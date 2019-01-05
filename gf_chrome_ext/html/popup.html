@@ -1,0 +1,103 @@
+<html>
+<head>
+	<script type="text/javascript" src="/lib/jquery-1.7.2.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/css/popup.css">
+
+	<script type="text/javascript" src="/js/popup_selected_elements.js"></script>
+	<script type="text/javascript" src="/js/popup.js"></script>
+	<script type="text/javascript" src="/js/gf_publisher/post_utils.js"></script>
+	<script type="text/javascript" src="/js/gf_images/image_utils.js"></script>
+	<script type="text/javascript" src="/lib/masonry.pkgd.min.js"></script>
+</head>
+<!-- ************************************************************* -->
+<body>
+	<div id='card_1'>
+		<div id='posts_container'>
+			
+			<!-- ************************************************************* -->
+			<!-- IMAGES ACTIONS -->
+			<div id='image_actions_container'>
+				<div id="get_tab_page_images_btn" title="get page images">
+					<!-- <span id='id_1'>get page</span>
+					<span id='id_2'>Images</span> -->
+					<div class="symbol"></div>
+				</div>
+			</div>
+
+			<!-- VIDEOS ACTIONS -->
+			<div id='video_actions_container'>
+				<div id="get_tab_page_videos_btn" title="get page videos">
+					<!-- <span id='id_1'>get page</span>
+					<span id='id_2'>Videos</span> -->
+					<div class="symbol"></div>
+				</div>
+			</div>
+			<!-- ************************************************************* -->
+			<!-- POST CREATION -->		
+			<form id ='post_creation_form'>
+				<!-- ************************************************************* -->
+				<!-- MANUAL FILE UPLOADING -->
+				<!-- HTML5 input field allowing the user to pick a file from the filesystem -->
+				<!-- <input type="file" id="dir-select" webkitdirectory></input> -->
+				<!-- ************************************************************* -->
+				<!-- TITLE -->
+				<div>
+					<!-- <label class="control-label" for  ="post_title_str">title</label> -->
+					<input type       ="text" 
+					       size       ="30"
+					       class      ='input_field'
+					       id         ="post_title_str" 
+					       placeholder="Post Title"></input>
+				</div>
+				<!-- ************************************************************* -->
+				<!-- TAGS -->
+				<div>
+					<!-- <label class="control-label" for  ="post_tags_str">tags</label> -->
+					<input type       ="text" 
+					       size       ="30" 
+					       class      ='input_field'
+					       id         ="post_tags_str" 
+					       placeholder="Tags - ' '(space) separated"></input>
+				</div>
+				<!-- ************************************************************* -->
+				<!-- DESCRIPTION -->
+				<div>
+					<!-- <label class="control-label" for  ="post_description_str">description</label> -->
+					<textarea type       ="text"
+							  class      ='textarea_field'
+					          id         ="post_description_str" 
+					          placeholder="Post Description"
+					          rows       = 6></textarea>
+				</div>
+				<!-- ************************************************************* -->
+				<!-- POSTER USER NAME -->
+				<div>
+					<!-- <label class="control-label" for  ="poster_user_name_str">poster user name</label> -->
+					<input type       ="text" 
+					       class      ="input_field" 
+					       size       ="30"
+					       class      ='input_field'
+					       id         ="poster_user_name_str" 
+					       placeholder="Your Username"></input>
+				</div>
+				<!-- ************************************************************* -->
+				<!-- CREATE POST BUTTON -->
+				<div id='create_post_btn'>Create Post</div>
+				<!-- ************************************************************* -->
+			</form>
+			<!-- ************************************************************* -->
+			<div id='target_host'><input value="http://gloflow.com"></input> target host</div>
+			
+		</div>
+	</div>
+	<div id='card_2'>
+	</div>
+	<div id='card_navigator'>
+
+		<div id='view_selected_elements_card'>
+			<div class="symbol" title="view selected elements"></div>
+		</div>
+	</div>
+</body>
+</html>

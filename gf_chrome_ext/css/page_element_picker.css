@@ -1,0 +1,334 @@
+
+
+body {}
+/*-----------------------------------------------------*/
+/*IMAGE_TO_POST*/
+
+.image_to_post {
+	right           : 0px;
+	z-index         : 2000;
+	position        : fixed;
+	height          : 40px;
+	background-color: rgb(221, 221, 221);
+}
+
+.image_to_post .close_btn {
+	position:relative;
+	float   :left;
+
+	background-color: rgb(255, 249, 152);
+	width           : 40px;
+	height          : 40px;
+
+	background-position: -150px 471px;
+
+	/*background-repeat  : no-repeat;
+	background-position: -150px 429px;*/
+}
+
+.image_to_post .image_name {
+	position: relative;
+	float   : left;
+
+	padding-top  : 11px;
+	padding-left : 11px;
+	padding-right: 13px;
+}
+
+.image_to_post .preview {
+	position: absolute;
+	top     : 0px;
+	left    : -172px; /* == width+2*padding */
+	width   : 150px;
+	background-color: rgb(255, 249, 152);
+
+	padding:11px;
+}
+
+.image_to_post .preview img {
+	width :100%;
+	height:auto;
+}
+/*-----------------------------------------------------*/
+#page_info_container {
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	position:absolute;
+	top     :0px;
+	left    :0px;
+	z-index :50000;
+
+	width       : 100%;
+	height      : 100%;
+	padding-left: 12px;
+	padding-top : 12px;
+
+	background-color:gray;	
+
+	overflow-y:scroll;
+	overflow-x:hidden; /*no horizontal scroll bars*/
+}
+/*-----------------------------------------------------*/
+/*IMAGE_IN_PAGE*/
+
+#page_info_container .image_in_page {
+
+	padding-bottom  : 9px;
+	padding-left    : 9px;
+	padding-top     : 9px;
+	padding-right   : 9px;
+
+	margin-top   : 11px;
+	margin-bottom: 11px;
+	margin-right : 11px;
+	margin-left  : 11px;
+
+	background-color: rgb(158, 158, 158);
+}
+
+#page_info_container .image_in_page img {
+}
+
+/*#page_info_container .image_in_page .hud {
+	position: absolute;
+	top     : 0px;
+	left    : 0px;
+	width   : 100%;
+	height  : 100%;
+}*/
+/*-----------------------------------------------------*/
+/*IMAGE_EXISTS*/
+#page_info_container .image_in_page .img_exists {
+	position: absolute;
+    top: 9px;
+    background-color: #7BAF7B;
+    color: white;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+#page_info_container .image_in_page .img_exists .exists_msg {
+	font-size: 16px;
+	height: 17px;
+	font-weight: bold;
+}
+#page_info_container .image_in_page .img_exists span.time {
+	font-weight: bold;
+}
+/*-----------------------------------------------------*/
+#page_info_container .image_in_page .hud {
+	position        : absolute;
+	top     : 0px;
+	left    : 0px;
+	height          : 100%;  
+	width           : 100%; 
+	
+	color           : white;
+	text-align      : center;
+}
+
+#page_info_container .image_in_page .hud .background {
+	height          : 100%;
+	width           : 100%;
+	background-color: rgb(232, 232, 232);
+	opacity         : 0.6;
+}
+
+#page_info_container .image_in_page .hud .img_height {
+	position: absolute;
+	padding : 5px;
+	color   : black;
+    left    : 10px;
+    top     : 10px;
+}
+#page_info_container .image_in_page .hud .img_height span {
+	font-weight: bold;
+}
+#page_info_container .image_in_page .hud .img_width {
+	position: absolute;
+	padding : 5px;
+	color   :black;
+	left    :10px;
+	top     :30px;	
+}
+#page_info_container .image_in_page .hud .img_width span {
+	font-weight: bold;
+}
+/*-----------------------------------------------------*/
+/*IMAGE_IN_PAGE__HUD_ACTIONS*/
+
+#page_info_container .image_in_page .hud #actions {
+	position    : absolute;
+	width       : 120px;
+	height      : 50px;
+
+	/*center div*/
+	left  : 0px;
+	right : 0px;
+	top   : 0px;
+	bottom: 0px;
+	margin: auto;
+}
+/*-----------------------------------------------------*/
+#page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .icon {
+	position        : absolute;
+	left            : 0px;
+	top             : 0px;
+
+	width           : 50px;
+	height          : 50px;
+	background-color: rgb(166, 166, 166);
+	cursor          : pointer;
+
+	/*this is specified programmatically in JS, because this 
+	  .png resource is an image declared as web-accessible in 
+	  the extension manifest.json. it is done via the
+	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  be set by the runtime, to its correct value.
+	  background-image   : url('assets/icons.png');*/
+	background-position: -530px -796px;
+}
+#page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .icon:hover {
+	background-color: white;
+}
+
+#page_info_container .image_in_page .hud #actions .add_to_image_flow_btn .symbol .btn_ok {
+	animation                : btn_ok_animation 0.2s;
+	animation-iteration-count: 1;
+	background-color         : green;
+}
+
+@keyframes btn_ok_animation {
+	0% {
+		background-color: rgb(166, 166, 166);
+	}
+	100% {
+		background-color: green;
+	}
+}
+/*-----------------------------------------------------*/
+#page_info_container .image_in_page .hud #actions .add_to_post_btn .symbol .icon {
+	position        : absolute;
+	left            : 60px;
+	top             : 0px;
+
+	width           : 50px;
+	height          : 50px;
+	background-color: rgb(166, 166, 166);
+	cursor          : pointer;
+
+	/*this is specified programmatically in JS, because this 
+	  .png resource is an image declared as web-accessible in 
+	  the extension manifest.json. it is done via the
+	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  be set by the runtime, to its correct value.
+	  background-image   : url('assets/icons.png');*/
+	background-position: -223px -423px;
+}
+#page_info_container .image_in_page .hud #actions .add_to_post_btn .symbol .icon:hover {
+	background-color: white;
+}
+/*-----------------------------------------------------*/
+/*ACTION__ADD_GIF*/
+#page_info_container .image_in_page .hud #actions .add_to_gif_flow_btn .symbol .icon {
+	position        : absolute;
+	left            : -49px;
+	top             : 0px;
+
+	width           : 100px;
+	height          : 50px;
+	padding-top     : 19px;
+	background-color: orange;
+	cursor          : pointer;
+}
+#page_info_container .image_in_page .hud #actions .add_to_gif_flow_btn .symbol .icon:hover {
+	background-color: white;
+	color:orange;
+}
+/*-----------------------------------------------------*/
+/*VIDEO_IN_PAGE*/
+
+#page_info_container .video_in_page {
+
+	padding-bottom  : 9px;
+	padding-left    : 9px;
+	padding-top     : 9px;
+	padding-right   : 9px;
+
+	margin-top   : 11px;
+	margin-bottom: 11px;
+	margin-right : 11px;
+	margin-left  : 11px;
+
+	background-color: rgb(158, 158, 158);
+}
+
+#page_info_container .video_in_page .hud {
+	position: absolute;
+	top     : 0px;
+	left    : 0px;
+	width   : 100%;
+	height  : 100%;
+}
+
+#page_info_container .video_in_page .hud .controls {
+
+	position    : absolute;
+	width       : 150px;
+	height      : 50px;
+
+	/*center div*/
+	left  : 0px;
+	right : 0px;
+	top   : 0px;
+	bottom: 0px;
+	margin: auto;
+}
+
+#page_info_container .video_in_page .hud .add_to_post_btn .symbol {
+	position    : absolute;
+	width       : 50px;
+	height      : 50px;	
+}
+
+#page_info_container .video_in_page .hud .add_to_post_btn .symbol .icon {
+	position        : absolute;
+	left            : 0px;
+	top             : 0px;
+
+	width           : 50px;
+	height          : 50px;
+	background-color: rgb(166, 166, 166);
+
+	/*this is specified programmatically in JS, because this 
+	  .png resource is an image declared as web-accessible in 
+	  the extension manifest.json. it is done via the
+	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  be set by the runtime, to its correct value.
+	  background-image   : url('assets/icons.png');*/
+	background-position: -223px -423px;
+}
+/*-----------------------------------------------------*/
+/*CLOSE BUTTON*/
+
+#page_info_container #close_btn {
+
+	position: fixed;
+	top     : 0px;
+	right   : 0px;
+	width   : 50px;
+	height  : 38px;
+	background-color: rgb(166, 166, 166);
+
+	/*this is specified programmatically in JS, because this 
+	  .png resource is an image declared as web-accessible in 
+	  the extension manifest.json. it is done via the
+	  chrome.extension.getURL(), so that the PACKAGE_ID can 
+	  be set by the runtime, to its correct value.
+	  background-image   : url('assets/icons.png');*/
+	background-position: -145px -423px;
+
+	padding-top: 14px;
+	font-weight: bold;
+	font-size  : 20px;
+	text-align : center;
+}
