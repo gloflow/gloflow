@@ -1,0 +1,95 @@
+#sys_panel {
+	position        : fixed;
+	top             : -43px;
+	width           : 100%;
+	height          : 43px;
+	background-color: rgb(247, 247, 247);
+	/*opacity         : 0.5;*/
+}
+
+#sys_panel #view_handle {
+	position: absolute;
+	top     : 43px;
+	right   : 16px;
+	width   : 50px;
+	height  : 50px;
+	background-color: rgb(255, 203, 203);
+}
+/*------------------------------------------------------------------*/
+/*HOME_BTN*/
+#sys_panel #home_btn {
+	position: fixed;
+	width   : 210px;
+	cursor: pointer;
+}
+/*------------------------------------------------------------------*/
+/*IMAGES_APP_BTN*/
+#sys_panel #images_app_btn {
+	position   : absolute;
+	top        : 0px;
+	left       : 218px;
+	width      : 150px;
+	padding-top: 6px;
+	height          : 37px;
+	text-align      : center;
+	background-color: rgb(57, 158, 208);
+	color           : white;
+	cursor          : pointer;
+	font-size       : 25px;
+}
+#sys_panel #images_app_btn:hover {
+	background-color: white;
+	color           : black;
+}
+
+#sys_panel #images_app_btn a {
+	color          : inherit; /*anchor tags have to explicitly inherit the color*/
+	text-decoration: none;
+}
+/*------------------------------------------------------------------*/
+/*PUBLISHER_APP_BTN*/
+#sys_panel #publisher_app_btn {
+	position   : absolute;
+	top        : 0px;
+	left       : 376px;
+	width      : 150px;
+	padding-top     : 6px;
+	height          : 37px;
+	text-align      : center;
+	background-color: rgb(233, 122, 60);
+	color           : white;
+	cursor          : pointer;
+	font-size       : 25px;
+}
+#sys_panel #publisher_app_btn:hover {
+	background-color: white;
+	color           : black;
+}
+
+#sys_panel #publisher_app_btn a {
+	color          : inherit; /*anchor tags have to explicitly inherit the color*/
+	text-decoration: none;
+}
+/*------------------------------------------------------------------*/
+#sys_panel #get_invited_btn {
+	position   : absolute;
+	top        : 0px;
+	right      : 93px;
+	padding-top: 11px;
+	width      : 120px;
+	height     : 32px;
+	text-align      : center;
+	background-color: rgb(235, 235, 235);
+	cursor          : pointer;
+}
+#sys_panel #login_btn {
+	position: absolute;
+	top     : 0px;
+	right   : 0px;
+	width   : 83px;
+	height  : 32px;
+	padding-top     : 11px;
+	text-align      : center;
+	background-color: rgb(245, 245, 119);
+	cursor          : pointer;
+}

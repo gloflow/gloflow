@@ -365,13 +365,10 @@ function init_image_hud(p_image_id_str,
 		//$(p_image_in_page_element).find('.gf_gif').gifplayer();
 
 		/*const gif_element = $(p_image_in_page_element).find('img')[0];
-
 		console.log(gif_element)
-
 		var sup1 = new SuperGif({ gif: gif_element } );
 		sup1.load();
 		sup1.play();
-
 		console.log('22222222222222222222')*/
 	}
 	//------------

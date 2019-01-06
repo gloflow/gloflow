@@ -1,0 +1,51 @@
+package gf_core
+
+//-------------------------------------------------
+type Sys_release_info struct {
+	Name_str        string
+	Version_str     string
+	Description_str string
+}
+//-------------------------------------------------
+func Get_sys_relese_info(p_runtime_sys *Runtime_sys) Sys_release_info {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_sys_release_info.Get_sys_relese_info()")
+
+	r := Sys_release_info{
+		Name_str       :"sparkly",
+		Version_str    :"0.7.3.1", //currently deployed version
+		Description_str:`
+0.7.4           - first prototype of the most basic image_editor (image filters/cropping) added. Still needs polish and integration of the UI into the
+                  rest of the system.
+				  (~2018 fall)
+0.7.3.1         - big refactor of how statistics are structured in all services, to standardize on gf_stats accross the whole system. 
+                  all stats are now accessible via gf_analytics only, not in custom dashboards of each of the services themselves
+                  (this way expensive stats calculations are only run in the gf_analytics service machines, not on machines of other services
+                  that are expected to efficiently handle real-time requests).
+                  (~2018 fall)
+0.7.3           - big refactor of error handling, a system wide gf_error code is now used. not all packages migrated yet,
+                  but core ones (gf_images,gf_crawl_lib,gf_analytics) are. 
+                  (~2018 fall)
+0.7.2           - small improvements in adding crawled_images to flows in the crawler dashboard.
+0.7.1           - gf_crawl can move images discovered in HTML pages into image flows. This is done via UI's in the crawler
+                  dashboard at the moment.
+                  (~2018 summer)
+0.7.0 (sparkly) - first round of GIF viewer/posting features. GIF's are now clickable/playable in the flows_browser, and can
+                  be added via the gf_chrome_ext.
+0.6.0 (robust)  - migrated system to multi-node cluster, separating key services to their own nodes. new cloud provider (GCP).
+0.5.0 (raise)   - addition of the "gf_crawl" application, which crawls the image-web for images from select sites.
+                  these images are then accessible in their own crawled/discovered image flow.
+                  "gf_crawl" functionality is working as a part of the gf_analytics service for now.
+0.4.4           - addition of the "gf_domains" application. UI for it is publicly accessible, which for now gives basic stats
+                  an all domains discovered in lings in the GF DB.
+0.4.3           - addition of the "flows" functionality to the "gf_images" application.
+0.4.0           - rewrite of the entire backend in Golang, and the front-end in Typescript. 
+                  major effort, and took over a year (if not longer) to complete, due to real-life coming in the way and 
+                  tech experimentation happening.
+0.2             - rewrote all services and most of the front-end in Dart, very few minor improvements added.
+0.1             - initial Python backend and gf_image/gf_post data-model, using mongodb, most basic css styling.
+                  (~2010)
+                  first introduction of a Chrome browser extension, for creating posts only (by adding images to them), no image flows.`,
+	}
+
+	return r
+}
