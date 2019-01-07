@@ -33,12 +33,10 @@ def get_log_fun(p_log_fun):
 			clint.textui.puts(t+':'+clint.textui.colored.red(p_group)+':'+p_msg)
 			
 		elif p_group == 'INFO':
-			clint.textui.puts(t+':'+clint.textui.colored.green(p_group)+':'+ \
-												clint.textui.colored.green(p_msg))
+			clint.textui.puts(t+':'+clint.textui.colored.green(p_group)+':'+ clint.textui.colored.green(p_msg))
 			
 		elif p_group == 'INFO_USR':
-			clint.textui.puts(t+':'+clint.textui.colored.magenta(p_group)+':'+ \
-												clint.textui.colored.magenta(p_msg))
+			clint.textui.puts(t+':'+clint.textui.colored.magenta(p_group)+':'+ clint.textui.colored.magenta(p_msg))
 			
 		#log message is in some way related to external-systems data
 		elif p_group == 'EXTERN':
@@ -54,8 +52,7 @@ def get_log_fun(p_log_fun):
 			clint.textui.puts(t+':'+'       '+clint.textui.colored.yellow('FUN_ENTER')+':'+p_msg)
 			
 		elif p_group == 'JS:INFO':
-			clint.textui.puts(t+':'+'       '+clint.textui.colored.green(p_group)+':'+ \
-													clint.textui.colored.green(p_msg))
+			clint.textui.puts(t+':'+'       '+clint.textui.colored.green(p_group)+':'+ clint.textui.colored.green(p_msg))
 	#----------------------------------------------
 			
 	return log_color_display_fun
