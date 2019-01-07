@@ -1,0 +1,62 @@
+
+
+
+
+<link rel="stylesheet" type="text/css" href="ln__gf_image_editor.css">
+<style>
+body {
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin     :0;
+
+	/*turn off horizontal scroll*/
+	max-width: 100%;
+    overflow-x: hidden;
+}
+</style>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="ln__caman.full.min.js"></script>
+<script type="text/javascript" src="gf_image_editor__test_build.js"></script>
+
+<script type="text/javascript">
+
+
+$(document).ready(()=>{
+    //-------------------------------------------------
+    function log_fun(p_g,p_m) {
+        var msg_str = p_g+':'+p_m
+        //chrome.extension.getBackgroundPage().console.log(msg_str);
+
+        switch (p_g) {
+            case "INFO":
+                console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
+                break;
+            case "FUN_ENTER":
+                console.log("%cFUN_ENTER"+":"+"%c"+p_m,"color:yellow; background-color:lightgray","background-color:lightgray");
+                break;
+        }
+    }
+    //-------------------------------------------------
+
+
+    console.log('test');
+
+    const target_image_div_e = $('#target_img');
+	gf_image_editor.init(target_image_div_e,log_fun);
+
+
+});
+
+
+
+
+</script>
+
+
+
+
+
+
+<div id='target_img' style='position: absolute;top:80px;left:300px;'>
+	<img src='f7c69997806007a9afcf1bb3f10900ae_thumb_small.jpeg'></img>
+</div>

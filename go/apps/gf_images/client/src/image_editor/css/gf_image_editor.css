@@ -1,0 +1,67 @@
+
+
+
+
+
+.gf_image_editor {
+	position:absolute;
+	top     :0px;
+	right   :0px;
+}
+
+.gf_image_editor .open_editor_btn {
+	position        : absolute;
+    right           : 0px;
+    top             : -30px;
+    background-color: #eaeaea;
+    padding-left    : 10px;
+    padding-right   : 10px;
+    padding-top     : 6px;
+    padding-bottom  : 6px;
+    cursor          : pointer;
+}
+
+.gf_image_editor .editor_pane {
+	position: absolute;
+    top     : 0px;
+}
+
+.gf_image_editor .editor_pane .close_btn {
+    position: absolute;
+    left: 550px;
+    background-color: #fceed3;
+    padding-left: 18px;
+    padding-right: 19px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: gray;
+    cursor: pointer;
+}
+
+.gf_image_editor .editor_pane .close_btn:hover {
+    background-color: white;
+}
+.gf_image_editor .editor_pane .close_btn:active {
+    background-color: red;
+}
+
+.editor_pane .slider_input {
+    position: absolute;
+    top: 0px;
+    right: -350px;
+    background-color: #ffecd4;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-right: 10px;
+    color: #7b7b7b;
+    height: 195px;
+}
+
+.editor_pane .slider_input input {
+    width: 250px;
+}
+
+.editor_pane .slider_input label {
+    top: -6px;
+    position: relative;
+}

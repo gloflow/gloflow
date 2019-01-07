@@ -1,0 +1,39 @@
+#stats__gf_images {
+    position: absolute;
+    top:      130px;
+}
+
+#stats__gf_images #stats_title {
+    color:        gray;
+    padding-left: 7px;
+}
+
+#stats__gf_images #completed_image_jobs_runtime_infos {
+	position:         absolute;
+    top:              24px;
+    background-color: #FFFFC7;
+    padding-top:      7px;
+    padding-bottom:   6px;
+    padding-right:    9px;
+    padding-left:     8px;
+    cursor:           pointer;
+}
+#stats__gf_images #completed_image_jobs_runtime_infos:hover {
+	background-color: white;
+}
+
+
+
+#stats__gf_images #image_jobs_errors {
+    position:         absolute;
+    top:              62px;
+    background-color: #EF814B;
+    padding-top:      7px;
+    padding-bottom:   6px;
+    padding-right:    9px;
+    padding-left:     8px;
+    cursor:           pointer;
+}
+#stats__gf_images #image_jobs_errors:hover {
+    background-color: white;
+}
