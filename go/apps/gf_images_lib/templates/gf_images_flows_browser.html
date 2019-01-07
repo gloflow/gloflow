@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>gloflow.com - the universe of art</title>
+
+	<link rel="stylesheet" type="text/css" href="/images/static/css/gf_images_flows_browser.css">
+	<link rel="stylesheet" type="text/css" href="/images/static/css/gf_gifs_viewer.css">
+	<link rel="stylesheet" type="text/css" href="/images/static/css/gf_image_viewer.css">
+	<link rel="stylesheet" type="text/css" href="/images/static/css/gf_sys_panel.css">
+	{{- /*-----------------------------------------------------*/}}
+	<!-- directs fb to use the specified image when the page is shared -->
+	<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+	<meta property="og:title" content="gloflow.com - a parallel space for artistic expression"/>
+
+	<!-- canonical address  -->
+	<meta property="og:url"       content="http://www.gloflow.com"/>
+	<meta property="og:site_name" content="GloFlow"/>
+
+	<meta property="og:type" content="culture"/>
+	<meta property="og:type" content="art"/>
+	<meta property="og:type" content="architecture"/>
+	<meta property="og:type" content="design"/>
+	<meta property="og:type" content="photography"/>
+	<meta property="og:type" content="fashion"/>
+	<meta property="og:type" content="music"/>
+	<meta property="og:type" content="vr"/>
+	{{- /*-----------------------------------------------------*/}}
+</head>
+<body>
+{{- /*------------------------------------------------------*/}}
+<div id='gf_images_flow_container'>
+
+{{- range .Images_pages_lst}}
+	{{- range .}}
+		{{- /*"item" class is used by Masonry*/}}
+		<div class ='gf_image item' data-img_id="{{- .id_str}}" data-img_format="{{- .format_str}}">
+			{{- /*------------------------------------------------------*/}}
+			{{- /*IMAGE THUMBNAIL DATA*/}}
+			{{- /*REMOVE!! - IS THIS USED????*/}}
+			<div style='display:none'>
+				{{- /*this div is a data carrier, so it should not be visible*/}}
+				<div class='thumb_small_url'>
+					{{- .thumbnail_small_url_str }}
+				</div>
+			</div>
+			<img src="{{.thumbnail_small_url_str}}" data-img_thumb_medium_url="{{.thumbnail_medium_url_str}}"></img>
+			{{- /*------------------------------------------------------*/}}
+			{{- /*TAGS*/}}
+			{{- if .image_has_tags_bool}}
+			<div class='tags_container'>
+			
+			{{- range .tags_lst}}
+				<a class='gf_image_tag' href ='/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+			{{- end}}
+			</div>
+			{{- end}}
+			{{- /*------------------------------------------------------*/}}
+			<div class="origin_page_url">
+				<a href="{{.image_origin_page_url_str}}" target="_blank">{{.image_origin_page_url_str}}</a>
+			</div>
+			{{- /*------------------------------------------------------*/}}
+			<div class="creation_time">{{.creation_unix_time_str}}</div>
+			{{- /*------------------------------------------------------*/}}
+		</div>
+	{{- end}}
+{{- end}}
+
+</div>
+{{- /*-----------------------------------------------------*/}}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/images/static/js/lib/masonry.pkgd.min.js"></script>
+<script type="text/javascript" src="/images/static/js/lib/jquery.timeago.js"></script>
+<script type="text/javascript" src="/images/static/js/gf_images_flows_browser.js"></script>
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
+</div>
+{{- /*------------------------------------------------------*/}}
+
+</body>
+</html>
