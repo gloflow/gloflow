@@ -1,11 +1,5 @@
-
-
-
-
-
-
+//SPDX-License-Identifier: GPL-2.0
 namespace gf_stats {
-
 //---------------------------------------------------
 export function init__batch(p_log_fun) {
 	p_log_fun("FUN_ENTER","gf_stats.init__batch()");
