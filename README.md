@@ -20,3 +20,4 @@ Originally it was coded in Python on the backend, and JS on the frontend. Later 
 
 
 
+Originally created by Ivan Trajkovic
