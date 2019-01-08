@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"gf_core"
-	"apps/gf_images_lib"
+	"github.com/gloflow/gloflow/gf_core"
+	"github.com/gloflow/gloflow/gf_apps/gf_images_lib"
 )
 //-------------------------------------------------
 func main() {
