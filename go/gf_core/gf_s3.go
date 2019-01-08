@@ -41,15 +41,6 @@ func S3__init(p_runtime_sys *Runtime_sys) (*Gf_s3_info,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_s3.S3__init()")
 
 	//--------------
-	// DO NOT PUT credentials in code for production usage!
-	// see https://www.socketloop.com/tutorials/golang-setting-up-configure-aws-credentials-with-official-aws-sdk-go
-	// on setting creds from environment or loading from file
-
-	//REMOVE!!
-	aws_access_key_id     := "AKIAIHKJLFRT3S6BE2UA"
-	aws_secret_access_key := "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"
-	token                 := ""
-
 	creds := credentials.NewStaticCredentials(aws_access_key_id, aws_secret_access_key, token)
 	_,err := creds.Get()
 
