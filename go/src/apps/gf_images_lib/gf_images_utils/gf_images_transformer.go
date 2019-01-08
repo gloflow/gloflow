@@ -33,13 +33,13 @@ import (
 //                              its not relevant for direct image uploads from clients.
 
 func Transform_image(p_image_id_str string,
-				p_image_client_type_str                      string,
-				p_images_flows_names_lst                     []string,
-				p_image_origin_url_str                       string,
-				p_image_origin_page_url_str                  string,
-				p_image_local_file_path_str                  string,
-				p_images_store_thumbnails_local_dir_path_str string,
-				p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
+	p_image_client_type_str                      string,
+	p_images_flows_names_lst                     []string,
+	p_image_origin_url_str                       string,
+	p_image_origin_page_url_str                  string,
+	p_image_local_file_path_str                  string,
+	p_images_store_thumbnails_local_dir_path_str string,
+	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_transformer.Transform_image()")
 
 	normalized_ext_str,gf_err := Get_image_ext_from_url(p_image_origin_url_str,p_runtime_sys)
@@ -64,14 +64,14 @@ func Transform_image(p_image_id_str string,
 }
 //---------------------------------------------------
 func Trans__process_image(p_image_id_str string,
-			p_image_client_type_str                string,
-			p_images_flows_names_lst               []string,
-			p_image_origin_url_str                 string,
-			p_image_origin_page_url_str            string,
-			p_normalized_ext_str                   string,
-			p_image_local_file_path_str            string,
-			p_local_thumbnails_target_dir_path_str string,
-			p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
+	p_image_client_type_str                string,
+	p_images_flows_names_lst               []string,
+	p_image_origin_url_str                 string,
+	p_image_origin_page_url_str            string,
+	p_normalized_ext_str                   string,
+	p_image_local_file_path_str            string,
+	p_local_thumbnails_target_dir_path_str string,
+	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_transformer.Trans__process_image()")
 	fmt.Println("p_image_local_file_path_str - "+p_image_local_file_path_str)
 
@@ -149,10 +149,10 @@ func Trans__process_image(p_image_id_str string,
 }
 //---------------------------------------------------
 func resize_image(p_img image.Image,
-		p_image_output_path_str string,
-		p_image_format_str      string,
-		p_size_px_int           int,
-		p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_image_output_path_str string,
+	p_image_format_str      string,
+	p_size_px_int           int,
+	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_transformer.resize_image()")
 	
 	// resize to width 1000 using Lanczos resampling

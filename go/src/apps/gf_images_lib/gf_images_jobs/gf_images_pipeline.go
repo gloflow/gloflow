@@ -25,18 +25,18 @@ import (
 )
 //-------------------------------------------------
 func pipeline__process_image(p_image_source_url_str string,
-				p_image_id_str                               string,
-				p_image_origin_page_url_str                  string,
-				p_images_store_local_dir_path_str            string,
-				p_images_thumbnails_store_local_dir_path_str string,
-				p_flows_names_lst                            []string,
-				p_job_id_str                                 string,
-				p_job_client_type_str                        string,
-				p_job_updates_ch                  chan *Job_update_msg,
-				p_s3_bucket_name_str              string,
-				p_s3_info                         *gf_core.Gf_s3_info,
-				p_send_error_fun                  func(string,*gf_core.Gf_error,string,string,string,chan *Job_update_msg,*gf_core.Runtime_sys) *gf_core.Gf_error,
-				p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_image_id_str                               string,
+	p_image_origin_page_url_str                  string,
+	p_images_store_local_dir_path_str            string,
+	p_images_thumbnails_store_local_dir_path_str string,
+	p_flows_names_lst                            []string,
+	p_job_id_str                                 string,
+	p_job_client_type_str                        string,
+	p_job_updates_ch                  chan *Job_update_msg,
+	p_s3_bucket_name_str              string,
+	p_s3_info                         *gf_core.Gf_s3_info,
+	p_send_error_fun                  func(string,*gf_core.Gf_error,string,string,string,chan *Job_update_msg,*gf_core.Runtime_sys) *gf_core.Gf_error,
+	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_pipeline.pipeline__process_image()")
 
 	//-----------------------

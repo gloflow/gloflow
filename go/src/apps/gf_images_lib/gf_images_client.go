@@ -44,10 +44,10 @@ type Client_job_image_output struct {
 //                                       its not relevant for direct image uploads from clients.
 
 func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
-									p_input_images_origin_pages_urls_str  []string,
-									p_client_type_str                     string,
-									p_target__image_service_host_port_str string,
-									p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
+	p_input_images_origin_pages_urls_str  []string,
+	p_client_type_str                     string,
+	p_target__image_service_host_port_str string,
+	p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.Client__dispatch_process_extern_images()")
 
 	running_job_id_str,images_outputs_lst,gf_err := client__start_job(p_input_images_urls_lst,
@@ -63,10 +63,10 @@ func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
 }
 //-------------------------------------------------
 func client__start_job(p_input_images_urls_lst []string,
-				p_input_images_origin_pages_urls_str  []string,
-				p_client_type_str                     string,
-				p_target__image_service_host_port_str string,
-				p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
+	p_input_images_origin_pages_urls_str  []string,
+	p_client_type_str                     string,
+	p_target__image_service_host_port_str string,
+	p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__start_job()")
 
 	//------------------
@@ -174,8 +174,8 @@ func client__start_job(p_input_images_urls_lst []string,
 }
 //-------------------------------------------------
 func client__get_status(p_running_job_id_str string,
-					p_target__image_service_host_port_str string,
-					p_runtime_sys                         *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
+	p_target__image_service_host_port_str string,
+	p_runtime_sys                         *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__get_status()")
 
 	url_str := fmt.Sprintf("http://%s/images/jobs/status",p_target__image_service_host_port_str)
@@ -205,8 +205,7 @@ func client__get_status(p_running_job_id_str string,
 	return update_items_lst,nil
 }
 //-------------------------------------------------
-func client__parse_sse_response(p_body_str string,
-							p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
+func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__parse_sse_response()")
 
 	data_items_lst := []map[string]interface{}{}

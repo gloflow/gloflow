@@ -32,7 +32,7 @@ import (
 )
 //-------------------------------------------------
 func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
-			p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------

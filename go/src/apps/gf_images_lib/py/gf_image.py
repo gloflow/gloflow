@@ -22,8 +22,7 @@ import urlparse
 import gf_image_verify
 #---------------------------------------------------
 class Image_ADT():
-	def __init__(self,
-		         p_props_dict):
+	def __init__(self, p_props_dict):
 		
 		self.id_str    = p_props_dict['id_str']
 		self.title_str = p_props_dict['title_str']
@@ -53,8 +52,8 @@ class Image_ADT():
 #---------------------------------------------------
 #->:Image_ADT
 def create(p_image_info_map,
-		p_db_context_map,
-		p_log_fun):
+	p_db_context_map,
+	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image.create()')
 	
 	new_image_info_dict = gf_image_verify.verify_image_info(p_image_info_map,
@@ -69,8 +68,7 @@ def create(p_image_info_map,
 	image_adt = Image_ADT(new_image_info_dict)
 	return image_adt
 #---------------------------------------------------
-def create_id_from_url(p_image_url_str,
-				p_log_fun):
+def create_id_from_url(p_image_url_str, p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image.create_id_from_url()')
 	
 	#urlparse() - used so that any possible url query parameters are not used in the 
@@ -90,8 +88,8 @@ def create_id_from_url(p_image_url_str,
 
 #->:String(image_id_str)
 def create_id(p_image_path_str,
-		p_image_format_str,
-		p_log_fun):
+	p_image_format_str,
+	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image.create_id()')
 	assert isinstance(p_image_path_str,basestring)
 	
@@ -114,8 +112,7 @@ def create_id(p_image_path_str,
 	return image_id_str
 #---------------------------------------------------
 #->:Map(image_info_map)
-def serialize(p_image_adt,
-			p_log_fun):
+def serialize(p_image_adt, p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image.serialize()')
 
 	image_info_map = {
@@ -140,8 +137,7 @@ def serialize(p_image_adt,
 	return image_info_map
 #---------------------------------------------------
 #->:Map(image_info_map)
-def deserialize(p_raw_image_info_map,
-				p_log_fun):
+def deserialize(p_raw_image_info_map, p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image.deserialize()')
 	assert isinstance(p_raw_image_info_map,dict)
 	

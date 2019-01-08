@@ -26,14 +26,14 @@ import (
 )
 //---------------------------------------------------
 func Create_thumbnails(p_image_id_str string,
-				p_image_format_str                     string,
-				p_image_file_path_str                  string,
-				p_local_target_thumbnails_dir_path_str string,
-				p_small_thumb_max_size_px_int          int,
-				p_medium_thumb_max_size_px_int         int,
-				p_large_thumb_max_size_px_int          int,
-				p_image                                image.Image,
-				p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image_thumbs,*gf_core.Gf_error) {
+	p_image_format_str                     string,
+	p_image_file_path_str                  string,
+	p_local_target_thumbnails_dir_path_str string,
+	p_small_thumb_max_size_px_int          int,
+	p_medium_thumb_max_size_px_int         int,
+	p_large_thumb_max_size_px_int          int,
+	p_image                                image.Image,
+	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image_thumbs,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_thumbs.Create_thumbnails()")
 
 	//-----------------

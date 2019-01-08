@@ -29,14 +29,14 @@ import (
 )
 //-------------------------------------------------
 func Run_service(p_port_str string,
-			p_mongodb_host_str                           string,
-			p_mongodb_db_name_str                        string,
-			p_images_store_local_dir_path_str            string,
-			p_images_thumbnails_store_local_dir_path_str string,
-			p_images_main_s3_bucket_name_str             string,
-			p_templates_dir_paths_map                    map[string]interface{},
-			p_init_done_ch                               chan bool,
-			p_log_fun                                    func(string,string)) {
+	p_mongodb_host_str                           string,
+	p_mongodb_db_name_str                        string,
+	p_images_store_local_dir_path_str            string,
+	p_images_thumbnails_store_local_dir_path_str string,
+	p_images_main_s3_bucket_name_str             string,
+	p_templates_dir_paths_map                    map[string]interface{},
+	p_init_done_ch                               chan bool,
+	p_log_fun                                    func(string,string)) {
 	p_log_fun("FUN_ENTER","gf_images_service.Run_service()")
 
 	p_log_fun("INFO","")

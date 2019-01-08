@@ -27,10 +27,10 @@ import (
 )
 //---------------------------------------------------
 func S3__store_gf_image(p_image_local_file_path_str string,
-				p_image_thumbs       *Gf_image_thumbs,
-				p_s3_bucket_name_str string,
-				p_s3_info            *gf_core.Gf_s3_info,
-				p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_image_thumbs       *Gf_image_thumbs,
+	p_s3_bucket_name_str string,
+	p_s3_info            *gf_core.Gf_s3_info,
+	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_s3.S3__store_gf_image()")
 
 	//--------------------
@@ -86,9 +86,9 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 }
 //---------------------------------------------------
 func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
-					p_s3_bucket_name_str string,
-					p_s3_info            *gf_core.Gf_s3_info,
-					p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_s3_bucket_name_str string,
+	p_s3_info            *gf_core.Gf_s3_info,
+	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_s3.S3__store_gf_image_thumbs()")
 
 	//IMPORTANT - for some image types (GIF) the system doesnt produce thumbs,
@@ -142,8 +142,8 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 }
 //------------------------------------------------
 func S3__get_image_url(p_image_path_name_str string,
-			p_s3_bucket_name_str string,
-			p_runtime_sys        *gf_core.Runtime_sys) string {
+	p_s3_bucket_name_str string,
+	p_runtime_sys        *gf_core.Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_s3.S3__get_image_url()")
 
 	//IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
@@ -158,8 +158,7 @@ func S3__get_image_url(p_image_path_name_str string,
 //IMPORTANT!! - get the filepath of the gf_image's original 
 //              image downloaded from the source site (or uploaded by user)
 
-func S3__get_image_original_file_s3_filepath(p_image *Gf_image,
-								p_runtime_sys *gf_core.Runtime_sys) string {
+func S3__get_image_original_file_s3_filepath(p_image *Gf_image, p_runtime_sys *gf_core.Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.S3__get_image_original_file_s3_filepath()")
 
 	//when image is downloaded its renamed to its ID
@@ -169,8 +168,7 @@ func S3__get_image_original_file_s3_filepath(p_image *Gf_image,
 	return uploaded_s3_filepath_str
 }
 //---------------------------------------------------
-func S3__get_image_thumbs_s3_filepaths(p_image *Gf_image,
-								p_runtime_sys *gf_core.Runtime_sys) (string,string,string) {
+func S3__get_image_thumbs_s3_filepaths(p_image *Gf_image, p_runtime_sys *gf_core.Runtime_sys) (string,string,string) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.S3__get_image_thumbs_s3_filepaths()")
 	
 	thumb_small__s3_filepath_str  := strings.Replace(p_image.Thumbnail_small_url_str, "/images/d","",1)

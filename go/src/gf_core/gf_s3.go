@@ -87,10 +87,10 @@ func S3__init(p_runtime_sys *Runtime_sys) (*Gf_s3_info,*Gf_error) {
 }
 //---------------------------------------------------
 func S3__upload_file(p_target_file__local_path_str string,
-			p_target_file__s3_path_str string,
-			p_s3_bucket_name_str       string,
-			p_s3_info                  *Gf_s3_info,
-			p_runtime_sys              *Runtime_sys) (string,*Gf_error) {
+	p_target_file__s3_path_str string,
+	p_s3_bucket_name_str       string,
+	p_s3_info                  *Gf_s3_info,
+	p_runtime_sys              *Runtime_sys) (string,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_s3.S3__upload_file()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
 	p_runtime_sys.Log_fun("INFO"     ,"p_target_file__s3_path_str - "+p_target_file__s3_path_str)
@@ -150,10 +150,10 @@ func S3__upload_file(p_target_file__local_path_str string,
 }
 //---------------------------------------------------
 func S3__copy_file(p_target_bucket_name_str string,
-			p_source_bucket_and_file__s3_path_str string,
-			p_target_file__s3_path_str            string,
-			p_s3_info                             *Gf_s3_info,
-			p_runtime_sys                         *Runtime_sys) *Gf_error {
+	p_source_bucket_and_file__s3_path_str string,
+	p_target_file__s3_path_str            string,
+	p_s3_info                             *Gf_s3_info,
+	p_runtime_sys                         *Runtime_sys) *Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_s3.S3__copy_file()")
 
 	fmt.Println("p_target_bucket_name_str              - "+p_target_bucket_name_str)

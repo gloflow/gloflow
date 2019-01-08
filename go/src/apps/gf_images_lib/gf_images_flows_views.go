@@ -29,11 +29,11 @@ import (
 )
 //-------------------------------------------------
 func flows__render_initial_page(p_flow_name_str string,
-						p_initial_pages_num_int int, //6
-						p_page_size_int         int, //5
-						p_tmpl                  *template.Template,
-						p_resp                  http.ResponseWriter,
-						p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_initial_pages_num_int int, //6
+	p_page_size_int         int, //5
+	p_tmpl                  *template.Template,
+	p_resp                  http.ResponseWriter,
+	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
@@ -78,9 +78,9 @@ func flows__render_initial_page(p_flow_name_str string,
 }
 //-------------------------------------------------
 func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //list-of-lists
-					p_tmpl        *template.Template,
-					p_resp        http.ResponseWriter,
-					p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_tmpl        *template.Template,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)

@@ -20,9 +20,9 @@ import traceback
 #p_surrounding_context_attribs_tpl - order matters
 
 def handle_exception(p_exception,
-				p_formated_msg_str,
-				p_surrounding_context_attribs_tpl,
-				p_log_fun):
+	p_formated_msg_str,
+	p_surrounding_context_attribs_tpl,
+	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_error.handle_exception()')
 	assert isinstance(p_exception,Exception)
 

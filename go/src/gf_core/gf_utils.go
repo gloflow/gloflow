@@ -19,8 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	
 package gf_core
 //-------------------------------------------------------------
-func Str_in_lst(p_str string,
-			p_lst []string) bool {
+func Str_in_lst(p_str string, p_lst []string) bool {
 	for _,s := range p_lst {
 		if p_str == s {
 			return true
@@ -29,8 +28,7 @@ func Str_in_lst(p_str string,
 	return false
 }
 //-------------------------------------------------------------
-func Map_has_key(p_map interface{},
-			p_key_str string) bool {
+func Map_has_key(p_map interface{}, p_key_str string) bool {
 
 	if _,ok := p_map.(map[string]interface{}); ok {
 		_,ok := p_map.(map[string]interface{})[p_key_str]

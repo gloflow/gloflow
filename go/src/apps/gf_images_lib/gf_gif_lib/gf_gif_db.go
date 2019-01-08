@@ -30,12 +30,12 @@ import (
 )
 //--------------------------------------------------
 func gif_db__create(p_image_source_url_str string,
-		p_image_origin_page_url_str string,
-		p_img_width_int             int,
-		p_img_height_int            int,
-		p_frames_num_int            int,
-		p_frames_s3_urls_lst        []string,
-		p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
+	p_image_origin_page_url_str string,
+	p_img_width_int             int,
+	p_img_height_int            int,
+	p_frames_num_int            int,
+	p_frames_s3_urls_lst        []string,
+	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__create()")
 
 	img_title_str,gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
@@ -94,7 +94,7 @@ func gif_db__create(p_image_source_url_str string,
 }
 //--------------------------------------------------
 func gif_db__delete(p_id_str string,
-		p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__delete()")
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
@@ -116,7 +116,7 @@ func gif_db__delete(p_id_str string,
 }
 //--------------------------------------------------
 func gif_db__get_by_img_id(p_gf_img_id_str string,
-					p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_img_id()")
 
 	var gif Gf_gif
@@ -151,7 +151,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 }
 //--------------------------------------------------
 func gif_db__get_by_origin_url(p_origin_url_str string,
-		p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_origin_url()")
 
 	var gif Gf_gif
@@ -184,8 +184,8 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 }
 //--------------------------------------------------
 func gif_db__get_page(p_cursor_start_position_int int, //0
-				p_elements_num_int int,                //50
-				p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_gif,*gf_core.Gf_error) {
+	p_elements_num_int int,                //50
+	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_page()")
 
 	gifs_lst := []*Gf_gif{}
@@ -219,8 +219,8 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 }
 //--------------------------------------------------
 func gif_db__update_image_id(p_gif_id_str string,
-				p_image_id_str string,
-				p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_image_id_str string,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
 			"t":     "gif",

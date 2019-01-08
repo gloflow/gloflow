@@ -141,9 +141,9 @@ function init__current_pages_display(p_log_fun) {
 }
 //---------------------------------------------------
 function load_new_page(p_flow_name_str :string,
-					p_current_page_int,
-					p_on_complete_fun,
-					p_log_fun) {
+	p_current_page_int,
+	p_on_complete_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_flows_browser.load_new_page()');
 
 	http__load_new_page(p_flow_name_str,
@@ -265,8 +265,7 @@ function load_new_page(p_flow_name_str :string,
 	//---------------------------------------------------
 }
 //-------------------------------------------------
-function init_image_date(p_image_element,
-					p_log_fun) {
+function init_image_date(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_flows_browser.init_image_date()');
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
@@ -297,10 +296,10 @@ function init_image_date(p_image_element,
 }
 //---------------------------------------------------
 function http__load_new_page(p_flow_name_str :string,
-						p_current_page_int,
-						p_on_complete_fun,
-						p_on_error_fun,
-						p_log_fun) {
+	p_current_page_int,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_flows_browser.http__load_new_page()');
 
 	const page_size_int = 10;

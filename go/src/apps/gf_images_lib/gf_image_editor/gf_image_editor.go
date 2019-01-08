@@ -64,9 +64,9 @@ type Gf_edited_image__processing_info struct {
 }
 //-------------------------------------------------
 func save_edited_image__pipeline(p_handler_url_path_str string,
-							p_req         *http.Request,
-							p_resp        http.ResponseWriter, 
-							p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_req         *http.Request,
+	p_resp        http.ResponseWriter, 
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
@@ -118,8 +118,8 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 }
 //-------------------------------------------------
 func save_edited_image(p_source_image_id_str string,
-					p_image_base64_data_str string,
-					p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info,*gf_core.Gf_error) {
+	p_image_base64_data_str string,
+	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.save_edited_image()")
 	
 	//--------------------------
@@ -221,9 +221,9 @@ func save_edited_image(p_source_image_id_str string,
 }
 //-------------------------------------------------
 func create_gf_image(p_new_title_str string,
-				p_images_flows_names_lst []string,
-				p_processing_info        *Gf_edited_image__processing_info,
-				p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_images_flows_names_lst []string,
+	p_processing_info        *Gf_edited_image__processing_info,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.create_gf_image()")
 
 

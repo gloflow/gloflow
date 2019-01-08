@@ -27,7 +27,7 @@ import (
 )
 //-------------------------------------------------
 func Gif__init_handlers(p_templates_dir_path_str string,
-					p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------

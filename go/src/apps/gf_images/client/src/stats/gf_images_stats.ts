@@ -4,8 +4,7 @@
 
 namespace gf_images_stats {
 //-------------------------------------------------
-export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_jobs_runtime_infos_lst,
-														p_log_fun) {
+export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_jobs_runtime_infos_lst, p_log_fun) {
 	p_log_fun("FUN_ENTER","gf_images_stats.stat_view__completed_image_jobs_runtime_infos()");
 
 	const plot = $(
@@ -72,8 +71,7 @@ export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_
 	});
 }
 //-------------------------------------------------
-export function stat_view__image_jobs_errors(p_image_jobs_errors_lst,
-										p_log_fun) {
+export function stat_view__image_jobs_errors(p_image_jobs_errors_lst, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_stats.stat_view__image_jobs_errors()');
 	
 }
@@ -81,8 +79,8 @@ export function stat_view__image_jobs_errors(p_image_jobs_errors_lst,
 //HTTP
 //-------------------------------------------------
 export function http__get_stat_data(p_stat_name_str,
-							p_onComplete_fun,
-							p_log_fun) {
+	p_onComplete_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_stats.http__get_stat_data()');
 
 	const url_str  = '/images/stats';

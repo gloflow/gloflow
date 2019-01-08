@@ -5,8 +5,7 @@ namespace gf_image_editor {
 
 declare var Caman;
 //-------------------------------------------------
-export function init(p_target_image_div_element,
-				p_log_fun) {
+export function init(p_target_image_div_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_image_editor.init()');
 
 

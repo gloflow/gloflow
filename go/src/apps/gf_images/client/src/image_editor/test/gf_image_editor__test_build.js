@@ -5,8 +5,8 @@ var gf_image_editor;
     function init(p_target_image_div_element, p_log_fun) {
         p_log_fun('FUN_ENTER', 'gf_image_editor.init()');
         var target_image = $(p_target_image_div_element).find('img')[0];
-        var width_int = target_image.clientWidth;
-        var height_int = target_image.clientHeight;
+        var width_int    = target_image.clientWidth;
+        var height_int   = target_image.clientHeight;
         console.log('img width  - ' + width_int);
         console.log('img height - ' + height_int);
         var container = $("\n\t\t<div class='gf_image_editor'>\n\t\t\t<div class='open_editor_btn'>editor</div>\n\t\t</div>");
@@ -53,7 +53,7 @@ var gf_image_editor;
         //-------------------------------------------------
         function save_modified_image(p_editor_pane) {
             p_log_fun('FUN_ENTER', 'gf_image_editor.init().save_modified_image()');
-            var canvas = $(p_editor_pane).find('.modified_image_canvas')[0];
+            var canvas            = $(p_editor_pane).find('.modified_image_canvas')[0];
             var canvas_base64_str = canvas.toDataURL();
             console.log(canvas_base64_str);
         }

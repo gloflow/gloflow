@@ -25,8 +25,8 @@ import (
 )
 //---------------------------------------------------
 func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
-					p_tags_lst    []string,
-					p_runtime_sys *gf_core.Runtime_sys) {
+	p_tags_lst    []string,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image.Add_tags_to_image()")
 	
 	if len(p_tags_lst) > 0 {

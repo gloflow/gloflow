@@ -39,8 +39,8 @@ type Image_fetch__error struct {
 }
 //-------------------------------------------------
 func Fetch_image(p_image_url_str string,
-		p_images_store_local_dir_path_str string,
-		p_runtime_sys                     *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
+	p_images_store_local_dir_path_str string,
+	p_runtime_sys                     *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_fetcher.Fetch_image()")
 
 	//----------------------
@@ -66,9 +66,9 @@ func Fetch_image(p_image_url_str string,
 }
 //---------------------------------------------------
 func Fetcher__get_extern_image(p_image_url_str string,
-				p_images_store_local_dir_path_str string,
-				p_random_time_delay_bool          bool,
-				p_runtime_sys                     *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
+	p_images_store_local_dir_path_str string,
+	p_random_time_delay_bool          bool,
+	p_runtime_sys                     *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_fetcher.Fetcher__get_extern_image()")
 
 	if p_random_time_delay_bool {
@@ -130,13 +130,13 @@ func Fetcher__get_extern_image(p_image_url_str string,
 }
 //---------------------------------------------------
 func analytics__log_image_fetch(p_image_url_str string,
-					p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_fetcher.analytics__log_image_fetch()")
 }
 //---------------------------------------------------
 func Download_file(p_image_url_str string,
-				p_local_image_file_path_str string,
-				p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_local_image_file_path_str string,
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_fetcher.Download_file()")
 
 	//-----------------------

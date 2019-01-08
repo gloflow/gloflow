@@ -22,8 +22,7 @@ import argparse
 #              what is returned by services get_service_info() function
 
 #->:Dict(dynamic_service_info_dict)
-def parse_args(p_cmd_line_args_defs_map,
-			p_log_fun):
+def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 	p_log_fun('FUN_ENTER','gf_core_cli.parse_args()')
 	assert isinstance(p_cmd_line_args_defs_map,dict)
 	
@@ -55,8 +54,7 @@ def parse_args(p_cmd_line_args_defs_map,
 	return extracted_args_map
 #-----------------------------------------------------
 #->:Bool
-def confirm(p_prompt_str,
-	p_resp=False):
+def confirm(p_prompt_str, p_resp=False):
     	
     if p_prompt_str is None:
         p_prompt_str = 'Confirm'

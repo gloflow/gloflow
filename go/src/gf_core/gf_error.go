@@ -49,11 +49,11 @@ type Gf_error struct {
 
 //-------------------------------------------------
 func Error__create(p_user_msg_str string,
-			p_error_type_str     string,
-			p_error_data_map     *map[string]interface{},
-			p_error              error,
-			p_subsystem_name_str string,
-			p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_error_type_str     string,
+	p_error_data_map     *map[string]interface{},
+	p_error              error,
+	p_subsystem_name_str string,
+	p_runtime_sys        *Runtime_sys) *Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_error.Error__create()")
 
 
@@ -76,11 +76,11 @@ func Error__create(p_user_msg_str string,
 	//--------------------
 	//VIEW
 	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
-								p_error_type_str,
-								p_runtime_sys.Service_name_str,
-								p_subsystem_name_str,
-								function_name_str,
-								p_user_msg_str))
+				p_error_type_str,
+				p_runtime_sys.Service_name_str,
+				p_subsystem_name_str,
+				function_name_str,
+				p_user_msg_str))
 	//--------------------
 	//ERROR_DEF
 

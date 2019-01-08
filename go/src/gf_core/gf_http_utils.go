@@ -41,7 +41,7 @@ type Gf_http_fetch struct {
 }
 //---------------------------------------------------
 func HTTP__fetch_url(p_url_str string,
-			p_runtime_sys *Runtime_sys) (*Gf_http_fetch,*Gf_error) {
+	p_runtime_sys *Runtime_sys) (*Gf_http_fetch,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__fetch_url()")
 
 	client := &http.Client{
@@ -121,7 +121,7 @@ func HTTP__fetch_url(p_url_str string,
 }
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
-						p_runtime_sys *Runtime_sys) {
+	p_runtime_sys *Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__init_static_serving()")
 
 	//IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
@@ -154,7 +154,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 }
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
-						p_runtime_sys *Runtime_sys) string {
+	p_runtime_sys *Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
@@ -167,7 +167,7 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 }
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
-				p_runtime_sys *Runtime_sys) (http.Flusher,*Gf_error) {
+	p_runtime_sys *Runtime_sys) (http.Flusher,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__init_sse()")
 
 
@@ -205,7 +205,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 }
 //-------------------------------------------------
 func HTTP__get_streaming_response(p_url_str string,
-						p_runtime_sys *Runtime_sys) (*[]map[string]interface{},*Gf_error) {
+	p_runtime_sys *Runtime_sys) (*[]map[string]interface{},*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__get_streaming_response()")
 
 

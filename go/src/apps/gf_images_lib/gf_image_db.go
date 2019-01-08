@@ -29,9 +29,9 @@ import (
 )
 //---------------------------------------------------
 func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5
-						p_max_random_cursor_position_int int, //2000
-						p_flow_name_str                  string,
-						p_runtime_sys                    *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image,*gf_core.Gf_error) {
+	p_max_random_cursor_position_int int, //2000
+	p_flow_name_str                  string,
+	p_runtime_sys                    *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_db.DB__get_random_imgs_range()")
 
 	rand.Seed(time.Now().Unix())
@@ -68,8 +68,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5
 	return imgs_lst,nil
 }
 //---------------------------------------------------
-func DB__image_exists(p_image_id_str string,
-			p_runtime_sys *gf_core.Runtime_sys) (bool,*gf_core.Gf_error) {
+func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys) (bool,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_db.DB__image_exists()")
 
 	c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"img","id_str":p_image_id_str}).Count()

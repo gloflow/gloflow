@@ -33,9 +33,9 @@ import (
 //            logic has proper creation of both image and gif DB records, but old
 //            image only DB records need to be processed
 func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
-			p_s3_bucket_name_str string,
-			p_s3_info            *gf_core.Gf_s3_info,
-			p_runtime_sys        *gf_core.Runtime_sys) {
+	p_s3_bucket_name_str string,
+	p_s3_info            *gf_core.Gf_s3_info,
+	p_runtime_sys        *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_migration.Init_img_to_gif_migration()")
 
 	gf_domain_str := "gloflow.com"
@@ -133,10 +133,10 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 //               regenerate GIF preview frames.
 
 func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
-			p_gf_domain_str      string,
-			p_s3_bucket_name_str string,
-			p_s3_info            *gf_core.Gf_s3_info,
-			p_runtime_sys        *gf_core.Runtime_sys) {
+	p_gf_domain_str      string,
+	p_s3_bucket_name_str string,
+	p_s3_info            *gf_core.Gf_s3_info,
+	p_runtime_sys        *gf_core.Runtime_sys) {
 	
 	go func() {
 
@@ -254,9 +254,9 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 }
 //--------------------------------------------------
 func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
-			p_s3_bucket_name_str string,
-			p_s3_info            *gf_core.Gf_s3_info,
-			p_runtime_sys        *gf_core.Runtime_sys) {
+	p_s3_bucket_name_str string,
+	p_s3_info            *gf_core.Gf_s3_info,
+	p_runtime_sys        *gf_core.Runtime_sys) {
 
 	//--------------------------------------------------
 	//CREATE_GIFS_FROM_IMAGES - for all 'img' DB objects with format 'gif', process it 
@@ -346,10 +346,10 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 }
 //--------------------------------------------------
 func migrate__rebuild_gif(p_old_gif *Gf_gif,
-					p_images_store_local_dir_path_str string,
-					p_s3_bucket_name_str              string,
-					p_s3_info                         *gf_core.Gf_s3_info,
-					p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_images_store_local_dir_path_str string,
+	p_s3_bucket_name_str              string,
+	p_s3_info                         *gf_core.Gf_s3_info,
+	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//----------------
 	//PROCESS_GIF
@@ -404,7 +404,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 }
 //--------------------------------------------------
 func migrate__get_flows_names(p_gif__gf_image_id_str string,
-						p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
 	var flows_names_lst []string
 
 	//IMPORTANT!! - GIF is not linked to a particular GF_Image

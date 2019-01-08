@@ -81,8 +81,8 @@ func Init(p_stats_url_base_str string,
 }
 //-------------------------------------------------
 func query__init_handlers(p_stats_url_base_str string,
-		p_stats_query_funs_map map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error),
-		p_runtime_sys          *gf_core.Runtime_sys) {
+	p_stats_query_funs_map map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error),
+	p_runtime_sys          *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
@@ -132,8 +132,8 @@ func query__init_handlers(p_stats_url_base_str string,
 }
 //-------------------------------------------------
 func query__run_fun(p_stat_name_str string,
-			p_stats_query_funs_map map[string](func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error)),
-			p_runtime_sys          *gf_core.Runtime_sys) (*Stat_query_run__extern_result,*gf_core.Gf_error) {
+	p_stats_query_funs_map map[string](func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error)),
+	p_runtime_sys          *gf_core.Runtime_sys) (*Stat_query_run__extern_result,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_stats.query__run_fun()")
 
 	if stat_fun,ok := p_stats_query_funs_map[p_stat_name_str]; ok {
@@ -175,10 +175,10 @@ func query__run_fun(p_stat_name_str string,
 }
 //-------------------------------------------------
 func Stat_run__create(p_stat_name_str string,
-				p_results_data_lst   map[string]interface{},
-				p_start_time__unix_f float64,
-				p_end_time__unix_f   float64,
-				p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_results_data_lst   map[string]interface{},
+	p_start_time__unix_f float64,
+	p_end_time__unix_f   float64,
+	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	id_str := fmt.Sprintf("stat_query_run:%f",float64(time.Now().UnixNano())/1000000000.0)
 	run    := &Stat_query_run{

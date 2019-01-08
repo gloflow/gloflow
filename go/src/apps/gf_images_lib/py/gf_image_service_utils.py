@@ -29,12 +29,12 @@ cwd_str = os.path.dirname(os.path.abspath(__file__))
 #        arguments should be avoided.
 
 def start_new_os_process(p_log_fun,
-				p_port_str                                   = '3050',
-				p_mongo_db_name_str                          = 'test_db',
-				p_images_store_local_dir_path_str            = '%s/../tests/images/output/original'%(cwd_str),
-				p_images_thumbnails_store_local_dir_path_str = '%s/../tests/images/output/thumbnails'%(cwd_str),
-				p_images_s3_bucket_name_str                  = 'gf--test',
-				p_service_bin_path_str                       = os.path.abspath('%s/../../../../bin/gf_images_service'%(cwd_str))):
+	p_port_str                                   = '3050',
+	p_mongo_db_name_str                          = 'test_db',
+	p_images_store_local_dir_path_str            = '%s/../tests/images/output/original'%(cwd_str),
+	p_images_thumbnails_store_local_dir_path_str = '%s/../tests/images/output/thumbnails'%(cwd_str),
+	p_images_s3_bucket_name_str                  = 'gf--test',
+	p_service_bin_path_str                       = os.path.abspath('%s/../../../../bin/gf_images_service'%(cwd_str))):
 	p_log_fun('FUN_ENTER','gf_image_service_utils.start_new_os_process()')
 	assert isinstance(p_port_str            ,basestring)
 	assert isinstance(p_service_bin_path_str,basestring)

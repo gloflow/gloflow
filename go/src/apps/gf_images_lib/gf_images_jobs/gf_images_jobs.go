@@ -81,10 +81,10 @@ type Job_Expected_Output struct {
 //CLIENT
 //-------------------------------------------------
 func Start_job(p_client_type_str string,
-			p_images_to_process_lst []Image_to_process,
-			p_flows_names_lst       []string,
-			p_jobs_mngr_ch          chan Job_msg,
-			p_runtime_sys           *gf_core.Runtime_sys) (*Running_job,[]*Job_Expected_Output,*gf_core.Gf_error) {
+	p_images_to_process_lst []Image_to_process,
+	p_flows_names_lst       []string,
+	p_jobs_mngr_ch          chan Job_msg,
+	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job,[]*Job_Expected_Output,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Start_job()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
@@ -169,8 +169,8 @@ func Start_job(p_client_type_str string,
 }
 //-------------------------------------------------
 func get_running_job_update_ch(p_job_id_str string,
-			p_jobs_mngr_ch chan Job_msg,
-			p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
+	p_jobs_mngr_ch chan Job_msg,
+	p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.get_running_job_update_ch()")
 
 	msg_response_ch := make(chan interface{})
@@ -194,10 +194,10 @@ func get_running_job_update_ch(p_job_id_str string,
 //SERVER
 //-------------------------------------------------
 func Jobs_mngr__init(p_images_store_local_dir_path_str string,
-				p_images_thumbnails_store_local_dir_path_str string,
-				p_s3_bucket_name_str                         string,
-				p_s3_info                                    *gf_core.Gf_s3_info,
-				p_runtime_sys                                *gf_core.Runtime_sys) chan Job_msg {
+	p_images_thumbnails_store_local_dir_path_str string,
+	p_s3_bucket_name_str                         string,
+	p_s3_info                                    *gf_core.Gf_s3_info,
+	p_runtime_sys                                *gf_core.Runtime_sys) chan Job_msg {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Jobs_mngr__init()")
 
 	jobs_mngr_ch := make(chan Job_msg,100)

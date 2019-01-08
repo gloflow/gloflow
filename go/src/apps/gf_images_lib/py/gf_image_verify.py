@@ -23,8 +23,8 @@ import gf_core_error
 #---------------------------------------------------
 #->:Map(new_image_info_map)
 def verify_image_info(p_image_info_map,
-				p_db_context_map,
-				p_log_fun):
+	p_db_context_map,
+	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image_verify.verify_image_info()')
 	p_log_fun('INFO'     ,'p_image_info_map:%s'%(p_image_info_map))
 	assert isinstance(p_image_info_map,dict)
@@ -157,8 +157,7 @@ def verify_image_info(p_image_info_map,
 	return new_image_info_map
 #---------------------------------------------------	
 #->:String(normalized_format_str)
-def check_image_format_str(p_format_str,
-						p_log_fun):
+def check_image_format_str(p_format_str, p_log_fun):
 	p_log_fun('FUN_ENTER','gf_image_verify.check_image_format_str()')
 	p_log_fun('INFO'     ,'p_format_str:%s'%(p_format_str))
 	

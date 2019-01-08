@@ -28,15 +28,15 @@ import (
 )
 //-------------------------------------------------
 func jobs_mngr__run_job(p_job_id_str string,
-				p_job_client_type_str                        string,
-				p_images_to_process_lst                      []Image_to_process,
-				p_flows_names_lst                            []string,
-				p_job_updates_ch                             chan *Job_update_msg,
-				p_images_store_local_dir_path_str            string,
-				p_images_thumbnails_store_local_dir_path_str string,
-				p_s3_bucket_name_str                         string,
-				p_s3_info                                    *gf_core.Gf_s3_info,
-				p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
+	p_job_client_type_str                        string,
+	p_images_to_process_lst                      []Image_to_process,
+	p_flows_names_lst                            []string,
+	p_job_updates_ch                             chan *Job_update_msg,
+	p_images_store_local_dir_path_str            string,
+	p_images_thumbnails_store_local_dir_path_str string,
+	p_s3_bucket_name_str                         string,
+	p_s3_info                                    *gf_core.Gf_s3_info,
+	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.jobs_mngr__run_job()")
 
 	gf_errors_lst := []*gf_core.Gf_error{}
@@ -142,12 +142,12 @@ func jobs_mngr__run_job(p_job_id_str string,
 }
 //-------------------------------------------------
 func job_error__send(p_job_error_type_str string,
-				p_gf_err               *gf_core.Gf_error,
-				p_image_source_url_str string,
-				p_image_id_str         string,
-				p_job_id_str           string,
-				p_job_updates_ch       chan *Job_update_msg,
-				p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_gf_err               *gf_core.Gf_error,
+	p_image_source_url_str string,
+	p_image_id_str         string,
+	p_job_id_str           string,
+	p_job_updates_ch       chan *Job_update_msg,
+	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__send()")
 
 	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("fetching image failed - %s - %s",
@@ -176,10 +176,10 @@ func job_error__send(p_job_error_type_str string,
 }
 //-------------------------------------------------
 func job_error__persist(p_job_id_str string,
-			p_error_type_str       string,
-			p_error_str            string,
-			p_image_source_url_str string,
-			p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_error_type_str       string,
+	p_error_str            string,
+	p_image_source_url_str string,
+	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__persist()")
 
 	job_error := Job_Error{

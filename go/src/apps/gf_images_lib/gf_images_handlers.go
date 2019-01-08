@@ -30,8 +30,7 @@ import (
 	"apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
-func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
-			p_runtime_sys *gf_core.Runtime_sys) {
+func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_handlers.init_handlers()")
 
 	img_config := Config__get()

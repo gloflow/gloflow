@@ -26,7 +26,7 @@ import (
 )
 //---------------------------------------------------
 func DB__put_image(p_image *Gf_image,
-		   p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_db.DB__put_image()")
 	
 	//spec          - a dict specifying elements which must be present for a document to be updated
@@ -45,7 +45,7 @@ func DB__put_image(p_image *Gf_image,
 
 //---------------------------------------------------
 func DB__get_image(p_image_id_str string,
-		p_runtime_sys *gf_core.Runtime_sys) (*Gf_image,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_db.DB__get_image()")
 
 	var image Gf_image

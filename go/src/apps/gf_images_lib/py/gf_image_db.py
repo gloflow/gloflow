@@ -20,11 +20,11 @@ import gf_image
 #---------------------------------------------------
 #->:Bool
 def image_exists(p_image_id_str,
-			p_db_context_map,
-			p_log_fun,
-			p_db_type_str         = 'mongo',
-			p_mongo_db_name_str   = 'prod_db',
-			p_mongo_coll_name_str = 'images'):
+	p_db_context_map,
+	p_log_fun,
+	p_db_type_str         = 'mongo',
+	p_mongo_db_name_str   = 'prod_db',
+	p_mongo_coll_name_str = 'images'):
 	p_log_fun('FUN_ENTER','gf_image_db.image_exists()')
 
 	#-----------
@@ -49,11 +49,11 @@ def image_exists(p_image_id_str,
 #---------------------------------------------------
 #->:Image_ADT|None
 def db_get(p_image_id_str,
-	       p_db_context_map,
-	       p_log_fun,
-	       p_db_type_str         = 'mongo',
-	       p_mongo_db_name_str   = 'prod_db',
-	       p_mongo_coll_name_str = 'images'):
+	p_db_context_map,
+	p_log_fun,
+	p_db_type_str         = 'mongo',
+	p_mongo_db_name_str   = 'prod_db',
+	p_mongo_coll_name_str = 'images'):
 	p_log_fun('FUN_ENTER','gf_image_db.db_get()')
 	
 	#---------------
@@ -85,11 +85,11 @@ def db_get(p_image_id_str,
 	return image_adt
 #---------------------------------------------------
 def db_put(p_image_adt,
-		p_db_context_map,
-		p_log_fun,
-		p_db_type_str         = 'mongo',
-		p_mongo_db_name_str   = 'prod_db',
-		p_mongo_coll_name_str = 'images'):
+	p_db_context_map,
+	p_log_fun,
+	p_db_type_str         = 'mongo',
+	p_mongo_db_name_str   = 'prod_db',
+	p_mongo_coll_name_str = 'images'):
 	p_log_fun('FUN_ENTER','gf_image_db.db_put()')
 	assert isinstance(p_image_adt,gf_image.Image_ADT)
 	
@@ -112,10 +112,10 @@ def db_put(p_image_adt,
 
 #->:List<:Image_ADT>
 def db_get_all(p_db_context_map,
-		p_log_fun,
-		p_db_type_str         = 'mongo',
-		p_mongo_db_name_str   = 'prod_db',
-		p_mongo_coll_name_str = 'images'):
+	p_log_fun,
+	p_db_type_str         = 'mongo',
+	p_mongo_db_name_str   = 'prod_db',
+	p_mongo_coll_name_str = 'images'):
 	p_log_fun('FUN_ENTER','gf_image_db.db_get_all()')
 
 	#----------

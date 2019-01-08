@@ -24,9 +24,9 @@ import requests
 
 #->:Map(image_processing_results_map)
 def dispatch_process_extern_image(p_image_url_str,
-						p_gf_images_service_host_str,
-						p_log_fun,
-						p_process_from_scratch_if_prexisting_bool = True):
+	p_gf_images_service_host_str,
+	p_log_fun,
+	p_process_from_scratch_if_prexisting_bool = True):
 	p_log_fun('FUN_ENTER','gf_images_client.dispatch_process_extern_image()')
 	p_log_fun('INFO'     ,'p_image_url_str:%s'%(p_image_url_str))
 	

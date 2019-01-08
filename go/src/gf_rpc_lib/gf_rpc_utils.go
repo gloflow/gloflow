@@ -34,9 +34,9 @@ type Gf_rpc_handler_run struct {
 }
 //-------------------------------------------------
 func Get_http_input(p_handler_url_path_str string,
-				p_resp        http.ResponseWriter,
-				p_req         *http.Request,
-				p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+	p_resp        http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Get_http_input()")
 
 	var i map[string]interface{}
@@ -60,7 +60,7 @@ func Get_http_input(p_handler_url_path_str string,
 }
 //-------------------------------------------------
 func Get_response_format(p_qs_map map[string][]string,
-					p_runtime_sys *gf_core.Runtime_sys) string {
+	p_runtime_sys *gf_core.Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Get_response_format()")
 
 	response_format_str := "html" //default - "h" - HTML
@@ -72,9 +72,9 @@ func Get_response_format(p_qs_map map[string][]string,
 }
 //-------------------------------------------------
 func Http_Respond(p_data interface{},
-			p_status_str  string,
-			p_resp        http.ResponseWriter,
-			p_runtime_sys *gf_core.Runtime_sys) {
+	p_status_str  string,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Http_Respond()")
 
 	r_lst,_ := json.Marshal(map[string]interface{}{
@@ -87,9 +87,9 @@ func Http_Respond(p_data interface{},
 }
 //-------------------------------------------------
 func Store_rpc_handler_run(p_handler_url_str string,
-			p_start_time__unix_f float64,
-			p_end_time__unix_f   float64,
-			p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_start_time__unix_f float64,
+	p_end_time__unix_f   float64,
+	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Store_rpc_handler_run()")
 
 	run := &Gf_rpc_handler_run{
@@ -112,10 +112,10 @@ func Store_rpc_handler_run(p_handler_url_str string,
 }
 //-------------------------------------------------
 func Error__in_handler(p_handler_url_path_str string,
-		p_user_msg_str string,
-		p_gf_err       *gf_core.Gf_error,
-		p_resp         http.ResponseWriter,
-		p_runtime_sys  *gf_core.Runtime_sys) {
+	p_user_msg_str string,
+	p_gf_err       *gf_core.Gf_error,
+	p_resp         http.ResponseWriter,
+	p_runtime_sys  *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Error__in_handler()")
 
 	status_str := "ERROR"
