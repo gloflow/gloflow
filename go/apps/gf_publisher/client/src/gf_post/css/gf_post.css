@@ -1,0 +1,161 @@
+body {
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin     :0;
+
+	/*turn off horizontal scroll*/
+	max-width: 100%;
+    overflow-x: hidden;
+}
+/*----------------------------------------------------------*/
+.gf_post {
+  margin-top: 70px;
+  position  : relative;
+}
+
+.gf_post iframe {
+	border:0px;
+}
+
+.gf_post_content {
+	top     : 30px;
+	position: relative;
+}
+
+#post_info_container {
+	padding-top: 6px;
+}
+
+#post_title {
+	font-size       : 25px;
+	padding-left    : 6px;
+	padding-top     : 7px;
+	padding-bottom  : 6px;
+	padding-right   : 8px;
+	
+	background-color:#E6E3E3;
+	width           :385px;
+}
+
+#post_description {
+	position    : relative;
+	top         : 2px;
+	
+	padding-left: 6px;
+	width       : 385px;
+}
+
+#poster_user_name {
+	width           : 220px;
+	padding-top     : 2px;
+	padding-bottom  : 4px;
+	padding-left    : 6px;
+	font-size       : 14px;
+	background-color: whiteSmoke;
+	margin-top      : 8px;
+}
+
+#poster_user_name span {
+	font-size  : 16px;
+	font-weight:bold;
+}
+
+/*.post_tags are there as a data source, the tags themselves are displayed
+  via objects_with_tags_mini_view*/
+#post_tags {
+	height:29px;
+}
+
+.post_tag {
+	float         : left;
+	padding-left  : 8px; 
+	padding-right : 8px;
+	padding-top   : 5px;
+	padding-bottom: 6px;
+
+	background-color: rgb(255, 255, 189);	
+}
+
+.post_tag a {
+	text-decoration: none;
+	color:#964000;
+}
+/*----------------------------------------------------------*/
+.gf_post_element {
+	position: relative;
+}
+.gf_post_element a {
+	text-decoration: none; /*remove underline from post_elements that are links*/
+	color          : #5E5E5E;
+}
+
+.post_element_image {
+	float: left;
+}
+.post_element_image img {
+	cursor:pointer;
+}
+
+.post_element_video {
+	float: left;
+}
+/*----------------------------------------------------------*/
+.post_element_controls {
+	position: absolute;
+	top     : 10px;
+}
+/*----------------------------------------------------------*/
+/*IMAGE VIEW*/
+#image_view {
+	position: absolute;
+	top     :0px;
+	left    :0px;
+	width   :100%;
+	height  :100%;
+}
+#image_view #background {
+	position        : absolute;
+	top             : 0px;
+	left            : 0px;
+	width           : 100%;
+	height          : 100%;
+	background-color: black;
+	opacity         : 0.7;
+}
+#image_view img {
+	left    : 40px;
+	position: absolute;
+	top     : 23px;
+}
+#image_view #close_button {
+	position        : absolute;
+	background-color: white;
+	padding         : 20px;
+	cursor          : pointer;
+}
+/*----------------------------------------------------------*/
+/*humble beginnings...*/
+#sys_release_info {
+	position        : fixed;
+	right           : 0px;
+	bottom          : 0px;
+	background-color: rgb(226, 226, 157);
+	padding-left    : 8px;
+	padding-top     : 6px;
+	padding-right   : 5px;
+	padding-bottom  : 3px;
+	z-index         : 5000;
+	width:100px;
+	height: 20px;
+	opacity: 0.5;
+}
+#sys_release_info #version {
+	text-align: right;
+	font-size: 10px}
+#sys_release_info #name {
+	text-align: right;
+	font-size: 10px;
+}
+
+#sys_release_info #description {
+	visibility: hidden;
+}

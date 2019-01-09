@@ -1,0 +1,45 @@
+
+
+.add_tags_button {
+	font-size       : 20px;
+	background-color: #ACACAC;
+	top             : 15px;
+	left            : 0px;
+	position        : relative;
+	width           : 79px;
+	padding-left    : 12px;
+	padding-right   : 12px;
+	padding-top     : 10px;
+	padding-bottom  : 10px;
+	
+	opacity : 0.7;
+  
+	cursor  : pointer;
+	position: absolute;
+}
+.add_tags_button:hover {
+	background-color: gray;
+}
+
+.gf_post .tags_container {
+	bottom          : 0px;
+	background-color: rgb(223, 223, 223);
+	
+	padding-bottom  : 4px;
+	padding-top     : 1px;
+}
+.gf_post_element .tags_container {
+	/*tags are initially not visible*/
+	visibility: hidden;
+}
+.gf_post_element .tags_container span {
+	padding-left: 7px;
+}
+.gf_post .tags_container .gf_post_tag {
+
+	/*so that as new tags are added the tags_container
+	  visually expands to accomodate new tags*/
+	display        : inline-block;
+	color          : gray;
+	text-decoration: none;
+}

@@ -1,0 +1,132 @@
+<html lang="en">
+<head>
+	
+	{{- /*'triple-braces' are used to not-default-escape the urls_base_web_host_str string*/}}
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_post.css">
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_post_tagging.css">
+
+	{{- /*gf_sys_panel.css - packaged with gf_publisher service even though its in gf_common*/}}
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_sys_panel.css"> 
+
+	{{- /*gf_tagger_input_ui.css - packaged with gf_publisher service even though its in gf_tagger*/}}
+	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_input_ui.css">
+	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_notes_ui.css">
+
+	{{- /*-----------------------------------------------------*/}}
+	{{- /*directs fb to use the specified image when the page is shared*/}}
+	
+	<meta property="og:site_name" content="GloFlow"/>
+	<meta property="og:title"     content="gloflow.com:{{ .Post_title_str }}"/>
+	<meta property="og:url"       content="/posts/{{ .Post_title_str }}"/>
+
+	{{- /*FIX!! REMOVE!! - when I finish deploying the gf_images subsystem 
+						 for the og:image property use use post_adt.main_image_url_str 
+						 instead of picking the first post_element image url like her*/}}
+	{{- /*the "top" image post_elements to be parsed by FB*/}}
+	{{- range .Image_post_elements_og_info_lst}}
+		<meta property="og:image" content="{{ .img_thumbnail_medium_absolute_url_str }}"/>
+	{{- end}}
+
+	{{- range .Post_tags_lst}}
+		<meta property="og:type" content="{{.}}"/>
+	{{- end}}
+
+	<meta property="og:type" content="culture"/>
+	<meta property="og:type" content="art"/>
+	<meta property="og:type" content="architecture"/>
+	<meta property="og:type" content="design"/>
+	<meta property="og:type" content="photography"/>
+	<meta property="og:type" content="fashion"/>
+	<meta property="og:type" content="music"/>
+	<meta property="og:type" content="vr"/>
+	{{- /*------------------------------------------------------*/}}
+</head>
+<body>
+{{- /*------------------------------------------------------*/}}
+<div id='container'>
+	<div class="gf_post">
+		{{- /*------------------------------------------------------*/}}
+		{{- /*POST INFO*/}}
+		<div id='post_info_container'>
+			<div id='post_title'>{{ .Post_title_str }}</div>
+			<div id='post_description'>{{ .Post_description_str }}</div>
+			<div id='poster_user_name'>posted by <span>{{ .Post_poster_user_name_str }}</span></div>
+			{{- /*------------------------------------------------------*/}}
+			<!-- TAGS -->
+			<div id='post_tags'>
+				<div class='post_tags_container'>
+
+				{{- range .Post_tags_lst}}
+					<div class='post_tag'><a href="/tags/objects?tag={{.}}&otype=post">#{{.}}</a></div>
+				{{- end}}
+				</div>
+			</div>
+			{{- /*------------------------------------------------------*/}}
+		</div>
+		{{- /*------------------------------------------------------*/}}
+		{{- /*POST CONTENT*/}}
+		<div class='gf_post_content'>
+			{{- range .Post_elements_lst}}
+				{{- /*---------------------------------------------------------------------*/}}
+				{{- /*LINK POST ELEMENT TYPE ----------------------------------------------*/}}
+
+				{{- if .post_element_type__link_bool}}
+				<div class ='gf_post_element post_element_link'>
+					{{ .post_element_description_str }}
+					{{- /*target="_blank" makes the link open in a new window when clicked on*/}}
+					<a href="{{ .post_element_extern_url_str }}" target="_blank">{{ .post_element_extern_url_str }}</a>
+				</div>
+				{{- end}}
+				{{/*---------------------------------------------------------------------*/}}
+				{{/*IMAGE POST ELEMENT TYPE ---------------------------------------------*/}}
+
+				{{- if .post_element_type__image_bool}}
+				<div class='gf_post_element post_element_image'>
+					<img src="{{ .post_element_img_thumbnail_medium_url_str }}"></img>
+					<!-- TAGS -->
+					<div class='tags_container'>
+						<span>tags:</span>
+						{{- range .tags_lst}}
+						<a class='gf_post_element_tag' href='/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
+						{{- end}}
+					</div>
+				</div>
+				{{- end}}
+				{{- /*---------------------------------------------------------------------
+					VIDEO POST ELEMENT TYPE ---------------------------------------------
+					use post_element_adt.width_str and post_element_adt.height_str for the 
+					iframe(video) width/height, instead of the hardcoded values*/}}
+
+				{{- if .post_element_type__video_bool}}
+					<div class ='gf_post_element post_element_video'>
+						<iframe src    = "{{ .post_element_extern_url_str }}"
+								width  = "640"
+								height = "360"
+								webkitAllowFullScreen mozallowfullscreen allowFullScreen>
+						</iframe>
+						<!-- TAGS -->
+						<div class='tags_container'>
+							<span>tags:</span>
+							{{- range .tags_lst}}
+							<a class='gf_post_element_tag' href='/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
+							{{- end}}
+						</div>
+					</div>
+				{{- end}}
+				{{- /*------------------------------------------------------*/}}
+			{{- end}}
+		</div>
+		{{- /*------------------------------------------------------*/}}
+	</div>
+</div>
+{{- /*-----------------------------------------------------*/}}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/posts/static/js/gf_post.js"></script>
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>0.4.4</span></div>
+	<div id='name'>name <span>raise</span></div>
+</div>
+{{- /*------------------------------------------------------*/}}
+</body>
+</html>

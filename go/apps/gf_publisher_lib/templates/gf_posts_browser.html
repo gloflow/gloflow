@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_posts_browser.css">
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_posts_browser_tagging.css">
+	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_sys_panel.css">
+	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_input_ui.css">
+	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_notes_ui.css">
+
+	{{- /*-----------------------------------------------------*/}}
+	<!-- directs fb to use the specified image when the page is shared -->
+	<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+	<meta property="og:title" content="gloflow.com - a parallel space for artistic expression"/>
+
+	<!-- canonical address  -->
+	<meta property="og:url"       content="http://www.gloflow.com"/>
+	<meta property="og:site_name" content="GloFlow"/>
+
+	<meta property="og:type" content="culture"/>
+	<meta property="og:type" content="art"/>
+	<meta property="og:type" content="architecture"/>
+	<meta property="og:type" content="design"/>
+	<meta property="og:type" content="photography"/>
+	<meta property="og:type" content="fashion"/>
+	<meta property="og:type" content="music"/>
+	<meta property="og:type" content="vr"/>
+	{{- /*-----------------------------------------------------*/}}
+</head>
+<body>
+{{- /*------------------------------------------------------*/}}
+<div id='posts_views_container'>
+	<div id='expand_posts_views_container_button'>
+		<div class='button_icon'></div>
+	</div>
+	{{- /*------------------------------------------------------*/}}
+	<!-- POST STATS VIEW BUTTON -->
+	<div id ='posts_stats_view_button' class='gf_post_view_button'>	
+		<div class="button_icon"></div>
+	</div>
+	{{- /*------------------------------------------------------*/}}
+</div>
+{{- /*------------------------------------------------------*/}}
+<div id='gf_posts_container'>
+{{- range .Posts_pages_lst}}
+	{{- range .}}
+		{{- /*"item" class is used by Masonry*/}}
+		<div class ='gf_post item gf_post_image_view'>
+			{{- /*------------------------------------------------------*/}}
+			{{- /*TITLE*/}}
+			<div class='post_title'>
+				{{ .post_title_str }}
+			</div>
+			{{- /*------------------------------------------------------*/}}
+			{{- /*IMAGES_NUMBER*/}}
+			<div class='post_images_number'>
+				<div class='num'>{{.images_number_int}}</div>
+				<div class='label'>images #</div>
+			</div>
+			{{- /*------------------------------------------------------*/}}
+			{{- /*IMAGE THUMBNAIL DATA*/}}
+			<div>
+				<a class="post_image" target="_blank" href="/posts/{{.post_title_str}}">
+					<img class='thumb_small_url' src='{{.post_thumbnail_url_str}}'></img>
+				</a>
+			</div>
+			{{- /*------------------------------------------------------*/}}
+			<div class='gf_post_creation_date'>{{.post_creation_datetime_str}}</div>
+			{{- /*------------------------------------------------------*/}}
+			{{- /*TAGS*/}}
+			{{- if .post_has_tags_bool}}
+			<div class='tags_container'>
+			{{- range .post_tags_lst}}
+				<a class='gf_post_tag' href ='/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
+			{{- end}}
+			</div>
+			{{- end}}
+			{{- /*------------------------------------------------------*/}}
+		</div>
+	{{- end}}
+{{- end}}
+</div>
+{{- /*-----------------------------------------------------*/}}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/posts/static/js/lib/masonry.pkgd.min.js"></script>
+<script type="text/javascript" src="/posts/static/js/lib/jquery.timeago.js"></script>
+<script type="text/javascript" src="/posts/static/js/gf_posts_browser.min.js"></script>
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>0.4.4</span></div>
+	<div id='name'>name <span>raise</span></div>
+</div>
+{{- /*------------------------------------------------------*/}}
+</body>
+</html>
