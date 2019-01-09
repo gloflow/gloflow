@@ -3,15 +3,15 @@
 namespace gf_tagger_notes_ui {
 //-----------------------------------------------------
 export function init(p_obj_id_str :string,
-				p_obj_type_str :string,
-				p_obj_element,
-				p_log_fun) {
+	p_obj_type_str :string,
+	p_obj_element,
+	p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_tagger_notes_ui.init()');
 
 	const notes_panel_btn = $(`
-			<div id='notes_panel_btn'>
-				<div class='icon'>notes</div>
-			</div>`);
+		<div id='notes_panel_btn'>
+			<div class='icon'>notes</div>
+		</div>`);
 	$(p_obj_element).append(notes_panel_btn);
 
 
@@ -39,7 +39,6 @@ export function init(p_obj_id_str :string,
 
 		}
 		else {
-
 			$(p_obj_element).append(notes_panel);
 
 			//------------------------
@@ -56,12 +55,12 @@ export function init(p_obj_id_str :string,
 				//------------
 				
 				get_notes(p_obj_id_str,
-						p_obj_type_str,
-						notes_panel,
-						()=>{
-							notes_init_bool = true;
-						},
-						p_log_fun);				
+					p_obj_type_str,
+					notes_panel,
+					()=>{
+						notes_init_bool = true;
+					},
+					p_log_fun);				
 			}
 			//------------------------
 			$(notes_panel).css('visibility',"visible");
@@ -72,32 +71,21 @@ export function init(p_obj_id_str :string,
 
 		console.log('>>>>> ENTER');
 		run__remote_add_note(p_obj_id_str,
-						p_obj_type_str,
-						notes_panel,
+			p_obj_type_str,
+			notes_panel,
 
-						//p_onComplete_fun,
-						()=>{
-
-							//print('>>>>>>>');
-							//print(notes_panel.query('#notes').offsetTop);
-							//print(notes_panel.query('#notes').getComputedStyle().top);
-
-							//----------------------
-							//GROW BACKGROUND
-							const background_padding_size_int :number = 30;
-							const notes_height_int            :number = $(notes_panel).find('#notes').height();
-							const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
-							const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
-
-							//print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-							//print(notes_height_int);
-							//print(notes_y_int);
-							//print(new_height_int);
-
-							$(background).css('height',new_height_int+'px');
-							//----------------------
-						},
-						p_log_fun);
+			//p_onComplete_fun,
+			()=>{
+				//----------------------
+				//GROW BACKGROUND
+				const background_padding_size_int :number = 30;
+				const notes_height_int            :number = $(notes_panel).find('#notes').height();
+				const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
+				const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
+				$(background).css('height',new_height_int+'px');
+				//----------------------
+			},
+			p_log_fun);
 	});
 	//------------------------
 	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
@@ -121,42 +109,41 @@ export function init(p_obj_id_str :string,
 }
 //-----------------------------------------------------
 function get_notes(p_obj_id_str :string,
-			p_obj_type_str :string,
-			p_notes_panel,
-			p_onComplete_fun,
-			p_log_fun) {
+	p_obj_type_str :string,
+	p_notes_panel,
+	p_onComplete_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.get_notes()');
 
 	//------------------------
 	//IMPORTANT!! - get notes via HTTP from backend gf_tagger_service
 	gf_tagger_client.get_notes(p_obj_id_str,
-						p_obj_type_str,
-						//p_onComplete_fun
-						(p_notes_lst :Object[])=>{
+		p_obj_type_str,
+		//p_onComplete_fun
+		(p_notes_lst :Object[])=>{
 
-							for (var note_map of p_notes_lst) {
+			for (var note_map of p_notes_lst) {
 
-								const user_id_str :string = note_map['user_id_str'];
-								const body_str    :string = note_map['body_str'];
+				const user_id_str :string = note_map['user_id_str'];
+				const body_str    :string = note_map['body_str'];
 
-								add_note_view(body_str,
-											user_id_str,
-											p_notes_panel,
-											p_log_fun);
-							}
-
-							p_onComplete_fun();
-						},
-						()=>{}, //p_onError_fun
-						p_log_fun);
+				add_note_view(body_str,
+					user_id_str,
+					p_notes_panel,
+					p_log_fun);
+			}
+			p_onComplete_fun();
+		},
+		()=>{}, //p_onError_fun
+		p_log_fun);
 	//------------------------	
 }
 //-----------------------------------------------------
 function run__remote_add_note(p_obj_id_str :string,
-		p_obj_type_str :string,
-		p_notes_panel,
-		p_onComplete_fun,
-		p_log_fun) {
+	p_obj_type_str :string,
+	p_notes_panel,
+	p_onComplete_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.run__remote_add_note()');
 
 	const text_element          = $(p_notes_panel).find('.note_input_panel textarea');
@@ -168,26 +155,25 @@ function run__remote_add_note(p_obj_id_str :string,
 
 		//ADD!! - some visual success/failure indicator
 		gf_tagger_client.add_note_to_obj(note_body_str,
-								p_obj_id_str,
-								p_obj_type_str,
-								()=>{
-
-									add_note_view(note_body_str,
-											'anonymouse', //p_anonymous_user_str,
-											p_notes_panel,
-											p_log_fun);
-									
-									$(text_element).val(''); //reset text
-								},
-								()=>{}, //p_onError_fun
-								p_log_fun);
+			p_obj_id_str,
+			p_obj_type_str,
+			()=>{
+				add_note_view(note_body_str,
+					'anonymouse', //p_anonymous_user_str,
+					p_notes_panel,
+					p_log_fun);
+				
+				$(text_element).val(''); //reset text
+			},
+			()=>{}, //p_onError_fun
+			p_log_fun);
 	}
 }
 //-----------------------------------------------------
 function add_note_view(p_body_str :string,
-			p_user_id_str :string,
-			p_notes_panel,
-			p_log_fun) {
+	p_user_id_str :string,
+	p_notes_panel,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.add_note_view()');
 
 	if (p_body_str.length > 20 ) console.log(p_body_str.substring(0,20)+'...');
@@ -220,9 +206,9 @@ function add_note_view(p_body_str :string,
 	}
 
 	$(new_note_element).css('opacity','0.0');
-	$(new_note_element).animate({'opacity':1.0},
-							300, //duration
-							()=>{});
+
+	const duration_int = 300;
+	$(new_note_element).animate({'opacity':1.0}, duration_int, ()=>{});
 }
 //-----------------------------------------------------
 }

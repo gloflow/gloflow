@@ -14,4 +14,5 @@ require (
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/pkg/errors v0.8.1 // indirect
 	golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e // indirect
+	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )

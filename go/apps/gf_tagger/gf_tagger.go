@@ -16,10 +16,10 @@ import (
 //                                        another ID.
 
 func add_tags_to_object(p_tags_str string,
-					p_object_type_str      string,
-					p_object_extern_id_str *string,
-					p_mongodb_coll         *mgo.Collection,
-					p_log_fun              func(string,string)) error {
+	p_object_type_str      string,
+	p_object_extern_id_str *string,
+	p_mongodb_coll         *mgo.Collection,
+	p_log_fun              func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_tagger.add_tags_to_object()")
 
 	if p_object_type_str != "post" &&
@@ -30,9 +30,9 @@ func add_tags_to_object(p_tags_str string,
 	}
 	
 	tags_lst,err := parse_tags(p_tags_str,
-						500, //p_max_tags_bulk_size_int        int, //500
-						20,  //p_max_tag_characters_number_int int, //20	
-						p_log_fun)
+		500, //p_max_tags_bulk_size_int        int, //500
+		20,  //p_max_tag_characters_number_int int, //20	
+		p_log_fun)
 	if err != nil {
 		return err
 	}
@@ -46,18 +46,13 @@ func add_tags_to_object(p_tags_str string,
 		//POST
 		case "post":
 			post_title_str := p_object_extern_id_str
-			exists_bool,_  := gf_publisher_lib.DB__check_post_exists(post_title_str,
-																p_mongodb_coll,
-																p_log_fun)
+			exists_bool,_  := gf_publisher_lib.DB__check_post_exists(post_title_str, p_mongodb_coll, p_log_fun)
 			if exists_bool {
 				p_log_fun("INFO","POST EXISTS")
-				err := db__add_tags_to_post(post_title_str,
-									tags_lst,
-									p_mongodb_coll,
-									p_log_fun)
+				err := db__add_tags_to_post(post_title_str, tags_lst, p_mongodb_coll, p_log_fun)
 				return err
 			} else {
-				return errors.New(fmt.Sprintf("post with title (%s) doesnt exist",post_title_str))
+				return errors.New(fmt.Sprintf("post with title (%s) doesnt exist", post_title_str))
 			}
 
 		//---------------
@@ -65,14 +60,9 @@ func add_tags_to_object(p_tags_str string,
 		case "image":
 			image_id_str := p_object_extern_id_str
 			
-			exists_bool,_ := gf_images_lib.DB__image_exists(image_id_str,
-													p_mongodb_coll,
-													p_log_fun)
+			exists_bool,_ := gf_images_lib.DB__image_exists(image_id_str, p_mongodb_coll, p_log_fun)
 			if exists_bool {
-				err := db__add_tags_to_image(image_id_str,
-										tags_lst,
-										p_mongodb_coll,
-										p_log_fun)
+				err := db__add_tags_to_image(image_id_str, tags_lst, p_mongodb_coll, p_log_fun)
 				if err != nil {
 					return err
 				}
@@ -86,22 +76,22 @@ func add_tags_to_object(p_tags_str string,
 }
 //---------------------------------------------------
 func get_objects_with_tags(p_tags_lst []string,
-					p_object_type_str string,
-					p_page_index_int  int,
-					p_page_size_int   int,
-					p_mongodb_coll    *mgo.Collection,
-					p_log_fun         func(string,string)) (map[string][]map[string]interface{},error) {
+	p_object_type_str string,
+	p_page_index_int  int,
+	p_page_size_int   int,
+	p_mongodb_coll    *mgo.Collection,
+	p_log_fun         func(string,string)) (map[string][]map[string]interface{},error) {
 	p_log_fun("FUN_ENTER","gf_tagger.get_objects_with_tags()")
 		
 	objects_with_tags_map := map[string][]map[string]interface{}{}
 	for _,tag_str := range p_tags_lst {
 
 		objects_with_tag_lst,err := get_objects_with_tag(tag_str,
-												p_object_type_str,
-												p_page_index_int,
-												p_page_size_int,
-												p_mongodb_coll,
-												p_log_fun)
+			p_object_type_str,
+			p_page_index_int,
+			p_page_size_int,
+			p_mongodb_coll,
+			p_log_fun)
 
 		if err != nil {
 			return nil,err
@@ -112,11 +102,11 @@ func get_objects_with_tags(p_tags_lst []string,
 }
 //---------------------------------------------------
 func get_objects_with_tag(p_tag_str string,
-				p_object_type_str string,
-				p_page_index_int  int,
-				p_page_size_int   int,
-				p_mongodb_coll    *mgo.Collection,
-				p_log_fun         func(string,string)) ([]map[string]interface{},error) {
+	p_object_type_str string,
+	p_page_index_int  int,
+	p_page_size_int   int,
+	p_mongodb_coll    *mgo.Collection,
+	p_log_fun         func(string,string)) ([]map[string]interface{},error) {
 	p_log_fun("FUN_ENTER","gf_tagger.get_objects_with_tag()")
 	p_log_fun("INFO"     ,"p_object_type_str - "+p_object_type_str)
 
@@ -125,10 +115,10 @@ func get_objects_with_tag(p_tag_str string,
 	}
 
 	posts_with_tag_lst,err := db__get_posts_with_tag(p_tag_str,
-												p_page_index_int,
-												p_page_size_int,
-												p_mongodb_coll,
-												p_log_fun)
+		p_page_index_int,
+		p_page_size_int,
+		p_mongodb_coll,
+		p_log_fun)
 	if err != nil {
 		return nil,err
 	}
@@ -138,10 +128,10 @@ func get_objects_with_tag(p_tag_str string,
 	for _,post := range posts_with_tag_lst {
 		
 		post_info_map := map[string]interface{}{
-			"title_str"              :post.Title_str,
-			"tags_lst"               :post.Tags_lst,
-			"url_str"                :"/posts/"+post.Title_str,
-			"object_type_str"        :p_object_type_str,
+			"title_str":              post.Title_str,
+			"tags_lst":               post.Tags_lst,
+			"url_str":                "/posts/"+post.Title_str,
+			"object_type_str":        p_object_type_str,
 			"thumbnail_small_url_str":post.Thumbnail_url_str,
 		}
 
@@ -153,9 +143,9 @@ func get_objects_with_tag(p_tag_str string,
 }
 //---------------------------------------------------
 func parse_tags(p_tags_str string,
-		p_max_tags_bulk_size_int        int, //500
-		p_max_tag_characters_number_int int, //20
-		p_log_fun                       func(string,string)) ([]string,error) {
+	p_max_tags_bulk_size_int        int, //500
+	p_max_tag_characters_number_int int, //20
+	p_log_fun                       func(string,string)) ([]string,error) {
 	p_log_fun("FUN_ENTER","gf_tagger.parse_tags()")
 	
 	tags_lst := strings.Split(p_tags_str," ")
@@ -166,9 +156,7 @@ func parse_tags(p_tags_str string,
 	//---------------------
 	for _,tag_str := range tags_lst {
 		if len(tag_str) > p_max_tag_characters_number_int {
-			return nil,errors.New(fmt.Sprintf("tag (%s) is too long - max is (%s)",
-										tag_str,
-										fmt.Sprint(p_max_tags_bulk_size_int)))
+			return nil,errors.New(fmt.Sprintf("tag (%s) is too long - max is (%s)", tag_str, fmt.Sprint(p_max_tags_bulk_size_int)))
 		}
 	}
 	//---------------------

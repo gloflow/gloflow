@@ -5,19 +5,19 @@ namespace gf_tagger_input_ui {
 //-----------------------------------------------------
 //in gf_post view
 export function init_tag_input(p_obj_id_str :string,
-					p_obj_type_str :string,
-					p_obj_element,
-					p_onTagsCreated_fun,
-					p_onTagUIAdd_fun,
-					p_onTagUIRemove_fun,
-					p_log_fun) {
+	p_obj_type_str :string,
+	p_obj_element,
+	p_onTagsCreated_fun,
+	p_onTagUIAdd_fun,
+	p_onTagUIRemove_fun,
+	p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tag_input()');
 	
 	const tagging_input_ui_element = init_tagging_input_ui_element(p_obj_id_str,
-															p_obj_type_str,
-															p_onTagsCreated_fun,
-															p_onTagUIRemove_fun,
-															p_log_fun);
+		p_obj_type_str,
+		p_onTagsCreated_fun,
+		p_onTagUIRemove_fun,
+		p_log_fun);
 	const tagging_ui_element = $(`
 		<div class="post_element_controls">
 			<div class="add_tags_button">add tags</div>
@@ -25,7 +25,6 @@ export function init_tag_input(p_obj_id_str :string,
 
 	//OPEN TAG INPUT UI
 	$(tagging_ui_element).find('.add_tags_button').on('click',(p_event)=>{
-		console.log('zzzzz');
 
 		//remove the tagging_input_container if its already displayed
 		//for tagging another post_element
@@ -37,8 +36,8 @@ export function init_tag_input(p_obj_id_str :string,
 		//                       html element of the post_element
 		//final DivElement post_element_element = p_event.target.parent.parent;
 		place_tagging_input_ui_element(tagging_input_ui_element,
-								p_obj_element, //post_element_element,
-								p_log_fun);
+			p_obj_element, //post_element_element,
+			p_log_fun);
 
 		if (p_onTagUIAdd_fun != null) p_onTagUIAdd_fun();
 	});
@@ -99,10 +98,10 @@ export function init_tag_input(p_obj_id_str :string,
 //TAGS UI UTILS
 //-----------------------------------------------------
 function init_tagging_input_ui_element(p_obj_id_str :string,
-				p_obj_type_str :string,
-				p_onTagsCreated_fun,
-				p_onTagUIRemove_fun,
-				p_log_fun) {
+	p_obj_type_str :string,
+	p_onTagsCreated_fun,
+	p_onTagUIRemove_fun,
+	p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tagging_input_ui_element()');
 	
 	const tagging_input_ui_element = $(`
@@ -135,24 +134,6 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 				p_event.preventDefault();
 				
 				add_tags_to_obj(p_obj_id_str,
-						p_obj_type_str,
-						tagging_input_ui_element,
-						//p_onComplete_fun
-						(p_tags_lst :string[])=>{
-							$(tags_input_element).val('');
-							p_onTagsCreated_fun(p_tags_lst);
-
-						},
-						//p_onError_fun
-						()=>{
-
-						},
-						p_log_fun);
-      		}
-		});
-	
-	$(tagging_input_ui_element).find('#submit_tags_button').on('onmouseup',(p_event)=>{
-			add_tags_to_obj(p_obj_id_str,
 					p_obj_type_str,
 					tagging_input_ui_element,
 					//p_onComplete_fun
@@ -161,10 +142,23 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 						p_onTagsCreated_fun(p_tags_lst);
 					},
 					//p_onError_fun
-					()=>{
-
-					},
+					()=>{},
 					p_log_fun);
+      		}
+		});
+	
+	$(tagging_input_ui_element).find('#submit_tags_button').on('onmouseup',(p_event)=>{
+			add_tags_to_obj(p_obj_id_str,
+				p_obj_type_str,
+				tagging_input_ui_element,
+				//p_onComplete_fun
+				(p_tags_lst :string[])=>{
+					$(tags_input_element).val('');
+					p_onTagsCreated_fun(p_tags_lst);
+				},
+				//p_onError_fun
+				()=>{},
+				p_log_fun);
 		});
 	
 	//TAG INPUT CLOSE BUTTON
@@ -182,8 +176,8 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 }
 //-----------------------------------------------------
 function place_tagging_input_ui_element(p_tagging_input_ui_element,
-								p_relative_to_element,
-								p_log_fun) {
+	p_relative_to_element,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_input_ui.place_tagging_input_ui_element()');
 	
 	$('body').append(p_tagging_input_ui_element);
@@ -214,12 +208,10 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 			tagging_input_x = relative_to_element_x_int;
 		}
 		//input_ui is cutoff on the right side
-		else if (((relative_to_element_x_int+relative_element__width_int) + input_ui_horizontal_overflow_int) > 
-				 $(window).innerWidth()) {
+		else if (((relative_to_element_x_int+relative_element__width_int) + input_ui_horizontal_overflow_int) > $(window).innerWidth()) {
 
 			//position inpout_ui with its right edge aligned with the right edge of element to be tagged
-			tagging_input_x = (relative_to_element_x_int+relative_element__width_int) - 
-							   input_ui_element__width_int;
+			tagging_input_x = (relative_to_element_x_int+relative_element__width_int) - input_ui_element__width_int;
 		}
 		//no cutoff
 		else {
@@ -243,11 +235,11 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 //TAGS SENDING TO SERVER
 //-----------------------------------------------------
 function add_tags_to_obj(p_obj_id_str :string,
-			p_obj_type_str :string,
-			p_tagging_ui_element,
-			p_onComplete_fun,
-			p_onError_fun,
-			p_log_fun) {
+	p_obj_type_str :string,
+	p_tagging_ui_element,
+	p_onComplete_fun,
+	p_onError_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_input_ui.add_tags_to_obj()');
 	
 
@@ -277,17 +269,16 @@ function add_tags_to_obj(p_obj_id_str :string,
 
 	//ADD!! - some visual success/failure indicator
 	gf_tagger_client.add_tags_to_obj(new_tags_lst,
-								p_obj_id_str,
-								p_obj_type_str,
+		p_obj_id_str,
+		p_obj_type_str,
+		(p_data_map)=>{
+			const added_tags_lst :string[] = p_data_map['added_tags_lst'];
+			p_log_fun('INFO','added_tags_lst:'+added_tags_lst);
 
-								(p_data_map)=>{
-									const added_tags_lst :string[] = p_data_map['added_tags_lst'];
-									p_log_fun('INFO','added_tags_lst:'+added_tags_lst);
-
-									p_onComplete_fun(added_tags_lst);
-								},
-								()=>{}, //p_onError_fun
-								p_log_fun);
+			p_onComplete_fun(added_tags_lst);
+		},
+		()=>{}, //p_onError_fun
+		p_log_fun);
 }
 /*//-----------------------------------------------------
 //in gf_posts_browser view
