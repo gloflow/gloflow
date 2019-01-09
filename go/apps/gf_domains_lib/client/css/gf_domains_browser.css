@@ -1,0 +1,187 @@
+body {
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	margin     :0;
+}
+
+
+/*----------------------------------------------------------*/
+#domains_stats {
+	margin-top: 10px;
+    margin-bottom: 7px;
+    padding-top: 8px;
+    padding-bottom: 7px;
+    padding-left: 6px;
+    background-color: #e3bcba;
+    width: 150px;
+}
+/*----------------------------------------------------------*/
+#domains .domain {
+	background-color: #e2e2e2;
+    font-size: 12px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    margin-bottom: 4px;
+	width: 550px;
+}
+
+#domains .domain .domain_name {
+	font-weight: bold;
+    font-size: 14px;
+}
+#domains .domain .domain_name a {
+	text-decoration: none;
+    color: #4c4c4c;
+}
+#domains .domain .count {
+	font-weight: bold;
+}
+/*----------------------------------------------------------*/
+#viz_container {
+	position: fixed;
+    top: 10px;
+    right: 0px;
+    width: 40px;
+    padding-left: 21px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    background-color: #e8b9b9;
+    color: gray;
+    cursor: pointer;
+}
+#viz_container #viz_btn:hover {
+	cursor          : pointer;
+	background-color: lightgray;
+	color           : black;
+}
+#viz_container #viz_btn:active {
+	cursor          : pointer;
+	opacity         : 1.0;  
+	background-color: white;
+	color           : black;
+}
+/*----------------------------------------------------------*/
+#control {
+	top:40px;
+	left:40px;
+	position: relative;
+	width: 1269px;
+}
+#control #selected_domain_info {
+	width: 456px;
+	right: 0px;
+	position: absolute;
+	top: 71px;
+	right: 0px;
+	padding-left: 13px;
+}
+#control #selected_domain_info #posts_count {
+	position: absolute;
+	right: 0px;
+	top: 12px;
+}
+#control #selected_domain_info #url {
+	font-size: 24px;
+	padding-left: 4px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+#control #selected_domain_info #url a {
+	text-decoration: none;
+	color: gray;
+}
+#control #domain_stats_canvas {
+	position: absolute;
+	top     : 61px;
+}
+#control #domain_posts {
+	background-color: rgb(249, 249, 249);
+	width: 469px;
+	height: 597px;
+	overflow: scroll;
+	overflow-x: hidden;
+
+	position: absolute;
+	right: 0px;
+	top: 118px;
+}
+#control #domain_posts #post {
+	padding-left: 6px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 6px;
+	background-color: white;
+
+	margin-bottom: 3px;
+	margin-top: 8px;
+	cursor:pointer;
+}
+#control #domain_posts #post:hover {
+   background-color: lightgray;
+}
+#control #domain_posts #post a {
+	text-decoration: none;
+	color:black;
+}
+/*----------------------------------------------------------*/
+/*DOMAIN_SEARCH*/
+
+#control #domain_search {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	height: 61px;
+	width: 1269px;
+}
+
+#control #domain_search input {
+	width: 100%;
+	height: 100%;
+	font-size: 51px;
+	padding-left: 8px;
+}
+.autocomplete-suggestions {
+	background-color: rgb(255, 255, 157);
+	height:700px;
+	max-height: 400px;
+	overflow-y:scroll;
+	overflow-x: hidden;
+
+}
+.autocomplete-suggestions .autocomplete-suggestion {
+	background-color: white;
+	padding-left: 7px;
+	padding-top: 5px;
+	padding-bottom: 7px;
+}
+.autocomplete-suggestions .autocomplete-selected {
+	background-color: gray;
+	color:white;
+}
+/*----------------------------------------------------------*/
+/*humble beginnings...*/
+#sys_release_info {
+	position        : fixed;
+	right           : 0px;
+	bottom          : 0px;
+	background-color: rgb(226, 226, 157);
+	padding-left    : 8px;
+	padding-top     : 6px;
+	padding-right   : 5px;
+	padding-bottom  : 3px;
+	z-index         : 5000;
+	width:100px;
+	height: 20px;
+	opacity: 0.5;
+}
+#sys_release_info #version {
+	text-align: right;
+	font-size: 10px}
+#sys_release_info #name {
+	text-align: right;
+	font-size: 10px;
+}
+
+#sys_release_info #description {
+	visibility: hidden;
+}

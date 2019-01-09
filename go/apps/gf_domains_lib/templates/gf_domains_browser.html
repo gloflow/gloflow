@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/a/static/css/gf_sys_panel.css">
+	<link rel="stylesheet" type="text/css" href="/a/static/css/gf_domains_browser.css">
+</head>
+<body>
+{{- /*-----------------------------------------------------*/}}
+
+<div id='viz_container'>
+	<div id='viz_btn'>viz</div>
+</div>
+
+<div id="domains_stats">
+	<div id="domains_count"><span class='title'>domains #</span><span class='count'>{{- len .Domains_lst }}</span></div>
+</div>
+
+<div id="domains">
+{{- range .Domains_lst}}
+	<div class="domain">
+		<div class="domain_name"><a href="http://{{.Name_str}}">{{.Name_str}}</a></div>
+		<div class="posts_count"><span class='title'>posts #</span><span class='count'>{{.Domain_posts.Count_int}}</span></div>
+		<div class="images_count"><span class='title'>images #</span><span class='count'>{{.Domain_images.Count_int}}</span></div>
+	</div>
+{{- end}}
+</div>
+
+{{- /*-----------------------------------------------------*/}}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/a/static/js/lib/jquery.autocomplete.min.js"></script>
+<script type="text/javascript" src="/a/static/js/lib/pixi.min.js"></script>
+
+<script type="text/javascript" src="/a/static/js/gf_domains_browser.js"></script>
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
+</div>
+{{- /*------------------------------------------------------*/}}
+
+</body>
+</html>
