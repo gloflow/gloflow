@@ -59,13 +59,13 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 		image_id_str := m["i"].(string)
 
 		browser_job_result := &Browser__job_run_result{
-			T_str                       :"img__browser_run_job_result",
-			Img__id_str                 :image_id_str,
-			Img__dominant_color_str     :m["c"].(string),
-			Img__color_pallete_lst      :color_pallete_lst,
+			T_str:                       "img__browser_run_job_result",
+			Img__id_str:                 image_id_str,
+			Img__dominant_color_str:     m["c"].(string),
+			Img__color_pallete_lst:      color_pallete_lst,
 			Browser__unix_start_time_str:m["st"].(float64),
-			Browser__unix_end_time_str  :m["et"].(float64),
-			Browser__fingerprint_str    :m["f"].(float64),
+			Browser__unix_end_time_str:  m["et"].(float64),
+			Browser__fingerprint_str:    m["f"].(float64),
 		}
 
 		err := p_runtime_sys.Mongodb_coll.Insert(browser_job_result)

@@ -129,8 +129,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 	//image_file_name_str := path.Base(image_path_str)
 	//image_ext_str       := strings.Split(image_file_name_str,".")[1]
 
-	normalized_ext_str,ok := Image__check_image_format(clean_image_ext_str,
-													p_runtime_sys)
+	normalized_ext_str,ok := Image__check_image_format(clean_image_ext_str, p_runtime_sys)
 	if !ok {
 		usr_msg_str := "invalid image extension found in image url - "+p_image_url_str
 
@@ -141,9 +140,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 		return "",gf_err
 	}
 	//-------------
-	image_id_str := Image__create_id(image_path_str,
-								normalized_ext_str, //p_image_format_str,
-								p_runtime_sys)
+	image_id_str := Image__create_id(image_path_str, normalized_ext_str, p_runtime_sys)
 	//-------------
 	return image_id_str,nil
 }
@@ -217,7 +214,7 @@ func Get_image_title_from_url(p_image_url_str string,
 func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.Runtime_sys) (int,int) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_dimensions__from_image()")
 
-	p := p_img.Bounds()
+	p          := p_img.Bounds()
 	width_int  := p.Max.X - p.Min.X
 	height_int := p.Max.Y - p.Min.Y
 	return width_int,height_int

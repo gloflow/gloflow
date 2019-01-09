@@ -82,13 +82,12 @@ func Create_thumbnails(p_image_id_str string,
 	thumb_large_relative_url_str  := "/images/d/thumbnails/"+new_thumb_large_file_name_str
 
 	image_thumbs := &Gf_image_thumbs{
-		Small_relative_url_str    :thumb_small_relative_url_str,
-		Medium_relative_url_str   :thumb_medium_relative_url_str,
-		Large_relative_url_str    :thumb_large_relative_url_str,
-
-		Small_local_file_path_str :small__target_thumbnail_file_path_str,
+		Small_relative_url_str:    thumb_small_relative_url_str,
+		Medium_relative_url_str:   thumb_medium_relative_url_str,
+		Large_relative_url_str:    thumb_large_relative_url_str,
+		Small_local_file_path_str: small__target_thumbnail_file_path_str,
 		Medium_local_file_path_str:medium__target_thumbnail_file_path_str,
-		Large_local_file_path_str :large__target_thumbnail_file_path_str,
+		Large_local_file_path_str: large__target_thumbnail_file_path_str,
 	}
 
 	return image_thumbs,nil

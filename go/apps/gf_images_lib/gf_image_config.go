@@ -27,7 +27,7 @@ type Config struct {
 func Config__get() Config {
 
 	flow_to_s3bucket_map := map[string]string{
-		"general"   :"gf--img",
+		"general":   "gf--img",
 		"discovered":"gf--img--discover",
 	}
 

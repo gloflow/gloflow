@@ -95,10 +95,7 @@ func query__init_handlers(p_stats_url_base_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input(url_str,
-											p_resp,
-											p_req,
-											p_runtime_sys)
+			i,gf_err := gf_rpc_lib.Get_http_input(url_str, p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -110,9 +107,7 @@ func query__init_handlers(p_stats_url_base_str string,
 			
 			query_fun_result,gf_err := query__run_fun(stat_name_str,p_stats_query_funs_map,p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler(url_str,
-										"stat run failed", //p_user_msg_str
-										gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler(url_str, "stat run failed", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			gf_rpc_lib.Http_Respond(query_fun_result,"OK",p_resp,p_runtime_sys)
@@ -121,10 +116,7 @@ func query__init_handlers(p_stats_url_base_str string,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run(url_str,
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run(url_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	});

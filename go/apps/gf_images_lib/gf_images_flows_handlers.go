@@ -49,8 +49,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//---------------------
 	
 	//-------------------------------------------------
-	http.HandleFunc("/images/flows/add_img",func(p_resp http.ResponseWriter,
-												p_req *http.Request) {
+	http.HandleFunc("/images/flows/add_img",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/add_img ----------")
 		if p_req.Method == "POST" {
@@ -58,14 +57,11 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img",
-											p_resp,
-											p_req,
-											p_runtime_sys)
+			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
-								"failed parse input for adding an image to a flow", //p_user_msg_str
-								gf_err,p_resp,p_runtime_sys)
+					"failed parse input for adding an image to a flow", //p_user_msg_str
+					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 
@@ -80,16 +76,17 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}
 			//--------------------------
 
-			running_job_id_str,thumbnail_small_relative_url_str,image_id_str,n_gf_err := Flows__add_extern_image(image_extern_url_str,
-																							image_origin_page_url_str,
-																							flows_names_lst,
-																							client_type_str,
-																							p_jobs_mngr_ch,
-																							p_runtime_sys)
+			running_job_id_str,thumb_small_relative_url_str,image_id_str,n_gf_err := Flows__add_extern_image(image_extern_url_str,
+				image_origin_page_url_str,
+				flows_names_lst,
+				client_type_str,
+				p_jobs_mngr_ch,
+				p_runtime_sys)
+
 			if n_gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
-								"failed to add image to flow", //p_user_msg_str
-								n_gf_err,p_resp,p_runtime_sys)
+					"failed to add image to flow", //p_user_msg_str
+					n_gf_err,p_resp,p_runtime_sys)
 				return
 			}
 			//------------------
@@ -97,7 +94,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			
 			data_map := map[string]interface{}{
 				"images_job_id_str":               running_job_id_str,
-				"thumbnail_small_relative_url_str":thumbnail_small_relative_url_str,
+				"thumbnail_small_relative_url_str":thumb_small_relative_url_str,
 				"image_id_str":                    image_id_str,
 			}
 			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
@@ -105,10 +102,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/flows/add_img",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/flows/add_img", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
@@ -116,8 +110,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                         if the image url has already been fetched/transformed and gf_image exists for it
 
-	http.HandleFunc("/images/flows/imgs_exist",func(p_resp http.ResponseWriter,
-												p_req *http.Request) {
+	http.HandleFunc("/images/flows/imgs_exist",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
 
@@ -126,14 +119,11 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist",
-											p_resp,
-											p_req,
-											p_runtime_sys)
+			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/imgs_exist",
-								"failed to parse input to check if images exist in a flow", //p_user_msg_str
-								gf_err,p_resp,p_runtime_sys)
+					"failed to parse input to check if images exist in a flow", //p_user_msg_str
+					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 
@@ -148,14 +138,11 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			client_type_str := i["client_type_str"].(string)
 			//--------------------------
 				
-			existing_images_lst,gf_err := flows__images_exist_check(images_extern_urls_lst,
-													flow_name_str,
-													client_type_str,
-													p_runtime_sys)
+			existing_images_lst,gf_err := flows__images_exist_check(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/imgs_exist",
-								"failed to check if extern image exists in the system", //p_user_msg_str
-								gf_err,p_resp,p_runtime_sys)
+					"failed to check if extern image exists in the system", //p_user_msg_str
+					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 			//------------------
@@ -169,18 +156,14 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/flows/imgs_exist",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/flows/imgs_exist", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
 	//-------------------------------------------------
 	//FLOWS_BROWSER
 	//-------------------------------------------------
-	http.HandleFunc("/images/flows/browser",func(p_resp http.ResponseWriter,
-												p_req *http.Request) {
+	http.HandleFunc("/images/flows/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser ----------")
 		if p_req.Method == "GET" {
@@ -197,43 +180,35 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			//------------------
 			//RENDER_TEMPLATE
 			gf_err := flows__render_initial_page(flow_name_str,
-										3,  //p_initial_pages_num_int int, //6
-										10, //p_page_size_int int, //5
-										flows_browser__tmpl,
-										p_resp,
-										p_runtime_sys)
+				3,  //p_initial_pages_num_int int, //6
+				10, //p_page_size_int int, //5
+				flows_browser__tmpl,
+				p_resp,
+				p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/flows/browser",
-										"failed to render posts_browsers initial page",
-										gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/images/flows/browser", "failed to render posts_browsers initial page", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/flows/browser",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/flows/browser", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
 	//-------------------------------------------------
 	//GET_BROWSER_PAGE (slice of posts data series)
-	http.HandleFunc("/images/flows/browser_page",func(p_resp http.ResponseWriter,
-												p_req *http.Request) {
+	http.HandleFunc("/images/flows/browser_page",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser_page ----------")
 		if p_req.Method == "GET" {
 
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			pages_lst,gf_err := flows__get_page__pipeline(p_req,p_resp,p_runtime_sys)
+			pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/flows/browser_page",
-									"failed to get images flow browser_page",
-									gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/images/flows/browser_page", "failed to get images flow browser_page", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 
@@ -243,15 +218,12 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			data_map := map[string]interface{}{
 				"pages_lst":pages_lst,
 			}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/flows/browser_page",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/flows/browser_page", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

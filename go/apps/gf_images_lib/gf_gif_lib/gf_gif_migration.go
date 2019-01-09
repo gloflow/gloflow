@@ -364,14 +364,15 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	}
 
 	new_gif,gf_err := Process_and_upload(p_old_gif.Origin_url_str, //p_image_source_url_str
-			p_old_gif.Origin_page_url_str, //p_image_origin_page_url_str
-			p_images_store_local_dir_path_str,
-			image_client_type_str,
-			flows_names_lst,
-			false, //p_create_new_db_img_bool
-			p_s3_bucket_name_str,
-			p_s3_info,
-			p_runtime_sys)
+		p_old_gif.Origin_page_url_str, //p_image_origin_page_url_str
+		p_images_store_local_dir_path_str,
+		image_client_type_str,
+		flows_names_lst,
+		false, //p_create_new_db_img_bool
+		p_s3_bucket_name_str,
+		p_s3_info,
+		p_runtime_sys)
+		
 	if gf_err != nil {
 		return gf_err
 	}

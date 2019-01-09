@@ -41,11 +41,11 @@ def main(p_log_fun):
 		cli_stats_path_str    = args_map['cli_stats_path']
 		crontab_file_path_str = args_map['crontab_file_path']
 		crontab__build_config(py_stats_dirs_lst,
-						plots_dir_str,
-						cli_stats_path_str,
-						crontab_file_path_str,
-						mongodb_host_str,
-						p_log_fun)
+			plots_dir_str,
+			cli_stats_path_str,
+			crontab_file_path_str,
+			mongodb_host_str,
+			p_log_fun)
 
 		crontab__run(crontab_file_path_str,p_log_fun)
 	#---------------
@@ -54,11 +54,11 @@ def main(p_log_fun):
 		cli_stats_path_str    = args_map['cli_stats_path']
 		crontab_file_path_str = args_map['crontab_file_path']
 		crontab__build_config(py_stats_dirs_lst,
-						plots_dir_str,
-						cli_stats_path_str,
-						crontab_file_path_str,
-						mongodb_host_str,
-						p_log_fun)
+			plots_dir_str,
+			cli_stats_path_str,
+			crontab_file_path_str,
+			mongodb_host_str,
+			p_log_fun)
 	#---------------
 	elif args_map['run'] == 'run_py_stat':
 
@@ -68,10 +68,10 @@ def main(p_log_fun):
 		py_stat_str = args_map['py_stat']
 
 		run_py_stat(py_stat_str,
-				py_stats_dirs_lst,
-				plots_dir_str,
-				mongo_client,
-				p_log_fun)
+			py_stats_dirs_lst,
+			plots_dir_str,
+			mongo_client,
+			p_log_fun)
 	#---------------
 
 #----------------------------------------------

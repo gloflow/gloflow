@@ -142,9 +142,9 @@ func Events__init(p_sse_url_str string,
 	}
 
 	events__init_handlers(p_sse_url_str,
-					register_consumer_ch,
-					ctx,
-					p_runtime_sys)
+		register_consumer_ch,
+		ctx,
+		p_runtime_sys)
 	return ctx
 }
 //-------------------------------------------------
@@ -170,7 +170,7 @@ func events__init_handlers(p_sse_url_str string,
 		register_consumer__response_ch := make(chan chan Event__msg)
 		register_consumer_msg          := Events__register_consumer_msg{
 			Events_id_str:events_id_str,
-			Response_ch  :register_consumer__response_ch,
+			Response_ch:  register_consumer__response_ch,
 		}
 
 		p_register_consumer_ch <- register_consumer_msg
@@ -189,11 +189,11 @@ func events__init_handlers(p_sse_url_str string,
 		data_map       := map[string]interface{}{}
 
 		Events__send_event(events_id_str,
-					event_type_str, //p_type_str
-					msg_str,        //p_msg_str
-					data_map,
-					p_events_ctx,
-					p_runtime_sys)
+			event_type_str, //p_type_str
+			msg_str,        //p_msg_str
+			data_map,
+			p_events_ctx,
+			p_runtime_sys)
 
 		//-------------
 
@@ -204,15 +204,11 @@ func events__init_handlers(p_sse_url_str string,
 
 			//channel is not closed, and there are more messages to be received/processed
 			if more_bool {
-				events__stream_msg(event_msg,
-								p_resp,
-								p_runtime_sys)
+				events__stream_msg(event_msg, p_resp, p_runtime_sys)
 				flusher.Flush()
 			} else {
 				//send this last received message
-				events__stream_msg(event_msg,
-								p_resp,
-								p_runtime_sys)
+				events__stream_msg(event_msg, p_resp, p_runtime_sys)
 				flusher.Flush()
 				break
 			}

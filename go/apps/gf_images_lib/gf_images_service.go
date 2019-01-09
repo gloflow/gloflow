@@ -74,9 +74,7 @@ func Run_service(p_port_str string,
 	//-------------
 	//RUNTIME_SYS
 
-	mongo_db := gf_core.Mongo__connect(p_mongodb_host_str,
-							p_mongodb_db_name_str,
-							p_log_fun )
+	mongo_db := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun )
 	mongodb_coll := mongo_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
@@ -98,16 +96,14 @@ func Run_service(p_port_str string,
 	//-------------
 
 	jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_images_store_local_dir_path_str,
-							p_images_thumbnails_store_local_dir_path_str,
-							p_images_main_s3_bucket_name_str,
-							s3_info,
-							runtime_sys)
+		p_images_thumbnails_store_local_dir_path_str,
+		p_images_main_s3_bucket_name_str,
+		s3_info,
+		runtime_sys)
 	//-------------
 	//IMAGE_FLOWS
 	flows__templates_dir_path_str := p_templates_dir_paths_map["flows_str"].(string)
-	gf_err = Flows__init_handlers(flows__templates_dir_path_str,
-							jobs_mngr_ch,
-							runtime_sys)
+	gf_err = Flows__init_handlers(flows__templates_dir_path_str, jobs_mngr_ch, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

@@ -78,8 +78,8 @@ func flows__get_page__pipeline(p_req *http.Request,
 				err,"gf_images_lib",p_runtime_sys)
 
 			gf_rpc_lib.Error__in_handler("/images/flows/browser_page",
-								"pg_index (page_index) is not an integer",
-								gf_err,p_resp,p_runtime_sys)
+				"pg_index (page_index) is not an integer",
+				gf_err,p_resp,p_runtime_sys)
 			return nil,gf_err
 		}
 	}
@@ -96,8 +96,9 @@ func flows__get_page__pipeline(p_req *http.Request,
 				err,"gf_images_lib",p_runtime_sys)
 
 			gf_rpc_lib.Error__in_handler("/images/flows/browser_page",
-								"pg_size (page_size) is not an integer",
-								gf_err,p_resp,p_runtime_sys)
+				"pg_size (page_size) is not an integer",
+				gf_err,p_resp,p_runtime_sys)
+
 			return nil,gf_err
 		}
 	}
@@ -111,9 +112,10 @@ func flows__get_page__pipeline(p_req *http.Request,
 	//GET_PAGES
 	cursor_start_position_int := page_index_int*page_size_int
 	pages_lst,gf_err := flows_db__get_page(flow_name_str,  //"general", //p_flow_name_str
-								cursor_start_position_int, //p_cursor_start_position_int
-								page_size_int,             //p_elements_num_int
-								p_runtime_sys)
+		cursor_start_position_int, //p_cursor_start_position_int
+		page_size_int,             //p_elements_num_int
+		p_runtime_sys)
+
 	if gf_err != nil {
 		return nil,gf_err
 	}
@@ -129,10 +131,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows.flows__images_exist_check()")
 
-	existing_images_lst,gf_err := flows_db__images_exist(p_images_extern_urls_lst,
-												p_flow_name_str,
-												p_client_type_str,
-												p_runtime_sys)
+	existing_images_lst,gf_err := flows_db__images_exist(p_images_extern_urls_lst, p_flow_name_str, p_client_type_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil,gf_err
 	}
@@ -181,16 +180,18 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 
 	//------------------
 	images_urls_to_process_lst := []gf_images_jobs.Image_to_process{
-										gf_images_jobs.Image_to_process{
-											Source_url_str     :p_image_extern_url_str,
-											Origin_page_url_str:p_image_origin_page_url_str,
-										},
-									}
+			gf_images_jobs.Image_to_process{
+				Source_url_str     :p_image_extern_url_str,
+				Origin_page_url_str:p_image_origin_page_url_str,
+			},
+		}
+		
 	running_job,job_expected_outputs_lst,gf_err := gf_images_jobs.Start_job(p_client_type_str,
-													images_urls_to_process_lst,
-													p_flows_names_lst,
-													p_jobs_mngr_ch,
-													p_runtime_sys)
+		images_urls_to_process_lst,
+		p_flows_names_lst,
+		p_jobs_mngr_ch,
+		p_runtime_sys)
+
 	if gf_err != nil {
 		return nil,nil,nil,gf_err
 	}

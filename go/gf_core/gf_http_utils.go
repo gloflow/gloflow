@@ -48,9 +48,9 @@ func HTTP__fetch_url(p_url_str string,
 		Timeout: time.Second * 10, //to prevent requests taking too long to return
 
 		/*IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
-						setting of these headers had to be added, via the CheckRedirect function
-						that gets called on every redirect, which gives us a chance to to re-set
-						user-agent headers again to the correct value*/
+		setting of these headers had to be added, via the CheckRedirect function
+		that gets called on every redirect, which gives us a chance to to re-set
+		user-agent headers again to the correct value*/
 		/*CheckRedirect specifies the policy for handling redirects.
 		If CheckRedirect is not nil, the client calls it before
 		following an HTTP redirect. The arguments req and via are
@@ -128,8 +128,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 	//              match this are /*/static/some_further_text, and those will only match
 	//              if the spec here ends with "/"
 	url_str := p_url_base_str+"/static/"
-	http.HandleFunc(url_str,func(p_resp http.ResponseWriter,
-								p_req *http.Request) {
+	http.HandleFunc(url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
 		//fmt.Println("FILE SERVE >>>>>>>>")
 
 		if p_req.Method == "GET" {

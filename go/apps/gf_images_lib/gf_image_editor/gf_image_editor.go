@@ -87,9 +87,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	//--------------------------
 	//SAVE_BASE64_DATA_TO_FILE
 	//IMPORTANT!! - save first, and then create a G
-	processing_info,gf_err := save_edited_image(source_image_id_str,
-											input.Image_base64_data_str,
-											p_runtime_sys)
+	processing_info,gf_err := save_edited_image(source_image_id_str, input.Image_base64_data_str, p_runtime_sys)
 	if err != nil {
 		return gf_err
 	}
@@ -106,9 +104,9 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	processing_info.image_origin_page_url_str = source_gf_image.Origin_page_url_str
 
 	gf_err = create_gf_image(new_title_str,
-					[]string{input.Target_flow_name_str,},
-					processing_info,
-					p_runtime_sys)
+		[]string{input.Target_flow_name_str,},
+		processing_info,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -236,20 +234,19 @@ func create_gf_image(p_new_title_str string,
 
 	//--------------------------
 	//GF_IMAGE_ID
-	image_id_str := gf_images_utils.Image__create_id(p_processing_info.tmp_local_filepath_str,
-								image_format_str,
-								p_runtime_sys)
+	image_id_str := gf_images_utils.Image__create_id(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
 	//--------------------------
 	//THUMBNAILS
 	image_thumbs,gf_err := gf_images_utils.Create_thumbnails(image_id_str,
-								image_format_str, //p_normalized_ext_str,
-								p_processing_info.tmp_local_filepath_str,
-								local_thumbnails_target_dir_path_str,
-								small_thumb_max_size_px_int,
-								medium_thumb_max_size_px_int,
-								large_thumb_max_size_px_int,
-								p_processing_info.png_image,
-								p_runtime_sys)
+		image_format_str, //p_normalized_ext_str,
+		p_processing_info.tmp_local_filepath_str,
+		local_thumbnails_target_dir_path_str,
+		small_thumb_max_size_px_int,
+		medium_thumb_max_size_px_int,
+		large_thumb_max_size_px_int,
+		p_processing_info.png_image,
+		p_runtime_sys)
+
 	if gf_err != nil {
 		return gf_err
 	}
@@ -274,7 +271,7 @@ func create_gf_image(p_new_title_str string,
 	//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 	//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 	//              these two structs are related by origin_url
-	_,c_gf_err := gf_images_utils.Image__create_new(gf_image_info,p_runtime_sys)
+	_,c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
 	if c_gf_err != nil {
 		return c_gf_err
 	}

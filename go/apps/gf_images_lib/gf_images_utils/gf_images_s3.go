@@ -36,8 +36,6 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	//--------------------
 	//UPLOAD FULL_SIZE (ORIGINAL) IMAGE
 
-
-	
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -50,22 +48,16 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
 	/*for files acquired by the Fetcher images are already uploaded 
 	with their Gf_img ID as their filename. so here the p_image_local_file_path_str value is already 
 	the image ID.
 	
-	
 	ADD!! - have an explicit p_target_s3_file_name_str argument, and dont derive it
 	        automatically from the the filename in p_image_local_file_path_str*/
 
-
-
-	s3_response_str,gf_err := gf_core.S3__upload_file(p_image_local_file_path_str, //p_target_file__local_path_str
-										s3_file_name_str,                          //p_target_file__s3_path_str
-										p_s3_bucket_name_str,
-										p_s3_info,
-										p_runtime_sys)
+	target_file__local_path_str := p_image_local_file_path_str
+	target_file__s3_path_str    := s3_file_name_str
+	s3_response_str,gf_err := gf_core.S3__upload_file(target_file__local_path_str, target_file__s3_path_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -74,10 +66,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	//--------------------
 	//UPLOAD THUMBS
 
-	gf_err = S3__store_gf_image_thumbs(p_image_thumbs,
-						p_s3_bucket_name_str,
-						p_s3_info,
-						p_runtime_sys)
+	gf_err = S3__store_gf_image_thumbs(p_image_thumbs, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -98,12 +87,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 		//SMALL THUMB
 		small_t_path_str         := p_image_thumbs.Small_local_file_path_str //thumbs_info_map["small__target_thumbnail_file_path_str"]
 		small_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(small_t_path_str))
-
-		s3_response_str,gf_err := gf_core.S3__upload_file(small_t_path_str, //p_target_file__local_path_str
-											small_t_s3_file_name_str,       //p_target_file__s3_path_str
-											p_s3_bucket_name_str,
-											p_s3_info,
-											p_runtime_sys)
+		s3_response_str,gf_err   := gf_core.S3__upload_file(small_t_path_str, small_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -113,11 +97,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 		medium_t_path_str         := p_image_thumbs.Medium_local_file_path_str //thumbs_info_map["medium__target_thumbnail_file_path_str"]
 		medium_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(medium_t_path_str))
 
-		s3_response_str,gf_err = gf_core.S3__upload_file(medium_t_path_str, //p_target_file__local_path_str
-												medium_t_s3_file_name_str,  //p_target_file__s3_path_str
-												p_s3_bucket_name_str,
-												p_s3_info,
-												p_runtime_sys)
+		s3_response_str,gf_err = gf_core.S3__upload_file(medium_t_path_str, medium_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -126,11 +106,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 		//LARGE THUMB
 		large_t_path_str         := p_image_thumbs.Large_local_file_path_str //thumbs_info_map["large__target_thumbnail_file_path_str"]
 		large_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(large_t_path_str))
-		s3_response_str,gf_err    = gf_core.S3__upload_file(large_t_path_str, //p_target_file__local_path_str
-												large_t_s3_file_name_str,     //p_target_file__s3_path_str
-												p_s3_bucket_name_str,
-												p_s3_info,
-												p_runtime_sys)
+		s3_response_str,gf_err    = gf_core.S3__upload_file(large_t_path_str, large_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -148,9 +124,7 @@ func S3__get_image_url(p_image_path_name_str string,
 
 	//IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
 	//              escaped_str := url.QueryEscape(*p_image_path_name_str)
-	url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s",
-						p_s3_bucket_name_str,
-						p_image_path_name_str) //escaped_str)
+	url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_path_name_str)
 	return url_str
 }
 

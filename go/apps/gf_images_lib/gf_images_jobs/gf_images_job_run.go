@@ -97,14 +97,15 @@ func jobs_mngr__run_job(p_job_id_str string,
 			//-----------------
 
 			_,gf_err := gf_gif_lib.Process_and_upload(image_source_url_str,
-											image_origin_page_url_str,
-											p_images_store_local_dir_path_str,
-											p_job_client_type_str,
-											flows_names_lst,
-											true, //p_create_new_db_img_bool
-											p_s3_bucket_name_str,
-											p_s3_info,
-											p_runtime_sys)
+				image_origin_page_url_str,
+				p_images_store_local_dir_path_str,
+				p_job_client_type_str,
+				flows_names_lst,
+				true, //p_create_new_db_img_bool
+				p_s3_bucket_name_str,
+				p_s3_info,
+				p_runtime_sys)
+
 			if gf_err != nil {
 				job_error_type_str := "gif_process_and_upload_error"
 				_ = job_error__send(job_error_type_str,gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
@@ -116,18 +117,19 @@ func jobs_mngr__run_job(p_job_id_str string,
 		//-----------------------
 		} else {
 			gf_err := pipeline__process_image(image_source_url_str,
-							image_id_str,
-							image_origin_page_url_str,
-							p_images_store_local_dir_path_str,
-							p_images_thumbnails_store_local_dir_path_str,
-							p_flows_names_lst,
-							p_job_id_str,
-							p_job_client_type_str,
-							p_job_updates_ch,
-							p_s3_bucket_name_str,
-							p_s3_info,
-							job_error__send,
-							p_runtime_sys)
+				image_id_str,
+				image_origin_page_url_str,
+				p_images_store_local_dir_path_str,
+				p_images_thumbnails_store_local_dir_path_str,
+				p_flows_names_lst,
+				p_job_id_str,
+				p_job_client_type_str,
+				p_job_updates_ch,
+				p_s3_bucket_name_str,
+				p_s3_info,
+				job_error__send,
+				p_runtime_sys)
+
 			if gf_err != nil {
 				job_error_type_str := "image_process_error"
 				_ = job_error__send(job_error_type_str,gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
@@ -137,7 +139,6 @@ func jobs_mngr__run_job(p_job_id_str string,
 		}
 		//-----------------------
 	}
-
 	return gf_errors_lst
 }
 //-------------------------------------------------
@@ -150,16 +151,15 @@ func job_error__send(p_job_error_type_str string,
 	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__send()")
 
-	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("fetching image failed - %s - %s",
-							p_image_source_url_str,
-							p_gf_err.Error))
+	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
 
 	error_str  := fmt.Sprint(p_gf_err.Error)
 	pje_gf_err := job_error__persist(p_job_id_str,
-					p_job_error_type_str,
-					error_str,
-					p_image_source_url_str,
-					p_runtime_sys)
+		p_job_error_type_str,
+		error_str,
+		p_image_source_url_str,
+		p_runtime_sys)
+
 	if pje_gf_err != nil {
 		return pje_gf_err
 	}
@@ -183,8 +183,8 @@ func job_error__persist(p_job_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__persist()")
 
 	job_error := Job_Error{
-		Type_str            :p_error_type_str,
-		Error_str           :p_error_str,
+		Type_str:            p_error_type_str,
+		Error_str:           p_error_str,
 		Image_source_url_str:p_image_source_url_str,
 	}
 

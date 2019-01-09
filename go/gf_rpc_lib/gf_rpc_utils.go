@@ -50,9 +50,9 @@ func Get_http_input(p_handler_url_path_str string,
 			err,"gf_rpc_lib",p_runtime_sys)
 
 		Error__in_handler(p_handler_url_path_str,
-					"failed parsing http-request input JSON in - "+p_handler_url_path_str, //p_user_msg_str
-					gf_err,
-					p_resp,p_runtime_sys)
+			"failed parsing http-request input JSON in - "+p_handler_url_path_str, //p_user_msg_str
+			gf_err,
+			p_resp,p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -78,9 +78,9 @@ func Http_Respond(p_data interface{},
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Http_Respond()")
 
 	r_lst,_ := json.Marshal(map[string]interface{}{
-						"status_str":p_status_str,
-						"data":      p_data,
-					})
+			"status_str":p_status_str,
+			"data":      p_data,
+		})
 	
 	p_resp.Header().Set("Content-Type","application/json")
 	p_resp.Write(r_lst)

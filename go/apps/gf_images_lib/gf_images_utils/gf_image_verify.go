@@ -68,9 +68,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		
 	if len(title_str) > max_title_characters_int {
 
-		usr_msg_str := fmt.Sprintf("image title_str length (%d) is longer then max_title_characters_int (%d)",
-							len(title_str),
-							max_title_characters_int)
+		usr_msg_str := fmt.Sprintf("image title_str length (%d) is longer then max_title_characters_int (%d)", len(title_str), max_title_characters_int)
 		gf_err := gf_core.Error__create(usr_msg_str,
 			"verify__string_too_long_error",
 			&map[string]interface{}{

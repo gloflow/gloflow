@@ -32,9 +32,9 @@ type Gf_image struct {
 	T_str                string        `json:"-"                    bson:"t"` //"img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	//---------------
-	Client_type_str string   `json:"-"               bson:"client_type_str"` //"gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
-	Title_str       string   `json:"title_str"       bson:"title_str"`
-	Flows_names_lst []string `json:"flows_names_lst" bson:"flows_names_lst"` //image can bellong to multiple flows
+	Client_type_str      string        `json:"-"                    bson:"client_type_str"` //"gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
+	Title_str            string        `json:"title_str"            bson:"title_str"`
+	Flows_names_lst      []string      `json:"flows_names_lst"      bson:"flows_names_lst"` //image can bellong to multiple flows
 	//---------------
 	//RESOLVED_SOURCE_URL
 	//IMPORTANT!! - when the image comes from an external url (as oppose to it being 
@@ -42,10 +42,10 @@ type Gf_image struct {
 	//              this is different from Origin_page_url_str in that the page_url is the url 
 	//              of the page in which the image is found, whereas this origin_url is the url
 	//              of the file on some file server from which the image is served
-	Origin_url_str string `json:"origin_url_str" bson:"origin_url_str"`
+	Origin_url_str       string        `json:"origin_url_str" bson:"origin_url_str"`
 
 	//if the image is extracted from a page, this holds the page_url
-	Origin_page_url_str string `json:"origin_page_url_str" bson:"origin_page_url_str"`
+	Origin_page_url_str  string        `json:"origin_page_url_str" bson:"origin_page_url_str"`
 
 	//DEPRECATED!! - is this used? images are stored in S3, and accessible via URL.
 	//actual path on the OS filesystem, of the fullsized image gotten from origin_url_str durring

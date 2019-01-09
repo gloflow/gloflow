@@ -40,19 +40,20 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5
 
 	var imgs_lst []*gf_images_utils.Gf_image
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-								"t"                   :"img",
-								"creation_unix_time_f":bson.M{"$exists":true,},
-								"flows_names_lst":     bson.M{"$in":[]string{p_flow_name_str},},
-								//---------------------
-								//IMPORTANT!! - this is the new member that indicates which page url (if not directly uploaded) the
-								//              image came from. only use these images, since only they can be properly credited
-								//              to the source site
-								"origin_page_url_str" :bson.M{"$exists":true,},
-								//---------------------
-							}).
-							Skip(random_cursor_position_int).
-							Limit(p_imgs_num_to_get_int).
-							All(&imgs_lst)
+			"t"                   :"img",
+			"creation_unix_time_f":bson.M{"$exists":true,},
+			"flows_names_lst":     bson.M{"$in":[]string{p_flow_name_str},},
+			//---------------------
+			//IMPORTANT!! - this is the new member that indicates which page url (if not directly uploaded) the
+			//              image came from. only use these images, since only they can be properly credited
+			//              to the source site
+			"origin_page_url_str" :bson.M{"$exists":true,},
+			//---------------------
+		}).
+		Skip(random_cursor_position_int).
+		Limit(p_imgs_num_to_get_int).
+		All(&imgs_lst)
+		
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to get random img range from the DB",
 			"mongodb_find_error",

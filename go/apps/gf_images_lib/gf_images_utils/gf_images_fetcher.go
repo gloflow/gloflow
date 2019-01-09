@@ -44,10 +44,7 @@ func Fetch_image(p_image_url_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_fetcher.Fetch_image()")
 
 	//----------------------
-	local_image_file_path_str,gf_err := Fetcher__get_extern_image(p_image_url_str,
-															p_images_store_local_dir_path_str,
-															true,
-															p_runtime_sys)
+	local_image_file_path_str,gf_err := Fetcher__get_extern_image(p_image_url_str, p_images_store_local_dir_path_str, true, p_runtime_sys)
 	if gf_err != nil {
 		return "",gf_err
 	}
@@ -107,18 +104,13 @@ func Fetcher__get_extern_image(p_image_url_str string,
 		return "",gf_err
 	}
 
-	local_image_file_path_str := fmt.Sprintf("%s/%s.%s",
-										p_images_store_local_dir_path_str,
-										image_id_str,
-										ext_str)
+	local_image_file_path_str := fmt.Sprintf("%s/%s.%s", p_images_store_local_dir_path_str, image_id_str, ext_str)
 
 	p_runtime_sys.Log_fun("INFO","local_image_file_path_str - "+local_image_file_path_str)
 	//--------------
 	//HTTP DOWNLOAD
 
-	gf_err = Download_file(p_image_url_str,
-					local_image_file_path_str,
-					p_runtime_sys)
+	gf_err = Download_file(p_image_url_str, local_image_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "",gf_err
 	}
@@ -157,11 +149,11 @@ func Download_file(p_image_url_str string,
 		id_str               := "image_fetch_error__"+fmt.Sprint(creation_unix_time_f)
 
 		fetch_error := &Image_fetch__error{
-			Id_str              :id_str,
-			T_str               :"img_fetch_error",
+			Id_str:              id_str,
+			T_str:               "img_fetch_error",
 			Creation_unix_time_f:creation_unix_time_f,
-			Image_url_str       :p_image_url_str,
-			Status_code_int     :gf_http_fetch.Status_code_int,
+			Image_url_str:       p_image_url_str,
+			Status_code_int:     gf_http_fetch.Status_code_int,
 		}
 
 		err := p_runtime_sys.Mongodb_coll.Insert(fetch_error)

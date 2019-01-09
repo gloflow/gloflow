@@ -86,8 +86,8 @@ func S3__upload_file(p_target_file__local_path_str string,
 	p_s3_info                  *Gf_s3_info,
 	p_runtime_sys              *Runtime_sys) (string,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_s3.S3__upload_file()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
-	p_runtime_sys.Log_fun("INFO"     ,"p_target_file__s3_path_str - "+p_target_file__s3_path_str)
+	p_runtime_sys.Log_fun("INFO",     "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
+	p_runtime_sys.Log_fun("INFO",     "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
 
 	//-----------------
 	file, fs_err := os.Open(p_target_file__local_path_str)
@@ -156,7 +156,7 @@ func S3__copy_file(p_target_bucket_name_str string,
 
 
 
-	svc := s3.New(p_s3_info.Session)
+	svc   := s3.New(p_s3_info.Session)
 	input := &s3.CopyObjectInput{
 	    Bucket:     aws.String(p_target_bucket_name_str),
 	    CopySource: aws.String(p_source_bucket_and_file__s3_path_str), //"/sourcebucket/HappyFacejpg"),

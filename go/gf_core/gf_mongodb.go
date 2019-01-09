@@ -88,8 +88,7 @@ func Mongo__connect(p_mongodb_host_str string,
 	p_log_fun("INFO"     ,"p_mongodb_host_str    - "+p_mongodb_host_str)
 	p_log_fun("INFO"     ,"p_mongodb_db_name_str - "+p_mongodb_db_name_str)
 	
-	session,err := mgo.DialWithTimeout(p_mongodb_host_str,
-								time.Second * 90)
+	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
 	if err != nil {
 		panic(err)
 	}
@@ -114,8 +113,7 @@ func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 	//p_log_fun("FUN_ENTER","gf_mongodb.Mongo__get_rs_members_info()")
 	//p_log_fun("INFO"     ,p_mongodb_primary_host_str)
 
-	mongo_client__cmd_str := fmt.Sprintf("mongo --host %s --quiet --eval 'JSON.stringify(rs.status())'",
-									p_mongodb_primary_host_str)
+	mongo_client__cmd_str := fmt.Sprintf("mongo --host %s --quiet --eval 'JSON.stringify(rs.status())'", p_mongodb_primary_host_str)
 
 	out, err := exec.Command("sh","-c",mongo_client__cmd_str).Output()
 

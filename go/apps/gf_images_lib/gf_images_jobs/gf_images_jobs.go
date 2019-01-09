@@ -94,25 +94,25 @@ func Start_job(p_client_type_str string,
 	job_updates_ch   := make(chan *Job_update_msg,10)
 
 	job_msg := Job_msg{
-		job_id_str           :job_id_str,
-		client_type_str      :p_client_type_str,
-		cmd_str              :job_cmd_str,
-		job_updates_ch       :job_updates_ch,
+		job_id_str:           job_id_str,
+		client_type_str:      p_client_type_str,
+		cmd_str:              job_cmd_str,
+		job_updates_ch:       job_updates_ch,
 		images_to_process_lst:p_images_to_process_lst,
-		flows_names_lst      :p_flows_names_lst,
+		flows_names_lst:      p_flows_names_lst,
 	}
 
 	p_jobs_mngr_ch <- job_msg
 	//-----------------
 	//CREATE RUNNING_JOB
 	running_job := &Running_job{
-		Id_str               :job_id_str,
-		T_str                :"img_running_job",
-		Client_type_str      :p_client_type_str,
-		Status_str           :"running",
-		Start_time_f         :job_start_time_f,
+		Id_str:               job_id_str,
+		T_str:                "img_running_job",
+		Client_type_str:      p_client_type_str,
+		Status_str:           "running",
+		Start_time_f:         job_start_time_f,
 		Images_to_process_lst:p_images_to_process_lst,
-		job_updates_ch       :job_updates_ch,
+		job_updates_ch:       job_updates_ch,
 	}
 
 	db_err := p_runtime_sys.Mongodb_coll.Insert(running_job)
@@ -159,7 +159,7 @@ func Start_job(p_client_type_str string,
 			Image_source_url_str:             img_source_url_str,
 			Thumbnail_small_relative_url_str :fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s" ,image_id_str,normalized_ext_str),
 			Thumbnail_medium_relative_url_str:fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s",image_id_str,normalized_ext_str),
-			Thumbnail_large_relative_url_str :fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" ,image_id_str,normalized_ext_str),
+			Thumbnail_large_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" ,image_id_str,normalized_ext_str),
 		}
 		job_expected_outputs_lst = append(job_expected_outputs_lst,output)
 	}
@@ -178,8 +178,8 @@ func get_running_job_update_ch(p_job_id_str string,
 
 	job_cmd_str := "get_running_job_update_ch"
 	job_msg     := Job_msg{
-		job_id_str     :p_job_id_str,
-		cmd_str        :job_cmd_str,
+		job_id_str:     p_job_id_str,
+		cmd_str:        job_cmd_str,
 		msg_response_ch:msg_response_ch,
 	}
 
@@ -223,15 +223,15 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					running_jobs_map[job_id_str] = job_msg.job_updates_ch
 
 					run_job_gf_err := jobs_mngr__run_job(job_id_str,
-											job_msg.client_type_str,
-											job_msg.images_to_process_lst,
-											job_msg.flows_names_lst,
-											job_msg.job_updates_ch,
-											p_images_store_local_dir_path_str,
-											p_images_thumbnails_store_local_dir_path_str,
-											p_s3_bucket_name_str,
-											p_s3_info,
-											p_runtime_sys)
+						job_msg.client_type_str,
+						job_msg.images_to_process_lst,
+						job_msg.flows_names_lst,
+						job_msg.job_updates_ch,
+						p_images_store_local_dir_path_str,
+						p_images_thumbnails_store_local_dir_path_str,
+						p_s3_bucket_name_str,
+						p_s3_info,
+						p_runtime_sys)
 					if run_job_gf_err != nil {
 						continue
 					}

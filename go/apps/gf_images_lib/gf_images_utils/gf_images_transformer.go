@@ -48,14 +48,14 @@ func Transform_image(p_image_id_str string,
 	}
 
 	gf_image,gf_image_thumbs,gf_err := Trans__process_image(p_image_id_str,
-											p_image_client_type_str,
-											p_images_flows_names_lst,
-											p_image_origin_url_str,
-											p_image_origin_page_url_str,
-											normalized_ext_str,
-											p_image_local_file_path_str,
-											p_images_store_thumbnails_local_dir_path_str,
-											p_runtime_sys)
+		p_image_client_type_str,
+		p_images_flows_names_lst,
+		p_image_origin_url_str,
+		p_image_origin_page_url_str,
+		normalized_ext_str,
+		p_image_local_file_path_str,
+		p_images_store_thumbnails_local_dir_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil,nil,gf_err
 	}
@@ -90,14 +90,14 @@ func Trans__process_image(p_image_id_str string,
 	large_thumb_max_size_px_int  := 600
 
 	gf_image_thumbs,gf_err := Create_thumbnails(p_image_id_str,
-										p_normalized_ext_str,
-										p_image_local_file_path_str,
-										p_local_thumbnails_target_dir_path_str,
-										small_thumb_max_size_px_int,
-										medium_thumb_max_size_px_int,
-										large_thumb_max_size_px_int,
-										img,
-										p_runtime_sys)
+		p_normalized_ext_str,
+		p_image_local_file_path_str,
+		p_local_thumbnails_target_dir_path_str,
+		small_thumb_max_size_px_int,
+		medium_thumb_max_size_px_int,
+		large_thumb_max_size_px_int,
+		img,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil,nil,gf_err
 	}

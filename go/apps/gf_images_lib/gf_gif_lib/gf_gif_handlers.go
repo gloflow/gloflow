@@ -32,8 +32,7 @@ func Gif__init_handlers(p_templates_dir_path_str string,
 
 	//-------------------------------------------------
 	//GIF_GET_INFO
-	http.HandleFunc("/images/gif/get_info",func(p_resp http.ResponseWriter,
-												p_req *http.Request) {
+	http.HandleFunc("/images/gif/get_info",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/gif/get_info ----------")
 		if p_req.Method == "GET" {
@@ -91,10 +90,7 @@ func Gif__init_handlers(p_templates_dir_path_str string,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/gif/get_info",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/gif/get_info", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

@@ -51,10 +51,11 @@ func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.Client__dispatch_process_extern_images()")
 
 	running_job_id_str,images_outputs_lst,gf_err := client__start_job(p_input_images_urls_lst,
-													p_input_images_origin_pages_urls_str,
-													p_client_type_str,
-													p_target__image_service_host_port_str,
-													p_runtime_sys)
+		p_input_images_origin_pages_urls_str,
+		p_client_type_str,
+		p_target__image_service_host_port_str,
+		p_runtime_sys)
+
 	if gf_err != nil {
 		return "",nil,gf_err
 	}
@@ -103,10 +104,10 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	data_lst,_  := json.Marshal(data_map)
 	_,body,errs := gorequest.New().
-						Post(url_str).
-						Set("accept","application/json").
-						Send(string(data_lst)).
-						End()
+		Post(url_str).
+		Set("accept","application/json").
+		Send(string(data_lst)).
+		End()
 
 	if errs != nil {
 		err    := errs[0] //FIX!! - use all errors in some way, just in case
@@ -157,11 +158,11 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	for _,o := range job_expected_outputs_untyped_lst {
 		image_output := &Client_job_image_output{
-			Image_id_str                     :o.(map[string]interface{})["image_id_str"].(string),
-			Image_source_url_str             :o.(map[string]interface{})["image_source_url_str"].(string),
-			Thumbnail_small_relative_url_str :o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
+			Image_id_str:                     o.(map[string]interface{})["image_id_str"].(string),
+			Image_source_url_str:             o.(map[string]interface{})["image_source_url_str"].(string),
+			Thumbnail_small_relative_url_str: o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
 			Thumbnail_medium_relative_url_str:o.(map[string]interface{})["thumbnail_medium_relative_url_str"].(string),
-			Thumbnail_large_relative_url_str :o.(map[string]interface{})["thumbnail_large_relative_url_str"].(string),
+			Thumbnail_large_relative_url_str: o.(map[string]interface{})["thumbnail_large_relative_url_str"].(string),
 			//Fetch_ok_bool                    :fetch_ok_bool,
 			//Transform_ok_bool                :transform_ok_bool,
 		}
@@ -181,10 +182,11 @@ func client__get_status(p_running_job_id_str string,
 	url_str := fmt.Sprintf("http://%s/images/jobs/status",p_target__image_service_host_port_str)
 
 	_,body,errs := gorequest.New().
-						Get(url_str).
-						Set("accept","text/event-stream").
-						Query(fmt.Sprintf(`running_job_id_str=%s`,p_running_job_id_str)).
-						End()
+		Get(url_str).
+		Set("accept","text/event-stream").
+		Query(fmt.Sprintf(`running_job_id_str=%s`,p_running_job_id_str)).
+		End()
+
 	if errs != nil {
 		err := errs[0]
 		gf_err := gf_core.Error__create("failed make a client HTTP request to /images/jobs/status",
@@ -229,7 +231,6 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 					"json_unmarshal_error",
 					&map[string]interface{}{"line_str":line_str,},
 					err,"gf_images_lib",p_runtime_sys)
-
 
 				return nil,gf_err
 			}

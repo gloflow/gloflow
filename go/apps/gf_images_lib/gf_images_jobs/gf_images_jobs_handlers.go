@@ -39,8 +39,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 	//running_jobs_map := map[string]*Running_job{}
 
 	//START_JOB
-	http.HandleFunc("/images/jobs/start",func(p_resp http.ResponseWriter,
-											p_req *http.Request) {
+	http.HandleFunc("/images/jobs/start",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/jobs/start ----------")
 
 		if p_req.Method == "POST" {
@@ -48,14 +47,9 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 
 			//--------------------------
 			//INPUT
-			input_map,gf_err := gf_rpc_lib.Get_http_input("/images/jobs/start",
-											p_resp,
-											p_req,
-											p_runtime_sys)
+			input_map,gf_err := gf_rpc_lib.Get_http_input("/images/jobs/start", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/jobs/start",
-								"failed parse input to start a job", //p_user_msg_str
-								gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/images/jobs/start", "failed parse input to start a job", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//--------------------------
@@ -86,7 +80,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
 				img_to_process            := Image_to_process{
-					Source_url_str     :image_url_str,
+					Source_url_str:     image_url_str,
 					Origin_page_url_str:image_origin_page_url_str,
 				}
 				images_to_process = append(images_to_process,img_to_process)
@@ -100,9 +94,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 															p_jobs_mngr_ch,
 															p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/jobs/start",
-								"failed starting a job", //p_user_msg_str
-								gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/images/jobs/start", "failed starting a job", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			
@@ -117,17 +109,13 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/jobs/start",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/jobs/start", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
 	//---------------------
 	//GET_JOB_STATUS - SSE
-	http.HandleFunc("/images/jobs/status",func(p_resp http.ResponseWriter,
-											p_req *http.Request) {
+	http.HandleFunc("/images/jobs/status",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/jobs/status ----------")
 
 		if p_req.Method == "GET" {
@@ -184,9 +172,9 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 				p_runtime_sys.Log_fun("ERROR","HTTP connection just closed")
 			}()
 
-			p_resp.Header().Set("Content-Type"               ,"text/event-stream")
-			p_resp.Header().Set("Cache-Control"              ,"no-cache")
-			p_resp.Header().Set("Connection"                 ,"keep-alive")
+			p_resp.Header().Set("Content-Type",               "text/event-stream")
+			p_resp.Header().Set("Cache-Control",              "no-cache")
+			p_resp.Header().Set("Connection",                 "keep-alive")
 			p_resp.Header().Set("Access-Control-Allow-Origin","*")
 
 			for {
@@ -210,10 +198,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/jobs/status",
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/images/jobs/status", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
