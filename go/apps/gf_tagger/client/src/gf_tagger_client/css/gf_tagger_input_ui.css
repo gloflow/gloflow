@@ -1,0 +1,72 @@
+#tagging_input_container {
+	padding-top   : 0px;
+	padding-bottom: 0px;
+	/*padding-left  : 7px;
+	padding-right : 7px;*/
+	
+	width : 452px;
+	height: 119px;
+}
+#tagging_input_container #background {
+	background-color: rgba(0,0,0,0.7);
+	width           : 452px;
+	height          : 119px;
+	position        : relative;
+	top             : 0px;
+	left            : 0px;
+}
+#tagging_input_container input {
+	border-width: 8px;
+	border-style: solid;
+	border-color: rgb(185, 185, 185);
+	
+	font-size: 22px;
+	position : absolute;
+	top      : 35px;
+	left     : 35px;
+	width    : 250px;
+	height   : 50px;
+}
+
+#tagging_input_container #submit_tags_button {
+	float           : left;
+	height          : 34px;
+	padding-left    : 15px;
+	padding-right   : 17px;
+	padding-top     : 16px;
+	margin-left     : 8px;
+
+	position: absolute;
+	top     : 35px;
+	left    : 286px;
+
+	background-color: whiteSmoke;
+	color           : rgb(160, 160, 160);
+	cursor          : pointer;
+}
+#tagging_input_container #submit_tags_button:hover {
+	background-color: rgb(221, 221, 221);
+}
+
+#tagging_input_container #close_tagging_input_container_button {
+	float           : left;
+	background-color: whiteSmoke;
+
+	width           : 31px;
+	height          : 33px;
+
+	padding-left    : 19px;
+	padding-right   : 4px;
+	padding-top     : 17px;
+	margin-left     : 8px;
+	/*margin-right    : 1px;*/
+	
+	cursor:pointer;
+	
+	position: absolute;
+	top     : 35px;
+	left    : 353px;
+}
+#tagging_input_container #close_tagging_input_container_button:hover {
+	background-color: white;
+}

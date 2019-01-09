@@ -1,0 +1,67 @@
+<html lang="en">
+<head>
+
+{{/*--------------------------------------------------------------*/}}
+{{/*METADATA*/}}
+<meta property="og:title" content="gloflow.com:tag:{{ .Tag_str }}"/>
+{{/*--------------------------------------------------------------*/}}
+<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tag_objects.css">
+<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_sys_panel.css">
+</head>
+{{/*--------------------------------------------------------------*/}}
+<body>
+
+<div id='tag_name'>#{{ .Tag_str }}</div>
+
+
+<!-- TAG STATS -->
+<div id='tag_stats'>
+	<div id='posts_count'>
+		<div class='title'>posts</div>
+		<div class='count'>{{ .Posts_with_tag_num_int }}</div>
+	</div>
+	<div id='images_count'>
+		<div class='title'>images</div>
+		<div class='count'>{{ .Images_with_tag_int }}</div>
+	</div>
+</div>
+
+
+<div id='posts_container'>
+
+	{{range .Posts_with_tag_lst}}
+		<div class='gf_post'>
+			{{/*--------------------------------------------------------------*/}}
+			<div class='post_thumbnail'>
+				<a href ='{{ .post_url_str }}'>
+					<img src="{{ .post_thumbnail_url_str }}"></img>
+				</a>
+			</div>
+			{{/*--------------------------------------------------------------*/}}
+			{{/*one data-thumb_small_url attribute (for the <a> tag) per post_thumb_small_url_str*/}}
+
+			<div class='post_title'>
+				{{ .post_title_str }}
+			</div>
+			{{/*--------------------------------------------------------------*/}}
+			<!-- TAGS -->
+			<div class='tags_container'>
+			{{range .post_tags_lst}}
+				<a class='gf_post_tag' target="_blank" href='/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
+			{{end}}
+			</div>
+			{{/*--------------------------------------------------------------*/}}
+		</div>
+	{{end}}
+</div>
+{{/*--------------------------------------------------------------*/}}
+<script type="text/javascript" src="/a/static/js/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="/posts/static/js/lib/jquery.masonry.min.js"></script>
+{{/*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>0.4.4</span></div>
+	<div id='name'>name <span>raise</span></div>
+</div>
+{{/*------------------------------------------------------*/}}
+</body>
+</html>

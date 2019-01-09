@@ -1,0 +1,335 @@
+
+
+
+namespace gf_tagger_input_ui {
+//-----------------------------------------------------
+//in gf_post view
+export function init_tag_input(p_obj_id_str :string,
+					p_obj_type_str :string,
+					p_obj_element,
+					p_onTagsCreated_fun,
+					p_onTagUIAdd_fun,
+					p_onTagUIRemove_fun,
+					p_log_fun) {
+	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tag_input()');
+	
+	const tagging_input_ui_element = init_tagging_input_ui_element(p_obj_id_str,
+															p_obj_type_str,
+															p_onTagsCreated_fun,
+															p_onTagUIRemove_fun,
+															p_log_fun);
+	const tagging_ui_element = $(`
+		<div class="post_element_controls">
+			<div class="add_tags_button">add tags</div>
+		</div>`);
+
+	//OPEN TAG INPUT UI
+	$(tagging_ui_element).find('.add_tags_button').on('click',(p_event)=>{
+		console.log('zzzzz');
+
+		//remove the tagging_input_container if its already displayed
+		//for tagging another post_element
+		if ($('#tagging_input_container') != null) {
+			$('#tagging_input_container').remove();
+		}
+
+		//post_element_element - as in part of a post. post_element_element because its a 
+		//                       html element of the post_element
+		//final DivElement post_element_element = p_event.target.parent.parent;
+		place_tagging_input_ui_element(tagging_input_ui_element,
+								p_obj_element, //post_element_element,
+								p_log_fun);
+
+		if (p_onTagUIAdd_fun != null) p_onTagUIAdd_fun();
+	});
+
+	//------------------------
+
+	////---------------------
+	//js.context
+	//    .callMethod(r'$', ['document'])
+	//    .callMethod('bind',['DOMNodeRemoved',(e) {
+	//    		print('zzzzzzzzzzzzzz');
+	//    	}]);
+	////---------------------
+
+	/*//'T' key - open tagging UI to the element that has the cursor 
+	//          hovering over it
+	final subscription = document.onKeyUp.listen((p_event) {
+		if (p_event.keyCode == 84) {
+
+			//remove the tagging_input_container if its already displayed
+			//for tagging another post_element
+			if (query('#tagging_input_container') != null) {
+				query('#tagging_input_container').remove();
+			}
+
+			place_tagging_input_ui_element(tagging_input_ui_element,
+										   p_obj_element, //post_element,
+										   p_log_fun);
+
+			//prevent this handler being invoked while the user
+			//is typing in tags into the input field
+			//subscription.pause();
+		}
+	});*/
+	//------------------------
+	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
+	//              but unline mouseon/mouseout it will not fire if its children are entered/left.
+	
+	$(p_obj_element).on('mouseenter',(p_event)=>{
+		$(p_obj_element).append(tagging_ui_element);
+	});
+
+	$(p_obj_element).on('mouseleave',(p_event)=>{
+		$(tagging_ui_element).remove();
+
+		////relatedTarget - The relatedTargert property can be used with the mouseover 
+		////                event to indicate the element the cursor just exited, 
+		////                or with the mouseout event to indicate the element the 
+		////                cursor just entered.
+		//if (p_event.relatedTarget != null && 
+		//	!p_event.relatedTarget.classes.contains('add_tags_button')) {
+		//	tagging_ui_element.remove();
+		//}
+	});
+	//------------------------
+}
+//-----------------------------------------------------
+//TAGS UI UTILS
+//-----------------------------------------------------
+function init_tagging_input_ui_element(p_obj_id_str :string,
+				p_obj_type_str :string,
+				p_onTagsCreated_fun,
+				p_onTagUIRemove_fun,
+				p_log_fun) {
+	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tagging_input_ui_element()');
+	
+	const tagging_input_ui_element = $(`
+		<div id="tagging_input_container">
+			<div id="background"></div>
+			<input type="text" id="tags_input" placeholder="(space) separated tags">
+			<div id="submit_tags_button">add</div>
+			<div id="close_tagging_input_container_button">&#10006;</div>
+		</div>`);
+	
+	const tags_input_element = $(tagging_input_ui_element).find('#tags_input');
+
+	//'ESCAPE' key
+	$(document).on('keyup',(p_event)=>{
+		if (p_event.which == 27) {
+			//remove any previously present tagging_input_container's
+			$(tagging_input_ui_element).remove();
+			if (p_onTagUIRemove_fun != null) {
+				p_onTagUIRemove_fun();
+			}
+		}
+	});
+
+	//to handlers for the same thing, one for the user clicking on the button,
+	//the other for the user pressing 'enter'  
+	$(tags_input_element).on('keyup',(p_event)=>{
+
+			//'ENTER' key
+			if (p_event.which == 13) {
+				p_event.preventDefault();
+				
+				add_tags_to_obj(p_obj_id_str,
+						p_obj_type_str,
+						tagging_input_ui_element,
+						//p_onComplete_fun
+						(p_tags_lst :string[])=>{
+							$(tags_input_element).val('');
+							p_onTagsCreated_fun(p_tags_lst);
+
+						},
+						//p_onError_fun
+						()=>{
+
+						},
+						p_log_fun);
+      		}
+		});
+	
+	$(tagging_input_ui_element).find('#submit_tags_button').on('onmouseup',(p_event)=>{
+			add_tags_to_obj(p_obj_id_str,
+					p_obj_type_str,
+					tagging_input_ui_element,
+					//p_onComplete_fun
+					(p_tags_lst :string[])=>{
+						$(tags_input_element).val('');
+						p_onTagsCreated_fun(p_tags_lst);
+					},
+					//p_onError_fun
+					()=>{
+
+					},
+					p_log_fun);
+		});
+	
+	//TAG INPUT CLOSE BUTTON
+	$(tagging_input_ui_element).find('#close_tagging_input_container_button').on('click',(p_event)=>{
+
+		const tagging_input_container_element = $(p_event.target).parent();
+		$(tagging_input_container_element).remove();
+
+		if (p_onTagUIRemove_fun != null) {
+			p_onTagUIRemove_fun();
+		}
+	});
+	
+	return tagging_input_ui_element;
+}
+//-----------------------------------------------------
+function place_tagging_input_ui_element(p_tagging_input_ui_element,
+								p_relative_to_element,
+								p_log_fun) {
+	p_log_fun('FUN_ENTER','gf_tagger_input_ui.place_tagging_input_ui_element()');
+	
+	$('body').append(p_tagging_input_ui_element);
+
+	const relative_element__width_int = $(p_relative_to_element).width();
+	const input_ui_element__width_int = $(p_tagging_input_ui_element).width();
+
+	//p_tagging_input_ui_element.query('input').focus();
+	//------------------------
+	//Y_COORDINATE
+	//document.body.scrollTop - is added to get the 'y' coord relative to the whole doc, regardless of amount of scrolling done
+	//const relative_to_element_y_int :number = $(p_relative_to_element).offset().top + $('body').scrollTop(); //p_relative_to_element.getClientRects()[0].top.toInt() +	
+	const relative_to_element_y_int :number = $(p_relative_to_element).offset().top;						
+	//------------------------
+	//X_COORDINATE
+	const relative_to_element_x_int        :number = $(p_relative_to_element).offset().left;
+	const input_ui_horizontal_overflow_int :number = (input_ui_element__width_int - relative_element__width_int)/2;
+
+	var tagging_input_x :number;
+
+	//input_ui is wider then target element
+	if (input_ui_horizontal_overflow_int > 0) {
+
+		//input_ui is cutoff on the left side
+		if ((relative_to_element_x_int - input_ui_horizontal_overflow_int) < 0) {
+
+			//position input_ui with its left side aligned with left edge of element to be tagged
+			tagging_input_x = relative_to_element_x_int;
+		}
+		//input_ui is cutoff on the right side
+		else if (((relative_to_element_x_int+relative_element__width_int) + input_ui_horizontal_overflow_int) > 
+				 $(window).innerWidth()) {
+
+			//position inpout_ui with its right edge aligned with the right edge of element to be tagged
+			tagging_input_x = (relative_to_element_x_int+relative_element__width_int) - 
+							   input_ui_element__width_int;
+		}
+		//no cutoff
+		else {
+			//positions that tag input container in the middle, and above, of the post_element
+			tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
+		}
+	}
+	//input_ui is narrower then element, so just position normally
+	else {
+		//positions that tag input container in the middle, and above, of the post_element
+		tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
+	}
+
+	const tagging_input_y :number = relative_to_element_y_int - $(p_tagging_input_ui_element).height()/2;
+
+	$(p_tagging_input_ui_element).css('position','absolute');
+	$(p_tagging_input_ui_element).css('left'    ,tagging_input_x+'px');
+	$(p_tagging_input_ui_element).css('top'     ,tagging_input_y+'px');
+}
+//-----------------------------------------------------
+//TAGS SENDING TO SERVER
+//-----------------------------------------------------
+function add_tags_to_obj(p_obj_id_str :string,
+			p_obj_type_str :string,
+			p_tagging_ui_element,
+			p_onComplete_fun,
+			p_onError_fun,
+			p_log_fun) {
+	p_log_fun('FUN_ENTER','gf_tagger_input_ui.add_tags_to_obj()');
+	
+
+	const tags_str :string   = $(p_tagging_ui_element).find('#tags_input').val();
+	const tags_lst :string[] = tags_str.split(' ');
+	p_log_fun('INFO','tags_lst - '+tags_lst.toString());
+	
+
+	const existing_tags_lst :string[] = [];
+
+	$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i,p_tag)=>{
+		const tag_str = $(p_tag).text().trim();
+		existing_tags_lst.push(tag_str);
+	});
+
+	//filter out only tags that are currently not existing/attached to this object
+	const new_tags_lst :string[] = [];
+	for (var tag_str of tags_lst) {
+		if (tag_str in existing_tags_lst) {
+			new_tags_lst.push(tag_str);
+		}
+	}
+
+	console.log('>>>>>>>>>>>>>>>>');
+	console.log(existing_tags_lst);
+	console.log(new_tags_lst);
+
+	//ADD!! - some visual success/failure indicator
+	gf_tagger_client.add_tags_to_obj(new_tags_lst,
+								p_obj_id_str,
+								p_obj_type_str,
+
+								(p_data_map)=>{
+									const added_tags_lst :string[] = p_data_map['added_tags_lst'];
+									p_log_fun('INFO','added_tags_lst:'+added_tags_lst);
+
+									p_onComplete_fun(added_tags_lst);
+								},
+								()=>{}, //p_onError_fun
+								p_log_fun);
+}
+/*//-----------------------------------------------------
+//in gf_posts_browser view
+init_image_view_post_tag_input(DivElement p_post_element,
+							   String     p_domain_str,
+							   Function   p_log_fun) {
+	p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_image_view_post_tag_input()');
+	
+	const tagging_input_ui_element = init_tagging_input_ui_element(p_domain_str,
+																   p_log_fun);
+	final DivElement tagging_ui_element = new Element.html('''
+		<div class="post_controls">
+			<div class="add_tags_button">add tags</div>
+		</div>''');
+	
+	tagging_ui_element.query('.add_tags_button').onClick.listen((p_event) {
+		final DivElement post_element = p_event.target.parent.parent;
+		
+		place_tagging_input_ui_element(tagging_input_ui_element,
+			                           post_element,
+			                           p_log_fun);
+	});
+
+	p_post_element.onMouseOver.listen((p_event) {
+			p_event.stopPropagation();
+			
+			//fixes a bug where after masonry scrolling elements are left even after mouseLeave
+			document.body.query('.post_controls').remove(); //detach();
+			
+
+			//insertAdjacentElement() - Inserts element into the DOM at the specified location.
+			p_post_element.insertAdjacentElement('beforeBegin', //Immediately before this element
+												 tagging_ui_element);
+			//$(p_post_element).prepend(tagging_ui_element);
+		});
+
+	p_post_element.onMouseOut.listen((p_event) {
+			p_event.stopPropagation();
+			p_event.target.query(".post_controls").remove(); //detach();	
+		});
+}*/
+//-----------------------------------------------------
+}
+
+
