@@ -7,9 +7,9 @@ import (
 )
 //--------------------------------------------------
 func domains_browser__render_template(p_domains_lst []Domain,
-						p_tmpl        *template.Template,
-						p_resp        http.ResponseWriter,
-						p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_tmpl        *template.Template,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains_view.domains_browser__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
@@ -20,7 +20,7 @@ func domains_browser__render_template(p_domains_lst []Domain,
 	}
 
 	err := p_tmpl.Execute(p_resp,tmpl_data{
-		Domains_lst     :p_domains_lst,
+		Domains_lst:     p_domains_lst,
 		Sys_release_info:sys_release_info,
 	})
 

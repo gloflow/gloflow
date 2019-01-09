@@ -7,14 +7,14 @@ namespace gf_domains_conn {
 }*/
 //-----------------------------------------------------
 export function draw_connectivity(p_domains_lst :Object[],
-					p_domains_infos_spr :PIXI.Container,
-					p_width_int  :number,
-					p_height_int :number,
-					p_color_int  :number,
-					p_log_fun) :PIXI.Container {
-					//{int     p_width_int :300,
-					//int      p_height_int:300,
-					//int      p_color_int :0xF31111FF}) :PIXI.Sprite {
+	p_domains_infos_spr :PIXI.Container,
+	p_width_int  :number,
+	p_height_int :number,
+	p_color_int  :number,
+	p_log_fun) :PIXI.Container {
+	//{int     p_width_int :300,
+	//int      p_height_int:300,
+	//int      p_color_int :0xF31111FF}) :PIXI.Sprite {
 	p_log_fun('FUN_ENTER','gf_domains_conn.draw_connectivity()');
 
 	const container = new PIXI.Container();
@@ -41,9 +41,9 @@ export function draw_connectivity(p_domains_lst :Object[],
 	graphics.lineStyle(1,p_color_int);
 
 	//single_page_height_px-1 - so that a little space is shown between pages
-	graphics.drawRect(0,0,         //x/y 
-					p_width_int,   //p_width_px 
-					p_height_int); //p_height_px
+	graphics.drawRect(0,0, //x/y 
+		p_width_int,   //p_width_px 
+		p_height_int); //p_height_px
 
 	container.addChild(graphics);
 	//------------------
@@ -56,8 +56,8 @@ export function draw_connectivity(p_domains_lst :Object[],
     	if ('info_container' in domain_info_map) {
 	    	const domain_info_container :PIXI.Container = domain_info_map['info_container'];
 
-	    	const start_x_int :number = container.x       + container.width;
-	    	const start_y_int :number = container.y       + container.height/2;
+	    	const start_x_int :number = container.x           + container.width;
+	    	const start_y_int :number = container.y           + container.height/2;
 	    	const end_x_int   :number = p_domains_infos_spr.x + domain_info_container.x;
 	    	const end_y_int   :number = p_domains_infos_spr.y + domain_info_container.y + domain_info_container.height/2;
 
@@ -68,11 +68,10 @@ export function draw_connectivity(p_domains_lst :Object[],
 			
 			graphics.endFill(); //.closePath();
 
-
 			//graphics.strokeColor(gf_color.get_hex('lightgray'), 1);
-			graphics.lineStyle(1,                          //lineWidth
-							gf_color.get_int('lightgrey'), //color
-							1);                            //alpha
+			graphics.lineStyle(1, //lineWidth
+				gf_color.get_int('lightgrey'), //color
+				1);                            //alpha
 		}
     }
 	return container;

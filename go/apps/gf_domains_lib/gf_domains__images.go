@@ -34,7 +34,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Ima
 		},
 		//-------------------
 		bson.M{"$project":bson.M{
-				"_id"                :false, //suppression of the "_id" field
+				"_id":                false, //suppression of the "_id" field
 				"origin_page_url_str":"$origin_page_url_str",
 			},
 		},
@@ -101,8 +101,8 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Ima
 			//domain_image - CREATE
 
 			new_domain_images := Domain_Images{
-				Name_str           :domain_str,
-				Count_int          :images_origin_page.Count_int,
+				Name_str:           domain_str,
+				Count_int:          images_origin_page.Count_int,
 				Subpages_Counts_map:map[string]int{
 					origin_page_url_no_dots_str:images_origin_page.Count_int,
 				},

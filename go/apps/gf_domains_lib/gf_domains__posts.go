@@ -95,7 +95,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Post
 		//              field, since this is where the url string is contained, in the post_element
 		//              of type 'link'
 		bson.M{"$project":bson.M{
-				"_id"              :false, //suppression of the "_id" field
+				"_id":              false, //suppression of the "_id" field
 				"post_elements_lst":"$post_elements_lst",
 			},
 		},

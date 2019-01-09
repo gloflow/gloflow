@@ -3,13 +3,13 @@
 namespace gf_domains_infos {
 //-----------------------------------------------------
 export function draw(p_domains_lst :Object[],
-				p_width_int  :number,
-				p_height_int :number,
-				p_ctx_map    :Object,
-				p_onPick_fun,
-				p_log_fun) :PIXI.Container {
-				//{int      p_width_int :200,
-				//int      p_height_int:600}) :PIXI.Sprite {
+	p_width_int  :number,
+	p_height_int :number,
+	p_ctx_map    :Object,
+	p_onPick_fun,
+	p_log_fun) :PIXI.Container {
+	//{int      p_width_int :200,
+	//int      p_height_int:600}) :PIXI.Sprite {
 	p_log_fun('FUN_ENTER','gf_domains_infos.draw()');
 
 	const container               = new PIXI.Container();
@@ -38,14 +38,14 @@ export function draw(p_domains_lst :Object[],
 	var last :PIXI.Container;
     for (var domain_info_map of top_domains_lst) {
 
-    	const domain_info_height_int :number         = new_scaled_domain_info_height_f - 2*domain_info_padding_int;
-		const domain_info            :PIXI.Container = draw_domain_info(domain_info_map,
-																20, //p_width_int
-																domain_info_height_int, //p_height_int
-																gf_color.get_int('lightgrey'),
-																p_ctx_map,
-																p_onPick_fun,
-																p_log_fun);
+    	const domain_info_height_int :number = new_scaled_domain_info_height_f - 2*domain_info_padding_int;
+		const domain_info :PIXI.Container = draw_domain_info(domain_info_map,
+			20, //p_width_int
+			domain_info_height_int, //p_height_int
+			gf_color.get_int('lightgrey'),
+			p_ctx_map,
+			p_onPick_fun,
+			p_log_fun);
 
     	//domain_info.height = new_scaled_domain_info_height_f;
 
@@ -66,12 +66,12 @@ export function draw(p_domains_lst :Object[],
     //--------------
 	//SELECTOR_BAR
 	const selector_bar_spr :PIXI.Container = init_selector_bar(domains_stats_lst,
-													top_domains_lst,
-													60,              //p_width_int
-													p_height_int,    //p_height_int
-													gf_color.get_int('lightgrey'), //p_color_int
-													p_onPick_fun,
-													p_log_fun);
+		top_domains_lst,
+		60,              //p_width_int
+		p_height_int,    //p_height_int
+		gf_color.get_int('lightgrey'), //p_color_int
+		p_onPick_fun,
+		p_log_fun);
 	selector_bar_spr.x = 10;
 	container.addChild(selector_bar_spr);
 	//--------------
@@ -79,35 +79,35 @@ export function draw(p_domains_lst :Object[],
 }
 //-----------------------------------------------------
 function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
-				p_domains_lst :Object[],
-				p_width_int   :number,
-				p_height_int  :number,
-				p_color_int   :number,
-				p_onPick_fun,
-				p_log_fun) :PIXI.Container {
-				//{int      p_width_int :30,
-				//int       p_height_int:100
+	p_domains_lst :Object[],
+	p_width_int   :number,
+	p_height_int  :number,
+	p_color_int   :number,
+	p_onPick_fun,
+	p_log_fun) :PIXI.Container {
+	//{int      p_width_int :30,
+	//int       p_height_int:100
 	p_log_fun('FUN_ENTER','gf_domains_infos.init_selector_bar()');
 
 	const container     = new PIXI.Container();
 	const background_gr = new PIXI.Graphics();
 	//---------------
 	draw_background(background_gr,
-				p_width_int,
-				p_height_int,
-				p_color_int,
-				p_log_fun);
+		p_width_int,
+		p_height_int,
+		p_color_int,
+		p_log_fun);
 	container.addChild(background_gr);
 	//---------------
 	//SCROOL_INDICATOR
 	const scroll_indicator_gr = new PIXI.Graphics();
 	draw_background(scroll_indicator_gr,
-				p_width_int,
-				1, //p_height_int
-				gf_color.get_int('gray'),
-				p_log_fun);
-				//p_width_int :p_width_int,
-				//p_height_int:1);
+		p_width_int,
+		1, //p_height_int
+		gf_color.get_int('gray'),
+		p_log_fun);
+		//p_width_int :p_width_int,
+		//p_height_int:1);
 
 	container.addChild(scroll_indicator_gr);
 	//---------------
@@ -127,23 +127,22 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 			//if (domain_stats.hitTestObject(scroll_indicator_gr)) {
 
 			if (hitTestObject(ds.x,
-						ds.y,
-						ds.width,
-						ds.height,
-						scroll_indicator_gr.x,
-						scroll_indicator_gr.y,
-						scroll_indicator_gr.width,
-						scroll_indicator_gr.height)) {
+				ds.y,
+				ds.width,
+				ds.height,
+				scroll_indicator_gr.x,
+				scroll_indicator_gr.y,
+				scroll_indicator_gr.width,
+				scroll_indicator_gr.height)) {
 				return {
-					'i'           :i,
+					'i':           i,
 					'domain_stats':ds
 				};
 			}
 			//--------------------
 		}
 		//-----------------------------------------------------
-		function hitTestObject(x1, y1, w1, h1,
-							x2, y2, w2, h2) {
+		function hitTestObject(x1, y1, w1, h1, x2, y2, w2, h2) {
 			if (x1 + w1 > x2) if (x1 < x2 + w2) if (y1 + h1 > y2) if (y1 < y2 + h2) return true;
 			return false;
 		}
@@ -158,7 +157,7 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 	}
 	//-----------------------------------------------------
 	function on_pick(p_domain_info_map :Object,
-				p_selected_domain_stats :PIXI.Container) {
+		p_selected_domain_stats :PIXI.Container) {
 		p_log_fun('FUN_ENTER','gf_domains_infos.init_selector_bar().on_pick()');
 
 		const posts_count_int :number = p_domain_info_map['posts_count_int'];
@@ -196,8 +195,6 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 
 				const mouse_y_int :number = parseInt(p_e.localY);
 
-				console.log(mouse_y_int);
-
 				//HACK!! - stagexl for some reason sometimes reports localY as 1 or 2. 
 				//         so here Im filtering that out, to avoid flickering due 
 				//         to sudden repositioning of scroll_indicator_gr
@@ -219,8 +216,7 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 
 					const domain_info_map :Object = p_domains_lst[i];
 
-					on_pick(domain_info_map,
-						selected_domain_stats);
+					on_pick(domain_info_map, selected_domain_stats);
 					p_onPick_fun(domain_info_map);
 				}
 				//--------------------------
@@ -238,15 +234,15 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 }
 //-----------------------------------------------------
 function draw_domain_info(p_domain_info_map :Object,
-					p_width_int  :number,
-					p_height_int :number,
-					p_color_int  :number,
-					p_ctx_map    :Object,
-					p_onPick_fun,
-					p_log_fun) :PIXI.Container {
-					//{int     p_width_int :20,
-					//int      p_height_int:30,
-					//int      p_color_int :Color.LightGray}) :PIXI.Sprite {
+	p_width_int  :number,
+	p_height_int :number,
+	p_color_int  :number,
+	p_ctx_map    :Object,
+	p_onPick_fun,
+	p_log_fun) :PIXI.Container {
+	//{int     p_width_int :20,
+	//int      p_height_int:30,
+	//int      p_color_int :Color.LightGray}) :PIXI.Sprite {
 	//p_log_fun('FUN_ENTER','gf_domains_infos.draw_domain_info()');
 
 	const items_count_int :number = p_domain_info_map['posts_count_int'] + p_domain_info_map['images_count_int'];
@@ -258,10 +254,10 @@ function draw_domain_info(p_domain_info_map :Object,
 	container.addChild(graphics);
 
 	draw_background(graphics,
-				p_width_int,
-				p_height_int,
-				p_color_int,
-				p_log_fun);
+		p_width_int,
+		p_height_int,
+		p_color_int,
+		p_log_fun);
 
 	container.addChild(graphics);
 	//---------------
@@ -353,12 +349,12 @@ function draw_domain_info(p_domain_info_map :Object,
 }
 //-----------------------------------------------------
 function draw_background(p_graphics :PIXI.Graphics,
-				p_width_int  :number,
-				p_height_int :number,
-				p_color_int  :number,
-				p_log_fun) {
-				//{int     p_width_int :20,
-				//int      p_height_int:20}) {
+	p_width_int  :number,
+	p_height_int :number,
+	p_color_int  :number,
+	p_log_fun) {
+	//{int     p_width_int :20,
+	//int      p_height_int:20}) {
 
 	p_graphics.clear();
 	p_graphics.moveTo(0, 0);
@@ -367,9 +363,9 @@ function draw_background(p_graphics :PIXI.Graphics,
     //p_graphics.lineStyle(1,p_color_int);
 
     //single_page_height_px-1 - so that a little space is shown between pages
-	p_graphics.drawRect(0,0,           //x/y 
-					p_width_int,   //p_width_px 
-					p_height_int); //p_height_px
+	p_graphics.drawRect(0,0, //x/y 
+		p_width_int,   //p_width_px 
+		p_height_int); //p_height_px
 
 	p_graphics.endFill(); //.closePath();
 	//p_graphics.strokeColor(p_color_int,1);

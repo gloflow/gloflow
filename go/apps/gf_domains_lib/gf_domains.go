@@ -9,10 +9,9 @@ import (
 )
 //--------------------------------------------------
 type Domain struct {
-	Id                    bson.ObjectId `bson:"_id,omitempty"`
-	Id_str                string        `bson:"id_str"`
-	T_str                 string        `bson:"t"` //"domain"
-
+	Id            bson.ObjectId `bson:"_id,omitempty"`
+	Id_str        string        `bson:"id_str"`
+	T_str         string        `bson:"t"` //"domain"
 	Name_str      string        `bson:"name_str"`
 	Count_int     int           `bson:"count_int"`
 	Domain_posts  Domain_Posts  `bson:"posts_domain"`
@@ -60,9 +59,7 @@ func Discover_domains_in_db(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_erro
 	}
 	//---------------
 	//APP_LEVEL_JOIN
-	domains_map := accumulate_domains(posts_domains_lst,
-								images_domains_lst,
-								p_runtime_sys)
+	domains_map := accumulate_domains(posts_domains_lst, images_domains_lst, p_runtime_sys)
 	//DB PERSIST
 	gf_err = db__persist_domains(domains_map,p_runtime_sys)
 	if gf_err != nil {
@@ -74,8 +71,8 @@ func Discover_domains_in_db(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_erro
 }
 //--------------------------------------------------
 func accumulate_domains(p_posts_domains_lst []Domain_Posts,
-				p_images_domains_lst []Domain_Images,
-				p_runtime_sys        *gf_core.Runtime_sys) map[string]Domain {
+	p_images_domains_lst []Domain_Images,
+	p_runtime_sys        *gf_core.Runtime_sys) map[string]Domain {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains.accumulate_domains()")
 
 	domains_map := map[string]Domain{}
@@ -138,7 +135,6 @@ func db__persist_domains(p_domains_map map[string]Domain,
 
 	i := 0
 	for _,d := range p_domains_map {
-
 
 		p_runtime_sys.Log_fun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
 

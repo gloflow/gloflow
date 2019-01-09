@@ -31,20 +31,18 @@ $(document).ready(()=>{
     	const posts_count_int  = parseInt($(p_e).find('.posts_count').text());
     	const images_count_int = parseInt($(p_e).find('.images_count').text());
     	domains_infos_lst.push({
-    		'name_str'        :domain_name_str,
-    		'url_str'         :domain_url_str,
-    		'posts_count_int' :posts_count_int,
+    		'name_str':        domain_name_str,
+    		'url_str':         domain_url_str,
+    		'posts_count_int': posts_count_int,
     		'images_count_int':images_count_int,
     	});
     });
     //-----------------
 
-    gf_domains_browser.init(domains_infos_lst,
-    					log_fun);
+    gf_domains_browser.init(domains_infos_lst, log_fun);
 });
 //-----------------------------------------------------
-export function init(p_domains_infos_lst :Object[],
-				p_log_fun) {
+export function init(p_domains_infos_lst :Object[], p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_domains_browser.init()');
 
 	$('#viz_container').on('click',()=>{
@@ -52,8 +50,7 @@ export function init(p_domains_infos_lst :Object[],
 	});
 }
 //-----------------------------------------------------
-export function init_viz(p_domains_infos_lst :Object[],
-					p_log_fun) {
+export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_domains_browser.init_viz()');
 
 	//---------------------
@@ -79,9 +76,10 @@ export function init_viz(p_domains_infos_lst :Object[],
     //const renderer = PIXI.autoDetectRenderer(1000, 2000, {antialias:true,backgroundColor:0x1099bb});
 	//const renderer = new PIXI.WebGLRenderer(800, 654, {
 	const renderer = new PIXI.CanvasRenderer(800,654,{
-								//antialias      : true,
-								backgroundColor:background_color_int, //backgroundColor:gf_color.get_hex("green"), //0x1099bb,
-								view           :<HTMLCanvasElement> $('#domain_stats_canvas')[0]});
+			//antialias      : true,
+			backgroundColor:background_color_int, //backgroundColor:gf_color.get_hex("green"), //0x1099bb,
+			view:           <HTMLCanvasElement> $('#domain_stats_canvas')[0]
+		});
 
     const width_int  :number = $('#domain_stats_canvas').width();
     const height_int :number = $('#domain_stats_canvas').height();
@@ -113,14 +111,14 @@ export function init_viz(p_domains_infos_lst :Object[],
 
 	const ctx_map          = {};
 	const info_map :Object = draw_domains_stats(p_domains_infos_lst,
-										width_int-300, //max_width
-										100,           //max_height
-										ctx_map,
-										//domain_onPick_fun,
-										(p_domain_info_map :Object)=>{
-											pick_domain(p_domain_info_map);
-										},
-										p_log_fun);
+		width_int-300, //max_width
+		100,           //max_height
+		ctx_map,
+		//domain_onPick_fun,
+		(p_domain_info_map :Object)=>{
+			pick_domain(p_domain_info_map);
+		},
+		p_log_fun);
 
     const domains_stats :PIXI.Container = info_map['container'];
     const domains_infos :PIXI.Container = info_map['domains_infos'];
@@ -128,11 +126,11 @@ export function init_viz(p_domains_infos_lst :Object[],
     domains_infos.x = 733;
 
     const connectivity_spr :PIXI.Container = gf_domains_conn.draw_connectivity(p_domains_infos_lst,
-																domains_infos,
-																width_int,
-																height_int,
-																background_color_int,
-																p_log_fun);
+		domains_infos,
+		width_int,
+		height_int,
+		background_color_int,
+		p_log_fun);
 
     const stage = new PIXI.Container();
     stage.addChild(connectivity_spr);
@@ -165,9 +163,7 @@ export function init_viz(p_domains_infos_lst :Object[],
 	function pick_domain(p_domain_info_map :Object) {
 		p_log_fun('FUN_ENTER','gf_domains_browser.init().pick_domain()');
 
-
 		const posts_count_int :number = p_domain_info_map['posts_count_int'];
-
 		
 		const posts_count_element = $('#control #selected_domain_info #posts_count');
 		if (posts_count_element != null) posts_count_element.remove();
@@ -195,12 +191,9 @@ export function init_viz(p_domains_infos_lst :Object[],
     	const new_posts_element = $('<div id="posts"></div>');
     	$(domain_posts_element).append(new_posts_element);
 
-    	
     	for (var i=0;i<posts_count_int;i++) {
-    		
     		const post_title_str :string         = p_domain_info_map['posts_titles_lst'][i];
     		const post_element   :HTMLDivElement = create_post(post_title_str);
-
     		$(new_posts_element).append(post_element);
     	}
     }
@@ -208,11 +201,11 @@ export function init_viz(p_domains_infos_lst :Object[],
 }
 //-----------------------------------------------------
 function draw_domains_stats(p_domains_lst :Object[],
-						p_item_max_width_int   :number,
-						p_items_max_height_int :number,
-						p_ctx_map              :Object,
-						p_onPick_fun,
-						p_log_fun) :Object {
+	p_item_max_width_int   :number,
+	p_items_max_height_int :number,
+	p_ctx_map              :Object,
+	p_onPick_fun,
+	p_log_fun) :Object {
 	p_log_fun('FUN_ENTER','gf_domains_browser.draw_domains_stats()');
 
 	const container :PIXI.Container = new PIXI.Container();
@@ -284,19 +277,16 @@ function draw_domains_stats(p_domains_lst :Object[],
     	}
     	//--------------
 		const domain_spr :PIXI.Container = gf_domain.draw(domain_name_str,
-													domain_relative_width_int,
-													domain_relative_height_int,
-													domain_images_indicator_height_int,
-													color_int, //0xFF8851+i*10,
-													p_log_fun); 
+			domain_relative_width_int,
+			domain_relative_height_int,
+			domain_images_indicator_height_int,
+			color_int, //0xFF8851+i*10,
+			p_log_fun); 
     	//--------------
     	//LAYOUT
 
     	if (i>0) {
-
-
     		if (domain_spr.width > 30) {
-
 	    		if ((last_spr.width+domain_spr.width) < 400) {
 
 	    			if (conseq_right_moves_int < 1) { 
@@ -423,23 +413,21 @@ function draw_domains_stats(p_domains_lst :Object[],
 	//----------------------
 	//DRAW DOMAINS INFOS	
 	const domains_infos :PIXI.Container = gf_domains_infos.draw(p_domains_lst,
-													200, //p_width_int
-													600, //p_height_int
-													p_ctx_map,
-													p_onPick_fun,
-													p_log_fun);
+		200, //p_width_int
+		600, //p_height_int
+		p_ctx_map,
+		p_onPick_fun,
+		p_log_fun);
 	container.addChild(domains_infos);
 	//domains_infos.x = p_domain_infos_x_int;
 	//----------------------
     var selected_spr :PIXI.Sprite;
     for (var p_domain_info_map of p_domains_lst) {
 		const container = p_domain_info_map['stats_container'];
-
-
 	}
     //----------------------
     return {
-    	'container'    :container,
+    	'container':    container,
     	'domains_infos':domains_infos
     };
 }

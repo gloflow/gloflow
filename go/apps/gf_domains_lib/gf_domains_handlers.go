@@ -27,8 +27,7 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//POSTS_ELEMENTS
-	http.HandleFunc("/a/domains/browser",func(p_resp http.ResponseWriter,
-											p_req *http.Request) {
+	http.HandleFunc("/a/domains/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/domains/browser ----------")
 
 		if p_req.Method == "GET" {
@@ -47,31 +46,24 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			//GET DOMAINS FROM DB
 			domains_lst,gf_err := db__get_domains(p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/domains/browser",
-									"rpc_handler failed getting domains",
-									gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/a/domains/browser", "rpc_handler failed getting domains", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//--------------------
 			//RENDER TEMPLATE
 			gf_err = domains_browser__render_template(domains_lst,
-											domains_browser__tmpl,
-											p_resp,
-											p_runtime_sys)
+				domains_browser__tmpl,
+				p_resp,
+				p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/domains/browser",
-									"failed to render domains_browser page",
-									gf_err,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/a/domains/browser", "failed to render domains_browser page", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/domains/browser",
-										start_time__unix_f,
-										end_time__unix_f,
-										p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run("/a/domains/browser", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

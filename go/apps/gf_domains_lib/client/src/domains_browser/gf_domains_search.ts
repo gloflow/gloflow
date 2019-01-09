@@ -1,18 +1,10 @@
-
-
-
 ///<reference path="../d/jquery.d.ts" />
-
-
-
-
-
 
 namespace gf_domains_search {
 //-----------------------------------------------------
 export function init_domain_search(p_domains_infos_lst :Object[],
-							p_onPick_fun,
-							p_log_fun) {
+	p_onPick_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_domains_search.init_domain_search()');
 
 	const suggestions_lst :Object[] = [];
@@ -22,8 +14,6 @@ export function init_domain_search(p_domains_infos_lst :Object[],
 			'data' :JSON.stringify(domain_info_map)
 		});
 	}
-
-
 
 	console.log('>>>>>>>>>>>>>>>>>>>>>>>>')
 	console.log(suggestions_lst)
