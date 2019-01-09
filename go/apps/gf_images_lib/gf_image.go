@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib 
 
 import (
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------

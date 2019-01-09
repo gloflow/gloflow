@@ -441,7 +441,7 @@ func migrate__get_flows_names(p_gif__gf_image_id_str string,
 				flows_names_lst = append(flows_names_lst,"gifs")
 			}
 		} else {
-			flows_names_lst = []string{gf_img.Flow_name_str,"gifs",}
+			flows_names_lst = []string{"gifs",}
 		}
 	} else {
 		flows_names_lst = []string{"gifs",}
