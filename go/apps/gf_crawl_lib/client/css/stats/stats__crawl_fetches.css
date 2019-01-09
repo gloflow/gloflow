@@ -1,0 +1,42 @@
+
+
+
+
+
+#fetches {
+    background-color: #fbeaa9;
+    margin-top      : 8px;
+    padding-bottom  : 6px;
+}
+
+
+
+#fetches #get_new_fetches_per_day_stats_btn {
+    background-color: #c7ba89;
+    padding         : 11px;
+    margin-right    : 6px;
+    cursor          : pointer;
+    text-align      : center;
+}
+#fetches #get_new_fetches_per_day_stats_btn:hover {
+    background-color: white;
+    color           : #96a4ad;
+}
+
+#fetches #get_new_fetches_per_day_stats_btn span {
+
+	font-weight: bold;
+}
+
+
+
+
+#new_fetches_per_day__plot {
+    background-color: white;
+    position: absolute;
+    top: 411px;
+    margin-bottom: 50px;
+    top: 0px;
+    width: 1200px;
+    height:800px;
+}

@@ -1,0 +1,156 @@
+
+
+
+
+#stats #links {
+    background-color: #8ea068;
+    padding-right: 6px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    margin-top: 7px;
+}
+#stats #links #title {
+    color:white;
+}
+/*---------------------------------------------------------------------*/
+/*LINKS DOMAINS*/
+.stats_container #links_domains {
+    position: absolute;
+    width: 968px;
+    left: 837px;
+    top: 6px;
+    padding-left: 12px;
+    background-color: #8396a2;
+}
+
+.stats_container #links_domains .title {
+    padding-left: 7px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-weight: bold;
+    color: #424242;
+}
+
+.stats_container #links_domains .links_domain {
+    background-color: white;
+    margin-bottom: 12px;
+}
+
+.stats_container #links_domains .links_domain span.imgs_count_label {
+    font-size: 12px;
+}
+.stats_container #links_domains .links_domain span.imgs_count {
+    font-weight: bold;
+}
+
+.stats_container #links_domains .links_domain .a_href {
+    position: relative;
+    background-color: #e4e4e4;
+    border-color: #bdbdbd;
+    border-width: 1px;
+    border-style: solid;
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.stats_container #links_domains .links_domain .a_href .status {
+
+
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+/*---------------------------------------------------------------------*/
+/*NEW_LINKS_PER_DAY_STATS*/
+
+#stats #links #get_new_links_per_day_stats_btn {
+    background-color: #adb799;
+    color     : white;
+    padding   : 9px;
+    cursor    : pointer;
+    text-align: center;
+}
+#stats #links #get_new_links_per_day_stats_btn:hover {
+    background-color: white;
+    color           : #96a4ad;
+}
+
+#stats #links #get_new_links_per_day_stats_btn span {
+    font-weight: bold;
+}
+
+
+
+#new_links_per_day__plot {
+    background-color: white;
+    position        : absolute;
+    top             : 411px;
+    margin-bottom   : 50px;
+    top             : 0px;
+    width           : 800px;
+}
+
+#total_links_count_per_day__plot {
+    background-color: white;
+}
+/*---------------------------------------------------------------------*/
+/*UNRESOLVED_LINKS_STATS*/
+#stats #links #get_unresolved_links_stats_btn {
+    background-color: #a2ab92;
+    color         : white;
+    padding-right : 20px;
+    padding-left  : 17px;
+    padding-top   : 11px;
+    padding-bottom: 13px;
+    cursor        : pointer;
+    margin-top: 8px;
+    text-align: center;
+}
+#stats #links #get_unresolved_links_stats_btn span {
+    font-weight: bold;
+}
+#stats #links #get_unresolved_links_stats_btn:hover {
+    background-color: white;
+    color           : #96a4ad;
+}
+
+.stats_container #unresolved_links .origin_domain {
+    position:relative;
+    background-color: gray;
+    font-size: 12px;
+    margin-bottom: 5px;
+    width: 400px;
+}
+
+.stats_container #unresolved_links .origin_domain .plot_urls_references_graph_btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.stats_container #unresolved_links .origin_domain #graph_container {
+    background-color: white;
+    height: 800px;
+    width: 800px;
+
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 400px;
+    right: 0px;
+    z-index: 2;
+}
+
+.stats_container #unresolved_links .origin_domain #graph_container #close_btn {
+    position: absolute;
+    top: -56px;
+    left: 16px;
+    background-color: gray;
+    padding: 21px;
+    cursor:pointer;
+}
+.stats_container #unresolved_links .origin_domain #graph_container #close_btn:hover {
+    background-color: white;
+}

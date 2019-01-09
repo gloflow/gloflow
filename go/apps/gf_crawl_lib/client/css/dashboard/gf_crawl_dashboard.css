@@ -1,0 +1,37 @@
+body {
+	background-color:lightgrey;margin:0px;font-family:sans-serif;
+}
+/*----------------------------------------------------------------*/
+#title {
+	padding: 6px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #B3B3B3;
+}
+/*----------------------------------------------------------------*/
+/*CRAWL_EVENTS*/
+#crawl_events {
+	position: absolute;
+	top: 0px;
+	left: 360px;
+	background-color: #ffd45a;
+	width: 154px;
+	height: 57px;
+}
+
+#crawl_events #view_crawl_events_btn {
+	position: absolute;
+	background-color: #daa224;
+	left: 9px;
+	width: 136px;
+	height: 34px;
+	padding-top: 15px;
+	text-align: center;
+	font-weight: bold;
+	color: white;
+	cursor:pointer;
+}
+#crawl_events #view_crawl_events_btn:hover {
+	background-color: white;
+	color:black;
+}

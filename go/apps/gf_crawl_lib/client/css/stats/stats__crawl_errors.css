@@ -1,0 +1,46 @@
+
+
+
+
+
+
+
+
+
+#crawl_errors #errors #errors_stats {
+    position: absolute;
+    top: 57px;
+    width: 760px;
+    background-color: #fd7918;
+    padding-top: 6px;
+    z-index: 5;
+}
+
+#crawl_errors #errors #errors_stats .crawler_errors {
+    background-color: #e4bfa3;
+    padding-left: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+#crawl_errors #errors #errors_stats .crawler_errors .crawler_name {
+    font-size: 20px;
+    font-weight: bold;
+}
+#crawl_errors #errors #errors_stats .errors_type .label {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+#crawl_errors #errors #errors_stats .errors_type .urls_lst {
+    background-color: #c3a38a;
+    padding-left: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+#crawl_errors #errors #errors_stats .errors_type .urls_lst .url {
+    background-color: white;
+    font-size: 12px;
+}

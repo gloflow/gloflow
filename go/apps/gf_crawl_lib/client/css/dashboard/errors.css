@@ -1,0 +1,39 @@
+
+
+
+
+
+
+
+
+
+
+
+
+/*----------------------------------------------------------------*/
+/*CRAWL_ERRORS*/
+#crawl_errors {
+    position: absolute;
+    top: 0px;
+    left: 524px;
+    background-color: #fd7918;
+    width: 154px;
+    height: 57px;
+}
+
+#crawl_errors #view_crawl_errors_btn {
+    position: absolute;
+    background-color: #cc6215;
+    left: 9px;
+    width: 136px;
+    height: 34px;
+    padding-top: 15px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    cursor:pointer;
+}
+#crawl_errors #view_crawl_errors_btn:hover {
+    background-color: white;
+    color:black;
+}
