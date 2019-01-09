@@ -9,8 +9,8 @@ import (
 )
 //---------------------------------------------------
 func DB__get_post(p_post_title_str *string,
-			p_mongodb_coll *mgo.Collection,
-			p_log_fun      func(string,string)) (*Post,error) {
+	p_mongodb_coll *mgo.Collection,
+	p_log_fun      func(string,string)) (*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
 
 	var post Post
@@ -51,18 +51,18 @@ func DB__get_post(p_post_title_str *string,
 }
 //---------------------------------------------------
 func DB__get_posts_page(p_cursor_start_position_int int, //0
-				p_elements_num_int int, //50
-				p_mongodb_coll     *mgo.Collection,
-				p_log_fun          func(string,string)) ([]*Post,error) {
+	p_elements_num_int int, //50
+	p_mongodb_coll     *mgo.Collection,
+	p_log_fun          func(string,string)) ([]*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__get_posts_page()")
 
 	posts_lst := []*Post{}
 	//descending - true - sort the latest items first
 	err := p_mongodb_coll.Find(bson.M{"t":"post"}).
-						Sort("-creation_datetime_str"). //descending:true
-						Skip(p_cursor_start_position_int).
-						Limit(p_elements_num_int).
-						All(&posts_lst)
+		Sort("-creation_datetime_str"). //descending:true
+		Skip(p_cursor_start_position_int).
+		Limit(p_elements_num_int).
+		All(&posts_lst)
 	if err != nil {
 		return nil,err
 	}
@@ -71,13 +71,11 @@ func DB__get_posts_page(p_cursor_start_position_int int, //0
 }
 //---------------------------------------------------
 func DB__create_post(p_post *Post,
-				p_mongodb_coll *mgo.Collection,
-				p_log_fun      func(string,string)) error {
+	p_mongodb_coll *mgo.Collection,
+	p_log_fun      func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
 
-	//FIX!! - abstract away the reference to "mongo" module here
-	err := p_mongodb_coll.Insert(p_post)
-								//writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
+	err := p_mongodb_coll.Insert(p_post) //writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
 	if err != nil {
 		return err
 	}
@@ -86,15 +84,15 @@ func DB__create_post(p_post *Post,
 }
 //---------------------------------------------------
 func DB__update_post(p_post *Post, 
-				p_mongodb_coll *mgo.Collection,
-				p_log_fun      func(string,string)) error {
+	p_mongodb_coll *mgo.Collection,
+	p_log_fun      func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
 
 	err := p_mongodb_coll.Update(bson.M{
-								"t"        :"post",
-								"title_str":p_post.Title_str,
-							},
-							p_post)
+			"t"        :"post",
+			"title_str":p_post.Title_str,
+		},
+		p_post)
 	if err != nil {
 		return err
 	}
@@ -113,9 +111,9 @@ func DB__delete_post(p_post_title_str *string,
 }*/
 //---------------------------------------------------
 func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
-						p_max_random_cursor_position_int int, //500
-						p_mongodb_coll                   *mgo.Collection,
-						p_log_fun                        func(string,string)) ([]*Post,error) {
+	p_max_random_cursor_position_int int, //500
+	p_mongodb_coll                   *mgo.Collection,
+	p_log_fun                        func(string,string)) ([]*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
 
 	rand.Seed(time.Now().Unix())
@@ -123,9 +121,9 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 	p_log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 	posts_in_random_range_lst,err := DB__get_posts_from_offset(random_cursor_position_int,
-											p_posts_num_to_get_int,
-											p_mongodb_coll,
-											p_log_fun)
+		p_posts_num_to_get_int,
+		p_mongodb_coll,
+		p_log_fun)
 	if err != nil {
 		return nil,err
 	}
@@ -134,9 +132,9 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 }
 //---------------------------------------------------
 func DB__get_posts_from_offset(p_cursor_position_int int,
-					p_posts_num_to_get_int int,
-					p_mongodb_coll         *mgo.Collection,
-					p_log_fun              func(string,string)) ([]*Post,error) {
+	p_posts_num_to_get_int int,
+	p_mongodb_coll         *mgo.Collection,
+	p_log_fun              func(string,string)) ([]*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__get_posts_from_offset()")
 
 	//----------------
@@ -148,9 +146,9 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 
 	var posts_lst []*Post
 	err := p_mongodb_coll.Find(bson.M{"t":"post"}).
-							Skip(p_cursor_position_int).
-							Limit(p_posts_num_to_get_int).
-							All(&posts_lst)
+		Skip(p_cursor_position_int).
+		Limit(p_posts_num_to_get_int).
+		All(&posts_lst)
 	if err != nil {
 		return nil,err
 	}
@@ -159,8 +157,8 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 }
 //---------------------------------------------------
 func DB__check_post_exists(p_post_title_str *string,
-				p_mongodb_coll *mgo.Collection,
-				p_log_fun      func(string,string)) (bool,error) {
+	p_mongodb_coll *mgo.Collection,
+	p_log_fun      func(string,string)) (bool,error) {
 	p_log_fun("FUN_ENTER","gf_post_db.DB__check_post_exists()")
 	
 	count_int,err := p_mongodb_coll.Find(bson.M{"t":"post","title_str":*p_post_title_str,}).Count()

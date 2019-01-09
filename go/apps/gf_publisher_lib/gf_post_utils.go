@@ -8,28 +8,22 @@ import (
 //TAGS
 //------------------------------------------
 func Add_tags_to_post_in_db(p_post_title_str *string,
-					p_tags_lst     []string,
-					p_mongodb_coll *mgo.Collection,
-					p_log_fun      func(string,string)) (*Post,error) {
+	p_tags_lst     []string,
+	p_mongodb_coll *mgo.Collection,
+	p_log_fun      func(string,string)) (*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post_utils.Add_tags_to_post_in_db()")
 	
-	post,err := DB__get_post(p_post_title_str,
-						p_mongodb_coll,
-						p_log_fun)
+	post,err := DB__get_post(p_post_title_str, p_mongodb_coll, p_log_fun)
 	if err != nil {
 		return nil,err
 	}
 
-	add_tags_to_post(post,
-				p_tags_lst,
-				p_log_fun)
+	add_tags_to_post(post, p_tags_lst, p_log_fun)
 	
 	fmt.Println(">>>>>>>>>>>>>>>>>> -------------");
 	fmt.Println(post.Tags_lst)
 
-	err = DB__update_post(post,
-				p_mongodb_coll,
-				p_log_fun)
+	err = DB__update_post(post, p_mongodb_coll, p_log_fun)
 	if err != nil {
 		return nil,err
 	}
@@ -38,8 +32,8 @@ func Add_tags_to_post_in_db(p_post_title_str *string,
 }
 //------------------------------------------
 func add_tags_to_post(p_post *Post,
-			p_tags_lst []string,
-			p_log_fun  func(string,string)) {
+	p_tags_lst []string,
+	p_log_fun  func(string,string)) {
 	p_log_fun("FUN_ENTER","gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
@@ -68,8 +62,7 @@ func add_tags_to_post(p_post *Post,
 	}
 }
 //---------------------------------------------------
-func get_posts_small_thumbnails_urls(p_posts_lst []*Post,
-								p_log_fun func(string,string)) map[string][]string {
+func get_posts_small_thumbnails_urls(p_posts_lst []*Post, p_log_fun func(string,string)) map[string][]string {
 	p_log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}

@@ -6,10 +6,10 @@ import (
 )
 //---------------------------------------------------
 func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
-						p_tmpl                *template.Template,
-						p_posts_page_size_int int, //5
-						p_resp                http.ResponseWriter,
-						p_log_fun             func(string,string)) error {
+	p_tmpl                *template.Template,
+	p_posts_page_size_int int, //5
+	p_resp                http.ResponseWriter,
+	p_log_fun             func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
 
 	pages_lst := [][]map[string]interface{}{}
@@ -19,10 +19,10 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
 		for _,post := range posts_page_lst {
 
 			post_info_map := map[string]interface{}{
-				"post_title_str"            :post.Title_str,
+				"post_title_str":            post.Title_str,
 				"post_creation_datetime_str":post.Creation_datetime_str,
-				"post_thumbnail_url_str"    :post.Thumbnail_url_str,
-				"images_number_int"         :len(post.Images_ids_lst),
+				"post_thumbnail_url_str":    post.Thumbnail_url_str,
+				"images_number_int":         len(post.Images_ids_lst),
 			}
 			//---------------
 			//TAGS

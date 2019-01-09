@@ -7,19 +7,17 @@ import (
 )
 //--------------------------------------------------
 func post__render_template(p_post *Post,
-				p_tmpl    *template.Template,
-				p_resp    http.ResponseWriter,
-				p_log_fun func(string,string)) error {
+	p_tmpl    *template.Template,
+	p_resp    http.ResponseWriter,
+	p_log_fun func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_post_view.post__render_template()")
 	
-	template_post_elements_lst,err := package_post_elements_infos(p_post,
-															p_log_fun)
+	template_post_elements_lst,err := package_post_elements_infos(p_post, p_log_fun)
 	if err != nil {
 		return err
 	}
 
-	image_post_elements_og_info_lst,err := get_image_post_elements_FBOpenGraph_info(p_post,
-																				p_log_fun)
+	image_post_elements_og_info_lst,err := get_image_post_elements_FBOpenGraph_info(p_post, p_log_fun)
 	if err != nil {
 		return err
 	}
@@ -53,12 +51,12 @@ func post__render_template(p_post *Post,
 	return template_str;*/
 
 	err = p_tmpl.Execute(p_resp,tmpl_data{
-		Post_title_str                 :p_post.Title_str,
-		Post_tags_lst                  :post_tags_lst,
-		Post_description_str           :p_post.Description_str,
-		Post_poster_user_name_str      :p_post.Poster_user_name_str,
-		Post_thumbnail_url_str         :p_post.Thumbnail_url_str,
-		Post_elements_lst              :template_post_elements_lst,
+		Post_title_str:                 p_post.Title_str,
+		Post_tags_lst:                  post_tags_lst,
+		Post_description_str:           p_post.Description_str,
+		Post_poster_user_name_str:      p_post.Poster_user_name_str,
+		Post_thumbnail_url_str:         p_post.Thumbnail_url_str,
+		Post_elements_lst:              template_post_elements_lst,
 		Image_post_elements_og_info_lst:image_post_elements_og_info_lst,
 	})
 
@@ -69,8 +67,7 @@ func post__render_template(p_post *Post,
 	return nil
 }
 //--------------------------------------------------
-func package_post_elements_infos(p_post *Post,
-							p_log_fun func(string,string)) ([]map[string]interface{},error) {
+func package_post_elements_infos(p_post *Post, p_log_fun func(string,string)) ([]map[string]interface{},error) {
 	p_log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
@@ -96,20 +93,20 @@ func package_post_elements_infos(p_post *Post,
 				post_element_map := map[string]interface{}{
 					"post_element_type__video_bool":false, //for mustache template conditionals
 					"post_element_type__image_bool":false,
-					"post_element_type__link_bool" :true,
-					"post_element_description_str" :post_element.Description_str,
-					"post_element_extern_url_str"  :post_element.Extern_url_str,
+					"post_element_type__link_bool": true,
+					"post_element_description_str": post_element.Description_str,
+					"post_element_extern_url_str":  post_element.Extern_url_str,
 				}
 				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
 				continue
 			case "image":
 				post_element_map := map[string]interface{}{
-					"post_element_type__video_bool"            :false, //for mustache template conditionals
-					"post_element_type__image_bool"            :true,
-					"post_element_type__link_bool"             :false,
+					"post_element_type__video_bool":            false, //for mustache template conditionals
+					"post_element_type__image_bool":            true,
+					"post_element_type__link_bool":             false,
 					"post_element_img_thumbnail_medium_url_str":post_element.Img_thumbnail_medium_url_str,
-					"post_element_img_thumbnail_large_url_str" :post_element.Img_thumbnail_large_url_str,
-					"tags_lst"                                 :post_element_tags_lst,
+					"post_element_img_thumbnail_large_url_str": post_element.Img_thumbnail_large_url_str,
+					"tags_lst":                                 post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
 				continue
@@ -117,9 +114,9 @@ func package_post_elements_infos(p_post *Post,
 				post_element_map := map[string]interface{}{
 					"post_element_type__video_bool":true, //for mustache template conditionals
 					"post_element_type__image_bool":false,
-					"post_element_type__link_bool" :false,
-					"post_element_extern_url_str"  :post_element.Extern_url_str,
-					"tags_lst"                     :post_element_tags_lst,
+					"post_element_type__link_bool": false,
+					"post_element_extern_url_str":  post_element.Extern_url_str,
+					"tags_lst":                     post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
 				continue
@@ -129,13 +126,10 @@ func package_post_elements_infos(p_post *Post,
 	return template_post_elements_lst,nil
 }
 //--------------------------------------------------
-func get_image_post_elements_FBOpenGraph_info(p_post *Post,
-								p_log_fun func(string,string)) ([]map[string]string,error) {
+func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_log_fun func(string,string)) ([]map[string]string,error) {
 	p_log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
-	image_post_elements_lst,err := get_post_elements_of_type(p_post,
-													"image",
-													p_log_fun)
+	image_post_elements_lst,err := get_post_elements_of_type(p_post, "image", p_log_fun)
 	if err != nil {
 		return nil,err
 	}

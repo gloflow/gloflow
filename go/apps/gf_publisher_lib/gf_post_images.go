@@ -7,9 +7,9 @@ import (
 )
 //---------------------------------------------------
 func process_external_images(p_post *Post,
-				p_gf_images_service_host_port_str *string, //"http://127.0.0.1:2060"
-				p_mongodb_coll                    *mgo.Collection,
-				p_log_fun                         func(string,string)) (*string,error) {
+	p_gf_images_service_host_port_str *string, //"http://127.0.0.1:2060"
+	p_mongodb_coll                    *mgo.Collection,
+	p_log_fun                         func(string,string)) (*string,error) {
 	p_log_fun("FUN_ENTER","gf_post_images.process_external_images()")
 
 	//-------------------	
@@ -25,7 +25,7 @@ func process_external_images(p_post *Post,
 
 			image_url_str                             := post_element.Extern_url_str
 			source_page_url_str                       := post_element.Source_page_url_str
-			post_elements_images_urls_lst              = append(post_elements_images_urls_lst             ,image_url_str)
+			post_elements_images_urls_lst              = append(post_elements_images_urls_lst,             image_url_str)
 			post_elements_images_origin_pages_urls_str = append(post_elements_images_origin_pages_urls_str,source_page_url_str)
 			post_elements_map[image_url_str]           = post_element
 		}
@@ -33,10 +33,11 @@ func process_external_images(p_post *Post,
 	//-------------------
 	image_job_client_type_str := "gf_publisher"
 	running_job_id_str,outputs_lst,err := gf_images_lib.Client__dispatch_process_extern_images(post_elements_images_urls_lst, //p_input_images_urls_lst
-																			post_elements_images_origin_pages_urls_str,       //p_input_images_origin_pages_urls_str
-																			&image_job_client_type_str,
-																			p_gf_images_service_host_port_str,
-																			p_log_fun)
+		post_elements_images_origin_pages_urls_str,       //p_input_images_origin_pages_urls_str
+		&image_job_client_type_str,
+		p_gf_images_service_host_port_str,
+		p_log_fun)
+
 	if err != nil {
 		return nil,err
 	}
@@ -76,9 +77,7 @@ func process_external_images(p_post *Post,
 	//----------------
 	//persists the newly updated post (some of its post_elements have been updated
 	//in the initiation of image post_elements)
-	err = DB__update_post(p_post,
-					p_mongodb_coll,
-					p_log_fun)
+	err = DB__update_post(p_post, p_mongodb_coll, p_log_fun)
 	if err != nil {
 		return nil,err
 	}

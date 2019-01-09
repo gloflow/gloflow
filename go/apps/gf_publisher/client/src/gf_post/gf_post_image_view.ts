@@ -2,8 +2,7 @@
 
 namespace gf_post_image_view {
 //------------------------------------------------
-export function init(p_image_post_element,
-			p_log_fun) {
+export function init(p_image_post_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_post_image_view.init()');
 
 	$(p_image_post_element).find('img').on('click',(p_event)=>{
@@ -11,13 +10,11 @@ export function init(p_image_post_element,
 		const img_medium_url_str :string = $(p_event.target).attr('src');
 		const img_large_url_str  :string = img_medium_url_str.replace('medium','large');
 
-		view_image(img_large_url_str,
-				   p_log_fun);
+		view_image(img_large_url_str, p_log_fun);
 	});
 }
 //------------------------------------------------
-function view_image(p_img_url_str :string,
-				p_log_fun) {
+function view_image(p_img_url_str :string, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_post_image_view.view_image()');
 
 	const image_view_element = $(`

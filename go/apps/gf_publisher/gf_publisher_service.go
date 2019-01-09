@@ -24,11 +24,11 @@ func main() {
 	if run__start_service_bool {
 		//init_done_ch := make(chan bool)
 		Run_service__in_process(port_str,
-						mongodb_host_str,
-						mongodb_db_name_str,
-						gf_images_service_host_port_str,
-						nil, //init_done_ch,
-						log_fun)
+			mongodb_host_str,
+			mongodb_db_name_str,
+			gf_images_service_host_port_str,
+			nil, //init_done_ch,
+			log_fun)
 		//<-init_done_ch
 	}
 }
@@ -38,20 +38,19 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 
 	//-------------------
 	//in_container_bool       := flag.Bool("in_container"      ,false      ,"is th service being run in a Docker container")
-	run__start_service_bool    := flag.Bool("run__start_service"          ,true       ,"run the service daemon")
-	port_str                   := flag.String("port"                      ,"2020"     ,"port for the service to use")
-	mongodb_host_str           := flag.String("mongodb_host"              ,"127.0.0.1","host of mongodb to use")
-	mongodb_db_name_str        := flag.String("mongodb_db_name"           ,"prod_db"  ,"DB name to use")
+	run__start_service_bool         := flag.Bool("run__start_service",               true,                      "run the service daemon")
+	port_str                        := flag.String("port",                           "2020",                    "port for the service to use")
+	mongodb_host_str                := flag.String("mongodb_host",                   "127.0.0.1",               "host of mongodb to use")
+	mongodb_db_name_str             := flag.String("mongodb_db_name",                "prod_db",                 "DB name to use")
 	gf_images_service_host_port_str := flag.String("gf_images_service_host_port_str","gf_images_service_1:3050","gf_images service host")
 	//-------------------
 	flag.Parse()
 
 	return map[string]interface{}{
-		//"in_container_bool"      :*in_container_bool,
-		"run__start_service_bool"   :*run__start_service_bool,
-		"port_str"                  :*port_str,
-		"mongodb_host_str"          :*mongodb_host_str,
-		"mongodb_db_name_str"       :*mongodb_db_name_str,
+		"run__start_service_bool":        *run__start_service_bool,
+		"port_str":                       *port_str,
+		"mongodb_host_str":               *mongodb_host_str,
+		"mongodb_db_name_str":            *mongodb_db_name_str,
 		"gf_images_service_host_port_str":*gf_images_service_host_port_str,
 	}
 }
@@ -102,10 +101,7 @@ func Run_service__in_process(p_port_str string,
                  |############\`
     p_log_fun("INFO",logo_str)
     
-	mongo_db := gf_core.Conn_to_mongodb(p_mongodb_host_str,
-							p_mongodb_db_name_str,
-							p_log_fun)
-	
+	mongo_db   := gf_core.Conn_to_mongodb(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
 	mongo_coll := mongo_db.C("data_symphony")
 
 	//------------------------
@@ -114,9 +110,7 @@ func Run_service__in_process(p_port_str string,
 	gf_core.HTTP__init_static_serving(&static_files__url_base_str,p_log_fun)
 	//------------------------
 
-	err := init_handlers(&p_gf_images_service_host_port_str,
-					mongo_coll,
-					p_log_fun)
+	err := init_handlers(&p_gf_images_service_host_port_str, mongo_coll, p_log_fun)
 	if err != nil {
 		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
 		panic(msg_str)

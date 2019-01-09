@@ -36,8 +36,7 @@ type Post_note struct {
 	Creation_datetime_str string `bson:"creation_datetime_str"`
 }
 //------------------------------------------------
-func create_new_post(p_post_info_map map[string]interface{},
-		p_log_fun func(string,string)) (*Post,error) {
+func create_new_post(p_post_info_map map[string]interface{}, p_log_fun func(string,string)) (*Post,error) {
 	p_log_fun("FUN_ENTER","gf_post.create_new_post()")
 	p_log_fun("INFO"     ,"p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
@@ -50,9 +49,7 @@ func create_new_post(p_post_info_map map[string]interface{},
 	//POST ELEMENTS
 
 	post_elements_infos_lst := p_post_info_map["post_elements_lst"].([]interface{})
-	post_elements_lst       := create_post_elements(post_elements_infos_lst,
-											&post_title_str,
-											p_log_fun)
+	post_elements_lst       := create_post_elements(post_elements_infos_lst, &post_title_str, p_log_fun)
 	p_log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
 	//--------------------
 	//CREATION DATETIME
@@ -111,8 +108,7 @@ func create_new_post(p_post_info_map map[string]interface{},
 		notes_lst = []*Post_note{}
 	} else {
 		notes_infos_lst := p_post_info_map["notes_lst"].([]map[string]interface{})
-		notes_lst        = create_post_notes(notes_infos_lst,
-										p_log_fun)
+		notes_lst        = create_post_notes(notes_infos_lst, p_log_fun)
 	}
 	//-------------------------
 	//COLORS
@@ -127,19 +123,19 @@ func create_new_post(p_post_info_map map[string]interface{},
 	}
 	//--------------------
 	post := &Post{
-		Id_str               :id_str,
-		T_str                :"post",
-		Client_type_str      :p_post_info_map["client_type_str"].(string),
-		Title_str            :post_title_str,
-		Description_str      :p_post_info_map["description_str"].(string),
+		Id_str:               id_str,
+		T_str:                "post",
+		Client_type_str:      p_post_info_map["client_type_str"].(string),
+		Title_str:            post_title_str,
+		Description_str:      p_post_info_map["description_str"].(string),
 		Creation_datetime_str:creation_datetime_str,
-		Poster_user_name_str :p_post_info_map["poster_user_name_str"].(string),
-		Thumbnail_url_str    :thumbnail_url_str,
-		Images_ids_lst       :images_ids_lst,
-		Post_elements_lst    :post_elements_lst,
-		Tags_lst             :tags_lst,
-		Notes_lst            :notes_lst,
-		Colors_lst           :colors_lst,
+		Poster_user_name_str: p_post_info_map["poster_user_name_str"].(string),
+		Thumbnail_url_str:    thumbnail_url_str,
+		Images_ids_lst:       images_ids_lst,
+		Post_elements_lst:    post_elements_lst,
+		Tags_lst:             tags_lst,
+		Notes_lst:            notes_lst,
+		Colors_lst:           colors_lst,
 	}
 	
 	return post,nil
@@ -147,13 +143,11 @@ func create_new_post(p_post_info_map map[string]interface{},
 //------------------------------------------------	
 //a post has to first be created, and only then can it be published
 
-func publish(p_post_title_str *string,
-		p_log_fun func(string,string)) {
+func publish(p_post_title_str *string, p_log_fun func(string,string)) {
 	p_log_fun("FUN_ENTER","gf_post.publish()")
 }
 //------------------------------------------------
-func create_post_notes(p_raw_notes_lst []map[string]interface{},
-				p_log_fun func(string,string)) []*Post_note {
+func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_log_fun func(string,string)) []*Post_note {
 	p_log_fun("FUN_ENTER","gf_post.create_post_notes()")
 
 	notes_lst := []*Post_note{}
@@ -161,7 +155,7 @@ func create_post_notes(p_raw_notes_lst []map[string]interface{},
 		
 		snippet := &Post_note{
 			User_id_str:"anonymous",
-			Body_str   :note_map["body_str"].(string),
+			Body_str:   note_map["body_str"].(string),
 		}
 		notes_lst = append(notes_lst,snippet)
 	}

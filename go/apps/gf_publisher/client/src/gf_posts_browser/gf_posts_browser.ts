@@ -31,8 +31,7 @@ export function init(p_log_fun) {
 
     gf_sys_panel.init(p_log_fun);
 
-    gf_posts_browser_view.init(static_posts_infos_lst,
-                            p_log_fun);
+    gf_posts_browser_view.init(static_posts_infos_lst, p_log_fun);
 }
 //-----------------------------------------------------
 //DATA LOADING
@@ -55,7 +54,7 @@ function load_data_from_dom(p_log_fun) {
             const tag_url_str :string = $(p_tag_element).attr('href');
 
             const tag_info_map = {
-                'tag_str'    :tag_str,
+                'tag_str':    tag_str,
                 'tag_url_str':tag_url_str
             };
 
@@ -68,10 +67,10 @@ function load_data_from_dom(p_log_fun) {
         //--------------------
 
         const post_info_map = {
-            'post'             :p_post,
-            'post_title_str'   :post_title_str, 
-            'post_url_str'     :post_url_str,
-            'tags_infos_lst'   :tags_infos_lst,
+            'post':             p_post,
+            'post_title_str':   post_title_str, 
+            'post_url_str':     post_url_str,
+            'tags_infos_lst':   tags_infos_lst,
             'thumbnail_url_str':thumbnail_url_str
         };
 

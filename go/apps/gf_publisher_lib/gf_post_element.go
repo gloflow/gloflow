@@ -57,8 +57,8 @@ type Post_element struct {
 }
 //---------------------------------------------------
 func create_post_elements(p_post_elements_infos_lst []interface{},
-					p_post_title_str *string,
-					p_log_fun         func(string,string)) []*Post_element {
+	p_post_title_str *string,
+	p_log_fun         func(string,string)) []*Post_element {
 	p_log_fun("FUN_ENTER","gf_post_element.create_post_elements()")
 	p_log_fun("INFO"     ,"p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
@@ -87,13 +87,13 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		p_log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 		//------------------
 		post_element := &Post_element{
-			Id_str               :post_element_id_str,
-			Type_str             :post_element_map["type_str"].(string),
-			//Description_str      :post_element_map["description_str"].(string),
+			Id_str:               post_element_id_str,
+			Type_str:             post_element_map["type_str"].(string),
 			Creation_datetime_str:creation_datetime_str,
-			Extern_url_str       :extern_url_str,
-			Source_page_url_str  :post_element_map["source_page_url_str"].(string),
-			Post_index_3_lst     :post_index_3_lst,
+			Extern_url_str:       extern_url_str,
+			Source_page_url_str:  post_element_map["source_page_url_str"].(string),
+			Post_index_3_lst:     post_index_3_lst,
+			//Description_str      :post_element_map["description_str"].(string),
 		}
 		
 		post_elements_lst = append(post_elements_lst,post_element)
@@ -205,8 +205,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 	//------------------
 }*/
 //---------------------------------------------------
-func get_first_image_post_element(p_post *Post,
-							p_log_fun func(string,string)) *Post_element {
+func get_first_image_post_element(p_post *Post, p_log_fun func(string,string)) *Post_element {
 	p_log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
 
 	for _,post_element := range p_post.Post_elements_lst {
@@ -219,8 +218,8 @@ func get_first_image_post_element(p_post *Post,
 }
 //---------------------------------------------------
 func get_post_elements_of_type(p_post *Post,
-						p_type_str string,
-						p_log_fun  func(string,string)) ([]*Post_element,error) {
+	p_type_str string,
+	p_log_fun  func(string,string)) ([]*Post_element,error) {
 	p_log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
 	
 	if !(p_type_str == "image"  ||

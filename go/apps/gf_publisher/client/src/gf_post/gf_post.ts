@@ -45,27 +45,26 @@ export function init(p_log_fun) {
 
         var tag_ui_added_bool :boolean = false;
         gf_tagger_input_ui.init_tag_input(img_id_str, //p_obj_id_str
-                                    'image',    //p_obj_type_str
-                                    p_post_element,
-                            //p_onTagsCreated_fun
-                            (p_added_tags_lst :string[])=>{
-                                
-                                view_added_tags(p_post_element,
-                                            p_added_tags_lst,
-                                            p_log_fun);
-                            },
-                            //p_onTagUIAdd_fun
-                            ()=>{
-                                tag_ui_added_bool = true;
-                            },
-                            //p_onTagUIRemove_fun
-                            ()=>{
-                                tag_ui_added_bool = false;
-                            },
+            'image',    //p_obj_type_str
+            p_post_element,
+            //p_onTagsCreated_fun
+            (p_added_tags_lst :string[])=>{
+                
+                view_added_tags(p_post_element,
+                            p_added_tags_lst,
                             p_log_fun);
+            },
+            //p_onTagUIAdd_fun
+            ()=>{
+                tag_ui_added_bool = true;
+            },
+            //p_onTagUIRemove_fun
+            ()=>{
+                tag_ui_added_bool = false;
+            },
+            p_log_fun);
 
-        gf_post_image_view.init(p_post_element,
-                            p_log_fun);
+        gf_post_image_view.init(p_post_element, p_log_fun);
 
         $(p_post_element).on('mouseenter',(p_event)=>{
 
@@ -91,19 +90,19 @@ export function init(p_log_fun) {
 
         //ADD!! - extract video ID properly
         gf_tagger_input_ui.init_tag_input('fix',
-                                    'video',
-                                    p_post_element,
-                                    
-                            //p_onTagsCreated_fun
-                            (p_added_tags_lst :string[])=>{
+            'video',
+            p_post_element,
+                    
+            //p_onTagsCreated_fun
+            (p_added_tags_lst :string[])=>{
 
-                                view_added_tags(p_post_element,
-                                        p_added_tags_lst,
-                                        p_log_fun);
-                            },
-                            ()=>{}, //p_onTagUIAdd_fun
-                            ()=>{}, //p_onTagUIRemove_fun
-                            p_log_fun);
+                view_added_tags(p_post_element,
+                        p_added_tags_lst,
+                        p_log_fun);
+            },
+            ()=>{}, //p_onTagUIAdd_fun
+            ()=>{}, //p_onTagUIRemove_fun
+            p_log_fun);
     });
     //------------------------------
 
@@ -113,8 +112,8 @@ export function init(p_log_fun) {
 }
 //-----------------------------------------------------
 function view_added_tags(p_post_element,
-                p_added_tags_lst :string[],
-                p_log_fun) {
+    p_added_tags_lst :string[],
+    p_log_fun) {
     p_log_fun('FUN_ENTER','gf_post.view_added_tags()');
 
     const tags_container_element = $(p_post_element).find('.tags_container');

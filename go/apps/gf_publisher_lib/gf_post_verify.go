@@ -12,11 +12,11 @@ import (
 //(it does not have an id assigned to it)
 
 func verify_external_post_info(p_post_info_map map[string]interface{},
-						p_max_title_chars_int       int, //100
-						p_max_description_chars_int int, //1000
-						p_post_element_tag_max_int  int, //20
-						p_mongodb_coll              *mgo.Collection,
-						p_log_fun                   func(string,string)) (map[string]interface{},error) {
+	p_max_title_chars_int       int, //100
+	p_max_description_chars_int int, //1000
+	p_post_element_tag_max_int  int, //20
+	p_mongodb_coll              *mgo.Collection,
+	p_log_fun                   func(string,string)) (map[string]interface{},error) {
 	p_log_fun("FUN_ENTER","gf_post_verify.verify_external_post_info()")
 		
 	//default_main_image_url_str := "http://gloflow.com/gf_publisher/objects/images/gf_landingpage_3.png"
@@ -35,9 +35,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	title_str := p_post_info_map["title_str"].(string)
 
 	if len(title_str) > p_max_title_chars_int {
-		return nil,errors.New(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)",
-										len(title_str),
-										p_max_title_chars_int))
+		return nil,errors.New(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int))
 	}
 
 	//ATTENTION!!
@@ -59,22 +57,17 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	description_str := p_post_info_map["description_str"].(string)
 
 	if len(description_str) > p_max_description_chars_int {
-		return nil,errors.New(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)",
-										len(description_str),
-										p_max_description_chars_int))
+		return nil,errors.New(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int))
 	}
 	//-------------------
 	//POST ELEMENTS
-	err := verify_post_elements(p_post_info_map,
-							p_post_element_tag_max_int,
-							p_log_fun)
+	err := verify_post_elements(p_post_info_map, p_post_element_tag_max_int, p_log_fun)
 	if err != nil {
 		return nil,err
 	}
 	//-------------------	
 	//TAGS
-	tags_lst,err := verify_tags(p_post_info_map,
-							p_log_fun)
+	tags_lst,err := verify_tags(p_post_info_map, p_log_fun)
 	if err != nil {
 		return nil,err
 	}
@@ -90,20 +83,18 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	//"id_str" - not included here since p_post_info_map comes from outside the system
 	//           and the internal id"s are for now not passed outside (or coming in from outside)
 	verified_post_info_map := map[string]interface{}{
-		"client_type_str"     :p_post_info_map["client_type_str"].(string),
-		"title_str"           :clean_title_str,
-		"description_str"     :description_str,
+		"client_type_str":     p_post_info_map["client_type_str"].(string),
+		"title_str":           clean_title_str,
+		"description_str":     description_str,
 		"poster_user_name_str":p_post_info_map["poster_user_name_str"].(string),
-
-		"post_elements_lst"   :p_post_info_map["post_elements_lst"],
-		"tags_lst"            :tags_lst,
+		"post_elements_lst":   p_post_info_map["post_elements_lst"],
+		"tags_lst":            tags_lst,
 	}
 	
 	return verified_post_info_map,nil
 }
 //---------------------------------------------------
-func verify_tags(p_post_info_map map[string]interface{},
-			p_log_fun func(string,string)) ([]string,error) { 
+func verify_tags(p_post_info_map map[string]interface{}, p_log_fun func(string,string)) ([]string,error) { 
 	p_log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
 	if _,ok := p_post_info_map["tags_str"]; !ok {
@@ -120,8 +111,8 @@ func verify_tags(p_post_info_map map[string]interface{},
 }
 //---------------------------------------------------
 func verify_post_elements(p_post_info_map map[string]interface{},
-					p_post_element_tag_max_int int,
-					p_log_fun                  func(string,string)) error {
+	p_post_element_tag_max_int int,
+	p_log_fun                  func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
@@ -132,9 +123,7 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	//verify each individiaul post_element
 	for _,post_element := range post_elements_lst {
 		post_element_map := post_element.(map[string]interface{})
-		err := verify_post_element(post_element_map,
-							p_post_element_tag_max_int,
-							p_log_fun)
+		err := verify_post_element(post_element_map, p_post_element_tag_max_int, p_log_fun)
 		if err != nil {
 			return err
 		}
@@ -151,8 +140,8 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 }
 //---------------------------------------------------
 func verify_post_element(p_post_element_info_map map[string]interface{},
-					p_post_element_tag_max_int int, //20
-					p_log_fun                  func(string,string)) error {
+	p_post_element_tag_max_int int, //20
+	p_log_fun                  func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_post_verify.verify_post_element()")
 	p_log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
 
@@ -188,9 +177,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		for _,tag_str := range pe_tags_lst.([]string) {
 
 			if len(tag_str) <= p_post_element_tag_max_int {
-				return errors.New(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)",
-										tag_str,
-										p_post_element_tag_max_int))
+				return errors.New(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int))
 			}
 		}
 	}
