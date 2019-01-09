@@ -135,8 +135,8 @@ func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 
 		member_info_map := map[string]interface{}{
 			"host_port_str":m["name"].(string),
-			"state_str"    :m["stateStr"].(string),
-			"uptime_int"   :m["uptime"].(int),
+			"state_str":    m["stateStr"].(string),
+			"uptime_int":   m["uptime"].(int),
 		}
 
 		rs_members_info_lst = append(rs_members_info_lst,member_info_map)

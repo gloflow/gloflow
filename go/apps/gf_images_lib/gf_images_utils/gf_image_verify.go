@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"strings"
 	"github.com/davecgh/go-spew/spew"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 /*map[

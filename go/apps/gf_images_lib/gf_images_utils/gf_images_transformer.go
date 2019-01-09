@@ -25,7 +25,7 @@ import (
 	"image"
 	"image/jpeg"
 	"github.com/nfnt/resize"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 //p_image_origin_page_url_str - urls of pages (html or some other resource) where the image image_url

@@ -22,8 +22,8 @@ package gf_images_lib
 import (
 	"fmt"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //---------------------------------------------------
 func Flows_db__add_flow_to_image(p_flow_name_str string,

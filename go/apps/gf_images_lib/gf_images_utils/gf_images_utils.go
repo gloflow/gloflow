@@ -32,7 +32,7 @@ import (
 	"image/png"
 	"crypto/md5"
 	"encoding/hex"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 //IMPORTANT!! - look at JS library, for content-aware image cropping

@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-
 	"github.com/fatih/color"
 )
 //-------------------------------------------------

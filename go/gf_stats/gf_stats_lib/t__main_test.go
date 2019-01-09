@@ -24,9 +24,8 @@ import (
 	"testing"
 	"strings"
 	"path/filepath"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
-
 //---------------------------------------------------
 func Test__main(p_test *testing.T) {
 

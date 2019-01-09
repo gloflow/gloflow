@@ -64,9 +64,9 @@ func Events__send_event(p_events_id_str string,
 
 	e := Event__msg{
 		Events_id_str:p_events_id_str,
-		Type_str     :p_type_str,
-		Msg_str      :p_msg_str,
-		Data_map     :p_data_map,
+		Type_str:     p_type_str,
+		Msg_str:      p_msg_str,
+		Data_map:     p_data_map,
 	}
 	p_events_ctx.Events_broker_ch <- e
 }
@@ -159,8 +159,7 @@ func events__init_handlers(p_sse_url_str string,
 
 
 	//IMPORTANT!! - new event_consumers (clients) register via this HTTP handler
-	http.HandleFunc(p_sse_url_str,func(p_resp http.ResponseWriter,
-									p_req *http.Request) {
+	http.HandleFunc(p_sse_url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
 
 		//start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

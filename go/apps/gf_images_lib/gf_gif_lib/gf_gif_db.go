@@ -25,8 +25,8 @@ import (
 	"net/url"
 	"github.com/globalsign/mgo/bson"
 	"github.com/davecgh/go-spew/spew"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //--------------------------------------------------
 func gif_db__create(p_image_source_url_str string,

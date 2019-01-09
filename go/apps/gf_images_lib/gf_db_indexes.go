@@ -21,7 +21,7 @@ package gf_images_lib
 
 import (
 	"github.com/globalsign/mgo"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {

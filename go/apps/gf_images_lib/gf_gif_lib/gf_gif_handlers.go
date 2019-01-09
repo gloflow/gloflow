@@ -22,8 +22,8 @@ package gf_gif_lib
 import (
 	"time"
 	"net/http"
-	"gf_core"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 func Gif__init_handlers(p_templates_dir_path_str string,

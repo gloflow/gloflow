@@ -27,8 +27,8 @@ import (
 	"net/url"
 	"net/http"
 	"encoding/json"
-	"gf_core"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,

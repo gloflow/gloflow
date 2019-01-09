@@ -22,7 +22,7 @@ package gf_images_utils
 import (
 	"fmt"
 	"image"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func Create_thumbnails(p_image_id_str string,

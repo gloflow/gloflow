@@ -22,9 +22,9 @@ package gf_images_jobs
 import (
 	"fmt"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
-	"apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
 )
 //-------------------------------------------------
 func jobs_mngr__run_job(p_job_id_str string,

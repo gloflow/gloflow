@@ -30,21 +30,21 @@ import (
 
 //-------------------------------------------------
 type Gf_error struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
-	Id_str               string        `bson:"id_str"` 
-	T_str                string        `bson:"t"`                    //"gf_error"
-	Creation_unix_time_f float64       `bson:"creation_unix_time_f"`
+	Id                   bson.ObjectId           `bson:"_id,omitempty"`
+	Id_str               string                  `bson:"id_str"` 
+	T_str                string                  `bson:"t"`                    //"gf_error"
+	Creation_unix_time_f float64                 `bson:"creation_unix_time_f"`
 	Type_str             string                  `bson:"type_str"`
 	User_msg_str         string                  `bson:"user_msg_str"`
 	Data_map             *map[string]interface{} `bson:"data_map"`
 	Descr_str            string                  `bson:"descr_str"`
 	Error                error                   `bson:"error"`
-	Service_name_str     string        `bson:"service_name_str"`   
-	Subsystem_name_str   string        `bson:"subsystem_name_str"`   //major portion of functionality, a particular package, or a logical group of functions
-	Stack_trace_str      string        `bson:"stack_trace_str"`
-	Function_name_str    string        `bson:"func_name_str"`
-	File_str             string        `bson:"file_str"`
-	Line_num_int         int           `bson:"line_num_int"`
+	Service_name_str     string                  `bson:"service_name_str"`
+	Subsystem_name_str   string                  `bson:"subsystem_name_str"`   //major portion of functionality, a particular package, or a logical group of functions
+	Stack_trace_str      string                  `bson:"stack_trace_str"`
+	Function_name_str    string                  `bson:"func_name_str"`
+	File_str             string                  `bson:"file_str"`
+	Line_num_int         int                     `bson:"line_num_int"`
 }
 
 //-------------------------------------------------

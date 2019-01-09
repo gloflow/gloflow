@@ -22,7 +22,7 @@ package gf_images_utils
 import (
 	"fmt"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func DB__put_image(p_image *Gf_image,

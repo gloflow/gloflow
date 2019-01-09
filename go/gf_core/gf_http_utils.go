@@ -146,9 +146,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 			p_runtime_sys.Log_fun("INFO","file_path_str  - "+file_path_str)
 			p_runtime_sys.Log_fun("INFO","local_path_str - "+local_path_str)
 
-		    http.ServeFile(p_resp,
-		    			p_req,
-		    			local_path_str)
+		    http.ServeFile(p_resp, p_req, local_path_str)
 		}
 	})
 }
@@ -170,8 +168,6 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 	p_runtime_sys *Runtime_sys) (http.Flusher,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__init_sse()")
 
-
-
 	flusher,ok := p_resp.(http.Flusher)
 	if !ok {
 		err_msg_str := "GF - SSE streaming not supported by this server"
@@ -184,15 +180,12 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 		return nil,gf_err
 	}
 
-
 	//IMPORTANT!! - listening for the closing of the http connections
 	notify := p_resp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
 		p_runtime_sys.Log_fun("INFO","HTTP SSE CONNECTION CLOSED")
 	}()
-
-
 
 	p_resp.Header().Set("Content-Type"               ,"text/event-stream")
 	p_resp.Header().Set("Cache-Control"              ,"no-cache")

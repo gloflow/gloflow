@@ -21,7 +21,7 @@ package gf_images_lib
 
 import (
 	"apps/gf_images_lib/gf_images_utils"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func Add_tags_to_image(p_image *gf_images_utils.Gf_image,

@@ -24,8 +24,8 @@ import (
 	"time"
 	"net/http"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 type Stat_query_run__extern_result struct {
@@ -86,8 +86,7 @@ func query__init_handlers(p_stats_url_base_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
-	http.HandleFunc(url_str,func(p_resp http.ResponseWriter,
-							p_req *http.Request) {
+	http.HandleFunc(url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO",fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
 		if p_req.Method == "POST" {

@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"path"
 	"strings"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func S3__store_gf_image(p_image_local_file_path_str string,

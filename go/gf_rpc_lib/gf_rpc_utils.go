@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Gf_rpc_handler_run struct {

@@ -21,7 +21,7 @@ package gf_images_lib
 
 import (
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Browser__job_run_result struct {

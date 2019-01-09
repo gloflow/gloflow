@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"testing"
 	"github.com/davecgh/go-spew/spew"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //---------------------------------------------------
 type Gf_test_image_data struct {

@@ -26,7 +26,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Client_job_image_output struct {

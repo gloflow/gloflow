@@ -25,8 +25,8 @@ import (
 	"net/http"
 	"io/ioutil"
 	"strings"
-	"gf_core"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 func batch__init_handlers(p_stats_url_base_str string,
@@ -40,8 +40,7 @@ func batch__init_handlers(p_stats_url_base_str string,
 	}
 
 	url_str := p_stats_url_base_str+"/batch/list"
-	http.HandleFunc(url_str,func(p_resp http.ResponseWriter,
-							p_req *http.Request) {
+	http.HandleFunc(url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO",fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
 		if p_req.Method == "GET" {
@@ -73,7 +72,6 @@ func batch__init_handlers(p_stats_url_base_str string,
 func batch__get_stats_list(p_py_stats_dir_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_stats_batch.batch__get_stats_list()")
-
 
 	files_lst, err := ioutil.ReadDir(p_py_stats_dir_path_str)
 	if err != nil {

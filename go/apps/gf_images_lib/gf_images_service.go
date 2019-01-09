@@ -22,10 +22,10 @@ package gf_images_lib
 import (
 	"fmt"
 	"net/http"
-	"gf_core"
-	"apps/gf_images_lib/gf_gif_lib"
-	"apps/gf_images_lib/gf_image_editor"
-	"apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_image_editor"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
 func Run_service(p_port_str string,

@@ -37,11 +37,14 @@ type Gf_s3_info struct {
 	Session  *session.Session
 }
 //---------------------------------------------------
-func S3__init(p_runtime_sys *Runtime_sys) (*Gf_s3_info,*Gf_error) {
+func S3__init(p_aws_access_key_id_str string,
+	p_aws_secret_access_key_str string,
+	p_token_str                 string,
+	p_runtime_sys               *Runtime_sys) (*Gf_s3_info,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_s3.S3__init()")
 
 	//--------------
-	creds := credentials.NewStaticCredentials(aws_access_key_id, aws_secret_access_key, token)
+	creds := credentials.NewStaticCredentials(p_aws_access_key_id_str, p_aws_secret_access_key_str, p_token_str)
 	_,err := creds.Get()
 
 	//usr,_    := user.Current()
@@ -57,10 +60,10 @@ func S3__init(p_runtime_sys *Runtime_sys) (*Gf_s3_info,*Gf_error) {
 	//--------------
 	
 	config := &aws.Config{
-		Region          :aws.String("us-east-1"),
-		Endpoint        :aws.String("s3.amazonaws.com"),
+		Region:          aws.String("us-east-1"),
+		Endpoint:        aws.String("s3.amazonaws.com"),
 		S3ForcePathStyle:aws.Bool(true),      // <-- without these lines. All will fail! fork you aws!
-		Credentials     :creds,
+		Credentials:     creds,
 		//LogLevel        :0, // <-- feel free to crank it up 
 	}
 	sess := session.New(config)
@@ -117,11 +120,11 @@ func S3__upload_file(p_target_file__local_path_str string,
 	//Upload uploads an object to S3, intelligently buffering large files 
 	//into smaller chunks and sending them in parallel across multiple goroutines.
 	result,s3_err := p_s3_info.Uploader.Upload(&s3manager.UploadInput{
-						    ACL        : aws.String("public-read"),
-						    Bucket     : aws.String(p_s3_bucket_name_str),
-						    Key        : aws.String(p_target_file__s3_path_str),
-						    ContentType: aws.String(file_type),
-						    Body       : file_bytes,
+						    ACL:        aws.String("public-read"),
+						    Bucket:     aws.String(p_s3_bucket_name_str),
+						    Key:        aws.String(p_target_file__s3_path_str),
+						    ContentType:aws.String(file_type),
+						    Body:       file_bytes,
 						})
 
 	if s3_err != nil {

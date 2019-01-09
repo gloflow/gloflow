@@ -24,8 +24,8 @@ import (
 	"time"
 	"strings"
 	"github.com/globalsign/mgo/bson"
-	"apps/gf_images_lib/gf_images_utils"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 //TEMPORARY - only used for a little while, until all GIF format images are also 

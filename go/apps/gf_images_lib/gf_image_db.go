@@ -24,8 +24,8 @@ import (
 	"time"
 	"math/rand"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //---------------------------------------------------
 func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5

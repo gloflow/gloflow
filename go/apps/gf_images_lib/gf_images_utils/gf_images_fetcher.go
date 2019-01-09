@@ -26,7 +26,7 @@ import (
 	"math/rand"
 	"time"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Image_fetch__error struct {

@@ -31,8 +31,8 @@ import (
 	"image"
 	"image/png"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
 type Gf_edited_image struct {

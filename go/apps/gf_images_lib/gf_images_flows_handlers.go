@@ -24,9 +24,9 @@ import (
 	"time"
 	"net/http"
 	"text/template"
-	"gf_core"
-	"gf_rpc_lib"
-	"apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
 func Flows__init_handlers(p_templates_dir_path_str string,

@@ -22,7 +22,7 @@ package gf_images_utils
 import (
 	"time"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 type Gf_image struct {
