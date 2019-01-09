@@ -34,6 +34,9 @@ func Run_service(p_port_str string,
 	p_images_store_local_dir_path_str            string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_images_main_s3_bucket_name_str             string,
+	p_aws_access_key_id_str                      string,
+	p_aws_secret_access_key_str                  string,
+	p_aws_token_str                              string,
 	p_templates_dir_paths_map                    map[string]interface{},
 	p_init_done_ch                               chan bool,
 	p_log_fun                                    func(string,string)) {
@@ -89,7 +92,11 @@ func Run_service(p_port_str string,
 	db_index__init(runtime_sys)
 	//-------------
 	//S3
-	s3_info,gf_err := gf_core.S3__init(runtime_sys)
+	
+	s3_info,gf_err := gf_core.S3__init(p_aws_access_key_id_str,
+		p_aws_secret_access_key_str,
+		p_aws_token_str,
+		runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
