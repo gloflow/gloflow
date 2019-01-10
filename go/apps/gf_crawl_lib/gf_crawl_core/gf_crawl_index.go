@@ -6,7 +6,7 @@ import (
 	"context"
 	"github.com/globalsign/mgo/bson"
 	"github.com/olivere/elastic"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 type Index__query_run struct {

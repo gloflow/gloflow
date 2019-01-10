@@ -2,8 +2,8 @@ package gf_crawl_lib
 
 import (
 	"testing"
-	"gf_core"
-	"apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //-------------------------------------------------
 func Test__stages(p_test *testing.T) {

@@ -2,7 +2,7 @@ package gf_crawl_core
 
 import (
 	"github.com/olivere/elastic"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 type Crawler_runtime struct {

@@ -1,7 +1,7 @@
 package gf_crawl_stats
 
 import (
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 func Get_query_funs(p_runtime_sys *gf_core.Runtime_sys) map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {

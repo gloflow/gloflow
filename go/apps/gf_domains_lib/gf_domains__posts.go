@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 /*example post:

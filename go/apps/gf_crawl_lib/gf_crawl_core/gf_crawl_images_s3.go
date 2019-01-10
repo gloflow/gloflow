@@ -3,8 +3,8 @@ package gf_crawl_core
 import (
 	"fmt"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //--------------------------------------------------
 func images_s3__stage__store_images(p_crawler_name_str string,

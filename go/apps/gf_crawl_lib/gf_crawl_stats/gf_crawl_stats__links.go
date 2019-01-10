@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sort"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Stat__crawled_links_domain struct {

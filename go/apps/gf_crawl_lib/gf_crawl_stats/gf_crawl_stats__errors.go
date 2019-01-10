@@ -2,7 +2,7 @@ package gf_crawl_stats
 
 import (
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 type Stat__errors struct {

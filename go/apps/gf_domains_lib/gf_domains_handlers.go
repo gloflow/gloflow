@@ -5,8 +5,8 @@ import (
 	"time"
 	"net/http"
 	"text/template"
-	"gf_core"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {

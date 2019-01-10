@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
-	"apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
 type Crawler_cluster_worker struct {

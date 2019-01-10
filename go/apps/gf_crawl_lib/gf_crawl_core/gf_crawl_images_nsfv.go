@@ -6,8 +6,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
 	"github.com/koyachi/go-nude"
-	"gf_core"
-	"apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
 )
 //--------------------------------------------------
 func images__stage__determine_are_nsfv(p_crawler_name_str string,

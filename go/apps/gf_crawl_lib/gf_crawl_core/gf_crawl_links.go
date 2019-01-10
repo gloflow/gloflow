@@ -9,8 +9,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
-	"gf_core"
-	"apps/gf_crawl_lib/gf_crawl_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_utils"
 )
 //--------------------------------------------------
 type Crawler_page_outgoing_link struct {

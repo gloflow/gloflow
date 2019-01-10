@@ -3,7 +3,7 @@ package gf_crawl_core
 import (
 	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func Image__db_create(p_img *Crawler_page_img,

@@ -3,7 +3,7 @@ package gf_domains_lib
 import (
 	"net/http"
 	"text/template"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func domains_browser__render_template(p_domains_lst []Domain,

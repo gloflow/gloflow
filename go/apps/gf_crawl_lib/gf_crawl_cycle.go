@@ -4,8 +4,8 @@ import (
 	"time"
 	"fmt"
 	"github.com/fatih/color"
-	"gf_core"
-	"apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
 func Run_crawler_cycle(p_crawler Crawler,

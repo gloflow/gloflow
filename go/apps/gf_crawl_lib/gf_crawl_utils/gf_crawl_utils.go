@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func Get__html_doc_over_http(p_url_str string,

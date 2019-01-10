@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"path/filepath"
 	"github.com/davecgh/go-spew/spew"
-	"gf_core"
-	"apps/gf_images_lib"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //--------------------------------------------------
 func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,

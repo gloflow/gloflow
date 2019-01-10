@@ -3,9 +3,9 @@ package gf_crawl_core
 import (
 	"fmt"
 	"github.com/fatih/color"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
-	"apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
 )
 //--------------------------------------------------
 func images__stage__process_images(p_crawler_name_str string,

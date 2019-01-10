@@ -1,7 +1,7 @@
 package gf_crawl_core
 
 import (
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------

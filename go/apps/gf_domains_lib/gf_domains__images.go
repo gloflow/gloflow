@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 //IMPORTANT!! - this statistic used by the gf_domains GF app, directly by the end-user

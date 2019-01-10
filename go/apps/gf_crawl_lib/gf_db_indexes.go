@@ -2,8 +2,8 @@ package gf_crawl_lib
 
 import (
 	"github.com/globalsign/mgo"
-	"gf_core"
-	"apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
 func db_index__init(p_runtime *gf_crawl_core.Crawler_runtime,

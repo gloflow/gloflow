@@ -5,7 +5,7 @@ import (
 	"strings"
 	"net/url"
 	"github.com/fatih/color"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func Complete_url(p_url_str string,

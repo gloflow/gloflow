@@ -2,7 +2,7 @@ package gf_crawl_core
 
 import (
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string,

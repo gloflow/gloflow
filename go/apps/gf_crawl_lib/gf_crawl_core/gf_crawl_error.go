@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/globalsign/mgo/bson"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 type Crawler_error struct {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
-	"gf_core"
-	"apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //--------------------------------------------------
 type gf__page_img__pipeline_info struct {
