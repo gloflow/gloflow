@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"flag"
 	"net/http"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
 func main() {

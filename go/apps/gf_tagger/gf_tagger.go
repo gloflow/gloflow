@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"gopkg.in/mgo.v2"
-
-	"apps/gf_images_lib"
-	"apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //---------------------------------------------------
 //p_tags_str      - :String - "," separated list of strings

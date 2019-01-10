@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"github.com/globalsign/mgo"
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 //external post_info is the one that comes from outside the system

@@ -3,7 +3,7 @@ package gf_publisher_lib
 import (
 	"errors"
 	"github.com/globalsign/mgo"
-	"apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
 )
 //---------------------------------------------------
 func process_external_images(p_post *Post,

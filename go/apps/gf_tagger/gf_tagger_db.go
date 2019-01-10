@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,

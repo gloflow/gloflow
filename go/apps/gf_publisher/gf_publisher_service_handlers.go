@@ -11,8 +11,8 @@ import (
 	"encoding/json"
 	"text/template"
 	"github.com/globalsign/mgo"
-	"gf_rpc_lib"
-	"apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //-------------------------------------------------
 func init_handlers(p_gf_images_service_host_port_str *string,

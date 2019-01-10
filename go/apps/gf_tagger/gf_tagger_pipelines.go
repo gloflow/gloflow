@@ -7,8 +7,7 @@ import (
 	"text/template"
 	"net/http"
 	"gopkg.in/mgo.v2"
-	
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //---------------------------------------------------
 //AUTHORIZED

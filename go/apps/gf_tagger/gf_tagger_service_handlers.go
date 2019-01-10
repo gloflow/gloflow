@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"text/template"
 	"gopkg.in/mgo.v2"
-	"gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
 func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)) error {
