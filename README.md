@@ -4,6 +4,8 @@
 
 Media publishing/management/manipulation system.
 
+(note: this is alpha software, not feature complete, and still missing more code that needs to be migrated to this repo)
+
 Its purpose is to help manage media (for now mainly images) libraries, to edit media, publish it, exchange it with other people, to analyse it. 
 Its goal is to provide free and private exchange of media between people and groups of people. It currently runs as a centralized service, but my goal is for it to also be fully decentralized and run in a P2P network. 
 Images/videos are at the core of our culture, at the core of how we perceive the world and how we remember ideas and moments. We communicate most effectivelly when we exchange images. There should be a technology that is focused on that, that is modern, accessible to technical people for modification/integration, and most importantly free and independent of any single individual or group.
