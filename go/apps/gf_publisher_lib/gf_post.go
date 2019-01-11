@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/globalsign/mgo/bson"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
 type Post struct {
@@ -36,9 +37,9 @@ type Post_note struct {
 	Creation_datetime_str string `bson:"creation_datetime_str"`
 }
 //------------------------------------------------
-func create_new_post(p_post_info_map map[string]interface{}, p_log_fun func(string,string)) (*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post.create_new_post()")
-	p_log_fun("INFO"     ,"p_post_info_map - "+fmt.Sprint(p_post_info_map))
+func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
+	p_runtime_sys.Log_fun("INFO"     ,"p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
 	//IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
 	//assert(p_post_info_map.containsKey("tags_lst"));
@@ -49,8 +50,8 @@ func create_new_post(p_post_info_map map[string]interface{}, p_log_fun func(stri
 	//POST ELEMENTS
 
 	post_elements_infos_lst := p_post_info_map["post_elements_lst"].([]interface{})
-	post_elements_lst       := create_post_elements(post_elements_infos_lst, &post_title_str, p_log_fun)
-	p_log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
+	post_elements_lst       := create_post_elements(post_elements_infos_lst, post_title_str, p_runtime_sys)
+	p_runtime_sys.Log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
 	//--------------------
 	//CREATION DATETIME
 
@@ -59,7 +60,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_log_fun func(stri
 	//--------------------
 	//FIX!! - id_str should be a hash, just as events/images have their ID"s generated as hashes
 	
-	id_str := fmt.Sprintf("%s:%s",post_title_str,creation_datetime_str)
+	id_str := fmt.Sprintf("%s:%s", post_title_str, creation_datetime_str)
 	//--------------------
 	//OPTIONAL VALUES
 
@@ -143,12 +144,12 @@ func create_new_post(p_post_info_map map[string]interface{}, p_log_fun func(stri
 //------------------------------------------------	
 //a post has to first be created, and only then can it be published
 
-func publish(p_post_title_str *string, p_log_fun func(string,string)) {
-	p_log_fun("FUN_ENTER","gf_post.publish()")
+func publish(p_post_title_str *string, p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.publish()")
 }
 //------------------------------------------------
-func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_log_fun func(string,string)) []*Post_note {
-	p_log_fun("FUN_ENTER","gf_post.create_post_notes()")
+func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Post_note {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_post_notes()")
 
 	notes_lst := []*Post_note{}
 	for _,note_map := range p_raw_notes_lst {

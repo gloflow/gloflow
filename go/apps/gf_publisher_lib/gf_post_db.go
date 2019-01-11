@@ -4,23 +4,25 @@ import (
 	"time"
 	"fmt"
 	"math/rand"
-	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
-func DB__get_post(p_post_title_str *string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) (*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
+func DB__get_post(p_post_title_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (*Post,*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
 
 	var post Post
-	//final mongo.Cursor c = posts_coll.find(mongo.where.eq("title_str",p_post_title_str));
-	err := p_mongodb_coll.Find(bson.M{"t":"post","title_str":*p_post_title_str}).One(&post)
+	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post","title_str":p_post_title_str}).One(&post)
 	if err != nil {
-		return nil,err
+		gf_err := gf_core.Error__create("failed to get a post from the DB",
+			"mongodb_find_error",
+			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			err,"gf_publisher_lib",p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return &post,nil
+	return &post, nil
 
 		/*if (result_map != null) {
 			
@@ -50,51 +52,37 @@ func DB__get_post(p_post_title_str *string,
 	//---------------------*/
 }
 //---------------------------------------------------
-func DB__get_posts_page(p_cursor_start_position_int int, //0
-	p_elements_num_int int, //50
-	p_mongodb_coll     *mgo.Collection,
-	p_log_fun          func(string,string)) ([]*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__get_posts_page()")
-
-	posts_lst := []*Post{}
-	//descending - true - sort the latest items first
-	err := p_mongodb_coll.Find(bson.M{"t":"post"}).
-		Sort("-creation_datetime_str"). //descending:true
-		Skip(p_cursor_start_position_int).
-		Limit(p_elements_num_int).
-		All(&posts_lst)
-	if err != nil {
-		return nil,err
-	}
-
-	return posts_lst,err
-}
-//---------------------------------------------------
 func DB__create_post(p_post *Post,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
 
-	err := p_mongodb_coll.Insert(p_post) //writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
+	err := p_runtime_sys.Mongodb_coll.Insert(p_post) //writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to create a post in the DB",
+			"mongodb_insert_error",
+			&map[string]interface{}{},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
 	}
 
 	return nil
 }
 //---------------------------------------------------
 func DB__update_post(p_post *Post, 
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
 
-	err := p_mongodb_coll.Update(bson.M{
-			"t"        :"post",
+	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":        "post",
 			"title_str":p_post.Title_str,
 		},
 		p_post)
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to update a gf_post in a mongodb",
+			"mongodb_update_error",
+			&map[string]interface{}{"post_title_str":p_post.Title_str,},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
 	}
 
 	return nil
@@ -110,32 +98,38 @@ func DB__delete_post(p_post_title_str *string,
 	return;
 }*/
 //---------------------------------------------------
-func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
-	p_max_random_cursor_position_int int, //500
-	p_mongodb_coll                   *mgo.Collection,
-	p_log_fun                        func(string,string)) ([]*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
+func DB__get_posts_page(p_cursor_start_position_int int, //0
+	p_elements_num_int int, //50
+	p_runtime_sys      *gf_core.Runtime_sys) ([]*Post,*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_posts_page()")
 
-	rand.Seed(time.Now().Unix())
-	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
-	p_log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	posts_lst := []*Post{}
+	//descending - true - sort the latest items first
+	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post"}).
+		Sort("-creation_datetime_str"). //descending:true
+		Skip(p_cursor_start_position_int).
+		Limit(p_elements_num_int).
+		All(&posts_lst)
 
-	posts_in_random_range_lst,err := DB__get_posts_from_offset(random_cursor_position_int,
-		p_posts_num_to_get_int,
-		p_mongodb_coll,
-		p_log_fun)
 	if err != nil {
-		return nil,err
+		gf_err := gf_core.Error__create("failed to get a posts page from the DB",
+			"mongodb_find_error",
+			&map[string]interface{}{
+				"cursor_start_position_int":p_cursor_start_position_int,
+				"elements_num_int":         p_elements_num_int,
+			},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return nil,gf_err
 	}
 
-	return posts_in_random_range_lst,nil
+	return posts_lst, nil
 }
 //---------------------------------------------------
+//REMOVE!! - is this a duplicate of DB__get_posts_page?
 func DB__get_posts_from_offset(p_cursor_position_int int,
 	p_posts_num_to_get_int int,
-	p_mongodb_coll         *mgo.Collection,
-	p_log_fun              func(string,string)) ([]*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__get_posts_from_offset()")
+	p_runtime_sys          *gf_core.Runtime_sys) ([]*Post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_posts_from_offset()")
 
 	//----------------
 	//IMPORTANT!! - because mongo"s skip() scans the collections number of docs
@@ -145,29 +139,61 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 	//----------------
 
 	var posts_lst []*Post
-	err := p_mongodb_coll.Find(bson.M{"t":"post"}).
+	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post"}).
 		Skip(p_cursor_position_int).
 		Limit(p_posts_num_to_get_int).
 		All(&posts_lst)
+
 	if err != nil {
-		return nil,err
+		gf_err := gf_core.Error__create("failed to get a posts page from the DB",
+			"mongodb_find_error",
+			&map[string]interface{}{
+				"cursor_start_position_int":p_cursor_position_int,
+				"posts_num_to_get_int":     p_posts_num_to_get_int,
+			},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return posts_lst,nil
+	return posts_lst, nil
 }
 //---------------------------------------------------
-func DB__check_post_exists(p_post_title_str *string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) (bool,error) {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__check_post_exists()")
+func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
+	p_max_random_cursor_position_int int, //500
+	p_runtime_sys                    *gf_core.Runtime_sys) ([]*Post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
+
+	rand.Seed(time.Now().Unix())
+	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
+	p_runtime_sys.Log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+
+	posts_in_random_range_lst,gf_err := DB__get_posts_from_offset(random_cursor_position_int, p_posts_num_to_get_int, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	return posts_in_random_range_lst, nil
+}
+//---------------------------------------------------
+func DB__check_post_exists(p_post_title_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (bool,*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__check_post_exists()")
 	
-	count_int,err := p_mongodb_coll.Find(bson.M{"t":"post","title_str":*p_post_title_str,}).Count()
+	count_int,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+			"t":        "post",
+			"title_str":p_post_title_str,
+		}).Count()
+
 	if err != nil {
-		return false,err
+		gf_err := gf_core.Error__create("failed to check if the post exists in DB",
+			"mongodb_find_error",
+			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return false, gf_err
 	}
 	if count_int > 0 {
-		return true,nil
+		return true, nil
 	} else {
-		return false,nil
+		return false, nil
 	}
 }

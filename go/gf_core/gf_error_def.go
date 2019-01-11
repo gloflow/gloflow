@@ -154,6 +154,9 @@ func error__get_defs() map[string]error_def {
 		},
 		//---------------
 		//DATA_VERIFICATION
+		"verify__invalid_value_error":{
+			Descr_str:"data failed verification, not an expected value",
+		},
 		"verify__missing_key_error":{
 			Descr_str:"data failed verification, the needed key is missing",
 		},

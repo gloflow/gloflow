@@ -11,36 +11,41 @@ import (
 	"encoding/json"
 	"text/template"
 	"github.com/globalsign/mgo"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //-------------------------------------------------
-func init_handlers(p_gf_images_service_host_port_str *string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun    func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_publisher_service_handlers.init_handlers()")
+func init_handlers(p_gf_images_service_host_port_str string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_publisher_service_handlers.init_handlers()")
 
 	//---------------------
 	//TEMPLATES
-	post__tmpl,err := template.New("gf_post.html").ParseFiles("./templates/gf_post.html")
+	pst__template_path_str := "./templates/gf_post.html"
+	post__tmpl,err         := template.New("gf_post.html").ParseFiles(pst__template_path_str)
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to parse a template",
+			"template_create_error",
+			&map[string]interface{}{"template_path_str":template_path_str,},
+			err,"gf_publisher",p_runtime_sys)
+		return gf_err
 	}
 
-	posts_browser__tmpl,err := template.New("gf_posts_browser.html").ParseFiles("./templates/gf_posts_browser.html")
+	pstbrows__template_path_str := "./templates/gf_posts_browser.html"
+	posts_browser__tmpl,err := template.New("gf_posts_browser.html").ParseFiles(pstbrows__template_path_str)
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to parse a template",
+			"template_create_error",
+			&map[string]interface{}{"template_path_str":template_path_str,},
+			err,"gf_publisher",p_runtime_sys)
+		return gf_err
 	}
-
-	/*posts_stats__tmpl,err := template.New("gf_posts_stats.html").ParseFiles("./templates/gf_posts_stats.html")
-	if err != nil {
-		return err
-	}*/
 	//---------------------
 	//HIDDEN DASHBOARD
 
 	http.HandleFunc("/posts/dash/18956180__42115/",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/dash ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/dash ----------")
 
 
 	})
@@ -48,7 +53,7 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 	//POSTS
 	
 	http.HandleFunc("/posts/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/create ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/create ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -60,7 +65,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 		    err              := json.Unmarshal(body_bytes_lst,&post_info_map)
 
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/create", err, "create_post pipeline received bad post_info_map input", p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
@@ -72,7 +76,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 				p_log_fun)
 
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/create", err, "create_post pipeline failed", p_resp, p_mongodb_coll, p_log_fun)
 				return 
 			}
@@ -91,8 +94,8 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 	//POST_STATUS
 	
 	http.HandleFunc("/posts/status",func(p_resp http.ResponseWriter, p_req *http.Request) {
-			p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/status ----------")
-		})
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/status ----------")
+	})
 	//---------------------
 	/*http.HandleFunc("/posts/create_with_updates",func(p_resp http.ResponseWriter,
 													p_req *http.Request) {
@@ -100,17 +103,17 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 		})*/
 
 	http.HandleFunc("/posts/update",func(p_resp http.ResponseWriter, p_req *http.Request) {
-			p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/update ----------")
-		})
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/update ----------")
+	})
 
 	http.HandleFunc("/posts/delete",func(p_resp http.ResponseWriter, p_req *http.Request) {
-			p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/delete ----------")
-		})
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/delete ----------")
+	})
 	//---------------------
 	//BROWSER
 
 	http.HandleFunc("/posts/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -133,7 +136,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 				p_log_fun)
 
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/browser", err, "failed to render posts_browser initial page", p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
@@ -148,7 +150,7 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 	//---------------------
 	//GET_BROWSER_PAGE (slice of posts data series)
 	http.HandleFunc("/posts/browser_page",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser_page ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser_page ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -162,7 +164,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 			if a_lst,ok := qs_map["pg_index"]; ok {
 				page_index_int,_ = strconv.Atoi(a_lst[0]) //user supplied value
 				if err != nil {
-					p_log_fun("ERROR",fmt.Sprint(err))
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", err, "pg_index (page_index) is not an integer", p_resp, p_mongodb_coll, p_log_fun)
 					return
 				}
@@ -172,7 +173,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 			if a_lst,ok := qs_map["pg_size"]; ok {
 				page_size_int,err = strconv.Atoi(a_lst[0]) //user supplied value
 				if err != nil {
-					p_log_fun("ERROR",fmt.Sprint(err))
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", err, "pg_size (page_size) is not an integer", p_resp, p_mongodb_coll, p_log_fun)
 					return
 				}
@@ -181,7 +181,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 			
 			serialized_pages_lst,err := gf_publisher_lib.Get_posts_page(page_index_int, page_size_int, p_mongodb_coll, p_log_fun)
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/browser_page", err, "failed to get posts page", p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
@@ -204,7 +203,7 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 	//---------------------
 	//GET POST
 	http.HandleFunc("/posts/",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/ ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/ ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -215,8 +214,7 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 			qs_map := p_req.URL.Query()
 
 			//response_format_str - "j"(for json)|"h"(for html)
-			response_format_str := gf_rpc_lib.Get_response_format(qs_map,
-															p_log_fun)
+			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_log_fun)
 			//--------------------
 			//POST_TITLE
 
@@ -225,7 +223,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 
 			//IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
 			if len(url_elements_lst) != 3 {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/", err, "get_post url is not of proper format - "+url_str, p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
@@ -240,11 +237,10 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 			post_title_encoded_str := strings.Replace(raw_post_title_str,"+"," ",-1)
 			post_title_str,err     := url.QueryUnescape(post_title_encoded_str)
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/", err, "post title cant be query_unescaped - "+post_title_encoded_str, p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
-			p_log_fun("INFO","post_title_str - "+post_title_str)
+			p_runtime_sys.Log_fun("INFO","post_title_str - "+post_title_str)
 			//--------------------
 
 			err = gf_publisher_lib.Pipeline__get_post(&post_title_str,
@@ -255,7 +251,6 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 				p_log_fun)
 
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
 				gf_rpc_lib.Error__in_handler("/posts/", err, "get_post pipeline failed", p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
@@ -272,7 +267,7 @@ func init_handlers(p_gf_images_service_host_port_str *string,
 	http.HandleFunc("/posts_elements/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 
-		})
+	})
 	//---------------------
 
 	return nil

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 type Post_element struct {
@@ -57,10 +58,10 @@ type Post_element struct {
 }
 //---------------------------------------------------
 func create_post_elements(p_post_elements_infos_lst []interface{},
-	p_post_title_str *string,
-	p_log_fun         func(string,string)) []*Post_element {
-	p_log_fun("FUN_ENTER","gf_post_element.create_post_elements()")
-	p_log_fun("INFO"     ,"p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
+	p_post_title_str string,
+	p_runtime_sys    *gf_core.Runtime_sys) []*Post_element {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.create_post_elements()")
+	p_runtime_sys.Log_fun("INFO",     "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
 	post_elements_lst := []*Post_element{}
 	for i,post_element := range p_post_elements_infos_lst {
@@ -79,12 +80,12 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		//FIX!! - post_index_3_str shouldnt be serialized in ID as a list
 		//example ID output - "pub_pe:test_post_"title:[0, 0, 0]"
 		post_index_3_str    := fmt.Sprint(post_index_3_lst) //post_element_map["post_index_3_lst"])
-		post_element_id_str := fmt.Sprintf("pub_pe:%s:%s",*p_post_title_str,post_index_3_str)
+		post_element_id_str := fmt.Sprintf("pub_pe:%s:%s", p_post_title_str, post_index_3_str)
 		//------------------			
 		creation_datetime_str := time.Now().String()
 		extern_url_str        := post_element_map["extern_url_str"].(string)
 
-		p_log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
+		p_runtime_sys.Log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 		//------------------
 		post_element := &Post_element{
 			Id_str:               post_element_id_str,
@@ -100,6 +101,43 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 	}
 
 	return post_elements_lst
+}
+//---------------------------------------------------
+func get_first_image_post_element(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) *Post_element {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
+
+	for _,post_element := range p_post.Post_elements_lst {
+		if post_element.Type_str == "image" {
+			return post_element
+		}
+	}
+	return nil //post has no image post_element
+}
+//---------------------------------------------------
+func get_post_elements_of_type(p_post *Post,
+	p_type_str    string,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Post_element,*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
+	
+	if !(p_type_str == "image"  ||
+		p_type_str == "link"   ||
+		p_type_str == "video"  ||
+		p_type_str == "iframe" ||
+		p_type_str == "text") {
+		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - ",p_type_str),
+			"verify__invalid_value_error",
+			&map[string]interface{}{"type_str":p_type_str,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	post_elements_lst := []*Post_element{}
+	for _,post_element := range p_post.Post_elements_lst {
+		if post_element.Type_str == p_type_str {
+			post_elements_lst = append(post_elements_lst,post_element)
+		}
+	}
+	return post_elements_lst,nil
 }
 //---------------------------------------------------
 /*func create_extern_post_element(p_post_element_info_map map[string]interface{},
@@ -204,38 +242,3 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 	});
 	//------------------
 }*/
-//---------------------------------------------------
-func get_first_image_post_element(p_post *Post, p_log_fun func(string,string)) *Post_element {
-	p_log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
-
-	for _,post_element := range p_post.Post_elements_lst {
-		if post_element.Type_str == "image" {
-			return post_element
-		}
-	}
-
-	return nil //post has no image post_element
-}
-//---------------------------------------------------
-func get_post_elements_of_type(p_post *Post,
-	p_type_str string,
-	p_log_fun  func(string,string)) ([]*Post_element,error) {
-	p_log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
-	
-	if !(p_type_str == "image"  ||
-		p_type_str == "link"   ||
-		p_type_str == "video"  ||
-		p_type_str == "iframe" ||
-		p_type_str == "text") {
-		return nil,errors.New("p_type_str not of type image|link|video|iframe|text - "+p_type_str)
-	}
-
-	post_elements_lst := []*Post_element{}
-	for _,post_element := range p_post.Post_elements_lst {
-		if post_element.Type_str == p_type_str {
-			post_elements_lst = append(post_elements_lst,post_element)
-		}
-	}
-
-	return post_elements_lst,nil
-}

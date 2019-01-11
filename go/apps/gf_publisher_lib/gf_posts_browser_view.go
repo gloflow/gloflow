@@ -3,14 +3,15 @@ package gf_publisher_lib
 import (
 	"text/template"
 	"net/http"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
 	p_tmpl                *template.Template,
 	p_posts_page_size_int int, //5
 	p_resp                http.ResponseWriter,
-	p_log_fun             func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
+	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
 
 	pages_lst := [][]map[string]interface{}{}
 	for _,posts_page_lst := range p_posts_pages_lst {

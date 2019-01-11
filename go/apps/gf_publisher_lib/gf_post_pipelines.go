@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"text/template"
 	"github.com/globalsign/mgo"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
 //CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
-	p_gf_images_service_host_port_str *string,
-	p_mongo_coll                      *mgo.Collection,
-	p_log_fun                         func(string,string)) (*Post,*string,error) {
-	p_log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__create_post()")
+	p_gf_images_service_host_port_str string,
+	p_runtime_sys                     *gf_core.Runtime_sys) (*Post, string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
 	//VERIFY INPUT
@@ -21,56 +21,51 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	max_description_chars_int := 1000
 	post_element_tag_max_int  := 20
 
-	p_log_fun("INFO","p_post_info_map - "+fmt.Sprint(p_post_info_map))
-	verified_post_info_map,err := verify_external_post_info(p_post_info_map,
+	p_runtime_sys.Log_fun("INFO","p_post_info_map - "+fmt.Sprint(p_post_info_map))
+	verified_post_info_map, gf_err := verify_external_post_info(p_post_info_map,
 		max_title_chars_int,
 		max_description_chars_int,
 		post_element_tag_max_int,
-		p_mongo_coll,
-		p_log_fun)
-	if err != nil {
-		return nil,nil,err
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, "", gf_err
 	}
 	//----------------------
 	//CREATE POST
-	post,err := create_new_post(verified_post_info_map, p_log_fun)
-	if err != nil {
-		return nil,nil,err
+	post, gf_err := create_new_post(verified_post_info_map, p_runtime_sys)
+	if gf_err != nil {
+		return nil, "", gf_err
 	}
 
-	p_log_fun("INFO","post - "+fmt.Sprint(post))
+	p_runtime_sys.Log_fun("INFO","post - "+fmt.Sprint(post))
 	//----------------------
 	//PERSIST POST
-	err = DB__create_post(post, p_mongo_coll, p_log_fun)
-	if err != nil {
-		return nil,nil,err
+	gf_err = DB__create_post(post, p_runtime_sys)
+	if gf_err != nil {
+		return nil, "", gf_err
 	}
 	//----------------------
 	//IMAGES
 	//IMPORTANT - long-lasting image operation
-	images_job_id_str,img_err := process_external_images(post,
-		p_gf_images_service_host_port_str,
-		p_mongo_coll,
-		p_log_fun)
-	if img_err != nil {
-		return nil,nil,img_err
+	images_job_id_str, img_gf_err := process_external_images(post, p_gf_images_service_host_port_str, p_runtime_sys)
+	if img_gf_err != nil {
+		return nil, "", img_gf_err
 	}
 	//----------------------
 
-	return post,images_job_id_str,nil
+	return post, images_job_id_str, nil
 }
 //------------------------------------------------
-func Pipeline__get_post(p_post_title_str *string,
-	p_response_format_str *string,
+func Pipeline__get_post(p_post_title_str string,
+	p_response_format_str string,
 	p_tmpl                *template.Template,
 	p_resp                http.ResponseWriter,
-	p_mongo_coll          *mgo.Collection,
-	p_log_fun             func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
+	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
-	post,err := DB__get_post(p_post_title_str, p_mongo_coll, p_log_fun)
-	if err != nil {
-		return err
+	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
 	//------------------
@@ -89,7 +84,7 @@ func Pipeline__get_post(p_post_title_str *string,
 	post.Tags_lst = whole_tags_lst
 	//------------------
 
-	switch *p_response_format_str {
+	switch p_response_format_str {
 		//------------------
 		//HTML RENDERING
 		case "html":
@@ -98,24 +93,25 @@ func Pipeline__get_post(p_post_title_str *string,
 			//ADD!! - cache this result in redis, and server it from there
 			//        only re-generate the template every so often
 			//        or figure out some quick way to check if something changed
-			err := post__render_template(post, p_tmpl, p_resp, p_log_fun)
-			if err != nil {
-				return err
+			gf_err := post__render_template(post, p_tmpl, p_resp, p_runtime_sys)
+			if gf_err != nil {
+				return gf_err
 			}
 		//------------------
 		//JSON EXPORT
-		
 		case "json":
 
-			post_lst,err := json.Marshal(post)
+			post_byte_lst,err := json.Marshal(post)
 			if err != nil {
-				return err
+				gf_err := gf_core.Error__create("failed to serialize a Post into JSON form",
+					"json_marshal_error",
+					&map[string]interface{}{"post_title_str":p_post_title_str,},
+					err,"gf_publisher_lib",p_runtime_sys)
+				return gf_err
 			}
-			post_str := string(post_lst)
-
+			post_str := string(post_byte_lst)
 			p_resp.Write([]byte(post_str))
 		//------------------
 	}
-
 	return nil
 }

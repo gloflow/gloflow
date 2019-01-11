@@ -2,39 +2,36 @@ package gf_publisher_lib
 
 import (
 	"fmt"
-	"github.com/globalsign/mgo"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------
 //TAGS
 //------------------------------------------
-func Add_tags_to_post_in_db(p_post_title_str *string,
-	p_tags_lst     []string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) (*Post,error) {
-	p_log_fun("FUN_ENTER","gf_post_utils.Add_tags_to_post_in_db()")
+func Add_tags_to_post_in_db(p_post_title_str string,
+	p_tags_lst    []string,
+	p_runtime_sys *gf_core.Runtime_sys) (*Post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.Add_tags_to_post_in_db()")
 	
-	post,err := DB__get_post(p_post_title_str, p_mongodb_coll, p_log_fun)
-	if err != nil {
-		return nil,err
+	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
-	add_tags_to_post(post, p_tags_lst, p_log_fun)
-	
-	fmt.Println(">>>>>>>>>>>>>>>>>> -------------");
-	fmt.Println(post.Tags_lst)
+	add_tags_to_post(post, p_tags_lst, p_runtime_sys)
+	fmt.Println(fmt.Sprintf(" --------- post tags - %s",post.Tags_lst))
 
-	err = DB__update_post(post, p_mongodb_coll, p_log_fun)
-	if err != nil {
-		return nil,err
+	gf_err = DB__update_post(post, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
-	return post,nil
+	return post, nil
 }
 //------------------------------------------
 func add_tags_to_post(p_post *Post,
-	p_tags_lst []string,
-	p_log_fun  func(string,string)) {
-	p_log_fun("FUN_ENTER","gf_post_utils.add_tags_to_post()")
+	p_tags_lst    []string,
+	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
 		p_post.Tags_lst = append(p_post.Tags_lst,p_tags_lst...)
@@ -62,11 +59,10 @@ func add_tags_to_post(p_post *Post,
 	}
 }
 //---------------------------------------------------
-func get_posts_small_thumbnails_urls(p_posts_lst []*Post, p_log_fun func(string,string)) map[string][]string {
-	p_log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
+func get_posts_small_thumbnails_urls(p_posts_lst []*Post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}
-	
 	for _,post := range p_posts_lst {
 
 		post_small_thumbnails_urls_lst := []string{}
@@ -75,10 +71,8 @@ func get_posts_small_thumbnails_urls(p_posts_lst []*Post, p_log_fun func(string,
 			thumb_url_str                           := post_element.Img_thumbnail_small_url_str
 			post_element.Img_thumbnail_small_url_str = thumb_url_str
 		}
-
 		posts_small_thumbnails_urls_map[post.Title_str] = post_small_thumbnails_urls_lst
 	}
-
 	return posts_small_thumbnails_urls_map
 }
 /*//------------------------------------------
@@ -166,12 +160,7 @@ String get_post_thumbnail_url_str(gf_post.Post_ADT p_post_adt,
 	//              then using the opportunity to initialize the new SYMPHONY thumbnail_url_str property
 	if (p_post_adt.thumbnail_url_str == null) {
 
-		List<gf_post_element.PostElement_ADT> image_post_elements_lst = gf_post_element.get_post_elements_of_type(p_post_adt,
-																												  "image",
-																												  p_log_fun);
-
-		print(">>>>>>>>>>>>>>>>>>>> ---------");
-		print(image_post_elements_lst);
+		List<gf_post_element.PostElement_ADT> image_post_elements_lst = gf_post_element.get_post_elements_of_type(p_post_adt, "image", p_log_fun);
 
 		//some posts dont have any image elements, and since the first image element of the post is used as its thumbnail,
 		//this will fail... 

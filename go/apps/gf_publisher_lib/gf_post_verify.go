@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"github.com/globalsign/mgo"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
@@ -15,27 +14,24 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	p_max_title_chars_int       int, //100
 	p_max_description_chars_int int, //1000
 	p_post_element_tag_max_int  int, //20
-	p_mongodb_coll              *mgo.Collection,
-	p_log_fun                   func(string,string)) (map[string]interface{},error) {
-	p_log_fun("FUN_ENTER","gf_post_verify.verify_external_post_info()")
-		
-	//default_main_image_url_str := "http://gloflow.com/gf_publisher/objects/images/gf_landingpage_3.png"
+	p_runtime_sys               *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_external_post_info()")
 
 	//-------------------
 	//TYPE
 	if _,ok := p_post_info_map["client_type_str"]; !ok {
-		return nil,errors.New("post client_type_str not supplied")
+		return nil, errors.New("post client_type_str not supplied")
 	}
 	//-------------------
 	//TITLE
 
 	if _,ok := p_post_info_map["title_str"]; !ok {
-		return nil,errors.New("post title_str not supplied")
+		return nil, errors.New("post title_str not supplied")
 	}
 	title_str := p_post_info_map["title_str"].(string)
 
 	if len(title_str) > p_max_title_chars_int {
-		return nil,errors.New(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int))
+		return nil, errors.New(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int))
 	}
 
 	//ATTENTION!!
@@ -52,32 +48,32 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	//DESCRIPTION
 		
 	if _,ok := p_post_info_map["description_str"]; !ok {
-		return nil,errors.New("post description_str not supplied")
+		return nil, errors.New("post description_str not supplied")
 	}
 	description_str := p_post_info_map["description_str"].(string)
 
 	if len(description_str) > p_max_description_chars_int {
-		return nil,errors.New(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int))
+		return nil, errors.New(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int))
 	}
 	//-------------------
 	//POST ELEMENTS
-	err := verify_post_elements(p_post_info_map, p_post_element_tag_max_int, p_log_fun)
-	if err != nil {
-		return nil,err
+	gf_err := verify_post_elements(p_post_info_map, p_post_element_tag_max_int, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 	//-------------------	
 	//TAGS
-	tags_lst,err := verify_tags(p_post_info_map, p_log_fun)
-	if err != nil {
-		return nil,err
+	tags_lst, gf_err := verify_tags(p_post_info_map, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 	//-------------------
 	if _,ok := p_post_info_map["poster_user_name_str"]; !ok {
-		return nil,errors.New("post poster_user_name_str not supplied")
+		return nil, errors.New("post poster_user_name_str not supplied")
 	}
 
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
-		return nil,errors.New("post post_elements_lst not supplied")
+		return nil, errors.New("post post_elements_lst not supplied")
 	}
 
 	//"id_str" - not included here since p_post_info_map comes from outside the system
@@ -91,29 +87,29 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 		"tags_lst":            tags_lst,
 	}
 	
-	return verified_post_info_map,nil
+	return verified_post_info_map, nil
 }
 //---------------------------------------------------
-func verify_tags(p_post_info_map map[string]interface{}, p_log_fun func(string,string)) ([]string,error) { 
-	p_log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
+func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) { 
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
 	if _,ok := p_post_info_map["tags_str"]; !ok {
-		return nil,errors.New("p_post_info_map doesnt contain the tags_str key")
+		return nil, errors.New("p_post_info_map doesnt contain the tags_str key")
 	}
 
 	input_tags_str := p_post_info_map["tags_str"].(string)
 	tags_lst       := strings.Split(input_tags_str," ")
 
-	p_log_fun("INFO","input_tags_str - "+fmt.Sprint(input_tags_str))
-	p_log_fun("INFO","tags_lst       - "+fmt.Sprint(tags_lst))
+	p_runtime_sys.Log_fun("INFO","input_tags_str - "+fmt.Sprint(input_tags_str))
+	p_runtime_sys.Log_fun("INFO","tags_lst       - "+fmt.Sprint(tags_lst))
 
-	return tags_lst,nil
+	return tags_lst, nil
 }
 //---------------------------------------------------
 func verify_post_elements(p_post_info_map map[string]interface{},
 	p_post_element_tag_max_int int,
-	p_log_fun                  func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
+	p_runtime_sys              *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
 		return errors.New("p_post_info_map doesnt contain the post_elements_lst key")
@@ -123,9 +119,9 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	//verify each individiaul post_element
 	for _,post_element := range post_elements_lst {
 		post_element_map := post_element.(map[string]interface{})
-		err := verify_post_element(post_element_map, p_post_element_tag_max_int, p_log_fun)
-		if err != nil {
-			return err
+		gf_err := verify_post_element(post_element_map, p_post_element_tag_max_int, p_runtime_sys)
+		if gf_err != nil {
+			return gf_err
 		}
 
 		//------------------------
@@ -141,9 +137,9 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 //---------------------------------------------------
 func verify_post_element(p_post_element_info_map map[string]interface{},
 	p_post_element_tag_max_int int, //20
-	p_log_fun                  func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_verify.verify_post_element()")
-	p_log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
+	p_runtime_sys              *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_element()")
+	p_runtime_sys.Log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
 
 	post_element_type_str := p_post_element_info_map["type_str"].(string)
 	
@@ -175,7 +171,6 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 
 	if pe_tags_lst,ok := p_post_element_info_map["tags_lst"]; ok {
 		for _,tag_str := range pe_tags_lst.([]string) {
-
 			if len(tag_str) <= p_post_element_tag_max_int {
 				return errors.New(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int))
 			}

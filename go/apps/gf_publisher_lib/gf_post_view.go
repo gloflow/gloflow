@@ -4,22 +4,23 @@ import (
 	"errors"
 	"net/http"
 	"text/template"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func post__render_template(p_post *Post,
-	p_tmpl    *template.Template,
-	p_resp    http.ResponseWriter,
-	p_log_fun func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_view.post__render_template()")
+	p_tmpl        *template.Template,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.post__render_template()")
 	
-	template_post_elements_lst,err := package_post_elements_infos(p_post, p_log_fun)
-	if err != nil {
-		return err
+	template_post_elements_lst, gf_err := package_post_elements_infos(p_post, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
-	image_post_elements_og_info_lst,err := get_image_post_elements_FBOpenGraph_info(p_post, p_log_fun)
-	if err != nil {
-		return err
+	image_post_elements_og_info_lst, gf_err := get_image_post_elements_FBOpenGraph_info(p_post, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
 	post_tags_lst := []string{}
@@ -67,14 +68,14 @@ func post__render_template(p_post *Post,
 	return nil
 }
 //--------------------------------------------------
-func package_post_elements_infos(p_post *Post, p_log_fun func(string,string)) ([]map[string]interface{},error) {
-	p_log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
+func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
 
 	for _,post_element := range p_post.Post_elements_lst {
 
-		p_log_fun("INFO","post_element.Type_str - "+post_element.Type_str)
+		p_runtime_sys.Log_fun("INFO","post_element.Type_str - "+post_element.Type_str)
 
 		if !(post_element.Type_str == "link" ||
 			post_element.Type_str == "image" ||
@@ -126,12 +127,12 @@ func package_post_elements_infos(p_post *Post, p_log_fun func(string,string)) ([
 	return template_post_elements_lst,nil
 }
 //--------------------------------------------------
-func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_log_fun func(string,string)) ([]map[string]string,error) {
-	p_log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")
+func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
-	image_post_elements_lst,err := get_post_elements_of_type(p_post, "image", p_log_fun)
-	if err != nil {
-		return nil,err
+	image_post_elements_lst, gf_err := get_post_elements_of_type(p_post, "image", p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
 	var top_image_post_elements_lst []*Post_element
