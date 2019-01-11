@@ -1,7 +1,6 @@
 package gf_publisher_lib
 
 import (
-	"errors"
 	"fmt"
 	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -119,25 +118,18 @@ func get_post_elements_of_type(p_post *Post,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*Post_element,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
 	
-	if !(p_type_str == "image"  ||
-		p_type_str == "link"   ||
-		p_type_str == "video"  ||
-		p_type_str == "iframe" ||
-		p_type_str == "text") {
-		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - ",p_type_str),
-			"verify__invalid_value_error",
-			&map[string]interface{}{"type_str":p_type_str,},
-			nil, "gf_publisher_lib", p_runtime_sys)
+	gf_err := verify_post_element_type(p_type_str, p_runtime_sys)
+	if gf_err != nil {
 		return nil, gf_err
 	}
-
+	
 	post_elements_lst := []*Post_element{}
 	for _,post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == p_type_str {
 			post_elements_lst = append(post_elements_lst,post_element)
 		}
 	}
-	return post_elements_lst,nil
+	return post_elements_lst, nil
 }
 //---------------------------------------------------
 /*func create_extern_post_element(p_post_element_info_map map[string]interface{},

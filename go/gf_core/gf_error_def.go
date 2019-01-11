@@ -163,6 +163,9 @@ func error__get_defs() map[string]error_def {
 		"verify__invalid_key_value_error":{
 			Descr_str:"data failed verification, the key does not have the expected value",
 		},
+		"verify__value_not_integer_error":{
+			Descr_str:"data failed verification, the supplied value is not an integer",
+		},
 		"verify__string_too_short_error":{
 			Descr_str:"data failed verification, the string is too short",
 		},
@@ -174,6 +177,9 @@ func error__get_defs() map[string]error_def {
 		},
 		"verify__invalid_image_nsfv_error":{
 			Descr_str:"image NSFV verification failed",
+		},
+		"verify__invalid_query_string_encoding_error":{
+			Descr_str:"string is not a valid query-string encoding",
 		},
 		//---------------
 		//S3

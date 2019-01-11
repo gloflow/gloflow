@@ -1,7 +1,7 @@
 package gf_publisher_lib
 
 import (
-	"errors"
+	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
 )

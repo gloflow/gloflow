@@ -58,7 +58,11 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
 	})
 
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to render the posts browser template",
+			"template_render_error",
+			&map[string]interface{}{},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
 	}
 
 	return nil

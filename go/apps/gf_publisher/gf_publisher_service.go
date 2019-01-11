@@ -123,14 +123,15 @@ func Run_service__in_process(p_port_str string,
 		p_init_done_ch <- true
 	}
 	//----------------------
-
-	p_log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
-	p_log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	err = http.ListenAndServe(":"+p_port_str,nil)
-	if err != nil {
+	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
+	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	http_err := http.ListenAndServe(":"+p_port_str,nil)
+	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		p_log_fun("ERROR",msg_str)
-		panic(msg_str)
+		runtime_sys.Log_fun("ERROR",msg_str)
+		runtime_sys.Log_fun("ERROR",fmt.Sprint(http_err))
+		
+		panic(fmt.Sprint(http_err))
 	}
 }

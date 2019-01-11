@@ -57,7 +57,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
 					"failed parse input for adding an image to a flow", //p_user_msg_str
@@ -119,7 +119,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/imgs_exist",
 					"failed to parse input to check if images exist in a flow", //p_user_msg_str

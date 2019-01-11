@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"text/template"
 	"net/http"
-	"github.com/globalsign/mgo"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
@@ -14,9 +13,9 @@ func Get_posts_page(p_page_index_int int,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_pipelines.Get_posts_page()")
 
 	cursor_start_position_int := p_page_index_int*p_page_elements_num_int
-	page_lst,err              := DB__get_posts_page(cursor_start_position_int, p_page_elements_num_int, p_runtime_sys)
-	if err != nil {
-		return nil,err
+	page_lst, gf_err          := DB__get_posts_page(cursor_start_position_int, p_page_elements_num_int, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
 	serialized_page_lst := []map[string]interface{}{}
@@ -28,10 +27,10 @@ func Get_posts_page(p_page_index_int int,
 			"thumbnail_url_str":    post.Thumbnail_url_str,
 			"tags_lst":             post.Tags_lst,
 		}
-		serialized_page_lst = append(serialized_page_lst,post_map)
+		serialized_page_lst = append(serialized_page_lst, post_map)
 	}
 
-	return serialized_page_lst,nil
+	return serialized_page_lst, nil
 }
 //------------------------------------------------
 //get initial pages - the pages that are rendered in the initial HTML template. 

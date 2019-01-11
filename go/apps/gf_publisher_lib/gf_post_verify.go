@@ -1,7 +1,6 @@
 package gf_publisher_lib
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -20,18 +19,32 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	//-------------------
 	//TYPE
 	if _,ok := p_post_info_map["client_type_str"]; !ok {
-		return nil, errors.New("post client_type_str not supplied")
+		gf_err := gf_core.Error__create("post client_type_str not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	//-------------------
 	//TITLE
-
 	if _,ok := p_post_info_map["title_str"]; !ok {
-		return nil, errors.New("post title_str not supplied")
+		gf_err := gf_core.Error__create("post title_str not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	title_str := p_post_info_map["title_str"].(string)
 
 	if len(title_str) > p_max_title_chars_int {
-		return nil, errors.New(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int))
+		gf_err := gf_core.Error__create(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int),
+			"verify__string_too_long_error",
+			&map[string]interface{}{
+				"title_str":          title_str,
+				"max_title_chars_int":p_max_title_chars_int,
+			},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//ATTENTION!!
@@ -46,14 +59,24 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	}
 	//-------------------
 	//DESCRIPTION
-		
 	if _,ok := p_post_info_map["description_str"]; !ok {
-		return nil, errors.New("post description_str not supplied")
+		gf_err := gf_core.Error__create("post description_str not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	description_str := p_post_info_map["description_str"].(string)
 
 	if len(description_str) > p_max_description_chars_int {
-		return nil, errors.New(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int))
+		gf_err := gf_core.Error__create(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int),
+			"verify__string_too_long_error",
+			&map[string]interface{}{
+				"description_str":          description_str,
+				"max_description_chars_int":p_max_description_chars_int,
+			},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	//-------------------
 	//POST ELEMENTS
@@ -69,11 +92,19 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	}
 	//-------------------
 	if _,ok := p_post_info_map["poster_user_name_str"]; !ok {
-		return nil, errors.New("post poster_user_name_str not supplied")
+		gf_err := gf_core.Error__create("post poster_user_name_str not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
-		return nil, errors.New("post post_elements_lst not supplied")
+		gf_err := gf_core.Error__create("post post_elements_lst not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//"id_str" - not included here since p_post_info_map comes from outside the system
@@ -90,11 +121,15 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	return verified_post_info_map, nil
 }
 //---------------------------------------------------
-func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) { 
+func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) ([]string, *gf_core.Gf_error) { 
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
 	if _,ok := p_post_info_map["tags_str"]; !ok {
-		return nil, errors.New("p_post_info_map doesnt contain the tags_str key")
+		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the tags_str key",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	input_tags_str := p_post_info_map["tags_str"].(string)
@@ -112,14 +147,18 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
-		return errors.New("p_post_info_map doesnt contain the post_elements_lst key")
+		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the post_elements_lst key",
+			"verify__missing_key_error",
+			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
 	}
 	post_elements_lst := p_post_info_map["post_elements_lst"].([]interface{})
 
 	//verify each individiaul post_element
 	for _,post_element := range post_elements_lst {
 		post_element_map := post_element.(map[string]interface{})
-		gf_err := verify_post_element(post_element_map, p_post_element_tag_max_int, p_runtime_sys)
+		gf_err           := verify_post_element(post_element_map, p_post_element_tag_max_int, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -141,18 +180,15 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_element()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
 
+	//--------------
+	//POST_ELEMENT_TYPE
 	post_element_type_str := p_post_element_info_map["type_str"].(string)
-	
-	if !(post_element_type_str == "link"  ||
-		post_element_type_str == "image"  ||
-		post_element_type_str == "video"  ||
-		post_element_type_str == "iframe" ||
-		post_element_type_str == "text") {
 
-		return errors.New("post_element_type_str is not link|image|video|iframe|text - "+post_element_type_str)
+	gf_err := verify_post_element_type(post_element_type_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 	
-	//--------------
 	if (post_element_type_str == "link"  ||
 		post_element_type_str == "image" ||
 		post_element_type_str == "video" ||
@@ -163,20 +199,48 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		//        remove p_post_element_info_dict.containsKey("url_str") from this assert
 		if !(gf_core.Map_has_key(p_post_element_info_map,"url_str") ||
 			gf_core.Map_has_key(p_post_element_info_map,"extern_url_str")) {
-			return errors.New("p_post_element_info_map doesnt contain url_str|extern_url_str")
+		
+			gf_err := gf_core.Error__create("p_post_element_info_map doesnt contain url_str|extern_url_str",
+				"verify__missing_key_error",
+				&map[string]interface{}{"post_element_info_map":p_post_element_info_map,},
+				nil, "gf_publisher_lib", p_runtime_sys)
+			return gf_err
 		}
 	}
 	//--------------
 	//TAGS       
-
 	if pe_tags_lst,ok := p_post_element_info_map["tags_lst"]; ok {
 		for _,tag_str := range pe_tags_lst.([]string) {
 			if len(tag_str) <= p_post_element_tag_max_int {
-				return errors.New(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int))
+				
+				gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int),
+					"verify__string_too_long_error",
+					&map[string]interface{}{
+						"tag_str":                 tag_str,
+						"post_element_tag_max_int":p_post_element_tag_max_int,
+					},
+					nil, "gf_publisher_lib", p_runtime_sys)
+				return gf_err	
 			}
 		}
 	}
 	//--------------
+	return nil
+}
+//---------------------------------------------------
+func verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
+	if !(p_type_str == "link"  ||
+		p_type_str == "image"  ||
+		p_type_str == "video"  ||
+		p_type_str == "iframe" ||
+		p_type_str == "text") {
+		
+		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - ", p_type_str),
+			"verify__invalid_value_error",
+			&map[string]interface{}{"post_element_type_str": p_type_str,},
+			nil, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
+	}
 	return nil
 }

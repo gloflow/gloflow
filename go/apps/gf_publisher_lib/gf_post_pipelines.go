@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"encoding/json"
 	"text/template"
-	"github.com/globalsign/mgo"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------

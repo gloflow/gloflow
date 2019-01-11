@@ -38,8 +38,8 @@ type Post_note struct {
 }
 //------------------------------------------------
 func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_post_info_map - "+fmt.Sprint(p_post_info_map))
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_new_post()")
+	p_runtime_sys.Log_fun("INFO"     , "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
 	//IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
 	//assert(p_post_info_map.containsKey("tags_lst"));
@@ -109,7 +109,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 		notes_lst = []*Post_note{}
 	} else {
 		notes_infos_lst := p_post_info_map["notes_lst"].([]map[string]interface{})
-		notes_lst        = create_post_notes(notes_infos_lst, p_log_fun)
+		notes_lst        = create_post_notes(notes_infos_lst, p_runtime_sys)
 	}
 	//-------------------------
 	//COLORS
@@ -144,12 +144,12 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 //------------------------------------------------	
 //a post has to first be created, and only then can it be published
 
-func publish(p_post_title_str *string, p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.publish()")
+func publish(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
 }
 //------------------------------------------------
 func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Post_note {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_post_notes()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
 
 	notes_lst := []*Post_note{}
 	for _,note_map := range p_raw_notes_lst {
@@ -158,7 +158,7 @@ func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *
 			User_id_str:"anonymous",
 			Body_str:   note_map["body_str"].(string),
 		}
-		notes_lst = append(notes_lst,snippet)
+		notes_lst = append(notes_lst, snippet)
 	}
 
 	return notes_lst

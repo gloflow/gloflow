@@ -1,7 +1,6 @@
 package gf_publisher_lib
 
 import (
-	"errors"
 	"net/http"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -51,7 +50,7 @@ func post__render_template(p_post *Post,
 	final String template_str = p_template.renderString(template_info_map)
 	return template_str;*/
 
-	err = p_tmpl.Execute(p_resp,tmpl_data{
+	err := p_tmpl.Execute(p_resp,tmpl_data{
 		Post_title_str:                 p_post.Title_str,
 		Post_tags_lst:                  post_tags_lst,
 		Post_description_str:           p_post.Description_str,
@@ -62,13 +61,17 @@ func post__render_template(p_post *Post,
 	})
 
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to render the post template",
+			"template_render_error",
+			&map[string]interface{}{},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
 	}
 
 	return nil
 }
 //--------------------------------------------------
-func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
+func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
@@ -76,12 +79,9 @@ func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sy
 	for _,post_element := range p_post.Post_elements_lst {
 
 		p_runtime_sys.Log_fun("INFO","post_element.Type_str - "+post_element.Type_str)
-
-		if !(post_element.Type_str == "link" ||
-			post_element.Type_str == "image" ||
-			post_element.Type_str == "video" ||
-			post_element.Type_str == "text") {
-			return nil,errors.New("post_element type is not 'link'|'image'|'video'|'text' - "+post_element.Type_str)
+		gf_err := verify_post_element_type(post_element.Type_str, p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
 		}
 
 		post_element_tags_lst := []string{}
@@ -98,7 +98,7 @@ func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sy
 					"post_element_description_str": post_element.Description_str,
 					"post_element_extern_url_str":  post_element.Extern_url_str,
 				}
-				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
+				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
 			case "image":
 				post_element_map := map[string]interface{}{
@@ -109,7 +109,7 @@ func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sy
 					"post_element_img_thumbnail_large_url_str": post_element.Img_thumbnail_large_url_str,
 					"tags_lst":                                 post_element_tags_lst,
 				}
-				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
+				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
 			case "video":
 				post_element_map := map[string]interface{}{
@@ -119,12 +119,12 @@ func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sy
 					"post_element_extern_url_str":  post_element.Extern_url_str,
 					"tags_lst":                     post_element_tags_lst,
 				}
-				template_post_elements_lst = append(template_post_elements_lst,post_element_map)
+				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
 		}
 	}
 
-	return template_post_elements_lst,nil
+	return template_post_elements_lst, nil
 }
 //--------------------------------------------------
 func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
