@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"encoding/json"
 	"text/template"
-	"gopkg.in/mgo.v2"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
-func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_tagger_service_handlers.init_handlers()")
+func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_service_handlers.init_handlers()")
 
 	//---------------------------
 	//NOTES
@@ -19,7 +19,7 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 	//ADD_NOTE
 
 	http.HandleFunc("/tags/add_note",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_note ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_note ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -31,24 +31,24 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 		    err              := json.Unmarshal(body_bytes_lst,&i_map)
 
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_note", err, "add_note pipeline received bad i_map input", p_resp,p_mongodb_coll,p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/add_note", err, "add_note pipeline received bad i_map input", p_resp, p_runtime_sys)
 				return
 			}
 			//------------
 
-			err = pipeline__add_note(i_map, p_mongodb_coll, p_log_fun)
+			err = pipeline__add_note(i_map, p_runtime_sys)
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_note", err, "add_note pipeline failed", p_resp, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/add_note", err, "add_note pipeline failed", p_resp, p_runtime_sys)
 				return
 			}
 
 			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_log_fun)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/add_note", start_time__unix_f, end_time__unix_f, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Store_rpc_handler_run("/tags/add_note", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
@@ -56,24 +56,24 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 	//GET_notes
 
 	http.HandleFunc("/tags/get_notes",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /tags/get_notes ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/get_notes ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			notes_lst,err := pipeline__get_notes(p_req, p_mongodb_coll, p_log_fun)
+			notes_lst,err := pipeline__get_notes(p_req, p_runtime_sys)
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/get_notes", err, "get_notes pipeline failed", p_resp, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/get_notes", err, "get_notes pipeline failed", p_resp, p_runtime_sys)
 				return 
 			}
 
 			data_map := map[string][]*Note{"notes_lst":notes_lst,}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_log_fun)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/get_notes", start_time__unix_f, end_time__unix_f, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Store_rpc_handler_run("/tags/get_notes", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
@@ -83,7 +83,7 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 	//ADD_TAGS
 
 	http.HandleFunc("/tags/add_tags",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_tags ----------")
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_tags ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -95,14 +95,14 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 		    err              := json.Unmarshal(body_bytes_lst,&i_map)
 
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_tags", err, "add_tags pipeline received bad i_map input", p_resp, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/add_tags", err, "add_tags pipeline received bad i_map input", p_resp, p_runtime_sys)
 				return
 			}
 			//------------
 
-			err = pipeline__add_tags(i_map, p_mongodb_coll, p_log_fun)
+			err = pipeline__add_tags(i_map, p_runtime_sys)
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_tags", err, "add_tags pipeline failed", p_resp, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/add_tags", err, "add_tags pipeline failed", p_resp, p_runtime_sys)
 				return
 			}
 
@@ -112,7 +112,7 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/add_tags", start_time__unix_f, end_time__unix_f, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Store_rpc_handler_run("/tags/add_tags", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})
@@ -124,16 +124,15 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 		return err
 	}
 	http.HandleFunc("/tags/objects",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_log_fun("INFO","INCOMING HTTP REQUEST - /tags/objects ----------")
-
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/objects ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 
-			objects_with_tag_lst,err := pipeline__get_objects_with_tag(p_req, p_resp, tag_objects__tmpl, p_mongodb_coll, p_log_fun)
+			objects_with_tag_lst,err := pipeline__get_objects_with_tag(p_req, p_resp, tag_objects__tmpl, p_runtime_sys)
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/objects", err, "failed to get html/json objects with tag", p_resp, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Error__in_handler("/tags/objects", err, "failed to get html/json objects with tag", p_resp, p_runtime_sys)
 				return
 			}
 
@@ -148,7 +147,7 @@ func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/objects", start_time__unix_f, end_time__unix_f, p_mongodb_coll, p_log_fun)
+				gf_rpc_lib.Store_rpc_handler_run("/tags/objects", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

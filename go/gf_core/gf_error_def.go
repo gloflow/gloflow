@@ -43,6 +43,38 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"failed to read bytes using the io.Reader.ReadBytes()",
 		},
 		//---------------
+		//DATA_VERIFICATION
+		"verify__invalid_value_error":{
+			Descr_str:"data failed verification, not an expected value",
+		},
+		"verify__value_not_integer_error":{
+			Descr_str:"data failed verification, the supplied value is not an integer",
+		},
+		"verify__value_too_many_error":{
+			Descr_str:"data failed verification, the supplied too many values",
+		},
+		"verify__missing_key_error":{
+			Descr_str:"data failed verification, the needed key is missing",
+		},
+		"verify__invalid_key_value_error":{
+			Descr_str:"data failed verification, the key does not have the expected value",
+		},
+		"verify__string_too_short_error":{
+			Descr_str:"data failed verification, the string is too short",
+		},
+		"verify__string_too_long_error":{
+			Descr_str:"data failed verification, the string is too long",
+		},
+		"verify__invalid_image_extension_error":{
+			Descr_str:"an unsupported image file extension was encountered",
+		},
+		"verify__invalid_query_string_encoding_error":{
+			Descr_str:"string is not a valid query-string encoding",
+		},
+		"verify__invalid_image_nsfv_error":{
+			Descr_str:"image NSFV verification failed",
+		},
+		//---------------
 		//FILESYSTEM
 		"file_open_error":error_def{
 			Descr_str:"os.Create() failed to create a file - package (os)",
@@ -151,35 +183,6 @@ func error__get_defs() map[string]error_def {
 		},
 		"http_server_flusher_not_supported_error":{
 			Descr_str:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
-		},
-		//---------------
-		//DATA_VERIFICATION
-		"verify__invalid_value_error":{
-			Descr_str:"data failed verification, not an expected value",
-		},
-		"verify__missing_key_error":{
-			Descr_str:"data failed verification, the needed key is missing",
-		},
-		"verify__invalid_key_value_error":{
-			Descr_str:"data failed verification, the key does not have the expected value",
-		},
-		"verify__value_not_integer_error":{
-			Descr_str:"data failed verification, the supplied value is not an integer",
-		},
-		"verify__string_too_short_error":{
-			Descr_str:"data failed verification, the string is too short",
-		},
-		"verify__string_too_long_error":{
-			Descr_str:"data failed verification, the string is too long",
-		},
-		"verify__invalid_image_extension_error":{
-			Descr_str:"an unsupported image file extension was encountered",
-		},
-		"verify__invalid_image_nsfv_error":{
-			Descr_str:"image NSFV verification failed",
-		},
-		"verify__invalid_query_string_encoding_error":{
-			Descr_str:"string is not a valid query-string encoding",
 		},
 		//---------------
 		//S3

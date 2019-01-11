@@ -2,42 +2,47 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,
 	p_object_type_str string,
-	p_mongodb_coll    *mgo.Collection,
-	p_log_fun         func(string,string)) (int,error) {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__get_objects_with_tag_count()")
+	p_runtime_sys     *gf_core.Runtime_sys) (int, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__get_objects_with_tag_count()")
 
 	switch p_object_type_str {
 		case "post":
-			count_int,err := p_mongodb_coll.Find(bson.M{
-					"t"       :"post",
+			count_int,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+					"t":       "post",
 					"tags_lst":bson.M{"$in":[]string{p_tag_str,}},
-				}).
-				Count()
+				}).Count()
+
 			if err != nil {
-				return 0,err
+				gf_err := gf_core.Error__create("failed to count of posts with tag - %s",fmt.Sprintf(p_tag_str)),
+					"mongodb_find_error",
+					&map[string]interface{}{
+						"tag_str":        p_tag_str,
+						"object_type_str":p_object_type_str,
+					},
+					err,"gf_tagger",p_runtime_sys)
+				return 0, gf_err
 			}
-			return count_int,nil
+			return count_int, nil
 	}
-	return 0,nil
+	return 0, nil
 }
 //---------------------------------------------------
 //POSTS
 //---------------------------------------------------
-func db__get_post_notes(p_post_title_str *string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) ([]*Note,error) {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__get_post_notes()")
+func db__get_post_notes(p_post_title_str string,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Note, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__get_post_notes()")
 
-	post,err := gf_publisher_lib.DB__get_post(p_post_title_str, p_mongodb_coll, p_log_fun)
-	if err != nil {
-		return nil,err
+	post, gf_err := gf_publisher_lib.DB__get_post(p_post_title_str, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
 	}
 
 	post_notes_lst := post.Notes_lst
@@ -53,15 +58,14 @@ func db__get_post_notes(p_post_title_str *string,
 		}
 		notes_lst = append(notes_lst,note)
 	}
-	p_log_fun("INFO","got # notes - "+fmt.Sprint(len(notes_lst)))
-	return notes_lst,nil //post_notes_lst,nil
+	p_runtime_sys.Log_fun("INFO","got # notes - "+fmt.Sprint(len(notes_lst)))
+	return notes_lst, nil
 }
 //---------------------------------------------------
 func db__add_post_note(p_note *Note,
-	p_post_title_str *string,
-	p_mongodb_coll   *mgo.Collection,
-	p_log_fun        func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__add_post_note()")
+	p_post_title_str string,
+	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__add_post_note()")
 
 	//--------------------
 	post_note := &gf_publisher_lib.Post_note{
@@ -71,9 +75,22 @@ func db__add_post_note(p_note *Note,
 	}
 	//--------------------
 	
-	err := p_mongodb_coll.Update(bson.M{"t":"post","title_str":*p_post_title_str,}, bson.M{"$push":bson.M{"notes_lst":post_note},})
+	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":        "post",
+			"title_str":p_post_title_str,
+		}, 
+		bson.M{"$push":bson.M{"notes_lst":post_note},
+	})
+	
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to update a gf_post in a mongodb with a new note",
+			"mongodb_update_error",
+			&map[string]interface{}{
+				"post_title_str":p_post_title_str,
+				"note":          p_note,
+			},
+			err, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 	return nil
 }
@@ -81,10 +98,9 @@ func db__add_post_note(p_note *Note,
 func db__get_posts_with_tag(p_tag_str string,
 	p_page_index_int int,
 	p_page_size_int  int,
-	p_mongodb_coll   *mgo.Collection,
-	p_log_fun        func(string,string)) ([]*gf_publisher_lib.Post,error) {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__get_posts_with_tag()")
-	p_log_fun("INFO"     ,"p_tag_str - "+p_tag_str)
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__get_posts_with_tag()")
+	p_runtime_sys.Log_fun("INFO"     ,"p_tag_str - "+p_tag_str)
 
 	//FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
 	//        with a tag, toList() will accumulate a large collection in memory. 
@@ -92,7 +108,7 @@ func db__get_posts_with_tag(p_tag_str string,
 	//        in some fashion
 		
 	var posts_lst []*gf_publisher_lib.Post
-	err := p_mongodb_coll.Find(bson.M{
+	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
 			"t":       "post",
 			"tags_lst":bson.M{"$in":[]string{p_tag_str,}},
 		}).
@@ -102,38 +118,65 @@ func db__get_posts_with_tag(p_tag_str string,
 		All(&posts_lst)
 
 	if err != nil {
-		return nil,err
+		gf_err := gf_core.Error__create("failed to get posts with tag - %s",fmt.Sprintf(p_tag_str)),
+			"mongodb_find_error",
+			&map[string]interface{}{
+				"tag_str":       p_tag_str,
+				"page_index_int":p_page_index_int,
+				"page_size_int": p_page_size_int,
+			},
+			err,"gf_tagger",p_runtime_sys)
+		return nil, gf_err
 	}
-
-	return posts_lst,nil
+	return posts_lst, nil
 }
 //---------------------------------------------------
-func db__add_tags_to_post(p_post_title_str *string,
-	p_tags_lst     []string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__add_tags_to_post()")
+func db__add_tags_to_post(p_post_title_str string,
+	p_tags_lst    []string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__add_tags_to_post()")
 
-	err := p_mongodb_coll.Update(bson.M{"t":"post","title_str":*p_post_title_str,}, bson.M{"$push":bson.M{"tags_lst":p_tags_lst},})
+	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":        "post",
+			"title_str":p_post_title_str,
+		},
+		bson.M{"$push":bson.M{"tags_lst":p_tags_lst},
+	})
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to update a gf_post in mongodb with new tags",
+			"mongodb_update_error",
+			&map[string]interface{}{
+				"post_title_str":p_post_title_str,
+				"tags_lst":      p_tags_lst,
+			},
+			err, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
-
 	return nil
 }
 //---------------------------------------------------
 //IMAGES
 //---------------------------------------------------
-func db__add_tags_to_image(p_image_id_str *string,
-	p_tags_lst     []string,
-	p_mongodb_coll *mgo.Collection,
-	p_log_fun      func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_tagger_db.db__add_tags_to_image()")
+func db__add_tags_to_image(p_image_id_str string,
+	p_tags_lst    []string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__add_tags_to_image()")
 
-	err := p_mongodb_coll.Update(bson.M{"t":"img","id_str":*p_image_id_str,}, bson.M{"$push":bson.M{"tags_lst":p_tags_lst},})
+	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":     "img",
+			"id_str":p_image_id_str,
+		},
+		bson.M{"$push":bson.M{"tags_lst":p_tags_lst},
+	})
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to update a gf_image in mongodb with new tags",
+			"mongodb_update_error",
+			&map[string]interface{}{
+				"image_id_str":p_image_id_str,
+				"tags_lst":    p_tags_lst,
+			},
+			err, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
-
 	return nil
 }

@@ -16,8 +16,6 @@ func main() {
 	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
 	mongodb_db_name_str     := cli_args_map["mongodb_db_name_str"].(string)
 
-	gf_core.Init_exit_os_signals(log_fun)
-
 	//START_SERVICE
 	if run__start_service_bool {
 		//init_done_ch := make(chan bool)

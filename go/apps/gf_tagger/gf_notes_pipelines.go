@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"time"
 	"strconv"
-	"errors"
 	"strings"
 	"net/http"
-	"gopkg.in/mgo.v2"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
@@ -20,22 +18,33 @@ type Note struct {
 }
 //---------------------------------------------------
 func pipeline__add_note(p_input_data_map map[string]interface{},
-	p_mongo_coll *mgo.Collection,
-	p_log_fun    func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__add_note()")
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__add_note()")
 
 	//----------------
 	//INPUT
 	if _,ok := p_input_data_map["otype"]; !ok {
-		return errors.New("note 'otype' not supplied")
+		gf_err := gf_core.Error__create("note 'otype' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 
 	if _,ok := p_input_data_map["o_id"]; !ok {
-		return errors.New("note 'o_id' not supplied")
+		gf_err := gf_core.Error__create("note 'o_id' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 
 	if _,ok := p_input_data_map["body"]; !ok {
-		return errors.New("note 'body' not supplied")
+		gf_err := gf_core.Error__create("note 'body' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 
 	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
@@ -56,27 +65,18 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 			Creation_datetime_str:creation_datetime_str,
 		}
 
-		fmt.Println(">>>>>>>>>>>>>>> =============")
-		fmt.Println(note)
-
-		err := db__add_post_note(note,
-			&post_title_str,
-			p_mongo_coll,
-			p_log_fun)
-		if err != nil {
-			return err
+		gf_err := db__add_post_note(note, post_title_str, p_runtime_sys)
+		if gf_err != nil {
+			return gf_err
 		}
-
-	} else {
-		return errors.New("object_type_str ["+object_type_str+"] not implemented yet")
 	}
+	
 	return nil
 }
 //---------------------------------------------------
 func pipeline__get_notes(p_req *http.Request,
-	p_mongo_coll *mgo.Collection,
-	p_log_fun    func(string,string)) ([]*Note,error) {
-	p_log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__get_notes()")
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Note, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__get_notes()")
 
 	//-----------------
 	//INPUT
@@ -84,11 +84,19 @@ func pipeline__get_notes(p_req *http.Request,
 	qs_map := p_req.URL.Query()
 
 	if _,ok := qs_map["otype"]; !ok {
-		return nil,errors.New("'otype' not supplied")
+		gf_err := gf_core.Error__create("note 'otype' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	if _,ok := qs_map["o_id"]; !ok {
-		return nil,errors.New("'o_id' not supplied")
+		gf_err := gf_core.Error__create("note 'o_id' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	object_type_str      := strings.TrimSpace(qs_map["otype"][0])
@@ -99,9 +107,12 @@ func pipeline__get_notes(p_req *http.Request,
 	if object_type_str == "post" {
 
 		var err error
-		post_title_str   := object_extern_id_str
-		notes_lst,err := db__get_post_notes(&post_title_str, p_mongo_coll, p_log_fun)
-
+		post_title_str    := object_extern_id_str
+		notes_lst, gf_err := db__get_post_notes(post_title_str, p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+		
 		for _,s := range notes_lst {
 			note := &Note{
 				User_id_str:        s.User_id_str,
@@ -109,16 +120,8 @@ func pipeline__get_notes(p_req *http.Request,
 				Target_obj_id_str:  post_title_str,
 				Target_obj_type_str:object_type_str,
 			}
-			tagger_notes_lst = append(tagger_notes_lst,note)
-
+			tagger_notes_lst = append(tagger_notes_lst, note)
 		}
-
-		if err != nil {
-			return nil,err
-		}
-	} else {
-		return nil,errors.New("object_type_str ["+object_type_str+"] not implemented yet")
 	}
-
-	return tagger_notes_lst,nil
+	return tagger_notes_lst, nil
 }
