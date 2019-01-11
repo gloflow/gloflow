@@ -140,7 +140,7 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 func Image__create(p_image_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_image,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images.Image__create()")
 	
-	new_image_info_map,gf_err := Image__verify_image_info(p_image_info_map,p_runtime_sys)
+	new_image_info_map,gf_err := Image__verify_image_info(p_image_info_map, p_runtime_sys)
 	if gf_err != nil {
 		return nil,gf_err
 	}
@@ -158,15 +158,15 @@ func Image__create(p_image_info_map map[string]interface{}, p_runtime_sys *gf_co
 		Origin_url_str:                new_image_info_map["origin_url_str"].(string),
 		Origin_page_url_str:           new_image_info_map["origin_page_url_str"].(string),
 		Original_file_internal_uri_str:new_image_info_map["original_file_internal_uri_str"].(string),
-		Thumbnail_small_url_str       :new_image_info_map["thumbnail_small_url_str"].(string),
-		Thumbnail_medium_url_str      :new_image_info_map["thumbnail_medium_url_str"].(string),
-		Thumbnail_large_url_str       :new_image_info_map["thumbnail_large_url_str"].(string),
+		Thumbnail_small_url_str:       new_image_info_map["thumbnail_small_url_str"].(string),
+		Thumbnail_medium_url_str:      new_image_info_map["thumbnail_medium_url_str"].(string),
+		Thumbnail_large_url_str:       new_image_info_map["thumbnail_large_url_str"].(string),
 		Format_str:                    new_image_info_map["format_str"].(string),
 	}
 	//----------------------------------
 	//DB PERSIST
 
-	db_gf_err := DB__put_image(image,p_runtime_sys)
+	db_gf_err := DB__put_image(image, p_runtime_sys)
 	if db_gf_err != nil {
 		return nil,db_gf_err
 	}

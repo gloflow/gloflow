@@ -77,8 +77,8 @@ func Run_service(p_port_str string,
 	//-------------
 	//RUNTIME_SYS
 
-	mongo_db := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun )
-	mongodb_coll := mongo_db.C("data_symphony")
+	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
+	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str:"gf_images",
