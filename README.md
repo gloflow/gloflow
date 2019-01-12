@@ -18,7 +18,7 @@ Originally it was coded in Python on the backend, and JS on the frontend. Later 
 
 
 
-With the structure of the code its is attempted to maintain a single style across languages (Go,Python,Typescript) - to make code across these languages be structured in a similar way. The focus is on basic functional principles (of pure functions, high-level functions, closures). Functions should receive all the state via their arguments, state that they need to work with. Object orientation (objects holding state and methods operating on that state internally) is avoided as much as possible (even though it is the default idiomatic style of Go). Without a purer functional language, this functional orientation is a goal to strive towards - hence the aim is to make the code even more so in the future (remove state/variable mutation that exists in various places). 
+A single style is maintained across languages used in the implementation (**Go**,**Python**,**Typescript**) - even though the languages are different enough from each other. The focus is on basic functional language principles (of pure functions, high-level functions, closures). Functions should receive all the state that they operate on via their arguments (other then functions that work with external state - DB or external queries). Object orientation (objects holding state and methods operating on that state internally) is avoided as much as possible (even though it is the default idiomatic style of Go and Python). State/variable mutation still exists in various places, but the aim is to keep it to a minimum (constant runtime values would be a welcome feature in Go and Python). 
 
 
 
