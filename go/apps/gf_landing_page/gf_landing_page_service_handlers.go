@@ -26,8 +26,7 @@ import (
 	"gf_rpc_lib"
 )
 //------------------------------------------------
-func init_handlers(p_mongodb_coll *mgo.Collection,
-			p_log_fun func(string,string)) error {
+func init_handlers(p_mongodb_coll *mgo.Collection, p_log_fun func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_landing_page_service_handlers.init_handlers()")
 
 	tmpl,err := template.New("gf_landing_page.html").ParseFiles("./templates/gf_landing_page.html")
@@ -36,32 +35,25 @@ func init_handlers(p_mongodb_coll *mgo.Collection,
 	}
 
 	//---------------------
-	http.HandleFunc("/landing/main/",func(p_resp http.ResponseWriter,
-										p_req *http.Request) {
+	http.HandleFunc("/landing/main/",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_log_fun("INFO","INCOMING HTTP REQUEST - /landing/main/ ----------")
 
 		if p_req.Method == "GET" {
 			err := Pipeline__get_landing_page(2000, //p_max_random_cursor_position_int
-										5,  //p_featured_posts_to_get_int
-										10, //p_featured_imgs_to_get_int
-										tmpl,
-										p_resp,
-										p_mongodb_coll,
-										p_log_fun)
+				5,  //p_featured_posts_to_get_int
+				10, //p_featured_imgs_to_get_int
+				tmpl,
+				p_resp,
+				p_mongodb_coll,
+				p_log_fun)
 			if err != nil {
-				gf_rpc_lib.Error__in_handler("/landing/main",
-									err,
-									"get landing_page failed",
-									p_resp,
-									p_mongodb_coll,
-									p_log_fun)
+				gf_rpc_lib.Error__in_handler("/landing/main", err, "get landing_page failed", p_resp, p_mongodb_coll, p_log_fun)
 				return
 			}
 		}
 	})
 	//---------------------
-	http.HandleFunc("/landing/register_invite_email",func(p_resp http.ResponseWriter,
-														p_req *http.Request) {
+	http.HandleFunc("/landing/register_invite_email",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 	})
 	//---------------------

@@ -33,16 +33,17 @@ export function init(p_log_fun) :HTMLCanvasElement {
 	//var ctx       = canvas.context2D;
 
 	draw_randomized_squares(canvas,
-					canvas.width,
-					canvas.height,
-					p_log_fun);
+		canvas.width,
+		canvas.height,
+		p_log_fun);
+
 	return canvas;
 }
 //-------------------------------------------------
 function draw_randomized_squares(p_canvas :HTMLCanvasElement,
-					p_width_int  :number,
-					p_height_int :number,
-					p_log_fun) {
+	p_width_int  :number,
+	p_height_int :number,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_procedural_art.draw_randomized_squares()');
 	
 	const ctx = p_canvas.getContext('2d');
@@ -52,12 +53,12 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 	const dots_num_int :number = Math.floor(Math.random()*30);
 
 	const random_background_color_str = get_random_color();
-	ctx.fillStyle = random_background_color_str;
+	ctx.fillStyle                     = random_background_color_str;
 	
 	ctx.fillRect(0, //i+20, 
-			0, //i+30, 
-			p_width_int,
-			p_height_int);
+		0, //i+30, 
+		p_width_int,
+		p_height_int);
 	
 	for (var i=0;i < dots_num_int;i++) {
 		draw_simple_square();
@@ -75,9 +76,9 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 
 		const random_square_scale :number = Math.floor(Math.random()*30);
 		ctx.fillRect(x_int, //i+20, 
-				y_int, //i+30, 
-				random_square_scale,
-				random_square_scale);
+			y_int, //i+30, 
+			random_square_scale,
+			random_square_scale);
 	}
 	//-------------------------------------------------
 	function draw_complex_square() {
@@ -89,52 +90,49 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 		const random_r_int :number = Math.floor(Math.random()*255);
 		const random_g_int :number = Math.floor(Math.random()*255);
 		const random_b_int :number = Math.floor(Math.random()*255);
-		ctx.fillStyle = "rgba("+random_r_int+","+random_g_int+","+random_b_int+",255)";
+		ctx.fillStyle              = "rgba("+random_r_int+","+random_g_int+","+random_b_int+",255)";
 		//-----------
 
 		const random_square_scale :number = Math.floor(Math.random()*50);
 		ctx.fillRect(x_int, //i+20, 
-				y_int, //i+30, 
-				random_square_scale,
-				random_square_scale);
+			y_int, //i+30, 
+			random_square_scale,
+			random_square_scale);
 
 		//nested square 
 		if (random_square_scale > 10) {
 
 			ctx.fillStyle = get_random_color();
 			ctx.fillRect(x_int+2, //i+20, 
-					y_int+2, //i+30, 
-					random_square_scale-5,
-					random_square_scale-5);
+				y_int+2, //i+30, 
+				random_square_scale-5,
+				random_square_scale-5);
 
 			//nested square's satellites
 			if (Math.random() >= 0.5) {
 				ctx.fillStyle = "rgba("+(random_r_int+15)+","+(random_g_int+15)+","+(random_b_int+15)+",255)";
-
-				draw_satelites(x_int,
-							y_int,
-							random_square_scale);
+				draw_satelites(x_int, y_int, random_square_scale);
 			}
 		}	
 		//-------------------------------------------------
 		function draw_satelites(p_target_x_int :number,
-						p_target_y_int :number,
-						p_scale_int    :number) {
+			p_target_y_int :number,
+			p_scale_int    :number) {
 
 			ctx.fillRect(p_target_x_int+6, //i+20, 
-					p_target_y_int+6, //i+30, 
-					p_scale_int-3,
-					p_scale_int-3);
+				p_target_y_int+6, //i+30, 
+				p_scale_int-3,
+				p_scale_int-3);
 
 			ctx.fillRect(p_target_x_int+8, //i+20, 
-					p_target_y_int+8, //i+30, 
-					p_scale_int*0.6,
-					p_scale_int*0.6);
+				p_target_y_int+8, //i+30, 
+				p_scale_int*0.6,
+				p_scale_int*0.6);
 
 			ctx.fillRect(p_target_x_int-4, //i+20, 
-					p_target_y_int-4, //i+30, 
-					p_scale_int*0.5,
-					p_scale_int*0.4);
+				p_target_y_int-4, //i+30, 
+				p_scale_int*0.5,
+				p_scale_int*0.4);
 		}
 		//-------------------------------------------------	
 	}
@@ -145,8 +143,8 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 		ctx.lineWidth   = 1;
 		ctx.strokeStyle = "rgba(184,86,40,255)";
 		ctx.strokeRect(0,0,
-				p_width_int,
-				p_height_int);
+			p_width_int,
+			p_height_int);
 	}
 	//-------------------------------------------------
 	function get_random_color() :string {

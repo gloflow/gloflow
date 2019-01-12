@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 namespace gf_email_registration {
 //--------------------------------------------------------
-export function init(p_register_user_email_fun,
-				p_log_fun) {
+export function init(p_register_user_email_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_email_registration.init()');
 
 	const register_email_form = $(`

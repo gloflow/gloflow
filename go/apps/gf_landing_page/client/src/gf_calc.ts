@@ -21,16 +21,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 namespace gf_calc {
 //--------------------------------------------------------
-declare var Fingerprint;
 declare var ColorThief;
 //--------------------------------------------------------
 export function run(p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_calc.run()')
 
-	const fingerprint = new Fingerprint({canvas: true}).get();
-	const colorThief  = new ColorThief();
-
-	var results_lst = []
+	const colorThief = new ColorThief();
+	var results_lst  = []
 
 	//------------------------
 	//FEATURED_POSTS IMAGES
@@ -43,7 +40,7 @@ export function run(p_log_fun) {
 		//-------------------
 		//DISPLAY IMAGE DOMINANT_COLOR
 
-		const parent_div = $(p_img).parent().parent()[0];
+		const parent_div           = $(p_img).parent().parent()[0];
 		const img_dominant_color_e = $('<div class="img_dominant_color"><div class="color"></div></div>');
 		$(img_dominant_color_e).find('.color').css('background-color','#'+hex_color_str);
 
@@ -57,8 +54,6 @@ export function run(p_log_fun) {
 		const browser_run__job_result_map = process_image(p_img);
 		const hex_color_str               = browser_run__job_result_map['c'];
 		results_lst.push(browser_run__job_result_map);
-
-
 
 		//-------------------
 		//DISPLAY IMAGE DOMINANT_COLOR
@@ -75,8 +70,7 @@ export function run(p_log_fun) {
 	const job_results_map = {
 		'jr':results_lst
 	};
-	send_calc_results(job_results_map,
-					p_log_fun);
+	send_calc_results(job_results_map, p_log_fun);
 	//--------------------------------------------------------
 	function process_image(p_img) {
 		p_img.crossOrigin = '';
@@ -85,9 +79,8 @@ export function run(p_log_fun) {
 		//image src example:
 		//https://s3-us-west-1.amazonaws.com/gf--prod/thumbnails/d35afafdf2a83c53a2b93b8dbc99fb9f_thumb_medium.jpeg
 
-		const img_url_str = p_img.src;
-		const l           = img_url_str.split("/");
-
+		const img_url_str  = p_img.src;
+		const l            = img_url_str.split("/");
 		const img_name_str = l[l.length-1];
 		const img_id_str   = img_name_str.split('_')[0];
 		//-------------------------
@@ -102,8 +95,7 @@ export function run(p_log_fun) {
 		//get a dominant color for an image
 		var color_lst   = colorThief.getColor(p_img);   //DOMINANT COLOR
 		var palette_lst = colorThief.getPalette(p_img); //COLOR PALLETE
-
-		var end = Date.now()/1000; //unix time in seconds
+		var end         = Date.now()/1000;              //unix time in seconds
 		//-------------------------
 		//COLORS RGB->HEX
 
@@ -119,19 +111,18 @@ export function run(p_log_fun) {
 		//-------------------------
 
 		const browser_run__job_result_map = {
-			'i' :img_id_str,
-			'c' :hex_color_str,
-			'p' :hex_pallete_lst,
+			'i': img_id_str,
+			'c': hex_color_str,
+			'p': hex_pallete_lst,
 			'st':start,
 			'et':end,
-			'f' :fingerprint
 		};
 		//console.log(browser_run__job_result_map);
 		return browser_run__job_result_map;
 	}
 	//--------------------------------------------------------
 	function to_hex(c) {
-	    var hex = c.toString(16);
+	    const hex = c.toString(16);
 	    return hex.length == 1 ? "0" + hex : hex;
 	}
 	//--------------------------------------------------------
@@ -141,20 +132,16 @@ export function run(p_log_fun) {
 	//--------------------------------------------------------
 }
 //--------------------------------------------------------
-function send_calc_results(p_job_results_map,
-						p_log_fun) {
+function send_calc_results(p_job_results_map, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_calc.send_calc_results()')
  	
 	console.log(p_job_results_map);
-
 	$.ajax({
-		url     :'/images/c',
-		type    :'POST',
-		data    :JSON.stringify(p_job_results_map),
+		url:     '/images/c',
+		type:    'POST',
+		data:    JSON.stringify(p_job_results_map),
 		dataType:'json',
-		success :()=>{
-
-		}
+		success :()=>{}
 	});
 }
 //--------------------------------------------------------

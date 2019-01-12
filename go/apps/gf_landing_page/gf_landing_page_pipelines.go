@@ -26,35 +26,35 @@ import (
 )
 //------------------------------------------------
 func Pipeline__get_landing_page(p_max_random_cursor_position_int int, //500
-				p_featured_posts_to_get_int int, //5
-				p_featured_imgs_to_get_int  int, //10
-				p_tmpl                      *template.Template,
-				p_resp                      http.ResponseWriter,
-				p_mongodb_coll              *mgo.Collection,
-				p_log_fun                   func(string,string)) error {
+	p_featured_posts_to_get_int int, //5
+	p_featured_imgs_to_get_int  int, //10
+	p_tmpl                      *template.Template,
+	p_resp                      http.ResponseWriter,
+	p_mongodb_coll              *mgo.Collection,
+	p_log_fun                   func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_landing_page_pipelines.Pipeline__get_landing_page()")
 
 	featured_posts_lst,err := get_featured_posts(p_max_random_cursor_position_int,
-											p_featured_posts_to_get_int,
-											p_mongodb_coll,
-											p_log_fun)
+		p_featured_posts_to_get_int,
+		p_mongodb_coll,
+		p_log_fun)
 	if err != nil {
 		return err
 	}
 
 	featured_imgs_lst,err := get_featured_imgs(p_max_random_cursor_position_int,
-										p_featured_imgs_to_get_int,
-										p_mongodb_coll,
-										p_log_fun)
+		p_featured_imgs_to_get_int,
+		p_mongodb_coll,
+		p_log_fun)
 	if err != nil {
 		return err
 	}
 
 	err = render_template(featured_posts_lst,
-					featured_imgs_lst,
-					p_tmpl,
-					p_resp,
-					p_log_fun)
+		featured_imgs_lst,
+		p_tmpl,
+		p_resp,
+		p_log_fun)
 	if err != nil {
 		return err
 	}

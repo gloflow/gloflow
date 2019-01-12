@@ -27,10 +27,10 @@ import (
 )
 //------------------------------------------------
 func render_template(p_featured_posts_lst []*Featured_post,
-				p_featured_imgs_lst []*Featured_img,
-				p_tmpl              *template.Template,
-				p_resp              http.ResponseWriter,
-				p_log_fun           func(string,string)) error {
+	p_featured_imgs_lst []*Featured_img,
+	p_tmpl              *template.Template,
+	p_resp              http.ResponseWriter,
+	p_log_fun           func(string,string)) error {
 	p_log_fun("FUN_ENTER","gf_landing_page_view.render_template()")
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_log_fun)
@@ -43,8 +43,8 @@ func render_template(p_featured_posts_lst []*Featured_post,
 
 	err := p_tmpl.Execute(p_resp,tmpl_data{
 		Featured_posts_lst:p_featured_posts_lst,
-		Featured_imgs_lst :p_featured_imgs_lst,
-		Sys_release_info  :sys_release_info,
+		Featured_imgs_lst: p_featured_imgs_lst,
+		Sys_release_info:  sys_release_info,
 	})
 
 	if err != nil {

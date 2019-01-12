@@ -56,8 +56,8 @@ export function init_remote(p_log_fun) {
 		p_log_fun);
 	//--------------------------------------------------------
 	function remote_register_user_email(p_inputed_email_str :string,
-								p_on_complete_fun,
-								p_log_fun) {
+		p_on_complete_fun,
+		p_log_fun) {
 		p_log_fun('FUN_ENTER','gf_landing_page.init_remote().remote_register_user_email()');
 		
 		const url_str       = '/landing/register_invite_email';
@@ -78,15 +78,13 @@ export function init_remote(p_log_fun) {
 	//--------------------------------------------------------
 }
 //--------------------------------------------------------
-function init(p_register_user_email_fun,
-			p_log_fun) {
+function init(p_register_user_email_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_landing_page.init()');
 
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
 	gf_procedural_art.init(p_log_fun);
-	gf_email_registration.init(p_register_user_email_fun,
-							p_log_fun);
+	gf_email_registration.init(p_register_user_email_fun, p_log_fun);
 
 	init_posts_img_num();
 	gf_images.init(p_log_fun);
@@ -135,10 +133,10 @@ function load_static_data(p_log_fun) :Object[] {
 		const featured_element_title_str      :string = $(element).find('.post_title').text();
 
 		const featured_element_info_map :Object = {
-			'element'   :$(element),
-			'image_src' :featured_element_image_url_str,
+			'element':   $(element),
+			'image_src': featured_element_image_url_str,
 			'images_num':featured_element_images_num_str,
-			'title_str' :featured_element_title_str
+			'title_str': featured_element_title_str
 		};
 
 		featured_elements_infos_lst.push(featured_element_info_map);

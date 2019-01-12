@@ -25,25 +25,19 @@ export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images.init()');
 
 	$('#featured_images').find('.image_info').each((p_i,p_e)=>{
-
-		init_image_viewer(p_e,
-					p_log_fun);
-
-		init_image_date(p_e,
-					p_log_fun);
+		init_image_viewer(p_e, p_log_fun);
+		init_image_date(p_e, p_log_fun);
 	});
 }
 //-------------------------------------------------
 //REMOVE!! - this function has been moved to flows_browser/gf_images_viewer.ts, as a general viewer,
 //           to use universaly gf_images/gf_landing_page
 
-function init_image_viewer(p_image_element,
-						p_log_fun) {
+function init_image_viewer(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images.init_image_viewer()');
 
 	const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
-
-	const image_view = $(`
+	const image_view           = $(`
 		<div id="image_view">
 			<div id="background"></div>
 			<div id="image_detail">
@@ -51,12 +45,10 @@ function init_image_viewer(p_image_element,
 			</div>
 		</div>`);
 
-
 	$(p_image_element).find('img').click(()=>{
 
 		console.log(img_thumb_medium_url)
 		$('body').append(image_view);
-
 
 		//----------------------
 		//BAKCGROUND
@@ -70,33 +62,26 @@ function init_image_viewer(p_image_element,
 		//----------------------
 		const image_detail = $(image_view).find('#image_detail');
 		$(image_detail).css("position","absolute");
-	    $(image_detail).css("top", Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + 
-	                                                $(window).scrollTop()) + "px");
-	    $(image_detail).css("left", Math.max(0, (($(window).width() - $(image_detail).outerWidth()) / 2) + 
-	                                                $(window).scrollLeft()) + "px");
+	    $(image_detail).css("top",  Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop())  + "px");
+	    $(image_detail).css("left", Math.max(0, (($(window).width()  - $(image_detail).outerWidth()) / 2)  + $(window).scrollLeft()) + "px");
 	    //----------------------
 	    $(bg).click(()=>{
 	    	$(image_view).remove();
-
-	    	//turn vertical scrolling back on when done viewing the image
-	    	$("body").css("overflow", "auto");
+	    	$("body").css("overflow", "auto"); //turn vertical scrolling back on when done viewing the image
 	    });
 	    //----------------------
 	});
 }
 //-------------------------------------------------
-function init_image_date(p_image_element,
-					p_log_fun) {
+function init_image_date(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images.init_image_date()');
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());
 	const creation_date         = new Date(creation_time_f*1000);
 
-
 	const date_msg_str = $.timeago(creation_date);
 	$(creation_time_element).text(date_msg_str);
-
 
 	const creation_date__readable_str = creation_date.toDateString();
 	const creation_date__readble      = $('<div class="full_creation_date">'+creation_date__readable_str+'</div>');
