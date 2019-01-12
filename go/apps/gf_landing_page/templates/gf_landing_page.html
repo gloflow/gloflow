@@ -1,0 +1,137 @@
+<html lang="en">
+<head>
+<title>gloflow.com - the universe of creativity and art</title>
+<meta name="description" content="gloflow.com - is a parallel space for artistic expression">
+<meta name="revisit-after" content="1 days">
+{{- /*-----------------------------------------------------*/}}
+<!-- directs fb to use the specified image when the page is shared -->
+<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+<meta property="og:title" content="gloflow.com - a parallel space for artistic expression"/>
+
+<!-- canonical address  -->
+<meta property="og:url"       content="http://www.gloflow.com"/>
+<meta property="og:site_name" content="GloFlow"/>
+
+<meta property="og:type" content="culture"/>
+<meta property="og:type" content="art"/>
+<meta property="og:type" content="architecture"/>
+<meta property="og:type" content="design"/>
+<meta property="og:type" content="photography"/>
+<meta property="og:type" content="fashion"/>
+<meta property="og:type" content="music"/>
+<meta property="og:type" content="vr"/>
+{{- /*-----------------------------------------------------*/}}
+<link rel="stylesheet" type="text/css" href="/landing/static/css/gf_landing_page.css">
+<link rel="stylesheet" type="text/css" href="/landing/static/css/images.css">
+<link rel="stylesheet" type="text/css" href="/landing/static/css/posts.css">
+<link rel="stylesheet" type="text/css" href="/landing/static/css/domains.css">
+
+</head>
+<body>
+	{{- /*-----------------------------------------------------*/}}
+	<div id='left_section'>
+		<div id='gf_logo'>
+			<img src='/images/d/gf_logo_0.3.png'></img>
+		</div>
+		<div id='randomized_art'>
+			<canvas id='randomized_canvas'></canvas>
+		</div>
+	</div>
+	<div id="right_section">
+		{{- /*-----------------------------------------------------*/}}
+		{{- /*REGISTER*/}}
+		<div id='register'>
+			<div id='register_email_button' class='button'>
+				<div class='button_title'>Get an Invite</div>
+			</div>
+		</div>
+		{{- /*-----------------------------------------------------*/}}
+		{{- /*IMAGES*/}}
+		<div id="images">
+			{{- /*BUTTON*/}}
+			<a id     = 'images_flows_button' 
+			   class  = 'button'
+			   target = '_blank' 
+			   href   = '/images/flows/browser?fname=general'>
+				Images
+			</a>
+			{{- /*IMAGES*/}}
+			<div id='featured_images'>
+				{{- range .Featured_imgs_lst}}
+					<div class='image_info'>
+						<div class="image_title">{{.Title_str}}</div>
+						
+						<div class="image">
+							<img src="{{.Image_url_str}}" data-img_thumb_medium_url="{{.Image_thumbnail_medium_url_str}}" crossOrigin="anonymous"></img>
+						</div>
+						<div class="origin_page_url">
+							<a href='{{.Image_origin_page_url_str}}' target="_blank">
+								{{- .Image_origin_page_url_str}}
+							</a>
+						</div>
+						<div class="creation_time">{{.Creation_unix_time_str}}</div>
+					</div>
+				{{end}}
+			</div>
+		</div>
+		{{- /*-----------------------------------------------------*/}}
+		{{- /*PUBLISHER_APP*/}}
+		<div id="posts">
+			{{- /*BUTTON*/}}
+			<a id     = 'posts_browser_button' 
+			   class  = 'button'
+			   target = '_blank' 
+			   href   = '/posts/browser'>
+				Posts
+			</a>
+			{{- /*POSTS*/}}
+			<div id='featured_posts'>
+				{{- range .Featured_posts_lst}}
+					<div class='post_info'>
+						<div class='post_title'>{{.Title_str}}</div>
+
+						{{- /*POST IMAGES NUMBER*/}}
+						<div class='post_images_number'>
+							<div class='num'>{{.Images_number_int}}</div>
+							<div class='label'>images #</div>
+						</div>
+						
+						{{- /*POST IMAGE*/}}
+						<div class='post_image'>
+							<a target='_blank' 
+							   href  ="{{.Url_str}}">
+								<img src="{{.Image_url_str}}" crossOrigin="anonymous"></img>
+							</a>
+						</div>
+					</div>
+				{{end}}
+			</div>
+		</div>
+		{{- /*-----------------------------------------------------*/}}
+		{{- /*DOMAINS*/}}
+		<div id="domains">
+			{{- /*BUTTON*/}}
+			<a id     = 'domains_browser_button' 
+			   class  = 'button'
+			   target = '_blank' 
+			   href   = '/a/domains/browser'>
+				Domains
+			</a>
+		</div>
+		{{- /*-----------------------------------------------------*/}}
+	</div>
+{{- /*-----------------------------------------------------*/}}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/landing/static/js/lib/jquery.timeago.js"></script>
+<script type="text/javascript" src="/landing/static/js/lib/color-thief.min.js"></script>
+<script type="text/javascript" src="/landing/static/js/gf_landing_page.min.js"></script>
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
+</div>
+{{- /*-----------------------------------------------------*/}}
+</body>
+</html>

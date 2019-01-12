@@ -1,0 +1,176 @@
+body {
+	margin     :0px;
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	/*turn off horizontal scroll*/
+	max-width: 100%;
+    overflow-x: hidden;
+}
+/*------------------------------------------------------------*/
+#left_section {
+	position: absolute;
+	top     : 100px;
+	width   : 30%;
+}
+#left_section #gf_logo {
+	position      : relative;
+	left          : 8px;
+    padding-bottom: 14px;
+    padding-right : 8px;
+    padding-left  : 8px; 
+}
+
+#left_section #gf_logo img {
+	width: 100%;
+}
+
+#left_section #randomized_art {
+	position: relative;
+	background-color: lightgray;
+	width:100%;
+	height:400px;
+}
+#left_section #randomized_art canvas {
+	position: relative;
+}
+
+
+#right_section {
+	position: relative;
+	left    : 40%;
+}
+
+@media (max-width: 600px) {
+	#right_section {
+		left: 10%;
+	}
+
+	#left_section #gf_logo {
+		visibility: hidden;
+	}
+
+	#left_section #randomized_art {
+		visibility: hidden;
+	}
+}
+/*------------------------------------------------------------*/
+/*REGISTER EMAIL BUTTON*/
+
+/*@media all and (max-width: 1000px) and (min-width: 520px) {}*/
+
+#register {
+	position: absolute;
+	top     : 0px;
+	left    : 569px;
+}
+
+#register #register_email_button {
+	background-color: gray;
+	width           : 216px;
+	height          : 37px;
+	padding-top     : 18px;
+	text-align      : center;
+	color           : white;
+	opacity         : 0.7;  
+
+	transition: opacity 0.5s ease;
+}
+#register #register_email_button:hover {
+	cursor          : pointer;
+	opacity         : 1.0;  
+}
+#register #register_email_button:active {
+	cursor          : pointer;
+	opacity         : 1.0;  
+	background-color: white;
+	color           : black;
+}
+/*------------------------------------------------------------*/
+/*REGISTER EMAIL FORM*/
+
+#register #register_email_form {
+	position: fixed;
+	top     : 65px;
+	height  : 77px;
+	width   : 300px;
+	z-index : 2;
+
+	opacity:0.0;
+	transition: opacity 0.5s ease;
+}
+#register #user_email_input {
+	height       : 36px;
+	width        : 100%;
+	border       : black;
+	border-width : 1px;
+	border-color : black;
+	border-radius: 1;
+	border-style : solid;
+	font-size    : 22px;
+}
+
+#register #submit_register_email_form_button {
+	background-color: gray;
+	width           : 300px;
+	height          : 37px;
+	padding-top     : 18px;
+	text-align      : center;
+	color           : white;
+	position        : absolute;
+	opacity         : 0.9;  
+	transition      : opacity 0.5s ease;
+}
+#register #submit_register_email_form_button:hover {
+	cursor          : pointer;
+	opacity         : 1.0;  
+}
+#register #submit_register_email_form_button:active {
+	cursor          : pointer;
+	opacity         : 1.0;  
+	background-color: white;
+	color           : black;
+}
+/*------------------------------------------------------------*/
+.preview_3d_button {
+	position        : fixed;
+	top             : 404px;
+	left            : 42px;
+	color           : white;
+	background-color: rgb(202, 202, 202);
+	padding-left    : 17px;
+	padding-bottom  : 15px;
+	padding-top     : 15px;
+	padding-right   : 17px;
+
+	cursor: pointer;
+}
+.randomized_canvas {
+	position: fixed;
+}
+/*-------------------------------------------*/
+/*humble beginnings...*/
+#sys_release_info {
+	position        : fixed;
+	right           : 0px;
+	bottom          : 0px;
+	background-color: rgb(226, 226, 157);
+	padding-left    : 8px;
+	padding-top     : 6px;
+	padding-right   : 5px;
+	padding-bottom  : 3px;
+	z-index         : 5000;
+	width:100px;
+	height: 20px;
+	opacity: 0.5;
+}
+#sys_release_info #version {
+	text-align: right;
+	font-size: 10px}
+#sys_release_info #name {
+	text-align: right;
+	font-size: 10px;
+}
+
+#sys_release_info #description {
+	visibility: hidden;
+}
