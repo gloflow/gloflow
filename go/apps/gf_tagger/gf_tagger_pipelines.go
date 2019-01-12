@@ -20,12 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"errors"
 	"strings"
 	"strconv"
 	"text/template"
 	"net/http"
-	"gopkg.in/mgo.v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -39,19 +37,27 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	//----------------
 	//INPUT
 	if _,ok := p_input_data_map["otype"]; !ok {
-		gf_err := gf_core.Error__create("note 'otype' not supplied",
+		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
 			&map[string]interface{}{"input_data_map":p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
-		return errors.New("snippet 'otype' not supplied")
+		return gf_err
 	}
 
 	if _,ok := p_input_data_map["o_id"]; !ok {
-		return errors.New("snippet 'o_id' not supplied")
+		gf_err := gf_core.Error__create("input 'o_id' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 
 	if _,ok := p_input_data_map["tags"]; !ok {
-		return errors.New("'tags' not supplied")
+		gf_err := gf_core.Error__create("input 'tags' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 
 	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
@@ -78,15 +84,25 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 	//----------------
 	//INPUT
 	qs_map := p_req.URL.Query()
+	var err error
 
 	//response_format_str - "j"(for json)|"h"(for html)
 	response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+
 	if _,ok := qs_map["otype"]; !ok {
-		return nil, errors.New("snippet 'otype' not supplied")
+		gf_err := gf_core.Error__create("input 'otype' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"qs_map":qs_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	if _,ok := qs_map["tag"]; !ok {
-		return nil, errors.New("'tag' not supplied")
+		gf_err := gf_core.Error__create("input 'tag' not supplied",
+			"verify__missing_key_error",
+			&map[string]interface{}{"qs_map":qs_map,},
+			nil, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//TrimSpace() - Returns the string without any leading and trailing whitespace.
@@ -96,19 +112,29 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 	//PAGE_INDEX
 	page_index_int := 0
 	if a_lst,ok := qs_map["pg_index"]; ok {
-		page_index_int,_ = strconv.Atoi(a_lst[0]) //user supplied value
-		/*if err != nil {
-			return nil,err
-		}*/
+		input_val          := a_lst[0]
+		page_index_int, err = strconv.Atoi(input_val) //user supplied value
+		if err != nil {
+			gf_err := gf_core.Error__create("input pg_index not an integer",
+				"verify__value_not_integer_error",
+				&map[string]interface{}{"input_val":input_val,},
+				nil, "gf_tagger", p_runtime_sys)
+			return nil, gf_err
+		}
 	}
 
 	//PAGE_SIZE
 	page_size_int := 10
 	if a_lst,ok := qs_map["pg_size"]; ok {
-		page_size_int,_ = strconv.Atoi(a_lst[0]) //user supplied value
-		/*if err != nil {
-			return nil,err
-		}*/
+		input_val         := a_lst[0]
+		page_size_int, err = strconv.Atoi(input_val) //user supplied value
+		if err != nil {
+			gf_err := gf_core.Error__create("input pg_size not an integer",
+				"verify__value_not_integer_error",
+				&map[string]interface{}{"input_val":input_val,},
+				nil, "gf_tagger", p_runtime_sys)
+			return nil, gf_err
+		}
 	}
 	//----------------
 
@@ -128,7 +154,6 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 			}
 		//------------------
 		//JSON EXPORT
-		
 		case "json":
 			p_runtime_sys.Log_fun("INFO","JSON RESPONSE >>")
 			objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
@@ -146,6 +171,5 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 			return objects_with_tag_lst, nil
 		//------------------
 	}
-
 	return nil, nil
 }

@@ -39,13 +39,13 @@ func db__get_objects_with_tag_count(p_tag_str string,
 				}).Count()
 
 			if err != nil {
-				gf_err := gf_core.Error__create("failed to count of posts with tag - %s",fmt.Sprintf(p_tag_str)),
+				gf_err := gf_core.Error__create(fmt.Sprintf("failed to count of posts with tag - %s",p_tag_str),
 					"mongodb_find_error",
 					&map[string]interface{}{
 						"tag_str":        p_tag_str,
 						"object_type_str":p_object_type_str,
 					},
-					err,"gf_tagger",p_runtime_sys)
+					err, "gf_tagger", p_runtime_sys)
 				return 0, gf_err
 			}
 			return count_int, nil
@@ -118,8 +118,8 @@ func db__get_posts_with_tag(p_tag_str string,
 	p_page_index_int int,
 	p_page_size_int  int,
 	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__get_posts_with_tag()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_tag_str - "+p_tag_str)
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
+	p_runtime_sys.Log_fun("INFO"     , "p_tag_str - "+p_tag_str)
 
 	//FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
 	//        with a tag, toList() will accumulate a large collection in memory. 
@@ -137,14 +137,14 @@ func db__get_posts_with_tag(p_tag_str string,
 		All(&posts_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get posts with tag - %s",fmt.Sprintf(p_tag_str)),
+		gf_err := gf_core.Error__create(fmt.Sprintf("failed to get posts with tag - %s",p_tag_str),
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"tag_str":       p_tag_str,
 				"page_index_int":p_page_index_int,
 				"page_size_int": p_page_size_int,
 			},
-			err,"gf_tagger",p_runtime_sys)
+			err, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
 	return posts_lst, nil

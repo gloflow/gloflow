@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"fmt"
 	"text/template"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -90,7 +89,7 @@ func render_objects_with_tag(p_tag_str string,
 		return gf_err
 	}
 	
-	err = p_tmpl.Execute(p_resp,
+	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
 			Tag_str:               p_tag_str,
 			Posts_with_tag_num_int:posts_with_tag_count_int,

@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"fmt"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -76,19 +75,24 @@ func Run_service__in_process(p_port_str string,
 	p_log_fun("INFO","")
 	p_log_fun("INFO"," >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
 	p_log_fun("INFO","")
-    
-	mongo_db   := gf_core.Conn_to_mongodb(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongo_coll := mongo_db.C("data_symphony")
+	
+	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
+	mongodb_coll := mongodb_db.C("data_symphony")
+
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str:"gf_images",
+		Log_fun:         p_log_fun,
+		Mongodb_coll:    mongodb_coll,
+	}
 	//------------------------
 	//STATIC FILES SERVING
 	dashboard__url_base_str := "/tags"
-	gf_core.HTTP__init_static_serving(&dashboard__url_base_str,p_log_fun)
+	gf_core.HTTP__init_static_serving(dashboard__url_base_str, runtime_sys)
 	//------------------------
 
-	err := init_handlers(mongo_coll, p_log_fun)
-	if err != nil {
-		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
-		panic(msg_str)
+	gf_err := init_handlers(runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
 	}
 
 	//----------------------
@@ -101,7 +105,7 @@ func Run_service__in_process(p_port_str string,
 	p_log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	p_log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
 	p_log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	err = http.ListenAndServe(":"+p_port_str,nil)
+	err := http.ListenAndServe(":"+p_port_str, nil)
 	if err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
 		p_log_fun("ERROR",msg_str)

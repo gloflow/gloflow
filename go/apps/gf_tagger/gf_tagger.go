@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -42,8 +41,14 @@ func add_tags_to_object(p_tags_str string,
 	if p_object_type_str != "post" &&
 		p_object_type_str != "image" &&
 		p_object_type_str != "event" {
-
-		return errors.New(fmt.Sprintf("p_object_type_str (%s) is not of supported type (post|image|event)",p_object_type_str))
+		gf_err := gf_core.Error__create(fmt.Sprintf("p_object_type_str (%s) is not of supported type (post|image|event)",p_object_type_str),
+			"verify__invalid_value_error",
+			&map[string]interface{}{
+				"tags_str":       p_tags_str,
+				"object_type_str":p_object_type_str,
+			},
+			nil, "gf_tagger", p_runtime_sys)
+		return gf_err
 	}
 	
 	tags_lst, gf_err := parse_tags(p_tags_str,
@@ -73,7 +78,14 @@ func add_tags_to_object(p_tags_str string,
 				gf_err := db__add_tags_to_post(post_title_str, tags_lst, p_runtime_sys)
 				return gf_err
 			} else {
-				return errors.New(fmt.Sprintf("post with title (%s) doesnt exist", post_title_str))
+				gf_err := gf_core.Error__create(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", post_title_str, tags_lst),
+					"verify__invalid_value_error",
+					&map[string]interface{}{
+						"post_title_str":post_title_str,
+						"tags_lst":      tags_lst,
+					},
+					nil, "gf_tagger", p_runtime_sys)
+				return gf_err
 			}
 
 		//---------------
@@ -89,8 +101,6 @@ func add_tags_to_object(p_tags_str string,
 				if gf_err != nil {
 					return gf_err
 				}
-			} else {
-				return errors.New(fmt.Sprintf("image with id (%s) doesnt exist",image_id_str))
 			}
 		//---------------
 	}
@@ -106,7 +116,6 @@ func get_objects_with_tags(p_tags_lst []string,
 		
 	objects_with_tags_map := map[string][]map[string]interface{}{}
 	for _,tag_str := range p_tags_lst {
-
 		objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
 			p_object_type_str,
 			p_page_index_int,
@@ -129,27 +138,23 @@ func get_objects_with_tag(p_tag_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger.get_objects_with_tag()")
 	p_runtime_sys.Log_fun("INFO",     "p_object_type_str - "+p_object_type_str)
 
-	if p_object_type_str != "post" {
-		return nil,errors.New("p_object_type_str is not 'post'")
-	}
-
 	//ADD!! - add support for tagging "image" p_object_type_str's
-	if p_object_type_str == "post" {
-		posts_with_tag_lst, gf_err := db__get_posts_with_tag(p_tag_str,
-			p_page_index_int,
-			p_page_size_int,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
-		}
-	} else {
+	if p_object_type_str != "post" {
 		gf_err := gf_core.Error__create(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", p_tag_str, p_object_type_str),
 			"verify__invalid_value_error",
 			&map[string]interface{}{
-				"tag_str":        tag_str,
+				"tag_str":        p_tag_str,
 				"object_type_str":p_object_type_str,
 			},
 			nil, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
+	}
+	
+	posts_with_tag_lst, gf_err := db__get_posts_with_tag(p_tag_str,
+		p_page_index_int,
+		p_page_size_int,
+		p_runtime_sys)
+	if gf_err != nil {
 		return nil, gf_err
 	}
 
@@ -182,7 +187,7 @@ func parse_tags(p_tags_str string,
 		gf_err := gf_core.Error__create(fmt.Sprintf("too many tags supplied - max is %s",p_max_tags_bulk_size_int),
 			"verify__value_too_many_error",
 			&map[string]interface{}{
-				"tag_str":               tag_str,
+				"tags_lst":              tags_lst,
 				"max_tags_bulk_size_int":p_max_tags_bulk_size_int,
 			},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -191,7 +196,7 @@ func parse_tags(p_tags_str string,
 	//---------------------
 	for _,tag_str := range tags_lst {
 		if len(tag_str) > p_max_tag_characters_number_int {
-			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%s)", tag_str, fmt.Sprint(p_max_tag_characters_number_int))
+			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%s)", tag_str, fmt.Sprint(p_max_tag_characters_number_int)),
 				"verify__string_too_long_error",
 				&map[string]interface{}{
 					"tag_str":                      tag_str,

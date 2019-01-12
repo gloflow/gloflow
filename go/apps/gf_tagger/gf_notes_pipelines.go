@@ -105,7 +105,7 @@ func pipeline__get_notes(p_req *http.Request,
 	if _,ok := qs_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("note 'otype' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			&map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -113,7 +113,7 @@ func pipeline__get_notes(p_req *http.Request,
 	if _,ok := qs_map["o_id"]; !ok {
 		gf_err := gf_core.Error__create("note 'o_id' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			&map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -125,7 +125,6 @@ func pipeline__get_notes(p_req *http.Request,
 	tagger_notes_lst := []*Note{}
 	if object_type_str == "post" {
 
-		var err error
 		post_title_str    := object_extern_id_str
 		notes_lst, gf_err := db__get_post_notes(post_title_str, p_runtime_sys)
 		if gf_err != nil {
