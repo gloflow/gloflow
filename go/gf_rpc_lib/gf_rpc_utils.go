@@ -36,7 +36,7 @@ type Gf_rpc_handler_run struct {
 func Get_http_input(p_handler_url_path_str string,
 	p_resp        http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Get_http_input()")
 
 	var i map[string]interface{}
@@ -56,7 +56,7 @@ func Get_http_input(p_handler_url_path_str string,
 		return nil,gf_err
 	}
 
-	return i,nil
+	return i, nil
 }
 //-------------------------------------------------
 func Get_response_format(p_qs_map map[string][]string,

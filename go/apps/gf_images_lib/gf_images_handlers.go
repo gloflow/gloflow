@@ -60,7 +60,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf
 			if _,ok := img_config.Flow_to_s3bucket_map[flow_name_str]; !ok {
 				gf_rpc_lib.Error__in_handler("/images/d",
 					"supplied fname argument is for a non-existed flow - "+flow_name_str, //p_user_msg_str
-					nil,p_resp,p_runtime_sys)
+					nil, p_resp, p_runtime_sys)
 				return
 			}
 			s3_bucket_name_str := img_config.Flow_to_s3bucket_map[flow_name_str]
@@ -88,22 +88,19 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/images/c", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/c", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/c/classifier",
-					"failed parse input for the received image calculation result", //p_user_msg_str
-					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 
-			browser_jobs_runs_results_lst      := i["jr"].([]interface{}) //map[string]interface{})
+			browser_jobs_runs_results_lst      := i_map["jr"].([]interface{}) //map[string]interface{})
 			cast_browser_jobs_runs_results_lst := []map[string]interface{}{}
 			for _,r := range browser_jobs_runs_results_lst {
 				cast_browser_jobs_runs_results_lst = append(cast_browser_jobs_runs_results_lst, r.(map[string]interface{}))
 			}
 			//--------------------------
 			//STORE BROWSER_IMAGE_CALC_RESULT
-			gf_err = Process__browser_image_calc_result(cast_browser_jobs_runs_results_lst,p_runtime_sys)
+			gf_err = Process__browser_image_calc_result(cast_browser_jobs_runs_results_lst, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/c",
 					"failed processing browser_image_calc_result", //p_user_msg_str

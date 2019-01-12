@@ -78,19 +78,11 @@ func init_handlers(p_gf_images_service_host_port_str string,
 
 			//------------
 			//INPUT
-			post_info_map    := map[string]interface{}{}
-			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-		    err              := json.Unmarshal(body_bytes_lst, &post_info_map)
-
-			if err != nil {
-				usr_msg_str := "create_post pipeline received bad post_info_map input"
-				gf_err      := gf_core.Error__create(usr_msg_str,
-					"json_unmarshal_error",
-					&map[string]interface{}{"body_bytes_str":string(body_bytes_lst),},
-					err,"gf_rpc_lib",p_runtime_sys)
-				gf_rpc_lib.Error__in_handler("/posts/create", usr_msg_str, gf_err, p_resp, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input("/posts/create", p_resp, p_req, p_runtime_sys)
+			if gf_err != nil {
 				return
 			}
+			post_info_map := i_map
 			//------------
 
 			_,images_job_id_str, gf_err := gf_publisher_lib.Pipeline__create_post(post_info_map, p_gf_images_service_host_port_str, p_runtime_sys)

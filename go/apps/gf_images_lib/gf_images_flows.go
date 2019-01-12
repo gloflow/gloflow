@@ -26,7 +26,6 @@ import (
 	"net/http"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
 )
@@ -72,15 +71,11 @@ func flows__get_page__pipeline(p_req *http.Request,
 		page_index_int,err = strconv.Atoi(pg_index) //user supplied value
 		
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to parse integer pg_indx query string arg in handler /images/flows/browser_page",
+			gf_err := gf_core.Error__create("failed to parse integer pg_index query string arg",
 				"int_parse_error",
 				&map[string]interface{}{"pg_index":pg_index,},
 				err,"gf_images_lib",p_runtime_sys)
-
-			gf_rpc_lib.Error__in_handler("/images/flows/browser_page",
-				"pg_index (page_index) is not an integer",
-				gf_err,p_resp,p_runtime_sys)
-			return nil,gf_err
+			return nil, gf_err
 		}
 	}
 
@@ -89,16 +84,10 @@ func flows__get_page__pipeline(p_req *http.Request,
 		pg_size          := a_lst[0]
 		page_size_int,err = strconv.Atoi(pg_size) //user supplied value
 		if err != nil {
-
-			gf_err := gf_core.Error__create("failed to parse integer pg_size query string arg in handler /images/flows/browser_page",
+			gf_err := gf_core.Error__create("failed to parse integer pg_size query string arg",
 				"int_parse_error",
 				&map[string]interface{}{"pg_size":pg_size,},
-				err,"gf_images_lib",p_runtime_sys)
-
-			gf_rpc_lib.Error__in_handler("/images/flows/browser_page",
-				"pg_size (page_size) is not an integer",
-				gf_err,p_resp,p_runtime_sys)
-
+				err, "gf_images_lib", p_runtime_sys)
 			return nil,gf_err
 		}
 	}
@@ -115,12 +104,10 @@ func flows__get_page__pipeline(p_req *http.Request,
 		cursor_start_position_int, //p_cursor_start_position_int
 		page_size_int,             //p_elements_num_int
 		p_runtime_sys)
-
 	if gf_err != nil {
 		return nil,gf_err
 	}
 	//------------------
-
 	return pages_lst,nil
 }
 
@@ -168,6 +155,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 
 	return existing_images_lst,nil
 }
+
 //-------------------------------------------------
 func Flows__add_extern_image(p_image_extern_url_str string,
 	p_image_origin_page_url_str string,

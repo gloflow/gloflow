@@ -43,7 +43,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":template_path_str,},
-			err,"gf_images_lib",p_runtime_sys)
+			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
 	}
 	//---------------------
@@ -57,22 +57,19 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i, gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
-					"failed parse input for adding an image to a flow", //p_user_msg_str
-					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 
-			image_extern_url_str      := i["image_extern_url_str"].(string)
-			image_origin_page_url_str := i["image_origin_page_url_str"].(string) //if image is from a page, the url of the page
-			client_type_str           := i["client_type_str"].(string)
+			image_extern_url_str      := i_map["image_extern_url_str"].(string)
+			image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) //if image is from a page, the url of the page
+			client_type_str           := i_map["client_type_str"].(string)
 
 			//flow_name_str := "general" //i["flow_name_str"].(string) //DEPRECATED
 			flows_names_lst := []string{}
-			for _,s := range i["flows_names_lst"].([]interface{}) {
-				flows_names_lst = append(flows_names_lst,s.(string))
+			for _,s := range i_map["flows_names_lst"].([]interface{}) {
+				flows_names_lst = append(flows_names_lst, s.(string))
 			}
 			//--------------------------
 
@@ -86,7 +83,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			if n_gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
 					"failed to add image to flow", //p_user_msg_str
-					n_gf_err,p_resp,p_runtime_sys)
+					n_gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//------------------
@@ -119,30 +116,27 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			//--------------------------
 			//INPUT
-			i, gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/flows/imgs_exist",
-					"failed to parse input to check if images exist in a flow", //p_user_msg_str
-					gf_err,p_resp,p_runtime_sys)
 				return
 			}
 
-			images_extern_urls__untyped_lst := i["images_extern_urls_lst"].([]interface{})
+			images_extern_urls__untyped_lst := i_map["images_extern_urls_lst"].([]interface{})
 			images_extern_urls_lst          := []string{}
 			for _,u := range images_extern_urls__untyped_lst {
 				u_str                 := u.(string)
-				images_extern_urls_lst = append(images_extern_urls_lst,u_str)
+				images_extern_urls_lst = append(images_extern_urls_lst, u_str)
 			}
 
-			flow_name_str   := i["flow_name_str"].(string)
-			client_type_str := i["client_type_str"].(string)
+			flow_name_str   := i_map["flow_name_str"].(string)
+			client_type_str := i_map["client_type_str"].(string)
 			//--------------------------
 				
-			existing_images_lst,gf_err := flows__images_exist_check(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
+			existing_images_lst, gf_err := flows__images_exist_check(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/imgs_exist",
 					"failed to check if extern image exists in the system", //p_user_msg_str
-					gf_err,p_resp,p_runtime_sys)
+					gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//------------------
@@ -151,7 +145,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			data_map := map[string]interface{}{
 				"existing_images_lst":existing_images_lst,
 			}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

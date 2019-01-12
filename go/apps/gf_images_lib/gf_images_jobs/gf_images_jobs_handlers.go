@@ -49,7 +49,6 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			//INPUT
 			input_map,gf_err := gf_rpc_lib.Get_http_input("/images/jobs/start", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/jobs/start", "failed parse input to start a job", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//--------------------------
@@ -89,10 +88,10 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 
 			flows_names_lst := []string{"general",}
 			running_job,job_expected_outputs_lst,gf_err := Start_job(client_type_str,
-															images_to_process, //p_images_to_process_lst
-															flows_names_lst,
-															p_jobs_mngr_ch,
-															p_runtime_sys)
+				images_to_process, //p_images_to_process_lst
+				flows_names_lst,
+				p_jobs_mngr_ch,
+				p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/jobs/start", "failed starting a job", gf_err, p_resp, p_runtime_sys)
 				return

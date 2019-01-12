@@ -78,7 +78,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 		gf_err := gf_core.Error__create("failed to parse json edited_image_save http_input",
 			"json_decode_error",
 			&map[string]interface{}{"handler_url_path_str":p_handler_url_path_str,},
-			err,"gf_image_editor",p_runtime_sys)
+			err, "gf_image_editor", p_runtime_sys)
 		return gf_err
 	}
 
@@ -94,7 +94,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	//--------------------------
 
 
-	source_gf_image,gf_err := gf_images_utils.DB__get_image(source_image_id_str,p_runtime_sys)
+	source_gf_image,gf_err := gf_images_utils.DB__get_image(source_image_id_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -131,8 +131,8 @@ func save_edited_image(p_source_image_id_str string,
 				"source_image_id_str":  p_source_image_id_str,
 				"image_base64_data_str":p_image_base64_data_str,
 			},
-			err,"gf_image_editor",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_image_editor", p_runtime_sys)
+		return nil, gf_err
 	}
 	//--------------------------
 	//PNG
@@ -146,8 +146,8 @@ func save_edited_image(p_source_image_id_str string,
 				"source_image_id_str":  p_source_image_id_str,
 				"image_base64_data_str":p_image_base64_data_str,
 			},
-			err,"gf_image_editor",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_image_editor", p_runtime_sys)
+		return nil, gf_err
 	}
 	//--------------------------
 	//FILE
@@ -164,8 +164,8 @@ func save_edited_image(p_source_image_id_str string,
 				"source_image_id_str":   p_source_image_id_str,
 				"tmp_local_filepath_str":tmp_local_filepath_str,
 			},
-			err,"gf_image_editor",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_image_editor", p_runtime_sys)
+		return nil, gf_err
 	}
 	defer file.Close()
 
@@ -175,8 +175,8 @@ func save_edited_image(p_source_image_id_str string,
 		gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 			"png_encoding_error",
 			&map[string]interface{}{"tmp_local_filepath_str":tmp_local_filepath_str,},
-			err,"gf_gif_lib",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_image_editor", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	/*//FILE_WRITE
@@ -199,13 +199,13 @@ func save_edited_image(p_source_image_id_str string,
 				"source_image_id_str":   p_source_image_id_str,
 				"tmp_local_filepath_str":tmp_local_filepath_str,
 			},
-			err,"gf_image_editor",p_runtime_sys)
+			err, "gf_image_editor", p_runtime_sys)
 		return nil,gf_err
 	}
 	//--------------------------
 	//IMAGE_DIMENSIONS
 
-	image_width_int,image_height_int := gf_images_utils.Get_image_dimensions__from_image(png_image,p_runtime_sys)
+	image_width_int, image_height_int := gf_images_utils.Get_image_dimensions__from_image(png_image, p_runtime_sys)
 	//--------------------------
 
 	processing_info := Gf_edited_image__processing_info{
@@ -237,7 +237,7 @@ func create_gf_image(p_new_title_str string,
 	image_id_str := gf_images_utils.Image__create_id(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
 	//--------------------------
 	//THUMBNAILS
-	image_thumbs,gf_err := gf_images_utils.Create_thumbnails(image_id_str,
+	image_thumbs, gf_err := gf_images_utils.Create_thumbnails(image_id_str,
 		image_format_str, //p_normalized_ext_str,
 		p_processing_info.tmp_local_filepath_str,
 		local_thumbnails_target_dir_path_str,
@@ -271,7 +271,7 @@ func create_gf_image(p_new_title_str string,
 	//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 	//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 	//              these two structs are related by origin_url
-	_,c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
+	_, c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
 	if c_gf_err != nil {
 		return c_gf_err
 	}
