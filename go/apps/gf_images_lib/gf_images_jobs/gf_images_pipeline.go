@@ -55,8 +55,8 @@ func pipeline__process_image(p_image_source_url_str string,
 	}
 
 	update_msg := &Job_update_msg{
-		Type_str            :"fetch_ok",
-		Image_id_str        :p_image_id_str,
+		Type_str:            "fetch_ok",
+		Image_id_str:        p_image_id_str,
 		Image_source_url_str:p_image_source_url_str,
 	}
 	p_job_updates_ch <- update_msg

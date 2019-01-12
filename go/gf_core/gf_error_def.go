@@ -28,7 +28,6 @@ func error__get_defs() map[string]error_def {
 	error_defs_map := map[string]error_def{
 
 		//---------------
-		//
 		"panic_error":error_def{
 			Descr_str:"a golang panic was caught with recover()",
 		},

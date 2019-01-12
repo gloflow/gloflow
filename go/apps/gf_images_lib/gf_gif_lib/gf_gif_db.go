@@ -38,9 +38,9 @@ func gif_db__create(p_image_source_url_str string,
 	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__create()")
 
-	img_title_str,gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
+	img_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -48,7 +48,7 @@ func gif_db__create(p_image_source_url_str string,
 	gf_url_str           := fmt.Sprintf("/images/d/gifs/%s.gif",img_title_str)
 
 	//--------------
-	origin_page_url,err := url.Parse(p_image_origin_page_url_str)
+	origin_page_url, err := url.Parse(p_image_origin_page_url_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse GIF's origin_page url when creating a DB record",
 			"url_parse_error",
@@ -56,8 +56,8 @@ func gif_db__create(p_image_source_url_str string,
 				"image_source_url_str":     p_image_source_url_str,
 				"image_origin_page_url_str":p_image_origin_page_url_str,
 			},
-			err,"gf_gif_lib",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_gif_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	//--------------
 

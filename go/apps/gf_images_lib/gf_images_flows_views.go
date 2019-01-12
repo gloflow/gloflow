@@ -53,8 +53,8 @@ func flows__render_initial_page(p_flow_name_str string,
 		//initial page might be larger then subsequent pages, that are requested 
 		//dynamically by the front-end
 		page_lst,gf_err := flows_db__get_page(p_flow_name_str, //"general", //p_flow_name_str
-			start_position_int,         //p_cursor_start_position_int
-			p_page_size_int,            //p_elements_num_int
+			start_position_int, //p_cursor_start_position_int
+			p_page_size_int,    //p_elements_num_int
 			p_runtime_sys)
 
 		if gf_err != nil {

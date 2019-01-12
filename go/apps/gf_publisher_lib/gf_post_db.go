@@ -37,7 +37,7 @@ func DB__get_post(p_post_title_str string,
 		gf_err := gf_core.Error__create("failed to get a post from the DB",
 			"mongodb_find_error",
 			&map[string]interface{}{"post_title_str":p_post_title_str,},
-			err,"gf_publisher_lib",p_runtime_sys)
+			err, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 

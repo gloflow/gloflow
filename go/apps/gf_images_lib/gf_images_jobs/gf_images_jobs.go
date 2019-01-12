@@ -239,13 +239,15 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					//MARK_JOB_AS_COMPLETE
 
 					job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-					update_err     := p_runtime_sys.Mongodb_coll.Update(bson.M{"t":"img_running_job","id_str":job_id_str,},
-														bson.M{
-															"$set":bson.M{
-																"status_str":"complete",
-																"end_time_f":job_end_time_f,
-															},
-														},)
+					update_err     := p_runtime_sys.Mongodb_coll.Update(bson.M{
+							"t":"img_running_job","id_str":job_id_str,
+						},
+						bson.M{
+							"$set":bson.M{
+								"status_str":"complete",
+								"end_time_f":job_end_time_f,
+							},
+						},)
 					if update_err != nil {
 						_ = gf_core.Error__create("failed to update an img_running_job in the DB, as complete and its end_time",
 							"mongodb_update_error",
@@ -253,7 +255,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 								"job_id_str":    job_id_str,
 								"job_end_time_f":job_end_time_f,
 							},
-							update_err,"gf_images_jobs",p_runtime_sys)
+							update_err, "gf_images_jobs", p_runtime_sys)
 					}
 					//--------------------
 

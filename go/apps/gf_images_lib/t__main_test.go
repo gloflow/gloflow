@@ -143,7 +143,6 @@ func test__images_ops(p_test_image_data *Gf_test_image_data, p_runtime_sys *gf_c
 			panic(gf_err.Error)
 		}
 
-
 		test__image_ops(p_test_image_data,
 			test__image_local_filepath_str,
 			format_str,
