@@ -55,7 +55,7 @@ func Init(p_images_local_dir_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.Init()")
 
 	//--------------
-	events_ctx := gf_core.Events__init("/a/crawl/events",p_runtime_sys)
+	events_ctx := gf_core.Events__init("/a/crawl/events", p_runtime_sys)
 
 	crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	gf_images_s3_bucket_name_str      := "gf--img"
@@ -73,7 +73,7 @@ func Init(p_images_local_dir_path_str string,
 	//--------------
 
 	//IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	db_index__init(runtime,p_runtime_sys)
+	db_index__init(runtime, p_runtime_sys)
 	
 	crawlers_map := Get_all_crawlers()
 
@@ -138,7 +138,7 @@ func start_crawler(p_crawler Crawler,
 	i := 0
 
 	for ;; {
-		gf_crawl_utils.Crawler_sleep(p_crawler.Name_str,i,r,p_runtime_sys)
+		gf_crawl_utils.Crawler_sleep(p_crawler.Name_str, i, r, p_runtime_sys)
 		//-----------------
 		//RUN CRAWLER
 		gf_err := Run_crawler_cycle(p_crawler,

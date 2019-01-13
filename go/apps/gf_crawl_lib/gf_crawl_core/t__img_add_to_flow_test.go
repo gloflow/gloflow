@@ -42,38 +42,38 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 
 
-	t__cleanup__test_page_imgs(test__crawler_name_str,runtime_sys)
+	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 	//-------------------
 	//CRAWLED_IMAGE_CREATE
 	test__crawled_image,gf_err := images__prepare_and_create(test__crawler_name_str,
-												test__cycle_run_id_str,
-												test__img_src_url_str,
-												test__origin_page_url_str,
-												crawler_runtime,
-												runtime_sys)
+		test__cycle_run_id_str,
+		test__img_src_url_str,
+		test__origin_page_url_str,
+		crawler_runtime,
+		runtime_sys)
 	if gf_err != nil { 
 		panic(gf_err.Error)
 	}
 
 	//CRAWLED_IMAGE_PERSIST
-	exists_bool,gf_err := Image__db_create(test__crawled_image,crawler_runtime,runtime_sys)
+	exists_bool,gf_err := Image__db_create(test__crawled_image, crawler_runtime, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-	assert.Equal(p_test,exists_bool,false,"test page_image exists in the DB already, test cleanup hasnt been done")
+	assert.Equal(p_test,exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
 	//-------------------
 	//CRAWLED_IMAGE_REF_CREATE
 	test__crawled_image_ref := images__ref_create(test__crawler_name_str,
-									test__cycle_run_id_str,
-									test__crawled_image.Url_str,                    //p_image_url_str
-									test__crawled_image.Domain_str,                 //p_image_url_domain_str
-									test__crawled_image.Origin_page_url_str,        //p_origin_page_url_str
-									test__crawled_image.Origin_page_url_domain_str, //p_origin_page_url_domain_str
-									runtime_sys)
+		test__cycle_run_id_str,
+		test__crawled_image.Url_str,                    //p_image_url_str
+		test__crawled_image.Domain_str,                 //p_image_url_domain_str
+		test__crawled_image.Origin_page_url_str,        //p_origin_page_url_str
+		test__crawled_image.Origin_page_url_domain_str, //p_origin_page_url_domain_str
+		runtime_sys)
 
 	//CRAWLED_IMAGE_REF_PERSIST
-	gf_err = Image__db_create_ref(test__crawled_image_ref,crawler_runtime,runtime_sys)
+	gf_err = Image__db_create_ref(test__crawled_image_ref, crawler_runtime, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -100,22 +100,21 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 
 	page_imgs__pinfos_with_thumbs_lst := images__stage__process_images(test__crawler_name_str,
-															page_imgs__pinfos_lst,
-															test__images_store_local_dir_path_str,
-															test__origin_page_url_str,
-															test__crawled_images_s3_bucket_name_str,
-															crawler_runtime,
-															runtime_sys)
+		page_imgs__pinfos_lst,
+		test__images_store_local_dir_path_str,
+		test__origin_page_url_str,
+		test__crawled_images_s3_bucket_name_str,
+		crawler_runtime,
+		runtime_sys)
 
 	fmt.Println("   STAGE_COMPLETE --------------")
 
-	assert.Equal(p_test,len(page_imgs__pinfos_lst),len(page_imgs__pinfos_with_thumbs_lst),"more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
-	assert.Equal(p_test,len(page_imgs__pinfos_lst),len(page_imgs__pinfos_with_thumbs_lst),"more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
+	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
+	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
 
 	for _,page_img__pinfo := range page_imgs__pinfos_with_thumbs_lst {
 
 		spew.Dump(page_img__pinfo)
-
 
 		assert.Equal(p_test,page_img__pinfo.page_img.S3_stored_bool,false)
 
@@ -128,11 +127,11 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//PIPELINE_STAGE__S3_STORE_IMAGES
 
 	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(test__crawler_name_str,
-												page_imgs__pinfos_with_thumbs_lst,
-												test__origin_page_url_str,
-												test__crawled_images_s3_bucket_name_str,
-												crawler_runtime,
-												runtime_sys)
+		page_imgs__pinfos_with_thumbs_lst,
+		test__origin_page_url_str,
+		test__crawled_images_s3_bucket_name_str,
+		crawler_runtime,
+		runtime_sys)
 
 	fmt.Println("   STAGE_COMPLETE --------------")
 
@@ -144,17 +143,15 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 		assert.Equal(p_test,page_img__pinfo.page_img.S3_stored_bool,true)
 	}
-
-	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	//-------------------
 	//FLOWS__ADD_EXTERN_IMAGE
 
 	gf_err = Flows__add_extern_image(test__crawled_image.Id_str,
-							test__image_flows_names_lst,
-							test__crawled_images_s3_bucket_name_str,
-							test__gf_images_s3_bucket_name_str,
-							crawler_runtime,
-							runtime_sys)
+		test__image_flows_names_lst,
+		test__crawled_images_s3_bucket_name_str,
+		test__gf_images_s3_bucket_name_str,
+		crawler_runtime,
+		runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

@@ -29,14 +29,13 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-func Get__html_doc_over_http(p_url_str string,
-					p_runtime_sys *gf_core.Runtime_sys) (*goquery.Document,*gf_core.Gf_error) {
+func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sys) (*goquery.Document, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_utils.Get__html_doc_over_http()")
 
 	//-----------------------
-	gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(p_url_str,p_runtime_sys)
+	gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(p_url_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	defer gf_http_fetch.Resp.Body.Close()
 	//-----------------------
@@ -55,8 +54,8 @@ func Get__html_doc_over_http(p_url_str string,
 				"status_code_int":gf_http_fetch.Status_code_int,
 				"body_str":       body_str,
 			},
-			nil,"gf_crawl_utils",p_runtime_sys)
-		return nil,gf_err
+			nil, "gf_crawl_utils", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//doc,err := goquery.NewDocument(p_url_str)
@@ -65,18 +64,18 @@ func Get__html_doc_over_http(p_url_str string,
 		gf_err := gf_core.Error__create("failed to parse a fetched HTML page from a crawled url",
 			"html_parse_error",
 			&map[string]interface{}{"url_str":p_url_str,},
-			err,"gf_crawl_utils",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_crawl_utils", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return doc,nil
+	return doc, nil
 }
 //--------------------------------------------------
 func Crawler_sleep(p_crawler_name_str string,
-				p_cycle_index_int int,
-				p_rand            *rand.Rand,
-				p_runtime_sys     *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_utils.Crawler_sleep()")
+	p_cycle_index_int int,
+	p_rand            *rand.Rand,
+	p_runtime_sys     *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
 
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -100,11 +99,11 @@ func Crawler_sleep(p_crawler_name_str string,
 
 
 	wait_random_min := float32(wait_random_sec)/float32(60)
-	sleep_length    := time.Second*time.Duration(wait_random_sec)
+	sleep_length    := time.Second * time.Duration(wait_random_sec)
 
-	fmt.Println("INFO",black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-	fmt.Println("INFO",black(">>>    SLEEPING CRAWLER >>> ")+yellow(p_crawler_name_str)+black(" - for min - "+fmt.Sprint(wait_random_min)))
-	fmt.Println("INFO",black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	fmt.Println("INFO", black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	fmt.Println("INFO", black(">>>    SLEEPING CRAWLER >>> ")+yellow(p_crawler_name_str)+black(" - for min - "+fmt.Sprint(wait_random_min)))
+	fmt.Println("INFO", black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
 
 	time.Sleep(sleep_length)
 }

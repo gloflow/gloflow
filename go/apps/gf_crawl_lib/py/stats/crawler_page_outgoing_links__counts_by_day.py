@@ -127,12 +127,7 @@ def run(p_mongo_client,
 			domain_count_int = domain_stats_map['count_int']
 
 			top_20_domains__count_int += domain_count_int
-
-
 		top_20_domains_counts_per_day_lst.append(top_20_domains__count_int)
-
-
-
 
 	df = pd.DataFrame({
 		"days":                         days_lst,

@@ -93,11 +93,11 @@ type Crawler__recent_images struct {
 }
 //-------------------------------------------------
 func images__prepare_and_create(p_crawler_name_str string,
-			p_cycle_run_id_str   string,
-			p_img_src_url_str    string,
-			p_origin_page_url_str string,
-			p_runtime            *Crawler_runtime,
-			p_runtime_sys        *gf_core.Runtime_sys) (*Crawler_page_img,*gf_core.Gf_error) {
+	p_cycle_run_id_str   string,
+	p_img_src_url_str    string,
+	p_origin_page_url_str string,
+	p_runtime            *Crawler_runtime,
+	p_runtime_sys        *gf_core.Runtime_sys) (*Crawler_page_img,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -106,24 +106,24 @@ func images__prepare_and_create(p_crawler_name_str string,
 	//------------------
 	//DOMAINS
 
-	img_src_domain_str,origin_page_url_domain_str,gf_err := gf_crawl_utils.Get_domain(p_img_src_url_str,p_origin_page_url_str,p_runtime_sys)
+	img_src_domain_str, origin_page_url_domain_str, gf_err := gf_crawl_utils.Get_domain(p_img_src_url_str, p_origin_page_url_str, p_runtime_sys)
 	if gf_err != nil {
 		t:="images_in_page__get_domain__failed"
 		m:="failed to get domain of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,},p_img_src_url_str,p_crawler_name_str,
-					gf_err,p_runtime,p_runtime_sys)
-		return nil,gf_err
+		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
+			gf_err, p_runtime, p_runtime_sys)
+		return nil, gf_err
 	}
 	//-------------
 	//COMPLETE_A_HREF
 	
-	complete_img_src_url_str,gf_err := gf_crawl_utils.Complete_url(p_img_src_url_str,img_src_domain_str,p_runtime_sys)
+	complete_img_src_url_str, gf_err := gf_crawl_utils.Complete_url(p_img_src_url_str, img_src_domain_str, p_runtime_sys)
 	if gf_err != nil {
 		t:="complete_url__failed"
 		m:="failed to complete_url of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,},p_img_src_url_str,p_crawler_name_str,
-					gf_err,p_runtime,p_runtime_sys)
-		return nil,gf_err
+		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
+			gf_err, p_runtime, p_runtime_sys)
+		return nil, gf_err
 	}
 	//-------------
 	//GET_IMG_EXT_FROM_URL
@@ -132,32 +132,32 @@ func images__prepare_and_create(p_crawler_name_str string,
 	if gf_err != nil {
 		t:="images_in_page__get_img_extension__failed"
 		m:="failed to get file extension of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,},p_img_src_url_str,p_crawler_name_str,
-					gf_err,p_runtime,p_runtime_sys)
-		return nil,gf_err
+		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
+			gf_err, p_runtime, p_runtime_sys)
+		return nil, gf_err
 	}
 	//-------------
 	p_runtime_sys.Log_fun("INFO",">>>>> "+cyan("img")+" -- "+yellow(img_src_domain_str)+" ------ "+yellow(fmt.Sprint(complete_img_src_url_str)))
 
 	img := images__create(p_crawler_name_str,
-					p_cycle_run_id_str,
-					complete_img_src_url_str,
-					img_ext_str,
-					img_src_domain_str,
-					p_origin_page_url_str,
-					origin_page_url_domain_str,
-					p_runtime_sys)
-	return img,nil
+		p_cycle_run_id_str,
+		complete_img_src_url_str,
+		img_ext_str,
+		img_src_domain_str,
+		p_origin_page_url_str,
+		origin_page_url_domain_str,
+		p_runtime_sys)
+	return img, nil
 }
 //-------------------------------------------------
 func images__create(p_crawler_name_str string,
-			p_cycle_run_id_str           string,
-			p_img_src_url_str            string,
-			p_img_ext_str                string,
-			p_img_src_domain_str         string,
-			p_origin_page_url_str        string,
-			p_origin_page_url_domain_str string,
-			p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img {
+	p_cycle_run_id_str           string,
+	p_img_src_url_str            string,
+	p_img_ext_str                string,
+	p_img_src_domain_str         string,
+	p_origin_page_url_str        string,
+	p_origin_page_url_domain_str string,
+	p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -190,12 +190,12 @@ func images__create(p_crawler_name_str string,
 }
 //-------------------------------------------------
 func images__ref_create(p_crawler_name_str string,
-				p_cycle_run_id_str           string,
-				p_image_url_str              string,
-				p_image_url_domain_str       string,
-				p_origin_page_url_str        string,
-				p_origin_page_url_domain_str string,
-				p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img_ref {
+	p_cycle_run_id_str           string,
+	p_image_url_str              string,
+	p_image_url_domain_str       string,
+	p_origin_page_url_str        string,
+	p_origin_page_url_domain_str string,
+	p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img_ref {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0

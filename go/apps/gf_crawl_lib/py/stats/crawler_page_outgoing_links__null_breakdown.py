@@ -15,14 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
-
 import pandas as pd
 import matplotlib.pyplot as plt 
-
-
-
 #-------------------------------------------------------------
 #called to find out how frequently to run the stat
 def freq():
@@ -32,13 +26,7 @@ def run(p_mongo_client,
 	p_log_fun,
 	p_output_img_str = '../plots/crawler_page_outgoing_links__null_breakdown.png'):
 
-
-
-
 	fig = plt.figure(figsize=(30,10))
-
-	
-
 
 	top_domains_number_int = 100
 
@@ -68,7 +56,7 @@ def run(p_mongo_client,
 
 
 	df = pd.DataFrame({
-	    "name"        : names_lst,
+	    "name":         names_lst,
 	    "links_counts": counts_lst
 	})
 

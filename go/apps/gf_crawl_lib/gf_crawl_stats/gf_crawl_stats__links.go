@@ -66,14 +66,14 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			},
 		},
 		bson.M{"$project":bson.M{
+				"creation_unix_time_f":true,
+				"valid_for_crawl_bool":true,
+				"fetched_bool":        true,
 				//"id_str"               :true,
-				"creation_unix_time_f" :true,
 				//"cycle_run_id_str"     :true,
 				//"domain_str"           :true,
 				//"a_href_str"           :true, //actual link from the html <a> page ('href' parameter)
 				//"origin_url_str"       :true, //page url from whos html this element was extracted
-				"valid_for_crawl_bool" :true,
-				"fetched_bool"         :true,
 				//"images_processed_bool":true,
 			},
 		},
@@ -89,8 +89,8 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get new links by day",
 			"mongodb_aggregation_error",
-			nil,err,"gf_crawl_stats",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//--------------------
@@ -156,9 +156,9 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
 		bson.M{"$match":bson.M{
-				"t"                   :"crawler_page_outgoing_link",
+				"t":                   "crawler_page_outgoing_link",
 				"valid_for_crawl_bool":true,
-				"fetched_bool"        :false,
+				"fetched_bool":        false,
 			},
 		},
 
@@ -168,16 +168,16 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 		},
 
 		bson.M{"$group":bson.M{
-				"_id"        :bson.M{"origin_domain_str":"$origin_domain_str","origin_url_str":"$origin_url_str",},
-				"count_int"  :bson.M{"$sum" :1},
+				"_id":        bson.M{"origin_domain_str":"$origin_domain_str","origin_url_str":"$origin_url_str",},
+				"count_int":  bson.M{"$sum" :1},
 				"a_hrefs_lst":bson.M{"$push":"$a_href_str",},
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id"                          :"$_id.origin_domain_str",
-				"origin_urls_lst"              :bson.M{"$push":"$_id.origin_url_str"},
-				"counts__from_origin_urls_lst" :bson.M{"$push":"$count_int"},
+				"_id":                          "$_id.origin_domain_str",
+				"origin_urls_lst":              bson.M{"$push":"$_id.origin_url_str"},
+				"counts__from_origin_urls_lst": bson.M{"$push":"$count_int"},
 				"a_hrefs__from_origin_urls_lst":bson.M{"$push":"$a_hrefs_lst"},
 			},
 		},
@@ -189,8 +189,8 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to unresolved links",
 			"mongodb_aggregation_error",
-			nil,err,"gf_crawl_stats",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{
@@ -199,7 +199,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	return data_map,nil
 }
 //-------------------------------------------------
-func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__crawled_links_domains()")
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
@@ -209,27 +209,27 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 		},
 
 		bson.M{"$project":bson.M{
-				"id_str"               :true,
-				"creation_unix_time_f" :true,
-				"cycle_run_id_str"     :true,
-				"domain_str"           :true,
-				"a_href_str"           :true, //actual link from the html <a> page ('href' parameter)
-				"origin_url_str"       :true, //page url from whos html this element was extracted
-				"valid_for_crawl_bool" :true,
-				"fetched_bool"         :true,
+				"id_str":               true,
+				"creation_unix_time_f": true,
+				"cycle_run_id_str":     true,
+				"domain_str":           true,
+				"a_href_str":           true, //actual link from the html <a> page ('href' parameter)
+				"origin_url_str":       true, //page url from whos html this element was extracted
+				"valid_for_crawl_bool": true,
+				"fetched_bool":         true,
 				"images_processed_bool":true,
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id"                    :"$domain_str",
-				"links_count_int"        :bson.M{"$sum"     :1},
+				"_id":                    "$domain_str",
+				"links_count_int":        bson.M{"$sum"     :1},
 				"creation_unix_times_lst":bson.M{"$push"    :"$creation_unix_time_f"},
-				"a_href_lst"             :bson.M{"$push"    :"$a_href_str"},
-				"origin_urls_lst"        :bson.M{"$addToSet":"$origin_url_str"},
-				"valid_for_crawl_lst"    :bson.M{"$push"    :"$valid_for_crawl_bool"},  //if the link is to be crawled/followed, or should be ignored
-				"fetched_lst"            :bson.M{"$push"    :"$fetched_bool"},          //if the link's HTML was downloaded
-				"images_processed_lst"   :bson.M{"$push"    :"$images_processed_bool"}, //if the images of this links HTML page were downloaded/processed
+				"a_href_lst":             bson.M{"$push"    :"$a_href_str"},
+				"origin_urls_lst":        bson.M{"$addToSet":"$origin_url_str"},
+				"valid_for_crawl_lst":    bson.M{"$push"    :"$valid_for_crawl_bool"},  //if the link is to be crawled/followed, or should be ignored
+				"fetched_lst":            bson.M{"$push"    :"$fetched_bool"},          //if the link's HTML was downloaded
+				"images_processed_lst":   bson.M{"$push"    :"$images_processed_bool"}, //if the images of this links HTML page were downloaded/processed
 			},
 		},
 
@@ -245,8 +245,8 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get crawled links domains",
 			"mongodb_aggregation_error",
-			nil,err,"gf_crawl_stats",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{

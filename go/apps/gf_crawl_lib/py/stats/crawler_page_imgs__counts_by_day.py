@@ -195,15 +195,15 @@ def run(p_mongo_client,
 	imgs_refs__counts_lst                                                = process_page_imgs_refs(imgs_refs__results)
 
 	df = pd.DataFrame({
-	    "days"                         : imgs__days_lst,
-	    "total_counts"                 : imgs__counts_lst,
+	    "days":                          imgs__days_lst,
+	    "total_counts":                  imgs__counts_lst,
 	    "top_10_domains_counts_per_day": imgs__top_domains_counts_per_day_lst,
 
 	    #CAUTION!! - this assumes that these lists are of the same length as the imgs__days_lst,
 	    #            same number of days. if thats not the case Pandas will complain.
 	    "imgs__downloaded__counts":imgs__downloaded__counts_lst,
-	    "imgs__s3_stored__counts" :imgs__s3_stored__counts_lst,
-	    "imgs_refs__counts"       : imgs_refs__counts_lst
+	    "imgs__s3_stored__counts": imgs__s3_stored__counts_lst,
+	    "imgs_refs__counts":       imgs_refs__counts_lst
 	})
 
 	df.set_index("days",drop=True,inplace=True)

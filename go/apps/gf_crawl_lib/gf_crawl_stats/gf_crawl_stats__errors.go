@@ -49,9 +49,9 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*
 		},
 
 		bson.M{"$group":bson.M{
-				"_id"                    :bson.M{"type_str":"$type_str","crawler_name_str":"$crawler_name_str",},
-				"count_int"              :bson.M{"$sum":1},
-				"urls_lst"               :bson.M{"$push":"$url_str"},
+				"_id":                    bson.M{"type_str":"$type_str","crawler_name_str":"$crawler_name_str",},
+				"count_int":              bson.M{"$sum":1},
+				"urls_lst":               bson.M{"$push":"$url_str"},
 				"creation_unix_times_lst":bson.M{"$push":"$creation_unix_time_f"},
 			},
 		},
@@ -59,12 +59,12 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*
 		bson.M{"$group":bson.M{
 				"_id"             :"$_id.crawler_name_str",
 				"errors_types_lst":bson.M{"$push":bson.M{
-											"type_str"               :"$_id.type_str",
-											"count_int"              :"$count_int",
-											"urls_lst"               :"$urls_lst",
-											"creation_unix_times_lst":"$creation_unix_times_lst",
-										},
-									},
+							"type_str":               "$_id.type_str",
+							"count_int":              "$count_int",
+							"urls_lst":               "$urls_lst",
+							"creation_unix_times_lst":"$creation_unix_times_lst",
+						},
+					},
 			},
 		},
 	})
@@ -75,12 +75,12 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
 			"mongodb_aggregation_error",
-			nil,err,"gf_crawl_stats",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
 	}
 	
 	data_map := map[string]interface{}{
 		"errors_lst":results_lst,
 	}
-	return data_map,nil
+	return data_map, nil
 }

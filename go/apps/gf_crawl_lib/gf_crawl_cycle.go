@@ -32,8 +32,8 @@ func Run_crawler_cycle(p_crawler Crawler,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *gf_crawl_core.Crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cycle.Run_crawler_cycle()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_s3_bucket_name_str - "+p_s3_bucket_name_str)
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
+	p_runtime_sys.Log_fun("INFO"     , "p_s3_bucket_name_str - "+p_s3_bucket_name_str)
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
@@ -46,7 +46,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 	//IMPORTANT!! - get unresolved links to pages on the domain to which the crawler belongs.
 	//              so if the a page contains links to domains external to the domain to which the 
 	//              crawler belongs, it wont get fetched/parsed here
-	unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(p_crawler.Name_str,p_runtime_sys)
+	unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(p_crawler.Name_str, p_runtime_sys)
 
 	//IMPORTANT!! - no unresolved links were found, this is a valid possible state
 	if gf_err != nil && fmt.Sprint(gf_err.Type_str) == "mongodb_not_found_error" {

@@ -43,7 +43,7 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	fmt.Println("p_crawler_page__gf_image_id_str - "+p_crawler_page__gf_image_id_str)
 	fmt.Println("p_flows_names_lst               - "+fmt.Sprint(p_flows_names_lst))
 
-	gf_page_img,gf_err := image__db_get(p_crawler_page__gf_image_id_str,p_runtime,p_runtime_sys)
+	gf_page_img,gf_err := image__db_get(p_crawler_page__gf_image_id_str, p_runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -64,11 +64,11 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 
 		//S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
 		//            after it finishes processing it.
-		gf_image,gf_image_thumbs,local_image_file_path_str,gf_err := images_pipe__single_simple(gf_page_img,
-																				images_store_local_dir_path_str,
-																				p_crawled_images_s3_bucket_name_str,
-																				p_runtime,
-																				p_runtime_sys)
+		gf_image, gf_image_thumbs, local_image_file_path_str, gf_err := images_pipe__single_simple(gf_page_img,
+			images_store_local_dir_path_str,
+			p_crawled_images_s3_bucket_name_str,
+			p_runtime,
+			p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -83,10 +83,10 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 		//FIX!! - too much uploading, very inefficient, figure out a better way!
 
 		gf_err = gf_images_utils.S3__store_gf_image(local_image_file_path_str,
-										gf_image_thumbs,
-										p_gf_images_s3_bucket_name_str,
-										p_runtime.S3_info,
-										p_runtime_sys)
+			gf_image_thumbs,
+			p_gf_images_s3_bucket_name_str,
+			p_runtime.S3_info,
+			p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -97,7 +97,7 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 		//-------------------
 		//CLEANUP
 
-		gf_err = image__cleanup(local_image_file_path_str,gf_image_thumbs,p_runtime_sys)
+		gf_err = image__cleanup(local_image_file_path_str, gf_image_thumbs, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -109,10 +109,7 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	//IMPORTANT!! - for each flow que up a DB operation. they will most likely
 	//              be sent out to the DB server together once the buffer fills up.
 	for _,flow_name_str := range p_flows_names_lst {
-
-		gf_err := gf_images_lib.Flows_db__add_flow_to_image(flow_name_str,
-													gf_image_id_str,
-													p_runtime_sys)
+		gf_err := gf_images_lib.Flows_db__add_flow_to_image(flow_name_str, gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -125,17 +122,10 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 
 	if !gf_images_s3_bucket__is_uploaded_to__bool {
 
-		gf_image,gf_err := gf_images_utils.DB__get_image(gf_image_id_str,p_runtime_sys)
+		gf_image,gf_err := gf_images_utils.DB__get_image(gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
-
-
-		fmt.Println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-		spew.Dump(gf_image)
-
-
-
 
 		/*S3__get_image_original_file_s3_filepath is wrong!! FIXX!!!
 		the path of the originl_file that its returning is of a file named by its gf_img ID, which is wrong. 
@@ -144,8 +134,8 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		original_file_s3_filepath_str                                := gf_images_utils.S3__get_image_original_file_s3_filepath(gf_image,p_runtime_sys)
-		t_small_s3_path_str,t_medium_s3_path_str,t_large_s3_path_str := gf_images_utils.S3__get_image_thumbs_s3_filepaths(gf_image,p_runtime_sys)
+		original_file_s3_filepath_str                                  := gf_images_utils.S3__get_image_original_file_s3_filepath(gf_image, p_runtime_sys)
+		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_utils.S3__get_image_thumbs_s3_filepaths(gf_image, p_runtime_sys)
 
 
 
@@ -176,7 +166,7 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 			//              to download it from S3 and reupload to gf_images S3 bucket. Instead we do 
 			//              a file copy operation within the S3 system without downloading here.
 
-			source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s",p_crawled_images_s3_bucket_name_str,s3_path_str))
+			source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", p_crawled_images_s3_bucket_name_str, s3_path_str))
 
 
 			//DEBUGGING

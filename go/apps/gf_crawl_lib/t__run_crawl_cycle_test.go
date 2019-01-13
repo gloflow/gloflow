@@ -29,11 +29,8 @@ func Test__run_crawl_cycle(p_test *testing.T) {
 
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__crawler_images_local_dir_path_str := "./test_data/crawled_images"
-
-
-
+	
 	runtime_sys,crawler_runtime := gf_crawl_core.T__init()
-
 
 	test__run_crawl_cycle(test__crawler_images_local_dir_path_str,
 		test__crawled_images_s3_bucket_name_str,

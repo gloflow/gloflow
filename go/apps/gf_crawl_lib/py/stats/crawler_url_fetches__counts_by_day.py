@@ -20,9 +20,6 @@ import datetime
 import pprint
 import pandas as pd
 import matplotlib.pyplot as plt 
-
-
-
 #-------------------------------------------------------------
 #called to find out how frequently to run the stat
 def freq():
@@ -125,8 +122,6 @@ def run(p_mongo_client,
 			domain_count_int = domain_stats_map['count_int']
 
 			top_domains__count_int += domain_count_int
-
-
 		top_domains_counts_per_day_lst.append(top_domains__count_int)
 
 	print len(days_lst)
@@ -137,8 +132,8 @@ def run(p_mongo_client,
 
 
 	df = pd.DataFrame({
-		"days"                         : days_lst,
-		"total_counts"                 : counts_lst,
+		"days":                          days_lst,
+		"total_counts":                  counts_lst,
 		"top_10_domains_counts_per_day": top_domains_counts_per_day_lst
 	})
 
@@ -152,15 +147,6 @@ def run(p_mongo_client,
 	#l.plot.bar(figsize=(10,6))
 
 	df.plot.line(figsize=(10,6),alpha=0.75) #,rot=0)
-
-
-
-
-
-	#---------------------------------------------
-
-
-
 
 	plt.title("crawler_url_fetch's counts per day",fontsize=18)
 	plt.xlabel("day",                              fontsize=14)

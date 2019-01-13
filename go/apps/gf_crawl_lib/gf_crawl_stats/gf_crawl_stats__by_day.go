@@ -41,8 +41,8 @@ type Domain_counts_for_all_days struct {
 }
 //-------------------------------------------------
 func stats__objs_by_days(p_match_query_map map[string]interface{},
-				p_obj_type_str string,
-				p_runtime_sys  *gf_core.Runtime_sys) (*Stats__objs_by_days,*gf_core.Gf_error) {
+	p_obj_type_str string,
+	p_runtime_sys  *gf_core.Runtime_sys) (*Stats__objs_by_days, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
 
 	type Domain_objs__stat struct {
@@ -66,7 +66,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		bson.M{"$match":match_query},
 		bson.M{"$project":bson.M{
 				"creation_unix_time_f":true,
-				"domain_str"          :true,
+				"domain_str":          true,
 			},
 		},
 		bson.M{"$sort":bson.M{
@@ -74,8 +74,8 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 			},
 		},
 		bson.M{"$group":bson.M{
-				"_id"               :"$domain_str",
-				"count_int"         :bson.M{"$sum" :1},
+				"_id":               "$domain_str",
+				"count_int":         bson.M{"$sum" :1},
 				"creation_times_lst":bson.M{"$push":"$creation_unix_time_f"},
 			},
 		},
@@ -92,7 +92,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			&map[string]interface{}{"obj_type_str":p_obj_type_str,},
-			err,"gf_crawl_stats",p_runtime_sys)
+			err, "gf_crawl_stats", p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -130,14 +130,14 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 				//-----------------
 				//CREATE_NEW
 				new_stat := &stat__objs_in_day{
-					Year_int                   :tm.Year(),
-					Day_int                    :tm.YearDay(),
+					Year_int:                   tm.Year(),
+					Day_int:                    tm.YearDay(),
 					Total_count__per_domain_map:map[string]int{},	
 				}
 				days_stats_map[year_day_id_int] = new_stat
 				day_stat                        = new_stat
 
-				days_keys_lst = append(days_keys_lst,year_day_id_int)
+				days_keys_lst = append(days_keys_lst, year_day_id_int)
 				//-----------------
 			}
 			//--------------
@@ -154,7 +154,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	stats__sorted_by_day_lst := []*stat__objs_in_day{}
 	for _,k := range days_keys_lst {
 		day_stat                := days_stats_map[k]
-		stats__sorted_by_day_lst = append(stats__sorted_by_day_lst,day_stat)
+		stats__sorted_by_day_lst = append(stats__sorted_by_day_lst, day_stat)
 	}
 	//------------------
 	//ZERO_OUT_BLANK_VALUES
@@ -187,13 +187,13 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 
 
 			domain_day_count_int := day_stat.Total_count__per_domain_map[domain_str]
-			domain_days_count_lst = append(domain_days_count_lst,domain_day_count_int)
+			domain_days_count_lst = append(domain_days_count_lst, domain_day_count_int)
 		}
 
 		//domains__counts_for_all_days_map[domain_str] = domain_days_count_lst
 
 		d := &Domain_counts_for_all_days{
-			Domain_str     :domain_str,
+			Domain_str:     domain_str,
 			Total_count_int:all_domains_total_counts_map[domain_str],
 			Days_counts_lst:domain_days_count_lst,
 		}
@@ -206,12 +206,12 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	//ACCUMULATE LIST OF GLOBAL FETCH COUNTS PER DAY
 	total_counts_by_day__sorted_lst := []int{}
 	for _,day_stat := range stats__sorted_by_day_lst {
-		total_counts_by_day__sorted_lst = append(total_counts_by_day__sorted_lst,day_stat.Total_count_int)
+		total_counts_by_day__sorted_lst = append(total_counts_by_day__sorted_lst, day_stat.Total_count_int)
 	}
 	//------------------
 	stats := &Stats__objs_by_days{
-		Obj_type_str                    :p_obj_type_str,
-		Counts_by_day__sorted_lst       :total_counts_by_day__sorted_lst,
+		Obj_type_str:                    p_obj_type_str,
+		Counts_by_day__sorted_lst:       total_counts_by_day__sorted_lst,
 		Domain_counts_by_day__sorted_lst:domains__counts_for_all_days_lst,
 	}
 	//------------------

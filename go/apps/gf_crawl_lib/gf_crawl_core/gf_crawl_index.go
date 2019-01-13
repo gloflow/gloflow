@@ -39,15 +39,13 @@ type Index__query_run struct {
 	Hits_urls_lst        []string      `bson:"hits_urls_lst"`
 }
 //--------------------------------------------------
-func index__get_stats(p_runtime *Crawler_runtime,
-			p_runtime_sys *gf_core.Runtime_sys) {
-
+func index__get_stats(p_runtime *Crawler_runtime, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime.Esearch_client.IndexStats("gf_crawl_pages")
 }
 //--------------------------------------------------
 func Index__query(p_term_str string,
-			p_runtime     *Crawler_runtime,
-			p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime     *Crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.Index__query()")
 
 
@@ -118,7 +116,7 @@ func Index__query(p_term_str string,
 
 		//result_doc_source__json_str := string(search_hit.Source)
 		var hit__doc_fields_map map[string]interface{} = search_hit.Fields
-		hit__url_str                                   := hit__doc_fields_map["Url_str"].(string)
+		hit__url_str                                  := hit__doc_fields_map["Url_str"].(string)
 
 		hits_urls_lst = append(hits_urls_lst,hit__url_str)
 	}
@@ -128,13 +126,13 @@ func Index__query(p_term_str string,
 	id_str               := fmt.Sprintf("crawler_page_img:%f",creation_unix_time_f)
 
 	query_run := &Index__query_run{
-		Id_str              :id_str,
-		T_str               :"index__query_run",
+		Id_str:              id_str,
+		T_str:               "index__query_run",
 		Run_time_milisec_int:query_run_time_milisec_int,
-		Hits_total_int      :total_hits_int,
-		Hits_scores_lst     :hits_scores_lst,
-		Hits_score_max_f    :*hits_score_max_f,
-		Hits_urls_lst       :hits_urls_lst,
+		Hits_total_int:      total_hits_int,
+		Hits_scores_lst:     hits_scores_lst,
+		Hits_score_max_f:    *hits_score_max_f,
+		Hits_urls_lst:       hits_urls_lst,
 	}
 
 	err = p_runtime_sys.Mongodb_coll.Insert(query_run)
@@ -145,7 +143,7 @@ func Index__query(p_term_str string,
 				"term_str":      p_term_str,
 				"total_hits_int":total_hits_int,
 			},
-			err,"gf_crawl_core",p_runtime_sys)
+			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -153,22 +151,22 @@ func Index__query(p_term_str string,
 }
 //--------------------------------------------------
 func index__add_to__of_url_fetch(p_url_fetch *Crawler_url_fetch,
-				p_runtime     *Crawler_runtime,
-				p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime     *Crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.index__add_to__of_url_fetch()")
 
 	index_name_str     := "gf_crawl_pages"
 	es_record_type_str := "crawl_page"
 	ctx                := context.Background()
 
-	_,err := p_runtime.Esearch_client.Index().
-				Index(index_name_str).
-				Type(es_record_type_str).
-				BodyJson(p_url_fetch).
-				//Refresh(true). //refresh this index after completing this Index() operation
-				Do(ctx)
+	_, err := p_runtime.Esearch_client.Index().
+		Index(index_name_str).
+		Type(es_record_type_str).
+		BodyJson(p_url_fetch).
+		//Refresh(true). //refresh this index after completing this Index() operation
+		Do(ctx)
 	if err != nil {
-		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s",es_record_type_str,index_name_str)
+		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", es_record_type_str, index_name_str)
 		gf_err := gf_core.Error__create(err_msg_str,
 			"elasticsearch_add_to_index",
 			&map[string]interface{}{
@@ -176,9 +174,8 @@ func index__add_to__of_url_fetch(p_url_fetch *Crawler_url_fetch,
 				"index_name_str":    index_name_str,
 				"es_record_type_str":es_record_type_str,
 			},
-			err,"gf_crawl_core",p_runtime_sys)
+			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}
-
 	return nil
 }

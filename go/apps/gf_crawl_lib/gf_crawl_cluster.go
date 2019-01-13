@@ -46,8 +46,8 @@ type Json_msg__link__get_unresolved struct {
 }
 //--------------------------------------------------
 func cluster__client(p_req_type_str string,
-				p_runtime     *gf_crawl_core.Crawler_runtime,
-				p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime     *gf_crawl_core.Crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__client()")
 	switch p_req_type_str {
 		case "register_worker":
@@ -62,7 +62,7 @@ func cluster__client(p_req_type_str string,
 //--------------------------------------------------
 func cluster__register_worker(p_ext_worker_name_str string,
 	p_runtime     *gf_crawl_core.Crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) (*Crawler_cluster_worker,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Crawler_cluster_worker, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__register_worker()")
 
 	id_str               := "crawler_cluster_worker__"+fmt.Sprint()
@@ -84,12 +84,12 @@ func cluster__register_worker(p_ext_worker_name_str string,
 			&map[string]interface{}{
 				"ext_worker_name_str":p_ext_worker_name_str,
 			},
-			err,"gf_crawl_lib",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_crawl_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	//------------
 
-	return worker,nil
+	return worker, nil
 }
 //--------------------------------------------------
 func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
@@ -132,7 +132,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 
 			var imgs_lst []gf_crawl_core.Crawler_page_img
 			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-			err              := json.Unmarshal(body_bytes_lst,&imgs_lst)
+			err              := json.Unmarshal(body_bytes_lst, &imgs_lst)
 			if err != nil {
 				panic(err)
 				return
@@ -140,12 +140,12 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 
 			imgs_existed_lst := []bool{}
 			for _,img := range imgs_lst {
-				img_existed_bool,gf_err := gf_crawl_core.Image__db_create(&img,p_runtime,p_runtime_sys)
+				img_existed_bool, gf_err := gf_crawl_core.Image__db_create(&img, p_runtime, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
 
-				imgs_existed_lst = append(imgs_existed_lst,img_existed_bool)
+				imgs_existed_lst = append(imgs_existed_lst, img_existed_bool)
 			}
 			//------------------
 			//OUTPUT
@@ -175,7 +175,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 			}
 
 			for _,img_ref := range imgs_refs_lst {
-				gf_err := gf_crawl_core.Image__db_create_ref(&img_ref,p_runtime,p_runtime_sys)
+				gf_err := gf_crawl_core.Image__db_create_ref(&img_ref, p_runtime, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
@@ -196,7 +196,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 
 				//domains_lst := crawler.Domains_lst
 
-				unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(crawler.Name_str, p_runtime_sys)
+				unresolved_link, gf_err := gf_crawl_core.Link__get_unresolved(crawler.Name_str, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
@@ -227,14 +227,14 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 			//INPUT
 			var input Json_msg__link__get_unresolved
 			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-			err              := json.Unmarshal(body_bytes_lst,&input)
+			err              := json.Unmarshal(body_bytes_lst, &input)
 			if err != nil {
 				panic(err)
-				return
+				return 
 			}
 			//---------------------
 
-			link,gf_err := gf_crawl_core.Link__get_db(input.Link_id_str,p_runtime_sys)
+			link, gf_err := gf_crawl_core.Link__get_db(input.Link_id_str, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -256,7 +256,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 
 			r_lst,_ := json.Marshal(r_map)
 			r_str   := string(r_lst)
-			fmt.Fprint(p_resp,r_str)
+			fmt.Fprint(p_resp, r_str)
 			//------------------
 		}
 	})

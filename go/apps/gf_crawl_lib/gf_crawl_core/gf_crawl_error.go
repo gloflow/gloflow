@@ -40,13 +40,13 @@ type Crawler_error struct {
 }
 //--------------------------------------------------
 func Create_error_and_event(p_error_type_str string,
-					p_error_msg_str    string,
-					p_error_data_map   map[string]interface{},
-					p_error_url_str    string,
-					p_crawler_name_str string,
-					p_gf_err           *gf_core.Gf_error,
-					p_runtime          *Crawler_runtime,
-					p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error,*gf_core.Gf_error) {
+	p_error_msg_str    string,
+	p_error_data_map   map[string]interface{},
+	p_error_url_str    string,
+	p_crawler_name_str string,
+	p_gf_err           *gf_core.Gf_error,
+	p_runtime          *Crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
 	if p_runtime.Events_ctx != nil {
@@ -54,21 +54,21 @@ func Create_error_and_event(p_error_type_str string,
 		event_type_str := "error"
 
 		gf_core.Events__send_event(events_id_str,
-							event_type_str,   //p_type_str
-							p_error_msg_str,  //p_msg_str
-							p_error_data_map, //p_data_map
-							p_runtime.Events_ctx,
-							p_runtime_sys)
+			event_type_str,   //p_type_str
+			p_error_msg_str,  //p_msg_str
+			p_error_data_map, //p_data_map
+			p_runtime.Events_ctx,
+			p_runtime_sys)
 	}
 
 	crawl_err,gf_err := create_error(p_error_type_str,
-						p_error_msg_str,
-						p_error_data_map,
-						p_error_url_str,
-						p_crawler_name_str,
-						p_gf_err,
-						p_runtime,
-						p_runtime_sys)
+		p_error_msg_str,
+		p_error_data_map,
+		p_error_url_str,
+		p_crawler_name_str,
+		p_gf_err,
+		p_runtime,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil,gf_err
 	}
@@ -77,13 +77,13 @@ func Create_error_and_event(p_error_type_str string,
 }
 //--------------------------------------------------
 func create_error(p_type_str string,
-			p_msg_str          string,
-			p_data_map         map[string]interface{},
-			p_url_str          string,
-			p_crawler_name_str string,
-			p_gf_err           *gf_core.Gf_error,
-			p_runtime          *Crawler_runtime,
-			p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error,*gf_core.Gf_error) {
+	p_msg_str          string,
+	p_data_map         map[string]interface{},
+	p_url_str          string,
+	p_crawler_name_str string,
+	p_gf_err           *gf_core.Gf_error,
+	p_runtime          *Crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.create_error()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -109,10 +109,9 @@ func create_error(p_type_str string,
 					"type_str":         p_type_str,
 					"crawler_name_str": p_crawler_name_str,
 				},
-				err,"gf_crawl_core",p_runtime_sys)
-			return nil,gf_err
+				err, "gf_crawl_core", p_runtime_sys)
+			return nil, gf_err
 		}
 	}
-
-	return crawl_err,nil
+	return crawl_err, nil
 }
