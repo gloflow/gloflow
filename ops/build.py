@@ -18,17 +18,12 @@
 import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
-
-
-
 from colored import fg,bg,attr
 import delegator
-
 
 print ''
 print '                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0))
 print ''
-
 
 #---------------------------------
 #META
@@ -40,6 +35,9 @@ gf_publisher_service__output_path_str = '%s/../bin/gf_publisher_service'%(cwd_st
 
 gf_tagger_service__path_str        = '%s/../go/apps/gf_tagger/gf_tagger_service.go'%(cwd_str)
 gf_tagger_service__output_path_str = '%s/../bin/gf_tagger_service'%(cwd_str)
+
+gf_landing_page_service__path_str        = '%s/../go/apps/gf_landing_page/gf_landing_page_service.go'%(cwd_str)
+gf_landing_page_service__output_path_str = '%s/../bin/gf_landing_page_service'%(cwd_str)
 #---------------------------------
 def build__go_bin(p_name_str,
     p_main_go_file_path_str,
@@ -58,6 +56,7 @@ def build__go_bin(p_name_str,
 
     os.chdir(cwd_str) #return to initial dir
 #---------------------------------
-#build__go_bin('gf_image_service',    gf_images_service__path_str,   gf_images_service__output_path_str)
-#build__go_bin('gf_publisher_service',gf_publisher_service__path_str,gf_publisher_service__output_path_str)
-build__go_bin('gf_tagger_service',   gf_tagger_service__path_str,   gf_tagger_service__output_path_str)
+build__go_bin('gf_image_service',       gf_images_service__path_str,      gf_images_service__output_path_str)
+build__go_bin('gf_publisher_service',   gf_publisher_service__path_str,   gf_publisher_service__output_path_str)
+build__go_bin('gf_tagger_service',      gf_tagger_service__path_str,      gf_tagger_service__output_path_str)
+build__go_bin('gf_landing_page_service',gf_landing_page_service__path_str,gf_landing_page_service__output_path_str)

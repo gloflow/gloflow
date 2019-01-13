@@ -22,7 +22,7 @@ package main
 import (
 	"net/http"
 	"text/template"
-	"gopkg.in/mgo.v2"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
 func Pipeline__get_landing_page(p_max_random_cursor_position_int int, //500
@@ -30,33 +30,30 @@ func Pipeline__get_landing_page(p_max_random_cursor_position_int int, //500
 	p_featured_imgs_to_get_int  int, //10
 	p_tmpl                      *template.Template,
 	p_resp                      http.ResponseWriter,
-	p_mongodb_coll              *mgo.Collection,
-	p_log_fun                   func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_landing_page_pipelines.Pipeline__get_landing_page()")
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_pipelines.Pipeline__get_landing_page()")
 
-	featured_posts_lst,err := get_featured_posts(p_max_random_cursor_position_int,
+	featured_posts_lst, gf_err := get_featured_posts(p_max_random_cursor_position_int,
 		p_featured_posts_to_get_int,
-		p_mongodb_coll,
-		p_log_fun)
-	if err != nil {
-		return err
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
-	featured_imgs_lst,err := get_featured_imgs(p_max_random_cursor_position_int,
+	featured_imgs_lst, gf_err := get_featured_imgs(p_max_random_cursor_position_int,
 		p_featured_imgs_to_get_int,
-		p_mongodb_coll,
-		p_log_fun)
-	if err != nil {
-		return err
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
-	err = render_template(featured_posts_lst,
+	gf_err = render_template(featured_posts_lst,
 		featured_imgs_lst,
 		p_tmpl,
 		p_resp,
-		p_log_fun)
-	if err != nil {
-		return err
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
 	return nil

@@ -22,18 +22,17 @@ package main
 import (
 	"net/http"
 	"text/template"
-
-	"gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
 func render_template(p_featured_posts_lst []*Featured_post,
 	p_featured_imgs_lst []*Featured_img,
 	p_tmpl              *template.Template,
 	p_resp              http.ResponseWriter,
-	p_log_fun           func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_landing_page_view.render_template()")
+	p_runtime_sys       *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_landing_page_view.render_template()")
 	
-	sys_release_info := gf_core.Get_sys_relese_info(p_log_fun)
+	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
 	type tmpl_data struct {
 		Featured_posts_lst []*Featured_post
@@ -48,7 +47,11 @@ func render_template(p_featured_posts_lst []*Featured_post,
 	})
 
 	if err != nil {
-		return err
+		gf_err := gf_core.Error__create("failed to render the landing_page template",
+			"template_render_error",
+			&map[string]interface{}{},
+			err, "gf_landing_page", p_runtime_sys)
+		return gf_err
 	}
 
 	return nil
