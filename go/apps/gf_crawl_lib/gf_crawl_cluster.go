@@ -61,18 +61,18 @@ func cluster__client(p_req_type_str string,
 }
 //--------------------------------------------------
 func cluster__register_worker(p_ext_worker_name_str string,
-				p_runtime     *gf_crawl_core.Crawler_runtime,
-				p_runtime_sys *gf_core.Runtime_sys) (*Crawler_cluster_worker,*gf_core.Gf_error) {
+	p_runtime     *gf_crawl_core.Crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) (*Crawler_cluster_worker,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__register_worker()")
 
 	id_str               := "crawler_cluster_worker__"+fmt.Sprint()
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	worker := &Crawler_cluster_worker{
-		Id_str              :id_str,
-		T_str               :"crawler_cluster_worker",
+		Id_str:              id_str,
+		T_str:               "crawler_cluster_worker",
 		Creation_unix_time_f:creation_unix_time_f,
-		Ext_name_str        :p_ext_worker_name_str,
+		Ext_name_str:        p_ext_worker_name_str,
 	}
 
 	//------------
@@ -93,20 +93,17 @@ func cluster__register_worker(p_ext_worker_name_str string,
 }
 //--------------------------------------------------
 func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
-				p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__init_handlers()")
 
 	//----------------
 	//REGISTER_WORKER
-	http.HandleFunc("/a/crawl/cluster/register__worker",func(p_resp http.ResponseWriter,
-														p_req *http.Request) {
+	http.HandleFunc("/a/crawl/cluster/register__worker",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		worker_name_str := p_req.URL.Query()["worker_name"][0]
 		p_runtime_sys.Log_fun("INFO","worker_name_str - "+worker_name_str)
 
-		worker,gf_err := cluster__register_worker(worker_name_str,
-										p_runtime,
-										p_runtime_sys)
+		worker,gf_err := cluster__register_worker(worker_name_str, p_runtime, p_runtime_sys)
 		if gf_err != nil {
 			return
 		}
@@ -126,11 +123,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 	})
 	//----------------
 	//IMAGES
-	http.HandleFunc("/a/crawl/cluster/create__page_imgs",func(p_resp http.ResponseWriter,
-													p_req *http.Request) {
-
-
-
+	http.HandleFunc("/a/crawl/cluster/create__page_imgs",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /a/crawl/cluster/create__page_imgs ----------")
 		if p_req.Method == "POST" {
 
@@ -169,9 +162,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 		}
 	})
 
-	http.HandleFunc("/a/crawl/cluster/create__page_img_ref",func(p_resp http.ResponseWriter,
-													p_req *http.Request) {
-
+	http.HandleFunc("/a/crawl/cluster/create__page_img_ref",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /a/crawl/cluster/create__page_img_ref ----------")
 		if p_req.Method == "POST" {
 
@@ -183,7 +174,6 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 				return
 			}
 
-
 			for _,img_ref := range imgs_refs_lst {
 				gf_err := gf_crawl_core.Image__db_create_ref(&img_ref,p_runtime,p_runtime_sys)
 				if gf_err != nil {
@@ -194,9 +184,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 	})
 	//-----------------
 	//LINKS
-	http.HandleFunc("/a/crawl/cluster/link__get_unresolved",func(p_resp http.ResponseWriter,
-														p_req *http.Request) {
-
+	http.HandleFunc("/a/crawl/cluster/link__get_unresolved",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /a/crawl/cluster/link__get_unresolved ----------")
 		if p_req.Method == "GET" {
 
@@ -204,11 +192,11 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 			p_runtime_sys.Log_fun("INFO","crawler_name_str - "+crawler_name_str)
 
 			crawlers_map := Get_all_crawlers()
-			if crawler,ok := crawlers_map[crawler_name_str]; ok {
+			if crawler, ok := crawlers_map[crawler_name_str]; ok {
 
 				//domains_lst := crawler.Domains_lst
 
-				unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(crawler.Name_str,p_runtime_sys)
+				unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(crawler.Name_str, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
@@ -230,8 +218,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 		}
 	})
 
-	http.HandleFunc("/a/crawl/cluster/link__mark_as_resolved",func(p_resp http.ResponseWriter,
-														p_req *http.Request) {
+	http.HandleFunc("/a/crawl/cluster/link__mark_as_resolved",func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /a/crawl/cluster/link__mark_as_resolved ----------")
 		if p_req.Method == "GET" {
@@ -253,9 +240,9 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Crawler_runtime,
 			}
 			
 			gf_err = gf_crawl_core.Link__mark_as_resolved(link,
-												input.Fetch_id_str,
-												input.Fetch_creation_time_f,
-												p_runtime_sys)
+				input.Fetch_id_str,
+				input.Fetch_creation_time_f,
+				p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

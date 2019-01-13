@@ -26,9 +26,7 @@ import (
 )
 //--------------------------------------------------
 func db_index__init(p_runtime *gf_crawl_core.Crawler_runtime,
-			p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-
-
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//FIELDS - "t"
@@ -43,7 +41,7 @@ func db_index__init(p_runtime *gf_crawl_core.Crawler_runtime,
 	err := p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
 		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t"}`,
-			"mongodb_ensure_index_error",nil,err,"gf_crawl_lib",p_runtime_sys)
+			"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
 	}
 	//---------------------
@@ -59,12 +57,9 @@ func db_index__init(p_runtime *gf_crawl_core.Crawler_runtime,
 	err = p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
 		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","hash_str"}`,
-			"mongodb_ensure_index_error",nil,err,"gf_crawl_lib",p_runtime_sys)
+			"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
 	}
 	//---------------------
-
-
 	return nil
-
 }

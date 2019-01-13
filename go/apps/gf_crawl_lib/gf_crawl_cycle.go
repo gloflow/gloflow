@@ -28,10 +28,10 @@ import (
 )
 //--------------------------------------------------
 func Run_crawler_cycle(p_crawler Crawler,
-			p_images_local_dir_path_str string,
-			p_s3_bucket_name_str        string,
-			p_runtime                   *gf_crawl_core.Crawler_runtime,
-			p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_images_local_dir_path_str string,
+	p_s3_bucket_name_str        string,
+	p_runtime                   *gf_crawl_core.Crawler_runtime,
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cycle.Run_crawler_cycle()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_s3_bucket_name_str - "+p_s3_bucket_name_str)
 
@@ -75,11 +75,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 		//              instances running on other nodes should not load this link of importing as well, 
 		//              to avoid duplicate work/data
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
-		gf_err := gf_crawl_core.Link__mark_import_in_progress(true,
-							start_time_f,
-							unresolved_link,
-							p_runtime,
-							p_runtime_sys)
+		gf_err       := gf_crawl_core.Link__mark_import_in_progress(true, start_time_f, unresolved_link, p_runtime, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -100,23 +96,23 @@ func Run_crawler_cycle(p_crawler Crawler,
 	//-------------------
 	//STAGE - FETCH THE LINK
 	url_fetch,domain_str,gf_err := gf_crawl_core.Fetch__url(url_str,
-													unresolved_link,
-													cycle_run__id_str,
-													p_crawler.Name_str,
-													p_runtime,
-													p_runtime_sys)
+		unresolved_link,
+		cycle_run__id_str,
+		p_crawler.Name_str,
+		p_runtime,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 	//-------------------
 	//STAGE - PARSE THE LINK
 	gf_err = gf_crawl_core.Fetch__parse_result(url_fetch,
-					cycle_run__id_str,
-					p_crawler.Name_str,
-					p_images_local_dir_path_str,
-					p_s3_bucket_name_str,
-					p_runtime,
-					p_runtime_sys)
+		cycle_run__id_str,
+		p_crawler.Name_str,
+		p_images_local_dir_path_str,
+		p_s3_bucket_name_str,
+		p_runtime,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -126,14 +122,14 @@ func Run_crawler_cycle(p_crawler Crawler,
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	cycle_run := &Crawler_cycle_run{
-		Id_str              :cycle_run__id_str,
-		T_str               :"crawler_cycle_run",
+		Id_str:              cycle_run__id_str,
+		T_str:               "crawler_cycle_run",
 		Creation_unix_time_f:cycle_run__creation_unix_time_f,
-		Crawler_name_str    :p_crawler.Name_str,
-		Target_domain_str   :domain_str,
-		Target_url_str      :url_str,
-		Start_time_f        :start_time_f,
-		End_time_f          :end_time_f,
+		Crawler_name_str:    p_crawler.Name_str,
+		Target_domain_str:   domain_str,
+		Target_url_str:      url_str,
+		Start_time_f:        start_time_f,
+		End_time_f:          end_time_f,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Insert(cycle_run)
@@ -155,9 +151,9 @@ func Run_crawler_cycle(p_crawler Crawler,
 	//              in which case the p_crawler.Start_url_str was used
 	if unresolved_link != nil {
 		gf_err = gf_crawl_core.Link__mark_as_resolved(unresolved_link,
-											url_fetch.Id_str,
-											url_fetch.Creation_unix_time_f,
-											p_runtime_sys)
+			url_fetch.Id_str,
+			url_fetch.Creation_unix_time_f,
+			p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -168,10 +164,10 @@ func Run_crawler_cycle(p_crawler Crawler,
 
 		//IMPORTANT!! - mark the link as no longer import_in_progress
 		gf_err := gf_crawl_core.Link__mark_import_in_progress(false, //p_status_bool
-														end_time_f,
-														unresolved_link,
-														p_runtime,
-														p_runtime_sys)
+			end_time_f,
+			unresolved_link,
+			p_runtime,
+			p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
