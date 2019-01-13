@@ -46,9 +46,7 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_db_name_str := "test_db"
 
 	log_fun  := gf_core.Init_log_fun()
-	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str,
-							test__mongodb_db_name_str,
-							log_fun )
+	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun )
 	mongodb_coll := mongo_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
@@ -138,7 +136,7 @@ func test__images_ops(p_test_image_data *Gf_test_image_data, p_runtime_sys *gf_c
 
 	for _,test__image_local_filepath_str := range p_test_image_data.images_local_filepaths_lst {
 
-		format_str,gf_err := gf_images_utils.Get_image_ext_from_url(test__image_local_filepath_str,p_runtime_sys)
+		format_str,gf_err := gf_images_utils.Get_image_ext_from_url(test__image_local_filepath_str, p_runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -159,25 +157,25 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	test__image_id_str := gf_images_utils.Image__create_id(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	fmt.Println("test__image_id_str - "+test__image_id_str)
 	//---------------
-	test__image_title_str,gf_err := gf_images_utils.Get_image_title_from_url(p_test__image_local_filepath_str,p_runtime_sys)
+	test__image_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_test__image_local_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	fmt.Println("test__image_title_str - "+test__image_title_str)
 	//---------------
-	img_width_int,img_height_int,gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_test__image_local_filepath_str,p_runtime_sys)
+	img_width_int,img_height_int, gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_test__image_local_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	fmt.Println(fmt.Sprintf("test__image dimensions - %d/%d",img_width_int,img_height_int))
 	//---------------
 
-	img,gf_err := gf_images_utils.Image__load_file(p_test__image_local_filepath_str,p_test__image_format_str,p_runtime_sys)
+	img, gf_err := gf_images_utils.Image__load_file(p_test__image_local_filepath_str,p_test__image_format_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	//---------------
-	second_img_width_int,second_img_height_int := gf_images_utils.Get_image_dimensions__from_image(img,p_runtime_sys)
+	second_img_width_int,second_img_height_int := gf_images_utils.Get_image_dimensions__from_image(img, p_runtime_sys)
 
 	if img_width_int != second_img_width_int {
 		err_msg_str := "gf_images_utils.Get_image_dimensions__from_filepath() and gf_images_utils.Get_image_dimensions__from_image() dont return the same width"
@@ -231,7 +229,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	}
 
 
-	gf_image,gf_err := gf_images_utils.Image__create_new(image_new_info,p_runtime_sys)
+	gf_image,gf_err := gf_images_utils.Image__create_new(image_new_info, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
