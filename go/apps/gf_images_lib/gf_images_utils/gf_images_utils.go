@@ -120,7 +120,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 			"url_parse_error",
 			&map[string]interface{}{"image_url_str":p_image_url_str,},
 			err,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+		return "", gf_err
 	}
 
 	image_path_str      := url.Path

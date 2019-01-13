@@ -123,15 +123,15 @@ func Fetch__url(p_url_str string,
 	//-------------------
 	//HTTP REQUEST
 
-	doc,gf_err := gf_crawl_utils.Get__html_doc_over_http(p_url_str,p_runtime_sys)
+	doc, gf_err := gf_crawl_utils.Get__html_doc_over_http(p_url_str, p_runtime_sys)
 
 	if gf_err != nil {
-		t:="fetch_url__failed"
-		m:=fmt.Sprintf("failed to HTTP fetch url - %s - err - %s",p_url_str,fmt.Sprint(gf_err.Error))
+		t := "fetch_url__failed"
+		m := fmt.Sprintf("failed to HTTP fetch url - %s - err - %s", p_url_str, fmt.Sprint(gf_err.Error))
 		
-		crawler_error,fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
+		crawler_error, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
 		if fe_gf_err != nil {
-			return nil,"",fe_gf_err
+			return nil, "", fe_gf_err
 		}
 
 		fetch__mark_as_failed(crawler_error,
@@ -139,7 +139,7 @@ func Fetch__url(p_url_str string,
 			p_runtime,
 			p_runtime_sys)
 
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0

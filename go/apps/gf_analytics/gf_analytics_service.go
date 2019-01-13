@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"flag"
 	"net/http"
@@ -116,6 +117,9 @@ func main() {
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 			py_stats_dirs_lst                 := cli_args_map["py_stats_dirs_lst"].([]string)
+			aws_access_key_id_str             := cli_args_map["aws_access_key_id_str"].(string)
+			aws_secret_access_key_str         := cli_args_map["aws_secret_access_key_str"].(string)
+			aws_token_str                     := cli_args_map["aws_token_str"].(string)
 
 			init_handlers(runtime_sys)
 
@@ -132,6 +136,9 @@ func main() {
 
 			gf_crawl_lib.Init(crawler_images_local_dir_path_str,
 				cluster_node_type_str,
+				aws_access_key_id_str,
+				aws_secret_access_key_str,
+				aws_token_str,
 				esearch_client,
 				runtime_sys)			
 			//------------------------

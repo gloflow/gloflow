@@ -49,9 +49,12 @@ type Crawler_cycle_run struct {
 }
 //--------------------------------------------------
 func Init(p_images_local_dir_path_str string,
-	p_cluster_node_type_str string,
-	p_esearch_client        *elastic.Client,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_cluster_node_type_str     string,
+	p_aws_access_key_id_str     string,
+	p_aws_secret_access_key_str string,
+	p_aws_token_str             string,
+	p_esearch_client            *elastic.Client,
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.Init()")
 
 	//--------------
@@ -59,7 +62,10 @@ func Init(p_images_local_dir_path_str string,
 
 	crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	gf_images_s3_bucket_name_str      := "gf--img"
-	gf_s3_info,gf_err                 := gf_core.S3__init(p_runtime_sys)
+	gf_s3_info, gf_err                := gf_core.S3__init(p_aws_access_key_id_str,
+		p_aws_secret_access_key_str,
+		p_aws_token_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

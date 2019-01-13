@@ -46,17 +46,17 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 				os_version_str := user_agent.OS.Version
 				//-----------------
 				//INPUT
-				event_data_map, gf_err := parse_track_input(p_req, p_runtime_sys)
+				input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
 					return
 				}
 				//-----------------
-				session_id_str := get_cookie__session_id(p_req, p_resp, p_runtime_sys)
-				gf_user_event  := &Gf_user_event{
-					Event_data_map:  event_data_map,
-					Session_id_str:  session_id_str,
+				
+
+				
+				gf_req_ctx := &Gf_user_event_req_ctx {
 					User_ip_str:     clean_ip_str,
 					User_agent_str:  user_agent_str,
 					Browser_name_str:browser_name_str,
@@ -64,9 +64,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 					Os_name_str:     os_name_str,
 					Os_ver_str:      os_version_str,
 					Cookies_str:     cookies_str,
-					time__unix_f:    time__unix_f,
 				}
-				server_track_id_str,gf_err := user_event__create(gf_user_event, p_runtime_sys)
+
+				gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
 				if gf_err != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
