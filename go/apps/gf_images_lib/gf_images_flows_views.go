@@ -34,7 +34,7 @@ func flows__render_initial_page(p_flow_name_str string,
 	p_tmpl                  *template.Template,
 	p_resp                  http.ResponseWriter,
 	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_initial_page()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
 	//GET_TEMPLATE_DATA
@@ -46,7 +46,7 @@ func flows__render_initial_page(p_flow_name_str string,
 		start_position_int := i*p_page_size_int
 		//int end_position_int   = start_position_int+p_page_size_int;
 
-		p_runtime_sys.Log_fun("INFO",fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
 		//------------
 		//DB GET PAGE
 
@@ -124,7 +124,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //
 		gf_err := gf_core.Error__create("failed to render the images flow template",
 			"template_render_error",
 			&map[string]interface{}{},
-			err,"gf_images_lib",p_runtime_sys)
+			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
 	}
 

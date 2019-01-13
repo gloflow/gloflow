@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"encoding/json"

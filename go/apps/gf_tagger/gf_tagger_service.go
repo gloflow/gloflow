@@ -80,7 +80,7 @@ func Run_service__in_process(p_port_str string,
 	mongodb_coll := mongodb_db.C("data_symphony")
 
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_images",
+		Service_name_str:"gf_tagger",
 		Log_fun:         p_log_fun,
 		Mongodb_coll:    mongodb_coll,
 	}
