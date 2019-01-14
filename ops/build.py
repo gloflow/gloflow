@@ -18,34 +18,44 @@
 import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
+import argparse
 from colored import fg,bg,attr
 import delegator
 
-print ''
-print '                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0))
-print ''
+sys.path.append('%s/../meta'%(cwd_str))
+import gf_meta
+#--------------------------------------------------
+def main():
+    
+    print ''
+    print '                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0))
+    print ''
 
-#---------------------------------
-#META
-gf_images_service__path_str        = '%s/../go/apps/gf_images/gf_images_service.go'%(cwd_str)
-gf_images_service__output_path_str = '%s/../bin/gf_images_service'%(cwd_str)
+    b_meta_map = gf_meta.get()['build_info_map']
+    args_map   = parse_args()
 
-gf_publisher_service__path_str        = '%s/../go/apps/gf_publisher/gf_publisher_service.go'%(cwd_str)
-gf_publisher_service__output_path_str = '%s/../bin/gf_publisher_service'%(cwd_str)
+    run_str      = args_map['run']
+    app_name_str = args_map['app']
 
-gf_tagger_service__path_str        = '%s/../go/apps/gf_tagger/gf_tagger_service.go'%(cwd_str)
-gf_tagger_service__output_path_str = '%s/../bin/gf_tagger_service'%(cwd_str)
+    assert b_meta_map.has_key(app_name_str)
+    app_meta_map = b_meta_map[app_name_str]
 
-gf_landing_page_service__path_str        = '%s/../go/apps/gf_landing_page/gf_landing_page_service.go'%(cwd_str)
-gf_landing_page_service__output_path_str = '%s/../bin/gf_landing_page_service'%(cwd_str)
 
-gf_analytics_service__path_str        = '%s/../go/apps/gf_analytics/gf_analytics_service.go'%(cwd_str)
-gf_analytics_service__output_path_str = '%s/../bin/gf_analytics_service'%(cwd_str)
-#---------------------------------
+
+    if run_str == 'build':
+        build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
+
+    elif run_str == 'test':
+        test(app_name_str)
+        
+#--------------------------------------------------
 def build__go_bin(p_name_str,
     p_main_go_file_path_str,
     p_output_path_str):
+    assert os.path.isfile(p_main_go_file_path_str)
+    assert os.path.isdir(os.path.dirname(p_output_path_str))
 
+    print ''
     print ' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0))
     
     cwd_str = os.getcwd()
@@ -58,9 +68,37 @@ def build__go_bin(p_name_str,
     if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'),attr(0),r.err)
 
     os.chdir(cwd_str) #return to initial dir
-#---------------------------------
-build__go_bin('gf_image_service',       gf_images_service__path_str,      gf_images_service__output_path_str)
-build__go_bin('gf_publisher_service',   gf_publisher_service__path_str,   gf_publisher_service__output_path_str)
-build__go_bin('gf_tagger_service',      gf_tagger_service__path_str,      gf_tagger_service__output_path_str)
-build__go_bin('gf_landing_page_service',gf_landing_page_service__path_str,gf_landing_page_service__output_path_str)
-build__go_bin('gf_analytics_service',   gf_landing_page_service__path_str,gf_landing_page_service__output_path_str)
+#--------------------------------------------------
+def test(p_name_str):
+
+    print ''
+    print ' -- test %s%s%s service'%(fg('green'), p_name_str, attr(0))
+#--------------------------------------------------
+def parse_args():
+
+    arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
+
+    arg_parser.add_argument('-run', action = "store", default = 'build',
+        help = '''
+- '''+fg('yellow')+'build'+attr(0)+'''
+- '''+fg('yellow')+'test'+attr(0)+'''
+        ''')
+    
+    arg_parser.add_argument('-app', action = "store", default = 'build',
+        help = '''
+- '''+fg('yellow')+'gf_images'+attr(0)+'''
+- '''+fg('yellow')+'gf_publisher'+attr(0)+'''
+- '''+fg('yellow')+'gf_tagger'+attr(0)+'''
+- '''+fg('yellow')+'gf_landing_page'+attr(0)+'''
+- '''+fg('yellow')+'gf_analytics'+attr(0)+'''
+        ''')
+    
+    cli_args_lst   = sys.argv[1:]
+    args_namespace = arg_parser.parse_args(cli_args_lst)
+    args_map       = {
+        "run":args_namespace.run,
+        "app":args_namespace.app
+    }
+    return args_map
+#--------------------------------------------------
+main()
