@@ -33,21 +33,24 @@ def main():
 
     b_meta_map = gf_meta.get()['build_info_map']
     args_map   = parse_args()
+    run_str    = args_map['run']
 
-    run_str      = args_map['run']
-    app_name_str = args_map['app']
+    if run_str == 'build' or run_str == 'test':
+        app_name_str = args_map['app']
+        assert b_meta_map.has_key(app_name_str)
+        app_meta_map = b_meta_map[app_name_str]
 
-    assert b_meta_map.has_key(app_name_str)
-    app_meta_map = b_meta_map[app_name_str]
-
-
-
+    #-------------
     if run_str == 'build':
         build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
-
+    #-------------
     elif run_str == 'test':
-        test(app_name_str)
-        
+
+        aws_s3_creds_file_path_str = args_map['aws_s3_creds']
+        aws_s3_creds_map           = parse_creds(aws_s3_creds_file_path_str)
+
+        test(app_name_str, aws_s3_creds_map)
+    #-------------
 #--------------------------------------------------
 def build__go_bin(p_name_str,
     p_main_go_file_path_str,
@@ -69,21 +72,36 @@ def build__go_bin(p_name_str,
 
     os.chdir(cwd_str) #return to initial dir
 #--------------------------------------------------
-def test(p_name_str):
-
+def test(p_name_str,
+    p_aws_s3_creds_map):
+    assert isinstance(p_aws_s3_creds_map,dict)
     print ''
     print ' -- test %s%s%s service'%(fg('green'), p_name_str, attr(0))
+
+    cwd_str = os.getcwd()
+    os.chdir(os.path.dirname(p_main_go_file_path_str)) #change into the target main package dir
+
+    c = 'go test'
+    print c
+    r = delegator.run(c,env=p_aws_s3_creds_map)
+    if not r.out == '': print r.out
+    if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'),attr(0),r.err)
+
+    os.chdir(cwd_str) #return to initial dir
 #--------------------------------------------------
 def parse_args():
 
     arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 
+    #-------------
+    #RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''
-- '''+fg('yellow')+'test'+attr(0)+'''
+- '''+fg('yellow')+'build'+attr(0)+''' - build a particular app
+- '''+fg('yellow')+'test'+attr(0)+'''  - run code tessts
         ''')
-    
+    #-------------
+    #APP
     arg_parser.add_argument('-app', action = "store", default = 'build',
         help = '''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
@@ -91,13 +109,14 @@ def parse_args():
 - '''+fg('yellow')+'gf_tagger'+attr(0)+'''
 - '''+fg('yellow')+'gf_landing_page'+attr(0)+'''
 - '''+fg('yellow')+'gf_analytics'+attr(0)+'''
+- '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
         ''')
-    
+    #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     args_map       = {
         "run":args_namespace.run,
-        "app":args_namespace.app
+        "app":args_namespace.app,
     }
     return args_map
 #--------------------------------------------------
