@@ -93,7 +93,7 @@ func Run_service(p_port_str string,
 	//-------------
 	//S3
 	
-	s3_info,gf_err := gf_core.S3__init(p_aws_access_key_id_str,
+	s3_info, gf_err := gf_core.S3__init(p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
 		p_aws_token_str,
 		runtime_sys)

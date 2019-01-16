@@ -31,7 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
-func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
+func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs_handlers.Jobs_mngr__init_handlers()")
 
@@ -51,7 +51,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			if gf_err != nil {
 				return
 			}
-			//--------------------------
+			
 			p_runtime_sys.Log_fun("INFO","input_map - "+fmt.Sprint(input_map))
 
 			job_type_str                           := input_map["job_type_str"].(string)
@@ -59,14 +59,17 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			url_encoded_imgs_urls_str              := input_map["imgs_urls_str"].(string)
 			url_encoded_imgs_origin_pages_urls_str := input_map["imgs_origin_pages_urls_str"].(string)
 
-			p_runtime_sys.Log_fun("INFO","job_type_str    - "+job_type_str)
-			p_runtime_sys.Log_fun("INFO","client_type_str - "+client_type_str)
-		
+			//ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
+			flows_names_lst := []string{"general",}
+
+			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
+			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("client_type_str - %s", client_type_str))
+			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
 			//-------------------
 			//IMAGES_TO_PROCESS
 			
 			images_urls_str,_ := url.QueryUnescape(url_encoded_imgs_urls_str)
-			images_urls_lst   := strings.Split(images_urls_str,",")
+			images_urls_lst   := strings.Split(images_urls_str, ",")
 
 			imgs_origin_pages_urls_str,_ := url.QueryUnescape(url_encoded_imgs_origin_pages_urls_str)
 			imgs_origin_pages_urls_lst   := strings.Split(imgs_origin_pages_urls_str,",")
@@ -74,21 +77,20 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 			p_runtime_sys.Log_fun("INFO","url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
 			p_runtime_sys.Log_fun("INFO","url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
 
-			images_to_process := []Image_to_process{}
-			for i,image_url_str := range images_urls_lst {
+			images_to_process_lst := []Image_to_process{}
+			for i, image_url_str := range images_urls_lst {
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
 				img_to_process            := Image_to_process{
 					Source_url_str:     image_url_str,
 					Origin_page_url_str:image_origin_page_url_str,
 				}
-				images_to_process = append(images_to_process,img_to_process)
+				images_to_process_lst = append(images_to_process_lst, img_to_process)
 			}
 			//-------------------
 
-			flows_names_lst := []string{"general",}
-			running_job,job_expected_outputs_lst,gf_err := Start_job(client_type_str,
-				images_to_process, //p_images_to_process_lst
+			running_job, job_expected_outputs_lst, gf_err := Start_job(client_type_str,
+				images_to_process_lst,
 				flows_names_lst,
 				p_jobs_mngr_ch,
 				p_runtime_sys)
@@ -103,7 +105,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 				"running_job_id_str":      running_job.Id_str,
 				"job_expected_outputs_lst":job_expected_outputs_lst,
 			}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -137,7 +139,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch chan Job_msg,
 
 			running_job := running_jobs_map[images_job_id_str]*/
 
-			job_updates_ch := get_running_job_update_ch(images_job_id_str,p_jobs_mngr_ch,p_runtime_sys)
+			job_updates_ch := get_running_job_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 			//-------------------------
 
 			//don't close the connection,

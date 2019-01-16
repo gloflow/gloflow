@@ -47,8 +47,8 @@ func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
 	p_input_images_origin_pages_urls_str  []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.Client__dispatch_process_extern_images()")
+	p_runtime_sys                         *gf_core.Runtime_sys) (string, []*Client_job_image_output, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.Client__dispatch_process_extern_images()")
 
 	running_job_id_str,images_outputs_lst,gf_err := client__start_job(p_input_images_urls_lst,
 		p_input_images_origin_pages_urls_str,
@@ -68,7 +68,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
 	p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__start_job()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__start_job()")
 
 	//------------------
 	//HTTP REQUEST
@@ -79,12 +79,12 @@ func client__start_job(p_input_images_urls_lst []string,
 	data_map := map[string]string{
 		"job_type_str":   "process_extern_image",
 		"client_type_str":p_client_type_str,
-		"imgs_urls_str":  strings.Join(p_input_images_urls_lst,","),
+		"imgs_urls_str":  strings.Join(p_input_images_urls_lst, ","),
 
 		//imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
 		//                             was found. this is valid for gf_chrome_ext image sources.
 		//                             its not relevant for direct image uploads from clients.
-		"imgs_origin_pages_urls_str":strings.Join(p_input_images_origin_pages_urls_str,","),
+		"imgs_origin_pages_urls_str":strings.Join(p_input_images_origin_pages_urls_str, ","),
 	}
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -114,9 +114,8 @@ func client__start_job(p_input_images_urls_lst []string,
 		gf_err := gf_core.Error__create("gf_images_client start_job HTTP REST API request failed - "+url_str,
 			"http_client_req_error",
 			&map[string]interface{}{"url_str":url_str,},
-			err,"gf_images_lib",p_runtime_sys)
-
-		return "",nil,gf_err
+			err, "gf_images_lib", p_runtime_sys)
+		return "", nil, gf_err
 	}
 
 	p_runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
@@ -134,8 +133,8 @@ func client__start_job(p_input_images_urls_lst []string,
 				"url_str":url_str,
 				"body":   body,
 			},
-			j_err,"gf_images_lib",p_runtime_sys)
-		return "",nil,gf_err
+			j_err, "gf_images_lib", p_runtime_sys)
+		return "", nil, gf_err
 	}
 
 	//-----------------
@@ -146,8 +145,8 @@ func client__start_job(p_input_images_urls_lst []string,
 		gf_err := gf_core.Error__create(err_usr_msg,
 			"verify__missing_key_error",
 			&map[string]interface{}{"r_map":r_map,},
-			nil,"gf_images_lib",p_runtime_sys)
-		return "",nil,gf_err
+			nil, "gf_images_lib", p_runtime_sys)
+		return "", nil, gf_err
 	}
 
 	running_job_id_str := r_map["running_job_id_str"].(string)
@@ -171,20 +170,20 @@ func client__start_job(p_input_images_urls_lst []string,
 	}
 	//-----------------
 
-	return running_job_id_str,images_outputs_lst,nil
+	return running_job_id_str, images_outputs_lst, nil
 }
 //-------------------------------------------------
 func client__get_status(p_running_job_id_str string,
 	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__get_status()")
+	p_runtime_sys                         *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__get_status()")
 
-	url_str := fmt.Sprintf("http://%s/images/jobs/status",p_target__image_service_host_port_str)
+	url_str := fmt.Sprintf("http://%s/images/jobs/status", p_target__image_service_host_port_str)
 
 	_,body,errs := gorequest.New().
 		Get(url_str).
 		Set("accept","text/event-stream").
-		Query(fmt.Sprintf(`running_job_id_str=%s`,p_running_job_id_str)).
+		Query(fmt.Sprintf(`running_job_id_str=%s`, p_running_job_id_str)).
 		End()
 
 	if errs != nil {
@@ -195,24 +194,24 @@ func client__get_status(p_running_job_id_str string,
 				"running_job_id_str":                 p_running_job_id_str,
 				"target__image_service_host_port_str":p_target__image_service_host_port_str,
 			},
-			err,"gf_images_lib",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_images_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	update_items_lst,gf_err := client__parse_sse_response(body,p_runtime_sys)
+	update_items_lst,gf_err := client__parse_sse_response(body, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
-	return update_items_lst,nil
+	return update_items_lst, nil
 }
 //-------------------------------------------------
-func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_client.client__parse_sse_response()")
+func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__parse_sse_response()")
 
 	data_items_lst := []map[string]interface{}{}
 
-	for _,line_str := range strings.Split(p_body_str,`\n`) {
+	for _,line_str := range strings.Split(p_body_str, `\n`) {
 
 		p_runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>")
 		p_runtime_sys.Log_fun("INFO",line_str)
@@ -223,16 +222,16 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 
 			msg_str := strings.Replace(line_str,"data: ","",1)
 			msg_map := map[string]interface{}{}
-			err     := json.Unmarshal([]byte(msg_str),&msg_map)
+			err     := json.Unmarshal([]byte(msg_str), &msg_map)
 
 			if err != nil {
 
 				gf_err := gf_core.Error__create("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					&map[string]interface{}{"line_str":line_str,},
-					err,"gf_images_lib",p_runtime_sys)
+					err, "gf_images_lib", p_runtime_sys)
 
-				return nil,gf_err
+				return nil, gf_err
 			}
 
 			//-------------------
@@ -242,8 +241,8 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 				gf_err      := gf_core.Error__create(err_usr_msg,
 					"verify__missing_key_error",
 					&map[string]interface{}{"msg_map":msg_map,},
-					nil,"gf_images_lib",p_runtime_sys)
-				return nil,gf_err
+					nil, "gf_images_lib", p_runtime_sys)
+				return nil, gf_err
 			}
 			status_str := msg_map["status_str"].(string)
 
@@ -256,8 +255,8 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 						"status_str":status_str,
 						"msg_map":   msg_map,
 					},
-					nil,"gf_images_lib",p_runtime_sys)
-				return nil,gf_err
+					nil, "gf_images_lib", p_runtime_sys)
+				return nil, gf_err
 			}
 			//-------------------
 			//DATA
@@ -266,15 +265,14 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 				gf_err      := gf_core.Error__create(err_usr_msg,
 					"verify__missing_key_error",
 					&map[string]interface{}{"msg_map":msg_map,},
-					nil,"gf_images_lib",p_runtime_sys)
-				return nil,gf_err
+					nil, "gf_images_lib", p_runtime_sys)
+				return nil, gf_err
 			}
 			
 			data_map := msg_map["data_map"].(map[string]interface{})
 			//-------------------
-
-			data_items_lst = append(data_items_lst,data_map)
+			data_items_lst = append(data_items_lst, data_map)
 		}
 	}
-	return data_items_lst,nil
+	return data_items_lst, nil
 }

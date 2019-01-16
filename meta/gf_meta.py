@@ -22,6 +22,11 @@ def get():
                 'go_output_path_str':'%s/../bin/gf_publisher_service'%(cwd_str),
             },
             #-------------
+            #LIB
+            'gf_publisher_lib':{
+                'go_path_str':'%s/../go/apps/gf_publisher_lib'%(cwd_str)
+            },
+            #-------------
             #MAIN
             'gf_tagger':{
                 'go_path_str':       '%s/../go/apps/gf_tagger'%(cwd_str),

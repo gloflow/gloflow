@@ -27,6 +27,8 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
+type Jobs_mngr chan Job_msg
+
 type Job_msg struct {
 	job_id_str            string
 	client_type_str       string 
@@ -83,14 +85,14 @@ type Job_Expected_Output struct {
 func Start_job(p_client_type_str string,
 	p_images_to_process_lst []Image_to_process,
 	p_flows_names_lst       []string,
-	p_jobs_mngr_ch          chan Job_msg,
-	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job,[]*Job_Expected_Output,*gf_core.Gf_error) {
+	p_jobs_mngr_ch          Jobs_mngr,
+	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Start_job()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
 	job_cmd_str      := "start_job"
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	job_id_str       := fmt.Sprintf("job:%f",job_start_time_f)
+	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 	job_updates_ch   := make(chan *Job_update_msg,10)
 
 	job_msg := Job_msg{
@@ -124,8 +126,8 @@ func Start_job(p_client_type_str string,
 				"images_to_process_lst":p_images_to_process_lst,
 				"flows_names_lst":      p_flows_names_lst,
 			},
-			db_err,"gf_images_jobs",p_runtime_sys)
-		return nil,nil,gf_err
+			db_err, "gf_images_jobs", p_runtime_sys)
+		return nil, nil, gf_err
 	}
 	//-----------------
 	//CREATE JOB_EXPECTED_OUTPUT
@@ -139,37 +141,37 @@ func Start_job(p_client_type_str string,
 
 		//--------------
 		//IMAGE_ID
-		image_id_str,i_gf_err := gf_images_utils.Image__create_id_from_url(img_source_url_str,p_runtime_sys)
+		image_id_str, i_gf_err := gf_images_utils.Image__create_id_from_url(img_source_url_str, p_runtime_sys)
 		if i_gf_err != nil {
-			return nil,nil,i_gf_err
+			return nil, nil, i_gf_err
 		}
 		//--------------
 		//GET FILE_FORMAT
-		normalized_ext_str,gf_err := gf_images_utils.Get_image_ext_from_url(img_source_url_str,p_runtime_sys)
+		normalized_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(img_source_url_str, p_runtime_sys)
 		
 		//FIX!! - it should not fail the whole job if one image is invalid,
 		//        it should continue and just mark that image with an error.
 		if gf_err != nil {
-			return nil,nil,gf_err
+			return nil, nil, gf_err
 		}
 		//--------------
 
 		output := &Job_Expected_Output{
 			Image_id_str:                     image_id_str,
 			Image_source_url_str:             img_source_url_str,
-			Thumbnail_small_relative_url_str :fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s" ,image_id_str,normalized_ext_str),
-			Thumbnail_medium_relative_url_str:fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s",image_id_str,normalized_ext_str),
-			Thumbnail_large_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" ,image_id_str,normalized_ext_str),
+			Thumbnail_small_relative_url_str :fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s" , image_id_str, normalized_ext_str),
+			Thumbnail_medium_relative_url_str:fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalized_ext_str),
+			Thumbnail_large_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" , image_id_str, normalized_ext_str),
 		}
-		job_expected_outputs_lst = append(job_expected_outputs_lst,output)
+		job_expected_outputs_lst = append(job_expected_outputs_lst, output)
 	}
 	//-----------------
 
-	return running_job,job_expected_outputs_lst,nil
+	return running_job, job_expected_outputs_lst, nil
 }
 //-------------------------------------------------
 func get_running_job_update_ch(p_job_id_str string,
-	p_jobs_mngr_ch chan Job_msg,
+	p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.get_running_job_update_ch()")
 
@@ -197,10 +199,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_s3_bucket_name_str                         string,
 	p_s3_info                                    *gf_core.Gf_s3_info,
-	p_runtime_sys                                *gf_core.Runtime_sys) chan Job_msg {
+	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Jobs_mngr__init()")
 
-	jobs_mngr_ch := make(chan Job_msg,100)
+	jobs_mngr_ch := make(chan Job_msg, 100)
 
 	//IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
 	//              service initialization time
