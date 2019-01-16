@@ -82,7 +82,7 @@ def test(p_name_str,
     assert os.path.isdir(p_go_package_dir_path_str)
     assert isinstance(p_aws_s3_creds_map,dict)
     print ''
-    print ' -- test %s%s%s service'%(fg('green'), p_name_str, attr(0))
+    print ' -- test %s%s%s package'%(fg('green'), p_name_str, attr(0))
 
     cwd_str = os.getcwd()
     os.chdir(p_go_package_dir_path_str) #change into the target main package dir

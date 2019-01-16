@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //---------------------------------------------------
 function http__create_post(p_selected__post_elements_lst,
-			p_post_source_page_url_str,
-			p_host_str,
-			p_on_complete_fun,
-			p_on_error_fun,
-			p_log_fun) {
+	p_post_source_page_url_str,
+	p_host_str,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','post_utils.http__create_post()');
 
 	//---------------------------------------------------
@@ -49,22 +49,21 @@ function http__create_post(p_selected__post_elements_lst,
 		
 		//a link goes first
 		post_elements_lst.push({
-			'type_str'      :'link',
+			'type_str':      'link',
 			'extern_url_str':p_post_source_page_url_str
 		});
 
 		//add selected elements to post_elements_lst
-		Array.prototype.push.apply(post_elements_lst,
-								p_selected__post_elements_lst);
+		Array.prototype.push.apply(post_elements_lst, p_selected__post_elements_lst);
 		//------------------------
 		
 		const post_info_map = {
-			'title_str'           :title_str,
-			'client_type_str'     :'gchrome_ext',
-			'tags_str'            :tags_str, //comma "," separated tags
-			'description_str'     :description_str,
-			'poster_user_name_str':poster_user_name_str,
-			'post_elements_lst'       :post_elements_lst,
+			'title_str':               title_str,
+			'client_type_str':         'gchrome_ext',
+			'tags_str':                tags_str, //comma "," separated tags
+			'description_str':         description_str,
+			'poster_user_name_str':    poster_user_name_str,
+			'post_elements_lst':       post_elements_lst,
 			'post_source_page_url_str':p_post_source_page_url_str
 		}
 		
@@ -101,9 +100,9 @@ function http__create_post(p_selected__post_elements_lst,
 }
 //---------------------------------------------------
 function publish_post(p_post_title_str,
-				p_on_complete_fun,
-				p_on_error_fun,
-				p_log_fun) {
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','post_utils.publish_post()');
 	
 	const target_post_info_map = {
