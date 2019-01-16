@@ -33,15 +33,15 @@ func Test__stages(p_test *testing.T) {
 	runtime_sys,crawler_runtime := gf_crawl_core.T__init()
 
 	test__stages(test__crawler_images_local_dir_path_str,
-			test__images_s3_bucket_name_str,
-			crawler_runtime,
-			runtime_sys)
+		test__images_s3_bucket_name_str,
+		crawler_runtime,
+		runtime_sys)
 }
 //-------------------------------------------------
 func test__stages(p_test__crawler_images_local_dir_path_str string,
-			p_test__images_s3_bucket_name_str string,
-			p_runtime                         *gf_crawl_core.Crawler_runtime,
-			p_runtime_sys                     *gf_core.Runtime_sys) {
+	p_test__images_s3_bucket_name_str string,
+	p_runtime                         *gf_crawl_core.Gf_crawler_runtime,
+	p_runtime_sys                     *gf_core.Runtime_sys) {
 
 
 

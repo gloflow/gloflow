@@ -25,9 +25,9 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-func Image__db_create(p_img *Crawler_page_img,
-	p_runtime     *Crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) (bool,*gf_core.Gf_error) {
+func Image__db_create(p_img *Gf_crawler_page_img,
+	p_runtime     *Gf_crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -49,7 +49,7 @@ func Image__db_create(p_img *Crawler_page_img,
 					"img_ref_origin_page_url_str":p_img.Origin_page_url_str,
 				},
 				err, "gf_crawl_core", p_runtime_sys)
-			return false,gf_err
+			return false, gf_err
 		}
 
 		//crawler_page_img already exists, from previous crawls, so ignore it
@@ -58,7 +58,7 @@ func Image__db_create(p_img *Crawler_page_img,
 			p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
 			
 			exists_bool = true
-			return exists_bool,nil
+			return exists_bool, nil
 		} else {
 				
 			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
@@ -70,12 +70,12 @@ func Image__db_create(p_img *Crawler_page_img,
 						"img_ref_url_str":            p_img.Url_str,
 						"img_ref_origin_page_url_str":p_img.Origin_page_url_str,
 					},
-					err,"gf_crawl_core",p_runtime_sys)
-				return false,gf_err
+					err, "gf_crawl_core", p_runtime_sys)
+				return false, gf_err
 			}
 
 			exists_bool = false
-			return exists_bool,nil
+			return exists_bool, nil
 		}
 	}
 	//------------
@@ -89,8 +89,8 @@ func Image__db_create(p_img *Crawler_page_img,
 	return false,nil
 }
 //--------------------------------------------------
-func Image__db_create_ref(p_img_ref *Crawler_page_img_ref,
-	p_runtime     *Crawler_runtime,
+func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//p_log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create_ref()")
 
@@ -137,11 +137,11 @@ func Image__db_create_ref(p_img_ref *Crawler_page_img_ref,
 }
 //--------------------------------------------------
 func image__db_get(p_id_str string,
-	p_runtime     *Crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) (*Crawler_page_img,*gf_core.Gf_error) {
+	p_runtime     *Gf_crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_img,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.image__db_get()")
 
-	var img Crawler_page_img
+	var img Gf_crawler_page_img
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
 			"t"     :"crawler_page_img",
 			"id_str":p_id_str,

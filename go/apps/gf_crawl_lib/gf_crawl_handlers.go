@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
-	p_runtime                      *gf_crawl_core.Crawler_runtime,
+	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_handlers.init_handlers()")
 
@@ -41,7 +41,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//------------------
-			recent_images_lst,gf_err := gf_crawl_core.Images__get_recent(p_runtime_sys)
+			recent_images_lst, gf_err := gf_crawl_core.Images__get_recent(p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/recent", "failed to get recently crawled images", gf_err, p_resp, p_runtime_sys)
 				return
@@ -70,7 +70,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input("/a/crawl/image/add_to_flow", p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_rpc_lib.Get_http_input("/a/crawl/image/add_to_flow", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to get input for adding a crawled image to a flow", gf_err, p_resp, p_runtime_sys)
 				return

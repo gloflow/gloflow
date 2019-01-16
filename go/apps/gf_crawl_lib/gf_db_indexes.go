@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
-func db_index__init(p_runtime *gf_crawl_core.Crawler_runtime,
+func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------

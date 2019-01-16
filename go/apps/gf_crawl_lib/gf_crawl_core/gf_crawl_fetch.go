@@ -31,7 +31,7 @@ import (
 )
 //--------------------------------------------------
 //ELASTIC_SEARCH - INDEXED
-type Crawler_url_fetch struct {
+type Gf_crawler_url_fetch struct {
 	Id                   bson.ObjectId     `bson:"_id,omitempty"`
 	Id_str               string            `bson:"id_str"               json:"id_str"`
 	T_str                string            `bson:"t"                    json:"t"` //"crawler_url_fetch"
@@ -52,11 +52,11 @@ type Crawler_url_fetch struct {
 }
 //--------------------------------------------------
 func Fetch__url(p_url_str string,
-	p_link             *Crawler_page_outgoing_link,
+	p_link             *Gf_crawler_page_outgoing_link,
 	p_cycle_run_id_str string,
 	p_crawler_name_str string,
-	p_runtime          *Crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_url_fetch, string, *gf_core.Gf_error) {
+	p_runtime          *Gf_crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_url_fetch, string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.Fetch__url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -90,7 +90,7 @@ func Fetch__url(p_url_str string,
 	domain_str           := url.Host
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawler_fetch__"+fmt.Sprint(creation_unix_time_f)
-	fetch                := &Crawler_url_fetch{
+	fetch                := &Gf_crawler_url_fetch{
 		Id_str:              id_str,
 		T_str:               "crawler_url_fetch",
 		Creation_unix_time_f:creation_unix_time_f,
@@ -106,7 +106,7 @@ func Fetch__url(p_url_str string,
 	err = p_runtime_sys.Mongodb_coll.Insert(fetch)
 	if err != nil {
 		t:="fetch_record_persist__failed"
-		m:=fmt.Sprintf("failed to DB persist Crawler_url_fetch struct of fetch for url - %s",p_url_str)
+		m:=fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s",p_url_str)
 		
 		gf_err := gf_core.Error__create(m,
 			"mongodb_insert_error",
@@ -134,10 +134,7 @@ func Fetch__url(p_url_str string,
 			return nil, "", fe_gf_err
 		}
 
-		fetch__mark_as_failed(crawler_error,
-			fetch,
-			p_runtime,
-			p_runtime_sys)
+		fetch__mark_as_failed(crawler_error, fetch, p_runtime, p_runtime_sys)
 
 		return nil, "", gf_err
 	}
@@ -184,12 +181,12 @@ func Fetch__url(p_url_str string,
 	return fetch,domain_str,nil
 }
 //--------------------------------------------------
-func Fetch__parse_result(p_url_fetch *Crawler_url_fetch,
+func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
 	p_crawler_name_str          string,
 	p_images_local_dir_path_str string,
 	p_s3_bucket_name_str        string,
-	p_runtime                   *Crawler_runtime,
+	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.Fetch__parse_result()")
 
@@ -227,11 +224,11 @@ func Fetch__parse_result(p_url_fetch *Crawler_url_fetch,
 func fetch__error(p_error_type_str string,
 	p_error_msg_str    string,
 	p_url_str          string,
-	p_link             *Crawler_page_outgoing_link,
+	p_link             *Gf_crawler_page_outgoing_link,
 	p_crawler_name_str string,
 	p_gf_err           *gf_core.Gf_error,
-	p_runtime          *Crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error,*gf_core.Gf_error) {
+	p_runtime          *Gf_crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.fetch__error()")
 
 	crawler_error,ce_err := Create_error_and_event(p_error_type_str,
@@ -252,12 +249,12 @@ func fetch__error(p_error_type_str string,
 		}
 	}
 
-	return crawler_error,nil
+	return crawler_error, nil
 }
 //--------------------------------------------------
-func fetch__mark_as_failed(p_error *Crawler_error,
-	p_fetch       *Crawler_url_fetch,
-	p_runtime     *Crawler_runtime,
+func fetch__mark_as_failed(p_error *Gf_crawler_error,
+	p_fetch       *Gf_crawler_url_fetch,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.fetch__mark_as_failed()")
 

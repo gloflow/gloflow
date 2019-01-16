@@ -26,7 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-type Crawler_error struct {
+type Gf_crawler_error struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"    json:"-"`
 	Id_str               string                 `bson:"id_str"           json:"id_str"`
 	T_str                string                 `bson:"t"                json:"t"` //"crawler_error"
@@ -45,8 +45,8 @@ func Create_error_and_event(p_error_type_str string,
 	p_error_url_str    string,
 	p_crawler_name_str string,
 	p_gf_err           *gf_core.Gf_error,
-	p_runtime          *Crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error,*gf_core.Gf_error) {
+	p_runtime          *Gf_crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
 	if p_runtime.Events_ctx != nil {
@@ -61,7 +61,7 @@ func Create_error_and_event(p_error_type_str string,
 			p_runtime_sys)
 	}
 
-	crawl_err,gf_err := create_error(p_error_type_str,
+	crawl_err, gf_err := create_error(p_error_type_str,
 		p_error_msg_str,
 		p_error_data_map,
 		p_error_url_str,
@@ -70,10 +70,10 @@ func Create_error_and_event(p_error_type_str string,
 		p_runtime,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
-	return crawl_err,nil
+	return crawl_err, nil
 }
 //--------------------------------------------------
 func create_error(p_type_str string,
@@ -82,13 +82,13 @@ func create_error(p_type_str string,
 	p_url_str          string,
 	p_crawler_name_str string,
 	p_gf_err           *gf_core.Gf_error,
-	p_runtime          *Crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_error, *gf_core.Gf_error) {
+	p_runtime          *Gf_crawler_runtime,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.create_error()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawl_error:"+fmt.Sprint(creation_unix_time_f)
-	crawl_err            := &Crawler_error{
+	crawl_err            := &Gf_crawler_error{
 		Id_str:              id_str,
 		T_str:               "crawler_error",
 		Creation_unix_time_f:creation_unix_time_f,

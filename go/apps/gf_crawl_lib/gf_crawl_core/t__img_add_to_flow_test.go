@@ -38,7 +38,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	test__images_store_local_dir_path_str   := "../test_data/processed_images" //image tmp thumbnails, or downloaded gif's and their frames
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__gf_images_s3_bucket_name_str      := "gf--test--img"
-	runtime_sys,crawler_runtime             := T__init()
+	runtime_sys, crawler_runtime            := T__init()
 
 
 
@@ -61,7 +61,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		panic(gf_err.Error)
 	}
 
-	assert.Equal(p_test,exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
+	assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
 	//-------------------
 	//CRAWLED_IMAGE_REF_CREATE
 	test__crawled_image_ref := images__ref_create(test__crawler_name_str,

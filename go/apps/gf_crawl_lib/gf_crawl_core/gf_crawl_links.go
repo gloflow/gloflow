@@ -32,7 +32,7 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_utils"
 )
 //--------------------------------------------------
-type Crawler_page_outgoing_link struct {
+type Gf_crawler_page_outgoing_link struct {
 	Id                    bson.ObjectId `bson:"_id,omitempty"`
 	Id_str                string        `bson:"id_str"`
 	T_str                 string        `bson:"t"`                    //"crawler_page_outgoing_link"
@@ -50,7 +50,6 @@ type Crawler_page_outgoing_link struct {
 	Hash_str              string        `bson:"hash_str"`
 	Valid_for_crawl_bool  bool          `bson:"valid_for_crawl_bool"`  //if the link should be crawled, or if it should be ignored
 	Images_processed_bool bool          `bson:"images_processed_bool"` //if all the images in the page have been downloaded/transformed/stored-in-s3
-
 	Fetched_bool          bool          `bson:"fetched_bool"`          //indicator if the link has been fetched (its html downloaded and parsed)
 	Fetch_last_id_str     string        `bson:"fetch_last_id_str"`
 	Fetch_last_time_f     float64       `bson:"fetch_last_time_f"`
@@ -66,7 +65,8 @@ type Crawler_page_outgoing_link struct {
 	//-------------------
 }
 //--------------------------------------------------
-func Link__get_unresolved(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Crawler_page_outgoing_link, *gf_core.Gf_error) {
+func Link__get_unresolved(p_crawler_name_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Link__get_unresolved()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -98,7 +98,7 @@ func Link__get_unresolved(p_crawler_name_str string, p_runtime_sys *gf_core.Runt
 		})
 
 
-	var unresolved_link Crawler_page_outgoing_link
+	var unresolved_link Gf_crawler_page_outgoing_link
 	err := query.One(&unresolved_link)
 
 	if fmt.Sprint(err) == "not found" {
@@ -106,7 +106,7 @@ func Link__get_unresolved(p_crawler_name_str string, p_runtime_sys *gf_core.Runt
 			"mongodb_not_found_error",
 			&map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	if err != nil {
@@ -114,16 +114,16 @@ func Link__get_unresolved(p_crawler_name_str string, p_runtime_sys *gf_core.Runt
 			"mongodb_find_error",
 			&map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
-	return &unresolved_link,nil
+	return &unresolved_link, nil
 }
 //--------------------------------------------------
-func Links__get_outgoing_in_page(p_url_fetch *Crawler_url_fetch,
+func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str string,
 	p_crawler_name_str string,
-	p_runtime          *Crawler_runtime,
+	p_runtime          *Gf_crawler_runtime,
 	p_runtime_sys      *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Links__get_outgoing_in_page()")
 
@@ -135,7 +135,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Crawler_url_fetch,
 	fmt.Println("INFO","GET__PAGE_LINKS - "+blue(p_url_fetch.Url_str))
 	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	crawled_links_lst := []*Crawler_page_outgoing_link{}
+	crawled_links_lst := []*Gf_crawler_page_outgoing_link{}
 
 	p_url_fetch.goquery_doc.Find("a").Each(func(p_i int, p_elem *goquery.Selection) {
 
@@ -188,11 +188,11 @@ func Links__get_outgoing_in_page(p_url_fetch *Crawler_url_fetch,
 	//STAGE - PERSIST ALL LINKS
 	for _,link := range crawled_links_lst {
 
-		gf_err := link__db_create(link,p_runtime_sys)
+		gf_err := link__db_create(link, p_runtime_sys)
 		if gf_err != nil {
 			t:="link__db_create__failed"
 			m:="failed creating link in the DB - "+link.A_href_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_url_fetch.Url_str,}, link.A_href_str, p_crawler_name_str,
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_url_fetch.Url_str,}, link.A_href_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 			return
 		}
@@ -200,10 +200,10 @@ func Links__get_outgoing_in_page(p_url_fetch *Crawler_url_fetch,
 	//--------------
 }
 //--------------------------------------------------
-func Link__get_db(p_link_id_str string, p_runtime_sys *gf_core.Runtime_sys) (*Crawler_page_outgoing_link, *gf_core.Gf_error) {
+func Link__get_db(p_link_id_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Link__get_db()")
 
-	var unresolved_link Crawler_page_outgoing_link
+	var unresolved_link Gf_crawler_page_outgoing_link
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
 			"t":     "crawler_page_outgoing_link",
 			"id_str":p_link_id_str,
@@ -224,19 +224,19 @@ func link__create(p_url_str string,
 	p_origin_url_str   string,
 	p_cycle_run_id_str string,
 	p_crawler_name_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Crawler_page_outgoing_link,*gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link,*gf_core.Gf_error) {
 
 	//-------------
 	//DOMAIN
-	domain_str,origin_url_domain_str,gf_err := gf_crawl_utils.Get_domain(p_url_str, p_origin_url_str, p_runtime_sys)
+	domain_str, origin_url_domain_str, gf_err := gf_crawl_utils.Get_domain(p_url_str, p_origin_url_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//-------------
 	//COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
 	//                  and complete them to get the full url
 	
-	complete_a_href_str,gf_err := gf_crawl_utils.Complete_url(p_url_str, domain_str, p_runtime_sys)
+	complete_a_href_str, gf_err := gf_crawl_utils.Complete_url(p_url_str, domain_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -254,26 +254,26 @@ func link__create(p_url_str string,
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
 	link__valid_for_crawl_bool := link__verify_for_crawl(p_url_str, domain_str, p_runtime_sys)
-	link := &Crawler_page_outgoing_link{
+	link := &Gf_crawler_page_outgoing_link{
 		Id_str:               id_str,
 		T_str:                "crawler_page_outgoing_link",
 		Creation_unix_time_f: creation_unix_time_f,
 		Crawler_name_str:     p_crawler_name_str,
 		Cycle_run_id_str:     p_cycle_run_id_str,
-		A_href_str           :complete_a_href_str,
-		Domain_str           :domain_str,
-		Origin_url_str       :p_origin_url_str,
+		A_href_str:           complete_a_href_str,
+		Domain_str:           domain_str,
+		Origin_url_str:       p_origin_url_str,
 		Origin_url_domain_str:origin_url_domain_str,
 		Hash_str:             hash_str,
 		Valid_for_crawl_bool: link__valid_for_crawl_bool,
-		Fetched_bool         :false,
+		Fetched_bool:         false,
 		Images_processed_bool:false,
 	}
 
-	return link,nil
+	return link, nil
 }
 //--------------------------------------------------
-func link__db_create(p_link *Crawler_page_outgoing_link, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__db_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -329,9 +329,9 @@ func link__verify_for_crawl(p_url_str string,
 	return true
 }
 //--------------------------------------------------
-func link__mark_as_failed(p_error *Crawler_error,
-	p_link        *Crawler_page_outgoing_link,
-	p_runtime     *Crawler_runtime,
+func link__mark_as_failed(p_error *Gf_crawler_error,
+	p_link        *Gf_crawler_page_outgoing_link,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__mark_as_failed()")
 
@@ -353,7 +353,7 @@ func link__mark_as_failed(p_error *Crawler_error,
 				"error_id_str":  p_error.Id_str,
 				"error_type_str":p_error.Type_str,
 			},
-			err,"gf_crawl_core",p_runtime_sys)
+			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -362,8 +362,8 @@ func link__mark_as_failed(p_error *Crawler_error,
 //--------------------------------------------------
 func Link__mark_import_in_progress(p_status_bool bool,
 	p_unix_time_f float64,
-	p_link        *Crawler_page_outgoing_link,
-	p_runtime     *Crawler_runtime,
+	p_link        *Gf_crawler_page_outgoing_link,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Link__mark_import_in_progress()")
 
@@ -397,7 +397,7 @@ func Link__mark_import_in_progress(p_status_bool bool,
 	return nil
 }
 //--------------------------------------------------
-func Link__mark_as_resolved(p_link *Crawler_page_outgoing_link,
+func Link__mark_as_resolved(p_link *Gf_crawler_page_outgoing_link,
 	p_fetch_id_str          string,
 	p_fetch_creation_time_f float64,
 	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {

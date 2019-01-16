@@ -83,7 +83,7 @@ func main() {
 			}
 			//-------------
 
-			crawler_runtime := &gf_crawl_core.Crawler_runtime{
+			crawler_runtime := &gf_crawl_core.Gf_crawler_runtime{
 				Events_ctx:           nil,
 				Esearch_client:       esearch_client,
 				S3_info:              s3_info,
@@ -94,10 +94,10 @@ func main() {
 			//run a certain number of crawl cycles
 			for i := 0; i < crawler_cycles_to_run_int; i++ {
 				err := gf_crawl_lib.Run_crawler_cycle(crawler,
-												crawler_images_local_dir_path_str,
-												images_s3_bucket_name_str,
-												crawler_runtime,
-												runtime_sys)
+					crawler_images_local_dir_path_str,
+					images_s3_bucket_name_str,
+					crawler_runtime,
+					runtime_sys)
 				if err != nil {
 					panic(err)
 				}

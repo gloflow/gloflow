@@ -37,7 +37,7 @@ func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *
 	}
 }
 //-------------------------------------------------
-func T__init() (*gf_core.Runtime_sys, *Crawler_runtime) {
+func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	test__mongodb_host_str      := "127.0.0.1"
 	test__mongodb_db_name_str   := "test_db"
@@ -74,7 +74,7 @@ func T__init() (*gf_core.Runtime_sys, *Crawler_runtime) {
 	}
 	//-------------
 
-	crawler_runtime := &Crawler_runtime{
+	crawler_runtime := &Gf_crawler_runtime{
 		Events_ctx:           nil,
 		Esearch_client:       esearch_client,
 		S3_info:              s3_info,

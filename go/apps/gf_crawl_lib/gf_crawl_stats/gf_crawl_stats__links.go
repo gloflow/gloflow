@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Stat__crawled_links_domain struct {
+type Gf_stat__crawled_links_domain struct {
 	Domain_str              string    `bson:"_id"                     json:"domain_str"`
 	Links_count_int         int       `bson:"links_count_int"         json:"links_count_int"`
 	Creation_unix_times_lst []float64 `bson:"creation_unix_times_lst" json:"creation_unix_times_lst"`
@@ -39,20 +39,20 @@ type Stat__crawled_links_domain struct {
 	Images_processed_lst    []bool    `bson:"images_processed_lst"    json:"images_processed_lst"` //if the images of this links HTML page were downloaded/processed
 }
 
-type Stat__unresolved_links struct {
+type Gf_stat__unresolved_links struct {
 	Origin_domain_str             string     `bson:"_id"                           json:"origin_domain_str"`
 	Origin_urls_lst               []string   `bson:"origin_urls_lst"               json:"origin_urls_lst"`
 	Counts__from_origin_urls_lst  []int      `bson:"counts__from_origin_urls_lst"  json:"counts__from_origin_urls_lst"`
 	A_hrefs__from_origin_urls_lst [][]string `bson:"a_hrefs__from_origin_urls_lst" json:"a_hrefs__from_origin_urls_lst"`
 }
 
-type Stat__links_in_day struct {
+type Gf_stat__links_in_day struct {
 	Total_count_int           int `bson:"total_count_int"           json:"total_count_int"`
 	Valid_for_crawl_total_int int `bson:"valid_for_crawl_total_int" json:"valid_for_crawl_total_int"`
 	Fetched_total_int         int `bson:"fetched_total_int"         json:"fetched_total_int"`
 }
 //-------------------------------------------------
-func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__new_links_by_day()")
 
 	type Minimal_link struct {
@@ -95,7 +95,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 
 	//--------------------
 	//AGGREGATE DAY COUNTS - app-layer DB join
-	new_links_counts_map := map[int]*Stat__links_in_day{}
+	new_links_counts_map := map[int]*Gf_stat__links_in_day{}
 	keys_lst             := []int{}
 	for _,l := range results_lst {
 
@@ -103,13 +103,13 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 		year_day_id_int,_ := strconv.Atoi(fmt.Sprintf("%d%d",tm.Year(),tm.YearDay()))
 
 		//--------------
-		var stat_r *Stat__links_in_day
+		var stat_r *Gf_stat__links_in_day
 		if stat,ok := new_links_counts_map[year_day_id_int]; ok {
 			stat_r = stat
 		} else {
 			//-----------------
 			//CREATE_NEW
-			stat                                 := &Stat__links_in_day{}
+			stat                                 := &Gf_stat__links_in_day{}
 			new_links_counts_map[year_day_id_int] = stat
 			stat_r                                = stat
 
@@ -132,7 +132,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 
 	sort.Ints(keys_lst)
 
-	new_links_counts__sorted_lst := []*Stat__links_in_day{}
+	new_links_counts__sorted_lst := []*Gf_stat__links_in_day{}
 	for _,k := range keys_lst {
 
 		stat                        := new_links_counts_map[k]
@@ -151,7 +151,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	return data_map,nil
 }
 //-------------------------------------------------
-func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__unresolved_links()")
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
@@ -183,7 +183,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 		},
 	})
 
-	results_lst := []Stat__unresolved_links{}
+	results_lst := []Gf_stat__unresolved_links{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -239,7 +239,7 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 		},
 	})
 
-	results_lst := []Stat__crawled_links_domain{}
+	results_lst := []Gf_stat__crawled_links_domain{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -252,5 +252,5 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 	data_map := map[string]interface{}{
 		"crawled_links_domains_lst":results_lst,
 	}
-	return data_map,nil
+	return data_map, nil
 }

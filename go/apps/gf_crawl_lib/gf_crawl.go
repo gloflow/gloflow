@@ -30,13 +30,13 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_utils"
 )
 //--------------------------------------------------
-type Crawler struct {
+type Gf_crawler struct {
 	Name_str      string
 	Start_url_str string
 	//Domains_lst   []string //some sites have multiple domains
 }
 
-type Crawler_cycle_run struct {
+type Gf_crawler_cycle_run struct {
 	Id                   bson.ObjectId `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
 	T_str                string        `bson:"t"` //"crawler_cycle_run"
@@ -70,7 +70,7 @@ func Init(p_images_local_dir_path_str string,
 		return gf_err
 	}
 
-	runtime := &gf_crawl_core.Crawler_runtime{
+	runtime := &gf_crawl_core.Gf_crawler_runtime{
 		Events_ctx:           events_ctx,
 		Esearch_client:       p_esearch_client,
 		S3_info:              gf_s3_info,
@@ -99,10 +99,10 @@ func Init(p_images_local_dir_path_str string,
 	return nil
 }
 //--------------------------------------------------
-func start_crawlers_cycles(p_crawlers_map map[string]Crawler,
+func start_crawlers_cycles(p_crawlers_map map[string]Gf_crawler,
 	p_images_local_dir_path_str string,
 	p_images_s3_bucket_name_str string,
-	p_runtime                   *gf_crawl_core.Crawler_runtime,
+	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.start_crawlers_cycles()")
 
@@ -114,7 +114,7 @@ func start_crawlers_cycles(p_crawlers_map map[string]Crawler,
 
 		//IMPORTANT!! - each crawler runs in its own goroutine, and continuously
 		//              crawls the target domains
-		go func(p_crawler Crawler) {
+		go func(p_crawler Gf_crawler) {
 			start_crawler(p_crawler,
 				p_images_local_dir_path_str,
 				p_images_s3_bucket_name_str,
@@ -124,10 +124,10 @@ func start_crawlers_cycles(p_crawlers_map map[string]Crawler,
 	}
 }
 //--------------------------------------------------
-func start_crawler(p_crawler Crawler,
+func start_crawler(p_crawler Gf_crawler,
 	p_images_local_dir_path_str string,
 	p_images_s3_bucket_name_str string,
-	p_runtime                   *gf_crawl_core.Crawler_runtime,
+	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.start_crawler()")
 

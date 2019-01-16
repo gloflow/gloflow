@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-type Index__query_run struct {
+type Gf_index__query_run struct {
 	Id                   bson.ObjectId `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
 	T_str                string        `bson:"t"` //"index__query_run"
@@ -39,12 +39,12 @@ type Index__query_run struct {
 	Hits_urls_lst        []string      `bson:"hits_urls_lst"`
 }
 //--------------------------------------------------
-func index__get_stats(p_runtime *Crawler_runtime, p_runtime_sys *gf_core.Runtime_sys) {
+func index__get_stats(p_runtime *Gf_crawler_runtime, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime.Esearch_client.IndexStats("gf_crawl_pages")
 }
 //--------------------------------------------------
 func Index__query(p_term_str string,
-	p_runtime     *Crawler_runtime,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.Index__query()")
 
@@ -125,7 +125,7 @@ func Index__query(p_term_str string,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("crawler_page_img:%f",creation_unix_time_f)
 
-	query_run := &Index__query_run{
+	query_run := &Gf_index__query_run{
 		Id_str:              id_str,
 		T_str:               "index__query_run",
 		Run_time_milisec_int:query_run_time_milisec_int,
@@ -150,8 +150,8 @@ func Index__query(p_term_str string,
 	return nil
 }
 //--------------------------------------------------
-func index__add_to__of_url_fetch(p_url_fetch *Crawler_url_fetch,
-	p_runtime     *Crawler_runtime,
+func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
+	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.index__add_to__of_url_fetch()")
 

@@ -31,7 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_utils"
 )
 //--------------------------------------------------
-type Crawler_page_img struct {
+type Gf_crawler_page_img struct {
 	Id                         bson.ObjectId `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`                          //"crawler_page_img"
@@ -65,7 +65,7 @@ type Crawler_page_img struct {
 //IMPORTANT!! - reference to an image, on a particular page. 
 //              the same image, with the same Url_str can appear on multiple pages, and this 
 //              struct tracks that, one record per reference
-type Crawler_page_img_ref struct {
+type Gf_crawler_page_img_ref struct {
 	Id                         bson.ObjectId `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`                          //"crawler_page_img_ref"
@@ -82,7 +82,7 @@ type Crawler_page_img_ref struct {
 	Hash_str                   string        `bson:"hash_str"`
 }
 
-type Crawler__recent_images struct {
+type Gf_crawler__recent_images struct {
 	Domain_str               string    `bson:"_id"                      json:"domain_str"`
 	Imgs_count_int           int       `bson:"imgs_count_int"           json:"imgs_count_int"`
 	Crawler_page_img_ids_lst []string  `bson:"crawler_page_img_ids_lst" json:"crawler_page_img_ids_lst"`
@@ -96,8 +96,8 @@ func images__prepare_and_create(p_crawler_name_str string,
 	p_cycle_run_id_str   string,
 	p_img_src_url_str    string,
 	p_origin_page_url_str string,
-	p_runtime            *Crawler_runtime,
-	p_runtime_sys        *gf_core.Runtime_sys) (*Crawler_page_img,*gf_core.Gf_error) {
+	p_runtime            *Gf_crawler_runtime,
+	p_runtime_sys        *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -157,7 +157,7 @@ func images__create(p_crawler_name_str string,
 	p_img_src_domain_str         string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img {
+	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -169,7 +169,7 @@ func images__create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	img := &Crawler_page_img{
+	img := &Gf_crawler_page_img{
 		Id_str:                    id_str,
 		T_str:                     "crawler_page_img",
 		Creation_unix_time_f:      creation_unix_time_f,
@@ -195,7 +195,7 @@ func images__ref_create(p_crawler_name_str string,
 	p_image_url_domain_str       string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Crawler_page_img_ref {
+	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img_ref {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -209,7 +209,7 @@ func images__ref_create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	gf_img_ref := &Crawler_page_img_ref{
+	gf_img_ref := &Gf_crawler_page_img_ref{
 		Id_str:                    ref_id_str,
 		T_str:                     "crawler_page_img_ref",
 		Creation_unix_time_f:      creation_unix_time_f,
@@ -225,7 +225,7 @@ func images__ref_create(p_crawler_name_str string,
 	return gf_img_ref
 }
 //-------------------------------------------------
-func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Crawler__recent_images,*gf_core.Gf_error) {
+func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.Images__get_recent()")
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
@@ -250,15 +250,15 @@ func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Crawler__recent_i
 		},
 	})
 
-	results_lst := []Crawler__recent_images{}
+	results_lst := []Gf_crawler__recent_images{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
-			nil,err,"gf_crawl_core",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_crawl_core", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return results_lst,nil
+	return results_lst, nil
 }

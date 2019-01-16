@@ -28,13 +28,13 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Stats__objs_by_days struct {
-	Obj_type_str                     string                        `json:"obj_type_str"                     bson:"obj_type_str"`
-	Counts_by_day__sorted_lst        []int                         `json:"counts_by_day__sorted_lst"        bson:"counts_by_day__sorted_lst"`//global count of fetches per day
-	Domain_counts_by_day__sorted_lst []*Domain_counts_for_all_days `json:"domain_counts_by_day__sorted_lst" bson:"domain_counts_by_day__sorted_lst"`//counts of fetches per domain per day
+type Gf_stats__objs_by_days struct {
+	Obj_type_str                     string                           `json:"obj_type_str"                     bson:"obj_type_str"`
+	Counts_by_day__sorted_lst        []int                            `json:"counts_by_day__sorted_lst"        bson:"counts_by_day__sorted_lst"`        //global count of fetches per day
+	Domain_counts_by_day__sorted_lst []*Gf_domain_counts_for_all_days `json:"domain_counts_by_day__sorted_lst" bson:"domain_counts_by_day__sorted_lst"` //counts of fetches per domain per day
 }
 
-type Domain_counts_for_all_days struct {
+type Gf_domain_counts_for_all_days struct {
 	Domain_str      string `json:"domain_str"      bson:"domain_str"`
 	Total_count_int int    `json:"total_count_int" bson:"total_count_int"`
 	Days_counts_lst []int  `json:"days_counts_lst" bson:"days_counts_lst"`
@@ -42,7 +42,7 @@ type Domain_counts_for_all_days struct {
 //-------------------------------------------------
 func stats__objs_by_days(p_match_query_map map[string]interface{},
 	p_obj_type_str string,
-	p_runtime_sys  *gf_core.Runtime_sys) (*Stats__objs_by_days, *gf_core.Gf_error) {
+	p_runtime_sys  *gf_core.Runtime_sys) (*Gf_stats__objs_by_days, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
 
 	type Domain_objs__stat struct {
@@ -98,7 +98,6 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 
 	//--------------------
 	//AGGREGATE DAY COUNTS
-
 
 	type stat__objs_in_day struct {
 		Year_int                    int            `bson:"year_int"                    json:"year_int"`
@@ -178,7 +177,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	//this is formated this way for easy feeding of columns of data (per domain)
 	//to visualization routines, without need to do a bunch of app joins client side
 
-	domains__counts_for_all_days_lst := []*Domain_counts_for_all_days{} //map[string][]int{}
+	domains__counts_for_all_days_lst := []*Gf_domain_counts_for_all_days{} //map[string][]int{}
 
 	for domain_str,_ := range all_domains_total_counts_map {
 
@@ -192,16 +191,16 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 
 		//domains__counts_for_all_days_map[domain_str] = domain_days_count_lst
 
-		d := &Domain_counts_for_all_days{
+		d := &Gf_domain_counts_for_all_days{
 			Domain_str:     domain_str,
 			Total_count_int:all_domains_total_counts_map[domain_str],
 			Days_counts_lst:domain_days_count_lst,
 		}
-		domains__counts_for_all_days_lst = append(domains__counts_for_all_days_lst,d)
+		domains__counts_for_all_days_lst = append(domains__counts_for_all_days_lst, d)
 	}
 	//----------------------
 	//SORT
-	sort__domains_counts(domains__counts_for_all_days_lst,p_runtime_sys)
+	sort__domains_counts(domains__counts_for_all_days_lst, p_runtime_sys)
 	//------------------
 	//ACCUMULATE LIST OF GLOBAL FETCH COUNTS PER DAY
 	total_counts_by_day__sorted_lst := []int{}
@@ -209,17 +208,17 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		total_counts_by_day__sorted_lst = append(total_counts_by_day__sorted_lst, day_stat.Total_count_int)
 	}
 	//------------------
-	stats := &Stats__objs_by_days{
+	stats := &Gf_stats__objs_by_days{
 		Obj_type_str:                    p_obj_type_str,
 		Counts_by_day__sorted_lst:       total_counts_by_day__sorted_lst,
 		Domain_counts_by_day__sorted_lst:domains__counts_for_all_days_lst,
 	}
 	//------------------
-	return stats,nil
+	return stats, nil
 }
 //-------------------------------------------------
 //SORT
-type domains_counts []*Domain_counts_for_all_days
+type domains_counts []*Gf_domain_counts_for_all_days
 func (d_lst domains_counts) Len() int {
 	return len(d_lst)
 }
@@ -230,8 +229,7 @@ func (d_lst domains_counts) Less(i, j int) bool {
 	return d_lst[i].Total_count_int > d_lst[j].Total_count_int
 }
 
-func sort__domains_counts(p_domains__counts_for_all_days_lst []*Domain_counts_for_all_days,
-					p_runtime_sys  *gf_core.Runtime_sys) {
+func sort__domains_counts(p_domains__counts_for_all_days_lst []*Gf_domain_counts_for_all_days, p_runtime_sys *gf_core.Runtime_sys) {
 	/*//------------------
 	//SORT
 	func (s domains_counts) Len() int {

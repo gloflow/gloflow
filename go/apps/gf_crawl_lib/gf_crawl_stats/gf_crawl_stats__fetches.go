@@ -24,7 +24,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Stat__crawled_url_fetches struct {
+type Gf_stat__crawled_url_fetches struct {
 	Url_str         string    `bson:"_id"             json:"url_str"`
 	Count_int       int       `bson:"count_int"       json:"count_int"`
 	Start_times_lst []float64 `bson:"start_times_lst" json:"start_times_lst"`
@@ -41,7 +41,7 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[str
 	data_map := map[string]interface{}{
 		"fetches_by_days_map":stats__fetches_by_days,
 	}
-	return data_map,nil
+	return data_map, nil
 }
 //-------------------------------------------------
 func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
@@ -76,7 +76,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 		},
 	})
 
-	results_lst := []Stat__crawled_url_fetches{}
+	results_lst := []Gf_stat__crawled_url_fetches{}
 	err         := pipe.All(&results_lst)
 
 	if err != nil {

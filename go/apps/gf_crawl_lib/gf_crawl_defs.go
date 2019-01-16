@@ -20,15 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_lib
 
 //--------------------------------------------------
-func Get_all_crawlers() map[string]Crawler {
+func Get_all_crawlers() map[string]Gf_crawler {
 
-	crawlers_map := map[string]Crawler{
-		"gloflow.com":Crawler{
+	crawlers_map := map[string]Gf_crawler{
+		"gloflow.com":Gf_crawler{
 			Name_str:     "gloflow.com",
 			Start_url_str:"http://gloflow.com/",
 		},
 	}
-
 	return crawlers_map
 }
 

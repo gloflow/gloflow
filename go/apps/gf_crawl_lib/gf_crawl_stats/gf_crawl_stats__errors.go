@@ -24,17 +24,17 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Stat__errors struct {
-	Crawler_name_str string             `bson:"_id"              json:"crawler_name_str"`
-	Errors_types_lst []Stat__error_type `bson:"errors_types_lst" json:"errors_types_lst"`
+type Gf_stat__errors struct {
+	Crawler_name_str string                `bson:"_id"              json:"crawler_name_str"`
+	Errors_types_lst []Gf_stat__error_type `bson:"errors_types_lst" json:"errors_types_lst"`
 }
-type Stat__error_type struct {
+type Gf_stat__error_type struct {
 	Type_str  string   `bson:"type_str"  json:"type_str"`
 	Count_int int      `bson:"count_int" json:"count_int"`
 	Urls_lst  []string `bson:"urls_lst"  json:"urls_lst"`
 }
 //-------------------------------------------------
-func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__errors.stats__errors()")
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
@@ -69,7 +69,7 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*
 		},
 	})
 
-	results_lst := []Stat__errors{}
+	results_lst := []Gf_stat__errors{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {

@@ -27,10 +27,10 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
-func Run_crawler_cycle(p_crawler Crawler,
+func Run_crawler_cycle(p_crawler Gf_crawler,
 	p_images_local_dir_path_str string,
 	p_s3_bucket_name_str        string,
-	p_runtime                   *gf_crawl_core.Crawler_runtime,
+	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
 	p_runtime_sys.Log_fun("INFO"     , "p_s3_bucket_name_str - "+p_s3_bucket_name_str)
@@ -46,7 +46,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 	//IMPORTANT!! - get unresolved links to pages on the domain to which the crawler belongs.
 	//              so if the a page contains links to domains external to the domain to which the 
 	//              crawler belongs, it wont get fetched/parsed here
-	unresolved_link,gf_err := gf_crawl_core.Link__get_unresolved(p_crawler.Name_str, p_runtime_sys)
+	unresolved_link, gf_err := gf_crawl_core.Link__get_unresolved(p_crawler.Name_str, p_runtime_sys)
 
 	//IMPORTANT!! - no unresolved links were found, this is a valid possible state
 	if gf_err != nil && fmt.Sprint(gf_err.Type_str) == "mongodb_not_found_error" {
@@ -95,7 +95,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 	
 	//-------------------
 	//STAGE - FETCH THE LINK
-	url_fetch,domain_str,gf_err := gf_crawl_core.Fetch__url(url_str,
+	url_fetch, domain_str, gf_err := gf_crawl_core.Fetch__url(url_str,
 		unresolved_link,
 		cycle_run__id_str,
 		p_crawler.Name_str,
@@ -121,7 +121,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 	
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	cycle_run := &Crawler_cycle_run{
+	cycle_run := &Gf_crawler_cycle_run{
 		Id_str:              cycle_run__id_str,
 		T_str:               "crawler_cycle_run",
 		Creation_unix_time_f:cycle_run__creation_unix_time_f,
@@ -141,7 +141,7 @@ func Run_crawler_cycle(p_crawler Crawler,
 				"crawler_name_str": p_crawler.Name_str,
 				"domain_str":       domain_str,
 			},
-			err,"gf_crawl_lib",p_runtime_sys)
+			err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
 	}
 	//-------------------

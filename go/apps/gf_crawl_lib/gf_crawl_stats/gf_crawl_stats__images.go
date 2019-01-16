@@ -24,7 +24,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Stat__crawled_images_domain struct {
+type Gf_stat__crawled_images_domain struct {
 	Domain_str              string    `bson:"_id"                     json:"domain_str"`
 	Imgs_count_int          int       `bson:"imgs_count_int"          json:"imgs_count_int"`
 	Creation_unix_times_lst []float64 `bson:"creation_unix_times_lst" json:"creation_unix_times_lst"`
@@ -35,13 +35,13 @@ type Stat__crawled_images_domain struct {
 	S3_stored_lst           []bool    `bson:"s3_stored_lst"           json:"s3_stored_lst"`
 }
 
-type Stat__crawled_gifs struct {
+type Gf_stat__crawled_gifs struct {
 	Domain_str             string                   `bson:"_id"                    json:"domain_str"`
 	Imgs_count_int         int                      `bson:"imgs_count_int"         json:"imgs_count_int"`
 	Urls_by_origin_url_lst []map[string]interface{} `bson:"urls_by_origin_url_lst" json:"urls_by_origin_url_lst"`
 }
 //-------------------------------------------------
-func stats__gifs_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+func stats__gifs_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__images.stats__gifs_by_days()")
 
 
@@ -118,7 +118,7 @@ func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *g
 		},
 	})
 
-	results_lst := []Stat__crawled_gifs{}
+	results_lst := []Gf_stat__crawled_gifs{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -177,7 +177,7 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 		},
 	})
 
-	results_lst := []Stat__crawled_images_domain{}
+	results_lst := []Gf_stat__crawled_images_domain{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {

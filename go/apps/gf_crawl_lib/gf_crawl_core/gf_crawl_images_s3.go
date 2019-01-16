@@ -27,11 +27,11 @@ import (
 )
 //--------------------------------------------------
 func images_s3__stage__store_images(p_crawler_name_str string,
-	p_page_imgs__pipeline_infos_lst []*gf__page_img__pipeline_info,
+	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_origin_page_url_str           string,
 	p_s3_bucket_name_str            string,
-	p_runtime                       *Crawler_runtime,
-	p_runtime_sys                   *gf_core.Runtime_sys) []*gf__page_img__pipeline_info {
+	p_runtime                       *Gf_crawler_runtime,
+	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_s3.images_s3__stage__store_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
@@ -85,11 +85,11 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image_s3__upload(p_image *Crawler_page_img,
+func image_s3__upload(p_image *Gf_crawler_page_img,
 	p_local_image_file_path_str string,
 	p_image_thumbs              *gf_images_utils.Gf_image_thumbs,
 	p_s3_bucket_name_str        string,
-	p_runtime                   *Crawler_runtime,
+	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_s3.image_s3__upload()")
 

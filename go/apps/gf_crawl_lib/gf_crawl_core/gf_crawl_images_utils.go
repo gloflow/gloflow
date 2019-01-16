@@ -27,7 +27,7 @@ import (
 )
 
 //--------------------------------------------------
-func image__update_after_process(p_page_img *Crawler_page_img,
+func image__update_after_process(p_page_img *Gf_crawler_page_img,
 	p_gf_image_id_str string,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_utils.image__update_after_process()")

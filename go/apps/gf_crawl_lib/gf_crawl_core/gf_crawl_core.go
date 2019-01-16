@@ -24,7 +24,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-type Crawler_runtime struct {
+type Gf_crawler_runtime struct {
 	Events_ctx            *gf_core.Events_ctx
 	Esearch_client        *elastic.Client
 	S3_info               *gf_core.Gf_s3_info
