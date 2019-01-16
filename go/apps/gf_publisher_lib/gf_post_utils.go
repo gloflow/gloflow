@@ -28,7 +28,7 @@ import (
 //------------------------------------------
 func Add_tags_to_post_in_db(p_post_title_str string,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.Runtime_sys) (*Post, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.Add_tags_to_post_in_db()")
 	
 	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
@@ -47,13 +47,13 @@ func Add_tags_to_post_in_db(p_post_title_str string,
 	return post, nil
 }
 //------------------------------------------
-func add_tags_to_post(p_post *Post,
+func add_tags_to_post(p_post *Gf_post,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
-		p_post.Tags_lst = append(p_post.Tags_lst,p_tags_lst...)
+		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
 
 		//---------------
 		//eliminate duplicates from the list, in case 
@@ -67,18 +67,18 @@ func add_tags_to_post(p_post *Post,
 				//tuplicate exists
 			} else {
 				encountered_map[t_str] = true
-				no_dupliactes_lst      = append(no_dupliactes_lst,t_str)
+				no_dupliactes_lst      = append(no_dupliactes_lst, t_str)
  			}
 		}
 		//---------------
 		
 		p_post.Tags_lst = no_dupliactes_lst
 	} else {
-		p_post.Tags_lst = append(p_post.Tags_lst,p_tags_lst...)
+		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
 	}
 }
 //---------------------------------------------------
-func get_posts_small_thumbnails_urls(p_posts_lst []*Post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
+func get_posts_small_thumbnails_urls(p_posts_lst []*Gf_post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}

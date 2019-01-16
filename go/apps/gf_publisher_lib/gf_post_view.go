@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-func post__render_template(p_post *Post,
+func post__render_template(p_post *Gf_post,
 	p_tmpl        *template.Template,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -69,7 +69,7 @@ func post__render_template(p_post *Post,
 	final String template_str = p_template.renderString(template_info_map)
 	return template_str;*/
 
-	err := p_tmpl.Execute(p_resp,tmpl_data{
+	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Post_title_str:                 p_post.Title_str,
 		Post_tags_lst:                  post_tags_lst,
 		Post_description_str:           p_post.Description_str,
@@ -90,7 +90,7 @@ func post__render_template(p_post *Post,
 	return nil
 }
 //--------------------------------------------------
-func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
@@ -142,11 +142,10 @@ func package_post_elements_infos(p_post *Post, p_runtime_sys *gf_core.Runtime_sy
 				continue
 		}
 	}
-
 	return template_post_elements_lst, nil
 }
 //--------------------------------------------------
-func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
+func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
 	image_post_elements_lst, gf_err := get_post_elements_of_type(p_post, "image", p_runtime_sys)
@@ -154,7 +153,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_runtime_sys *gf_co
 		return nil, gf_err
 	}
 
-	var top_image_post_elements_lst []*Post_element
+	var top_image_post_elements_lst []*Gf_post_element
 	if len(image_post_elements_lst) > 5 {
 
 		//getRange() - returns an Iterable<String>
@@ -169,7 +168,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Post, p_runtime_sys *gf_co
 		d := map[string]string{
 			"img_thumbnail_medium_absolute_url_str":post_element.Img_thumbnail_medium_url_str,
 		}
-		og_info_lst = append(og_info_lst,d)
+		og_info_lst = append(og_info_lst, d)
 	}
 	//---------------------
 

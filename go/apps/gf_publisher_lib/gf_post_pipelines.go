@@ -29,8 +29,8 @@ import (
 //------------------------------------------------
 //CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
-	p_gf_images_service_host_port_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (*Post, string, *gf_core.Gf_error) {
+	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+	p_runtime_sys            *gf_core.Runtime_sys) (*Gf_post, string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
@@ -65,7 +65,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	//----------------------
 	//IMAGES
 	//IMPORTANT - long-lasting image operation
-	images_job_id_str, img_gf_err := process_external_images(post, p_gf_images_service_host_port_str, p_runtime_sys)
+	images_job_id_str, img_gf_err := process_external_images(post, p_gf_images_runtime_info, p_runtime_sys)
 	if img_gf_err != nil {
 		return nil, "", img_gf_err
 	}
@@ -124,7 +124,7 @@ func Pipeline__get_post(p_post_title_str string,
 				gf_err := gf_core.Error__create("failed to serialize a Post into JSON form",
 					"json_marshal_error",
 					&map[string]interface{}{"post_title_str":p_post_title_str,},
-					err,"gf_publisher_lib",p_runtime_sys)
+					err, "gf_publisher_lib", p_runtime_sys)
 				return gf_err
 			}
 			post_str := string(post_byte_lst)

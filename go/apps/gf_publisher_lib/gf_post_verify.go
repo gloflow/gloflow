@@ -56,7 +56,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	title_str := p_post_info_map["title_str"].(string)
 
 	if len(title_str) > p_max_title_chars_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("title_str is longer (%s) then the max allowed number of chars (%s)", len(title_str), p_max_title_chars_int),
+		gf_err := gf_core.Error__create(fmt.Sprintf("title_str is longer (%d) then the max allowed number of chars (%d)", len(title_str), p_max_title_chars_int),
 			"verify__string_too_long_error",
 			&map[string]interface{}{
 				"title_str":          title_str,
@@ -88,7 +88,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	description_str := p_post_info_map["description_str"].(string)
 
 	if len(description_str) > p_max_description_chars_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("description_str is longer (%s) then the max allowed number of chars (%s)", len(description_str), p_max_description_chars_int),
+		gf_err := gf_core.Error__create(fmt.Sprintf("description_str is longer (%d) then the max allowed number of chars (%d)", len(description_str), p_max_description_chars_int),
 			"verify__string_too_long_error",
 			&map[string]interface{}{
 				"description_str":          description_str,
@@ -255,7 +255,7 @@ func verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.Runtime_
 		p_type_str == "iframe" ||
 		p_type_str == "text") {
 		
-		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - ", p_type_str),
+		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - %s", p_type_str),
 			"verify__invalid_value_error",
 			&map[string]interface{}{"post_element_type_str": p_type_str,},
 			nil, "gf_publisher_lib", p_runtime_sys)

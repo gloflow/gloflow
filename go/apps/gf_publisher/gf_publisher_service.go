@@ -20,10 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"fmt"
 	"flag"
-	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //-------------------------------------------------
 func main() {
@@ -38,11 +37,17 @@ func main() {
 
 	//START_SERVICE
 	if run__start_service_bool {
+
+		gf_images_runtime := &gf_publisher_lib.Gf_images_extern_runtime_info{
+			Jobs_mngr:            nil, //indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
+			Service_host_port_str:gf_images_service_host_port_str,
+		}
+		
 		//init_done_ch := make(chan bool)
-		Run_service__in_process(port_str,
+		gf_publisher_lib.Run_service(port_str,
 			mongodb_host_str,
 			mongodb_db_name_str,
-			gf_images_service_host_port_str,
+			gf_images_runtime,
 			nil, //init_done_ch,
 			log_fun)
 		//<-init_done_ch
@@ -67,90 +72,5 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 		"mongodb_host_str":               *mongodb_host_str,
 		"mongodb_db_name_str":            *mongodb_db_name_str,
 		"gf_images_service_host_port_str":*gf_images_service_host_port_str,
-	}
-}
-//-------------------------------------------------
-func Run_service__in_process(p_port_str string,
-			p_mongodb_host_str                string,
-			p_mongodb_db_name_str             string,
-			p_gf_images_service_host_port_str string,
-			p_init_done_ch                    chan bool,
-			p_log_fun                         func(string,string)) {
-	p_log_fun("FUN_ENTER","gf_publisher_service.Run_service__in_process()")
-
-	p_log_fun("INFO","")
-	p_log_fun("INFO"," >>>>>>>>>>> STARTING GF_PUBLISHER SERVICE")
-	p_log_fun("INFO","")
-	logo_str := `
-	                   #\   /##/      #
-                    #   #/       #/
-     ####\    /##\  #\__\#\     #/         /#
-       \##\  /#  #\  ######|    #     /####/
-         |#\_|___##| |#####|__ #/ _/######/
-         \#########|_|##################/
-           \###########/     \########/
-            \#########|        \###|
-        \##\ \########/   @@   |###| ___/#####
-           #\ \######|    @@   |#########
-            #\ //   \|         ||
-            \##|     \\____ ####| /########
-      _____  \#|_@@__|#####/....\##/ \#/  \#
-     #######\ /######MMM#/ ......|#        \#
-          /###/......\M/ ...... .\#######
-         |#| .........|...........|###\
-      ___|#|..........|......  .../| \##
-     ########.. ......\........./##|   \#
-         |#|.........../\.._____|##|     \##
-         |##\  ...__.--|---#########
-        /####\___/##/--|--|#######/ #
-       /#    \######|-----|#/ \#    \##
-     ##/     /|######\---/#/          \#
-            ##/ |#########/            \#
-               /########|               \##
-              /#########|
-             ## |#######|
-                |#########\
-                 |########|
-                 |#########\
-                 |##########\
-                 |############\`
-    p_log_fun("INFO",logo_str)
-    
-	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
-	
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_publisher",
-		Log_fun:         p_log_fun,
-		Mongodb_coll:    mongodb_coll,
-	}
-	//------------------------
-	//STATIC FILES SERVING
-	static_files__url_base_str := "/posts"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
-	//------------------------
-
-	err := init_handlers(p_gf_images_service_host_port_str, runtime_sys)
-	if err != nil {
-		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
-		panic(msg_str)
-	}
-
-	//----------------------
-	//IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
-	if p_init_done_ch != nil {
-		p_init_done_ch <- true
-	}
-	//----------------------
-	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
-	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_port_str,nil)
-	if http_err != nil {
-		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.Log_fun("ERROR",msg_str)
-		runtime_sys.Log_fun("ERROR",fmt.Sprint(http_err))
-		
-		panic(fmt.Sprint(http_err))
 	}
 }

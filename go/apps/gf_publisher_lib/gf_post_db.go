@@ -28,10 +28,10 @@ import (
 )
 //---------------------------------------------------
 func DB__get_post(p_post_title_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (*Post,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
 
-	var post Post
+	var post Gf_post
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post","title_str":p_post_title_str}).One(&post)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to get a post from the DB",
@@ -71,7 +71,7 @@ func DB__get_post(p_post_title_str string,
 	//---------------------*/
 }
 //---------------------------------------------------
-func DB__create_post(p_post *Post,
+func DB__create_post(p_post *Gf_post,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
 
@@ -87,7 +87,7 @@ func DB__create_post(p_post *Post,
 	return nil
 }
 //---------------------------------------------------
-func DB__update_post(p_post *Post, 
+func DB__update_post(p_post *Gf_post, 
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
 
@@ -119,10 +119,10 @@ func DB__delete_post(p_post_title_str *string,
 //---------------------------------------------------
 func DB__get_posts_page(p_cursor_start_position_int int, //0
 	p_elements_num_int int, //50
-	p_runtime_sys      *gf_core.Runtime_sys) ([]*Post,*gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_post,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_posts_page()")
 
-	posts_lst := []*Post{}
+	posts_lst := []*Gf_post{}
 	//descending - true - sort the latest items first
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post"}).
 		Sort("-creation_datetime_str"). //descending:true
@@ -138,7 +138,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, //0
 				"elements_num_int":         p_elements_num_int,
 			},
 			err, "gf_publisher_lib", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	return posts_lst, nil
@@ -147,7 +147,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, //0
 //REMOVE!! - is this a duplicate of DB__get_posts_page?
 func DB__get_posts_from_offset(p_cursor_position_int int,
 	p_posts_num_to_get_int int,
-	p_runtime_sys          *gf_core.Runtime_sys) ([]*Post, *gf_core.Gf_error) {
+	p_runtime_sys          *gf_core.Runtime_sys) ([]*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_posts_from_offset()")
 
 	//----------------
@@ -157,7 +157,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 	//assert(p_cursor_position_int < 500);
 	//----------------
 
-	var posts_lst []*Post
+	var posts_lst []*Gf_post
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post"}).
 		Skip(p_cursor_position_int).
 		Limit(p_posts_num_to_get_int).
@@ -179,14 +179,14 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 //---------------------------------------------------
 func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 	p_max_random_cursor_position_int int, //500
-	p_runtime_sys                    *gf_core.Runtime_sys) ([]*Post, *gf_core.Gf_error) {
+	p_runtime_sys                    *gf_core.Runtime_sys) ([]*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
 
 	rand.Seed(time.Now().Unix())
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
 	p_runtime_sys.Log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
-	posts_in_random_range_lst,gf_err := DB__get_posts_from_offset(random_cursor_position_int, p_posts_num_to_get_int, p_runtime_sys)
+	posts_in_random_range_lst, gf_err := DB__get_posts_from_offset(random_cursor_position_int, p_posts_num_to_get_int, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -195,7 +195,7 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 }
 //---------------------------------------------------
 func DB__check_post_exists(p_post_title_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (bool,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__check_post_exists()")
 	
 	count_int,err := p_runtime_sys.Mongodb_coll.Find(bson.M{

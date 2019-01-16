@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_publisher_lib
 
 import (
 	"time"
@@ -30,12 +30,11 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
 //-------------------------------------------------
-func init_handlers(p_gf_images_service_host_port_str string,
+func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_publisher_service_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_publisher_handlers.init_handlers()")
 
 	//---------------------
 	//TEMPLATES
@@ -45,7 +44,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":pst__template_path_str,},
-			err, "gf_publisher", p_runtime_sys)
+			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 
@@ -55,7 +54,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":posts_browser__tmpl,},
-			err, "gf_publisher", p_runtime_sys)
+			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 	//---------------------
@@ -84,7 +83,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 			post_info_map := i_map
 			//------------
 
-			_,images_job_id_str, gf_err := gf_publisher_lib.Pipeline__create_post(post_info_map, p_gf_images_service_host_port_str, p_runtime_sys)
+			_,images_job_id_str, gf_err := Pipeline__create_post(post_info_map, p_gf_images_runtime_info, p_runtime_sys)
 
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/posts/create", "create_post pipeline failed", gf_err, p_resp, p_runtime_sys)
@@ -138,7 +137,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 			//--------------------
 
-			gf_err := gf_publisher_lib.Render_initial_pages(response_format_str,
+			gf_err := Render_initial_pages(response_format_str,
 				6, //p_initial_pages_num_int int
 				5, //p_page_size_int
 				posts_browser__tmpl,
@@ -182,7 +181,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 					gf_err      := gf_core.Error__create(usr_msg_str,
 						"verify__value_not_integer_error",
 						&map[string]interface{}{"input_val":input_val,},
-						err, "gf_publisher", p_runtime_sys)
+						err, "gf_publisher_lib", p_runtime_sys)
 
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 					return
@@ -199,7 +198,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 					gf_err      := gf_core.Error__create(usr_msg_str,
 						"verify__value_not_integer_error",
 						&map[string]interface{}{"input_val":input_val,},
-						err, "gf_publisher", p_runtime_sys)
+						err, "gf_publisher_lib", p_runtime_sys)
 
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 					return
@@ -207,7 +206,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 			}
 			//--------------------
 			
-			serialized_pages_lst, gf_err := gf_publisher_lib.Get_posts_page(page_index_int, page_size_int, p_runtime_sys)
+			serialized_pages_lst, gf_err := Get_posts_page(page_index_int, page_size_int, p_runtime_sys)
 			if err != nil {
 				gf_rpc_lib.Error__in_handler("/posts/browser_page", "failed to get posts page", gf_err, p_resp, p_runtime_sys)
 				return
@@ -255,7 +254,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 				gf_err      := gf_core.Error__create(usr_msg_str,
 					"verify__invalid_value_error",
 					&map[string]interface{}{"url_str":url_str,},
-					nil, "gf_publisher", p_runtime_sys)
+					nil, "gf_publisher_lib", p_runtime_sys)
 				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 				return
 			}
@@ -278,7 +277,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 				gf_err      := gf_core.Error__create(usr_msg_str,
 					"verify__invalid_query_string_encoding_error",
 					&map[string]interface{}{"post_title_encoded_str":post_title_encoded_str,},
-					err, "gf_publisher", p_runtime_sys)
+					err, "gf_publisher_lib", p_runtime_sys)
 
 				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 				return
@@ -286,7 +285,7 @@ func init_handlers(p_gf_images_service_host_port_str string,
 			p_runtime_sys.Log_fun("INFO","post_title_str - "+post_title_str)
 			//--------------------
 
-			gf_err := gf_publisher_lib.Pipeline__get_post(post_title_str,
+			gf_err := Pipeline__get_post(post_title_str,
 				response_format_str,
 				post__tmpl,
 				p_resp,

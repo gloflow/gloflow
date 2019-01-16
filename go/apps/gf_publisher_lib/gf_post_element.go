@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
-type Post_element struct {
+type Gf_post_element struct {
 
 	Id_str string `bson:"id_str"`
 
@@ -77,11 +77,11 @@ type Post_element struct {
 //---------------------------------------------------
 func create_post_elements(p_post_elements_infos_lst []interface{},
 	p_post_title_str string,
-	p_runtime_sys    *gf_core.Runtime_sys) []*Post_element {
+	p_runtime_sys    *gf_core.Runtime_sys) []*Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.create_post_elements()")
 	p_runtime_sys.Log_fun("INFO",     "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
-	post_elements_lst := []*Post_element{}
+	post_elements_lst := []*Gf_post_element{}
 	for i,post_element := range p_post_elements_infos_lst {
 
 		post_element_map := post_element.(map[string]interface{})
@@ -105,7 +105,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 
 		p_runtime_sys.Log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 		//------------------
-		post_element := &Post_element{
+		post_element := &Gf_post_element{
 			Id_str:               post_element_id_str,
 			Type_str:             post_element_map["type_str"].(string),
 			Creation_datetime_str:creation_datetime_str,
@@ -115,13 +115,13 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 			//Description_str      :post_element_map["description_str"].(string),
 		}
 		
-		post_elements_lst = append(post_elements_lst,post_element)
+		post_elements_lst = append(post_elements_lst, post_element)
 	}
 
 	return post_elements_lst
 }
 //---------------------------------------------------
-func get_first_image_post_element(p_post *Post, p_runtime_sys *gf_core.Runtime_sys) *Post_element {
+func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
 
 	for _,post_element := range p_post.Post_elements_lst {
@@ -132,9 +132,9 @@ func get_first_image_post_element(p_post *Post, p_runtime_sys *gf_core.Runtime_s
 	return nil //post has no image post_element
 }
 //---------------------------------------------------
-func get_post_elements_of_type(p_post *Post,
+func get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Post_element,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_post_element,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
 	
 	gf_err := verify_post_element_type(p_type_str, p_runtime_sys)
@@ -142,7 +142,7 @@ func get_post_elements_of_type(p_post *Post,
 		return nil, gf_err
 	}
 	
-	post_elements_lst := []*Post_element{}
+	post_elements_lst := []*Gf_post_element{}
 	for _,post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == p_type_str {
 			post_elements_lst = append(post_elements_lst,post_element)

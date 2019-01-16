@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
-func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
+func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-lists
 	p_tmpl                *template.Template,
 	p_posts_page_size_int int, //5
 	p_resp                http.ResponseWriter,
@@ -52,7 +52,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
 
 					//IMPORTANT!! - some tags attached to posts are emtpy strings ""
 					if tag_str != "" {
-						post_tags_lst = append(post_tags_lst,tag_str)
+						post_tags_lst = append(post_tags_lst, tag_str)
 					}
 				}
 
@@ -63,9 +63,9 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Post, //list-of-lists
 			}
 			//---------------
 
-			page_posts_lst = append(page_posts_lst,post_info_map)
+			page_posts_lst = append(page_posts_lst, post_info_map)
 		}
-		pages_lst = append(pages_lst,page_posts_lst)
+		pages_lst = append(pages_lst, page_posts_lst)
 	}
 
 	type tmpl_data struct {

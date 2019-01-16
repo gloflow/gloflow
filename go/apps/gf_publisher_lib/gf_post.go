@@ -26,37 +26,37 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
-type Post struct {
-	Id                    bson.ObjectId `bson:"_id,omitempty"`
-	Id_str                string        `bson:"id_str"`
-	T_str                 string        `bson:"t"`                //"post"
-	Client_type_str       string        `bson:"client_type_str"`  //"gchrome_ext" //type of the client that created the post
-	Title_str             string        `bson:"title_str"`
-	Description_str       string        `bson:"description_str"`
-	Creation_datetime_str string        `bson:"creation_datetime_str"`
-	Poster_user_name_str  string        `bson:"poster_user_name_str"` //user-name of the user that posted this post
+type Gf_post struct {
+	Id                    bson.ObjectId  `bson:"_id,omitempty"`
+	Id_str                string         `bson:"id_str"`
+	T_str                 string         `bson:"t"`                //"post"
+	Client_type_str       string         `bson:"client_type_str"`  //"gchrome_ext" //type of the client that created the post
+	Title_str             string         `bson:"title_str"`
+	Description_str       string         `bson:"description_str"`
+	Creation_datetime_str string         `bson:"creation_datetime_str"`
+	Poster_user_name_str  string         `bson:"poster_user_name_str"` //user-name of the user that posted this post
 
 	//------------
 	//GF_IMAGES
-	Thumbnail_url_str string            `bson:"thumbnail_url_str"` //SYMPHONY 0.3
-	Images_ids_lst    []string          `bson:"images_ids_lst"`
+	Thumbnail_url_str string             `bson:"thumbnail_url_str"` //SYMPHONY 0.3
+	Images_ids_lst    []string           `bson:"images_ids_lst"`
 	//------------
-	Post_elements_lst []*Post_element   `bson:"post_elements_lst"`
+	Post_elements_lst []*Gf_post_element `bson:"post_elements_lst"`
 	//------------
-	Tags_lst  []string                  `bson:"tags_lst"`
-	Notes_lst []*Post_note              `bson:"notes_lst"`      //SYMPHONY 0.3 - notes are chunks of text (for now) that can be attached to a post
+	Tags_lst  []string                   `bson:"tags_lst"`
+	Notes_lst []*Gf_post_note            `bson:"notes_lst"`      //SYMPHONY 0.3 - notes are chunks of text (for now) that can be attached to a post
  
 	//every event can have multiple colors assigned to it
-	Colors_lst []string                 `bson:"colors_lst"`
+	Colors_lst []string                  `bson:"colors_lst"`
 }
 
-type Post_note struct {
+type Gf_post_note struct {
 	User_id_str           string `bson:"user_id_str"`
 	Body_str              string `bson:"body_str"`
 	Creation_datetime_str string `bson:"creation_datetime_str"`
 }
 //------------------------------------------------
-func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Post, *gf_core.Gf_error) {
+func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_new_post()")
 	p_runtime_sys.Log_fun("INFO"     , "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
@@ -123,9 +123,9 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	}
 	//-------------------------
 	//NOTES
-	var notes_lst []*Post_note
+	var notes_lst []*Gf_post_note
 	if _,ok := p_post_info_map["notes_lst"]; !ok {
-		notes_lst = []*Post_note{}
+		notes_lst = []*Gf_post_note{}
 	} else {
 		notes_infos_lst := p_post_info_map["notes_lst"].([]map[string]interface{})
 		notes_lst        = create_post_notes(notes_infos_lst, p_runtime_sys)
@@ -142,7 +142,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 		colors_lst = p_post_info_map["colors_lst"].([]string)
 	}
 	//--------------------
-	post := &Post{
+	post := &Gf_post{
 		Id_str:               id_str,
 		T_str:                "post",
 		Client_type_str:      p_post_info_map["client_type_str"].(string),
@@ -158,7 +158,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 		Colors_lst:           colors_lst,
 	}
 	
-	return post,nil
+	return post, nil
 }
 //------------------------------------------------	
 //a post has to first be created, and only then can it be published
@@ -167,18 +167,17 @@ func publish(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
 }
 //------------------------------------------------
-func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Post_note {
+func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Gf_post_note {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
 
-	notes_lst := []*Post_note{}
+	notes_lst := []*Gf_post_note{}
 	for _,note_map := range p_raw_notes_lst {
 		
-		snippet := &Post_note{
+		snippet := &Gf_post_note{
 			User_id_str:"anonymous",
 			Body_str:   note_map["body_str"].(string),
 		}
 		notes_lst = append(notes_lst, snippet)
 	}
-
 	return notes_lst
 }
