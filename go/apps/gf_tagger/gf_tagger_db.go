@@ -25,6 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
+
 //---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,
 	p_object_type_str string,
@@ -39,7 +40,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 				}).Count()
 
 			if err != nil {
-				gf_err := gf_core.Error__create(fmt.Sprintf("failed to count of posts with tag - %s",p_tag_str),
+				gf_err := gf_core.Error__create(fmt.Sprintf("failed to count of posts with tag - %s", p_tag_str),
 					"mongodb_find_error",
 					&map[string]interface{}{
 						"tag_str":        p_tag_str,
@@ -56,7 +57,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 //POSTS
 //---------------------------------------------------
 func db__get_post_notes(p_post_title_str string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Note, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__get_post_notes()")
 
 	post, gf_err := gf_publisher_lib.DB__get_post(p_post_title_str, p_runtime_sys)
@@ -65,10 +66,10 @@ func db__get_post_notes(p_post_title_str string,
 	}
 
 	post_notes_lst := post.Notes_lst
-	notes_lst      := []*Note{}
+	notes_lst      := []*Gf_note{}
 	for _,s := range post_notes_lst {
 
-		note := &Note{
+		note := &Gf_note{
 			User_id_str:          s.User_id_str,
 			Body_str:             s.Body_str,
 			Target_obj_id_str:    post.Title_str,
@@ -81,13 +82,13 @@ func db__get_post_notes(p_post_title_str string,
 	return notes_lst, nil
 }
 //---------------------------------------------------
-func db__add_post_note(p_note *Note,
+func db__add_post_note(p_note *Gf_note,
 	p_post_title_str string,
 	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_db.db__add_post_note()")
 
 	//--------------------
-	post_note := &gf_publisher_lib.Post_note{
+	post_note := &gf_publisher_lib.Gf_post_note{
 		User_id_str:          p_note.User_id_str,
 		Body_str:             p_note.Body_str,
 		Creation_datetime_str:p_note.Creation_datetime_str,
@@ -117,7 +118,7 @@ func db__add_post_note(p_note *Note,
 func db__get_posts_with_tag(p_tag_str string,
 	p_page_index_int int,
 	p_page_size_int  int,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Post, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
 	p_runtime_sys.Log_fun("INFO"     , "p_tag_str - "+p_tag_str)
 
@@ -126,7 +127,7 @@ func db__get_posts_with_tag(p_tag_str string,
 	//        instead use a Stream-oriented way where results are streamed lazily
 	//        in some fashion
 		
-	var posts_lst []*gf_publisher_lib.Post
+	var posts_lst []*gf_publisher_lib.Gf_post
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
 			"t":       "post",
 			"tags_lst":bson.M{"$in":[]string{p_tag_str,}},
@@ -137,7 +138,7 @@ func db__get_posts_with_tag(p_tag_str string,
 		All(&posts_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create(fmt.Sprintf("failed to get posts with tag - %s",p_tag_str),
+		gf_err := gf_core.Error__create(fmt.Sprintf("failed to get posts with tag - %s", p_tag_str),
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"tag_str":       p_tag_str,

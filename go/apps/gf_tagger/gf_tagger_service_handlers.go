@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
 //-------------------------------------------------
 func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_service_handlers.init_handlers()")
@@ -80,7 +81,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 				return 
 			}
 
-			data_map := map[string][]*Note{"notes_lst":notes_lst,}
+			data_map := map[string][]*Gf_note{"notes_lst":notes_lst,}
 			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

@@ -28,7 +28,7 @@ import (
 )
 
 //---------------------------------------------------
-type Note struct {
+type Gf_note struct {
 	User_id_str           string `json:"user_id_str"         bson:"user_id_str"`         //user_id of the user that attached this note
 	Body_str              string `json:"body_str"            bson:"body_str"`
 	Target_obj_id_str     string `json:"target_obj_id_str"   bson:"target_obj_id_str"`   //object_id to which this note is attached
@@ -76,7 +76,7 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 		post_title_str        := object_extern_id_str
 		creation_datetime_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 
-		note := &Note{
+		note := &Gf_note{
 			User_id_str:          "anonymous",
 			Body_str:             body_str,
 			Target_obj_id_str:    post_title_str,
@@ -89,17 +89,15 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 			return gf_err
 		}
 	}
-	
 	return nil
 }
 //---------------------------------------------------
 func pipeline__get_notes(p_req *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Note, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__get_notes()")
 
 	//-----------------
 	//INPUT
-
 	qs_map := p_req.URL.Query()
 
 	if _,ok := qs_map["otype"]; !ok {
@@ -122,7 +120,7 @@ func pipeline__get_notes(p_req *http.Request,
 	object_extern_id_str := strings.TrimSpace(qs_map["o_id"][0])
 	//-----------------
 
-	tagger_notes_lst := []*Note{}
+	tagger_notes_lst := []*Gf_note{}
 	if object_type_str == "post" {
 
 		post_title_str    := object_extern_id_str
@@ -132,7 +130,7 @@ func pipeline__get_notes(p_req *http.Request,
 		}
 		
 		for _,s := range notes_lst {
-			note := &Note{
+			note := &Gf_note{
 				User_id_str:        s.User_id_str,
 				Body_str:           s.Body_str,
 				Target_obj_id_str:  post_title_str,

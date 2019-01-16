@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
 )
+
 //---------------------------------------------------
 //p_tags_str      - :String - "," separated list of strings
 //p_object_id_str - :String - this is an external identifier for an object, not necessarily its internal. 
@@ -77,6 +78,7 @@ func add_tags_to_object(p_tags_str string,
 				p_runtime_sys.Log_fun("INFO","POST EXISTS")
 				gf_err := db__add_tags_to_post(post_title_str, tags_lst, p_runtime_sys)
 				return gf_err
+
 			} else {
 				gf_err := gf_core.Error__create(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", post_title_str, tags_lst),
 					"verify__invalid_value_error",
@@ -184,7 +186,7 @@ func parse_tags(p_tags_str string,
 	tags_lst := strings.Split(p_tags_str," ")
 	//---------------------
 	if len(tags_lst) > p_max_tags_bulk_size_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("too many tags supplied - max is %s",p_max_tags_bulk_size_int),
+		gf_err := gf_core.Error__create(fmt.Sprintf("too many tags supplied - max is %d", p_max_tags_bulk_size_int),
 			"verify__value_too_many_error",
 			&map[string]interface{}{
 				"tags_lst":              tags_lst,
@@ -196,7 +198,7 @@ func parse_tags(p_tags_str string,
 	//---------------------
 	for _,tag_str := range tags_lst {
 		if len(tag_str) > p_max_tag_characters_number_int {
-			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%s)", tag_str, fmt.Sprint(p_max_tag_characters_number_int)),
+			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%d)", tag_str, p_max_tag_characters_number_int),
 				"verify__string_too_long_error",
 				&map[string]interface{}{
 					"tag_str":                      tag_str,
