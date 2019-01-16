@@ -19,11 +19,16 @@ import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
+import subprocess
+
 from colored import fg,bg,attr
 import delegator
 
 sys.path.append('%s/../meta'%(cwd_str))
 import gf_meta
+
+sys.path.append('%s/aws/s3'%(cwd_str))
+import gf_s3_utils
 #--------------------------------------------------
 def main():
     
@@ -46,23 +51,22 @@ def main():
     #-------------
     elif run_str == 'test':
 
-        aws_s3_creds_file_path_str = args_map['aws_s3_creds']
-        aws_s3_creds_map           = parse_creds(aws_s3_creds_file_path_str)
-
-        test(app_name_str, aws_s3_creds_map)
+        aws_creds_file_path_str = args_map['aws_creds']
+        aws_creds_map           = gf_s3_utils.parse_creds(aws_creds_file_path_str)
+        test(app_name_str, app_meta_map['go_path_str'], aws_creds_map)
     #-------------
 #--------------------------------------------------
 def build__go_bin(p_name_str,
-    p_main_go_file_path_str,
+    p_go_path_str,
     p_output_path_str):
-    assert os.path.isfile(p_main_go_file_path_str)
+    assert os.path.isdir(p_go_path_str)
     assert os.path.isdir(os.path.dirname(p_output_path_str))
 
     print ''
     print ' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0))
     
     cwd_str = os.getcwd()
-    os.chdir(os.path.dirname(p_main_go_file_path_str)) #change into the target main package dir
+    os.chdir(p_go_path_str) #change into the target main package dir
 
     c = 'go build -o %s'%(p_output_path_str)
     print c
@@ -73,19 +77,25 @@ def build__go_bin(p_name_str,
     os.chdir(cwd_str) #return to initial dir
 #--------------------------------------------------
 def test(p_name_str,
+    p_go_package_dir_path_str,
     p_aws_s3_creds_map):
+    assert os.path.isdir(p_go_package_dir_path_str)
     assert isinstance(p_aws_s3_creds_map,dict)
     print ''
     print ' -- test %s%s%s service'%(fg('green'), p_name_str, attr(0))
 
     cwd_str = os.getcwd()
-    os.chdir(os.path.dirname(p_main_go_file_path_str)) #change into the target main package dir
+    os.chdir(p_go_package_dir_path_str) #change into the target main package dir
 
-    c = 'go test'
-    print c
-    r = delegator.run(c,env=p_aws_s3_creds_map)
-    if not r.out == '': print r.out
-    if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'),attr(0),r.err)
+    c = "go test"
+    print(c)
+
+    e = os.environ.copy()
+    e.update(p_aws_s3_creds_map)
+    p = subprocess.Popen(c.split(' '), stdout=subprocess.PIPE, env=e)
+    for l in iter(p.stdout.readline, ""):
+        print(l.rstrip())
+    if not p.stderr == None: print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), p.stderr)
 
     os.chdir(cwd_str) #return to initial dir
 #--------------------------------------------------
@@ -112,11 +122,18 @@ def parse_args():
 - '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
         ''')
     #-------------
+    #AWS_S3_CREDS
+    arg_parser.add_argument('-aws_creds',
+        action =  "store",
+        default = "%s/../../creds/aws/s3.txt"%(cwd_str),
+        help =    '''path to the file containing AWS S3 credentials to be used''')
+    #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     args_map       = {
-        "run":args_namespace.run,
-        "app":args_namespace.app,
+        "run":      args_namespace.run,
+        "app":      args_namespace.app,
+        "aws_creds":args_namespace.aws_creds,
     }
     return args_map
 #--------------------------------------------------

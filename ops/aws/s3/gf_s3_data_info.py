@@ -25,15 +25,16 @@ import gf_s3_utils
 def stats__image_buckets_general(p_aws_access_key_id_str,
 	p_aws_secret_access_key_str):
 
-	imgs__bucket, discovered_imgs__bucket, s3_resource = gf_s3_utils.s3_connect(p_aws_access_key_id_str, p_aws_secret_access_key_str)
+	gf_s3_info = gf_s3_utils.s3_connect(p_aws_access_key_id_str, p_aws_secret_access_key_str)
+	assert isinstance(gf_s3_info, gf_s3_utils.Gf_s3_info)
 
 	#LIST_BUCKETS
-	for bucket in s3_resource.buckets.all():
+	for bucket in gf_s3_info.s3_resource.buckets.all():
 		print(bucket.name)
 
 	#-------------------
-	main_images__bucket_info_map    = process_bucket('gf--img',             imgs__bucket)
-	crawler_images__bucket_info_map = process_bucket('gf--discovered--img', discovered_imgs__bucket)
+	main_images__bucket_info_map    = process_bucket('gf--img',             gf_s3_info.imgs__bucket)
+	crawler_images__bucket_info_map = process_bucket('gf--discovered--img', gf_s3_info.discovered_imgs__bucket)
 	#-------------------
 	
 	view_bucket_info([crawler_images__bucket_info_map, main_images__bucket_info_map])

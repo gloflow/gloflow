@@ -54,19 +54,21 @@ func T__init() (*gf_core.Runtime_sys, *Crawler_runtime) {
 	}
 	//-------------
 	//ELASTICSEARCH
-	esearch_client,gf_err := gf_core.Elastic__get_client(runtime_sys)
+	esearch_client, gf_err := gf_core.Elastic__get_client(runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	//-------------
 	//S3
-
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
 	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
 
+	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
+		panic("test AWS credentials were not supplied")
+	}
 	
-	s3_info,gf_err := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
+	s3_info, gf_err := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

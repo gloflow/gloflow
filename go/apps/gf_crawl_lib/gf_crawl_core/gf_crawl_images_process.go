@@ -25,6 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
+	//"github.com/davecgh/go-spew/spew"
 )
 //--------------------------------------------------
 func images__stage__process_images(p_crawler_name_str string,
@@ -115,16 +116,16 @@ func image__process(p_page_img *Crawler_page_img,
 			p_runtime_sys)
 
 		if gf_err != nil {
-			return nil,nil,gf_err
+			return nil, nil, gf_err
 		}													
 
 		gf_image_id_str := gf_gif.Gf_image_id_str
 		gf_err           = image__update_after_process(p_page_img, gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
-			return nil,nil,gf_err
+			return nil, nil, gf_err
 		}
 
-		return nil,nil,nil
+		return nil, nil, nil
 	//----------------------------
 	//GENERAL
 	} else {
@@ -135,13 +136,17 @@ func image__process(p_page_img *Crawler_page_img,
 			thumbnails_local_dir_path_str,
 			p_runtime_sys)
 		if gf_err != nil {
-			return nil,nil,gf_err
+			return nil, nil, gf_err
 		}
+
+
+		//spew.Dump(gf_image)
+
 
 		gf_image_id_str := gf_image.Id_str
 		gf_err           = image__update_after_process(p_page_img, gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
-			return nil,nil,gf_err
+			return nil, nil, gf_err
 		}
 
 		return gf_image, gf_image_thumbs, nil
