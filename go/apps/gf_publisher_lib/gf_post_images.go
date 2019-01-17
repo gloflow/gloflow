@@ -47,9 +47,9 @@ func process_external_images(p_post *Gf_post,
 	for _,post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == "image" {
 			image_url_str                             := post_element.Extern_url_str
-			source_page_url_str                       := post_element.Source_page_url_str
-			post_elements_images_urls_lst              = append(post_elements_images_urls_lst,             image_url_str)
-			post_elements_images_origin_pages_urls_str = append(post_elements_images_origin_pages_urls_str,source_page_url_str)
+			origin_page_url_str                       := post_element.Origin_page_url_str
+			post_elements_images_urls_lst              = append(post_elements_images_urls_lst,              image_url_str)
+			post_elements_images_origin_pages_urls_str = append(post_elements_images_origin_pages_urls_str, origin_page_url_str)
 			post_elements_map[image_url_str]           = post_element
 		}
 	}

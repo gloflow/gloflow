@@ -22,6 +22,7 @@ package gf_publisher_lib
 import (
 	"fmt"
 	"time"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
@@ -46,7 +47,7 @@ type Gf_post_element struct {
 	//----------------------
 	//if type_str == "image"|"video" then source_page_url_str represents the URL of
 	//the page from which this post_element was extracted from (if it wasnt uploaded directly)
-	Source_page_url_str string `bson:"source_page_url_str"`
+	Origin_page_url_str string `bson:"origin_page_url_str"`
 	//----------------------
 	//GEOMETRIC PROPS
 		
@@ -84,33 +85,34 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 	post_elements_lst := []*Gf_post_element{}
 	for i,post_element := range p_post_elements_infos_lst {
 
-		post_element_map := post_element.(map[string]interface{})
+		creation_datetime_str := time.Now().String()
+		post_element_map      := post_element.(map[string]interface{})
+
 		//--------------------
-		//REMOVE!! - 3d positioning will be a part of gf_3d data structures
-		
+		//
 		//1d index stored in the 3d index slot
 		//this is the placement order for the post element
 		post_index_3_lst := []int{i,0,0,}
-		//post_element_map["post_index_3_lst"] = []int{i,0,0,}
 		//--------------------
 		//POST_ELEMENT_ID
 	
 		//FIX!! - post_index_3_str shouldnt be serialized in ID as a list
 		//example ID output - "pub_pe:test_post_"title:[0, 0, 0]"
-		post_index_3_str    := fmt.Sprint(post_index_3_lst) //post_element_map["post_index_3_lst"])
-		post_element_id_str := fmt.Sprintf("pub_pe:%s:%s", p_post_title_str, post_index_3_str)
-		//------------------			
-		creation_datetime_str := time.Now().String()
-		extern_url_str        := post_element_map["extern_url_str"].(string)
+		post_index_3_str := fmt.Sprint(post_index_3_lst) //post_element_map["post_index_3_lst"])
+		//------------------
+		post_element_id_str               := fmt.Sprintf("pub_pe:%s:%s", p_post_title_str, post_index_3_str)
+		post_element__type_str            := post_element_map["type_str"].(string)
+		extern_url_str                    := post_element_map["extern_url_str"].(string)
+		post_element__origin_page_url_str := post_element_map["origin_page_url_str"].(string)
 
 		p_runtime_sys.Log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
-		//------------------
+
 		post_element := &Gf_post_element{
 			Id_str:               post_element_id_str,
-			Type_str:             post_element_map["type_str"].(string),
+			Type_str:             post_element__type_str,
 			Creation_datetime_str:creation_datetime_str,
 			Extern_url_str:       extern_url_str,
-			Source_page_url_str:  post_element_map["source_page_url_str"].(string),
+			Origin_page_url_str:  post_element__origin_page_url_str,
 			Post_index_3_lst:     post_index_3_lst,
 			//Description_str      :post_element_map["description_str"].(string),
 		}
@@ -145,7 +147,7 @@ func get_post_elements_of_type(p_post *Gf_post,
 	post_elements_lst := []*Gf_post_element{}
 	for _,post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == p_type_str {
-			post_elements_lst = append(post_elements_lst,post_element)
+			post_elements_lst = append(post_elements_lst, post_element)
 		}
 	}
 	return post_elements_lst, nil

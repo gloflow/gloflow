@@ -280,6 +280,5 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 			} 
 		}
 	}()
-
 	return jobs_mngr_ch
 }

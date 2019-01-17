@@ -32,7 +32,7 @@ func DB__get_post(p_post_title_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
 
 	var post Gf_post
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post","title_str":p_post_title_str}).One(&post)
+	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post", "title_str":p_post_title_str}).One(&post)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to get a post from the DB",
 			"mongodb_find_error",

@@ -60,18 +60,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	}
 	//-------------
 	//S3
-	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
-	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
-	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
-
-	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
-		panic("test AWS credentials were not supplied")
-	}
-	
-	s3_info, gf_err := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
+	s3_info := gf_core.T__get_s3_info(p_runtime_sys)
 	//-------------
 
 	crawler_runtime := &Gf_crawler_runtime{

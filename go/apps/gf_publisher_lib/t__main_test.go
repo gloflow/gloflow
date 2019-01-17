@@ -20,25 +20,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_publisher_lib
 
 import (
-	"os"
 	"fmt"
 	"testing"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	//"github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
 func Test__main(p_test *testing.T) {
 
-	//test__images_s3_bucket_name_str := "gf--test"
+	test__mongodb_host_str          := "127.0.0.1"
+	test__mongodb_db_name_str       := "test_db"
+	test__s3_bucket_name_str        := "gf--test--img"
+	test__images_local_dir_path_str := "./test_data"
+	test__images_thumbs_local_dir_path_str := "./test_data/thumbnails"
 
-
-	test__mongodb_host_str    := "127.0.0.1"
-	test__mongodb_db_name_str := "test_db"
-	
 	test_post_info_map := map[string]interface{}{
-		
+		"client_type_str":     "test_run",
+		"title_str":           "test title",
+		"description_str":     "some test description",
+		"tags_str":            "tag1,tag2,tag3",
+		"poster_user_name_str":"test_user",
+		"post_elements_lst":   []interface{}{
+			map[string]interface{}{"type_str":"link", "extern_url_str":"http://some.com/external/url1", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
+			map[string]interface{}{"type_str":"image","extern_url_str":"http://some.com/external/url2", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
+			map[string]interface{}{"type_str":"video","extern_url_str":"http://some.com/external/url3", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
+		},
 	}
-
 
 	log_fun      := gf_core.Init_log_fun()
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
@@ -50,31 +58,48 @@ func Test__main(p_test *testing.T) {
 		Mongodb_coll:    mongodb_coll,
 	}
 
-
 	//-------------
 	//S3
-	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
-	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
-	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
+	s3_info := gf_core.T__get_s3_info(runtime_sys)
+	//-------------
 
-	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
-		panic("test AWS credentials were not supplied")
+	test_posts_creation(test_post_info_map,
+		test__images_local_dir_path_str,
+		test__images_thumbs_local_dir_path_str,
+		test__s3_bucket_name_str,
+		s3_info,
+		runtime_sys)
+}
+//-------------------------------------------------
+func test_posts_creation(p_test_post_info_map map[string]interface{},
+	p_test__images_local_dir_path_str        string,
+	p_test__images_thumbs_local_dir_path_str string,
+	p_test__s3_bucket_name_str               string,
+	p_test__s3_info                          *gf_core.Gf_s3_info,
+	p_runtime_sys                            *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER","t__main_test.test_posts_creation()")
+
+	jobs_mngr := gf_images_jobs.Jobs_mngr__init(p_test__images_local_dir_path_str,
+		p_test__images_thumbs_local_dir_path_str,
+		p_test__s3_bucket_name_str,
+		p_test__s3_info,
+		p_runtime_sys)
+
+	gf_images_runtime_info := &Gf_images_extern_runtime_info{
+		Jobs_mngr:            jobs_mngr, //use jobs_mngr thats running in the same process
+		Service_host_port_str:"",        //setting this to "" causes jobs_mngr to not issue job requests over HTTP
 	}
 	
-	s3_info, gf_err := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
+
+
+	gf_post, images_job_id_str, gf_err := Pipeline__create_post(p_test_post_info_map, gf_images_runtime_info, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-	fmt.Println(s3_info)
-}
-//-------------------------------------------------
-func test_posts_creation() {
 
-
-	Pipeline__create_post(p_post_info_map map[string]interface{},
-
-
+	fmt.Printf("images_job_id_str - %s\n",images_job_id_str)
+	spew.Dump(gf_post)
 
 
 }

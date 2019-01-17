@@ -94,10 +94,10 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data, p_runtime_s
 	fmt.Println("         TEST__IMAGES_TRANSFORMER   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("")
 
-	for _,image_local_file_path_str := range p_test_image_data.images_local_filepaths_lst {
+	for _, image_local_file_path_str := range p_test_image_data.images_local_filepaths_lst {
 
 		//---------------
-		format_str,gf_err := gf_images_utils.Get_image_ext_from_url(image_local_file_path_str,p_runtime_sys)
+		format_str, gf_err := gf_images_utils.Get_image_ext_from_url(image_local_file_path_str,p_runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -106,7 +106,7 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data, p_runtime_s
 		fmt.Println("test__image_id_str - "+test__image_id_str)
 		//---------------
 
-		image_thumbs,gf_image,gf_err := gf_images_utils.Trans__process_image(test__image_id_str,
+		image_thumbs, gf_image, gf_err := gf_images_utils.Trans__process_image(test__image_id_str,
 			p_test_image_data.image_client_type_str,
 			p_test_image_data.image_flows_names_lst,
 			p_test_image_data.origin_url_str,
