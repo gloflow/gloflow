@@ -44,9 +44,7 @@ function main(p_log_fun) {
 
 	chrome.extension.onRequest.addListener(on_request_received_fun);
 	//---------------------------------------------------	
-	function on_request_received_fun(p_request, 
-								p_sender, 
-								p_send_response_fun) {		
+	function on_request_received_fun(p_request, p_sender, p_send_response_fun) {		
 
 		p_log_fun('INFO','background_page MSG RECEIVED ------------');
 		
@@ -57,39 +55,31 @@ function main(p_log_fun) {
 
 		switch (p_request.source_str) {
 			case 'popup':
-				handle_popup_msg(p_request.type_str,
-							p_request);
+				handle_popup_msg(p_request.type_str, p_request);
 				break;
 			case 'popup_selected_elements':
-				handle_popup_selected_elements(p_request.type_str,
-										p_log_fun);
+				handle_popup_selected_elements(p_request.type_str, p_log_fun);
 				break;
 			case 'content_script':
-				handle_content_script_msg(p_request.type_str,
-									p_send_response_fun,
-									p_request);
+				handle_content_script_msg(p_request.type_str, p_send_response_fun, p_request);
 				break;
 		}
 		//---------------------------------------------------	
-		function handle_popup_selected_elements(p_msg_type_str,
-											p_request) {
+		function handle_popup_selected_elements(p_msg_type_str, p_request) {
 			switch(p_msg_type_str) {
 				//----------------
 				//GET SELECTED ASSETS
 
 				case 'get_selected_elements':
 					get__selected_elements(ctx_map,
-							(p_selected_elements_map) => {
-
-								console.log(p_selected_elements_map);
-
-								const msg_map = {
-									'selected_elements_map':p_selected_elements_map
-								};
-
-								p_send_response_fun(msg_map);
-							},
-							p_log_fun);
+						(p_selected_elements_map) => {
+							console.log(p_selected_elements_map);
+							const msg_map = {
+								'selected_elements_map':p_selected_elements_map
+							};
+							p_send_response_fun(msg_map);
+						},
+						p_log_fun);
 					break;
 				//----------------
 				default:
@@ -101,8 +91,7 @@ function main(p_log_fun) {
 			}
 		}
 		//---------------------------------------------------	
-		function handle_popup_msg(p_msg_type_str,
-							p_request) {
+		function handle_popup_msg(p_msg_type_str, p_request) {
 			switch (p_msg_type_str) {
 				//----------------
 				//LOG_MSG
@@ -123,24 +112,22 @@ function main(p_log_fun) {
 				//----------------
 				case 'clear__selected_elements':
 					clear__selected_elements(ctx_map,
-									()=>{
-										const msg_map = {};
-										p_send_response_fun(msg_map);
-									},
-									p_log_fun);
+						()=>{
+							const msg_map = {};
+							p_send_response_fun(msg_map);
+						},
+						p_log_fun);
 				//----------------
 				default:
-					p_log_fun('INFO','--------------------------------------');
-					p_log_fun('INFO','background_page received unknonwn POPUP msg');
-					p_log_fun('INFO',p_request);
-					p_log_fun('INFO',"p_request['type_str']:"+p_request['type_str']);
+					p_log_fun('INFO', '--------------------------------------');
+					p_log_fun('INFO', 'background_page received unknonwn POPUP msg');
+					p_log_fun('INFO', p_request);
+					p_log_fun('INFO', "p_request['type_str']:"+p_request['type_str']);
 					break;
 			}
 		}
 		//---------------------------------------------------
-		function handle_content_script_msg(p_msg_type_str,
-									p_send_response_fun,
-									p_request) {
+		function handle_content_script_msg(p_msg_type_str, p_send_response_fun, p_request) {
 			switch (p_msg_type_str) {
 				//----------------
 				//LOG_MSG
@@ -153,22 +140,20 @@ function main(p_log_fun) {
 					var element_info_map = p_request['element_info_map'];
 
 					add_element_to_post(element_info_map,
-							ctx_map,
-							(p_status_str) => {
-								const msg_map = {
-									'status_str':p_status_str
-								};
-								p_send_response_fun(msg_map);
-							},
-							p_log_fun);
+						ctx_map,
+						(p_status_str) => {
+							const msg_map = {
+								'status_str':p_status_str
+							};
+							p_send_response_fun(msg_map);
+						},
+						p_log_fun);
 					break;
 				//----------------
 				//REMOVE_ELEMENT_FROM_POST
 				case 'remove_element_from_post':
 					var element_info_map = p_request['element_info_map'];
-					remove_element_from_post(element_info_map,
-										ctx_map,
-										p_log_fun);
+					remove_element_from_post(element_info_map, ctx_map, p_log_fun);
 					break;
 				//----------------
 				default:
@@ -186,19 +171,15 @@ function main(p_log_fun) {
 //---------------------------------------------------
 //POST_OPS
 //---------------------------------------------------
-function clear__selected_elements(p_ctx_map,
-					p_on_complete_fun,
-					p_log_fun) {
-	p_log_fun('FUN_ENTER','background_page.clear__selected_elements()');
+function clear__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
+	p_log_fun('FUN_ENTER', 'background_page.clear__selected_elements()');
 
 	//IMPORTANT!! - clear all currently selected elements
 	p_ctx_map['selected_elements_map'] = {}; 
 }
 //---------------------------------------------------
-function get__selected_elements(p_ctx_map,
-					p_on_complete_fun,
-					p_log_fun) {
-	p_log_fun('FUN_ENTER','background_page.get__selected_elements()');
+function get__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
+	p_log_fun('FUN_ENTER', 'background_page.get__selected_elements()');
 
 	//-------
 	const images_lst = [];
@@ -228,10 +209,7 @@ function get__selected_elements(p_ctx_map,
 	p_on_complete_fun(selected_elements_map);
 }
 //---------------------------------------------------
-function add_element_to_post(p_element_info_map,
-						p_ctx_map,
-						p_on_complete_fun,
-						p_log_fun) {
+function add_element_to_post(p_element_info_map, p_ctx_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','background_page.add_element_to_post()');
 
 	const element_type_str      = p_element_info_map['type_str'];
@@ -271,9 +249,7 @@ function add_element_to_post(p_element_info_map,
 	}
 }
 //---------------------------------------------------
-function remove_element_from_post(p_element_info_map,
-							p_ctx_map,
-							p_log_fun) {
+function remove_element_from_post(p_element_info_map, p_ctx_map, p_log_fun) {
 	p_log_fun('FUN_ENTER','background_page.remove_element_from_post()');
 
 	const element_type_str      = p_element_info_map['type_str'];

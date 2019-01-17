@@ -52,17 +52,10 @@ function main(p_log_fun) {
 		(p_request,
 		p_sender,
 		p_send_response_fun) => {
-
-			//p_log_fun('INFO','===========++++++=------------------===--=-=-=-=-=-=-');
-
-			handle_msg(p_request,
-					p_sender,
-					p_send_response_fun);
+			handle_msg(p_request, p_sender, p_send_response_fun);
 		});
 	//---------------------------------------------------
-	function handle_msg(p_request,
-					p_sender,
-					p_send_response_fun) {
+	function handle_msg(p_request, p_sender, p_send_response_fun) {
 
 		p_log_fun('INFO','============================================');
 		p_log_fun('INFO','page_element_picker received message');
@@ -115,15 +108,13 @@ function main(p_log_fun) {
 				//DISPLAY PAGE INFO
 				case 'display_page_info':
 
-					p_log_fun('INFO','========_____===');
-					p_log_fun('INFO',page_img_infos_lst);
-					p_log_fun('INFO',page_img_infos_lst.length);
+					p_log_fun('INFO', '========_____===');
+					p_log_fun('INFO', page_img_infos_lst);
+					p_log_fun('INFO', page_img_infos_lst.length);
 
 					//determine whether you are a top level frame
 					if (window.parent == window) {
-						display_page_info(page_img_infos_lst,
-									page_videos_infos_lst,
-									p_log_fun);
+						display_page_info(page_img_infos_lst, page_videos_infos_lst, p_log_fun);
 					}
 					break;
 			}
@@ -133,28 +124,27 @@ function main(p_log_fun) {
 	//---------------------------------------------------
 }
 //---------------------------------------------------
-function add_image_to_post(p_image_info_map,
-					p_log_fun) {
+function add_image_to_post(p_image_info_map, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.add_image_to_post()');
 
 	//first send the newly added post to the background_page
 	add_element_to_post___bckg_pg(p_image_info_map,
-				(p_response) => {
-					switch(p_response.status_str) {
-						//------------
-						//only draw the image if it was added to the Post, who's state
-						//is maintaned in the background page
-						case 'success':
-							draw();
-							break;
-						//------------
-						//if this has already been added then do nothing
-						case 'exists':
-							break;
-						//------------
-					}
-				},
-				p_log_fun);
+		(p_response) => {
+			switch(p_response.status_str) {
+				//------------
+				//only draw the image if it was added to the Post, who's state
+				//is maintaned in the background page
+				case 'success':
+					draw();
+					break;
+				//------------
+				//if this has already been added then do nothing
+				case 'exists':
+					break;
+				//------------
+			}
+		},
+		p_log_fun);
 
 	//---------------------------------------------------
 	function draw() {
@@ -162,12 +152,12 @@ function add_image_to_post(p_image_info_map,
 
 		const images_to_post_block_start_y    = 80;
 		const all_previous_images_to_post_lst = $('body').find('.image_to_post');
-		const previous_image_to_post          = all_previous_images_to_post_lst[all_previous_images_to_post_lst.length-1];
+		const previous_image_to_post          = all_previous_images_to_post_lst[all_previous_images_to_post_lst.length - 1];
 		const img_name_str                    = p_image_info_map['img_name_str'];
 		
 		const image_to_post = $(
-			'<div class="image_to_post">'                       +
-				'<div class="close_btn"></div>'                 +
+			'<div class="image_to_post">'+
+				'<div class="close_btn"></div>'+
 				'<div class="image_name">'+img_name_str+'</div>'+
 			'</div>');
 
@@ -181,15 +171,12 @@ function add_image_to_post(p_image_info_map,
 			//--------
 			//CSS
 			const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
-			$(close_btn).css('background-image',
-							 icons_chrome_ext_url_str);
+			$(close_btn).css('background-image', icons_chrome_ext_url_str);
 			//--------
 
 			$(image_to_post).on('click','.close_btn',
 				() => {
-					remove_element_from_post_bckg_pg(p_image_info_map,
-											()=>{},
-											p_log_fun);
+					remove_element_from_post_bckg_pg(p_image_info_map, ()=>{}, p_log_fun);
 				});
 		}
 		//---------------------------------------------------
@@ -217,14 +204,12 @@ function add_image_to_post(p_image_info_map,
 		//if there is at least one image_to_post
 		if ($('body').find('.image_to_post').length > 0) {
 			const previous_image_y = parseInt($(previous_image_to_post).css('top').replace('px',''));
-			const new_y            = previous_image_y                             + 
-									 parseInt($(previous_image_to_post).height()) + 
-									 10;
+			const new_y            = previous_image_y + parseInt($(previous_image_to_post).height()) + 10;
 
 			$(image_to_post).css('top',new_y+'px');
 		}
 		else {
-			$(image_to_post).css('top',images_to_post_block_start_y+'px');	
+			$(image_to_post).css('top', images_to_post_block_start_y+'px');	
 		}
 
 		$('#page_info_container #selected_elements_preview').append(image_to_post);
@@ -234,14 +219,12 @@ function add_image_to_post(p_image_info_map,
 //---------------------------------------------------
 //BACKGROUND_PAGE COMM
 //---------------------------------------------------
-function add_element_to_post___bckg_pg(p_element_info_map,
-								p_on_complete_fun,
-								p_log_fun) {
+function add_element_to_post___bckg_pg(p_element_info_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.add_element_to_post___bckg_pg()');	
 
 	const msg_map = {
-		'source_str'      :'content_script',
-		'type_str'        :'add_element_to_post',
+		'source_str':      'content_script',
+		'type_str':        'add_element_to_post',
 		'element_info_map':p_element_info_map
 	};
 	chrome.extension.sendRequest(msg_map,
@@ -250,14 +233,12 @@ function add_element_to_post___bckg_pg(p_element_info_map,
 		});
 }
 //---------------------------------------------------
-function remove_element_from_post_bckg_pg(p_element_info_map,
-									p_on_complete_fun,
-									p_log_fun) {
+function remove_element_from_post_bckg_pg(p_element_info_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','page_element_picker.remove_element_from_post_bckg_pg()');
 
 	const msg_map = {
-		'source_str'      :'content_script',
-		'type_str'        :'remove_element_from_post',
+		'source_str':      'content_script',
+		'type_str':        'remove_element_from_post',
 		'element_info_map':p_element_info_map
 	};
 	chrome.runtime.sendMessage(msg_map,

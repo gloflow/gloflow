@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //---------------------------------------------------
 function http__create_post(p_selected__post_elements_lst,
-	p_post_source_page_url_str,
+	p_post_origin_page_url_str,
 	p_host_str,
 	p_on_complete_fun,
 	p_on_error_fun,
@@ -28,7 +28,7 @@ function http__create_post(p_selected__post_elements_lst,
 	//---------------------------------------------------
 	//->:Map
 	function extract_post_form_info() {
-		p_log_fun('FUN_ENTER','post_utils.create_post().extract_post_form_info()');
+		p_log_fun('FUN_ENTER','post_utils.http__create_post().extract_post_form_info()');
 		
 		const title_str            = $('#post_title_str').val();
 		const description_str      = $('#post_description_str').val();
@@ -50,7 +50,7 @@ function http__create_post(p_selected__post_elements_lst,
 		//a link goes first
 		post_elements_lst.push({
 			'type_str':      'link',
-			'extern_url_str':p_post_source_page_url_str
+			'extern_url_str':p_post_origin_page_url_str
 		});
 
 		//add selected elements to post_elements_lst
@@ -64,7 +64,7 @@ function http__create_post(p_selected__post_elements_lst,
 			'description_str':         description_str,
 			'poster_user_name_str':    poster_user_name_str,
 			'post_elements_lst':       post_elements_lst,
-			'post_source_page_url_str':p_post_source_page_url_str
+			'post_origin_page_url_str':p_post_origin_page_url_str
 		}
 		
 		return post_info_map

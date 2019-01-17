@@ -29,15 +29,14 @@ function hash_code(p_str,
 	return hash;
 }
 //---------------------------------------------------
-function get_image_histogram(p_on_complete_fun,
-						p_log_fun) {
+function get_image_histogram(p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','utils.get_image_histogram()');
 
 	const hist_map = {};	
 	const img       = new Image();
 	img.onload      = () => {
 		Pixastic.process(img,"colorhistogram", {
-			paint      :true,
+			paint:      true,
 			returnValue:hist_map
 		});
 		hist_map.rvals; // <- array[255] red channel
