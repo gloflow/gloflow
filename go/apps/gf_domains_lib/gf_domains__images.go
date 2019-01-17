@@ -31,13 +31,13 @@ import (
 //IMPORTANT!! - this statistic used by the gf_domains GF app, directly by the end-user
 //              (not only by the admin user)
 
-type Domain_Images struct {
+type Gf_domain_images struct {
 	Name_str            string         `bson:"_id"`
 	Count_int           int            `bson:"count_int"`           //total count of all subpages counts
 	Subpages_Counts_map map[string]int `bson:"subpages_counts_map"` //ccounts of individual sub-page urls that images come from
 }
 
-func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Images,*gf_core.Gf_error) {
+func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_images,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains__images.Get_domains_images__mongo()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -92,8 +92,8 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Ima
 	//IMPORTANT!! - application-layer JOIN. starts with all unique origin_page_url_str's, 
 	//              and then indexes their info by the domain to which they belong.
 
-	domains_images_map := map[string]Domain_Images{}
-	for _,images_origin_page := range results_lst {
+	domains_images_map := map[string]Gf_domain_images{}
+	for _, images_origin_page := range results_lst {
 
 		origin_page_url := images_origin_page.Origin_page_url_str
 
@@ -119,7 +119,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Ima
 			//--------------------
 			//domain_image - CREATE
 
-			new_domain_images := Domain_Images{
+			new_domain_images := Gf_domain_images{
 				Name_str:           domain_str,
 				Count_int:          images_origin_page.Count_int,
 				Subpages_Counts_map:map[string]int{
@@ -133,7 +133,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Ima
 	}
 
 	//serialize map 
-	domain_images_lst := []Domain_Images{}
+	domain_images_lst := []Gf_domain_images{}
 	for _,v := range domains_images_map {
 		domain_images_lst = append(domain_images_lst,v)
 	}

@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
-func domains_browser__render_template(p_domains_lst []Domain,
+func domains_browser__render_template(p_domains_lst []Gf_domain,
 	p_tmpl        *template.Template,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -34,7 +34,7 @@ func domains_browser__render_template(p_domains_lst []Domain,
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 
 	type tmpl_data struct {
-		Domains_lst      []Domain
+		Domains_lst      []Gf_domain
 		Sys_release_info gf_core.Sys_release_info
 	}
 
@@ -47,7 +47,7 @@ func domains_browser__render_template(p_domains_lst []Domain,
 		gf_err := gf_core.Error__create("failed to render the domains_browser template",
             "template_render_error",
             &map[string]interface{}{"domains_lst":p_domains_lst,},
-            err,"gf_domains_lib",p_runtime_sys)
+            err, "gf_domains_lib", p_runtime_sys)
 		return gf_err
 	}
 

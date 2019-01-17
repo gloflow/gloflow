@@ -33,13 +33,13 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//TEMPLATES
-	template_path_str         := "./templates/gf_domains_browser.html"
-	domains_browser__tmpl,err := template.New("gf_domains_browser.html").ParseFiles(template_path_str)
+	template_path_str          := "./templates/gf_domains_browser.html"
+	domains_browser__tmpl, err := template.New("gf_domains_browser.html").ParseFiles(template_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":template_path_str,},
-			err,"gf_images_lib",p_runtime_sys)
+			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
 	}
 	//---------------------
@@ -63,7 +63,7 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 															p_log_fun)*/
 			//--------------------
 			//GET DOMAINS FROM DB
-			domains_lst,gf_err := db__get_domains(p_runtime_sys)
+			domains_lst, gf_err := db__get_domains(p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/domains/browser", "rpc_handler failed getting domains", gf_err, p_resp, p_runtime_sys)
 				return

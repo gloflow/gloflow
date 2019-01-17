@@ -92,12 +92,12 @@ import (
 	"t" : "post"
 }*/
 //---------------------------------------------------
-type Domain_Posts struct {
+type Gf_domain_posts struct {
 	Name_str  string `bson:"name_str"`
 	Count_int int    `bson:"count_int"`
 }
 //---------------------------------------------------
-func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Posts,*gf_core.Gf_error) {
+func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_posts, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains__posts.Get_domains_posts__mongo()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -170,20 +170,20 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Domain_Post
 		}
 	}
 	//---------------
-	domain_posts_lst := []Domain_Posts{}
+	domain_posts_lst := []Gf_domain_posts{}
 	for domain_str,count_int := range parsed_domains_map {
 
-		domain_posts := Domain_Posts{
+		domain_posts := Gf_domain_posts{
 			Name_str: domain_str,
 			Count_int:count_int,
 		}
-		domain_posts_lst = append(domain_posts_lst,domain_posts)
+		domain_posts_lst = append(domain_posts_lst, domain_posts)
 	}
 
 	p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
 	//---------------
 
-	return domain_posts_lst,nil
+	return domain_posts_lst, nil
 
 	/*mongo console query - for testing
 	db.posts.aggregate(
