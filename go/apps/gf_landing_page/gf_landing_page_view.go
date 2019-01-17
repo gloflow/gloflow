@@ -25,8 +25,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //------------------------------------------------
-func render_template(p_featured_posts_lst []*Featured_post,
-	p_featured_imgs_lst []*Featured_img,
+func render_template(p_featured_posts_lst []*Gf_featured_post,
+	p_featured_imgs_lst []*Gf_featured_img,
 	p_tmpl              *template.Template,
 	p_resp              http.ResponseWriter,
 	p_runtime_sys       *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -35,8 +35,8 @@ func render_template(p_featured_posts_lst []*Featured_post,
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
 	type tmpl_data struct {
-		Featured_posts_lst []*Featured_post
-		Featured_imgs_lst  []*Featured_img
+		Featured_posts_lst []*Gf_featured_post
+		Featured_imgs_lst  []*Gf_featured_img
 		Sys_release_info   gf_core.Sys_release_info
 	}
 

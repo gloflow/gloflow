@@ -61,6 +61,5 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	})
 	//---------------------
-
 	return nil
 }

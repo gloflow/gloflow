@@ -27,14 +27,14 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
 )
 //------------------------------------------------
-type Featured_post struct {
+type Gf_featured_post struct {
 	Title_str            string
 	Image_url_str        string
 	Url_str              string
 	Images_number_int    int	
 }
 
-type Featured_img struct {
+type Gf_featured_img struct {
 	Title_str                      string
 	Image_url_str                  string
 	Image_thumbnail_medium_url_str string
@@ -46,7 +46,7 @@ type Featured_img struct {
 //------------------------------------------
 func get_featured_imgs(p_max_random_cursor_position_int int, //500
 	p_elements_num_to_get_int int, //5
-	p_runtime_sys             *gf_core.Runtime_sys) ([]*Featured_img, *gf_core.Gf_error) {
+	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_img, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_imgs()")
 
 	imgs_lst,err := gf_images_lib.DB__get_random_imgs_range(p_elements_num_to_get_int,
@@ -55,13 +55,13 @@ func get_featured_imgs(p_max_random_cursor_position_int int, //500
 		p_runtime_sys)
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
-	featured_imgs_lst := []*Featured_img{}
+	featured_imgs_lst := []*Gf_featured_img{}
 	for _,img := range imgs_lst {
 
-		featured := &Featured_img{
+		featured := &Gf_featured_img{
 			Title_str:                     img.Title_str,
 			Image_url_str:                 img.Thumbnail_small_url_str,
 			Image_thumbnail_medium_url_str:img.Thumbnail_medium_url_str,
@@ -77,7 +77,7 @@ func get_featured_imgs(p_max_random_cursor_position_int int, //500
 //------------------------------------------
 func get_featured_posts(p_max_random_cursor_position_int int, //500
 	p_elements_num_to_get_int int, //5
-	p_runtime_sys             *gf_core.Runtime_sys) ([]*Featured_post, *gf_core.Gf_error) {
+	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_posts()")
 
 	//gets posts starting in some random position (time wise), 
@@ -93,10 +93,10 @@ func get_featured_posts(p_max_random_cursor_position_int int, //500
 	return featured_posts_lst, nil
 }
 //------------------------------------------
-func posts_to_featured(p_posts_lst []*gf_publisher_lib.Post, p_runtime_sys *gf_core.Runtime_sys) []*Featured_post {
+func posts_to_featured(p_posts_lst []*gf_publisher_lib.Gf_post, p_runtime_sys *gf_core.Runtime_sys) []*Gf_featured_post {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_featured.posts_to_featured()")
 
-	featured_posts_lst := []*Featured_post{}
+	featured_posts_lst := []*Gf_featured_post{}
 	for _,post := range p_posts_lst {
 		featured          := post_to_featured(post, p_runtime_sys)
 		featured_posts_lst = append(featured_posts_lst, featured)
@@ -105,7 +105,7 @@ func posts_to_featured(p_posts_lst []*gf_publisher_lib.Post, p_runtime_sys *gf_c
 	//CAUTION!! - in some cases image_src is null or "error", in which case it should not 
 	//            be included in the final output. This is due to past issues/bugs in the gf_image and 
 	//			  gf_publisher.
-	featured_elements_with_no_errors_lst := []*Featured_post{}
+	featured_elements_with_no_errors_lst := []*Gf_featured_post{}
 	for _,featured := range featured_posts_lst {
 		p_runtime_sys.Log_fun("INFO","featured.Image_url_str - "+featured.Image_url_str)
 
@@ -121,13 +121,13 @@ func posts_to_featured(p_posts_lst []*gf_publisher_lib.Post, p_runtime_sys *gf_c
 	return featured_elements_with_no_errors_lst
 }
 //------------------------------------------
-func post_to_featured(p_post *gf_publisher_lib.Post, p_runtime_sys *gf_core.Runtime_sys) *Featured_post {
+func post_to_featured(p_post *gf_publisher_lib.Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_featured_post {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)
 	p_runtime_sys.Log_fun("INFO","p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
 
-	featured := &Featured_post{
+	featured := &Gf_featured_post{
 		Title_str:        p_post.Title_str,
 		Image_url_str:    p_post.Thumbnail_url_str,
 		Url_str:          post_url_str,
