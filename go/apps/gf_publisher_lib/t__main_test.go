@@ -29,6 +29,7 @@ import (
 //-------------------------------------------------
 func Test__main(p_test *testing.T) {
 
+	test__http_server_host_str      := "localhost:8000"
 	test__mongodb_host_str          := "127.0.0.1"
 	test__mongodb_db_name_str       := "test_db"
 	test__s3_bucket_name_str        := "gf--test--img"
@@ -42,9 +43,24 @@ func Test__main(p_test *testing.T) {
 		"tags_str":            "tag1,tag2,tag3",
 		"poster_user_name_str":"test_user",
 		"post_elements_lst":   []interface{}{
-			map[string]interface{}{"type_str":"link", "extern_url_str":"http://some.com/external/url1", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
-			map[string]interface{}{"type_str":"image","extern_url_str":"http://some.com/external/url2", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
-			map[string]interface{}{"type_str":"video","extern_url_str":"http://some.com/external/url3", "origin_page_url_str":"http://origin.com/page/url", "tags_lst":[]string{"tag1","tag2"}},
+			map[string]interface{}{
+				"type_str":           "link",
+				"extern_url_str":     fmt.Sprintf("http://%s/test_image_01.jpeg",test__http_server_host_str),
+				"origin_page_url_str":"http://origin.com/page/url", 
+				"tags_lst":           []string{"tag1","tag2"},
+			},
+			map[string]interface{}{
+				"type_str":           "image",
+				"extern_url_str":     fmt.Sprintf("http://%s/test_image_02.jpeg",test__http_server_host_str),
+				"origin_page_url_str":"http://origin.com/page/url",
+				"tags_lst":           []string{"tag1","tag2"},
+			},
+			map[string]interface{}{
+				"type_str":           "video",
+				"extern_url_str":     fmt.Sprintf("http://%s/test_image_03.jpeg",test__http_server_host_str),
+				"origin_page_url_str":"http://origin.com/page/url",
+				"tags_lst":           []string{"tag1","tag2"},
+			},
 		},
 	}
 

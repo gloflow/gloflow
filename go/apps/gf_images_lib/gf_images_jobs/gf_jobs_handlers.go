@@ -33,7 +33,7 @@ import (
 //-------------------------------------------------
 func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs_handlers.Jobs_mngr__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------
 	//running_jobs_map := map[string]*Running_job{}
@@ -142,28 +142,20 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			job_updates_ch := Job__get_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 			//-------------------------
 
-			//don't close the connection,
-			//sending messages and flushing the response each time
-			//there is a new message to send along.
+			//don't close the connection, sending messages and flushing the response each time there is a new message to send along.
 			//
-			//NOTE: we could loop endlessly; however, then you
-			//could not easily detect clients that dettach and the
-			//server would continue to send them messages long after
-			//they're gone due to the "keep-alive" header.  One of
-			//the nifty aspects of SSE is that clients automatically
-			//reconnect when they lose their connection.
+			//NOTE: we could loop endlessly; however, then you could not easily detect clients that dettach and the
+			//server would continue to send them messages long after they're gone due to the "keep-alive" header.  One of
+			//the nifty aspects of SSE is that clients automatically reconnect when they lose their connection.
 			//
-			//a better way to do this is to use the CloseNotifier
-			//interface that will appear in future releases of
+			//a better way to do this is to use the CloseNotifier interface that will appear in future releases of
 			//Go (this is written as of 1.0.3):
 			//https://code.google.com/p/go/source/detail?name=3292433291b2
 
 			flusher,ok := p_resp.(http.Flusher)
 			if !ok {
 				err_msg_str := "/images/jobs/status handler failed - SSE http streaming is not supported on the server"
-				gf_rpc_lib.Error__in_handler("/images/jobs/status",
-								err_msg_str,
-								nil,p_resp,p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/images/jobs/status", err_msg_str, nil, p_resp,p_runtime_sys)
 				return
 			}
 
@@ -179,20 +171,19 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			p_resp.Header().Set("Access-Control-Allow-Origin","*")
 
 			for {
-				job_update,more_bool := <- job_updates_ch //running_job.job_updates_ch
+				job_update, more_bool := <- job_updates_ch //running_job.job_updates_ch
 				if more_bool {
 					sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 					sse_event_id_str         := sse_event__unix_time_str
 
-					fmt.Fprintf(p_resp,"id: %s\n",sse_event_id_str)
+					fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
 
 					job_update_lst,_ := json.Marshal(job_update)
 					fmt.Fprintf(p_resp,"data: %s\n\n",job_update_lst)
 
 					flusher.Flush()
 				} else {
-					//channel has been closed, so exit the loop
-					break
+					break //channel has been closed, so exit the loop
 				}
 			}
 

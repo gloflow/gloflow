@@ -27,29 +27,6 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
-type Jobs_mngr chan Job_msg
-
-type Job_msg struct {
-	job_id_str            string
-	client_type_str       string 
-	cmd_str               string //"start_job"|"get_running_job_ids"
-	msg_response_ch       chan interface{}
-	job_updates_ch        chan *Job_update_msg
-	images_to_process_lst []Image_to_process
-	flows_names_lst       []string
-}
-type Image_to_process struct {
-	Source_url_str      string `bson:"source_url_str"`
-	Origin_page_url_str string `bson:"origin_page_url_str"`
-}
-
-type Job_update_msg struct {
-	Type_str             string        `json:"type_str"`
-	Image_id_str         string        `json:"image_id_str"`
-	Image_source_url_str string        `json:"image_source_url_str"`
-	Err_str              string        `json:"err_str,omitempty"`  //if the update indicates an error, this is its value
-	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
-}
 
 type Running_job struct {
 	Id                    bson.ObjectId        `bson:"_id,omitempty"`
@@ -64,10 +41,9 @@ type Running_job struct {
 	job_updates_ch        chan *Job_update_msg `bson:"-"`
 }
 
-type Job_Error struct {
-	Type_str             string `bson:"type_str"`  //"fetcher_error"|"transformer_error"
-	Error_str            string `bson:"error_str"` //serialization of the golang error
-	Image_source_url_str string `bson:"image_source_url_str"`
+type Image_to_process struct {
+	Source_url_str      string `bson:"source_url_str"`
+	Origin_page_url_str string `bson:"origin_page_url_str"`
 }
 
 //called "expected" because jobs are long-running processes, and they might fail at various stages
@@ -79,6 +55,7 @@ type Job_Expected_Output struct {
 	Thumbnail_medium_relative_url_str string `json:"thumbnail_medium_relative_url_str"`
 	Thumbnail_large_relative_url_str  string `json:"thumbnail_large_relative_url_str"`
 }
+
 //-------------------------------------------------
 //CLIENT
 //-------------------------------------------------
@@ -87,7 +64,7 @@ func Job__start(p_client_type_str string,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          Jobs_mngr,
 	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Job__start()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__start()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
 	job_cmd_str      := "start_job"
@@ -173,7 +150,7 @@ func Job__start(p_client_type_str string,
 func Job__get_update_ch(p_job_id_str string,
 	p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Job__get_update_ch()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__get_update_ch()")
 
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)
@@ -191,94 +168,4 @@ func Job__get_update_ch(p_job_id_str string,
 	job_updates_ch,_ := response.(chan *Job_update_msg)
 
 	return job_updates_ch
-}
-//-------------------------------------------------
-//SERVER
-//-------------------------------------------------
-func Jobs_mngr__init(p_images_store_local_dir_path_str string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	p_s3_bucket_name_str                         string,
-	p_s3_info                                    *gf_core.Gf_s3_info,
-	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Jobs_mngr__init()")
-
-	jobs_mngr_ch := make(chan Job_msg, 100)
-
-	//IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
-	//              service initialization time
-	go func() {
-		
-		running_jobs_map := map[string]chan *Job_update_msg{}
-
-		//listen to messages
-		for {
-			job_msg := <- jobs_mngr_ch
-
-			//IMPORTANT!! - only one job is processed per jobs_mngr.
-			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
-			switch job_msg.cmd_str {
-
-				//------------------------
-				case "start_job":
-
-					job_id_str                  := job_msg.job_id_str
-					running_jobs_map[job_id_str] = job_msg.job_updates_ch
-
-					run_job_gf_err := jobs_mngr__run_job(job_id_str,
-						job_msg.client_type_str,
-						job_msg.images_to_process_lst,
-						job_msg.flows_names_lst,
-						job_msg.job_updates_ch,
-						p_images_store_local_dir_path_str,
-						p_images_thumbnails_store_local_dir_path_str,
-						p_s3_bucket_name_str,
-						p_s3_info,
-						p_runtime_sys)
-					if run_job_gf_err != nil {
-						continue
-					}
-					//--------------------
-					//MARK_JOB_AS_COMPLETE
-
-					job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-					update_err     := p_runtime_sys.Mongodb_coll.Update(bson.M{
-							"t":"img_running_job","id_str":job_id_str,
-						},
-						bson.M{
-							"$set":bson.M{
-								"status_str":"complete",
-								"end_time_f":job_end_time_f,
-							},
-						},)
-					if update_err != nil {
-						_ = gf_core.Error__create("failed to update an img_running_job in the DB, as complete and its end_time",
-							"mongodb_update_error",
-							&map[string]interface{}{
-								"job_id_str":    job_id_str,
-								"job_end_time_f":job_end_time_f,
-							},
-							update_err, "gf_images_jobs", p_runtime_sys)
-					}
-					//--------------------
-
-					delete(running_jobs_map,job_id_str) //remove running job from lookup, since its complete
-					close(job_msg.job_updates_ch)
-				//------------------------
-				case "get_running_job_update_ch":
-
-					job_id_str := job_msg.job_id_str
-
-					if _,ok := running_jobs_map[job_id_str]; ok {
-
-						job_updates_ch := running_jobs_map[job_id_str]
-						job_msg.msg_response_ch <- job_updates_ch
-
-					} else {
-						job_msg.msg_response_ch <- nil
-					}
-				//------------------------
-			} 
-		}
-	}()
-	return jobs_mngr_ch
 }

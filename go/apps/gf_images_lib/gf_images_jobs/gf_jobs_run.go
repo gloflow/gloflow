@@ -20,14 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_jobs
 
 import (
-	"fmt"
-	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
 )
 //-------------------------------------------------
-func jobs_mngr__run_job(p_job_id_str string,
+func run_job(p_job_id_str string,
 	p_job_client_type_str                        string,
 	p_images_to_process_lst                      []Image_to_process,
 	p_flows_names_lst                            []string,
@@ -37,7 +35,7 @@ func jobs_mngr__run_job(p_job_id_str string,
 	p_s3_bucket_name_str                         string,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.jobs_mngr__run_job()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_run.run_job()")
 
 	gf_errors_lst := []*gf_core.Gf_error{}
 	for _, image_to_process := range p_images_to_process_lst {
@@ -139,74 +137,4 @@ func jobs_mngr__run_job(p_job_id_str string,
 		//-----------------------
 	}
 	return gf_errors_lst
-}
-//-------------------------------------------------
-func job_error__send(p_job_error_type_str string,
-	p_gf_err               *gf_core.Gf_error,
-	p_image_source_url_str string,
-	p_image_id_str         string,
-	p_job_id_str           string,
-	p_job_updates_ch       chan *Job_update_msg,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__send()")
-
-	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
-
-	error_str  := fmt.Sprint(p_gf_err.Error)
-	pje_gf_err := job_error__persist(p_job_id_str,
-		p_job_error_type_str,
-		error_str,
-		p_image_source_url_str,
-		p_runtime_sys)
-
-	if pje_gf_err != nil {
-		return pje_gf_err
-	}
-	//------------
-	update_msg := &Job_update_msg{
-		Type_str            :p_gf_err.Type_str,
-		Image_id_str        :p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
-		Err_str             :error_str,
-	}
-	p_job_updates_ch <- update_msg
-	//------------
-	return nil
-}
-//-------------------------------------------------
-func job_error__persist(p_job_id_str string,
-	p_error_type_str       string,
-	p_error_str            string,
-	p_image_source_url_str string,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__persist()")
-
-	job_error := Job_Error{
-		Type_str:            p_error_type_str,
-		Error_str:           p_error_str,
-		Image_source_url_str:p_image_source_url_str,
-	}
-
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t_str": "img_running_job",
-			"id_str":p_job_id_str,
-		},
-		bson.M{
-			"$push":bson.M{"errors_lst":job_error,},
-		})
-
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to update img_running_job type document in mongodb, to add a job error",
-			"mongodb_update_error",
-			&map[string]interface{}{
-				"job_id_str":          p_job_id_str,
-				"error_type_str":      p_error_type_str,
-				"error_str":           p_error_str,
-				"image_source_url_str":p_image_source_url_str,
-			},
-			err, "gf_images_jobs", p_runtime_sys)
-		return gf_err
-	}
-
-	return nil
 }

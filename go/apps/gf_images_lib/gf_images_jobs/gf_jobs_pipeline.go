@@ -37,7 +37,7 @@ func pipeline__process_image(p_image_source_url_str string,
 	p_s3_info                         *gf_core.Gf_s3_info,
 	p_send_error_fun                  func(string, *gf_core.Gf_error, string, string, string, chan *Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_pipeline.pipeline__process_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_pipeline.pipeline__process_image()")
 
 	//-----------------------
 	//FETCH_IMAGE
