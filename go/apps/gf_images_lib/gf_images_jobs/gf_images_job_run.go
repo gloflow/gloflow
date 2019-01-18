@@ -40,19 +40,19 @@ func jobs_mngr__run_job(p_job_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.jobs_mngr__run_job()")
 
 	gf_errors_lst := []*gf_core.Gf_error{}
-	for _,image_to_process := range p_images_to_process_lst {
+	for _, image_to_process := range p_images_to_process_lst {
 
-		image_source_url_str      := image_to_process.Source_url_str
+		image_source_url_str      := image_to_process.Source_url_str //FIX!! rename source_url_str to origin_url_str
 		image_origin_page_url_str := image_to_process.Origin_page_url_str
 
 		//--------------
 		//IMAGE_ID
-		image_id_str,i_gf_err := gf_images_utils.Image__create_id_from_url(image_source_url_str,p_runtime_sys)
+		image_id_str, i_gf_err := gf_images_utils.Image__create_id_from_url(image_source_url_str, p_runtime_sys)
 
 		if i_gf_err != nil {
 			job_error_type_str := "create_image_id_error"
-			_ = job_error__send(job_error_type_str,i_gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
-			gf_errors_lst = append(gf_errors_lst,i_gf_err)
+			_ = job_error__send(job_error_type_str, i_gf_err, image_source_url_str, image_id_str, p_job_id_str, p_job_updates_ch, p_runtime_sys)
+			gf_errors_lst = append(gf_errors_lst, i_gf_err)
 			continue
 		}
 		//--------------
@@ -61,15 +61,14 @@ func jobs_mngr__run_job(p_job_id_str string,
 
 		//IMPORTANT!! - 'ok' is '_' because Im already calling Get_image_ext_from_url()
 		//              in Image__create_id_from_url()
-		ext_str,ext_gf_err := gf_images_utils.Get_image_ext_from_url(image_source_url_str,p_runtime_sys)
+		ext_str,ext_gf_err := gf_images_utils.Get_image_ext_from_url(image_source_url_str, p_runtime_sys)
 		
 		if ext_gf_err != nil {
 			job_error_type_str := "get_image_ext_error"
-			_ = job_error__send(job_error_type_str,ext_gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
-			gf_errors_lst = append(gf_errors_lst,ext_gf_err)
+			_ = job_error__send(job_error_type_str, ext_gf_err, image_source_url_str, image_id_str, p_job_id_str, p_job_updates_ch, p_runtime_sys)
+			gf_errors_lst = append(gf_errors_lst, ext_gf_err)
 			continue
 		}
-
 		//--------------
 		//GIF - gifs have their own processing pipeline
 
@@ -90,7 +89,7 @@ func jobs_mngr__run_job(p_job_id_str string,
 			
 			var flows_names_lst []string
 			if b {
-				flows_names_lst = append([]string{"gifs"},p_flows_names_lst...)
+				flows_names_lst = append([]string{"gifs"}, p_flows_names_lst...)
 			} else {
 				flows_names_lst = p_flows_names_lst
 			}
@@ -108,8 +107,8 @@ func jobs_mngr__run_job(p_job_id_str string,
 
 			if gf_err != nil {
 				job_error_type_str := "gif_process_and_upload_error"
-				_ = job_error__send(job_error_type_str,gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
-				gf_errors_lst = append(gf_errors_lst,gf_err)
+				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str, p_job_id_str, p_job_updates_ch, p_runtime_sys)
+				gf_errors_lst = append(gf_errors_lst, gf_err)
 				continue
 			}
 
@@ -132,8 +131,8 @@ func jobs_mngr__run_job(p_job_id_str string,
 
 			if gf_err != nil {
 				job_error_type_str := "image_process_error"
-				_ = job_error__send(job_error_type_str,gf_err,image_source_url_str,image_id_str,p_job_id_str,p_job_updates_ch,p_runtime_sys)
-				gf_errors_lst = append(gf_errors_lst,gf_err)
+				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str, p_job_id_str, p_job_updates_ch, p_runtime_sys)
+				gf_errors_lst = append(gf_errors_lst, gf_err)
 				continue
 			}
 		}
@@ -151,7 +150,7 @@ func job_error__send(p_job_error_type_str string,
 	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_job_run.job_error__send()")
 
-	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
+	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
 
 	error_str  := fmt.Sprint(p_gf_err.Error)
 	pje_gf_err := job_error__persist(p_job_id_str,
@@ -205,7 +204,7 @@ func job_error__persist(p_job_id_str string,
 				"error_str":           p_error_str,
 				"image_source_url_str":p_image_source_url_str,
 			},
-			err,"gf_images_jobs",p_runtime_sys)
+			err, "gf_images_jobs", p_runtime_sys)
 		return gf_err
 	}
 

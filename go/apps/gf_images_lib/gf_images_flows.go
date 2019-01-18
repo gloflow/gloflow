@@ -174,7 +174,7 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 			},
 		}
 		
-	running_job,job_expected_outputs_lst,gf_err := gf_images_jobs.Start_job(p_client_type_str,
+	running_job,job_expected_outputs_lst,gf_err := gf_images_jobs.Job__start(p_client_type_str,
 		images_urls_to_process_lst,
 		p_flows_names_lst,
 		p_jobs_mngr_ch,

@@ -122,7 +122,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 			err,"gf_images_utils",p_runtime_sys)
 		return "", gf_err
 	}
-
+	
 	image_path_str      := url.Path
 	image_ext_str       := filepath.Ext(image_path_str)
 	clean_image_ext_str := strings.Trim(strings.ToLower(image_ext_str),".")
@@ -136,8 +136,8 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 		gf_err := gf_core.Error__create(usr_msg_str,
 			"verify__invalid_image_extension_error",
 			&map[string]interface{}{"image_url_str":p_image_url_str,},
-			err,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+			err, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
 	}
 	//-------------
 	image_id_str := Image__create_id(image_path_str, normalized_ext_str, p_runtime_sys)

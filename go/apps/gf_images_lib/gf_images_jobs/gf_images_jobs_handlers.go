@@ -89,7 +89,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			}
 			//-------------------
 
-			running_job, job_expected_outputs_lst, gf_err := Start_job(client_type_str,
+			running_job, job_expected_outputs_lst, gf_err := Job__start(client_type_str,
 				images_to_process_lst,
 				flows_names_lst,
 				p_jobs_mngr_ch,
@@ -139,7 +139,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 			running_job := running_jobs_map[images_job_id_str]*/
 
-			job_updates_ch := get_running_job_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
+			job_updates_ch := Job__get_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 			//-------------------------
 
 			//don't close the connection,

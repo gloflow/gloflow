@@ -93,7 +93,6 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			gf_rpc_lib.Http_Respond(map[string]interface{}{"images_job_id_str":images_job_id_str}, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
 			go func() {
 				gf_rpc_lib.Store_rpc_handler_run("/posts/create", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
@@ -118,6 +117,29 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 	http.HandleFunc("/posts/delete",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/delete ----------")
+		if p_req.Method == "POST" {
+			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			//------------
+			//INPUT
+			i_map, gf_err := gf_rpc_lib.Get_http_input("/posts/delete", p_resp, p_req, p_runtime_sys)
+			if gf_err != nil {
+				return
+			}
+			post_title_str := i_map["title_str"].(string)
+			//------------
+
+			gf_err = DB__mark_as_deleted_post(post_title_str, p_runtime_sys)
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/posts/delete", "delete_post pipeline failed", gf_err, p_resp, p_runtime_sys)
+				return 
+			}
+
+			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			go func() {
+				gf_rpc_lib.Store_rpc_handler_run("/posts/delete", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
 	})
 	//---------------------
 	//BROWSER

@@ -82,12 +82,12 @@ type Job_Expected_Output struct {
 //-------------------------------------------------
 //CLIENT
 //-------------------------------------------------
-func Start_job(p_client_type_str string,
+func Job__start(p_client_type_str string,
 	p_images_to_process_lst []Image_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          Jobs_mngr,
 	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Start_job()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Job__start()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
 	job_cmd_str      := "start_job"
@@ -170,10 +170,10 @@ func Start_job(p_client_type_str string,
 	return running_job, job_expected_outputs_lst, nil
 }
 //-------------------------------------------------
-func get_running_job_update_ch(p_job_id_str string,
+func Job__get_update_ch(p_job_id_str string,
 	p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.get_running_job_update_ch()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_jobs.Job__get_update_ch()")
 
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)

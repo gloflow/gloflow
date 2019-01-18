@@ -22,8 +22,8 @@ package gf_publisher_lib
 import (
 	"fmt"
 	"time"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
+	//"github.com/davecgh/go-spew/spew"
 )
 //---------------------------------------------------
 type Gf_post_element struct {

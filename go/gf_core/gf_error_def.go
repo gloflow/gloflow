@@ -144,6 +144,9 @@ func error__get_defs() map[string]error_def {
 		"mongodb_update_error":error_def{
 			Descr_str:"c.Update() failed to update a mongodb document- package (mgo)",
 		},
+		"mongodb_delete_error":error_def{
+			Descr_str:"c.Update() failed to update a mongodb document- package (mgo)",
+		},
 		"mongodb_aggregation_error":error_def{
 			Descr_str:"pipe.All() failed to run a aggregation pipeline in mongodb - package (mgo)",
 		},

@@ -30,6 +30,7 @@ type Gf_post struct {
 	Id                    bson.ObjectId  `bson:"_id,omitempty"`
 	Id_str                string         `bson:"id_str"`
 	T_str                 string         `bson:"t"`                //"post"
+	Deleted_bool          bool           `bson:"deleted_bool"`
 	Client_type_str       string         `bson:"client_type_str"`  //"gchrome_ext" //type of the client that created the post
 	Title_str             string         `bson:"title_str"`
 	Description_str       string         `bson:"description_str"`
@@ -57,8 +58,8 @@ type Gf_post_note struct {
 }
 //------------------------------------------------
 func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_new_post()")
-	p_runtime_sys.Log_fun("INFO"     , "p_post_info_map - "+fmt.Sprint(p_post_info_map))
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
+	p_runtime_sys.Log_fun("INFO",     "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
 	//IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
 	//assert(p_post_info_map.containsKey("tags_lst"));
@@ -145,6 +146,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	post := &Gf_post{
 		Id_str:               id_str,
 		T_str:                "post",
+		Deleted_bool:         false,
 		Client_type_str:      p_post_info_map["client_type_str"].(string),
 		Title_str:            post_title_str,
 		Description_str:      p_post_info_map["description_str"].(string),
@@ -157,7 +159,6 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 		Notes_lst:            notes_lst,
 		Colors_lst:           colors_lst,
 	}
-	
 	return post, nil
 }
 //------------------------------------------------	

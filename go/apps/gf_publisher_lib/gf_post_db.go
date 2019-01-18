@@ -42,35 +42,9 @@ func DB__get_post(p_post_title_str string,
 	}
 
 	return &post, nil
-
-		/*if (result_map != null) {
-			
-			post_info_map = gf_post_serialize.deserialize(result_map,
-																	p_log_fun);
-			final gf_post.Post_ADT post_adt = gf_post.create(post_info_map,
-															 p_log_fun);
-			return post_adt;
-		}
-		else {
-			p_log_fun("INFO","POST WITH TITLE ($p_post_title_str) NOT FOUND");
-			return null;
-		}
-	}
-	//---------------------
-	//ERROR_HANDLING
-	catch(p_exc,
-		  p_stack_trace) {
-		final Map error_map = {
-			"msg_str"    :"failed to get post from DB with title [$p_post_title_str]",
-			"error"      :p_exc,
-			"stack_trace":p_stack_trace
-		};
-		p_log_fun("ERROR",error_map);
-		throw error_map;
-	};
-	//---------------------*/
 }
 //---------------------------------------------------
+//CREATE
 func DB__create_post(p_post *Gf_post,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
@@ -83,10 +57,10 @@ func DB__create_post(p_post *Gf_post,
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
-
 	return nil
 }
 //---------------------------------------------------
+//UPDATE
 func DB__update_post(p_post *Gf_post, 
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
@@ -106,17 +80,44 @@ func DB__update_post(p_post *Gf_post,
 
 	return nil
 }
-/*//---------------------------------------------------
-func DB__delete_post(p_post_title_str *string,
-			p_mongodb_coll *mgo.Collection,
-			p_log_fun      func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_db.DB__delete_post()")
-
-	posts_coll.remove({"title_str":p_post_title_str},
-							mongo.WriteConcern.ACKNOWLEDGED);
-	return;
-}*/
 //---------------------------------------------------
+//DELETE
+func DB__mark_as_deleted_post(p_post_title_str string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__mark_as_deleted_post()")
+
+	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":        "post",
+			"title_str":p_post_title_str,
+		},
+		bson.M{"$set":bson.M{"deleted_bool":true}})
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to mark as deleted a gf_post in a mongodb",
+			"mongodb_update_error",
+			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
+//---------------------------------------------------
+//DELETE
+func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__delete_post()")
+
+	err := p_runtime_sys.Mongodb_coll.Remove(bson.M{"title_str": p_post_title_str})
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to update a gf_post in a mongodb",
+			"mongodb_delete_error",
+			&map[string]interface{}{"post_title_str": p_post_title_str,},
+			err, "gf_publisher_lib", p_runtime_sys)
+		return gf_err
+	}
+	return nil
+}
+//---------------------------------------------------
+//GET_POSTS_PAGE
 func DB__get_posts_page(p_cursor_start_position_int int, //0
 	p_elements_num_int int, //50
 	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_post,*gf_core.Gf_error) {
