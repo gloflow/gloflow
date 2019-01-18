@@ -16,6 +16,12 @@ def get():
                 'go_output_path_str':'%s/../bin/gf_images_service'%(cwd_str),
             },
             #-------------
+            #LIB
+            'gf_images_lib':{
+                'go_path_str':               '%s/../go/apps/gf_images_lib'%(cwd_str),
+                'test_data_to_serve_dir_str':'%s/../go/apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
+            },
+            #-------------
             #MAIN
             'gf_publisher':{
                 'go_path_str':       '%s/../go/apps/gf_publisher'%(cwd_str),
@@ -24,7 +30,12 @@ def get():
             #-------------
             #LIB
             'gf_publisher_lib':{
-                'go_path_str':'%s/../go/apps/gf_publisher_lib'%(cwd_str)
+                'go_path_str':'%s/../go/apps/gf_publisher_lib'%(cwd_str),
+
+                #for tests serve data over http from this dir.
+                #gf_publisher test runs an gf_images jobs_mngr to test post_creation, and jobs_mngr
+                #needs to be able to fetch images over http that come from this dir.
+                'test_data_to_serve_dir_str':'%s/../go/apps/gf_images_lib/tests_data'%(cwd_str),
             },
             #-------------
             #MAIN

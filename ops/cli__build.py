@@ -19,13 +19,15 @@ import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
-import subprocess
 
 from colored import fg,bg,attr
 import delegator
 
 sys.path.append('%s/../meta'%(cwd_str))
 import gf_meta
+
+sys.path.append('%s/tests'%(cwd_str))
+import gf_tests
 
 sys.path.append('%s/aws/s3'%(cwd_str))
 import gf_s3_utils
@@ -47,13 +49,16 @@ def main():
 
     #-------------
     if run_str == 'build':
+        if not app_meta_map.has_key('go_output_path_str'):
+            print("not a main package")
+            exit()
         build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
     #-------------
     elif run_str == 'test':
-
         aws_creds_file_path_str = args_map['aws_creds']
         aws_creds_map           = gf_s3_utils.parse_creds(aws_creds_file_path_str)
-        test(app_name_str, app_meta_map['go_path_str'], aws_creds_map)
+
+        gf_tests.run(app_name_str, app_meta_map, aws_creds_map)
     #-------------
 #--------------------------------------------------
 def build__go_bin(p_name_str,
@@ -75,29 +80,7 @@ def build__go_bin(p_name_str,
     if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'),attr(0),r.err)
 
     os.chdir(cwd_str) #return to initial dir
-#--------------------------------------------------
-def test(p_name_str,
-    p_go_package_dir_path_str,
-    p_aws_s3_creds_map):
-    assert os.path.isdir(p_go_package_dir_path_str)
-    assert isinstance(p_aws_s3_creds_map,dict)
-    print ''
-    print ' -- test %s%s%s package'%(fg('green'), p_name_str, attr(0))
 
-    cwd_str = os.getcwd()
-    os.chdir(p_go_package_dir_path_str) #change into the target main package dir
-
-    c = "go test"
-    print(c)
-
-    e = os.environ.copy()
-    e.update(p_aws_s3_creds_map)
-    p = subprocess.Popen(c.split(' '), stdout=subprocess.PIPE, env=e)
-    for l in iter(p.stdout.readline, ""):
-        print(l.rstrip())
-    if not p.stderr == None: print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), p.stderr)
-
-    os.chdir(cwd_str) #return to initial dir
 #--------------------------------------------------
 def parse_args():
 

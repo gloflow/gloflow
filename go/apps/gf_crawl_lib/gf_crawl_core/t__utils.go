@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_core
 
 import (
-	"os"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -60,7 +59,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	}
 	//-------------
 	//S3
-	s3_info := gf_core.T__get_s3_info(p_runtime_sys)
+	s3_info := gf_core.T__get_s3_info(runtime_sys)
 	//-------------
 
 	crawler_runtime := &Gf_crawler_runtime{

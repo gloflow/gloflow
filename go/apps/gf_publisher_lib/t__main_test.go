@@ -98,8 +98,18 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 	}
 
 
-	fmt.Printf("images_job_id_str - %s\n",images_job_id_str)
+	fmt.Printf("images_job_id_str - %s\n", images_job_id_str)
 	spew.Dump(gf_post)
 
+
+
+	job_updates_ch := gf_images_jobs.Job__get_update_ch(images_job_id_str, jobs_mngr, p_runtime_sys)
+
+	for ;; {
+
+		fmt.Println("------------------------- WAITING")
+		update := <-job_updates_ch
+		fmt.Println(update)
+	}
 
 }
