@@ -27,25 +27,6 @@ import (
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
-
-type Running_job struct {
-	Id                    bson.ObjectId        `bson:"_id,omitempty"`
-	Id_str                string               `bson:"id_str"`
-	T_str                 string               `bson:"t"`
-	Client_type_str       string               `bson:"client_type_str"`
-	Status_str            string               `bson:"status_str"` //"running"|"complete"
-	Start_time_f          float64              `bson:"start_time_f"`
-	End_time_f            float64              `bson:"end_time_f"`
-	Images_to_process_lst []Image_to_process   `bson:"images_to_process_lst"`
-	Errors_lst            []Job_Error          `bson:"errors_lst"`
-	job_updates_ch        chan *Job_update_msg `bson:"-"`
-}
-
-type Image_to_process struct {
-	Source_url_str      string `bson:"source_url_str"`
-	Origin_page_url_str string `bson:"origin_page_url_str"`
-}
-
 //called "expected" because jobs are long-running processes, and they might fail at various stages
 //of their processing. in that case some of these result values will be satisfied, others will not.
 type Job_Expected_Output struct {
@@ -55,7 +36,6 @@ type Job_Expected_Output struct {
 	Thumbnail_medium_relative_url_str string `json:"thumbnail_medium_relative_url_str"`
 	Thumbnail_large_relative_url_str  string `json:"thumbnail_large_relative_url_str"`
 }
-
 //-------------------------------------------------
 //CLIENT
 //-------------------------------------------------
@@ -67,10 +47,12 @@ func Job__start(p_client_type_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__start()")
 	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
+	//-----------------
+	//SEND_MSG_TO_JOBS_MNGR
 	job_cmd_str      := "start_job"
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
-	job_updates_ch   := make(chan *Job_update_msg,10)
+	job_updates_ch   := make(chan Job_update_msg, 10) //ADD!! channel buffer size should be larger for large jobs (with a lot of images)
 
 	job_msg := Job_msg{
 		job_id_str:           job_id_str,
@@ -149,7 +131,7 @@ func Job__start(p_client_type_str string,
 //-------------------------------------------------
 func Job__get_update_ch(p_job_id_str string,
 	p_jobs_mngr_ch Jobs_mngr,
-	p_runtime_sys  *gf_core.Runtime_sys) chan *Job_update_msg {
+	p_runtime_sys  *gf_core.Runtime_sys) chan Job_update_msg {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__get_update_ch()")
 
 	msg_response_ch := make(chan interface{})
@@ -164,8 +146,8 @@ func Job__get_update_ch(p_job_id_str string,
 
 	p_jobs_mngr_ch <- job_msg
 
-	response         := <-msg_response_ch
-	job_updates_ch,_ := response.(chan *Job_update_msg)
+	response          := <-msg_response_ch
+	job_updates_ch, _ := response.(chan Job_update_msg)
 
 	return job_updates_ch
 }

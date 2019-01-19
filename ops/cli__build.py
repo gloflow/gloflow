@@ -57,8 +57,9 @@ def main():
     elif run_str == 'test':
         aws_creds_file_path_str = args_map['aws_creds']
         aws_creds_map           = gf_s3_utils.parse_creds(aws_creds_file_path_str)
-
-        gf_tests.run(app_name_str, app_meta_map, aws_creds_map)
+        test_name_str           = args_map['test_name']
+        
+        gf_tests.run(app_name_str, test_name_str, app_meta_map, aws_creds_map)
     #-------------
 #--------------------------------------------------
 def build__go_bin(p_name_str,
@@ -111,12 +112,19 @@ def parse_args():
         default = "%s/../../creds/aws/s3.txt"%(cwd_str),
         help =    '''path to the file containing AWS S3 credentials to be used''')
     #-------------
+    #TEST_NAME
+    arg_parser.add_argument('-test_name',
+        action =  "store",
+        default = "all",
+        help =    '''if only a particular test needs to be run''')
+    #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     args_map       = {
         "run":      args_namespace.run,
         "app":      args_namespace.app,
         "aws_creds":args_namespace.aws_creds,
+        "test_name":args_namespace.test_name,
     }
     return args_map
 #--------------------------------------------------

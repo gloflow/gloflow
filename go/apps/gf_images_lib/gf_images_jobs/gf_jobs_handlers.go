@@ -171,7 +171,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			p_resp.Header().Set("Access-Control-Allow-Origin","*")
 
 			for {
-				job_update, more_bool := <- job_updates_ch //running_job.job_updates_ch
+				job_update, more_bool := <- job_updates_ch
 				if more_bool {
 					sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 					sse_event_id_str         := sse_event__unix_time_str

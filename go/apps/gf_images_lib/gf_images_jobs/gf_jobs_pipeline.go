@@ -32,10 +32,10 @@ func pipeline__process_image(p_image_source_url_str string,
 	p_flows_names_lst                            []string,
 	p_job_id_str                                 string,
 	p_job_client_type_str                        string,
-	p_job_updates_ch                  chan *Job_update_msg,
+	p_job_updates_ch                  chan Job_update_msg,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.Gf_s3_info,
-	p_send_error_fun                  func(string, *gf_core.Gf_error, string, string, string, chan *Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
+	p_send_error_fun                  func(string, *gf_core.Gf_error, string, string, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_pipeline.pipeline__process_image()")
 
@@ -54,24 +54,25 @@ func pipeline__process_image(p_image_source_url_str string,
 		return f_err
 	}
 
-	update_msg := &Job_update_msg{
-		Type_str:            "fetch_ok",
+	update_msg := Job_update_msg{
+		Type_str:            "image_fetch_ok",
 		Image_id_str:        p_image_id_str,
 		Image_source_url_str:p_image_source_url_str,
 	}
+
 	p_job_updates_ch <- update_msg
 	//-----------------------
 	//TRANSFORM_IMAGE
 	
 	image_client_type_str   := p_job_client_type_str
-	_,gf_image_thumbs,t_err := gf_images_utils.Transform_image(p_image_id_str,
-			image_client_type_str,
-			p_flows_names_lst,
-			p_image_source_url_str,
-			p_image_origin_page_url_str,
-			local_image_file_path_str,
-			p_images_thumbnails_store_local_dir_path_str,
-			p_runtime_sys)
+	_, gf_image_thumbs,t_err := gf_images_utils.Transform_image(p_image_id_str,
+		image_client_type_str,
+		p_flows_names_lst,
+		p_image_source_url_str,
+		p_image_origin_page_url_str,
+		local_image_file_path_str,
+		p_images_thumbnails_store_local_dir_path_str,
+		p_runtime_sys)
 
 	if t_err != nil {
 		error_type_str := "transform_error"
@@ -85,8 +86,8 @@ func pipeline__process_image(p_image_source_url_str string,
 		return t_err
 	}
 
-	update_msg = &Job_update_msg{
-		Type_str:            "transform_ok",
+	update_msg = Job_update_msg{
+		Type_str:            "image_transform_ok",
 		Image_id_str:        p_image_id_str,
 		Image_source_url_str:p_image_source_url_str,
 	}
@@ -106,8 +107,15 @@ func pipeline__process_image(p_image_source_url_str string,
 			p_runtime_sys)
 		return s3_err
 	}
+
+	update_msg = Job_update_msg{
+		Type_str:            "image_persist_ok",
+		Image_id_str:        p_image_id_str,
+		Image_source_url_str:p_image_source_url_str,
+	}
+	p_job_updates_ch <- update_msg
 	//-----------------------
-	update_msg = &Job_update_msg{
+	update_msg = Job_update_msg{
 		Type_str:            "image_done",
 		Image_id_str:        p_image_id_str,
 		Image_source_url_str:p_image_source_url_str,

@@ -39,7 +39,7 @@ func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *
 func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	test__mongodb_host_str      := "127.0.0.1"
-	test__mongodb_db_name_str   := "test_db"
+	test__mongodb_db_name_str   := "gf_tests"
 	test__cluster_node_type_str := "master"
 	
 	log_fun      := gf_core.Init_log_fun()

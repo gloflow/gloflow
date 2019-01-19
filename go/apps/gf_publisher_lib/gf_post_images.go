@@ -224,10 +224,10 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 	images_to_process_lst := []gf_images_jobs.Image_to_process{}
 	for i, image_url_str := range p_post_elements_images_urls_lst {
 		
-		source_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
-		img_to_process            := gf_images_jobs.Image_to_process{
+		origin_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
+		img_to_process      := gf_images_jobs.Image_to_process{
 			Source_url_str:     image_url_str,
-			Origin_page_url_str:source_page_url_str,
+			Origin_page_url_str:origin_page_url_str,
 		}
 		images_to_process_lst = append(images_to_process_lst, img_to_process)
 	}

@@ -21,14 +21,16 @@ import subprocess
 
 from colored import fg,bg,attr
 #--------------------------------------------------
-def run(p_name_str,
+def run(p_app_name_str,
+    p_test_name_str,
     p_app_meta_map,
     p_aws_s3_creds_map):
+    assert isinstance(p_test_name_str,   basestring)
     assert isinstance(p_app_meta_map,    dict)
     assert isinstance(p_aws_s3_creds_map,dict)
 
     print ''
-    print ' -- test %s%s%s package'%(fg('green'), p_name_str, attr(0))
+    print ' -- test %s%s%s package'%(fg('green'), p_app_name_str, attr(0))
 
     if p_app_meta_map.has_key('test_data_to_serve_dir_str'): use_test_server_bool = True
     else:                                                    use_test_server_bool = False
@@ -44,8 +46,6 @@ def run(p_name_str,
 
         print('')
         print('STARTING TEST DATA PYTHON HTTP SERVER ----------------------------')
-        c = '(cd %s && python -m SimpleHTTPServer 8000)'%(test_data_dir_str)
-        print(c)
 
         #run the python simple server in the dir where the test data is located, so that its served over http
         c_lst = ["cd %s && python -m SimpleHTTPServer 8000"%(test_data_dir_str)]
@@ -61,7 +61,9 @@ def run(p_name_str,
     cwd_str = os.getcwd()
     os.chdir(go_package_dir_path_str) #change into the target main package dir
 
-    c = "go test"
+    #ADD!! - per app timeout values, so that in gf_meta.py a test timeout can be specified per app/package
+    if p_test_name_str == 'all': c = "go test -timeout 30s"
+    else:                        c = "go test -timeout 30s -v %s"%(p_test_name_str)
     print(c)
 
     e = os.environ.copy()

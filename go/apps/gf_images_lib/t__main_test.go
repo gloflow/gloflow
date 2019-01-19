@@ -42,21 +42,7 @@ type Gf_test_image_data struct {
 func Test__main(p_test *testing.T) {
 
 	//-----------------
-	test__mongodb_host_str    := "127.0.0.1"
-	test__mongodb_db_name_str := "test_db"
-
-	log_fun  := gf_core.Init_log_fun()
-	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun )
-	mongodb_coll := mongo_db.C("data_symphony")
-	
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_images_tests",
-		Log_fun:         log_fun,
-		Mongodb_coll:    mongodb_coll,
-	}
-	//-----------------
 	//TEST_DATA
-
 	test__image_client_type_str      := "test_run"
 	test__image_flows_names_lst      := []string{"test_flow",}
 	test__images_local_filepaths_lst := []string{
@@ -71,6 +57,20 @@ func Test__main(p_test *testing.T) {
 	medium_thumb_max_size_px_int           := 400
 	large_thumb_max_size_px_int            := 600
 	//-----------------
+	test__mongodb_host_str    := "127.0.0.1"
+	test__mongodb_db_name_str := "gf_tests"
+
+	log_fun  := gf_core.Init_log_fun()
+	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun )
+	mongodb_coll := mongo_db.C("data_symphony")
+	
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str:"gf_images_tests",
+		Log_fun:         log_fun,
+		Mongodb_coll:    mongodb_coll,
+	}
+	//-----------------
+	
 
 	test_image_data := &Gf_test_image_data{
 		image_client_type_str:           test__image_client_type_str,

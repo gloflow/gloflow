@@ -185,6 +185,7 @@ func Download_file(p_image_url_str string,
 
 	//--------------
 	//WRITE TO FILE
+	fmt.Printf("p_local_image_file_path_str - %s\n",p_local_image_file_path_str)
 
 	out,c_err := os.Create(p_local_image_file_path_str)
 	defer out.Close()

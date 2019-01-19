@@ -27,7 +27,7 @@ import (
 func Test__main(p_test *testing.T) {
 
 	test__mongodb_host_str    := "127.0.0.1"
-	test__mongodb_db_name_str := "test_db"
+	test__mongodb_db_name_str := "gf_tests"
 
 	log_fun      := gf_core.Init_log_fun()
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)

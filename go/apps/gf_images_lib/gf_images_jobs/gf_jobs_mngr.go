@@ -28,12 +28,30 @@ import (
 //-------------------------------------------------
 type Jobs_mngr chan Job_msg
 
+type Running_job struct {
+	Id                    bson.ObjectId       `bson:"_id,omitempty"`
+	Id_str                string              `bson:"id_str"`
+	T_str                 string              `bson:"t"`
+	Client_type_str       string              `bson:"client_type_str"`
+	Status_str            string              `bson:"status_str"` //"running"|"complete"
+	Start_time_f          float64             `bson:"start_time_f"`
+	End_time_f            float64             `bson:"end_time_f"`
+	Images_to_process_lst []Image_to_process  `bson:"images_to_process_lst"`
+	Errors_lst            []Job_Error         `bson:"errors_lst"`
+	job_updates_ch        chan Job_update_msg `bson:"-"`
+}
+
+type Image_to_process struct {
+	Source_url_str      string `bson:"source_url_str"` //FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
+	Origin_page_url_str string `bson:"origin_page_url_str"`
+}
+
 type Job_msg struct {
 	job_id_str            string
 	client_type_str       string 
 	cmd_str               string //"start_job"|"get_running_job_ids"
 	msg_response_ch       chan interface{}
-	job_updates_ch        chan *Job_update_msg
+	job_updates_ch        chan Job_update_msg
 	images_to_process_lst []Image_to_process
 	flows_names_lst       []string
 }
@@ -61,7 +79,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	//              service initialization time
 	go func() {
 		
-		running_jobs_map := map[string]chan *Job_update_msg{}
+		running_jobs_map := map[string]chan Job_update_msg{}
 
 		//listen to messages
 		for {
