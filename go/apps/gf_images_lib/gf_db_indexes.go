@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib
 
 import (
+	"fmt"
+	"strings"
 	"github.com/globalsign/mgo"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -40,9 +42,13 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	err := p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
-		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flows_names_lst","origin_url_str"}`,
-			"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
-		return gf_err
+		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+			//ignore, index already exists
+		} else {
+			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flows_names_lst","origin_url_str"}`,
+				"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
+			return gf_err
+		}
 	}
 
 	//DEPRECATED!! - flow_name_str field is deprecated in favor of flows_names_lst, 
@@ -62,9 +68,13 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	err = p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
-		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flow_name_str","origin_url_str"}`,
-			"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
-		return gf_err
+		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+			//ignore, index already exists
+		} else {
+			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flow_name_str","origin_url_str"}`,
+				"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
+			return gf_err
+		}
 	}
 	//---------------------
 

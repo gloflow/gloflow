@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_lib
 
 import (
+	"strings"
 	"github.com/globalsign/mgo"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
@@ -40,9 +41,13 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 
 	err := p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
-		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t"}`,
-			"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
-		return gf_err
+		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+			//ignore, index already exists
+		} else {
+			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t"}`,
+				"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
+			return gf_err
+		}
 	}
 	//---------------------
 	//FIELDS - "t","hash_str"
@@ -56,9 +61,13 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 
 	err = p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
 	if err != nil {
-		gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","hash_str"}`,
-			"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
-		return gf_err
+		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+			//ignore, index already exists
+		} else {
+			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","hash_str"}`,
+				"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
+			return gf_err
+		}
 	}
 	//---------------------
 	return nil
