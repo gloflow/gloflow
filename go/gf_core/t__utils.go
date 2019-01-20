@@ -23,7 +23,14 @@ import (
 	"os"
 )
 //---------------------------------------------------
-func T__get_s3_info(p_runtime_sys *Runtime_sys) *Gf_s3_info {
+type Gf_s3_test_info struct {
+	Gf_s3_info                *Gf_s3_info
+	Aws_access_key_id_str     string
+	Aws_secret_access_key_str string
+	Aws_token_str             string
+}
+//---------------------------------------------------
+func T__get_s3_info(p_runtime_sys *Runtime_sys) *Gf_s3_test_info {
 
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
@@ -33,10 +40,16 @@ func T__get_s3_info(p_runtime_sys *Runtime_sys) *Gf_s3_info {
 		panic("test AWS credentials were not supplied")
 	}
 	
-	s3_info, gf_err := S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, p_runtime_sys)
+	gf_s3_info, gf_err := S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-	return s3_info
+	gf_s3_test_info := &Gf_s3_test_info{
+		Gf_s3_info:               gf_s3_info,
+		Aws_access_key_id_str:    aws_access_key_id_str,
+		Aws_secret_access_key_str:aws_secret_access_key_str,
+		Aws_token_str:            aws_token_str,
+	}
+	return gf_s3_test_info
 }

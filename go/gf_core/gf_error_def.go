@@ -186,6 +186,9 @@ func error__get_defs() map[string]error_def {
 		"http_server_flusher_not_supported_error":{
 			Descr_str:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
 		},
+		"http_client_gf_status_error":{
+			Descr_str:"http_client received a non-OK GF error",
+		},
 		//---------------
 		//S3
 		"s3_credentials_error":{

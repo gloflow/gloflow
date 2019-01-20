@@ -44,30 +44,30 @@ type Client_job_image_output struct {
 //                                       its not relevant for direct image uploads from clients.
 
 func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
-	p_input_images_origin_pages_urls_str  []string,
+	p_input_images_origin_pages_urls_lst  []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
 	p_runtime_sys                         *gf_core.Runtime_sys) (string, []*Client_job_image_output, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.Client__dispatch_process_extern_images()")
 
-	running_job_id_str,images_outputs_lst,gf_err := client__start_job(p_input_images_urls_lst,
-		p_input_images_origin_pages_urls_str,
+	running_job_id_str, images_outputs_lst, gf_err := client__start_job(p_input_images_urls_lst,
+		p_input_images_origin_pages_urls_lst,
 		p_client_type_str,
 		p_target__image_service_host_port_str,
 		p_runtime_sys)
 
 	if gf_err != nil {
-		return "",nil,gf_err
+		return "", nil, gf_err
 	}
 
-	return running_job_id_str,images_outputs_lst,nil
+	return running_job_id_str, images_outputs_lst, nil
 }
 //-------------------------------------------------
 func client__start_job(p_input_images_urls_lst []string,
-	p_input_images_origin_pages_urls_str  []string,
+	p_input_images_origin_pages_urls_lst  []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.Runtime_sys) (string,[]*Client_job_image_output,*gf_core.Gf_error) {
+	p_runtime_sys                         *gf_core.Runtime_sys) (string, []*Client_job_image_output, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__start_job()")
 
 	//------------------
@@ -75,7 +75,7 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	p_runtime_sys.Log_fun("INFO","p_target__image_service_host_port_str - "+p_target__image_service_host_port_str)
 
-	url_str  := fmt.Sprintf("http://%s/images/jobs/start",p_target__image_service_host_port_str)
+	url_str  := fmt.Sprintf("http://%s/images/jobs/start", p_target__image_service_host_port_str)
 	data_map := map[string]string{
 		"job_type_str":   "process_extern_image",
 		"client_type_str":p_client_type_str,
@@ -84,16 +84,16 @@ func client__start_job(p_input_images_urls_lst []string,
 		//imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
 		//                             was found. this is valid for gf_chrome_ext image sources.
 		//                             its not relevant for direct image uploads from clients.
-		"imgs_origin_pages_urls_str":strings.Join(p_input_images_origin_pages_urls_str, ","),
+		"imgs_origin_pages_urls_str":strings.Join(p_input_images_origin_pages_urls_lst, ","),
 	}
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.Log_fun("INFO","")
-	p_runtime_sys.Log_fun("INFO",cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
-	p_runtime_sys.Log_fun("INFO",yellow(p_input_images_urls_lst))
-    p_runtime_sys.Log_fun("INFO","")
+	p_runtime_sys.Log_fun("INFO", "")
+	p_runtime_sys.Log_fun("INFO", cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
+	p_runtime_sys.Log_fun("INFO", yellow(p_input_images_urls_lst))
+    p_runtime_sys.Log_fun("INFO", "")
 
     fmt.Println("")
 	spew.Dump(data_map)
@@ -118,14 +118,14 @@ func client__start_job(p_input_images_urls_lst []string,
 		return "", nil, gf_err
 	}
 
-	p_runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("images_service %s response",url_str))
+	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
+	fmt.Println(fmt.Sprintf("images_service %s RESPONSE", url_str))
 	p_runtime_sys.Log_fun("INFO",fmt.Sprint(body))
-	p_runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
 	//------------------
 
 	r_map := map[string]interface{}{}
-	j_err := json.Unmarshal([]byte(body),&r_map)
+	j_err := json.Unmarshal([]byte(body), &r_map)
 	if j_err != nil {
 		gf_err := gf_core.Error__create("failed to parse json response from gf_images_client start_job HTTP REST API - "+url_str,
 			"json_unmarshal_error",
@@ -137,10 +137,23 @@ func client__start_job(p_input_images_urls_lst []string,
 		return "", nil, gf_err
 	}
 
+	r_status_str := r_map["status_str"].(string)
+	if r_status_str != "OK" {
+		gf_err := gf_core.Error__create("received a non-OK response from gf_images_client start_job HTTP REST API - "+url_str,
+			"http_client_gf_status_error",
+			&map[string]interface{}{
+				"url_str":url_str,
+				"body":   body,
+			},
+			nil, "gf_images_lib", p_runtime_sys)
+		return "", nil, gf_err
+	}
+
+	r_data_map := r_map["data"].(map[string]interface{})
 	//-----------------
 	//RUNNING_JOB_ID
 
-	if _,ok := r_map["running_job_id_str"]; !ok {
+	if _,ok := r_data_map["running_job_id_str"]; !ok {
 		err_usr_msg := fmt.Sprintf("%s response didnt return 'running_job_id_str'",url_str)
 		gf_err := gf_core.Error__create(err_usr_msg,
 			"verify__missing_key_error",
@@ -149,10 +162,10 @@ func client__start_job(p_input_images_urls_lst []string,
 		return "", nil, gf_err
 	}
 
-	running_job_id_str := r_map["running_job_id_str"].(string)
+	running_job_id_str := r_data_map["running_job_id_str"].(string)
 	//-----------------
 	//JUB_RESULT_IMAGES
-	job_expected_outputs_untyped_lst := r_map["job_expected_outputs_lst"].([]interface{})
+	job_expected_outputs_untyped_lst := r_data_map["job_expected_outputs_lst"].([]interface{})
 	images_outputs_lst               := []*Client_job_image_output{}
 
 	for _,o := range job_expected_outputs_untyped_lst {
@@ -165,8 +178,7 @@ func client__start_job(p_input_images_urls_lst []string,
 			//Fetch_ok_bool                    :fetch_ok_bool,
 			//Transform_ok_bool                :transform_ok_bool,
 		}
-
-		images_outputs_lst = append(images_outputs_lst,image_output)
+		images_outputs_lst = append(images_outputs_lst, image_output)
 	}
 	//-----------------
 
@@ -180,7 +192,7 @@ func client__get_status(p_running_job_id_str string,
 
 	url_str := fmt.Sprintf("http://%s/images/jobs/status", p_target__image_service_host_port_str)
 
-	_,body,errs := gorequest.New().
+	_, body, errs := gorequest.New().
 		Get(url_str).
 		Set("accept","text/event-stream").
 		Query(fmt.Sprintf(`running_job_id_str=%s`, p_running_job_id_str)).

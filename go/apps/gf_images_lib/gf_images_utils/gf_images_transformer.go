@@ -80,7 +80,7 @@ func Trans__process_image(p_image_id_str string,
 
 	img,gf_err := Image__load_file(p_image_local_file_path_str,p_normalized_ext_str,p_runtime_sys)
 	if gf_err != nil {
-		return nil,nil,gf_err
+		return nil, nil, gf_err
 	}
 	//--------------------------
 	//CREATE THUMBNAILS
@@ -99,7 +99,7 @@ func Trans__process_image(p_image_id_str string,
 		img,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,nil,gf_err
+		return nil, nil, gf_err
 	}
 	//--------------------------
 	/*//DOMINANT COLOR DETERMINATION

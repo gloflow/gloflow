@@ -33,17 +33,25 @@ func Test__jobs_updates(p_test *testing.T) {
 	//TEST_DATA
 	
 	test__http_server_host_str             := "localhost:8000"
+	test__gf_images_service_port_str       := "8010"
 	test__mongodb_host_str                 := "127.0.0.1"
 	test__mongodb_db_name_str              := "gf_tests"
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
 	test__s3_bucket_name_str               := "gf--test--img"
-	test__image_client_type_str            := "test_run"
+	
 	test__image_flows_names_lst            := []string{"test_flow",}
 	test__image_url_str                    := fmt.Sprintf("http://%s/test_image_01.jpeg", test__http_server_host_str)
 	test__origin_page_url_str              := "https://some_test_domain.com/page_1"
+	test__image_client_type_str            := "test_run"
+	
+	test__service_templates_dir_paths_map  := map[string]interface{}{
+		"flows_str":"./templates",
+	}
 
-	fmt.Println(test__http_server_host_str)
+	fmt.Println(fmt.Sprintf("test__http_server_host_str       - %s", test__http_server_host_str))
+	fmt.Println(fmt.Sprintf("test__gf_images_service_port_str - %s", test__gf_images_service_port_str))
+	fmt.Println("")
 	//-------------
 	log_fun      := gf_core.Init_log_fun()
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
@@ -56,31 +64,81 @@ func Test__jobs_updates(p_test *testing.T) {
 	}
 	//-------------
 	//S3
-	s3_info := gf_core.T__get_s3_info(runtime_sys)
+	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
 	//-------------
 	//JOBS_MNGR
 	jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
 		test__images_thumbs_local_dir_path_str,
 		test__s3_bucket_name_str,
-		s3_info,
+		gf_s3_test_info.Gf_s3_info,
 		runtime_sys)
 	//-------------
+	//START_HTTP_SERVICE
+	done_ch := make(chan bool)
+	go func() {
+		Run_service(test__gf_images_service_port_str,
+			test__mongodb_host_str,
+			test__mongodb_db_name_str,
+			test__images_local_dir_path_str,
+			test__images_thumbs_local_dir_path_str,
+			test__s3_bucket_name_str,
+			gf_s3_test_info.Aws_access_key_id_str,
+			gf_s3_test_info.Aws_secret_access_key_str,
+			gf_s3_test_info.Aws_token_str,
+			test__service_templates_dir_paths_map,
+			done_ch,
+			log_fun)
+	}()
+	<-done_ch //wait for the service to finish initializing
+	//-------------
+	//HTTP
+	test__job_updates__via_http(test__image_url_str,
+		test__origin_page_url_str,
+		test__image_client_type_str,
+		test__gf_images_service_port_str,
+		runtime_sys)
 
-	test__job_start(test__image_url_str,
+	//IN_PROCESS
+	test__job_updates__in_process(test__image_url_str,
 		test__image_flows_names_lst,
 		test__image_client_type_str,
 		test__origin_page_url_str,
 		jobs_mngr,
-		p_test,
 		runtime_sys)
+	//-------------
 }
 //---------------------------------------------------
-func test__job_start(p_test__image_url_str string,
+func test__job_updates__via_http(p_test__image_url_str string,
+	p_test__origin_page_url_str   string,
+	p_test__image_client_type_str string,
+	p_test_image_service_port_str string,
+	p_runtime_sys                 *gf_core.Runtime_sys) {
+	
+	test__input_images_urls_lst                    := []string{p_test__image_url_str,}
+	test__input_images_origin_pages_urls_lst       := []string{p_test__origin_page_url_str,}
+	test__image_service_host_port_str              := fmt.Sprintf("localhost:%s", p_test_image_service_port_str)
+	running_job_id_str, images_outputs_lst, gf_err := Client__dispatch_process_extern_images(test__input_images_urls_lst,
+		test__input_images_origin_pages_urls_lst,
+		p_test__image_client_type_str,
+		test__image_service_host_port_str,
+		p_runtime_sys)
+
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
+
+	fmt.Println(running_job_id_str)
+	fmt.Println(images_outputs_lst)
+
+	
+}
+//---------------------------------------------------
+func test__job_updates__in_process(p_test__image_url_str string,
 	p_test__image_flows_names_lst []string,
 	p_test__image_client_type_str string,
 	p_test__origin_page_url_str   string,
 	p_jobs_mngr                   gf_images_jobs.Jobs_mngr,
-	p_test                        *testing.T,
 	p_runtime_sys                 *gf_core.Runtime_sys) {
 
 

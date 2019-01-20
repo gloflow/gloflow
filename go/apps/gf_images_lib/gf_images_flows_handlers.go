@@ -37,7 +37,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//---------------------
 	//TEMPLATES
 	template_name_str       := "gf_images_flows_browser.html"
-	template_path_str       := fmt.Sprintf("%s/gf_images_flows_browser.html",p_templates_dir_path_str)
+	template_path_str       := fmt.Sprintf("%s/gf_images_flows_browser.html", p_templates_dir_path_str)
 	flows_browser__tmpl,err := template.New(template_name_str).ParseFiles(template_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a template",

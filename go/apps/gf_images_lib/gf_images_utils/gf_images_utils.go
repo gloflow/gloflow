@@ -22,6 +22,7 @@ package gf_images_utils
 import (
 	"fmt"
 	"os"
+	"time"
 	"strings"
 	"path"
 	"path/filepath"
@@ -35,31 +36,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
-//IMPORTANT!! - look at JS library, for content-aware image cropping
-//              https://github.com/jwagner/smartcrop.js/
-//---------------------------------------------------
-//ADD!! - a function that will detect how many duplicates are there in the image DB/collection
-//		 use "fdupes" for this (command line utility)
-//		 fdupes - fdupes is a program written by Adrian Lopez to scan directories for duplicate files, 
-//				  with options to list, delete or replace the files with hardlinks pointing to the 
-//				  duplicate. It first compares file sizes and MD5 signatures, and then 
-//				  performs a byte-by-byte check for verification.
-//---------------------------------------------------
-//ADD!! - calculate RGBA histogram for every image
-/*var histogram [16][4]int
-for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-	for x := bounds.Min.X; x < bounds.Max.X; x++ {
-		r, g, b, a := m.At(x, y).RGBA()
-
-		// A color's RGBA method returns values in the range [0, 65535].
-		// Shifting by 12 reduces this to the range [0, 15].
-		histogram[r>>12][0]++
-		histogram[g>>12][1]++
-		histogram[b>>12][2]++
-		histogram[a>>12][3]++
-	}
-}*/
-//---------------------------------------------------
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
 	p_runtime_sys        *gf_core.Runtime_sys) (image.Image,*gf_core.Gf_error) {
@@ -72,7 +48,7 @@ func Image__load_file(p_image_local_file_path_str string,
 			&map[string]interface{}{
 				"local_image_file_path_str":p_image_local_file_path_str,
 			},
-			fs_err,"gf_images_utils",p_runtime_sys)
+			fs_err, "gf_images_utils", p_runtime_sys)
 		return nil,gf_err
 	}
 	defer file.Close()
@@ -89,7 +65,7 @@ func Image__load_file(p_image_local_file_path_str string,
 				&map[string]interface{}{
 					"local_image_file_path_str":p_image_local_file_path_str,
 				},
-				img_err,"gf_images_utils",p_runtime_sys)
+				img_err, "gf_images_utils", p_runtime_sys)
 			return nil,gf_err
 		}
 	} else {
@@ -101,12 +77,12 @@ func Image__load_file(p_image_local_file_path_str string,
 				&map[string]interface{}{
 					"local_image_file_path_str":p_image_local_file_path_str,
 				},
-				img_err,"gf_images_utils",p_runtime_sys)
-			return nil,gf_err
+				img_err, "gf_images_utils", p_runtime_sys)
+			return nil, gf_err
 		}
 	}
 
-	return img,nil
+	return img, nil
 }
 //---------------------------------------------------
 func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
@@ -153,6 +129,8 @@ func Image__create_id(p_image_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.create_id()")
 	
 	h := md5.New()
+	
+	h.Write([]byte(fmt.Sprint(float64(time.Now().UnixNano())/1000000000.0)))
 	h.Write([]byte(p_image_path_str))
 	h.Write([]byte(p_image_format_str))
 
@@ -161,16 +139,6 @@ func Image__create_id(p_image_path_str string,
 	
 	image_id_str := hex_str
 	return image_id_str
-
-	//m = hashlib.md5()
-	//m.update(p_image_path_str)
-	//m.update(p_image_format_str)
-	////-------------------
-	////hexdigest() - Like digest() except the digest is returned as a string of 
-	////              double length, containing only hexadecimal digits. This may be used to 
-	////              exchange the value safely in email or other non-binary environments.
-	//image_id_str = m.hexdigest()
-	////-------------------
 }
 //---------------------------------------------------
 //VAR
@@ -189,7 +157,7 @@ func Get_image_filename_from_url(p_image_url_str string, p_runtime_sys *gf_core.
 
 	image_path_str      := url.Path
 	image_file_name_str := path.Base(image_path_str)
-	return image_file_name_str,nil
+	return image_file_name_str, nil
 }
 //---------------------------------------------------
 func Get_image_title_from_url(p_image_url_str string,
@@ -201,14 +169,14 @@ func Get_image_title_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to parse image_url to get image title",
 			"url_parse_error",
 			&map[string]interface{}{"image_url_str":p_image_url_str,},
-			err,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+			err, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
 	}
 	image_path_str      := url.Path
 	image_file_name_str := path.Base(image_path_str)
-	image_title_str     := strings.Split(image_file_name_str,".")[0]
+	image_title_str     := strings.Split(image_file_name_str, ".")[0]
 	
-	return image_title_str,nil
+	return image_title_str, nil
 }
 //---------------------------------------------------
 func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.Runtime_sys) (int,int) {
@@ -217,11 +185,11 @@ func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.
 	p          := p_img.Bounds()
 	width_int  := p.Max.X - p.Min.X
 	height_int := p.Max.Y - p.Min.Y
-	return width_int,height_int
+	return width_int, height_int
 }
 //---------------------------------------------------
 func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_dimensions__from_filepath()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_filepath()")
 
 	//-------------------
 	file, fs_err := os.Open(p_image_local_file_path_str)
@@ -229,22 +197,22 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_r
 		gf_err := gf_core.Error__create("failed to open a local image file to get its dimensions",
 			"file_open_error",
 			&map[string]interface{}{"image_local_file_path_str":p_image_local_file_path_str,},
-			fs_err,"gf_images_utils",p_runtime_sys)
-		return 0,0,gf_err
+			fs_err, "gf_images_utils", p_runtime_sys)
+		return 0, 0, gf_err
 	}
 	defer file.Close()
 	//-------------------
 	format,gf_err := Get_image_ext_from_url(p_image_local_file_path_str,p_runtime_sys)
 	if gf_err != nil {
-		return 0,0,gf_err
+		return 0, 0, gf_err
 	}
 	//-------------------
 	image_width_int,image_height_int,gf_err := Get_image_dimensions__from_file(file,format,p_runtime_sys)
 	if gf_err != nil {
-		return 0,0,gf_err
+		return 0, 0, gf_err
 	}
 	//-------------------
-	return image_width_int,image_height_int,nil
+	return image_width_int, image_height_int, nil
 }
 //---------------------------------------------------
 func Get_image_dimensions__from_file(p_file io.Reader,
@@ -258,35 +226,35 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	//-------------------
 	//JPEG
 	if p_img_extension_str == "jpeg" {
-		image_config,config_err = jpeg.DecodeConfig(p_file)
+		image_config, config_err = jpeg.DecodeConfig(p_file)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for JPEG image file to get image dimensions",
 				"image_decoding_config_error",
 				&map[string]interface{}{"img_extension_str":p_img_extension_str,},
-				config_err,"gf_images_utils",p_runtime_sys)
-			return 0,0,gf_err
+				config_err, "gf_images_utils", p_runtime_sys)
+			return 0, 0, gf_err
 		}
 	//-------------------
 	//PNG
 	} else if p_img_extension_str == "png" {
-		image_config,config_err = png.DecodeConfig(p_file)
+		image_config, config_err = png.DecodeConfig(p_file)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for PNG image file to get image dimensions",
 				"image_decoding_config_error",
 				&map[string]interface{}{"img_extension_str":p_img_extension_str,},
-				config_err,"gf_images_utils",p_runtime_sys)
-			return 0,0,gf_err
+				config_err, "gf_images_utils", p_runtime_sys)
+			return 0, 0, gf_err
 		}
 	//-------------------
 	//GENERAL
 	} else {
-		image_config,_,config_err = image.DecodeConfig(p_file)
+		image_config, _, config_err = image.DecodeConfig(p_file)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for image file to get image dimensions",
 				"image_decoding_config_error",
 				&map[string]interface{}{"img_extension_str":p_img_extension_str,},
-				config_err,"gf_images_utils",p_runtime_sys)
-			return 0,0,gf_err
+				config_err, "gf_images_utils", p_runtime_sys)
+			return 0, 0, gf_err
 		}
 	}
 	//-------------------
@@ -294,7 +262,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	image_width_int  := image_config.Width
 	image_height_int := image_config.Height
 
-	return image_width_int,image_height_int,nil
+	return image_width_int, image_height_int, nil
 }
 //---------------------------------------------------
 func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
@@ -309,8 +277,8 @@ func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runti
 		gf_err := gf_core.Error__create("failed to parse image_url to get image extension",
 			"url_parse_error",
 			&map[string]interface{}{"image_url_str":p_image_url_str,},
-			err,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+			err, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
 	}
 
 	image_path_str      := url.Path
@@ -327,8 +295,8 @@ func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runti
 				"image_url_str":p_image_url_str,
 				"ext_str":      ext_str,
 			},
-			nil,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+			nil, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
 	}
 
 
@@ -344,7 +312,7 @@ func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runti
 		p_format_str != "png" {
 
 		//IMPORTANT!! - format is not a valid image format, so 'false' is returned
-		return p_format_str,false
+		return p_format_str, false
 	}
 
 	var normalized_format_str string
@@ -356,8 +324,33 @@ func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runti
 		normalized_format_str = p_format_str
 	}
 
-	return normalized_format_str,true
+	return normalized_format_str, true
 }
+//---------------------------------------------------
+//IMPORTANT!! - look at JS library, for content-aware image cropping
+//              https://github.com/jwagner/smartcrop.js/
+//---------------------------------------------------
+//ADD!! - a function that will detect how many duplicates are there in the image DB/collection
+//		 use "fdupes" for this (command line utility)
+//		 fdupes - fdupes is a program written by Adrian Lopez to scan directories for duplicate files, 
+//				  with options to list, delete or replace the files with hardlinks pointing to the 
+//				  duplicate. It first compares file sizes and MD5 signatures, and then 
+//				  performs a byte-by-byte check for verification.
+//---------------------------------------------------
+//ADD!! - calculate RGBA histogram for every image
+/*var histogram [16][4]int
+for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		r, g, b, a := m.At(x, y).RGBA()
+
+		// A color's RGBA method returns values in the range [0, 65535].
+		// Shifting by 12 reduces this to the range [0, 15].
+		histogram[r>>12][0]++
+		histogram[g>>12][1]++
+		histogram[b>>12][2]++
+		histogram[a>>12][3]++
+	}
+}*/
 //---------------------------------------------------
 //TAGS
 //---------------------------------------------------

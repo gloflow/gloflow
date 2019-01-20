@@ -128,7 +128,7 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 
 	db_gf_err := DB__put_image(image,p_runtime_sys)
 	if db_gf_err != nil {
-		return nil,db_gf_err
+		return nil, db_gf_err
 	}
 	//----------------------------------
 
@@ -148,7 +148,7 @@ func Image__create(p_image_info_map map[string]interface{}, p_runtime_sys *gf_co
 	title_str       := new_image_info_map["title_str"].(string)
 	flows_names_lst := new_image_info_map["flows_names_lst"].([]string)
 
-	image := &Gf_image{
+	gf_image := &Gf_image{
 		Id_str:                        new_image_info_map["id_str"].(string),
 		T_str:                         "img",
 		Creation_unix_time_f:          float64(time.Now().UnixNano())/1000000000.0,
@@ -166,11 +166,11 @@ func Image__create(p_image_info_map map[string]interface{}, p_runtime_sys *gf_co
 	//----------------------------------
 	//DB PERSIST
 
-	db_gf_err := DB__put_image(image, p_runtime_sys)
+	db_gf_err := DB__put_image(gf_image, p_runtime_sys)
 	if db_gf_err != nil {
-		return nil,db_gf_err
+		return nil, db_gf_err
 	}
 	//----------------------------------
 
-	return image,nil
+	return gf_image, nil
 }

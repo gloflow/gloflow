@@ -75,13 +75,13 @@ func Test__main(p_test *testing.T) {
 	}
 	//-------------
 	//S3
-	s3_info := gf_core.T__get_s3_info(runtime_sys)
+	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
 	//-------------
 	//GF_IMAGES_LIB JOBS_MNGR
 	jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
 		test__images_thumbs_local_dir_path_str,
 		test__s3_bucket_name_str,
-		s3_info,
+		gf_s3_test_info.Gf_s3_info,
 		runtime_sys)
 
 	gf_images_runtime_info := &Gf_images_extern_runtime_info{

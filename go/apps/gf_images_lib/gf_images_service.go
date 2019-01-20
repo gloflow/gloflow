@@ -116,8 +116,7 @@ func Run_service(p_port_str string,
 	}
 	//-------------
 	//GIF
-	gif__templates_dir_path_str := p_templates_dir_paths_map["gif_str"].(string)
-	gf_err = gf_gif_lib.Gif__init_handlers(gif__templates_dir_path_str,runtime_sys)
+	gf_err = gf_gif_lib.Gif__init_handlers(runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

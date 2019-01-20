@@ -58,7 +58,7 @@ func Error__create(p_user_msg_str string,
 
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("%s:%s",p_error_type_str,creation_unix_time_f)
+	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
 	stack_trace_str      := string(debug.Stack())
 
 	//IMPORTANT!! - number of stack frames to skip before recording. without skipping 
@@ -87,7 +87,7 @@ func Error__create(p_user_msg_str string,
 	error_defs_map := error__get_defs()
 	error_def,ok   := error_defs_map[p_error_type_str]
 	if !ok {
-		panic(fmt.Sprintf("unknown gf_error type encountered - %s",p_error_type_str))
+		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
 	}
 	//--------------------
 
