@@ -66,13 +66,12 @@ func Test__jobs_updates(p_test *testing.T) {
 		runtime_sys)
 	//-------------
 
-
-
 	test__job_start(test__image_url_str,
 		test__image_flows_names_lst,
 		test__image_client_type_str,
 		test__origin_page_url_str,
 		jobs_mngr,
+		p_test,
 		runtime_sys)
 }
 //---------------------------------------------------
@@ -81,6 +80,7 @@ func test__job_start(p_test__image_url_str string,
 	p_test__image_client_type_str string,
 	p_test__origin_page_url_str   string,
 	p_jobs_mngr                   gf_images_jobs.Jobs_mngr,
+	p_test                        *testing.T,
 	p_runtime_sys                 *gf_core.Runtime_sys) {
 
 
@@ -99,6 +99,8 @@ func test__job_start(p_test__image_url_str string,
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
+
+
 	fmt.Println(running_job)
 	spew.Dump(output)
 
@@ -112,14 +114,21 @@ func test__job_start(p_test__image_url_str string,
 	for ;; {
 
 		fmt.Println("\n\n------------------------- TESTING - GET_JOB_UPDATE -----")
-		update, more_bool := <-job_updates_ch
+		job_update := <-job_updates_ch
 
-		if more_bool {
+		spew.Dump(job_update)
 
-			spew.Dump(update)
+		job_update_type_str := job_update.Type_str
+		if job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__ERROR {
+			panic("job encountered an error while processing")
+		}
 
-		} else {
-			fmt.Println("\n\n------------------------- TESTING - GET_JOB_UPDATE COMPLETE -----")
+		if !(job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__OK || job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__COMPLETED) {
+			panic(fmt.Sprintf("job_update is expected to be of type 'ok' but instead is - %s", job_update_type_str))
+		}
+		
+		//test complete
+		if job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__COMPLETED {
 			break
 		}
 	}

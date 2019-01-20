@@ -45,10 +45,11 @@ func job_error__send(p_job_error_type_str string,
 	error_str := fmt.Sprint(p_gf_err.Error)
 	
 	update_msg := Job_update_msg{
-		Type_str            :p_gf_err.Type_str,
-		Image_id_str        :p_image_id_str,
+		Name_str:            p_gf_err.Type_str,
+		Type_str:            JOB_UPDATE_TYPE__ERROR,
+		Image_id_str:        p_image_id_str,
 		Image_source_url_str:p_image_source_url_str,
-		Err_str             :error_str,
+		Err_str:             error_str,
 	}
 	p_job_updates_ch <- update_msg
 	//------------
@@ -77,7 +78,7 @@ func job_error__persist(p_job_id_str string,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t_str": "img_running_job",
+			"t":     "img_running_job",
 			"id_str":p_job_id_str,
 		},
 		bson.M{

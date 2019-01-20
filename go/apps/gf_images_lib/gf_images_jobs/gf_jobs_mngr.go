@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_jobs
 
 import (
+	"fmt"
 	"time"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -57,12 +58,22 @@ type Job_msg struct {
 }
 
 type Job_update_msg struct {
-	Type_str             string        `json:"type_str"`
-	Image_id_str         string        `json:"image_id_str"`
-	Image_source_url_str string        `json:"image_source_url_str"`
-	Err_str              string        `json:"err_str,omitempty"`  //if the update indicates an error, this is its value
+	Name_str             string              `json:"name_str"`
+	Type_str             job_update_type_val `json:"type_str"`             //"ok"|"error"|"complete"
+	Image_id_str         string              `json:"image_id_str"`
+	Image_source_url_str string              `json:"image_source_url_str"`
+	Err_str              string              `json:"err_str,omitempty"`    //if the update indicates an error, this is its value
 	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
 }
+
+type job_status_val string
+const JOB_STATUS__FAILED    job_status_val = "failed"
+const JOB_STATUS__COMPLETED job_status_val = "completed"
+
+type job_update_type_val string
+const JOB_UPDATE_TYPE__OK        job_update_type_val = "ok"
+const JOB_UPDATE_TYPE__ERROR     job_update_type_val = "error"
+const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 //-------------------------------------------------
 //SERVER
 //-------------------------------------------------
@@ -90,6 +101,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 			switch job_msg.cmd_str {
 
 				//------------------------
+				//START_JOB
 				case "start_job":
 
 					job_id_str                  := job_msg.job_id_str
@@ -105,37 +117,15 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						p_s3_bucket_name_str,
 						p_s3_info,
 						p_runtime_sys)
+
 					if run_job_gf_err != nil {
-						continue
+						_ = db__jobs_mngr__update_job_status(JOB_STATUS__FAILED, job_id_str, p_runtime_sys)
+					} else {
+						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, job_id_str, p_runtime_sys)
 					}
-					//--------------------
-					//MARK_JOB_AS_COMPLETE
-
-					job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-					update_err     := p_runtime_sys.Mongodb_coll.Update(bson.M{
-							"t":"img_running_job","id_str":job_id_str,
-						},
-						bson.M{
-							"$set":bson.M{
-								"status_str":"complete",
-								"end_time_f":job_end_time_f,
-							},
-						},)
-					if update_err != nil {
-						_ = gf_core.Error__create("failed to update an img_running_job in the DB, as complete and its end_time",
-							"mongodb_update_error",
-							&map[string]interface{}{
-								"job_id_str":    job_id_str,
-								"job_end_time_f":job_end_time_f,
-							},
-							update_err, "gf_images_jobs", p_runtime_sys)
-					}
-					//--------------------
-
-					delete(running_jobs_map,job_id_str) //remove running job from lookup, since its complete
-					close(job_msg.job_updates_ch)
 				//------------------------
-				case "get_running_job_update_ch":
+				//GET_JOB_UPDATE_CH
+				case "get_job_update_ch":
 
 					job_id_str := job_msg.job_id_str
 
@@ -148,8 +138,51 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						job_msg.msg_response_ch <- nil
 					}
 				//------------------------
+				//CLEANUP_JOB
+				case "cleanup_job":
+					job_id_str := job_msg.job_id_str
+					delete(running_jobs_map, job_id_str) //remove running job from lookup, since its complete
+				//------------------------
 			} 
 		}
 	}()
 	return jobs_mngr_ch
+}
+//-------------------------------------------------
+func db__jobs_mngr__update_job_status(p_status_str job_status_val,
+	p_job_id_str  string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_mngr.db__jobs_mngr__update_job_status()")
+
+	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {
+		//status values are not generated at runtime, but are static, so its ok to panic here since
+		//this should never be countered in production
+		panic(fmt.Sprintf("job status value thats not allowed - %s", p_status_str))
+	}
+
+	job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
+	err            := p_runtime_sys.Mongodb_coll.Update(bson.M{
+			"t":      "img_running_job",
+			"id_str": p_job_id_str,
+		},
+		bson.M{
+			"$set":bson.M{
+				"status_str":p_status_str,
+				"end_time_f":job_end_time_f,
+			},
+		},)
+		
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to update an img_running_job in the DB, as complete and its end_time",
+			"mongodb_update_error",
+			&map[string]interface{}{
+				"job_id_str":    p_job_id_str,
+				"job_end_time_f":job_end_time_f,
+			},
+			err, "gf_images_jobs", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+
 }

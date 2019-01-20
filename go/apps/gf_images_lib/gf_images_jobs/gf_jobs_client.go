@@ -22,7 +22,6 @@ package gf_images_jobs
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
 )
@@ -137,7 +136,7 @@ func Job__get_update_ch(p_job_id_str string,
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)
 
-	job_cmd_str := "get_running_job_update_ch"
+	job_cmd_str := "get_job_update_ch"
 	job_msg     := Job_msg{
 		job_id_str:     p_job_id_str,
 		cmd_str:        job_cmd_str,
@@ -150,4 +149,18 @@ func Job__get_update_ch(p_job_id_str string,
 	job_updates_ch, _ := response.(chan Job_update_msg)
 
 	return job_updates_ch
+}
+//-------------------------------------------------
+func Job__cleanup(p_job_id_str string,
+	p_jobs_mngr_ch Jobs_mngr,
+	p_runtime_sys  *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__cleanup()")
+
+	job_cmd_str := "cleanup_job"
+	job_msg     := Job_msg{
+		job_id_str:p_job_id_str,
+		cmd_str:   job_cmd_str,
+	}
+
+	p_jobs_mngr_ch <- job_msg
 }
