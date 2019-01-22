@@ -1,0 +1,10 @@
+body {
+	background-color:lightgrey;margin:0px;font-family:sans-serif;
+}
+/*----------------------------------------------------------------*/
+#title {
+	padding:     6px;
+	font-size:   12px;
+	font-weight: bold;
+	color:       #B3B3B3;
+}
