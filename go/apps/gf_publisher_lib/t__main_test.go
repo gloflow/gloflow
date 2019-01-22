@@ -24,6 +24,7 @@ import (
 	"testing"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
@@ -113,13 +114,7 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 
 
 
-	job_updates_ch := gf_images_jobs.Job__get_update_ch(images_job_id_str, p_gf_images_runtime_info.Jobs_mngr, p_runtime_sys)
+	gf_images_lib.T__test_image_job__updates(images_job_id_str, p_gf_images_runtime_info.Jobs_mngr, p_runtime_sys)
 
-	for ;; {
-
-		fmt.Println("\n\n------------------------- TESTING - GET_JOB_UPDATE -----")
-		update := <-job_updates_ch
-		fmt.Println(update)
-	}
 
 }
