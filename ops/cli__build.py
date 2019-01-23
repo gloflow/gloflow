@@ -41,16 +41,14 @@ def main():
     print('                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0)))
     print('')
 
-    def log_fun(g, m): print('%s%s%s:%s%s%s'%(bg('yellow'), g, attr(0), bg('gree'), m, attr(0)))
+    def log_fun(g, m): print('%s%s%s:%s%s%s'%(fg('yellow'), g, attr(0), fg('green'), m, attr(0)))
 
     b_meta_map = gf_meta.get()['build_info_map']
     args_map   = parse_args()
     run_str    = args_map['run']
 
-    if run_str == 'build' or run_str == 'test':
-        app_name_str = args_map['app']
-        assert b_meta_map.has_key(app_name_str)
-        app_meta_map = b_meta_map[app_name_str]
+    app_name_str = args_map['app']
+    assert b_meta_map.has_key(app_name_str)
 
     #-------------
     #BUILD
@@ -58,12 +56,14 @@ def main():
         if not app_meta_map.has_key('go_output_path_str'):
             print("not a main package")
             exit()
+
+        app_meta_map = b_meta_map[app_name_str]
         build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
     #-------------
     #BUILD_WEB
     if run_str == 'build_web':
         
-        apps_names_lst = []
+        apps_names_lst = [app_name_str]
         gf_web__build.build(apps_names_lst, log_fun)
     #-------------
     #TEST

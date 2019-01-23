@@ -28,6 +28,7 @@ import gf_web_meta
 #---------------------------------------------------
 def build(p_apps_names_lst, p_log_fun):
 	p_log_fun("FUN_ENTER","gf_web__build.build()")
+	assert len(p_apps_names_lst) > 0
 
 	apps_meta_map = gf_web_meta.get()
 
@@ -38,37 +39,31 @@ def build(p_apps_names_lst, p_log_fun):
 		#BUILD PAGES - build each page of the app
 		for page_name_str, p_map in app_map['pages_map'].items():
 
-			code_root_dir_str = p_map['code_root_dir_str']
 			target_deploy_dir = p_map['target_deploy_dir']
 
 			build_page(page_name_str,
-				code_root_dir_str,
 				target_deploy_dir,
 				p_map,
 				p_log_fun)
 #---------------------------------------------------
 def build_page(p_page_name_str,
-    p_code_root_dir_path_str,
     p_target_deploy_dir_path_str,
     p_page_info_map,
     p_log_fun):
-	p_log_fun("FUN_ENTER","gf_web__build.build_page()")
+	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str,attr(0)))
+	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str, attr(0)))
 	p_log_fun('INFO', 'page type - %s'%(p_page_info_map['type_str']))
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	p_log_fun('INFO', 'p_code_root_dir_path_str     - %s'%(p_code_root_dir_path_str))
 	p_log_fun('INFO', 'p_target_deploy_dir_path_str - %s'%(p_target_deploy_dir_path_str))
 	
-	assert isinstance(p_code_root_dir_path_str,    basestring)
-	assert isinstance(p_target_deploy_dir_path_str,basestring)
-	assert os.path.isdir(p_code_root_dir_path_str)
+	assert isinstance(p_target_deploy_dir_path_str, basestring)
 	assert os.path.isdir(p_target_deploy_dir_path_str)
 
 	#---------------------------------------------------
 	def build_typescript(p_out_file_str, p_minified_file_str, p_ts_files_lst):
-		p_log_fun("FUN_ENTER","gf_web__build.build_page().build_typescript()")
+		p_log_fun("FUN_ENTER", "gf_web__build.build_page().build_typescript()")
 
 		cmd_lst = [
 			'tsc',
@@ -83,9 +78,7 @@ def build_page(p_page_name_str,
 		if not r.err == '': print r.err
 
 		#minify into the same file name as the Typescript compiler output
-		minify_js(p_minified_file_str,
-			[p_out_file_str],
-			p_log_fun)
+		minify_js(p_minified_file_str, [p_out_file_str], p_log_fun)
 	#---------------------------------------------------
 
 	#-----------------

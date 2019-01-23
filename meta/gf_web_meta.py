@@ -11,17 +11,16 @@ def get():
 				#IMAGES_FLOWS_BROWSER
 				'gf_images_flows_browser':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_images/flows_browser'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_images/js/gf_images_flows_browser.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_images/js/gf_images_flows_browser.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_images/flows_browser/gf_images_flows_browser.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_gifs.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_gifs_viewer.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_image_viewer.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_sys_panel.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_images/ts/flows_browser/gf_images_flows_browser.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_gifs.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_gifs_viewer.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_image_viewer.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_sys_panel.ts'%(cwd_str),
 						],
 						#-------------
 						#LIBS
@@ -44,14 +43,13 @@ def get():
 				#IMAGES_DASHBOARD
 				'gf_images_dashboard':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_images/dashboard'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_images/js/dashboard__ff0099__ooo.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_images/js/dashboard__ff0099__ooo.min.js'%(cwd_str),
 						'files_lst': [
-							'%s/../web/src/gf_apps/gf_images/dashboard/gf_images_dashboard.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_images/stats/gf_images_stats.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_images/ts/dashboard/gf_images_dashboard.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_images/ts/stats/gf_images_stats.ts'%(cwd_str),
 						],
 						#-------------
 						#LIBS
@@ -82,26 +80,25 @@ def get():
 				#DASHBOARD
 				'gf_analytics_dashboard':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/gf_apps/gf_analytics'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_analytics_dashboard.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_analytics/js/gf_analytics_dashboard.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_analytics/dashboard/gf_analytics_dashboard.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_analytics/ts/dashboard/gf_analytics_dashboard.ts'%(cwd_str),
 							#-------------
 							#STATS__GF_IMAGES
-							'%s/../web/src/gf_apps/gf_images/stats/gf_images_stats.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_images/ts/stats/gf_images_stats.ts'%(cwd_str),
 							#-------------
 							#STATS__GF_CRAWL
-							'%s/../web/src/gf_apps/gf_crawl_lib/stats/gf_crawl_stats.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/stats/gf_crawl_stats__errors.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/stats/gf_crawl_stats__fetches.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/stats/gf_crawl_stats__images.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/stats/gf_crawl_stats__links.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/stats/gf_crawl_stats.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/stats/gf_crawl_stats__errors.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/stats/gf_crawl_stats__fetches.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/stats/gf_crawl_stats__images.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/stats/gf_crawl_stats__links.ts'%(cwd_str),
 							#-------------
-							'%s/../web/src/gf_stats/gf_stats.ts'%(cwd_str)
+							'%s/../web/src/gf_stats/ts/gf_stats.ts'%(cwd_str)
 						],
 						#-------------
 						#LIBS
@@ -135,14 +132,13 @@ def get():
 
 					#static files to copy without change
 					'files_to_copy_lst':[
-						('%s/../web/src/gf_apps/gf_analytics/dashboard/analytics_dashboard__ff0099__ooo.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),),
+						('%s/../web/src/gf_apps/gf_analytics/ts/dashboard/analytics_dashboard__ff0099__ooo.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),),
 					]
 				},
 				#-------------
 				#CRAWL_DASHBOARD
 				'gf_crawl_dashboard':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_crawl_lib'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
@@ -195,7 +191,6 @@ def get():
 				#              belong to neither gf_images nor gf_publisher. maybe it should be its own app?
 				'gf_domains_browser':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_domains_lib'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
@@ -233,7 +228,6 @@ def get():
 			'pages_map':{
 				'gf_user_profile':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_user'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_user'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.js'%(cwd_str),
@@ -265,7 +259,6 @@ def get():
 			'pages_map':{
 				'main':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_landing_page'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
 
 					'ts':{
@@ -302,7 +295,6 @@ def get():
 			'pages_map':{
 				'gf_post':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_publisher/gf_post'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
 
 					'ts':{
@@ -333,7 +325,6 @@ def get():
 				#-------------
 				'gf_posts_browser':{
 					'type_str':          'ts',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_publisher/gf_posts_browser'%(cwd_str),
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
 
 					'ts':{

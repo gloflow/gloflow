@@ -71,14 +71,13 @@ export function init(p_log_fun) {
 	$('#gf_images_flow_container').masonry({
 		// options...
 		itemSelector: '.item',
-		columnWidth : 6
+		columnWidth:  6
 	});
 
 	$('.gf_image').each((p_i,p_e)=>{
 
 		const image_element = p_e;
-		init_image_date(image_element,
-					p_log_fun);
+		init_image_date(image_element, p_log_fun);
 
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_format_str           = $(image_element).attr('data-img_format');
@@ -90,17 +89,11 @@ export function init(p_log_fun) {
 			const img_id_str = $(image_element).attr('data-img_id');
 
 
-			gf_gifs_viewer.init(image_element,
-							img_id_str,
-							flow_name_str,
-							p_log_fun);
+			gf_gifs_viewer.init(image_element, img_id_str, flow_name_str, p_log_fun);
 		}
 		//----------------
 		else {
-			gf_image_viewer.init(image_element,
-						img_thumb_medium_url_str,
-						flow_name_str,
-						p_log_fun);
+			gf_image_viewer.init(image_element, img_thumb_medium_url_str, flow_name_str, p_log_fun);
 		}
 		//----------------
 	});
@@ -128,17 +121,15 @@ export function init(p_log_fun) {
 				p_log_fun("INFO","current_page_int - "+current_page_int);
 
 				load_new_page(flow_name_str,
-						current_page_int,
-						()=>{
+					current_page_int,
+					()=>{
 
-							current_page_int    += 1;
-							page_is_loading_bool = false;
+						current_page_int    += 1;
+						page_is_loading_bool = false;
 
-
-
-							$(current_pages_display).find('#end_page').text(current_page_int);
-						},
-						p_log_fun);
+						$(current_pages_display).find('#end_page').text(current_page_int);
+					},
+					p_log_fun);
 			}
 		}
 	};
@@ -149,12 +140,12 @@ function init__current_pages_display(p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_flows_browser.init__current_pages_display()');
 
 	const container = $(`
-			<div id="current_pages_display"'>
-				<div id="title">pages:</div>
-				<div id="start_page">1</div>
-				<div id="to">to</div>
-				<div id="end_page">6</div>
-			</div>`);
+		<div id="current_pages_display"'>
+			<div id="title">pages:</div>
+			<div id="start_page">1</div>
+			<div id="to">to</div>
+			<div id="end_page">6</div>
+		</div>`);
 
 	return container;
 }
@@ -166,14 +157,14 @@ function load_new_page(p_flow_name_str :string,
 	p_log_fun('FUN_ENTER','gf_images_flows_browser.load_new_page()');
 
 	http__load_new_page(p_flow_name_str,
-				p_current_page_int,
-				(p_page_lst)=>{
-					view_page(p_page_lst);
-				},
-				(p_error)=>{
-					p_on_complete_fun();
-				},
-				p_log_fun);
+		p_current_page_int,
+		(p_page_lst)=>{
+			view_page(p_page_lst);
+		},
+		(p_error)=>{
+			p_on_complete_fun();
+		},
+		p_log_fun);
 
 	//---------------------------------------------------
 	function view_page(p_page_lst) {
@@ -218,8 +209,8 @@ function load_new_page(p_flow_name_str :string,
 				//MASONRY_RELOAD
 				var masonry = $('#gf_images_flow_container').data('masonry');
 
-				masonry.once('layoutComplete',(p_event,p_laid_out_items)=>{
-					$(image).css('visibility','visible');
+				masonry.once('layoutComplete',(p_event, p_laid_out_items)=>{
+					$(image).css('visibility', 'visible');
 				});
 
 				$('#gf_images_flow_container').masonry('reloadItems');
@@ -230,15 +221,9 @@ function load_new_page(p_flow_name_str :string,
 				//VIEWER_INIT
 
 				if (img__format_str == 'gif') {
-					gf_gifs_viewer.init(image,
-								img__id_str,
-								p_flow_name_str,
-								p_log_fun);
+					gf_gifs_viewer.init(image, img__id_str, p_flow_name_str, p_log_fun);
 				} else {
-					gf_image_viewer.init(image,
-									img__thumbnail_medium_url_str,
-									p_flow_name_str,
-									p_log_fun);
+					gf_image_viewer.init(image, img__thumbnail_medium_url_str, p_flow_name_str, p_log_fun);
 				}
 				//------------------
 
