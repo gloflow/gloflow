@@ -293,6 +293,8 @@ def get():
 		#-----------------------------
 		'gf_publisher':{
 			'pages_map':{
+				#-------------
+				#GF_POST
 				'gf_post':{
 					'type_str':          'ts',
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
@@ -301,12 +303,12 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_publisher/js/gf_post.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_publisher/js/gf_post.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_publisher/gf_post/gf_post.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_publisher/gf_post/gf_post_image_view.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_publisher/gf_post/gf_post_tag_mini_view.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_tagger/gf_tagger_client/gf_tagger_client.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_tagger/gf_tagger_client/gf_tagger_input_ui.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_sys_panel.ts'%(cwd_str)
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_post/gf_post.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_post/gf_post_image_view.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_post/gf_post_tag_mini_view.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_tagger/ts/gf_tagger_client/gf_tagger_client.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_sys_panel.ts'%(cwd_str)
 						],
 						#-------------
 						#LIBS
@@ -316,13 +318,14 @@ def get():
 
 					'css':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher/gf_post/web/css/gf_post.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_publisher/gf_post/web/css/gf_post_tagging.css'%(cwd_str), '%s/../go/bin/gf_apps/gf_publisher/css'%(cwd_str)),
-							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                             '%s/../go/bin/gf_apps/gf_publisher/css'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/css/gf_post.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/css/gf_post_tagging.css'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                 '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
 						]
 					}
 				},
 				#-------------
+				#GF_POSTS_BROWSER
 				'gf_posts_browser':{
 					'type_str':          'ts',
 					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
@@ -331,13 +334,13 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_publisher/js/gf_posts_browser.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_publisher/js/gf_posts_browser.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_publisher/gf_posts_browser/gf_posts_browser.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_publisher/gf_posts_browser/gf_posts_browser_view.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_publisher/gf_posts_browser/gf_posts_browser_client.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_tagger/gf_tagger_client/gf_tagger_client.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_tagger/gf_tagger_client/gf_tagger_input_ui.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_tagger/gf_tagger_client/gf_tagger_notes_ui.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_sys_panel.ts'%(cwd_str)
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_posts_browser/gf_posts_browser.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_posts_browser/gf_posts_browser_view.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_publisher/ts/gf_posts_browser/gf_posts_browser_client.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_tagger/ts/gf_tagger_client/gf_tagger_client.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_sys_panel.ts'%(cwd_str)
 						],
 						#-------------
 						#LIBS
@@ -350,9 +353,9 @@ def get():
 
 					'css':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser/web/css/gf_posts_browser.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser/web/css/gf_posts_browser_tagging.css'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
-							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                                               '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser_tagging.css'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
 						]
 					}
 				}
@@ -360,21 +363,21 @@ def get():
 			}
 		},
 		#-----------------------------
-		'gf_tagger':{
-			'pages_map':{
-				'gf_tag_objects':{
-					'type_str':          'dart',
-					'code_root_dir_str': '%s/../web/src/gf_apps/gf_tagger/gf_tag_objects'%(cwd_str),
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_tagger/static'%(cwd_str),
-				},
-				##IMPORTANT!! - not a page itself, instead its code being used by other pages, but its included here
-				##              so that its code gets built when pages for this app are built
-				#'gf_tagger_client':{
-				#	'code_root_dir_str':'%s/../src/apps/gf_tagger/client/gf_tagger_client'%(cwd_str),
-				#	'target_deploy_dir':'%s/../bin/apps/gf_tagger/static'%(cwd_str),
-				#}
-			}
-		}
+		# 'gf_tagger':{
+		# 	'pages_map':{
+		# 		'gf_tag_objects':{
+		# 			'type_str':          'dart',
+		# 			'code_root_dir_str': '%s/../web/src/gf_apps/gf_tagger/gf_tag_objects'%(cwd_str),
+		# 			'target_deploy_dir': '%s/../web/build/gf_apps/gf_tagger/static'%(cwd_str),
+		# 		},
+		# 		##IMPORTANT!! - not a page itself, instead its code being used by other pages, but its included here
+		# 		##              so that its code gets built when pages for this app are built
+		# 		#'gf_tagger_client':{
+		# 		#	'code_root_dir_str':'%s/../src/apps/gf_tagger/client/gf_tagger_client'%(cwd_str),
+		# 		#	'target_deploy_dir':'%s/../bin/apps/gf_tagger/static'%(cwd_str),
+		# 		#}
+		# 	}
+		# }
 		#-----------------------------
 	}
 	return apps_map

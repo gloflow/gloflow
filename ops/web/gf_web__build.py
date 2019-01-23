@@ -33,7 +33,9 @@ def build(p_apps_names_lst, p_log_fun):
 	apps_meta_map = gf_web_meta.get()
 
 	for app_str in p_apps_names_lst:
-		assert apps_meta_map.has_key(app_str)
+		if not apps_meta_map.has_key(app_str):
+			p_log_fun("ERROR","supplied app (%s) does not exist in apps_meta"%(app_str))
+			return
 		app_map = apps_meta_map[app_str]
 
 		#BUILD PAGES - build each page of the app

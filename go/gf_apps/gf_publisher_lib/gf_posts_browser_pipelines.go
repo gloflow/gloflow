@@ -38,7 +38,7 @@ func Get_posts_page(p_page_index_int int,
 	}
 
 	serialized_page_lst := []map[string]interface{}{}
-	for _,post := range page_lst {
+	for _, post := range page_lst {
 		post_map := map[string]interface{}{
 			"title_str":            post.Title_str,
 			"images_number_str":    len(post.Images_ids_lst),

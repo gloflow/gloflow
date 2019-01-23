@@ -41,8 +41,14 @@ def main():
     print('                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0)))
     print('')
 
-    def log_fun(g, m): print('%s%s%s:%s%s%s'%(fg('yellow'), g, attr(0), fg('green'), m, attr(0)))
-
+    #--------------------------------------------------
+    def log_fun(g, m):
+        if g == "ERROR":
+            print('%s%s%s:%s%s%s'%(bg('red'), g, attr(0), fg('red'), m, attr(0)))
+        else:
+            print('%s%s%s:%s%s%s'%(fg('yellow'), g, attr(0), fg('green'), m, attr(0)))
+    #--------------------------------------------------
+    
     b_meta_map = gf_meta.get()['build_info_map']
     args_map   = parse_args()
     run_str    = args_map['run']
