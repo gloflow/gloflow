@@ -2,33 +2,41 @@
 
 import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
-
-
-
+#-------------------------------------------------------------
 def get():
 
     meta_map = {
         'build_info_map':{
             #-------------
             #MAIN
+            #GF_IMAGES
             'gf_images':{
-                'go_path_str':       '%s/../go/apps/gf_images'%(cwd_str),
-                'go_output_path_str':'%s/../bin/gf_images_service'%(cwd_str),
+                'version_str':         '0.7.3.7',
+                'go_path_str':         '%s/../go/apps/gf_images'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_images/gf_images_service'%(cwd_str),
+                'service_name_str':    'gf_images_service',
+                'service_base_dir_str':'%s/../bin/gf_images'%(cwd_str),
             },
-            #-------------
+            
             #LIB
+            #GF_IMAGES_LIB
             'gf_images_lib':{
                 'go_path_str':               '%s/../go/apps/gf_images_lib'%(cwd_str),
                 'test_data_to_serve_dir_str':'%s/../go/apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
             },
             #-------------
             #MAIN
+            #GF_PUBLISHER
             'gf_publisher':{
-                'go_path_str':       '%s/../go/apps/gf_publisher'%(cwd_str),
-                'go_output_path_str':'%s/../bin/gf_publisher_service'%(cwd_str),
+                'version_str':         '0.6.1',
+                'go_path_str':         '%s/../go/apps/gf_publisher'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_publisher/gf_publisher_service'%(cwd_str),
+                'service_name_str':    'gf_publisher_service',
+                'service_base_dir_str':'%s/../bin/gf_publisher'%(cwd_str),
             },
-            #-------------
+            
             #LIB
+            #GF_PUBLISHER_LIB
             'gf_publisher_lib':{
                 'go_path_str':'%s/../go/apps/gf_publisher_lib'%(cwd_str),
 
@@ -39,26 +47,40 @@ def get():
             },
             #-------------
             #MAIN
-            'gf_tagger':{
-                'go_path_str':       '%s/../go/apps/gf_tagger'%(cwd_str),
-                'go_output_path_str':'%s/../bin/gf_tagger_service'%(cwd_str),
-            },
-            #-------------
-            #MAIN
-            'gf_landing_page':{
-                'go_path_str':       '%s/../go/apps/gf_landing_page'%(cwd_str),
-                'go_output_path_str':'%s/../bin/gf_landing_page_service'%(cwd_str),
-            },
-            #-------------
-            #MAIN
+            #GF_ANALYTICS
             'gf_analytics':{
-                'go_path_str':       '%s/../go/apps/gf_analytics'%(cwd_str),
-                'go_output_path_str':'%s/../bin/gf_analytics_service'%(cwd_str),
+                'version_str':         '0.7.3.16',
+                'service_name_str':    'gf_analytics_service',
+                'go_path_str':         '%s/../go/apps/gf_analytics'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_analytics_service'%(cwd_str),
+                'service_name_str':    'gf_analytics_service',
+                'service_base_dir_str':'%s/../bin/gf_analytics'%(cwd_str),
             },
             #-------------
             #LIB
+            #GF_CRAWL_LIB
             'gf_crawl_lib':{
                 'go_path_str':'%s/../go/apps/gf_crawl_lib'%(cwd_str),
+            },
+            #-------------
+            #MAIN
+            #GF_LANDING_PAGE
+            'gf_landing_page':{
+                'version_str':         '0.6.9',
+                'go_path_str':         '%s/../go/apps/gf_landing_page'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_landing_page_service'%(cwd_str),
+                'service_name_str':    'gf_landing_page_service',
+                'service_base_dir_str':'%s/../bin/gf_landing_page'%(cwd_str),
+            },
+            #-------------
+            #MAIN
+            #GF_TAGGER
+            'gf_tagger':{
+                'version_str':         '0.6.1',
+                'go_path_str':         '%s/../go/apps/gf_tagger'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_tagger_service'%(cwd_str),
+                'service_name_str':    'gf_tagger_service',
+                'service_base_dir_str':'%s/../bin/gf_tagger'%(cwd_str),
             },
             #-------------
         }

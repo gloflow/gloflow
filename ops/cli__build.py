@@ -34,6 +34,9 @@ import gf_s3_utils
 
 sys.path.append('%s/web'%(cwd_str))
 import gf_web__build
+
+sys.path.append('%s/containers'%(cwd_str))
+import gf_containers
 #--------------------------------------------------
 def main():
     
@@ -67,10 +70,13 @@ def main():
         build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
     #-------------
     #BUILD_WEB
-    if run_str == 'build_web':
-        
+    elif run_str == 'build_web':
         apps_names_lst = [app_name_str]
         gf_web__build.build(apps_names_lst, log_fun)
+    #-------------
+    #BUILD_CONTAINERS
+    elif run_str == 'build_containers':
+        gf_containers.build(log_fun)
     #-------------
     #TEST
     elif run_str == 'test':
@@ -110,9 +116,10 @@ def parse_args():
     #RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''      - build a particular app
-- '''+fg('yellow')+'build_web'+attr(0)+'''  - build web code (ts/js/css/html)
-- '''+fg('yellow')+'test'+attr(0)+'''       - run code tests
+- '''+fg('yellow')+'build'+attr(0)+'''            - build an app
+- '''+fg('yellow')+'build_web'+attr(0)+'''        - build web code (ts/js/css/html) for an app
+- '''+fg('yellow')+'build_containers'+attr(0)+''' - build Docker containers for an app
+- '''+fg('yellow')+'test'+attr(0)+'''             - run code tests for an app
 
         ''')
     #-------------
