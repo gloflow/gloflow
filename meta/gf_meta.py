@@ -13,9 +13,9 @@ def get():
             'gf_images':{
                 'version_str':         '0.7.3.7',
                 'go_path_str':         '%s/../go/apps/gf_images'%(cwd_str),
-                'go_output_path_str':  '%s/../bin/gf_images/gf_images_service'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_apps/gf_images/gf_images_service'%(cwd_str),
                 'service_name_str':    'gf_images_service',
-                'service_base_dir_str':'%s/../bin/gf_images'%(cwd_str),
+                'service_base_dir_str':'%s/../bin/gf_apps/gf_images'%(cwd_str),
             },
             
             #LIB
@@ -28,11 +28,11 @@ def get():
             #MAIN
             #GF_PUBLISHER
             'gf_publisher':{
-                'version_str':         '0.6.1',
+                'version_str':         '0.6.1.0',
                 'go_path_str':         '%s/../go/apps/gf_publisher'%(cwd_str),
-                'go_output_path_str':  '%s/../bin/gf_publisher/gf_publisher_service'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_apps/gf_publisher/gf_publisher_service'%(cwd_str),
                 'service_name_str':    'gf_publisher_service',
-                'service_base_dir_str':'%s/../bin/gf_publisher'%(cwd_str),
+                'service_base_dir_str':'%s/../bin/gf_apps/gf_publisher'%(cwd_str),
             },
             
             #LIB
@@ -50,11 +50,10 @@ def get():
             #GF_ANALYTICS
             'gf_analytics':{
                 'version_str':         '0.7.3.16',
+                'go_path_str':         '%s/../go/gf_apps/gf_analytics'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_apps/gf_analytics/gf_analytics_service'%(cwd_str),
                 'service_name_str':    'gf_analytics_service',
-                'go_path_str':         '%s/../go/apps/gf_analytics'%(cwd_str),
-                'go_output_path_str':  '%s/../bin/gf_analytics_service'%(cwd_str),
-                'service_name_str':    'gf_analytics_service',
-                'service_base_dir_str':'%s/../bin/gf_analytics'%(cwd_str),
+                'service_base_dir_str':'%s/../bin/gf_apps/gf_analytics'%(cwd_str),
             },
             #-------------
             #LIB
@@ -66,21 +65,21 @@ def get():
             #MAIN
             #GF_LANDING_PAGE
             'gf_landing_page':{
-                'version_str':         '0.6.9',
-                'go_path_str':         '%s/../go/apps/gf_landing_page'%(cwd_str),
-                'go_output_path_str':  '%s/../bin/gf_landing_page_service'%(cwd_str),
+                'version_str':         '0.6.9.0',
+                'go_path_str':         '%s/../go/gf_apps/gf_landing_page'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_apps/gf_landing_page/gf_landing_page_service'%(cwd_str),
                 'service_name_str':    'gf_landing_page_service',
-                'service_base_dir_str':'%s/../bin/gf_landing_page'%(cwd_str),
+                'service_base_dir_str':'%s/../bin/gf_apps/gf_landing_page'%(cwd_str),
             },
             #-------------
             #MAIN
             #GF_TAGGER
             'gf_tagger':{
-                'version_str':         '0.6.1',
-                'go_path_str':         '%s/../go/apps/gf_tagger'%(cwd_str),
-                'go_output_path_str':  '%s/../bin/gf_tagger_service'%(cwd_str),
+                'version_str':         '0.6.1.0',
+                'go_path_str':         '%s/../go/gf_apps/gf_tagger'%(cwd_str),
+                'go_output_path_str':  '%s/../bin/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
                 'service_name_str':    'gf_tagger_service',
-                'service_base_dir_str':'%s/../bin/gf_tagger'%(cwd_str),
+                'service_base_dir_str':'%s/../bin/gf_apps/gf_tagger'%(cwd_str),
             },
             #-------------
         }

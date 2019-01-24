@@ -1,75 +1,104 @@
-import os
+import os,sys
+cwd_str = os.path.abspath(os.path.dirname(__file__))
+
 import subprocess
+import delegator
+from colored import fg,bg,attr
 
 sys.path.append('%s/../../meta'%(cwd_str))
+import gf_meta
 import gf_web_meta
 #-------------------------------------------------------------
-def build(p_app_name_str, #p_service_name_str,
-    p_service_dockerfile_path_str,
-    p_service_docker_version_str,
-    p_user_name_str,
-    p_log_fun):
+def build(p_app_name_str,
+	p_log_fun,
+	p_user_name_str = 'local'):
+	p_log_fun('FUN_ENTER','gf_containers.build()')
 	assert isinstance(p_app_name_str, basestring)
-	assert os.path.isfile(p_service_dockerfile_path_str)
-	assert len(p_service_docker_version_str.split(".")) == 3 #format x.x.x
+	
+	#------------------
+	#META
+	build_meta_map = gf_meta.get()['build_info_map']
 
-	prepare_context_dir(p_app_name_str)
+	if not build_meta_map.has_key(p_app_name_str):
+		p_log_fun("ERROR","supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
+		return
+	app_meta_map = build_meta_map[p_app_name_str]
 
-	build_docker_container(p_service_name_str,
-		p_service_dockerfile_path_str,
-		p_service_docker_version_str,
+	service_name_str     = app_meta_map['service_name_str']
+	service_base_dir_str = app_meta_map['service_base_dir_str']
+	assert os.path.isdir(service_base_dir_str)
+
+	service_version_str  = app_meta_map['version_str']
+	assert len(service_version_str.split(".")) == 4 #format x.x.x.x
+	#------------------
+
+	prepare_context_dir(p_app_name_str, service_base_dir_str, p_log_fun)
+
+
+	build_docker_container(service_name_str,
+		service_base_dir_str,
+		service_version_str,
 		p_user_name_str,
 		p_log_fun)
-
-
 #-------------------------------------------------------------
-def prepare_context_dir(p_app_name_str):
+def prepare_context_dir(p_app_name_str,
+	p_service_base_dir_str,
+	p_log_fun):
+	p_log_fun('FUN_ENTER','gf_containers.prepare_context_dir()')
 
 	apps_meta_map = gf_web_meta.get()
 	assert apps_meta_map.has_key(p_app_name_str)
-
 
 	app_meta_map = apps_meta_map[p_app_name_str]
 
 	assert app_meta_map.has_key('pages_map')
 	pages_map = app_meta_map['pages_map']
 
+	for pg_name_str, pg_info_map in pages_map.items():
 
+		assert pg_info_map.has_key('build_dir_str')
+		assert os.path.isdir(pg_info_map['build_dir_str'])
+		build_dir_str = pg_info_map['build_dir_str']
 
-	for pg_info_map, pg_name_str in pages_map.items():
+		#------------------
+		#TARGET_DIR
+		target_dir_str = '%s/static'%(p_service_base_dir_str)
+		r = delegator.run('mkdir -p %s'%(target_dir_str))
 
-
-
-		assert pg_info_map.has_key('target_deploy_dir')
-		assert os.path.isdir(pg_info_map['target_deploy_dir'])
-		target_deploy_dir = pg_info_map['target_deploy_dir']
-
-
-
-		delegator.run('cp -r %s '%(target_deploy_dir))
+		if not r.out == '': print r.out
+		if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
+		#------------------
+		#COPY_PAGE_WEB_CODE
+		c = 'cp -p -r %s/* %s'%(build_dir_str, target_dir_str)
+		print(c)
+		
+		r = delegator.run(c)
+		if not r.out == '': print r.out
+		if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
+		#------------------
 #-------------------------------------------------------------
 def build_docker_container(p_service_name_str,
-    p_service_dockerfile_path_str,
-    p_service_docker_version_str,
-    p_user_name_str,
-    p_log_fun):
+	p_service_base_dir_str,
+	p_service_version_str,
+	p_user_name_str,
+	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_containers.build_docker_container()')
-	assert os.path.isdir(p_service_dockerfile_path_str)
+	assert os.path.isdir(p_service_base_dir_str)
 
-	image_name_str = '%s/%s:%s'%(p_user_name_str, p_service_name_str, p_service_docker_version_str)
-
-	context_dir_path_str = os.path.dirname(p_service_dockerfile_path_str)
+	image_name_str       = '%s/%s:%s'%(p_user_name_str, p_service_name_str, p_service_version_str)
+	dockerfile_path_str  = '%s/Dockerfile'%(p_service_base_dir_str)
+	context_dir_path_str = p_service_base_dir_str
 
 	p_log_fun('INFO','====================+++++++++++++++=====================')
 	p_log_fun('INFO','                 BUILDING PACKAGE/SERVICE IMAGE')
 	p_log_fun('INFO','              %s'%(p_service_name_str))
-	p_log_fun('INFO','Dockerfile     - %s'%(p_service_dockerfile_path_str))
+	p_log_fun('INFO','Dockerfile     - %s'%(dockerfile_path_str))
 	p_log_fun('INFO','image_name_str - %s'%(image_name_str))
 	p_log_fun('INFO','====================+++++++++++++++=====================')
 
 	cmd_lst = [
 		'sudo docker build',
-		'-f %s'%(p_service_dockerfile_path_str),
+		'-f %s'%(dockerfile_path_str),
 		'--tag=%s'%(image_name_str),
 		context_dir_path_str
 	]

@@ -10,8 +10,8 @@ def get():
 				#-------------
 				#IMAGES_FLOWS_BROWSER
 				'gf_images_flows_browser':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_images/js/gf_images_flows_browser.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_images/js/gf_images_flows_browser.min.js'%(cwd_str),
@@ -42,8 +42,8 @@ def get():
 				#-------------
 				#IMAGES_DASHBOARD
 				'gf_images_dashboard':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_images'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_images/js/dashboard__ff0099__ooo.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_images/js/dashboard__ff0099__ooo.min.js'%(cwd_str),
@@ -79,8 +79,8 @@ def get():
 				#-------------
 				#DASHBOARD
 				'gf_analytics_dashboard':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_analytics_dashboard.js'%(cwd_str),
@@ -138,8 +138,8 @@ def get():
 				#-------------
 				#CRAWL_DASHBOARD
 				'gf_crawl_dashboard':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_crawl_dashboard.js'%(cwd_str),
@@ -190,8 +190,8 @@ def get():
 				#IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
 				#              belong to neither gf_images nor gf_publisher. maybe it should be its own app?
 				'gf_domains_browser':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_domains_browser.js'%(cwd_str),
@@ -227,8 +227,8 @@ def get():
 		'gf_user':{
 			'pages_map':{
 				'gf_user_profile':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_user'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_user'%(cwd_str),
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.min.js'%(cwd_str),
@@ -258,8 +258,8 @@ def get():
 		'gf_landing_page':{
 			'pages_map':{
 				'main':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.js'%(cwd_str),
@@ -296,8 +296,8 @@ def get():
 				#-------------
 				#GF_POST
 				'gf_post':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_publisher/js/gf_post.js'%(cwd_str),
@@ -327,8 +327,8 @@ def get():
 				#-------------
 				#GF_POSTS_BROWSER
 				'gf_posts_browser':{
-					'type_str':          'ts',
-					'target_deploy_dir': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
 
 					'ts':{
 						'out_file_str':      '%s/../web/build/gf_apps/gf_publisher/js/gf_posts_browser.js'%(cwd_str),

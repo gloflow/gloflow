@@ -76,7 +76,7 @@ def main():
     #-------------
     #BUILD_CONTAINERS
     elif run_str == 'build_containers':
-        gf_containers.build(log_fun)
+        gf_containers.build(app_name_str, log_fun)
     #-------------
     #TEST
     elif run_str == 'test':
@@ -103,7 +103,7 @@ def build__go_bin(p_name_str,
     print c
     r = delegator.run(c)
     if not r.out == '': print r.out
-    if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'),attr(0),r.err)
+    if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
 
     os.chdir(cwd_str) #return to initial dir
 
