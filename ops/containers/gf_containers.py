@@ -1,13 +1,32 @@
+# GloFlow media management/publishing system
+# Copyright (C) 2019 Ivan Trajkovic
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import subprocess
-import delegator
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 
 sys.path.append('%s/../../meta'%(cwd_str))
 import gf_meta
 import gf_web_meta
+
+sys.path.append('%s/../utils'%(cwd_str))
+import gf_cli_utils as gf_u
 #-------------------------------------------------------------
 def build(p_app_name_str,
 	p_log_fun,
@@ -45,6 +64,7 @@ def prepare_context_dir(p_app_name_str,
 	p_service_base_dir_str,
 	p_log_fun):
 	p_log_fun('FUN_ENTER','gf_containers.prepare_context_dir()')
+	assert os.path.dirname(p_service_base_dir_str)
 
 	apps_meta_map = gf_web_meta.get()
 	assert apps_meta_map.has_key(p_app_name_str)
@@ -61,20 +81,12 @@ def prepare_context_dir(p_app_name_str,
 		build_dir_str = pg_info_map['build_dir_str']
 
 		#------------------
-		#TARGET_DIR
+		#CREATE_TARGET_DIR
 		target_dir_str = '%s/static'%(p_service_base_dir_str)
-		r = delegator.run('mkdir -p %s'%(target_dir_str))
-
-		if not r.out == '': print r.out
-		if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
+		gf_u.run_cmd('mkdir -p %s'%(target_dir_str))
 		#------------------
 		#COPY_PAGE_WEB_CODE
-		c = 'cp -p -r %s/* %s'%(build_dir_str, target_dir_str)
-		print(c)
-		
-		r = delegator.run(c)
-		if not r.out == '': print r.out
-		if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
+		gf_u.run_cmd('cp -p -r %s/* %s'%(build_dir_str, target_dir_str))
 		#------------------
 #-------------------------------------------------------------
 def build_docker_container(p_service_name_str,
@@ -130,7 +142,7 @@ def build_docker_container(p_service_name_str,
 
 		#------------------
 		#display the line, to update terminal display
-		print line_str
+		print(line_str)
 		#------------------
 
 		if line_str.startswith('Successfully built'):
@@ -139,6 +151,3 @@ def build_docker_container(p_service_name_str,
 
 	#change back to old dir
 	os.chdir(old_cwd)
-
-
-

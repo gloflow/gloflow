@@ -41,7 +41,7 @@ def get():
 
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_images_lib/templates/gf_images_flows_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_images/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_images_lib/templates/gf_images_flows_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_images/templates'%(cwd_str)),
 						]
 					}
 				},
@@ -227,7 +227,7 @@ def get():
 					},
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_images/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_analytics/templates'%(cwd_str)),
 						]
 					}
 				}
@@ -270,7 +270,7 @@ def get():
 
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str), '%s/../bin/gf_apps/gf_publisher/templates'%(cwd_str)),
 						]
 					}
 				}
@@ -312,7 +312,7 @@ def get():
 
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_post.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_post.html'%(cwd_str), '%s/../bin/gf_apps/gf_publisher/templates'%(cwd_str)),
 						]
 					}
 				},
@@ -353,7 +353,7 @@ def get():
 
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_posts_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_posts_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_publisher/templates'%(cwd_str)),
 						]
 					}
 				}

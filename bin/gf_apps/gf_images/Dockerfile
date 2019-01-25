@@ -20,5 +20,6 @@ RUN mkdir -p /home/gf/static
 #              "x509: failed to load system roots and no roots provided"
 RUN apk add ca-certificates
 #------------
-ADD ./static            /home/gf/static
-ADD ./gf_images_service /home/gf/gf_images_service
+ADD ./templates/gf_images_flows_browser.html /home/gf/templates/gf_images_flows_browser.html
+ADD ./static                                 /home/gf/static
+ADD ./gf_images_service                      /home/gf/gf_images_service
