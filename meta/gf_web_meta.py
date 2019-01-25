@@ -38,6 +38,12 @@ def get():
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_images/css'%(cwd_str)),
 						]
 					},
+
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_images_lib/templates/gf_images_flows_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_images/templates'%(cwd_str)),
+						]
+					}
 				},
 				#-------------
 				#IMAGES_DASHBOARD
@@ -219,39 +225,13 @@ def get():
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
 						]
 					},
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_images/templates'%(cwd_str)),
+						]
+					}
 				}
 				#-------------
-			}
-		},
-		#-----------------------------
-		'gf_user':{
-			'pages_map':{
-				'gf_user_profile':{
-					'type_str':      'ts',
-					'build_dir_str': '%s/../web/build/gf_apps/gf_user'%(cwd_str),
-					'ts':{
-						'out_file_str':      '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.js'%(cwd_str),
-						'minified_file_str': '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.min.js'%(cwd_str),
-						'files_lst':[
-							'%s/../web/src/gf_apps/gf_user/gf_user_profile.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_sys_panel.ts'%(cwd_str),
-						],
-						#-------------
-						#LIBS
-						'libs_files_lst':[]
-						#-------------
-					},
-					'css':{
-						'files_lst':[
-							('%s/../web/src/gf_apps/gf_user/css/gf_user_profile.css'%(cwd_str), '%s/../web/build/gf_apps/gf_user/css'%(cwd_str))
-						]
-					},
-
-					#static files to copy without change
-					'files_to_copy_lst':[
-						('%s/../web/src/gf_apps/gf_user/gf_user_profile.html'%(cwd_str), '%s/../web/build/gf_apps/gf_user'%(cwd_str),)
-					]
-				}
 			}
 		},
 		#-----------------------------
@@ -287,6 +267,12 @@ def get():
 							('%s/../web/src/gf_apps/gf_landing_page/css/posts.css'%(cwd_str),           '%s/../web/build/gf_apps/gf_landing_page/css'%(cwd_str))
 						]
 					},
+
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+						]
+					}
 				}
 			}
 		},
@@ -321,6 +307,12 @@ def get():
 							('%s/../web/src/gf_apps/gf_publisher/css/gf_post.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
 							('%s/../web/src/gf_apps/gf_publisher/css/gf_post_tagging.css'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                 '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
+						]
+					},
+
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_post.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
 						]
 					}
 				},
@@ -357,9 +349,46 @@ def get():
 							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser_tagging.css'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
 						]
+					},
+
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_publisher_lib/templates/gf_posts_browser.html'%(cwd_str), '%s/../web/bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+						]
 					}
 				}
 				#-------------
+			}
+		},
+		#-----------------------------
+		'gf_user':{
+			'pages_map':{
+				'gf_user_profile':{
+					'type_str':      'ts',
+					'build_dir_str': '%s/../web/build/gf_apps/gf_user'%(cwd_str),
+					'ts':{
+						'out_file_str':      '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.js'%(cwd_str),
+						'minified_file_str': '%s/../web/build/gf_apps/gf_user/js/gf_user_profile.min.js'%(cwd_str),
+						'files_lst':[
+							'%s/../web/src/gf_apps/gf_user/gf_user_profile.ts'%(cwd_str),
+							'%s/../web/src/gf_core/gf_sys_panel.ts'%(cwd_str),
+						],
+						#-------------
+						#LIBS
+						'libs_files_lst':[]
+						#-------------
+					},
+					'css':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_user/css/gf_user_profile.css'%(cwd_str), '%s/../web/build/gf_apps/gf_user/css'%(cwd_str))
+						]
+					},
+
+					#static files to copy without change
+					'files_to_copy_lst':[
+						('%s/../web/src/gf_apps/gf_user/gf_user_profile.html'%(cwd_str), '%s/../web/build/gf_apps/gf_user'%(cwd_str),)
+					]
+				}
 			}
 		},
 		#-----------------------------

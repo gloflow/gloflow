@@ -1,4 +1,7 @@
-FROM gliderlabs/alpine:3.8
+
+#FIX!! - when using "gliderlabs/alpine:3.8" the container build process was failing at "apk upgrade".
+#        figure out how to fix and use latest alpine 3.8
+FROM gliderlabs/alpine:3.7
 
 RUN apk update
 RUN apk add --update bash
@@ -10,10 +13,10 @@ RUN apk add ca-certificates
 
 #------------
 #DIRS
-RUN mkdir /home/gf/static/
+RUN mkdir -p /home/gf/static/
 
 #for crawler image data
-RUN mkdir /home/gf/image_data 
+RUN mkdir -p /home/gf/image_data 
 #------------
 #PYTHON CODE
 
