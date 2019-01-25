@@ -56,7 +56,7 @@ func image__update_after_process(p_page_img *Gf_crawler_page_img,
 			&map[string]interface{}{
 				"id_str":         p_page_img.Id_str,
 				"gf_image_id_str":p_gf_image_id_str,
-			},err,"gf_crawl_core",p_runtime_sys)
+			}, err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}
 	return nil

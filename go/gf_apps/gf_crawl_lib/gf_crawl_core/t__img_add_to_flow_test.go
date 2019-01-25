@@ -45,7 +45,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 	//-------------------
 	//CRAWLED_IMAGE_CREATE
-	test__crawled_image,gf_err := images__prepare_and_create(test__crawler_name_str,
+	test__crawled_image, gf_err := images__prepare_and_create(test__crawler_name_str,
 		test__cycle_run_id_str,
 		test__img_src_url_str,
 		test__origin_page_url_str,
@@ -56,7 +56,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 
 	//CRAWLED_IMAGE_PERSIST
-	exists_bool,gf_err := Image__db_create(test__crawled_image, crawler_runtime, runtime_sys)
+	exists_bool, gf_err := Image__db_create(test__crawled_image, crawler_runtime, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -112,11 +112,11 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
 	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")
 
-	for _,page_img__pinfo := range page_imgs__pinfos_with_thumbs_lst {
+	for _, page_img__pinfo := range page_imgs__pinfos_with_thumbs_lst {
 
 		spew.Dump(page_img__pinfo)
 
-		assert.Equal(p_test,page_img__pinfo.page_img.S3_stored_bool,false)
+		assert.Equal(p_test,page_img__pinfo.page_img.S3_stored_bool, false)
 
 		if page_img__pinfo.thumbs == nil {
 			panic("page_img.thumbs has not been set to a gf_images_utils.Gf_image_thumbs instance pointer")
@@ -137,7 +137,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	spew.Dump(page_imgs__pinfos_with_s3_lst)
 
-	for _,page_img__pinfo := range page_imgs__pinfos_with_s3_lst {
+	for _, page_img__pinfo := range page_imgs__pinfos_with_s3_lst {
 
 		spew.Dump(page_img__pinfo)
 

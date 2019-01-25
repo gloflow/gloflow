@@ -50,7 +50,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images_pipe__from_html()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
 
 	cyan := color.New(color.FgCyan).SprintFunc()
 	blue := color.New(color.FgBlue).SprintFunc()
@@ -131,12 +131,12 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_img,
 
 
 	//------------------------
-	local_image_file_path_str,gf_err := image__download(p_image, p_images_store_local_dir_path_str, p_runtime_sys)
+	local_image_file_path_str, gf_err := image__download(p_image, p_images_store_local_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,nil,"",gf_err
+		return nil, nil, "", gf_err
 	}
 	//------------------------
-	image,image_thumbs,gf_err := image__process(p_image,
+	image, image_thumbs, gf_err := image__process(p_image,
 		local_image_file_path_str,
 		p_images_store_local_dir_path_str,
 		p_crawled_images_s3_bucket_name_str,
@@ -225,10 +225,10 @@ func images__stage__create_page_images(p_crawler_name_str string,
 
 		gf_img_ref := images__ref_create(p_crawler_name_str,
 			p_cycle_run_id_str,
-			gf_img.Url_str,                              //p_image_url_str
-			gf_img.Domain_str,                           //p_image_url_domain_str
+			gf_img.Url_str,                           //p_image_url_str
+			gf_img.Domain_str,                        //p_image_url_domain_str
 			page_img__pinfo.link.origin_page_url_str, //p_origin_page_url_str
-			gf_img.Origin_page_url_domain_str,           //p_origin_page_url_domain_str
+			gf_img.Origin_page_url_domain_str,        //p_origin_page_url_domain_str
 			p_runtime_sys)
 		//------------------
 		//GIF
@@ -265,7 +265,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 
 		page_img := page_img__pinfo.page_img
 		//------------------
-		img_exists_bool,gf_err := Image__db_create(page_img__pinfo.page_img, p_runtime, p_runtime_sys)
+		img_exists_bool, gf_err := Image__db_create(page_img__pinfo.page_img, p_runtime, p_runtime_sys)
 		if gf_err != nil {
 			t:="image_db_create__failed"
 			m:="failed db creation of image with img_url_str - "+page_img.Url_str
@@ -282,7 +282,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		if gf_err != nil {
 			t:="image_ref_db_create__failed"
 			m:="failed db creation of image_ref with img_url_str - "+page_img.Url_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err

@@ -73,8 +73,8 @@ func images__stage__download_images(p_crawler_name_str string,
 		if gf_err != nil {
 			t:="image_download__failed"
 			m:="failed downloading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,},page_img__pinfo.page_img.Url_str,p_crawler_name_str,
-				gf_err,p_runtime,p_runtime_sys)
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
+				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
 			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort

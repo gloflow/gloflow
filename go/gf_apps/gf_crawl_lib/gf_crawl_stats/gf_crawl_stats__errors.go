@@ -57,7 +57,7 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, 
 		},
 
 		bson.M{"$group":bson.M{
-				"_id"             :"$_id.crawler_name_str",
+				"_id":             "$_id.crawler_name_str",
 				"errors_types_lst":bson.M{"$push":bson.M{
 							"type_str":               "$_id.type_str",
 							"count_int":              "$count_int",

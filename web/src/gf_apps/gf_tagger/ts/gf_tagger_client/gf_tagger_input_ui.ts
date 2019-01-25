@@ -23,16 +23,16 @@ namespace gf_tagger_input_ui {
 export function init_tag_input(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_obj_element,
-	p_onTagsCreated_fun,
-	p_onTagUIAdd_fun,
-	p_onTagUIRemove_fun,
+	p_on_tags_created_fun,
+	p_on_tag_ui_add_fun,
+	p_on_tag_ui_remove_fun,
 	p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tag_input()');
 	
 	const tagging_input_ui_element = init_tagging_input_ui_element(p_obj_id_str,
 		p_obj_type_str,
-		p_onTagsCreated_fun,
-		p_onTagUIRemove_fun,
+		p_on_tags_created_fun,
+		p_on_tag_ui_remove_fun,
 		p_log_fun);
 	const tagging_ui_element = $(`
 		<div class="post_element_controls">
@@ -55,7 +55,7 @@ export function init_tag_input(p_obj_id_str :string,
 			p_obj_element, //post_element_element,
 			p_log_fun);
 
-		if (p_onTagUIAdd_fun != null) p_onTagUIAdd_fun();
+		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
 	});
 
 	//------------------------
@@ -115,8 +115,8 @@ export function init_tag_input(p_obj_id_str :string,
 //-----------------------------------------------------
 function init_tagging_input_ui_element(p_obj_id_str :string,
 	p_obj_type_str :string,
-	p_onTagsCreated_fun,
-	p_onTagUIRemove_fun,
+	p_on_tags_created_fun,
+	p_on_tag_ui_remove_fun,
 	p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tagging_input_ui_element()');
 	
@@ -135,8 +135,8 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 		if (p_event.which == 27) {
 			//remove any previously present tagging_input_container's
 			$(tagging_input_ui_element).remove();
-			if (p_onTagUIRemove_fun != null) {
-				p_onTagUIRemove_fun();
+			if (p_on_tag_ui_remove_fun != null) {
+				p_on_tag_ui_remove_fun();
 			}
 		}
 	});
@@ -155,7 +155,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 					//p_onComplete_fun
 					(p_tags_lst :string[])=>{
 						$(tags_input_element).val('');
-						p_onTagsCreated_fun(p_tags_lst);
+						p_on_tags_created_fun(p_tags_lst);
 					},
 					//p_onError_fun
 					()=>{},
@@ -170,7 +170,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 				//p_onComplete_fun
 				(p_tags_lst :string[])=>{
 					$(tags_input_element).val('');
-					p_onTagsCreated_fun(p_tags_lst);
+					p_on_tags_created_fun(p_tags_lst);
 				},
 				//p_onError_fun
 				()=>{},
@@ -183,8 +183,8 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 		const tagging_input_container_element = $(p_event.target).parent();
 		$(tagging_input_container_element).remove();
 
-		if (p_onTagUIRemove_fun != null) {
-			p_onTagUIRemove_fun();
+		if (p_on_tag_ui_remove_fun != null) {
+			p_on_tag_ui_remove_fun();
 		}
 	});
 	

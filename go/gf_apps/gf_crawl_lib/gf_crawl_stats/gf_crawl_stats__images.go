@@ -100,9 +100,9 @@ func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *g
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":                   "$_id.domain_str",
-				"imgs_count_int":        bson.M{"$sum" :"$count_int",}, //add up counts from the previous grouping operation
-				"urls_by_origin_url_lst":bson.M{"$push":bson.M{
+				"_id":                       "$_id.domain_str",
+				"imgs_count_int":            bson.M{"$sum" :"$count_int",}, //add up counts from the previous grouping operation
+				"urls_by_origin_url_lst":    bson.M{"$push":bson.M{
 						"origin_url_str":    "$_id.origin_url_str",
 						"creation_times_lst":"$creation_times_lst",
 						"urls_lst":          "$urls_lst",

@@ -38,7 +38,7 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {

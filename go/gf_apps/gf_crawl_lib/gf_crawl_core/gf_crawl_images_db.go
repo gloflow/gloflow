@@ -143,7 +143,7 @@ func image__db_get(p_id_str string,
 
 	var img Gf_crawler_page_img
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t"     :"crawler_page_img",
+			"t":     "crawler_page_img",
 			"id_str":p_id_str,
 		}).One(&img)
 	if err != nil {
@@ -151,8 +151,8 @@ func image__db_get(p_id_str string,
 			"mongodb_find_error",
 			&map[string]interface{}{"id_str":p_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
-	return &img,nil
+	return &img, nil
 }

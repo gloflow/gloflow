@@ -76,7 +76,7 @@ func Index__query(p_term_str string,
 				"index_name_str":index_name_str,
 				"field_name_str":field_name_str,
 			},
-			err,"gf_crawl_lib",p_runtime_sys)
+			err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
 	}
 

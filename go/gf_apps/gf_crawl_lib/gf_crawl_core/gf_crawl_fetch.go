@@ -81,10 +81,10 @@ func Fetch__url(p_url_str string,
 
 		_,fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
 		if fe_gf_err != nil {
-			return nil,"",fe_gf_err
+			return nil, "", fe_gf_err
 		}
 
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 
 	domain_str           := url.Host
@@ -106,19 +106,19 @@ func Fetch__url(p_url_str string,
 	err = p_runtime_sys.Mongodb_coll.Insert(fetch)
 	if err != nil {
 		t:="fetch_record_persist__failed"
-		m:=fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s",p_url_str)
+		m:=fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
 		
 		gf_err := gf_core.Error__create(m,
 			"mongodb_insert_error",
 			&map[string]interface{}{"url_str":p_url_str,},
-			err,"gf_crawl_core",p_runtime_sys)
+			err, "gf_crawl_core", p_runtime_sys)
 
 		_,fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
 		if fe_gf_err != nil {
-			return nil,"",fe_gf_err
+			return nil, "", fe_gf_err
 		}
 
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 	//-------------------
 	//HTTP REQUEST
@@ -155,7 +155,7 @@ func Fetch__url(p_url_str string,
 			"mongodb_update_error",
 			&map[string]interface{}{"fetch_id_str":fetch.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 	//-------------
 	//SEND_EVENT
@@ -178,7 +178,7 @@ func Fetch__url(p_url_str string,
 	}
 	//-------------
 	
-	return fetch,domain_str,nil
+	return fetch, domain_str, nil
 }
 //--------------------------------------------------
 func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
@@ -238,14 +238,14 @@ func fetch__error(p_error_type_str string,
 		p_runtime,
 		p_runtime_sys)
 	if ce_err != nil {
-		return nil,ce_err
+		return nil, ce_err
 	}
 
 	if p_link != nil {
 		//IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
 		lm_err := link__mark_as_failed(crawler_error, p_link, p_runtime, p_runtime_sys)
 		if lm_err != nil {
-			return nil,lm_err
+			return nil, lm_err
 		}
 	}
 
