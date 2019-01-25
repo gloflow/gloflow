@@ -151,10 +151,10 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_crawl_dashboard.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_analytics/js/gf_crawl_dashboard.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_crawl_lib/dashboard/gf_crawl__img_preview_tooltip.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/dashboard/gf_crawl_dashboard.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/dashboard/gf_crawl_events.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_crawl_lib/dashboard/gf_crawl_images_browser.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/dashboard/gf_crawl__img_preview_tooltip.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/dashboard/gf_crawl_dashboard.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/dashboard/gf_crawl_events.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_crawl_lib/ts/dashboard/gf_crawl_images_browser.ts'%(cwd_str),
 
 							
 						],
@@ -176,17 +176,17 @@ def get():
 						'files_lst':[
 							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/browser.css'%(cwd_str),            '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
 							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/errors.css'%(cwd_str),             '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/fetches.css'%(cwd_str),            '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
 							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/gf_crawl_dashboard.css'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/gifs.css'%(cwd_str),               '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/images.css'%(cwd_str),             '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/links.css'%(cwd_str),              '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
-							('%s/../web/src/gf_apps/gf_crawl_lib/css/lib/c3.min.css'%(cwd_str),                   '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
+							#('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/fetches.css'%(cwd_str),            '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),							
+							#('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/gifs.css'%(cwd_str),               '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
+							#('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/images.css'%(cwd_str),             '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
+							#('%s/../web/src/gf_apps/gf_crawl_lib/css/dashboard/links.css'%(cwd_str),              '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
+							#('%s/../web/src/gf_apps/gf_crawl_lib/css/lib/c3.min.css'%(cwd_str),                   '%s/../web/build/gf_apps/gf_analytics/css'%(cwd_str)),
 							
 						]
 					},
 					'files_to_copy_lst':[
-						('%s/../web/src/gf_apps/gf_crawl_lib/dashboard/crawl_dashboard_ff2___1112_29.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),),
+						('%s/../web/src/gf_apps/gf_crawl_lib/ts/dashboard/crawl_dashboard_ff2___1112_29.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),),
 						('%s/../web/src/gf_apps/gf_crawl_lib/assets/icons.png'%(cwd_str),                             '%s/../web/build/gf_apps/gf_analytics'%(cwd_str),),
 					]
 				},
@@ -203,12 +203,12 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_analytics/js/gf_domains_browser.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_analytics/js/gf_domains_browser.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_domains_lib/domains_browser/gf_domain.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_domains_lib/domains_browser/gf_domains_browser.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_domains_lib/domains_browser/gf_domains_conn.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_domains_lib/domains_browser/gf_domains_infos.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_domains_lib/domains_browser/gf_domains_search.ts'%(cwd_str),
-							'%s/../web/src/gf_core/gf_color.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_domains_lib/ts/domains_browser/gf_domain.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_domains_lib/ts/domains_browser/gf_domains_browser.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_domains_lib/ts/domains_browser/gf_domains_conn.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_domains_lib/ts/domains_browser/gf_domains_infos.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_domains_lib/ts/domains_browser/gf_domains_search.ts'%(cwd_str),
+							'%s/../web/src/gf_core/ts/gf_color.ts'%(cwd_str),
 						],
 						#-------------
 						#LIBS
@@ -245,11 +245,11 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/gf_landing_page/gf_calc.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_landing_page/gf_email_registration.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_landing_page/gf_images.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_landing_page/gf_landing_page.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/gf_landing_page/gf_procedural_art.ts'%(cwd_str)
+							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_calc.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_email_registration.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_images.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_landing_page.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_procedural_art.ts'%(cwd_str)
 						],
 						#-------------
 						#LIBS
