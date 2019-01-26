@@ -25,8 +25,8 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
 func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf_core.Runtime_sys) {

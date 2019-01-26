@@ -59,13 +59,13 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	}
 	//-------------
 	//S3
-	s3_info := gf_core.T__get_s3_info(runtime_sys)
+	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
 	//-------------
 
 	crawler_runtime := &Gf_crawler_runtime{
 		Events_ctx:           nil,
 		Esearch_client:       esearch_client,
-		S3_info:              s3_info,
+		S3_info:              s3_test_info.Gf_s3_info,
 		Cluster_node_type_str:test__cluster_node_type_str,
 	}
 

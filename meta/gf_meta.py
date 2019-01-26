@@ -12,7 +12,7 @@ def get():
             #GF_IMAGES
             'gf_images':{
                 'version_str':         '0.7.3.7',
-                'go_path_str':         '%s/../go/apps/gf_images'%(cwd_str),
+                'go_path_str':         '%s/../go/gf_apps/gf_images'%(cwd_str),
                 'go_output_path_str':  '%s/../bin/gf_apps/gf_images/gf_images_service'%(cwd_str),
                 'service_name_str':    'gf_images_service',
                 'service_base_dir_str':'%s/../bin/gf_apps/gf_images'%(cwd_str),
@@ -21,8 +21,8 @@ def get():
             #LIB
             #GF_IMAGES_LIB
             'gf_images_lib':{
-                'go_path_str':               '%s/../go/apps/gf_images_lib'%(cwd_str),
-                'test_data_to_serve_dir_str':'%s/../go/apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
+                'go_path_str':               '%s/../go/gf_apps/gf_images_lib'%(cwd_str),
+                'test_data_to_serve_dir_str':'%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
             },
             #-------------
             #MAIN
@@ -47,14 +47,14 @@ def get():
             #LIB
             #GF_CRAWL_LIB
             'gf_crawl_lib':{
-                'go_path_str':'%s/../go/apps/gf_crawl_lib'%(cwd_str),
+                'go_path_str':'%s/../go/gf_apps/gf_crawl_lib'%(cwd_str),
             },
             #-------------
             #MAIN
             #GF_PUBLISHER
             'gf_publisher':{
                 'version_str':         '0.6.1.0',
-                'go_path_str':         '%s/../go/apps/gf_publisher'%(cwd_str),
+                'go_path_str':         '%s/../go/gf_apps/gf_publisher'%(cwd_str),
                 'go_output_path_str':  '%s/../bin/gf_apps/gf_publisher/gf_publisher_service'%(cwd_str),
                 'service_name_str':    'gf_publisher_service',
                 'service_base_dir_str':'%s/../bin/gf_apps/gf_publisher'%(cwd_str),
@@ -63,12 +63,12 @@ def get():
             #LIB
             #GF_PUBLISHER_LIB
             'gf_publisher_lib':{
-                'go_path_str':'%s/../go/apps/gf_publisher_lib'%(cwd_str),
+                'go_path_str':'%s/../go/gf_apps/gf_publisher_lib'%(cwd_str),
 
                 #for tests serve data over http from this dir.
                 #gf_publisher test runs an gf_images jobs_mngr to test post_creation, and jobs_mngr
                 #needs to be able to fetch images over http that come from this dir.
-                'test_data_to_serve_dir_str':'%s/../go/apps/gf_images_lib/tests_data'%(cwd_str),
+                'test_data_to_serve_dir_str':'%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str),
             },
             #-------------
             #MAIN

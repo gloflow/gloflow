@@ -27,8 +27,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
 //--------------------------------------------------
 type Gf_crawler_page_img struct {

@@ -24,7 +24,7 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 //-------------------------------------------------
 func init_handlers(p_crawled_images_s3_bucket_name_str string,

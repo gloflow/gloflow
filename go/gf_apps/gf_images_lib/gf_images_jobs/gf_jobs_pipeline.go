@@ -21,7 +21,7 @@ package gf_images_jobs
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
 func pipeline__process_image(p_image_source_url_str string,

@@ -22,7 +22,7 @@ package main
 import (
 	"flag"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 )
 //-------------------------------------------------
 func main() {

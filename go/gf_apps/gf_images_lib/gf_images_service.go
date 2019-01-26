@@ -23,9 +23,9 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_image_editor"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 //-------------------------------------------------
 func Run_service(p_port_str string,

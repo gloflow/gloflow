@@ -25,7 +25,7 @@ import (
 	"text/template"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 //-------------------------------------------------
 func flows__render_initial_page(p_flow_name_str string,

@@ -21,8 +21,8 @@ package gf_images_jobs
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 )
 //-------------------------------------------------
 func run_job(p_job_id_str string,

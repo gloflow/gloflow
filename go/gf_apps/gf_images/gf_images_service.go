@@ -23,7 +23,7 @@ import (
 	"os"
 	"flag"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 )
 //-------------------------------------------------
 func main() {

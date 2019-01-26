@@ -20,21 +20,9 @@ from colored import fg, bg, attr
 
 import gf_cli_utils
 #--------------------------------------------------
-def run(p_name_str,
-    p_go_path_str,
-    p_output_path_str,
-    p_copy_to_dir_lst):
-    assert os.path.isdir(p_go_path_str)
-    assert os.path.isdir(os.path.dirname(p_output_path_str))
+def copy_files(p_copy_to_dir_lst):
     assert isinstance(p_copy_to_dir_lst, list)
 
-    print('')
-    print(' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0)))
-
-    copy_files(p_copy_to_dir_lst)
-    run_go(p_name_str, p_go_path_str, p_output_path_str)
-#--------------------------------------------------
-def copy_files(p_copy_to_dir_lst):
     print('')
     print('             COPY FILES')
     for src_f_str, target_dir_str in p_copy_to_dir_lst:
@@ -42,11 +30,19 @@ def copy_files(p_copy_to_dir_lst):
         gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
 #--------------------------------------------------
 def run_go(p_name_str,
-    p_go_path_str,
+    p_go_dir_path_str,
     p_output_path_str):
+
+    print(p_go_dir_path_str)
     
+    assert os.path.isdir(p_go_dir_path_str)
+    assert os.path.isdir(os.path.dirname(p_output_path_str))
+
+    print('')
+    print(' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0)))
+
     cwd_str = os.getcwd()
-    os.chdir(p_go_path_str) #change into the target main package dir
+    os.chdir(p_go_dir_path_str) #change into the target main package dir
 
     gf_cli_utils.run_cmd('go build -o %s'%(p_output_path_str))
     

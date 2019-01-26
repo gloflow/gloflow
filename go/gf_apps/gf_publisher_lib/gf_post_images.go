@@ -22,8 +22,8 @@ package gf_publisher_lib
 import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 //---------------------------------------------------
 type Gf_images_client_result struct {

@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 )
 
 //---------------------------------------------------

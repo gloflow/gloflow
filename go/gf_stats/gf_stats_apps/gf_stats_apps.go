@@ -22,8 +22,8 @@ package gf_stats_apps
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
-	"github.com/gloflow/gloflow/go/apps/gf_images_lib/gf_images_stats"
-	"github.com/gloflow/gloflow/go/apps/gf_crawl_lib/gf_crawl_stats"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_stats"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_stats"
 )
 //-------------------------------------------------
 func Init(p_stats_url_base_str string,
