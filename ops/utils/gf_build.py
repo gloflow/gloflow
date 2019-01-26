@@ -20,15 +20,6 @@ from colored import fg, bg, attr
 
 import gf_cli_utils
 #--------------------------------------------------
-def copy_files(p_copy_to_dir_lst):
-    assert isinstance(p_copy_to_dir_lst, list)
-
-    print('')
-    print('             COPY FILES')
-    for src_f_str, target_dir_str in p_copy_to_dir_lst:
-        if not os.path.isdir(target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
-        gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
-#--------------------------------------------------
 def run_go(p_name_str,
     p_go_dir_path_str,
     p_output_path_str):

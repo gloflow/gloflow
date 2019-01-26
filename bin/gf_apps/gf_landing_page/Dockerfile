@@ -7,9 +7,9 @@ RUN apk add --update bash
 
 #------------
 #DIRS
-RUN mkdir /home/gf/logs
-RUN mkdir /home/gf/conf
-RUN mkdir /home/gf/data
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/conf
+RUN mkdir -p /home/gf/data
 #------------
 
 ADD ./gf_landing_page_service /home/gf/gf_landing_page_service

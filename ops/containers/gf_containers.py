@@ -26,7 +26,7 @@ import gf_meta
 import gf_web_meta
 
 sys.path.append('%s/../utils'%(cwd_str))
-import gf_cli_utils as gf_u
+import gf_cli_utils
 #-------------------------------------------------------------
 def build(p_app_name_str,
 	p_log_fun,
@@ -37,6 +37,7 @@ def build(p_app_name_str,
 	#------------------
 	#META
 	build_meta_map = gf_meta.get()['build_info_map']
+	web_meta_map   = gf_web_meta.get()
 
 	if not build_meta_map.has_key(p_app_name_str):
 		p_log_fun("ERROR","supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
@@ -49,32 +50,46 @@ def build(p_app_name_str,
 
 	service_version_str  = app_meta_map['version_str']
 	assert len(service_version_str.split(".")) == 4 #format x.x.x.x
+
 	#------------------
+	#COPY_FILES_TO_DIR
+	if app_meta_map.has_key('copy_to_dir_lst'):
+		copy_to_dir_lst = app_meta_map['copy_to_dir_lst']
+		copy_files(copy_to_dir_lst)
+	#------------------
+	#COPY_WEB_FILES
+	if web_meta_map.has_key(p_app_name_str):
 
-	prepare_context_dir(p_app_name_str, service_base_dir_str, p_log_fun)
+		app_web_meta_map = web_meta_map[p_app_name_str]
+		assert app_web_meta_map.has_key('pages_map')
+		pages_map = app_web_meta_map['pages_map']
 
+		prepare_web_static_dir(pages_map, service_base_dir_str, p_log_fun)
+	#------------------
 
 	build_docker_container(service_name_str,
 		service_base_dir_str,
 		service_version_str,
 		p_user_name_str,
 		p_log_fun)
+#--------------------------------------------------
+def copy_files(p_copy_to_dir_lst):
+    assert isinstance(p_copy_to_dir_lst, list)
+
+    print('')
+    print('             COPY FILES')
+    for src_f_str, target_dir_str in p_copy_to_dir_lst:
+        if not os.path.isdir(target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
+        gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
 #-------------------------------------------------------------
-def prepare_context_dir(p_app_name_str,
+def prepare_web_static_dir(p_pages_map,
 	p_service_base_dir_str,
 	p_log_fun):
-	p_log_fun('FUN_ENTER','gf_containers.prepare_context_dir()')
+	p_log_fun('FUN_ENTER','gf_containers.prepare_web_static_dir()')
+	assert isinstance(p_pages_map, dict)
 	assert os.path.dirname(p_service_base_dir_str)
 
-	apps_meta_map = gf_web_meta.get()
-	assert apps_meta_map.has_key(p_app_name_str)
-
-	app_meta_map = apps_meta_map[p_app_name_str]
-
-	assert app_meta_map.has_key('pages_map')
-	pages_map = app_meta_map['pages_map']
-
-	for pg_name_str, pg_info_map in pages_map.items():
+	for pg_name_str, pg_info_map in p_pages_map.items():
 
 		assert pg_info_map.has_key('build_dir_str')
 		assert os.path.isdir(pg_info_map['build_dir_str'])
@@ -83,10 +98,10 @@ def prepare_context_dir(p_app_name_str,
 		#------------------
 		#CREATE_TARGET_DIR
 		target_dir_str = '%s/static'%(p_service_base_dir_str)
-		gf_u.run_cmd('mkdir -p %s'%(target_dir_str))
+		gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
 		#------------------
 		#COPY_PAGE_WEB_CODE
-		gf_u.run_cmd('cp -p -r %s/* %s'%(build_dir_str, target_dir_str))
+		gf_cli_utils.run_cmd('cp -p -r %s/* %s'%(build_dir_str, target_dir_str))
 		#------------------
 #-------------------------------------------------------------
 def build_docker_container(p_service_name_str,

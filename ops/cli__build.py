@@ -69,11 +69,7 @@ def main():
         if not app_meta_map.has_key('go_output_path_str'):
             print("not a main package")
             exit()
-        
-        if app_meta_map.has_key('copy_to_dir_lst'):
-            copy_to_dir_lst = app_meta_map['copy_to_dir_lst']
-            gf_build.copy_files(copy_to_dir_lst)
-
+            
         gf_build.run_go(app_name_str,
             app_meta_map['go_path_str'],
             app_meta_map['go_output_path_str'])
