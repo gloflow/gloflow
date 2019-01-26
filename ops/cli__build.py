@@ -20,11 +20,14 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
 
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 import delegator
 
 sys.path.append('%s/../meta'%(cwd_str))
 import gf_meta
+
+sys.path.append('%s/utils'%(cwd_str))
+import gf_build
 
 sys.path.append('%s/tests'%(cwd_str))
 import gf_tests
@@ -62,12 +65,15 @@ def main():
     #-------------
     #BUILD
     if run_str == 'build':
+        app_meta_map = b_meta_map[app_name_str]
         if not app_meta_map.has_key('go_output_path_str'):
             print("not a main package")
             exit()
-
-        app_meta_map = b_meta_map[app_name_str]
-        build__go_bin(app_name_str, app_meta_map['go_path_str'], app_meta_map['go_output_path_str'])
+            
+        gf_build.run(app_name_str,
+            app_meta_map['go_path_str'],
+            app_meta_map['go_output_path_str'],
+            app_meta_map['copy_to_dir_lst'])
     #-------------
     #BUILD_WEB
     elif run_str == 'build_web':
@@ -86,27 +92,9 @@ def main():
         
         gf_tests.run(app_name_str, test_name_str, app_meta_map, aws_creds_map)
     #-------------
-#--------------------------------------------------
-def build__go_bin(p_name_str,
-    p_go_path_str,
-    p_output_path_str):
-    assert os.path.isdir(p_go_path_str)
-    assert os.path.isdir(os.path.dirname(p_output_path_str))
-
-    print ''
-    print ' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0))
-    
-    cwd_str = os.getcwd()
-    os.chdir(p_go_path_str) #change into the target main package dir
-
-    c = 'go build -o %s'%(p_output_path_str)
-    print c
-    r = delegator.run(c)
-    if not r.out == '': print r.out
-    if not r.err == '': print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err)
-
-    os.chdir(cwd_str) #return to initial dir
-
+    else:
+        print("unknown run command - %s"%(run_str))
+        exit()
 #--------------------------------------------------
 def parse_args():
 
