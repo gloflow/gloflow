@@ -62,9 +62,8 @@ def main():
     app_name_str = args_map['app']
     assert b_meta_map.has_key(app_name_str)
 
-    #-------------
-    #BUILD
-    if run_str == 'build':
+    #--------------------------------------------------
+    def go_build(p_static_bool):
         app_meta_map = b_meta_map[app_name_str]
         if not app_meta_map.has_key('go_output_path_str'):
             print("not a main package")
@@ -72,7 +71,16 @@ def main():
             
         gf_build.run_go(app_name_str,
             app_meta_map['go_path_str'],
-            app_meta_map['go_output_path_str'])
+            app_meta_map['go_output_path_str'],
+            p_static_bool = p_static_bool)
+    #--------------------------------------------------
+
+    #-------------
+    #BUILD
+    if run_str == 'build':
+        
+        #build using dynamic linking, its quicker while in dev.
+        go_build(False)
     #-------------
     #BUILD_WEB
     elif run_str == 'build_web':
@@ -81,6 +89,12 @@ def main():
     #-------------
     #BUILD_CONTAINERS
     elif run_str == 'build_containers':
+
+        #build using static linking, containers are based on Alpine linux, 
+        #which has a minimal stdlib and other libraries, so we want to compile 
+        #everything needed by this Go package into a single binary.
+        go_build(True)
+
         gf_containers.build(app_name_str, log_fun)
     #-------------
     #TEST

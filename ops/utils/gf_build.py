@@ -22,7 +22,9 @@ import gf_cli_utils
 #--------------------------------------------------
 def run_go(p_name_str,
     p_go_dir_path_str,
-    p_output_path_str):
+    p_output_path_str,
+    p_static_bool = False):
+    assert isinstance(p_static_bool, bool)
 
     print(p_go_dir_path_str)
     
@@ -35,6 +37,21 @@ def run_go(p_name_str,
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) #change into the target main package dir
 
-    gf_cli_utils.run_cmd('go build -o %s'%(p_output_path_str))
+    if p_static_bool:
+        args_lst = [
+            'CGO_ENABLED=0',
+            'GOOS=linux',
+            'go build',
+            '-ldflags',
+            "-s",
+            '-a',
+            '-installsuffix cgo',
+            '-o %s'%(p_output_path_str),
+        ]
+        c_str = ' '.join(args_lst)
+    else:
+        c_str = 'go build -o %s'%(p_output_path_str)
+
+    gf_cli_utils.run_cmd(c_str)
     
     os.chdir(cwd_str) #return to initial dir
