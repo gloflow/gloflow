@@ -21,9 +21,9 @@ package gf_images_lib
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"text/template"
-	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
@@ -33,7 +33,7 @@ func flows__render_initial_page(p_flow_name_str string,
 	p_page_size_int          int, //5
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_resp                   http.ResponseWriter, //REMOVE!! - use a io.Writer direclty, to avoid dependancy on http package, and for easier testing
+	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
@@ -77,7 +77,7 @@ func flows__render_initial_page(p_flow_name_str string,
 func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //list-of-lists
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_resp                   http.ResponseWriter, //REMOVE!! - use a io.Writer direclty, to avoid dependancy on http package, and for easier testing
+	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_template()")
 

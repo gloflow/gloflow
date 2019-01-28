@@ -21,7 +21,7 @@ package gf_publisher_lib
 
 import (
 	"fmt"
-	"net/http"
+	"io"
 	"encoding/json"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -77,7 +77,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 func Pipeline__get_post(p_post_title_str string,
 	p_response_format_str string,
 	p_tmpl                *template.Template,
-	p_resp                http.ResponseWriter,
+	p_resp                io.Writer,
 	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 

@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_publisher_lib
 
 import (
-	"net/http"
+	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func post__render_template(p_post *Gf_post,
 	p_tmpl        *template.Template,
-	p_resp        http.ResponseWriter,
+	p_resp        io.Writer,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.post__render_template()")
 	

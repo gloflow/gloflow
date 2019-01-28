@@ -20,15 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_publisher_lib
 
 import (
+	"io"
 	"text/template"
-	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
 func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-lists
 	p_tmpl                *template.Template,
 	p_posts_page_size_int int, //5
-	p_resp                http.ResponseWriter,
+	p_resp                io.Writer,
 	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
 

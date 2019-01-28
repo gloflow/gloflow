@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"net/http"
+	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -28,7 +28,7 @@ import (
 func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_featured_imgs_lst []*Gf_featured_img,
 	p_tmpl              *template.Template,
-	p_resp              http.ResponseWriter,
+	p_resp              io.Writer,
 	p_runtime_sys       *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_landing_page_view.render_template()")
 	

@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_domains_lib
 
 import (
-	"net/http"
+	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
 func domains_browser__render_template(p_domains_lst []Gf_domain,
 	p_tmpl        *template.Template,
-	p_resp        http.ResponseWriter,
+	p_resp        io.Writer,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains_view.domains_browser__render_template()")
 
