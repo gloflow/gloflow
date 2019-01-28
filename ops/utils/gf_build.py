@@ -37,6 +37,10 @@ def run_go(p_name_str,
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) #change into the target main package dir
 
+    #STATIC_LINKING - when deploying to containers it is not always guaranteed that all
+    #                 required libraries are present. so its safest to compile to a statically
+    #                 linked lib.
+    #                 build time a few times larger then regular, so slow for dev.
     if p_static_bool:
         args_lst = [
             'CGO_ENABLED=0',
@@ -49,6 +53,8 @@ def run_go(p_name_str,
             '-o %s'%(p_output_path_str),
         ]
         c_str = ' '.join(args_lst)
+        
+    #DYNAMIC_LINKING - fast build for dev.
     else:
         c_str = 'go build -o %s'%(p_output_path_str)
 

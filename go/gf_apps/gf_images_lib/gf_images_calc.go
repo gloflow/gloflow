@@ -35,6 +35,7 @@ type Browser__job_run_result struct {
 	Browser__unix_end_time_str   float64       `bson:"browser__unix_end_time_str"`
 	Browser__fingerprint_str     float64       `bson:"browser__fingerprint_str"`
 }
+
 //-------------------------------------------------
 type Browser__ai_classify__job_run_result struct {
 	Id                           bson.ObjectId `bson:"_id,omitempty"`
@@ -45,15 +46,16 @@ type Browser__ai_classify__job_run_result struct {
 	Browser__unix_end_time_str   float64       `bson:"browser__unix_end_time_str"`
 	Browser__fingerprint_str     float64       `bson:"browser__fingerprint_str"`
 }
+
 //-------------------------------------------------
 func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_calc.Process__browser_image_calc_result()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_calc.Process__browser_image_calc_result()")
 
 	for _,m := range p_browser_jobs_runs_results_lst {
 
 		color_pallete_lst := []string{}
 		for _,c := range m["p"].([]interface{}) {
-			color_pallete_lst = append(color_pallete_lst,c.(string))
+			color_pallete_lst = append(color_pallete_lst, c.(string))
 		}
 
 		image_id_str := m["i"].(string)
@@ -73,8 +75,8 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 
 			gf_err := gf_core.Error__create("failed to insert a Browser__job_run_result in mongodb",
 				"mongodb_insert_error",
-				&map[string]interface{}{"image_id_str":image_id_str,},
-				err,"gf_images_lib",p_runtime_sys)
+				&map[string]interface{}{"image_id_str": image_id_str,},
+				err, "gf_images_lib", p_runtime_sys)
 			return gf_err
 		}
 	}

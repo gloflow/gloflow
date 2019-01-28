@@ -14,6 +14,9 @@ RUN mkdir -p /home/gf/data
 RUN mkdir -p /home/gf/data/images
 RUN mkdir -p /home/gf/data/images/thumbnails
 RUN mkdir -p /home/gf/static
+
+RUN mkdir -p /home/gf/templates
+RUN mkdir -p /home/gf/templates/subtemplates
 #------------
 #IMPORTANT!! - without ca-certificates when the fetcher runs a GET on the image url, 
 #              if its a https:// address, it will return an error

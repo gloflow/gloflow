@@ -80,5 +80,10 @@
 </div>
 {{- /*------------------------------------------------------*/}}
 
+{{ if (call .Is_subtmpl_def "gf_footer")}}
+	{{ template "gf_footer" }}
+{{ end }}
+
+
 </body>
 </html>

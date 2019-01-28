@@ -29,11 +29,12 @@ import (
 )
 //-------------------------------------------------
 func flows__render_initial_page(p_flow_name_str string,
-	p_initial_pages_num_int int, //6
-	p_page_size_int         int, //5
-	p_tmpl                  *template.Template,
-	p_resp                  http.ResponseWriter,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_initial_pages_num_int  int, //6
+	p_page_size_int          int, //5
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_resp                   http.ResponseWriter, //REMOVE!! - use a io.Writer direclty, to avoid dependancy on http package, and for easier testing
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
@@ -41,7 +42,7 @@ func flows__render_initial_page(p_flow_name_str string,
 
 	pages_lst := [][]*gf_images_utils.Gf_image{}
 
-	for i:=0;i<p_initial_pages_num_int;i++ {
+	for i:=0; i < p_initial_pages_num_int; i++ {
 
 		start_position_int := i*p_page_size_int
 		//int end_position_int   = start_position_int+p_page_size_int;
@@ -52,7 +53,7 @@ func flows__render_initial_page(p_flow_name_str string,
 
 		//initial page might be larger then subsequent pages, that are requested 
 		//dynamically by the front-end
-		page_lst,gf_err := flows_db__get_page(p_flow_name_str, //"general", //p_flow_name_str
+		page_lst, gf_err := flows_db__get_page(p_flow_name_str, //"general", //p_flow_name_str
 			start_position_int, //p_cursor_start_position_int
 			p_page_size_int,    //p_elements_num_int
 			p_runtime_sys)
@@ -62,10 +63,10 @@ func flows__render_initial_page(p_flow_name_str string,
 		}
 		//------------
 
-		pages_lst = append(pages_lst,page_lst)
+		pages_lst = append(pages_lst, page_lst)
 	}
 	//---------------------
-	gf_err := flows__render_template(pages_lst, p_tmpl, p_resp, p_runtime_sys)
+	gf_err := flows__render_template(pages_lst, p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -74,27 +75,28 @@ func flows__render_initial_page(p_flow_name_str string,
 }
 //-------------------------------------------------
 func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //list-of-lists
-	p_tmpl        *template.Template,
-	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_resp                   http.ResponseWriter, //REMOVE!! - use a io.Writer direclty, to avoid dependancy on http package, and for easier testing
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	//-------------------------
 	images_pages_lst := [][]map[string]interface{}{}
-	for _,images_page_lst := range p_images_pages_lst {
+	for _, images_page_lst := range p_images_pages_lst {
 
 		page_images_lst := []map[string]interface{}{}
-		for _,image := range images_page_lst {
+		for _, image := range images_page_lst {
 
 			image_info_map := map[string]interface{}{
-				"creation_unix_time_str":   strconv.FormatFloat(image.Creation_unix_time_f,'f',6,64),
-				"id_str":                   image.Id_str,
-				"title_str":                image.Title_str,
-				"format_str":               image.Format_str,
-				"thumbnail_small_url_str":  image.Thumbnail_small_url_str,
-				"thumbnail_medium_url_str": image.Thumbnail_medium_url_str,
-				"image_origin_page_url_str":image.Origin_page_url_str,
+				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f,'f',6,64),
+				"id_str":                    image.Id_str,
+				"title_str":                 image.Title_str,
+				"format_str":                image.Format_str,
+				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
+				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
+				"image_origin_page_url_str": image.Origin_page_url_str,
 			}
 
 			if len(image.Tags_lst) > 0 {
@@ -104,20 +106,32 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //
 				image_info_map["image_has_tags_bool"] = false
 			}
 
-			page_images_lst = append(page_images_lst,image_info_map)
+			page_images_lst = append(page_images_lst, image_info_map)
 		}
-		images_pages_lst = append(images_pages_lst,page_images_lst)
+		images_pages_lst = append(images_pages_lst, page_images_lst)
 	}
 	//-------------------------
 
 	type tmpl_data struct {
 		Images_pages_lst [][]map[string]interface{}
 		Sys_release_info gf_core.Sys_release_info
+		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp,tmpl_data{
-		Images_pages_lst:images_pages_lst,
-		Sys_release_info:sys_release_info,
+	err := p_tmpl.Execute(p_resp, tmpl_data{
+		Images_pages_lst: images_pages_lst,
+		Sys_release_info: sys_release_info,
+		//-------------------------------------------------
+		//IS_SUBTEMPLATE_DEFINED
+		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+			for _, n := range p_subtemplates_names_lst {
+				if n == p_subtemplate_name_str {
+					return true
+				}
+			}
+			return false
+		},
+		//-------------------------------------------------
 	})
 
 	if err != nil {

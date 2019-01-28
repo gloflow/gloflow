@@ -20,14 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib
 
 import (
-	"fmt"
 	"time"
 	"net/http"
-	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
+
 //-------------------------------------------------
 func Flows__init_handlers(p_templates_dir_path_str string,
 	p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
@@ -36,16 +35,20 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 	//---------------------
 	//TEMPLATES
-	template_name_str       := "gf_images_flows_browser.html"
-	template_path_str       := fmt.Sprintf("%s/gf_images_flows_browser.html", p_templates_dir_path_str)
-	flows_browser__tmpl,err := template.New(template_name_str).ParseFiles(template_path_str)
+	template_name_str := "gf_images_flows_browser.html"
+	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(template_name_str, p_templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*flows_browser__tmpl, err := template.New(template_name_str).ParseFiles(template_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":template_path_str,},
 			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 	//---------------------
 	
 	//-------------------------------------------------
@@ -157,7 +160,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//-------------------------------------------------
 	//FLOWS_BROWSER
 	//-------------------------------------------------
-	http.HandleFunc("/images/flows/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/images/flows/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser ----------")
 		if p_req.Method == "GET" {
@@ -174,9 +177,10 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			//------------------
 			//RENDER_TEMPLATE
 			gf_err := flows__render_initial_page(flow_name_str,
-				3,  //p_initial_pages_num_int int, //6
-				10, //p_page_size_int int, //5
+				3,  //p_initial_pages_num_int int,
+				10, //p_page_size_int int,
 				flows_browser__tmpl,
+				subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {
@@ -193,7 +197,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	})
 	//-------------------------------------------------
 	//GET_BROWSER_PAGE (slice of posts data series)
-	http.HandleFunc("/images/flows/browser_page",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/images/flows/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser_page ----------")
 		if p_req.Method == "GET" {
