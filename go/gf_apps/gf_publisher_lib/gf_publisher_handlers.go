@@ -27,7 +27,6 @@ import (
 	"net/http"
 	"net/url"
 	"encoding/json"
-	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -38,7 +37,23 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 	//---------------------
 	//TEMPLATES
-	pst__template_path_str := "./templates/gf_post.html"
+	
+	post__main_template_filename_str          := "gf_post.html"
+	posts_browser__main_template_filename_str := "gf_posts_browser.html"
+	templates_dir_path_str                    := "./templates"
+
+	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	
+	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.Templates__load(posts_browser__main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	/*pst__template_path_str := "./templates/gf_post.html"
 	post__tmpl,err         := template.New("gf_post.html").ParseFiles(pst__template_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a template",
@@ -56,18 +71,94 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			&map[string]interface{}{"template_path_str":posts_browser__tmpl,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 	//---------------------
 	//HIDDEN DASHBOARD
 
-	http.HandleFunc("/posts/dash/18956180__42115/",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts/dash/18956180__42115/", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/dash ----------")
 
 
 	})
 	//---------------------
-	//POSTS
-	
+	//GET_POST
+	http.HandleFunc("/posts/", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/ ----------")
+
+		if p_req.Method == "GET" {
+			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			//--------------------
+			//response_format_str - "j"(for json)|"h"(for html)
+
+			qs_map := p_req.URL.Query()
+
+			//response_format_str - "j"(for json)|"h"(for html)
+			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+			//--------------------
+			//POST_TITLE
+
+			url_str          := p_req.URL.Path
+			url_elements_lst := strings.Split(url_str, "/")
+
+			//IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
+			if len(url_elements_lst) != 3 {
+				usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s", url_str)
+				gf_err      := gf_core.Error__create(usr_msg_str,
+					"verify__invalid_value_error",
+					&map[string]interface{}{"url_str":url_str,},
+					nil, "gf_publisher_lib", p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
+				return
+			}
+
+			raw_post_title_str := url_elements_lst[2]
+
+			//IMPORTANT!! - replaceAll() - is used here because at the time of testing all titles were still
+			//                             with their spaces (" ") encoded as "+". So for the title to be correct,
+			//                             for lookups against the internal DB, this is decoded.
+			//decodeComponent() - this decodes the percentage encoded symbols. it does not remove
+			//                    "+" encoded spaces (" "), and the need for replaceAll()
+			post_title_encoded_str := strings.Replace(raw_post_title_str, "+", " ", -1)
+
+			//QueryUnescape() - converting each 3-byte encoded substring of the form "%AB" into the
+			//                  hex-decoded byte 0xAB. It returns an error if any % is not followed by two hexadecimal digits.
+			post_title_str, err := url.QueryUnescape(post_title_encoded_str)
+			if err != nil {
+
+				usr_msg_str := fmt.Sprintf("post title cant be query_unescaped - %s", post_title_encoded_str)
+				gf_err      := gf_core.Error__create(usr_msg_str,
+					"verify__invalid_query_string_encoding_error",
+					&map[string]interface{}{"post_title_encoded_str": post_title_encoded_str,},
+					err, "gf_publisher_lib", p_runtime_sys)
+
+				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
+				return
+			}
+			p_runtime_sys.Log_fun("INFO","post_title_str - "+post_title_str)
+			//--------------------
+
+			gf_err := Pipeline__get_post(post_title_str,
+				response_format_str,
+				post__tmpl,
+				post__subtmpl_lst,
+				p_resp,
+				p_runtime_sys)
+
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/posts/", "get_post pipeline failed", gf_err, p_resp, p_runtime_sys)
+				return
+			}
+
+			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			go func() {
+				gf_rpc_lib.Store_rpc_handler_run("/posts/", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
+	})
+	//---------------------
+	//POST_CREATE
 	http.HandleFunc("/posts/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/create ----------")
 
@@ -98,11 +189,10 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
-	
 	//---------------------
 	//POST_STATUS
 	
-	http.HandleFunc("/posts/status",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/status ----------")
 	})
 	//---------------------
@@ -111,11 +201,11 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/create_with_updates ----------")
 		})*/
 
-	http.HandleFunc("/posts/update",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts/update", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/update ----------")
 	})
 
-	http.HandleFunc("/posts/delete",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts/delete", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/delete ----------")
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -142,9 +232,8 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//BROWSER
-
-	http.HandleFunc("/posts/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	//POSTS_BROWSER
+	http.HandleFunc("/posts/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser ----------")
 
 		if p_req.Method == "GET" {
@@ -163,6 +252,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 				6, //p_initial_pages_num_int int
 				5, //p_page_size_int
 				posts_browser__tmpl,
+				posts_browser__subtmpl_lst,
 				p_resp,
 				p_runtime_sys)
 
@@ -182,7 +272,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	})
 	//---------------------
 	//GET_BROWSER_PAGE (slice of posts data series)
-	http.HandleFunc("/posts/browser_page",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser_page ----------")
 
 		if p_req.Method == "GET" {
@@ -194,6 +284,8 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			qs_map := p_req.URL.Query()
 
 			page_index_int := 0 //default - "h" - HTML
+			var err error
+
 			if a_lst,ok := qs_map["pg_index"]; ok {
 				input_val          := a_lst[0]
 				page_index_int, err = strconv.Atoi(input_val) //user supplied value
@@ -246,82 +338,6 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 			go func() {
 				gf_rpc_lib.Store_rpc_handler_run("/posts/browser_page", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
-	//---------------------
-	//GET POST
-	http.HandleFunc("/posts/",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/ ----------")
-
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			//--------------------
-			//response_format_str - "j"(for json)|"h"(for html)
-
-			qs_map := p_req.URL.Query()
-
-			//response_format_str - "j"(for json)|"h"(for html)
-			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
-			//--------------------
-			//POST_TITLE
-
-			url_str          := p_req.URL.Path
-			url_elements_lst := strings.Split(url_str,"/")
-
-			//IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
-			if len(url_elements_lst) != 3 {
-				usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s",url_str)
-				gf_err      := gf_core.Error__create(usr_msg_str,
-					"verify__invalid_value_error",
-					&map[string]interface{}{"url_str":url_str,},
-					nil, "gf_publisher_lib", p_runtime_sys)
-				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			raw_post_title_str := url_elements_lst[2]
-
-			//IMPORTANT!! - replaceAll() - is used here because at the time of testing all titles were still
-			//                             with their spaces (" ") encoded as "+". So for the title to be correct,
-			//                             for lookups against the internal DB, this is decoded.
-			//decodeComponent() - this decodes the percentage encoded symbols. it does not remove
-			//                    "+" encoded spaces (" "), and the need for replaceAll()
-			post_title_encoded_str := strings.Replace(raw_post_title_str,"+"," ",-1)
-
-			//QueryUnescape() - converting each 3-byte encoded substring of the form "%AB" into the
-			//                  hex-decoded byte 0xAB. It returns an error if any % is not followed by two hexadecimal digits.
-			post_title_str, err := url.QueryUnescape(post_title_encoded_str)
-			if err != nil {
-
-				usr_msg_str := fmt.Sprintf("post title cant be query_unescaped - %s",post_title_encoded_str)
-				gf_err      := gf_core.Error__create(usr_msg_str,
-					"verify__invalid_query_string_encoding_error",
-					&map[string]interface{}{"post_title_encoded_str":post_title_encoded_str,},
-					err, "gf_publisher_lib", p_runtime_sys)
-
-				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
-				return
-			}
-			p_runtime_sys.Log_fun("INFO","post_title_str - "+post_title_str)
-			//--------------------
-
-			gf_err := Pipeline__get_post(post_title_str,
-				response_format_str,
-				post__tmpl,
-				p_resp,
-				p_runtime_sys)
-
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/posts/", "get_post pipeline failed", gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/posts/", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

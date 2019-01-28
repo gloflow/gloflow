@@ -24,23 +24,37 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func domains_browser__render_template(p_domains_lst []Gf_domain,
-	p_tmpl        *template.Template,
-	p_resp        io.Writer,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains_view.domains_browser__render_template()")
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_resp                   io.Writer,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_view.domains_browser__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 
 	type tmpl_data struct {
 		Domains_lst      []Gf_domain
 		Sys_release_info gf_core.Sys_release_info
+		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := p_tmpl.Execute(p_resp,tmpl_data{
 		Domains_lst:     p_domains_lst,
 		Sys_release_info:sys_release_info,
+		//-------------------------------------------------
+		//IS_SUBTEMPLATE_DEFINED
+		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+			for _, n := range p_subtemplates_names_lst {
+				if n == p_subtemplate_name_str {
+					return true
+				}
+			}
+			return false
+		},
+		//-------------------------------------------------
 	})
 
 	if err != nil {

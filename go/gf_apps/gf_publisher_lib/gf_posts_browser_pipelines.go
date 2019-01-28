@@ -56,11 +56,12 @@ func Get_posts_page(p_page_index_int int,
 //                    subsequent pages are loaded as AJAX requests, via HTTP API. 
 
 func Render_initial_pages(p_response_format_str string,
-	p_initial_pages_num_int int, //6
-	p_page_size_int         int, //5
-	p_tmpl                  *template.Template,
-	p_resp                  io.Writer,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_initial_pages_num_int  int, //6
+	p_page_size_int          int, //5
+	p_tmpl                   *template.Template,
+	p_subtempaltes_names_lst []string,
+	p_resp                   io.Writer,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_pipelines.Render_initial_pages()")
 	
 	posts_pages_lst := [][]*Gf_post{}
@@ -82,7 +83,7 @@ func Render_initial_pages(p_response_format_str string,
 		posts_pages_lst = append(posts_pages_lst, page_lst)
 	}
 	
-	gf_err := posts_browser__render_template(posts_pages_lst, p_tmpl, p_page_size_int, p_resp, p_runtime_sys)
+	gf_err := posts_browser__render_template(posts_pages_lst, p_tmpl, p_subtempaltes_names_lst, p_page_size_int, p_resp, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

@@ -33,15 +33,22 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//TEMPLATES
-	template_path_str          := "./templates/gf_domains_browser.html"
-	domains_browser__tmpl, err := template.New("gf_domains_browser.html").ParseFiles(template_path_str)
+	main_template_filename_str := "gf_domains_browser.html"
+	templates_dir_path_str     := "./templates"
+
+	domains_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*domains_browser__tmpl, err := template.New("gf_domains_browser.html").ParseFiles(template_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a template",
 			"template_create_error",
 			&map[string]interface{}{"template_path_str":template_path_str,},
 			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 	//---------------------
 
 	//---------------------
@@ -72,6 +79,7 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			//RENDER TEMPLATE
 			gf_err = domains_browser__render_template(domains_lst,
 				domains_browser__tmpl,
+				subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {

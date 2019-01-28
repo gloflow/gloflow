@@ -26,10 +26,11 @@ import (
 )
 //---------------------------------------------------
 func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-lists
-	p_tmpl                *template.Template,
-	p_posts_page_size_int int, //5
-	p_resp                io.Writer,
-	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_posts_page_size_int    int, //5
+	p_resp                   io.Writer,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
 
 	pages_lst := [][]map[string]interface{}{}
@@ -70,10 +71,22 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 
 	type tmpl_data struct {
 		Posts_pages_lst [][]map[string]interface{}
+		Is_subtmpl_def  func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp,tmpl_data{
+	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Posts_pages_lst:pages_lst,
+		//-------------------------------------------------
+		//IS_SUBTEMPLATE_DEFINED
+		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+			for _, n := range p_subtemplates_names_lst {
+				if n == p_subtemplate_name_str {
+					return true
+				}
+			}
+			return false
+		},
+		//-------------------------------------------------
 	})
 
 	if err != nil {

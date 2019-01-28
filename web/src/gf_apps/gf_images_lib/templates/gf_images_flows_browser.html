@@ -79,11 +79,11 @@
 	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
 </div>
 {{- /*------------------------------------------------------*/}}
-
+{{- /*SUBTEMPLATE*/}}
 {{ if (call .Is_subtmpl_def "gf_footer")}}
 	{{ template "gf_footer" }}
 {{ end }}
-
+{{- /*------------------------------------------------------*/}}
 
 </body>
 </html>

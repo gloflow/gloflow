@@ -35,8 +35,8 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 	//---------------------
 	//TEMPLATES
-	template_name_str := "gf_images_flows_browser.html"
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(template_name_str, p_templates_dir_path_str, p_runtime_sys)
+	main_template_filename_str := "gf_images_flows_browser.html"
+	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -52,7 +52,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//---------------------
 	
 	//-------------------------------------------------
-	http.HandleFunc("/images/flows/add_img",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/images/flows/add_img", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/add_img ----------")
 		if p_req.Method == "POST" {
@@ -110,7 +110,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                         if the image url has already been fetched/transformed and gf_image exists for it
 
-	http.HandleFunc("/images/flows/imgs_exist",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/images/flows/imgs_exist", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
 

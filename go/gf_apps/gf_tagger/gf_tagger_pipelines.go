@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"text/template"
 	"net/http"
+	"io"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -77,9 +78,10 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 }
 //---------------------------------------------------
 func pipeline__get_objects_with_tag(p_req *http.Request,
-	p_resp        http.ResponseWriter,
-	p_tmpl        *template.Template,
-	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_resp                   io.Writer,
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_runtime_sys            *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_pipelines.pipeline__get_objects_with_tag()")
 
 	//----------------
@@ -108,7 +110,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 
 	//TrimSpace() - Returns the string without any leading and trailing whitespace.
 	object_type_str := strings.TrimSpace(qs_map["otype"][0])
-	tag_str         := strings.TrimSpace(qs_map["tag"][0]  )
+	tag_str         := strings.TrimSpace(qs_map["tag"][0])
 
 	//PAGE_INDEX
 	page_index_int := 0
@@ -146,6 +148,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 			p_runtime_sys.Log_fun("INFO","HTML RESPONSE >>")
 			gf_err := render_objects_with_tag(tag_str,
 				p_tmpl,
+				p_subtemplates_names_lst,
 				page_index_int,
 				page_size_int,
 				p_resp,

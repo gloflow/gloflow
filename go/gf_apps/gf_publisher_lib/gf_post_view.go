@@ -24,11 +24,13 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func post__render_template(p_post *Gf_post,
-	p_tmpl        *template.Template,
-	p_resp        io.Writer,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_resp                   io.Writer,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.post__render_template()")
 	
 	template_post_elements_lst, gf_err := package_post_elements_infos(p_post, p_runtime_sys)
@@ -54,6 +56,7 @@ func post__render_template(p_post *Gf_post,
 		Post_thumbnail_url_str          string
 		Post_elements_lst               []map[string]interface{}
 		Image_post_elements_og_info_lst []map[string]string
+		Is_subtmpl_def                  func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 	
 	/*template_info_map := map[string]interface{}{
@@ -77,6 +80,17 @@ func post__render_template(p_post *Gf_post,
 		Post_thumbnail_url_str:         p_post.Thumbnail_url_str,
 		Post_elements_lst:              template_post_elements_lst,
 		Image_post_elements_og_info_lst:image_post_elements_og_info_lst,
+		//-------------------------------------------------
+		//IS_SUBTEMPLATE_DEFINED
+		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+			for _, n := range p_subtemplates_names_lst {
+				if n == p_subtemplate_name_str {
+					return true
+				}
+			}
+			return false
+		},
+		//-------------------------------------------------
 	})
 
 	if err != nil {
@@ -89,6 +103,7 @@ func post__render_template(p_post *Gf_post,
 
 	return nil
 }
+
 //--------------------------------------------------
 func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
@@ -144,6 +159,7 @@ func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime
 	}
 	return template_post_elements_lst, nil
 }
+
 //--------------------------------------------------
 func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")

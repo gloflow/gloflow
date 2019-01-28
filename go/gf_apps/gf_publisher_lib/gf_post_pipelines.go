@@ -75,10 +75,11 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 }
 //------------------------------------------------
 func Pipeline__get_post(p_post_title_str string,
-	p_response_format_str string,
-	p_tmpl                *template.Template,
-	p_resp                io.Writer,
-	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_response_format_str    string,
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_resp                   io.Writer,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
 	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
@@ -111,7 +112,7 @@ func Pipeline__get_post(p_post_title_str string,
 			//ADD!! - cache this result in redis, and server it from there
 			//        only re-generate the template every so often
 			//        or figure out some quick way to check if something changed
-			gf_err := post__render_template(post, p_tmpl, p_resp, p_runtime_sys)
+			gf_err := post__render_template(post, p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
 			if gf_err != nil {
 				return gf_err
 			}

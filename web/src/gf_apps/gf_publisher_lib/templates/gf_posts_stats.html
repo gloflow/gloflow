@@ -27,9 +27,15 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 {{/*------------------------------------------------------*/}}
 <div id='sys_release_info'>
-	<div id='version'>v <span>0.4.4</span></div>
-	<div id='name'>name <span>raise</span></div>
+	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
 </div>
 {{/*------------------------------------------------------*/}}
+{{- /*SUBTEMPLATE*/}}
+{{ if (call .Is_subtmpl_def "gf_footer")}}
+	{{ template "gf_footer" }}
+{{ end }}
+{{- /*------------------------------------------------------*/}}
 </body>
 </html>
