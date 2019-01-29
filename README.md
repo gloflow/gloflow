@@ -37,19 +37,19 @@ The focus is on basic functional language principles (of pure functions, high-le
 
 
 **DB abstraction**  
-MongoDB - <4.0 - not using new mongodb transactions yet
-SQLite  - using its SQL interface. this is the default DB configuration used in gf_solo
+MongoDB - <4.0 - not using new mongodb transactions yet  
+SQLite  - using its SQL interface. this is the default DB configuration used in gf_solo  
 
 
 
 **FS abstraction**  
 The goal is to abstract file operations. This is mainly relevant for the gf_images and gf_crawl applications, where files are downloaded either from the user or from remote url's. 
 gf_images downloads images, operates on them (transforms them with filters or resizes them or reformats them,etc.), and then persists them on a FS. The FS abstraction layer will allow
-for configurability so that these operations can be applied to:
-    - AWS S3
-    - GCP storage
-    - local FS
-    - IPFS
+for configurability so that these operations can be applied to:  
+    - AWS S3  
+    - GCP storage  
+    - local FS  
+    - IPFS  
 
 
 
@@ -60,13 +60,13 @@ Broad rules:
 - function argument names beging with "p_" to easily indicate right away where the value is coming from (outside the function, or from internal scope).
 - if values/variables are of generic type, such as string/float/int/list/map/tuple, then their names should end with a postfix with a shorthand. If its a custom/user_defined type 
   then there is no posftix. this practice increases readibility and acts as local documentation, for which types are involved in a particular expression, either in dynamic languages,
-  or in languages with type inferencers.
+  or in languages with type inferencers.  
   Type suffixes:
-    - float  - "_f"
-    - int    - "_int"
-    - string - "_str"
-    - list   - "_lst"
-    - map    - "_map"
+    - float  - "_f"  
+    - int    - "_int"  
+    - string - "_str"  
+    - list   - "_lst"  
+    - map    - "_map"  
     
 
 
