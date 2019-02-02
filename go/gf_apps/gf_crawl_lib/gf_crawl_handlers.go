@@ -31,10 +31,10 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
 	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_handlers.init_handlers()")
 
 	//----------------
-	http.HandleFunc("/a/crawl/image/recent",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/a/crawl/image/recent", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
 
 		if p_req.Method == "GET" {
@@ -62,8 +62,8 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 		}
 	})
 	//----------------
-	http.HandleFunc("/a/crawl/image/add_to_flow",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/crawl/image/add_to_flow ----------")
+	http.HandleFunc("/a/crawl/image/add_to_flow", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/add_to_flow ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -98,7 +98,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			//------------------
 			//OUTPUT
 			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -109,15 +109,15 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 		}
 	})
 	//----------------
-	http.HandleFunc("/a/crawl/search",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/crawl/search ----------")
+	http.HandleFunc("/a/crawl/search", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/search ----------")
 
 		query_term_str := p_req.URL.Query()["term"][0]
-		p_runtime_sys.Log_fun("INFO","query_term_str - "+query_term_str)
+		p_runtime_sys.Log_fun("INFO", "query_term_str - "+query_term_str)
 
 		//IMPORTANT!! - only query if the indexer is enabled
 		if p_runtime.Esearch_client != nil {
-			gf_err := gf_crawl_core.Index__query(query_term_str,p_runtime,p_runtime_sys)
+			gf_err := gf_crawl_core.Index__query(query_term_str, p_runtime, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/search", "failed to query the crawled index", gf_err, p_resp, p_runtime_sys)
 				return

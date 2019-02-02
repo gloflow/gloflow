@@ -30,12 +30,18 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//TEMPLATES
-	main_template_filename_str := "gf_landing_page.html"
-	templates_dir_path_str     := "./templates"
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+
+	/*main_template_filename_str := "gf_landing_page.html"
+	templates_dir_path_str     := "./web/gf_apps/gf_landing_page/templates"
+	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}*/
 
 	/*main_template_filename_str := "gf_landing_page.html"
 	template_path_str := "./templates/gf_landing_page.html"
@@ -55,8 +61,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			gf_err := Pipeline__get_landing_page(2000, //p_max_random_cursor_position_int
 				5,  //p_featured_posts_to_get_int
 				10, //p_featured_imgs_to_get_int
-				flows_browser__tmpl,
-				subtemplates_names_lst,
+				gf_templates.tmpl,
+				gf_templates.subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {

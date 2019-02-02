@@ -35,11 +35,18 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 	//---------------------
 	//TEMPLATES
-	main_template_filename_str := "gf_images_flows_browser.html"
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, p_templates_dir_path_str, p_runtime_sys)
+
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+
+	/*main_template_filename_str := "gf_images_flows_browser.html"
+	templates_dir_path_str     := "./web/gf_apps/gf_images/gf_flows_browser/templates"
+	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, p_templates_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}*/
 
 	/*flows_browser__tmpl, err := template.New(template_name_str).ParseFiles(template_path_str)
 	if err != nil {
@@ -179,8 +186,8 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			gf_err := flows__render_initial_page(flow_name_str,
 				3,  //p_initial_pages_num_int int,
 				10, //p_page_size_int int,
-				flows_browser__tmpl,
-				subtemplates_names_lst,
+				gf_templates.flows_browser__tmpl,
+				gf_templates.flows_browser__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {

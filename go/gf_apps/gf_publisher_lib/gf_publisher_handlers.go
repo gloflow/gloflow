@@ -38,40 +38,10 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	//---------------------
 	//TEMPLATES
 	
-	post__main_template_filename_str          := "gf_post.html"
-	posts_browser__main_template_filename_str := "gf_posts_browser.html"
-	templates_dir_path_str                    := "./templates"
-
-	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-
-	
-	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.Templates__load(posts_browser__main_template_filename_str, templates_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-	
-	/*pst__template_path_str := "./templates/gf_post.html"
-	post__tmpl,err         := template.New("gf_post.html").ParseFiles(pst__template_path_str)
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a template",
-			"template_create_error",
-			&map[string]interface{}{"template_path_str":pst__template_path_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
-		return gf_err
-	}
-
-	pstbrows__template_path_str := "./templates/gf_posts_browser.html"
-	posts_browser__tmpl,err     := template.New("gf_posts_browser.html").ParseFiles(pstbrows__template_path_str)
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a template",
-			"template_create_error",
-			&map[string]interface{}{"template_path_str":posts_browser__tmpl,},
-			err, "gf_publisher_lib", p_runtime_sys)
-		return gf_err
-	}*/
 	//---------------------
 	//HIDDEN DASHBOARD
 
@@ -140,8 +110,8 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 			gf_err := Pipeline__get_post(post_title_str,
 				response_format_str,
-				post__tmpl,
-				post__subtmpl_lst,
+				gf_templates.post__tmpl,
+				gf_templates.post__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 
@@ -251,8 +221,8 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			gf_err := Render_initial_pages(response_format_str,
 				6, //p_initial_pages_num_int int
 				5, //p_page_size_int
-				posts_browser__tmpl,
-				posts_browser__subtmpl_lst,
+				gf_templates.posts_browser__tmpl,
+				gf_templates.posts_browser__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 

@@ -30,9 +30,9 @@ func main() {
 	mongodb_coll := mongodb_db.C("data_symphony")
 
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_analytics",
-		Log_fun:         log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_analytics",
+		Log_fun:          log_fun,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//-----------------
 	//ELASTICSEARCH
@@ -44,7 +44,7 @@ func main() {
 	var esearch_client *elastic.Client
 	var gf_err         *gf_core.Gf_error
 	if run_indexer_bool {
-		esearch_client,gf_err = gf_core.Elastic__get_client(runtime_sys)
+		esearch_client, gf_err = gf_core.Elastic__get_client(runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -80,10 +80,10 @@ func main() {
 			//-------------
 
 			crawler_runtime := &gf_crawl_core.Gf_crawler_runtime{
-				Events_ctx:           nil,
-				Esearch_client:       esearch_client,
-				S3_info:              s3_info,
-				Cluster_node_type_str:cluster_node_type_str,
+				Events_ctx:            nil,
+				Esearch_client:        esearch_client,
+				S3_info:               s3_info,
+				Cluster_node_type_str: cluster_node_type_str,
 			}
 
 			//run a certain number of crawl cycles
@@ -158,7 +158,7 @@ func main() {
 			err := http.ListenAndServe(":"+port_str,nil)
 			if err != nil {
 				msg_str := "cant start listening on port - "+port_str
-				log_fun("ERROR",msg_str)
+				log_fun("ERROR", msg_str)
 				panic(err)
 			}
 		//-----------------------------
@@ -189,18 +189,18 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 	flag.Parse()
 
 	return map[string]interface{}{
-		"run_str":                          *run_str,
-		"port_str":                         *port_str,
-		"mongodb_host_str":                 *mongodb_host_str,
-		"mongodb_db_name_str":              *mongodb_db_name_str,
-		"crawler_name_str":                 *crawler_name_str,
-		"crawler_cycles_to_run_int":        *crawler_cycles_to_run_int,
-		"cluster_node_type_str":            *cluster_node_type_str,
-		"crawler_images_local_dir_path_str":*crawler_images_local_dir_path_str,
-		"run_indexer_bool":                 *run_indexer_bool,
-		"py_stats_dirs_lst":                strings.Split(*py_stats_dirs,","),
-		"aws_access_key_id_str":            aws_access_key_id_str,
-		"aws_secret_access_key_str":        aws_secret_access_key_str,
-		"aws_token_str":                    aws_token_str,
+		"run_str":                           *run_str,
+		"port_str":                          *port_str,
+		"mongodb_host_str":                  *mongodb_host_str,
+		"mongodb_db_name_str":               *mongodb_db_name_str,
+		"crawler_name_str":                  *crawler_name_str,
+		"crawler_cycles_to_run_int":         *crawler_cycles_to_run_int,
+		"cluster_node_type_str":             *cluster_node_type_str,
+		"crawler_images_local_dir_path_str": *crawler_images_local_dir_path_str,
+		"run_indexer_bool":                  *run_indexer_bool,
+		"py_stats_dirs_lst":                 strings.Split(*py_stats_dirs,","),
+		"aws_access_key_id_str":             aws_access_key_id_str,
+		"aws_secret_access_key_str":         aws_secret_access_key_str,
+		"aws_token_str":                     aws_token_str,
 	}
 }

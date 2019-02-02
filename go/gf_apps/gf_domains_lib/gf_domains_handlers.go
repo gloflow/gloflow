@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"time"
 	"net/http"
-	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -33,13 +32,19 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//TEMPLATES
-	main_template_filename_str := "gf_domains_browser.html"
+
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*main_template_filename_str := "gf_domains_browser.html"
 	templates_dir_path_str     := "./templates"
 
 	domains_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
-	}
+	}*/
 
 	/*domains_browser__tmpl, err := template.New("gf_domains_browser.html").ParseFiles(template_path_str)
 	if err != nil {
@@ -78,8 +83,8 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			//--------------------
 			//RENDER TEMPLATE
 			gf_err = domains_browser__render_template(domains_lst,
-				domains_browser__tmpl,
-				subtemplates_names_lst,
+				gf_templates.domains_browser__tmpl,
+				gf_templates.domains_browser__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {

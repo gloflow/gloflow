@@ -10,12 +10,12 @@ import (
 )
 //-------------------------------------------------
 func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_analytics_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
 	//--------------
 	//USER_EVENT
-	http.HandleFunc("/a/ue",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST --- /a/ue")
+	http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST --- /a/ue")
 
 		if p_req.Method == "OPTIONS" {
 			p_resp.Header().Set("Access-Control-Allow-Origin","*")
@@ -55,13 +55,13 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 			//-----------------
 						
 			gf_req_ctx := &Gf_user_event_req_ctx {
-				User_ip_str:     clean_ip_str,
-				User_agent_str:  user_agent_str,
-				Browser_name_str:browser_name_str,
-				Browser_ver_str: browser_ver_str,
-				Os_name_str:     os_name_str,
-				Os_ver_str:      os_version_str,
-				Cookies_str:     cookies_str,
+				User_ip_str:      clean_ip_str,
+				User_agent_str:   user_agent_str,
+				Browser_name_str: browser_name_str,
+				Browser_ver_str:  browser_ver_str,
+				Os_name_str:      os_name_str,
+				Os_ver_str:       os_version_str,
+				Cookies_str:      cookies_str,
 			}
 
 			gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)

@@ -38,7 +38,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf
 	//---------------------
 	//GET_IMAGE_URL
 	
-	http.HandleFunc("/images/d/",func(p_resp http.ResponseWriter,p_req *http.Request) {
+	http.HandleFunc("/images/d/", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/d ----------")
 
@@ -80,7 +80,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg, p_runtime_sys *gf
 	//---------------------
 	//IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
 	
-	http.HandleFunc("/images/c",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/images/c", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/c ----------")
 		if p_req.Method == "POST" {

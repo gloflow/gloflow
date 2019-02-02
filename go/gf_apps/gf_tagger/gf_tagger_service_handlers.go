@@ -34,8 +34,14 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//---------------------
 	//TEMPLATES
 	
-	main_template_filename_str := "gf_tag_objects.html"
-	templates_dir_path_str     := "./templates"
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+
+	/*main_template_filename_str := "gf_tag_objects.html"
+	templates_dir_path_str     := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
 
 	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
@@ -155,7 +161,10 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			objects_with_tag_lst, gf_err := pipeline__get_objects_with_tag(p_req, p_resp, tag_objects__tmpl, subtemplates_names_lst, p_runtime_sys)
+			objects_with_tag_lst, gf_err := pipeline__get_objects_with_tag(p_req, p_resp, 
+				gf_templates.tag_objects__tmpl,
+				gf_templates.tag_objects__subtemplates_names_lst,
+				p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/tags/objects", "failed to get html/json objects with tag", gf_err, p_resp, p_runtime_sys)
 				return

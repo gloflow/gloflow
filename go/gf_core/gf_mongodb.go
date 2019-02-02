@@ -26,7 +26,7 @@ import (
 	"strings"
 	"encoding/json"
 	"os/exec"
-	"github.com/globalsign/mgo" //"gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
 )
 //--------------------------------------------------------------------
 func Mongo__start(p_mongodb_bin_path_str string,
@@ -132,9 +132,9 @@ func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 	for _,m := range rs_members_lst {
 
 		member_info_map := map[string]interface{}{
-			"host_port_str":m["name"].(string),
-			"state_str":    m["stateStr"].(string),
-			"uptime_int":   m["uptime"].(int),
+			"host_port_str": m["name"].(string),
+			"state_str":     m["stateStr"].(string),
+			"uptime_int":    m["uptime"].(int),
 		}
 
 		rs_members_info_lst = append(rs_members_info_lst,member_info_map)

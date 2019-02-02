@@ -77,14 +77,14 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	url_str  := fmt.Sprintf("http://%s/images/jobs/start", p_target__image_service_host_port_str)
 	data_map := map[string]string{
-		"job_type_str":   "process_extern_image",
-		"client_type_str":p_client_type_str,
-		"imgs_urls_str":  strings.Join(p_input_images_urls_lst, ","),
+		"job_type_str":    "process_extern_image",
+		"client_type_str": p_client_type_str,
+		"imgs_urls_str":   strings.Join(p_input_images_urls_lst, ","),
 
 		//imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
 		//                             was found. this is valid for gf_chrome_ext image sources.
 		//                             its not relevant for direct image uploads from clients.
-		"imgs_origin_pages_urls_str":strings.Join(p_input_images_origin_pages_urls_lst, ","),
+		"imgs_origin_pages_urls_str": strings.Join(p_input_images_origin_pages_urls_lst, ","),
 	}
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
