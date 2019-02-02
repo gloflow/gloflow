@@ -34,20 +34,33 @@
 	</style>
 </head>
 <body>
-	<div id="title">gf_crawl dashboard</div>
+<div id="title">gf_crawl dashboard</div>
 
-	<div id="crawl_events">
-		<div id="view_crawl_events_btn">crawl events</div>
-		<div id="events"></div>
-	</div>
+<div id="crawl_events">
+	<div id="view_crawl_events_btn">crawl events</div>
+	<div id="events"></div>
+</div>
 
-	<div id="crawl_errors">
-		<div id="view_crawl_errors_btn">crawl errors</div>
-		<div id="errors"></div>
-	</div>
+<div id="crawl_errors">
+	<div id="view_crawl_errors_btn">crawl errors</div>
+	<div id="errors"></div>
+</div>
 
-	<div id='browser'>
-		<div id="get_recent_images_btn"><span>recent images</span></div>
-	</div>
+<div id='browser'>
+	<div id="get_recent_images_btn"><span>recent images</span></div>
+</div>
+
+{{- /*------------------------------------------------------*/}}
+<div id='sys_release_info'>
+	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
+</div>
+{{- /*------------------------------------------------------*/}}
+{{- /*SUBTEMPLATE*/}}
+{{ if (call .Is_subtmpl_def "gf_footer")}}
+	{{ template "gf_footer" }}
+{{ end }}
+{{- /*------------------------------------------------------*/}}
 </body>
 </html>

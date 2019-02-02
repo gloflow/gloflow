@@ -31,7 +31,7 @@ import (
 func Flows__init_handlers(p_templates_dir_path_str string,
 	p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_handlers.Flows__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
 
 	//---------------------
 	//TEMPLATES
@@ -100,11 +100,11 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			//OUTPUT
 			
 			data_map := map[string]interface{}{
-				"images_job_id_str":               running_job_id_str,
-				"thumbnail_small_relative_url_str":thumb_small_relative_url_str,
-				"image_id_str":                    image_id_str,
+				"images_job_id_str":                running_job_id_str,
+				"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
+				"image_id_str":                     image_id_str,
 			}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -118,7 +118,6 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//                         if the image url has already been fetched/transformed and gf_image exists for it
 
 	http.HandleFunc("/images/flows/imgs_exist", func(p_resp http.ResponseWriter, p_req *http.Request) {
-
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
 
 		if p_req.Method == "POST" {
@@ -168,7 +167,6 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//FLOWS_BROWSER
 	//-------------------------------------------------
 	http.HandleFunc("/images/flows/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
-
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser ----------")
 		if p_req.Method == "GET" {
 

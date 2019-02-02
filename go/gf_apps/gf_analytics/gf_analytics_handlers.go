@@ -12,6 +12,13 @@ import (
 func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
+	//---------------------
+	//TEMPLATES
+
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 	//--------------
 	//USER_EVENT
 	http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -76,6 +83,31 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 		
 			go func() {
 				gf_rpc_lib.Store_rpc_handler_run("/a/ue", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
+	})
+	//--------------
+	http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/analytics_dashboard__ff0099__ooo ----------")
+
+		if p_req.Method == "GET" {
+			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			//--------------------
+			//RENDER TEMPLATE
+			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
+				gf_templates.dashboard__subtemplates_names_lst,
+				p_resp,
+				p_runtime_sys)
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/a/analytics_dashboard__ff0099__ooo", "failed to render analytics dashboard page", gf_err, p_resp, p_runtime_sys)
+				return
+			}
+
+			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			go func() {
+				gf_rpc_lib.Store_rpc_handler_run("/a/analytics_dashboard__ff0099__ooo", start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

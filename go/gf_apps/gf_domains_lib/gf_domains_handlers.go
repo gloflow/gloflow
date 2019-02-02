@@ -58,8 +58,8 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	//---------------------
 	//POSTS_ELEMENTS
-	http.HandleFunc("/a/domains/browser",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/domains/browser ----------")
+	http.HandleFunc("/a/domains/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/domains/browser ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
