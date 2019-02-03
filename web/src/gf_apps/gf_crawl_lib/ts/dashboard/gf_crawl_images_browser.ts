@@ -17,18 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
-///<reference path="../d/jquery.timeago.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.timeago.d.ts" />
+
+import "./gf_crawl__img_preview_tooltip";
 
 namespace gf_crawl_images_browser {
-
 //---------------------------------------------------
 export function init__recent_images(p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_crawl_images_browser.init__recent_images()");
 
 	http__get_recent_images((p_recent_images_lst)=>{
+
 			const recent_images__browser = view__recent_images(p_recent_images_lst, p_log_fun);
-			
 			$('#browser').append(recent_images__browser);
 		},
 		()=>{},
@@ -40,8 +41,7 @@ function view__recent_images(p_recent_images_lst, p_log_fun) {
 
 	const browser  = $(`
 		<div id="browser_container">
-			<div id="recent_images">
-			</div>
+			<div id="recent_images"></div>
 		</div>`);
 
 	for (var domain_map of p_recent_images_lst) { 
@@ -102,7 +102,6 @@ function view__recent_images(p_recent_images_lst, p_log_fun) {
 		//              existing in the target flow.
 		check_imgs_existence(urls_lst,
 			(p_img_existance__views_lst)=>{
-
 				for (const [url_str,image_existence_e] of p_img_existance__views_lst) {
 					$(domain_e).find('.urls').find(`[data-url="`+url_str+`"]`).append($(image_existence_e));
 				}
@@ -127,7 +126,7 @@ function check_imgs_existence(p_urls_lst,
 		(p_existing_images_lst)=>{
 
 			const img_existance__views_lst = [];
-			$.each(p_existing_images_lst,(p_i, p_e)=>{
+			$.each(p_existing_images_lst, (p_i, p_e)=>{
 
 				const img__id_str               = p_e['id_str'];
 				const img__origin_url_str       = p_e['origin_url_str'];      //image url that was found in a page
@@ -138,7 +137,7 @@ function check_imgs_existence(p_urls_lst,
 					img__origin_page_url_str,
 					img__creation_unix_time_f);
 
-				img_existance__views_lst.push([img__origin_url_str,element]);
+				img_existance__views_lst.push([img__origin_url_str, element]);
 			});
 
 			p_on_complete_fun(img_existance__views_lst);
@@ -199,7 +198,7 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_crawl_images_browser.http__check_imgs_exist_in_flow()');
+	p_log_fun('FUN_ENTER', 'gf_crawl_images_browser.http__check_imgs_exist_in_flow()');
 
 	const url_str = '/images/flows/imgs_exist';
 	//p_log_fun('INFO','url_str - '+url_str);

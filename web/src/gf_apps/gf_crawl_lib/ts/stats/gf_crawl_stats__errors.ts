@@ -17,13 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_crawl_stats__errors {
 
 //---------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_crawl_stats__errors.init()");
+	p_log_fun("FUN_ENTER", "gf_crawl_stats__errors.init()");
 
-	$('#view_crawl_errors_btn').on('click',(p_stats_map)=>{
+	$('#view_crawl_errors_btn').on('click', (p_stats_map)=>{
 
 		gf_stats.http__stats_query('errors',
 			(p_stats_map)=>{
@@ -37,7 +39,7 @@ export function init(p_log_fun) {
 }
 //---------------------------------------------------
 function view__errors_stats(p_stats_map, p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_crawl_stats__errors.view__errors_stats()");
+	p_log_fun("FUN_ENTER", "gf_crawl_stats__errors.view__errors_stats()");
 
 	const stats = $(`<div id="errors_stats"></div>`);
 

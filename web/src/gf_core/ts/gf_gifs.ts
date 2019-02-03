@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../d/jquery.d.ts" />
+
 namespace gf_gifs {
 //---------------------------------------------------
 export function http__gif_get_info(p_gf_img_id_str,

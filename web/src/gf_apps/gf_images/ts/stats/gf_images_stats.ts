@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/d3.d.ts" />
-///<reference path="../d/nvd3.d.ts" />
+///<reference path="../../../../d/d3.d.ts" />
+///<reference path="../../../../d/nvd3.d.ts" />
 
 namespace gf_images_stats {
 //-------------------------------------------------

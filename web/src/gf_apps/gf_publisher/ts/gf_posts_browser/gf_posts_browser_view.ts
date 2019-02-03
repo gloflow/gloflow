@@ -17,9 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
-///<reference path="../d/masonry.layout.d.ts" />
-///<reference path="../d/jquery.timeago.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+///<reference path="../../../../d/masonry.layout.d.ts" />
+///<reference path="../../../../d/jquery.timeago.d.ts" />
+
+import "./gf_posts_browser_client";
+import "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
+import "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
 
 namespace gf_posts_browser_view {
 //-----------------------------------------------------
@@ -117,7 +121,7 @@ function load_new_page(p_page_index_int :number,
                     //              item is added to the layout, all the items will initially overlap 
                     //              (one over the other)
 
-                    $('#gf_posts_container').masonry('reloadItems');
+                    $('#gf_posts_container').masonry(<any>'reloadItems');
                     //---------------------
 
                     p_on_complete_fun();

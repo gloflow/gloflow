@@ -17,11 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_crawl_stats__links {
 
 declare var sigma;
 declare var c3;
-//declare var d3;
 //---------------------------------------------------
 export function view__new_links_per_day(p_stats_lst, p_parent, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__new_links_per_day()');
@@ -65,7 +66,6 @@ export function view__new_links_per_day(p_stats_lst, p_parent, p_log_fun) {
 
         total_counts_lst.push(total_count_int); //total_count_int);
 
-
         i               += 1;
         total_count_int += count_int;
     }
@@ -76,8 +76,8 @@ export function view__new_links_per_day(p_stats_lst, p_parent, p_log_fun) {
     daily_fetched_total_lst.unshift('per-day fetched links count');
 
     const chart = c3.generate({
-        bindto:'#new_links_per_day__plot',
-        data  : {
+        bindto: '#new_links_per_day__plot',
+        data: {
           columns: [
             daily_total_count_lst,
             daily_valid_for_crawl_total_lst,
@@ -90,8 +90,8 @@ export function view__new_links_per_day(p_stats_lst, p_parent, p_log_fun) {
 
     total_counts_lst.unshift('per-day total links count')
     const chart2 = c3.generate({
-        bindto:'#total_links_count_per_day__plot',
-        data  : {
+        bindto: '#total_links_count_per_day__plot',
+        data: {
           columns: [
             total_counts_lst
           ]
@@ -167,11 +167,11 @@ export function view__links_graph(p_origin_domain_str :string,
 
     //----------------------
     nodes_lst.push({
-        id   : p_origin_domain_str,
+        id:    p_origin_domain_str,
         label: p_origin_domain_str,
-        x    : 0,   //Math.random(),
-        y    : 0,   //Math.random(),
-        size : 0.5, //Math.random(),
+        x:     0,   //Math.random(),
+        y:     0,   //Math.random(),
+        size:  0.5, //Math.random(),
         color: '#111'
     });
     nodes_map[p_origin_domain_str] = true;
@@ -233,9 +233,9 @@ export function view__links_graph(p_origin_domain_str :string,
     }
 
     const s = new sigma({
-        graph:{
-            nodes:nodes_lst,
-            edges:edges_lst
+        graph: {
+            nodes: nodes_lst,
+            edges: edges_lst
         },
         container: 'graph_container'
     });
@@ -244,9 +244,7 @@ export function view__links_graph(p_origin_domain_str :string,
 
     //-----------------
     //CLOSE_BTN
-    $(c).find('#close_btn').on('click',(p_e)=>{
-
-
+    $(c).find('#close_btn').on('click', (p_e)=>{
         s.stopForceAtlas2({worker: true, barnesHutOptimize: false});
         $(c).remove();
 
@@ -255,7 +253,7 @@ export function view__links_graph(p_origin_domain_str :string,
 }
 //---------------------------------------------------
 export function view__crawled_domains(p_domains_lst, p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__crawled_domains()');
+    p_log_fun('FUN_ENTER', 'gf_crawl_stats__links.view__crawled_domains()');
 
     const links_domains_e = $(`
         <div id="links_domains">

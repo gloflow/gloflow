@@ -17,9 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
-///<reference path="../d/masonry.layout.d.ts" />
-///<reference path="../d/jquery.timeago.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+///<reference path="../../../../d/masonry.layout.d.ts" />
+///<reference path="../../../../d/jquery.timeago.d.ts" />
+
+import "./../../../../gf_core/ts/gf_gifs_viewer";
+import "./../../../../gf_core/ts/gf_image_viewer";
+import "./../../../../gf_core/ts/gf_sys_panel";
 
 namespace gf_images_flows_browser {
 //-------------------------------------------------
@@ -64,7 +68,7 @@ export function init(p_log_fun) {
 	//              this is necessary so that initial images in the page, before
 	//              load_new_page() starts getting called, are properly laid out
 	//              by masonry
-	$('.gf_image img').on('load',()=>{
+	$('.gf_image img').on('load', ()=>{
 		$('#gf_images_flow_container').masonry();
 	});
 
@@ -150,7 +154,7 @@ function load_new_page(p_flow_name_str :string,
 	p_current_page_int,
 	p_on_complete_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images_flows_browser.load_new_page()');
+	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.load_new_page()');
 
 	http__load_new_page(p_flow_name_str,
 		p_current_page_int,
@@ -164,10 +168,10 @@ function load_new_page(p_flow_name_str :string,
 
 	//---------------------------------------------------
 	function view_page(p_page_lst) {
-		p_log_fun('FUN_ENTER','gf_images_flows_browser.load_new_page().view_page()');
+		p_log_fun('FUN_ENTER', 'gf_images_flows_browser.load_new_page().view_page()');
 
 		var img_i_int = 0;
-		$.each(p_page_lst,(p_i,p_e)=>{
+		$.each(p_page_lst, (p_i, p_e)=>{
 
 			const img__id_str                   = p_e['id_str'];
 			const img__format_str               = p_e['format_str'];
@@ -196,7 +200,7 @@ function load_new_page(p_flow_name_str :string,
 			//        the image hasnt been added yet.
 			//        move it to be after $("#gf_images_flow_container").append(image);
 
-			$(image).find('img').on('load',function() {
+			$(image).find('img').on('load', function() {
 
 				//IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded
 				$("#gf_images_flow_container").append(image);
@@ -209,7 +213,7 @@ function load_new_page(p_flow_name_str :string,
 					$(image).css('visibility', 'visible');
 				});
 
-				$('#gf_images_flow_container').masonry('reloadItems');
+				$('#gf_images_flow_container').masonry(<any>"reloadItems");
 				$('#gf_images_flow_container').masonry();
 				//------------------
 
@@ -282,7 +286,7 @@ function init_image_date(p_image_element, p_log_fun) {
 		$(creation_time_element).append(creation_date__readble);
 
 		//IMPORTANT!! - image size changed, so recalculate the Masonry layout
-		$('#gf_images_flow_container').masonry('reloadItems');
+		$('#gf_images_flow_container').masonry(<any>'reloadItems');
 		$('#gf_images_flow_container').masonry();
 	});
 
@@ -290,7 +294,7 @@ function init_image_date(p_image_element, p_log_fun) {
 		$(creation_date__readble).remove();
 
 		//IMPORTANT!! - image size changed, so recalculate the Masonry layout
-		$('#gf_images_flow_container').masonry('reloadItems');
+		$('#gf_images_flow_container').masonry(<any>'reloadItems');
 		$('#gf_images_flow_container').masonry();
 	});
 }

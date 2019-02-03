@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../d/jquery.d.ts" />
+
 namespace gf_stats {
 //---------------------------------------------------
 export function init__batch(p_log_fun) {
@@ -61,12 +63,10 @@ export function init__batch(p_log_fun) {
 }
 
 //---------------------------------------------------
-function http__batch_plots_list(p_on_complete_fun,
-						p_on_error_fun,
-						p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_stats.http__batch_plots_list()");
+function http__batch_plots_list(p_on_complete_fun, p_on_error_fun, p_log_fun) {
+	p_log_fun("FUN_ENTER", "gf_stats.http__batch_plots_list()");
 
-	$.get('/a/stats/batch/list',(p_data_map)=>{
+	$.get('/a/stats/batch/list', (p_data_map)=>{
 
 		console.log('response received');
 		//const data_map = JSON.parse(p_data);
@@ -86,9 +86,9 @@ function http__batch_plots_list(p_on_complete_fun,
 //              for display on the client.
 
 export function http__stats_query(p_stat_name_str :string,
-						p_on_complete_fun,
-						p_on_error_fun,
-						p_log_fun) {
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun("FUN_ENTER","gf_stats.http__stats_query()");
 
 	const url_str = '/a/stats/query';
@@ -98,7 +98,7 @@ export function http__stats_query(p_stat_name_str :string,
 	//HTTP AJAX
 	$.post(url_str,
 		JSON.stringify({
-			"stat_name_str":p_stat_name_str
+			"stat_name_str": p_stat_name_str
 		}),
 		function(p_data_map) {
 			console.log('response received');

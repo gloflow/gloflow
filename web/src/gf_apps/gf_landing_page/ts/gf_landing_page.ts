@@ -17,7 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="./d/jquery.d.ts" />
+///<reference path="../../../d/jquery.d.ts" />
+
+import "./gf_calc";
+import "./gf_email_registration";
+import "./gf_images";
+import "./gf_procedural_art";
 
 namespace gf_landing_page {
 

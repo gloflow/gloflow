@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_tagger_client {
 //-----------------------------------------------------
 //SNIPPETS
@@ -29,8 +31,8 @@ export function get_notes(p_object_id_str :string,
     p_log_fun('FUN_ENTER','gf_tagger_client.get_notes()');
 
     const data_map = {
-        'otype':p_object_type_str,
-        'o_id': p_object_id_str
+        'otype': p_object_type_str,
+        'o_id':  p_object_id_str
     };
     const url_str = '/tags/get_notes';
 

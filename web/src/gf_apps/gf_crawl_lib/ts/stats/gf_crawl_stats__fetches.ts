@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_crawl_stats__fetches {
 
 declare var c3;
-
 //---------------------------------------------------
 export function view__fetches_per_day(p_fetches_by_days_map, p_parent, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__fetches.view__fetches_per_day()');
@@ -88,9 +89,9 @@ export function view__fetches_per_day(p_fetches_by_days_map, p_parent, p_log_fun
     console.log(top_c3_columns_lst)
 
     const chart = c3.generate({
-        bindto:'#new_fetches_per_day__plot',
+        bindto: '#new_fetches_per_day__plot',
         data: {
-            columns:top_c3_columns_lst
+            columns: top_c3_columns_lst
             /*columns: [
             daily_total_count_lst,
             //['data1', 30, 200, 100, 400, 150, 250],

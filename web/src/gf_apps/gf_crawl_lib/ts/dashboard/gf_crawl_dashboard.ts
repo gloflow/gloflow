@@ -17,12 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+
+import "./gf_crawl_images_browser";
+import "./gf_crawl_events";
 
 namespace gf_crawl_dashboard {
 
 declare var EventSource;
-
+//-------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
 	function log_fun(p_g,p_m) {
@@ -31,17 +34,15 @@ $(document).ready(()=>{
 
 		switch (p_g) {
 			case "INFO":
-				console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
+				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
 				break;
 			case "FUN_ENTER":
-				console.log("%cFUN_ENTER"+":"+"%c"+p_m,"color:yellow; background-color:lightgray","background-color:lightgray");
+				console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
 				break;
 		}
 	}
 	//-------------------------------------------------
-
 	gf_crawl_dashboard.init(log_fun);
-	
 });
 //-------------------------------------------------
 export function init(p_log_fun) {
@@ -49,8 +50,7 @@ export function init(p_log_fun) {
 
 	//---------------------
 	//IMAGES
-	$('#get_recent_images_btn').on('click',()=>{
-
+	$('#get_recent_images_btn').on('click', ()=>{
 		gf_crawl_images_browser.init__recent_images(p_log_fun);
 	});
 	//---------------------

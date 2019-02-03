@@ -17,10 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+
+import "./../../../../gf_core/ts/gf_sys_panel";
+import "./gf_post_image_view";
 
 namespace gf_post {
-
+//-----------------------------------------------------
 $(document).ready(()=>{
     //-------------------------------------------------
     function log_fun(p_g,p_m) {
@@ -143,10 +146,6 @@ function view_added_tags(p_post_element,
 //-----------------------------------------------------
 function get_post_element_tags_num(p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_post.get_post_element_tags_num()');
-
-    //final DivElement tags_container_element = p_post_element.query('.tags_container');
-
-
     
 }
 //--------------------------------------------------------

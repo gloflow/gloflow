@@ -17,7 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+
+import "./../../../gf_crawl_lib/ts/stats/gf_crawl_stats";
+import "./../../../../gf_stats/ts/gf_stats";
 
 namespace gf_analytics_dashboard {
 
@@ -42,7 +45,6 @@ $(document).ready(()=>{
 });
 //-------------------------------------------------
 export function init(p_log_fun) {
-
 
     const query_stats_e = gf_crawl_stats.init__queries(p_log_fun);
 

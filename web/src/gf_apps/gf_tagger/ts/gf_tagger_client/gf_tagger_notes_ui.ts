@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_tagger_notes_ui {
 //-----------------------------------------------------
 export function init(p_obj_id_str :string,
@@ -50,7 +52,7 @@ export function init(p_obj_id_str :string,
 
 	var notes_open_bool = false;
 	var notes_init_bool = false;
-	$(notes_panel_btn).on('click',(p_event)=>{
+	$(notes_panel_btn).on('click', (p_event)=>{
 
 		if (notes_open_bool) {
 
@@ -84,9 +86,7 @@ export function init(p_obj_id_str :string,
 		}		
 	});
 	//------------------------
-	add_note_btn.on('click',(p_event)=>{
-
-		console.log('>>>>> ENTER');
+	add_note_btn.on('click', (p_event)=>{
 		run__remote_add_note(p_obj_id_str,
 			p_obj_type_str,
 			notes_panel,
@@ -107,16 +107,16 @@ export function init(p_obj_id_str :string,
 	//------------------------
 	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
 	//              but unline mouseon/mouseout it will not fire if its children are entered/left.
-	$(p_obj_element).on('mouseenter',(p_event)=>{
-		$(notes_panel_btn).css('visibility','visible');
+	$(p_obj_element).on('mouseenter', (p_event)=>{
+		$(notes_panel_btn).css('visibility', 'visible');
 	});
 
-	$(p_obj_element).on('mouseleave',(p_event)=>{
-		$(notes_panel_btn).css('visibility','hidden');
+	$(p_obj_element).on('mouseleave', (p_event)=>{
+		$(notes_panel_btn).css('visibility', 'hidden');
 	});
 	//------------------------
 	//'ESCAPE' key
-	$(document).on('keyup',(p_event)=>{
+	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
 			//remove any previously present note_input_container's
 			$(notes_panel).remove();

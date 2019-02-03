@@ -17,27 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
 
 namespace gf_crawl_events {
 
 declare var EventSource;
-
 //---------------------------------------------------
 export function init_SSE(p_log_fun) {
-    p_log_fun("FUN_ENTER","gf_crawl_events.init_SSE()");
-
-
+    p_log_fun("FUN_ENTER", "gf_crawl_events.init_SSE()");
 
     const events_id_str = "crawler_events";
     const event_source  = new EventSource("/a/crawl/events?events_id="+events_id_str)
 
-    $('#view_crawl_events_btn').on('click',(p_e)=>{
+    $('#view_crawl_events_btn').on('click', (p_e)=>{
 
         console.log("REGISTER EVENT_SOURCE")
         //const events_id_str = "crawler_events";
         //const event_source  = new EventSource("/a/crawl/events?events_id="+events_id_str)
-
 
         event_source.onopen = (p_e)=>{
             console.log('EventSource >> OPEN CONN');
@@ -58,7 +54,6 @@ export function init_SSE(p_log_fun) {
 
         event_source.onerror = (p_e)=>{
 
-
             console.log('EventSource >> ERROR - '+event_source.readyState);
             console.log(EventSource.CLOSED)
             console.log(p_e);
@@ -72,7 +67,7 @@ export function init_SSE(p_log_fun) {
 }
 //---------------------------------------------------
 function view_server_event(p_event_data_map, p_log_fun) {
-    p_log_fun("FUN_ENTER","gf_crawl_events.view_server_event()");
+    p_log_fun("FUN_ENTER", "gf_crawl_events.view_server_event()");
 
     const event_type_str = p_event_data_map['event_type_str'];
 

@@ -17,13 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../d/jquery.d.ts" />
+
 namespace gf_image_viewer {
 //-------------------------------------------------
 export function init(p_image_element,
 	p_img_thumb_medium_url_str :string,
 	p_flow_name_str            :string,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_image_viewer.init()');
+	p_log_fun('FUN_ENTER', 'gf_image_viewer.init()');
 
 	//const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 
@@ -51,14 +53,14 @@ export function init(p_image_element,
 		$(bg).css('top',$(window).scrollTop()+'px');
 		//----------------------
 		//IMPORTANT!! - turn off vertical scrolling while viewing the image
-		$("body").css("overflow","hidden");
+		$("body").css("overflow", "hidden");
 		//----------------------
 
 
-		$(image_view).find('img').on('load',()=>{
+		$(image_view).find('img').on('load', ()=>{
 
 			const image_detail = $(image_view).find('#image_detail');
-			$(image_detail).css("position","absolute");
+			$(image_detail).css("position", "absolute");
 
 			//Math.max() - returns the largest of zero or more numbers.
 			//Math.max(10, 20);   //20
@@ -66,8 +68,8 @@ export function init(p_image_element,
 			const image_x = Math.max(0, (($(window).width() - $(image_detail).outerWidth()) / 2) + $(window).scrollLeft());
 			const image_y = Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop());
 
-			$(image_detail).css("left",image_x+"px");
-		    $(image_detail).css("top" ,image_y+"px");
+			$(image_detail).css("left", image_x+"px");
+		    $(image_detail).css("top",  image_y+"px");
 		});
 
 	    //----------------------

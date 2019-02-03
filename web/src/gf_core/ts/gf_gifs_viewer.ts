@@ -17,6 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../d/jquery.d.ts" />
+
+import "./gf_gifs";
+
 namespace gf_gifs_viewer {
 //-------------------------------------------------
 export function init(p_image_element,
@@ -98,14 +102,14 @@ export function init(p_image_element,
 
 		//----------------------
 
-		$(image_view).find('img').on('load',()=>{
+		$(image_view).find('img').on('load', ()=>{
 
 		});
 
 		//----------------------
 		//CLOSE_VIEWER - when GIF thats playing is clicked again
 		//               the image_view is removed.
-	    $(bg).on('click',()=>{
+	    $(bg).on('click', ()=>{
 	    	$(image_view).remove();
 	    });
 	    //----------------------

@@ -17,9 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
-///<reference path="../d/jqueryui.d.ts" />
-///<reference path="../d/pixi.js.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
+///<reference path="../../../../d/jqueryui.d.ts" />
+///<reference path="../../../../d/pixi.js.d.ts" />
+
+import "./../../../../gf_core/ts/gf_color";
+import "./gf_domains_search";
+import "./gf_domains_conn";
+import "./gf_domain";
+import "./gf_domains_infos";
 
 namespace gf_domains_browser {
 

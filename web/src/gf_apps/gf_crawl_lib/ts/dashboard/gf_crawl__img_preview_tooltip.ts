@@ -17,10 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
 
 namespace gf_crawl__img_preview_tooltip {
-
 
 //---------------------------------------------------
 export function init(p_url_str,
@@ -105,7 +104,7 @@ function http__add_to_image_flows(p_crawler_page_image_id_str,
 
 	const data_map = {
 		'crawler_page_image_id_str': p_crawler_page_image_id_str,
-		'flows_names_lst':           p_flows_names_lst, //['general'],
+		'flows_names_lst':           p_flows_names_lst,
 	};    
 	//-------------------------
 	//HTTP AJAX

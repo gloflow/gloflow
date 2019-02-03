@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../../d/jquery.d.ts" />
+
 namespace gf_tagger_input_ui {
 //-----------------------------------------------------
 //in gf_post view
@@ -60,14 +62,6 @@ export function init_tag_input(p_obj_id_str :string,
 
 	//------------------------
 
-	////---------------------
-	//js.context
-	//    .callMethod(r'$', ['document'])
-	//    .callMethod('bind',['DOMNodeRemoved',(e) {
-	//    		print('zzzzzzzzzzzzzz');
-	//    	}]);
-	////---------------------
-
 	/*//'T' key - open tagging UI to the element that has the cursor 
 	//          hovering over it
 	final subscription = document.onKeyUp.listen((p_event) {
@@ -92,11 +86,11 @@ export function init_tag_input(p_obj_id_str :string,
 	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
 	//              but unline mouseon/mouseout it will not fire if its children are entered/left.
 	
-	$(p_obj_element).on('mouseenter',(p_event)=>{
+	$(p_obj_element).on('mouseenter', (p_event)=>{
 		$(p_obj_element).append(tagging_ui_element);
 	});
 
-	$(p_obj_element).on('mouseleave',(p_event)=>{
+	$(p_obj_element).on('mouseleave', (p_event)=>{
 		$(tagging_ui_element).remove();
 
 		////relatedTarget - The relatedTargert property can be used with the mouseover 
@@ -131,7 +125,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 	const tags_input_element = $(tagging_input_ui_element).find('#tags_input');
 
 	//'ESCAPE' key
-	$(document).on('keyup',(p_event)=>{
+	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
 			//remove any previously present tagging_input_container's
 			$(tagging_input_ui_element).remove();
@@ -143,7 +137,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 
 	//to handlers for the same thing, one for the user clicking on the button,
 	//the other for the user pressing 'enter'  
-	$(tags_input_element).on('keyup',(p_event)=>{
+	$(tags_input_element).on('keyup', (p_event)=>{
 
 			//'ENTER' key
 			if (p_event.which == 13) {
