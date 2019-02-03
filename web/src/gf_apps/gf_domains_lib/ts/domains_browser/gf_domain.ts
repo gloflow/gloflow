@@ -71,7 +71,7 @@ export function draw(p_name_str :string,
 		posts_count_txt = new PIXI.Text(p_name_str,{ //text
 				font:  '18px Arial',
 				fill:  color_black,
-				align:'center'
+				align: 'center'
 			});
 		posts_count_txt.x = 10;
 		posts_count_txt.y = 20;
@@ -91,10 +91,10 @@ export function draw(p_name_str :string,
 		container_spr.addChild(posts_count_txt);*/
 
 		posts_count_txt = new PIXI.Text(p_name_str,{
-								font: '12px Arial',
-								fill: color_black,
-								align:'center'
-							});
+				font:  '12px Arial',
+				fill:  color_black,
+				align: 'center'
+			});
 
 		posts_count_txt.x = 4;
 		posts_count_txt.y = 2;
@@ -115,10 +115,10 @@ export function draw(p_name_str :string,
 		container_spr.addChild(posts_count_txt);*/
 
 		posts_count_txt = new PIXI.Text(p_name_str,{
-								font: '10px Arial',
-								fill: color_black,
-								align:'center'
-							});
+				font:  '10px Arial',
+				fill:  color_black,
+				align: 'center'
+			});
 		posts_count_txt.x = 2;
 		posts_count_txt.y = 2;
 		//posts_count_txt.width = 80;

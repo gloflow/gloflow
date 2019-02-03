@@ -51,8 +51,7 @@ export function init_SSE(p_log_fun) {
                 
             console.log(event_data_map)
             
-            view_server_event(event_data_map,
-                        p_log_fun);
+            view_server_event(event_data_map, p_log_fun);
 
             i+=1;
         }
@@ -72,14 +71,10 @@ export function init_SSE(p_log_fun) {
     });
 }
 //---------------------------------------------------
-function view_server_event(p_event_data_map,
-                    p_log_fun) {
+function view_server_event(p_event_data_map, p_log_fun) {
     p_log_fun("FUN_ENTER","gf_crawl_events.view_server_event()");
 
-
-
     const event_type_str = p_event_data_map['event_type_str'];
-
 
     switch (event_type_str) {
         //--------------

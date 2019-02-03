@@ -49,7 +49,7 @@ export function run(p_log_fun) {
 	});
 	//------------------------
 	//FEATURED_IMAGES
-	$.each($('#featured_images .image img'),(i,p_img)=>{
+	$.each($('#featured_images .image img'),(i, p_img)=>{
 
 		const browser_run__job_result_map = process_image(p_img);
 		const hex_color_str               = browser_run__job_result_map['c'];
@@ -60,7 +60,7 @@ export function run(p_log_fun) {
 
 		const parent_div = $(p_img).parent().parent()[0];
 		const img_dominant_color_e = $('<div class="img_dominant_color"><div class="color"></div></div>');
-		$(img_dominant_color_e).find('.color').css('background-color','#'+hex_color_str);
+		$(img_dominant_color_e).find('.color').css('background-color', '#'+hex_color_str);
 
 		$(parent_div).append(img_dominant_color_e);
 		//-------------------
@@ -68,7 +68,7 @@ export function run(p_log_fun) {
 	//------------------------
 
 	const job_results_map = {
-		'jr':results_lst
+		'jr': results_lst
 	};
 	send_calc_results(job_results_map, p_log_fun);
 	//--------------------------------------------------------
@@ -99,8 +99,8 @@ export function run(p_log_fun) {
 		//-------------------------
 		//COLORS RGB->HEX
 
-		const hex_color_str = rgb_to_hex(color_lst[0],color_lst[1],color_lst[2]);
-		p_log_fun('INFO','hex_color_str - '+hex_color_str);
+		const hex_color_str = rgb_to_hex(color_lst[0], color_lst[1], color_lst[2]);
+		p_log_fun('INFO', 'hex_color_str - '+hex_color_str);
 
 		const hex_pallete_lst = [];
 		for (var e of palette_lst) {
@@ -111,11 +111,11 @@ export function run(p_log_fun) {
 		//-------------------------
 
 		const browser_run__job_result_map = {
-			'i': img_id_str,
-			'c': hex_color_str,
-			'p': hex_pallete_lst,
-			'st':start,
-			'et':end,
+			'i':  img_id_str,
+			'c':  hex_color_str,
+			'p':  hex_pallete_lst,
+			'st': start,
+			'et': end,
 		};
 		//console.log(browser_run__job_result_map);
 		return browser_run__job_result_map;
@@ -133,15 +133,15 @@ export function run(p_log_fun) {
 }
 //--------------------------------------------------------
 function send_calc_results(p_job_results_map, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_calc.send_calc_results()')
+	p_log_fun('FUN_ENTER', 'gf_calc.send_calc_results()')
  	
 	console.log(p_job_results_map);
 	$.ajax({
-		url:     '/images/c',
-		type:    'POST',
-		data:    JSON.stringify(p_job_results_map),
-		dataType:'json',
-		success :()=>{}
+		url:      '/images/c',
+		type:     'POST',
+		data:     JSON.stringify(p_job_results_map),
+		dataType: 'json',
+		success : ()=>{}
 	});
 }
 //--------------------------------------------------------

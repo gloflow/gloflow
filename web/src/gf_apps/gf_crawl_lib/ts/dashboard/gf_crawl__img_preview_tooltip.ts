@@ -24,18 +24,18 @@ namespace gf_crawl__img_preview_tooltip {
 
 //---------------------------------------------------
 export function init(p_url_str,
-				p_crawler_page_image_id_str,
-				p_origin_page_url_str,
-				p_url_element,
-				p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_crawl__img_preview_tooltip.init()');
+	p_crawler_page_image_id_str,
+	p_origin_page_url_str,
+	p_url_element,
+	p_log_fun) {
+	p_log_fun('FUN_ENTER', 'gf_crawl__img_preview_tooltip.init()');
 
 	const flows_names_lst = ['general'];
 
 	var tooltip_element;
 	var img_visible_bool = false;
 	var i                = 0;
-	$(p_url_element).on('mouseover',()=>{
+	$(p_url_element).on('mouseover', ()=>{
 
 		if (!img_visible_bool) {
 		
@@ -70,17 +70,17 @@ export function init(p_url_str,
 			$(tooltip_element).find('.add_to_image_flow_btn').on('click',()=>{
 
 				http__add_to_image_flows(p_crawler_page_image_id_str,
-								flows_names_lst,
-								function() {
+					flows_names_lst,
+					function() {
 
-									console.log('FLOW_DONE>>>>>>>>>>>>>>>>>>>')
+						console.log('FLOW_DONE>>>>>>>>>>>>>>>>>>>')
 
-									//-------------------
-									//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
-									$(tooltip_element).find('.add_to_image_flow_btn .icon').addClass('btn_ok');
-									//-------------------
-								},
-								p_log_fun);
+						//-------------------
+						//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
+						$(tooltip_element).find('.add_to_image_flow_btn .icon').addClass('btn_ok');
+						//-------------------
+					},
+					p_log_fun);
 			});
 			//--------------------
 
@@ -95,24 +95,23 @@ export function init(p_url_str,
 }
 //---------------------------------------------------
 function http__add_to_image_flows(p_crawler_page_image_id_str,
-							p_flows_names_lst,
-							p_on_complete_fun,
-							p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_crawl__img_preview_tooltip.http__add_to_image_flows()');
+	p_flows_names_lst,
+	p_on_complete_fun,
+	p_log_fun) {
+	p_log_fun('FUN_ENTER', 'gf_crawl__img_preview_tooltip.http__add_to_image_flows()');
 
 	const url_str = '/a/crawl/image/add_to_flow';
 	p_log_fun('INFO','url_str - '+url_str);
 
 	const data_map = {
-		'crawler_page_image_id_str':p_crawler_page_image_id_str,
-		'flows_names_lst':          p_flows_names_lst, //['general'],
+		'crawler_page_image_id_str': p_crawler_page_image_id_str,
+		'flows_names_lst':           p_flows_names_lst, //['general'],
 	};    
 	//-------------------------
 	//HTTP AJAX
 	$.post(url_str,
 		JSON.stringify(data_map),
 		(p_data_map) => {
-
 			p_on_complete_fun(p_data_map);
 		});
 	//-------------------------

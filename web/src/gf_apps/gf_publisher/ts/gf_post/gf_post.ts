@@ -41,7 +41,7 @@ $(document).ready(()=>{
 });
 //-----------------------------------------------------
 export function init(p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_post.init()');
+    p_log_fun('FUN_ENTER', 'gf_post.init()');
     
     gf_sys_panel.init(p_log_fun);
 
@@ -50,7 +50,7 @@ export function init(p_log_fun) {
     
     //------------------------------
     //INIT IMAGE TAGGING
-    $('.post_element_image').each((p_i,p_post_element)=>{
+    $('.post_element_image').each((p_i, p_post_element)=>{
         
         const image_element          = $(p_post_element).find('img');
         const img_url_str  :string   = $(image_element).attr('src');
@@ -60,7 +60,7 @@ export function init(p_log_fun) {
         
         //img_file_str example - "6c4a667457f05939af6a5f68690d0f55_thumb_medium.jpeg"
         const img_id_str :string = img_file_str.split('_')[0];
-        p_log_fun('INFO','img_id_str - '+img_id_str);
+        p_log_fun('INFO', 'img_id_str - '+img_id_str);
 
         var tag_ui_added_bool :boolean = false;
         gf_tagger_input_ui.init_tag_input(img_id_str, //p_obj_id_str
@@ -68,10 +68,7 @@ export function init(p_log_fun) {
             p_post_element,
             //p_onTagsCreated_fun
             (p_added_tags_lst :string[])=>{
-                
-                view_added_tags(p_post_element,
-                            p_added_tags_lst,
-                            p_log_fun);
+                view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
             },
             //p_onTagUIAdd_fun
             ()=>{
@@ -85,27 +82,27 @@ export function init(p_log_fun) {
 
         gf_post_image_view.init(p_post_element, p_log_fun);
 
-        $(p_post_element).on('mouseenter',(p_event)=>{
+        $(p_post_element).on('mouseenter', (p_event)=>{
 
             //IMPORTANT!! - only show tags_container if there are tags attached to this post_element
             if (tags_num_int > 0) {
-                $(p_post_element).find('.tags_container').css('visibility','visible');
+                $(p_post_element).find('.tags_container').css('visibility', 'visible');
             }
         });
-        $(p_post_element).on('mouseleave',(p_event)=>{
+        $(p_post_element).on('mouseleave', (p_event)=>{
 
             //hide the tags_container only if the tagging UI is not open. 
             //if it is open we want the tags_container visible so that we can 
             //see the tags as they're added
             if (!tag_ui_added_bool) {
-                $(p_post_element).find('.tags_container').css("visibility",'hidden');
+                $(p_post_element).find('.tags_container').css("visibility", 'hidden');
             }
         });
     });
     //------------------------------
     //VIDEO TAGGING
 
-    $('.post_element_video').each((p_i,p_post_element)=>{
+    $('.post_element_video').each((p_i, p_post_element)=>{
 
         //ADD!! - extract video ID properly
         gf_tagger_input_ui.init_tag_input('fix',
@@ -114,10 +111,7 @@ export function init(p_log_fun) {
                     
             //p_onTagsCreated_fun
             (p_added_tags_lst :string[])=>{
-
-                view_added_tags(p_post_element,
-                        p_added_tags_lst,
-                        p_log_fun);
+                view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
             },
             ()=>{}, //p_onTagUIAdd_fun
             ()=>{}, //p_onTagUIRemove_fun
@@ -133,7 +127,7 @@ export function init(p_log_fun) {
 function view_added_tags(p_post_element,
     p_added_tags_lst :string[],
     p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_post.view_added_tags()');
+    p_log_fun('FUN_ENTER', 'gf_post.view_added_tags()');
 
     const tags_container_element = $(p_post_element).find('.tags_container');
 
@@ -148,7 +142,7 @@ function view_added_tags(p_post_element,
 }
 //-----------------------------------------------------
 function get_post_element_tags_num(p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_post.get_post_element_tags_num()');
+    p_log_fun('FUN_ENTER', 'gf_post.get_post_element_tags_num()');
 
     //final DivElement tags_container_element = p_post_element.query('.tags_container');
 

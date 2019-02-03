@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 namespace gf_crawl_stats__images {
 //---------------------------------------------------
-export function view__crawled_images_domains(p_domains_lst,
-                                        p_log_fun) {
+export function view__crawled_images_domains(p_domains_lst, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__images.view__crawled_images_domains()');
 
     const images_domains_e = $(`
@@ -32,15 +31,14 @@ export function view__crawled_images_domains(p_domains_lst,
     
     //---------------------------------------------------
     function view_urls(p_urls_lst,
-                p_valid_for_usage_lst,
-                p_downloaded_lst,
-                p_s3_stored_lst,
-                p_creation_unix_times_lst,
-                p_domain_e) {
+        p_valid_for_usage_lst,
+        p_downloaded_lst,
+        p_s3_stored_lst,
+        p_creation_unix_times_lst,
+        p_domain_e) {
 
-        for (var i=0;i<p_urls_lst.length;i++) {
+        for (var i=0; i < p_urls_lst.length; i++) {
             const u_str                = p_urls_lst[i];
-            
             const valid_for_usage_bool = p_valid_for_usage_lst[i];
             const downloaded_bool      = p_downloaded_lst[i];
             const s3_stored_bool       = p_s3_stored_lst[i];
@@ -130,11 +128,11 @@ export function view__crawled_images_domains(p_domains_lst,
         } 
         else {
             view_urls(urls_lst,
-                    valid_for_usage_lst,
-                    downloaded_lst,
-                    s3_stored_lst,
-                    creation_unix_times_lst,
-                    domain_e);
+                valid_for_usage_lst,
+                downloaded_lst,
+                s3_stored_lst,
+                creation_unix_times_lst,
+                domain_e);
         }   
     }
 
@@ -147,8 +145,7 @@ export function view__crawled_images_domains(p_domains_lst,
     return images_domains_e;
 }
 //---------------------------------------------------
-export function view__gifs_per_day_stats(p_stats_map,
-                                    p_log_fun) {
+export function view__gifs_per_day_stats(p_stats_map, p_log_fun) {
     p_log_fun("FUN_ENTER","gf_crawl_stats__images.view__gifs_per_day_stats()");
 
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
@@ -157,17 +154,14 @@ export function view__gifs_per_day_stats(p_stats_map,
     const stat__crawled_gifs_lst = p_stats_map['stat__crawled_gifs_lst'];
 }
 //---------------------------------------------------
-export function view__gif_stats(p_stats_map,
-                            p_log_fun) {
+export function view__gif_stats(p_stats_map, p_log_fun) {
     p_log_fun("FUN_ENTER","gf_crawl_stats__images.view__gif_stats()");
 
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     console.log(p_stats_map);
 
     const stat__crawled_gifs_lst = p_stats_map['stat__crawled_gifs_lst'];
-    const gifs_stats             = $(`
-                <div id="gifs_stats">
-                </div>`);
+    const gifs_stats             = $(`<div id="gifs_stats"></div>`);
 
     for (var e_map of stat__crawled_gifs_lst) {
 
@@ -176,11 +170,11 @@ export function view__gif_stats(p_stats_map,
         const urls_by_origin_url_lst = e_map['urls_by_origin_url_lst'];
 
         const gifs_domain = $(`
-                <div class="gifs_domain">
-                    <div class="title"><a target="_blank" href=http://"`+domain_str+`">`+domain_str+`</a></div>
-                    <div class="imgs_count">`+imgs_count_int+`</div>
-                    <div class="origin_urls"></div>
-                </div>`);
+            <div class="gifs_domain">
+                <div class="title"><a target="_blank" href=http://"`+domain_str+`">`+domain_str+`</a></div>
+                <div class="imgs_count">`+imgs_count_int+`</div>
+                <div class="origin_urls"></div>
+            </div>`);
         $(gifs_stats).append(gifs_domain);
 
         for (var u_map  of urls_by_origin_url_lst) {
@@ -223,11 +217,9 @@ export function view__gif_stats(p_stats_map,
     }
 
     const nsfv_lst = $(gifs_stats).find('.nsfv:contains("true")');
-    $(nsfv_lst).css('background-color','red');
-    $(nsfv_lst).css('color'           ,'white');
-    $(nsfv_lst).css('font-weight'     ,'bold');
-    //$(nsfv_lst).css('font-size'       ,'12px');
-
+    $(nsfv_lst).css('background-color', 'red');
+    $(nsfv_lst).css('color',            'white');
+    $(nsfv_lst).css('font-weight',      'bold');
     return gifs_stats
 }
 //---------------------------------------------------

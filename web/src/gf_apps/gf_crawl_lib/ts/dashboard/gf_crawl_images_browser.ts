@@ -24,20 +24,19 @@ namespace gf_crawl_images_browser {
 
 //---------------------------------------------------
 export function init__recent_images(p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_crawl_images_browser.init__recent_images()");
+	p_log_fun("FUN_ENTER", "gf_crawl_images_browser.init__recent_images()");
 
 	http__get_recent_images((p_recent_images_lst)=>{
-					const recent_images__browser = view__recent_images(p_recent_images_lst,p_log_fun);
-					
-					$('#browser').append(recent_images__browser);
-				},
-				()=>{},
-				p_log_fun);
+			const recent_images__browser = view__recent_images(p_recent_images_lst, p_log_fun);
+			
+			$('#browser').append(recent_images__browser);
+		},
+		()=>{},
+		p_log_fun);
 }
 //---------------------------------------------------
-function view__recent_images(p_recent_images_lst,
-						p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_crawl_images_browser.view__recent_images()");
+function view__recent_images(p_recent_images_lst, p_log_fun) {
+	p_log_fun("FUN_ENTER", "gf_crawl_images_browser.view__recent_images()");
 
 	const browser  = $(`
 		<div id="browser_container">
@@ -56,11 +55,11 @@ function view__recent_images(p_recent_images_lst,
 		const origin_page_urls_lst     = domain_map['origin_page_urls_lst'];
 
 		const domain_e = $(`
-				<div class="domain">
-					<div class="title"><a target="_blank" href=http://"`+domain_str+`">`+domain_str+`</a></div>
-					<div class="imgs_count"><span>imgs_count: </span>`+imgs_count_int+`</div>
-					<div class="urls"></div>
-				</div>`);
+			<div class="domain">
+				<div class="title"><a target="_blank" href=http://"`+domain_str+`">`+domain_str+`</a></div>
+				<div class="imgs_count"><span>imgs_count: </span>`+imgs_count_int+`</div>
+				<div class="urls"></div>
+			</div>`);
 		$(browser).find('#recent_images').append(domain_e);
 
 		var i=0;
@@ -88,10 +87,10 @@ function view__recent_images(p_recent_images_lst,
 			const crawler_page_image_id_str = crawler_page_img_ids_lst[i];
 			const origin_page_url_str       = origin_page_urls_lst[i];
 			gf_crawl__img_preview_tooltip.init(url_str,
-									crawler_page_image_id_str,
-									origin_page_url_str,
-									url_e,
-									p_log_fun);
+				crawler_page_image_id_str,
+				origin_page_url_str,
+				url_e,
+				p_log_fun);
 			//------------------
 
 			$(domain_e).find('.urls').append(url_e);
@@ -102,16 +101,16 @@ function view__recent_images(p_recent_images_lst,
 		//IMPORTANT!! - mark all images that are listed for a domain, as potentially already
 		//              existing in the target flow.
 		check_imgs_existence(urls_lst,
-					(p_img_existance__views_lst)=>{
+			(p_img_existance__views_lst)=>{
 
-						for (const [url_str,image_existence_e] of p_img_existance__views_lst) {
-							$(domain_e).find('.urls').find(`[data-url="`+url_str+`"]`).append($(image_existence_e));
-						}
-					},
-					(p_error_e)=>{
-						$(domain_e).append(p_error_e);
-					},
-					p_log_fun);
+				for (const [url_str,image_existence_e] of p_img_existance__views_lst) {
+					$(domain_e).find('.urls').find(`[data-url="`+url_str+`"]`).append($(image_existence_e));
+				}
+			},
+			(p_error_e)=>{
+				$(domain_e).append(p_error_e);
+			},
+			p_log_fun);
 		//----------------------
 	}
 
@@ -119,43 +118,41 @@ function view__recent_images(p_recent_images_lst,
 }
 //---------------------------------------------------
 function check_imgs_existence(p_urls_lst,
-					p_on_complete_fun,
-					p_on_error_fun,
-					p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_crawl_images_browser.check_imgs_existence()');
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
+	p_log_fun('FUN_ENTER', 'gf_crawl_images_browser.check_imgs_existence()');
 
 	http__check_imgs_exist_in_flow(p_urls_lst,
-						(p_existing_images_lst)=>{
+		(p_existing_images_lst)=>{
 
+			const img_existance__views_lst = [];
+			$.each(p_existing_images_lst,(p_i, p_e)=>{
 
-							const img_existance__views_lst = [];
-							$.each(p_existing_images_lst,(p_i,p_e)=>{
+				const img__id_str               = p_e['id_str'];
+				const img__origin_url_str       = p_e['origin_url_str'];      //image url that was found in a page
+				const img__origin_page_url_str  = p_e['origin_page_url_str']; //page url from which the image url came
+				const img__creation_unix_time_f = p_e['creation_unix_time_f'];
 
-								const img__id_str               = p_e['id_str'];
-								const img__origin_url_str       = p_e['origin_url_str'];      //image url that was found in a page
-								const img__origin_page_url_str  = p_e['origin_page_url_str']; //page url from which the image url came
-								const img__creation_unix_time_f = p_e['creation_unix_time_f'];
+				const element = get_view(img__origin_url_str,
+					img__origin_page_url_str,
+					img__creation_unix_time_f);
 
-								const element = get_view(img__origin_url_str,
-													img__origin_page_url_str,
-													img__creation_unix_time_f);
+				img_existance__views_lst.push([img__origin_url_str,element]);
+			});
 
-								img_existance__views_lst.push([img__origin_url_str,element]);
-
-							});
-
-							p_on_complete_fun(img_existance__views_lst);
-						},
-						(p_error_data_map)=>{
-							const error_e = $('<div>check_img_exists_in_flow - ERROR</div>');
-							p_on_error_fun(error_e);
-						},
-						p_log_fun);
+			p_on_complete_fun(img_existance__views_lst);
+		},
+		(p_error_data_map)=>{
+			const error_e = $('<div>check_img_exists_in_flow - ERROR</div>');
+			p_on_error_fun(error_e);
+		},
+		p_log_fun);
 
 	//---------------------------------------------------
 	function get_view(p_existing_img__origin_url_str,
-				p_existing_img__origin_page_url_str,
-				p_existing_img__creation_unix_time_f) {
+		p_existing_img__origin_page_url_str,
+		p_existing_img__creation_unix_time_f) {
 		//p_log_fun('FUN_ENTER','gf_crawl_images_browser.check_imgs_existence().get_view()');
 
 		const date = new Date(p_existing_img__creation_unix_time_f*1000);
@@ -179,10 +176,8 @@ function check_imgs_existence(p_urls_lst,
 //---------------------------------------------------
 //HTTP
 //---------------------------------------------------
-function http__get_recent_images(p_on_complete_fun,
-						p_on_error_fun,
-						p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_crawl_images_browser.http__get_recent_images()');
+function http__get_recent_images(p_on_complete_fun, p_on_error_fun, p_log_fun) {
+	p_log_fun('FUN_ENTER', 'gf_crawl_images_browser.http__get_recent_images()');
 
 	const url_str = '/a/crawl/image/recent';
 	$.get(url_str,
@@ -191,9 +186,6 @@ function http__get_recent_images(p_on_complete_fun,
 			//const data_map = JSON.parse(p_data);
 			
 			if (p_data_map["status_str"] == 'OK') {
-
-
-
 				const recent_images_lst = p_data_map['data']['recent_images_lst'];
 				p_on_complete_fun(recent_images_lst);
 			}
@@ -204,18 +196,18 @@ function http__get_recent_images(p_on_complete_fun,
 }
 //---------------------------------------------------
 function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
-					p_on_complete_fun,
-					p_on_error_fun,
-					p_log_fun) {
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_crawl_images_browser.http__check_imgs_exist_in_flow()');
 
 	const url_str = '/images/flows/imgs_exist';
 	//p_log_fun('INFO','url_str - '+url_str);
 
 	const data_map = {
-		'images_extern_urls_lst':p_images_extern_urls_lst,
-		'flow_name_str':         'general', //check if image exists in specific flow
-		'client_type_str':       'gchrome_ext'
+		'images_extern_urls_lst': p_images_extern_urls_lst,
+		'flow_name_str':          'general', //check if image exists in specific flow
+		'client_type_str':        'gchrome_ext'
 	};
 
 	//-------------------------

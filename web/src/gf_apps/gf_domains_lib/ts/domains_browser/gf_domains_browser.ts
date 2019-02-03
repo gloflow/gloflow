@@ -50,10 +50,10 @@ $(document).ready(()=>{
     	const posts_count_int  = parseInt($(p_e).find('.posts_count').text());
     	const images_count_int = parseInt($(p_e).find('.images_count').text());
     	domains_infos_lst.push({
-    		'name_str':        domain_name_str,
-    		'url_str':         domain_url_str,
-    		'posts_count_int': posts_count_int,
-    		'images_count_int':images_count_int,
+    		'name_str':         domain_name_str,
+    		'url_str':          domain_url_str,
+    		'posts_count_int':  posts_count_int,
+    		'images_count_int': images_count_int,
     	});
     });
     //-----------------
@@ -96,8 +96,8 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 	//const renderer = new PIXI.WebGLRenderer(800, 654, {
 	const renderer = new PIXI.CanvasRenderer(800,654,{
 			//antialias      : true,
-			backgroundColor:background_color_int, //backgroundColor:gf_color.get_hex("green"), //0x1099bb,
-			view:           <HTMLCanvasElement> $('#domain_stats_canvas')[0]
+			backgroundColor: background_color_int, //backgroundColor:gf_color.get_hex("green"), //0x1099bb,
+			view:            <HTMLCanvasElement> $('#domain_stats_canvas')[0]
 		});
 
     const width_int  :number = $('#domain_stats_canvas').width();
@@ -107,10 +107,10 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 	//DOMAIN SEARCH
 	
 	gf_domains_search.init_domain_search(p_domains_infos_lst,
-			(p_domain_info_map :Object)=>{
-				pick_domain(p_domain_info_map);
-			},
-			p_log_fun);
+		(p_domain_info_map :Object)=>{
+			pick_domain(p_domain_info_map);
+		},
+		p_log_fun);
 	//-----------------
 	//SORT DATA
 	p_domains_infos_lst.sort((a,b)=>{
@@ -159,7 +159,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 
     //-----------------------------------------------------
     function create_post(p_post_title_str :string) :HTMLDivElement {
-    	//p_log_fun('FUN_ENTER','gf_domains_browser.init().create_post()');
+    	//p_log_fun('FUN_ENTER', 'gf_domains_browser.init().create_post()');
 
     	const url_encoded_title_str :string = encodeURIComponent(p_post_title_str);
     	const post                          = $(`<div id='post'></div>`);
@@ -180,7 +180,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
     }
     //-----------------------------------------------------
 	function pick_domain(p_domain_info_map :Object) {
-		p_log_fun('FUN_ENTER','gf_domains_browser.init().pick_domain()');
+		p_log_fun('FUN_ENTER', 'gf_domains_browser.init().pick_domain()');
 
 		const posts_count_int :number = p_domain_info_map['posts_count_int'];
 		
@@ -225,7 +225,7 @@ function draw_domains_stats(p_domains_lst :Object[],
 	p_ctx_map              :Object,
 	p_onPick_fun,
 	p_log_fun) :Object {
-	p_log_fun('FUN_ENTER','gf_domains_browser.draw_domains_stats()');
+	p_log_fun('FUN_ENTER', 'gf_domains_browser.draw_domains_stats()');
 
 	const container :PIXI.Container = new PIXI.Container();
 
@@ -446,8 +446,8 @@ function draw_domains_stats(p_domains_lst :Object[],
 	}
     //----------------------
     return {
-    	'container':    container,
-    	'domains_infos':domains_infos
+    	'container':     container,
+    	'domains_infos': domains_infos
     };
 }
 //-----------------------------------------------------

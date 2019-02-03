@@ -87,8 +87,6 @@ export function init(p_log_fun) {
 		if (img_format_str == 'gif') {
 
 			const img_id_str = $(image_element).attr('data-img_id');
-
-
 			gf_gifs_viewer.init(image_element, img_id_str, flow_name_str, p_log_fun);
 		}
 		//----------------
@@ -97,8 +95,6 @@ export function init(p_log_fun) {
 		}
 		//----------------
 	});
-
-
 
 	const current_pages_display = init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);

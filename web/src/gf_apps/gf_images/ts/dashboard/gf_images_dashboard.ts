@@ -47,36 +47,25 @@ export function init(p_log_fun) {
 	//COMPLETED_IMAGE_JOBS
 	$('#completed_image_jobs_runtime_infos .btn').on('click',()=>{
 		gf_images_stats.http__get_stat_data('completed_image_jobs_runtime_infos',
-				(p_stat_data_map)=>{
-
-					console.log('aaaaaaaaaaaaaa');
-					console.log(p_stat_data_map);
-
-					const completed_image_jobs_runtime_infos_lst = p_stat_data_map['data_map']['completed_image_jobs_runtime_infos_lst'];
-					if (completed_image_jobs_runtime_infos_lst.length > 0) {
-						gf_images_stats.stat_view__completed_image_jobs_runtime_infos(completed_image_jobs_runtime_infos_lst,
-																				p_log_fun);
-					}
-				},
-				p_log_fun);
+			(p_stat_data_map)=>{
+				const completed_image_jobs_runtime_infos_lst = p_stat_data_map['data_map']['completed_image_jobs_runtime_infos_lst'];
+				if (completed_image_jobs_runtime_infos_lst.length > 0) {
+					gf_images_stats.stat_view__completed_image_jobs_runtime_infos(completed_image_jobs_runtime_infos_lst, p_log_fun);
+				}
+			},
+			p_log_fun);
 	});
 	//-------------------------
 	//COMPLETED_IMAGE_JOBS
 	$('#image_jobs_errors .btn').on('click',()=>{
 		gf_images_stats.http__get_stat_data('image_jobs_errors',
-				(p_stat_data_map)=>{
-
-					console.log('22222222222222');
-					console.log(p_stat_data_map);
-
-
-					const image_jobs_errors_lst = p_stat_data_map['data_map']['image_jobs_errors_lst'];
-					if (image_jobs_errors_lst.length) {
-						gf_images_stats.stat_view__image_jobs_errors(image_jobs_errors_lst,
-																p_log_fun);
-					}
-				},
-				p_log_fun);
+			(p_stat_data_map)=>{
+				const image_jobs_errors_lst = p_stat_data_map['data_map']['image_jobs_errors_lst'];
+				if (image_jobs_errors_lst.length) {
+					gf_images_stats.stat_view__image_jobs_errors(image_jobs_errors_lst, p_log_fun);
+				}
+			},
+			p_log_fun);
 	});
 	//-------------------------
 }

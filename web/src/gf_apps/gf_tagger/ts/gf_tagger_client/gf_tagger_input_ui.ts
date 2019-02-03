@@ -40,7 +40,7 @@ export function init_tag_input(p_obj_id_str :string,
 		</div>`);
 
 	//OPEN TAG INPUT UI
-	$(tagging_ui_element).find('.add_tags_button').on('click',(p_event)=>{
+	$(tagging_ui_element).find('.add_tags_button').on('click', (p_event)=>{
 
 		//remove the tagging_input_container if its already displayed
 		//for tagging another post_element
@@ -194,7 +194,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 function place_tagging_input_ui_element(p_tagging_input_ui_element,
 	p_relative_to_element,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_input_ui.place_tagging_input_ui_element()');
+	p_log_fun('FUN_ENTER', 'gf_tagger_input_ui.place_tagging_input_ui_element()');
 	
 	$('body').append(p_tagging_input_ui_element);
 
@@ -243,9 +243,9 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 
 	const tagging_input_y :number = relative_to_element_y_int - $(p_tagging_input_ui_element).height()/2;
 
-	$(p_tagging_input_ui_element).css('position','absolute');
-	$(p_tagging_input_ui_element).css('left'    ,tagging_input_x+'px');
-	$(p_tagging_input_ui_element).css('top'     ,tagging_input_y+'px');
+	$(p_tagging_input_ui_element).css('position', 'absolute');
+	$(p_tagging_input_ui_element).css('left',     tagging_input_x+'px');
+	$(p_tagging_input_ui_element).css('top',      tagging_input_y+'px');
 }
 //-----------------------------------------------------
 //TAGS SENDING TO SERVER
@@ -256,9 +256,8 @@ function add_tags_to_obj(p_obj_id_str :string,
 	p_onComplete_fun,
 	p_onError_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_input_ui.add_tags_to_obj()');
+	p_log_fun('FUN_ENTER', 'gf_tagger_input_ui.add_tags_to_obj()');
 	
-
 	const tags_str :string   = $(p_tagging_ui_element).find('#tags_input').val();
 	const tags_lst :string[] = tags_str.split(' ');
 	p_log_fun('INFO','tags_lst - '+tags_lst.toString());
@@ -266,7 +265,7 @@ function add_tags_to_obj(p_obj_id_str :string,
 
 	const existing_tags_lst :string[] = [];
 
-	$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i,p_tag)=>{
+	$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i, p_tag)=>{
 		const tag_str = $(p_tag).text().trim();
 		existing_tags_lst.push(tag_str);
 	});
@@ -289,7 +288,7 @@ function add_tags_to_obj(p_obj_id_str :string,
 		p_obj_type_str,
 		(p_data_map)=>{
 			const added_tags_lst :string[] = p_data_map['added_tags_lst'];
-			p_log_fun('INFO','added_tags_lst:'+added_tags_lst);
+			p_log_fun('INFO', 'added_tags_lst:'+added_tags_lst);
 
 			p_onComplete_fun(added_tags_lst);
 		},

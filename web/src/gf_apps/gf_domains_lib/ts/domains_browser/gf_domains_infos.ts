@@ -154,8 +154,8 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 				scroll_indicator_gr.width,
 				scroll_indicator_gr.height)) {
 				return {
-					'i':           i,
-					'domain_stats':ds
+					'i':            i,
+					'domain_stats': ds
 				};
 			}
 			//--------------------

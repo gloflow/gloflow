@@ -29,10 +29,10 @@ $(document).ready(()=>{
 
 		switch (p_g) {
 			case "INFO":
-				console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
+				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
 				break;
 			case "FUN_ENTER":
-				console.log("%cFUN_ENTER"+":"+"%c"+p_m,"color:yellow; background-color:lightgray","background-color:lightgray");
+				console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray","background-color:lightgray");
 				break;
 		}
 	}
@@ -50,10 +50,9 @@ $(document).ready(()=>{
 });
 //--------------------------------------------------------
 export function init_remote(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_landing_page.init_remote()');
+	p_log_fun('FUN_ENTER', 'gf_landing_page.init_remote()');
 
-	init(remote_register_user_email,
-		p_log_fun);
+	init(remote_register_user_email, p_log_fun);
 	//--------------------------------------------------------
 	function remote_register_user_email(p_inputed_email_str :string,
 		p_on_complete_fun,
@@ -62,15 +61,15 @@ export function init_remote(p_log_fun) {
 		
 		const url_str       = '/landing/register_invite_email';
 		const data_args_map = {
-			'email_str':p_inputed_email_str
+			'email_str': p_inputed_email_str
 		};
 		
 		$.ajax({
-			'url':        url_str,
-			'type':       'POST',
-			'data':       JSON.stringify(data_args_map),
-			'contentType':'application/json',
-			'success':    (p_data_map)=>{
+			'url':         url_str,
+			'type':        'POST',
+			'data':        JSON.stringify(data_args_map),
+			'contentType': 'application/json',
+			'success':     (p_data_map)=>{
 	     		p_on_complete_fun('success',p_data_map);
 			}
 		});
@@ -79,7 +78,7 @@ export function init_remote(p_log_fun) {
 }
 //--------------------------------------------------------
 function init(p_register_user_email_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_landing_page.init()');
+	p_log_fun('FUN_ENTER', 'gf_landing_page.init()');
 
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
@@ -122,7 +121,7 @@ function init(p_register_user_email_fun, p_log_fun) {
 }
 //--------------------------------------------------------
 function load_static_data(p_log_fun) :Object[] {
-	p_log_fun('FUN_ENTER','gf_landing_page.load_static_data()');
+	p_log_fun('FUN_ENTER', 'gf_landing_page.load_static_data()');
 	
 	const featured_elements_infos_lst :Object[] = []; 
 
@@ -133,10 +132,10 @@ function load_static_data(p_log_fun) :Object[] {
 		const featured_element_title_str      :string = $(element).find('.post_title').text();
 
 		const featured_element_info_map :Object = {
-			'element':   $(element),
-			'image_src': featured_element_image_url_str,
-			'images_num':featured_element_images_num_str,
-			'title_str': featured_element_title_str
+			'element':    $(element),
+			'image_src':  featured_element_image_url_str,
+			'images_num': featured_element_images_num_str,
+			'title_str':  featured_element_title_str
 		};
 
 		featured_elements_infos_lst.push(featured_element_info_map);

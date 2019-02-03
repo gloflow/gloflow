@@ -27,9 +27,9 @@ namespace gf_domains_conn {
 //-----------------------------------------------------
 export function draw_connectivity(p_domains_lst :Object[],
 	p_domains_infos_spr :PIXI.Container,
-	p_width_int  :number,
-	p_height_int :number,
-	p_color_int  :number,
+	p_width_int         :number,
+	p_height_int        :number,
+	p_color_int         :number,
 	p_log_fun) :PIXI.Container {
 	//{int     p_width_int :300,
 	//int      p_height_int:300,

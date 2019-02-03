@@ -20,14 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 namespace gf_gifs_viewer {
 //-------------------------------------------------
 export function init(p_image_element,
-				p_img_id_str    :string,
-				p_flow_name_str :string,
-				p_log_fun) {
+	p_img_id_str    :string,
+	p_flow_name_str :string,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_gifs_viewer.init()');
 
 	//const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
-
-
 
 	//----------------------
 	//GIF_INDICATOR
@@ -64,20 +62,20 @@ export function init(p_image_element,
 		console.log('click');
 
 		gf_gifs.http__gif_get_info(p_img_id_str,
-					'gloflow.com',
-					(p_gif_map)=>{
+			'gloflow.com',
+			(p_gif_map)=>{
 
-						console.log('GIF RECEIVED >>>>>>>>>> --------------')
-						console.log(p_gif_map);
+				console.log('GIF RECEIVED >>>>>>>>>> --------------')
+				console.log(p_gif_map);
 
-						const gif_gf_url_str = p_gif_map['gf_url_str'];
+				const gif_gf_url_str = p_gif_map['gf_url_str'];
 
-						view_gif(gif_gf_url_str);
-					},
-					(p_error_data_map)=>{
+				view_gif(gif_gf_url_str);
+			},
+			(p_error_data_map)=>{
 
-					},
-					p_log_fun);
+			},
+			p_log_fun);
 	});
 
 	//-------------------------------------------------

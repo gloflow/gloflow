@@ -99,7 +99,7 @@ export function init(p_obj_id_str :string,
 				const notes_height_int            :number = $(notes_panel).find('#notes').height();
 				const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
 				const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
-				$(background).css('height',new_height_int+'px');
+				$(background).css('height', new_height_int+'px');
 				//----------------------
 			},
 			p_log_fun);
@@ -128,7 +128,7 @@ export function init(p_obj_id_str :string,
 function get_notes(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_notes_panel,
-	p_onComplete_fun,
+	p_on_complete_fun,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.get_notes()');
 
@@ -136,7 +136,7 @@ function get_notes(p_obj_id_str :string,
 	//IMPORTANT!! - get notes via HTTP from backend gf_tagger_service
 	gf_tagger_client.get_notes(p_obj_id_str,
 		p_obj_type_str,
-		//p_onComplete_fun
+		//p_on_complete_fun
 		(p_notes_lst :Object[])=>{
 
 			for (var note_map of p_notes_lst) {
@@ -149,7 +149,7 @@ function get_notes(p_obj_id_str :string,
 					p_notes_panel,
 					p_log_fun);
 			}
-			p_onComplete_fun();
+			p_on_complete_fun();
 		},
 		()=>{}, //p_onError_fun
 		p_log_fun);
@@ -159,7 +159,7 @@ function get_notes(p_obj_id_str :string,
 function run__remote_add_note(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_notes_panel,
-	p_onComplete_fun,
+	p_on_complete_fun,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.run__remote_add_note()');
 

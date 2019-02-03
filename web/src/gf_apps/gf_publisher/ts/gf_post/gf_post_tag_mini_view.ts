@@ -24,7 +24,7 @@ namespace gf_post_tag_mini_view {
 function init_tags_mini_view(p_tags_lst :string[],
 	p_domain_str :string,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_post.gf_post_main().init_tags_mini_view()');
+	p_log_fun('FUN_ENTER', 'gf_post.gf_post_main().init_tags_mini_view()');
   
 	//Element tags_container_element = $('#post_tags');
 	//List    tags_html_elements_lst = $('.post_tag');
@@ -36,8 +36,8 @@ function init_tags_mini_view(p_tags_lst :string[],
 								
 		//onClose_fun
 		()=>{
-			$('#post_info_container').css('opacity','1.0');
-			$('.post_element').each((p_i,p_element)=>{$(p_element).css('opacity','1.0');});
+			$('#post_info_container').css('opacity', '1.0');
+			$('.post_element').each((p_i,p_element)=>{$(p_element).css('opacity', '1.0');});
 		},
 		p_log_fun);
 			
@@ -60,11 +60,11 @@ function init_tags_mini_view(p_tags_lst :string[],
 	const space_between_post_title_and_tags_mini_view :number = 10;
 	const tags_mini_view_new_x                        :number = $(post_title_element).offset.left + $(post_title_element).offset.width + space_between_post_title_and_tags_mini_view;
 		
-	$(tags_mini_view_tags_container_element).css('left',tags_mini_view_new_x.toString()+'px');
+	$(tags_mini_view_tags_container_element).css('left', tags_mini_view_new_x.toString()+'px');
 	//-----------------
 	
 	//when the cursor is over the tags_mini_view lighten all of the post_element's
-	$(tags_mini_view_tags_container_element).on('onmouseover',(event)=>{
+	$(tags_mini_view_tags_container_element).on('onmouseover', (event)=>{
 		
 		////--------------
 		////ANALYTICS
@@ -87,7 +87,7 @@ function init_tags_mini_view(p_tags_lst :string[],
 		//---------------------
 	});
 	
-	$(tags_mini_view_tags_container_element).on('onmouseleave',(p_event)=>{
+	$(tags_mini_view_tags_container_element).on('onmouseleave', (p_event)=>{
 		$('#post_info_container').css('opacity','1.0');
 		$('.post_element').each((p_i,p_element)=>{$(p_element).css('opacity','1.0');});
 	});
@@ -98,7 +98,7 @@ function init_tags_mini_view(p_tags_lst :string[],
 	//position .post_tags div vertically centered with .post_title_str
 	const new_mini_view_y :number = $(post_title_element).offset().top + ($(post_title_element).offset().height - $(post_tags_element).offset().height)/2;
 	
-	$(post_tags_element).css('top',new_mini_view_y.toString());
+	$(post_tags_element).css('top', new_mini_view_y.toString());
 	//----------------
 }
 //-----------------------------------------------------

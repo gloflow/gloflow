@@ -66,7 +66,7 @@ export function init(p_register_user_email_fun, p_log_fun) {
 	
 	//--------------------------------------------------------
 	function register_user_email(p_inputed_email_str :string) {
-		p_log_fun('FUN_ENTER','gf_email_registration.init().register_user_email()');
+		p_log_fun('FUN_ENTER', 'gf_email_registration.init().register_user_email()');
 
 		p_register_user_email_fun(p_inputed_email_str,
 
@@ -75,17 +75,17 @@ export function init(p_register_user_email_fun, p_log_fun) {
 			p_msg_str     :string)=>{
 				console.assert(p_status_str == 'success' || p_status_str == 'error');
 
-				p_log_fun('INFO','email registration DONE');
-				p_log_fun('INFO','p_status_str:$p_status_str');
+				p_log_fun('INFO', 'email registration DONE');
+				p_log_fun('INFO', 'p_status_str:$p_status_str');
 
 				switch(p_status_str) {
 					case 'success':
 						$(submit_register_email_form_button).find('.button_title').text('success');
-						$(submit_register_email_form_button).css('background-color','rgb(80, 173, 36)');
+						$(submit_register_email_form_button).css('background-color', 'rgb(80, 173, 36)');
 						break;
 					case 'error':
 						$(submit_register_email_form_button).find('.button_title').text('error');
-						$(submit_register_email_form_button).css('background-color','rgb(255, 10, 0)');
+						$(submit_register_email_form_button).css('background-color', 'rgb(255, 10, 0)');
 
 						const error_msg = $(`
 							<div class="button_title">$p_msg_str</div>

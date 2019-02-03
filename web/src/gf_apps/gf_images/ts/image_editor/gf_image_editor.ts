@@ -27,15 +27,9 @@ declare var Caman;
 export function init(p_target_image_div_element, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_image_editor.init()');
 
-
-
-
 	const target_image = $(p_target_image_div_element).find('img')[0];
 	var width_int  = target_image.clientWidth;
 	var height_int = target_image.clientHeight;
-
-
-
 
 	console.log('img width  - '+width_int);
 	console.log('img height - '+height_int);
@@ -183,7 +177,7 @@ function http_save(p_canvas_base64_str) {
 
 	$.ajax({
 		type: "POST",
-		url : "/images/editor/save",
+		url:  "/images/editor/save",
 		data: { 
 			imgBase64: p_canvas_base64_str
 		}

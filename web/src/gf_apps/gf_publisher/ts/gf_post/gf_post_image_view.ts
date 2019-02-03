@@ -62,29 +62,29 @@ function view_image(p_img_url_str :string, p_log_fun) {
 				$(image_view_element).append(image);
 
 				const close_btn = $(image_view_element).find('#close_button');
-				$(close_btn).css('left',(image_x_int+$(image).width())+'px');
-				$(close_btn).css('top' ,image_y_int+'px');
+				$(close_btn).css('left', (image_x_int+$(image).width())+'px');
+				$(close_btn).css('top',  image_y_int+'px');
             });
     }
     //--------------------------------------------------------
 
     //offset the top of the image_viewer in case the user scrolled
-    $(image_view_element).css('top',document.body.scrollTop+'px');
+    $(image_view_element).css('top', document.body.scrollTop+'px');
     
     $('body').append(image_view_element);
 
 	//prevent scrolling while in image_view
-	$('body').css('overflow','hidden');
+	$('body').css('overflow', 'hidden');
 
 	//'ESCAPE' key
-	$(document).on('keyup',(p_event)=>{
+	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
 			
 			$(image_view_element).remove();
 			$('body').css('overflow','auto');
 		}
 	});
-	$(image_view_element).find('#close_button').on('click',(p_event)=>{
+	$(image_view_element).find('#close_button').on('click', (p_event)=>{
 		$(image_view_element).remove();
 		$('body').css('overflow','auto');
 	});

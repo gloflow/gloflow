@@ -23,20 +23,18 @@ declare var sigma;
 declare var c3;
 //declare var d3;
 //---------------------------------------------------
-export function view__new_links_per_day(p_stats_lst,
-                                    p_parent,
-                                    p_log_fun) {
+export function view__new_links_per_day(p_stats_lst, p_parent, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__new_links_per_day()');
 
     const plot = $(`
-            <div id='plots'>
-                <div id='new_links_per_day__plot'>
-                    <svg width='800' height='600'></svg>
-                </div>
-                <div id='total_links_count_per_day__plot'>
-                    <svg width='800' height='600'></svg>
-                </div>
-            </div>`);
+        <div id='plots'>
+            <div id='new_links_per_day__plot'>
+                <svg width='800' height='600'></svg>
+            </div>
+            <div id='total_links_count_per_day__plot'>
+                <svg width='800' height='600'></svg>
+            </div>
+        </div>`);
 
     $(p_parent).append(plot);
     //-----------------
@@ -101,8 +99,7 @@ export function view__new_links_per_day(p_stats_lst,
     });
 }
 //---------------------------------------------------
-export function view__unresolved(p_stats_lst,
-							p_log_fun) {
+export function view__unresolved(p_stats_lst, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__unresolved()');
 
     const container = $(`
@@ -128,10 +125,10 @@ export function view__unresolved(p_stats_lst,
         $(domain).find('.plot_urls_references_graph_btn').on('click',(p_e)=>{
 
             const graph = view__links_graph(origin_domain_str,
-                            origin_urls_lst,
-                            a_hrefs__from_origin_urls_lst,
-                            domain,
-                            p_log_fun);
+                origin_urls_lst,
+                a_hrefs__from_origin_urls_lst,
+                domain,
+                p_log_fun);
         });
 
         for (var i=0;i<origin_urls_lst.length;i++) {
@@ -151,10 +148,10 @@ export function view__unresolved(p_stats_lst,
 }
 //---------------------------------------------------
 export function view__links_graph(p_origin_domain_str :string,
-                                p_origin_urls_lst               :string[],
-                                p_a_hrefs__from_origin_urls_lst :string[],
-                                p_parent,
-                                p_log_fun) {
+    p_origin_urls_lst               :string[],
+    p_a_hrefs__from_origin_urls_lst :string[],
+    p_parent,
+    p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__links_graph()');
 
     const c = $(`
@@ -170,13 +167,13 @@ export function view__links_graph(p_origin_domain_str :string,
 
     //----------------------
     nodes_lst.push({
-                id   : p_origin_domain_str,
-                label: p_origin_domain_str,
-                x    : 0,   //Math.random(),
-                y    : 0,   //Math.random(),
-                size : 0.5, //Math.random(),
-                color: '#111'
-            });
+        id   : p_origin_domain_str,
+        label: p_origin_domain_str,
+        x    : 0,   //Math.random(),
+        y    : 0,   //Math.random(),
+        size : 0.5, //Math.random(),
+        color: '#111'
+    });
     nodes_map[p_origin_domain_str] = true;
     //----------------------
 
@@ -185,11 +182,11 @@ export function view__links_graph(p_origin_domain_str :string,
 
         if (!(origin_url_str in nodes_map)) {
             nodes_lst.push({
-                id   : origin_url_str,
+                id:    origin_url_str,
                 label: origin_url_str,
-                x    : Math.random(),
-                y    : Math.random(),
-                size : 0.5, //Math.random(),
+                x:     Math.random(),
+                y:     Math.random(),
+                size:  0.5, //Math.random(),
                 color: '#111'
             });
 
@@ -199,24 +196,24 @@ export function view__links_graph(p_origin_domain_str :string,
         const a_hrefs_from_origin_url_lst = p_a_hrefs__from_origin_urls_lst[i];
 
         edges_lst.push({
-                id    : origin_url_str+' '+i,
+                id:     origin_url_str+' '+i,
                 source: p_origin_domain_str,
                 target: origin_url_str,
-                size  : Math.random(),
-                color : '#ccc'
+                size:   Math.random(),
+                color:  '#ccc'
             }); 
 
-        for (var j=0;j<a_hrefs_from_origin_url_lst.length;j++) {
+        for (var j=0; j < a_hrefs_from_origin_url_lst.length; j++) {
 
             const a_href_from_origin_url_str = a_hrefs_from_origin_url_lst[j];
                 
             if (!(a_href_from_origin_url_str in nodes_map)) {
                 nodes_lst.push({
-                    id   : a_href_from_origin_url_str,
+                    id:    a_href_from_origin_url_str,
                     label: 'n', //a_href_from_origin_url_str,
-                    x    : Math.random(),
-                    y    : Math.random(),
-                    size : 0.1, //Math.random(),
+                    x:     Math.random(),
+                    y:     Math.random(),
+                    size:  0.1, //Math.random(),
                     color: '#666'
                 });
 
@@ -224,11 +221,11 @@ export function view__links_graph(p_origin_domain_str :string,
             }   
 
             edges_lst.push({
-                id    : origin_url_str + '_'+a_href_from_origin_url_str+'_'+j,
+                id:     origin_url_str + '_'+a_href_from_origin_url_str+'_'+j,
                 source: origin_url_str,
                 target: a_href_from_origin_url_str,
-                size  : 0.5, //Math.random(),
-                color : '#ccc'
+                size:   0.5, //Math.random(),
+                color:  '#ccc'
             });       
         }
 
@@ -257,8 +254,7 @@ export function view__links_graph(p_origin_domain_str :string,
     //-----------------
 }
 //---------------------------------------------------
-export function view__crawled_domains(p_domains_lst,
-                                p_log_fun) {
+export function view__crawled_domains(p_domains_lst, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__links.view__crawled_domains()');
 
     const links_domains_e = $(`

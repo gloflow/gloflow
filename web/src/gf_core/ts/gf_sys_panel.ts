@@ -36,14 +36,12 @@ export function init(p_log_fun) {
 
 	$('body').append(sys_panel_element);
 
-	$(sys_panel_element).find('#view_handle').on('mouseover',(p_e)=>{
-
+	$(sys_panel_element).find('#view_handle').on('mouseover', (p_e)=>{
 		$(sys_panel_element).animate({
 			top:0 //move it
 		},
 		200,
 		()=>{
-			
 			$(sys_panel_element).find('#view_handle').css('visibility','hidden');
 		});
 	});

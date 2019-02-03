@@ -22,17 +22,15 @@ namespace gf_crawl_stats__fetches {
 declare var c3;
 
 //---------------------------------------------------
-export function view__fetches_per_day(p_fetches_by_days_map,
-                                    p_parent,
-                                    p_log_fun) {
+export function view__fetches_per_day(p_fetches_by_days_map, p_parent, p_log_fun) {
     p_log_fun('FUN_ENTER','gf_crawl_stats__fetches.view__fetches_per_day()');
 
     const plot = $(`
-            <div id='plots'>
-                <div id='new_fetches_per_day__plot'>
-                    <svg width='2000' height='2000'></svg>
-                </div>
-            </div>`);
+        <div id='plots'>
+            <div id='new_fetches_per_day__plot'>
+                <svg width='2000' height='2000'></svg>
+            </div>
+        </div>`);
 
     $(p_parent).append(plot);
 
@@ -91,7 +89,7 @@ export function view__fetches_per_day(p_fetches_by_days_map,
 
     const chart = c3.generate({
         bindto:'#new_fetches_per_day__plot',
-        data  : {
+        data: {
             columns:top_c3_columns_lst
             /*columns: [
             daily_total_count_lst,

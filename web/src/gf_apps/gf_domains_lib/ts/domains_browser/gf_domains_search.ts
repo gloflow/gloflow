@@ -29,8 +29,8 @@ export function init_domain_search(p_domains_infos_lst :Object[],
 	const suggestions_lst :Object[] = [];
 	for (var domain_info_map of p_domains_infos_lst) {
 		suggestions_lst.push({
-			'value':domain_info_map['url_str'],
-			'data' :JSON.stringify(domain_info_map)
+			'value': domain_info_map['url_str'],
+			'data':  JSON.stringify(domain_info_map)
 		});
 	}
 
@@ -46,8 +46,8 @@ export function init_domain_search(p_domains_infos_lst :Object[],
 			//	{'value':'test2','data':'AE2'},
 			//	{'value':'test4','data':'AE3'}
 			//],
-			'lookup'  :suggestions_lst,
-			'onSelect':(p_suggestion)=>{
+			'lookup':   suggestions_lst,
+			'onSelect': (p_suggestion)=>{
 				
 				const domain_url_str  :string = p_suggestion['value'];
 				const domain_info_map :Object = JSON.stringify(p_suggestion['data']);

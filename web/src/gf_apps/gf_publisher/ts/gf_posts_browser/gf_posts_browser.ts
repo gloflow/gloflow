@@ -42,7 +42,7 @@ $(document).ready(()=>{
 });
 //-----------------------------------------------------
 export function init(p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_posts_browser.init()');
+    p_log_fun('FUN_ENTER', 'gf_posts_browser.init()');
 
     //this app assumes that the first page of the posts is present 
     //in the dom on app startup... subsequent page loads happen from the server
@@ -56,11 +56,11 @@ export function init(p_log_fun) {
 //DATA LOADING
 //-----------------------------------------------------
 function load_data_from_dom(p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_posts_browser.load_data_from_dom()');
+    p_log_fun('FUN_ENTER', 'gf_posts_browser.load_data_from_dom()');
         
     const page_posts_infos_lst :Object[] = [];
 
-    $('body #gf_posts_container').find('.gf_post').each((p_i,p_post)=>{
+    $('body #gf_posts_container').find('.gf_post').each((p_i, p_post)=>{
 
         const post_title_str :string = $(p_post).find('.post_title').text().trim();
         const post_url_str   :string = '/posts/'+post_title_str;
@@ -73,8 +73,8 @@ function load_data_from_dom(p_log_fun) {
             const tag_url_str :string = $(p_tag_element).attr('href');
 
             const tag_info_map = {
-                'tag_str':    tag_str,
-                'tag_url_str':tag_url_str
+                'tag_str':     tag_str,
+                'tag_url_str': tag_url_str
             };
 
             tags_infos_lst.push(tag_info_map);
@@ -86,11 +86,11 @@ function load_data_from_dom(p_log_fun) {
         //--------------------
 
         const post_info_map = {
-            'post':             p_post,
-            'post_title_str':   post_title_str, 
-            'post_url_str':     post_url_str,
-            'tags_infos_lst':   tags_infos_lst,
-            'thumbnail_url_str':thumbnail_url_str
+            'post':              p_post,
+            'post_title_str':    post_title_str, 
+            'post_url_str':      post_url_str,
+            'tags_infos_lst':    tags_infos_lst,
+            'thumbnail_url_str': thumbnail_url_str
         };
 
         page_posts_infos_lst.push(post_info_map);

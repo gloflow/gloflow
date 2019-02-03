@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 namespace gf_gifs {
 //---------------------------------------------------
 export function http__gif_get_info(p_gf_img_id_str,
-					p_host_str,
-					p_on_complete_fun,
-					p_on_error_fun,
-					p_log_fun) {
+	p_host_str,
+	p_on_complete_fun,
+	p_on_error_fun,
+	p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_gifs.http__gif_get_info()');
 
 	const url_str = 'http://'+p_host_str+'/images/gif/get_info?gfimg_id='+p_gf_img_id_str;

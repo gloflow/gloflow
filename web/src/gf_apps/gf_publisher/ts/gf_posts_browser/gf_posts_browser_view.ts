@@ -24,17 +24,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 namespace gf_posts_browser_view {
 //-----------------------------------------------------
 export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_posts_browser_view.init()');
+    p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init()');
   
     const image_view_container_element = $('<div id="image_view_posts_container"></div>');
 
     //----------------
     //JS - MASONRY
 
-    $('#gf_posts_container').masonry(
-        {
-            'columnWidth' :10,
-            'itemSelector':'.item'
+    $('#gf_posts_container').masonry({
+            'columnWidth':  10,
+            'itemSelector': '.item'
         });
     //----------------
     init_posts_images(p_initial_posts_infos_lst,
@@ -56,7 +55,7 @@ export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
 
         var loading_page_bool = false;
         var current_page_int  = 6; //the few initial pages are already statically embedded in the document
-        $(window).on('scroll',(e)=>{
+        $(window).on('scroll', (e)=>{
 
             //print('SCROLL >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
             //print(document.documentElement.clientHeight);
@@ -102,7 +101,7 @@ export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
 //--------------------------------------------------------
 function load_new_page(p_page_index_int :number,
     p_page_elements_num_int :number,
-    p_onComplete_fun,
+    p_on_complete_fun,
     p_log_fun) {
     //p_log_fun('FUN_ENTER','gf_posts_browser_view.load_new_page()');
 
@@ -121,7 +120,7 @@ function load_new_page(p_page_index_int :number,
                     $('#gf_posts_container').masonry('reloadItems');
                     //---------------------
 
-                    p_onComplete_fun();
+                    p_on_complete_fun();
                 },
                 p_log_fun); //load_new_page() only runs with server_comm
         },
@@ -188,9 +187,9 @@ function create_posts_from_page(p_page_lst :Object[],
         const images_number_str :string = p_post_map['images_number_str'];
 
         const post_info_map = {
-            'post':             post,
-            'post_url_str':     post_url_str,
-            'thumbnail_url_str':thumbnail_url_str,
+            'post':              post,
+            'post_url_str':      post_url_str,
+            'thumbnail_url_str': thumbnail_url_str,
             //'images_number_str':images_number_str
         };
         posts_infos_lst.push(post_info_map);
@@ -200,7 +199,7 @@ function create_posts_from_page(p_page_lst :Object[],
 }
 //--------------------------------------------------------
 function init_posts_images(p_posts_infos_lst :Object[],
-    p_onComplete_fun,
+    p_on_complete_fun,
     p_log_fun) {
     p_log_fun('FUN_ENTER','gf_posts_browser_view.init_posts_images()');
         
@@ -234,7 +233,7 @@ function init_posts_images(p_posts_infos_lst :Object[],
                 processed_images_int += 1;
 
                 if (processed_images_int == p_posts_infos_lst.length) {
-                    p_onComplete_fun();
+                    p_on_complete_fun();
                 }
             },
             //--------------------------------------------------------
@@ -250,8 +249,8 @@ function init_post_image(p_thumbnail_image_src :string,
     p_error_img_url_str       :string,
     p_video_thumb_img_url_str :string,
     p_post                    :HTMLDivElement,
-    p_onComplete_fun,
-    p_onError_fun,
+    p_on_complete_fun,
+    p_on_error_fun,
     p_log_fun) {
     //p_log_fun('FUN_ENTER','gf_posts_browser_view.init_post_image()');
 
@@ -273,12 +272,12 @@ function init_post_image(p_thumbnail_image_src :string,
 
         $('#gf_posts_container').masonry();
         //---------------------
-        p_onComplete_fun(image);
+        p_on_complete_fun(image);
     });
 
-    $(image).on('error',(p_e)=>{
-        $(image).attr('src',p_error_img_url_str);
-        p_onError_fun('image with url failed to load - '+p_thumbnail_image_src);
+    $(image).on('error', (p_e)=>{
+        $(image).attr('src', p_error_img_url_str);
+        p_on_error_fun('image with url failed to load - '+p_thumbnail_image_src);
     });
 }
 //--------------------------------------------------------
@@ -287,26 +286,25 @@ function init_post(p_post :HTMLDivElement,
     p_log_fun) {
     p_log_fun('FUN_ENTER','gf_posts_browser_view.init_post()');
 
-    init_post_date(p_post,
-                p_log_fun);
+    init_post_date(p_post, p_log_fun);
     //---------------------
     //IMAGES_NUMBER
 
     const post_images_number = $(p_post).find('.post_images_number');
 
     $(p_post).on('mouseover',(p_e)=>{
-        $(post_images_number).css('visibility','visible');
+        $(post_images_number).css('visibility', 'visible');
     });
     $(p_post).on('mouseout',(p_e)=>{
-        $(post_images_number).css('visibility','hidden');
+        $(post_images_number).css('visibility', 'hidden');
     });
-    $(post_images_number).css('right',-$(post_images_number).width()+'px');
+    $(post_images_number).css('right', -$(post_images_number).width()+'px');
     //---------------------
     //TAGGING
     const post_title_str :string = $(p_post).find('.post_title').text();
 
     gf_tagger_input_ui.init_tag_input(post_title_str, //p_obj_id_str
-        'post',               //p_obj_type_str
+        'post',                                       //p_obj_type_str
         p_post,
         //--------------------------------------------------------
         //p_onTagsCreated_fun

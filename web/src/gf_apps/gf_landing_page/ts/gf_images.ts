@@ -22,9 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 namespace gf_images {
 //-------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images.init()');
+	p_log_fun('FUN_ENTER', 'gf_images.init()');
 
-	$('#featured_images').find('.image_info').each((p_i,p_e)=>{
+	$('#featured_images').find('.image_info').each((p_i, p_e)=>{
 		init_image_viewer(p_e, p_log_fun);
 		init_image_date(p_e, p_log_fun);
 	});
@@ -74,7 +74,7 @@ function init_image_viewer(p_image_element, p_log_fun) {
 }
 //-------------------------------------------------
 function init_image_date(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images.init_image_date()');
+	p_log_fun('FUN_ENTER', 'gf_images.init_image_date()');
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());
