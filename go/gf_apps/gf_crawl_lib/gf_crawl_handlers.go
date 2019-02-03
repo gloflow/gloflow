@@ -32,7 +32,14 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_handlers.init_handlers()")
+	
+	//---------------------
+	//TEMPLATES
 
+	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 	//----------------
 	http.HandleFunc("/a/crawl/image/recent", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
@@ -130,6 +137,31 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 		//------------------
 	})
 	//----------------
+	http.HandleFunc("/a/crawl/crawl_dashboard_ff2___1112_29", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/crawl_dashboard_ff2___1112_29 ----------")
+
+		if p_req.Method == "GET" {
+			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			//--------------------
+			//RENDER TEMPLATE
+			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
+				gf_templates.dashboard__subtemplates_names_lst,
+				p_resp,
+				p_runtime_sys)
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/a/crawl_dashboard_ff2___1112_29", "failed to render analytics dashboard page", gf_err, p_resp, p_runtime_sys)
+				return
+			}
+
+			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+			go func() {
+				gf_rpc_lib.Store_rpc_handler_run("/a/crawl_dashboard_ff2___1112_29", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
+	})
+	//--------------
 
 	return nil
 }

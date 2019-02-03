@@ -9,7 +9,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 //-------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
+func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
 	//---------------------
@@ -112,4 +112,5 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 		}
 	})
 	//--------------
+	return nil
 }

@@ -10,8 +10,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 //-------------------------------------------------
 func main() {
