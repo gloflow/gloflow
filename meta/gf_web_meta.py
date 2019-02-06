@@ -32,16 +32,15 @@ def get():
 					},
 					'css':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_images/css/gf_images_flows_browser.css'%(cwd_str), '%s/../web/build/gf_apps/gf_images/css'%(cwd_str)),
-							('%s/../web/src/gf_core/css/gf_gifs_viewer.css'%(cwd_str),                    '%s/../web/build/gf_apps/gf_images/css'%(cwd_str)),
-							('%s/../web/src/gf_core/css/gf_image_viewer.css'%(cwd_str),                   '%s/../web/build/gf_apps/gf_images/css'%(cwd_str)),
-							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_images/css'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_images/css/gf_images_flows_browser.css'%(cwd_str), '%s/../web/build/gf_apps/gf_images/css/flows_browser'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_gifs_viewer.css'%(cwd_str),                    '%s/../web/build/gf_apps/gf_images/css/flows_browser'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_image_viewer.css'%(cwd_str),                   '%s/../web/build/gf_apps/gf_images/css/flows_browser'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_images/css/flows_browser'%(cwd_str)),
 						]
 					},
-
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_images/templates/flows_browser/gf_images_flows_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_images/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_images/templates/flows_browser/gf_images_flows_browser.html'%(cwd_str), '%s/../web/build/gf_apps/gf_images/templates/flows_browser'%(cwd_str)),
 						]
 					}
 				},
@@ -67,14 +66,16 @@ def get():
 					},
 					'css':{
 						'files_lst':[
-							('%s/../web/gf_apps/gf_images/css/lib/nv.d3.css'%(cwd_str),           '%s/../web/build/gf_apps/gf_images/css/lib'%(cwd_str)),
-							('%s/../web/gf_apps/gf_images/css/dashboard/dashboard.css'%(cwd_str), '%s/../web/build/gf_apps/gf_images/css/dashboard'%(cwd_str))
+							('%s/../web/src/gf_apps/gf_images/css/dashboard/gf_dashboard.css'%(cwd_str), '%s/../web/build/gf_apps/gf_images/css/dashboard'%(cwd_str)),
+							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                     '%s/../web/build/gf_apps/gf_images/css/dashboard'%(cwd_str)),
+							('%s/../web/libs/css/nv.d3.css'%(cwd_str),                                   '%s/../web/build/gf_apps/gf_images/css/dashboard'%(cwd_str)),
 						]
 					},
-					#static files to copy without change
-					'files_to_copy_lst':[
-						('%s/../web/gf_apps/gf_images/templates/dashboard__ff0099__ooo.html'%(cwd_str), '%s/../web/build/gf_apps/gf_images'%(cwd_str),)
-					]
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_images/templates/dashboard/gf_images_dashboard.html'%(cwd_str), '%s/../web/build/gf_apps/gf_images/templates/dashboard'%(cwd_str)),
+						]
+					}
 				}
 				#-------------
 			}
@@ -104,7 +105,6 @@ def get():
 						'libs_files_lst':[]
 						#-------------
 					},
-
 					'css':{
 						'files_lst':[
 							('%s/../web/src/gf_apps/gf_publisher/css/gf_post.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
@@ -112,10 +112,9 @@ def get():
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                 '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
 						]
 					},
-
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html'%(cwd_str), '%s/../bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/templates/gf_post'%(cwd_str)),
 						]
 					}
 				},
@@ -145,7 +144,6 @@ def get():
 						]
 						#-------------
 					},
-
 					'css':{
 						'files_lst':[
 							('%s/../web/src/gf_apps/gf_publisher/gf_posts_browser.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_publisher/css'%(cwd_str)),
@@ -153,10 +151,9 @@ def get():
 							('%s/../web/src/gf_core/css/gf_sys_panel.css'%(cwd_str),                      '%s/../web/build/gf_apps/gf_publisher/static/css'%(cwd_str)),
 						]
 					},
-
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_publisher/templates'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html'%(cwd_str), '%s/../web/build/gf_apps/gf_publisher/templates/gf_posts_browser'%(cwd_str)),
 						]
 					}
 				}
@@ -219,9 +216,11 @@ def get():
 							#-------------
 						]
 					},
-					'files_to_copy_lst':[
-						('%s/../web/src/gf_apps/gf_analytics/templates/dashboard/gf_analytics_dashboard.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/templates/dashboard'%(cwd_str),),
-					]
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_analytics/templates/dashboard/gf_analytics_dashboard.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/templates/gf_analytics_dashboard'%(cwd_str)),
+						]
+					}
 				},
 				#-------------
 				#CRAWL_DASHBOARD
@@ -267,9 +266,13 @@ def get():
 							
 						]
 					},
+					'templates':{
+						'files_lst':[
+							('%s/../web/src/gf_apps/gf_crawl_lib/templates/dashboard/gf_crawl_dashboard.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/templates/gf_crawl_dashboard'%(cwd_str)),
+						]
+					},
 					'files_to_copy_lst':[
-						('%s/../web/src/gf_apps/gf_crawl_lib/templates/dashboard/crawl_dashboard_ff2___1112_29.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/templates/crawl_dashboard'%(cwd_str),),
-						('%s/../web/src/gf_apps/gf_crawl_lib/assets/icons.png'%(cwd_str),                                       '%s/../web/build/gf_apps/gf_analytics/assets'%(cwd_str),),
+						('%s/../web/src/gf_apps/gf_crawl_lib/assets/icons.png'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/assets'%(cwd_str),),
 					]
 				},
 				#-------------
@@ -309,7 +312,7 @@ def get():
 					},
 					'templates':{
 						'files_lst':[
-							('%s/../web/src/gf_apps/gf_domains_lib/templates/domains_browser/gf_domains_browser.html'%(cwd_str), '%s/../bin/gf_apps/gf_analytics/templates/domains_browser'%(cwd_str)),
+							('%s/../web/src/gf_apps/gf_domains_lib/templates/domains_browser/gf_domains_browser.html'%(cwd_str), '%s/../web/build/gf_apps/gf_analytics/templates/gf_domains_browser'%(cwd_str)),
 						]
 					}
 				}
@@ -327,11 +330,11 @@ def get():
 						'out_file_str':      '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.js'%(cwd_str),
 						'minified_file_str': '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.min.js'%(cwd_str),
 						'files_lst':[
-							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_calc.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_email_registration.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_images.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_landing_page.ts'%(cwd_str),
-							'%s/../web/src/gf_apps/ts/gf_landing_page/gf_procedural_art.ts'%(cwd_str)
+							'%s/../web/src/gf_apps/gf_landing_page/ts/gf_calc.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_landing_page/ts/gf_email_registration.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_landing_page/ts/gf_images.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_landing_page/ts/gf_landing_page.ts'%(cwd_str),
+							'%s/../web/src/gf_apps/gf_landing_page/ts/gf_procedural_art.ts'%(cwd_str)
 						],
 						#-------------
 						#LIBS

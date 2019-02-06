@@ -10,14 +10,10 @@ def get():
             #------------------------
             #GF_SOLO
             'apps/gf_solo':{
-                'type_str'           :'main',
-                'version_str'        :'0.8.0.0',
-                'target_bin_file_str':'%s/../go/bin/apps/gf_solo/gf_solo'%(cwd_str),
-                'templates_dir_lst'  :[],
-                'src_lst':[
-                    '%s/../go/src/apps/gf_solo/gf_solo.go'%(cwd_str),
-                ],
-                'copy_to_dir_lst':[
+                'type_str':           'main',
+                'version_str':        '0.8.0.0',
+                'go_output_path_str': '%s/../bin/gf_apps/apps/gf_solo/gf_solo'%(cwd_str),
+                'copy_to_dir_lst': [
                     ('%s/../go/src/apps/gf_solo/gf_php_lib/php/index.php'%(cwd_str),'%s/../go/bin/apps/gf_solo/php'%(cwd_str)),
                 ]
             },

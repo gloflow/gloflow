@@ -68,8 +68,8 @@ def parse_args():
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     args_map       = {
-        "run":      args_namespace.run,
-        "aws_creds":args_namespace.aws_creds,
+        "run":       args_namespace.run,
+        "aws_creds": args_namespace.aws_creds,
     }
     return args_map
 #--------------------------------------------------

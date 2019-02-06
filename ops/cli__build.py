@@ -125,7 +125,7 @@ def parse_args():
         ''')
     #-------------
     #APP
-    arg_parser.add_argument('-app', action = "store", default = 'build',
+    arg_parser.add_argument('-app', action = "store", default = 'gf_images',
         help = '''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
 - '''+fg('yellow')+'gf_publisher'+attr(0)+'''
@@ -150,10 +150,10 @@ def parse_args():
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     args_map       = {
-        "run":      args_namespace.run,
-        "app":      args_namespace.app,
-        "aws_creds":args_namespace.aws_creds,
-        "test_name":args_namespace.test_name,
+        "run":       args_namespace.run,
+        "app":       args_namespace.app,
+        "aws_creds": args_namespace.aws_creds,
+        "test_name": args_namespace.test_name,
     }
     return args_map
 #--------------------------------------------------

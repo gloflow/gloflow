@@ -38,15 +38,15 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 	if p_runtime.Cluster_node_type_str == "master" {
 
 		c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-				"t":       "crawler_page_img",
-				"hash_str":p_img.Hash_str,
+				"t":        "crawler_page_img",
+				"hash_str": p_img.Hash_str,
 			}).Count()
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to count the number of crawler_page_img's in mongodb",
 				"mongodb_find_error",
 				&map[string]interface{}{
-					"img_ref_url_str":            p_img.Url_str,
-					"img_ref_origin_page_url_str":p_img.Origin_page_url_str,
+					"img_ref_url_str":             p_img.Url_str,
+					"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
 				},
 				err, "gf_crawl_core", p_runtime_sys)
 			return false, gf_err
@@ -67,8 +67,8 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 				gf_err := gf_core.Error__create("failed to insert a crawler_page_img in mongodb",
 					"mongodb_insert_error",
 					&map[string]interface{}{
-						"img_ref_url_str":            p_img.Url_str,
-						"img_ref_origin_page_url_str":p_img.Origin_page_url_str,
+						"img_ref_url_str":             p_img.Url_str,
+						"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
 					},
 					err, "gf_crawl_core", p_runtime_sys)
 				return false, gf_err
@@ -104,8 +104,8 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 			gf_err := gf_core.Error__create("failed to count the number of crawler_page_img_ref's in mongodb",
 				"mongodb_find_error",
 				&map[string]interface{}{
-					"img_ref_url_str":            p_img_ref.Url_str,
-					"img_ref_origin_page_url_str":p_img_ref.Origin_page_url_str,
+					"img_ref_url_str":             p_img_ref.Url_str,
+					"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
 				},
 				err, "gf_crawl_core", p_runtime_sys)
 			return gf_err

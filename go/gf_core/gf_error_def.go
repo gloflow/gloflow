@@ -190,6 +190,10 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"http_client received a non-OK GF error",
 		},
 		//---------------
+		"ws_connection_init_error":{
+			Descr_str:"websocket client failed to connect to a url",
+		},
+		//---------------
 		//S3
 		"s3_credentials_error":{
 			Descr_str:"S3 credentials operation failed",
