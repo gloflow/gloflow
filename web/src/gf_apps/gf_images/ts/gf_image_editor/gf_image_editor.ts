@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 declare var Caman;
 //-------------------------------------------------
 export function init(p_target_image_div_element, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_image_editor.init()');
+	p_log_fun('FUN_ENTER', 'gf_image_editor.init()');
 
 	const target_image = $(p_target_image_div_element).find('img')[0];
 	var width_int  = target_image.clientWidth;
@@ -41,7 +41,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 
 	//-------------------------------------------------
 	function create_pane() {
-		p_log_fun('FUN_ENTER','gf_image_editor.init().create_pane()');
+		p_log_fun('FUN_ENTER', 'gf_image_editor.init().create_pane()');
 
 		const editor_pane = $(`
 			<div class='editor_pane'>
@@ -124,7 +124,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 
 		//-------------
 		//SAVE_MODIFIED_IMAGE
-		$(editor_pane).find('.save_btn').on('click',()=>{
+		$(editor_pane).find('.save_btn').on('click', ()=>{
 			save_modified_image(editor_pane);
 		});
 		//-------------
@@ -133,23 +133,19 @@ export function init(p_target_image_div_element, p_log_fun) {
 	}
 	//-------------------------------------------------
 	function save_modified_image(p_editor_pane) {
-		p_log_fun('FUN_ENTER','gf_image_editor.init().save_modified_image()');
+		p_log_fun('FUN_ENTER', 'gf_image_editor.init().save_modified_image()');
 
 		const canvas            = $(p_editor_pane).find('.modified_image_canvas')[0];
 		const canvas_base64_str = (canvas as HTMLCanvasElement).toDataURL();
 
-
-
 		console.log(canvas_base64_str);
-
-
 
 		http_save(canvas_base64_str)
 	}
 	//-------------------------------------------------
 
 	var opened_bool = false;
-	$(container).find('.open_editor_btn').on('click',()=>{
+	$(container).find('.open_editor_btn').on('click', ()=>{
 
 		if (opened_bool) {
 			return;
@@ -178,7 +174,5 @@ function http_save(p_canvas_base64_str) {
 		data: { 
 			imgBase64: p_canvas_base64_str
 		}
-		}).done(function(p_data) {
-
-		});
+		}).done((p_data)=>{});
 }
