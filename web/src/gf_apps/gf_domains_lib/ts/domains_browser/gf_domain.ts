@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
-namespace gf_domain {
 //-----------------------------------------------------
 export function draw(p_name_str :string,
 	p_width_int                   :number,
@@ -151,6 +150,4 @@ export function draw(p_name_str :string,
 		}
 	}*/
 	//---------------
-}
-//-----------------------------------------------------
 }

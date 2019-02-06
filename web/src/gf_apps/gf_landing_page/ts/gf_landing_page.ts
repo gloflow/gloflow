@@ -19,12 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import "./gf_calc";
-import "./gf_email_registration";
-import "./gf_images";
-import "./gf_procedural_art";
-
-namespace gf_landing_page {
+import * as gf_calc               from "./gf_calc";
+import * as gf_email_registration from "./gf_email_registration";
+import * as gf_images             from "./gf_images";
+import * as gf_procedural_art     from "./gf_procedural_art";
 
 $(document).ready(()=>{
 	//-------------------------------------------------
@@ -44,7 +42,7 @@ $(document).ready(()=>{
 	//-------------------------------------------------
 	$("time.timeago").timeago();
 
-	gf_landing_page.init_remote(log_fun);
+	init_remote(log_fun);
 
 	//----------------------
 	//IMPORTANT!! - wait for all images in the page to load first
@@ -208,5 +206,3 @@ function layout_featured_columns(Function p_log_fun,
 	//--------------------------------------------------------
 	layout_featured_posts_display();
 }*/
-//--------------------------------------------------------
-}

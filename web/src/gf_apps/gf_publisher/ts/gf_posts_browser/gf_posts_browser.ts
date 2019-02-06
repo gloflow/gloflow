@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import "./gf_posts_browser_view";
+import * as gf_sys_panel          from "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_posts_browser_view from "./gf_posts_browser_view";
 
-namespace gf_posts_browser {
 //-----------------------------------------------------
 $(document).ready(()=>{
     //-------------------------------------------------
@@ -40,7 +40,7 @@ $(document).ready(()=>{
     }
     //-------------------------------------------------
 
-    gf_posts_browser.init(log_fun);
+    init(log_fun);
 });
 //-----------------------------------------------------
 export function init(p_log_fun) {
@@ -99,6 +99,4 @@ function load_data_from_dom(p_log_fun) {
     });
 
     return page_posts_infos_lst;
-}
-//-----------------------------------------------------
 }

@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_tagger_client {
 //-----------------------------------------------------
 //SNIPPETS
 //-----------------------------------------------------
@@ -149,6 +148,4 @@ export function get_objs_with_tag(p_tag_str :string,
             p_onError_fun(p_text_status_str);
         }
     });
-}
-//-----------------------------------------------------
 }

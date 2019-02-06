@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_crawl__img_preview_tooltip {
-
 //---------------------------------------------------
 export function init(p_url_str,
 	p_crawler_page_image_id_str,
@@ -114,6 +112,4 @@ function http__add_to_image_flows(p_crawler_page_image_id_str,
 			p_on_complete_fun(p_data_map);
 		});
 	//-------------------------
-}
-//---------------------------------------------------
 }

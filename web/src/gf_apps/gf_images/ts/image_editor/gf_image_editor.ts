@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_image_editor {
-
 declare var Caman;
 //-------------------------------------------------
 export function init(p_target_image_div_element, p_log_fun) {
@@ -183,7 +181,4 @@ function http_save(p_canvas_base64_str) {
 		}).done(function(p_data) {
 
 		});
-}
-//-------------------------------------------------
-
 }

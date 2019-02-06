@@ -19,13 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import "./gf_crawl_stats__errors";
-import "./gf_crawl_stats__fetches";
-import "./gf_crawl_stats__images";
-import "./gf_crawl_stats__links";
-import "./../../../../gf_stats/ts/gf_stats";
-
-namespace gf_crawl_stats {
+import * as gf_crawl_stats__errors  from "./gf_crawl_stats__errors";
+import * as gf_crawl_stats__fetches from "./gf_crawl_stats__fetches";
+import * as gf_crawl_stats__images  from "./gf_crawl_stats__images";
+import * as gf_crawl_stats__links   from "./gf_crawl_stats__links";
+import * as gf_stats                from "./../../../../gf_stats/ts/gf_stats";
 
 //-------------------------------------------------
 export function init__queries(p_log_fun) {
@@ -132,6 +130,4 @@ export function init__queries(p_log_fun) {
 			p_log_fun);
 	});
 	//---------------------
-}
-//---------------------------------------------------
 }

@@ -20,9 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import "./gf_crawl__img_preview_tooltip";
+import * as gf_crawl__img_preview_tooltip from "./gf_crawl__img_preview_tooltip";
 
-namespace gf_crawl_images_browser {
 //---------------------------------------------------
 export function init__recent_images(p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_crawl_images_browser.init__recent_images()");
@@ -231,6 +230,4 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 			}
 		});
 	//-------------------------    
-}
-//---------------------------------------------------
 }

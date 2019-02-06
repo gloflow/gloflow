@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
-namespace gf_domains_conn {
 //-----------------------------------------------------
 /*activate_conn(Function p_log_fun) {
 	p_log_fun('FUN_ENTER','domains_conn.activate_conn()');
@@ -94,6 +93,4 @@ export function draw_connectivity(p_domains_lst :Object[],
 		}
     }
 	return container;
-}
-//-----------------------------------------------------
 }

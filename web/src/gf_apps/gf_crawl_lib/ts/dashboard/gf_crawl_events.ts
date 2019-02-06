@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_crawl_events {
-
 declare var EventSource;
 //---------------------------------------------------
 export function init_SSE(p_log_fun) {
@@ -82,6 +80,4 @@ function view_server_event(p_event_data_map, p_log_fun) {
         default:
             break;
     }
-}
-//-------------------------------------------------
 }

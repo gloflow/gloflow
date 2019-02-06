@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
-namespace gf_domains_infos {
 //-----------------------------------------------------
 export function draw(p_domains_lst :Object[],
 	p_width_int  :number,
@@ -389,6 +388,4 @@ function draw_background(p_graphics :PIXI.Graphics,
 	p_graphics.endFill(); //.closePath();
 	//p_graphics.strokeColor(p_color_int,1);
 	//p_graphics.fillColor(p_color_int);
-}
-//-----------------------------------------------------
 }

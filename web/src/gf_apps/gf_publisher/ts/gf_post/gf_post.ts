@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import "./../../../../gf_core/ts/gf_sys_panel";
-import "./gf_post_image_view";
+import * as gf_sys_panel       from "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_post_image_view from "./gf_post_image_view";
+import * as gf_tagger_input_ui from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
 
-namespace gf_post {
 //-----------------------------------------------------
 $(document).ready(()=>{
     //-------------------------------------------------
@@ -40,7 +40,7 @@ $(document).ready(()=>{
         }
     }
     //-------------------------------------------------
-    gf_post.init(log_fun);
+    init(log_fun);
 });
 //-----------------------------------------------------
 export function init(p_log_fun) {
@@ -147,6 +147,4 @@ function view_added_tags(p_post_element,
 function get_post_element_tags_num(p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_post.get_post_element_tags_num()');
     
-}
-//--------------------------------------------------------
 }

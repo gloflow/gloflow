@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-namespace gf_email_registration {
 //--------------------------------------------------------
 export function init(p_register_user_email_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_email_registration.init()');
@@ -142,5 +141,3 @@ function layout_email_form(p_log_fun) {
 	}
 	register_email_form.style.left = '${form_x_int}px';
 }*/
-//--------------------------------------------------------
-}

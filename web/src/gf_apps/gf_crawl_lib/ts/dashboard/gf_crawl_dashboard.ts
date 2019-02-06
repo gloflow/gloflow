@@ -19,10 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import "./gf_crawl_images_browser";
-import "./gf_crawl_events";
-
-namespace gf_crawl_dashboard {
+import * as gf_crawl_images_browser from "./gf_crawl_images_browser";
+import * as gf_crawl_events         from "./gf_crawl_events";
 
 declare var EventSource;
 //-------------------------------------------------
@@ -42,7 +40,7 @@ $(document).ready(()=>{
 		}
 	}
 	//-------------------------------------------------
-	gf_crawl_dashboard.init(log_fun);
+	init(log_fun);
 });
 //-------------------------------------------------
 export function init(p_log_fun) {
@@ -54,6 +52,4 @@ export function init(p_log_fun) {
 		gf_crawl_images_browser.init__recent_images(p_log_fun);
 	});
 	//---------------------
-}
-//---------------------------------------------------
 }

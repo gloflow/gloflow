@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_posts_browser_client {
 //-----------------------------------------------------
 export function get_page(p_page_index_int :number,
     p_page_elements_num_int :number,
@@ -51,6 +50,4 @@ export function get_page(p_page_index_int :number,
             p_on_error_fun(p_text_status_str);
         }
     });
-}
-//-----------------------------------------------------
 }

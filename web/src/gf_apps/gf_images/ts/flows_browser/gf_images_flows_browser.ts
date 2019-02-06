@@ -21,11 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import "./../../../../gf_core/ts/gf_gifs_viewer";
-import "./../../../../gf_core/ts/gf_image_viewer";
-import "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
+import * as gf_sys_panel    from "./../../../../gf_core/ts/gf_sys_panel";
 
-namespace gf_images_flows_browser {
 //-------------------------------------------------
 declare var URLSearchParams;
 //-------------------------------------------------
@@ -45,7 +44,7 @@ $(document).ready(()=>{
         }
     }
     //-------------------------------------------------
-    gf_images_flows_browser.init(log_fun);
+    init(log_fun);
 });
 //-------------------------------------------------
 export function init(p_log_fun) {
@@ -329,6 +328,4 @@ function http__load_new_page(p_flow_name_str :string,
 			}
 		});
 	//-------------------------	
-}
-//---------------------------------------------------
 }

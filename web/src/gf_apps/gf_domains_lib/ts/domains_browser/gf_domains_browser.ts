@@ -21,13 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jqueryui.d.ts" />
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
-import "./../../../../gf_core/ts/gf_color";
-import "./gf_domains_search";
-import "./gf_domains_conn";
-import "./gf_domain";
-import "./gf_domains_infos";
-
-namespace gf_domains_browser {
+import * as gf_color          from "./../../../../gf_core/ts/gf_color";
+import * as gf_domains_search from "./gf_domains_search";
+import * as gf_domains_conn   from "./gf_domains_conn";
+import * as gf_domain         from "./gf_domain";
+import * as gf_domains_infos  from "./gf_domains_infos";
 
 $(document).ready(()=>{
     //-------------------------------------------------
@@ -64,7 +62,7 @@ $(document).ready(()=>{
     });
     //-----------------
 
-    gf_domains_browser.init(domains_infos_lst, log_fun);
+    init(domains_infos_lst, log_fun);
 });
 //-----------------------------------------------------
 export function init(p_domains_infos_lst :Object[], p_log_fun) {
@@ -455,6 +453,4 @@ function draw_domains_stats(p_domains_lst :Object[],
     	'container':     container,
     	'domains_infos': domains_infos
     };
-}
-//-----------------------------------------------------
 }

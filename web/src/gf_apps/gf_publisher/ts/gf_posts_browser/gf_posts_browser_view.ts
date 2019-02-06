@@ -21,11 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import "./gf_posts_browser_client";
-import "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
-import "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
+import * as gf_posts_browser_client from "./gf_posts_browser_client";
+import * as gf_tagger_input_ui      from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
+import * as gf_tagger_notes_ui      from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
 
-namespace gf_posts_browser_view {
 //-----------------------------------------------------
 export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init()');
@@ -371,6 +370,4 @@ function init_post_date(p_post :HTMLDivElement, p_log_fun) {
     $(creation_time_element).mouseout((p_e)=>{
         $(creation_date__readble).remove();
     });
-}
-//--------------------------------------------------------
 }

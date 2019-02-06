@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_tagger_input_ui {
+import * as gf_tagger_client from "./gf_tagger_client";
+
 //-----------------------------------------------------
 //in gf_post view
 export function init_tag_input(p_obj_id_str :string,
@@ -329,7 +330,3 @@ init_image_view_post_tag_input(DivElement p_post_element,
 			p_event.target.query(".post_controls").remove(); //detach();	
 		});
 }*/
-//-----------------------------------------------------
-}
-
-

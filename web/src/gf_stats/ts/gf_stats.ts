@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../d/jquery.d.ts" />
 
-namespace gf_stats {
 //---------------------------------------------------
 export function init__batch(p_log_fun) {
 	p_log_fun("FUN_ENTER","gf_stats.init__batch()");
@@ -114,6 +113,4 @@ export function http__stats_query(p_stat_name_str :string,
 			}
 		});
 	//------------------------- 
-}
-//---------------------------------------------------
 }

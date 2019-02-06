@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-namespace gf_color {
 //-----------------------------------------------------
 export function get_int(p_color_str :string) :number {
 	return parseInt(get_hex(p_color_str).replace('#',''),16);
@@ -180,6 +179,4 @@ export function get_hex(p_color_str :string) :string {
 
     if (typeof colours_lst[p_color_str.toLowerCase()] != 'undefined')
         return colours_lst[p_color_str.toLowerCase()];
-}
-//-----------------------------------------------------
 }

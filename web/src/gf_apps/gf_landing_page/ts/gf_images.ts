@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
-namespace gf_images {
 //-------------------------------------------------
 export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images.init()');
@@ -93,6 +92,4 @@ function init_image_date(p_image_element, p_log_fun) {
 	$(creation_time_element).mouseout((p_e)=>{
 		$(creation_date__readble).remove();
 	});
-}
-//-------------------------------------------------
 }

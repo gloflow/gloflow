@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_tagger_notes_ui {
+import * as gf_tagger_client from "./gf_tagger_client";
+
 //-----------------------------------------------------
 export function init(p_obj_id_str :string,
 	p_obj_type_str :string,
@@ -226,6 +227,4 @@ function add_note_view(p_body_str :string,
 
 	const duration_int = 300;
 	$(new_note_element).animate({'opacity':1.0}, duration_int, ()=>{});
-}
-//-----------------------------------------------------
 }

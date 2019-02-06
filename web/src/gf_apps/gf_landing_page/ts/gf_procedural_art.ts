@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-namespace gf_procedural_art {
 //--------------------------------------------------------
 export function init(p_log_fun) :HTMLCanvasElement {
 	p_log_fun('FUN_ENTER','gf_landing_page.init()');
@@ -155,6 +154,4 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 		return random_rgba_str;
 	}
 	//-------------------------------------------------
-}
-//--------------------------------------------------------
 }

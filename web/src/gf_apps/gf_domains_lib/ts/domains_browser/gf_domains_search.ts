@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-namespace gf_domains_search {
 //-----------------------------------------------------
 export function init_domain_search(p_domains_infos_lst :Object[],
 	p_onPick_fun,
@@ -58,6 +57,4 @@ export function init_domain_search(p_domains_infos_lst :Object[],
         };
 	$('#domain_search #query_input').autocomplete(<any>config_map);
     //----------------
-}
-//-----------------------------------------------------
 }
