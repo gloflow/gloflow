@@ -1,45 +1,46 @@
 <html lang="en">
 <head>
 	
-	{{- /*'triple-braces' are used to not-default-escape the urls_base_web_host_str string*/}}
-	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_post.css">
-	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_post_tagging.css">
+{{- /*'triple-braces' are used to not-default-escape the urls_base_web_host_str string*/}}
+<link rel="stylesheet" type="text/css" href="./../../css/gf_post/gf_post.css">
+<link rel="stylesheet" type="text/css" href="./../../css/gf_post/gf_post_tagging.css">
 
-	{{- /*gf_sys_panel.css - packaged with gf_publisher service even though its in gf_common*/}}
-	<link rel="stylesheet" type="text/css" href="/posts/static/css/gf_sys_panel.css"> 
+{{- /*gf_sys_panel.css - packaged with gf_publisher service even though its in gf_common*/}}
+<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css"> 
 
-	{{- /*gf_tagger_input_ui.css - packaged with gf_publisher service even though its in gf_tagger*/}}
-	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_input_ui.css">
-	<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tagger_notes_ui.css">
+{{- /*gf_tagger_input_ui.css - packaged with gf_publisher service even though its in gf_tagger*/}}
+<link rel="stylesheet" type="text/css" href="./../../../gf_tagger/css/gf_tagger_input_ui.css">
+<link rel="stylesheet" type="text/css" href="./../../../gf_tagger/css/gf_tagger_notes_ui.css">
 
-	{{- /*-----------------------------------------------------*/}}
-	{{- /*directs fb to use the specified image when the page is shared*/}}
-	
-	<meta property="og:site_name" content="GloFlow"/>
-	<meta property="og:title"     content="gloflow.com:{{ .Post_title_str }}"/>
-	<meta property="og:url"       content="/posts/{{ .Post_title_str }}"/>
+{{- /*-----------------------------------------------------*/}}
+{{- /*directs fb to use the specified image when the page is shared*/}}
 
-	{{- /*FIX!! REMOVE!! - when I finish deploying the gf_images subsystem 
-						 for the og:image property use use post_adt.main_image_url_str 
-						 instead of picking the first post_element image url like her*/}}
-	{{- /*the "top" image post_elements to be parsed by FB*/}}
-	{{- range .Image_post_elements_og_info_lst}}
-		<meta property="og:image" content="{{ .img_thumbnail_medium_absolute_url_str }}"/>
-	{{- end}}
+<meta property="og:site_name" content="GloFlow"/>
+<meta property="og:title"     content="gloflow.com:{{ .Post_title_str }}"/>
+<meta property="og:url"       content="/posts/{{ .Post_title_str }}"/>
 
-	{{- range .Post_tags_lst}}
-		<meta property="og:type" content="{{.}}"/>
-	{{- end}}
+{{- /*FIX!! REMOVE!! - when I finish deploying the gf_images subsystem 
+						for the og:image property use use post_adt.main_image_url_str 
+						instead of picking the first post_element image url like her*/}}
+{{- /*the "top" image post_elements to be parsed by FB*/}}
+{{- range .Image_post_elements_og_info_lst}}
+<meta property="og:image" content="{{ .img_thumbnail_medium_absolute_url_str }}"/>
+{{- end}}
 
-	<meta property="og:type" content="culture"/>
-	<meta property="og:type" content="art"/>
-	<meta property="og:type" content="architecture"/>
-	<meta property="og:type" content="design"/>
-	<meta property="og:type" content="photography"/>
-	<meta property="og:type" content="fashion"/>
-	<meta property="og:type" content="music"/>
-	<meta property="og:type" content="vr"/>
-	{{- /*------------------------------------------------------*/}}
+{{- range .Post_tags_lst}}
+<meta property="og:type" content="{{.}}"/>
+{{- end}}
+
+<meta property="og:type" content="culture"/>
+<meta property="og:type" content="art"/>
+<meta property="og:type" content="architecture"/>
+<meta property="og:type" content="design"/>
+<meta property="og:type" content="photography"/>
+<meta property="og:type" content="fashion"/>
+<meta property="og:type" content="music"/>
+<meta property="og:type" content="vr"/>
+{{- /*------------------------------------------------------*/}}
+
 </head>
 <body>
 {{- /*------------------------------------------------------*/}}
@@ -121,7 +122,7 @@
 </div>
 {{- /*-----------------------------------------------------*/}}
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/posts/static/js/gf_post.js"></script>
+<script type="text/javascript" src="./../../ts/gf_post/gf_post.ts"></script>
 {{- /*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>

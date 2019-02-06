@@ -5,14 +5,13 @@
 {{/*METADATA*/}}
 <meta property="og:title" content="gloflow.com:tag:{{ .Tag_str }}"/>
 {{/*--------------------------------------------------------------*/}}
-<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_tag_objects.css">
-<link rel="stylesheet" type="text/css" href="/tags/static/css/gf_sys_panel.css">
+<link rel="stylesheet" type="text/css" href="./../../css/gf_tag_objects.css">
+<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css">
 </head>
 {{/*--------------------------------------------------------------*/}}
 <body>
 
 <div id='tag_name'>#{{ .Tag_str }}</div>
-
 
 <!-- TAG STATS -->
 <div id='tag_stats'>
@@ -26,9 +25,7 @@
 	</div>
 </div>
 
-
 <div id='posts_container'>
-
 	{{range .Posts_with_tag_lst}}
 		<div class='gf_post'>
 			{{/*--------------------------------------------------------------*/}}
@@ -55,8 +52,8 @@
 	{{end}}
 </div>
 {{/*--------------------------------------------------------------*/}}
-<script type="text/javascript" src="/a/static/js/jquery-2.2.1.min.js"></script>
-<script type="text/javascript" src="/posts/static/js/lib/jquery.masonry.min.js"></script>
+<script type="text/javascript" src="./../../../../../libs/js/jquery-2.2.1.min.js"></script>
+<script type="text/javascript" src="./../../../../../libs/js/jquery.masonry.min.js"></script>
 {{/*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>

@@ -1,8 +1,10 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="/a/static/css/gf_sys_panel.css">
-	<link rel="stylesheet" type="text/css" href="/a/static/css/gf_domains_browser.css">
+
+<link rel="stylesheet" type="text/css" href="./../../css/gf_domains_browser/gf_domains_browser.css">
+<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css">
+
 </head>
 <body>
 {{- /*-----------------------------------------------------*/}}
@@ -27,10 +29,10 @@
 
 {{- /*-----------------------------------------------------*/}}
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/a/static/js/lib/jquery.autocomplete.min.js"></script>
-<script type="text/javascript" src="/a/static/js/lib/pixi.min.js"></script>
+<script type="text/javascript" src="./../../../../../libs/js/jquery.autocomplete.min.js"></script>
+<script type="text/javascript" src="./../../../../../libs/js/pixi.min.js"></script>
 
-<script type="text/javascript" src="/a/static/js/gf_domains_browser.js"></script>
+<script type="text/javascript" src="./../../ts/gf_domains_browser/gf_domains_browser.js"></script>
 {{- /*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
