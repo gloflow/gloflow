@@ -66,7 +66,8 @@ def build_page(p_page_name_str,
 
 	main_html_path_str = os.path.abspath(p_page_info_map['main_html_path_str'])
 	assert os.path.isfile(main_html_path_str)
-	assert os.path.basename(main_html_path_str).strip('.html') == p_page_name_str
+	assert main_html_path_str.endswith('.html')
+	assert '.'.join(os.path.basename(main_html_path_str).split('.')[:-1]) == p_page_name_str
 
 	url_base_str = p_page_info_map['url_base_str']
 
@@ -91,6 +92,10 @@ def build_page(p_page_name_str,
 	def process_scripts():
 		scripts_lst = soup.findAll('script')
 
+		if len(scripts_lst) > 0:
+			js_libs_build_dir_str = '%s/js/lib'%(p_build_dir_str)
+			gf_u.run_cmd('mkdir -p %s'%(js_libs_build_dir_str)) #create dir and all parent dirs
+
 		for script in scripts_lst:
 
 			src_str = script['src']
@@ -100,6 +105,7 @@ def build_page(p_page_name_str,
 				continue
 			
 			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			print(local_path_str)
 			assert os.path.isfile(local_path_str)
 
 			#-----------------
@@ -123,7 +129,7 @@ def build_page(p_page_name_str,
 				#---------------------------------------------------
 
 				main_ts_file_str       = local_path_str
-				minified_file_name_str = os.path.basename(main_ts_file_str).strip('.ts')
+				minified_file_name_str = '.'.join(os.path.basename(main_ts_file_str).split('.')[:-1])
 				minified_file_path_str = '%s/js/%s.min.js'%(p_build_dir_str, minified_file_name_str)
 
 				build_typescript(minified_file_path_str)
@@ -135,7 +141,7 @@ def build_page(p_page_name_str,
 				p_log_fun('INFO', '%s------------ JAVASCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
 
 				#IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
-				gf_u.run_cmd('cp %s %s/js/lib'%(local_path_str, p_build_dir_str))
+				gf_u.run_cmd('cp %s %s'%(local_path_str, js_libs_build_dir_str))
 
 				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
 				script['src'] = '%s/js/lib/%s'%(url_base_str, os.path.basename(local_path_str))
@@ -155,6 +161,7 @@ def build_page(p_page_name_str,
 				continue
 
 			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			print(local_path_str)
 			assert local_path_str.endswith('.css')
 			assert os.path.isfile(local_path_str)
 
@@ -171,6 +178,8 @@ def build_page(p_page_name_str,
 	#CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
 	#                             the modified urls for JS/CSS
 	target_html_file_path_str = '%s/templates/%s/%s.html'%(p_build_dir_str, p_page_name_str, p_page_name_str)
+	gf_u.run_cmd('mkdir -p %s'%(os.path.dirname(target_html_file_path_str)))
+
 	f = open(target_html_file_path_str, 'w+')
 	f.write(soup.prettify())
 	f.close()

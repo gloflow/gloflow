@@ -126,7 +126,7 @@ def get():
 				#GF_POSTS_BROWSER
 				'gf_posts_browser':{
 					'build_dir_str':      '%s/../web/build/gf_apps/gf_publisher'%(cwd_str),
-					'main_html_path_str': '%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_post.html'%(cwd_str),
+					'main_html_path_str': '%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html'%(cwd_str),
 					'url_base_str':       '/posts/static',
 					# 'type_str':      'ts',
 					# 'ts':{
@@ -327,7 +327,7 @@ def get():
 		#-----------------------------
 		'gf_landing_page':{
 			'pages_map':{
-				'main':{
+				'gf_landing_page':{
 					'build_dir_str':      '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
 					'main_html_path_str': '%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str),
 					'url_base_str':       '/landing/static',
