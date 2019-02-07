@@ -20,6 +20,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
 from colored import fg,bg,attr
+import BeautifulSoup as bs
 
 sys.path.append('%s/../../meta'%(cwd_str))
 import gf_web_meta
@@ -41,13 +42,14 @@ def build(p_apps_names_lst, p_log_fun):
 		if not apps_meta_map.has_key(app_str):
 			p_log_fun("ERROR","supplied app (%s) does not exist in gf_web_meta"%(app_str))
 			return
+
 		app_map = apps_meta_map[app_str]
 		#-----------------
 
 		#BUILD PAGES - build each page of the app
 		for page_name_str, page_info_map in app_map['pages_map'].items():
 
-			build_dir_str = page_info_map['build_dir_str']
+			build_dir_str = os.path.abspath(page_info_map['build_dir_str'])
 
 			build_page(page_name_str,
 				build_dir_str,
@@ -59,119 +61,120 @@ def build_page(p_page_name_str,
     p_page_info_map,
     p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
+	assert isinstance(p_build_dir_str, basestring)
 	assert os.path.isdir(p_build_dir_str)
+
+	main_html_path_str = os.path.abspath(p_page_info_map['main_html_path_str'])
+	assert os.path.isfile(main_html_path_str)
+	assert os.path.basename(main_html_path_str).strip('.html') == p_page_name_str
+
+	url_base_str = p_page_info_map['url_base_str']
 
 	print('')
 	print('')
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
 	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str, attr(0)))
-	p_log_fun('INFO', 'page type - %s'%(p_page_info_map['type_str']))
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	p_log_fun('INFO', 'build_dir_str - %s'%(p_build_dir_str))
+	p_log_fun('INFO', 'build_dir_str      - %s'%(p_build_dir_str))
+	p_log_fun('INFO', 'main_html_path_str - %s'%(main_html_path_str))
+	p_log_fun('INFO', 'url_base_str       - %s'%(url_base_str))
+
+
 	
-	assert isinstance(p_build_dir_str, basestring)
-	assert os.path.isdir(p_build_dir_str)
+	f = open(main_html_path_str, 'r')
+	main_html_str = f.read()
+	f.close()
 
+	soup = bs.BeautifulSoup(main_html_str)
+	
 	#---------------------------------------------------
-	def build_typescript(p_out_file_str, p_minified_file_str, p_ts_files_lst):
-		p_log_fun("FUN_ENTER", "gf_web__build.build_page().build_typescript()")
+	def process_scripts():
+		scripts_lst = soup.findAll('script')
 
-		cmd_lst = [
-			'tsc',
-			'--out %s'%(p_out_file_str),
-			' '.join(p_ts_files_lst)
-		]
-		gf_u.run_cmd(' '.join(cmd_lst))
+		for script in scripts_lst:
 
-		#minify into the same file name as the Typescript compiler output
-		minify_js(p_minified_file_str, [p_out_file_str], p_log_fun)
-	#---------------------------------------------------
-
-	#-----------------
-	if p_page_info_map['type_str'] == 'ts':
-		p_log_fun('INFO','%s------------ TYPESCRIPT --------------------------------%s'%(fg('yellow'),attr(0)))
-
-		out_file_str      = p_page_info_map['ts']['out_file_str']
-		minified_file_str = p_page_info_map['ts']['minified_file_str']
-		ts_files_lst      = p_page_info_map['ts']['files_lst']
-
-		build_typescript(out_file_str, minified_file_str, ts_files_lst)
-		#-----------------
-		#COPY LIBS
-
-		if p_page_info_map['ts'].has_key('libs_files_lst'):
-			p_log_fun('INFO','%s------------ TS_LIBS -----------------------------%s'%(fg('yellow'),attr(0)))
-
-			if not os.path.isdir(p_build_dir_str): gf_u.run_cmd('mkdir -p %s/js/lib'%(p_build_dir_str))
+			src_str = script['src']
 			
-			for lib_file_str in p_page_info_map['ts']['libs_files_lst']:
-				gf_u.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
-		#-----------------
-	#-----------------
-	#if p_page_info_map['type_str'] == 'js':
-	#	p_log_fun('INFO','%s------------ JAVASCRIPT --------------------------------%s'%(fg('yellow'),attr(0))))
-	#	#-----------------
-	#	#MINIFY JS
-	#	if p_page_info_map['js'].has_key('minified_file_str'):
-	#		p_log_fun('INFO','------------ JS_MINIFY ---------------------------')
-	#		minified_file_str = p_page_info_map['js']['minified_file_str']
-	#		js_files_lst      = p_page_info_map['js']['files_lst']
-	#
-	#		minify_js(minified_file_str, js_files_lst, p_log_fun)
-	#	#-----------------
-	#	#COPY JS LIBS
-	#
-	#	if p_page_info_map['js'].has_key('libs_files_lst'):
-	#		p_log_fun('INFO','------------ JS_LIBS -----------------------------')
-	#
-	#		for lib_file_str in p_page_info_map['js']['libs_files_lst']:
-	#			gf_u.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
-	#-----------------
-	#CSS
+			if src_str.startswith('http://') or src_str.startswith('https://'):
+				print('EXTERNAL_URL - DO NOTHING')
+				continue
+			
+			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			assert os.path.isfile(local_path_str)
 
-	if p_page_info_map.has_key('css'):
-		p_log_fun('INFO','%s------------ CSS ---------------------------------%s'%(fg('yellow'),attr(0)))
-		css_files_lst = p_page_info_map['css']['files_lst']
+			#-----------------
+			if local_path_str.endswith('.ts'):
+				p_log_fun('INFO', '%s------------ TYPESCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
+				
+				#---------------------------------------------------
+				def build_typescript(p_out_file_str):
+					
+					cmd_lst = [
+						'tsc',
+						'--module system', #needed with the "--out" option
+						'--out %s'%(p_out_file_str),
+						main_ts_file_str
+					]
+					gf_u.run_cmd(' '.join(cmd_lst))
 
-		for f_tpl in css_files_lst:
-			assert len(f_tpl) == 2
+					#minify into the same file name as the Typescript compiler output
+					target_dir_str = os.path.dirname(p_out_file_str)
+					minify_js(p_out_file_str, [p_out_file_str], p_log_fun)
+				#---------------------------------------------------
 
-			src_file_str, dest_dir_src = f_tpl
+				main_ts_file_str       = local_path_str
+				minified_file_name_str = os.path.basename(main_ts_file_str).strip('.ts')
+				minified_file_path_str = '%s/js/%s.min.js'%(p_build_dir_str, minified_file_name_str)
 
-			if not os.path.isdir(dest_dir_src): gf_u.run_cmd('mkdir -p %s'%(dest_dir_src))
-			gf_u.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
-	#-----------------
-	#TEMPLATES
-	if p_page_info_map.has_key('templates'):
-		p_log_fun('INFO','%s------------ TEMPLATES -----------------------------%s'%(fg('yellow'),attr(0)))
+				build_typescript(minified_file_path_str)
+
+				#HTML_MODIFY - change the src in the html tag to the minified name, and url_base (dont leave relative path)
+				script['src'] = '%s/js/%s'%(url_base_str, minified_file_name_str)
+			#-----------------
+			elif local_path_str.endswith('.js'):
+				p_log_fun('INFO', '%s------------ JAVASCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
+
+				#IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
+				gf_u.run_cmd('cp %s %s/js/lib'%(local_path_str, p_build_dir_str))
+
+				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+				script['src'] = '%s/js/lib/%s'%(url_base_str, os.path.basename(local_path_str))
+			#-----------------
+	#---------------------------------------------------
+	def process_css():
+		css_links_lst = soup.findAll('link', {'type':'text/css'})
 		
-		assert p_page_info_map['templates'].has_key('files_lst')
-		templates_files_lst = p_page_info_map['templates']['files_lst']
-		assert isinstance(templates_files_lst, list)
+		target_dir_str = '%s/css/%s'%(p_build_dir_str, p_page_name_str)
+		gf_u.run_cmd('mkdir -p %s'%(target_dir_str)) #create dir and all parent dirs
+
+		for css in css_links_lst:
+			src_str = css['href']
+
+			if src_str.startswith('http://') or src_str.startswith('https://'):
+				print('EXTERNAL_URL - DO NOTHING')
+				continue
+
+			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			assert local_path_str.endswith('.css')
+			assert os.path.isfile(local_path_str)
+
+			gf_u.run_cmd('cp %s %s'%(local_path_str, target_dir_str))
+
+			#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+			css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, os.path.basename(local_path_str))
+	#---------------------------------------------------
+	process_scripts()
+	process_css()
 
 
-		#COPY_TEMPLATE_FILES - copy them from their source location to the desired build location
-		for tmpl_file_str, tmpl_target_dir_str in templates_files_lst:
-			print('tmpl_file_str - %s'%(tmpl_file_str))
 
-			assert os.path.isfile(tmpl_file_str)
-
-			#if target template dir doesnt exist, create it
-			if not os.path.isdir(tmpl_target_dir_str): gf_u.run_cmd('mkdir -p %s'%(tmpl_target_dir_str))
-
-			gf_u.run_cmd('cp %s %s'%(tmpl_file_str, tmpl_target_dir_str))
-	#-----------------
-	#FILES_TO_COPY
-
-	if p_page_info_map.has_key('files_to_copy_lst'):
-		p_log_fun('INFO','%s------------ FILES_TO_COPY -----------------------%s'%(fg('yellow'),attr(0)))
-		files_to_copy_lst = p_page_info_map['files_to_copy_lst']
-
-		for f_tpl in files_to_copy_lst:
-			src_file_str, dest_dir_src = f_tpl
-
-			gf_u.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
-	#-----------------
+	#CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
+	#                             the modified urls for JS/CSS
+	target_html_file_path_str = '%s/templates/%s/%s.html'%(p_build_dir_str, p_page_name_str, p_page_name_str)
+	f = open(target_html_file_path_str, 'w+')
+	f.write(soup.prettify())
+	f.close()
+	
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
     p_js_files_lst,
@@ -184,3 +187,120 @@ def minify_js(p_js_target_file_str,
 		' '.join(p_js_files_lst),
 	]
 	gf_u.run_cmd(' '.join(cmd_lst))
+#---------------------------------------------------
+# def build_page(p_page_name_str,
+#     p_build_dir_str,
+#     p_page_info_map,
+#     p_log_fun):
+# 	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
+# 	assert isinstance(p_build_dir_str, basestring)
+# 	assert os.path.isdir(p_build_dir_str)
+#
+# 	print('')
+# 	print('')
+# 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
+# 	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str, attr(0)))
+# 	p_log_fun('INFO', 'page type - %s'%(p_page_info_map['type_str']))
+# 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
+# 	p_log_fun('INFO', 'build_dir_str - %s'%(p_build_dir_str))
+#
+# 	#---------------------------------------------------
+# 	def build_typescript(p_out_file_str, p_minified_file_str, p_ts_files_lst):
+# 		p_log_fun("FUN_ENTER", "gf_web__build.build_page().build_typescript()")
+#
+# 		cmd_lst = [
+# 			'tsc',
+# 			'--out %s'%(p_out_file_str),
+# 			' '.join(p_ts_files_lst)
+# 		]
+# 		gf_u.run_cmd(' '.join(cmd_lst))
+#
+# 		#minify into the same file name as the Typescript compiler output
+# 		minify_js(p_minified_file_str, [p_out_file_str], p_log_fun)
+# 	#---------------------------------------------------
+#
+# 	#-----------------
+# 	if p_page_info_map['type_str'] == 'ts':
+# 		p_log_fun('INFO', '%s------------ TYPESCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
+#
+# 		out_file_str      = p_page_info_map['ts']['out_file_str']
+# 		minified_file_str = p_page_info_map['ts']['minified_file_str']
+# 		ts_files_lst      = p_page_info_map['ts']['files_lst']
+#
+# 		build_typescript(out_file_str, minified_file_str, ts_files_lst)
+# 		#-----------------
+# 		#COPY LIBS
+#
+# 		if p_page_info_map['ts'].has_key('libs_files_lst'):
+# 			p_log_fun('INFO', '%s------------ TS_LIBS -----------------------------%s'%(fg('yellow'), attr(0)))
+#
+# 			if not os.path.isdir(p_build_dir_str): gf_u.run_cmd('mkdir -p %s/js/lib'%(p_build_dir_str))
+#			
+# 			for lib_file_str in p_page_info_map['ts']['libs_files_lst']:
+# 				gf_u.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
+# 		#-----------------
+# 	#-----------------
+# 	#if p_page_info_map['type_str'] == 'js':
+# 	#	p_log_fun('INFO','%s------------ JAVASCRIPT --------------------------------%s'%(fg('yellow'),attr(0))))
+# 	#	#-----------------
+# 	#	#MINIFY JS
+# 	#	if p_page_info_map['js'].has_key('minified_file_str'):
+# 	#		p_log_fun('INFO','------------ JS_MINIFY ---------------------------')
+# 	#		minified_file_str = p_page_info_map['js']['minified_file_str']
+# 	#		js_files_lst      = p_page_info_map['js']['files_lst']
+# 	#
+# 	#		minify_js(minified_file_str, js_files_lst, p_log_fun)
+# 	#	#-----------------
+# 	#	#COPY JS LIBS
+# 	#
+# 	#	if p_page_info_map['js'].has_key('libs_files_lst'):
+# 	#		p_log_fun('INFO','------------ JS_LIBS -----------------------------')
+# 	#
+# 	#		for lib_file_str in p_page_info_map['js']['libs_files_lst']:
+# 	#			gf_u.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
+# 	#-----------------
+# 	#CSS
+#
+# 	if p_page_info_map.has_key('css'):
+# 		p_log_fun('INFO', '%s------------ CSS ---------------------------------%s'%(fg('yellow'), attr(0)))
+# 		css_files_lst = p_page_info_map['css']['files_lst']
+#
+# 		for f_tpl in css_files_lst:
+# 			assert len(f_tpl) == 2
+#
+# 			src_file_str, dest_dir_src = f_tpl
+#
+# 			if not os.path.isdir(dest_dir_src): gf_u.run_cmd('mkdir -p %s'%(dest_dir_src))
+# 			gf_u.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
+# 	#-----------------
+# 	#TEMPLATES
+# 	if p_page_info_map.has_key('templates'):
+# 		p_log_fun('INFO', '%s------------ TEMPLATES -----------------------------%s'%(fg('yellow'), attr(0)))
+#		
+# 		assert p_page_info_map['templates'].has_key('files_lst')
+# 		templates_files_lst = p_page_info_map['templates']['files_lst']
+# 		assert isinstance(templates_files_lst, list)
+#
+#
+# 		#COPY_TEMPLATE_FILES - copy them from their source location to the desired build location
+# 		for tmpl_file_str, tmpl_target_dir_str in templates_files_lst:
+# 			print('tmpl_file_str - %s'%(tmpl_file_str))
+#
+# 			assert os.path.isfile(tmpl_file_str)
+#
+# 			#if target template dir doesnt exist, create it
+# 			if not os.path.isdir(tmpl_target_dir_str): gf_u.run_cmd('mkdir -p %s'%(tmpl_target_dir_str))
+#
+# 			gf_u.run_cmd('cp %s %s'%(tmpl_file_str, tmpl_target_dir_str))
+# 	#-----------------
+# 	#FILES_TO_COPY
+#
+# 	if p_page_info_map.has_key('files_to_copy_lst'):
+# 		p_log_fun('INFO', '%s------------ FILES_TO_COPY -----------------------%s'%(fg('yellow'), attr(0)))
+# 		files_to_copy_lst = p_page_info_map['files_to_copy_lst']
+#
+# 		for f_tpl in files_to_copy_lst:
+# 			src_file_str, dest_dir_src = f_tpl
+#
+# 			gf_u.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
+# 	#-----------------

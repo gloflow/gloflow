@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css">
 {{- /*-----------------------------------------------------*/}}
 <!-- directs fb to use the specified image when the page is shared -->
-<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+<meta property="og:image" content="data/gf_landingpage_5.png"/>
 <meta property="og:title" content="gloflow.com - a parallel space for artistic expression"/>
 
 <!-- canonical address  -->
@@ -52,8 +52,9 @@
 			<div class='tags_container'>
 			
 			{{- range .tags_lst}}
-				<a class='gf_image_tag' href ='/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+				<a class='gf_image_tag' href='/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
 			{{- end}}
+			
 			</div>
 			{{- end}}
 			{{- /*------------------------------------------------------*/}}
@@ -73,7 +74,7 @@
 
 <script type="text/javascript" src="./../../../../../libs/js/masonry.pkgd.min.js"></script>
 <script type="text/javascript" src="./../../../../../libs/js/jquery.timeago.js"></script>
-<script type="text/javascript" src="./../../ts/gf_images_flows_browser.js"></script>
+<script type="text/javascript" src="./../../ts/gf_images_flows_browser/gf_images_flows_browser.ts"></script>
 {{- /*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
