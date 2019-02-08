@@ -5,18 +5,25 @@ FROM gliderlabs/alpine:3.7
 
 RUN apk update
 RUN apk add --update bash
+#------------
+#DIRS
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/conf
+RUN mkdir -p /home/gf/data
 
-#IMPORTANT!! - without ca-certificates when requests are made to external urls, 
+#for crawler image data
+RUN mkdir -p /home/gf/data/images
+RUN mkdir -p /home/gf/data/images/thumbnails
+RUN mkdir -p /home/gf/static
+
+#templates
+RUN mkdir -p /home/gf/templates
+RUN mkdir -p /home/gf/templates/subtemplates
+#------------
+#IMPORTANT!! - without ca-certificates when the fetcher runs a GET on the image url, 
 #              if its a https:// address, it will return an error
 #              "x509: failed to load system roots and no roots provided"
 RUN apk add ca-certificates
-
-#------------
-#DIRS
-RUN mkdir -p /home/gf/static/
-
-#for crawler image data
-RUN mkdir -p /home/gf/image_data 
 #------------
 #PYTHON CODE
 

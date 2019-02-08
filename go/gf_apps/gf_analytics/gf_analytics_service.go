@@ -195,7 +195,7 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 	crawler_name_str                  := flag.String("crawler_name",            "gloflow.com",   "name of the crawler to run")
 	crawler_cycles_to_run_int         := flag.Int("crawler_cycles_to_run",      1,               "DEBUGGING - when running 'run_crawler' command this indicates how many crawler cylcles o run")
 	cluster_node_type_str             := flag.String("cluster_node_type",       "master",        "master|worker - crawler node type")
-	crawler_images_local_dir_path_str := flag.String("crawler_images_dir_path", "./image_data",  "local image tmp dir for crawled images before upload to permanent storage")
+	crawler_images_local_dir_path_str := flag.String("crawler_images_dir_path", "./data/images", "local image tmp dir for crawled images before upload to permanent storage")
 	run_indexer_bool                  := flag.Bool("run_indexer",               true,            "DEBUG - if the indexer (elasticsearch) should be used")
 	py_stats_dirs                     := flag.String("py_stats_dirs",           "./py/stats",    "path to the dir that contains stats .py script files")
 	//-------------------

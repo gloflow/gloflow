@@ -15,6 +15,7 @@ RUN mkdir -p /home/gf/data/images
 RUN mkdir -p /home/gf/data/images/thumbnails
 RUN mkdir -p /home/gf/static
 
+#templates
 RUN mkdir -p /home/gf/templates
 RUN mkdir -p /home/gf/templates/subtemplates
 #------------
