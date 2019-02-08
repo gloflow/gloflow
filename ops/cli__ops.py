@@ -1,4 +1,4 @@
-# GloFlow media management/publishing system
+# GloFlow application and media management/publishing platform
 # Copyright (C) 2019 Ivan Trajkovic
 #
 # This program is free software; you can redistribute it and/or modify
