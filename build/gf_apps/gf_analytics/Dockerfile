@@ -42,6 +42,6 @@ RUN pip install colored
 ADD ./py/cli_stats.py /home/gf/py/cli_stats.py
 ADD ./py/stats/       /home/gf/py/stats
 #------------
-ADD ./templates/gf_domains_browser.html /home/gf/templates/gf_domains_browser.html
-ADD ./static                            /home/gf/static
-ADD ./gf_analytics_service              /home/gf/
+ADD ./templates            /home/gf/templates
+ADD ./static               /home/gf/static
+ADD ./gf_analytics_service /home/gf/

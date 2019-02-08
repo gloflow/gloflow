@@ -63,7 +63,7 @@ def build(p_app_name_str,
 		assert app_web_meta_map.has_key('pages_map')
 		pages_map = app_web_meta_map['pages_map']
 
-		prepare_web_static_dir(pages_map, service_base_dir_str, p_log_fun)
+		prepare_web_files(pages_map, service_base_dir_str, p_log_fun)
 	#------------------
 
 	build_docker_container(service_name_str,
@@ -81,10 +81,10 @@ def copy_files(p_copy_to_dir_lst):
         if not os.path.isdir(target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
         gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
 #-------------------------------------------------------------
-def prepare_web_static_dir(p_pages_map,
+def prepare_web_files(p_pages_map,
 	p_service_base_dir_str,
 	p_log_fun):
-	p_log_fun('FUN_ENTER', 'gf_containers.prepare_web_static_dir()')
+	p_log_fun('FUN_ENTER', 'gf_containers.prepare_web_files()')
 	assert isinstance(p_pages_map, dict)
 	assert os.path.dirname(p_service_base_dir_str)
 
@@ -103,6 +103,17 @@ def prepare_web_static_dir(p_pages_map,
 		#COPY_PAGE_WEB_CODE
 		gf_cli_utils.run_cmd('cp -r %s/* %s'%(build_dir_str, target_dir_str))
 		#------------------
+
+	#------------------
+	#MOVE_TEMPLATES_OUT_OF_STATIC
+
+	#IMPORTANT!! - templates should not be in the static/ dir, which would make them servable
+	#              over HTTP which we dont want. instead its moved out of the static/ dir 
+	#              to its parent dir where its private
+	gf_cli_utils.run_cmd('rm -rf %s/../templates'%(target_dir_str)) #remove existing templates build dir
+	gf_cli_utils.run_cmd('mv %s/templates %s/..'%(target_dir_str, target_dir_str))
+	#------------------
+	
 #-------------------------------------------------------------
 def build_docker_container(p_service_name_str,
 	p_service_base_dir_str,
