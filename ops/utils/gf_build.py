@@ -29,9 +29,14 @@ def run_go(p_name_str,
     print(p_go_dir_path_str)
     
     assert os.path.isdir(p_go_dir_path_str)
+
+
+
+    print(p_output_path_str)
     assert os.path.isdir(os.path.dirname(p_output_path_str))
 
     print('')
+    if p_static_bool: print(' -- %sSTATIC BINARY BUILD%s'%(fg('yellow'), attr(0)))
     print(' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0)))
 
     cwd_str = os.getcwd()

@@ -129,8 +129,8 @@ def build_page(p_page_name_str,
 				#---------------------------------------------------
 
 				main_ts_file_str       = local_path_str
-				minified_file_name_str = '.'.join(os.path.basename(main_ts_file_str).split('.')[:-1])
-				minified_file_path_str = '%s/js/%s.min.js'%(p_build_dir_str, minified_file_name_str)
+				minified_file_name_str = '%s.min.js'%('.'.join(os.path.basename(main_ts_file_str).split('.')[:-1]))
+				minified_file_path_str = '%s/js/%s'%(p_build_dir_str, minified_file_name_str)
 
 				build_typescript(minified_file_path_str)
 

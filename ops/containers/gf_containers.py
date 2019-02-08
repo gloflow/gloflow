@@ -31,7 +31,7 @@ import gf_cli_utils
 def build(p_app_name_str,
 	p_log_fun,
 	p_user_name_str = 'local'):
-	p_log_fun('FUN_ENTER','gf_containers.build()')
+	p_log_fun('FUN_ENTER', 'gf_containers.build()')
 	assert isinstance(p_app_name_str, basestring)
 	
 	#------------------
@@ -50,7 +50,6 @@ def build(p_app_name_str,
 
 	service_version_str  = app_meta_map['version_str']
 	assert len(service_version_str.split(".")) == 4 #format x.x.x.x
-
 	#------------------
 	#COPY_FILES_TO_DIR
 	if app_meta_map.has_key('copy_to_dir_lst'):
@@ -85,14 +84,15 @@ def copy_files(p_copy_to_dir_lst):
 def prepare_web_static_dir(p_pages_map,
 	p_service_base_dir_str,
 	p_log_fun):
-	p_log_fun('FUN_ENTER','gf_containers.prepare_web_static_dir()')
+	p_log_fun('FUN_ENTER', 'gf_containers.prepare_web_static_dir()')
 	assert isinstance(p_pages_map, dict)
 	assert os.path.dirname(p_service_base_dir_str)
 
 	for pg_name_str, pg_info_map in p_pages_map.items():
-
+		assert isinstance(pg_info_map, dict)
 		assert pg_info_map.has_key('build_dir_str')
 		assert os.path.isdir(pg_info_map['build_dir_str'])
+
 		build_dir_str = pg_info_map['build_dir_str']
 
 		#------------------
@@ -101,7 +101,7 @@ def prepare_web_static_dir(p_pages_map,
 		gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
 		#------------------
 		#COPY_PAGE_WEB_CODE
-		gf_cli_utils.run_cmd('cp -p -r %s/* %s'%(build_dir_str, target_dir_str))
+		gf_cli_utils.run_cmd('cp -r %s/* %s'%(build_dir_str, target_dir_str))
 		#------------------
 #-------------------------------------------------------------
 def build_docker_container(p_service_name_str,
@@ -109,7 +109,7 @@ def build_docker_container(p_service_name_str,
 	p_service_version_str,
 	p_user_name_str,
 	p_log_fun):
-	p_log_fun('FUN_ENTER','gf_containers.build_docker_container()')
+	p_log_fun('FUN_ENTER', 'gf_containers.build_docker_container()')
 	assert os.path.isdir(p_service_base_dir_str)
 
 	image_name_str       = '%s/%s:%s'%(p_user_name_str, p_service_name_str, p_service_version_str)
