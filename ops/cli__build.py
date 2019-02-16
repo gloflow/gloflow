@@ -25,6 +25,7 @@ import delegator
 
 sys.path.append('%s/../meta'%(cwd_str))
 import gf_meta
+import gf_web_meta
 
 sys.path.append('%s/utils'%(cwd_str))
 import gf_build
@@ -85,7 +86,9 @@ def main():
     #BUILD_WEB
     elif run_str == 'build_web':
         apps_names_lst = [app_name_str]
-        gf_web__build.build(apps_names_lst, log_fun)
+        apps_meta_map  = gf_web_meta.get() 
+
+        gf_web__build.build(apps_names_lst, apps_meta_map, log_fun)
     #-------------
     #BUILD_CONTAINERS
     elif run_str == 'build_containers':

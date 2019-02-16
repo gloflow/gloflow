@@ -23,25 +23,25 @@ import argparse
 
 #->:Dict(dynamic_service_info_dict)
 def parse_args(p_cmd_line_args_defs_map, p_log_fun):
-	p_log_fun('FUN_ENTER','gf_core_cli.parse_args()')
-	assert isinstance(p_cmd_line_args_defs_map,dict)
+	p_log_fun('FUN_ENTER', 'gf_core_cli.parse_args()')
+	assert isinstance(p_cmd_line_args_defs_map, dict)
 	
 	passed_in_args_lst = sys.argv[1:]
-	p_log_fun('INFO','passed in args:%s'%(passed_in_args_lst))
+	p_log_fun('INFO', 'passed in args:%s'%(passed_in_args_lst))
 	
 	#RawTextHelpFormatter - so that newlines in the help text are rendered when "-h" option 
 	#                       is passed on the command line
 	arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 
 	#load up all command line argument definitions
-	for arg_name_str,arg_def_map in p_cmd_line_args_defs_map.items():
+	for arg_name_str, arg_def_map in p_cmd_line_args_defs_map.items():
 		arg_default  = arg_def_map['default']
 		arg_help_str = arg_def_map['help']
 		
 		arg_parser.add_argument('-%s'%(arg_name_str), 
-								action  = "store",
-								default = arg_default,
-								help    = arg_help_str)
+			action  = "store",
+			default = arg_default,
+			help    = arg_help_str)
 	#:Namespace
 	args_namespace = arg_parser.parse_args(passed_in_args_lst)
 	

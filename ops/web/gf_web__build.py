@@ -22,28 +22,24 @@ import os
 from colored import fg,bg,attr
 import BeautifulSoup as bs
 
-sys.path.append('%s/../../meta'%(cwd_str))
-import gf_web_meta
-
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils as gf_u
 #---------------------------------------------------
-def build(p_apps_names_lst, p_log_fun):
+def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 	p_log_fun("FUN_ENTER","gf_web__build.build()")
 	assert isinstance(p_apps_names_lst, list)
 	assert len(p_apps_names_lst) > 0
-
-	apps_meta_map = gf_web_meta.get()
+	assert isinstance(p_apps_meta_map, dict)
 
 	for app_str in p_apps_names_lst:
 		
 		#-----------------
 		#META
-		if not apps_meta_map.has_key(app_str):
+		if not p_apps_meta_map.has_key(app_str):
 			p_log_fun("ERROR","supplied app (%s) does not exist in gf_web_meta"%(app_str))
 			return
 
-		app_map = apps_meta_map[app_str]
+		app_map = p_apps_meta_map[app_str]
 		#-----------------
 
 		#BUILD PAGES - build each page of the app
@@ -61,6 +57,7 @@ def build_page(p_page_name_str,
     p_page_info_map,
     p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
+	print('p_build_dir_str - %s'%(p_build_dir_str))
 	assert isinstance(p_build_dir_str, basestring)
 	assert os.path.isdir(p_build_dir_str)
 

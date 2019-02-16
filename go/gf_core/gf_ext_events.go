@@ -60,7 +60,7 @@ func Events__send_event(p_events_id_str string,
 	p_data_map    map[string]interface{},
 	p_events_ctx  *Events_ctx,
 	p_runtime_sys *Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_ext_events.Events__send_event()")
+	//p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__send_event()")
 
 	e := Event__msg{
 		Events_id_str:p_events_id_str,
@@ -74,7 +74,7 @@ func Events__send_event(p_events_id_str string,
 func Events__register_producer(p_events_id_str string,
 	p_events_ctx  *Events_ctx,
 	p_runtime_sys *Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_ext_events.Events__register_producer()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
 
 	register_producer_msg := Events__register_producer_msg{
 		Events_id_str:p_events_id_str,
@@ -85,7 +85,7 @@ func Events__register_producer(p_events_id_str string,
 //-------------------------------------------------
 func Events__init(p_sse_url_str string,
 			p_runtime_sys *Runtime_sys) *Events_ctx {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_ext_events.Events__init()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__init()")
 
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()

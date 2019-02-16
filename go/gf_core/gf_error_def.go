@@ -191,24 +191,29 @@ func error__get_defs() map[string]error_def {
 		},
 		//---------------
 		"ws_connection_init_error":{
-			Descr_str:"websocket client failed to connect to a url",
+			Descr_str: "websocket client failed to connect to a url",
 		},
 		//---------------
 		//S3
-		"s3_credentials_error":{
-			Descr_str:"S3 credentials operation failed",
+		"s3_credentials_error": {
+			Descr_str: "S3 credentials operation failed",
 		},
-		"s3_file_upload_error":{
-			Descr_str:"failed to upload a file to S3 bucket",
+		"s3_file_upload_error": {
+			Descr_str: "failed to upload a file to S3 bucket",
 		},
-		"s3_file_copy_error":{
-			Descr_str:"failed to copy a file within S3",
+		"s3_file_copy_error": {
+			Descr_str: "failed to copy a file within S3",
 		},
 		//---------------
 		//HTML_PARSING
-		"html_parse_error":{
-			Descr_str:"parsing of a HTML document failed",
+		"html_parse_error": {
+			Descr_str: "parsing of a HTML document failed",
 		},
+		//---------------
+		//LIBRARY_ERROR
+		"library_error":{
+			Descr_str: "third-party library has failed",
+		}
 		//---------------
 	}
 	return error_defs_map
