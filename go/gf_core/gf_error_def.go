@@ -213,7 +213,7 @@ func error__get_defs() map[string]error_def {
 		//LIBRARY_ERROR
 		"library_error":{
 			Descr_str: "third-party library has failed",
-		}
+		},
 		//---------------
 	}
 	return error_defs_map

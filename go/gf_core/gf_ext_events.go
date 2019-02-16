@@ -63,10 +63,10 @@ func Events__send_event(p_events_id_str string,
 	//p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__send_event()")
 
 	e := Event__msg{
-		Events_id_str:p_events_id_str,
-		Type_str:     p_type_str,
-		Msg_str:      p_msg_str,
-		Data_map:     p_data_map,
+		Events_id_str: p_events_id_str,
+		Type_str:      p_type_str,
+		Msg_str:       p_msg_str,
+		Data_map:      p_data_map,
 	}
 	p_events_ctx.Events_broker_ch <- e
 }
@@ -77,14 +77,13 @@ func Events__register_producer(p_events_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
 
 	register_producer_msg := Events__register_producer_msg{
-		Events_id_str:p_events_id_str,
+		Events_id_str: p_events_id_str,
 	}
 
 	p_events_ctx.Register_producer_ch <- register_producer_msg
 }
 //-------------------------------------------------
-func Events__init(p_sse_url_str string,
-			p_runtime_sys *Runtime_sys) *Events_ctx {
+func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__init()")
 
 	//yellow := color.New(color.FgYellow).SprintFunc()
@@ -136,9 +135,9 @@ func Events__init(p_sse_url_str string,
 	}()
 
 	ctx := &Events_ctx{
-		Register_producer_ch:register_producer_ch,
-		Register_consumer_ch:register_consumer_ch,
-		Events_broker_ch:    events_broker_ch,
+		Register_producer_ch: register_producer_ch,
+		Register_consumer_ch: register_consumer_ch,
+		Events_broker_ch:     events_broker_ch,
 	}
 
 	events__init_handlers(p_sse_url_str,
@@ -152,31 +151,31 @@ func events__init_handlers(p_sse_url_str string,
 	p_register_consumer_ch chan<- Events__register_consumer_msg,
 	p_events_ctx           *Events_ctx,
 	p_runtime_sys          *Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_ext_events.events__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.events__init_handlers()")
 
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
 
 
 	//IMPORTANT!! - new event_consumers (clients) register via this HTTP handler
-	http.HandleFunc(p_sse_url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
+	http.HandleFunc(p_sse_url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
 
 		//start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 		events_id_str := p_req.URL.Query()["events_id"][0]
-		p_runtime_sys.Log_fun("INFO","events_id_str - "+events_id_str)
+		p_runtime_sys.Log_fun("INFO", "events_id_str - "+events_id_str)
 
 		register_consumer__response_ch := make(chan chan Event__msg)
 		register_consumer_msg          := Events__register_consumer_msg{
-			Events_id_str:events_id_str,
-			Response_ch:  register_consumer__response_ch,
+			Events_id_str: events_id_str,
+			Response_ch:   register_consumer__response_ch,
 		}
 
 		p_register_consumer_ch <- register_consumer_msg
 		events_consumer_ch := <- register_consumer__response_ch
 
-		flusher,gf_err := HTTP__init_sse(p_resp,p_runtime_sys)
+		flusher,gf_err := HTTP__init_sse(p_resp, p_runtime_sys)
 		if gf_err != nil {
 			return
 		}
@@ -235,8 +234,8 @@ func events__stream_msg(p_event_msg Event__msg,
 
 	unix_f       := float64(time.Now().UnixNano())/1000000000.0
 	event_id_str := fmt.Sprint(unix_f)
-	fmt.Fprintf(p_resp,"id: %s\n",event_id_str)
+	fmt.Fprintf(p_resp, "id: %s\n",event_id_str)
 
 	event_msg_lst,_ := json.Marshal(p_event_msg)
-	fmt.Fprintf(p_resp,"data: %s\n\n",event_msg_lst)
+	fmt.Fprintf(p_resp, "data: %s\n\n", event_msg_lst)
 }
