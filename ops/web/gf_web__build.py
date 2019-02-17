@@ -95,6 +95,10 @@ def build_page(p_page_name_str,
 
 		for script in scripts_lst:
 
+			#some <script> tags might just contain source code, and not reference an external JS file
+			if not script.has_key('src'):
+				continue
+
 			src_str = script['src']
 			
 			if src_str.startswith('http://') or src_str.startswith('https://'):
@@ -115,6 +119,9 @@ def build_page(p_page_name_str,
 					cmd_lst = [
 						'tsc',
 						'--module system', #needed with the "--out" option
+
+						#Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
+						#'--esModuleInterop',
 						'--out %s'%(p_out_file_str),
 						main_ts_file_str
 					]
