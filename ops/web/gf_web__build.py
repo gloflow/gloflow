@@ -152,6 +152,7 @@ def build_page(p_page_name_str,
 			#-----------------
 	#---------------------------------------------------
 	def process_css():
+		p_log_fun('INFO', '%s------------ CSS ---------------------------------------%s'%(fg('yellow'), attr(0)))
 		css_links_lst = soup.findAll('link', {'type':'text/css'})
 		
 		target_dir_str = '%s/css/%s'%(p_build_dir_str, p_page_name_str)
@@ -159,20 +160,35 @@ def build_page(p_page_name_str,
 
 		for css in css_links_lst:
 			src_str = css['href']
+			assert src_str.endswith('.css') or src_str.endswith('.scss')
 
 			if src_str.startswith('http://') or src_str.startswith('https://'):
 				print('EXTERNAL_URL - DO NOTHING')
 				continue
 
-			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
-			print(local_path_str)
-			assert local_path_str.endswith('.css')
-			assert os.path.isfile(local_path_str)
+			#full paths are relative to the dir holding the main html file (app entry point)
+			full_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			print(full_path_str)
+			assert os.path.isfile(full_path_str)
+			
+			#SASS
+			if src_str.endswith('.scss'):
+				css_file_name_str = os.path.basename(src_str).replace('.scss', '.css')
+				final_src_str     = '%s/%s'%(target_dir_str, css_file_name_str)
+				gf_u.run_cmd('sass %s %s'%(full_path_str, final_src_str))
 
-			gf_u.run_cmd('cp %s %s'%(local_path_str, target_dir_str))
+				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+				css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, css_file_name_str)
 
-			#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
-			css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, os.path.basename(local_path_str))
+			#CSS
+			else:
+				
+				
+
+				gf_u.run_cmd('cp %s %s'%(full_path_str, target_dir_str))
+
+				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+				css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, os.path.basename(full_path_str))
 	#---------------------------------------------------
 	process_scripts()
 	process_css()
