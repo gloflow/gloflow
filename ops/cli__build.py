@@ -108,6 +108,11 @@ def main():
         
         gf_tests.run(app_name_str, test_name_str, app_meta_map, aws_creds_map)
     #-------------
+    #LIST_CHANGED_APPS
+    elif run_str == 'list_changed_apps':
+        changed_apps_map = gf_build.list_changed_apps()
+        gf_build.view_changed_apps(changed_apps_map)
+    #-------------
     else:
         print("unknown run command - %s"%(run_str))
         exit()
@@ -120,10 +125,11 @@ def parse_args():
     #RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''            - build an app
-- '''+fg('yellow')+'build_web'+attr(0)+'''        - build web code (ts/js/css/html) for an app
-- '''+fg('yellow')+'build_containers'+attr(0)+''' - build Docker containers for an app
-- '''+fg('yellow')+'test'+attr(0)+'''             - run code tests for an app
+- '''+fg('yellow')+'build'+attr(0)+'''             - build an app
+- '''+fg('yellow')+'build_web'+attr(0)+'''         - build web code (ts/js/css/html) for an app
+- '''+fg('yellow')+'build_containers'+attr(0)+'''  - build Docker containers for an app
+- '''+fg('yellow')+'test'+attr(0)+'''              - run code tests for an app
+- '''+fg('yellow')+'list_changed_apps'+attr(0)+''' - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
 
         ''')
     #-------------

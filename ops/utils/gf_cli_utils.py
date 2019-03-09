@@ -19,8 +19,11 @@ from colored import fg, bg, attr
 import delegator
 
 #---------------------------------------------------
-def run_cmd(p_cmd_str):
-	print(p_cmd_str)
+def run_cmd(p_cmd_str, p_print_output_bool=True):
+	if p_print_output_bool: print(p_cmd_str)
 	r = delegator.run(p_cmd_str)
-	if not r.out == '': print(r.out)
+	if not r.out == '':
+		o = r.out
+		if p_print_output_bool: print(o)
+		return o
 	if not r.err == '': print('%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err))

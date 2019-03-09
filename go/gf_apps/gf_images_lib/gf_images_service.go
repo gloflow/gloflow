@@ -152,7 +152,7 @@ func Run_service(p_port_str string,
 	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
 	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_port_str,nil)
+	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
 		runtime_sys.Log_fun("ERROR",msg_str)

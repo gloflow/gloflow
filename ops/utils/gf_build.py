@@ -17,6 +17,7 @@
 
 import os
 from colored import fg, bg, attr
+import delegator
 
 import gf_cli_utils
 #--------------------------------------------------
@@ -66,3 +67,84 @@ def run_go(p_name_str,
     gf_cli_utils.run_cmd(c_str)
     
     os.chdir(cwd_str) #return to initial dir
+#--------------------------------------------------
+def list_changed_apps():
+
+    apps_names_lst = [
+        'gf_images',
+        'gf_analytics',
+        'gf_publisher',
+        'gf_tagger',
+        'gf_landing_page',
+    ]
+
+    system_packages_lst = [
+        'gf_core',
+        'gf_rpc_lib',
+        'gf_stats'
+    ]
+
+    #latest_commit_hash_str = gf_cli_utils.run_cmd('git rev-parse HEAD')
+    #assert len(latest_commit_hash_str) == 32
+
+    list_st = gf_cli_utils.run_cmd('git diff --name-only HEAD HEAD~1', p_print_output_bool=False)
+
+    changed_apps_map = {}
+
+    #--------------------------------------------------
+    def add_change_to_all_apps(p_file_changed_str):
+        for a in apps_names_lst:
+            if changed_apps_map.has_key(a): changed_apps_map[a].append(p_file_changed_str)
+            else:                           changed_apps_map[a] = [p_file_changed_str]
+    #--------------------------------------------------
+    
+    for l in list_st.split('\n'):
+
+        #------------------------
+        #GO
+        if l.startswith('go'):
+            #an app itself changed
+            if l.startswith('go/gf_apps'):
+                app_name_str = l.split('/')[2]
+                assert app_name_str in apps_names_lst
+                
+                if changed_apps_map.has_key(app_name_str): changed_apps_map[app_name_str].append(l)
+                else:                                      changed_apps_map[app_name_str] = [l]
+
+            #if one of the system packages has changed
+            else:
+                for sys_package_str in system_packages_lst:
+
+                    #IMPORTANT!! - one of the system packages has changed, so infer
+                    #              that all apps have changed.
+                    if l.startswith('go/%s'%(sys_package_str)):
+                        add_change_to_all_apps(l)
+        #------------------------
+        #WEB
+        elif l.startswith('web'):
+            if l.startswith('web/src/gf_apps'):
+                app_name_str = s.split('/')[3]
+                assert app_name_str in apps_names_lst
+
+                if changed_apps_map.has_key(app_name_str): changed_apps_map[app_name_str].append(l)
+                else:                                      changed_apps_map[app_name_str] = [l]
+
+            #IMPORTATN!! - one of the web libs changed, so all apps should be rebuilt
+            #FIX!!       - have a better way of determening which apps use this lib, 
+            #              to avoid rebuilding unaffected apps
+            elif l.startswith('web/libs'):
+                add_change_to_all_apps(l)
+        #------------------------
+
+    return changed_apps_map
+#--------------------------------------------------
+def view_changed_apps(p_changed_apps_map):
+    assert isinstance(p_changed_apps_map, dict)
+
+    if len(p_changed_apps_map.items()) == 0:
+        print('NO APPS CHANGED')
+    else:
+        for k, changed_files_lst in p_changed_apps_map.items():
+            print('%s%s%s'%(fg('yellow'), k, attr(0)))
+            for f in changed_files_lst:
+                print('\t%s/%s%s%s'%(os.path.dirname(f), fg('green'), os.path.basename(f), attr(0)))
