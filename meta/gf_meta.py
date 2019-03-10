@@ -4,12 +4,32 @@ import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 #-------------------------------------------------------------
 def get():
+    
+    #IMPORTANT!! - dependency graph between go/web packages and apps, used to know 
+    #              which app containers to rebuild (CI/CD tools) in this monorepo.
+    #FIX!!       - have an automated way of determening this graph (no time for that right now).
+    apps_changes_deps_map = {
+        'apps_names_map': {
+            'gf_images':       ['gf_images',     'gf_images_lib'],
+            'gf_analytics':    ['gf_analytics',  'gf_crawl_lib',     'gf_domains_lib'],
+            'gf_publisher':    ['gf_images_lib', 'gf_publisher',     'gf_publisher_lib'],
+            'gf_tagger':       ['gf_images_lib', 'gf_publisher_lib', 'gf_tagger'],
+            'gf_landing_page': ['gf_images_lib', 'gf_publisher_lib', 'gf_landing_page'],
+        },
+
+        'system_packages_lst': [
+            'gf_core',
+            'gf_rpc_lib',
+            'gf_stats'
+        ]
+    }
 
     meta_map = {
+        'apps_changes_deps_map': apps_changes_deps_map,
         'build_info_map':{
             #------------------------
             #GF_SOLO
-            'apps/gf_solo':{
+            'gf_solo':{
                 'type_str':           'main',
                 'version_str':        '0.8.0.0',
                 'go_output_path_str': '%s/../build/gf_apps/apps/gf_solo/gf_solo'%(cwd_str),
@@ -31,8 +51,8 @@ def get():
             #LIB
             #GF_IMAGES_LIB
             'gf_images_lib':{
-                'go_path_str':               '%s/../go/gf_apps/gf_images_lib'%(cwd_str),
-                'test_data_to_serve_dir_str':'%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
+                'go_path_str':                '%s/../go/gf_apps/gf_images_lib'%(cwd_str),
+                'test_data_to_serve_dir_str': '%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
             },
             #-------------
             #MAIN
@@ -43,7 +63,7 @@ def get():
                 'go_output_path_str':   '%s/../build/gf_apps/gf_analytics/gf_analytics_service'%(cwd_str),
                 'service_name_str':     'gf_analytics_service',
                 'service_base_dir_str': '%s/../build/gf_apps/gf_analytics'%(cwd_str),
-                'copy_to_dir_lst':[
+                'copy_to_dir_lst': [
                     ('%s/../go/gf_stats/py/cli_stats.py'%(cwd_str),                                                    '%s/../build/gf_apps/gf_analytics/py'%(cwd_str)),
                     ('%s/../go/gf_core/py/stats/gf_errors__counts_by_day.py'%(cwd_str),                                '%s/../build/gf_apps/gf_analytics/py/stats'%(cwd_str)),
                     ('%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py'%(cwd_str),           '%s/../build/gf_apps/gf_analytics/py/stats'%(cwd_str)),

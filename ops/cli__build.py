@@ -29,6 +29,7 @@ import gf_web_meta
 
 sys.path.append('%s/utils'%(cwd_str))
 import gf_build
+import gf_build_changes
 
 sys.path.append('%s/tests'%(cwd_str))
 import gf_tests
@@ -45,7 +46,7 @@ import gf_containers
 def main():
     
     print('')
-    print('                              %sBUILD GLOFLOW%s'%(fg('green'),attr(0)))
+    print('                              %sGLOFLOW BUILD TOOL%s'%(fg('green'),attr(0)))
     print('')
 
     #--------------------------------------------------
@@ -56,16 +57,17 @@ def main():
             print('%s%s%s:%s%s%s'%(fg('yellow'), g, attr(0), fg('green'), m, attr(0)))
     #--------------------------------------------------
     
-    b_meta_map = gf_meta.get()['build_info_map']
+    build_meta_map        = gf_meta.get()['build_info_map']
+    apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
     args_map   = parse_args()
     run_str    = args_map['run']
 
     app_name_str = args_map['app']
-    assert b_meta_map.has_key(app_name_str)
+    assert build_meta_map.has_key(app_name_str)
 
     #--------------------------------------------------
     def go_build(p_static_bool):
-        app_meta_map = b_meta_map[app_name_str]
+        app_meta_map = build_meta_map[app_name_str]
         if not app_meta_map.has_key('go_output_path_str'):
             print("not a main package")
             exit()
@@ -110,8 +112,8 @@ def main():
     #-------------
     #LIST_CHANGED_APPS
     elif run_str == 'list_changed_apps':
-        changed_apps_map = gf_build.list_changed_apps()
-        gf_build.view_changed_apps(changed_apps_map)
+        changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
+        gf_build_changes.view_changed_apps(changed_apps_map)
     #-------------
     else:
         print("unknown run command - %s"%(run_str))
