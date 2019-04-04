@@ -88,9 +88,9 @@ def main():
     #BUILD_WEB
     elif run_str == 'build_web':
         apps_names_lst = [app_name_str]
-        apps_meta_map  = gf_web_meta.get() 
+        web_meta_map   = gf_web_meta.get() 
 
-        gf_web__build.build(apps_names_lst, apps_meta_map, log_fun)
+        gf_web__build.build(apps_names_lst, web_meta_map, log_fun)
     #-------------
     #BUILD_CONTAINERS
     elif run_str == 'build_containers':
@@ -99,11 +99,19 @@ def main():
         #which has a minimal stdlib and other libraries, so we want to compile 
         #everything needed by this Go package into a single binary.
         go_build(True)
+        
+	    web_meta_map = gf_web_meta.get()
 
-        gf_containers.build(app_name_str, log_fun)
+        gf_containers.build(app_name_str, 
+            build_meta_map,
+            web_meta_map,
+            log_fun)
     #-------------
     #TEST
     elif run_str == 'test':
+
+        app_meta_map = build_meta_map[app_name_str]
+        
         aws_creds_file_path_str = args_map['aws_creds']
         aws_creds_map           = gf_s3_utils.parse_creds(aws_creds_file_path_str)
         test_name_str           = args_map['test_name']

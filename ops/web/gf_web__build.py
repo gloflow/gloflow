@@ -24,6 +24,7 @@ import BeautifulSoup as bs
 
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils as gf_u
+
 #---------------------------------------------------
 def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 	p_log_fun("FUN_ENTER","gf_web__build.build()")
@@ -51,46 +52,51 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 				build_dir_str,
 				page_info_map,
 				p_log_fun)
+
 #---------------------------------------------------
 def build_page(p_page_name_str,
-    p_build_dir_str,
+    p_target_build_dir_str,
     p_page_info_map,
     p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
-	print('p_build_dir_str - %s'%(p_build_dir_str))
-	assert isinstance(p_build_dir_str, basestring)
-	assert os.path.isdir(p_build_dir_str)
-
-	main_html_path_str = os.path.abspath(p_page_info_map['main_html_path_str'])
-	assert os.path.isfile(main_html_path_str)
-	assert main_html_path_str.endswith('.html')
-	assert '.'.join(os.path.basename(main_html_path_str).split('.')[:-1]) == p_page_name_str
-
-	url_base_str = p_page_info_map['url_base_str']
-
+	
 	print('')
 	print('')
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
 	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str, attr(0)))
 	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	p_log_fun('INFO', 'build_dir_str      - %s'%(p_build_dir_str))
-	p_log_fun('INFO', 'main_html_path_str - %s'%(main_html_path_str))
-	p_log_fun('INFO', 'url_base_str       - %s'%(url_base_str))
+	print('')
+	print('')
 
+	p_log_fun('INFO', 'build_dir_str - %s'%(p_target_build_dir_str))
+	assert isinstance(p_target_build_dir_str, basestring)
+	assert os.path.isdir(p_target_build_dir_str)
 
-	
-	f = open(main_html_path_str, 'r')
-	main_html_str = f.read()
-	f.close()
+	if p_page_info_map.has_key('main_html_path_str'):
+		main_html_path_str = os.path.abspath(p_page_info_map['main_html_path_str'])
+		assert os.path.isfile(main_html_path_str)
+		assert main_html_path_str.endswith('.html')
+		assert '.'.join(os.path.basename(main_html_path_str).split('.')[:-1]) == p_page_name_str
+		p_log_fun('INFO', 'main_html_path_str - %s'%(main_html_path_str))
 
-	soup = bs.BeautifulSoup(main_html_str)
-	
+	if p_page_info_map.has_key('url_base_str'):
+		url_base_str = p_page_info_map['url_base_str']
+		p_log_fun('INFO', 'url_base_str - %s'%(url_base_str))
+
+	if p_page_info_map.has_key('main_html_path_str'):	
+		f = open(main_html_path_str, 'r')
+		main_html_str = f.read()
+		f.close()
+
+		soup = bs.BeautifulSoup(main_html_str)
+		
 	#---------------------------------------------------
 	def process_scripts():
 		scripts_lst = soup.findAll('script')
 
+		#if there are scripts detected in the page
 		if len(scripts_lst) > 0:
-			js_libs_build_dir_str = '%s/js/lib'%(p_build_dir_str)
+			js_libs_build_dir_str = '%s/js/lib'%(p_target_build_dir_str)
 			gf_u.run_cmd('mkdir -p %s'%(js_libs_build_dir_str)) #create dir and all parent dirs
 
 		for script in scripts_lst:
@@ -105,7 +111,10 @@ def build_page(p_page_name_str,
 				print('EXTERNAL_URL - DO NOTHING')
 				continue
 			
-			local_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
+			main_html_dir_path_str = os.path.dirname(main_html_path_str)
+			assert os.path.isdir(main_html_dir_path_str)
+			
+			local_path_str = os.path.abspath('%s/%s'%(main_html_dir_path_str, src_str))
 			print(local_path_str)
 			assert os.path.isfile(local_path_str)
 
@@ -130,11 +139,12 @@ def build_page(p_page_name_str,
 					#minify into the same file name as the Typescript compiler output
 					target_dir_str = os.path.dirname(p_out_file_str)
 					minify_js(p_out_file_str, [p_out_file_str], p_log_fun)
+
 				#---------------------------------------------------
 
 				main_ts_file_str       = local_path_str
 				minified_file_name_str = '%s.min.js'%('.'.join(os.path.basename(main_ts_file_str).split('.')[:-1]))
-				minified_file_path_str = '%s/js/%s'%(p_build_dir_str, minified_file_name_str)
+				minified_file_path_str = '%s/js/%s'%(p_target_build_dir_str, minified_file_name_str)
 
 				build_typescript(minified_file_path_str)
 
@@ -150,12 +160,13 @@ def build_page(p_page_name_str,
 				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
 				script['src'] = '%s/js/lib/%s'%(url_base_str, os.path.basename(local_path_str))
 			#-----------------
+
 	#---------------------------------------------------
 	def process_css():
 		p_log_fun('INFO', '%s------------ CSS ---------------------------------------%s'%(fg('yellow'), attr(0)))
 		css_links_lst = soup.findAll('link', {'type':'text/css'})
 		
-		target_dir_str = '%s/css/%s'%(p_build_dir_str, p_page_name_str)
+		target_dir_str = '%s/css/%s'%(p_target_build_dir_str, p_page_name_str)
 		gf_u.run_cmd('mkdir -p %s'%(target_dir_str)) #create dir and all parent dirs
 
 		for css in css_links_lst:
@@ -183,32 +194,71 @@ def build_page(p_page_name_str,
 			#CSS
 			else:
 				
-				
-
 				gf_u.run_cmd('cp %s %s'%(full_path_str, target_dir_str))
 
 				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
 				css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, os.path.basename(full_path_str))
+
 	#---------------------------------------------------
-	process_scripts()
-	process_css()
 
+	if p_page_info_map.has_key('main_html_path_str'):
+		process_scripts()
+		process_css()
 
+		#-----------------
+		#CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
+		#                             the modified urls for JS/CSS
+		target_html_file_path_str = '%s/templates/%s/%s.html'%(p_target_build_dir_str, p_page_name_str, p_page_name_str)
+		gf_u.run_cmd('mkdir -p %s'%(os.path.dirname(target_html_file_path_str)))
 
-	#CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
-	#                             the modified urls for JS/CSS
-	target_html_file_path_str = '%s/templates/%s/%s.html'%(p_build_dir_str, p_page_name_str, p_page_name_str)
-	gf_u.run_cmd('mkdir -p %s'%(os.path.dirname(target_html_file_path_str)))
+		f = open(target_html_file_path_str, 'w+')
+		f.write(soup.prettify())
+		f.close()
+		#-----------------
 
-	f = open(target_html_file_path_str, 'w+')
-	f.write(soup.prettify())
-	f.close()
-	
+	#-----------------
+	#SUBTEMPLATES
+	if p_page_info_map.has_key('subtemplates_lst'):
+		process_subtemplates(p_page_name_str,
+			p_target_build_dir_str,
+			p_page_info_map,
+			p_log_fun)
+	#-----------------
+#---------------------------------------------------
+def process_subtemplates(p_page_name_str,
+	p_target_build_dir_str, 
+	p_page_info_map,
+	p_log_fun):
+	p_log_fun("FUN_ENTER", "gf_web__build.process_subtemplates()")
+	assert isinstance(p_page_name_str, basestring)
+	assert os.path.isdir(p_target_build_dir_str)
+	assert p_page_info_map.has_key('subtemplates_lst')
+
+	print('')
+	p_log_fun('INFO', '%s------------ SUBTEMPLATES --------------------------------%s'%(fg('yellow'), attr(0)))
+	print('')
+
+	subtemplates_lst = p_page_info_map['subtemplates_lst']
+	assert isinstance(subtemplates_lst, list)
+
+	#SUBTEMPLATES__BUILD_DIR
+	target_subtemplates_build_dir_str = '%s/templates/%s/subtemplates'%(p_target_build_dir_str, p_page_name_str)
+	if not os.path.isdir(target_subtemplates_build_dir_str):
+		gf_u.run_cmd('mkdir -p %s'%(target_subtemplates_build_dir_str))
+
+	for s_path_str in subtemplates_lst:
+		print(s_path_str)
+		assert isinstance(s_path_str, basestring)
+		assert os.path.isfile(s_path_str)
+		assert s_path_str.endswith('.html')
+
+		#SUBTEMPLATE__COPY
+		gf_u.run_cmd('cp %s %s'%(s_path_str, target_subtemplates_build_dir_str))
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
     p_js_files_lst,
     p_log_fun):
-	p_log_fun("FUN_ENTER","gf_apps_build.minify_js()")
+	p_log_fun("FUN_ENTER", "gf_web__build.minify_js()")
 
 	cmd_lst = [
 		'uglifyjs',
@@ -216,6 +266,7 @@ def minify_js(p_js_target_file_str,
 		' '.join(p_js_files_lst),
 	]
 	gf_u.run_cmd(' '.join(cmd_lst))
+
 #---------------------------------------------------
 # def build_page(p_page_name_str,
 #     p_build_dir_str,

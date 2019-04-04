@@ -32,7 +32,7 @@ import (
 //--------------------------------------------------
 //ELASTIC_SEARCH - INDEXED
 type Gf_crawler_url_fetch struct {
-	Id                   bson.ObjectId     `bson:"_id,omitempty"`
+	Id                   bson.ObjectId     `bson:"_id, omitempty"`
 	Id_str               string            `bson:"id_str"               json:"id_str"`
 	T_str                string            `bson:"t"                    json:"t"` //"crawler_url_fetch"
 	Creation_unix_time_f float64           `bson:"creation_unix_time_f" json:"creation_unix_time_f"`

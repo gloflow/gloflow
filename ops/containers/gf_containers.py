@@ -21,28 +21,36 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 import subprocess
 from colored import fg, bg, attr
 
-sys.path.append('%s/../../meta'%(cwd_str))
-import gf_meta
-import gf_web_meta
+#sys.path.append('%s/../../meta'%(cwd_str))
+#import gf_meta
+#import gf_web_meta
 
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
 #-------------------------------------------------------------
 def build(p_app_name_str,
+	p_app_build_meta_map,
+	p_web_meta_map,
 	p_log_fun,
 	p_user_name_str = 'local'):
 	p_log_fun('FUN_ENTER', 'gf_containers.build()')
-	assert isinstance(p_app_name_str, basestring)
-	
+	assert isinstance(p_app_name_str,       basestring)
+	assert isinstance(p_app_build_meta_map, dict)
+	assert isinstance(p_web_meta_map,       dict)
+
 	#------------------
 	#META
-	build_meta_map = gf_meta.get()['build_info_map']
-	web_meta_map   = gf_web_meta.get()
+	#build_meta_map = gf_meta.get()['build_info_map']
+	#web_meta_map   = gf_web_meta.get()
 
-	if not build_meta_map.has_key(p_app_name_str):
-		p_log_fun("ERROR","supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
+	if not p_app_build_meta_map.has_key(p_app_name_str):
+		p_log_fun("ERROR", "supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
 		return
-	app_meta_map = build_meta_map[p_app_name_str]
+	app_meta_map = p_app_build_meta_map[p_app_name_str]
+
+
+	print(app_meta_map)
+
 
 	service_name_str     = app_meta_map['service_name_str']
 	service_base_dir_str = app_meta_map['service_base_dir_str']
@@ -57,9 +65,9 @@ def build(p_app_name_str,
 		copy_files(copy_to_dir_lst)
 	#------------------
 	#COPY_WEB_FILES
-	if web_meta_map.has_key(p_app_name_str):
+	if p_web_meta_map.has_key(p_app_name_str):
 
-		app_web_meta_map = web_meta_map[p_app_name_str]
+		app_web_meta_map = p_web_meta_map[p_app_name_str]
 		assert app_web_meta_map.has_key('pages_map')
 		pages_map = app_web_meta_map['pages_map']
 

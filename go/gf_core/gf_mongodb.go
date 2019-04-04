@@ -99,7 +99,7 @@ func Mongo__connect(p_mongodb_host_str string,
 	//              this mode is faster, since no confirmation is expected.
 	session.SetSafe(&mgo.Safe{})
 
-	//Monotonic consistency - will read from a slave in possible, for better load distribution.
+	//Monotonic consistency - will read from a slave if possible, for better load distribution.
 	//                        once the first write happens the connection is switched to the master.
 	session.SetMode(mgo.Monotonic,true)
 	//--------------------
