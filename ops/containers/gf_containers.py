@@ -34,6 +34,7 @@ def build(p_app_name_str,
 	p_log_fun,
 	p_user_name_str = 'local'):
 	p_log_fun('FUN_ENTER', 'gf_containers.build()')
+	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
 	assert isinstance(p_app_name_str,       basestring)
 	assert isinstance(p_app_build_meta_map, dict)
 	assert isinstance(p_web_meta_map,       dict)
@@ -48,10 +49,6 @@ def build(p_app_name_str,
 		return
 	app_meta_map = p_app_build_meta_map[p_app_name_str]
 
-
-	print(app_meta_map)
-
-
 	service_name_str     = app_meta_map['service_name_str']
 	service_base_dir_str = app_meta_map['service_base_dir_str']
 	assert os.path.isdir(service_base_dir_str)
@@ -64,7 +61,7 @@ def build(p_app_name_str,
 		copy_to_dir_lst = app_meta_map['copy_to_dir_lst']
 		copy_files(copy_to_dir_lst)
 	#------------------
-	#COPY_WEB_FILES
+	#PREPARE_WEB_FILES
 	if p_web_meta_map.has_key(p_app_name_str):
 
 		app_web_meta_map = p_web_meta_map[p_app_name_str]

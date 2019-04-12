@@ -224,6 +224,32 @@ def build_page(p_page_name_str,
 			p_page_info_map,
 			p_log_fun)
 	#-----------------
+
+	if p_page_info_map.has_key('files_to_copy_lst'):
+		process_files_to_copy(p_page_info_map, p_log_fun)
+#---------------------------------------------------
+def process_files_to_copy(p_page_info_map, p_log_fun):
+	p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
+	assert isinstance(p_page_info_map, dict)
+
+	print('')
+	p_log_fun('INFO', '%s------------ COPY_FILES --------------------------------%s'%(fg('yellow'), attr(0)))
+	print('')
+
+	files_to_copy_lst = p_page_info_map['files_to_copy_lst']
+	assert isinstance(files_to_copy_lst, list)
+
+	#COPY_FILES
+	for file_to_copy_tpl in files_to_copy_lst:
+		assert isinstance(file_to_copy_tpl, tuple)
+		src_file_str, target_dir_str = file_to_copy_tpl
+
+		assert os.path.isfile(src_file_str)
+		assert os.path.isdir(target_dir_str)
+
+		gf_u.run_cmd('cp %s %s'%(src_file_str, target_dir_str))
+		assert os.path.isfile('%s/%s'%(target_dir_str, os.path.basename(src_file_str)))
+
 #---------------------------------------------------
 def process_subtemplates(p_page_name_str,
 	p_target_build_dir_str, 
@@ -254,6 +280,7 @@ def process_subtemplates(p_page_name_str,
 
 		#SUBTEMPLATE__COPY
 		gf_u.run_cmd('cp %s %s'%(s_path_str, target_subtemplates_build_dir_str))
+
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
     p_js_files_lst,

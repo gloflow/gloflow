@@ -30,7 +30,7 @@ def get():
             #------------------------
             #GF_SOLO
             'gf_solo':{
-                'type_str':           'main',
+                #'type_str':           'main',
                 'version_str':        '0.8.0.0',
                 'go_output_path_str': '%s/../build/gf_apps/apps/gf_solo/gf_solo'%(cwd_str),
                 'copy_to_dir_lst': [
