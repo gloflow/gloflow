@@ -73,7 +73,7 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, 
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err

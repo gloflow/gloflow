@@ -197,16 +197,16 @@ func image__flag_as_nsfv(p_image *Gf_crawler_page_img,
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_nsfv.image__flag_as_nsfv()")
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":     "crawler_page_img",
-			"id_str":p_image.Id_str,
+			"t":      "crawler_page_img",
+			"id_str": p_image.Id_str,
 		},
 		bson.M{
 			"$set":bson.M{"nsfv_bool":true},
 		})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update an crawler_page_img NSFV flag by its ID",
+		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img NSFV flag by its ID",
 			"mongodb_update_error",
-			&map[string]interface{}{"image_id_str":p_image.Id_str,},
+			&map[string]interface{}{"image_id_str": p_image.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

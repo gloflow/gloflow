@@ -33,7 +33,7 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	p_gf_images_s3_bucket_name_str      string,
 	p_runtime                           *Gf_crawler_runtime,
 	p_runtime_sys                       *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_flows.Flows__add_extern_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_flows.Flows__add_extern_image()")
 
 
 	//this is used temporarily to donwload images to, before upload to S3

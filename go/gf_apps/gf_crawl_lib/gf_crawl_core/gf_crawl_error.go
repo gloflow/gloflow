@@ -103,7 +103,7 @@ func create_error(p_type_str string,
 	if p_runtime.Cluster_node_type_str == "master" {
 		err := p_runtime_sys.Mongodb_coll.Insert(crawl_err)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to persist a crawler_error",
+			gf_err := gf_core.Mongo__handle_error("failed to persist a crawler_error",
 				"mongodb_insert_error",
 				&map[string]interface{}{
 					"type_str":         p_type_str,

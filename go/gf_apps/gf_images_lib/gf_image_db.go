@@ -55,7 +55,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5
 		All(&imgs_lst)
 		
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get random img range from the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to get random img range from the DB",
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"imgs_num_to_get_int":           p_imgs_num_to_get_int,
@@ -74,7 +74,7 @@ func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys)
 
 	c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"img","id_str":p_image_id_str}).Count()
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to check if image exists in the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
 			"mongodb_find_error",
 			&map[string]interface{}{"image_id_str":p_image_id_str,},
 			err, "gf_images_lib", p_runtime_sys)

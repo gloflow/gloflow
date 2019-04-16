@@ -163,7 +163,7 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 		//               to the selector document and the result is inserted in the collection
 		_,err := p_runtime_sys.Mongodb_coll.Upsert(bson.M{"t":"domain","name_str":d.Name_str,}, d)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to persist a domain in mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to persist a domain in mongodb",
 				"mongodb_update_error",
 				&map[string]interface{}{"domain_name_str":d.Name_str,},
 				err, "gf_domains_lib", p_runtime_sys)
@@ -185,7 +185,7 @@ func db__get_domains(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain, *gf_core.
 		Sort("-count_int").
 		All(&results_lst)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get all domains",
+		gf_err := gf_core.Mongo__handle_error("failed to get all domains",
 			"mongodb_find_error",
 			nil, err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err

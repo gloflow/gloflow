@@ -254,7 +254,7 @@ func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recen
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err

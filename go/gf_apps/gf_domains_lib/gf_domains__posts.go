@@ -144,7 +144,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get domains posts",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
 			nil,err,"gf_domains_lib",p_runtime_sys)
 		return nil,gf_err

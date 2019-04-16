@@ -42,7 +42,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	}
 	//----------------
 	http.HandleFunc("/a/crawl/image/recent", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

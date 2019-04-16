@@ -137,7 +137,7 @@ func Index__query(p_term_str string,
 
 	err = p_runtime_sys.Mongodb_coll.Insert(query_run)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a index__query_run into mongodb for a elasticsearch index query",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a index__query_run into mongodb for a elasticsearch index query",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"term_str":      p_term_str,
@@ -170,9 +170,9 @@ func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 		gf_err := gf_core.Error__create(err_msg_str,
 			"elasticsearch_add_to_index",
 			&map[string]interface{}{
-				"url_fetch_url_str": p_url_fetch.Url_str,
-				"index_name_str":    index_name_str,
-				"es_record_type_str":es_record_type_str,
+				"url_fetch_url_str":  p_url_fetch.Url_str,
+				"index_name_str":     index_name_str,
+				"es_record_type_str": es_record_type_str,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err

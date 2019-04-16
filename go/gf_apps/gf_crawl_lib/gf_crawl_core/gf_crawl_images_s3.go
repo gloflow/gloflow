@@ -106,16 +106,16 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 	//------------------
 	p_image.S3_stored_bool = true
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":       "crawler_page_img",
-			"hash_str":p_image.Hash_str,
+			"t":        "crawler_page_img",
+			"hash_str": p_image.Hash_str,
 		},
 		bson.M{
-			"$set":bson.M{"s3_stored_bool":true},
+			"$set": bson.M{"s3_stored_bool":true},
 		})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update an crawler_page_img s3_stored flag by its hash",
+		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
 			"mongodb_update_error",
-			&map[string]interface{}{"image_hash_str":p_image.Hash_str,},
+			&map[string]interface{}{"image_hash_str": p_image.Hash_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

@@ -45,7 +45,7 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists
 		} else {
-			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flows_names_lst","origin_url_str"}`,
+			gf_err := gf_core.Mongo__handle_error(`failed to create db index on fields - {"t","flows_names_lst","origin_url_str"}`,
 				"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
 			return gf_err
 		}
@@ -71,7 +71,7 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists
 		} else {
-			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","flow_name_str","origin_url_str"}`,
+			gf_err := gf_core.Mongo__handle_error(`failed to create db index on fields - {"t","flow_name_str","origin_url_str"}`,
 				"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
 			return gf_err
 		}

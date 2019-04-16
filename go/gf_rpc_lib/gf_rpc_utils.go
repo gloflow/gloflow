@@ -101,7 +101,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 
 	err := p_runtime_sys.Mongodb_coll.Insert(run)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert rpc_handler_run",
+		gf_err := gf_core.Mongo__handle_error("failed to insert rpc_handler_run",
             "mongodb_insert_error",
             &map[string]interface{}{"handler_url_str":p_handler_url_str,},
             err,"gf_rpc_lib",p_runtime_sys)
@@ -120,9 +120,9 @@ func Error__in_handler(p_handler_url_path_str string,
 
 	status_str := "ERROR"
 	data_map   := map[string]interface{}{
-		"handler_error_user_msg_str":p_user_msg_str,
-		"gf_error_type_str":         p_gf_err.Type_str,
-		"gf_error_user_msg_str":     p_gf_err.User_msg_str,
+		"handler_error_user_msg_str": p_user_msg_str,
+		"gf_error_type_str":          p_gf_err.Type_str,
+		"gf_error_user_msg_str":      p_gf_err.User_msg_str,
 	}
 	Http_Respond(data_map,status_str,p_resp,p_runtime_sys)
 

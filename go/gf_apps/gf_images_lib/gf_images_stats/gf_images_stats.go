@@ -60,7 +60,7 @@ func stats__image_jobs_errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]in
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get errors of all img_running_job's",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get errors of all img_running_job's",
 			"mongodb_aggregation_error",
 			nil,err,"gf_images_stats",p_runtime_sys)
 		return nil,gf_err
@@ -99,7 +99,7 @@ func stats__completed_image_jobs_runtime_infos(p_runtime_sys *gf_core.Runtime_sy
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get runtime_info of all img_running_job's",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get runtime_info of all img_running_job's",
 			"mongodb_aggregation_error",
 			nil,err,"gf_images_stats",p_runtime_sys)
 		return nil,gf_err

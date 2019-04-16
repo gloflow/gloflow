@@ -134,7 +134,7 @@ func Run_crawler_cycle(p_crawler Gf_crawler,
 
 	err := p_runtime_sys.Mongodb_coll.Insert(cycle_run)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a Crawler_cycle_run in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a Crawler_cycle_run in mongodb",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"cycle_run__id_str":cycle_run__id_str,

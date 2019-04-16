@@ -80,14 +80,14 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
 	}
 	
 	data_map := map[string]interface{}{
-		"crawled_url_fetches_lst":results_lst,
+		"crawled_url_fetches_lst": results_lst,
 	}
 
 	return data_map, nil

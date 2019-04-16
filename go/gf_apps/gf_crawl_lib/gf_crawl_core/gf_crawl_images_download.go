@@ -67,7 +67,7 @@ func images__stage__download_images(p_crawler_name_str string,
 		//              since when users view a page in their browser the browser issues all requests
 		//              for all the images in the page immediatelly. 
 
-		local_image_file_path_str,gf_err := image__download(page_img__pinfo.page_img, p_images_store_local_dir_path_str, p_runtime_sys)
+		local_image_file_path_str, gf_err := image__download(page_img__pinfo.page_img, p_images_store_local_dir_path_str, p_runtime_sys)
 		//------------------
 
 		if gf_err != nil {
@@ -91,9 +91,9 @@ func images__stage__download_images(p_crawler_name_str string,
 			event_type_str := "image_download__http_request__done"
 			msg_str        := "completed downloading an image over HTTP"
 			data_map       := map[string]interface{}{
-				"img_url_str": page_img__pinfo.page_img.Url_str,
-				"start_time_f":start_time_f,
-				"end_time_f":  end_time_f,
+				"img_url_str":  page_img__pinfo.page_img.Url_str,
+				"start_time_f": start_time_f,
+				"end_time_f":   end_time_f,
 			}
 
 			gf_core.Events__send_event(events_id_str,
@@ -149,7 +149,7 @@ func image__download(p_image *Gf_crawler_page_img,
 			"$set":bson.M{"downloaded_bool":true},
 		})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update an crawler_page_img downloaded flag by its hash",
+		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
 			"mongodb_update_error",
 			&map[string]interface{}{"image_hash_str":p_image.Hash_str,},
 			err, "gf_crawl_core", p_runtime_sys)

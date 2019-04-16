@@ -34,7 +34,7 @@ func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
 
 		//add all new tags with the current tags associated with an image,
 		//with possible duplicates existing
-		p_image.Tags_lst = append(p_image.Tags_lst,p_tags_lst...)
+		p_image.Tags_lst = append(p_image.Tags_lst, p_tags_lst...)
 
 		//-----------
 		set := map[string]bool{}
@@ -44,7 +44,7 @@ func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
 		//-----------
 		list_no_duplicates_lst := []string{}
 		for k_str,_ := range set {
-			list_no_duplicates_lst = append(list_no_duplicates_lst,k_str)
+			list_no_duplicates_lst = append(list_no_duplicates_lst, k_str)
 		}
 
 		//eliminate duplicates from the list

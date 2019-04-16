@@ -89,7 +89,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to count objects by days",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			&map[string]interface{}{"obj_type_str":p_obj_type_str,},
 			err, "gf_crawl_stats", p_runtime_sys)

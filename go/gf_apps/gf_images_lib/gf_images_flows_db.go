@@ -156,7 +156,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 				All(&existing_images_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to find images in flow when checking if images exist",
+		gf_err := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"images_extern_urls_lst":p_images_extern_urls_lst,

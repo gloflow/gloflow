@@ -45,7 +45,7 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists
 		} else {
-			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t"}`,
+			gf_err := gf_core.Mongo__handle_error(`failed to create db index on fields - {"t"}`,
 				"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
 			return gf_err
 		}
@@ -65,7 +65,7 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists
 		} else {
-			gf_err := gf_core.Error__create(`failed to create db index on fields - {"t","hash_str"}`,
+			gf_err := gf_core.Mongo__handle_error(`failed to create db index on fields - {"t","hash_str"}`,
 				"mongodb_ensure_index_error", nil, err, "gf_crawl_lib", p_runtime_sys)
 			return gf_err
 		}

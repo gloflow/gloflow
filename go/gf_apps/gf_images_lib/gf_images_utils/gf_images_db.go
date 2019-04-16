@@ -33,7 +33,7 @@ func DB__put_image(p_image *Gf_image,
 	//upsert = True - insert doc if it doesnt exist, else just update
 	_,err := p_runtime_sys.Mongodb_coll.Upsert(bson.M{"t":"img","id_str":p_image.Id_str,},p_image)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update/upsert gf_image in a mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
 			"mongodb_update_error",
 			&map[string]interface{}{"image_id_str":p_image.Id_str,},
 			err,"gf_images_utils",p_runtime_sys)
@@ -52,7 +52,7 @@ func DB__get_image(p_image_id_str string,
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"img","id_str":p_image_id_str}).One(&image)
 
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Error__create("image does not exist in mongodb",
+		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 			"mongodb_not_found_error",
 			&map[string]interface{}{"image_id_str":p_image_id_str,},
 			err,"gf_images_utils",p_runtime_sys)
@@ -60,7 +60,7 @@ func DB__get_image(p_image_id_str string,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get image from mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
 			"mongodb_find_error",
 			&map[string]interface{}{"image_id_str":p_image_id_str,},
 			err,"gf_images_utils",p_runtime_sys)

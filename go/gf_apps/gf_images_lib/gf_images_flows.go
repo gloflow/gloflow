@@ -140,7 +140,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		//ADD!! - log this error
 		db_err := p_runtime_sys.Mongodb_coll.Insert(check)
 		if db_err != nil {
-			_ = gf_core.Error__create("failed to insert a img_exists_check in mongodb",
+			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
 				"mongodb_insert_error",
 				&map[string]interface{}{
 					"images_extern_urls_lst":p_images_extern_urls_lst,
@@ -206,7 +206,7 @@ func create_flow(p_images_flow_name_str string, p_runtime_sys *gf_core.Runtime_s
 
 	err := p_runtime_sys.Mongodb_coll.Insert(*flow)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a image Flow in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"images_flow_name_str":p_images_flow_name_str,

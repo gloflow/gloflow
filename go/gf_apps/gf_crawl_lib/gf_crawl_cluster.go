@@ -78,7 +78,7 @@ func cluster__register_worker(p_ext_worker_name_str string,
 	//DB
 	err := p_runtime_sys.Mongodb_coll.Insert(worker)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"ext_worker_name_str":p_ext_worker_name_str,

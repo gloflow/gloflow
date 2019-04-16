@@ -106,7 +106,7 @@ func user_event__create(p_input *Gf_user_event_input,
 
 	err := p_runtime_sys.Mongodb_coll.Insert(gf_user_event)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a user_event in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a user_event in mongodb",
 			"mongodb_insert_error",
 			&map[string]interface{}{},
 			err, "gf_analytics", p_runtime_sys)

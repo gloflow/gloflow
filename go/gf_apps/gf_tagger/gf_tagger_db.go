@@ -40,7 +40,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 				}).Count()
 
 			if err != nil {
-				gf_err := gf_core.Error__create(fmt.Sprintf("failed to count of posts with tag - %s", p_tag_str),
+				gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to count of posts with tag - %s", p_tag_str),
 					"mongodb_find_error",
 					&map[string]interface{}{
 						"tag_str":        p_tag_str,
@@ -103,7 +103,7 @@ func db__add_post_note(p_note *Gf_note,
 	})
 	
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a gf_post in a mongodb with a new note",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb with a new note",
 			"mongodb_update_error",
 			&map[string]interface{}{
 				"post_title_str":p_post_title_str,
@@ -138,7 +138,7 @@ func db__get_posts_with_tag(p_tag_str string,
 		All(&posts_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create(fmt.Sprintf("failed to get posts with tag - %s", p_tag_str),
+		gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to get posts with tag - %s", p_tag_str),
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"tag_str":       p_tag_str,
@@ -163,7 +163,7 @@ func db__add_tags_to_post(p_post_title_str string,
 		bson.M{"$push":bson.M{"tags_lst":p_tags_lst},
 	})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a gf_post in mongodb with new tags",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in mongodb with new tags",
 			"mongodb_update_error",
 			&map[string]interface{}{
 				"post_title_str":p_post_title_str,
@@ -189,7 +189,7 @@ func db__add_tags_to_image(p_image_id_str string,
 		bson.M{"$push":bson.M{"tags_lst":p_tags_lst},
 	})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a gf_image in mongodb with new tags",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_image in mongodb with new tags",
 			"mongodb_update_error",
 			&map[string]interface{}{
 				"image_id_str":p_image_id_str,

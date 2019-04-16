@@ -102,7 +102,7 @@ func Link__get_unresolved(p_crawler_name_str string,
 	err := query.One(&unresolved_link)
 
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Error__create("unresolved links for gf_crawler were not found in mongodb",
+		gf_err := gf_core.Mongo__handle_error("unresolved links for gf_crawler were not found in mongodb",
 			"mongodb_not_found_error",
 			&map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
@@ -110,7 +110,7 @@ func Link__get_unresolved(p_crawler_name_str string,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get unresolved_link from mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb",
 			"mongodb_find_error",
 			&map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
@@ -205,12 +205,12 @@ func Link__get_db(p_link_id_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf
 
 	var unresolved_link Gf_crawler_page_outgoing_link
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":     "crawler_page_outgoing_link",
-			"id_str":p_link_id_str,
+			"t":      "crawler_page_outgoing_link",
+			"id_str": p_link_id_str,
 		}).One(&unresolved_link)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get crawler_page_outgoing_link by ID from mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_outgoing_link by ID from mongodb",
 			"mongodb_find_error",
 			&map[string]interface{}{"link_id_str":p_link_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
@@ -280,11 +280,11 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":       "crawler_page_outgoing_link",
-			"hash_str":p_link.Hash_str,
+			"t":        "crawler_page_outgoing_link",
+			"hash_str": p_link.Hash_str,
 		}).Count()
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to count crawler_page_outgoing_link by its hash",
+		gf_err := gf_core.Mongo__handle_error("failed to count crawler_page_outgoing_link by its hash",
 			"mongodb_find_error",
 			&map[string]interface{}{"hash_str":p_link.Hash_str,},
 			err, "gf_crawl_core", p_runtime_sys)
@@ -300,7 +300,7 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 		err = p_runtime_sys.Mongodb_coll.Insert(p_link)
 		if err != nil {
 
-			gf_err := gf_core.Error__create("failed to insert a crawler_page_outgoing_link in mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_outgoing_link in mongodb",
 				"mongodb_insert_error",
 				&map[string]interface{}{
 					"link_a_href_str":p_link.A_href_str,
@@ -336,22 +336,22 @@ func link__mark_as_failed(p_error *Gf_crawler_error,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__mark_as_failed()")
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"id_str":p_link.Id_str,
-			"t":     "crawler_page_outgoing_link",
+			"id_str": p_link.Id_str,
+			"t":      "crawler_page_outgoing_link",
 		},
-		bson.M{"$set":bson.M{
-				"error_id_str":  p_error.Id_str,
-				"error_type_str":p_error.Type_str,
+		bson.M{"$set": bson.M{
+				"error_id_str":   p_error.Id_str,
+				"error_type_str": p_error.Type_str,
 			},
 		})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a crawler_page_outgoing_link in mongodb as failed",
+		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as failed",
 			"mongodb_update_error",
 			&map[string]interface{}{
-				"link_id_str":   p_link.Id_str,
-				"error_id_str":  p_error.Id_str,
-				"error_type_str":p_error.Type_str,
+				"link_id_str":    p_link.Id_str,
+				"error_id_str":   p_error.Id_str,
+				"error_type_str": p_error.Type_str,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
@@ -379,13 +379,13 @@ func Link__mark_import_in_progress(p_status_bool bool,
 	//----------------
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-				"id_str":p_link.Id_str,
-				"t":     "crawler_page_outgoing_link",
+				"id_str": p_link.Id_str,
+				"t":      "crawler_page_outgoing_link",
 			},
 			bson.M{"$set":update_map,})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a crawler_page_outgoing_link in mongodb as in_progress/complete",
+		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as in_progress/complete",
 			"mongodb_update_error",
 			&map[string]interface{}{
 				"link_id_str":p_link.Id_str,
@@ -405,23 +405,23 @@ func Link__mark_as_resolved(p_link *Gf_crawler_page_outgoing_link,
 
 	p_link.Fetched_bool = true
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-				"id_str":              p_link.Id_str,
-				"t":                   "crawler_page_outgoing_link",
-				"valid_for_crawl_bool":true,
+				"id_str":               p_link.Id_str,
+				"t":                    "crawler_page_outgoing_link",
+				"valid_for_crawl_bool": true,
 			},
-			bson.M{"$set":bson.M{
-				"fetched_bool":     true,
-				"fetch_last_id_str":p_fetch_id_str,
-				"fetch_last_time_f":p_fetch_creation_time_f,
+			bson.M{"$set": bson.M{
+				"fetched_bool":      true,
+				"fetch_last_id_str": p_fetch_id_str,
+				"fetch_last_time_f": p_fetch_creation_time_f,
 			},
 		})
 	
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update a crawler_page_outgoing_link in mongodb as resolved/fetched",
+		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as resolved/fetched",
 			"mongodb_update_error",
 			&map[string]interface{}{
-				"link_id_str": p_link.Id_str,
-				"fetch_id_str":p_fetch_id_str,
+				"link_id_str":  p_link.Id_str,
+				"fetch_id_str": p_fetch_id_str,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err

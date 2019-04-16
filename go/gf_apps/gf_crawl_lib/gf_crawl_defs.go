@@ -23,9 +23,9 @@ package gf_crawl_lib
 func Get_all_crawlers() map[string]Gf_crawler {
 
 	crawlers_map := map[string]Gf_crawler{
-		"gloflow.com":Gf_crawler{
-			Name_str:     "gloflow.com",
-			Start_url_str:"http://gloflow.com/",
+		"gloflow.com": Gf_crawler{
+			Name_str:      "gloflow.com",
+			Start_url_str: "http://gloflow.com/",
 		},
 	}
 	return crawlers_map

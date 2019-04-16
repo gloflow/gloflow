@@ -81,7 +81,7 @@ func gif_db__create(p_image_source_url_str string,
 
 	err = p_runtime_sys.Mongodb_coll.Insert(gif)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to insert a GIF in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to insert a GIF in mongodb",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"image_source_url_str":     p_image_source_url_str,
@@ -106,7 +106,7 @@ func gif_db__delete(p_id_str string,
 		})
 	
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to mark a GIF as deleted in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF as deleted in mongodb",
 			"mongodb_update_error",
 			&map[string]interface{}{"gif_id_str":p_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
@@ -121,16 +121,16 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 
 	var gif Gf_gif
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":                  "gif",
-			"deleted_bool":       false,
-			"gf_image_id_str":    p_gf_img_id_str,
-			"title_str":          bson.M{"$exists":true,},
-			"origin_page_url_str":bson.M{"$exists":true,},
-			"tags_lst":           bson.M{"$exists":true,},
+			"t":                   "gif",
+			"deleted_bool":        false,
+			"gf_image_id_str":     p_gf_img_id_str,
+			"title_str":           bson.M{"$exists":true,},
+			"origin_page_url_str": bson.M{"$exists":true,},
+			"tags_lst":            bson.M{"$exists":true,},
 		}).One(&gif)
 
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Error__create("GIF with gf_img_id_str not found",
+		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
 			&map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
@@ -138,7 +138,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Error__create("GIF with gf_img_id_str failed the DB find operation",
+		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str failed the DB find operation",
 			"mongodb_find_error",
 			&map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
@@ -156,27 +156,27 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 
 	var gif Gf_gif
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":                  "gif",
-			"deleted_bool":       false,
-			"origin_url_str":     p_origin_url_str,
-			"title_str":          bson.M{"$exists":true,},
-			"origin_page_url_str":bson.M{"$exists":true,},
-			"tags_lst":           bson.M{"$exists":true,},
+			"t":                   "gif",
+			"deleted_bool":        false,
+			"origin_url_str":      p_origin_url_str,
+			"title_str":           bson.M{"$exists":true,},
+			"origin_page_url_str": bson.M{"$exists":true,},
+			"tags_lst":            bson.M{"$exists":true,},
 		}).One(&gif)
 
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Error__create("GIF with origin_url_str not found",
+		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str not found",
 			"mongodb_not_found_error",
-			&map[string]interface{}{"origin_url_str":p_origin_url_str,},
-			err,"gf_gif_lib",p_runtime_sys)
+			&map[string]interface{}{"origin_url_str": p_origin_url_str,},
+			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
 	}
 
 	if err != nil {
-		gf_err := gf_core.Error__create("GIF with origin_url_str failed the DB find operation",
+		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str failed the DB find operation",
 			"mongodb_find_error",
-			&map[string]interface{}{"origin_url_str":p_origin_url_str,},
-			err,"gf_gif_lib",p_runtime_sys)
+			&map[string]interface{}{"origin_url_str": p_origin_url_str,},
+			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -192,12 +192,12 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 
 	//descending - true - sort the latest items first
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":                     "gif",
-			"valid_bool":            true,
-			"preview_frames_num_int":bson.M{"$gte":0},
-			"title_str":             bson.M{"$exists":true,},
-			"origin_page_url_str":   bson.M{"$exists":true,},
-			"tags_lst":              bson.M{"$exists":true,},
+			"t":                      "gif",
+			"valid_bool":             true,
+			"preview_frames_num_int": bson.M{"$gte":0},
+			"title_str":              bson.M{"$exists":true,},
+			"origin_page_url_str":    bson.M{"$exists":true,},
+			"tags_lst":               bson.M{"$exists":true,},
 		}).
 		Sort("-creation_unix_time_f"). //descending:true
 		Skip(p_cursor_start_position_int).
@@ -205,7 +205,7 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 		All(&gifs_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("GIFs pages failed to be retreived",
+		gf_err := gf_core.Mongo__handle_error("GIFs pages failed to be retreived",
 			"mongodb_find_error",
 			&map[string]interface{}{
 				"cursor_start_position_int":p_cursor_start_position_int,
@@ -223,18 +223,18 @@ func gif_db__update_image_id(p_gif_id_str string,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":     "gif",
-			"id_str":p_gif_id_str,
+			"t":      "gif",
+			"id_str": p_gif_id_str,
 		},
 		bson.M{"$set":bson.M{"gf_image_id_str":p_image_id_str,},})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to mark a GIF's gf_image_id_str in mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF's gf_image_id_str in mongodb",
 			"mongodb_update_error",
 			&map[string]interface{}{
-				"gif_id_str":  p_gif_id_str,
-				"image_id_str":p_image_id_str,
+				"gif_id_str":   p_gif_id_str,
+				"image_id_str": p_image_id_str,
 			},
-			err,"gf_gif_lib",p_runtime_sys)
+			err, "gf_gif_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil

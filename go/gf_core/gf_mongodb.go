@@ -28,6 +28,49 @@ import (
 	"os/exec"
 	"github.com/globalsign/mgo"
 )
+
+//--------------------------------------------------------------------
+func Mongo__handle_error(p_user_msg_str string,
+	p_error_type_str     string,
+	p_error_data_map     *map[string]interface{},
+	p_error              error,
+	p_subsystem_name_str string,
+	p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_mongodb.Mongo__handle_error()")
+
+	gf_error := Error__create_with_hook(p_user_msg_str,
+		p_error_type_str,
+		p_error_data_map,
+		p_error,
+		p_subsystem_name_str,
+		func(p_gf_error *Gf_error) map[string]interface{} {
+
+			gf_error_str := fmt.Sprint(p_gf_error)
+
+			//IMPORTANT!! - "mgo" had behavior where after the connection was reset by mongod server,
+			//              it (mgo) wouldnt reconnect to that server. so this hack is applied where the entire service
+			//              is restarted so that a fresh DB connection is established
+			
+			if strings.Contains(gf_error_str, "connection reset by peer") {
+				os.Exit(1)
+			}
+
+			//IMPORTANT!! - "mgo" specific error, where after a broken connection gets re-established the session object
+			//              is still kept in an error state. to get out of this error state session.Refresh() can be called,
+			//              but this might lead to inconsistencies if a signle session object is shared among multiple go-routines
+			//              that might be in the middle of queries.
+			//              conservative approach is taken here and error recovery is not attempted, instead the whole service
+			//              is restarted. 
+			if gf_error_str == "EOF" || gf_error_str == "Closed explicitly" {
+				os.Exit(1)
+			}
+
+			return nil
+		},
+		p_runtime_sys)
+	return gf_error
+}
+
 //--------------------------------------------------------------------
 func Mongo__start(p_mongodb_bin_path_str string,
 	p_mongodb_port_str          int,
@@ -35,27 +78,27 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	p_mongodb_log_file_path_str string,
 	p_sudo_bool                 bool,
 	p_log_fun                   func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_mongodb.Mongo__start()")
-	p_log_fun("INFO"     ,"p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
-	p_log_fun("INFO"     ,"p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
+	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__start()")
+	p_log_fun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
+	p_log_fun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
 
 
 	if _,err := os.Stat(p_mongodb_log_file_path_str); os.IsNotExist(err) {
-		p_log_fun("ERROR","supplied log_file path is not a file - "+p_mongodb_log_file_path_str)
+		p_log_fun("ERROR", "supplied log_file path is not a file - "+p_mongodb_log_file_path_str)
 		return err
 	}
 
-	p_log_fun("INFO","-----------------------------------------")
-	p_log_fun("INFO","--------- STARTING - MONGODB ------------")
-	p_log_fun("INFO","-----------------------------------------")
-	p_log_fun("INFO","p_mongodb_bin_path_str      - "+p_mongodb_bin_path_str)
-	p_log_fun("INFO","p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
-	p_log_fun("INFO","p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
+	p_log_fun("INFO", "-----------------------------------------")
+	p_log_fun("INFO", "--------- STARTING - MONGODB ------------")
+	p_log_fun("INFO", "-----------------------------------------")
+	p_log_fun("INFO", "p_mongodb_bin_path_str      - "+p_mongodb_bin_path_str)
+	p_log_fun("INFO", "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
+	p_log_fun("INFO", "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
 
 	args_lst := []string{
 		"--fork",            //start the server as a deamon
-		fmt.Sprintf("--dbpath %s" ,p_mongodb_data_dir_path_str),
-		fmt.Sprintf("--logpath %s",p_mongodb_log_file_path_str),
+		fmt.Sprintf("--dbpath %s",  p_mongodb_data_dir_path_str),
+		fmt.Sprintf("--logpath %s", p_mongodb_log_file_path_str),
 
 		"--port "+fmt.Sprint(p_mongodb_port_str),
 		"--rest",            //turn on REST http API interface
@@ -67,26 +110,27 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	var cmd *exec.Cmd
 	if p_sudo_bool {
 		new_args_lst := []string{p_mongodb_bin_path_str,}
-		new_args_lst  = append(new_args_lst,args_lst...)
+		new_args_lst  = append(new_args_lst, args_lst...)
 
-		cmd = exec.Command("sudo",new_args_lst...)
+		cmd = exec.Command("sudo", new_args_lst...)
 	} else {
 		//cmd = exec.Command("/usr/bin/mongod") //fmt.Sprintf("'%s'",strings.Join(args_lst," ")),"&")
-		cmd = exec.Command(p_mongodb_bin_path_str,args_lst...)
+		cmd = exec.Command(p_mongodb_bin_path_str, args_lst...)
 	}
 
-	p_log_fun("INFO","cmd - "+strings.Join(cmd.Args," "))
+	p_log_fun("INFO", "cmd - "+strings.Join(cmd.Args, " "))
 	cmd.Start()
 
 	return nil
 }
+
 //-------------------------------------------------
 func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
-	p_log_fun             func(string,string)) *mgo.Database {
-	p_log_fun("FUN_ENTER","gf_mongodb.Mongo__connect()")
-	p_log_fun("INFO"     ,"p_mongodb_host_str    - "+p_mongodb_host_str)
-	p_log_fun("INFO"     ,"p_mongodb_db_name_str - "+p_mongodb_db_name_str)
+	p_log_fun             func(string, string)) *mgo.Database {
+	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
+	p_log_fun("INFO",      "p_mongodb_host_str    - "+p_mongodb_host_str)
+	p_log_fun("INFO",      "p_mongodb_db_name_str - "+p_mongodb_db_name_str)
 	
 	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
 	if err != nil {
@@ -107,22 +151,23 @@ func Mongo__connect(p_mongodb_host_str string,
 	db := session.DB(p_mongodb_db_name_str)
 	return db
 }
+
 //-------------------------------------------------
 func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
-	p_log_fun func(string,string)) ([]map[string]interface{},error) {
+	p_log_fun func(string, string)) ([]map[string]interface{}, error) {
 	//p_log_fun("FUN_ENTER","gf_mongodb.Mongo__get_rs_members_info()")
 	//p_log_fun("INFO"     ,p_mongodb_primary_host_str)
 
 	mongo_client__cmd_str := fmt.Sprintf("mongo --host %s --quiet --eval 'JSON.stringify(rs.status())'", p_mongodb_primary_host_str)
 
-	out, err := exec.Command("sh","-c",mongo_client__cmd_str).Output()
+	out, err := exec.Command("sh", "-c",mongo_client__cmd_str).Output()
 
 	//---------------
 	//JSON
 	var i map[string]interface{}
     err = json.Unmarshal([]byte(out), &i)
     if err != nil {
-    	return nil,err
+    	return nil, err
     }
     //---------------
 
@@ -137,8 +182,8 @@ func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 			"uptime_int":    m["uptime"].(int),
 		}
 
-		rs_members_info_lst = append(rs_members_info_lst,member_info_map)
+		rs_members_info_lst = append(rs_members_info_lst, member_info_map)
 	}
 
-	return rs_members_info_lst,nil
+	return rs_members_info_lst, nil
 }

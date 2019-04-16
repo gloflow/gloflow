@@ -122,14 +122,14 @@ func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *g
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get GIF's (crawler_page_img) by domain",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get GIF's (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{
-		"crawled_gifs_lst":results_lst,
+		"crawled_gifs_lst": results_lst,
 	}
 	return data_map, nil
 }
@@ -143,26 +143,26 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 			},
 		},
 		bson.M{"$project":bson.M{
-				"id_str":              true,
-				"creation_unix_time_f":true,
-				"cycle_run_id_str":    true,
-				"domain_str":          true,
-				"url_str":             true,
-				"origin_url_str":      true, //page url from whos html this element was extracted
-				"downloaded_bool":     true,
-				"valid_for_usage_bool":true,
-				"s3_stored_bool":      true,
+				"id_str":               true,
+				"creation_unix_time_f": true,
+				"cycle_run_id_str":     true,
+				"domain_str":           true,
+				"url_str":              true,
+				"origin_url_str":       true, //page url from whos html this element was extracted
+				"downloaded_bool":      true,
+				"valid_for_usage_bool": true,
+				"s3_stored_bool":       true,
 			},
 		},
 		bson.M{"$group":bson.M{
-				"_id":                    "$domain_str",
-				"imgs_count_int":         bson.M{"$sum"     :1},
-				"creation_unix_times_lst":bson.M{"$push"    :"$creation_unix_time_f"},
-				"urls_lst":               bson.M{"$push"    :"$url_str"},
-				"origin_urls_lst":        bson.M{"$addToSet":"$origin_url_str"},
-				"downloaded_lst":         bson.M{"$push"    :"$downloaded_bool"},
-				"valid_for_usage_lst":    bson.M{"$push"    :"$valid_for_usage_bool"},
-				"s3_stored_lst":          bson.M{"$push"    :"$s3_stored_bool"},
+				"_id":                     "$domain_str",
+				"imgs_count_int":          bson.M{"$sum"     :1},
+				"creation_unix_times_lst": bson.M{"$push"    :"$creation_unix_time_f"},
+				"urls_lst":                bson.M{"$push"    :"$url_str"},
+				"origin_urls_lst":         bson.M{"$addToSet":"$origin_url_str"},
+				"downloaded_lst":          bson.M{"$push"    :"$downloaded_bool"},
+				"valid_for_usage_lst":     bson.M{"$push"    :"$valid_for_usage_bool"},
+				"s3_stored_lst":           bson.M{"$push"    :"$s3_stored_bool"},
 			},
 		},
 		/*bson.M{"$group":bson.M{
@@ -171,8 +171,8 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 				""
 			},
 		},*/
-		bson.M{"$sort":bson.M{
-				"imgs_count_int":-1,
+		bson.M{"$sort": bson.M{
+				"imgs_count_int": -1,
 			},
 		},
 	})
@@ -181,14 +181,14 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to run an aggregation pipeline to get crawler_page_imgs by domain",
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawler_page_imgs by domain",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{
-		"crawled_images_domains_lst":results_lst,
+		"crawled_images_domains_lst": results_lst,
 	}
 	return data_map, nil
 }

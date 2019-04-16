@@ -42,7 +42,7 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 				"hash_str": p_img.Hash_str,
 			}).Count()
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to count the number of crawler_page_img's in mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img's in mongodb",
 				"mongodb_find_error",
 				&map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
@@ -64,7 +64,7 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
 			err = p_runtime_sys.Mongodb_coll.Insert(p_img)
 			if err != nil {
-				gf_err := gf_core.Error__create("failed to insert a crawler_page_img in mongodb",
+				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img in mongodb",
 					"mongodb_insert_error",
 					&map[string]interface{}{
 						"img_ref_url_str":             p_img.Url_str,
@@ -101,7 +101,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 				"hash_str":p_img_ref.Hash_str,
 			}).Count()
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to count the number of crawler_page_img_ref's in mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img_ref's in mongodb",
 				"mongodb_find_error",
 				&map[string]interface{}{
 					"img_ref_url_str":             p_img_ref.Url_str,
@@ -119,7 +119,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
 			err = p_runtime_sys.Mongodb_coll.Insert(p_img_ref)
 			if err != nil {
-				gf_err := gf_core.Error__create("failed to insert a crawler_page_img_ref in mongodb",
+				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img_ref in mongodb",
 					"mongodb_insert_error",
 					&map[string]interface{}{
 						"img_ref_url_str":            p_img_ref.Url_str,
@@ -147,7 +147,7 @@ func image__db_get(p_id_str string,
 			"id_str":p_id_str,
 		}).One(&img)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get crawler_page_img by ID from mongodb",
+		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_img by ID from mongodb",
 			"mongodb_find_error",
 			&map[string]interface{}{"id_str":p_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)

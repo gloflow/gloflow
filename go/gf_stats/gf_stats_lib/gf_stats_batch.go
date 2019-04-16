@@ -58,10 +58,7 @@ func batch__init_handlers(p_stats_url_base_str string,
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run(url_str,
-									start_time__unix_f,
-									end_time__unix_f,
-									p_runtime_sys)
+				gf_rpc_lib.Store_rpc_handler_run(url_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
 	})

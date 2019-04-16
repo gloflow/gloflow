@@ -128,11 +128,11 @@ func Process(p_image_source_url_str string,
 	
 	//-------------
 	//FETCH
-	local_image_file_path_str,f_gf_err := gf_images_utils.Fetch_image(p_image_source_url_str,
+	local_image_file_path_str, f_gf_err := gf_images_utils.Fetch_image(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_runtime_sys)
 	if f_gf_err != nil {
-		return nil,"",f_gf_err
+		return nil, "", f_gf_err
 	}
 	//-----------------------
 	//IMPORTANT!! - save first N frames of the GIF, to be uploaded to S3, and 
@@ -141,13 +141,13 @@ func Process(p_image_source_url_str string,
 	//              (to save on bandwidth and download the full GIF only when the 
 	//              user explicitly wants to view the full version)
 
-	frames_num_int,frames_s3_urls_lst,var_gf_err,frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
+	frames_num_int,frames_s3_urls_lst, var_gf_err, frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_s3_bucket_name_str,
 		p_s3_info,
 		p_runtime_sys)
 	if var_gf_err != nil {
-		return nil,"",var_gf_err
+		return nil, "", var_gf_err
 	}
 
 
@@ -156,19 +156,19 @@ func Process(p_image_source_url_str string,
 
 			//FIX!! - return all errors to the user, to know exactly which frames failed, 
 			//        even though most likely all frames failed.
-			return nil,"",frame_gf_err
+			return nil, "", frame_gf_err
 		}
 	}
 
 	//-----------------------
 	//GIF_GET_DIMENSIONS
-	img_width_int,img_height_int,gf_err := gif__get_dimensions(local_image_file_path_str,p_runtime_sys)
+	img_width_int, img_height_int, gf_err := gif__get_dimensions(local_image_file_path_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 	//-----------------------
 	//GIF_OBJ_CREATE
-	gif,gf_err := gif_db__create(p_image_source_url_str,
+	gif, gf_err := gif_db__create(p_image_source_url_str,
 		p_image_origin_page_url_str,
 		img_width_int,
 		img_height_int,
@@ -176,7 +176,7 @@ func Process(p_image_source_url_str string,
 		frames_s3_urls_lst,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,"",gf_err
+		return nil, "", gf_err
 	}
 	//-----------------------
 	//IMAGE_CREATE

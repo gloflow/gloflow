@@ -30,21 +30,42 @@ import (
 
 //-------------------------------------------------
 type Gf_error struct {
-	Id                   bson.ObjectId           `bson:"_id,omitempty"`
-	Id_str               string                  `bson:"id_str"` 
-	T_str                string                  `bson:"t"`                    //"gf_error"
-	Creation_unix_time_f float64                 `bson:"creation_unix_time_f"`
-	Type_str             string                  `bson:"type_str"`
-	User_msg_str         string                  `bson:"user_msg_str"`
-	Data_map             *map[string]interface{} `bson:"data_map"`
-	Descr_str            string                  `bson:"descr_str"`
-	Error                error                   `bson:"error"`
-	Service_name_str     string                  `bson:"service_name_str"`
-	Subsystem_name_str   string                  `bson:"subsystem_name_str"`   //major portion of functionality, a particular package, or a logical group of functions
-	Stack_trace_str      string                  `bson:"stack_trace_str"`
-	Function_name_str    string                  `bson:"func_name_str"`
-	File_str             string                  `bson:"file_str"`
-	Line_num_int         int                     `bson:"line_num_int"`
+	Id                   bson.ObjectId          `bson:"_id,omitempty"`
+	Id_str               string                 `bson:"id_str"` 
+	T_str                string                 `bson:"t"`                    //"gf_error"
+	Creation_unix_time_f float64                `bson:"creation_unix_time_f"`
+	Type_str             string                 `bson:"type_str"`
+	User_msg_str         string                 `bson:"user_msg_str"`
+	Data_map             map[string]interface{} `bson:"data_map"`
+	Descr_str            string                 `bson:"descr_str"`
+	Error                error                  `bson:"error"`
+	Service_name_str     string                 `bson:"service_name_str"`
+	Subsystem_name_str   string                 `bson:"subsystem_name_str"`   //major portion of functionality, a particular package, or a logical group of functions
+	Stack_trace_str      string                 `bson:"stack_trace_str"`
+	Function_name_str    string                 `bson:"func_name_str"`
+	File_str             string                 `bson:"file_str"`
+	Line_num_int         int                    `bson:"line_num_int"`
+}
+
+//-------------------------------------------------
+func Error__create_with_hook(p_user_msg_str string,
+	p_error_type_str     string,
+	p_error_data_map     *map[string]interface{},
+	p_error              error,
+	p_subsystem_name_str string,
+	p_hook_fun           func(*Gf_error) map[string]interface{},
+	p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_error.Error__create_with_hook()")
+
+	gf_error := Error__create(p_user_msg_str,
+		p_error_type_str,
+		p_error_data_map,
+		p_error,
+		p_subsystem_name_str,
+		p_runtime_sys)
+
+	p_hook_fun(gf_error)
+	return gf_error
 }
 
 //-------------------------------------------------
@@ -76,11 +97,11 @@ func Error__create(p_user_msg_str string,
 	//--------------------
 	//VIEW
 	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
-				p_error_type_str,
-				p_runtime_sys.Service_name_str,
-				p_subsystem_name_str,
-				function_name_str,
-				p_user_msg_str))
+		p_error_type_str,
+		p_runtime_sys.Service_name_str,
+		p_subsystem_name_str,
+		function_name_str,
+		p_user_msg_str))
 	//--------------------
 	//ERROR_DEF
 
@@ -93,20 +114,20 @@ func Error__create(p_user_msg_str string,
 
 
 	gf_error := Gf_error{
-		Id_str:              id_str,
-		T_str:               "gf_error",
-		Creation_unix_time_f:creation_unix_time_f,
-		Type_str:            p_error_type_str,
-		User_msg_str:        p_user_msg_str,
-		Data_map:            p_error_data_map,
-		Descr_str:           error_def.Descr_str,
-		Error:               p_error,
-		Service_name_str:    p_runtime_sys.Service_name_str,
-		Subsystem_name_str:  p_subsystem_name_str,
-		Stack_trace_str:     stack_trace_str,
-		Function_name_str:   function_name_str,
-		File_str:            file_str,
-		Line_num_int:        line_num_int,
+		Id_str:               id_str,
+		T_str:                "gf_error",
+		Creation_unix_time_f: creation_unix_time_f,
+		Type_str:             p_error_type_str,
+		User_msg_str:         p_user_msg_str,
+		Data_map:             *p_error_data_map,
+		Descr_str:            error_def.Descr_str,
+		Error:                p_error,
+		Service_name_str:     p_runtime_sys.Service_name_str,
+		Subsystem_name_str:   p_subsystem_name_str,
+		Stack_trace_str:      stack_trace_str,
+		Function_name_str:    function_name_str,
+		File_str:             file_str,
+		Line_num_int:         line_num_int,
 	}
 
 	fmt.Println("")

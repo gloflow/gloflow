@@ -100,7 +100,7 @@ def main():
         #everything needed by this Go package into a single binary.
         go_build(True)
         
-	    web_meta_map = gf_web_meta.get()
+        web_meta_map = gf_web_meta.get()
 
         gf_containers.build(app_name_str, 
             build_meta_map,

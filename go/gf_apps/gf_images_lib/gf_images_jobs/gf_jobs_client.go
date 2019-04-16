@@ -77,7 +77,7 @@ func Job__start(p_client_type_str string,
 
 	db_err := p_runtime_sys.Mongodb_coll.Insert(running_job)
 	if db_err != nil {
-		gf_err := gf_core.Error__create("failed to create a Running_job record in the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
 			"mongodb_insert_error",
 			&map[string]interface{}{
 				"client_type_str":      p_client_type_str,

@@ -86,7 +86,7 @@ func job_error__persist(p_job_id_str string,
 		})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to update img_running_job type document in mongodb, to add a job error",
+		gf_err := gf_core.Mongo__handle_error("failed to update img_running_job type document in mongodb, to add a job error",
 			"mongodb_update_error",
 			&map[string]interface{}{
 				"job_id_str":          p_job_id_str,

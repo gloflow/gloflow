@@ -158,7 +158,7 @@ func Download_file(p_image_url_str string,
 
 		err := p_runtime_sys.Mongodb_coll.Insert(fetch_error)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to insert a Image_fetch__error into mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to insert a Image_fetch__error into mongodb",
 				"mongodb_insert_error",
 				&map[string]interface{}{
 					"image_url_str":            p_image_url_str,
