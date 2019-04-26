@@ -46,7 +46,7 @@ $(document).ready(()=>{
 
 	//----------------------
 	//IMPORTANT!! - wait for all images in the page to load first
-	$(window).on("load",()=>{
+	$(window).on("load", ()=>{
 		gf_calc.run(log_fun);
 	});
 	//----------------------
@@ -60,7 +60,7 @@ export function init_remote(p_log_fun) {
 	function remote_register_user_email(p_inputed_email_str :string,
 		p_on_complete_fun,
 		p_log_fun) {
-		p_log_fun('FUN_ENTER','gf_landing_page.init_remote().remote_register_user_email()');
+		p_log_fun('FUN_ENTER', 'gf_landing_page.init_remote().remote_register_user_email()');
 		
 		const url_str       = '/landing/register_invite_email';
 		const data_args_map = {
@@ -73,7 +73,7 @@ export function init_remote(p_log_fun) {
 			'data':        JSON.stringify(data_args_map),
 			'contentType': 'application/json',
 			'success':     (p_data_map)=>{
-	     		p_on_complete_fun('success',p_data_map);
+	     		p_on_complete_fun('success', p_data_map);
 			}
 		});
 	}
@@ -101,9 +101,9 @@ function init(p_register_user_email_fun, p_log_fun) {
 	});
 	//--------------------------------------------------------
 	function init_posts_img_num() {
-		p_log_fun('FUN_ENTER','gf_landing_page.init().init_posts_img_num()');
+		p_log_fun('FUN_ENTER', 'gf_landing_page.init().init_posts_img_num()');
 
-		$('#featured_posts .post_info').each((p_i,p_post)=>{
+		$('#featured_posts .post_info').each((p_i, p_post)=>{
 
 			const post_images_number = $(p_post).find('.post_images_number')[0];
 			const label_element      = $(post_images_number).find('.label');

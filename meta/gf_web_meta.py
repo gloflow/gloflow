@@ -329,7 +329,7 @@ def get():
 			'pages_map':{
 				'gf_landing_page':{
 					'build_dir_str':      '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
-					'main_html_path_str': '%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str),
+					'main_html_path_str': '%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html'%(cwd_str),
 					'url_base_str':       '/landing/static',
 					# 'type_str':      'ts',
 					# 'ts':{

@@ -33,7 +33,7 @@ export function init(p_log_fun) {
 //           to use universaly gf_images/gf_landing_page
 
 function init_image_viewer(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images.init_image_viewer()');
+	p_log_fun('FUN_ENTER', 'gf_images.init_image_viewer()');
 
 	const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 	const image_view           = $(`
@@ -60,7 +60,7 @@ function init_image_viewer(p_image_element, p_log_fun) {
 		$("body").css("overflow","hidden");
 		//----------------------
 		const image_detail = $(image_view).find('#image_detail');
-		$(image_detail).css("position","absolute");
+		$(image_detail).css("position", "absolute");
 	    $(image_detail).css("top",  Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop())  + "px");
 	    $(image_detail).css("left", Math.max(0, (($(window).width()  - $(image_detail).outerWidth()) / 2)  + $(window).scrollLeft()) + "px");
 	    //----------------------

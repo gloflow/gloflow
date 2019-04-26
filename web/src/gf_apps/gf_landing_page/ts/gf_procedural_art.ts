@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //--------------------------------------------------------
 export function init(p_log_fun) :HTMLCanvasElement {
-	p_log_fun('FUN_ENTER','gf_landing_page.init()');
+	p_log_fun('FUN_ENTER','gf_procedural_art.init()');
 
 	//final CanvasElement canvas = new CanvasElement();
 	const canvas = <HTMLCanvasElement> $('#randomized_art #randomized_canvas')[0];
@@ -141,9 +141,7 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 		//previously drawn on the canvas
 		ctx.lineWidth   = 1;
 		ctx.strokeStyle = "rgba(184,86,40,255)";
-		ctx.strokeRect(0,0,
-			p_width_int,
-			p_height_int);
+		ctx.strokeRect(0, 0, p_width_int, p_height_int);
 	}
 	//-------------------------------------------------
 	function get_random_color() :string {

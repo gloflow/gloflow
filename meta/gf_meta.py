@@ -104,7 +104,7 @@ def get():
             #MAIN
             #GF_LANDING_PAGE
             'gf_landing_page':{
-                'version_str':          '0.8.0.4',
+                'version_str':          '0.8.0.11',
                 'go_path_str':          '%s/../go/gf_apps/gf_landing_page'%(cwd_str),
                 'go_output_path_str':   '%s/../build/gf_apps/gf_landing_page/gf_landing_page_service'%(cwd_str),
                 'service_name_str':     'gf_landing_page_service',

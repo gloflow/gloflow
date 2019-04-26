@@ -30,7 +30,7 @@ export function run(p_log_fun) {
 
 	//------------------------
 	//FEATURED_POSTS IMAGES
-	$.each($('#featured_posts .post_image img'),(i,p_img)=>{
+	$.each($('#featured_posts .post_image img'),(i, p_img)=>{
 
 		const browser_run__job_result_map = process_image(p_img);
 		const hex_color_str               = browser_run__job_result_map['c'];
@@ -41,7 +41,7 @@ export function run(p_log_fun) {
 
 		const parent_div           = $(p_img).parent().parent()[0];
 		const img_dominant_color_e = $('<div class="img_dominant_color"><div class="color"></div></div>');
-		$(img_dominant_color_e).find('.color').css('background-color','#'+hex_color_str);
+		$(img_dominant_color_e).find('.color').css('background-color', '#'+hex_color_str);
 
 		$(parent_div).append(img_dominant_color_e);
 		//-------------------
