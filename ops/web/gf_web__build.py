@@ -27,7 +27,7 @@ import gf_cli_utils as gf_u
 
 #---------------------------------------------------
 def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
-	p_log_fun("FUN_ENTER","gf_web__build.build()")
+	p_log_fun("FUN_ENTER", "gf_web__build.build()")
 	assert isinstance(p_apps_names_lst, list)
 	assert len(p_apps_names_lst) > 0
 	assert isinstance(p_apps_meta_map, dict)
@@ -37,7 +37,7 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 		#-----------------
 		#META
 		if not p_apps_meta_map.has_key(app_str):
-			p_log_fun("ERROR","supplied app (%s) does not exist in gf_web_meta"%(app_str))
+			p_log_fun("ERROR", "supplied app (%s) does not exist in gf_web_meta"%(app_str))
 			return
 
 		app_map = p_apps_meta_map[app_str]

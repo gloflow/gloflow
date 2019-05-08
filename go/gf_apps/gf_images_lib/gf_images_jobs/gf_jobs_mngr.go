@@ -175,7 +175,7 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update an img_running_job in the DB, as complete and its end_time",
 			"mongodb_update_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"job_id_str":    p_job_id_str,
 				"job_end_time_f":job_end_time_f,
 			},

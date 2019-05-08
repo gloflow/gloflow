@@ -1,33 +1,33 @@
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
-<title>gloflow.com - the universe of creativity and art</title>
-<meta name="description" content="platform for media (image, video, sound) usage and editing, creation and sharing of culture">
-<meta name="revisit-after" content="1 days">
-{{- /*-----------------------------------------------------*/}}
-<!-- directs fb to use the specified image when the page is shared -->
-<meta property="og:image" content="data/gf_landingpage_5.png"/> 
-<meta property="og:title" content="gloflow - a parallel space for artistic expression"/>
+	<title>gloflow.com - the universe of creativity and art</title>
+	<meta name="description" content="platform for media (image, video, sound) usage and editing, creation and sharing of culture">
+	<meta name="revisit-after" content="1 days">
+	{{- /*-----------------------------------------------------*/}}
+	<!-- directs fb to use the specified image when the page is shared -->
+	<meta property="og:image" content="data/gf_landingpage_5.png"/> 
+	<meta property="og:title" content="gloflow - a parallel space for artistic expression"/>
 
-<!-- canonical address  -->
-<meta property="og:url"       content="YOUR_SITE_URL"/>
-<meta property="og:site_name" content="YOUR_SITE_NAME"/>
+	<!-- canonical address  -->
+	<meta property="og:url"       content="YOUR_SITE_URL"/>
+	<meta property="og:site_name" content="YOUR_SITE_NAME"/>
 
-<meta property="og:type" content="photos"/>
-<meta property="og:type" content="videos"/>
-<meta property="og:type" content="culture"/>
-<meta property="og:type" content="art"/>
-<meta property="og:type" content="architecture"/>
-<meta property="og:type" content="design"/>
-<meta property="og:type" content="photography"/>
-<meta property="og:type" content="fashion"/>
-<meta property="og:type" content="music"/>
-<meta property="og:type" content="vr"/>
-{{- /*-----------------------------------------------------*/}}
-<link rel="stylesheet" type="text/css" href="./../../css/gf_landing_page.css">
-<link rel="stylesheet" type="text/css" href="./../../css/images.css">
-<link rel="stylesheet" type="text/css" href="./../../css/posts.css">
-<link rel="stylesheet" type="text/css" href="./../../css/domains.css">
-
+	<meta property="og:type" content="photos"/>
+	<meta property="og:type" content="videos"/>
+	<meta property="og:type" content="culture"/>
+	<meta property="og:type" content="art"/>
+	<meta property="og:type" content="architecture"/>
+	<meta property="og:type" content="design"/>
+	<meta property="og:type" content="photography"/>
+	<meta property="og:type" content="fashion"/>
+	<meta property="og:type" content="music"/>
+	<meta property="og:type" content="vr"/>
+	{{- /*-----------------------------------------------------*/}}
+	<link rel="stylesheet" type="text/css" href="./../../css/gf_landing_page.css">
+	<link rel="stylesheet" type="text/css" href="./../../css/images.css">
+	<link rel="stylesheet" type="text/css" href="./../../css/posts.css">
+	<link rel="stylesheet" type="text/css" href="./../../css/domains.css">
 </head>
 <body>
 	{{- /*-----------------------------------------------------*/}}
@@ -122,29 +122,29 @@
 		</div>
 		{{- /*-----------------------------------------------------*/}}
 	</div>
-{{- /*------------------------------------------------------*/}}
-<div id='sys_release_info'>
-	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
-	<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
-	<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
-</div>
-{{- /*-----------------------------------------------------*/}}
-<script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
-<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
+	{{- /*------------------------------------------------------*/}}
+	<div id='sys_release_info'>
+		<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
+		<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
+		<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
+	</div>
+	{{- /*-----------------------------------------------------*/}}
+	<script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
+	<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
 
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="./../../../../../libs/js/jquery.timeago.js"></script>
-<script type="text/javascript" src="./../../../../../libs/js/color-thief.min.js"></script>
-<script type="text/javascript" src="./../../ts/gf_landing_page.ts"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="./../../../../../libs/js/jquery.timeago.js"></script>
+	<script type="text/javascript" src="./../../../../../libs/js/color-thief.min.js"></script>
+	<script type="text/javascript" src="./../../ts/gf_landing_page.ts"></script>
 
-<script>
-	System.import('gf_landing_page').then(function(m){});
-</script>
-{{- /*-----------------------------------------------------*/}}
-{{- /*SUBTEMPLATE*/}}
-{{ if (call .Is_subtmpl_def "gf_footer")}}
-	{{ template "gf_footer" }}
-{{ end }}
-{{- /*------------------------------------------------------*/}}
+	<script>
+		System.import('gf_landing_page').then(function(m){});
+	</script>
+	{{- /*-----------------------------------------------------*/}}
+	{{- /*SUBTEMPLATE*/}}
+	{{ if (call .Is_subtmpl_def "gf_footer")}}
+		{{ template "gf_footer" }}
+	{{ end }}
+	{{- /*------------------------------------------------------*/}}
 </body>
 </html>

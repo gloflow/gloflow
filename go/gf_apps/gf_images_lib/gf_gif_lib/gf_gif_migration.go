@@ -390,7 +390,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a new migrated GIF with an old creation_unix_time_f (of the old GIF) in mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"old_gif_id_str":p_old_gif.Id_str,
 				"new_gif_id_str":new_gif.Id_str,
 			},
@@ -416,7 +416,7 @@ func migrate__get_flows_names(p_gif__gf_image_id_str string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to find images with GIF id_str",
 				"mongodb_find_error",
-				&map[string]interface{}{"gif__gf_image_id_str": p_gif__gf_image_id_str,},
+				map[string]interface{}{"gif__gf_image_id_str": p_gif__gf_image_id_str,},
 				err, "gf_gif_lib", p_runtime_sys)
 			return nil, gf_err
 		}

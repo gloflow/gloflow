@@ -27,6 +27,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 //p_image_origin_page_url_str - urls of pages (html or some other resource) where the image image_url
 //                              was found. this is valid for gf_chrome_ext image sources.
@@ -39,8 +40,8 @@ func Transform_image(p_image_id_str string,
 	p_image_origin_page_url_str                  string,
 	p_image_local_file_path_str                  string,
 	p_images_store_thumbnails_local_dir_path_str string,
-	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_transformer.Transform_image()")
+	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_image, *Gf_image_thumbs, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.Transform_image()")
 
 	normalized_ext_str,gf_err := Get_image_ext_from_url(p_image_origin_url_str,p_runtime_sys)
 	if gf_err != nil {
@@ -57,7 +58,7 @@ func Transform_image(p_image_id_str string,
 		p_images_store_thumbnails_local_dir_path_str,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,nil,gf_err
+		return nil, nil, gf_err
 	}
 
 	return gf_image,gf_image_thumbs,nil
@@ -164,7 +165,7 @@ func resize_image(p_img image.Image,
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
-			&map[string]interface{}{"image_output_path_str":p_image_output_path_str,},
+			map[string]interface{}{"image_output_path_str":p_image_output_path_str,},
 			err,"gf_images_utils",p_runtime_sys)
 		return gf_err
 	}

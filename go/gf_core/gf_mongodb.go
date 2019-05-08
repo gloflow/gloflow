@@ -32,7 +32,7 @@ import (
 //--------------------------------------------------------------------
 func Mongo__handle_error(p_user_msg_str string,
 	p_error_type_str     string,
-	p_error_data_map     *map[string]interface{},
+	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
@@ -81,7 +81,6 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__start()")
 	p_log_fun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
 	p_log_fun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
-
 
 	if _,err := os.Stat(p_mongodb_log_file_path_str); os.IsNotExist(err) {
 		p_log_fun("ERROR", "supplied log_file path is not a file - "+p_mongodb_log_file_path_str)

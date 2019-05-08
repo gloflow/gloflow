@@ -79,7 +79,7 @@ func Job__start(p_client_type_str string,
 	if db_err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
 			"mongodb_insert_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"client_type_str":      p_client_type_str,
 				"images_to_process_lst":p_images_to_process_lst,
 				"flows_names_lst":      p_flows_names_lst,

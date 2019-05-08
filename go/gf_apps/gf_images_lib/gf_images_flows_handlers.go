@@ -36,7 +36,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//---------------------
 	//TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

@@ -75,8 +75,8 @@ func HTTP__fetch_url(p_url_str string,
 	if err != nil {
 		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
 			"http_client_req_error",
-			&map[string]interface{}{"url_str":p_url_str,},
-			err,"gf_core",p_runtime_sys)
+			map[string]interface{}{"url_str": p_url_str,},
+			err, "gf_core", p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -90,8 +90,8 @@ func HTTP__fetch_url(p_url_str string,
 	if err != nil {
 		gf_err := Error__create("http fetch failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
-			&map[string]interface{}{"url_str":p_url_str,},
-			err,"gf_core",p_runtime_sys)
+			map[string]interface{}{"url_str": p_url_str,},
+			err, "gf_core", p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -109,26 +109,26 @@ func HTTP__fetch_url(p_url_str string,
 	}
 
 	gf_http_fetch := &Gf_http_fetch{
-		Url_str:         p_url_str, 
-		Status_code_int: status_code_int,
-		Resp_headers_map:resp_headers_map,
-		Req_time_f:      req_unix_time_f,
-		Resp_time_f:     resp_unix_time_f,
-		Resp:            resp,
+		Url_str:          p_url_str, 
+		Status_code_int:  status_code_int,
+		Resp_headers_map: resp_headers_map,
+		Req_time_f:       req_unix_time_f,
+		Resp_time_f:      resp_unix_time_f,
+		Resp:             resp,
 	}
 
-	return gf_http_fetch,nil
+	return gf_http_fetch, nil
 }
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
 	p_runtime_sys *Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__init_static_serving()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_static_serving()")
 
 	//IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//              match this are /*/static/some_further_text, and those will only match
 	//              if the spec here ends with "/"
 	url_str := p_url_base_str+"/static/"
-	http.HandleFunc(url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 		//fmt.Println("FILE SERVE >>>>>>>>")
 
 		if p_req.Method == "GET" {
@@ -152,10 +152,10 @@ func HTTP__init_static_serving(p_url_base_str string,
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 	p_runtime_sys *Runtime_sys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__serialize_cookies()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
-	for _,cookie := range p_cookies_lst {
+	for _, cookie := range p_cookies_lst {
 		cookie_str := cookie.Raw
 		buffer.WriteString("; "+cookie_str)
 	}
@@ -164,8 +164,8 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 }
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
-	p_runtime_sys *Runtime_sys) (http.Flusher,*Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__init_sse()")
+	p_runtime_sys *Runtime_sys) (http.Flusher, *Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
 
 	flusher,ok := p_resp.(http.Flusher)
 	if !ok {
@@ -174,43 +174,43 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 
 		gf_err := Error__create(err_msg_str,
 			"http_server_flusher_not_supported_error",
-			nil,nil,"gf_core",p_runtime_sys)
+			nil, nil, "gf_core", p_runtime_sys)
 
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	//IMPORTANT!! - listening for the closing of the http connections
 	notify := p_resp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
-		p_runtime_sys.Log_fun("INFO","HTTP SSE CONNECTION CLOSED")
+		p_runtime_sys.Log_fun("INFO", "HTTP SSE CONNECTION CLOSED")
 	}()
 
-	p_resp.Header().Set("Content-Type"               ,"text/event-stream")
-	p_resp.Header().Set("Cache-Control"              ,"no-cache")
-	p_resp.Header().Set("Connection"                 ,"keep-alive")
-	p_resp.Header().Set("Access-Control-Allow-Origin","*")
+	p_resp.Header().Set("Content-Type",                "text/event-stream")
+	p_resp.Header().Set("Cache-Control",               "no-cache")
+	p_resp.Header().Set("Connection",                  "keep-alive")
+	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
 
 	flusher.Flush()
 
-	return flusher,nil
+	return flusher, nil
 }
 //-------------------------------------------------
 func HTTP__get_streaming_response(p_url_str string,
-	p_runtime_sys *Runtime_sys) (*[]map[string]interface{},*Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__get_streaming_response()")
+	p_runtime_sys *Runtime_sys) (*[]map[string]interface{}, *Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
 
 
-	req,err := http.NewRequest("GET",p_url_str,nil)
-    req.Header.Set("accept","text/event-stream")
+	req,err := http.NewRequest("GET", p_url_str, nil)
+    req.Header.Set("accept", "text/event-stream")
 
 	client   := &http.Client{}
     resp,err := client.Do(req)
     if err != nil {
     	gf_err := Error__create("http get_streaming_response failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
-			&map[string]interface{}{"url_str":p_url_str,},
-			err,"gf_core",p_runtime_sys)
+			map[string]interface{}{"url_str": p_url_str,},
+			err, "gf_core", p_runtime_sys)
     	return nil,gf_err
     }
 
@@ -226,8 +226,8 @@ func HTTP__get_streaming_response(p_url_str string,
 	    if err != nil {
 	    	gf_err := Error__create("failed to read a line of SSE streaming response from a server url",
 				"io_reader_error",
-				&map[string]interface{}{"url_str":p_url_str,},
-				err,"gf_core",p_runtime_sys)
+				map[string]interface{}{"url_str": p_url_str,},
+				err, "gf_core", p_runtime_sys)
 	    	return nil,gf_err
 	    }
 	    
@@ -237,19 +237,18 @@ func HTTP__get_streaming_response(p_url_str string,
 	    	clean_line_str := strings.Replace(line_str,"data: ","",1)
 
 	    	data_map := map[string]interface{}{}
-	    	err      := json.Unmarshal([]byte(clean_line_str),&data_map)
+	    	err      := json.Unmarshal([]byte(clean_line_str), &data_map)
 
 	    	if err != nil {
 	    		gf_err := Error__create("http get_streaming_response failed to parse JSON response",
 					"json_decode_error",
-					&map[string]interface{}{"url_str":p_url_str,},
-					err,"gf_core",p_runtime_sys)
-	    		return nil,gf_err
+					map[string]interface{}{"url_str": p_url_str,},
+					err, "gf_core", p_runtime_sys)
+	    		return nil, gf_err
 	    	}
 
-	    	data_lst = append(data_lst,data_map)
+	    	data_lst = append(data_lst, data_map)
 	    }
 	}
-
-	return &data_lst,nil
+	return &data_lst, nil
 }

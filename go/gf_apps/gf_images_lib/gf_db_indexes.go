@@ -33,7 +33,7 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//QUERIES - flows_db__images_exist() issues these queries
 
 	doc_type__index := mgo.Index{
-		Key:        []string{"t","flows_names_lst","origin_url_str"},
+		Key:        []string{"t", "flows_names_lst", "origin_url_str"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -46,7 +46,7 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			//ignore, index already exists
 		} else {
 			gf_err := gf_core.Mongo__handle_error(`failed to create db index on fields - {"t","flows_names_lst","origin_url_str"}`,
-				"mongodb_ensure_index_error",nil,err,"gf_images_lib",p_runtime_sys)
+				"mongodb_ensure_index_error", nil, err, "gf_images_lib", p_runtime_sys)
 			return gf_err
 		}
 	}

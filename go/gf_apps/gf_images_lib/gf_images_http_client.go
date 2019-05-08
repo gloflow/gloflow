@@ -113,7 +113,7 @@ func client__start_job(p_input_images_urls_lst []string,
 		err    := errs[0] //FIX!! - use all errors in some way, just in case
 		gf_err := gf_core.Error__create("gf_images_client start_job HTTP REST API request failed - "+url_str,
 			"http_client_req_error",
-			&map[string]interface{}{"url_str":url_str,},
+			map[string]interface{}{"url_str":url_str,},
 			err, "gf_images_lib", p_runtime_sys)
 		return "", nil, gf_err
 	}
@@ -129,7 +129,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	if j_err != nil {
 		gf_err := gf_core.Error__create("failed to parse json response from gf_images_client start_job HTTP REST API - "+url_str,
 			"json_unmarshal_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"url_str":url_str,
 				"body":   body,
 			},
@@ -141,7 +141,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	if r_status_str != "OK" {
 		gf_err := gf_core.Error__create("received a non-OK response from gf_images_client start_job HTTP REST API - "+url_str,
 			"http_client_gf_status_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"url_str":url_str,
 				"body":   body,
 			},
@@ -157,7 +157,7 @@ func client__start_job(p_input_images_urls_lst []string,
 		err_usr_msg := fmt.Sprintf("%s response didnt return 'running_job_id_str'",url_str)
 		gf_err := gf_core.Error__create(err_usr_msg,
 			"verify__missing_key_error",
-			&map[string]interface{}{"r_map":r_map,},
+			map[string]interface{}{"r_map":r_map,},
 			nil, "gf_images_lib", p_runtime_sys)
 		return "", nil, gf_err
 	}
@@ -202,7 +202,7 @@ func client__get_status(p_running_job_id_str string,
 		err := errs[0]
 		gf_err := gf_core.Error__create("failed make a client HTTP request to /images/jobs/status",
 			"http_client_req_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"running_job_id_str":                 p_running_job_id_str,
 				"target__image_service_host_port_str":p_target__image_service_host_port_str,
 			},
@@ -240,7 +240,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 
 				gf_err := gf_core.Error__create("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
-					&map[string]interface{}{"line_str":line_str,},
+					map[string]interface{}{"line_str":line_str,},
 					err, "gf_images_lib", p_runtime_sys)
 
 				return nil, gf_err
@@ -252,7 +252,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 				err_usr_msg := "sse message json doesnt container key status_str"
 				gf_err      := gf_core.Error__create(err_usr_msg,
 					"verify__missing_key_error",
-					&map[string]interface{}{"msg_map":msg_map,},
+					map[string]interface{}{"msg_map":msg_map,},
 					nil, "gf_images_lib", p_runtime_sys)
 				return nil, gf_err
 			}
@@ -263,7 +263,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 				err_usr_msg := "sse message json status_str key is not of value ok|error"
 				gf_err      := gf_core.Error__create(err_usr_msg,
 					"verify__invalid_key_value_error",
-					&map[string]interface{}{
+					map[string]interface{}{
 						"status_str":status_str,
 						"msg_map":   msg_map,
 					},
@@ -276,7 +276,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 				err_usr_msg := "sse message json doesnt container key data_map"
 				gf_err      := gf_core.Error__create(err_usr_msg,
 					"verify__missing_key_error",
-					&map[string]interface{}{"msg_map":msg_map,},
+					map[string]interface{}{"msg_map":msg_map,},
 					nil, "gf_images_lib", p_runtime_sys)
 				return nil, gf_err
 			}

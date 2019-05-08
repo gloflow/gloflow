@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //--------------------------------------------------
 func gif_db__create(p_image_source_url_str string,
 	p_image_origin_page_url_str string,
@@ -52,7 +53,7 @@ func gif_db__create(p_image_source_url_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse GIF's origin_page url when creating a DB record",
 			"url_parse_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"image_source_url_str":     p_image_source_url_str,
 				"image_origin_page_url_str":p_image_origin_page_url_str,
 			},
@@ -83,7 +84,7 @@ func gif_db__create(p_image_source_url_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a GIF in mongodb",
 			"mongodb_insert_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"image_source_url_str":     p_image_source_url_str,
 				"image_origin_page_url_str":p_image_origin_page_url_str,
 			},
@@ -108,7 +109,7 @@ func gif_db__delete(p_id_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF as deleted in mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{"gif_id_str":p_id_str,},
+			map[string]interface{}{"gif_id_str":p_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return gf_err
 	}
@@ -132,7 +133,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
-			&map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
+			map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return nil,gf_err
 	}
@@ -140,7 +141,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str failed the DB find operation",
 			"mongodb_find_error",
-			&map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
+			map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return nil,gf_err
 	}
@@ -167,7 +168,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str not found",
 			"mongodb_not_found_error",
-			&map[string]interface{}{"origin_url_str": p_origin_url_str,},
+			map[string]interface{}{"origin_url_str": p_origin_url_str,},
 			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
 	}
@@ -175,7 +176,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str failed the DB find operation",
 			"mongodb_find_error",
-			&map[string]interface{}{"origin_url_str": p_origin_url_str,},
+			map[string]interface{}{"origin_url_str": p_origin_url_str,},
 			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
 	}
@@ -207,7 +208,7 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("GIFs pages failed to be retreived",
 			"mongodb_find_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"cursor_start_position_int":p_cursor_start_position_int,
 				"elements_num_int":         p_elements_num_int,
 			},
@@ -230,7 +231,7 @@ func gif_db__update_image_id(p_gif_id_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF's gf_image_id_str in mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"gif_id_str":   p_gif_id_str,
 				"image_id_str": p_image_id_str,
 			},

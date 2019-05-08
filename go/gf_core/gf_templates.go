@@ -45,7 +45,7 @@ func Templates__load(p_main_template_filename_str string,
 		if err != nil {
 			gf_err := Error__create("failed to parse a template",
 				"dir_list_error",
-				&map[string]interface{}{"subtemplates_dir_path_str": subtemplates_dir_path_str,},
+				map[string]interface{}{"subtemplates_dir_path_str": subtemplates_dir_path_str,},
 				err, "gf_core", p_runtime_sys)
 			return nil, nil, gf_err
 		}
@@ -53,7 +53,7 @@ func Templates__load(p_main_template_filename_str string,
 		for _, f := range files_lst {
 			filename_str := f.Name()
 			if strings.HasSuffix(filename_str, ".html") {
-				subtemplates_names_lst      = append(subtemplates_names_lst,  strings.Split(filename_str, ".")[0])
+				subtemplates_names_lst      = append(subtemplates_names_lst, strings.Split(filename_str, ".")[0])
 				subtemplates_file_paths_lst = append(subtemplates_file_paths_lst, fmt.Sprintf("%s/%s", subtemplates_dir_path_str, filename_str))
 			}
 		}
@@ -68,7 +68,7 @@ func Templates__load(p_main_template_filename_str string,
 	if err != nil {
 		gf_err := Error__create("failed to parse a template",
 			"template_create_error",
-			&map[string]interface{}{"main_template_path_str": main_template_path_str,},
+			map[string]interface{}{"main_template_path_str": main_template_path_str,},
 			err, "gf_core", p_runtime_sys)
 		return nil, nil, gf_err
 	}

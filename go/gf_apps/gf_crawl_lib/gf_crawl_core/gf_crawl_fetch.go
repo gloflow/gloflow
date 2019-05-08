@@ -91,16 +91,16 @@ func Fetch__url(p_url_str string,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawler_fetch__"+fmt.Sprint(creation_unix_time_f)
 	fetch                := &Gf_crawler_url_fetch{
-		Id_str:              id_str,
-		T_str:               "crawler_url_fetch",
-		Creation_unix_time_f:creation_unix_time_f,
-		Cycle_run_id_str:    p_cycle_run_id_str,
-		Domain_str:          domain_str,
-		Url_str:             p_url_str,
-		Start_time_f:        start_time_f,
-		//End_time_f          :end_time_f,
-		//Page_text_str       :doc.Text(),
-		//goquery_doc         :doc,
+		Id_str:               id_str,
+		T_str:                "crawler_url_fetch",
+		Creation_unix_time_f: creation_unix_time_f,
+		Cycle_run_id_str:     p_cycle_run_id_str,
+		Domain_str:           domain_str,
+		Url_str:              p_url_str,
+		Start_time_f:         start_time_f,
+		//End_time_f           :end_time_f,
+		//Page_text_str        :doc.Text(),
+		//goquery_doc          :doc,
 	}
 
 	err = p_runtime_sys.Mongodb_coll.Insert(fetch)

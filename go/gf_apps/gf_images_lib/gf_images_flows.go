@@ -73,7 +73,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse integer pg_index query string arg",
 				"int_parse_error",
-				&map[string]interface{}{"pg_index":pg_index,},
+				map[string]interface{}{"pg_index":pg_index,},
 				err,"gf_images_lib",p_runtime_sys)
 			return nil, gf_err
 		}
@@ -86,7 +86,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse integer pg_size query string arg",
 				"int_parse_error",
-				&map[string]interface{}{"pg_size":pg_size,},
+				map[string]interface{}{"pg_size":pg_size,},
 				err, "gf_images_lib", p_runtime_sys)
 			return nil,gf_err
 		}
@@ -142,7 +142,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		if db_err != nil {
 			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
 				"mongodb_insert_error",
-				&map[string]interface{}{
+				map[string]interface{}{
 					"images_extern_urls_lst":p_images_extern_urls_lst,
 					"flow_name_str":         p_flow_name_str,
 					"client_type_str":       p_client_type_str,
@@ -208,7 +208,7 @@ func create_flow(p_images_flow_name_str string, p_runtime_sys *gf_core.Runtime_s
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
 			"mongodb_insert_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"images_flow_name_str":p_images_flow_name_str,
 			},
 			err,"gf_images_lib",p_runtime_sys)

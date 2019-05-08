@@ -48,7 +48,7 @@ $(document).ready(()=>{
 });
 //-------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images_flows_browser.init()');
+	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init()');
 
 	//-----------------
 	//GET FLOW_NAME
@@ -77,7 +77,7 @@ export function init(p_log_fun) {
 		columnWidth:  6
 	});
 
-	$('.gf_image').each((p_i,p_e)=>{
+	$('.gf_image').each((p_i, p_e)=>{
 
 		const image_element = p_e;
 		init_image_date(image_element, p_log_fun);
@@ -136,7 +136,7 @@ export function init(p_log_fun) {
 }
 //---------------------------------------------------
 function init__current_pages_display(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images_flows_browser.init__current_pages_display()');
+	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init__current_pages_display()');
 
 	const container = $(`
 		<div id="current_pages_display"'>
@@ -236,7 +236,7 @@ function load_new_page(p_flow_name_str :string,
 			});
 
 			//IMAGE_FAILED_TO_LOAD
-			$(image).find('img').on('error',function() {
+			$(image).find('img').on('error', function() {
 
 				p_log_fun("ERROR","IMAGE_FAILED_TO_LOAD ----------");
 
@@ -253,7 +253,7 @@ function load_new_page(p_flow_name_str :string,
 			//------------------
 			//TAGS
 			if (img__tags_lst != null && img__tags_lst.length > 0) {
-				$.each(img__tags_lst,function(p_i,p_tag_str) {
+				$.each(img__tags_lst, function(p_i, p_tag_str) {
 					const tag = $(
 						"<a class='gf_image_tag' href ='/tags/objects?tag="+p_tag_str+"&otype=image'>"+
 							p_tag_str+

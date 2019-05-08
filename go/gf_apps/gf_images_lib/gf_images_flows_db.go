@@ -46,7 +46,7 @@ func Flows_db__add_flow_to_image(p_flow_name_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to add a flow to an existing image DB record",
 			"mongodb_update_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"flow_name_str":  p_flow_name_str,
 				"image_gf_id_str":p_image_gf_id_str,
 			},
@@ -87,7 +87,7 @@ func flows_db__get_page(p_flow_name_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to get a page of images from a flow",
 			"mongodb_find_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"flow_name_str":            p_flow_name_str,
 				"cursor_start_position_int":p_cursor_start_position_int,
 				"elements_num_int":         p_elements_num_int,
@@ -158,7 +158,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
 			"mongodb_find_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"images_extern_urls_lst":p_images_extern_urls_lst,
 				"flow_name_str":         p_flow_name_str,
 				"client_type_str":       p_client_type_str,

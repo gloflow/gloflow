@@ -5,6 +5,16 @@ def get():
 
 	apps_map = {
 		#-----------------------------
+		'gf_landing_page':{
+			'pages_map':{
+				'gf_landing_page':{
+					'build_dir_str':      '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
+					'main_html_path_str': '%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html'%(cwd_str),
+					'url_base_str':       '/landing/static',
+				}
+			}
+		},
+		#-----------------------------
 		'gf_images':{
 			'pages_map':{
 				#-------------
@@ -322,48 +332,6 @@ def get():
 					# }
 				}
 				#-------------
-			}
-		},
-		#-----------------------------
-		'gf_landing_page':{
-			'pages_map':{
-				'gf_landing_page':{
-					'build_dir_str':      '%s/../web/build/gf_apps/gf_landing_page'%(cwd_str),
-					'main_html_path_str': '%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html'%(cwd_str),
-					'url_base_str':       '/landing/static',
-					# 'type_str':      'ts',
-					# 'ts':{
-					# 	'out_file_str':      '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.js'%(cwd_str),
-					# 	'minified_file_str': '%s/../web/build/gf_apps/gf_landing_page/js/gf_landing_page.min.js'%(cwd_str),
-					# 	'files_lst':[
-					# 		'%s/../web/src/gf_apps/gf_landing_page/ts/gf_calc.ts'%(cwd_str),
-					# 		'%s/../web/src/gf_apps/gf_landing_page/ts/gf_email_registration.ts'%(cwd_str),
-					# 		'%s/../web/src/gf_apps/gf_landing_page/ts/gf_images.ts'%(cwd_str),
-					# 		'%s/../web/src/gf_apps/gf_landing_page/ts/gf_landing_page.ts'%(cwd_str),
-					# 		'%s/../web/src/gf_apps/gf_landing_page/ts/gf_procedural_art.ts'%(cwd_str)
-					# 	],
-					# 	#-------------
-					# 	#LIBS
-					# 	'libs_files_lst':[
-					# 		'%s/../web/libs/js/jquery.timeago.js'%(cwd_str),
-					# 		'%s/../web/libs/js/color-thief.min.js'%(cwd_str),
-					# 	]
-					# 	#-------------
-					# },
-					# 'css':{
-					# 	'files_lst':[
-					# 		('%s/../web/src/gf_apps/gf_landing_page/css/domains.css'%(cwd_str),         '%s/../web/build/gf_apps/gf_landing_page/css'%(cwd_str)),
-					# 		('%s/../web/src/gf_apps/gf_landing_page/css/gf_landing_page.css'%(cwd_str), '%s/../web/build/gf_apps/gf_landing_page/css'%(cwd_str)),
-					# 		('%s/../web/src/gf_apps/gf_landing_page/css/images.css'%(cwd_str),          '%s/../web/build/gf_apps/gf_landing_page/css'%(cwd_str)),
-					# 		('%s/../web/src/gf_apps/gf_landing_page/css/posts.css'%(cwd_str),           '%s/../web/build/gf_apps/gf_landing_page/css'%(cwd_str))
-					# 	]
-					# },
-					# 'templates':{
-					# 	'files_lst':[
-					# 		('%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page.html'%(cwd_str), '%s/../bin/gf_apps/gf_landing_page/templates'%(cwd_str)),
-					# 	]
-					# }
-				}
 			}
 		},
 		#-----------------------------

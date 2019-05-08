@@ -41,7 +41,7 @@ def get():
             #MAIN
             #GF_IMAGES
             'gf_images':{
-                'version_str':          '0.8.0.1',
+                'version_str':          '0.8.0.8',
                 'go_path_str':          '%s/../go/gf_apps/gf_images'%(cwd_str),
                 'go_output_path_str':   '%s/../build/gf_apps/gf_images/gf_images_service'%(cwd_str),
                 'service_name_str':     'gf_images_service',

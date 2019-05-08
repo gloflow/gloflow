@@ -286,11 +286,8 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 		frame_image_file_name_str      := filepath.Base(frame_image_file_path_str)
 		s3_target_file_path_str        := fmt.Sprintf("gifs/frames/%s",frame_image_file_name_str)
 		s3_target_file__local_path_str := frame_image_file_path_str
-		s3_response_str,s_gf_err       := gf_core.S3__upload_file(s3_target_file__local_path_str,
-												s3_target_file_path_str,
-												p_s3_bucket_name_str,
-												p_s3_info,
-												p_runtime_sys)
+		s3_response_str,s_gf_err       := gf_core.S3__upload_file(s3_target_file__local_path_str, s3_target_file_path_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+
 		if s_gf_err != nil {
 			p_runtime_sys.Log_fun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(s_gf_err.Error))
 			gf_errors_lst[i] = s_gf_err
@@ -298,9 +295,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 
 		fmt.Println(s3_response_str)
 
-		image_s3_url_str := gf_images_utils.S3__get_image_url(s3_target_file_path_str, //&image_file_name_str,
-											p_s3_bucket_name_str,
-											p_runtime_sys)
+		image_s3_url_str := gf_images_utils.S3__get_image_url(s3_target_file_path_str, p_s3_bucket_name_str, p_runtime_sys)
 
 		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst,image_s3_url_str)
 	}
@@ -335,7 +330,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a GIF file to then save its frames as individual files",
 			"file_open_error",
-			&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return nil,gf_err
 	}
@@ -346,7 +341,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		if r := recover(); r != nil {
 			_ = gf_core.Error__create("Gif__frames__save_to_fs() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+				map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 				err,"gf_gif_lib",p_runtime_sys)
 		}
 	}()
@@ -356,7 +351,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	if gif_err != nil {
 		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 			gif_err,"gf_gif_lib",p_runtime_sys)
 		return nil,gf_err
 	}
@@ -402,7 +397,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		if err != nil {
 			gf_err := gf_core.Error__create("OS failed to create a file to save a GIF frame to FS",
 				"file_create_error",
-				&map[string]interface{}{"new_file_name_str":new_file_name_str,},
+				map[string]interface{}{"new_file_name_str":new_file_name_str,},
 				err,"gf_gif_lib",p_runtime_sys)
 			return nil,gf_err
 		}
@@ -411,7 +406,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 				"png_encoding_error",
-				&map[string]interface{}{"new_file_name_str":new_file_name_str,},
+				map[string]interface{}{"new_file_name_str":new_file_name_str,},
 				err,"gf_gif_lib",p_runtime_sys)
 			return nil,gf_err
 		}
@@ -434,7 +429,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a file to get image dimensions",
 			"file_open_error",
-			&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return 0,0,gf_err
 	}
@@ -445,7 +440,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 		if r := recover(); r != nil {
 			_ = gf_core.Error__create("gif__get_dimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+				map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 				err,"gf_gif_lib",p_runtime_sys)
 		}
 	}()
@@ -455,7 +450,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 	if gif_err != nil {
 		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			&map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
 			gif_err,"gf_gif_lib",p_runtime_sys)
 		return 0,0,gf_err
 	}
@@ -494,7 +489,7 @@ func gif__get_hash(p_image_local_file_path_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a GIF file to get its hash",
 			"file_open_error",
-			&map[string]interface{}{"image_local_file_path_str":p_image_local_file_path_str,},
+			map[string]interface{}{"image_local_file_path_str":p_image_local_file_path_str,},
 			err,"gf_gif_lib",p_runtime_sys)
 		return "",gf_err
 	}

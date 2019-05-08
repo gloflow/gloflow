@@ -11,6 +11,7 @@ RUN apk add bash
 RUN mkdir -p /home/gf/logs
 RUN mkdir -p /home/gf/conf
 RUN mkdir -p /home/gf/data
+RUN mkdir -p /home/gf/static
 #------------
 #SUPERVISOR
 RUN apk --update add supervisor
