@@ -28,13 +28,13 @@ def run(p_mongo_client,
 
 	fig = plt.figure(figsize=(30,10))
 
-	results = p_mongo_client['prod_db']['data_symphony'].aggregate([
-			{'$match':{'t':'crawler_page_outgoing_link'}},
+	results = p_mongo_client['prod_db']['gf_crawl'].aggregate([
+			{'$match':{'t': 'crawler_page_outgoing_link'}},
 			{'$group':{
-				'_id'      :'$crawler_name_str',
-				'count_int':{'$sum':1}}
+				'_id'      : '$crawler_name_str',
+				'count_int': {'$sum': 1}}
 			},
-			{'$sort':{'count_int':-1}}
+			{'$sort': {'count_int': -1}}
 		],
 		allowDiskUse=True)
 

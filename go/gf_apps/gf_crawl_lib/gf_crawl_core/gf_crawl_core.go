@@ -23,6 +23,7 @@ import (
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 type Gf_crawler_runtime struct {
 	Events_ctx            *gf_core.Events_ctx

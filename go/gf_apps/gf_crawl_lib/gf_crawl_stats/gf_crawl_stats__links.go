@@ -27,6 +27,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Gf_stat__crawled_links_domain struct {
 	Domain_str              string    `bson:"_id"                     json:"domain_str"`
@@ -51,6 +52,7 @@ type Gf_stat__links_in_day struct {
 	Valid_for_crawl_total_int int `bson:"valid_for_crawl_total_int" json:"valid_for_crawl_total_int"`
 	Fetched_total_int         int `bson:"fetched_total_int"         json:"fetched_total_int"`
 }
+
 //-------------------------------------------------
 func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__new_links_by_day()")
@@ -60,7 +62,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 		Valid_for_crawl_bool bool    `bson:"valid_for_crawl_bool"`
 		Fetched_bool         bool    `bson:"fetched_bool"`
 	}
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
 				"t": "crawler_page_outgoing_link",
 			},
@@ -152,33 +154,33 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 }
 //-------------------------------------------------
 func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__unresolved_links()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__unresolved_links()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
-				"t":                   "crawler_page_outgoing_link",
-				"valid_for_crawl_bool":true,
-				"fetched_bool":        false,
+				"t":                    "crawler_page_outgoing_link",
+				"valid_for_crawl_bool": true,
+				"fetched_bool":         false,
 			},
 		},
 
 		bson.M{"$sort":bson.M{
-				"creation_unix_time_f":-1,
+				"creation_unix_time_f": -1,
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":        bson.M{"origin_domain_str":"$origin_domain_str","origin_url_str":"$origin_url_str",},
-				"count_int":  bson.M{"$sum" :1},
-				"a_hrefs_lst":bson.M{"$push":"$a_href_str",},
+				"_id":         bson.M{"origin_domain_str": "$origin_domain_str", "origin_url_str": "$origin_url_str",},
+				"count_int":   bson.M{"$sum":  1},
+				"a_hrefs_lst": bson.M{"$push": "$a_href_str",},
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":                          "$_id.origin_domain_str",
-				"origin_urls_lst":              bson.M{"$push":"$_id.origin_url_str"},
-				"counts__from_origin_urls_lst": bson.M{"$push":"$count_int"},
-				"a_hrefs__from_origin_urls_lst":bson.M{"$push":"$a_hrefs_lst"},
+				"_id":                           "$_id.origin_domain_str",
+				"origin_urls_lst":               bson.M{"$push": "$_id.origin_url_str"},
+				"counts__from_origin_urls_lst":  bson.M{"$push": "$count_int"},
+				"a_hrefs__from_origin_urls_lst": bson.M{"$push": "$a_hrefs_lst"},
 			},
 		},
 	})
@@ -202,34 +204,34 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__crawled_links_domains()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
-		bson.M{"$match":bson.M{
-				"t":"crawler_page_outgoing_link",
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+		bson.M{"$match": bson.M{
+				"t": "crawler_page_outgoing_link",
 			},
 		},
 
 		bson.M{"$project":bson.M{
-				"id_str":               true,
-				"creation_unix_time_f": true,
-				"cycle_run_id_str":     true,
-				"domain_str":           true,
-				"a_href_str":           true, //actual link from the html <a> page ('href' parameter)
-				"origin_url_str":       true, //page url from whos html this element was extracted
-				"valid_for_crawl_bool": true,
-				"fetched_bool":         true,
-				"images_processed_bool":true,
+				"id_str":                true,
+				"creation_unix_time_f":  true,
+				"cycle_run_id_str":      true,
+				"domain_str":            true,
+				"a_href_str":            true, //actual link from the html <a> page ('href' parameter)
+				"origin_url_str":        true, //page url from whos html this element was extracted
+				"valid_for_crawl_bool":  true,
+				"fetched_bool":          true,
+				"images_processed_bool": true,
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":                    "$domain_str",
-				"links_count_int":        bson.M{"$sum"     :1},
-				"creation_unix_times_lst":bson.M{"$push"    :"$creation_unix_time_f"},
-				"a_href_lst":             bson.M{"$push"    :"$a_href_str"},
-				"origin_urls_lst":        bson.M{"$addToSet":"$origin_url_str"},
-				"valid_for_crawl_lst":    bson.M{"$push"    :"$valid_for_crawl_bool"},  //if the link is to be crawled/followed, or should be ignored
-				"fetched_lst":            bson.M{"$push"    :"$fetched_bool"},          //if the link's HTML was downloaded
-				"images_processed_lst":   bson.M{"$push"    :"$images_processed_bool"}, //if the images of this links HTML page were downloaded/processed
+				"_id":                     "$domain_str",
+				"links_count_int":         bson.M{"$sum":      1},
+				"creation_unix_times_lst": bson.M{"$push":     "$creation_unix_time_f"},
+				"a_href_lst":              bson.M{"$push":     "$a_href_str"},
+				"origin_urls_lst":         bson.M{"$addToSet": "$origin_url_str"},
+				"valid_for_crawl_lst":     bson.M{"$push":     "$valid_for_crawl_bool"},  //if the link is to be crawled/followed, or should be ignored
+				"fetched_lst":             bson.M{"$push":     "$fetched_bool"},          //if the link's HTML was downloaded
+				"images_processed_lst":    bson.M{"$push":     "$images_processed_bool"}, //if the images of this links HTML page were downloaded/processed
 			},
 		},
 

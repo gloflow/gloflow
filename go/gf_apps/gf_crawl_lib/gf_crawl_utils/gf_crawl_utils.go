@@ -28,6 +28,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sys) (*goquery.Document, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_utils.Get__html_doc_over_http()")
@@ -49,10 +50,10 @@ func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sy
 
 		gf_err := gf_core.Error__create("crawler fetch failed with HTTP status error",
 			"http_client_req_status_error",
-			&map[string]interface{}{
-				"url_str":        p_url_str,
-				"status_code_int":gf_http_fetch.Status_code_int,
-				"body_str":       body_str,
+			map[string]interface{}{
+				"url_str":         p_url_str,
+				"status_code_int": gf_http_fetch.Status_code_int,
+				"body_str":        body_str,
 			},
 			nil, "gf_crawl_utils", p_runtime_sys)
 		return nil, gf_err
@@ -63,13 +64,14 @@ func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sy
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse a fetched HTML page from a crawled url",
 			"html_parse_error",
-			&map[string]interface{}{"url_str":p_url_str,},
+			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_crawl_utils", p_runtime_sys)
 		return nil, gf_err
 	}
 
 	return doc, nil
 }
+
 //--------------------------------------------------
 func Crawler_sleep(p_crawler_name_str string,
 	p_cycle_index_int int,

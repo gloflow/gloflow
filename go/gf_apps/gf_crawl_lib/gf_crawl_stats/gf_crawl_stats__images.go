@@ -23,6 +23,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Gf_stat__crawled_images_domain struct {
 	Domain_str              string    `bson:"_id"                     json:"domain_str"`
@@ -40,26 +41,28 @@ type Gf_stat__crawled_gifs struct {
 	Imgs_count_int         int                      `bson:"imgs_count_int"         json:"imgs_count_int"`
 	Urls_by_origin_url_lst []map[string]interface{} `bson:"urls_by_origin_url_lst" json:"urls_by_origin_url_lst"`
 }
+
 //-------------------------------------------------
 func stats__gifs_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__images.stats__gifs_by_days()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__images.stats__gifs_by_days()")
 
 
-	stats__gifs_by_days, gf_err := stats__objs_by_days(map[string]interface{}{"img_ext_str":"gif",}, "crawler_page_img", p_runtime_sys)
+	stats__gifs_by_days, gf_err := stats__objs_by_days(map[string]interface{}{"img_ext_str": "gif",}, "crawler_page_img", p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{
-		"gifs_by_days_map":stats__gifs_by_days,
+		"gifs_by_days_map": stats__gifs_by_days,
 	}
 	return data_map, nil
 }
+
 //-------------------------------------------------
 func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__images.stats__gifs()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match"  :bson.M{
 				"t":          "crawler_page_img",
 				"img_ext_str":"gif",
@@ -137,7 +140,7 @@ func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *g
 func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__images.stats__crawled_images_domains()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
 				"t":"crawler_page_img",
 			},

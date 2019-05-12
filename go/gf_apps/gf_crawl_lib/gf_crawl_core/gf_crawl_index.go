@@ -27,6 +27,7 @@ import (
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 type Gf_index__query_run struct {
 	Id                   bson.ObjectId `bson:"_id,omitempty"`
@@ -38,10 +39,12 @@ type Gf_index__query_run struct {
 	Hits_score_max_f     float64       `bson:"hits_score_max_f"`
 	Hits_urls_lst        []string      `bson:"hits_urls_lst"`
 }
+
 //--------------------------------------------------
 func index__get_stats(p_runtime *Gf_crawler_runtime, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime.Esearch_client.IndexStats("gf_crawl_pages")
 }
+
 //--------------------------------------------------
 func Index__query(p_term_str string,
 	p_runtime     *Gf_crawler_runtime,
@@ -71,10 +74,10 @@ func Index__query(p_term_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to issue a elasticsearch index query - "+p_term_str,
 			"elasticsearch_query_index",
-			&map[string]interface{}{
-				"term_str":      p_term_str,
-				"index_name_str":index_name_str,
-				"field_name_str":field_name_str,
+			map[string]interface{}{
+				"term_str":       p_term_str,
+				"index_name_str": index_name_str,
+				"field_name_str": field_name_str,
 			},
 			err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
@@ -126,22 +129,22 @@ func Index__query(p_term_str string,
 	id_str               := fmt.Sprintf("crawler_page_img:%f",creation_unix_time_f)
 
 	query_run := &Gf_index__query_run{
-		Id_str:              id_str,
-		T_str:               "index__query_run",
-		Run_time_milisec_int:query_run_time_milisec_int,
-		Hits_total_int:      total_hits_int,
-		Hits_scores_lst:     hits_scores_lst,
-		Hits_score_max_f:    *hits_score_max_f,
-		Hits_urls_lst:       hits_urls_lst,
+		Id_str:               id_str,
+		T_str:                "index__query_run",
+		Run_time_milisec_int: query_run_time_milisec_int,
+		Hits_total_int:       total_hits_int,
+		Hits_scores_lst:      hits_scores_lst,
+		Hits_score_max_f:     *hits_score_max_f,
+		Hits_urls_lst:        hits_urls_lst,
 	}
 
-	err = p_runtime_sys.Mongodb_coll.Insert(query_run)
+	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(query_run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a index__query_run into mongodb for a elasticsearch index query",
 			"mongodb_insert_error",
-			&map[string]interface{}{
-				"term_str":      p_term_str,
-				"total_hits_int":total_hits_int,
+			map[string]interface{}{
+				"term_str":       p_term_str,
+				"total_hits_int": total_hits_int,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
@@ -149,6 +152,7 @@ func Index__query(p_term_str string,
 
 	return nil
 }
+
 //--------------------------------------------------
 func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 	p_runtime     *Gf_crawler_runtime,
@@ -169,7 +173,7 @@ func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", es_record_type_str, index_name_str)
 		gf_err := gf_core.Error__create(err_msg_str,
 			"elasticsearch_add_to_index",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"url_fetch_url_str":  p_url_fetch.Url_str,
 				"index_name_str":     index_name_str,
 				"es_record_type_str": es_record_type_str,

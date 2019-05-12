@@ -31,7 +31,9 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
+	"github.com/davecgh/go-spew/spew"
 )
+
 //-------------------------------------------------
 func main() {
 	log_fun := gf_core.Init_log_fun()
@@ -41,7 +43,7 @@ func main() {
 	port_str            := cli_args_map["port_str"].(string)
 	mongodb_host_str    := cli_args_map["mongodb_host_str"].(string)
 	mongodb_db_name_str := cli_args_map["mongodb_db_name_str"].(string)
-
+	crawl_config_file_path_str := cli_args_map["crawl_config_file_path_str"].(string)
 	//-----------------
 	//MONGODB
 
@@ -51,6 +53,7 @@ func main() {
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_analytics",
 		Log_fun:          log_fun,
+		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
 	//-----------------
@@ -75,7 +78,7 @@ func main() {
 	switch run_str {
 
 		//-----------------------------
-		//RUN CRAWLER
+		//RUN CRAWLER - run a certain number of crawler cycles.
 
 		case "run_crawler":
 				
@@ -83,16 +86,21 @@ func main() {
 			crawler_cycles_to_run_int         := cli_args_map["crawler_cycles_to_run_int"].(int)
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
-			all_crawlers_map                  := gf_crawl_lib.Get_all_crawlers()
-			crawler                           := all_crawlers_map[crawler_name_str]
+
+			all_crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(crawl_config_file_path_str, runtime_sys)
+			crawler                  := all_crawlers_map[crawler_name_str]
+
+
+			spew.Dump(all_crawlers_map)
+
 
 			//-------------
-			//S3
+			//AWS_S3
 			images_s3_bucket_name_str := "gf--discovered--img"
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
-			s3_info,gf_err            := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
+			s3_info, gf_err           := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
@@ -107,6 +115,7 @@ func main() {
 
 			//run a certain number of crawl cycles
 			for i := 0; i < crawler_cycles_to_run_int; i++ {
+
 				err := gf_crawl_lib.Run_crawler_cycle(crawler,
 					crawler_images_local_dir_path_str,
 					images_s3_bucket_name_str,
@@ -131,9 +140,11 @@ func main() {
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 			py_stats_dirs_lst                 := cli_args_map["py_stats_dirs_lst"].([]string)
-			aws_access_key_id_str             := cli_args_map["aws_access_key_id_str"].(string)
-			aws_secret_access_key_str         := cli_args_map["aws_secret_access_key_str"].(string)
-			aws_token_str                     := cli_args_map["aws_token_str"].(string)
+
+			//AWS
+			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
+			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
+			aws_token_str             := cli_args_map["aws_token_str"].(string)
 
 			init_handlers(runtime_sys)
 			//------------------------
@@ -149,6 +160,7 @@ func main() {
 
 			gf_crawl_lib.Init(crawler_images_local_dir_path_str,
 				cluster_node_type_str,
+				crawl_config_file_path_str,
 				aws_access_key_id_str,
 				aws_secret_access_key_str,
 				aws_token_str,
@@ -174,7 +186,7 @@ func main() {
 			log_fun("INFO","STARTING HTTP SERVER - PORT - "+port_str)
 			log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 			
-			err := http.ListenAndServe(":"+port_str,nil)
+			err := http.ListenAndServe(":"+port_str, nil)
 			if err != nil {
 				msg_str := "cant start listening on port - "+port_str
 				log_fun("ERROR", msg_str)
@@ -183,21 +195,23 @@ func main() {
 		//-----------------------------
 	}
 }
+
 //-------------------------------------------------
 func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 	p_log_fun("FUN_ENTER","gf_analytics_service.parse__cli_args()")
 
 	//-------------------
-	run_str                           := flag.String("run",                     "start_service", "start_service|discover_domains_in_db|run_crawler - name of the command to run")
-	port_str                          := flag.String("port",                    "3060",          "port for the service to use")
-	mongodb_host_str                  := flag.String("mongodb_host",            "127.0.0.1",     "host of mongodb to use")
-	mongodb_db_name_str               := flag.String("mongodb_db_name",         "prod_db",       "DB name to use")
-	crawler_name_str                  := flag.String("crawler_name",            "gloflow.com",   "name of the crawler to run")
-	crawler_cycles_to_run_int         := flag.Int("crawler_cycles_to_run",      1,               "DEBUGGING - when running 'run_crawler' command this indicates how many crawler cylcles o run")
-	cluster_node_type_str             := flag.String("cluster_node_type",       "master",        "master|worker - crawler node type")
-	crawler_images_local_dir_path_str := flag.String("crawler_images_dir_path", "./data/images", "local image tmp dir for crawled images before upload to permanent storage")
-	run_indexer_bool                  := flag.Bool("run_indexer",               true,            "DEBUG - if the indexer (elasticsearch) should be used")
-	py_stats_dirs                     := flag.String("py_stats_dirs",           "./py/stats",    "path to the dir that contains stats .py script files")
+	run_str                           := flag.String("run",                     "start_service",              "start_service|discover_domains_in_db|run_crawler - name of the command to run")
+	port_str                          := flag.String("port",                    "3060",                       "port for the service to use")
+	mongodb_host_str                  := flag.String("mongodb_host",            "127.0.0.1",                  "host of mongodb to use")
+	mongodb_db_name_str               := flag.String("mongodb_db_name",         "prod_db",                    "DB name to use")
+	crawler_name_str                  := flag.String("crawler_name",            "gloflow.com",                "name of the crawler to run")
+	crawler_cycles_to_run_int         := flag.Int("crawler_cycles_to_run",      1,                            "DEBUGGING - when running 'run_crawler' command this indicates how many crawler cylcles o run")
+	cluster_node_type_str             := flag.String("cluster_node_type",       "master",                     "master|worker - crawler node type")
+	crawl_config_file_path_str        := flag.String("crawl_config_file_path",  "./config/crawl_config.yaml", "local image tmp dir for crawled images before upload to permanent storage")
+	crawler_images_local_dir_path_str := flag.String("crawler_images_dir_path", "./data/images",              "local image tmp dir for crawled images before upload to permanent storage")
+	run_indexer_bool                  := flag.Bool("run_indexer",               true,                         "DEBUG - if the indexer (elasticsearch) should be used")
+	py_stats_dirs                     := flag.String("py_stats_dirs",           "./py/stats",                 "path to the dir that contains stats .py script files")
 	//-------------------
 	//ENV VARS
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
@@ -215,6 +229,7 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 		"crawler_name_str":                  *crawler_name_str,
 		"crawler_cycles_to_run_int":         *crawler_cycles_to_run_int,
 		"cluster_node_type_str":             *cluster_node_type_str,
+		"crawl_config_file_path_str":        *crawl_config_file_path_str,
 		"crawler_images_local_dir_path_str": *crawler_images_local_dir_path_str,
 		"run_indexer_bool":                  *run_indexer_bool,
 		"py_stats_dirs_lst":                 strings.Split(*py_stats_dirs,","),

@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
+
 //-------------------------------------------------
 func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
@@ -56,7 +57,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			//------------------
 			//OUTPUT
 			data_map := map[string]interface{}{
-				"recent_images_lst":recent_images_lst,
+				"recent_images_lst": recent_images_lst,
 			}
 			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------

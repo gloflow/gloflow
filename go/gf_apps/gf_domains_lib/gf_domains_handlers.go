@@ -28,7 +28,7 @@ import (
 )
 //-------------------------------------------------
 func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains_handlers.Init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_handlers.Init_handlers()")
 
 	//---------------------
 	//TEMPLATES

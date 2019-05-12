@@ -26,6 +26,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func Complete_url(p_url_str string,
 	p_domain_str  string,
@@ -46,9 +47,9 @@ func Complete_url(p_url_str string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse a domain to complete a url",
 				"url_parse_error",
-				&map[string]interface{}{
-					"url_str":   p_url_str,
-					"domain_str":p_domain_str,
+				map[string]interface{}{
+					"url_str":    p_url_str,
+					"domain_str": p_domain_str,
 				},
 				err, "gf_crawl_utils", p_runtime_sys)
 			return "", gf_err
@@ -65,6 +66,7 @@ func Complete_url(p_url_str string,
 	}	
 	return "", nil
 }
+
 //--------------------------------------------------
 func Get_domain(p_link_url_str string,
 	p_origin_url_str string,
@@ -75,9 +77,9 @@ func Get_domain(p_link_url_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse p_origin_url_str to get its domain",
 			"url_parse_error",
-			&map[string]interface{}{
-				"link_url_str":  p_link_url_str,
-				"origin_url_str":p_origin_url_str,
+			map[string]interface{}{
+				"link_url_str":   p_link_url_str,
+				"origin_url_str": p_origin_url_str,
 			},
 			err, "gf_crawl_utils", p_runtime_sys)
 		return "", "", gf_err
@@ -95,9 +97,9 @@ func Get_domain(p_link_url_str string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse p_link_url_str starting with '//' to get its domain",
 				"url_parse_error",
-				&map[string]interface{}{
-					"link_url_str":  p_link_url_str,
-					"origin_url_str":p_origin_url_str,
+				map[string]interface{}{
+					"link_url_str":   p_link_url_str,
+					"origin_url_str": p_origin_url_str,
 				},
 				err, "gf_crawl_utils", p_runtime_sys)
 			return "", "", gf_err
@@ -115,9 +117,9 @@ func Get_domain(p_link_url_str string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse p_link_url_str with no prefix '//' or '/' to get its domain",
 				"url_parse_error",
-				&map[string]interface{}{
-					"link_url_str":  p_link_url_str,
-					"origin_url_str":p_origin_url_str,
+				map[string]interface{}{
+					"link_url_str":   p_link_url_str,
+					"origin_url_str": p_origin_url_str,
 				},
 				err, "gf_crawl_utils", p_runtime_sys)
 			return "", "", gf_err

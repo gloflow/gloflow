@@ -47,14 +47,14 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
 		//-------------------
 		bson.M{"$match":bson.M{
-				"t":                  "img",
-				"origin_page_url_str":bson.M{"$exists":true,},
+				"t":                   "img",
+				"origin_page_url_str": bson.M{"$exists":true,},
 			},
 		},
 		//-------------------
 		bson.M{"$project":bson.M{
-				"_id":                false, //suppression of the "_id" field
-				"origin_page_url_str":"$origin_page_url_str",
+				"_id":                 false, //suppression of the "_id" field
+				"origin_page_url_str": "$origin_page_url_str",
 			},
 		},
 		//-------------------
@@ -63,8 +63,8 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 		//              those page url's are then grouped by domain in the application layer
 		//              (although idealy that join would be happening as a part of the aggregation pipeline)
 		bson.M{"$group":bson.M{
-				"_id":      "$origin_page_url_str",
-				"count_int":bson.M{"$sum":1},
+				"_id":       "$origin_page_url_str",
+				"count_int": bson.M{"$sum":1},
 			},
 		},
 		//-------------------
@@ -82,8 +82,8 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains images",
 			"mongodb_aggregation_error",
-			nil,err,"gf_domains_lib",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_domains_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	//----------------------
@@ -97,7 +97,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 
 		origin_page_url := images_origin_page.Origin_page_url_str
 
-		u,err := url.Parse(origin_page_url)
+		u, err := url.Parse(origin_page_url)
 		if err != nil {
 			continue
 		}
@@ -120,10 +120,10 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 			//domain_image - CREATE
 
 			new_domain_images := Gf_domain_images{
-				Name_str:           domain_str,
-				Count_int:          images_origin_page.Count_int,
-				Subpages_Counts_map:map[string]int{
-					origin_page_url_no_dots_str:images_origin_page.Count_int,
+				Name_str:            domain_str,
+				Count_int:           images_origin_page.Count_int,
+				Subpages_Counts_map: map[string]int{
+					origin_page_url_no_dots_str: images_origin_page.Count_int,
 				},
 			}
 

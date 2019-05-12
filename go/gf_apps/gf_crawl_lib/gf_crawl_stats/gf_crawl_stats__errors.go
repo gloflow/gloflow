@@ -23,46 +23,49 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Gf_stat__errors struct {
 	Crawler_name_str string                `bson:"_id"              json:"crawler_name_str"`
 	Errors_types_lst []Gf_stat__error_type `bson:"errors_types_lst" json:"errors_types_lst"`
 }
+
 type Gf_stat__error_type struct {
 	Type_str  string   `bson:"type_str"  json:"type_str"`
 	Count_int int      `bson:"count_int" json:"count_int"`
 	Urls_lst  []string `bson:"urls_lst"  json:"urls_lst"`
 }
+
 //-------------------------------------------------
 func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__errors.stats__errors()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
-				"t":"crawler_error",
+				"t": "crawler_error",
 			},
 		},
 
-		bson.M{"$sort":bson.M{
-				"creation_unix_time_f":-1,
-			},
-		},
-
-		bson.M{"$group":bson.M{
-				"_id":                    bson.M{"type_str":"$type_str","crawler_name_str":"$crawler_name_str",},
-				"count_int":              bson.M{"$sum":1},
-				"urls_lst":               bson.M{"$push":"$url_str"},
-				"creation_unix_times_lst":bson.M{"$push":"$creation_unix_time_f"},
+		bson.M{"$sort": bson.M{
+				"creation_unix_time_f": -1,
 			},
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":             "$_id.crawler_name_str",
-				"errors_types_lst":bson.M{"$push":bson.M{
-							"type_str":               "$_id.type_str",
-							"count_int":              "$count_int",
-							"urls_lst":               "$urls_lst",
-							"creation_unix_times_lst":"$creation_unix_times_lst",
+				"_id":                     bson.M{"type_str": "$type_str", "crawler_name_str": "$crawler_name_str",},
+				"count_int":               bson.M{"$sum": 1},
+				"urls_lst":                bson.M{"$push": "$url_str"},
+				"creation_unix_times_lst": bson.M{"$push": "$creation_unix_time_f"},
+			},
+		},
+
+		bson.M{"$group":bson.M{
+				"_id":              "$_id.crawler_name_str",
+				"errors_types_lst": bson.M{"$push": bson.M{
+							"type_str":                "$_id.type_str",
+							"count_int":               "$count_int",
+							"urls_lst":                "$urls_lst",
+							"creation_unix_times_lst": "$creation_unix_times_lst",
 						},
 					},
 			},
@@ -80,7 +83,7 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, 
 	}
 	
 	data_map := map[string]interface{}{
-		"errors_lst":results_lst,
+		"errors_lst": results_lst,
 	}
 	return data_map, nil
 }

@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	//"github.com/davecgh/go-spew/spew"
 )
+
 //--------------------------------------------------
 func images__stage__process_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
@@ -83,6 +84,7 @@ func images__stage__process_images(p_crawler_name_str string,
 	}
 	return p_page_imgs__pipeline_infos_lst
 }
+
 //--------------------------------------------------
 func image__process(p_page_img *Gf_crawler_page_img,
 	p_local_image_file_path_str       string,
@@ -139,9 +141,7 @@ func image__process(p_page_img *Gf_crawler_page_img,
 			return nil, nil, gf_err
 		}
 
-
 		//spew.Dump(gf_image)
-
 
 		gf_image_id_str := gf_image.Id_str
 		gf_err           = image__update_after_process(p_page_img, gf_image_id_str, p_runtime_sys)
@@ -154,12 +154,13 @@ func image__process(p_page_img *Gf_crawler_page_img,
 	//----------------------------
 	return nil, nil, nil
 }
+
 //--------------------------------------------------
 func image__process_bitmap(p_page_img *Gf_crawler_page_img,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
 	p_runtime_sys                   *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_process.image__process_bitmap()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
 	//CONFIG
@@ -171,7 +172,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_img,
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//-------------------
-	img_width_int,img_height_int,gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_local_image_file_path_str, p_runtime_sys)
+	img_width_int, img_height_int, gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_local_image_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}

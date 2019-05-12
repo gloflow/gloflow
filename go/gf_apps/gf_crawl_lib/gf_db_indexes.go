@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
+
 //--------------------------------------------------
 func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -40,7 +41,7 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 	    Sparse:     true,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").EnsureIndex(doc_type__index)
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists
@@ -60,7 +61,7 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 	    Sparse:     true,
 	}
 
-	err = p_runtime_sys.Mongodb_coll.EnsureIndex(doc_type__index)
+	err = p_runtime_sys.Mongodb_db.C("gf_crawl").EnsureIndex(doc_type__index)
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			//ignore, index already exists

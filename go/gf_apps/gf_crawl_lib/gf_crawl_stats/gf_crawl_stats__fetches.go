@@ -35,11 +35,11 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[str
 
 	stats__fetches_by_days, gf_err := stats__objs_by_days(map[string]interface{}{}, "crawler_url_fetch", p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	data_map := map[string]interface{}{
-		"fetches_by_days_map":stats__fetches_by_days,
+		"fetches_by_days_map": stats__fetches_by_days,
 	}
 	return data_map, nil
 }
@@ -47,18 +47,18 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[str
 func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
-				"t":"crawler_url_fetch",
+				"t": "crawler_url_fetch",
 			},
 		},
 
 		bson.M{"$project":bson.M{
-				"id_str":      true,
-				"start_time_f":true,
-				"end_time_f":  true,
-				"domain_str":  true,
-				"url_str":     true, //actual link from the HTML <a> page ('href' parameter)
+				"id_str":       true,
+				"start_time_f": true,
+				"end_time_f":   true,
+				"domain_str":   true,
+				"url_str":      true, //actual link from the HTML <a> page ('href' parameter)
 				//"errors_num_i":bson.M{"$size":"$errors_lst",},
 			},
 		},

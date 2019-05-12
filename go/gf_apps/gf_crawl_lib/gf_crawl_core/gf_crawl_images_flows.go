@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //--------------------------------------------------
 func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	p_flows_names_lst                   []string,
@@ -42,11 +43,10 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	fmt.Println("p_crawler_page__gf_image_id_str - "+p_crawler_page__gf_image_id_str)
 	fmt.Println("p_flows_names_lst               - "+fmt.Sprint(p_flows_names_lst))
 
-	gf_page_img,gf_err := image__db_get(p_crawler_page__gf_image_id_str, p_runtime, p_runtime_sys)
+	gf_page_img, gf_err := image__db_get(p_crawler_page__gf_image_id_str, p_runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-
 
 	gf_image_id_str := gf_page_img.Image_id_str
 	gf_images_s3_bucket__is_uploaded_to__bool := false
@@ -54,8 +54,6 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 	//IMPORTANT!! - some crawler_page_images dont have their gf_image_id_str set,
 	//              which means that they dont have their corresponding gf_image.
 	if gf_image_id_str == "" {
-
-
 
 		p_runtime_sys.Log_fun("INFO","")
 		p_runtime_sys.Log_fun("INFO","CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")

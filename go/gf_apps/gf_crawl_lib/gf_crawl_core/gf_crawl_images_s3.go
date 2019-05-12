@@ -25,6 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //--------------------------------------------------
 func images_s3__stage__store_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
@@ -105,7 +106,7 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 
 	//------------------
 	p_image.S3_stored_bool = true
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":        "crawler_page_img",
 			"hash_str": p_image.Hash_str,
 		},
@@ -115,7 +116,7 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
 			"mongodb_update_error",
-			&map[string]interface{}{"image_hash_str": p_image.Hash_str,},
+			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

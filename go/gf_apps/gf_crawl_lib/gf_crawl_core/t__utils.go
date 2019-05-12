@@ -23,18 +23,20 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER","t__utils.t__cleanup__test_page_imgs()")
 
-	_,err := p_runtime_sys.Mongodb_coll.RemoveAll(bson.M{
-			"t":               bson.M{"$in":[]string{"crawler_page_img","crawler_page_img_ref",},},
-			"crawler_name_str":p_test__crawler_name_str,
+	_,err := p_runtime_sys.Mongodb_db.C("gf_crawl").RemoveAll(bson.M{
+			"t":                bson.M{"$in":[]string{"crawler_page_img","crawler_page_img_ref",},},
+			"crawler_name_str": p_test__crawler_name_str,
 		})
 	if err != nil {
 		panic(err)
 	}
 }
+
 //-------------------------------------------------
 func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
@@ -47,9 +49,10 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_crawl_tests",
-		Log_fun:         log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_crawl_tests",
+		Log_fun:          log_fun,
+		Mongodb_db:       mongodb_db,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//-------------
 	//ELASTICSEARCH
@@ -63,10 +66,10 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	//-------------
 
 	crawler_runtime := &Gf_crawler_runtime{
-		Events_ctx:           nil,
-		Esearch_client:       esearch_client,
-		S3_info:              s3_test_info.Gf_s3_info,
-		Cluster_node_type_str:test__cluster_node_type_str,
+		Events_ctx:            nil,
+		Esearch_client:        esearch_client,
+		S3_info:               s3_test_info.Gf_s3_info,
+		Cluster_node_type_str: test__cluster_node_type_str,
 	}
 
 	return runtime_sys, crawler_runtime

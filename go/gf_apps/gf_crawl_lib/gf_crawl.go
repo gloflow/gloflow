@@ -29,6 +29,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
+
 //--------------------------------------------------
 type Gf_crawler struct {
 	Name_str      string
@@ -47,15 +48,17 @@ type Gf_crawler_cycle_run struct {
 	Start_time_f         float64       `bson:"start_time_f"`
 	End_time_f           float64       `bson:"end_time_f"`
 }
+
 //--------------------------------------------------
 func Init(p_images_local_dir_path_str string,
-	p_cluster_node_type_str     string,
-	p_aws_access_key_id_str     string,
-	p_aws_secret_access_key_str string,
-	p_aws_token_str             string,
-	p_esearch_client            *elastic.Client,
-	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.Init()")
+	p_cluster_node_type_str      string,
+	p_crawl_config_file_path_str string,
+	p_aws_access_key_id_str      string,
+	p_aws_secret_access_key_str  string,
+	p_aws_token_str              string,
+	p_esearch_client             *elastic.Client,
+	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.Init()")
 
 	//--------------
 	events_ctx := gf_core.Events__init("/a/crawl/events", p_runtime_sys)
@@ -71,17 +74,20 @@ func Init(p_images_local_dir_path_str string,
 	}
 
 	runtime := &gf_crawl_core.Gf_crawler_runtime{
-		Events_ctx:           events_ctx,
-		Esearch_client:       p_esearch_client,
-		S3_info:              gf_s3_info,
-		Cluster_node_type_str:p_cluster_node_type_str,
+		Events_ctx:            events_ctx,
+		Esearch_client:        p_esearch_client,
+		S3_info:               gf_s3_info,
+		Cluster_node_type_str: p_cluster_node_type_str,
 	}
 	//--------------
 
 	//IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	db_index__init(runtime, p_runtime_sys)
 	
-	crawlers_map := Get_all_crawlers()
+	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
 	start_crawlers_cycles(crawlers_map,
 		p_images_local_dir_path_str,
@@ -94,27 +100,31 @@ func Init(p_images_local_dir_path_str string,
 		runtime,
 		p_runtime_sys)
 
-	cluster__init_handlers(runtime, p_runtime_sys)
+	gf_err = cluster__init_handlers(p_crawl_config_file_path_str, runtime, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
 	return nil
 }
+
 //--------------------------------------------------
-func start_crawlers_cycles(p_crawlers_map map[string]Gf_crawler,
+func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
 	p_images_s3_bucket_name_str string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl.start_crawlers_cycles()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.start_crawlers_cycles()")
 
 	events_id_str := "crawler_events"
 	
 	gf_core.Events__register_producer(events_id_str, p_runtime.Events_ctx, p_runtime_sys)
 
-	for _,crawler := range p_crawlers_map {
+	for _, crawler := range p_crawlers_map {
 
 		//IMPORTANT!! - each crawler runs in its own goroutine, and continuously
 		//              crawls the target domains
-		go func(p_crawler Gf_crawler) {
+		go func(p_crawler gf_crawl_core.Gf_crawler_def) {
 			start_crawler(p_crawler,
 				p_images_local_dir_path_str,
 				p_images_s3_bucket_name_str,
@@ -123,8 +133,9 @@ func start_crawlers_cycles(p_crawlers_map map[string]Gf_crawler,
 		}(crawler)
 	}
 }
+
 //--------------------------------------------------
-func start_crawler(p_crawler Gf_crawler,
+func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
 	p_images_s3_bucket_name_str string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,

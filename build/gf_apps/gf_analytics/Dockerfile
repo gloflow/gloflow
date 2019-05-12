@@ -8,7 +8,7 @@ RUN apk add --update bash
 #------------
 #DIRS
 RUN mkdir -p /home/gf/logs
-RUN mkdir -p /home/gf/conf
+RUN mkdir -p /home/gf/config
 RUN mkdir -p /home/gf/data
 
 #for crawler image data
@@ -49,6 +49,7 @@ RUN pip install colored
 ADD ./py/cli_stats.py /home/gf/py/cli_stats.py
 ADD ./py/stats/       /home/gf/py/stats
 #------------
-ADD ./templates            /home/gf/templates
-ADD ./static               /home/gf/static
-ADD ./gf_analytics_service /home/gf/
+ADD ./templates                /home/gf/templates
+ADD ./static                   /home/gf/static
+ADD ./config/crawl_config.yaml /home/gf/config
+ADD ./gf_analytics_service     /home/gf/

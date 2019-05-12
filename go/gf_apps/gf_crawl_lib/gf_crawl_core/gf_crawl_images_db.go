@@ -24,6 +24,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func Image__db_create(p_img *Gf_crawler_page_img,
 	p_runtime     *Gf_crawler_runtime,
@@ -37,14 +38,14 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 	//MASTER
 	if p_runtime.Cluster_node_type_str == "master" {
 
-		c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+		c,err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
 				"t":        "crawler_page_img",
 				"hash_str": p_img.Hash_str,
 			}).Count()
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img's in mongodb",
 				"mongodb_find_error",
-				&map[string]interface{}{
+				map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
 					"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
 				},
@@ -62,11 +63,11 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 		} else {
 				
 			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
-			err = p_runtime_sys.Mongodb_coll.Insert(p_img)
+			err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_img)
 			if err != nil {
 				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img in mongodb",
 					"mongodb_insert_error",
-					&map[string]interface{}{
+					map[string]interface{}{
 						"img_ref_url_str":             p_img.Url_str,
 						"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
 					},
@@ -96,14 +97,14 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 
 	if p_runtime.Cluster_node_type_str == "master" {
 
-		c,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-				"t":       "crawler_page_img_ref",
-				"hash_str":p_img_ref.Hash_str,
+		c,err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+				"t":        "crawler_page_img_ref",
+				"hash_str": p_img_ref.Hash_str,
 			}).Count()
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img_ref's in mongodb",
 				"mongodb_find_error",
-				&map[string]interface{}{
+				map[string]interface{}{
 					"img_ref_url_str":             p_img_ref.Url_str,
 					"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
 				},
@@ -117,13 +118,13 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 		} else {
 				
 			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
-			err = p_runtime_sys.Mongodb_coll.Insert(p_img_ref)
+			err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_img_ref)
 			if err != nil {
 				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img_ref in mongodb",
 					"mongodb_insert_error",
-					&map[string]interface{}{
-						"img_ref_url_str":            p_img_ref.Url_str,
-						"img_ref_origin_page_url_str":p_img_ref.Origin_page_url_str,
+					map[string]interface{}{
+						"img_ref_url_str":             p_img_ref.Url_str,
+						"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
 					},
 					err, "gf_crawl_core", p_runtime_sys)
 				return gf_err
@@ -135,6 +136,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 
 	return nil
 }
+
 //--------------------------------------------------
 func image__db_get(p_id_str string,
 	p_runtime     *Gf_crawler_runtime,
@@ -142,14 +144,14 @@ func image__db_get(p_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.image__db_get()")
 
 	var img Gf_crawler_page_img
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-			"t":     "crawler_page_img",
-			"id_str":p_id_str,
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+			"t":      "crawler_page_img",
+			"id_str": p_id_str,
 		}).One(&img)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_img by ID from mongodb",
 			"mongodb_find_error",
-			&map[string]interface{}{"id_str":p_id_str,},
+			map[string]interface{}{"id_str":p_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}

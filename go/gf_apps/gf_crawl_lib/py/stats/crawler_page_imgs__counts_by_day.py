@@ -34,7 +34,7 @@ def run(p_mongo_client,
 	#-------------------------------------------------------------
 	def query(p_obj_type_str):
 
-		coll    = p_mongo_client['prod_db']['data_symphony']
+		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
 				{'$match':{
 					't':p_obj_type_str}},
@@ -91,7 +91,7 @@ def run(p_mongo_client,
 		#print coll.explain("executionStats")
 	#-------------------------------------------------------------
 	def query__img_attribute(p_img_attribute_str):
-		coll    = p_mongo_client['prod_db']['data_symphony']
+		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
 				{'$match':{'t':'crawler_page_img'}},
 				{"$project":{
@@ -201,12 +201,12 @@ def run(p_mongo_client,
 
 	    #CAUTION!! - this assumes that these lists are of the same length as the imgs__days_lst,
 	    #            same number of days. if thats not the case Pandas will complain.
-	    "imgs__downloaded__counts":imgs__downloaded__counts_lst,
-	    "imgs__s3_stored__counts": imgs__s3_stored__counts_lst,
-	    "imgs_refs__counts":       imgs_refs__counts_lst
+	    "imgs__downloaded__counts": imgs__downloaded__counts_lst,
+	    "imgs__s3_stored__counts":  imgs__s3_stored__counts_lst,
+	    "imgs_refs__counts":        imgs_refs__counts_lst
 	})
 
-	df.set_index("days",drop=True,inplace=True)
+	df.set_index("days", drop=True, inplace=True)
 	print df
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"

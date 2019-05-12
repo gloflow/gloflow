@@ -29,6 +29,34 @@ import (
 	"github.com/globalsign/mgo"
 )
 
+//-------------------------------------------------
+func Mongo__connect(p_mongodb_host_str string,
+	p_mongodb_db_name_str string,
+	p_log_fun             func(string, string)) *mgo.Database {
+	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
+	p_log_fun("INFO",      "p_mongodb_host_str    - "+p_mongodb_host_str)
+	p_log_fun("INFO",      "p_mongodb_db_name_str - "+p_mongodb_db_name_str)
+	
+	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
+	if err != nil {
+		panic(err)
+	}
+
+	//--------------------
+	//IMPORTANT!! - writes are waited for to confirm them.
+	//				in unsafe mode writes are fire-and-forget with no error checking. 
+	//              this mode is faster, since no confirmation is expected.
+	session.SetSafe(&mgo.Safe{})
+
+	//Monotonic consistency - will read from a slave if possible, for better load distribution.
+	//                        once the first write happens the connection is switched to the master.
+	session.SetMode(mgo.Monotonic,true)
+	//--------------------
+
+	db := session.DB(p_mongodb_db_name_str)
+	return db
+}
+
 //--------------------------------------------------------------------
 func Mongo__handle_error(p_user_msg_str string,
 	p_error_type_str     string,
@@ -121,34 +149,6 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	cmd.Start()
 
 	return nil
-}
-
-//-------------------------------------------------
-func Mongo__connect(p_mongodb_host_str string,
-	p_mongodb_db_name_str string,
-	p_log_fun             func(string, string)) *mgo.Database {
-	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
-	p_log_fun("INFO",      "p_mongodb_host_str    - "+p_mongodb_host_str)
-	p_log_fun("INFO",      "p_mongodb_db_name_str - "+p_mongodb_db_name_str)
-	
-	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
-	if err != nil {
-		panic(err)
-	}
-
-	//--------------------
-	//IMPORTANT!! - writes are waited for to confirm them.
-	//				in unsafe mode writes are fire-and-forget with no error checking. 
-	//              this mode is faster, since no confirmation is expected.
-	session.SetSafe(&mgo.Safe{})
-
-	//Monotonic consistency - will read from a slave if possible, for better load distribution.
-	//                        once the first write happens the connection is switched to the master.
-	session.SetMode(mgo.Monotonic,true)
-	//--------------------
-
-	db := session.DB(p_mongodb_db_name_str)
-	return db
 }
 
 //-------------------------------------------------

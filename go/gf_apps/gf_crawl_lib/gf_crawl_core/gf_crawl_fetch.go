@@ -29,6 +29,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
+
 //--------------------------------------------------
 //ELASTIC_SEARCH - INDEXED
 type Gf_crawler_url_fetch struct {
@@ -50,6 +51,7 @@ type Gf_crawler_url_fetch struct {
 	Error_id_str         string            `bson:"error_id_str,omitempty"`
 	//-------------------
 }
+
 //--------------------------------------------------
 func Fetch__url(p_url_str string,
 	p_link             *Gf_crawler_page_outgoing_link,
@@ -76,7 +78,7 @@ func Fetch__url(p_url_str string,
 
 		gf_err := gf_core.Error__create(m,
 			"url_parse_error",
-			&map[string]interface{}{"url_str":p_url_str,},
+			map[string]interface{}{"url_str":p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 
 		_,fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
@@ -103,14 +105,14 @@ func Fetch__url(p_url_str string,
 		//goquery_doc          :doc,
 	}
 
-	err = p_runtime_sys.Mongodb_coll.Insert(fetch)
+	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(fetch)
 	if err != nil {
 		t:="fetch_record_persist__failed"
 		m:=fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
 		
 		gf_err := gf_core.Mongo__handle_error(m,
 			"mongodb_insert_error",
-			&map[string]interface{}{"url_str":p_url_str,},
+			map[string]interface{}{"url_str":p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 
 		_,fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
@@ -145,15 +147,15 @@ func Fetch__url(p_url_str string,
 	fetch.End_time_f    = end_time_f
 	fetch.Page_text_str = doc.Text()
 	fetch.goquery_doc   = doc
-	err = p_runtime_sys.Mongodb_coll.Update(bson.M{"id_str":fetch.Id_str,"t":"crawler_url_fetch"},
+	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{"id_str": fetch.Id_str, "t": "crawler_url_fetch"},
 		bson.M{"$set":bson.M{
-			"end_time_f":   end_time_f,
-			"page_text_str":doc.Text(),
+			"end_time_f":    end_time_f,
+			"page_text_str": doc.Text(),
 		}})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to to update fetch record with end_time and page_text",
 			"mongodb_update_error",
-			&map[string]interface{}{"fetch_id_str":fetch.Id_str,},
+			map[string]interface{}{"fetch_id_str":fetch.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, "", gf_err
 	}
@@ -164,9 +166,9 @@ func Fetch__url(p_url_str string,
 		event_type_str := "fetch__http_request__done"
 		msg_str        := "completed fetching a document over HTTP"
 		data_map       := map[string]interface{}{
-			"url_str":     p_url_str,
-			"start_time_f":start_time_f,
-			"end_time_f":  end_time_f,
+			"url_str":      p_url_str,
+			"start_time_f": start_time_f,
+			"end_time_f":   end_time_f,
 		}
 
 		gf_core.Events__send_event(events_id_str,
@@ -180,6 +182,7 @@ func Fetch__url(p_url_str string,
 	
 	return fetch, domain_str, nil
 }
+
 //--------------------------------------------------
 func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
@@ -220,6 +223,7 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 
 	return nil
 }
+
 //--------------------------------------------------
 func fetch__error(p_error_type_str string,
 	p_error_msg_str    string,
@@ -251,29 +255,30 @@ func fetch__error(p_error_type_str string,
 
 	return crawler_error, nil
 }
+
 //--------------------------------------------------
 func fetch__mark_as_failed(p_error *Gf_crawler_error,
 	p_fetch       *Gf_crawler_url_fetch,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.fetch__mark_as_failed()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_fetch.fetch__mark_as_failed()")
 
 	p_fetch.Error_id_str   = p_error.Id_str
 	p_fetch.Error_type_str = p_error.Type_str
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"id_str":p_fetch.Id_str,
-			"t":     "crawler_url_fetch",
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+			"id_str": p_fetch.Id_str,
+			"t":      "crawler_url_fetch",
 		},
 		bson.M{"$set":bson.M{
-				"error_id_str":  p_error.Id_str,
-				"error_type_str":p_error.Type_str,
+				"error_id_str":   p_error.Id_str,
+				"error_type_str": p_error.Type_str,
 			},
 		})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a crawler_url_fetch as failed in mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{"fetch_id_str":p_fetch.Id_str,},
+			map[string]interface{}{"fetch_id_str":p_fetch.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

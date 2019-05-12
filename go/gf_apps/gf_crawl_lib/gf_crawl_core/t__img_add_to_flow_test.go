@@ -25,6 +25,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/davecgh/go-spew/spew"
 )
+
 //---------------------------------------------------
 func Test__img_add_to_flow(p_test *testing.T) {
 
@@ -39,8 +40,6 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__gf_images_s3_bucket_name_str      := "gf--test--img"
 	runtime_sys, crawler_runtime            := T__init()
-
-
 
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 	//-------------------
@@ -86,13 +85,13 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 
 	page_img__pipeline_info := &gf__page_img__pipeline_info{
-		link:               page_img_link,
-		page_img:           test__crawled_image,
-		page_img_ref:       test__crawled_image_ref,
-		exists_bool:        false,               //artificially set test image to be declared as not existing already, in order to be fully processed
-		local_file_path_str:test__local_image_file_path_str,
-		nsfv_bool:          false,
-		thumbs:             nil,
+		link:                page_img_link,
+		page_img:            test__crawled_image,
+		page_img_ref:        test__crawled_image_ref,
+		exists_bool:         false,               //artificially set test image to be declared as not existing already, in order to be fully processed
+		local_file_path_str: test__local_image_file_path_str,
+		nsfv_bool:           false,
+		thumbs:              nil,
 	}
 
 	page_imgs__pinfos_lst := []*gf__page_img__pipeline_info{

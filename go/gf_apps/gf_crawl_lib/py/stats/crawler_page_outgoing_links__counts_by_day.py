@@ -33,7 +33,7 @@ def run(p_mongo_client,
 	p_output_img_str = '../plots/crawler_page_outgoing_links__counts_by_day.png'):
 
 	def query():
-		coll    = p_mongo_client['prod_db']['data_symphony']
+		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
 				{'$match':{
 					't':'crawler_page_outgoing_link'}},

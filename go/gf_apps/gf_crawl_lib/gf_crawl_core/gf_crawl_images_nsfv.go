@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 )
+
 //--------------------------------------------------
 func images__stage__determine_are_nsfv(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
@@ -114,6 +115,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 	}
 	return p_page_imgs__pipeline_infos_lst
 }
+
 //--------------------------------------------------
 //GIF
 
@@ -175,6 +177,7 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 	is_nsfv_bool := false //if all frames pass as non-nsfv then the GIF is not NSFV
 	return is_nsfv_bool, nil
 }
+
 //--------------------------------------------------
 func image__is_nsfv(p_img_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
@@ -184,19 +187,20 @@ func image__is_nsfv(p_img_path_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to classify image as NSFV or not, using the 'nude' package",
 			"verify__invalid_image_nsfv_error",
-			&map[string]interface{}{"img_path_str":p_img_path_str,},
+			map[string]interface{}{"img_path_str":p_img_path_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return true, gf_err
 	}
 	p_runtime_sys.Log_fun("INFO","image is_nude - "+fmt.Sprint(is_nude_bool))
 	return is_nude_bool, nil
 }
+
 //--------------------------------------------------
 func image__flag_as_nsfv(p_image *Gf_crawler_page_img,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_nsfv.image__flag_as_nsfv()")
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":      "crawler_page_img",
 			"id_str": p_image.Id_str,
 		},
@@ -206,7 +210,7 @@ func image__flag_as_nsfv(p_image *Gf_crawler_page_img,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img NSFV flag by its ID",
 			"mongodb_update_error",
-			&map[string]interface{}{"image_id_str": p_image.Id_str,},
+			map[string]interface{}{"image_id_str": p_image.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

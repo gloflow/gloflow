@@ -30,6 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
+
 //--------------------------------------------------
 type Gf_crawler_page_img struct {
 	Id                         bson.ObjectId `bson:"_id,omitempty"`
@@ -91,6 +92,7 @@ type Gf_crawler__recent_images struct {
 	Nsfv_lst                 []bool    `bson:"nsfv_lst"                 json:"nsfv_lst"`
 	Origin_page_urls_lst     []string  `bson:"origin_page_urls_lst"     json:"origin_page_urls_lst"`
 }
+
 //-------------------------------------------------
 func images__prepare_and_create(p_crawler_name_str string,
 	p_cycle_run_id_str   string,
@@ -149,6 +151,7 @@ func images__prepare_and_create(p_crawler_name_str string,
 		p_runtime_sys)
 	return img, nil
 }
+
 //-------------------------------------------------
 func images__create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
@@ -158,10 +161,10 @@ func images__create(p_crawler_name_str string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("crawler_page_img:%f",creation_unix_time_f)
+	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
 
 	//HASH
 	to_hash_str := p_img_src_url_str //one Crawler_page_img for a given page url, no matter on how many pages it is referenced by
@@ -170,24 +173,24 @@ func images__create(p_crawler_name_str string,
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
 	img := &Gf_crawler_page_img{
-		Id_str:                    id_str,
-		T_str:                     "crawler_page_img",
-		Creation_unix_time_f:      creation_unix_time_f,
-		Crawler_name_str:          p_crawler_name_str,
-		Cycle_run_id_str:          p_cycle_run_id_str,
-		Img_ext_str:               p_img_ext_str,
-		Url_str:                   p_img_src_url_str,
-		Domain_str:                p_img_src_domain_str,
-		Origin_page_url_str:       p_origin_page_url_str,
-		Origin_page_url_domain_str:p_origin_page_url_domain_str,
-		Hash_str:                  hash_str,
-		Downloaded_bool:           false,
-		Valid_for_usage_bool:      false, //all images are initially set as invalid for usage
-		S3_stored_bool:            false, 
+		Id_str:                     id_str,
+		T_str:                      "crawler_page_img",
+		Creation_unix_time_f:       creation_unix_time_f,
+		Crawler_name_str:           p_crawler_name_str,
+		Cycle_run_id_str:           p_cycle_run_id_str,
+		Img_ext_str:                p_img_ext_str,
+		Url_str:                    p_img_src_url_str,
+		Domain_str:                 p_img_src_domain_str,
+		Origin_page_url_str:        p_origin_page_url_str,
+		Origin_page_url_domain_str: p_origin_page_url_domain_str,
+		Hash_str:                   hash_str,
+		Downloaded_bool:            false,
+		Valid_for_usage_bool:       false, //all images are initially set as invalid for usage
+		S3_stored_bool:             false, 
 	}
-
 	return img
 }
+
 //-------------------------------------------------
 func images__ref_create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
@@ -196,7 +199,7 @@ func images__ref_create(p_crawler_name_str string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img_ref {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__ref_create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	ref_id_str           := fmt.Sprintf("img_ref:%f",creation_unix_time_f)
@@ -210,42 +213,43 @@ func images__ref_create(p_crawler_name_str string,
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
 	gf_img_ref := &Gf_crawler_page_img_ref{
-		Id_str:                    ref_id_str,
-		T_str:                     "crawler_page_img_ref",
-		Creation_unix_time_f:      creation_unix_time_f,
-		Crawler_name_str:          p_crawler_name_str,
-		Cycle_run_id_str:          p_cycle_run_id_str,
-		Url_str:                   p_image_url_str,        //complete_img_src_str,
-		Domain_str:                p_image_url_domain_str, //img_src_domain_str,
-		Origin_page_url_str:       p_origin_page_url_str,
-		Origin_page_url_domain_str:p_origin_page_url_domain_str,
-		Hash_str:                  hash_str,
+		Id_str:                     ref_id_str,
+		T_str:                      "crawler_page_img_ref",
+		Creation_unix_time_f:       creation_unix_time_f,
+		Crawler_name_str:           p_crawler_name_str,
+		Cycle_run_id_str:           p_cycle_run_id_str,
+		Url_str:                    p_image_url_str,        //complete_img_src_str,
+		Domain_str:                 p_image_url_domain_str, //img_src_domain_str,
+		Origin_page_url_str:        p_origin_page_url_str,
+		Origin_page_url_domain_str: p_origin_page_url_domain_str,
+		Hash_str:                   hash_str,
 	}
 
 	return gf_img_ref
 }
+
 //-------------------------------------------------
 func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.Images__get_recent()")
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
-		bson.M{"$match":bson.M{
-				"t":"crawler_page_img",
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+		bson.M{"$match": bson.M{
+				"t": "crawler_page_img",
 			},
 		},
-		bson.M{"$sort":bson.M{
-				"creation_unix_time_f":-1,
+		bson.M{"$sort": bson.M{
+				"creation_unix_time_f": -1,
 			},
 		},
-		bson.M{"$limit":2000},
-		bson.M{"$group":bson.M{
-				"_id":                     "$origin_page_url_domain_str", //"$domain_str",
-				"imgs_count_int":          bson.M{"$sum" :1},
-				"crawler_page_img_ids_lst":bson.M{"$push":"$id_str"},
-				"creation_times_lst":      bson.M{"$push":"$creation_unix_time_f"},
-				"urls_lst":                bson.M{"$push":"$url_str"},
-				"nsfv_ls":                 bson.M{"$push":"$nsfv_bool"},
-				"origin_page_urls_lst":    bson.M{"$push":"$origin_page_url_str"},
+		bson.M{"$limit": 2000},
+		bson.M{"$group": bson.M{
+				"_id":                      "$origin_page_url_domain_str", //"$domain_str",
+				"imgs_count_int":           bson.M{"$sum" :1},
+				"crawler_page_img_ids_lst": bson.M{"$push":"$id_str"},
+				"creation_times_lst":       bson.M{"$push":"$creation_unix_time_f"},
+				"urls_lst":                 bson.M{"$push":"$url_str"},
+				"nsfv_ls":                  bson.M{"$push":"$nsfv_bool"},
+				"origin_page_urls_lst":     bson.M{"$push":"$origin_page_url_str"},
 			},
 		},
 	})

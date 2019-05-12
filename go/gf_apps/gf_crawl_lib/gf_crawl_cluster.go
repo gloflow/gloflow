@@ -29,6 +29,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
+
 //--------------------------------------------------
 type Gf_crawler_cluster_worker struct {
 	Id                   bson.ObjectId `bson:"_id,omitempty"`
@@ -43,6 +44,7 @@ type Gf_json_msg__link__get_unresolved struct {
 	Fetch_id_str          string  `json:"fetch_id_str"`
 	Fetch_creation_time_f float64 `json:"fetch_creation_time_f"`
 }
+
 //--------------------------------------------------
 func cluster__client(p_req_type_str string,
 	p_runtime     *gf_crawl_core.Gf_crawler_runtime,
@@ -58,30 +60,31 @@ func cluster__client(p_req_type_str string,
 		case "link__mark_as_resolved":
 	}
 }
+
 //--------------------------------------------------
 func cluster__register_worker(p_ext_worker_name_str string,
 	p_runtime     *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_cluster_worker, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__register_worker()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_cluster.cluster__register_worker()")
 
 	id_str               := "crawler_cluster_worker__"+fmt.Sprint()
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	worker := &Gf_crawler_cluster_worker{
-		Id_str:              id_str,
-		T_str:               "crawler_cluster_worker",
-		Creation_unix_time_f:creation_unix_time_f,
-		Ext_name_str:        p_ext_worker_name_str,
+		Id_str:               id_str,
+		T_str:                "crawler_cluster_worker",
+		Creation_unix_time_f: creation_unix_time_f,
+		Ext_name_str:         p_ext_worker_name_str,
 	}
 
 	//------------
 	//DB
-	err := p_runtime_sys.Mongodb_coll.Insert(worker)
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(worker)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
 			"mongodb_insert_error",
-			&map[string]interface{}{
-				"ext_worker_name_str":p_ext_worker_name_str,
+			map[string]interface{}{
+				"ext_worker_name_str": p_ext_worker_name_str,
 			},
 			err, "gf_crawl_lib", p_runtime_sys)
 		return nil, gf_err
@@ -90,11 +93,18 @@ func cluster__register_worker(p_ext_worker_name_str string,
 
 	return worker, nil
 }
-//--------------------------------------------------
-func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_cluster.cluster__init_handlers()")
 
+//--------------------------------------------------
+func cluster__init_handlers(p_crawl_config_file_path_str string,
+	p_runtime *gf_crawl_core.Gf_crawler_runtime,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_cluster.cluster__init_handlers()")
+	
+	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
 	//----------------
 	//REGISTER_WORKER
 	http.HandleFunc("/a/crawl/cluster/register__worker", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -111,13 +121,13 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		//OUTPUT
 		
 		r_map := map[string]interface{}{
-			"status_str":   "OK",
-			"worker_id_str":worker.Id_str,
+			"status_str":    "OK",
+			"worker_id_str": worker.Id_str,
 		}
 
 		r_lst,_ := json.Marshal(r_map)
 		r_str   := string(r_lst)
-		fmt.Fprint(p_resp,r_str)
+		fmt.Fprint(p_resp, r_str)
 		//------------------
 	})
 	//----------------
@@ -127,7 +137,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		if p_req.Method == "POST" {
 
 			worker_id_str := p_req.URL.Query()["worker_id"][0]
-			p_runtime_sys.Log_fun("INFO","worker_id_str - "+worker_id_str)
+			p_runtime_sys.Log_fun("INFO", "worker_id_str - "+worker_id_str)
 
 			var imgs_lst []gf_crawl_core.Gf_crawler_page_img
 			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
@@ -150,8 +160,8 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 			//OUTPUT
 			
 			r_map := map[string]interface{}{
-				"status_str":      "OK",
-				"imgs_existed_lst":imgs_existed_lst,
+				"status_str":       "OK",
+				"imgs_existed_lst": imgs_existed_lst,
 			}
 
 			r_lst,_ := json.Marshal(r_map)
@@ -190,7 +200,6 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 			crawler_name_str := p_req.URL.Query()["crawler_name_str"][0]
 			p_runtime_sys.Log_fun("INFO","crawler_name_str - "+crawler_name_str)
 
-			crawlers_map := Get_all_crawlers()
 			if crawler, ok := crawlers_map[crawler_name_str]; ok {
 
 				//domains_lst := crawler.Domains_lst
@@ -203,13 +212,13 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 				//OUTPUT
 				
 				r_map := map[string]interface{}{
-					"status_str":     "OK",
-					"unresolved_link":unresolved_link,
+					"status_str":      "OK",
+					"unresolved_link": unresolved_link,
 				}
 
 				r_lst,_ := json.Marshal(r_map)
 				r_str   := string(r_lst)
-				fmt.Fprint(p_resp,r_str)
+				fmt.Fprint(p_resp, r_str)
 				//------------------
 			} else {
 
@@ -250,7 +259,7 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 			//OUTPUT
 			
 			r_map := map[string]interface{}{
-				"status_str":"OK",
+				"status_str": "OK",
 			}
 
 			r_lst,_ := json.Marshal(r_map)
@@ -260,6 +269,5 @@ func cluster__init_handlers(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		}
 	})
 	//-----------------
-
 	return nil
 }

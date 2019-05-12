@@ -57,7 +57,7 @@ func dashboard__render_template(p_tmpl *template.Template,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to render the domains_browser template",
             "template_render_error",
-            &map[string]interface{}{},
+            map[string]interface{}{},
             err, "gf_analytics", p_runtime_sys)
 		return gf_err
 	}

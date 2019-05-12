@@ -26,5 +26,6 @@ import (
 type Runtime_sys struct {
 	Service_name_str string
 	Log_fun          func(string,string)
+	Mongodb_db       *mgo.Database
 	Mongodb_coll     *mgo.Collection
 }

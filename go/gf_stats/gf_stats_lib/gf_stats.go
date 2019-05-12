@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
 //-------------------------------------------------
 type Stat_query_run__extern_result struct {
 	Query_run_id_str   string                 `json:"query_run_id_str"`
@@ -45,6 +46,7 @@ type Stat_query_run struct {
 	End_time__unix_f   float64                `bson:"end_time__unix_f"`
 	Result_data_map    map[string]interface{} `bson:"result_data_map"`
 }
+
 //-------------------------------------------------
 func Init(p_stats_url_base_str string,
 	p_py_stats_dir_path_str       string,
@@ -79,6 +81,7 @@ func Init(p_stats_url_base_str string,
 
 	return nil
 }
+
 //-------------------------------------------------
 func query__init_handlers(p_stats_url_base_str string,
 	p_stats_query_funs_map map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error),
@@ -121,6 +124,7 @@ func query__init_handlers(p_stats_url_base_str string,
 		}
 	});
 }
+
 //-------------------------------------------------
 func query__run_fun(p_stat_name_str string,
 	p_stats_query_funs_map map[string](func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error)),
@@ -157,13 +161,14 @@ func query__run_fun(p_stat_name_str string,
 	} else {
 		gf_err := gf_core.Error__create("failed to get random img range from the DB",
 			"verify__invalid_key_value_error",
-			&map[string]interface{}{"stat_name_str":p_stat_name_str,},
+			map[string]interface{}{"stat_name_str":p_stat_name_str,},
 			nil,"gf_stats_lib",p_runtime_sys)
 		return nil,gf_err
 	}
 
 	return nil,nil
 }
+
 //-------------------------------------------------
 func Stat_run__create(p_stat_name_str string,
 	p_results_data_lst   map[string]interface{},
@@ -185,7 +190,7 @@ func Stat_run__create(p_stat_name_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to persist a stat_run",
 			"mongodb_insert_error",
-			&map[string]interface{}{"stat_name_str":p_stat_name_str,},
+			map[string]interface{}{"stat_name_str":p_stat_name_str,},
 			err,"gf_stats_lib",p_runtime_sys)
 		return gf_err
 	}

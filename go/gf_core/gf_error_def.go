@@ -28,111 +28,120 @@ func error__get_defs() map[string]error_def {
 	error_defs_map := map[string]error_def{
 
 		//---------------
-		"panic_error":error_def{
-			Descr_str:"a golang panic was caught with recover()",
+		"panic_error": error_def{
+			Descr_str: "a golang panic was caught with recover()",
 		},
 		//---------------
-		"int_parse_error":error_def{
-			Descr_str:"failed to parse an integer string",
+		"int_parse_error": error_def{
+			Descr_str: "failed to parse an integer string",
 		},
-		"url_parse_error":error_def{
-			Descr_str:"failed to parse a url with url.Parse()",
+		"url_parse_error": error_def{
+			Descr_str: "failed to parse a url with url.Parse()",
 		},
-		"io_reader_error":error_def{
-			Descr_str:"failed to read bytes using the io.Reader.ReadBytes()",
+		"io_reader_error": error_def{
+			Descr_str: "failed to read bytes using the io.Reader.ReadBytes()",
 		},
 		//---------------
 		//DATA_VERIFICATION
-		"verify__invalid_value_error":{
-			Descr_str:"data failed verification, not an expected value",
+		"verify__invalid_value_error": error_def{
+			Descr_str: "data failed verification, not an expected value",
 		},
-		"verify__value_not_integer_error":{
-			Descr_str:"data failed verification, the supplied value is not an integer",
+		"verify__value_not_integer_error": error_def{
+			Descr_str: "data failed verification, the supplied value is not an integer",
 		},
-		"verify__value_too_many_error":{
-			Descr_str:"data failed verification, the supplied too many values",
+		"verify__value_too_many_error": error_def{
+			Descr_str: "data failed verification, the supplied too many values",
 		},
-		"verify__missing_key_error":{
-			Descr_str:"data failed verification, the needed key is missing",
+		"verify__missing_key_error": error_def{
+			Descr_str: "data failed verification, the needed key is missing",
 		},
-		"verify__invalid_key_value_error":{
-			Descr_str:"data failed verification, the key does not have the expected value",
+		"verify__invalid_key_value_error": error_def{
+			Descr_str: "data failed verification, the key does not have the expected value",
 		},
-		"verify__string_too_short_error":{
-			Descr_str:"data failed verification, the string is too short",
+		"verify__string_too_short_error": error_def{
+			Descr_str: "data failed verification, the string is too short",
 		},
-		"verify__string_too_long_error":{
-			Descr_str:"data failed verification, the string is too long",
+		"verify__string_too_long_error": error_def{
+			Descr_str: "data failed verification, the string is too long",
 		},
-		"verify__invalid_image_extension_error":{
-			Descr_str:"an unsupported image file extension was encountered",
+		"verify__invalid_image_extension_error": error_def{
+			Descr_str: "an unsupported image file extension was encountered",
 		},
-		"verify__invalid_query_string_encoding_error":{
-			Descr_str:"string is not a valid query-string encoding",
+		"verify__invalid_query_string_encoding_error": error_def{
+			Descr_str: "string is not a valid query-string encoding",
 		},
-		"verify__invalid_image_nsfv_error":{
-			Descr_str:"image NSFV verification failed",
+		"verify__invalid_image_nsfv_error": error_def{
+			Descr_str: "image NSFV verification failed",
 		},
 		//---------------
 		//FILESYSTEM
-		"file_open_error":error_def{
-			Descr_str:"os.Create() failed to create a file - package (os)",
+		"file_open_error": error_def{
+			Descr_str: "os.Create() failed to create a file - package (os)",
 		},
-		"file_create_error":error_def{
-			Descr_str:"os.Open() failed to open a file - package (os)",
+		"file_create_error": error_def{
+			Descr_str: "os.Open() failed to open a file - package (os)",
 		},
-		"file_remove_error":error_def{
-			Descr_str:"os.Remove() failed to remove a file - package (os)",
+		"file_read_error": error_def{
+			Descr_str: "f.Read() failed to read file - package (os)",
 		},
-		"file_write_error":error_def{
-			Descr_str:"f.Write() failed to write to a file - package (os)",
+		"file_remove_error": error_def{
+			Descr_str: "os.Remove() failed to remove a file - package (os)",
 		},
-		"file_sync_error":error_def{
-			Descr_str:"f.Sync() failed to sync a file to the FS - package (os)",
+		"file_write_error": error_def{
+			Descr_str: "f.Write() failed to write to a file - package (os)",
 		},
-		"file_missing_error":error_def{
-			Descr_str:"file doesnt exist in the FS",
+		"file_sync_error": error_def{
+			Descr_str: "f.Sync() failed to sync a file to the FS - package (os)",
 		},
-		"file_buffer_copy_error":error_def{
-			Descr_str:"using a file as a source/target of a buffer copy failed - (io.Copy(),etc.)",
+		"file_missing_error": error_def{
+			Descr_str: "file doesnt exist in the FS",
 		},
-		"dir_list_error":error_def{
-			Descr_str:"failed to list contents of a dir in the FS",
+		"file_buffer_copy_error": error_def{
+			Descr_str: "using a file as a source/target of a buffer copy failed - (io.Copy(),etc.)",
+		},
+		"dir_list_error": error_def{
+			Descr_str: "failed to list contents of a dir in the FS",
 		},
 		//---------------
 		//ENCODE/DECODE
-		"json_decode_error":error_def{
-			Descr_str:"json.Unmarshal() failed to parse byte array  - package (encoding/json)",
+		//JSON
+		"json_decode_error": error_def{
+			Descr_str: "json.Unmarshal() failed to parse byte array - package (encoding/json)",
 		},
-		"json_encode_error":error_def{
-			Descr_str:"json.Marshal() failed to parse byte array  - package (encoding/json)",
+		"json_encode_error": error_def{
+			Descr_str: "json.Marshal() failed to parse byte array - package (encoding/json)",
 		},
-		"base64_decoding_error":error_def{
-			Descr_str:"base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
+		//YAML
+		"yaml_decode_error": error_def{
+			Descr_str: "yaml.Unmarshal() failed to parse byte array - package (gopkg.in/yaml.v2)",
+		},
+		//BASE64
+		"base64_decoding_error": error_def{
+			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
 		},
 		//---------------
 		//IMAGES
-		"image_decoding_error":error_def{
-			Descr_str:"image.Decode() failed to decode image data - package (image)",
+		"image_decoding_error": error_def{
+			Descr_str: "image.Decode() failed to decode image data - package (image)",
 		},
-		"image_decoding_config_error":error_def{
-			Descr_str:"image.DecodeConfig() failed to decode image data - package (image,image/png,image/jpeg,etc.)",
+		"image_decoding_config_error": error_def{
+			Descr_str: "image.DecodeConfig() failed to decode image data - package (image,image/png,image/jpeg,etc.)",
 		},
-		"jpeg_decoding_error":error_def{
-			Descr_str:"jpeg.Decode() failed to decode image data - package (image/jpeg)",
+		"jpeg_decoding_error": error_def{
+			Descr_str: "jpeg.Decode() failed to decode image data - package (image/jpeg)",
 		},
-		"png_decoding_error":error_def{
-			Descr_str:"png.Decode() failed to decode image data - package (image/png)",
+		"png_decoding_error": error_def{
+			Descr_str: "png.Decode() failed to decode image data - package (image/png)",
 		},
-		"png_encoding_error":error_def{
-			Descr_str:"png.Encode() failed to encode image data - package (image/png)",
+		"png_encoding_error": error_def{
+			Descr_str: "png.Encode() failed to encode image data - package (image/png)",
 		},
-		"gif_decoding_frames_error":error_def{
-			Descr_str:"gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
+		"gif_decoding_frames_error": error_def{
+			Descr_str: "gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
 		},
 		//---------------
 		//MONGODB
-		"mongodb_find_error":error_def{
+		"mongodb_find_error": error_def{
 			Descr_str:"c.Find() failed to find a mongodb document - package (mgo)",
 		},
 		"mongodb_not_found_error":error_def{
@@ -190,6 +199,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"http_client received a non-OK GF error",
 		},
 		//---------------
+		//WEBSOCKETS
 		"ws_connection_init_error":{
 			Descr_str: "websocket client failed to connect to a url",
 		},

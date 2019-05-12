@@ -27,6 +27,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Gf_stats__objs_by_days struct {
 	Obj_type_str                     string                           `json:"obj_type_str"                     bson:"obj_type_str"`
@@ -39,6 +40,7 @@ type Gf_domain_counts_for_all_days struct {
 	Total_count_int int    `json:"total_count_int" bson:"total_count_int"`
 	Days_counts_lst []int  `json:"days_counts_lst" bson:"days_counts_lst"`
 }
+
 //-------------------------------------------------
 func stats__objs_by_days(p_match_query_map map[string]interface{},
 	p_obj_type_str string,
@@ -58,7 +60,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		match_query[k] = v
 	}
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		/*bson.M{"$match":bson.M{
 				"t":p_obj_type_str, //"crawler_url_fetch",
 			},
@@ -91,7 +93,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
-			&map[string]interface{}{"obj_type_str":p_obj_type_str,},
+			map[string]interface{}{"obj_type_str": p_obj_type_str,},
 			err, "gf_crawl_stats", p_runtime_sys)
 		return nil,gf_err
 	}
@@ -209,9 +211,9 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	}
 	//------------------
 	stats := &Gf_stats__objs_by_days{
-		Obj_type_str:                    p_obj_type_str,
-		Counts_by_day__sorted_lst:       total_counts_by_day__sorted_lst,
-		Domain_counts_by_day__sorted_lst:domains__counts_for_all_days_lst,
+		Obj_type_str:                     p_obj_type_str,
+		Counts_by_day__sorted_lst:        total_counts_by_day__sorted_lst,
+		Domain_counts_by_day__sorted_lst: domains__counts_for_all_days_lst,
 	}
 	//------------------
 	return stats, nil

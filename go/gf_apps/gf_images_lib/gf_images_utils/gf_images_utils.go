@@ -35,6 +35,7 @@ import (
 	"encoding/hex"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
@@ -84,6 +85,7 @@ func Image__load_file(p_image_local_file_path_str string,
 
 	return img, nil
 }
+
 //---------------------------------------------------
 func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Image__create_id_from_url()")
@@ -120,6 +122,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 	//-------------
 	return image_id_str,nil
 }
+
 //---------------------------------------------------
 //p_image_type_str - :String - "jpeg"|"gif"|"png"
 
@@ -140,6 +143,7 @@ func Image__create_id(p_image_path_str string,
 	image_id_str := hex_str
 	return image_id_str
 }
+
 //---------------------------------------------------
 //VAR
 //---------------------------------------------------
@@ -159,6 +163,7 @@ func Get_image_filename_from_url(p_image_url_str string, p_runtime_sys *gf_core.
 	image_file_name_str := path.Base(image_path_str)
 	return image_file_name_str, nil
 }
+
 //---------------------------------------------------
 func Get_image_title_from_url(p_image_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
@@ -178,6 +183,7 @@ func Get_image_title_from_url(p_image_url_str string,
 	
 	return image_title_str, nil
 }
+
 //---------------------------------------------------
 func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.Runtime_sys) (int,int) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_dimensions__from_image()")
@@ -187,6 +193,7 @@ func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.
 	height_int := p.Max.Y - p.Min.Y
 	return width_int, height_int
 }
+
 //---------------------------------------------------
 func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_filepath()")
@@ -214,6 +221,7 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_r
 	//-------------------
 	return image_width_int, image_height_int, nil
 }
+
 //---------------------------------------------------
 func Get_image_dimensions__from_file(p_file io.Reader,
 	p_img_extension_str string,
@@ -264,6 +272,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 
 	return image_width_int, image_height_int, nil
 }
+
 //---------------------------------------------------
 func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
@@ -302,6 +311,7 @@ func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runti
 
 	return normalized_ext_str,nil
 }
+
 //---------------------------------------------------	
 func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runtime_sys) (string,bool) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Image__check_image_format()")
@@ -326,6 +336,7 @@ func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runti
 
 	return normalized_format_str, true
 }
+
 //---------------------------------------------------
 //IMPORTANT!! - look at JS library, for content-aware image cropping
 //              https://github.com/jwagner/smartcrop.js/

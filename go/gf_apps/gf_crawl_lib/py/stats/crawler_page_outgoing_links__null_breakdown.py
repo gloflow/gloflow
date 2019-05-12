@@ -30,7 +30,7 @@ def run(p_mongo_client,
 
 	top_domains_number_int = 100
 
-	results = p_mongo_client['prod_db']['data_symphony'].aggregate([
+	results = p_mongo_client['prod_db']['gf_crawl'].aggregate([
 			{'$match':{
 				't'               :'crawler_page_outgoing_link',
 				'crawler_name_str':None}},

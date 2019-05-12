@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 //--------------------------------------------------
-func Run_crawler_cycle(p_crawler Gf_crawler,
+func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
@@ -122,21 +122,21 @@ func Run_crawler_cycle(p_crawler Gf_crawler,
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	cycle_run := &Gf_crawler_cycle_run{
-		Id_str:              cycle_run__id_str,
-		T_str:               "crawler_cycle_run",
-		Creation_unix_time_f:cycle_run__creation_unix_time_f,
-		Crawler_name_str:    p_crawler.Name_str,
-		Target_domain_str:   domain_str,
-		Target_url_str:      url_str,
-		Start_time_f:        start_time_f,
-		End_time_f:          end_time_f,
+		Id_str:               cycle_run__id_str,
+		T_str:                "crawler_cycle_run",
+		Creation_unix_time_f: cycle_run__creation_unix_time_f,
+		Crawler_name_str:     p_crawler.Name_str,
+		Target_domain_str:    domain_str,
+		Target_url_str:       url_str,
+		Start_time_f:         start_time_f,
+		End_time_f:           end_time_f,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Insert(cycle_run)
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(cycle_run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a Crawler_cycle_run in mongodb",
 			"mongodb_insert_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"cycle_run__id_str":cycle_run__id_str,
 				"crawler_name_str": p_crawler.Name_str,
 				"domain_str":       domain_str,

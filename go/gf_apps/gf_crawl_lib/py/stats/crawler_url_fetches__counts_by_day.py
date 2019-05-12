@@ -31,23 +31,23 @@ def run(p_mongo_client,
 	
 	#-------------------------------------------------------------
 	def query():
-		coll    = p_mongo_client['prod_db']['data_symphony']
+		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
-				{'$match':{
-					't':'crawler_url_fetch'}},
+				{'$match': {
+					't': 'crawler_url_fetch'}},
 
-				{"$project":{
-					"creation_unix_time_f":1,
-					"domain_str"          :1
+				{"$project": {
+					"creation_unix_time_f": 1,
+					"domain_str":           1
 				}},
-				{"$group":{
+				{"$group": {
 
 					#group by day
-					"_id":{
-						"date_str":{
+					"_id": {
+						"date_str": {
 							"$dateToString": {
-								"format":"%Y-%m-%d",
-								"date"  :{
+								"format": "%Y-%m-%d",
+								"date":   {
 
 									#convert creation_unix_time_f from seconds to a Date object
 									"$add":[
@@ -60,20 +60,20 @@ def run(p_mongo_client,
 								}
 							},
 						},
-						'domain_str':'$domain_str'
+						'domain_str': '$domain_str'
 					},
-					"count_int":{"$sum":1},
+					"count_int": {"$sum": 1},
 				}},
 
-				{'$sort':{'count_int':-1}},
+				{'$sort': {'count_int': -1}},
 
-				{'$group':{
-					'_id'        :"$_id.date_str",
-					"domains_lst":{"$push":{
-						"domain_str":"$_id.domain_str",
-						"count_int" :"$count_int" #count for the individual domain in that day
+ 				{'$group':{
+					'_id':         "$_id.date_str",
+					"domains_lst": {"$push":{
+						"domain_str": "$_id.domain_str",
+						"count_int":  "$count_int" #count for the individual domain in that day
 					}},
-					"count_int":{"$sum":"$count_int"}, #add the count for each domain on that date
+					"count_int": {"$sum": "$count_int"}, #add the count for each domain on that date
 				}},
 
 				#IMPORTANT!! - for plotting, oldest records need to be first, timeseries plots go from left to right
@@ -128,16 +128,13 @@ def run(p_mongo_client,
 	print len(counts_lst)
 	print len(top_domains_counts_per_day_lst)
 
-
-
-
 	df = pd.DataFrame({
 		"days":                          days_lst,
 		"total_counts":                  counts_lst,
 		"top_10_domains_counts_per_day": top_domains_counts_per_day_lst
 	})
 
-	df.set_index("days",drop=True,inplace=True)
+	df.set_index("days", drop=True, inplace=True)
 	print df
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"
@@ -148,9 +145,9 @@ def run(p_mongo_client,
 
 	df.plot.line(figsize=(10,6),alpha=0.75) #,rot=0)
 
-	plt.title("crawler_url_fetch's counts per day",fontsize=18)
-	plt.xlabel("day",                              fontsize=14)
-	plt.ylabel('number of fetches',                fontsize=14)
+	plt.title("crawler_url_fetch's counts per day", fontsize=18)
+	plt.xlabel("day",                               fontsize=14)
+	plt.ylabel('number of fetches',                 fontsize=14)
 	plt.xticks(size = 6)
 	plt.axes().yaxis.grid() #horizontal-grid
 

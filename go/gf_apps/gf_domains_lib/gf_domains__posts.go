@@ -98,7 +98,7 @@ type Gf_domain_posts struct {
 }
 //---------------------------------------------------
 func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_posts, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains__posts.Get_domains_posts__mongo()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -146,8 +146,8 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
-			nil,err,"gf_domains_lib",p_runtime_sys)
-		return nil,gf_err
+			nil, err, "gf_domains_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 	//---------------
 	//IMPORTANT!! - application level join. move this to Db with the apporpriate "domain_str" field
@@ -171,16 +171,16 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 	}
 	//---------------
 	domain_posts_lst := []Gf_domain_posts{}
-	for domain_str,count_int := range parsed_domains_map {
+	for domain_str, count_int := range parsed_domains_map {
 
 		domain_posts := Gf_domain_posts{
-			Name_str: domain_str,
-			Count_int:count_int,
+			Name_str:  domain_str,
+			Count_int: count_int,
 		}
 		domain_posts_lst = append(domain_posts_lst, domain_posts)
 	}
 
-	p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
+	p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
 	//---------------
 
 	return domain_posts_lst, nil

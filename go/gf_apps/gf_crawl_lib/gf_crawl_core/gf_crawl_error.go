@@ -25,6 +25,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 type Gf_crawler_error struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"    json:"-"`
@@ -38,6 +39,7 @@ type Gf_crawler_error struct {
 	Crawler_name_str     string                 `bson:"crawler_name_str" json:"crawler_name_str"`
 	Url_str              string                 `bson:"url_str"          json:"url_str"`
 }
+
 //--------------------------------------------------
 func Create_error_and_event(p_error_type_str string,
 	p_error_msg_str    string,
@@ -75,6 +77,7 @@ func Create_error_and_event(p_error_type_str string,
 
 	return crawl_err, nil
 }
+
 //--------------------------------------------------
 func create_error(p_type_str string,
 	p_msg_str          string,
@@ -89,23 +92,23 @@ func create_error(p_type_str string,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawl_error:"+fmt.Sprint(creation_unix_time_f)
 	crawl_err            := &Gf_crawler_error{
-		Id_str:              id_str,
-		T_str:               "crawler_error",
-		Creation_unix_time_f:creation_unix_time_f,
-		Type_str:            p_type_str,
-		Msg_str:             p_msg_str,
-		Data_map:            p_data_map,
-		Gf_error_id_str:     p_gf_err.Id_str,
-		Crawler_name_str:    p_crawler_name_str,
-		Url_str:             p_url_str,
+		Id_str:               id_str,
+		T_str:                "crawler_error",
+		Creation_unix_time_f: creation_unix_time_f,
+		Type_str:             p_type_str,
+		Msg_str:              p_msg_str,
+		Data_map:             p_data_map,
+		Gf_error_id_str:      p_gf_err.Id_str,
+		Crawler_name_str:     p_crawler_name_str,
+		Url_str:              p_url_str,
 	}
 
 	if p_runtime.Cluster_node_type_str == "master" {
-		err := p_runtime_sys.Mongodb_coll.Insert(crawl_err)
+		err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(crawl_err)
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to persist a crawler_error",
 				"mongodb_insert_error",
-				&map[string]interface{}{
+				map[string]interface{}{
 					"type_str":         p_type_str,
 					"crawler_name_str": p_crawler_name_str,
 				},
