@@ -65,10 +65,10 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 				"t":p_obj_type_str, //"crawler_url_fetch",
 			},
 		},*/
-		bson.M{"$match":match_query},
-		bson.M{"$project":bson.M{
-				"creation_unix_time_f":true,
-				"domain_str":          true,
+		bson.M{"$match": match_query},
+		bson.M{"$project": bson.M{
+				"creation_unix_time_f": true,
+				"domain_str":           true,
 			},
 		},
 		bson.M{"$sort":bson.M{
@@ -76,13 +76,13 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 			},
 		},
 		bson.M{"$group":bson.M{
-				"_id":               "$domain_str",
-				"count_int":         bson.M{"$sum" :1},
-				"creation_times_lst":bson.M{"$push":"$creation_unix_time_f"},
+				"_id":                "$domain_str",
+				"count_int":          bson.M{"$sum" :1},
+				"creation_times_lst": bson.M{"$push":"$creation_unix_time_f"},
 			},
 		},
 		bson.M{"$sort":bson.M{
-				"fetches_count_int":-1,
+				"fetches_count_int": -1,
 			},
 		},
 	})

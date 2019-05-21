@@ -81,9 +81,10 @@ func Run_service(p_port_str string,
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_images",
-		Log_fun:         p_log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_images",
+		Log_fun:          p_log_fun,
+		Mongodb_db:       mongodb_db,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//-------------
 	//DB_INDEXES
@@ -132,14 +133,14 @@ func Run_service(p_port_str string,
 							p_log_fun)*/
 	//-------------
 	//JOBS_MANAGER
-	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch,runtime_sys)
+	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch, runtime_sys)
 	//-------------
 	//OTHER
 	init_handlers(jobs_mngr_ch, runtime_sys)
 	//------------------------
 	//DASHBOARD SERVING
 	static_files__url_base_str := "/images"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str,runtime_sys)
+	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
 	//------------------------
 	
 	//----------------------
@@ -155,8 +156,8 @@ func Run_service(p_port_str string,
 	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.Log_fun("ERROR",msg_str)
-		runtime_sys.Log_fun("ERROR",fmt.Sprint(http_err))
+		runtime_sys.Log_fun("ERROR", msg_str)
+		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

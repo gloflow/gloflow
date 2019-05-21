@@ -130,9 +130,9 @@ def run(p_mongo_client,
 		top_20_domains_counts_per_day_lst.append(top_20_domains__count_int)
 
 	df = pd.DataFrame({
-		"days":                         days_lst,
-		"total_counts":                 counts_lst,
-		"top_20_domains_counts_per_day":top_20_domains_counts_per_day_lst
+		"days":                          days_lst,
+		"total_counts":                  counts_lst,
+		"top_20_domains_counts_per_day": top_20_domains_counts_per_day_lst
 	})
 
 	df.set_index("days",drop=True,inplace=True)
@@ -155,9 +155,9 @@ def run(p_mongo_client,
 
 
 
-	plt.title("crawler_page_outgoing_link's counts per day",fontsize=18)
-	plt.xlabel("day",                                       fontsize=14)
-	plt.ylabel('number of links',                           fontsize=14)
+	plt.title("crawler_page_outgoing_link's counts per day", fontsize=18)
+	plt.xlabel("day",                                        fontsize=14)
+	plt.ylabel('number of links',                            fontsize=14)
 	plt.xticks(size = 6)
 	plt.axes().yaxis.grid() #horizontal-grid
 

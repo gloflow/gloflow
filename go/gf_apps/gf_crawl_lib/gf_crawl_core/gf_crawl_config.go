@@ -21,7 +21,7 @@ package gf_crawl_core
 
 import (
 	"os"
-	"fmt"
+	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -54,32 +54,14 @@ func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_cor
 
 		//-------------
 		//OPEN_CONFIG_FILE
-		
-		file, fs_err := os.Open(p_crawl_config_file_path_str)
+		config_byte_lst, fs_err := ioutil.ReadFile(p_crawl_config_file_path_str)
 		if fs_err != nil {
-			gf_err := gf_core.Error__create("failed to open a local file to load the image",
-				"file_open_error",
-				map[string]interface{}{"crawl_config_file_path_str": p_crawl_config_file_path_str,},
-				fs_err, "gf_crawl_lib", p_runtime_sys)
-			return nil, gf_err
-		}
-		defer file.Close()
-
-		//READ_CONFIG_FILE
-		config_byte_lst := []byte{}
-		_, err := file.Read(config_byte_lst)
-		if err != nil {
-			gf_err := gf_core.Error__create("failed to open a local file to load the image",
+			gf_err := gf_core.Error__create("failed to read a local file to load the image",
 				"file_read_error",
 				map[string]interface{}{"crawl_config_file_path_str": p_crawl_config_file_path_str,},
 				fs_err, "gf_crawl_lib", p_runtime_sys)
 			return nil, gf_err
 		}
-
-		fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-		fmt.Println(p_crawl_config_file_path_str)
-		fmt.Println(config_byte_lst)
-
 		//-------------
 		//PARSE_YAML
 		crawl_config := Gf_crawl_config{}
@@ -101,5 +83,3 @@ func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_cor
 	}
 	return nil, nil
 }
-
-

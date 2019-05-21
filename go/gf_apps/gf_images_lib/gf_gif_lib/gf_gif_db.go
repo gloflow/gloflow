@@ -37,7 +37,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
 	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
 	img_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
 	if gf_err != nil {
@@ -54,8 +54,8 @@ func gif_db__create(p_image_source_url_str string,
 		gf_err := gf_core.Error__create("failed to parse GIF's origin_page url when creating a DB record",
 			"url_parse_error",
 			map[string]interface{}{
-				"image_source_url_str":     p_image_source_url_str,
-				"image_origin_page_url_str":p_image_origin_page_url_str,
+				"image_source_url_str":      p_image_source_url_str,
+				"image_origin_page_url_str": p_image_origin_page_url_str,
 			},
 			err, "gf_gif_lib", p_runtime_sys)
 		return nil, gf_err
@@ -63,21 +63,21 @@ func gif_db__create(p_image_source_url_str string,
 	//--------------
 
 	gif := &Gf_gif{
-		Id_str:                    id_str,
-		T_str:                     "gif",
-		Creation_unix_time_f:      creation_unix_time_f,
-		Deleted_bool:              false,
-		Valid_bool:                true,
-		Title_str:                 img_title_str,
-		Gf_url_str:                gf_url_str,
-		Origin_url_str:            p_image_source_url_str,
-		Origin_page_url_str:       p_image_origin_page_url_str,
-		Origin_page_domain_str:    origin_page_url.Host,
-		Width_int:                 p_img_width_int,
-		Height_int:                p_img_height_int,
-		Preview_frames_num_int:    p_frames_num_int,
-		Preview_frames_s3_urls_lst:p_frames_s3_urls_lst,
-		Tags_lst:                  []string{},
+		Id_str:                     id_str,
+		T_str:                      "gif",
+		Creation_unix_time_f:       creation_unix_time_f,
+		Deleted_bool:               false,
+		Valid_bool:                 true,
+		Title_str:                  img_title_str,
+		Gf_url_str:                 gf_url_str,
+		Origin_url_str:             p_image_source_url_str,
+		Origin_page_url_str:        p_image_origin_page_url_str,
+		Origin_page_domain_str:     origin_page_url.Host,
+		Width_int:                  p_img_width_int,
+		Height_int:                 p_img_height_int,
+		Preview_frames_num_int:     p_frames_num_int,
+		Preview_frames_s3_urls_lst: p_frames_s3_urls_lst,
+		Tags_lst:                   []string{},
 	}
 
 	err = p_runtime_sys.Mongodb_coll.Insert(gif)
@@ -85,32 +85,33 @@ func gif_db__create(p_image_source_url_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to insert a GIF in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{
-				"image_source_url_str":     p_image_source_url_str,
-				"image_origin_page_url_str":p_image_origin_page_url_str,
+				"image_source_url_str":      p_image_source_url_str,
+				"image_origin_page_url_str": p_image_origin_page_url_str,
 			},
 			err,"gf_gif_lib",p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
-	return gif,nil
+	return gif, nil
 }
+
 //--------------------------------------------------
 func gif_db__delete(p_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__delete()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":     "gif",
-			"id_str":p_id_str,
+			"t":      "gif",
+			"id_str": p_id_str,
 		},
 		bson.M{
-			"$set":bson.M{"deleted_bool":true,},
+			"$set": bson.M{"deleted_bool": true,},
 		})
 	
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF as deleted in mongodb",
 			"mongodb_update_error",
-			map[string]interface{}{"gif_id_str":p_id_str,},
-			err,"gf_gif_lib",p_runtime_sys)
+			map[string]interface{}{"gif_id_str": p_id_str,},
+			err, "gf_gif_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil
@@ -133,27 +134,27 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
-			map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
-			err,"gf_gif_lib",p_runtime_sys)
-		return nil,gf_err
+			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
+			err, "gf_gif_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str failed the DB find operation",
 			"mongodb_find_error",
-			map[string]interface{}{"gf_img_id_str":p_gf_img_id_str,},
-			err,"gf_gif_lib",p_runtime_sys)
-		return nil,gf_err
+			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
+			err, "gf_gif_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
 	spew.Dump(gif)
 
-	return &gif,nil
+	return &gif, nil
 }
 //--------------------------------------------------
 func gif_db__get_by_origin_url(p_origin_url_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_origin_url()")
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
 
 	var gif Gf_gif
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
@@ -186,8 +187,8 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 //--------------------------------------------------
 func gif_db__get_page(p_cursor_start_position_int int, //0
 	p_elements_num_int int,                //50
-	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_gif,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_page()")
+	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_gif, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_page()")
 
 	gifs_lst := []*Gf_gif{}
 
@@ -209,10 +210,10 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 		gf_err := gf_core.Mongo__handle_error("GIFs pages failed to be retreived",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"cursor_start_position_int":p_cursor_start_position_int,
-				"elements_num_int":         p_elements_num_int,
+				"cursor_start_position_int": p_cursor_start_position_int,
+				"elements_num_int":          p_elements_num_int,
 			},
-			err,"gf_gif_lib",p_runtime_sys)
+			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
 	}
 

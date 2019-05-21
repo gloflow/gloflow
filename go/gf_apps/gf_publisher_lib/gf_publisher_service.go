@@ -21,15 +21,18 @@ package gf_publisher_lib
 
 import (
 	"fmt"
+	"os"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
+
 //-------------------------------------------------
 type Gf_images_extern_runtime_info struct {
 	Jobs_mngr             gf_images_jobs.Jobs_mngr
 	Service_host_port_str string //"http://127.0.0.1:2060"
 }
+
 //-------------------------------------------------
 func Run_service(p_port_str string,
 	p_mongodb_host_str       string,
@@ -81,9 +84,9 @@ func Run_service(p_port_str string,
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_publisher",
-		Log_fun:         p_log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_publisher",
+		Log_fun:          p_log_fun,
+		Mongodb_coll:     mongodb_coll,
 	}
 
 	//------------------------
@@ -92,7 +95,14 @@ func Run_service(p_port_str string,
 	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
 	//------------------------
 
-	err := init_handlers(p_gf_images_runtime_info, runtime_sys)
+	//TEMPLATES_DIR
+	templates_dir_path_str := "./templates"
+	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
+		p_log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+		panic(1)
+	}
+
+	err := init_handlers(p_gf_images_runtime_info, templates_dir_path_str, runtime_sys)
 	if err != nil {
 		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
 		panic(msg_str)
@@ -107,11 +117,11 @@ func Run_service(p_port_str string,
 	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
 	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_port_str,nil)
+	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.Log_fun("ERROR",msg_str)
-		runtime_sys.Log_fun("ERROR",fmt.Sprint(http_err))
+		runtime_sys.Log_fun("ERROR", msg_str)
+		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

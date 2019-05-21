@@ -24,6 +24,7 @@ import (
 	"image"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func Create_thumbnails(p_image_id_str string,
 	p_image_format_str                     string,
@@ -34,7 +35,7 @@ func Create_thumbnails(p_image_id_str string,
 	p_large_thumb_max_size_px_int          int,
 	p_image                                image.Image,
 	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image_thumbs,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_thumbs.Create_thumbnails()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_thumbs.Create_thumbnails()")
 
 	//-----------------
 	//SMALL THUMBS
@@ -47,7 +48,7 @@ func Create_thumbnails(p_image_id_str string,
 		p_small_thumb_max_size_px_int,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//-----------------
 	//MEDIUM THUMBS
@@ -60,7 +61,7 @@ func Create_thumbnails(p_image_id_str string,
 		p_medium_thumb_max_size_px_int,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//-----------------
 	//LARGE THUMBS
@@ -73,7 +74,7 @@ func Create_thumbnails(p_image_id_str string,
 		p_large_thumb_max_size_px_int,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//-----------------
 
@@ -82,13 +83,13 @@ func Create_thumbnails(p_image_id_str string,
 	thumb_large_relative_url_str  := "/images/d/thumbnails/"+new_thumb_large_file_name_str
 
 	image_thumbs := &Gf_image_thumbs{
-		Small_relative_url_str:    thumb_small_relative_url_str,
-		Medium_relative_url_str:   thumb_medium_relative_url_str,
-		Large_relative_url_str:    thumb_large_relative_url_str,
-		Small_local_file_path_str: small__target_thumbnail_file_path_str,
-		Medium_local_file_path_str:medium__target_thumbnail_file_path_str,
-		Large_local_file_path_str: large__target_thumbnail_file_path_str,
+		Small_relative_url_str:     thumb_small_relative_url_str,
+		Medium_relative_url_str:    thumb_medium_relative_url_str,
+		Large_relative_url_str:     thumb_large_relative_url_str,
+		Small_local_file_path_str:  small__target_thumbnail_file_path_str,
+		Medium_local_file_path_str: medium__target_thumbnail_file_path_str,
+		Large_local_file_path_str:  large__target_thumbnail_file_path_str,
 	}
 
-	return image_thumbs,nil
+	return image_thumbs, nil
 }

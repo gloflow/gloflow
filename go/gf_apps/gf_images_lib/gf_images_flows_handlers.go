@@ -60,8 +60,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	
 	//-------------------------------------------------
 	http.HandleFunc("/images/flows/add_img", func(p_resp http.ResponseWriter, p_req *http.Request) {
-
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/add_img ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/add_img ----------")
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -118,7 +117,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//                         if the image url has already been fetched/transformed and gf_image exists for it
 
 	http.HandleFunc("/images/flows/imgs_exist", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -152,7 +151,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			//OUTPUT
 			
 			data_map := map[string]interface{}{
-				"existing_images_lst":existing_images_lst,
+				"existing_images_lst": existing_images_lst,
 			}
 			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
@@ -167,7 +166,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//FLOWS_BROWSER
 	//-------------------------------------------------
 	http.HandleFunc("/images/flows/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/browser ----------")
 		if p_req.Method == "GET" {
 
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

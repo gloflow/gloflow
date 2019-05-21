@@ -43,8 +43,8 @@ func Job__start(p_client_type_str string,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          Jobs_mngr,
 	p_runtime_sys           *gf_core.Runtime_sys) (*Running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__start()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Job__start()")
+	p_runtime_sys.Log_fun("INFO",      "p_images_to_process_lst - "+fmt.Sprint(p_images_to_process_lst))
 
 	//-----------------
 	//SEND_MSG_TO_JOBS_MNGR
@@ -54,25 +54,25 @@ func Job__start(p_client_type_str string,
 	job_updates_ch   := make(chan Job_update_msg, 10) //ADD!! channel buffer size should be larger for large jobs (with a lot of images)
 
 	job_msg := Job_msg{
-		job_id_str:           job_id_str,
-		client_type_str:      p_client_type_str,
-		cmd_str:              job_cmd_str,
-		job_updates_ch:       job_updates_ch,
-		images_to_process_lst:p_images_to_process_lst,
-		flows_names_lst:      p_flows_names_lst,
+		job_id_str:            job_id_str,
+		client_type_str:       p_client_type_str,
+		cmd_str:               job_cmd_str,
+		job_updates_ch:        job_updates_ch,
+		images_to_process_lst: p_images_to_process_lst,
+		flows_names_lst:       p_flows_names_lst,
 	}
 
 	p_jobs_mngr_ch <- job_msg
 	//-----------------
 	//CREATE RUNNING_JOB
 	running_job := &Running_job{
-		Id_str:               job_id_str,
-		T_str:                "img_running_job",
-		Client_type_str:      p_client_type_str,
-		Status_str:           "running",
-		Start_time_f:         job_start_time_f,
-		Images_to_process_lst:p_images_to_process_lst,
-		job_updates_ch:       job_updates_ch,
+		Id_str:                job_id_str,
+		T_str:                 "img_running_job",
+		Client_type_str:       p_client_type_str,
+		Status_str:            "running",
+		Start_time_f:          job_start_time_f,
+		Images_to_process_lst: p_images_to_process_lst,
+		job_updates_ch:        job_updates_ch,
 	}
 
 	db_err := p_runtime_sys.Mongodb_coll.Insert(running_job)
@@ -80,9 +80,9 @@ func Job__start(p_client_type_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{
-				"client_type_str":      p_client_type_str,
-				"images_to_process_lst":p_images_to_process_lst,
-				"flows_names_lst":      p_flows_names_lst,
+				"client_type_str":       p_client_type_str,
+				"images_to_process_lst": p_images_to_process_lst,
+				"flows_names_lst":       p_flows_names_lst,
 			},
 			db_err, "gf_images_jobs", p_runtime_sys)
 		return nil, nil, gf_err
@@ -115,11 +115,11 @@ func Job__start(p_client_type_str string,
 		//--------------
 
 		output := &Job_Expected_Output{
-			Image_id_str:                     image_id_str,
-			Image_source_url_str:             img_source_url_str,
-			Thumbnail_small_relative_url_str :fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s" , image_id_str, normalized_ext_str),
-			Thumbnail_medium_relative_url_str:fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalized_ext_str),
-			Thumbnail_large_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" , image_id_str, normalized_ext_str),
+			Image_id_str:                      image_id_str,
+			Image_source_url_str:              img_source_url_str,
+			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s" , image_id_str, normalized_ext_str),
+			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalized_ext_str),
+			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s" , image_id_str, normalized_ext_str),
 		}
 		job_expected_outputs_lst = append(job_expected_outputs_lst, output)
 	}
@@ -131,16 +131,16 @@ func Job__start(p_client_type_str string,
 func Job__get_update_ch(p_job_id_str string,
 	p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) chan Job_update_msg {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__get_update_ch()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Job__get_update_ch()")
 
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)
 
 	job_cmd_str := "get_job_update_ch"
 	job_msg     := Job_msg{
-		job_id_str:     p_job_id_str,
-		cmd_str:        job_cmd_str,
-		msg_response_ch:msg_response_ch,
+		job_id_str:      p_job_id_str,
+		cmd_str:         job_cmd_str,
+		msg_response_ch: msg_response_ch,
 	}
 
 	p_jobs_mngr_ch <- job_msg
@@ -154,12 +154,12 @@ func Job__get_update_ch(p_job_id_str string,
 func Job__cleanup(p_job_id_str string,
 	p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_client.Job__cleanup()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Job__cleanup()")
 
 	job_cmd_str := "cleanup_job"
 	job_msg     := Job_msg{
-		job_id_str:p_job_id_str,
-		cmd_str:   job_cmd_str,
+		job_id_str: p_job_id_str,
+		cmd_str:    job_cmd_str,
 	}
 
 	p_jobs_mngr_ch <- job_msg

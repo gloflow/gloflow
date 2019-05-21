@@ -24,6 +24,7 @@ import (
 	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 //external post_info is the one that comes from outside the system
 //(it does not have an id assigned to it)
@@ -40,7 +41,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if _,ok := p_post_info_map["client_type_str"]; !ok {
 		gf_err := gf_core.Error__create("post client_type_str not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -50,7 +51,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if _,ok := p_post_info_map["title_str"]; !ok {
 		gf_err := gf_core.Error__create("post title_str not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -59,9 +60,9 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if len(title_str) > p_max_title_chars_int {
 		gf_err := gf_core.Error__create(fmt.Sprintf("title_str is longer (%d) then the max allowed number of chars (%d)", len(title_str), p_max_title_chars_int),
 			"verify__string_too_long_error",
-			&map[string]interface{}{
-				"title_str":          title_str,
-				"max_title_chars_int":p_max_title_chars_int,
+			map[string]interface{}{
+				"title_str":           title_str,
+				"max_title_chars_int": p_max_title_chars_int,
 			},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
@@ -82,7 +83,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if _,ok := p_post_info_map["description_str"]; !ok {
 		gf_err := gf_core.Error__create("post description_str not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -91,7 +92,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if len(description_str) > p_max_description_chars_int {
 		gf_err := gf_core.Error__create(fmt.Sprintf("description_str is longer (%d) then the max allowed number of chars (%d)", len(description_str), p_max_description_chars_int),
 			"verify__string_too_long_error",
-			&map[string]interface{}{
+			map[string]interface{}{
 				"description_str":          description_str,
 				"max_description_chars_int":p_max_description_chars_int,
 			},
@@ -109,7 +110,7 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	if _,ok := p_post_info_map["poster_user_name_str"]; !ok {
 		gf_err := gf_core.Error__create("post poster_user_name_str not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -124,12 +125,12 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	//"id_str" - not included here since p_post_info_map comes from outside the system
 	//           and the internal id"s are for now not passed outside (or coming in from outside)
 	verified_post_info_map := map[string]interface{}{
-		"client_type_str":     client_type_str,
-		"title_str":           clean_title_str,
-		"description_str":     description_str,
-		"tags_lst":            tags_lst,
-		"poster_user_name_str":p_post_info_map["poster_user_name_str"].(string),
-		"post_elements_lst":   p_post_info_map["post_elements_lst"],
+		"client_type_str":      client_type_str,
+		"title_str":            clean_title_str,
+		"description_str":      description_str,
+		"tags_lst":             tags_lst,
+		"poster_user_name_str": p_post_info_map["poster_user_name_str"].(string),
+		"post_elements_lst":    p_post_info_map["post_elements_lst"],
 	}
 	
 	return verified_post_info_map, nil
@@ -141,7 +142,7 @@ func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.
 	if _,ok := p_post_info_map["tags_str"]; !ok {
 		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the tags_str key",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -163,7 +164,7 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
 		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the post_elements_lst key",
 			"verify__missing_key_error",
-			&map[string]interface{}{"post_info_map":p_post_info_map,},
+			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
@@ -215,7 +216,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		
 			gf_err := gf_core.Error__create("p_post_element_info_map doesnt contain url_str|extern_url_str",
 				"verify__missing_key_error",
-				&map[string]interface{}{"post_element_info_map":p_post_element_info_map,},
+				map[string]interface{}{"post_element_info_map":p_post_element_info_map,},
 				nil, "gf_publisher_lib", p_runtime_sys)
 			return gf_err
 		}
@@ -228,9 +229,9 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 			if len(tag_str) >= p_post_element_tag_max_int {
 				gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int),
 					"verify__string_too_long_error",
-					&map[string]interface{}{
-						"tag_str":                 tag_str,
-						"post_element_tag_max_int":p_post_element_tag_max_int,
+					map[string]interface{}{
+						"tag_str":                  tag_str,
+						"post_element_tag_max_int": p_post_element_tag_max_int,
 					},
 					nil, "gf_publisher_lib", p_runtime_sys)
 				return gf_err	
@@ -251,7 +252,7 @@ func verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.Runtime_
 		
 		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - %s", p_type_str),
 			"verify__invalid_value_error",
-			&map[string]interface{}{"post_element_type_str": p_type_str,},
+			map[string]interface{}{"post_element_type_str": p_type_str,},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}

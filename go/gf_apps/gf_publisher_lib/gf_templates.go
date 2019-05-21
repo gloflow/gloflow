@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_publisher_lib
 
 import (
+	"fmt"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -31,14 +32,15 @@ type gf_templates struct {
 	posts_browser__tmpl                   *template.Template
 	posts_browser__subtemplates_names_lst []string
 }
+
 //-------------------------------------------------
-func tmpl__load(p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+func tmpl__load(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	post__main_template_filename_str          := "gf_post.html"
-	post__templates_dir_path_str              := "./web/gf_apps/gf_publisher/gf_post/templates"
+	post__templates_dir_path_str              := fmt.Sprintf("%s/gf_post", p_templates_dir_path_str)
 	posts_browser__main_template_filename_str := "gf_posts_browser.html"
-	posts_browser__templates_dir_path_str     := "./web/gf_apps/gf_publisher/gf_posts_browser/templates"
+	posts_browser__templates_dir_path_str     := fmt.Sprintf("%s/gf_posts_browser", p_templates_dir_path_str)
 
 	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filename_str, post__templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {

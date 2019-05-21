@@ -30,17 +30,18 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
 //-------------------------------------------------
 func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_handlers.Jobs_mngr__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------
 	//running_jobs_map := map[string]*Running_job{}
 
 	//START_JOB
-	http.HandleFunc("/images/jobs/start",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/jobs/start ----------")
+	http.HandleFunc("/images/jobs/start", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/jobs/start ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -82,8 +83,8 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
 				img_to_process            := Image_to_process{
-					Source_url_str:     image_url_str,
-					Origin_page_url_str:image_origin_page_url_str,
+					Source_url_str:      image_url_str,
+					Origin_page_url_str: image_origin_page_url_str,
 				}
 				images_to_process_lst = append(images_to_process_lst, img_to_process)
 			}
@@ -102,8 +103,8 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
  			//------------------
 			//OUTPUT
 			data_map := map[string]interface{}{
-				"running_job_id_str":      running_job.Id_str,
-				"job_expected_outputs_lst":job_expected_outputs_lst,
+				"running_job_id_str":       running_job.Id_str,
+				"job_expected_outputs_lst": job_expected_outputs_lst,
 			}
 			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
@@ -116,8 +117,8 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 	})
 	//---------------------
 	//GET_JOB_STATUS - SSE
-	http.HandleFunc("/images/jobs/status",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/jobs/status ----------")
+	http.HandleFunc("/images/jobs/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/jobs/status ----------")
 
 		if p_req.Method == "GET" {
 			
@@ -163,10 +164,10 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 				p_runtime_sys.Log_fun("ERROR", "HTTP connection just closed")
 			}()
 
-			p_resp.Header().Set("Content-Type",               "text/event-stream")
-			p_resp.Header().Set("Cache-Control",              "no-cache")
-			p_resp.Header().Set("Connection",                 "keep-alive")
-			p_resp.Header().Set("Access-Control-Allow-Origin","*")
+			p_resp.Header().Set("Content-Type",                "text/event-stream")
+			p_resp.Header().Set("Cache-Control",               "no-cache")
+			p_resp.Header().Set("Connection",                  "keep-alive")
+			p_resp.Header().Set("Access-Control-Allow-Origin", "*")
 
 			for {
 

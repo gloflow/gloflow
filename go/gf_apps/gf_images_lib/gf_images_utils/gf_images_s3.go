@@ -25,6 +25,7 @@ import (
 	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func S3__store_gf_image(p_image_local_file_path_str string,
 	p_image_thumbs       *Gf_image_thumbs,
@@ -73,6 +74,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	//--------------------
 	return nil
 }
+
 //---------------------------------------------------
 func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 	p_s3_bucket_name_str string,
@@ -116,6 +118,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 
 	return nil
 }
+
 //------------------------------------------------
 func S3__get_image_url(p_image_path_name_str string,
 	p_s3_bucket_name_str string,
@@ -141,6 +144,7 @@ func S3__get_image_original_file_s3_filepath(p_image *Gf_image, p_runtime_sys *g
 
 	return uploaded_s3_filepath_str
 }
+
 //---------------------------------------------------
 func S3__get_image_thumbs_s3_filepaths(p_image *Gf_image, p_runtime_sys *gf_core.Runtime_sys) (string,string,string) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.S3__get_image_thumbs_s3_filepaths()")

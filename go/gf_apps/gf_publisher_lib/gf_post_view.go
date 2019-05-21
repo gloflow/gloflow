@@ -96,7 +96,7 @@ func post__render_template(p_post *Gf_post,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to render the post template",
 			"template_render_error",
-			&map[string]interface{}{},
+			map[string]interface{}{},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
@@ -126,32 +126,32 @@ func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime
 		switch post_element.Type_str {
 			case "link":
 				post_element_map := map[string]interface{}{
-					"post_element_type__video_bool":false, //for mustache template conditionals
-					"post_element_type__image_bool":false,
-					"post_element_type__link_bool": true,
-					"post_element_description_str": post_element.Description_str,
-					"post_element_extern_url_str":  post_element.Extern_url_str,
+					"post_element_type__video_bool": false, //for mustache template conditionals
+					"post_element_type__image_bool": false,
+					"post_element_type__link_bool":  true,
+					"post_element_description_str":  post_element.Description_str,
+					"post_element_extern_url_str":   post_element.Extern_url_str,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
 			case "image":
 				post_element_map := map[string]interface{}{
-					"post_element_type__video_bool":            false, //for mustache template conditionals
-					"post_element_type__image_bool":            true,
-					"post_element_type__link_bool":             false,
-					"post_element_img_thumbnail_medium_url_str":post_element.Img_thumbnail_medium_url_str,
-					"post_element_img_thumbnail_large_url_str": post_element.Img_thumbnail_large_url_str,
-					"tags_lst":                                 post_element_tags_lst,
+					"post_element_type__video_bool":             false, //for mustache template conditionals
+					"post_element_type__image_bool":             true,
+					"post_element_type__link_bool":              false,
+					"post_element_img_thumbnail_medium_url_str": post_element.Img_thumbnail_medium_url_str,
+					"post_element_img_thumbnail_large_url_str":  post_element.Img_thumbnail_large_url_str,
+					"tags_lst":                                  post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
 			case "video":
 				post_element_map := map[string]interface{}{
-					"post_element_type__video_bool":true, //for mustache template conditionals
-					"post_element_type__image_bool":false,
-					"post_element_type__link_bool": false,
-					"post_element_extern_url_str":  post_element.Extern_url_str,
-					"tags_lst":                     post_element_tags_lst,
+					"post_element_type__video_bool": true, //for mustache template conditionals
+					"post_element_type__image_bool": false,
+					"post_element_type__link_bool":  false,
+					"post_element_extern_url_str":   post_element.Extern_url_str,
+					"tags_lst":                      post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
@@ -182,7 +182,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf
 	og_info_lst := []map[string]string{}
 	for _,post_element := range top_image_post_elements_lst {
 		d := map[string]string{
-			"img_thumbnail_medium_absolute_url_str":post_element.Img_thumbnail_medium_url_str,
+			"img_thumbnail_medium_absolute_url_str": post_element.Img_thumbnail_medium_url_str,
 		}
 		og_info_lst = append(og_info_lst, d)
 	}

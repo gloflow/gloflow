@@ -108,12 +108,12 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		p_runtime_sys.Log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 
 		post_element := &Gf_post_element{
-			Id_str:               post_element_id_str,
-			Type_str:             post_element__type_str,
-			Creation_datetime_str:creation_datetime_str,
-			Extern_url_str:       extern_url_str,
-			Origin_page_url_str:  post_element__origin_page_url_str,
-			Post_index_3_lst:     post_index_3_lst,
+			Id_str:                post_element_id_str,
+			Type_str:              post_element__type_str,
+			Creation_datetime_str: creation_datetime_str,
+			Extern_url_str:        extern_url_str,
+			Origin_page_url_str:   post_element__origin_page_url_str,
+			Post_index_3_lst:      post_index_3_lst,
 			//Description_str      :post_element_map["description_str"].(string),
 		}
 		
@@ -122,6 +122,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 
 	return post_elements_lst
 }
+
 //---------------------------------------------------
 func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
@@ -133,6 +134,7 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 	}
 	return nil //post has no image post_element
 }
+
 //---------------------------------------------------
 func get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
@@ -152,6 +154,7 @@ func get_post_elements_of_type(p_post *Gf_post,
 	}
 	return post_elements_lst, nil
 }
+
 //---------------------------------------------------
 /*func create_extern_post_element(p_post_element_info_map map[string]interface{},
 					p_post_title_str                  *string,

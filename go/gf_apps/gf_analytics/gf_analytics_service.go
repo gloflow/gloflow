@@ -146,12 +146,19 @@ func main() {
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
 
-			init_handlers(runtime_sys)
+			//TEMPLATES_DIR
+			templates_dir_path_str := "./templates"
+			if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
+				log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+				panic(1)
+			}
+
+			init_handlers(templates_dir_path_str, runtime_sys)
 			//------------------------
 			//GF_DOMAINS
-
+			gf_domains_lib.DB_index__init(runtime_sys)
 			gf_domains_lib.Init_domains_aggregation(runtime_sys)
-			gf_err := gf_domains_lib.Init_handlers(runtime_sys)
+			gf_err := gf_domains_lib.Init_handlers(templates_dir_path_str, runtime_sys)
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
@@ -161,6 +168,7 @@ func main() {
 			gf_crawl_lib.Init(crawler_images_local_dir_path_str,
 				cluster_node_type_str,
 				crawl_config_file_path_str,
+				templates_dir_path_str,
 				aws_access_key_id_str,
 				aws_secret_access_key_str,
 				aws_token_str,
@@ -217,6 +225,11 @@ func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
 	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
+
+	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
+		p_log_fun("ERROR", "ENV vars not set - GF_AWS_ACCESS_KEY_ID, GF_AWS_SECRET_ACCESS_KEY")
+		panic(1)
+	}
 	//-------------------
 
 	flag.Parse()

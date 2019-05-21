@@ -45,11 +45,11 @@ func job_error__send(p_job_error_type_str string,
 	error_str := fmt.Sprint(p_gf_err.Error)
 	
 	update_msg := Job_update_msg{
-		Name_str:            p_gf_err.Type_str,
-		Type_str:            JOB_UPDATE_TYPE__ERROR,
-		Image_id_str:        p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
-		Err_str:             error_str,
+		Name_str:             p_gf_err.Type_str,
+		Type_str:             JOB_UPDATE_TYPE__ERROR,
+		Image_id_str:         p_image_id_str,
+		Image_source_url_str: p_image_source_url_str,
+		Err_str:              error_str,
 	}
 	p_job_updates_ch <- update_msg
 	//------------
@@ -69,7 +69,7 @@ func job_error__persist(p_job_id_str string,
 	p_error_str            string,
 	p_image_source_url_str string,
 	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_errors.job_error__persist()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_errors.job_error__persist()")
 
 	job_error := Job_Error{
 		Type_str:            p_error_type_str,
@@ -78,21 +78,21 @@ func job_error__persist(p_job_id_str string,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":     "img_running_job",
-			"id_str":p_job_id_str,
+			"t":      "img_running_job",
+			"id_str": p_job_id_str,
 		},
 		bson.M{
-			"$push":bson.M{"errors_lst":job_error,},
+			"$push": bson.M{"errors_lst": job_error,},
 		})
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update img_running_job type document in mongodb, to add a job error",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"job_id_str":          p_job_id_str,
-				"error_type_str":      p_error_type_str,
-				"error_str":           p_error_str,
-				"image_source_url_str":p_image_source_url_str,
+				"job_id_str":           p_job_id_str,
+				"error_type_str":       p_error_type_str,
+				"error_str":            p_error_str,
+				"image_source_url_str": p_image_source_url_str,
 			},
 			err, "gf_images_jobs", p_runtime_sys)
 		return gf_err

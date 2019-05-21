@@ -106,7 +106,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
 
-		bson.M{"$match":bson.M{"t":"post",},},
+		bson.M{"$match": bson.M{"t": "post",},},
 
 		//{"\$limit":10}, //DEBUGGING
 		//---------------------
@@ -114,8 +114,8 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 		//              field, since this is where the url string is contained, in the post_element
 		//              of type 'link'
 		bson.M{"$project":bson.M{
-				"_id":              false, //suppression of the "_id" field
-				"post_elements_lst":"$post_elements_lst",
+				"_id":               false, //suppression of the "_id" field
+				"post_elements_lst": "$post_elements_lst",
 			},
 		},
 		//---------------------
@@ -125,13 +125,13 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 		// 
 		//create as many new docs as there are post_elements in the current doc,
 		//where the new docs contain all the fields of the original source doc
-		bson.M{"$unwind":"$post_elements_lst",},
+		bson.M{"$unwind": "$post_elements_lst",},
 		//---------------------
 		//"$type_str" - attribute of "post_elements_lst" elements
-		bson.M{"$match":bson.M{"post_elements_lst.type_str":"link",},},
-		bson.M{"$project":bson.M{
-				"_id":                false, //suppression of the "_id" field
-				"post_extern_url_str":"$post_elements_lst.extern_url_str",
+		bson.M{"$match": bson.M{"post_elements_lst.type_str": "link",},},
+		bson.M{"$project": bson.M{
+				"_id":                 false, //suppression of the "_id" field
+				"post_extern_url_str": "$post_elements_lst.extern_url_str",
 			},
 		},
 	})
@@ -157,7 +157,6 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 
 		u,err := url.Parse(r.Post_extern_url_str)
 		if err != nil {
-
 			continue
 		}
 		domain_str := u.Host

@@ -24,6 +24,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 )
+
 //-------------------------------------------------
 func run_job(p_job_id_str string,
 	p_job_client_type_str                        string,
@@ -35,7 +36,7 @@ func run_job(p_job_id_str string,
 	p_s3_bucket_name_str                         string,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_run.run_job()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job()")
 
 	gf_errors_lst := []*gf_core.Gf_error{}
 	for _, image_to_process := range p_images_to_process_lst {
@@ -55,7 +56,7 @@ func run_job(p_job_id_str string,
 		}
 		//--------------
 
-		p_runtime_sys.Log_fun("INFO","PROCESSING IMAGE - "+image_source_url_str)
+		p_runtime_sys.Log_fun("INFO", "PROCESSING IMAGE - "+image_source_url_str)
 
 		//IMPORTANT!! - 'ok' is '_' because Im already calling Get_image_ext_from_url()
 		//              in Image__create_id_from_url()

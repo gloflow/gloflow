@@ -33,7 +33,7 @@ func Elastic__get_client(p_runtime_sys *Runtime_sys) (*elastic.Client, *Gf_error
 
 	elasticsearch_client, err := elastic.NewClient(elastic.SetURL("http://"+es_host_str))
 	if err != nil {
-		gf_err := Error__create("failed to insert a user_track_start into mongodb",
+		gf_err := Error__create("failed to create an ElasticSearch client",
 			"elasticsearch_get_client",
 			map[string]interface{}{"es_host_str": es_host_str,},
 			err, "gf_core", p_runtime_sys)
@@ -45,7 +45,7 @@ func Elastic__get_client(p_runtime_sys *Runtime_sys) (*elastic.Client, *Gf_error
 	ping_url_str            := fmt.Sprintf("http://%s",es_host_str)
 	es_info, resp_code, err := elasticsearch_client.Ping(ping_url_str).Do(ctx)
 	if err != nil {
-		gf_err := Error__create("failed to insert a user_track_start into mongodb",
+		gf_err := Error__create("failed to ping ElasticSearch server with a client",
 			"elasticsearch_ping",
 			map[string]interface{}{"ping_url_str": ping_url_str,},
 			err, "gf_core", p_runtime_sys)

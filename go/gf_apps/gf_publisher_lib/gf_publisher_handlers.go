@@ -30,15 +30,17 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
 //-------------------------------------------------
 func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+	p_templates_dir_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_publisher_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
 
 	//---------------------
 	//TEMPLATES
 	
-	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -46,7 +48,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	//HIDDEN DASHBOARD
 
 	http.HandleFunc("/posts/dash/18956180__42115/", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/dash ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/dash ----------")
 
 
 	})
@@ -76,7 +78,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 				usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s", url_str)
 				gf_err      := gf_core.Error__create(usr_msg_str,
 					"verify__invalid_value_error",
-					&map[string]interface{}{"url_str":url_str,},
+					map[string]interface{}{"url_str":url_str,},
 					nil, "gf_publisher_lib", p_runtime_sys)
 				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 				return
@@ -99,7 +101,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 				usr_msg_str := fmt.Sprintf("post title cant be query_unescaped - %s", post_title_encoded_str)
 				gf_err      := gf_core.Error__create(usr_msg_str,
 					"verify__invalid_query_string_encoding_error",
-					&map[string]interface{}{"post_title_encoded_str": post_title_encoded_str,},
+					map[string]interface{}{"post_title_encoded_str": post_title_encoded_str,},
 					err, "gf_publisher_lib", p_runtime_sys)
 
 				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
@@ -264,7 +266,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 					usr_msg_str := "pg_index (page_index) is not an integer"
 					gf_err      := gf_core.Error__create(usr_msg_str,
 						"verify__value_not_integer_error",
-						&map[string]interface{}{"input_val":input_val,},
+						map[string]interface{}{"input_val": input_val,},
 						err, "gf_publisher_lib", p_runtime_sys)
 
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", usr_msg_str, gf_err, p_resp, p_runtime_sys)
@@ -281,7 +283,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 					usr_msg_str := "pg_size (page_size) is not an integer"
 					gf_err      := gf_core.Error__create(usr_msg_str,
 						"verify__value_not_integer_error",
-						&map[string]interface{}{"input_val":input_val,},
+						map[string]interface{}{"input_val": input_val,},
 						err, "gf_publisher_lib", p_runtime_sys)
 
 					gf_rpc_lib.Error__in_handler("/posts/browser_page", usr_msg_str, gf_err, p_resp, p_runtime_sys)
@@ -313,7 +315,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	})
 	//---------------------
 	//POSTS_ELEMENTS
-	http.HandleFunc("/posts_elements/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
+	http.HandleFunc("/posts_elements/create", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 
 	})

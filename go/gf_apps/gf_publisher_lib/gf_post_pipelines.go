@@ -26,6 +26,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------------
 //CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
@@ -73,6 +74,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 
 	return post, images_job_id_str, nil
 }
+
 //------------------------------------------------
 func Pipeline__get_post(p_post_title_str string,
 	p_response_format_str    string,
@@ -124,7 +126,7 @@ func Pipeline__get_post(p_post_title_str string,
 			if err != nil {
 				gf_err := gf_core.Error__create("failed to serialize a Post into JSON form",
 					"json_marshal_error",
-					&map[string]interface{}{"post_title_str":p_post_title_str,},
+					map[string]interface{}{"post_title_str":p_post_title_str,},
 					err, "gf_publisher_lib", p_runtime_sys)
 				return gf_err
 			}

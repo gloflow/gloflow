@@ -23,6 +23,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //-------------------------------------------------
 func pipeline__process_image(p_image_source_url_str string,
 	p_image_id_str                               string,
@@ -37,7 +38,7 @@ func pipeline__process_image(p_image_source_url_str string,
 	p_s3_info                         *gf_core.Gf_s3_info,
 	p_send_error_fun                  func(string, *gf_core.Gf_error, string, string, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_pipeline.pipeline__process_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.pipeline__process_image()")
 
 	//-----------------------
 	//FETCH_IMAGE
@@ -49,10 +50,10 @@ func pipeline__process_image(p_image_source_url_str string,
 	}
 
 	update_msg := Job_update_msg{
-		Name_str:            "image_fetch",
-		Type_str:            JOB_UPDATE_TYPE__OK,
-		Image_id_str:        p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
+		Name_str:             "image_fetch",
+		Type_str:             JOB_UPDATE_TYPE__OK,
+		Image_id_str:         p_image_id_str,
+		Image_source_url_str: p_image_source_url_str,
 	}
 
 	p_job_updates_ch <- update_msg
@@ -76,10 +77,10 @@ func pipeline__process_image(p_image_source_url_str string,
 	}
 
 	update_msg = Job_update_msg{
-		Name_str:            "image_transform",
-		Type_str:            JOB_UPDATE_TYPE__OK,
-		Image_id_str:        p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
+		Name_str:             "image_transform",
+		Type_str:             JOB_UPDATE_TYPE__OK,
+		Image_id_str:         p_image_id_str,
+		Image_source_url_str: p_image_source_url_str,
 	}
 	p_job_updates_ch <- update_msg
 	//-----------------------
@@ -93,19 +94,19 @@ func pipeline__process_image(p_image_source_url_str string,
 	}
 
 	update_msg = Job_update_msg{
-		Name_str:            "image_persist",
-		Type_str:            JOB_UPDATE_TYPE__OK,
-		Image_id_str:        p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
+		Name_str:             "image_persist",
+		Type_str:             JOB_UPDATE_TYPE__OK,
+		Image_id_str:         p_image_id_str,
+		Image_source_url_str: p_image_source_url_str,
 	}
 	p_job_updates_ch <- update_msg
 	//-----------------------
 	update_msg = Job_update_msg{
-		Name_str:            "image_done",
-		Type_str:            JOB_UPDATE_TYPE__COMPLETED,
-		Image_id_str:        p_image_id_str,
-		Image_source_url_str:p_image_source_url_str,
-		Image_thumbs:        gf_image_thumbs,
+		Name_str:             "image_done",
+		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
+		Image_id_str:         p_image_id_str,
+		Image_source_url_str: p_image_source_url_str,
+		Image_thumbs:         gf_image_thumbs,
 	}
 	p_job_updates_ch <- update_msg
 	//-----------------------

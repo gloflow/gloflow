@@ -82,7 +82,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str                         string,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_mngr.Jobs_mngr__init()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
 
 	jobs_mngr_ch := make(chan Job_msg, 100)
 
@@ -148,11 +148,12 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	}()
 	return jobs_mngr_ch
 }
+
 //-------------------------------------------------
 func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	p_job_id_str  string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_jobs_mngr.db__jobs_mngr__update_job_status()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
 
 	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {
 		//status values are not generated at runtime, but are static, so its ok to panic here since
@@ -167,8 +168,8 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 		},
 		bson.M{
 			"$set":bson.M{
-				"status_str":p_status_str,
-				"end_time_f":job_end_time_f,
+				"status_str": p_status_str,
+				"end_time_f": job_end_time_f,
 			},
 		},)
 		
@@ -176,8 +177,8 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 		gf_err := gf_core.Mongo__handle_error("failed to update an img_running_job in the DB, as complete and its end_time",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"job_id_str":    p_job_id_str,
-				"job_end_time_f":job_end_time_f,
+				"job_id_str":     p_job_id_str,
+				"job_end_time_f": job_end_time_f,
 			},
 			err, "gf_images_jobs", p_runtime_sys)
 		return gf_err

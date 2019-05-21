@@ -25,6 +25,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------------
 func Get_posts_page(p_page_index_int int,
 	p_page_elements_num_int int,
@@ -40,17 +41,18 @@ func Get_posts_page(p_page_index_int int,
 	serialized_page_lst := []map[string]interface{}{}
 	for _, post := range page_lst {
 		post_map := map[string]interface{}{
-			"title_str":            post.Title_str,
-			"images_number_str":    len(post.Images_ids_lst),
-			"creation_datetime_str":post.Creation_datetime_str,
-			"thumbnail_url_str":    post.Thumbnail_url_str,
-			"tags_lst":             post.Tags_lst,
+			"title_str":             post.Title_str,
+			"images_number_str":     len(post.Images_ids_lst),
+			"creation_datetime_str": post.Creation_datetime_str,
+			"thumbnail_url_str":     post.Thumbnail_url_str,
+			"tags_lst":              post.Tags_lst,
 		}
 		serialized_page_lst = append(serialized_page_lst, post_map)
 	}
 
 	return serialized_page_lst, nil
 }
+
 //------------------------------------------------
 //get initial pages - the pages that are rendered in the initial HTML template. 
 //                    subsequent pages are loaded as AJAX requests, via HTTP API. 
@@ -62,7 +64,7 @@ func Render_initial_pages(p_response_format_str string,
 	p_subtempaltes_names_lst []string,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_pipelines.Render_initial_pages()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_posts_browser_pipelines.Render_initial_pages()")
 	
 	posts_pages_lst := [][]*Gf_post{}
 

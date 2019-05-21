@@ -30,12 +30,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
+
 //---------------------------------------------------
 type Gf_s3_info struct {
 	Client   *s3.S3
 	Uploader *s3manager.Uploader
 	Session  *session.Session
 }
+
 //---------------------------------------------------
 func S3__init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
@@ -79,6 +81,7 @@ func S3__init(p_aws_access_key_id_str string,
 
 	return s3_info, nil
 }
+
 //---------------------------------------------------
 func S3__upload_file(p_target_file__local_path_str string,
 	p_target_file__s3_path_str string,
@@ -141,6 +144,7 @@ func S3__upload_file(p_target_file__local_path_str string,
 	r_str := fmt.Sprint(result)
 	return r_str, nil
 }
+
 //---------------------------------------------------
 func S3__copy_file(p_target_bucket_name_str string,
 	p_source_bucket_and_file__s3_path_str string,
@@ -152,8 +156,6 @@ func S3__copy_file(p_target_bucket_name_str string,
 	fmt.Println("p_target_bucket_name_str              - "+p_target_bucket_name_str)
 	fmt.Println("p_source_bucket_and_file__s3_path_str - "+p_source_bucket_and_file__s3_path_str)
 	fmt.Println("p_target_file__s3_path_str            - "+p_target_file__s3_path_str)
-
-
 
 	svc   := s3.New(p_s3_info.Session)
 	input := &s3.CopyObjectInput{

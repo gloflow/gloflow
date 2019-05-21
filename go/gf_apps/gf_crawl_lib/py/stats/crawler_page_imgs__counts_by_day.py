@@ -93,36 +93,36 @@ def run(p_mongo_client,
 	def query__img_attribute(p_img_attribute_str):
 		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
-				{'$match':{'t':'crawler_page_img'}},
-				{"$project":{
-					"creation_unix_time_f":1,       
-					p_img_attribute_str   :1}},
-				{"$group":{
+				{'$match': {'t': 'crawler_page_img'}},
+				{"$project": {
+					"creation_unix_time_f": 1,       
+					p_img_attribute_str:    1}},
+				{"$group": {
 					#group by day
-					"_id":{
-						"date_str":{
+					"_id": {
+						"date_str": {
 							"$dateToString": {
-							    "format":"%Y-%m-%d",
-							    "date"  :{
+							    "format": "%Y-%m-%d",
+							    "date": {
 							    	#convert creation_unix_time_f from seconds to a Date object
-							        "$add":[
+							        "$add": [
 							            datetime.datetime(1970,1,1), #new Date(0), 
 							            #convert creation_unix_time_f seconds to millisecond timestamp first through
 							            #multiplying the value by 1000.
 							            {"$multiply": [1000, "$creation_unix_time_f"]}
 							        ]}},},
-						p_img_attribute_str:'$%s'%(p_img_attribute_str)
+						p_img_attribute_str: '$%s'%(p_img_attribute_str)
 			        },
-			        "count_int":{"$sum":1},
+			        "count_int": {"$sum": 1},
 			    }},
-			    {'$sort':{'count_int':-1}},
-			    {'$group':{
-			    	'_id'      :"$_id.date_str",
-			    	"count_int":{"$sum":"$count_int"}, #add the count for each domain on that date
+			    {'$sort': {'count_int': -1}},
+			    {'$group': {
+			    	'_id':       "$_id.date_str",
+			    	"count_int": {"$sum": "$count_int"}, #add the count for each domain on that date
 			    }},
 			    
 			    #IMPORTANT!! - for plotting, oldest records need to be first, timeseries plots go from left to right
-			    {'$sort':{'_id':1}},
+			    {'$sort': {'_id': 1}},
 			],
 			allowDiskUse=True)
 
@@ -217,9 +217,9 @@ def run(p_mongo_client,
 
 	df.plot.line(figsize=(10,6),alpha=0.75) #,rot=0)
 
-	plt.title("crawler_page_img's and crawler_page_img_ref's counts per day",fontsize=18)
-	plt.xlabel("day",                                                        fontsize=14)
-	plt.ylabel('number of imgs/img_refs',                                    fontsize=14)
+	plt.title("crawler_page_img's and crawler_page_img_ref's counts per day", fontsize=18)
+	plt.xlabel("day",                                                         fontsize=14)
+	plt.ylabel('number of imgs/img_refs',                                     fontsize=14)
 	plt.xticks(size = 6)
 	plt.axes().yaxis.grid() #horizontal-grid
 

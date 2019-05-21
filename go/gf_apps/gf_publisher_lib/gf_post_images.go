@@ -25,12 +25,14 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
+
 //---------------------------------------------------
 type Gf_images_client_result struct {
 	image_ids_lst      []string
 	running_job_id_str string
 	post_thumbnail_str string
 }
+
 //---------------------------------------------------
 func process_external_images(p_post *Gf_post,
 	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
@@ -150,6 +152,7 @@ func process_external_images(p_post *Gf_post,
 
 	return result.running_job_id_str, nil
 }
+
 //---------------------------------------------------
 func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_element,
 	p_post_elements_images_urls_lst              []string,
@@ -178,7 +181,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 		if _,ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
 			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
-				&map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
+				map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
 				nil, "gf_publisher_lib", p_runtime_sys)
 			return nil, gf_err
 		}
@@ -203,13 +206,14 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 	//--------------------
 
 	result := &Gf_images_client_result{
-		image_ids_lst:     image_ids_lst,
-		running_job_id_str:running_job_id_str,
-		post_thumbnail_str:post_thumbnail_str,
+		image_ids_lst:      image_ids_lst,
+		running_job_id_str: running_job_id_str,
+		post_thumbnail_str: post_thumbnail_str,
 	}
 
 	return result, nil
 }
+
 //---------------------------------------------------
 func process_external_images__in_process(p_post_elements_map map[string]*Gf_post_element,
 	p_post_elements_images_urls_lst              []string,
@@ -251,7 +255,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 		if _,ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
 			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
-				&map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
+				map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
 				nil, "gf_publisher_lib", p_runtime_sys)
 			return nil, gf_err
 		}
@@ -276,9 +280,9 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 	//--------------------
 
 	result := &Gf_images_client_result{
-		image_ids_lst:     image_ids_lst,
-		running_job_id_str:running_job.Id_str,
-		post_thumbnail_str:post_thumbnail_str,
+		image_ids_lst:      image_ids_lst,
+		running_job_id_str: running_job.Id_str,
+		post_thumbnail_str: post_thumbnail_str,
 	}
 
 	return result, nil

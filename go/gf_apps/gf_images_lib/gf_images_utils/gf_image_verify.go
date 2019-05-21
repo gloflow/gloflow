@@ -25,6 +25,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 /*map[
 	origin_url_str:http://66.media.tumblr.com/b5b70dc4e994c5111c5318177b965b57/tumblr_o87f7n8XZr1vqf2mpo1_500.jpg 
@@ -38,6 +39,7 @@ import (
 	thumbnail_medium_url_str:/images/d/thumbnails/4615191efaae8f4b530b31d5d26bbd9f_thumb_medium.jpeg 
 	thumbnail_large_url_str:/images/d/thumbnails/4615191efaae8f4b530b31d5d26bbd9f_thumb_large.jpeg
 ]*/
+
 //---------------------------------------------------
 func Image__verify_image_info(p_image_info_map map[string]interface{},
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {

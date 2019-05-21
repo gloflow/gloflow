@@ -26,6 +26,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func DB__get_post(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
@@ -36,13 +37,14 @@ func DB__get_post(p_post_title_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get a post from the DB",
 			"mongodb_find_error",
-			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			map[string]interface{}{"post_title_str":p_post_title_str,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 
 	return &post, nil
 }
+
 //---------------------------------------------------
 //CREATE
 func DB__create_post(p_post *Gf_post,
@@ -53,12 +55,13 @@ func DB__create_post(p_post *Gf_post,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to create a post in the DB",
 			"mongodb_insert_error",
-			&map[string]interface{}{},
+			map[string]interface{}{},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil
 }
+
 //---------------------------------------------------
 //UPDATE
 func DB__update_post(p_post *Gf_post, 
@@ -73,13 +76,14 @@ func DB__update_post(p_post *Gf_post,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{"post_title_str":p_post.Title_str,},
+			map[string]interface{}{"post_title_str":p_post.Title_str,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 
 	return nil
 }
+
 //---------------------------------------------------
 //DELETE
 func DB__mark_as_deleted_post(p_post_title_str string,
@@ -94,13 +98,14 @@ func DB__mark_as_deleted_post(p_post_title_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark as deleted a gf_post in a mongodb",
 			"mongodb_update_error",
-			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			map[string]interface{}{"post_title_str":p_post_title_str,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 
 	return nil
 }
+
 //---------------------------------------------------
 //DELETE
 func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -110,12 +115,13 @@ func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sy
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
 			"mongodb_delete_error",
-			&map[string]interface{}{"post_title_str": p_post_title_str,},
+			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil
 }
+
 //---------------------------------------------------
 //GET_POSTS_PAGE
 func DB__get_posts_page(p_cursor_start_position_int int, //0
@@ -134,9 +140,9 @@ func DB__get_posts_page(p_cursor_start_position_int int, //0
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get a posts page from the DB",
 			"mongodb_find_error",
-			&map[string]interface{}{
-				"cursor_start_position_int":p_cursor_start_position_int,
-				"elements_num_int":         p_elements_num_int,
+			map[string]interface{}{
+				"cursor_start_position_int": p_cursor_start_position_int,
+				"elements_num_int":          p_elements_num_int,
 			},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
@@ -144,6 +150,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, //0
 
 	return posts_lst, nil
 }
+
 //---------------------------------------------------
 //REMOVE!! - is this a duplicate of DB__get_posts_page?
 func DB__get_posts_from_offset(p_cursor_position_int int,
@@ -167,9 +174,9 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get a posts page from the DB",
 			"mongodb_find_error",
-			&map[string]interface{}{
-				"cursor_start_position_int":p_cursor_position_int,
-				"posts_num_to_get_int":     p_posts_num_to_get_int,
+			map[string]interface{}{
+				"cursor_start_position_int": p_cursor_position_int,
+				"posts_num_to_get_int":      p_posts_num_to_get_int,
 			},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
@@ -177,6 +184,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 
 	return posts_lst, nil
 }
+
 //---------------------------------------------------
 func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 	p_max_random_cursor_position_int int, //500
@@ -194,6 +202,7 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, //5
 
 	return posts_in_random_range_lst, nil
 }
+
 //---------------------------------------------------
 func DB__check_post_exists(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
@@ -207,7 +216,7 @@ func DB__check_post_exists(p_post_title_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to check if the post exists in DB",
 			"mongodb_find_error",
-			&map[string]interface{}{"post_title_str":p_post_title_str,},
+			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return false, gf_err
 	}

@@ -25,6 +25,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------------
 type Gf_post struct {
 	Id                    bson.ObjectId  `bson:"_id,omitempty"`
@@ -56,6 +57,7 @@ type Gf_post_note struct {
 	Body_str              string `bson:"body_str"`
 	Creation_datetime_str string `bson:"creation_datetime_str"`
 }
+
 //------------------------------------------------
 func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
@@ -144,29 +146,31 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	}
 	//--------------------
 	post := &Gf_post{
-		Id_str:               id_str,
-		T_str:                "post",
-		Deleted_bool:         false,
-		Client_type_str:      p_post_info_map["client_type_str"].(string),
-		Title_str:            post_title_str,
-		Description_str:      p_post_info_map["description_str"].(string),
-		Creation_datetime_str:creation_datetime_str,
-		Poster_user_name_str: p_post_info_map["poster_user_name_str"].(string),
-		Thumbnail_url_str:    thumbnail_url_str,
-		Images_ids_lst:       images_ids_lst,
-		Post_elements_lst:    post_elements_lst,
-		Tags_lst:             tags_lst,
-		Notes_lst:            notes_lst,
-		Colors_lst:           colors_lst,
+		Id_str:                id_str,
+		T_str:                 "post",
+		Deleted_bool:          false,
+		Client_type_str:       p_post_info_map["client_type_str"].(string),
+		Title_str:             post_title_str,
+		Description_str:       p_post_info_map["description_str"].(string),
+		Creation_datetime_str: creation_datetime_str,
+		Poster_user_name_str:  p_post_info_map["poster_user_name_str"].(string),
+		Thumbnail_url_str:     thumbnail_url_str,
+		Images_ids_lst:        images_ids_lst,
+		Post_elements_lst:     post_elements_lst,
+		Tags_lst:              tags_lst,
+		Notes_lst:             notes_lst,
+		Colors_lst:            colors_lst,
 	}
 	return post, nil
 }
+
 //------------------------------------------------	
 //a post has to first be created, and only then can it be published
 
 func publish(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
 }
+
 //------------------------------------------------
 func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Gf_post_note {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
@@ -175,8 +179,8 @@ func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *
 	for _,note_map := range p_raw_notes_lst {
 		
 		snippet := &Gf_post_note{
-			User_id_str:"anonymous",
-			Body_str:   note_map["body_str"].(string),
+			User_id_str: "anonymous",
+			Body_str:    note_map["body_str"].(string),
 		}
 		notes_lst = append(notes_lst, snippet)
 	}

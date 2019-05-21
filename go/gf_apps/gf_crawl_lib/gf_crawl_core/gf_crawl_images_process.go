@@ -36,13 +36,13 @@ func images__stage__process_images(p_crawler_name_str string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
 	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_process.images__stage__process_images")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - process_images")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
@@ -72,7 +72,7 @@ func images__stage__process_images(p_crawler_name_str string,
 		if gf_err != nil {
 			t:="image_process__failed"
 			m:="failed processing of image with img_url_str - "+page_img__pinfo.page_img.Url_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
+			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
@@ -97,7 +97,7 @@ func image__process(p_page_img *Gf_crawler_page_img,
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.Log_fun("INFO",cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("PROCESS_IMAGE"))
+	p_runtime_sys.Log_fun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("PROCESS_IMAGE"))
 
 	//----------------------------
 	//GIF

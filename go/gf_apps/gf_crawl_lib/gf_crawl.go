@@ -53,6 +53,7 @@ type Gf_crawler_cycle_run struct {
 func Init(p_images_local_dir_path_str string,
 	p_cluster_node_type_str      string,
 	p_crawl_config_file_path_str string,
+	p_templates_dir_path_str     string,
 	p_aws_access_key_id_str      string,
 	p_aws_secret_access_key_str  string,
 	p_aws_token_str              string,
@@ -84,19 +85,20 @@ func Init(p_images_local_dir_path_str string,
 	//IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	db_index__init(runtime, p_runtime_sys)
 	
-	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
+	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
-	}
+	}*/
 
-	start_crawlers_cycles(crawlers_map,
+	/*start_crawlers_cycles(crawlers_map,
 		p_images_local_dir_path_str,
 		crawled_images_s3_bucket_name_str,
 		runtime,
-		p_runtime_sys)
+		p_runtime_sys)*/
 
 	init_handlers(crawled_images_s3_bucket_name_str,
 		gf_images_s3_bucket_name_str,
+		p_templates_dir_path_str,
 		runtime,
 		p_runtime_sys)
 

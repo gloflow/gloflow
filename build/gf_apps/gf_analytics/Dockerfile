@@ -44,11 +44,21 @@ RUN pip install pandas
 RUN pip install pymongo
 RUN pip install delegator-py
 RUN pip install colored
-
+#------------
+#SUPERVISOR
+RUN apk --update add supervisor
+#------------
+#"-c" - config file path
+#"-n" - --nodaemon -- run in the foreground (same as 'nodaemon true' in config file).
+#       this way the supervisor will run as the main process, and the container wont exit
+CMD /usr/bin/supervisord -n -c /home/gf/conf/supervisor.conf
+#------------
+ADD ./supervisor.conf   /home/gf/conf/supervisor.conf
+#------------
 #PY SCRIPTS
 ADD ./py/cli_stats.py /home/gf/py/cli_stats.py
 ADD ./py/stats/       /home/gf/py/stats
-#------------
+
 ADD ./templates                /home/gf/templates
 ADD ./static                   /home/gf/static
 ADD ./config/crawl_config.yaml /home/gf/config

@@ -17,20 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_crawl_lib
+package gf_domains_lib
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 
 //--------------------------------------------------
-func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
+func DB_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	
 	indexes_keys_lst := [][]string{
 		[]string{"t", }, //all stat queries first match on "t"
-		[]string{"t", "hash_str"},
+		[]string{"t", "origin_page_url_str"},
+		[]string{"t", "name_str"},
+		[]string{"t", "count_int"},
 	}
 
 	gf_errs_lst := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
@@ -38,12 +38,5 @@ func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
 		return gf_errs_lst
 	}
 
-	//-------------
-	//LINK_INDEXES
-	gf_errs_lst = gf_crawl_core.Link__db_index__init(p_runtime_sys)
-	if len(gf_errs_lst) > 0 {
-		return gf_errs_lst
-	}
-	//-------------
 	return nil
 }

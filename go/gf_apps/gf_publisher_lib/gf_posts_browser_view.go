@@ -24,6 +24,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-lists
 	p_tmpl                   *template.Template,
@@ -40,10 +41,10 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 		for _,post := range posts_page_lst {
 
 			post_info_map := map[string]interface{}{
-				"post_title_str":            post.Title_str,
-				"post_creation_datetime_str":post.Creation_datetime_str,
-				"post_thumbnail_url_str":    post.Thumbnail_url_str,
-				"images_number_int":         len(post.Images_ids_lst),
+				"post_title_str":             post.Title_str,
+				"post_creation_datetime_str": post.Creation_datetime_str,
+				"post_thumbnail_url_str":     post.Thumbnail_url_str,
+				"images_number_int":          len(post.Images_ids_lst),
 			}
 			//---------------
 			//TAGS
@@ -69,13 +70,17 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 		pages_lst = append(pages_lst, page_posts_lst)
 	}
 
+	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	
 	type tmpl_data struct {
-		Posts_pages_lst [][]map[string]interface{}
-		Is_subtmpl_def  func(string) bool //used inside the main_template to check if the subtemplate is defined
+		Posts_pages_lst  [][]map[string]interface{}
+		Sys_release_info gf_core.Sys_release_info
+		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Posts_pages_lst:pages_lst,
+		Posts_pages_lst:  pages_lst,
+		Sys_release_info: sys_release_info,
 		//-------------------------------------------------
 		//IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
@@ -92,7 +97,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to render the posts browser template",
 			"template_render_error",
-			&map[string]interface{}{},
+			map[string]interface{}{},
 			err, "gf_publisher_lib", p_runtime_sys)
 		return gf_err
 	}

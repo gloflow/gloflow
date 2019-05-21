@@ -30,6 +30,35 @@ import (
 )
 
 //-------------------------------------------------
+func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
+	p_coll_name_str string,
+	p_runtime_sys   *Runtime_sys) []*Gf_error {
+
+	gf_errs_lst := []*Gf_error{}
+	for _, index_keys_lst := range p_indexes_keys_lst {
+		doc_type__index := mgo.Index{
+			Key:        index_keys_lst, 
+			Unique:     false, //index must necessarily contain only a single document per Key
+			DropDups:   false, //documents with the same key as a previously indexed one will be dropped rather than an error returned.
+			Background: true,  //other connections will be allowed to proceed using the collection without the index while it's being built
+			Sparse:     true,  //only documents containing the provided Key fields will be included in the index
+		}
+	
+		err := p_runtime_sys.Mongodb_db.C(p_coll_name_str).EnsureIndex(doc_type__index)
+		if err != nil {
+			if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+				continue //ignore, index already exists
+			} else {
+				gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
+					"mongodb_ensure_index_error", nil, err, "gf_core", p_runtime_sys)
+				gf_errs_lst = append(gf_errs_lst, gf_err)
+			}
+		}
+	}
+	return gf_errs_lst
+}
+
+//-------------------------------------------------
 func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
 	p_log_fun             func(string, string)) *mgo.Database {

@@ -67,9 +67,25 @@ type Gf_crawler_page_outgoing_link struct {
 }
 
 //--------------------------------------------------
+func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links.Link__db_index__init()")
+
+	indexes_keys_lst := [][]string{
+		[]string{"t", "crawler_name_str"}, //all stat queries first match on "t"
+		[]string{"t", "id_str"},
+		[]string{"t", "hash_str"},
+		[]string{"t", "hash_str", "valid_for_crawl_bool", "fetched_bool", "error_type_str", "error_id_str"}, //Link__get_unresolved()
+		[]string{"t", "hash_str", "valid_for_crawl_bool"}, //Link__mark_as_resolved()
+	}
+
+	gf_errs_lst := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
+	return gf_errs_lst
+}
+
+//--------------------------------------------------
 func Link__get_unresolved(p_crawler_name_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Link__get_unresolved()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links.Link__get_unresolved()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
