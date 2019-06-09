@@ -152,6 +152,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_landing_page'+attr(0)+'''
 - '''+fg('yellow')+'gf_analytics'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
+- '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
         ''')
     #-------------
     #AWS_S3_CREDS

@@ -1,0 +1,23 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+crawlers-defs:
+- name: gloflow
+  start-url: http://gloflow.com
+- name: test-crawler
+  start-url: http://gloflow.com
+
+
+  

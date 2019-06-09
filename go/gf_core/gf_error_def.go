@@ -38,6 +38,9 @@ func error__get_defs() map[string]error_def {
 		"url_parse_error": error_def{
 			Descr_str: "failed to parse a url with url.Parse()",
 		},
+		"url_unescape_error": error_def{
+			Descr_str: "failed to unescape a url with url.QueryUnescape()",
+		},
 		"io_reader_error": error_def{
 			Descr_str: "failed to read bytes using the io.Reader.ReadBytes()",
 		},

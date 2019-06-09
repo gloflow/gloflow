@@ -79,6 +79,9 @@ def get():
             'gf_crawl_lib': {
                 'go_path_str': '%s/../go/gf_apps/gf_crawl_lib'%(cwd_str),
             },
+            'gf_crawl_core': {
+                'go_path_str': '%s/../go/gf_apps/gf_crawl_lib/gf_crawl_core'%(cwd_str),
+            },
             #-------------
             #MAIN
             #GF_PUBLISHER

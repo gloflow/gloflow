@@ -68,9 +68,11 @@ def run(p_app_name_str,
 
     e = os.environ.copy()
     e.update(p_aws_s3_creds_map)
-    p = subprocess.Popen(c.split(' '), stdout=subprocess.PIPE, env=e)
+    p = subprocess.Popen(c.split(' '), stderr=subprocess.PIPE, env=e)
 
-    for l in iter(p.stdout.readline, ""):
+    #IMPORTANT!! - stderr is used and read, because thats what contains the log lines from Go programs that has
+    #              color codes preserved in log lines.
+    for l in iter(p.stderr.readline, ""):
         print(l.rstrip())
 
     if not p.stderr == None: print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), p.stderr)

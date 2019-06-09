@@ -21,6 +21,7 @@ package gf_crawl_lib
 
 import (
 	"testing"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
@@ -29,24 +30,35 @@ func Test__run_crawl_cycle(p_test *testing.T) {
 
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__crawler_images_local_dir_path_str := "./test_data/crawled_images"
-	
+	test__crawl_config_file_path_str        := "./test_data/config/test_crawl_config.yaml"
+
+
 	runtime_sys, crawler_runtime := gf_crawl_core.T__init()
 
 	test__run_crawl_cycle(test__crawler_images_local_dir_path_str,
 		test__crawled_images_s3_bucket_name_str,
+		test__crawl_config_file_path_str,
 		crawler_runtime,
 		runtime_sys)
 }
 //---------------------------------------------------
 func test__run_crawl_cycle(p_test__crawler_images_local_dir_path_str string,
 	p_test__crawled_images_s3_bucket_name_str string,
+	p_test__crawl_config_file_path_str        string,
 	p_runtime                                 *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                             *gf_core.Runtime_sys) {
 
-	crawlers_map := Get_all_crawlers()
-	crawler      := crawlers_map["gloflow.com"]
+	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_test__crawl_config_file_path_str, p_runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
 
-	gf_err := Run_crawler_cycle(crawler,
+
+	spew.Dump(crawlers_map)
+
+	crawler := crawlers_map["gloflow"]
+
+	gf_err = Run_crawler_cycle(crawler,
 		p_test__crawler_images_local_dir_path_str,
 		p_test__crawled_images_s3_bucket_name_str,
 		p_runtime,

@@ -233,7 +233,7 @@ func fetch__error(p_error_type_str string,
 	p_gf_err           *gf_core.Gf_error,
 	p_runtime          *Gf_crawler_runtime,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.fetch__error()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_fetch.fetch__error()")
 
 	crawler_error,ce_err := Create_error_and_event(p_error_type_str,
 		p_error_msg_str,

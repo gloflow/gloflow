@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"net/url"
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/globalsign/mgo/bson"
@@ -122,7 +123,7 @@ func Link__get_unresolved(p_crawler_name_str string,
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("unresolved links for gf_crawler were not found in mongodb",
 			"mongodb_not_found_error",
-			map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
+			map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -130,11 +131,28 @@ func Link__get_unresolved(p_crawler_name_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"crawler_name_str":p_crawler_name_str,},
+			map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
+	//-------------------
+	//IMPORTANT!! - some unresolved links in the DB might possibly be urlescaped,
+	//              so for proper usage it is unescaped here and stored back in the unresolved_link struct.
+	unescaped_unresolved_link_url_str, err := url.QueryUnescape(unresolved_link.A_href_str)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb", "url_unescape_error",
+			map[string]interface{}{
+				"crawler_name_str":        p_crawler_name_str,
+				"unresolved_link_url_str": unresolved_link.A_href_str,
+			},
+			err, "gf_crawl_core", p_runtime_sys)
+		return nil, gf_err
+	}
+	unresolved_link.A_href_str = unescaped_unresolved_link_url_str
+	//-------------------
+
+	fmt.Printf("unresolved_link URL - %s\n", unresolved_link.A_href_str)
 	return &unresolved_link, nil
 }
 
@@ -144,7 +162,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 	p_crawler_name_str string,
 	p_runtime          *Gf_crawler_runtime,
 	p_runtime_sys      *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.Links__get_outgoing_in_page()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

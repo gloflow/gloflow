@@ -30,7 +30,7 @@ import (
 func Test__img_add_to_flow(p_test *testing.T) {
 
 	//-------------------
-	test__crawler_name_str                  := "test_crawler"
+	test__crawler_name_str                  := "test-crawler"
 	test__cycle_run_id_str                  := "test__cycle_run_id"
 	test__image_flows_names_lst             := []string{"test_flow",}
 	test__img_src_url_str                   := "/some/origin/test_image_wasp.jpeg"
@@ -79,12 +79,12 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//-------------------
 	//PIPELINE_STAGE__PROCESS_IMAGES
 
-	page_img_link := &gf__page_img_link{
+	page_img_link := &gf_page_img_link{
 		img_src_str:         test__img_src_url_str,
 		origin_page_url_str: test__origin_page_url_str,
 	}
 
-	page_img__pipeline_info := &gf__page_img__pipeline_info{
+	page_img__pipeline_info := &gf_page_img__pipeline_info{
 		link:                page_img_link,
 		page_img:            test__crawled_image,
 		page_img_ref:        test__crawled_image_ref,
@@ -94,7 +94,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		thumbs:              nil,
 	}
 
-	page_imgs__pinfos_lst := []*gf__page_img__pipeline_info{
+	page_imgs__pinfos_lst := []*gf_page_img__pipeline_info{
 		page_img__pipeline_info,
 	}
 
