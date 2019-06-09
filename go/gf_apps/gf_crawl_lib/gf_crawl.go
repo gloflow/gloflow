@@ -81,7 +81,6 @@ func Init(p_images_local_dir_path_str string,
 		Cluster_node_type_str: p_cluster_node_type_str,
 	}
 	//--------------
-
 	//IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	db_index__init(runtime, p_runtime_sys)
 	
@@ -95,17 +94,23 @@ func Init(p_images_local_dir_path_str string,
 		crawled_images_s3_bucket_name_str,
 		runtime,
 		p_runtime_sys)*/
-
-	init_handlers(crawled_images_s3_bucket_name_str,
+	//--------------
+	//HTTP_HANDLERS
+	gf_err = init_handlers(crawled_images_s3_bucket_name_str,
 		gf_images_s3_bucket_name_str,
 		p_templates_dir_path_str,
 		runtime,
 		p_runtime_sys)
-
+	if gf_err != nil {
+		return gf_err
+	}
+		
+	//HTTP_HANDLERS__CLUSTER
 	gf_err = cluster__init_handlers(p_crawl_config_file_path_str, runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+	//--------------
 
 	return nil
 }
@@ -151,6 +156,11 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_runtime_sys.Log_fun("INFO",black(">>>    STARTING CRAWLER >>> ")+yellow(p_crawler.Name_str))
 	p_runtime_sys.Log_fun("INFO",black("------------------------------------"))
 
+	//-----------------
+	//LINK_ALLOCATOR
+	gf_crawl_core.Link_alloc__init(p_crawler.Name_str, p_runtime_sys)
+	//-----------------
+
 	//randomize r.Intn() usage, otherwise its determanistic 
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
@@ -166,7 +176,7 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 			p_runtime,
 			p_runtime_sys)
 		if gf_err != nil {
-
+			//ADD!! - do something useful with this error, although its persisted to DB since its a gf_err
 		}
 		//-----------------
 		i=i+1

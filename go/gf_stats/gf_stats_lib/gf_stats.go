@@ -76,7 +76,7 @@ func Init(p_stats_url_base_str string,
 			}
 		} 
 	}
-	query__init_handlers(p_stats_url_base_str,query_funs_map,p_runtime_sys)
+	query__init_handlers(p_stats_url_base_str, query_funs_map, p_runtime_sys)
 	//----------------
 
 	return nil
@@ -84,14 +84,14 @@ func Init(p_stats_url_base_str string,
 
 //-------------------------------------------------
 func query__init_handlers(p_stats_url_base_str string,
-	p_stats_query_funs_map map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error),
+	p_stats_query_funs_map map[string]func(*gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error),
 	p_runtime_sys          *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_stats.query__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
 	http.HandleFunc(url_str,func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		p_runtime_sys.Log_fun("INFO",fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
 		if p_req.Method == "POST" {
 			
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

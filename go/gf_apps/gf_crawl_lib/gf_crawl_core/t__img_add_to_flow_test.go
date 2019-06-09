@@ -80,8 +80,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//PIPELINE_STAGE__PROCESS_IMAGES
 
 	page_img_link := &gf__page_img_link{
-		img_src_str:        test__img_src_url_str,
-		origin_page_url_str:test__origin_page_url_str,
+		img_src_str:         test__img_src_url_str,
+		origin_page_url_str: test__origin_page_url_str,
 	}
 
 	page_img__pipeline_info := &gf__page_img__pipeline_info{

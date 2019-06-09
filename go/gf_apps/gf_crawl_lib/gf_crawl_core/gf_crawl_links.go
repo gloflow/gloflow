@@ -195,7 +195,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 		if gf_err != nil {
 			t := "link__complete_url__failed"
 			m := "failed completing the url of a_href_str - "+a_href_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_url_fetch.Url_str,}, a_href_str, p_crawler_name_str,
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_url_fetch.Url_str,}, a_href_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 			return
 		}
@@ -205,7 +205,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 	})
 	//--------------
 	//STAGE - PERSIST ALL LINKS
-	for _,link := range crawled_links_lst {
+	for _, link := range crawled_links_lst {
 
 		gf_err := link__db_create(link, p_runtime_sys)
 		if gf_err != nil {
