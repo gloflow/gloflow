@@ -101,15 +101,15 @@ func Fetcher__get_extern_image(p_image_url_str string,
 
 	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
 	//              instead of the old original_image naming scheme
-	image_id_str,_ := Image__create_id_from_url(p_image_url_str, p_runtime_sys)
-	ext_str,gf_err := Get_image_ext_from_url(p_image_url_str, p_runtime_sys)
+	image_id_str, _ := Image__create_id_from_url(p_image_url_str, p_runtime_sys)
+	ext_str, gf_err := Get_image_ext_from_url(p_image_url_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
 	}
 
 	local_image_file_path_str := fmt.Sprintf("%s/%s.%s", p_images_store_local_dir_path_str, image_id_str, ext_str)
 
-	p_runtime_sys.Log_fun("INFO","local_image_file_path_str - "+local_image_file_path_str)
+	p_runtime_sys.Log_fun("INFO", "local_image_file_path_str - "+local_image_file_path_str)
 	//--------------
 	//HTTP DOWNLOAD
 
@@ -118,10 +118,11 @@ func Fetcher__get_extern_image(p_image_url_str string,
 		return "", gf_err
 	}
 	//--------------
+
 	//LOG
 	analytics__log_image_fetch(p_image_url_str, p_runtime_sys)
 	
-	return local_image_file_path_str,nil
+	return local_image_file_path_str, nil
 }
 
 //---------------------------------------------------
@@ -190,7 +191,7 @@ func Download_file(p_image_url_str string,
 
 	//--------------
 	//WRITE TO FILE
-	fmt.Printf("p_local_image_file_path_str - %s\n",p_local_image_file_path_str)
+	fmt.Printf("p_local_image_file_path_str - %s\n", p_local_image_file_path_str)
 
 	out, c_err := os.Create(p_local_image_file_path_str)
 	defer out.Close()
@@ -203,7 +204,7 @@ func Download_file(p_image_url_str string,
 		return gf_err
 	}
 
-	_,cp_err := io.Copy(out,gf_http_fetch.Resp.Body)
+	_, cp_err := io.Copy(out,gf_http_fetch.Resp.Body)
 	if cp_err != nil {
 		gf_err := gf_core.Error__create("failed to copy HTTP GET response Body buffer to a image file",
 			"file_buffer_copy_error",

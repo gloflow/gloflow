@@ -87,8 +87,9 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 	}
 	//------------
 
-	return false,nil
+	return false, nil
 }
+
 //--------------------------------------------------
 func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 	p_runtime     *Gf_crawler_runtime,
@@ -157,4 +158,43 @@ func image__db_get(p_id_str string,
 	}
 
 	return &img, nil
+}
+
+//-------------------------------------------------
+func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.Images__get_recent()")
+
+	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+		bson.M{"$match": bson.M{
+				"t": "crawler_page_img",
+			},
+		},
+		bson.M{"$sort": bson.M{
+				"creation_unix_time_f": -1,
+			},
+		},
+		bson.M{"$limit": 2000},
+		bson.M{"$group": bson.M{
+				"_id":                      "$origin_page_url_domain_str", //"$domain_str",
+				"imgs_count_int":           bson.M{"$sum" :1},
+				"crawler_page_img_ids_lst": bson.M{"$push":"$id_str"},
+				"creation_times_lst":       bson.M{"$push":"$creation_unix_time_f"},
+				"urls_lst":                 bson.M{"$push":"$url_str"},
+				"nsfv_ls":                  bson.M{"$push":"$nsfv_bool"},
+				"origin_page_urls_lst":     bson.M{"$push":"$origin_page_url_str"},
+			},
+		},
+	})
+
+	results_lst := []Gf_crawler__recent_images{}
+	err         := pipe.AllowDiskUse().All(&results_lst)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
+			"mongodb_aggregation_error",
+			nil, err, "gf_crawl_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return results_lst, nil
 }

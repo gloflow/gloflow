@@ -94,13 +94,13 @@ type Gf_crawler__recent_images struct {
 }
 
 //-------------------------------------------------
-func images__prepare_and_create(p_crawler_name_str string,
+func images_adt__prepare_and_create(p_crawler_name_str string,
 	p_cycle_run_id_str   string,
 	p_img_src_url_str    string,
 	p_origin_page_url_str string,
 	p_runtime            *Gf_crawler_runtime,
 	p_runtime_sys        *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__prepare_and_create()")
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images_adt__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -141,7 +141,7 @@ func images__prepare_and_create(p_crawler_name_str string,
 	//-------------
 	p_runtime_sys.Log_fun("INFO",">>>>> "+cyan("img")+" -- "+yellow(img_src_domain_str)+" ------ "+yellow(fmt.Sprint(complete_img_src_url_str)))
 
-	img := images__create(p_crawler_name_str,
+	img := images_adt__create(p_crawler_name_str,
 		p_cycle_run_id_str,
 		complete_img_src_url_str,
 		img_ext_str,
@@ -153,7 +153,7 @@ func images__prepare_and_create(p_crawler_name_str string,
 }
 
 //-------------------------------------------------
-func images__create(p_crawler_name_str string,
+func images_adt__create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
 	p_img_src_url_str            string,
 	p_img_ext_str                string,
@@ -161,7 +161,7 @@ func images__create(p_crawler_name_str string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
@@ -192,17 +192,17 @@ func images__create(p_crawler_name_str string,
 }
 
 //-------------------------------------------------
-func images__ref_create(p_crawler_name_str string,
+func images_adt__ref_create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
 	p_image_url_str              string,
 	p_image_url_domain_str       string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img_ref {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__ref_create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	ref_id_str           := fmt.Sprintf("img_ref:%f",creation_unix_time_f)
+	ref_id_str           := fmt.Sprintf("img_ref:%f", creation_unix_time_f)
 
 	//HASH
 	//IMPORTANT!! - one Crawler_page_img_ref per page img reference, so if the same image is linked on several pages
@@ -226,43 +226,4 @@ func images__ref_create(p_crawler_name_str string,
 	}
 
 	return gf_img_ref
-}
-
-//-------------------------------------------------
-func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.Images__get_recent()")
-
-	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
-		bson.M{"$match": bson.M{
-				"t": "crawler_page_img",
-			},
-		},
-		bson.M{"$sort": bson.M{
-				"creation_unix_time_f": -1,
-			},
-		},
-		bson.M{"$limit": 2000},
-		bson.M{"$group": bson.M{
-				"_id":                      "$origin_page_url_domain_str", //"$domain_str",
-				"imgs_count_int":           bson.M{"$sum" :1},
-				"crawler_page_img_ids_lst": bson.M{"$push":"$id_str"},
-				"creation_times_lst":       bson.M{"$push":"$creation_unix_time_f"},
-				"urls_lst":                 bson.M{"$push":"$url_str"},
-				"nsfv_ls":                  bson.M{"$push":"$nsfv_bool"},
-				"origin_page_urls_lst":     bson.M{"$push":"$origin_page_url_str"},
-			},
-		},
-	})
-
-	results_lst := []Gf_crawler__recent_images{}
-	err         := pipe.AllowDiskUse().All(&results_lst)
-
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
-			"mongodb_aggregation_error",
-			nil, err, "gf_crawl_core", p_runtime_sys)
-		return nil, gf_err
-	}
-
-	return results_lst, nil
 }

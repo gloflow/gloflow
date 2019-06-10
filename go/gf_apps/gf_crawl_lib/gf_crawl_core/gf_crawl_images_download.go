@@ -62,6 +62,7 @@ func images__stage__download_images(p_crawler_name_str string,
 
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
+
 		//------------------
 		//DOWNLOAD
 		//IMPORTANT!! - all images done as fast as possible (without sleeps/pauses)
@@ -69,17 +70,18 @@ func images__stage__download_images(p_crawler_name_str string,
 		//              for all the images in the page immediatelly. 
 
 		local_image_file_path_str, gf_err := image__download(page_img__pinfo.page_img, p_images_store_local_dir_path_str, p_runtime_sys)
-		//------------------
-
+		
 		if gf_err != nil {
-			t:="image_download__failed"
-			m:="failed downloading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
+			t := "image_download__failed"
+			m := "failed downloading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
 			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
+		//------------------
+
 
 		end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -123,7 +125,7 @@ func image__download(p_image *Gf_crawler_page_img,
 
 	//-------------------
 	//DOWNLOAD
-	local_image_file_path_str,gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
+	local_image_file_path_str, gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
 		p_images_store_local_dir_path_str,
 
 		//IMPORTANT!! - dont add any time delay, instead download images as fast as possible

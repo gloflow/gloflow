@@ -32,10 +32,10 @@ type gf_page_img__pipeline_info struct {
 	link                *gf_page_img_link
 	page_img            *Gf_crawler_page_img
 	page_img_ref        *Gf_crawler_page_img_ref
-	exists_bool         bool                   //has the page_img already been discovered in the past
 	local_file_path_str string
-	nsfv_bool           bool
 	thumbs              *gf_images_utils.Gf_image_thumbs
+	exists_bool         bool                   //has the page_img already been discovered in the past
+	nsfv_bool           bool
 	gf_error            *gf_core.Gf_error      //if page_img processing failed at some stage
 }
 
@@ -67,7 +67,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 	//------------------
 	//STAGE - pull all page image links
 
-	page_imgs__pinfos_lst := images__stage__pull_image_links(p_url_fetch,
+	page_imgs__pipeline_infos_lst := images__stage__pull_image_links(p_url_fetch,
 		p_crawler_name_str,
 		p_cycle_run_id_str,
 		p_runtime,
@@ -77,7 +77,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 
 	page_imgs__pinfos_with_imgs_lst := images__stage__create_page_images(p_crawler_name_str,
 		p_cycle_run_id_str,
-		page_imgs__pinfos_lst,
+		page_imgs__pipeline_infos_lst,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
@@ -88,7 +88,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - download gf_images
+	//STAGE - download gf_images from target URL
 	
 	page_imgs__pinfos_with_local_file_paths_lst := images__stage__download_images(p_crawler_name_str,
 		page_imgs__pinfos_with_persists_lst,
@@ -107,7 +107,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - S3 store all images
+	//STAGE - persist all images files (S3, etc.)
 
 	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(p_crawler_name_str,
 		page_imgs__pinfos_with_thumbs_lst,
@@ -183,13 +183,15 @@ func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
 		img_src_str,_       := p_elem.Attr("src")
 		origin_page_url_str := p_url_fetch.Url_str
 		
+		//GF_PAGE_IMG__LINK
 		page_img_link := &gf_page_img_link{
-			img_src_str:        img_src_str,
-			origin_page_url_str:origin_page_url_str,
+			img_src_str:         img_src_str,
+			origin_page_url_str: origin_page_url_str,
 		}
 
+		//GF_PAGE_IMG__PIPELINE_INFO
 		page_img__pipeline_info := &gf_page_img__pipeline_info{
-			link:page_img_link,
+			link: page_img_link,
 		}
 
 		page_imgs__pipeline_infos_lst = append(page_imgs__pipeline_infos_lst, page_img__pipeline_info)
@@ -215,7 +217,7 @@ func images__stage__create_page_images(p_crawler_name_str string,
 		//------------------
 		//CRAWLER_PAGE_IMG
 
-		gf_img,gf_err := images__prepare_and_create(p_crawler_name_str,
+		gf_img, gf_err := images_adt__prepare_and_create(p_crawler_name_str,
 			p_cycle_run_id_str,                       //p_cycle_run_id_str
 			page_img__pinfo.link.img_src_str,         //p_img_src_url_str
 			page_img__pinfo.link.origin_page_url_str, //p_origin_page_url_str
@@ -228,7 +230,7 @@ func images__stage__create_page_images(p_crawler_name_str string,
 		//------------------
 		//CRAWLER_PAGE_IMG_REF
 
-		gf_img_ref := images__ref_create(p_crawler_name_str,
+		gf_img_ref := images_adt__ref_create(p_crawler_name_str,
 			p_cycle_run_id_str,
 			gf_img.Url_str,                           //p_image_url_str
 			gf_img.Domain_str,                        //p_image_url_domain_str
