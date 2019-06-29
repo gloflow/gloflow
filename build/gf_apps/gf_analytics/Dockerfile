@@ -53,13 +53,16 @@ RUN apk --update add supervisor
 #       this way the supervisor will run as the main process, and the container wont exit
 CMD /usr/bin/supervisord -n -c /home/gf/conf/supervisor.conf
 #------------
-ADD ./supervisor.conf   /home/gf/conf/supervisor.conf
+ADD ./supervisor.conf /home/gf/conf/supervisor.conf
 #------------
 #PY SCRIPTS
 ADD ./py/cli_stats.py /home/gf/py/cli_stats.py
 ADD ./py/stats/       /home/gf/py/stats
 
-ADD ./templates                /home/gf/templates
-ADD ./static                   /home/gf/static
+#WEB
+ADD ./templates /home/gf/templates
+ADD ./static    /home/gf/static
+
+#default crawler definitions
 ADD ./config/crawl_config.yaml /home/gf/config
 ADD ./gf_analytics_service     /home/gf/

@@ -252,6 +252,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 		}
 	}()
 }
+
 //--------------------------------------------------
 func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str string,
@@ -316,13 +317,13 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				//              p_create_new_db_img_bool is set to 'false'.
 				image_client_type_str := ""
 
-				flows_names_lst,gf_err := migrate__get_flows_names(img.Id_str, p_runtime_sys)
+				flows_names_lst, gf_err := migrate__get_flows_names(img.Id_str, p_runtime_sys)
 				if gf_err != nil {
 					continue
 				}
 
 				//IMPORTANT!! - image is re-fetched and GIF is processed in full
-				_,_,gf_err = Process(img.Origin_url_str, //p_image_source_url_str,
+				_, _, gf_err = Process(img.Origin_url_str, //p_image_source_url_str,
 					img.Origin_page_url_str,
 					p_images_store_local_dir_path_str,
 					image_client_type_str,
@@ -344,6 +345,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 		}
 	}()
 }
+
 //--------------------------------------------------
 func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	p_images_store_local_dir_path_str string,
@@ -358,7 +360,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	//              p_create_new_db_img_bool is set to 'false'.
 	image_client_type_str := ""
 
-	flows_names_lst,gf_err := migrate__get_flows_names(p_old_gif.Gf_image_id_str,p_runtime_sys)
+	flows_names_lst, gf_err := migrate__get_flows_names(p_old_gif.Gf_image_id_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

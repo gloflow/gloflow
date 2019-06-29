@@ -35,6 +35,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //--------------------------------------------------
 type Gf_gif struct {
 	Id                         bson.ObjectId `json:"-"                          bson:"_id,omitempty"`
@@ -75,8 +76,8 @@ func Process_and_upload(p_image_source_url_str string,
 	p_create_new_db_img_bool                      bool,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.Gf_s3_info,
-	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Process_and_upload()")
+	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
 	gif,local_image_file_path_str,gf_err := Process(p_image_source_url_str,
 		p_image_origin_page_url_str,
@@ -123,8 +124,8 @@ func Process(p_image_source_url_str string,
 	p_create_new_db_img_bool                      bool,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.Gf_s3_info,
-	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif,string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Process()")
+	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
 	//FETCH
@@ -141,7 +142,7 @@ func Process(p_image_source_url_str string,
 	//              (to save on bandwidth and download the full GIF only when the 
 	//              user explicitly wants to view the full version)
 
-	frames_num_int,frames_s3_urls_lst, var_gf_err, frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
+	frames_num_int, frames_s3_urls_lst, var_gf_err, frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_s3_bucket_name_str,
 		p_s3_info,
@@ -151,7 +152,7 @@ func Process(p_image_source_url_str string,
 	}
 
 
-	for _,frame_gf_err := range frames_gf_errs_lst {
+	for _, frame_gf_err := range frames_gf_errs_lst {
 		if frame_gf_err != nil {
 
 			//FIX!! - return all errors to the user, to know exactly which frames failed, 
@@ -184,13 +185,13 @@ func Process(p_image_source_url_str string,
 	if p_create_new_db_img_bool {
 
 		//IMAGE_ID
-		image_id_str,i_err := gf_images_utils.Image__create_id_from_url(p_image_source_url_str,p_runtime_sys)
+		image_id_str, i_err := gf_images_utils.Image__create_id_from_url(p_image_source_url_str, p_runtime_sys)
 		if i_err != nil {
-			return nil,"",i_err
+			return nil, "", i_err
 		}
 
 		//IMAGE_TITLE
-		image_title_str,gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
+		image_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
 		if gf_err != nil {
 			return nil,"",gf_err
 		}
@@ -202,53 +203,53 @@ func Process(p_image_source_url_str string,
 		//               not via gf_images_utils.Image__verify_image_info()
 
 		gf_image_info_map := map[string]interface{}{
-			"id_str":                        image_id_str,
-			"title_str":                     image_title_str,
-			"image_client_type_str":         p_image_client_type_str,
+			"id_str":                         image_id_str,
+			"title_str":                      image_title_str,
+			"image_client_type_str":          p_image_client_type_str,
 			//--------------
-			"flows_names_lst":               p_flows_names_lst,
-			"origin_url_str":                p_image_source_url_str, //*p_image_origin_url_str,
-			"origin_page_url_str":           p_image_origin_page_url_str,
-			"original_file_internal_uri_str":local_image_file_path_str,
+			"flows_names_lst":                p_flows_names_lst,
+			"origin_url_str":                 p_image_source_url_str, //*p_image_origin_url_str,
+			"origin_page_url_str":            p_image_origin_page_url_str,
+			"original_file_internal_uri_str": local_image_file_path_str,
 			//--------------
-			"format_str":                    "gif",
-			"width_int":                     img_width_int,
-			"height_int":                    img_height_int,
+			"format_str":                     "gif",
+			"width_int":                      img_width_int,
+			"height_int":                     img_height_int,
 			//--------------
-			"thumbnail_small_url_str":       gif_first_frame_str, //image_thumbs.Small_relative_url_str,
-			"thumbnail_medium_url_str":      gif_first_frame_str, //image_thumbs.Medium_relative_url_str,
-			"thumbnail_large_url_str":       gif_first_frame_str, //image_thumbs.Large_relative_url_str,
+			"thumbnail_small_url_str":        gif_first_frame_str, //image_thumbs.Small_relative_url_str,
+			"thumbnail_medium_url_str":       gif_first_frame_str, //image_thumbs.Medium_relative_url_str,
+			"thumbnail_large_url_str":        gif_first_frame_str, //image_thumbs.Large_relative_url_str,
 
 			//"dominant_color_hex_str":dominant_color_hex_str,
 		}
 
-		verified_image_info_map,gf_err := gf_images_utils.Image__verify_image_info(gf_image_info_map,p_runtime_sys)
+		verified_image_info_map, gf_err := gf_images_utils.Image__verify_image_info(gf_image_info_map, p_runtime_sys)
 		if gf_err != nil {
-			return nil,"",gf_err
+			return nil, "", gf_err
 		}
 		//-----------------------
 
 		gf_image_info := &gf_images_utils.Gf_image_new_info{
-			Id_str:                        verified_image_info_map["id_str"].(string),                         //image_id_str,
-			Title_str:                     verified_image_info_map["title_str"].(string),                      //image_title_str,
-			Flows_names_lst:               verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
-			Image_client_type_str:         verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,
-			Origin_url_str:                verified_image_info_map["origin_url_str"].(string),                 //p_image_source_url_str,
-			Origin_page_url_str:           verified_image_info_map["origin_page_url_str"].(string),            //p_image_origin_page_url_str,
-			Original_file_internal_uri_str:verified_image_info_map["original_file_internal_uri_str"].(string), //image_local_file_path_str,
-			Thumbnail_small_url_str:       verified_image_info_map["thumbnail_small_url_str"].(string),        //gif_first_frame_str,
-			Thumbnail_medium_url_str:      verified_image_info_map["thumbnail_medium_url_str"].(string),       //gif_first_frame_str,
-			Thumbnail_large_url_str:       verified_image_info_map["thumbnail_large_url_str"].(string),        //gif_first_frame_str,
-			Format_str:                    verified_image_info_map["format_str"].(string),                     //"gif",
+			Id_str:                         verified_image_info_map["id_str"].(string),                         //image_id_str,
+			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
+			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
+			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,
+			Origin_url_str:                 verified_image_info_map["origin_url_str"].(string),                 //p_image_source_url_str,
+			Origin_page_url_str:            verified_image_info_map["origin_page_url_str"].(string),            //p_image_origin_page_url_str,
+			Original_file_internal_uri_str: verified_image_info_map["original_file_internal_uri_str"].(string), //image_local_file_path_str,
+			Thumbnail_small_url_str:        verified_image_info_map["thumbnail_small_url_str"].(string),        //gif_first_frame_str,
+			Thumbnail_medium_url_str:       verified_image_info_map["thumbnail_medium_url_str"].(string),       //gif_first_frame_str,
+			Thumbnail_large_url_str:        verified_image_info_map["thumbnail_large_url_str"].(string),        //gif_first_frame_str,
+			Format_str:                     verified_image_info_map["format_str"].(string),                     //"gif",
 		}
 
 		//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 		//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 		//              these two structs are related by origin_url
 
-		_,c_gf_err := gf_images_utils.Image__create_new(gf_image_info,p_runtime_sys)
+		_, c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
 		if c_gf_err != nil {
-			return nil,"",c_gf_err
+			return nil, "", c_gf_err
 		}
 
 		//link the new gf_image DB record to the gf_gif DB record
@@ -256,8 +257,9 @@ func Process(p_image_source_url_str string,
 	}
 	//-----------------------
 
-	return gif,local_image_file_path_str,nil
+	return gif, local_image_file_path_str, nil
 }
+
 //--------------------------------------------------
 func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
@@ -303,6 +305,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 
 	return preview_frames_num_int,preview_frames_s3_urls_lst,nil,gf_errors_lst
 }
+
 //--------------------------------------------------
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
@@ -420,6 +423,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 	return new_files_names_lst,nil
 }
+
 //--------------------------------------------------
 func gif__get_dimensions(p_local_file_path_src string,
 	p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
@@ -478,6 +482,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 
 	return highestX - lowestX, highestY - lowestY,nil
 }
+
 //--------------------------------------------------
 func gif__get_hash(p_image_local_file_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {

@@ -56,7 +56,7 @@ func Init(p_stats_url_base_str string,
 
 	//----------------
 	//BATCH__HANDLERS
-	gf_err := batch__init_handlers(p_stats_url_base_str,p_py_stats_dir_path_str,p_runtime_sys)
+	gf_err := batch__init_handlers(p_stats_url_base_str, p_py_stats_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -65,9 +65,9 @@ func Init(p_stats_url_base_str string,
 
 	//collect all query funs into a single map
 	query_funs_map := map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error){}
-	for _,stats_query_funs_map := range p_stats_query_funs_groups_lst {
+	for _, stats_query_funs_map := range p_stats_query_funs_groups_lst {
 		for stat_name_str,query_fun := range stats_query_funs_map {
-			if _,ok := query_funs_map[stat_name_str]; !ok {
+			if _, ok := query_funs_map[stat_name_str]; !ok {
 				query_funs_map[stat_name_str] = query_fun
 			} else {
 				//panicking here since this is only run on code initialization, and is a 
@@ -98,7 +98,7 @@ func query__init_handlers(p_stats_url_base_str string,
 
 			//--------------------------
 			//INPUT
-			i,gf_err := gf_rpc_lib.Get_http_input(url_str, p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_rpc_lib.Get_http_input(url_str, p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -150,23 +150,23 @@ func query__run_fun(p_stat_name_str string,
 		}
 
 		stat_result := &Stat_query_run__extern_result{
-			Query_run_id_str:  run_id_str,
-			Stat_name_str:     p_stat_name_str,
-			Start_time__unix_f:start_time__unix_f,
-			End_time__unix_f:  end_time__unix_f,
-			Result_data_map:   result_data_map,
+			Query_run_id_str:   run_id_str,
+			Stat_name_str:      p_stat_name_str,
+			Start_time__unix_f: start_time__unix_f,
+			End_time__unix_f:   end_time__unix_f,
+			Result_data_map:    result_data_map,
 		}
 
 		return stat_result,nil	
 	} else {
 		gf_err := gf_core.Error__create("failed to get random img range from the DB",
 			"verify__invalid_key_value_error",
-			map[string]interface{}{"stat_name_str":p_stat_name_str,},
-			nil,"gf_stats_lib",p_runtime_sys)
-		return nil,gf_err
+			map[string]interface{}{"stat_name_str": p_stat_name_str,},
+			nil, "gf_stats_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return nil,nil
+	return nil, nil
 }
 
 //-------------------------------------------------
@@ -178,20 +178,20 @@ func Stat_run__create(p_stat_name_str string,
 
 	id_str := fmt.Sprintf("stat_query_run:%f",float64(time.Now().UnixNano())/1000000000.0)
 	run    := &Stat_query_run{
-		Id_str:            id_str,
-		T_str:             "stat_query_run",
-		Stat_name_str:     p_stat_name_str,
-		Start_time__unix_f:p_start_time__unix_f,
-		End_time__unix_f:  p_end_time__unix_f,
-		Result_data_map:   p_results_data_lst,
+		Id_str:             id_str,
+		T_str:              "stat_query_run",
+		Stat_name_str:      p_stat_name_str,
+		Start_time__unix_f: p_start_time__unix_f,
+		End_time__unix_f:   p_end_time__unix_f,
+		Result_data_map:    p_results_data_lst,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Insert(run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to persist a stat_run",
 			"mongodb_insert_error",
-			map[string]interface{}{"stat_name_str":p_stat_name_str,},
-			err,"gf_stats_lib",p_runtime_sys)
+			map[string]interface{}{"stat_name_str": p_stat_name_str,},
+			err, "gf_stats_lib", p_runtime_sys)
 		return gf_err
 	}
 

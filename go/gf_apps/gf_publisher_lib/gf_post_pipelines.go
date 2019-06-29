@@ -32,7 +32,7 @@ import (
 func Pipeline__create_post(p_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	p_runtime_sys            *gf_core.Runtime_sys) (*Gf_post, string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__create_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
 	//VERIFY INPUT

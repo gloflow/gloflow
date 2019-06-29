@@ -26,6 +26,7 @@ import (
 	"path/filepath"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
 func Test__main(p_test *testing.T) {
 
@@ -56,14 +57,14 @@ func Test__main(p_test *testing.T) {
 
 	py_stats__names_lst,gf_err := batch__get_stats_list(test__py_stats_dir_path_str,runtime_sys)
 	if gf_err != nil {
-		p_test.Errorf("failed to list py_stats files in py_stats_dir - %s",test__py_stats_dir_path_str)
+		p_test.Errorf("failed to list py_stats files in py_stats_dir - %s", test__py_stats_dir_path_str)
 	}
 
 	if len(py_stats__names_lst) == 0 {
-		p_test.Errorf("no py_stats found in py_stats_dir - %s",test__py_stats_dir_path_str)
+		p_test.Errorf("no py_stats found in py_stats_dir - %s", test__py_stats_dir_path_str)
 	}
 
-	for _,py_stat_name_str := range py_stats__names_lst {
+	for _, py_stat_name_str := range py_stats__names_lst {
 
 		fmt.Println("py_stat_name_str - "+py_stat_name_str)
 		

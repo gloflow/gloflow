@@ -67,13 +67,13 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter, 
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.save_edited_image__pipeline()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
 	//INPUT
 	var input *Gf_edited_image__save__http_input
 	body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-	err              := json.Unmarshal(body_bytes_lst,input)
+	err              := json.Unmarshal(body_bytes_lst, input)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse json edited_image_save http_input",
 			"json_decode_error",
@@ -117,8 +117,8 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 //-------------------------------------------------
 func save_edited_image(p_source_image_id_str string,
 	p_image_base64_data_str string,
-	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.save_edited_image()")
+	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image()")
 	
 	//--------------------------
 	//BASE64_DECODE
@@ -128,8 +128,8 @@ func save_edited_image(p_source_image_id_str string,
 		gf_err := gf_core.Error__create("failed to decode base64 string of image_data",
 			"base64_decoding_error",
 			map[string]interface{}{
-				"source_image_id_str":  p_source_image_id_str,
-				"image_base64_data_str":p_image_base64_data_str,
+				"source_image_id_str":   p_source_image_id_str,
+				"image_base64_data_str": p_image_base64_data_str,
 			},
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
@@ -137,14 +137,14 @@ func save_edited_image(p_source_image_id_str string,
 	//--------------------------
 	//PNG
 
-	image_reader  := bytes.NewReader(image_byte_lst)
-	png_image,err := png.Decode(image_reader)
+	image_reader   := bytes.NewReader(image_byte_lst)
+	png_image, err := png.Decode(image_reader)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to encode png image_byte array while saving edited_image",
 			"png_encoding_error",
 			map[string]interface{}{
-				"source_image_id_str":  p_source_image_id_str,
-				"image_base64_data_str":p_image_base64_data_str,
+				"source_image_id_str":   p_source_image_id_str,
+				"image_base64_data_str": p_image_base64_data_str,
 			},
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
@@ -161,8 +161,8 @@ func save_edited_image(p_source_image_id_str string,
 		gf_err := gf_core.Error__create("OS failed to create a file to save edited_image to FS",
 			"file_create_error",
 			map[string]interface{}{
-				"source_image_id_str":   p_source_image_id_str,
-				"tmp_local_filepath_str":tmp_local_filepath_str,
+				"source_image_id_str":    p_source_image_id_str,
+				"tmp_local_filepath_str": tmp_local_filepath_str,
 			},
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
@@ -174,7 +174,7 @@ func save_edited_image(p_source_image_id_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 			"png_encoding_error",
-			map[string]interface{}{"tmp_local_filepath_str":tmp_local_filepath_str,},
+			map[string]interface{}{"tmp_local_filepath_str": tmp_local_filepath_str,},
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -196,11 +196,11 @@ func save_edited_image(p_source_image_id_str string,
 		gf_err := gf_core.Error__create("failed to decode jpen image_byte array while saving edited_image",
 			"file_sync_error",
 			map[string]interface{}{
-				"source_image_id_str":   p_source_image_id_str,
-				"tmp_local_filepath_str":tmp_local_filepath_str,
+				"source_image_id_str":    p_source_image_id_str,
+				"tmp_local_filepath_str": tmp_local_filepath_str,
 			},
 			err, "gf_image_editor", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//--------------------------
 	//IMAGE_DIMENSIONS
@@ -222,7 +222,7 @@ func create_gf_image(p_new_title_str string,
 	p_images_flows_names_lst []string,
 	p_processing_info        *Gf_edited_image__processing_info,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_editor.create_gf_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.create_gf_image()")
 
 
 	image_client_type_str                := "gf_image_editor" //IMPORTANT!! - since gf_image_editor is creating the image,
@@ -253,19 +253,19 @@ func create_gf_image(p_new_title_str string,
 	//--------------------------
 
 	gf_image_info := &gf_images_utils.Gf_image_new_info{
-		Id_str:                        image_id_str,
-		Title_str:                     p_new_title_str,
-		Flows_names_lst:               p_images_flows_names_lst,
-		Image_client_type_str:         image_client_type_str,
-		Origin_url_str:                p_processing_info.image_origin_url_str,
-		Origin_page_url_str:           p_processing_info.image_origin_page_url_str,
-		Original_file_internal_uri_str:p_processing_info.tmp_local_filepath_str, //image_local_file_path_str,
-		Thumbnail_small_url_str:       image_thumbs.Small_relative_url_str,
-		Thumbnail_medium_url_str:      image_thumbs.Medium_relative_url_str,
-		Thumbnail_large_url_str:       image_thumbs.Large_relative_url_str,
-		Format_str:                    image_format_str,
-		Width_int:                     p_processing_info.image_width_int,
-		Height_int:                    p_processing_info.image_height_int,
+		Id_str:                         image_id_str,
+		Title_str:                      p_new_title_str,
+		Flows_names_lst:                p_images_flows_names_lst,
+		Image_client_type_str:          image_client_type_str,
+		Origin_url_str:                 p_processing_info.image_origin_url_str,
+		Origin_page_url_str:            p_processing_info.image_origin_page_url_str,
+		Original_file_internal_uri_str: p_processing_info.tmp_local_filepath_str, //image_local_file_path_str,
+		Thumbnail_small_url_str:        image_thumbs.Small_relative_url_str,
+		Thumbnail_medium_url_str:       image_thumbs.Medium_relative_url_str,
+		Thumbnail_large_url_str:        image_thumbs.Large_relative_url_str,
+		Format_str:                     image_format_str,
+		Width_int:                      p_processing_info.image_width_int,
+		Height_int:                     p_processing_info.image_height_int,
 	}
 
 	//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.

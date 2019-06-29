@@ -29,6 +29,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
+
 //-------------------------------------------------
 //IMPORTANT!! - image_flow's are ordered sequences of images, that the user creates and then
 //              over time adds images to it... 
@@ -48,6 +49,7 @@ type Image_exists__check struct {
 	Creation_unix_time_f       float64       `bson:"creation_unix_time_f"`
 	Images_extern_urls_lst     []string      `bson:"images_extern_urls_lst"`
 }
+
 //-------------------------------------------------
 func flows__get_page__pipeline(p_req *http.Request,
 	p_resp        http.ResponseWriter,
@@ -66,15 +68,15 @@ func flows__get_page__pipeline(p_req *http.Request,
 
 	var err error
 	page_index_int := 0 //default
-	if a_lst,ok := qs_map["pg_index"]; ok {
-		pg_index          := a_lst[0]
-		page_index_int,err = strconv.Atoi(pg_index) //user supplied value
+	if a_lst, ok := qs_map["pg_index"]; ok {
+		pg_index           := a_lst[0]
+		page_index_int, err = strconv.Atoi(pg_index) //user supplied value
 		
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse integer pg_index query string arg",
 				"int_parse_error",
-				map[string]interface{}{"pg_index":pg_index,},
-				err,"gf_images_lib",p_runtime_sys)
+				map[string]interface{}{"pg_index": pg_index,},
+				err, "gf_images_lib", p_runtime_sys)
 			return nil, gf_err
 		}
 	}
@@ -100,27 +102,27 @@ func flows__get_page__pipeline(p_req *http.Request,
 	//--------------------
 	//GET_PAGES
 	cursor_start_position_int := page_index_int*page_size_int
-	pages_lst,gf_err := flows_db__get_page(flow_name_str,  //"general", //p_flow_name_str
+	pages_lst, gf_err := flows_db__get_page(flow_name_str,  //"general", //p_flow_name_str
 		cursor_start_position_int, //p_cursor_start_position_int
 		page_size_int,             //p_elements_num_int
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 	//------------------
-	return pages_lst,nil
+	return pages_lst, nil
 }
 
 //-------------------------------------------------
 func flows__images_exist_check(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{},*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows.flows__images_exist_check()")
+	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__images_exist_check()")
 
-	existing_images_lst,gf_err := flows_db__images_exist(p_images_extern_urls_lst, p_flow_name_str, p_client_type_str, p_runtime_sys)
+	existing_images_lst, gf_err := flows_db__images_exist(p_images_extern_urls_lst, p_flow_name_str, p_client_type_str, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	//-------------------------
@@ -131,10 +133,10 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		id_str               := fmt.Sprintf("img_exists_check:%f",creation_unix_time_f)
 		
 		check := Image_exists__check{
-			Id_str:                id_str,
-			T_str:                 "img_exists_check",
-			Creation_unix_time_f:  creation_unix_time_f,
-			Images_extern_urls_lst:p_images_extern_urls_lst,
+			Id_str:                 id_str,
+			T_str:                  "img_exists_check",
+			Creation_unix_time_f:   creation_unix_time_f,
+			Images_extern_urls_lst: p_images_extern_urls_lst,
 		}
 
 		//ADD!! - log this error
@@ -143,9 +145,9 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
 				"mongodb_insert_error",
 				map[string]interface{}{
-					"images_extern_urls_lst":p_images_extern_urls_lst,
-					"flow_name_str":         p_flow_name_str,
-					"client_type_str":       p_client_type_str,
+					"images_extern_urls_lst": p_images_extern_urls_lst,
+					"flow_name_str":          p_flow_name_str,
+					"client_type_str":        p_client_type_str,
 				},
 				db_err,"gf_images_lib",p_runtime_sys)
 			return
@@ -153,7 +155,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 	}()
 	//-------------------------
 
-	return existing_images_lst,nil
+	return existing_images_lst, nil
 }
 
 //-------------------------------------------------
@@ -162,15 +164,15 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 	p_flows_names_lst           []string,
 	p_client_type_str           string,
 	p_jobs_mngr_ch              chan gf_images_jobs.Job_msg,
-	p_runtime_sys               *gf_core.Runtime_sys) (*string,*string,*string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows.Flows__add_extern_image()")
-	p_runtime_sys.Log_fun("INFO"     ,fmt.Sprintf("p_flows_names_lst - %s",p_flows_names_lst))
+	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, *string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.Flows__add_extern_image()")
+	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s",p_flows_names_lst))
 
 	//------------------
 	images_urls_to_process_lst := []gf_images_jobs.Image_to_process{
 			gf_images_jobs.Image_to_process{
-				Source_url_str     :p_image_extern_url_str,
-				Origin_page_url_str:p_image_origin_page_url_str,
+				Source_url_str:      p_image_extern_url_str,
+				Origin_page_url_str: p_image_origin_page_url_str,
 			},
 		}
 		
@@ -181,27 +183,28 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 		p_runtime_sys)
 
 	if gf_err != nil {
-		return nil,nil,nil,gf_err
+		return nil, nil, nil, gf_err
 	}
 	//------------------
 
 	image_id_str                     := job_expected_outputs_lst[0].Image_id_str
 	thumbnail_small_relative_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
 
-	return &running_job.Id_str,&thumbnail_small_relative_url_str,&image_id_str,nil
+	return &running_job.Id_str, &thumbnail_small_relative_url_str, &image_id_str, nil
 }
+
 //-------------------------------------------------
-func create_flow(p_images_flow_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Images_flow,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows.create_flow()")
+func create_flow(p_images_flow_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Images_flow, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.create_flow()")
 
 	id_str               := fmt.Sprintf("img_flow:%f",float64(time.Now().UnixNano())/1000000000.0)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	flow   := &Images_flow{
-		Id_str:              id_str,
-		T_str:               "img_flow",
-		Name_str:            p_images_flow_name_str,
-		Creation_unix_time_f:creation_unix_time_f,
+		Id_str:               id_str,
+		T_str:                "img_flow",
+		Name_str:             p_images_flow_name_str,
+		Creation_unix_time_f: creation_unix_time_f,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Insert(*flow)
@@ -209,11 +212,11 @@ func create_flow(p_images_flow_name_str string, p_runtime_sys *gf_core.Runtime_s
 		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{
-				"images_flow_name_str":p_images_flow_name_str,
+				"images_flow_name_str": p_images_flow_name_str,
 			},
-			err,"gf_images_lib",p_runtime_sys)
-		return nil,gf_err
+			err, "gf_images_lib", p_runtime_sys)
+		return nil, gf_err
 	}
 
-	return flow,nil
+	return flow, nil
 }

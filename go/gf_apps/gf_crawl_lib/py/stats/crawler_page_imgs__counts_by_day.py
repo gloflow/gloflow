@@ -21,11 +21,11 @@ import pprint
 import pandas as pd
 import matplotlib.pyplot as plt 
 
-
 #-------------------------------------------------------------
 #called to find out how frequently to run the stat
 def freq():
 	return '5m'
+
 #-------------------------------------------------------------
 def run(p_mongo_client,
 	p_log_fun,
@@ -37,17 +37,17 @@ def run(p_mongo_client,
 		coll    = p_mongo_client['prod_db']['gf_crawl']
 		results = coll.aggregate([
 				{'$match':{
-					't':p_obj_type_str}},
+					't': p_obj_type_str}},
 
 				{"$project":{
-					"creation_unix_time_f":1,
+					"creation_unix_time_f": 1,
 
 					#IMPORTANT!! - not using the "domain_str" here because for images thats usually the url 
 					#              of the image on some CDN. a lot of domains might have images on the same
 					#              CDN domain, which will hide too much meaningful information.
 					#              instead we want the domain of the page where the image was discovered.
 					#           
-					"origin_page_url_domain_str":1
+					"origin_page_url_domain_str": 1
 				}},
 				{"$group":{
 

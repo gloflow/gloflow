@@ -37,7 +37,7 @@ type Gf_images_client_result struct {
 func process_external_images(p_post *Gf_post,
 	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_images.process_external_images()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
 
 	//-------------------	
 	//POST ELEMENTS IMAGES
@@ -178,7 +178,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 	for _, output := range outputs_lst {
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 
-		if _,ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
+		if _, ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
 			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
 				map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
@@ -230,8 +230,8 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 		
 		origin_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
 		img_to_process      := gf_images_jobs.Image_to_process{
-			Source_url_str:     image_url_str,
-			Origin_page_url_str:origin_page_url_str,
+			Source_url_str:      image_url_str,
+			Origin_page_url_str: origin_page_url_str,
 		}
 		images_to_process_lst = append(images_to_process_lst, img_to_process)
 	}
