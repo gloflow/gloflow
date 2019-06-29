@@ -24,8 +24,9 @@ import (
 	"time"
 	"runtime"
 	"runtime/debug"
+	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
-	"github.com/davecgh/go-spew/spew"
+	//"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -94,14 +95,7 @@ func Error__create(p_user_msg_str string,
 	function          := runtime.FuncForPC(program_counter)
 	function_name_str := function.Name()
 
-	//--------------------
-	//VIEW
-	p_runtime_sys.Log_fun("ERROR",fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
-		p_error_type_str,
-		p_runtime_sys.Service_name_str,
-		p_subsystem_name_str,
-		function_name_str,
-		p_user_msg_str))
+
 	//--------------------
 	//ERROR_DEF
 
@@ -130,14 +124,36 @@ func Error__create(p_user_msg_str string,
 		Line_num_int:         line_num_int,
 	}
 
-	fmt.Println("")
-	fmt.Println("  FAILED FUNCTION ------------- "+function_name_str)
-	fmt.Println("")
-	fmt.Println(stack_trace_str)
-	fmt.Println("")
-	spew.Dump(gf_error)
-	fmt.Println("")
-	fmt.Println("")
+
+	red      := color.New(color.FgRed).SprintFunc()
+	cyan     := color.New(color.FgCyan, color.BgWhite).SprintFunc()
+	yellow   := color.New(color.FgYellow).SprintFunc()
+	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
+	green    := color.New(color.FgBlack, color.BgGreen).SprintFunc()
+
+	//--------------------
+	//VIEW
+	fmt.Printf("\n\n  %s ------------- %s\n\n\n", red("FAILED FUNCTION CALL"), yellow(function_name_str))
+
+	fmt.Printf("GF_ERROR:\n")
+	fmt.Printf("file           - %s\n", yellowBg(gf_error.File_str))
+	fmt.Printf("line_num       - %s\n", yellowBg(gf_error.Line_num_int))
+	fmt.Printf("user_msg       - %s\n", yellowBg(gf_error.User_msg_str))
+	fmt.Printf("id             - %s\n", yellow(gf_error.Id_str))
+	fmt.Printf("type           - %s\n", yellow(gf_error.Type_str))
+	fmt.Printf("service_name   - %s\n", yellow(gf_error.Service_name_str))
+	fmt.Printf("subsystem_name - %s\n", yellow(gf_error.Subsystem_name_str))
+	fmt.Printf("function_name  - %s\n", yellow(gf_error.Function_name_str))
+	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
+	
+	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
+		p_error_type_str,
+		p_runtime_sys.Service_name_str,
+		p_subsystem_name_str,
+		function_name_str,
+		p_user_msg_str))
+
+	fmt.Printf("\n\n")
 	//--------------------
 	//PERSIST
 	err := p_runtime_sys.Mongodb_coll.Insert(gf_error)

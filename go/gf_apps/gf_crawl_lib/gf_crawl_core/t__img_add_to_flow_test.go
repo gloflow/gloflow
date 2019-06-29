@@ -22,6 +22,7 @@ package gf_crawl_core
 import (
 	"fmt"
 	"testing"
+	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -29,6 +30,8 @@ import (
 //---------------------------------------------------
 func Test__img_add_to_flow(p_test *testing.T) {
 
+	//cyan := color.New(color.FgCyan).SprintFunc()
+	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//IMPORTANT!! - in this test there is no downloading of a file. a gf_page_img__pipeline_info reference is created manually
 	//              with a local image file path set manually. this local path is the path of the test image (test__local_image_file_path_str).
@@ -161,9 +164,15 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test__crawled_images_s3_bucket_name_str,
 		crawler_runtime,
 		runtime_sys)
+	
+	//CHECK!! - Downloaded_bool flag doesnt seem to be set at this point, so Im setting it here 
+	//          directly for consistency. check if it makes sense for this flag to be set someplace
+	//          within images__stage__process_images() for example, so that here it tests id doesnt
+	//          have to be managed. 
+	test__crawled_image.Downloaded_bool = true
 
 	fmt.Println("   STAGE_COMPLETE --------------")
-
+		
 	spew.Dump(page_imgs__pinfos_with_s3_lst)
 
 	for _, page_img__pinfo := range page_imgs__pinfos_with_s3_lst {
@@ -177,7 +186,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 
 
-	fmt.Printf("+++++++++++++++++++++++++++++++++++++")
+	fmt.Printf("+++++++++++++++++++++++++++++++++++++\n\n")
+	fmt.Printf("%s\n", yellow("TEST_CRAWLED_IMAGE"))
 	spew.Dump(test__crawled_image)
 	
 
@@ -187,6 +197,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test__gf_images_s3_bucket_name_str,
 		crawler_runtime,
 		runtime_sys)
+
 	if gf_err != nil {
 		p_test.Errorf("failed to add external image with ID [%s] to a flows [%s] from S3 bucket [%s] to [%s]",
 			test__crawled_image.Id_str, 

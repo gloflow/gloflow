@@ -25,32 +25,33 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //---------------------------------------------------
-func Flows_db__add_flow_to_image(p_flow_name_str string,
+func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 	p_image_gf_id_str string,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_db.Flows_db__add_flow_to_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 
 	fmt.Println("p_image_gf_id_str - "+p_image_gf_id_str)
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
-			"t":     "img",
-			"id_str":p_image_gf_id_str,	
+			"t":      "img",
+			"id_str": p_image_gf_id_str,	
 		},
 		bson.M{
 
 			//IMPORTANT!! - add an image to a flow
-			"$addToSet":bson.M{
-				"flows_names_lst":p_flow_name_str,
+			"$addToSet": bson.M{
+				"flows_names_lst": p_flow_name_str,
 			},
 		})
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to add a flow to an existing image DB record",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"flow_name_str":  p_flow_name_str,
-				"image_gf_id_str":p_image_gf_id_str,
+				"flow_name_str":   p_flow_name_str,
+				"image_gf_id_str": p_image_gf_id_str,
 			},
-			err,"gf_images_lib",p_runtime_sys)
+			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
 	}
 

@@ -41,7 +41,6 @@ func get_domains_blacklist(p_runtime_sys *gf_core.Runtime_sys) map[string]bool {
 		"pinterest.com":    false,
 		"youtube.com":      false,
 		"ffffound.com":     false,
-		
 	}
 	return domains_map
 }

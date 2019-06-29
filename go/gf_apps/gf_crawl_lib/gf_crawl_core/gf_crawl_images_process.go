@@ -181,7 +181,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_img,
 	//IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
 	//              part of a particular page
 	if img_width_int <= 130 || img_height_int <= 130 {
-		p_runtime_sys.Log_fun("INFO",yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(img_width_int))+"/height-"+cyan(fmt.Sprint(img_height_int))+")"))
+		p_runtime_sys.Log_fun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(img_width_int))+"/height-"+cyan(fmt.Sprint(img_height_int))+")"))
 		return nil, nil, nil
 	} else {
 
