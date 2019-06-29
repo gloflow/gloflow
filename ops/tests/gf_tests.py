@@ -20,14 +20,15 @@ import signal
 import subprocess
 
 from colored import fg,bg,attr
+
 #--------------------------------------------------
 def run(p_app_name_str,
     p_test_name_str,
     p_app_meta_map,
     p_aws_s3_creds_map):
-    assert isinstance(p_test_name_str,   basestring)
-    assert isinstance(p_app_meta_map,    dict)
-    assert isinstance(p_aws_s3_creds_map,dict)
+    assert isinstance(p_test_name_str,    basestring)
+    assert isinstance(p_app_meta_map,     dict)
+    assert isinstance(p_aws_s3_creds_map, dict)
 
     print ''
     print ' -- test %s%s%s package'%(fg('green'), p_app_name_str, attr(0))
@@ -75,10 +76,11 @@ def run(p_app_name_str,
     for l in iter(p.stderr.readline, ""):
         print(l.rstrip())
 
-    if not p.stderr == None: print '%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), p.stderr)
+    #if not p.stderr == None: print '%sTESTS FAILED%s >>>>>>>\n'%(fg('red'), attr(0))
 
     os.chdir(cwd_str) #return to initial dir
     #-------------
 
     #kill HTTP test server used to serve assets that need to come over HTTP
-    if use_test_server_bool: os.killpg(server_p.pid, signal.SIGTERM)
+    if use_test_server_bool:
+        os.killpg(server_p.pid, signal.SIGTERM)

@@ -41,7 +41,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - determine_are_nsfv")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
@@ -64,11 +64,11 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 
 			is_nsfv_bool,gf_err = image__is_nsfv__gif(page_img__pinfo.local_file_path_str, gf_img.Url_str, p_runtime_sys)
 			if gf_err != nil {
-				p_runtime_sys.Log_fun("ERROR","failed to do nudity-detection/filtering in GIF - "+gf_img.Url_str+" - "+fmt.Sprint(gf_err))
+				p_runtime_sys.Log_fun("ERROR", "failed to do nudity-detection/filtering in GIF - "+gf_img.Url_str+" - "+fmt.Sprint(gf_err))
 
 				t:="gif_is_nsfv_test__failed"
 				m:="failed nsfv testing of GIF with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
+				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
 					gf_err, p_runtime, p_runtime_sys)
 
 				page_img__pinfo.gf_error = gf_err
@@ -85,7 +85,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 
 				t:="image_is_nsfv_test__failed"
 				m:="failed nsfv testing of image with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
+				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
 					gf_err, p_runtime, p_runtime_sys)
 
 				page_img__pinfo.gf_error = gf_err
@@ -104,7 +104,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 				
 				t:="image_mark_as_nsfv__failed"
 				m:="failed nsfv marking (in DB) of image with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
+				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
 					gf_err, p_runtime, p_runtime_sys)
 
 				page_img__pinfo.gf_error = gf_err
@@ -128,14 +128,14 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 	green := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 	black := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
 
-	fmt.Println("INFO",green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
-	fmt.Println("INFO",green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
-	fmt.Println("INFO","")
-	fmt.Println("INFO",cyan("                          GIF")+" - "+cyan("GET_FRAMES"))
-	fmt.Println("INFO","")
-	fmt.Println("INFO",black(p_img_gif_origin_url_str))
-	fmt.Println("INFO",green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
-	fmt.Println("INFO",green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
+	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
+	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
+	fmt.Println("INFO", "")
+	fmt.Println("INFO", cyan("                          GIF")+" - "+cyan("GET_FRAMES"))
+	fmt.Println("INFO", "")
+	fmt.Println("INFO", black(p_img_gif_origin_url_str))
+	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
+	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
 
 	frames_images_dir_path_str := "./"
 	new_files_names_lst,gf_err := gf_gif_lib.Gif__frames__save_to_fs(p_img_gif_path_str,

@@ -166,7 +166,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 				"block_size_int":   p_block_size_int,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	//-------------------

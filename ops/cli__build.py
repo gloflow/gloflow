@@ -169,11 +169,19 @@ def parse_args():
     #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
+
+    #AWS_CREDS_FILE_PATH
+    aws_creds_file_path_str     = args_namespace.aws_creds
+    aws_creds_file_path_abs_str = os.path.abspath(aws_creds_file_path_str)
+    print(aws_creds_file_path_abs_str)
+    assert os.path.isfile(aws_creds_file_path_abs_str)
+
     args_map       = {
         "run":       args_namespace.run,
         "app":       args_namespace.app,
         "aws_creds": args_namespace.aws_creds,
         "test_name": args_namespace.test_name,
+        "aws_creds_file_path_abs_str": aws_creds_file_path_abs_str,
     }
     return args_map
 #--------------------------------------------------

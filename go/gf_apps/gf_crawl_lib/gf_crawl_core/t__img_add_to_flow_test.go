@@ -44,7 +44,12 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	test__images_store_local_dir_path_str   := "../test_data/processed_images" //image tmp thumbnails, or downloaded gif's and their frames
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__gf_images_s3_bucket_name_str      := "gf--test--img"
-	runtime_sys, crawler_runtime            := T__init()
+
+
+	runtime_sys, crawler_runtime := T__init(p_test)
+	if runtime_sys == nil || crawler_runtime == nil {
+		return
+	}
 
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 
@@ -59,13 +64,15 @@ func Test__img_add_to_flow(p_test *testing.T) {
 			crawler_runtime,
 			runtime_sys)
 		if gf_err != nil { 
-			panic(gf_err.Error)
+			p_test.Errorf("failed to prepare and create image_adt with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
+			return nil, nil
 		}
 
 		//DB - CRAWLED_IMAGE_PERSIST
 		exists_bool, gf_err := Image__db_create(test__crawled_image, crawler_runtime, runtime_sys)
 		if gf_err != nil {
-			panic(gf_err.Error)
+			p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
+			return nil, nil
 		}
 
 		assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
@@ -82,7 +89,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		//DB - CRAWLED_IMAGE_REF_PERSIST
 		gf_err = Image__db_create_ref(test__crawled_image_ref, crawler_runtime, runtime_sys)
 		if gf_err != nil {
-			panic(gf_err.Error)
+			p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
+			return nil, nil
 		}
 		//-------------------
 
@@ -90,7 +98,9 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 	//---------------------------------------------------
 	test__crawled_image, test__crawled_image_ref := create_image_ADTs()
-
+	if test__crawled_image == nil || test__crawled_image_ref == nil {
+		return
+	}
 	//-------------------
 	//PIPELINE_STAGE__PROCESS_IMAGES - apply image transformations, create thumbnails, etc.
 
@@ -137,7 +147,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		assert.Equal(p_test, page_img__pinfo.page_img.S3_stored_bool, false)
 
 		if page_img__pinfo.thumbs == nil {
-			panic("page_img.thumbs has not been set to a gf_images_utils.Gf_image_thumbs instance pointer")
+			p_test.Errorf("page_img.thumbs has not been set to a gf_images_utils.Gf_image_thumbs instance pointer")
+			return
 		}
 	}
 
@@ -177,7 +188,12 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		crawler_runtime,
 		runtime_sys)
 	if gf_err != nil {
-		panic(gf_err.Error)
+		p_test.Errorf("failed to add external image with ID [%s] to a flows [%s] from S3 bucket [%s] to [%s]",
+			test__crawled_image.Id_str, 
+			fmt.Sprint(test__image_flows_names_lst),
+			test__crawled_images_s3_bucket_name_str,
+			test__gf_images_s3_bucket_name_str)
+		return
 	}
 	//-------------------
 }

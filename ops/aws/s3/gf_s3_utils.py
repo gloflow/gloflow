@@ -24,6 +24,7 @@ class Gf_s3_info:
     s3_resource             = None
 #--------------------------------------------------
 def parse_creds(p_aws_creds_file_path_str):
+    print(p_aws_creds_file_path_str)
     assert os.path.isfile(os.path.abspath(p_aws_creds_file_path_str))
 
     f                = open(p_aws_creds_file_path_str,'r')

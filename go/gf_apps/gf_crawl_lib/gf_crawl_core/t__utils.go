@@ -20,16 +20,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_core
 
 import (
+	"testing"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","t__utils.t__cleanup__test_page_imgs()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
 
 	_,err := p_runtime_sys.Mongodb_db.C("gf_crawl").RemoveAll(bson.M{
-			"t":                bson.M{"$in":[]string{"crawler_page_img","crawler_page_img_ref",},},
+			"t":                bson.M{"$in": []string{"crawler_page_img", "crawler_page_img_ref",},},
 			"crawler_name_str": p_test__crawler_name_str,
 		})
 	if err != nil {
@@ -38,7 +39,7 @@ func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *
 }
 
 //-------------------------------------------------
-func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
+func T__init(p_test *testing.T) (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	test__mongodb_host_str      := "127.0.0.1"
 	test__mongodb_db_name_str   := "gf_tests"
@@ -58,7 +59,8 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	//ELASTICSEARCH
 	esearch_client, gf_err := gf_core.Elastic__get_client(runtime_sys)
 	if gf_err != nil {
-		panic(gf_err.Error)
+		p_test.Errorf("failed to get ElasticSearch client in test initialization")
+		return nil, nil
 	}
 	//-------------
 	//S3
