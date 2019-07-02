@@ -53,8 +53,8 @@ type Image_exists__check struct {
 //-------------------------------------------------
 func flows__get_page__pipeline(p_req *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows.flows__get_page__pipeline()")
+	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__get_page__pipeline()")
 
 	//--------------------
 	//INPUT
@@ -88,15 +88,15 @@ func flows__get_page__pipeline(p_req *http.Request,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse integer pg_size query string arg",
 				"int_parse_error",
-				map[string]interface{}{"pg_size":pg_size,},
+				map[string]interface{}{"pg_size": pg_size,},
 				err, "gf_images_lib", p_runtime_sys)
-			return nil,gf_err
+			return nil, gf_err
 		}
 	}
 
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("flow_name_str  - %s",flow_name_str))
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_index_int - %d",page_index_int))
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_size_int  - %d",page_size_int))
+	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
+	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
+	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
 	//--------------------
 
 	//--------------------
@@ -149,7 +149,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 					"flow_name_str":          p_flow_name_str,
 					"client_type_str":        p_client_type_str,
 				},
-				db_err,"gf_images_lib",p_runtime_sys)
+				db_err, "gf_images_lib", p_runtime_sys)
 			return
 		}
 	}()
@@ -164,7 +164,7 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 	p_flows_names_lst           []string,
 	p_client_type_str           string,
 	p_jobs_mngr_ch              chan gf_images_jobs.Job_msg,
-	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, *string, *gf_core.Gf_error) {
+	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, gf_images_utils.Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.Flows__add_extern_image()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s",p_flows_names_lst))
 
@@ -183,14 +183,14 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 		p_runtime_sys)
 
 	if gf_err != nil {
-		return nil, nil, nil, gf_err
+		return nil, nil, gf_images_utils.Gf_image_id(""), gf_err
 	}
 	//------------------
 
-	image_id_str                     := job_expected_outputs_lst[0].Image_id_str
+	image_id_str                     := gf_images_utils.Gf_image_id(job_expected_outputs_lst[0].Image_id_str)
 	thumbnail_small_relative_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
 
-	return &running_job.Id_str, &thumbnail_small_relative_url_str, &image_id_str, nil
+	return &running_job.Id_str, &thumbnail_small_relative_url_str, image_id_str, nil
 }
 
 //-------------------------------------------------

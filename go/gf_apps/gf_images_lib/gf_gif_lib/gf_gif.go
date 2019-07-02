@@ -65,8 +65,9 @@ type Gf_gif struct {
 	Preview_frames_s3_urls_lst []string      `json:"preview_frames_s3_urls_lst" bson:"preview_frames_s3_urls_lst"`
 	Tags_lst                   []string      `json:"tags_lst"                   bson:"tags_lst"`
 	Hash_str                   string        `json:"hash_str"                   bson:"hash_str"`
-	Gf_image_id_str            string        `json:"gf_image_id_str"            bson:"gf_image_id_str"`
+	Gf_image_id_str            gf_images_utils.Gf_image_id `json:"gf_image_id_str" bson:"gf_image_id_str"`
 }
+
 //--------------------------------------------------
 func Process_and_upload(p_image_source_url_str string,
 	p_image_origin_page_url_str                   string,
@@ -115,6 +116,7 @@ func Process_and_upload(p_image_source_url_str string,
 	
 	return gif,nil
 }
+
 //--------------------------------------------------
 func Process(p_image_source_url_str string,
 	p_image_origin_page_url_str                   string,
@@ -228,9 +230,9 @@ func Process(p_image_source_url_str string,
 			return nil, "", gf_err
 		}
 		//-----------------------
-
+		gf_image_id_str := gf_images_utils.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_utils.Gf_image_id is a type (not function)
 		gf_image_info := &gf_images_utils.Gf_image_new_info{
-			Id_str:                         verified_image_info_map["id_str"].(string),                         //image_id_str,
+			Id_str:                         gf_image_id_str,                                                    //image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
 			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
 			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,

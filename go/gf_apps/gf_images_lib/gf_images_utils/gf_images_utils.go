@@ -40,14 +40,14 @@ import (
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
 	p_runtime_sys        *gf_core.Runtime_sys) (image.Image,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Image__load_file()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__load_file()")
 
 	file, fs_err := os.Open(p_image_local_file_path_str)
 	if fs_err != nil {
 		gf_err := gf_core.Error__create("failed to open a local file to load the image",
 			"file_open_error",
 			map[string]interface{}{
-				"local_image_file_path_str":p_image_local_file_path_str,
+				"local_image_file_path_str": p_image_local_file_path_str,
 			},
 			fs_err, "gf_images_utils", p_runtime_sys)
 		return nil,gf_err
@@ -87,8 +87,8 @@ func Image__load_file(p_image_local_file_path_str string,
 }
 
 //---------------------------------------------------
-func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Image__create_id_from_url()")
+func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (Gf_image_id, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__create_id_from_url()")
 	
 	//urlparse() - used so that any possible url query parameters are not used in the 
 	//             os.path.basename() result
@@ -96,8 +96,8 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to create image ID",
 			"url_parse_error",
-			map[string]interface{}{"image_url_str":p_image_url_str,},
-			err,"gf_images_utils",p_runtime_sys)
+			map[string]interface{}{"image_url_str": p_image_url_str,},
+			err, "gf_images_utils", p_runtime_sys)
 		return "", gf_err
 	}
 	
@@ -120,7 +120,7 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 	//-------------
 	image_id_str := Image__create_id(image_path_str, normalized_ext_str, p_runtime_sys)
 	//-------------
-	return image_id_str,nil
+	return image_id_str, nil
 }
 
 //---------------------------------------------------
@@ -128,8 +128,8 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 
 func Image__create_id(p_image_path_str string,
 	p_image_format_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.create_id()")
+	p_runtime_sys      *gf_core.Runtime_sys) Gf_image_id {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.create_id()")
 	
 	h := md5.New()
 	
@@ -140,7 +140,7 @@ func Image__create_id(p_image_path_str string,
 	sum     := h.Sum(nil)
 	hex_str := hex.EncodeToString(sum)
 	
-	image_id_str := hex_str
+	image_id_str := Gf_image_id(hex_str)
 	return image_id_str
 }
 

@@ -34,24 +34,25 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //-------------------------------------------------
 type Gf_edited_image struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
-	Id_str               string        `bson:"id_str"` 
-	T_str                string        `bson:"t"` //"img_edited"
-	Creation_unix_time_f float64       `bson:"creation_unix_time_f"`
-	Source_image_id_str  string        `bson:"source_image_id_str"`
+	Id                   bson.ObjectId               `bson:"_id,omitempty"`
+	Id_str               string                      `bson:"id_str"` 
+	T_str                string                      `bson:"t"` //"img_edited"
+	Creation_unix_time_f float64                     `bson:"creation_unix_time_f"`
+	Source_image_id_str  gf_images_utils.Gf_image_id `bson:"source_image_id_str"`
 }
 
 type Gf_edited_image__save__http_input struct {
-	Title_str             string   `json:"new_title_str"`         //title of the new edited_image
-	Source_image_id_str   string   `json:"source_image_id_str"`   //id of the gf_image that has modification applied to it
-	Source_flow_name_str  string   `json:"source_flow_name_str"`  //which flow was the original image from
-	Target_flow_name_str  string   `json:"target_flow_name_str"`  //which flow the modified_image should be placed into
-	Image_base64_data_str string   `json:"image_base64_data_str"` //base64 encoded pixel data of the image
-	Applied_filters_lst   []string `json:"applied_filters_lst"`   //list of filter names (in order) that were applied to the original image
-	New_height_int        int      `json:"new_height_int"`        //new dimensions in case of cropping/resizing
-	New_width_int         int      `json:"new_width_int"`         //new dimensions in case of cropping/resizing
+	Title_str             string                      `json:"new_title_str"`         //title of the new edited_image
+	Source_image_id_str   gf_images_utils.Gf_image_id `json:"source_image_id_str"`   //id of the gf_image that has modification applied to it
+	Source_flow_name_str  string                      `json:"source_flow_name_str"`  //which flow was the original image from
+	Target_flow_name_str  string                      `json:"target_flow_name_str"`  //which flow the modified_image should be placed into
+	Image_base64_data_str string                      `json:"image_base64_data_str"` //base64 encoded pixel data of the image
+	Applied_filters_lst   []string                    `json:"applied_filters_lst"`   //list of filter names (in order) that were applied to the original image
+	New_height_int        int                         `json:"new_height_int"`        //new dimensions in case of cropping/resizing
+	New_width_int         int                         `json:"new_width_int"`         //new dimensions in case of cropping/resizing
 }
 
 type Gf_edited_image__processing_info struct {
@@ -62,6 +63,7 @@ type Gf_edited_image__processing_info struct {
 	image_width_int           int
 	image_height_int          int
 }
+
 //-------------------------------------------------
 func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_req         *http.Request,
@@ -94,7 +96,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	//--------------------------
 
 
-	source_gf_image,gf_err := gf_images_utils.DB__get_image(source_image_id_str, p_runtime_sys)
+	source_gf_image, gf_err := gf_images_utils.DB__get_image(source_image_id_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -114,8 +116,9 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 
 	return nil
 }
+
 //-------------------------------------------------
-func save_edited_image(p_source_image_id_str string,
+func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 	p_image_base64_data_str string,
 	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image()")
@@ -209,14 +212,15 @@ func save_edited_image(p_source_image_id_str string,
 	//--------------------------
 
 	processing_info := Gf_edited_image__processing_info{
-		png_image:             png_image,
-		tmp_local_filepath_str:tmp_local_filepath_str,
-		image_width_int:       image_width_int,
-		image_height_int:      image_height_int,
+		png_image:              png_image,
+		tmp_local_filepath_str: tmp_local_filepath_str,
+		image_width_int:        image_width_int,
+		image_height_int:       image_height_int,
 	}
 
 	return &processing_info,nil
 }
+
 //-------------------------------------------------
 func create_gf_image(p_new_title_str string,
 	p_images_flows_names_lst []string,

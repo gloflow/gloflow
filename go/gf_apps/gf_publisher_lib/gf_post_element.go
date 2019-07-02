@@ -23,8 +23,10 @@ import (
 	"fmt"
 	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	//"github.com/davecgh/go-spew/spew"
 )
+
 //---------------------------------------------------
 type Gf_post_element struct {
 
@@ -61,7 +63,7 @@ type Gf_post_element struct {
 	//----------------------
 	//IMAGE - if type_str == "image"
 
-	Image_id_str string
+	Image_id_str gf_images_utils.Gf_image_id
 
 	//only thumbnail urls are tracked here in the Post_ADT, not the full-size (which is tracked
 	//in Image_ADT), since the fullsize internal url is never used (that would be copyright infringement).
@@ -75,15 +77,16 @@ type Gf_post_element struct {
 	Colors_lst []string               `bson:"colors_lst"`
 	Meta_map   map[string]interface{} `bson:"meta_map"`
 }
+
 //---------------------------------------------------
 func create_post_elements(p_post_elements_infos_lst []interface{},
 	p_post_title_str string,
 	p_runtime_sys    *gf_core.Runtime_sys) []*Gf_post_element {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.create_post_elements()")
-	p_runtime_sys.Log_fun("INFO",     "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.create_post_elements()")
+	p_runtime_sys.Log_fun("INFO",      "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
 	post_elements_lst := []*Gf_post_element{}
-	for i,post_element := range p_post_elements_infos_lst {
+	for i, post_element := range p_post_elements_infos_lst {
 
 		creation_datetime_str := time.Now().String()
 		post_element_map      := post_element.(map[string]interface{})
@@ -92,7 +95,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		//
 		//1d index stored in the 3d index slot
 		//this is the placement order for the post element
-		post_index_3_lst := []int{i,0,0,}
+		post_index_3_lst := []int{i, 0, 0,}
 		//--------------------
 		//POST_ELEMENT_ID
 	
@@ -105,7 +108,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		extern_url_str                    := post_element_map["extern_url_str"].(string)
 		post_element__origin_page_url_str := post_element_map["origin_page_url_str"].(string)
 
-		p_runtime_sys.Log_fun("INFO","post_element extern_url_str - "+fmt.Sprint(extern_url_str))
+		p_runtime_sys.Log_fun("INFO", "post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 
 		post_element := &Gf_post_element{
 			Id_str:                post_element_id_str,
@@ -125,7 +128,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 
 //---------------------------------------------------
 func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_post_element {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_first_image_post_element()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_first_image_post_element()")
 
 	for _,post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == "image" {
@@ -138,8 +141,8 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 //---------------------------------------------------
 func get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_post_element,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_element.get_post_elements_of_type()")
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_post_element, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_post_elements_of_type()")
 	
 	gf_err := verify_post_element_type(p_type_str, p_runtime_sys)
 	if gf_err != nil {

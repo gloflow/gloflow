@@ -24,11 +24,14 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //---------------------------------------------------
+
+type Gf_image_id string
 type Gf_image struct {
 
 	Id                   bson.ObjectId `json:"-"                    bson:"_id,omitempty"`
-	Id_str               string        `json:"id_str"               bson:"id_str"` 
+	Id_str               Gf_image_id   `json:"id_str"               bson:"id_str"` 
 	T_str                string        `json:"-"                    bson:"t"` //"img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	//---------------
@@ -85,7 +88,7 @@ type Gf_image_thumbs struct {
 }
 
 type Gf_image_new_info struct {
-	Id_str                         string
+	Id_str                         Gf_image_id
 	Title_str                      string
 	Flows_names_lst                []string
 	Image_client_type_str          string
@@ -99,6 +102,7 @@ type Gf_image_new_info struct {
 	Width_int                      int
 	Height_int                     int
 }
+
 //---------------------------------------------------
 func Image__create_new(p_image_info *Gf_image_new_info,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image,*gf_core.Gf_error) {
@@ -134,6 +138,7 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 
 	return image,nil
 }
+
 //---------------------------------------------------
 //DEPRECATED!! - use Image__create_new and its structured input
 
@@ -147,9 +152,10 @@ func Image__create(p_image_info_map map[string]interface{}, p_runtime_sys *gf_co
 
 	title_str       := new_image_info_map["title_str"].(string)
 	flows_names_lst := new_image_info_map["flows_names_lst"].([]string)
+	gf_image_id_str := Gf_image_id(new_image_info_map["id_str"].(string))
 
 	gf_image := &Gf_image{
-		Id_str:                        new_image_info_map["id_str"].(string),
+		Id_str:                        gf_image_id_str,
 		T_str:                         "img",
 		Creation_unix_time_f:          float64(time.Now().UnixNano())/1000000000.0,
 		Client_type_str:               new_image_info_map["image_client_type_str"].(string),

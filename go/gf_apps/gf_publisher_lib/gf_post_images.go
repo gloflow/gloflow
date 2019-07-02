@@ -23,12 +23,13 @@ import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 
 //---------------------------------------------------
 type Gf_images_client_result struct {
-	image_ids_lst      []string
+	image_ids_lst      []gf_images_utils.Gf_image_id
 	running_job_id_str string
 	post_thumbnail_str string
 }
@@ -174,7 +175,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 	}
 	//--------------------
 
-	image_ids_lst := []string{}
+	image_ids_lst := []gf_images_utils.Gf_image_id{}
 	for _, output := range outputs_lst {
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 
@@ -248,7 +249,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 	}
 	//--------------------
 	
-	image_ids_lst := []string{}
+	image_ids_lst := []gf_images_utils.Gf_image_id{}
 	for _, output := range outputs_lst {
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 

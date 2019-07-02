@@ -116,6 +116,7 @@ func gif_db__delete(p_id_str string,
 	}
 	return nil
 }
+
 //--------------------------------------------------
 func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
@@ -151,6 +152,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 
 	return &gif, nil
 }
+
 //--------------------------------------------------
 func gif_db__get_by_origin_url(p_origin_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
@@ -184,6 +186,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 
 	return &gif,nil
 }
+
 //--------------------------------------------------
 func gif_db__get_page(p_cursor_start_position_int int, //0
 	p_elements_num_int int,                //50
@@ -219,16 +222,17 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 
 	return gifs_lst,nil
 }
+
 //--------------------------------------------------
 func gif_db__update_image_id(p_gif_id_str string,
-	p_image_id_str string,
+	p_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
 			"t":      "gif",
 			"id_str": p_gif_id_str,
 		},
-		bson.M{"$set":bson.M{"gf_image_id_str":p_image_id_str,},})
+		bson.M{"$set": bson.M{"gf_image_id_str": p_image_id_str,},})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF's gf_image_id_str in mongodb",
 			"mongodb_update_error",

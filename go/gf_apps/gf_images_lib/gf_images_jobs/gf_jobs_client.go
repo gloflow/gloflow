@@ -25,16 +25,18 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //-------------------------------------------------
 //called "expected" because jobs are long-running processes, and they might fail at various stages
 //of their processing. in that case some of these result values will be satisfied, others will not.
 type Job_Expected_Output struct {
-	Image_id_str                      string `json:"image_id_str"`
-	Image_source_url_str              string `json:"image_source_url_str"`
-	Thumbnail_small_relative_url_str  string `json:"thumbnail_small_relative_url_str"`
-	Thumbnail_medium_relative_url_str string `json:"thumbnail_medium_relative_url_str"`
-	Thumbnail_large_relative_url_str  string `json:"thumbnail_large_relative_url_str"`
+	Image_id_str                      gf_images_utils.Gf_image_id `json:"image_id_str"`
+	Image_source_url_str              string                      `json:"image_source_url_str"`
+	Thumbnail_small_relative_url_str  string                      `json:"thumbnail_small_relative_url_str"`
+	Thumbnail_medium_relative_url_str string                      `json:"thumbnail_medium_relative_url_str"`
+	Thumbnail_large_relative_url_str  string                      `json:"thumbnail_large_relative_url_str"`
 }
+
 //-------------------------------------------------
 //CLIENT
 //-------------------------------------------------

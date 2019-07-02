@@ -45,7 +45,7 @@ func DB__put_image(p_image *Gf_image,
 }
 
 //---------------------------------------------------
-func DB__get_image(p_image_id_str string,
+func DB__get_image(p_image_id_str Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_db.DB__get_image()")
 
@@ -56,7 +56,7 @@ func DB__get_image(p_image_id_str string,
 		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err,"gf_images_utils", p_runtime_sys)
+			err, "gf_images_utils", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -65,7 +65,7 @@ func DB__get_image(p_image_id_str string,
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
 			err, "gf_images_utils", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 	
 	return &image, nil

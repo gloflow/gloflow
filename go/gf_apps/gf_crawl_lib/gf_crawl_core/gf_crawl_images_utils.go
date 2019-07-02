@@ -28,7 +28,7 @@ import (
 
 //--------------------------------------------------
 func image__update_after_process(p_page_img *Gf_crawler_page_img,
-	p_gf_image_id_str string,
+	p_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__update_after_process()")
 
@@ -39,7 +39,7 @@ func image__update_after_process(p_page_img *Gf_crawler_page_img,
 			"t":      "crawler_page_img",
 			"id_str": p_page_img.Id_str,
 		},
-		bson.M{"$set":bson.M{
+		bson.M{"$set": bson.M{
 				//IMPORTANT!! - gf_image has been created for this page_image, and so the appropriate
 				//              image_id_str needs to be set in the page_image DB record
 				"image_id_str": p_gf_image_id_str,
@@ -66,7 +66,7 @@ func image__update_after_process(p_page_img *Gf_crawler_page_img,
 func image__cleanup(p_img_local_file_path_str string,
 	p_img_thumbs  *gf_images_utils.Gf_image_thumbs,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_utils.image__cleanup()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__cleanup()")
 
 	files_to_remove_lst := []string{
 		p_img_local_file_path_str,
@@ -83,7 +83,7 @@ func image__cleanup(p_img_local_file_path_str string,
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to cleanup a crawled image files",
 				"file_remove_error",
-				map[string]interface{}{"file_str":f_str,},
+				map[string]interface{}{"file_str": f_str,},
 				err, "gf_crawl_core", p_runtime_sys)
 			return gf_err
 		}

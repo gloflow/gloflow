@@ -58,11 +58,11 @@ type Job_msg struct {
 }
 
 type Job_update_msg struct {
-	Name_str             string              `json:"name_str"`
-	Type_str             job_update_type_val `json:"type_str"`             //"ok"|"error"|"complete"
-	Image_id_str         string              `json:"image_id_str"`
-	Image_source_url_str string              `json:"image_source_url_str"`
-	Err_str              string              `json:"err_str,omitempty"`    //if the update indicates an error, this is its value
+	Name_str             string                      `json:"name_str"`
+	Type_str             job_update_type_val         `json:"type_str"`             //"ok"|"error"|"complete"
+	Image_id_str         gf_images_utils.Gf_image_id `json:"image_id_str"`
+	Image_source_url_str string                      `json:"image_source_url_str"`
+	Err_str              string                      `json:"err_str,omitempty"`    //if the update indicates an error, this is its value
 	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
 }
 
@@ -74,6 +74,7 @@ type job_update_type_val string
 const JOB_UPDATE_TYPE__OK        job_update_type_val = "ok"
 const JOB_UPDATE_TYPE__ERROR     job_update_type_val = "error"
 const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
+
 //-------------------------------------------------
 //SERVER
 //-------------------------------------------------

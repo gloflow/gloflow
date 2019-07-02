@@ -32,7 +32,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.Gf_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_s3.S3__store_gf_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image()")
 
 	//--------------------
 	//UPLOAD FULL_SIZE (ORIGINAL) IMAGE
@@ -58,12 +58,12 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 
 	target_file__local_path_str := p_image_local_file_path_str
 	target_file__s3_path_str    := s3_file_name_str
-	s3_response_str,gf_err := gf_core.S3__upload_file(target_file__local_path_str, target_file__s3_path_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+	s3_response_str, gf_err := gf_core.S3__upload_file(target_file__local_path_str, target_file__s3_path_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+	p_runtime_sys.Log_fun("INFO", "s3_response_str - "+s3_response_str)
 	//--------------------
 	//UPLOAD THUMBS
 
@@ -80,7 +80,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.Gf_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_s3.S3__store_gf_image_thumbs()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image_thumbs()")
 
 	//IMPORTANT - for some image types (GIF) the system doesnt produce thumbs,
 	//            and therefore p_image_thumbs is nil.

@@ -33,7 +33,7 @@ import (
 //                              was found. this is valid for gf_chrome_ext image sources.
 //                              its not relevant for direct image uploads from clients.
 
-func Transform_image(p_image_id_str string,
+func Transform_image(p_image_id_str Gf_image_id,
 	p_image_client_type_str                      string,
 	p_images_flows_names_lst                     []string,
 	p_image_origin_url_str                       string,
@@ -48,7 +48,7 @@ func Transform_image(p_image_id_str string,
 		return nil,nil,gf_err
 	}
 
-	gf_image,gf_image_thumbs,gf_err := Trans__process_image(p_image_id_str,
+	gf_image, gf_image_thumbs, gf_err := Trans__process_image(p_image_id_str,
 		p_image_client_type_str,
 		p_images_flows_names_lst,
 		p_image_origin_url_str,
@@ -63,8 +63,9 @@ func Transform_image(p_image_id_str string,
 
 	return gf_image,gf_image_thumbs,nil
 }
+
 //---------------------------------------------------
-func Trans__process_image(p_image_id_str string,
+func Trans__process_image(p_image_id_str Gf_image_id,
 	p_image_client_type_str                string,
 	p_images_flows_names_lst               []string,
 	p_image_origin_url_str                 string,
@@ -72,8 +73,8 @@ func Trans__process_image(p_image_id_str string,
 	p_normalized_ext_str                   string,
 	p_image_local_file_path_str            string,
 	p_local_thumbnails_target_dir_path_str string,
-	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image,*Gf_image_thumbs,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_transformer.Trans__process_image()")
+	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image, *Gf_image_thumbs, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
 	fmt.Println("p_image_local_file_path_str - "+p_image_local_file_path_str)
 
 	//---------------------------------

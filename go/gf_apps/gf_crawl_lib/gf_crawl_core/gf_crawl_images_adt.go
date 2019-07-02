@@ -60,7 +60,7 @@ type Gf_crawler_page_img struct {
 	Valid_for_usage_bool       bool          `bson:"valid_for_usage_bool"`
 	S3_stored_bool             bool          `bson:"s3_stored_bool"` //if persisting to s3 succeeded
 	Nsfv_bool                  bool          `bson:"nsfv_bool"`      //NSFV (not safe for viewing/nudity) flag for the image 
-	Image_id_str               string        `bson:"image_id_str"`   //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
+	Image_id_str               gf_images_utils.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
 }
 	
 //IMPORTANT!! - reference to an image, on a particular page. 

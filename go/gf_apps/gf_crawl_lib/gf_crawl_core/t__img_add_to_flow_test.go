@@ -57,7 +57,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 
 	//---------------------------------------------------
-	create_image_ADTs := func() (*Gf_crawler_page_img, *Gf_crawler_page_img_ref) {
+	create_test_image_ADTs := func() (*Gf_crawler_page_img, *Gf_crawler_page_img_ref) {
 		//-------------------
 		//CRAWLED_IMAGE_CREATE
 		test__crawled_image, gf_err := images_adt__prepare_and_create(test__crawler_name_str,
@@ -100,7 +100,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		return test__crawled_image, test__crawled_image_ref
 	}
 	//---------------------------------------------------
-	test__crawled_image, test__crawled_image_ref := create_image_ADTs()
+	test__crawled_image, test__crawled_image_ref := create_test_image_ADTs()
 	if test__crawled_image == nil || test__crawled_image_ref == nil {
 		return
 	}
@@ -137,6 +137,10 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		crawler_runtime,
 		runtime_sys)
 
+
+	fmt.Println("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+	spew.Dump(page_imgs__pinfos_with_thumbs_lst)
+	panic(1)
 	fmt.Println("   STAGE_COMPLETE --------------")
 
 	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")

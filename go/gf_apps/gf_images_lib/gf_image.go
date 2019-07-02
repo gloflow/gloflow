@@ -28,7 +28,7 @@ import (
 func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_image.Add_tags_to_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.Add_tags_to_image()")
 	
 	if len(p_tags_lst) > 0 {
 
@@ -39,7 +39,7 @@ func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
 		//-----------
 		set := map[string]bool{}
 		for _,t_str := range p_image.Tags_lst {
-			set[t_str]=true
+			set[t_str] = true
 		}
 		//-----------
 		list_no_duplicates_lst := []string{}

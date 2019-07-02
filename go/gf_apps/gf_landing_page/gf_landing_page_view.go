@@ -24,6 +24,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------------
 func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_featured_imgs_lst      []*Gf_featured_img,
@@ -31,7 +32,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_landing_page_view.render_template()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_view.render_template()")
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
@@ -62,7 +63,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to render the landing_page template",
 			"template_render_error",
-			&map[string]interface{}{},
+			map[string]interface{}{},
 			err, "gf_landing_page", p_runtime_sys)
 		return gf_err
 	}

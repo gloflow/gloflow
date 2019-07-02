@@ -24,6 +24,7 @@ import (
 	"time"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //------------------------------------------------
@@ -40,8 +41,8 @@ type Gf_post struct {
 
 	//------------
 	//GF_IMAGES
-	Thumbnail_url_str string             `bson:"thumbnail_url_str"` //SYMPHONY 0.3
-	Images_ids_lst    []string           `bson:"images_ids_lst"`
+	Thumbnail_url_str string                        `bson:"thumbnail_url_str"` //SYMPHONY 0.3
+	Images_ids_lst    []gf_images_utils.Gf_image_id `bson:"images_ids_lst"`
 	//------------
 	Post_elements_lst []*Gf_post_element `bson:"post_elements_lst"`
 	//------------
@@ -95,14 +96,14 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	}
 
 	//IMAGES_IDS
-	var images_ids_lst []string
+	var images_ids_lst []gf_images_utils.Gf_image_id
 	if _,ok := p_post_info_map["images_ids_lst"]; !ok {
 
 		//"images_ids_lst" key was not present
-		images_ids_lst = []string{}
-	} else if ids_lst,ok := p_post_info_map["images_ids_lst"].([]string); !ok {
+		images_ids_lst = []gf_images_utils.Gf_image_id{}
+	} else if ids_lst,ok := p_post_info_map["images_ids_lst"].([]gf_images_utils.Gf_image_id); !ok {
 		//if p_post_info_map is coming from mongodb, its of []interface{} type, so a "type conversion" is done)
-		images_ids_lst = []string(ids_lst)
+		images_ids_lst = []gf_images_utils.Gf_image_id(ids_lst)
 	} else {
 		images_ids_lst = ids_lst
 	}

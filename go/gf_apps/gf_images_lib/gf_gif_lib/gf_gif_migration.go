@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 //TEMPORARY - only used for a little while, until all GIF format images are also 
 //            created in their GIF record form. new versions of crawler and chrome_ext 
@@ -36,7 +37,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.Gf_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_migration.Init_img_to_gif_migration()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_migration.Init_img_to_gif_migration()")
 
 	gf_domain_str := "gloflow.com"
 	fmt.Println(gf_domain_str)
@@ -405,8 +406,9 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	//----------------
 	return nil
 }
+
 //--------------------------------------------------
-func migrate__get_flows_names(p_gif__gf_image_id_str string,
+func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
 	var flows_names_lst []string
 
