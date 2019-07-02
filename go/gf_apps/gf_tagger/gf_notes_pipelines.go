@@ -35,33 +35,34 @@ type Gf_note struct {
 	Target_obj_type_str   string `json:"target_obj_type_str" bson:"target_obj_type_str"` //"post"|"image"|"video"
 	Creation_datetime_str string `json:"creation_datetime_str"`
 }
+
 //---------------------------------------------------
 func pipeline__add_note(p_input_data_map map[string]interface{},
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__add_note()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.pipeline__add_note()")
 
 	//----------------
 	//INPUT
-	if _,ok := p_input_data_map["otype"]; !ok {
+	if _, ok := p_input_data_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("note 'otype' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
 
-	if _,ok := p_input_data_map["o_id"]; !ok {
+	if _, ok := p_input_data_map["o_id"]; !ok {
 		gf_err := gf_core.Error__create("note 'o_id' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
 
-	if _,ok := p_input_data_map["body"]; !ok {
+	if _, ok := p_input_data_map["body"]; !ok {
 		gf_err := gf_core.Error__create("note 'body' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
@@ -74,14 +75,14 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 	if  object_type_str == "post" {
 
 		post_title_str        := object_extern_id_str
-		creation_datetime_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
+		creation_datetime_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 
 		note := &Gf_note{
-			User_id_str:          "anonymous",
-			Body_str:             body_str,
-			Target_obj_id_str:    post_title_str,
-			Target_obj_type_str:  object_type_str,
-			Creation_datetime_str:creation_datetime_str,
+			User_id_str:           "anonymous",
+			Body_str:              body_str,
+			Target_obj_id_str:     post_title_str,
+			Target_obj_type_str:   object_type_str,
+			Creation_datetime_str: creation_datetime_str,
 		}
 
 		gf_err := db__add_post_note(note, post_title_str, p_runtime_sys)
@@ -91,10 +92,11 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 	}
 	return nil
 }
+
 //---------------------------------------------------
 func pipeline__get_notes(p_req *http.Request,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_notes_pipelines.pipeline__get_notes()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.pipeline__get_notes()")
 
 	//-----------------
 	//INPUT
@@ -103,7 +105,7 @@ func pipeline__get_notes(p_req *http.Request,
 	if _,ok := qs_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("note 'otype' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map": qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -111,7 +113,7 @@ func pipeline__get_notes(p_req *http.Request,
 	if _,ok := qs_map["o_id"]; !ok {
 		gf_err := gf_core.Error__create("note 'o_id' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map": qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -131,10 +133,10 @@ func pipeline__get_notes(p_req *http.Request,
 		
 		for _,s := range notes_lst {
 			note := &Gf_note{
-				User_id_str:        s.User_id_str,
-				Body_str:           s.Body_str,
-				Target_obj_id_str:  post_title_str,
-				Target_obj_type_str:object_type_str,
+				User_id_str:         s.User_id_str,
+				Body_str:            s.Body_str,
+				Target_obj_id_str:   post_title_str,
+				Target_obj_type_str: object_type_str,
 			}
 			tagger_notes_lst = append(tagger_notes_lst, note)
 		}

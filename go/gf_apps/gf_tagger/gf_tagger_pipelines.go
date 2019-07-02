@@ -41,7 +41,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	if _,ok := p_input_data_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map":p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
@@ -49,7 +49,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	if _,ok := p_input_data_map["o_id"]; !ok {
 		gf_err := gf_core.Error__create("input 'o_id' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map":p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
@@ -57,7 +57,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	if _,ok := p_input_data_map["tags"]; !ok {
 		gf_err := gf_core.Error__create("input 'tags' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"input_data_map":p_input_data_map,},
+			map[string]interface{}{"input_data_map":p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
@@ -76,6 +76,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	//----------------
 	return nil
 }
+
 //---------------------------------------------------
 func pipeline__get_objects_with_tag(p_req *http.Request,
 	p_resp                   io.Writer,
@@ -95,7 +96,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 	if _,ok := qs_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -103,7 +104,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 	if _,ok := qs_map["tag"]; !ok {
 		gf_err := gf_core.Error__create("input 'tag' not supplied",
 			"verify__missing_key_error",
-			&map[string]interface{}{"qs_map":qs_map,},
+			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -120,7 +121,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 		if err != nil {
 			gf_err := gf_core.Error__create("input pg_index not an integer",
 				"verify__value_not_integer_error",
-				&map[string]interface{}{"input_val":input_val,},
+				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", p_runtime_sys)
 			return nil, gf_err
 		}
@@ -134,7 +135,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 		if err != nil {
 			gf_err := gf_core.Error__create("input pg_size not an integer",
 				"verify__value_not_integer_error",
-				&map[string]interface{}{"input_val":input_val,},
+				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", p_runtime_sys)
 			return nil, gf_err
 		}

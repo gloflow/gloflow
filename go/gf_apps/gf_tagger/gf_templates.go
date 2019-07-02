@@ -29,6 +29,7 @@ type gf_templates struct {
 	tag_objects__tmpl                            *template.Template
 	tag_objects__subtemplates_names_lst          []string
 }
+
 //-------------------------------------------------
 func tmpl__load(p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")

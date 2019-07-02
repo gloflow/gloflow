@@ -114,7 +114,7 @@ func render_objects_with_tag(p_tag_str string,
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to render the objects_with_tag template",
 			"template_render_error",
-			&map[string]interface{}{"tag_str": p_tag_str,},
+			map[string]interface{}{"tag_str": p_tag_str,},
 			err, "gf_tagger", p_runtime_sys)
 		return gf_err
 	}
