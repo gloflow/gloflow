@@ -46,10 +46,10 @@ type Gf_crawler_page_outgoing_link struct {
 	Origin_url_str        string        `bson:"origin_url_str"`       //page url from whos html this element was extracted
 	Origin_url_domain_str string        `bson:"origin_url_domain_str"`
 
-	//IMPORTANT!! - this is unique for the combination of the image src encountered, and origin_url from which
-	//              the image was extracted from. this way the same data links are not entered in duplicates, 
-	//              and using the hash the DB can qucikly be checked for existence of record
+	//IMPORTANT!! - this is a hash of the . it 
 	Hash_str              string        `bson:"hash_str"`
+
+
 	Valid_for_crawl_bool  bool          `bson:"valid_for_crawl_bool"`  //if the link should be crawled, or if it should be ignored
 	Images_processed_bool bool          `bson:"images_processed_bool"` //if all the images in the page have been downloaded/transformed/stored-in-s3
 	Fetched_bool          bool          `bson:"fetched_bool"`          //indicator if the link has been fetched (its html downloaded and parsed)
@@ -284,13 +284,16 @@ func link__create(p_url_str string,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("outgoing_link:%f", creation_unix_time_f)
 
+	//-------------
 	//HASH
-	//IMPORTANT!! - using the a_href url only, because the same link might appear on several pages/domains,
-	//              and should not be crawled every time
-	to_hash_str := p_url_str
+	//IMPORTANT!! - this hash uniquely identifies links going to the same target URL that were discovered on the same origin page URL. 
+	//              if a particular origin page has several links in it that point to the same target URL, then all those links
+	//              will have the same hash (which can be used for efficient queries or grouping).
 	hash        := md5.New()
-	hash.Write([]byte(to_hash_str))
+	hash.Write([]byte(p_origin_url_str))
+	hash.Write([]byte(p_url_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
+	//-------------
 
 	link__valid_for_crawl_bool := link__verify_for_crawl(p_url_str, domain_str, p_runtime_sys)
 	link := &Gf_crawler_page_outgoing_link{
@@ -318,26 +321,28 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
-
-	c,err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
-			"t":        "crawler_page_outgoing_link",
-			"hash_str": p_link.Hash_str,
-		}).Count()
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to count crawler_page_outgoing_link by its hash",
-			"mongodb_find_error",
-			map[string]interface{}{"hash_str":p_link.Hash_str,},
-			err, "gf_crawl_core", p_runtime_sys)
+	
+	//-------------
+	//IMPORTANT!! - REXAMINE!! - to conserve on storage for potentially large savings (should be checked empirically?), links are persisted
+	//                           in the DB only if their hash is unique. Hashes are composed of origin page URL and target URL hashed, so multiple links coming from the 
+	//                           same origin page URL, and targeting the same URL, are only stored once.
+	//                           this is a potentially loss of information, for pages that have a lot of these duplicate links. having this information 
+	//                           on pages could maybe prove useful for some kind of analysis or algo. 
+	//                           - so maybe store links even if their hashes are duplicates?
+	//                           - add some kind of tracking where these duplicates are counted for pages.
+	link_exists_bool, gf_err := link__db_exists(p_link.Hash_str, p_runtime_sys)
+	if gf_err != nil {
 		return gf_err
 	}
+	//-------------
 
 	//crawler_page_outgoing_link already exists, from previous crawls, so ignore it
-	if c > 0 {
+	if link_exists_bool {
 		fmt.Println(">> "+yellow(">>>>>>>> - DB PAGE_LINK ALREADY EXISTS >-- ")+cyan(fmt.Sprint(p_link.A_href_str)))
 		return nil
 	} else {
 
-		err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_link)
+		err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_link)
 		if err != nil {
 
 			gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_outgoing_link in mongodb",
@@ -351,6 +356,31 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 	}
 
 	return nil
+}
+
+//--------------------------------------------------
+func link__db_exists(p_link_hash_str string, p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
+
+	c, err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+		"t":        "crawler_page_outgoing_link",
+		"hash_str": p_link_hash_str,
+		}).Count()
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to count crawler_page_outgoing_link by its hash",
+			"mongodb_find_error",
+			map[string]interface{}{"hash_str": p_link_hash_str,},
+			err, "gf_crawl_core", p_runtime_sys)
+		return false, gf_err
+	}
+
+	//crawler_page_outgoing_link already exists, from previous crawls, so ignore it
+	if c > 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
+	return false, nil
 }
 
 //--------------------------------------------------
@@ -425,7 +455,7 @@ func Link__mark_import_in_progress(p_status_bool bool,
 			"t":      "crawler_page_outgoing_link",
 			"id_str": p_link.Id_str,
 		},
-		bson.M{"$set":update_map,})
+		bson.M{"$set": update_map,})
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as in_progress/complete",
