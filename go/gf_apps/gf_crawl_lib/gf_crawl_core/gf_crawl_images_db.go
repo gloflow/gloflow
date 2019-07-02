@@ -56,7 +56,7 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 		//crawler_page_img already exists, from previous crawls, so ignore it
 		var exists_bool bool
 		if c > 0 {
-			p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
+			p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
 			
 			exists_bool = true
 			return exists_bool, nil
@@ -141,8 +141,8 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 //--------------------------------------------------
 func image__db_get(p_id_str string,
 	p_runtime     *Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_img,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.image__db_get()")
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_get()")
 
 	var img Gf_crawler_page_img
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
@@ -152,7 +152,7 @@ func image__db_get(p_id_str string,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_img by ID from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"id_str":p_id_str,},
+			map[string]interface{}{"id_str": p_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -176,12 +176,12 @@ func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recen
 		bson.M{"$limit": 2000},
 		bson.M{"$group": bson.M{
 				"_id":                      "$origin_page_url_domain_str", //"$domain_str",
-				"imgs_count_int":           bson.M{"$sum" :1},
-				"crawler_page_img_ids_lst": bson.M{"$push":"$id_str"},
-				"creation_times_lst":       bson.M{"$push":"$creation_unix_time_f"},
-				"urls_lst":                 bson.M{"$push":"$url_str"},
-				"nsfv_ls":                  bson.M{"$push":"$nsfv_bool"},
-				"origin_page_urls_lst":     bson.M{"$push":"$origin_page_url_str"},
+				"imgs_count_int":           bson.M{"$sum":  1},
+				"crawler_page_img_ids_lst": bson.M{"$push": "$id_str"},
+				"creation_times_lst":       bson.M{"$push": "$creation_unix_time_f"},
+				"urls_lst":                 bson.M{"$push": "$url_str"},
+				"nsfv_ls":                  bson.M{"$push": "$nsfv_bool"},
+				"origin_page_urls_lst":     bson.M{"$push": "$origin_page_url_str"},
 			},
 		},
 	})

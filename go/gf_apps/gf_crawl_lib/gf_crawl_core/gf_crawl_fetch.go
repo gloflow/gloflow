@@ -53,20 +53,22 @@ type Gf_crawler_url_fetch struct {
 }
 
 //--------------------------------------------------
+//FETCH_URL
+
 func Fetch__url(p_url_str string,
 	p_link             *Gf_crawler_page_outgoing_link,
 	p_cycle_run_id_str string,
 	p_crawler_name_str string,
 	p_runtime          *Gf_crawler_runtime,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_url_fetch, string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.Fetch__url()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_fetch.Fetch__url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.Log_fun("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-	p_runtime_sys.Log_fun("INFO","FETCHING >> - "+yellow(p_url_str))
-	p_runtime_sys.Log_fun("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	p_runtime_sys.Log_fun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	p_runtime_sys.Log_fun("INFO", "FETCHING >> - "+yellow(p_url_str))
+	p_runtime_sys.Log_fun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
 
 	start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -74,11 +76,11 @@ func Fetch__url(p_url_str string,
 	url,err := url.Parse(p_url_str)
 	if err != nil {
 		t:="fetcher_parse_url__failed"
-		m:=fmt.Sprintf("failed to parse url for fetch - %s",p_url_str)
+		m:=fmt.Sprintf("failed to parse url for fetch - %s", p_url_str)
 
 		gf_err := gf_core.Error__create(m,
 			"url_parse_error",
-			map[string]interface{}{"url_str":p_url_str,},
+			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 
 		_,fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
@@ -115,7 +117,7 @@ func Fetch__url(p_url_str string,
 			map[string]interface{}{"url_str":p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 
-		_,fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
+		_, fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
 		if fe_gf_err != nil {
 			return nil, "", fe_gf_err
 		}
@@ -184,6 +186,8 @@ func Fetch__url(p_url_str string,
 }
 
 //--------------------------------------------------
+//FETCH__PARSE_RESULT
+
 func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
 	p_crawler_name_str          string,
@@ -270,7 +274,7 @@ func fetch__mark_as_failed(p_error *Gf_crawler_error,
 			"id_str": p_fetch.Id_str,
 			"t":      "crawler_url_fetch",
 		},
-		bson.M{"$set":bson.M{
+		bson.M{"$set": bson.M{
 				"error_id_str":   p_error.Id_str,
 				"error_type_str": p_error.Type_str,
 			},
@@ -278,7 +282,7 @@ func fetch__mark_as_failed(p_error *Gf_crawler_error,
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a crawler_url_fetch as failed in mongodb",
 			"mongodb_update_error",
-			map[string]interface{}{"fetch_id_str":p_fetch.Id_str,},
+			map[string]interface{}{"fetch_id_str": p_fetch.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}

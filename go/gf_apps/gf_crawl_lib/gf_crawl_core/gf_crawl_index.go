@@ -49,7 +49,7 @@ func index__get_stats(p_runtime *Gf_crawler_runtime, p_runtime_sys *gf_core.Runt
 func Index__query(p_term_str string,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.Index__query()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_index.Index__query()")
 
 
 	//ADD!! - use termquery result relevance
@@ -95,7 +95,7 @@ func Index__query(p_term_str string,
 
 	hits_scores_lst := []float64{}
 	hits_urls_lst   := []string{}
-	for _,search_hit := range hits_lst {
+	for _, search_hit := range hits_lst {
 
 		//-------------------
 		//relevance - the algorithm that we use to calculate how similar 
@@ -108,7 +108,7 @@ func Index__query(p_term_str string,
 		//          
 		//          - "_score" - field in results
 		hit_score_f    := search_hit.Score
-		hits_scores_lst = append(hits_scores_lst,*hit_score_f)
+		hits_scores_lst = append(hits_scores_lst, *hit_score_f)
 		//-------------------
 
 		var highlights_map map[string][]string = search_hit.Highlight
@@ -121,12 +121,12 @@ func Index__query(p_term_str string,
 		var hit__doc_fields_map map[string]interface{} = search_hit.Fields
 		hit__url_str                                  := hit__doc_fields_map["Url_str"].(string)
 
-		hits_urls_lst = append(hits_urls_lst,hit__url_str)
+		hits_urls_lst = append(hits_urls_lst, hit__url_str)
 	}
 	//----------------
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("crawler_page_img:%f",creation_unix_time_f)
+	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
 
 	query_run := &Gf_index__query_run{
 		Id_str:               id_str,
@@ -157,7 +157,7 @@ func Index__query(p_term_str string,
 func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_index.index__add_to__of_url_fetch()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_index.index__add_to__of_url_fetch()")
 
 	index_name_str     := "gf_crawl_pages"
 	es_record_type_str := "crawl_page"

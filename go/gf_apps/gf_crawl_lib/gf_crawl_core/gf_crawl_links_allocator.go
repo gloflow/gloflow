@@ -85,7 +85,8 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("gf_crawl_link_alloc:%s:%f", p_crawler_name_str, creation_unix_time_f)
 
-	//IMPORTANT!! - there can be multiple allocators operating in a single cluster
+	//IMPORTANT!! - there can be multiple allocators operating in a single cluster. potentially they can have different allocations strategies,
+	//              or may have different limitations on the range of values for various filters used by allocation function.
 	allocator := &Gf_crawl_link_alloc{
 		Id_str:                    id_str,
 		T_str:                     "crawler_link_alloc", 
