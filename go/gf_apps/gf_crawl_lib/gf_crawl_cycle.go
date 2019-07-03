@@ -46,7 +46,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	//IMPORTANT!! - get unresolved links to pages on the domain to which the crawler belongs.
 	//              so if the a page contains links to domains external to the domain to which the 
 	//              crawler belongs, it wont get fetched/parsed here
-	unresolved_link, gf_err := gf_crawl_core.Link__get_unresolved(p_crawler.Name_str, p_runtime_sys)
+	unresolved_link, gf_err := gf_crawl_core.Link__db_get_unresolved(p_crawler.Name_str, p_runtime_sys)
 
 	//IMPORTANT!! - no unresolved links were found, this is a valid possible state
 	if gf_err != nil && fmt.Sprint(gf_err.Type_str) == "mongodb_not_found_error" {
@@ -75,7 +75,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 		//              instances running on other nodes should not load this link of importing as well, 
 		//              to avoid duplicate work/data
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
-		gf_err       := gf_crawl_core.Link__mark_import_in_progress(true, start_time_f, unresolved_link, p_runtime, p_runtime_sys)
+		gf_err       := gf_crawl_core.Link__db_mark_import_in_progress(true, start_time_f, unresolved_link, p_runtime, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -150,7 +150,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	//IMPORTANT!! - unresolved_link is nil if no links are present in DB or if all links have been resolved, 
 	//              in which case the p_crawler.Start_url_str was used
 	if unresolved_link != nil {
-		gf_err = gf_crawl_core.Link__mark_as_resolved(unresolved_link,
+		gf_err = gf_crawl_core.Link__db_mark_as_resolved(unresolved_link,
 			url_fetch.Id_str,
 			url_fetch.Creation_unix_time_f,
 			p_runtime_sys)
@@ -163,7 +163,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	if unresolved_link != nil {
 
 		//IMPORTANT!! - mark the link as no longer import_in_progress
-		gf_err := gf_crawl_core.Link__mark_import_in_progress(false, //p_status_bool
+		gf_err := gf_crawl_core.Link__db_mark_import_in_progress(false, //p_status_bool
 			end_time_f,
 			unresolved_link,
 			p_runtime,

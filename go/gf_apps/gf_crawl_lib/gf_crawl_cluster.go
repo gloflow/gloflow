@@ -204,7 +204,7 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 
 				//domains_lst := crawler.Domains_lst
 
-				unresolved_link, gf_err := gf_crawl_core.Link__get_unresolved(crawler.Name_str, p_runtime_sys)
+				unresolved_link, gf_err := gf_crawl_core.Link__db_get_unresolved(crawler.Name_str, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
@@ -242,12 +242,12 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 			}
 			//---------------------
 
-			link, gf_err := gf_crawl_core.Link__get_db(input.Link_id_str, p_runtime_sys)
+			link, gf_err := gf_crawl_core.Link__db_get(input.Link_id_str, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
 			
-			gf_err = gf_crawl_core.Link__mark_as_resolved(link,
+			gf_err = gf_crawl_core.Link__db_mark_as_resolved(link,
 				input.Fetch_id_str,
 				input.Fetch_creation_time_f,
 				p_runtime_sys)

@@ -251,7 +251,7 @@ func fetch__error(p_error_type_str string,
 
 	if p_link != nil {
 		//IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
-		lm_err := link__mark_as_failed(crawler_error, p_link, p_runtime, p_runtime_sys)
+		lm_err := link__db_mark_as_failed(crawler_error, p_link, p_runtime, p_runtime_sys)
 		if lm_err != nil {
 			return nil, lm_err
 		}
