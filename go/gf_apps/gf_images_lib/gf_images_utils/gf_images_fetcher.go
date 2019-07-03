@@ -39,31 +39,6 @@ type Image_fetch__error struct {
 	Status_code_int      int           `json:"status_code_int"      bson:"status_code_int"`
 }
 
-//-------------------------------------------------
-func Fetch_image(p_image_url_str string,
-	p_images_store_local_dir_path_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.Fetch_image()")
-
-	//----------------------
-	local_image_file_path_str, gf_err := Fetcher__get_extern_image(p_image_url_str, p_images_store_local_dir_path_str, true, p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
-	}
-
-	//check if local file exists
-	if _, err := os.Stat(local_image_file_path_str); os.IsNotExist(err) {
-		gf_err := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
-			"file_missing_error",
-			map[string]interface{}{"local_image_file_path_str": local_image_file_path_str,},
-			err, "gf_images_utils", p_runtime_sys)
-		return "", gf_err
-	}
-	//----------------------
-
-	return local_image_file_path_str, nil
-}
-
 //---------------------------------------------------
 func Fetcher__get_extern_image(p_image_url_str string,
 	p_images_store_local_dir_path_str string,
@@ -81,39 +56,20 @@ func Fetcher__get_extern_image(p_image_url_str string,
 		sleep_sec_int             := rand.Intn(max_time_to_sleep_sec_int)
 		time.Sleep(time.Second * time.Duration(sleep_sec_int))
 	}
+
 	//--------------
-	//FS FILE
-
-	/*parsed_url,err := url.Parse(*p_image_url_str)
-	if err != nil {
-		return nil,errors.New("supplied image_url is not valid - "+*p_image_url_str)
-	}
-
-	url_path_str := parsed_url.Path
-
-	//ATTENTION!! - using the full image_path_str to calc file name, instead of the exact image_file_name_str
-	//              because on lots of sites images may have the same name, but are differentiated by the admins/authors
-	//              by putting them in different folders (paths)... so to avoid this problem Im acounting on the 
-	//              full image path being unique across the whole internal image DB. 
-	//              also, by using the image_path_str as the file name, I can get uniqueness and also be able to 
-	//              extract the actual file name in case the Image DB is lost and all I have is the file names
-	image_file_name_str       := strings.TrimLeft(url_path_str,"/") //path.Base(url_path_str)*/
+	//NEW_IMAGE_LOCAL_FILE_PATH
 
 	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
-	//              instead of the old original_image naming scheme
-	image_id_str, _ := Image__create_id_from_url(p_image_url_str, p_runtime_sys)
-	ext_str, gf_err := Get_image_ext_from_url(p_image_url_str, p_runtime_sys)
+	//              instead of the old original_image naming scheme.
+	new_image_local_file_path_str, gf_err := Image__create_gf_image_file_path_from_url(p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
-	}
-
-	local_image_file_path_str := fmt.Sprintf("%s/%s.%s", p_images_store_local_dir_path_str, image_id_str, ext_str)
-
-	p_runtime_sys.Log_fun("INFO", "local_image_file_path_str - "+local_image_file_path_str)
+	}	
 	//--------------
 	//HTTP DOWNLOAD
 
-	gf_err = Download_file(p_image_url_str, local_image_file_path_str, p_runtime_sys)
+	gf_err = Download_file(p_image_url_str, new_image_local_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
 	}
@@ -122,7 +78,16 @@ func Fetcher__get_extern_image(p_image_url_str string,
 	//LOG
 	analytics__log_image_fetch(p_image_url_str, p_runtime_sys)
 	
-	return local_image_file_path_str, nil
+	//check if local file exists
+	if _, err := os.Stat(new_image_local_file_path_str); os.IsNotExist(err) {
+		gf_err := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
+			"file_missing_error",
+			map[string]interface{}{"new_image_local_file_path_str": new_image_local_file_path_str,},
+			err, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
+	}
+
+	return new_image_local_file_path_str, nil
 }
 
 //---------------------------------------------------

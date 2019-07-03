@@ -2,3 +2,5 @@
 *.jpg
 *.png
 *.gif
+
+!test_image_wasp_small.jpeg

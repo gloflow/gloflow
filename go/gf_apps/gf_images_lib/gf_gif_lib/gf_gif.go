@@ -131,8 +131,9 @@ func Process(p_image_source_url_str string,
 	
 	//-------------
 	//FETCH
-	local_image_file_path_str, f_gf_err := gf_images_utils.Fetch_image(p_image_source_url_str,
+	local_image_file_path_str, f_gf_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
+		false, //p_random_time_delay_bool
 		p_runtime_sys)
 	if f_gf_err != nil {
 		return nil, "", f_gf_err

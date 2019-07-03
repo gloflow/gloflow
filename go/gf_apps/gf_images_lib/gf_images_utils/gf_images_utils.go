@@ -124,6 +124,27 @@ func Image__create_id_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 }
 
 //---------------------------------------------------
+func Image__create_gf_image_file_path_from_url(p_image_url_str string,
+	p_images_store_local_dir_path_str string,
+	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	
+	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
+	//              instead of the old original_image naming scheme.
+	image_id_str, _ := Image__create_id_from_url(p_image_url_str, p_runtime_sys)
+	ext_str, gf_err := Get_image_ext_from_url(p_image_url_str, p_runtime_sys)
+	if gf_err != nil {
+		return "", gf_err
+	}
+
+	local_image_file_name_str := fmt.Sprintf("%s.%s", image_id_str, ext_str)
+	local_image_file_path_str := fmt.Sprintf("%s/%s", p_images_store_local_dir_path_str, local_image_file_name_str)
+
+	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("local_image_file_path_str - %s", local_image_file_path_str))
+	
+	return local_image_file_path_str, nil
+}
+
+//---------------------------------------------------
 //p_image_type_str - :String - "jpeg"|"gif"|"png"
 
 func Image__create_id(p_image_path_str string,
@@ -147,16 +168,16 @@ func Image__create_id(p_image_path_str string,
 //---------------------------------------------------
 //VAR
 //---------------------------------------------------
-func Get_image_filename_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_filename_from_url()")
+func Get_image_original_filename_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_original_filename_from_url()")
 
 	url,err := url.Parse(p_image_url_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to get image filename",
 			"url_parse_error",
-			map[string]interface{}{"image_url_str":p_image_url_str,},
-			err,"gf_images_utils",p_runtime_sys)
-		return "",gf_err
+			map[string]interface{}{"image_url_str": p_image_url_str,},
+			err, "gf_images_utils", p_runtime_sys)
+		return "", gf_err
 	}
 
 	image_path_str      := url.Path

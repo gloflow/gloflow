@@ -144,6 +144,7 @@ func Error__create(p_user_msg_str string,
 	fmt.Printf("service_name   - %s\n", yellow(gf_error.Service_name_str))
 	fmt.Printf("subsystem_name - %s\n", yellow(gf_error.Subsystem_name_str))
 	fmt.Printf("function_name  - %s\n", yellow(gf_error.Function_name_str))
+	fmt.Printf("data           - %s\n", yellow(gf_error.Data_map))
 	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
 	
 	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",

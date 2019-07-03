@@ -26,6 +26,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //--------------------------------------------------
 func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")

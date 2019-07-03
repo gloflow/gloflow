@@ -43,13 +43,17 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	test__crawler_name_str                  := "test-crawler"
 	test__cycle_run_id_str                  := "test__cycle_run_id"
 	test__image_flows_names_lst             := []string{"test_flow",}
-	test__img_src_url_str                   := "/some/origin/test_image_wasp.jpeg"
+	test__img_src_url_str                   := "/some/origin/test_image_wasp_small.jpeg"
 	test__origin_page_url_str               := "/some/origin/url.html"
-	test__local_image_file_path_str         := "../test_data/test_image_wasp.jpeg"
+	test__local_image_file_path_str         := "../test_data/test_image_wasp_small.jpeg"
 	test__images_store_local_dir_path_str   := "../test_data/processed_images" //image tmp thumbnails, or downloaded gif's and their frames
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__gf_images_s3_bucket_name_str      := "gf--test--img"
 
+
+
+
+	
 
 	runtime_sys, crawler_runtime := T__init(p_test)
 	if runtime_sys == nil || crawler_runtime == nil {
@@ -57,6 +61,18 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
+
+
+
+	test__local_gf_image_file_path_str := t__create_test_gf_image_named_image_file(p_test,
+		test__img_src_url_str,
+		test__local_image_file_path_str,
+		runtime_sys)
+	if test__local_gf_image_file_path_str == "" {
+		return
+	}
+	
+
 
 	test__crawled_image, test__crawled_image_ref := t__create_test_image_ADTs(p_test, 
 		test__crawler_name_str,
@@ -80,13 +96,21 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//GF_PAGE_IMAGE__PIPELINE_INFO - this is the struct thats passed through the crawler image processing pipeline, 
 	//                               from stage to stage. here we're createing it manually and populating with test values. 
 	page_img__pipeline_info := &gf_page_img__pipeline_info{
-		link:                page_img_link,
-		page_img:            test__crawled_image,
-		page_img_ref:        test__crawled_image_ref,
-		exists_bool:         false,               //artificially set test image to be declared as not existing already, in order to be fully processed
-		local_file_path_str: test__local_image_file_path_str,
-		nsfv_bool:           false,
-		thumbs:              nil,
+		link:         page_img_link,
+		page_img:     test__crawled_image,
+		page_img_ref: test__crawled_image_ref,
+		exists_bool:  false, //artificially set test image to be declared as not existing already, in order to be fully processed
+
+		//-------------------
+		//IMPORTANT!! - this is critical, that the gf_image file_path is used, not the unprocessed/original file_path (test__local_image_file_path_str).
+		//              this is because gf_crawl uses the gf_images naming scheme for image file_names that is based on the gf_image ID. 
+		//              (this ID is used for file naming because on a lot of URL/domains some generic/common image file names are used, even though the 
+		//              contents might be different)
+		local_file_path_str: test__local_gf_image_file_path_str,
+		//-------------------
+
+		nsfv_bool: false,
+		thumbs:    nil,
 	}
 
 	page_imgs__pinfos_lst := []*gf_page_img__pipeline_info{
@@ -100,12 +124,6 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test__crawled_images_s3_bucket_name_str,
 		crawler_runtime,
 		runtime_sys)
-
-
-	fmt.Println("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-	spew.Dump(page_imgs__pinfos_with_thumbs_lst)
-	panic(1)
-
 
 	fmt.Println("   STAGE_COMPLETE --------------")
 

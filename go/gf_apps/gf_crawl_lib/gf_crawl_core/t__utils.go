@@ -21,9 +21,13 @@ package gf_crawl_core
 
 import (
 	"testing"
+	"fmt"
+	"os/exec"
+	"path/filepath"
 	"github.com/globalsign/mgo/bson"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //---------------------------------------------------
@@ -75,6 +79,35 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	//-------------------
 
 	return test__crawled_image, test__crawled_image_ref
+}
+
+//-------------------------------------------------
+//given some human readable (or arbitrarily named) local image file, create a new image file with the same content, that is named
+//according to the gf_images image file naming scheme. here for testing this is done manually via this function, but in the gf_crawl pipeline
+//this is done by calling the native gf_image functions that create this gf_images based name.
+
+func t__create_test_gf_image_named_image_file(p_test *testing.T,
+	p_test__img_src_url_str           string,
+	p_test__local_image_file_path_str string,
+	p_runtime_sys                     *gf_core.Runtime_sys) string {
+
+	test__local_image_dir_path_str             := filepath.Dir(p_test__local_image_file_path_str)
+	test__local_gf_image_file_path_str, gf_err := gf_images_utils.Image__create_gf_image_file_path_from_url(p_test__img_src_url_str, test__local_image_dir_path_str, p_runtime_sys)
+	if gf_err != nil {
+		p_test.Errorf(fmt.Sprintf("failed to create a gf_image local file path from URL [%s]", p_test__img_src_url_str))
+		return ""
+	}
+
+
+	source_abs_str, _ := filepath.Abs(p_test__local_image_file_path_str)
+	target_abs_str, _ := filepath.Abs(test__local_gf_image_file_path_str)
+
+	err := exec.Command("cp", source_abs_str, target_abs_str).Run()
+	if err != nil {
+		p_test.Errorf(fmt.Sprintf("failed to copy a image file via shell, from old path [%s] to new gf_image path [%s]", source_abs_str, target_abs_str))
+		return ""
+	}
+	return test__local_gf_image_file_path_str
 }
 
 //-------------------------------------------------

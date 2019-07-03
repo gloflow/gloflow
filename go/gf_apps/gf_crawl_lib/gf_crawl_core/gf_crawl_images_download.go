@@ -139,6 +139,19 @@ func image__download(p_image *Gf_crawler_page_img,
 	//-------------------
 	//FLAG_IMAGE
 
+	gf_err = image__db_mark_as_downloaded(p_image, p_runtime_sys)
+	if gf_err != nil {
+		return "", gf_err
+	}
+	//-------------------
+
+	return local_image_file_path_str, nil
+}
+
+//--------------------------------------------------
+func image__db_mark_as_downloaded(p_image *Gf_crawler_page_img, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__db_mark_as_downloaded()")
+
 	p_image.Downloaded_bool = true
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t": "crawler_page_img",
@@ -157,9 +170,8 @@ func image__download(p_image *Gf_crawler_page_img,
 			"mongodb_update_error",
 			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
 			err, "gf_crawl_core", p_runtime_sys)
-		return "", gf_err
+		return gf_err
 	}
-	//-------------------
 
-	return local_image_file_path_str, nil
+	return nil
 }
