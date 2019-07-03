@@ -22,8 +22,60 @@ package gf_crawl_core
 import (
 	"testing"
 	"github.com/globalsign/mgo/bson"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//---------------------------------------------------
+func t__create_test_image_ADTs(p_test *testing.T,
+	p_test__crawler_name_str    string,
+	p_test__cycle_run_id_str    string,
+	p_test__img_src_url_str     string,
+	p_test__origin_page_url_str string,
+	p_crawler_runtime           *Gf_crawler_runtime,
+	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_crawler_page_img, *Gf_crawler_page_img_ref) {
+
+	//-------------------
+	//CRAWLED_IMAGE_CREATE
+	test__crawled_image, gf_err := images_adt__prepare_and_create(p_test__crawler_name_str,
+		p_test__cycle_run_id_str,
+		p_test__img_src_url_str,
+		p_test__origin_page_url_str,
+		p_crawler_runtime,
+		p_runtime_sys)
+	if gf_err != nil { 
+		p_test.Errorf("failed to prepare and create image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		return nil, nil
+	}
+
+	//DB - CRAWLED_IMAGE_PERSIST
+	exists_bool, gf_err := Image__db_create(test__crawled_image, p_crawler_runtime, p_runtime_sys)
+	if gf_err != nil {
+		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		return nil, nil
+	}
+
+	assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
+	//-------------------
+	//CRAWLED_IMAGE_REF_CREATE
+	test__crawled_image_ref := images_adt__ref_create(p_test__crawler_name_str,
+		p_test__cycle_run_id_str,
+		test__crawled_image.Url_str,                    //p_image_url_str
+		test__crawled_image.Domain_str,                 //p_image_url_domain_str
+		test__crawled_image.Origin_page_url_str,        //p_origin_page_url_str
+		test__crawled_image.Origin_page_url_domain_str, //p_origin_page_url_domain_str
+		p_runtime_sys)
+
+	//DB - CRAWLED_IMAGE_REF_PERSIST
+	gf_err = Image__db_create_ref(test__crawled_image_ref, p_crawler_runtime, p_runtime_sys)
+	if gf_err != nil {
+		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		return nil, nil
+	}
+	//-------------------
+
+	return test__crawled_image, test__crawled_image_ref
+}
 
 //-------------------------------------------------
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) {

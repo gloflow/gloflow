@@ -38,6 +38,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//              crawler image ADT's are manually created first 
 
 	//-------------------
+	//INIT 
+
 	test__crawler_name_str                  := "test-crawler"
 	test__cycle_run_id_str                  := "test__cycle_run_id"
 	test__image_flows_names_lst             := []string{"test_flow",}
@@ -56,51 +58,13 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	t__cleanup__test_page_imgs(test__crawler_name_str, runtime_sys)
 
-	//---------------------------------------------------
-	create_test_image_ADTs := func() (*Gf_crawler_page_img, *Gf_crawler_page_img_ref) {
-		//-------------------
-		//CRAWLED_IMAGE_CREATE
-		test__crawled_image, gf_err := images_adt__prepare_and_create(test__crawler_name_str,
-			test__cycle_run_id_str,
-			test__img_src_url_str,
-			test__origin_page_url_str,
-			crawler_runtime,
-			runtime_sys)
-		if gf_err != nil { 
-			p_test.Errorf("failed to prepare and create image_adt with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
-			return nil, nil
-		}
-
-		//DB - CRAWLED_IMAGE_PERSIST
-		exists_bool, gf_err := Image__db_create(test__crawled_image, crawler_runtime, runtime_sys)
-		if gf_err != nil {
-			p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
-			return nil, nil
-		}
-
-		assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
-		//-------------------
-		//CRAWLED_IMAGE_REF_CREATE
-		test__crawled_image_ref := images_adt__ref_create(test__crawler_name_str,
-			test__cycle_run_id_str,
-			test__crawled_image.Url_str,                    //p_image_url_str
-			test__crawled_image.Domain_str,                 //p_image_url_domain_str
-			test__crawled_image.Origin_page_url_str,        //p_origin_page_url_str
-			test__crawled_image.Origin_page_url_domain_str, //p_origin_page_url_domain_str
-			runtime_sys)
-
-		//DB - CRAWLED_IMAGE_REF_PERSIST
-		gf_err = Image__db_create_ref(test__crawled_image_ref, crawler_runtime, runtime_sys)
-		if gf_err != nil {
-			p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", test__img_src_url_str, test__origin_page_url_str)
-			return nil, nil
-		}
-		//-------------------
-
-		return test__crawled_image, test__crawled_image_ref
-	}
-	//---------------------------------------------------
-	test__crawled_image, test__crawled_image_ref := create_test_image_ADTs()
+	test__crawled_image, test__crawled_image_ref := t__create_test_image_ADTs(p_test, 
+		test__crawler_name_str,
+		test__cycle_run_id_str,
+		test__img_src_url_str,
+		test__origin_page_url_str,
+		crawler_runtime,
+		runtime_sys)
 	if test__crawled_image == nil || test__crawled_image_ref == nil {
 		return
 	}
@@ -141,6 +105,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	fmt.Println("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 	spew.Dump(page_imgs__pinfos_with_thumbs_lst)
 	panic(1)
+
+
 	fmt.Println("   STAGE_COMPLETE --------------")
 
 	assert.Equal(p_test, len(page_imgs__pinfos_lst), len(page_imgs__pinfos_with_thumbs_lst), "more page_imgs pipeline_info's returned from images__stage__process_images() then inputed")

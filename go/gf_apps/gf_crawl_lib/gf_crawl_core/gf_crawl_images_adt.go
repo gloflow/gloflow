@@ -95,12 +95,12 @@ type Gf_crawler__recent_images struct {
 
 //-------------------------------------------------
 func images_adt__prepare_and_create(p_crawler_name_str string,
-	p_cycle_run_id_str   string,
-	p_img_src_url_str    string,
+	p_cycle_run_id_str    string,
+	p_img_src_url_str     string,
 	p_origin_page_url_str string,
-	p_runtime            *Gf_crawler_runtime,
-	p_runtime_sys        *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images_adt__prepare_and_create()")
+	p_runtime             *Gf_crawler_runtime,
+	p_runtime_sys         *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

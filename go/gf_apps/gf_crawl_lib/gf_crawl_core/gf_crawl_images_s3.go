@@ -74,7 +74,7 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 			if gf_err != nil {
 				t := "image_s3_upload__failed"
 				m := "failed s3 uploading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
-				Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
+				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
 					gf_err, p_runtime, p_runtime_sys)
 				page_img__pinfo.gf_error = gf_err
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
@@ -93,7 +93,7 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_s3.image_s3__upload()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
 
 
 	gf_err := gf_images_utils.S3__store_gf_image(p_local_image_file_path_str,
@@ -105,14 +105,23 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 		return gf_err
 	}
 
-	//------------------
+	image_s3__db_flag_as_uploaded(p_image, p_runtime_sys)
+
+	return nil
+}
+
+//--------------------------------------------------
+//UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
+func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_img, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
+
 	p_image.S3_stored_bool = true
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":        "crawler_page_img",
 			"hash_str": p_image.Hash_str,
 		},
 		bson.M{
-			"$set": bson.M{"s3_stored_bool":true},
+			"$set": bson.M{"s3_stored_bool": true},
 		})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
@@ -121,7 +130,5 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
 	}
-	//------------------
-
 	return nil
 }

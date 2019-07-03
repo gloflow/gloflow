@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 /*IMPORTANT!! - functions in this file are responsible for bridging the gf_crawler space of images, with the gf_images service
-                space of images in "flows"*/
+                space of images in "flows". it copies images from gf_crawler storage to gf_images service storage*/
 
 package gf_crawl_core
 
