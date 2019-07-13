@@ -18,8 +18,7 @@ Originally it was coded in Python on the backend, and JS on the frontend. Later 
 
 
 
-A single style is maintained across languages used in the implementation (**Go**,**Python**,**Typescript**) - even though the languages are different enough from each other. 
-The focus is on basic functional language principles (of pure functions, high-level functions, closures). Functions should receive all the state that they operate on via their arguments (other then functions that work with external state - DB or external queries). Object orientation (objects holding state and methods operating on that state internally) is avoided as much as possible (even though it is the default idiomatic style of Go and Python). State/variable mutation still exists in various places, but the aim is to keep it to a minimum (constant runtime values would be a welcome feature in Go and Python). 
+
 
 
 
@@ -27,6 +26,12 @@ The focus is on basic functional language principles (of pure functions, high-le
 
 
 - gf_images
+main application, responsible for working with images. this application contains its own HTTP handlers for REST API endpoints for adding images to the system. it also contains functions for working with Image Flows (which are collections of images). this application has several sub-packages:
+    - gf_gif_lib - this is responsible for working with GIF files.
+    - gf_image_editor - collection of functions for saving versions of images (versions that were edited). Image filters are for now appliced on the front-end in JS code, in the browser, but in the future we need to move to applying filters on the backend as well since we can scale and be much more performant there for really large images (or for less powerful .
+    - gf_images_jobs - this is the main image operations image manager, parallel process that applies various image transformation to potentially large collections of images. This is purely Go for now, but Rust will be plugged in here as well for the most performant operations.
+    - gf_images_stats - for now just a few simple image statistics function that collection some aggregate metrics from the DB
+    - gf_images_utils - various image functions used by both the gf_images application, and other applications (gf_publisher, gf_crawl, etc.) 
 - gf_publisher
 - gf_analytics
 - gf_crawl
@@ -51,7 +56,9 @@ for configurability so that these operations can be applied to:
     - local FS  
     - IPFS  
 
-
+**Code Style**
+A single style is maintained across languages used in the implementation (**Go**,**Python**,**Typescript**) - even though the languages are different enough from each other. 
+The focus is on basic functional language principles (of pure functions, high-level functions, closures). Functions should receive all the state that they operate on via their arguments (other then functions that work with external state - DB or external queries). Object orientation (objects holding state and methods operating on that state internally) is avoided as much as possible (even though it is the default idiomatic style of Go and Python). State/variable mutation still exists in various places, but the aim is to keep it to a minimum (constant runtime values would be a welcome feature in Go and Python). 
 
 **Naming convention**  
 There are multiple languages involved, Go, Python, Typescript, with bits of Rust starting to show up. Potentially there are going to be other languages coming in. We're trying to maintain a simple universal naming scheme across all languages. For some languages this scheme is not ideal, but having it be consistent across all of the code (including the shared symbol names) has its benefits in readibility and correctness.  

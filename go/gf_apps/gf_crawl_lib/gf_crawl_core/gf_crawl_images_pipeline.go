@@ -130,7 +130,7 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_img,
 	p_crawled_images_s3_bucket_name_str string,
 	p_runtime                           *Gf_crawler_runtime,
 	p_runtime_sys                       *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_process.images_pipe__single_simple")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 
 	//------------------------
@@ -180,7 +180,7 @@ func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
 	page_imgs__pipeline_infos_lst := []*gf_page_img__pipeline_info{}
 	p_url_fetch.goquery_doc.Find("img").Each(func(p_i int, p_elem *goquery.Selection) {
 
-		img_src_str,_       := p_elem.Attr("src")
+		img_src_str, _      := p_elem.Attr("src")
 		origin_page_url_str := p_url_fetch.Url_str
 		
 		//GF_PAGE_IMG__LINK
@@ -206,13 +206,13 @@ func images__stage__create_page_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_runtime                       *Gf_crawler_runtime,
 	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__create_page_images")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - create_page_images")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//------------------
 		//CRAWLER_PAGE_IMG
@@ -258,13 +258,13 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_runtime                       *Gf_crawler_runtime,
 	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__page_images_persist")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - page_images_persist")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
@@ -275,9 +275,9 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		//------------------
 		img_exists_bool, gf_err := Image__db_create(page_img__pinfo.page_img, p_runtime, p_runtime_sys)
 		if gf_err != nil {
-			t:="image_db_create__failed"
-			m:="failed db creation of image with img_url_str - "+page_img.Url_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
+			t := "image_db_create__failed"
+			m := "failed db creation of image with img_url_str - "+page_img.Url_str
+			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
@@ -288,8 +288,8 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		//------------------
 		gf_err = Image__db_create_ref(page_img__pinfo.page_img_ref, p_runtime, p_runtime_sys)
 		if gf_err != nil {
-			t:="image_ref_db_create__failed"
-			m:="failed db creation of image_ref with img_url_str - "+page_img.Url_str
+			t := "image_ref_db_create__failed"
+			m := "failed db creation of image_ref with img_url_str - "+page_img.Url_str
 			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
@@ -309,7 +309,7 @@ func images__stages__process_images(p_crawler_name_str string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
 	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.images__stages__process_images")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
 
 	//------------------
 	//STAGE - determine if image is NSFV (contains nudity)
@@ -339,7 +339,7 @@ func images__stages__process_images(p_crawler_name_str string,
 func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stages_cleanup")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
 
 	//IMPORTANT!! - delete local tmp transformed image, since the files
 	//              have just been uploaded to S3 so no need for them localy anymore
