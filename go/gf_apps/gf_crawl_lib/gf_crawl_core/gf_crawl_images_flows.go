@@ -150,15 +150,10 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 		original_file_s3_path_str                                      := gf_images_utils.S3__get_image_original_file_s3_filepath(gf_image, p_runtime_sys)
 		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_utils.S3__get_image_thumbs_s3_filepaths(gf_image, p_runtime_sys)
 
-
-
 		fmt.Printf("original_file_s3_path_str - %s\n", original_file_s3_path_str)
 		fmt.Printf("t_small_s3_path_str       - %s\n", t_small_s3_path_str)
 		fmt.Printf("t_medium_s3_path_str      - %s\n", t_medium_s3_path_str)
 		fmt.Printf("t_large_s3_path_str       - %s\n", t_large_s3_path_str)
-
-
-
 
 		//ADD!! - copy t_small_s3_path_str first, and then copy original_file_s3_path_str and medium/large thumb in separate goroutines
 		//        (in parallel and after the response returns back to the user). 
@@ -171,9 +166,6 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 			t_large_s3_path_str,
 		}
 		
-
-
-		
 		for _, s3_path_str := range files_to_copy_lst {
 
 			//IMPORTANT!! - the Crawler_page_img has alread been uploaded to S3, so we dont need 
@@ -181,15 +173,6 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
 			//              a file copy operation within the S3 system without downloading here.
 
 			source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", source_gf_crawl_s3_bucket_str, s3_path_str))
-
-
-			//DEBUGGING
-			fmt.Println("")
-			fmt.Println("==========================")
-			fmt.Println(p_gf_images_s3_bucket_name_str)
-			fmt.Println(source_bucket_and_file__s3_path_str)
-			fmt.Println(s3_path_str)
-			fmt.Println("")
 
 			gf_err := gf_core.S3__copy_file(p_gf_images_s3_bucket_name_str, //p_target_bucket_name_str,
 				source_bucket_and_file__s3_path_str, //p_source_file__s3_path_str

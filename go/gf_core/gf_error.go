@@ -56,7 +56,7 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_subsystem_name_str string,
 	p_hook_fun           func(*Gf_error) map[string]interface{},
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_error.Error__create_with_hook()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create_with_hook()")
 
 	gf_error := Error__create(p_user_msg_str,
 		p_error_type_str,
@@ -76,10 +76,10 @@ func Error__create(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_error.Error__create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
 
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	creation_unix_time_f := float64(time.Now().UnixNano()) / 1000000000.0
 	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
 	stack_trace_str      := string(debug.Stack())
 
@@ -89,7 +89,7 @@ func Error__create(p_user_msg_str string,
 	skip_stack_frames_num_int := 1
 
 	//https://golang.org/pkg/runtime/#Caller
-	program_counter,file_str,line_num_int,_ := runtime.Caller(skip_stack_frames_num_int)
+	program_counter, file_str, line_num_int,_ := runtime.Caller(skip_stack_frames_num_int)
 
 	//FuncForPC - returns a *Func describing the function that contains the given program counter address
 	function          := runtime.FuncForPC(program_counter)
@@ -100,7 +100,7 @@ func Error__create(p_user_msg_str string,
 	//ERROR_DEF
 
 	error_defs_map := error__get_defs()
-	error_def,ok   := error_defs_map[p_error_type_str]
+	error_def, ok  := error_defs_map[p_error_type_str]
 	if !ok {
 		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
 	}
@@ -145,6 +145,7 @@ func Error__create(p_user_msg_str string,
 	fmt.Printf("subsystem_name - %s\n", yellow(gf_error.Subsystem_name_str))
 	fmt.Printf("function_name  - %s\n", yellow(gf_error.Function_name_str))
 	fmt.Printf("data           - %s\n", yellow(gf_error.Data_map))
+	fmt.Printf("error          - %s\n", red(p_error))
 	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
 	
 	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
