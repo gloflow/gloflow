@@ -26,8 +26,6 @@ import (
 )
 
 //---------------------------------------------------
-
-type Gf_image_id string
 type Gf_image struct {
 
 	Id                   bson.ObjectId `json:"-"                    bson:"_id,omitempty"`

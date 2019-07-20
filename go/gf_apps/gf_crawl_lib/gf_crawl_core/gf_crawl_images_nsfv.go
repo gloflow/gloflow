@@ -196,7 +196,7 @@ func image__is_nsfv(p_img_path_str string,
 }
 
 //--------------------------------------------------
-func image__flag_as_nsfv(p_image *Gf_crawler_page_img,
+func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_nsfv.image__flag_as_nsfv()")
 

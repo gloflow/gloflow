@@ -113,7 +113,7 @@ func images__stage__download_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image__download(p_image *Gf_crawler_page_img,
+func image__download(p_image *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str string,
 	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__download()")
@@ -149,7 +149,7 @@ func image__download(p_image *Gf_crawler_page_img,
 }
 
 //--------------------------------------------------
-func image__db_mark_as_downloaded(p_image *Gf_crawler_page_img, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__db_mark_as_downloaded()")
 
 	p_image.Downloaded_bool = true

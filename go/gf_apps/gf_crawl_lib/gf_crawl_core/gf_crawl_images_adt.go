@@ -31,19 +31,20 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
 
-//--------------------------------------------------
-type Gf_crawler_page_img struct {
-	Id                         bson.ObjectId `bson:"_id,omitempty"`
-	Id_str                     string        `bson:"id_str"`
-	T_str                      string        `bson:"t"`                          //"crawler_page_img"
-	Creation_unix_time_f       float64       `bson:"creation_unix_time_f"`
-	Crawler_name_str           string        `bson:"crawler_name_str"`           //name of the crawler that discovered this image
-	Cycle_run_id_str           string        `bson:"cycle_run_id_str"`
-	Img_ext_str                string        `bson:"img_ext_str"`                //jpg|gif|png
-	Url_str                    string        `bson:"url_str"`
-	Domain_str                 string        `bson:"domain_str"`                 //domain of the url_str
-	Origin_page_url_str        string        `bson:"origin_page_url_str"`        //page url from whos html this element was extracted
-	Origin_page_url_domain_str string        `bson:"origin_page_url_domain_str"` //domain of the origin_page_url_str //NEW_FIELD!! a lot of records dont have this field
+//---------------------------------------------------
+type Gf_crawler_page_image_id string
+type Gf_crawler_page_image struct {
+	Id                         bson.ObjectId            `bson:"_id,omitempty"`
+	Id_str                     Gf_crawler_page_image_id `bson:"id_str"`
+	T_str                      string                   `bson:"t"`                          //"crawler_page_img"
+	Creation_unix_time_f       float64                  `bson:"creation_unix_time_f"`
+	Crawler_name_str           string                   `bson:"crawler_name_str"`           //name of the crawler that discovered this image
+	Cycle_run_id_str           string                   `bson:"cycle_run_id_str"`
+	Img_ext_str                string                   `bson:"img_ext_str"`                //jpg|gif|png
+	Url_str                    string                   `bson:"url_str"`
+	Domain_str                 string                   `bson:"domain_str"`                 //domain of the url_str
+	Origin_page_url_str        string                   `bson:"origin_page_url_str"`        //page url from whos html this element was extracted
+	Origin_page_url_domain_str string                   `bson:"origin_page_url_domain_str"` //domain of the origin_page_url_str //NEW_FIELD!! a lot of records dont have this field
 
 	//IMPORTANT!! - this is unique for the image src encountered. this way the same data links are not entered in duplicates, 
 	//              and using the hash the DB can qucikly be checked for existence of record
@@ -66,7 +67,7 @@ type Gf_crawler_page_img struct {
 //IMPORTANT!! - reference to an image, on a particular page. 
 //              the same image, with the same Url_str can appear on multiple pages, and this 
 //              struct tracks that, one record per reference
-type Gf_crawler_page_img_ref struct {
+type Gf_crawler_page_image_ref struct {
 	Id                         bson.ObjectId `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`                          //"crawler_page_img_ref"
@@ -93,13 +94,13 @@ type Gf_crawler__recent_images struct {
 	Origin_page_urls_lst     []string  `bson:"origin_page_urls_lst"     json:"origin_page_urls_lst"`
 }
 
-//-------------------------------------------------
+//---------------------------------------------------
 func images_adt__prepare_and_create(p_crawler_name_str string,
 	p_cycle_run_id_str    string,
 	p_img_src_url_str     string,
 	p_origin_page_url_str string,
 	p_runtime             *Gf_crawler_runtime,
-	p_runtime_sys         *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
+	p_runtime_sys         *gf_core.Runtime_sys) (*Gf_crawler_page_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -152,7 +153,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	return img, nil
 }
 
-//-------------------------------------------------
+//---------------------------------------------------
 func images_adt__create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
 	p_img_src_url_str            string,
@@ -160,7 +161,7 @@ func images_adt__create(p_crawler_name_str string,
 	p_img_src_domain_str         string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img {
+	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -172,8 +173,8 @@ func images_adt__create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	img := &Gf_crawler_page_img{
-		Id_str:                     id_str,
+	img := &Gf_crawler_page_image{
+		Id_str:                     Gf_crawler_page_image_id(id_str),
 		T_str:                      "crawler_page_img",
 		Creation_unix_time_f:       creation_unix_time_f,
 		Crawler_name_str:           p_crawler_name_str,
@@ -191,14 +192,14 @@ func images_adt__create(p_crawler_name_str string,
 	return img
 }
 
-//-------------------------------------------------
+//---------------------------------------------------
 func images_adt__ref_create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
 	p_image_url_str              string,
 	p_image_url_domain_str       string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_img_ref {
+	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image_ref {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -212,7 +213,7 @@ func images_adt__ref_create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	gf_img_ref := &Gf_crawler_page_img_ref{
+	gf_img_ref := &Gf_crawler_page_image_ref{
 		Id_str:                     ref_id_str,
 		T_str:                      "crawler_page_img_ref",
 		Creation_unix_time_f:       creation_unix_time_f,

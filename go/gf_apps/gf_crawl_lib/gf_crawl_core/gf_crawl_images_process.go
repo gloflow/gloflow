@@ -86,7 +86,7 @@ func images__stage__process_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image__process(p_page_img *Gf_crawler_page_img,
+func image__process(p_page_img *Gf_crawler_page_image,
 	p_local_image_file_path_str       string,
 	p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str              string,
@@ -156,7 +156,7 @@ func image__process(p_page_img *Gf_crawler_page_img,
 }
 
 //--------------------------------------------------
-func image__process_bitmap(p_page_img *Gf_crawler_page_img,
+func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
 	p_runtime_sys                   *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, *gf_core.Gf_error) {

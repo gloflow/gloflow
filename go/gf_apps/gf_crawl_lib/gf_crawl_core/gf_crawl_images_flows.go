@@ -36,7 +36,7 @@ import (
 to do this it ads the flow_name to the gf_image DB record, and then copies the discovered image file from
 gf_crawlers file_storage (S3) to gf_images service file_storage (S3).*/
 
-func Flows__add_extern_image(p_crawler_page__gf_image_id_str string,
+func Flows__add_extern_image(p_crawler_page__gf_image_id_str gf_images_utils.Gf_image_id,
 	p_flows_names_lst                   []string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str      string,

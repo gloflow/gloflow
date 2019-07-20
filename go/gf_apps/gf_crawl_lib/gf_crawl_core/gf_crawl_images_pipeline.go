@@ -30,8 +30,8 @@ import (
 //--------------------------------------------------
 type gf_page_img__pipeline_info struct {
 	link                *gf_page_img_link
-	page_img            *Gf_crawler_page_img
-	page_img_ref        *Gf_crawler_page_img_ref
+	page_img            *Gf_crawler_page_image
+	page_img_ref        *Gf_crawler_page_image_ref
 	local_file_path_str string
 	thumbs              *gf_images_utils.Gf_image_thumbs
 	exists_bool         bool                   //has the page_img already been discovered in the past
@@ -125,7 +125,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 //--------------------------------------------------
 //SINGLE_IMAGE
 
-func images_pipe__single_simple(p_image *Gf_crawler_page_img,
+func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str   string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_runtime                           *Gf_crawler_runtime,

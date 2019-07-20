@@ -80,7 +80,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	t__cleanup__test_page_imgs(test_config.test__crawler_name_str, runtime_sys)
 
 
-
+	//IMPORTANT!! - this function creates, by calling gf_images_utils library from gf_images app, creates
+	//              a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 
 	test__local_gf_image_file_path_str := t__create_test_gf_image_named_image_file(p_test,
 		test_config.test__img_src_url_str,
 		test_config.test__local_image_file_path_str,
@@ -131,6 +132,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	fmt.Printf("+++++++++++++++++++++++++++++++++++++\n\n")
 	fmt.Printf("%s\n", yellow("TEST_CRAWLED_IMAGE"))
 	spew.Dump(test__crawled_image)
+	fmt.Printf("\n")
 	
 
 	gf_err := Flows__add_extern_image(test__crawled_image.Id_str,

@@ -21,6 +21,7 @@ package gf_crawl_core
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -34,7 +35,7 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 	p_s3_bucket_name_str            string,
 	p_runtime                       *Gf_crawler_runtime,
 	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_s3.images_s3__stage__store_images")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.images_s3__stage__store_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")
@@ -87,14 +88,17 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image_s3__upload(p_image *Gf_crawler_page_img,
+func image_s3__upload(p_image *Gf_crawler_page_image,
 	p_local_image_file_path_str string,
 	p_image_thumbs              *gf_images_utils.Gf_image_thumbs,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
-
+	
+	cyan := color.New(color.FgCyan, color.BgWhite).SprintFunc()
+	yellow := color.New(color.FgYellow, color.BgBlack).SprintFunc()
+	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"), yellow(p_image.Id_str), yellow(p_local_image_file_path_str))
 
 	gf_err := gf_images_utils.S3__store_gf_image(p_local_image_file_path_str,
 		p_image_thumbs,
@@ -112,7 +116,7 @@ func image_s3__upload(p_image *Gf_crawler_page_img,
 
 //--------------------------------------------------
 //UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
-func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_img, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
 
 	p_image.S3_stored_bool = true

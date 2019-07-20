@@ -37,7 +37,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	p_test__img_src_url_str     string,
 	p_test__origin_page_url_str string,
 	p_crawler_runtime           *Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_crawler_page_img, *Gf_crawler_page_img_ref) {
+	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_crawler_page_image, *Gf_crawler_page_image_ref) {
 
 	//-------------------
 	//CRAWLED_IMAGE_CREATE

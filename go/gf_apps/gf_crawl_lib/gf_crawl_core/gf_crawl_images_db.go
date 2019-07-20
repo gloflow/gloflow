@@ -26,7 +26,7 @@ import (
 )
 
 //--------------------------------------------------
-func Image__db_create(p_img *Gf_crawler_page_img,
+func Image__db_create(p_img *Gf_crawler_page_image,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create()")
@@ -91,7 +91,7 @@ func Image__db_create(p_img *Gf_crawler_page_img,
 }
 
 //--------------------------------------------------
-func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
+func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	//p_log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create_ref()")
@@ -139,12 +139,12 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_img_ref,
 }
 
 //--------------------------------------------------
-func image__db_get(p_id_str string,
+func image__db_get(p_id_str Gf_crawler_page_image_id,
 	p_runtime     *Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_img, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_get()")
 
-	var img Gf_crawler_page_img
+	var img Gf_crawler_page_image
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
 			"t":      "crawler_page_img",
 			"id_str": p_id_str,
