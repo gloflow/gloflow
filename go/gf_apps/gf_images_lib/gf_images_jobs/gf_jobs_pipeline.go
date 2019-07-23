@@ -42,7 +42,7 @@ func pipeline__process_image(p_image_source_url_str string,
 
 	//-----------------------
 	//FETCH_IMAGE
-	local_image_file_path_str, gf_f_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
+	local_image_file_path_str, _, gf_f_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
 		p_images_store_local_dir_path_str,
 		false, //p_random_time_delay_bool
 		p_runtime_sys)

@@ -33,7 +33,7 @@ func image__update_after_process(p_page_img *Gf_crawler_page_image,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__update_after_process()")
 
 	p_page_img.Valid_for_usage_bool = true
-	p_page_img.Image_id_str         = p_gf_image_id_str
+	p_page_img.Gf_image_id_str      = p_gf_image_id_str
 	
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":      "crawler_page_img",

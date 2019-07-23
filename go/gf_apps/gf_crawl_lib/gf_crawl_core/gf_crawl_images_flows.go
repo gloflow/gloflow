@@ -32,11 +32,12 @@ import (
 )
 
 //--------------------------------------------------
-/*ads an image already crawled from an external source URL to some named list of flows.
-to do this it ads the flow_name to the gf_image DB record, and then copies the discovered image file from
-gf_crawlers file_storage (S3) to gf_images service file_storage (S3).*/
+// adds an image already crawled from an external source URL to some named list of flows in the gf_images app/system.
+// to do this it adds the flow_name to the gf_image DB record, and then copies the discovered image file from
+// gf_crawlers file_storage (S3/IPFS) to gf_images service file_storage (S3/IPFS).
+// at the moment this is called directly in the gf_crawl HTTP handler.
 
-func Flows__add_extern_image(p_crawler_page__gf_image_id_str gf_images_utils.Gf_image_id,
+func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_id,
 	p_flows_names_lst                   []string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str      string,
@@ -50,15 +51,16 @@ func Flows__add_extern_image(p_crawler_page__gf_image_id_str gf_images_utils.Gf_
 	//this is used temporarily to donwload images to, before upload to S3
 	images_store_local_dir_path_str := "."
 
-	fmt.Printf("crawler_page__gf_image_id - %s\n", p_crawler_page__gf_image_id_str)
+	fmt.Printf("crawler_page_image_id_str - %s\n", p_crawler_page_image_id_str)
 	fmt.Printf("flows_names               - %s\n", fmt.Sprint(p_flows_names_lst))
 
-	gf_page_img, gf_err := image__db_get(p_crawler_page__gf_image_id_str, p_runtime, p_runtime_sys)
+	//DB - get gf_crawler_page_image from the DB
+	gf_page_img, gf_err := image__db_get(p_crawler_page_image_id_str, p_runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	gf_image_id_str := gf_page_img.Image_id_str
+	gf_image_id_str := gf_page_img.Gf_image_id_str
 	gf_images_s3_bucket__upload_complete__bool := false
 
 	//--------------------------

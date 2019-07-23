@@ -58,10 +58,10 @@ type Gf_crawler_page_image struct {
 	//              they're not page elements, or other small unimportant parts.
 	//              if it is valid for usage then a gf_image for this image should be 
 	//              found in the db
-	Valid_for_usage_bool       bool          `bson:"valid_for_usage_bool"`
-	S3_stored_bool             bool          `bson:"s3_stored_bool"` //if persisting to s3 succeeded
-	Nsfv_bool                  bool          `bson:"nsfv_bool"`      //NSFV (not safe for viewing/nudity) flag for the image 
-	Image_id_str               gf_images_utils.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
+	Valid_for_usage_bool       bool                        `bson:"valid_for_usage_bool"`
+	S3_stored_bool             bool                        `bson:"s3_stored_bool"` //if persisting to s3 succeeded
+	Nsfv_bool                  bool                        `bson:"nsfv_bool"`      //NSFV (not safe for viewing/nudity) flag for the image 
+	Gf_image_id_str            gf_images_utils.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
 }
 	
 //IMPORTANT!! - reference to an image, on a particular page. 
@@ -131,7 +131,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	//-------------
 	//GET_IMG_EXT_FROM_URL
 
-	img_ext_str,gf_err := gf_images_utils.Get_image_ext_from_url(p_img_src_url_str,p_runtime_sys)
+	img_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(p_img_src_url_str,p_runtime_sys)
 	if gf_err != nil {
 		t:="images_in_page__get_img_extension__failed"
 		m:="failed to get file extension of image with img_src - "+p_img_src_url_str
@@ -154,6 +154,13 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 }
 
 //---------------------------------------------------
+func images_adt__create_id() (Gf_crawler_page_image_id, float64) {
+	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
+	return Gf_crawler_page_image_id(id_str), creation_unix_time_f
+}
+
+//---------------------------------------------------
 func images_adt__create(p_crawler_name_str string,
 	p_cycle_run_id_str           string,
 	p_img_src_url_str            string,
@@ -164,17 +171,16 @@ func images_adt__create(p_crawler_name_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__create()")
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
-
+	
 	//HASH
 	to_hash_str := p_img_src_url_str //one Crawler_page_img for a given page url, no matter on how many pages it is referenced by
 	hash        := md5.New()
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
+	id_str, creation_unix_time_f := images_adt__create_id()
 	img := &Gf_crawler_page_image{
-		Id_str:                     Gf_crawler_page_image_id(id_str),
+		Id_str:                     id_str,
 		T_str:                      "crawler_page_img",
 		Creation_unix_time_f:       creation_unix_time_f,
 		Crawler_name_str:           p_crawler_name_str,

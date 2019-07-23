@@ -139,7 +139,7 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 			worker_id_str := p_req.URL.Query()["worker_id"][0]
 			p_runtime_sys.Log_fun("INFO", "worker_id_str - "+worker_id_str)
 
-			var imgs_lst []gf_crawl_core.Gf_crawler_page_img
+			var imgs_lst []gf_crawl_core.Gf_crawler_page_image
 			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
 			err              := json.Unmarshal(body_bytes_lst, &imgs_lst)
 			if err != nil {
@@ -175,7 +175,7 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /a/crawl/cluster/create__page_img_ref ----------")
 		if p_req.Method == "POST" {
 
-			var imgs_refs_lst []gf_crawl_core.Gf_crawler_page_img_ref
+			var imgs_refs_lst []gf_crawl_core.Gf_crawler_page_image_ref
 			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
 			err              := json.Unmarshal(body_bytes_lst,&imgs_refs_lst)
 			if err != nil {

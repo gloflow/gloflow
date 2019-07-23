@@ -23,6 +23,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //--------------------------------------------------
@@ -161,8 +162,8 @@ func image__db_get(p_id_str Gf_crawler_page_image_id,
 }
 
 //-------------------------------------------------
-func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images.Images__get_recent()")
+func Images__db_get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recent_images, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.Images__db_get_recent()")
 
 	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
@@ -197,4 +198,58 @@ func Images__get_recent(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_crawler__recen
 	}
 
 	return results_lst, nil
+}
+
+//--------------------------------------------------
+func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_mark_as_downloaded()")
+
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+			"t": "crawler_page_img",
+
+			//IMPORTANT!! - search by "hash_str", not "id_str", because p_image's id_str might not
+			//              be the id_str of the p_image (with the same hash_str) that was written to the DB. 
+			//              (it might be an old p_image from previous crawler runs. to conserve DB space the crawler
+			//              system doesnt write duplicate crawler_page_img's to the DB. 
+			"hash_str": p_image.Hash_str,
+		},
+		bson.M{
+			"$set": bson.M{"downloaded_bool": true},
+		})
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
+			"mongodb_update_error",
+			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
+			err, "gf_crawl_core", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
+
+//--------------------------------------------------
+func image__db_set_gf_image_id(p_gf_image_id_str gf_images_utils.Gf_image_id, p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
+
+	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+			"t": "crawler_page_img",
+
+			//IMPORTANT!! - search by "hash_str", not "id_str", because p_image's id_str might not
+			//              be the id_str of the p_image (with the same hash_str) that was written to the DB. 
+			//              (it might be an old p_image from previous crawler runs. to conserve DB space the crawler
+			//              system doesnt write duplicate crawler_page_img's to the DB. 
+			"hash_str": p_image.Hash_str,
+		},
+		bson.M{
+			"$set": bson.M{"image_id_str": p_gf_image_id_str},
+		})
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
+			"mongodb_update_error",
+			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
+			err, "gf_crawl_core", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
 }

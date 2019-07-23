@@ -43,7 +43,7 @@ type Image_fetch__error struct {
 func Fetcher__get_extern_image(p_image_url_str string,
 	p_images_store_local_dir_path_str string,
 	p_random_time_delay_bool          bool,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys                     *gf_core.Runtime_sys) (string, Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.Fetcher__get_extern_image()")
 
 	if p_random_time_delay_bool {
@@ -62,16 +62,16 @@ func Fetcher__get_extern_image(p_image_url_str string,
 
 	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
 	//              instead of the old original_image naming scheme.
-	new_image_local_file_path_str, gf_err := Image__create_gf_image_file_path_from_url(p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
+	new_image_local_file_path_str, image_id_str, gf_err := Image_ID__create_gf_image_file_path_from_url(p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
-		return "", gf_err
+		return "", "", gf_err
 	}	
 	//--------------
 	//HTTP DOWNLOAD
 
 	gf_err = Download_file(p_image_url_str, new_image_local_file_path_str, p_runtime_sys)
 	if gf_err != nil {
-		return "", gf_err
+		return "", "", gf_err
 	}
 	//--------------
 
@@ -84,10 +84,10 @@ func Fetcher__get_extern_image(p_image_url_str string,
 			"file_missing_error",
 			map[string]interface{}{"new_image_local_file_path_str": new_image_local_file_path_str,},
 			err, "gf_images_utils", p_runtime_sys)
-		return "", gf_err
+		return "", "", gf_err
 	}
 
-	return new_image_local_file_path_str, nil
+	return new_image_local_file_path_str, image_id_str, nil
 }
 
 //---------------------------------------------------

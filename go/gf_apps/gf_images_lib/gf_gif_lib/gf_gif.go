@@ -131,7 +131,7 @@ func Process(p_image_source_url_str string,
 	
 	//-------------
 	//FETCH
-	local_image_file_path_str, f_gf_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
+	local_image_file_path_str, _, f_gf_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		false, //p_random_time_delay_bool
 		p_runtime_sys)
@@ -188,7 +188,7 @@ func Process(p_image_source_url_str string,
 	if p_create_new_db_img_bool {
 
 		//IMAGE_ID
-		image_id_str, i_err := gf_images_utils.Image__create_id_from_url(p_image_source_url_str, p_runtime_sys)
+		image_id_str, i_err := gf_images_utils.Image_ID__create_from_url(p_image_source_url_str, p_runtime_sys)
 		if i_err != nil {
 			return nil, "", i_err
 		}

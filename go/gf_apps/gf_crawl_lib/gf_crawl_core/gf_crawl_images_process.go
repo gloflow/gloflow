@@ -187,8 +187,8 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 
 		//--------------------------------
 		//TRANSFORM DOWNLOADED IMAGE - CREATE THUMBS, SAVE TO DB, AND UPLOAD TO AWS_S3
-
-		gf_image_id_str,gf_err := gf_images_utils.Image__create_id_from_url(p_page_img.Url_str, p_runtime_sys)
+		//IMPORTANT!! - a new gf_image ID is created
+		gf_image_id_str, gf_err := gf_images_utils.Image_ID__create_from_url(p_page_img.Url_str, p_runtime_sys)
 		if gf_err != nil {
 			return nil, nil, gf_err
 		}

@@ -46,7 +46,7 @@ func run_job(p_job_id_str string,
 
 		//--------------
 		//IMAGE_ID
-		image_id_str, i_gf_err := gf_images_utils.Image__create_id_from_url(image_source_url_str, p_runtime_sys)
+		image_id_str, i_gf_err := gf_images_utils.Image_ID__create_from_url(image_source_url_str, p_runtime_sys)
 
 		if i_gf_err != nil {
 			job_error_type_str := "create_image_id_error"

@@ -82,7 +82,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	//IMPORTANT!! - this function creates, by calling gf_images_utils library from gf_images app, creates
 	//              a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 
-	test__local_gf_image_file_path_str := t__create_test_gf_image_named_image_file(p_test,
+	test__local_gf_image_file_path_str, test__gf_image_id_str := t__create_test_gf_image_named_image_file(p_test,
 		test_config.test__img_src_url_str,
 		test_config.test__local_image_file_path_str,
 		runtime_sys)
@@ -103,6 +103,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		return
 	}
 
+	
 	//------------------
 	//TEST - PIPELINE_STAGE__PROCESS_IMAGES
 	page_imgs__pinfos_with_thumbs_lst := t__images__stage__process_images(p_test,
@@ -115,6 +116,9 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	if page_imgs__pinfos_with_thumbs_lst == nil {
 		return
 	}
+
+	assert.Equal(p_test, test__crawled_image.Gf_image_id_str, test__gf_image_id_str,
+		"gf_image ID (which was created manually) of a test image is not equal to the test Gf_crawler_page_image created with gf_crawl_core function")
 	//------------------
 	//TEST - PIPELINE_STAGE__S3_STORE_IMAGES
 
@@ -127,7 +131,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//-------------------
 	//FLOWS__ADD_EXTERN_IMAGE - copying files from one FS location to another (S3 bucket to another)
 
-
+	
+	
 
 	fmt.Printf("+++++++++++++++++++++++++++++++++++++\n\n")
 	fmt.Printf("%s\n", yellow("TEST_CRAWLED_IMAGE"))
@@ -155,8 +160,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 //---------------------------------------------------
 func t__images__stage__process_images(p_test *testing.T,
-	p_test__crawled_image                *Gf_crawler_page_img,
-	p_test__crawled_image_ref            *Gf_crawler_page_img_ref,
+	p_test__crawled_image                *Gf_crawler_page_image,
+	p_test__crawled_image_ref            *Gf_crawler_page_image_ref,
 	p_test__local_gf_image_file_path_str string,
 	p_test_config                        *gf_test_config,
 	p_crawler_runtime                    *Gf_crawler_runtime, 
@@ -227,7 +232,7 @@ func t__images__stage__process_images(p_test *testing.T,
 //---------------------------------------------------
 func t__images__stage__s3_store_images(p_test *testing.T,
 	p_page_imgs__pinfos_with_thumbs_lst []*gf_page_img__pipeline_info,
-	p_test__crawled_image               *Gf_crawler_page_img,
+	p_test__crawled_image               *Gf_crawler_page_image,
 	p_test_config                       *gf_test_config,
 	p_crawler_runtime                   *Gf_crawler_runtime, 
 	p_runtime_sys                       *gf_core.Runtime_sys) {

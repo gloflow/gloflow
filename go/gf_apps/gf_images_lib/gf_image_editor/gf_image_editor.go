@@ -238,7 +238,7 @@ func create_gf_image(p_new_title_str string,
 
 	//--------------------------
 	//GF_IMAGE_ID
-	image_id_str := gf_images_utils.Image__create_id(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
+	image_id_str := gf_images_utils.Image_ID__create(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
 	//--------------------------
 	//THUMBNAILS
 	image_thumbs, gf_err := gf_images_utils.Create_thumbnails(image_id_str,

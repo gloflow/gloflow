@@ -50,7 +50,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//------------------
-			recent_images_lst, gf_err := gf_crawl_core.Images__get_recent(p_runtime_sys)
+			recent_images_lst, gf_err := gf_crawl_core.Images__db_get_recent(p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/recent", "failed to get recently crawled images", gf_err, p_resp, p_runtime_sys)
 				return
@@ -85,23 +85,22 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 				return
 			}
 
-			crawler_page__gf_image_id_str := i["crawler_page_image_id_str"].(string)
+			crawler_page_image_id_str := i["crawler_page_image_id_str"].(string)
 
-			//flow_name_str := "general" //i["flow_name_str"].(string) //DEPRECATED
 			flows_names_lst := []string{}
-			for _,s := range i["flows_names_lst"].([]interface{}) {
+			for _, s := range i["flows_names_lst"].([]interface{}) {
 				flows_names_lst = append(flows_names_lst, s.(string))
 			}
 			//--------------------------
-
-			gf_err = gf_crawl_core.Flows__add_extern_image(crawler_page__gf_image_id_str,
+			
+			gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 				flows_names_lst,
 				p_crawled_images_s3_bucket_name_str,
 				p_gf_images_s3_bucket_name_str,
 				p_runtime,
 				p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to add a crawled image to a flow", gf_err, p_resp, p_runtime_sys)
+				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to add a crawled image to a gf_images flow", gf_err, p_resp, p_runtime_sys)
 				return
 			}
 			//------------------

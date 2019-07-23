@@ -22,7 +22,6 @@ package gf_crawl_core
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -62,7 +61,6 @@ func images__stage__download_images(p_crawler_name_str string,
 
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-
 		//------------------
 		//DOWNLOAD
 		//IMPORTANT!! - all images done as fast as possible (without sleeps/pauses)
@@ -73,7 +71,7 @@ func images__stage__download_images(p_crawler_name_str string,
 		
 		if gf_err != nil {
 			t := "image_download__failed"
-			m := "failed downloading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
+			m := "failed downloading of image with URL - "+page_img__pinfo.page_img.Url_str
 			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
@@ -125,7 +123,8 @@ func image__download(p_image *Gf_crawler_page_image,
 
 	//-------------------
 	//DOWNLOAD
-	local_image_file_path_str, gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
+	//IMPORTANT!! - this creates a new gf_images ID, from the image URL
+	local_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
 		p_images_store_local_dir_path_str,
 
 		//IMPORTANT!! - dont add any time delay, instead download images as fast as possible
@@ -137,41 +136,20 @@ func image__download(p_image *Gf_crawler_page_image,
 		return "",gf_err
 	}
 	//-------------------
-	//FLAG_IMAGE
-
+	//DB_UPDATE
 	gf_err = image__db_mark_as_downloaded(p_image, p_runtime_sys)
+	if gf_err != nil {
+		return "", gf_err
+	}
+
+	gf_err = image__db_set_gf_image_id(gf_image_id_str, p_image, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
 	}
 	//-------------------
 
-	return local_image_file_path_str, nil
-}
-
-//--------------------------------------------------
-func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__db_mark_as_downloaded()")
-
 	p_image.Downloaded_bool = true
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
-			"t": "crawler_page_img",
+	p_image.Gf_image_id_str = gf_image_id_str
 
-			//IMPORTANT!! - search by "hash_str", not "id_str", because p_image's id_str might not
-			//              be the id_str of the p_image (with the same hash_str) that was written to the DB. 
-			//              (it might be an old p_image from previous crawler runs. to conserve DB space the crawler
-			//              system doesnt write duplicate crawler_page_img's to the DB. 
-			"hash_str": p_image.Hash_str,
-		},
-		bson.M{
-			"$set": bson.M{"downloaded_bool": true},
-		})
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
-			"mongodb_update_error",
-			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
-	}
-
-	return nil
+	return local_image_file_path_str, nil
 }
