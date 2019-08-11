@@ -69,7 +69,8 @@ type Gf_gif struct {
 }
 
 //--------------------------------------------------
-func Process_and_upload(p_image_source_url_str string,
+func Process_and_upload(p_gf_image_id_str gf_images_utils.Gf_image_id,
+	p_image_source_url_str                        string,
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
 	p_image_client_type_str                       string, //what type of client is processing this gif
@@ -80,7 +81,8 @@ func Process_and_upload(p_image_source_url_str string,
 	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
-	gif,local_image_file_path_str,gf_err := Process(p_image_source_url_str,
+	gif, local_image_file_path_str, gf_err := Process(p_gf_image_id_str,
+		p_image_source_url_str,
 		p_image_origin_page_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_image_client_type_str,
@@ -118,7 +120,8 @@ func Process_and_upload(p_image_source_url_str string,
 }
 
 //--------------------------------------------------
-func Process(p_image_source_url_str string,
+func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,   
+	p_image_source_url_str                        string,   
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
 	p_image_client_type_str                       string, //what type of client is processing this gif
@@ -188,9 +191,15 @@ func Process(p_image_source_url_str string,
 	if p_create_new_db_img_bool {
 
 		//IMAGE_ID
-		image_id_str, i_err := gf_images_utils.Image_ID__create_from_url(p_image_source_url_str, p_runtime_sys)
-		if i_err != nil {
-			return nil, "", i_err
+		var gf_image_id_str gf_images_utils.Gf_image_id
+		if p_gf_image_id_str == "" {
+			new_image_id_str, i_err := gf_images_utils.Image_ID__create_from_url(p_image_source_url_str, p_runtime_sys)
+			if i_err != nil {
+				return nil, "", i_err
+			}
+			gf_image_id_str = new_image_id_str
+		} else {
+			gf_image_id_str = p_gf_image_id_str
 		}
 
 		//IMAGE_TITLE
@@ -206,7 +215,7 @@ func Process(p_image_source_url_str string,
 		//               not via gf_images_utils.Image__verify_image_info()
 
 		gf_image_info_map := map[string]interface{}{
-			"id_str":                         image_id_str,
+			"id_str":                         string(gf_image_id_str),
 			"title_str":                      image_title_str,
 			"image_client_type_str":          p_image_client_type_str,
 			//--------------
@@ -231,9 +240,9 @@ func Process(p_image_source_url_str string,
 			return nil, "", gf_err
 		}
 		//-----------------------
-		gf_image_id_str := gf_images_utils.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_utils.Gf_image_id is a type (not function)
+		verified_gf_image_id_str := gf_images_utils.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_utils.Gf_image_id is a type (not function)
 		gf_image_info := &gf_images_utils.Gf_image_new_info{
-			Id_str:                         gf_image_id_str,                                                    //image_id_str,
+			Id_str:                         verified_gf_image_id_str,                                           //image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
 			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
 			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,
@@ -256,7 +265,7 @@ func Process(p_image_source_url_str string,
 		}
 
 		//link the new gf_image DB record to the gf_gif DB record
-		gif_db__update_image_id(gif.Id_str, image_id_str, p_runtime_sys)
+		gif_db__update_image_id(gif.Id_str, verified_gf_image_id_str, p_runtime_sys)
 	}
 	//-----------------------
 

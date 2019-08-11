@@ -21,46 +21,9 @@ package gf_crawl_core
 
 import (
 	"os"
-	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
-
-//--------------------------------------------------
-func image__update_after_process(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str gf_images_utils.Gf_image_id,
-	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__update_after_process()")
-
-	p_page_img.Valid_for_usage_bool = true
-	p_page_img.Gf_image_id_str      = p_gf_image_id_str
-	
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
-			"t":      "crawler_page_img",
-			"id_str": p_page_img.Id_str,
-		},
-		bson.M{"$set": bson.M{
-				//IMPORTANT!! - gf_image has been created for this page_image, and so the appropriate
-				//              image_id_str needs to be set in the page_image DB record
-				"image_id_str": p_gf_image_id_str,
-
-				//IMPORTANT!! - image has been transformed, and is ready to be used further
-				//              by other apps/services, either for display, or further calculation
-				"valid_for_usage_bool": true,
-			},
-		})
-
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img valid_for_usage flag and its image_id (Gf_image) by its ID",
-			"mongodb_update_error",
-			map[string]interface{}{
-				"id_str":          p_page_img.Id_str,
-				"gf_image_id_str": p_gf_image_id_str,
-			}, err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
-	}
-	return nil
-}
 
 //--------------------------------------------------
 func image__cleanup(p_img_local_file_path_str string,

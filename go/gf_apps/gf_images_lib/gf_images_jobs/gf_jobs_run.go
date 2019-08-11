@@ -94,7 +94,8 @@ func run_job(p_job_id_str string,
 			}
 			//-----------------
 
-			_,gf_err := gf_gif_lib.Process_and_upload(image_source_url_str,
+			_, gf_err := gf_gif_lib.Process_and_upload("", //p_gf_image_id_str
+				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
 				p_job_client_type_str,

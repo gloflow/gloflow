@@ -31,7 +31,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-
 type Gf_user_event_input struct {
 	Type_str string                 `json:"type_str"`
 	Data_map map[string]interface{} `json:"d"`
@@ -57,11 +56,12 @@ type Gf_user_event struct {
 	Req_ctx              Gf_user_event_req_ctx  `json:"req_ctx"              bson:"req_ctx"`
 	time__unix_f         float64                `json:"time__unix_f"         bson:"time__unix_f"`
 }
+
 //-------------------------------------------------
 func user_event__parse_input(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_user_event_input, string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_user_events.user_event__parse_input()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_user_events.user_event__parse_input()")
 
 	//--------------------
 	input            := Gf_user_event_input{}
@@ -79,6 +79,7 @@ func user_event__parse_input(p_req *http.Request,
 	}
 	return &input, session_id_str, nil
 }
+
 //-------------------------------------------------
 func user_event__create(p_input *Gf_user_event_input,
 	p_session_id_str string,
@@ -115,6 +116,7 @@ func user_event__create(p_input *Gf_user_event_input,
 		
 	return nil
 }
+
 //-------------------------------------------------
 func session__get_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
@@ -129,6 +131,7 @@ func session__get_id_cookie(p_req *http.Request,
 		return session_id_str
 	}
 }
+
 //-------------------------------------------------
 func session__create_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
@@ -138,7 +141,7 @@ func session__create_id_cookie(p_req *http.Request,
 	ip_str               := p_req.RemoteAddr
 	session_id_str       := fmt.Sprintf("%f_%s", current_time__unix_f, ip_str)
 
-	p_runtime_sys.Log_fun("INFO","session_id_str - "+session_id_str)
+	p_runtime_sys.Log_fun("INFO", "session_id_str - "+session_id_str)
 
 	new_cookie := http.Cookie{Name:"gf", Value:session_id_str}
 	http.SetCookie(p_resp, &new_cookie)

@@ -42,11 +42,11 @@ def test():
 	mongo_client = cli_stats.get_mongodb_client(test_mongodb_host_str,log_fun)
 
 	py_stats__names_lst = cli_stats.crontab__build_config(py_stats_dirs_lst,
-					plots_dir_str,
-					cli_stats_path_str,
-					crontab_file_path_str,
-					test_mongodb_host_str,
-					log_fun)
+		plots_dir_str,
+		cli_stats_path_str,
+		crontab_file_path_str,
+		test_mongodb_host_str,
+		log_fun)
 
 	##START CROND DEAMON
 	#crontab__run(crontab_file_path_str,log_fun)
@@ -61,10 +61,10 @@ def test():
 		print ''
 
 		cli_stats.run_py_stat(py_stat_str,
-				py_stats_dirs_lst,
-				plots_dir_str,
-				mongo_client,
-				log_fun)
+			py_stats_dirs_lst,
+			plots_dir_str,
+			mongo_client,
+			log_fun)
 	#---------------
 
 #----------------------------------------------

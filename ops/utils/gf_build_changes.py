@@ -20,6 +20,7 @@ from colored import fg, bg, attr
 import delegator
 
 import gf_cli_utils
+
 #--------------------------------------------------
 def list_changed_apps(p_apps_changes_deps_map):
     assert isinstance(p_apps_changes_deps_map, dict)

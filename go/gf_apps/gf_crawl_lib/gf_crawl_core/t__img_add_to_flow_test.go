@@ -26,6 +26,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //---------------------------------------------------
@@ -103,10 +104,12 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		return
 	}
 
-	
+	assert.NotEqual(p_test, test__crawled_image.Gf_image_id_str, "",
+		"gf_image ID of a test image is set even though it has not yet been test processed")
 	//------------------
 	//TEST - PIPELINE_STAGE__PROCESS_IMAGES
 	page_imgs__pinfos_with_thumbs_lst := t__images__stage__process_images(p_test,
+		test__gf_image_id_str,
 		test__crawled_image,
 		test__crawled_image_ref,
 		test__local_gf_image_file_path_str,
@@ -160,6 +163,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 //---------------------------------------------------
 func t__images__stage__process_images(p_test *testing.T,
+	p_test__gf_image_id_str              gf_images_utils.Gf_image_id,
 	p_test__crawled_image                *Gf_crawler_page_image,
 	p_test__crawled_image_ref            *Gf_crawler_page_image_ref,
 	p_test__local_gf_image_file_path_str string,
@@ -194,6 +198,10 @@ func t__images__stage__process_images(p_test *testing.T,
 
 		nsfv_bool: false,
 		thumbs:    nil,
+
+		//IMPORTANT!! - in this test situation an externally generated gf_image_id is explicitly supplied in the pipeline_info,
+		//              instead of counting on gf_images functions to generate a new gf_image_id themselves.
+		gf_image_id_str: p_test__gf_image_id_str,
 	}
 
 	page_imgs__pinfos_lst := []*gf_page_img__pipeline_info{

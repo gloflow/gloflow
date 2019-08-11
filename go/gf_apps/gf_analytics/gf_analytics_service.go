@@ -190,9 +190,9 @@ func main() {
 			gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
 			//------------------------
 
-			log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-			log_fun("INFO","STARTING HTTP SERVER - PORT - "+port_str)
-			log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			log_fun("INFO", "STARTING HTTP SERVER - PORT - "+port_str)
+			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 			
 			err := http.ListenAndServe(":"+port_str, nil)
 			if err != nil {
@@ -205,11 +205,12 @@ func main() {
 }
 
 //-------------------------------------------------
-func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER","gf_analytics_service.parse__cli_args()")
+func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
+	p_log_fun("FUN_ENTER", "gf_analytics_service.parse__cli_args()")
 
+	default_command_str := "start_service"
 	//-------------------
-	run_str                           := flag.String("run",                     "start_service",              "start_service|discover_domains_in_db|run_crawler - name of the command to run")
+	run_str                           := flag.String("run",                     default_command_str,          "start_service|discover_domains_in_db|run_crawler - name of the command to run")
 	port_str                          := flag.String("port",                    "3060",                       "port for the service to use")
 	mongodb_host_str                  := flag.String("mongodb_host",            "127.0.0.1",                  "host of mongodb to use")
 	mongodb_db_name_str               := flag.String("mongodb_db_name",         "prod_db",                    "DB name to use")

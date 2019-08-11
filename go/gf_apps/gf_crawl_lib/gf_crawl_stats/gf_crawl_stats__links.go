@@ -79,8 +79,8 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 				//"images_processed_bool":true,
 			},
 		},
-		bson.M{"$sort":bson.M{
-				"creation_unix_time_f":-1,
+		bson.M{"$sort": bson.M{
+				"creation_unix_time_f": -1,
 			},
 		},
 	})
@@ -99,14 +99,14 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	//AGGREGATE DAY COUNTS - app-layer DB join
 	new_links_counts_map := map[int]*Gf_stat__links_in_day{}
 	keys_lst             := []int{}
-	for _,l := range results_lst {
+	for _, l := range results_lst {
 
-		tm                := time.Unix(int64(l.Creation_unix_time_f),0)
-		year_day_id_int,_ := strconv.Atoi(fmt.Sprintf("%d%d",tm.Year(),tm.YearDay()))
+		tm                 := time.Unix(int64(l.Creation_unix_time_f), 0)
+		year_day_id_int, _ := strconv.Atoi(fmt.Sprintf("%d%d", tm.Year(), tm.YearDay()))
 
 		//--------------
 		var stat_r *Gf_stat__links_in_day
-		if stat,ok := new_links_counts_map[year_day_id_int]; ok {
+		if stat, ok := new_links_counts_map[year_day_id_int]; ok {
 			stat_r = stat
 		} else {
 			//-----------------
@@ -115,7 +115,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			new_links_counts_map[year_day_id_int] = stat
 			stat_r                                = stat
 
-			keys_lst = append(keys_lst,year_day_id_int)
+			keys_lst = append(keys_lst, year_day_id_int)
 			//-----------------
 		}
 		//--------------
@@ -135,20 +135,20 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	sort.Ints(keys_lst)
 
 	new_links_counts__sorted_lst := []*Gf_stat__links_in_day{}
-	for _,k := range keys_lst {
+	for _, k := range keys_lst {
 
 		stat                        := new_links_counts_map[k]
-		new_links_counts__sorted_lst = append(new_links_counts__sorted_lst,stat)
+		new_links_counts__sorted_lst = append(new_links_counts__sorted_lst, stat)
 	}
 
 	fmt.Println("DONE SORTING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println(len(new_links_counts__sorted_lst))
-	for _,a := range new_links_counts__sorted_lst {
+	for _, a := range new_links_counts__sorted_lst {
 		fmt.Println(a)
 	}
 	
 	data_map := map[string]interface{}{
-		"new_links_per_day_lst":new_links_counts__sorted_lst,
+		"new_links_per_day_lst": new_links_counts__sorted_lst,
 	}
 	return data_map,nil
 }
@@ -235,8 +235,8 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 			},
 		},
 
-		bson.M{"$sort":bson.M{
-				"links_count_int":-1,
+		bson.M{"$sort": bson.M{
+				"links_count_int": -1,
 			},
 		},
 	})

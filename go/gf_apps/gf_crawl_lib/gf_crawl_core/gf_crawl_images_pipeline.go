@@ -37,6 +37,10 @@ type gf_page_img__pipeline_info struct {
 	exists_bool         bool                   //has the page_img already been discovered in the past
 	nsfv_bool           bool
 	gf_error            *gf_core.Gf_error      //if page_img processing failed at some stage
+
+	//in some situations (or in tests) we wish to manually assign a gf_image_id, instead of letting the gf_image processing/transformation
+	//operations create those ID's themselves
+	gf_image_id_str     gf_images_utils.Gf_image_id
 }
 
 type gf_page_img_link struct {
@@ -140,6 +144,7 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	}
 	//------------------------
 	image, image_thumbs, gf_err := image__process(p_image,
+		"", //p_gf_image_id_str
 		local_image_file_path_str,
 		p_images_store_local_dir_path_str,
 		p_crawled_images_s3_bucket_name_str,

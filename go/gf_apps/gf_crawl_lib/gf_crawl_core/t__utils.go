@@ -90,16 +90,18 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
 	p_test__local_image_file_path_str string,
 	p_runtime_sys                     *gf_core.Runtime_sys) (string, gf_images_utils.Gf_image_id) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
 
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
 	//IMPORTANT!! - creates a new gf_image ID from the image URL
-	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Image_ID__create_gf_image_file_path_from_url(p_test__img_src_url_str, test__local_image_dir_path_str, p_runtime_sys)
+	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
+		test__local_image_dir_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf(fmt.Sprintf("failed to create a gf_image local file path from URL [%s]", p_test__img_src_url_str))
 		return "", ""
 	}
-
 
 	source_abs_str, _ := filepath.Abs(p_test__local_image_file_path_str)
 	target_abs_str, _ := filepath.Abs(test__local_gf_image_file_path_str)

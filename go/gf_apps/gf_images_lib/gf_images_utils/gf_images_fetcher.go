@@ -62,7 +62,7 @@ func Fetcher__get_extern_image(p_image_url_str string,
 
 	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
 	//              instead of the old original_image naming scheme.
-	new_image_local_file_path_str, image_id_str, gf_err := Image_ID__create_gf_image_file_path_from_url(p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
+	new_image_local_file_path_str, image_id_str, gf_err := Create_gf_image_file_path_from_url("", p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", "", gf_err
 	}	

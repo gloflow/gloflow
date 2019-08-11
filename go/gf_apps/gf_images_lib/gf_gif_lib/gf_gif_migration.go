@@ -276,12 +276,12 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			//IMPORTANT!! - get a truly random img with GIF format
 			pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
 				bson.M{"$match":bson.M{
-						"t":         "img",
-						"format_str":"gif",
+						"t":          "img",
+						"format_str": "gif",
 					},
 				},
-				bson.M{"$sample":bson.M{
-						"size":1,
+				bson.M{"$sample": bson.M{
+						"size": 1,
 					},
 				},
 			})
@@ -290,7 +290,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			err := pipe.One(&img)
 			if err != nil {
 				_ = gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
-					"mongodb_aggregation_error",nil,err,"gf_gif_lib",p_runtime_sys)
+					"mongodb_aggregation_error", nil, err, "gf_gif_lib", p_runtime_sys)
 				continue
 			}
 			//---------------------
@@ -299,9 +299,9 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			err = p_runtime_sys.Mongodb_coll.Find(bson.M{
 					"t":                   "gif",
 					"origin_url_str":      img.Origin_url_str,
-					"title_str":           bson.M{"$exists":1,}, //IMPORTANT!! - new field added
-					"origin_page_url_str": bson.M{"$exists":1,}, //IMPORTANT!! - new field added
-					"tags_lst":            bson.M{"$exists":1,}, //IMPORTANT!! - new field added
+					"title_str":           bson.M{"$exists": 1,}, //IMPORTANT!! - new field added
+					"origin_page_url_str": bson.M{"$exists": 1,}, //IMPORTANT!! - new field added
+					"tags_lst":            bson.M{"$exists": 1,}, //IMPORTANT!! - new field added
 				}).One(&gif)
 
 			//IMPORTANT!! - a "gif" object was not found in the DB for an "img"
@@ -324,7 +324,8 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				}
 
 				//IMPORTANT!! - image is re-fetched and GIF is processed in full
-				_, _, gf_err = Process(img.Origin_url_str, //p_image_source_url_str,
+				_, _, gf_err = Process("", //p_gf_image_id_str
+					img.Origin_url_str,    //p_image_source_url_str,
 					img.Origin_page_url_str,
 					p_images_store_local_dir_path_str,
 					image_client_type_str,
@@ -366,8 +367,9 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 		return gf_err
 	}
 
-	new_gif,gf_err := Process_and_upload(p_old_gif.Origin_url_str, //p_image_source_url_str
-		p_old_gif.Origin_page_url_str, //p_image_origin_page_url_str
+	new_gif,gf_err := Process_and_upload("", //p_gf_image_id_str
+		p_old_gif.Origin_url_str,            //p_image_source_url_str
+		p_old_gif.Origin_page_url_str,       //p_image_origin_page_url_str
 		p_images_store_local_dir_path_str,
 		image_client_type_str,
 		flows_names_lst,

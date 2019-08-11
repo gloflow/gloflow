@@ -101,7 +101,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	p_origin_page_url_str string,
 	p_runtime             *Gf_crawler_runtime,
 	p_runtime_sys         *gf_core.Runtime_sys) (*Gf_crawler_page_image, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__prepare_and_create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -169,7 +169,7 @@ func images_adt__create(p_crawler_name_str string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__create()")
 
 	
 	//HASH
@@ -206,7 +206,7 @@ func images_adt__ref_create(p_crawler_name_str string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
 	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image_ref {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images_adt__ref_create()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	ref_id_str           := fmt.Sprintf("img_ref:%f", creation_unix_time_f)
