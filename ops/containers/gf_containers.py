@@ -21,13 +21,11 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 import subprocess
 from colored import fg, bg, attr
 
-#sys.path.append('%s/../../meta'%(cwd_str))
-#import gf_meta
-#import gf_web_meta
-
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
+
 #-------------------------------------------------------------
+#BUILD
 def build(p_app_name_str,
 	p_app_build_meta_map,
 	p_web_meta_map,
@@ -71,11 +69,12 @@ def build(p_app_name_str,
 		prepare_web_files(pages_map, service_base_dir_str, p_log_fun)
 	#------------------
 
-	build_docker_container(service_name_str,
-		service_base_dir_str,
+	build_docker_image(service_name_str,
 		service_version_str,
+		service_base_dir_str,
 		p_user_name_str,
 		p_log_fun)
+
 #--------------------------------------------------
 def copy_files(p_copy_to_dir_lst):
     assert isinstance(p_copy_to_dir_lst, list)
@@ -85,6 +84,7 @@ def copy_files(p_copy_to_dir_lst):
     for src_f_str, target_dir_str in p_copy_to_dir_lst:
         if not os.path.isdir(target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
         gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
+
 #-------------------------------------------------------------
 def prepare_web_files(p_pages_map,
 	p_service_base_dir_str,
@@ -120,29 +120,30 @@ def prepare_web_files(p_pages_map,
 	#------------------
 	
 #-------------------------------------------------------------
-def build_docker_container(p_service_name_str,
-	p_service_base_dir_str,
-	p_service_version_str,
+#BUILD_DOCKER_IMAGE
+def build_docker_image(p_image_name_str,
+	p_image_tag_str,
+	p_docker_context_dir_str,
 	p_user_name_str,
 	p_log_fun):
-	p_log_fun('FUN_ENTER', 'gf_containers.build_docker_container()')
-	assert os.path.isdir(p_service_base_dir_str)
+	p_log_fun('FUN_ENTER', 'gf_containers.build_docker_image()')
+	assert os.path.isdir(p_docker_context_dir_str)
 
-	image_name_str       = '%s/%s:%s'%(p_user_name_str, p_service_name_str, p_service_version_str)
-	dockerfile_path_str  = '%s/Dockerfile'%(p_service_base_dir_str)
-	context_dir_path_str = p_service_base_dir_str
+	full_image_name_str  = '%s/%s:%s'%(p_user_name_str, p_image_name_str, p_image_tag_str)
+	dockerfile_path_str  = '%s/Dockerfile'%(p_docker_context_dir_str)
+	context_dir_path_str = p_docker_context_dir_str
 
-	p_log_fun('INFO','====================+++++++++++++++=====================')
-	p_log_fun('INFO','                 BUILDING PACKAGE/SERVICE IMAGE')
-	p_log_fun('INFO','              %s'%(p_service_name_str))
-	p_log_fun('INFO','Dockerfile     - %s'%(dockerfile_path_str))
-	p_log_fun('INFO','image_name_str - %s'%(image_name_str))
-	p_log_fun('INFO','====================+++++++++++++++=====================')
+	p_log_fun('INFO', '====================+++++++++++++++=====================')
+	p_log_fun('INFO', '                 BUILDING DOCKER IMAGE')
+	p_log_fun('INFO', '              %s'%(p_image_name_str))
+	p_log_fun('INFO', 'Dockerfile          - %s'%(dockerfile_path_str))
+	p_log_fun('INFO', 'full_image_name_str - %s'%(full_image_name_str))
+	p_log_fun('INFO', '====================+++++++++++++++=====================')
 
 	cmd_lst = [
 		'sudo docker build',
 		'-f %s'%(dockerfile_path_str),
-		'--tag=%s'%(image_name_str),
+		'--tag=%s'%(full_image_name_str),
 		context_dir_path_str
 	]
 

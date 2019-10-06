@@ -42,6 +42,10 @@ import gf_web__build
 
 sys.path.append('%s/containers'%(cwd_str))
 import gf_containers
+
+sys.path.append('%s/gf_builder'%(cwd_str))
+import gf_builder_ops
+
 #--------------------------------------------------
 def main():
     
@@ -84,6 +88,7 @@ def main():
         
         #build using dynamic linking, its quicker while in dev.
         go_build(False)
+
     #-------------
     #BUILD_WEB
     elif run_str == 'build_web':
@@ -91,6 +96,7 @@ def main():
         web_meta_map   = gf_web_meta.get() 
 
         gf_web__build.build(apps_names_lst, web_meta_map, log_fun)
+
     #-------------
     #BUILD_CONTAINERS
     elif run_str == 'build_containers':
@@ -106,6 +112,7 @@ def main():
             build_meta_map,
             web_meta_map,
             log_fun)
+
     #-------------
     #TEST
     elif run_str == 'test':
@@ -122,15 +129,23 @@ def main():
         test_name_str = args_map['test_name']
         
         gf_tests.run(app_name_str, test_name_str, app_meta_map, aws_creds_map)
+
     #-------------
     #LIST_CHANGED_APPS
     elif run_str == 'list_changed_apps':
         changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
         gf_build_changes.view_changed_apps(changed_apps_map)
+    
+    #-------------
+    #GF_BUILDER__CONTAINER_BUILD
+    elif run_str == "gf_builder__cont_build":
+        gf_builder_ops.cont__build(log_fun)
+
     #-------------
     else:
         print("unknown run command - %s"%(run_str))
         exit()
+
 #--------------------------------------------------
 def parse_args():
 
@@ -140,11 +155,12 @@ def parse_args():
     #RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''             - build an app
-- '''+fg('yellow')+'build_web'+attr(0)+'''         - build web code (ts/js/css/html) for an app
-- '''+fg('yellow')+'build_containers'+attr(0)+'''  - build Docker containers for an app
-- '''+fg('yellow')+'test'+attr(0)+'''              - run code tests for an app
-- '''+fg('yellow')+'list_changed_apps'+attr(0)+''' - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
+- '''+fg('yellow')+'build'+attr(0)+'''                  - build an app
+- '''+fg('yellow')+'build_web'+attr(0)+'''              - build web code (ts/js/css/html) for an app
+- '''+fg('yellow')+'build_containers'+attr(0)+'''       - build Docker containers for an app
+- '''+fg('yellow')+'test'+attr(0)+'''                   - run code tests for an app
+- '''+fg('yellow')+'list_changed_apps'+attr(0)+'''      - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
+- '''+fg('yellow')+'gf_builder__cont_build'+attr(0)+''' - build gf_builder container (for monorepo CI)
 
         ''')
     #-------------
@@ -182,5 +198,6 @@ def parse_args():
         "test_name": args_namespace.test_name,
     }
     return args_map
+
 #--------------------------------------------------
 main()

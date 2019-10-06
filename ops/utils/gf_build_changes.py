@@ -27,6 +27,7 @@ def list_changed_apps(p_apps_changes_deps_map):
     assert p_apps_changes_deps_map.has_key('apps_names_map')
     assert p_apps_changes_deps_map.has_key('system_packages_lst')
 
+    apps_names_map      = p_apps_changes_deps_map['apps_names_map']
     system_packages_lst = p_apps_changes_deps_map['system_packages_lst']
     assert isinstance(system_packages_lst, list)
 
@@ -38,7 +39,7 @@ def list_changed_apps(p_apps_changes_deps_map):
     changed_apps_map = {}
     #--------------------------------------------------
     def add_change_to_all_apps(p_file_changed_str):
-        for a in apps_names_lst:
+        for a, _ in apps_names_map.items():
             if changed_apps_map.has_key(a): changed_apps_map[a].append(p_file_changed_str)
             else:                           changed_apps_map[a] = [p_file_changed_str]
 
