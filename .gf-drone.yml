@@ -1,11 +1,6 @@
 kind: pipeline
 name: gloflow
 
-
-
-image_pull_secrets:
-- dockerhub_creds_json
-
 steps:
   - name: build
     image: glofloworg/gf_builder
