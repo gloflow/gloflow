@@ -4,7 +4,7 @@ name: gloflow
 steps:
   - name: build
     image: glofloworg/gf_builder
-    command:
+    commands:
       - python /home/gf/gf_builder.py
     when:
       event:

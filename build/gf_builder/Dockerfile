@@ -3,8 +3,12 @@
 
 FROM ubuntu:18.04
 
-RUN apt-get update
 RUN mkdir /home/gf
+
+
+RUN apt-get update
+RUN apt-get install -y python
+
 
 
 
