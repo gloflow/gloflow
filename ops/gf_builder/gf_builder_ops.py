@@ -24,10 +24,10 @@ import gf_containers
 #---------------------------------------------------
 def cont__build(p_log_fun):
     
-    image_name_str          = "gf_builder_org"
+    image_name_str          = "gf_builder"
     image_tag_str           = "latest"
     docker_context_dir_str  = "%s/../../build/gf_builder"%(cwd_str)
-    dockerhub_user_name_str = "gloflow"
+    dockerhub_user_name_str = "glofloworg"
 
     gf_containers.build_docker_image(image_name_str,
         image_tag_str,

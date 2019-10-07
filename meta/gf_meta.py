@@ -30,7 +30,6 @@ def get():
             #------------------------
             #GF_SOLO
             'gf_solo': {
-                #'type_str':           'main',
                 'version_str':        '0.8.0.0',
                 'go_output_path_str': '%s/../build/gf_apps/apps/gf_solo/gf_solo'%(cwd_str),
                 'copy_to_dir_lst': [
@@ -122,6 +121,12 @@ def get():
                 'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
                 'service_name_str':     'gf_tagger_service',
                 'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
+            },
+            #-------------
+            #GF_BUILDER
+            'gf_builder': {
+                'version_str':         'latest',
+                'cont_image_name_str': 'gf_builder'
             },
             #-------------
         }

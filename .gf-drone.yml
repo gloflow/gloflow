@@ -9,3 +9,10 @@ image_pull_secrets:
 steps:
   - name: build
     image: glofloworg/gf_builder
+    command:
+      - python /home/gf/gf_builder.py
+    when:
+      event:
+        - push
+      branch:
+        - master
