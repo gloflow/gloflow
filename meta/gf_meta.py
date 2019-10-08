@@ -126,7 +126,12 @@ def get():
             #GF_BUILDER
             'gf_builder': {
                 'version_str':         'latest',
-                'cont_image_name_str': 'gf_builder'
+                'cont_image_name_str': 'gf_builder',
+                'image_tag_str':       'latest',
+
+                #gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
+                #build procedures that files/modules from many different directories. 
+                'dockerfile_path_str': '%s/../Dockerfile__gf_builder'%(cwd_str)
             },
             #-------------
         }

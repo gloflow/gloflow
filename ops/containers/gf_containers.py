@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os,sys
+import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import subprocess
@@ -51,6 +51,7 @@ def build(p_app_name_str,
 	service_base_dir_str = app_meta_map['service_base_dir_str']
 	assert os.path.isdir(service_base_dir_str)
 
+	service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
 	service_version_str  = app_meta_map['version_str']
 	assert len(service_version_str.split(".")) == 4 #format x.x.x.x
 	#------------------
@@ -71,7 +72,7 @@ def build(p_app_name_str,
 
 	build_docker_image(service_name_str,
 		service_version_str,
-		service_base_dir_str,
+		service_dockerfile_path_str,
 		p_user_name_str,
 		p_log_fun)
 
@@ -123,26 +124,26 @@ def prepare_web_files(p_pages_map,
 #BUILD_DOCKER_IMAGE
 def build_docker_image(p_image_name_str,
 	p_image_tag_str,
-	p_docker_context_dir_str,
+	p_dockerfile_path_str,
 	p_user_name_str,
 	p_log_fun):
 	p_log_fun('FUN_ENTER', 'gf_containers.build_docker_image()')
-	assert os.path.isdir(p_docker_context_dir_str)
+	assert os.path.isfile(p_dockerfile_path_str)
+	assert "Dockerfile" in os.path.basename(p_dockerfile_path_str)
 
 	full_image_name_str  = '%s/%s:%s'%(p_user_name_str, p_image_name_str, p_image_tag_str)
-	dockerfile_path_str  = '%s/Dockerfile'%(p_docker_context_dir_str)
-	context_dir_path_str = p_docker_context_dir_str
+	context_dir_path_str = os.path.dirname(p_dockerfile_path_str)
 
 	p_log_fun('INFO', '====================+++++++++++++++=====================')
 	p_log_fun('INFO', '                 BUILDING DOCKER IMAGE')
 	p_log_fun('INFO', '              %s'%(p_image_name_str))
-	p_log_fun('INFO', 'Dockerfile          - %s'%(dockerfile_path_str))
+	p_log_fun('INFO', 'Dockerfile          - %s'%(p_dockerfile_path_str))
 	p_log_fun('INFO', 'full_image_name_str - %s'%(full_image_name_str))
 	p_log_fun('INFO', '====================+++++++++++++++=====================')
 
 	cmd_lst = [
 		'sudo docker build',
-		'-f %s'%(dockerfile_path_str),
+		'-f %s'%(p_dockerfile_path_str),
 		'--tag=%s'%(full_image_name_str),
 		context_dir_path_str
 	]

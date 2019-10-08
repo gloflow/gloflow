@@ -117,8 +117,7 @@ def main():
     #TEST
     elif run_str == 'test':
 
-        app_meta_map = build_meta_map[app_name_str]
-        
+        app_meta_map            = build_meta_map[app_name_str]
         aws_creds_file_path_str = args_map['aws_creds']
 
         aws_creds_file_path_abs_str = os.path.abspath(aws_creds_file_path_str)
@@ -139,7 +138,8 @@ def main():
     #-------------
     #GF_BUILDER__CONTAINER_BUILD
     elif run_str == "gf_builder__cont_build":
-        gf_builder_ops.cont__build(log_fun)
+        dockerhub_user_str = args_map['dockerhub_user']
+        gf_builder_ops.cont__build(dockerhub_user_str, log_fun)
 
     #-------------
     else:
@@ -174,6 +174,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_analytics'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
+
         ''')
     #-------------
     #AWS_S3_CREDS
@@ -181,6 +182,12 @@ def parse_args():
         action =  "store",
         default = "%s/../../creds/aws/s3.txt"%(cwd_str),
         help =    '''path to the file containing AWS S3 credentials to be used''')
+    #-------------
+    #DOCKERHUB_USER
+    arg_parser.add_argument('-dockerhub_user',
+        action =  "store",
+        default = "glofloworg",
+        help =    '''name of the dockerhub user to target''')
     #-------------
     #TEST_NAME
     arg_parser.add_argument('-test_name',
@@ -192,10 +199,11 @@ def parse_args():
     args_namespace = arg_parser.parse_args(cli_args_lst)
 
     args_map = {
-        "run":       args_namespace.run,
-        "app":       args_namespace.app,
-        "aws_creds": args_namespace.aws_creds,
-        "test_name": args_namespace.test_name,
+        "run":            args_namespace.run,
+        "app":            args_namespace.app,
+        "aws_creds":      args_namespace.aws_creds,
+        "test_name":      args_namespace.test_name,
+        "dockerhub_user": args_namespace.dockerhub_user
     }
     return args_map
 

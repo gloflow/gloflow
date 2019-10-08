@@ -15,22 +15,30 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os,sys
+import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 sys.path.append('%s/../containers'%(cwd_str))
 import gf_containers
 
-#---------------------------------------------------
-def cont__build(p_log_fun):
-    
-    image_name_str          = "gf_builder"
-    image_tag_str           = "latest"
-    docker_context_dir_str  = "%s/../../build/gf_builder"%(cwd_str)
-    dockerhub_user_name_str = "glofloworg"
+sys.path.append('%s/../meta'%(cwd_str))
+import gf_meta
 
-    gf_containers.build_docker_image(image_name_str,
-        image_tag_str,
-		docker_context_dir_str,
-		dockerhub_user_name_str,
+#---------------------------------------------------
+def cont__build(p_dockerhub_user_name_str, p_log_fun):
+    assert isinstance(p_dockerhub_user_name_str, basestring)
+
+    build_meta_map = gf_meta.get()['build_info_map']
+    assert build_meta_map.has_key('gf_builder')
+
+    gf_builder_meta_map            = build_meta_map['gf_builder']
+    cont_image_name_str            = gf_builder_meta_map['cont_image_name_str']
+    cont_image_version_str         = gf_builder_meta_map['version_str']
+    cont_image_dockerfile_path_str = gf_builder_meta_map['dockerfile_path_str']
+    assert os.path.isfile(cont_image_dockerfile_path_str)
+
+    gf_containers.build_docker_image(cont_image_name_str,
+        cont_image_version_str,
+		cont_image_dockerfile_path_str,
+		p_dockerhub_user_name_str,
 		p_log_fun)
