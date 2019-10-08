@@ -5,29 +5,10 @@ FROM ubuntu:18.04
 
 RUN mkdir /home/gf
 
-
 RUN apt-get update
 RUN apt-get install -y python
 RUN apt-get install -y python-pip
 RUN pip install delegator.py
 
-
-
-
-
-ADD ./build/gf_builder/gf_builder.py /home/gf/build/gf_builder
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]
+#ADD ./build/gf_builder/gf_builder.py /home/gf/build/gf_builder
+#ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

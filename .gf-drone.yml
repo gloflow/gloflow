@@ -3,6 +3,8 @@ type: docker
 name: gloflow
 
 workspace:
+  #IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder
+  #              container is placing all its code.
   base: /home/gf
 
 steps:
