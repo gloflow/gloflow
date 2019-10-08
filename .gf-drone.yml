@@ -2,11 +2,14 @@ kind: pipeline
 type: docker
 name: gloflow
 
+workspace:
+  base: /home/gf
+
 steps:
   - name: build
     image: glofloworg/gf_builder
     commands:
-      - python /home/gf/gf_builder.py
+      - python /home/gf/build/gf_builder/gf_builder.py
     when:
       event:
         - push
