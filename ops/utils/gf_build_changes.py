@@ -51,9 +51,9 @@ def list_changed_apps(p_apps_changes_deps_map):
                 dependant_apps_lst.append(app_str)
                 
         
-        for a in dependant_apps_lst:
-            if changed_apps_map.has_key(a): changed_apps_map[a].append(p_file_path_str)
-            else:                           changed_apps_map[a] = [p_file_path_str]
+        for app_str in dependant_apps_lst:
+            if changed_apps_map.has_key(app_str): changed_apps_map[app_str].append(p_file_path_str)
+            else:                                 changed_apps_map[app_str] = [p_file_path_str]
 
     #--------------------------------------------------
     
@@ -103,7 +103,7 @@ def view_changed_apps(p_changed_apps_map):
     if len(p_changed_apps_map.items()) == 0:
         print('NO APPS CHANGED')
     else:
-        for k, changed_files_lst in p_changed_apps_map.items():
-            print('%s%s%s'%(fg('yellow'), k, attr(0)))
+        for app_name_str, changed_files_lst in p_changed_apps_map.items():
+            print('%s%s%s'%(fg('yellow'), app_name_str, attr(0)))
             for f in changed_files_lst:
                 print('\t%s/%s%s%s'%(os.path.dirname(f), fg('green'), os.path.basename(f), attr(0)))
