@@ -46,6 +46,7 @@ $(document).ready(()=>{
     //-------------------------------------------------
     init(log_fun);
 });
+
 //-------------------------------------------------
 export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init()');

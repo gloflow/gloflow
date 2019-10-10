@@ -22,38 +22,74 @@ import delegator
 import gf_cli_utils
 
 #--------------------------------------------------
-def list_changed_apps(p_apps_changes_deps_map):
+#p_mark_all_bool - mark all apps as changed. used mainly for debugging.
+
+def list_changed_apps(p_apps_changes_deps_map,
+    p_commits_lookback_int = 1,
+    p_mark_all_bool        = False):
     assert isinstance(p_apps_changes_deps_map, dict)
     assert p_apps_changes_deps_map.has_key('apps_names_map')
     assert p_apps_changes_deps_map.has_key('system_packages_lst')
+    assert isinstance(p_commits_lookback_int, int)
 
     apps_names_map      = p_apps_changes_deps_map['apps_names_map']
     system_packages_lst = p_apps_changes_deps_map['system_packages_lst']
     assert isinstance(system_packages_lst, list)
 
+    changed_apps_map  = {
+        "go": {},
+        "web":{},
+    }
+
+    #------------------------
+    #DEBUGGING - mark all apps as changed
+    if p_mark_all_bool:
+        for a, _ in apps_names_map.items():
+            changed_apps_map["go"][a]  = ["all"]
+            changed_apps_map["web"][a] = ["all"]
+        return changed_apps_map
+    #------------------------
+
     #latest_commit_hash_str = gf_cli_utils.run_cmd('git rev-parse HEAD')
     #assert len(latest_commit_hash_str) == 32
 
-    list_st = gf_cli_utils.run_cmd('git diff --name-only HEAD HEAD~1', p_print_output_bool=False)
+    #------------------------
+    #FIX!! - dont just look 1 commit back to see what changed. if localy a developer makes several commits and then uploads code
+    #        got github(or other) and CI clones it this function then might miss some of the services/apps/packages that changed 
+    #        several commits back.
+    #        instead some mechanism for getting the number of commits that some deployment environment is behind HEAD,
+    #        and then use that number for this "p_commits_lookback_int" argument (that would be >1).
+    past_commit_str = 'HEAD~%s'%(p_commits_lookback_int)
+    #------------------------
 
-    changed_apps_map = {}
+    list_st = gf_cli_utils.run_cmd('git diff --name-only HEAD %s'%(past_commit_str), p_print_output_bool=False)
+
     #--------------------------------------------------
-    def add_change_to_all_apps(p_file_changed_str):
+    #IMPORTANT!! - the file that changed affects all apps, so they all need to be marked as changed
+    #              and this file added to the list of changed files of all apps.
+
+    def add_change_to_all_apps(p_file_changed_str, p_type_str):
+        assert p_type_str == "go" or p_type_str == "web"
         for a, _ in apps_names_map.items():
-            if changed_apps_map.has_key(a): changed_apps_map[a].append(p_file_changed_str)
-            else:                           changed_apps_map[a] = [p_file_changed_str]
+
+            if changed_apps_map[p_type_str].has_key(a):
+                changed_apps_map[p_type_str][a].append(p_file_changed_str)
+            else:
+                changed_apps_map[p_type_str][a] = [p_file_changed_str]
 
     #--------------------------------------------------
-    def update_dependant_apps(p_package_name_str, p_file_path_str):
+    #IMPORTANT!! - update only the apps that have this files package is marked as a dependancy of
+    def update_dependant_apps(p_package_name_str, p_file_path_str, p_type_str):
+        assert p_type_str == "go" or p_type_str == "web"
         dependant_apps_lst = []
         for app_str, package_deps_lst in p_apps_changes_deps_map['apps_names_map'].items():
             if p_package_name_str in package_deps_lst:
                 dependant_apps_lst.append(app_str)
                 
-        
         for app_str in dependant_apps_lst:
-            if changed_apps_map.has_key(app_str): changed_apps_map[app_str].append(p_file_path_str)
-            else:                                 changed_apps_map[app_str] = [p_file_path_str]
+            
+            if changed_apps_map.has_key(app_str): changed_apps_map[p_type_str][app_str].append(p_file_changed_str)
+            else:                                 changed_apps_map[p_type_str][app_str] = [p_file_changed_str]
 
     #--------------------------------------------------
     
@@ -65,7 +101,7 @@ def list_changed_apps(p_apps_changes_deps_map):
             #an app itself changed
             if l.startswith('go/gf_apps'):
                 package_name_str = l.split('/')[2]
-                update_dependant_apps(package_name_str, l)
+                update_dependant_apps(package_name_str, l, "go")
 
             #if one of the system packages has changed
             else:
@@ -74,36 +110,49 @@ def list_changed_apps(p_apps_changes_deps_map):
                     #IMPORTANT!! - one of the system packages has changed, so infer
                     #              that all apps have changed.
                     if l.startswith('go/%s'%(sys_package_str)):
-                        add_change_to_all_apps(l)
+                        add_change_to_all_apps(l, "go")
         #------------------------
         #WEB
         elif l.startswith('web'):
             if l.startswith('web/src/gf_apps'):
-                package_name_str = l.split('/')[3]
-                update_dependant_apps(package_name_str, l)
+                package_name_str = l.split('/')[3] #get package_name from the path of the changed file
+                update_dependant_apps(package_name_str, l, "web")
 
             #IMPORTATN!! - one of the web libs changed, so all apps should be rebuilt
             #FIX!!       - have a better way of determening which apps use this lib, 
             #              to avoid rebuilding unaffected apps
             elif l.startswith('web/libs'):
-                add_change_to_all_apps(l)
+                add_change_to_all_apps(l, "web")
 
             else:
                 package_name_str = l.split('/')[2]
                 if package_name_str in system_packages_lst:
-                    add_change_to_all_apps(l)
+                    add_change_to_all_apps(l, web)
         #------------------------
 
     return changed_apps_map
 
 #--------------------------------------------------
-def view_changed_apps(p_changed_apps_map):
+def view_changed_apps(p_changed_apps_map, p_type_str):
     assert isinstance(p_changed_apps_map, dict)
+    assert p_type_str == "go" or p_type_str == "web"
 
-    if len(p_changed_apps_map.items()) == 0:
+    print("----- %s"%(p_type_str))
+
+    if len(p_changed_apps_map[p_type_str].items()) == 0:
         print('NO APPS CHANGED')
     else:
-        for app_name_str, changed_files_lst in p_changed_apps_map.items():
+        for app_name_str, changed_files_lst in p_changed_apps_map[p_type_str].items():
             print('%s%s%s'%(fg('yellow'), app_name_str, attr(0)))
+            
+            if len(changed_files_lst) == 0:
+                print('%s%s%s'%(fg('green'),
+                    "ALL",
+                    attr(0)))
+
             for f in changed_files_lst:
-                print('\t%s/%s%s%s'%(os.path.dirname(f), fg('green'), os.path.basename(f), attr(0)))
+
+                print('\t%s/%s%s%s'%(os.path.dirname(f),
+                    fg('green'),
+                    os.path.basename(f),
+                    attr(0)))

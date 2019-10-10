@@ -133,7 +133,8 @@ def main():
     #LIST_CHANGED_APPS
     elif run_str == 'list_changed_apps':
         changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
-        gf_build_changes.view_changed_apps(changed_apps_map)
+        gf_build_changes.view_changed_apps(changed_apps_map, "go")
+        gf_build_changes.view_changed_apps(changed_apps_map, "web")
     
     #-------------
     #GF_BUILDER__CONTAINER_BUILD
