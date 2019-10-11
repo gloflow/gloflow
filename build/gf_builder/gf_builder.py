@@ -22,33 +22,38 @@ def main():
     print(delegator.run("ls -al").out)
     print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out.strip(), delegator.run("whoami").out.strip()))
 
+    #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+    if "DRONE_COMMIT_SHA" in os.environ:
+        git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
+        paste_git_commit_hash(git_commit_hash_str)
+
     build_apps()
 
 #--------------------------------------------------
 def build_apps():
+
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
     build_meta_map        = gf_meta.get()['build_info_map']
-
-
+    
     #------------------------
     print("DIFF")
 
-    #LIST_CHANGED_APPS - determine how which apps/services changed
+    # LIST_CHANGED_APPS - determine how which apps/services changed
     changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
         p_commits_lookback_int = 1, 
         p_mark_all_bool        = True)
 
-    #VIEW
+    # VIEW
     gf_build_changes.view_changed_apps(changed_apps_map, "go")
     gf_build_changes.view_changed_apps(changed_apps_map, "web")
     #------------------------
-
 
     if len(changed_apps_map.keys()) == 0:
         exit(0)
     else:
         #------------------------
-        #WEB
+        # WEB
+        print("\n\nWEB--------\n\n")
         web_meta_map   = gf_web_meta.get()
         apps_names_lst = []
         for app_name_str, v in changed_apps_map["web"].items():
@@ -56,7 +61,8 @@ def build_apps():
 
         gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
         #------------------------
-        #GO
+        # GO
+        print("\n\nGO--------\n\n")
         for app_name_str, v in changed_apps_map["go"].items():
 
             app_meta_map           = build_meta_map[app_name_str]
@@ -67,23 +73,45 @@ def build_apps():
                 app_go_path_str,
                 app_go_output_path_str,
 
-                #IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
-                #              so all binary dependencies are to be statically linked into the output binary 
-                #              without depending on standard dynamic linking.
+                # IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
+                #               so all binary dependencies are to be statically linked into the output binary 
+                #               without depending on standard dynamic linking.
                 p_static_bool = True, 
                 
-                #gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
-                #gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
-                #to be marked as failed because of the non-zero exit code.
+                # gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
+                # gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+                # to be marked as failed because of the non-zero exit code.
                 p_exit_on_fail_bool = True)
         #------------------------
 
 #--------------------------------------------------
-#IMPORTANT!! - get Git commit from the deployed artifact (making API call to a target service).
-#              this is needed to know how far HEAD of this monorepo is ahead from the commit 
-#              that was used to build a particular service, to then use that integer distance
-#              as the p_commits_lookback_int when determening which apps change when calling 
-#              list_changed_apps(). 
+def paste_git_commit_hash(p_git_commit_hash_str):
+    print("PASTE_GIT_COMMIT_HASH - %s"%(p_git_commit_hash_str))
+    golang_sys_release_info_file_path_str = "%s/../../go/gf_core/gf_sys_release_info.go"%(cwd_str)
+
+    original_word_regex_str = 'Git_commit_str: "",' #this is the original line of Go code
+    new_word_regex_str      = 'Git_commit_str: "%s",'%(p_git_commit_hash_str)
+
+    #------------------------
+    # IMPORTANT!! - "sed" - Stream EDitor.
+    #               "-i" - in-place, save to original file
+    #               command string:
+    #                 "s" - the substitute command
+    #                 "g" - global, replace all not just first instance
+    c = "sed -i 's/%s/%s/g'"%(original_word_regex_str, new_word_regex_str)
+    print(c)
+    #------------------------
+
+    r = delegator.run("sed -i 's/%s'"%()).out
+    print(r.out)
+    print(r.err)
+
+#--------------------------------------------------
+# IMPORTANT!! - get Git commit from the deployed artifact (making API call to a target service).
+#               this is needed to know how far HEAD of this monorepo is ahead from the commit 
+#               that was used to build a particular service, to then use that integer distance
+#               as the p_commits_lookback_int when determening which apps change when calling 
+#               list_changed_apps(). 
 
 def get_deployed_commit(p_domain_str = "https://gloflow.com"):
     True

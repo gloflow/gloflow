@@ -19,7 +19,7 @@ import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 import BeautifulSoup as bs
 
 sys.path.append('%s/../utils'%(cwd_str))

@@ -23,11 +23,12 @@ package gf_core
 type Sys_release_info struct {
 	Name_str        string
 	Version_str     string
-	Description_str string
+    Description_str string
+    Git_commit_str  string //indicates this is usually pasted in by CI systems
 }
 //-------------------------------------------------
 func Get_sys_relese_info(p_runtime_sys *Runtime_sys) Sys_release_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_sys_release_info.Get_sys_relese_info()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_sys_release_info.Get_sys_relese_info()")
 
 	r := Sys_release_info{
 		Name_str       :"precious",
@@ -62,6 +63,10 @@ func Get_sys_relese_info(p_runtime_sys *Runtime_sys) Sys_release_info {
 0.1              - initial Python backend and gf_image/gf_post data-model, using mongodb, most basic css styling.
                    first introduction of a Chrome browser extension, for creating posts only (by adding images to them), no image flows.
                    (~2010)`,
+                    
+        //IMPORTANT!! - in CI systems (Drone at the moment) this line is searched for
+        //              and the git commit hash is pasted in.
+        Git_commit_str: "",
 	}
 
 	return r
