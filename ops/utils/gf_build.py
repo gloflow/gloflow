@@ -24,20 +24,22 @@ import gf_cli_utils
 #--------------------------------------------------
 def run_go(p_name_str,
     p_go_dir_path_str,
-    p_output_path_str,
+    p_go_output_path_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = False):
     assert isinstance(p_static_bool, bool)
 
-    print(p_go_dir_path_str)    
+      
     assert os.path.isdir(p_go_dir_path_str)
 
-    print(p_output_path_str)
-    assert os.path.isdir(os.path.dirname(p_output_path_str))
+    print(p_go_output_path_str)
+    assert os.path.isdir(os.path.dirname(p_go_output_path_str))
 
     print('')
     if p_static_bool: print(' -- %sSTATIC BINARY BUILD%s'%(fg('yellow'), attr(0)))
     print(' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0)))
+    print(' -- go_dir_path    - %s%s%s'%(fg('green'), p_go_dir_path_str, attr(0)))  
+    print(' -- go_output_path - %s%s%s'%(fg('green'), p_go_output_path_str, attr(0)))  
 
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) #change into the target main package dir
@@ -55,13 +57,13 @@ def run_go(p_name_str,
             "-s",
             '-a',
             '-installsuffix cgo',
-            '-o %s'%(p_output_path_str),
+            '-o %s'%(p_go_output_path_str),
         ]
         c_str = ' '.join(args_lst)
         
     #DYNAMIC_LINKING - fast build for dev.
     else:
-        c_str = 'go build -o %s'%(p_output_path_str)
+        c_str = 'go build -o %s'%(p_go_output_path_str)
 
     _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
