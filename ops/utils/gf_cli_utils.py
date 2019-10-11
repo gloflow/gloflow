@@ -24,8 +24,8 @@ def run_cmd(p_cmd_str, p_print_output_bool=True):
 	r = delegator.run(p_cmd_str)
 	if not r.out == '':
 		o = r.out
-		if p_print_output_bool: print(o)
-		return o, r.return_code
 	if not r.err == '':
-		if p_print_output_bool: print(o)
-		return r.err, r.return_code
+		o = r.err
+	
+	if p_print_output_bool: print(o)
+	return o, r.return_code
