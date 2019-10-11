@@ -14,7 +14,8 @@ RUN tar -xvf go1.13.1.linux-amd64.tar.gz
 
 #-----------------------------------------------------
 #STAGE_1
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
+FROM golang
 
 RUN apt-get update
 RUN mkdir /home/gf
@@ -31,6 +32,11 @@ RUN pip install delegator.py
 RUN pip install colored
 #-----------------------------
 #GO - copy Go compiler binary only, from stage_0
-COPY --from=0 go/bin/go /usr/local/go
+#COPY --from=0 go /usr/lib/go
+
+#make Go SDK usable by non-root users
+#RUN chmod -R 777 /usr/lib/go
+
+#RUN ls -al /usr/lib/go
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

@@ -11,7 +11,8 @@ steps:
   - name: build
     image: glofloworg/gf_builder
     commands:
-      - python /home/gf/build/gf_builder/gf_builder.py
+      #"-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py
     when:
       event:
         - push

@@ -15,7 +15,7 @@ import gf_build
 print("    ---   GF_BUILDER -------------------")
 print(delegator.run("ls -al").out)
 print(delegator.run("pwd").out)
-
+print(delegator.run("whoami").out)
 #--------------------------------------------------
 def build_apps():
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
@@ -29,6 +29,8 @@ def build_apps():
     changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
         p_commits_lookback_int = 1, 
         p_mark_all_bool        = True)
+
+    #VIEW
     gf_build_changes.view_changed_apps(changed_apps_map, "go")
     gf_build_changes.view_changed_apps(changed_apps_map, "web")
     #------------------------
