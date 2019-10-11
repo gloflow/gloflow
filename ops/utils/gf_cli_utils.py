@@ -27,5 +27,5 @@ def run_cmd(p_cmd_str, p_print_output_bool=True):
 		if p_print_output_bool: print(o)
 		return o, r.return_code
 	if not r.err == '':
-		print('%sFAILED%s >>>>>>>\n%s'%(fg('red'), attr(0), r.err))
+		if p_print_output_bool: print(o)
 		return r.err, r.return_code

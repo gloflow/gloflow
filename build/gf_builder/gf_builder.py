@@ -14,8 +14,7 @@ import gf_build
 
 print("    ---   GF_BUILDER -------------------")
 print(delegator.run("ls -al").out)
-print(delegator.run("pwd").out)
-print(delegator.run("whoami").out)
+print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out, delegator.run("whoami").out))
 #--------------------------------------------------
 def build_apps():
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
