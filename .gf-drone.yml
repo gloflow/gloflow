@@ -8,13 +8,44 @@ workspace:
   base: /home/gf
 
 steps:
-  - name: build
+
+  #-------------------------------
+  #TEST
+  - name: test
     image: glofloworg/gf_builder
     commands:
       #"-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test
     when:
       event:
         - push
       branch:
         - master
+
+  #-------------------------------
+  #BUILD
+  - name: build
+    image: glofloworg/gf_builder
+    commands:
+      #"-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  #BUILD_CONTAINERS
+  - name: build_containers
+    image: glofloworg/gf_builder
+    commands:
+      #"-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------

@@ -149,10 +149,10 @@ def parse_args():
     #RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''                  - build an app
-- '''+fg('yellow')+'build_web'+attr(0)+'''              - build web code (ts/js/css/html) for an app
-- '''+fg('yellow')+'build_containers'+attr(0)+'''       - build Docker containers for an app
-- '''+fg('yellow')+'test'+attr(0)+'''                   - run code tests for an app
+- '''+fg('yellow')+'build'+attr(0)+'''                  - build app golang code
+- '''+fg('yellow')+'build_web'+attr(0)+'''              - build app web code (ts/js/css/html)
+- '''+fg('yellow')+'build_containers'+attr(0)+'''       - build app Docker containers
+- '''+fg('yellow')+'test'+attr(0)+'''                   - run app code tests
 - '''+fg('yellow')+'list_changed_apps'+attr(0)+'''      - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
 - '''+fg('yellow')+'gf_builder__cont_build'+attr(0)+''' - build gf_builder container (for monorepo CI)
 

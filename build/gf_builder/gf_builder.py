@@ -1,6 +1,7 @@
 import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
+import argparse
 import delegator
 
 sys.path.append('%s/../../meta'%(cwd_str))
@@ -22,12 +23,16 @@ def main():
     print(delegator.run("ls -al").out)
     print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out.strip(), delegator.run("whoami").out.strip()))
 
+
+    args_map = parse_args()
+
     #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
     if "DRONE_COMMIT_SHA" in os.environ:
         git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
         paste_git_commit_hash(git_commit_hash_str)
 
-    build_apps()
+    if args_map["run"] == "build":
+        build_apps()
 
 #--------------------------------------------------
 def build_apps():
@@ -102,7 +107,7 @@ def paste_git_commit_hash(p_git_commit_hash_str):
     print(c)
     #------------------------
 
-    r = delegator.run("sed -i 's/%s'"%()).out
+    r = delegator.run(c).out
     print(r.out)
     print(r.err)
 
@@ -115,6 +120,21 @@ def paste_git_commit_hash(p_git_commit_hash_str):
 
 def get_deployed_commit(p_domain_str = "https://gloflow.com"):
     True
+
+#--------------------------------------------------
+def parse_args():
+    arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
+    arg_parser.add_argument('-run', action = "store", default = 'build',
+        help = '''
+- '''+fg('yellow')+'build'+attr(0)+'''            - build app golang/web code
+- '''+fg('yellow')+'build_containers'+attr(0)+''' - build app Docker containers
+- '''+fg('yellow')+'test'+attr(0)+'''             - run app code tests
+        ''')
+    cli_args_lst   = sys.argv[1:]
+    args_namespace = arg_parser.parse_args(cli_args_lst)
+    return {
+        "run": args_namespace.run,
+    }
 
 #--------------------------------------------------
 main()
