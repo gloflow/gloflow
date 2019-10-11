@@ -1,19 +1,36 @@
 
 
-
+#-----------------------------------------------------
+#STAGE_0
 FROM ubuntu:18.04
 
-RUN mkdir /home/gf
+RUN apt-get update
+#-----------------------------
+#GO
+RUN apt-get install -y wget
+RUN wget https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz
+RUN tar -xvf go1.13.1.linux-amd64.tar.gz
+#-----------------------------
+
+#-----------------------------------------------------
+#STAGE_1
+FROM ubuntu:18.04
 
 RUN apt-get update
+RUN mkdir /home/gf
 
+#-----------------------------
+#GIT
 #IMPORTANT!! - used by ./ops/utils/gf_build_changes.py to determine which apps changed
 RUN apt-get install -y git
-
+#-----------------------------
+#PY
 RUN apt-get install -y python
 RUN apt-get install -y python-pip
 RUN pip install delegator.py
 RUN pip install colored
-
-#ADD ./build/gf_builder/gf_builder.py /home/gf/build/gf_builder
+#-----------------------------
+#GO - copy Go compiler binary only, from stage_0
+COPY --from=0 go/bin/go /usr/local/go
+#-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

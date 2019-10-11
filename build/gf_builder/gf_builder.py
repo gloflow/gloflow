@@ -52,7 +52,12 @@ def build_apps():
                 #IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
                 #              so all binary dependencies are to be statically linked into the output binary 
                 #              without depending on standard dynamic linking.
-                p_static_bool = True)
+                p_static_bool = True, 
+                
+                #gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
+                #gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+                #to be marked as failed because of the non-zero exit code.
+                p_exit_on_fail_bool = True)
 
 
 #--------------------------------------------------

@@ -25,7 +25,8 @@ import gf_cli_utils
 def run_go(p_name_str,
     p_go_dir_path_str,
     p_output_path_str,
-    p_static_bool = False):
+    p_static_bool       = False,
+    p_exit_on_fail_bool = False):
     assert isinstance(p_static_bool, bool)
 
     print(p_go_dir_path_str)    
@@ -62,6 +63,13 @@ def run_go(p_name_str,
     else:
         c_str = 'go build -o %s'%(p_output_path_str)
 
-    gf_cli_utils.run_cmd(c_str)
-    
+    _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+
+    #IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
+    #              want to fail with a non-zero exit code as well - this way other CI 
+    #              programs will flag builds as failed.
+    if not exit_code_int == 0:
+        if p_exit_on_fail_bool:
+            exit(exit_code_int)
+
     os.chdir(cwd_str) #return to initial dir

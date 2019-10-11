@@ -37,8 +37,8 @@ def list_changed_apps(p_apps_changes_deps_map,
     assert isinstance(system_packages_lst, list)
 
     changed_apps_map  = {
-        "go": {},
-        "web":{},
+        "go":  {},
+        "web": {},
     }
 
     #------------------------
@@ -50,7 +50,7 @@ def list_changed_apps(p_apps_changes_deps_map,
         return changed_apps_map
     #------------------------
 
-    #latest_commit_hash_str = gf_cli_utils.run_cmd('git rev-parse HEAD')
+    #latest_commit_hash_str, _ = gf_cli_utils.run_cmd('git rev-parse HEAD')
     #assert len(latest_commit_hash_str) == 32
 
     #------------------------
@@ -62,7 +62,7 @@ def list_changed_apps(p_apps_changes_deps_map,
     past_commit_str = 'HEAD~%s'%(p_commits_lookback_int)
     #------------------------
 
-    list_st = gf_cli_utils.run_cmd('git diff --name-only HEAD %s'%(past_commit_str), p_print_output_bool=False)
+    list_str, _ = gf_cli_utils.run_cmd('git diff --name-only HEAD %s'%(past_commit_str), p_print_output_bool=False)
 
     #--------------------------------------------------
     #IMPORTANT!! - the file that changed affects all apps, so they all need to be marked as changed
@@ -93,7 +93,7 @@ def list_changed_apps(p_apps_changes_deps_map,
 
     #--------------------------------------------------
     
-    for l in list_st.split('\n'):
+    for l in list_str.split('\n'):
 
         #------------------------
         #GO

@@ -83,7 +83,8 @@ def copy_files(p_copy_to_dir_lst):
     print('')
     print('             COPY FILES')
     for src_f_str, target_dir_str in p_copy_to_dir_lst:
-        if not os.path.isdir(target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
+        if not os.path.isdir(target_dir_str):
+			gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
         gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
 
 #-------------------------------------------------------------
