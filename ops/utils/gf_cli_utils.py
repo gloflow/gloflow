@@ -22,10 +22,14 @@ import delegator
 def run_cmd(p_cmd_str, p_print_output_bool=True):
 	if p_print_output_bool: print(p_cmd_str)
 	r = delegator.run(p_cmd_str)
-	if not r.out == '':
+
+	o=""
+	e=""
+	if not r.out == "":
 		o = r.out
-	if not r.err == '':
-		o = r.err
+		if p_print_output_bool: print(o)
+	if not r.err == "":
+		e = r.err
+		if p_print_output_bool: print(e)
 	
-	if p_print_output_bool: print(o)
-	return o, r.return_code
+	return o, e, r.return_code

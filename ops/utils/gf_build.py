@@ -63,7 +63,7 @@ def run_go(p_name_str,
     else:
         c_str = 'go build -o %s'%(p_output_path_str)
 
-    _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+    _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
     #IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
     #              want to fail with a non-zero exit code as well - this way other CI 

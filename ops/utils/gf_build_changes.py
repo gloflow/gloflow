@@ -62,7 +62,7 @@ def list_changed_apps(p_apps_changes_deps_map,
     past_commit_str = 'HEAD~%s'%(p_commits_lookback_int)
     #------------------------
 
-    list_str, _ = gf_cli_utils.run_cmd('git diff --name-only HEAD %s'%(past_commit_str), p_print_output_bool=False)
+    list_str, _, _ = gf_cli_utils.run_cmd('git diff --name-only HEAD %s'%(past_commit_str), p_print_output_bool=False)
 
     #--------------------------------------------------
     #IMPORTANT!! - the file that changed affects all apps, so they all need to be marked as changed
