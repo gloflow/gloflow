@@ -30,6 +30,7 @@ import gf_web_meta
 sys.path.append('%s/utils'%(cwd_str))
 import gf_build
 import gf_build_changes
+import gf_log
 
 sys.path.append('%s/tests'%(cwd_str))
 import gf_tests
@@ -52,14 +53,6 @@ def main():
     print('')
     print('                              %sGLOFLOW BUILD TOOL%s'%(fg('green'),attr(0)))
     print('')
-
-    #--------------------------------------------------
-    def log_fun(g, m):
-        if g == "ERROR":
-            print('%s%s%s:%s%s%s'%(bg('red'), g, attr(0), fg('red'), m, attr(0)))
-        else:
-            print('%s%s%s:%s%s%s'%(fg('yellow'), g, attr(0), fg('green'), m, attr(0)))
-    #--------------------------------------------------
     
     build_meta_map        = gf_meta.get()['build_info_map']
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
@@ -95,7 +88,7 @@ def main():
         apps_names_lst = [app_name_str]
         web_meta_map   = gf_web_meta.get() 
 
-        gf_web__build.build(apps_names_lst, web_meta_map, log_fun)
+        gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
 
     #-------------
     #BUILD_CONTAINERS
@@ -111,7 +104,7 @@ def main():
         gf_containers.build(app_name_str, 
             build_meta_map,
             web_meta_map,
-            log_fun)
+            gf_log.log_fun)
 
     #-------------
     #TEST
@@ -140,7 +133,7 @@ def main():
     #GF_BUILDER__CONTAINER_BUILD
     elif run_str == "gf_builder__cont_build":
         dockerhub_user_str = args_map['dockerhub_user']
-        gf_builder_ops.cont__build(dockerhub_user_str, log_fun)
+        gf_builder_ops.cont__build(dockerhub_user_str, gf_log.log_fun)
 
     #-------------
     else:

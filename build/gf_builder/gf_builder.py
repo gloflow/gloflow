@@ -5,16 +5,25 @@ import delegator
 
 sys.path.append('%s/../../meta'%(cwd_str))
 import gf_meta
+import gf_web_meta
 
 sys.path.append('%s/../../ops/utils'%(cwd_str))
 import gf_build_changes
 import gf_build
+import gf_log
 
+sys.path.append('%s/../../ops/web'%(cwd_str))
+import gf_web__build
 
+#--------------------------------------------------
+def main():
+    
+    print("    ---   GF_BUILDER -------------------")
+    print(delegator.run("ls -al").out)
+    print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out.strip(), delegator.run("whoami").out.strip()))
 
-print("    ---   GF_BUILDER -------------------")
-print(delegator.run("ls -al").out)
-print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out.strip(), delegator.run("whoami").out.strip()))
+    build_apps()
+
 #--------------------------------------------------
 def build_apps():
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
@@ -38,7 +47,15 @@ def build_apps():
     if len(changed_apps_map.keys()) == 0:
         exit(0)
     else:
+        #------------------------
+        #WEB
+        web_meta_map   = gf_web_meta.get()
+        apps_names_lst = []
+        for app_name_str, v in changed_apps_map["web"].items():
+            apps_names_lst.append(app_name_str)
 
+        gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
+        #------------------------
         #GO
         for app_name_str, v in changed_apps_map["go"].items():
 
@@ -59,7 +76,7 @@ def build_apps():
                 #gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
                 #to be marked as failed because of the non-zero exit code.
                 p_exit_on_fail_bool = True)
-
+        #------------------------
 
 #--------------------------------------------------
 #IMPORTANT!! - get Git commit from the deployed artifact (making API call to a target service).
@@ -72,4 +89,4 @@ def get_deployed_commit(p_domain_str = "https://gloflow.com"):
     True
 
 #--------------------------------------------------
-build_apps()
+main()

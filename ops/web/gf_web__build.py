@@ -227,6 +227,7 @@ def build_page(p_page_name_str,
 
 	if p_page_info_map.has_key('files_to_copy_lst'):
 		process_files_to_copy(p_page_info_map, p_log_fun)
+		
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
