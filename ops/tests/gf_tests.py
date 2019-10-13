@@ -36,8 +36,10 @@ def run(p_app_name_str,
     if p_app_meta_map.has_key('test_data_to_serve_dir_str'): use_test_server_bool = True
     else:                                                    use_test_server_bool = False
 
+    #GO_PACKAGE_DIR
     go_package_dir_path_str = p_app_meta_map['go_path_str']
     assert os.path.isdir(go_package_dir_path_str)
+    print("go_package_dir_path_str - %s"%(go_package_dir_path_str))
 
     #-------------
     #TEST_SERVER - used to server assets/images that various Go functions

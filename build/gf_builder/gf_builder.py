@@ -30,13 +30,7 @@ def main():
     print(delegator.run("ls -al").out)
     print("pwd[%s] - whoami[%s]"%(delegator.run("pwd").out.strip(), delegator.run("whoami").out.strip()))
 
-
     args_map = parse_args()
-
-    #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-    if "DRONE_COMMIT_SHA" in os.environ:
-        git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
-        paste_git_commit_hash(git_commit_hash_str)
 
     #GET_CHANGED_APPS
     changed_apps_files_map = get_changed_apps()
@@ -49,6 +43,12 @@ def main():
     #------------------------
     #BUILD
     elif args_map["run"] == "build":
+
+        #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+        if "DRONE_COMMIT_SHA" in os.environ:
+            git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
+            paste_git_commit_hash(git_commit_hash_str)
+            
         build_apps(changed_apps_files_map)
 
     #------------------------
@@ -76,10 +76,8 @@ def test_apps(p_changed_apps_files_map):
         # GO
         print("\n\nGO--------\n\n")
         for app_name_str, v in p_changed_apps_files_map["go"].items():
-
-            app_meta_map  = build_meta_map[app_name_str]
+            
             test_name_str = "all"
-
 
             #IMPORTANT!! - get all packages that are involved in tis app, so that 
             #              tests for all these packages can be run.
@@ -87,9 +85,13 @@ def test_apps(p_changed_apps_files_map):
 
             #RUN_TESTS_FOR_ALL_APP_PACKAGES
             for app_gf_package_name_str in app_gf_packages_lst:
+
+                assert build_meta_map.has_key(app_gf_package_name_str)
+                gf_package_meta_map  = build_meta_map[app_gf_package_name_str]
+
                 gf_tests.run(app_gf_package_name_str,
                     test_name_str,
-                    app_meta_map,
+                    gf_package_meta_map,
                     aws_creds_map)
         #------------------------
     
