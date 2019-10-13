@@ -39,61 +39,69 @@ def main():
         paste_git_commit_hash(git_commit_hash_str)
 
     #GET_CHANGED_APPS
-    changed_apps_map = get_changed_apps()
+    changed_apps_files_map = get_changed_apps()
 
     #------------------------
     #TEST
     if args_map["run"] == "test":
-        test_apps(changed_apps_map)
+        test_apps(changed_apps_files_map)
 
     #------------------------
     #BUILD
     elif args_map["run"] == "build":
-        build_apps(changed_apps_map)
+        build_apps(changed_apps_files_map)
 
     #------------------------
 
 #--------------------------------------------------
-def test_apps(p_changed_apps_map):
-    assert isinstance(p_changed_apps_map, dict)
+def test_apps(p_changed_apps_files_map):
+    assert isinstance(p_changed_apps_files_map, dict)
 
     print("\n\n TEST APPS ----------------------------------------------------- \n\n")
 
-    build_meta_map = gf_meta.get()['build_info_map']
+    build_meta_map        = gf_meta.get()['build_info_map']
+    apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
 
     #AWS_CREDS
     aws_creds_map = gf_aws_creds.get_from_env_vars()
     assert isinstance(aws_creds_map, dict)
 
     #nothing changed
-    if len(p_changed_apps_map.keys()) == 0:
+    if len(p_changed_apps_files_map.keys()) == 0:
         return
     else:
 
         #------------------------
         # GO
         print("\n\nGO--------\n\n")
-        for app_name_str, v in p_changed_apps_map["go"].items():
+        for app_name_str, v in p_changed_apps_files_map["go"].items():
 
             app_meta_map  = build_meta_map[app_name_str]
             test_name_str = "all"
-            
-            gf_tests.run(app_name_str,
-                test_name_str,
-                app_meta_map,
-                aws_creds_map)
+
+
+            #IMPORTANT!! - get all packages that are involved in tis app, so that 
+            #              tests for all these packages can be run.
+            app_gf_packages_lst = apps_changes_deps_map[app_name_str]
+
+            #RUN_TESTS_FOR_ALL_APP_PACKAGES
+            for app_gf_package_name_str in app_gf_packages_lst:
+                gf_tests.run(app_gf_package_name_str,
+                    test_name_str,
+                    app_meta_map,
+                    aws_creds_map)
         #------------------------
     
 #--------------------------------------------------
-def build_apps(p_changed_apps_map):
-    assert isinstance(p_changed_apps_map, dict)
+def build_apps(p_changed_apps_files_map):
+    assert isinstance(p_changed_apps_files_map, dict)
 
     print("\n\n BUILD APPS ----------------------------------------------------- \n\n")
 
     build_meta_map = gf_meta.get()['build_info_map']
     
     #nothing changed
-    if len(p_changed_apps_map.keys()) == 0:
+    if len(p_changed_apps_files_map.keys()) == 0:
         return
     else:
         #------------------------
@@ -101,14 +109,14 @@ def build_apps(p_changed_apps_map):
         print("\n\nWEB--------\n\n")
         web_meta_map   = gf_web_meta.get()
         apps_names_lst = []
-        for app_name_str, v in p_changed_apps_map["web"].items():
+        for app_name_str, v in p_changed_apps_files_map["web"].items():
             apps_names_lst.append(app_name_str)
 
         gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
         #------------------------
         # GO
         print("\n\nGO--------\n\n")
-        for app_name_str, v in p_changed_apps_map["go"].items():
+        for app_name_str, v in p_changed_apps_files_map["go"].items():
 
             app_meta_map           = build_meta_map[app_name_str]
             app_go_path_str        = app_meta_map['go_path_str']
@@ -135,14 +143,14 @@ def get_changed_apps():
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
 
     # LIST_CHANGED_APPS - determine how which apps/services changed
-    changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
+    changed_apps_files_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
         p_commits_lookback_int = 1, 
         p_mark_all_bool        = True)
 
     # VIEW
-    gf_build_changes.view_changed_apps(changed_apps_map, "go")
-    gf_build_changes.view_changed_apps(changed_apps_map, "web")
-    return changed_apps_map
+    gf_build_changes.view_changed_apps(changed_apps_files_map, "go")
+    gf_build_changes.view_changed_apps(changed_apps_files_map, "web")
+    return changed_apps_files_map
 
 #--------------------------------------------------
 def paste_git_commit_hash(p_git_commit_hash_str):
