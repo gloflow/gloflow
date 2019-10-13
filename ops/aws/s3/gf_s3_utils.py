@@ -15,35 +15,26 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
+import os, sys
+cwd_str = os.path.abspath(os.path.dirname(__file__))
+
 import boto3
 
+sys.path.append('%s/..'%(cwd_str))
+import gf_aws_creds
+
+#--------------------------------------------------
 class Gf_s3_info:
     imgs__bucket            = None
     discovered_imgs__bucket = None
     s3_resource             = None
+
 #--------------------------------------------------
+#DEPRECATED!! - use gf_aws_creds.get_from_file() directly
 def parse_creds(p_aws_creds_file_path_str):
-    print(p_aws_creds_file_path_str)
-    assert os.path.isfile(os.path.abspath(p_aws_creds_file_path_str))
-
-    f                = open(p_aws_creds_file_path_str,'r')
-    aws_s3_creds_map = {}
-    for l in f.readlines():
-
-        if l == '' or l == '\n': continue
-        if l.startswith('#'):    continue #ignore comments
-        
-        k, v = l.strip().split("=")
-        k    = k.strip()
-        v    = v.strip()
-
-        if k == "GF_AWS_ACCESS_KEY_ID" or \
-            k == "GF_AWS_SECRET_ACCESS_KEY" or \
-            k == "GF_AWS_TOKEN":
-            aws_s3_creds_map[k]=v
-    f.close()   
+    aws_s3_creds_map = gf_aws_creds.get_from_file(p_aws_creds_file_path_str)
     return aws_s3_creds_map
+
 #---------------------------------------------------
 def s3_connect(p_aws_access_key_id_str,
     p_aws_secret_access_key_str):

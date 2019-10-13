@@ -40,7 +40,9 @@ def run(p_app_name_str,
     assert os.path.isdir(go_package_dir_path_str)
 
     #-------------
-    #TEST_SERVER
+    #TEST_SERVER - used to server assets/images that various Go functions
+    #              that are tested that do fetching of remote resources.
+    
     if use_test_server_bool:
         test_data_dir_str = p_app_meta_map['test_data_to_serve_dir_str']
         assert os.path.isdir(test_data_dir_str)

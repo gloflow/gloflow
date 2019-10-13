@@ -46,10 +46,10 @@ def process_bucket(p_name_str, p_bucket):
 	total_size_kb_int        = 0
 	counts_per_day_map       = {}
 	counts_per_file_type_map = {
-		'thumbnails/':    0, #used??
-		'thumbnails':     0,
-		'thumbnails_jpeg':0,
-		'thumbnails_png': 0
+		'thumbnails/':     0, #used??
+		'thumbnails':      0,
+		'thumbnails_jpeg': 0,
+		'thumbnails_png':  0
 	}
 
 	for o in p_bucket.objects.all():
@@ -98,10 +98,10 @@ def process_bucket(p_name_str, p_bucket):
 		i+=1
 
 	return {
-		'name_str':                p_name_str,
-		'total_size_kb_int':       total_size_kb_int,
-		'counts_per_day_map':      counts_per_day_map,
-		'counts_per_file_type_map':counts_per_file_type_map,
+		'name_str':                 p_name_str,
+		'total_size_kb_int':        total_size_kb_int,
+		'counts_per_day_map':       counts_per_day_map,
+		'counts_per_file_type_map': counts_per_file_type_map,
 	}
 
 #---------------------------------------------------
@@ -162,7 +162,7 @@ def view_bucket_info(p_infos_lst):
 	#}
 	#df = pd.DataFrame(data=df_columns_map)
 	df = pd.DataFrame(df_lst)
-	df.set_index("day",drop=True,inplace=True)
+	df.set_index("day", drop=True, inplace=True)
 	df = df.fillna(0)
 	df = df.sort_values(by=['day'])
 	#print df
@@ -170,13 +170,13 @@ def view_bucket_info(p_infos_lst):
 	#-------------------------
 	#PLOT
 
-	df.plot.line(figsize=(10,6),alpha=0.75)
+	df.plot.line(figsize=(10, 6), alpha=0.75)
 
 	#fig = plt.figure(figsize=(30,10))
 
-	plt.title("S3 buckets info per day",fontsize=18)
-	plt.xlabel("day",                   fontsize=14)
-	plt.ylabel('# of images',           fontsize=14)
+	plt.title("S3 buckets info per day", fontsize=18)
+	plt.xlabel("day",                    fontsize=14)
+	plt.ylabel('# of images',            fontsize=14)
 	plt.xticks(size = 6)
 	plt.axes().yaxis.grid() #horizontal-grid
 

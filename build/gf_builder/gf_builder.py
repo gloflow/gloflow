@@ -2,6 +2,7 @@ import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
+from colored import fg, bg, attr
 import delegator
 
 sys.path.append('%s/../../meta'%(cwd_str))
@@ -13,8 +14,14 @@ import gf_build_changes
 import gf_build
 import gf_log
 
+sys.path.append('%s/../../ops/tests'%(cwd_str))
+import gf_tests
+
 sys.path.append('%s/../../ops/web'%(cwd_str))
 import gf_web__build
+
+sys.path.append('%s/../../ops/aws'%(cwd_str))
+import gf_aws_creds
 
 #--------------------------------------------------
 def main():
@@ -31,44 +38,77 @@ def main():
         git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
         paste_git_commit_hash(git_commit_hash_str)
 
-    if args_map["run"] == "build":
-        build_apps()
+    #GET_CHANGED_APPS
+    changed_apps_map = get_changed_apps()
+
+    #------------------------
+    #TEST
+    if args_map["run"] == "test":
+        test_apps(changed_apps_map)
+
+    #------------------------
+    #BUILD
+    elif args_map["run"] == "build":
+        build_apps(changed_apps_map)
+
+    #------------------------
 
 #--------------------------------------------------
-def build_apps():
+def test_apps(p_changed_apps_map):
+    assert isinstance(p_changed_apps_map, dict)
 
-    apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
-    build_meta_map        = gf_meta.get()['build_info_map']
+    print("\n\n TEST APPS ----------------------------------------------------- \n\n")
+
+    build_meta_map = gf_meta.get()['build_info_map']
+
+    #AWS_CREDS
+    aws_creds_map = gf_aws_creds.get_from_env_vars()
+    assert isinstance(aws_creds_map, dict)
+
+    #nothing changed
+    if len(p_changed_apps_map.keys()) == 0:
+        return
+    else:
+
+        #------------------------
+        # GO
+        print("\n\nGO--------\n\n")
+        for app_name_str, v in p_changed_apps_map["go"].items():
+
+            app_meta_map  = build_meta_map[app_name_str]
+            test_name_str = "all"
+            
+            gf_tests.run(app_name_str,
+                test_name_str,
+                app_meta_map,
+                aws_creds_map)
+        #------------------------
     
-    #------------------------
-    print("DIFF")
+#--------------------------------------------------
+def build_apps(p_changed_apps_map):
+    assert isinstance(p_changed_apps_map, dict)
 
-    # LIST_CHANGED_APPS - determine how which apps/services changed
-    changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
-        p_commits_lookback_int = 1, 
-        p_mark_all_bool        = True)
+    print("\n\n BUILD APPS ----------------------------------------------------- \n\n")
 
-    # VIEW
-    gf_build_changes.view_changed_apps(changed_apps_map, "go")
-    gf_build_changes.view_changed_apps(changed_apps_map, "web")
-    #------------------------
-
-    if len(changed_apps_map.keys()) == 0:
-        exit(0)
+    build_meta_map = gf_meta.get()['build_info_map']
+    
+    #nothing changed
+    if len(p_changed_apps_map.keys()) == 0:
+        return
     else:
         #------------------------
         # WEB
         print("\n\nWEB--------\n\n")
         web_meta_map   = gf_web_meta.get()
         apps_names_lst = []
-        for app_name_str, v in changed_apps_map["web"].items():
+        for app_name_str, v in p_changed_apps_map["web"].items():
             apps_names_lst.append(app_name_str)
 
         gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
         #------------------------
         # GO
         print("\n\nGO--------\n\n")
-        for app_name_str, v in changed_apps_map["go"].items():
+        for app_name_str, v in p_changed_apps_map["go"].items():
 
             app_meta_map           = build_meta_map[app_name_str]
             app_go_path_str        = app_meta_map['go_path_str']
@@ -88,6 +128,21 @@ def build_apps():
                 # to be marked as failed because of the non-zero exit code.
                 p_exit_on_fail_bool = True)
         #------------------------
+
+#--------------------------------------------------
+def get_changed_apps():
+    print("DIFF")
+    apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
+
+    # LIST_CHANGED_APPS - determine how which apps/services changed
+    changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map,
+        p_commits_lookback_int = 1, 
+        p_mark_all_bool        = True)
+
+    # VIEW
+    gf_build_changes.view_changed_apps(changed_apps_map, "go")
+    gf_build_changes.view_changed_apps(changed_apps_map, "web")
+    return changed_apps_map
 
 #--------------------------------------------------
 def paste_git_commit_hash(p_git_commit_hash_str):
@@ -130,6 +185,7 @@ def parse_args():
 - '''+fg('yellow')+'build_containers'+attr(0)+''' - build app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''             - run app code tests
         ''')
+
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     return {

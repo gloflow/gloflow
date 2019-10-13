@@ -120,7 +120,10 @@ def main():
         aws_creds_map = gf_s3_utils.parse_creds(aws_creds_file_path_str)
         test_name_str = args_map['test_name']
         
-        gf_tests.run(app_name_str, test_name_str, app_meta_map, aws_creds_map)
+        gf_tests.run(app_name_str,
+            test_name_str,
+            app_meta_map,
+            aws_creds_map)
 
     #-------------
     #LIST_CHANGED_APPS
@@ -157,6 +160,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_builder__cont_build'+attr(0)+''' - build gf_builder container (for monorepo CI)
 
         ''')
+        
     #-------------
     #APP
     arg_parser.add_argument('-app', action = "store", default = 'gf_images',
@@ -170,24 +174,28 @@ def parse_args():
 - '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
 
         ''')
+
     #-------------
     #AWS_S3_CREDS
     arg_parser.add_argument('-aws_creds',
         action =  "store",
         default = "%s/../../creds/aws/s3.txt"%(cwd_str),
         help =    '''path to the file containing AWS S3 credentials to be used''')
+
     #-------------
     #DOCKERHUB_USER
     arg_parser.add_argument('-dockerhub_user',
         action =  "store",
         default = "glofloworg",
         help =    '''name of the dockerhub user to target''')
+
     #-------------
     #TEST_NAME
     arg_parser.add_argument('-test_name',
         action =  "store",
         default = "all",
         help =    '''if only a particular test needs to be run''')
+
     #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
