@@ -28,12 +28,12 @@ def list_changed_apps(p_apps_changes_deps_map,
     p_commits_lookback_int = 1,
     p_mark_all_bool        = False):
     assert isinstance(p_apps_changes_deps_map, dict)
-    assert p_apps_changes_deps_map.has_key('apps_names_map')
+    assert p_apps_changes_deps_map.has_key('apps_gf_packages_map')
     assert p_apps_changes_deps_map.has_key('system_packages_lst')
     assert isinstance(p_commits_lookback_int, int)
 
-    apps_names_map      = p_apps_changes_deps_map['apps_names_map']
-    system_packages_lst = p_apps_changes_deps_map['system_packages_lst']
+    apps_gf_packages_map = p_apps_changes_deps_map['apps_gf_packages_map']
+    system_packages_lst  = p_apps_changes_deps_map['system_packages_lst']
     assert isinstance(system_packages_lst, list)
 
     changed_apps_files_map  = {
@@ -44,7 +44,7 @@ def list_changed_apps(p_apps_changes_deps_map,
     #------------------------
     #DEBUGGING - mark all apps as changed
     if p_mark_all_bool:
-        for a, _ in apps_names_map.items():
+        for a, _ in apps_gf_packages_map.items():
             changed_apps_files_map["go"][a]  = ["all"]
             changed_apps_files_map["web"][a] = ["all"]
         return changed_apps_files_map
@@ -70,7 +70,7 @@ def list_changed_apps(p_apps_changes_deps_map,
 
     def add_change_to_all_apps(p_file_changed_str, p_type_str):
         assert p_type_str == "go" or p_type_str == "web"
-        for a, _ in apps_names_map.items():
+        for a, _ in apps_gf_packages_map.items():
 
             if changed_apps_files_map[p_type_str].has_key(a):
                 changed_apps_files_map[p_type_str][a].append(p_file_changed_str)
@@ -84,8 +84,8 @@ def list_changed_apps(p_apps_changes_deps_map,
 
         #build out a list of apps that this package (p_package_name_str) is a dependency of
         dependant_apps_lst = []
-        for app_str, package_deps_lst in p_apps_changes_deps_map['apps_names_map'].items():
-            if p_package_name_str in package_deps_lst:
+        for app_str, app_gf_package_lst in p_apps_changes_deps_map['apps_gf_packages_map'].items():
+            if p_package_name_str in app_gf_package_lst:
                 dependant_apps_lst.append(app_str)
 
         #for all apps that are determined to have changed (because they depend on p_package_name_str package) 

@@ -61,6 +61,7 @@ def test_apps(p_changed_apps_files_map):
 
     build_meta_map        = gf_meta.get()['build_info_map']
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
+    apps_gf_packages_map  = apps_changes_deps_map["apps_gf_packages_map"]
 
     #AWS_CREDS
     aws_creds_map = gf_aws_creds.get_from_env_vars()
@@ -82,7 +83,7 @@ def test_apps(p_changed_apps_files_map):
 
             #IMPORTANT!! - get all packages that are involved in tis app, so that 
             #              tests for all these packages can be run.
-            app_gf_packages_lst = apps_changes_deps_map[app_name_str]
+            app_gf_packages_lst = apps_gf_packages_map[app_name_str]
 
             #RUN_TESTS_FOR_ALL_APP_PACKAGES
             for app_gf_package_name_str in app_gf_packages_lst:

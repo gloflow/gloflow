@@ -7,13 +7,13 @@ def get():
     
     #IMPORTANT!! - dependency graph between go/web packages and apps, used to know 
     #              which app containers to rebuild (CI/CD tools) in this monorepo.
-    #              in "apps_names_map" the keys are names of applications, and values are lists of packages
+    #              in "apps_gf_packages_map" the keys are names of applications, and values are lists of packages
     #              that are dependencies for that app. if those packages changed that app will be marked
     #              as changed and will be rebuilt.
     #
     #FIX!!       - have an automated way of determening this graph (no time for that right now).
     apps_changes_deps_map = {
-        'apps_names_map': {
+        'apps_gf_packages_map': {
             'gf_images':       ['gf_images',       'gf_images_lib'],
             'gf_analytics':    ['gf_analytics',    'gf_crawl_lib',     'gf_domains_lib'],
             'gf_publisher':    ['gf_publisher',    'gf_publisher_lib', 'gf_images_lib'],
