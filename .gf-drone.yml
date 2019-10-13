@@ -13,6 +13,11 @@ steps:
   #TEST
   - name: test
     image: glofloworg/gf_builder
+    environment:
+      GF_AWS_ACCESS_KEY_ID:
+        from_secret: gf_testing__aws_access_key_id
+      GF_AWS_SECRET_ACCESS_KEY:
+        from_secret: gf_testing__aws_secret_access_key
     commands:
       #"-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=test

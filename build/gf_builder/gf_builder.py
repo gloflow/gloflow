@@ -162,7 +162,7 @@ def paste_git_commit_hash(p_git_commit_hash_str):
     print(c)
     #------------------------
 
-    r = delegator.run(c).out
+    r = delegator.run(c)
     print(r.out)
     print(r.err)
 

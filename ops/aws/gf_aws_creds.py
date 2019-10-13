@@ -34,8 +34,8 @@ def get_from_file(p_aws_creds_file_path_str):
         v    = v.strip()
 
         if k == "GF_AWS_ACCESS_KEY_ID" or \
-            k == "GF_AWS_SECRET_ACCESS_KEY" or \
-            k == "GF_AWS_TOKEN":
+            k == "GF_AWS_SECRET_ACCESS_KEY":
+            #k == "GF_AWS_TOKEN":
             aws_creds_map[k]=v
     f.close()   
     return aws_creds_map
@@ -45,7 +45,7 @@ def get_from_env_vars():
     aws_creds_map = {
         "aws_access_key_id_str": os.environ["GF_AWS_ACCESS_KEY_ID"],
         "aws_secret_access_key": os.environ["GF_AWS_SECRET_ACCESS_KEY"],
-        "aws_token_str":         os.environ["GF_AWS_TOKEN"]
+        #"aws_token_str":         os.environ["GF_AWS_TOKEN"]
     }
     return aws_creds_map
     

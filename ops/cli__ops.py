@@ -19,7 +19,7 @@ import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 import delegator
 
 sys.path.append('%s/../meta'%(cwd_str))
@@ -28,6 +28,7 @@ import gf_meta
 sys.path.append('%s/aws/s3'%(cwd_str))
 import gf_s3_data_info
 import gf_s3_utils
+
 #--------------------------------------------------
 def main():
     
