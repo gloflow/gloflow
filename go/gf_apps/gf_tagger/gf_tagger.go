@@ -140,7 +140,7 @@ func get_objects_with_tag(p_tag_str string,
 	p_page_size_int   int,
 	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_object_type_str - ", p_object_type_str))
+	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
 
 	//ADD!! - add support for tagging "image" p_object_type_str's
 	if p_object_type_str != "post" {

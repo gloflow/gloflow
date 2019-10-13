@@ -13,7 +13,7 @@ def get():
             'gf_images':       ['gf_images',     'gf_images_lib'],
             'gf_analytics':    ['gf_analytics',  'gf_crawl_lib',     'gf_domains_lib'],
             'gf_publisher':    ['gf_images_lib', 'gf_publisher',     'gf_publisher_lib'],
-            'gf_tagger':       ['gf_images_lib', 'gf_publisher_lib', 'gf_tagger'],
+            #'gf_tagger':       ['gf_images_lib', 'gf_publisher_lib', 'gf_tagger'],
             'gf_landing_page': ['gf_images_lib', 'gf_publisher_lib', 'gf_landing_page'],
         },
 
@@ -115,13 +115,13 @@ def get():
             #-------------
             #MAIN
             #GF_TAGGER
-            'gf_tagger': {
-                'version_str':          '0.8.0.1',
-                'go_path_str':          '%s/../go/gf_apps/gf_tagger'%(cwd_str),
-                'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
-                'service_name_str':     'gf_tagger_service',
-                'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
-            },
+            # 'gf_tagger': {
+            #     'version_str':          '0.8.0.1',
+            #     'go_path_str':          '%s/../go/gf_apps/gf_tagger'%(cwd_str),
+            #     'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
+            #     'service_name_str':     'gf_tagger_service',
+            #     'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
+            # },
             #-------------
             #GF_BUILDER
             'gf_builder': {

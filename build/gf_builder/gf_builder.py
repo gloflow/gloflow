@@ -147,8 +147,10 @@ def get_changed_apps():
 #--------------------------------------------------
 def paste_git_commit_hash(p_git_commit_hash_str):
     print("PASTE_GIT_COMMIT_HASH - %s"%(p_git_commit_hash_str))
-    golang_sys_release_info_file_path_str = "%s/../../go/gf_core/gf_sys_release_info.go"%(cwd_str)
 
+    golang_sys_release_info_file_path_str = "%s/../../go/gf_core/gf_sys_release_info.go"%(cwd_str)
+    assert os.path.isfile(golang_sys_release_info_file_path_str)
+    
     original_word_regex_str = 'Git_commit_str: "",' #this is the original line of Go code
     new_word_regex_str      = 'Git_commit_str: "%s",'%(p_git_commit_hash_str)
 
@@ -158,7 +160,7 @@ def paste_git_commit_hash(p_git_commit_hash_str):
     #               command string:
     #                 "s" - the substitute command
     #                 "g" - global, replace all not just first instance
-    c = "sed -i 's/%s/%s/g'"%(original_word_regex_str, new_word_regex_str)
+    c = "sed -i 's/%s/%s/g' %s"%(original_word_regex_str, new_word_regex_str, golang_sys_release_info_file_path_str)
     print(c)
     #------------------------
 
