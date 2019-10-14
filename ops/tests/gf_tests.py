@@ -75,6 +75,7 @@ def run(p_app_name_str,
     e = os.environ.copy()
     e.update(p_aws_s3_creds_map)
     p = subprocess.Popen(c.split(' '), stderr=subprocess.PIPE, env=e)
+    
 
     #IMPORTANT!! - stderr is used and read, because thats what contains the log lines from Go programs that has
     #              color codes preserved in log lines.
@@ -83,6 +84,7 @@ def run(p_app_name_str,
 
     #if not p.stderr == None: print '%sTESTS FAILED%s >>>>>>>\n'%(fg('red'), attr(0))
 
+    p.wait() #has to be called so that p.returncode is set
     os.chdir(cwd_str) #return to initial dir
     #-------------
 
@@ -96,5 +98,7 @@ def run(p_app_name_str,
     #this way CI pipeline will get stoped and marked as failed.
     if p_exit_on_fail_bool:
         print("test exited with code - %s"%(p.returncode))
+        assert not p.returncode == None #makesure returncode is set by p.wait()
+        
         if not p.returncode == 0:
             exit(p.returncode)
