@@ -25,7 +25,8 @@ from colored import fg,bg,attr
 def run(p_app_name_str,
     p_test_name_str,
     p_app_meta_map,
-    p_aws_s3_creds_map):
+    p_aws_s3_creds_map,
+    p_exit_on_fail_bool = False):
     assert isinstance(p_test_name_str,    basestring)
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
@@ -88,3 +89,11 @@ def run(p_app_name_str,
     #kill HTTP test server used to serve assets that need to come over HTTP
     if use_test_server_bool:
         os.killpg(server_p.pid, signal.SIGTERM)
+
+
+    #in certain scenarios (such as CI) we want this test run to fail 
+    #completelly in case "go test" returns a non-zero return code (failed test).
+    #this way CI pipeline will get stoped and marked as failed.
+    if p_exit_on_fail_bool:
+        if not p.returncode == 0:
+            exit(p.returncode)

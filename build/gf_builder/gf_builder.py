@@ -92,7 +92,12 @@ def test_apps(p_changed_apps_files_map):
                 gf_tests.run(app_gf_package_name_str,
                     test_name_str,
                     gf_package_meta_map,
-                    aws_creds_map)
+                    aws_creds_map,
+
+                    #IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
+                    #              run() should call exit() and force this whole process to exit, 
+                    #              so that CI marks the build as failed.
+                    p_exit_on_fail_bool = True)
         #------------------------
     
 #--------------------------------------------------

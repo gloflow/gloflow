@@ -7,6 +7,15 @@ workspace:
   #              container is placing all its code.
   base: /home/gf
 
+
+services:
+  - name: mongo
+    image: mongo
+
+  - name: elasticsearch
+    image: elasticsearch
+
+
 steps:
 
   #-------------------------------
