@@ -74,7 +74,7 @@ def test_apps(p_changed_apps_files_map):
 
         #------------------------
         # GO
-        print("\n\nGO--------\n\n")
+        print("\nGO--------\n")
         for app_name_str, v in p_changed_apps_files_map["go"].items():
             
             test_name_str = "all"

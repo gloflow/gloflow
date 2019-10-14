@@ -95,5 +95,6 @@ def run(p_app_name_str,
     #completelly in case "go test" returns a non-zero return code (failed test).
     #this way CI pipeline will get stoped and marked as failed.
     if p_exit_on_fail_bool:
+        print("test exited with code - %s"%(p.returncode))
         if not p.returncode == 0:
             exit(p.returncode)
