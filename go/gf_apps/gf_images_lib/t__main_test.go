@@ -102,7 +102,7 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data, p_runtime_s
 			panic(gf_err.Error)
 		}
 		//---------------
-		test__image_id_str := gf_images_utils.Image__create_id(image_local_file_path_str,format_str,p_runtime_sys)
+		test__image_id_str := gf_images_utils.Image_ID__create(image_local_file_path_str,format_str,p_runtime_sys)
 		fmt.Println("test__image_id_str - "+test__image_id_str)
 		//---------------
 
@@ -154,7 +154,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	p_runtime_sys                    *gf_core.Runtime_sys) {
 
 	//---------------
-	test__image_id_str := gf_images_utils.Image__create_id(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
+	test__image_id_str := gf_images_utils.Image_ID__create(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	fmt.Println("test__image_id_str - "+test__image_id_str)
 	//---------------
 	test__image_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_test__image_local_filepath_str, p_runtime_sys)
