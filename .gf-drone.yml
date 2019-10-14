@@ -13,7 +13,7 @@ services:
     image: mongo
 
   - name: elasticsearch
-    image: elasticsearch
+    image: elasticsearch:7.4.0
 
 
 steps:
