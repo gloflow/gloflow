@@ -51,7 +51,7 @@ import gf_builder_ops
 def main():
     
     print('')
-    print('                              %sGLOFLOW BUILD TOOL%s'%(fg('green'),attr(0)))
+    print('                              %sGLOFLOW BUILD TOOL%s'%(fg('green'), attr(0)))
     print('')
     
     build_meta_map        = gf_meta.get()['build_info_map']
@@ -73,17 +73,18 @@ def main():
             app_meta_map['go_path_str'],
             app_meta_map['go_output_path_str'],
             p_static_bool = p_static_bool)
+
     #--------------------------------------------------
 
     #-------------
-    #BUILD
+    0 #BUILD
     if run_str == 'build':
         
         #build using dynamic linking, its quicker while in dev.
         go_build(False)
 
     #-------------
-    #BUILD_WEB
+    # BUILD_WEB
     elif run_str == 'build_web':
         apps_names_lst = [app_name_str]
         web_meta_map   = gf_web_meta.get() 
@@ -91,7 +92,7 @@ def main():
         gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
 
     #-------------
-    #BUILD_CONTAINERS
+    # BUILD_CONTAINERS
     elif run_str == 'build_containers':
 
         #build using static linking, containers are based on Alpine linux, 
@@ -107,7 +108,7 @@ def main():
             gf_log.log_fun)
 
     #-------------
-    #TEST
+    # TEST
     elif run_str == 'test':
 
         app_meta_map            = build_meta_map[app_name_str]
@@ -149,7 +150,7 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 
     #-------------
-    #RUN
+    # RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
 - '''+fg('yellow')+'build'+attr(0)+'''                  - build app golang code
@@ -162,7 +163,7 @@ def parse_args():
         ''')
         
     #-------------
-    #APP
+    # APP
     arg_parser.add_argument('-app', action = "store", default = 'gf_images',
         help = '''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
@@ -176,21 +177,21 @@ def parse_args():
         ''')
 
     #-------------
-    #AWS_S3_CREDS
+    # AWS_S3_CREDS
     arg_parser.add_argument('-aws_creds',
         action =  "store",
         default = "%s/../../creds/aws/s3.txt"%(cwd_str),
         help =    '''path to the file containing AWS S3 credentials to be used''')
 
     #-------------
-    #DOCKERHUB_USER
+    # DOCKERHUB_USER
     arg_parser.add_argument('-dockerhub_user',
         action =  "store",
         default = "glofloworg",
         help =    '''name of the dockerhub user to target''')
 
     #-------------
-    #TEST_NAME
+    # TEST_NAME
     arg_parser.add_argument('-test_name',
         action =  "store",
         default = "all",

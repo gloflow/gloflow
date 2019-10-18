@@ -19,7 +19,7 @@ services:
 steps:
 
   #-------------------------------
-  #TEST
+  # TEST
   - name: test
     image: glofloworg/gf_builder
     environment:
@@ -28,8 +28,9 @@ steps:
       GF_AWS_SECRET_ACCESS_KEY:
         from_secret: gf_testing__aws_secret_access_key
     commands:
-      #"-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test
+      # "-u"                  - run unbuffered to see all stdout/stderr as it happens
+      # "-mongodb_host=mongo" - "mongo" is the hostname used by Drone for the mongo service
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test -mongodb_host=mongo
     when:
       event:
         - push
@@ -37,11 +38,11 @@ steps:
         - master
 
   #-------------------------------
-  #BUILD
+  # BUILD
   - name: build
     image: glofloworg/gf_builder
     commands:
-      #"-u" - run unbuffered to see all stdout/stderr as it happens
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=build
     when:
       event:
@@ -50,11 +51,11 @@ steps:
         - master
 
   #-------------------------------
-  #BUILD_CONTAINERS
+  # BUILD_CONTAINERS
   - name: build_containers
     image: glofloworg/gf_builder
     commands:
-      #"-u" - run unbuffered to see all stdout/stderr as it happens
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
     when:
       event:

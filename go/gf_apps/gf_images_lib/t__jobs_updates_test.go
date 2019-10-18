@@ -24,18 +24,19 @@ import (
 	"testing"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 //---------------------------------------------------
 func Test__jobs_updates(p_test *testing.T) {
-	
+
+	log_fun      := gf_core.Init_log_fun()
+	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
 	//-----------------
 	//TEST_DATA
 	
 	test__http_server_host_str             := "localhost:8000"
 	test__gf_images_service_port_str       := "8010"
-	test__mongodb_host_str                 := "127.0.0.1"
-	test__mongodb_db_name_str              := "gf_tests"
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
 	test__s3_bucket_name_str               := "gf--test--img"
@@ -49,11 +50,15 @@ func Test__jobs_updates(p_test *testing.T) {
 		"flows_str":"./templates",
 	}
 
+	// MONGODB
+	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
+	test__mongodb_db_name_str := "gf_tests"
+
 	fmt.Println(fmt.Sprintf("test__http_server_host_str       - %s", test__http_server_host_str))
 	fmt.Println(fmt.Sprintf("test__gf_images_service_port_str - %s", test__gf_images_service_port_str))
 	fmt.Println("")
 	//-------------
-	log_fun      := gf_core.Init_log_fun()
+	
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 	

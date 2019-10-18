@@ -36,12 +36,14 @@ def main():
     changed_apps_files_map = get_changed_apps()
 
     #------------------------
-    #TEST
+    # TEST
     if args_map["run"] == "test":
-        test_apps(changed_apps_files_map)
+        test_mongodb_host_str = args_map["mongodb_host"]
+        test_apps(changed_apps_files_map,
+            test_mongodb_host_str)
 
     #------------------------
-    #BUILD
+    # BUILD
     elif args_map["run"] == "build":
 
         #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
@@ -54,8 +56,10 @@ def main():
     #------------------------
 
 #--------------------------------------------------
-def test_apps(p_changed_apps_files_map):
+def test_apps(p_changed_apps_files_map,
+    p_test_mongodb_host_str):
     assert isinstance(p_changed_apps_files_map, dict)
+    assert isinstance(p_test_mongodb_host_str, basestring)
 
     print("\n\n TEST APPS ----------------------------------------------------- \n\n")
 
@@ -63,11 +67,11 @@ def test_apps(p_changed_apps_files_map):
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
     apps_gf_packages_map  = apps_changes_deps_map["apps_gf_packages_map"]
 
-    #AWS_CREDS
+    # AWS_CREDS
     aws_creds_map = gf_aws_creds.get_from_env_vars()
     assert isinstance(aws_creds_map, dict)
 
-    #nothing changed
+    # nothing changed
     if len(p_changed_apps_files_map.keys()) == 0:
         return
     else:
@@ -79,11 +83,11 @@ def test_apps(p_changed_apps_files_map):
             
             test_name_str = "all"
 
-            #IMPORTANT!! - get all packages that are involved in tis app, so that 
-            #              tests for all these packages can be run.
+            # IMPORTANT!! - get all packages that are involved in tis app, so that 
+            #               tests for all these packages can be run.
             app_gf_packages_lst = apps_gf_packages_map[app_name_str]
 
-            #RUN_TESTS_FOR_ALL_APP_PACKAGES
+            # RUN_TESTS_FOR_ALL_APP_PACKAGES
             for app_gf_package_name_str in app_gf_packages_lst:
 
                 assert build_meta_map.has_key(app_gf_package_name_str)
@@ -94,10 +98,12 @@ def test_apps(p_changed_apps_files_map):
                     gf_package_meta_map,
                     aws_creds_map,
 
-                    #IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
-                    #              run() should call exit() and force this whole process to exit, 
-                    #              so that CI marks the build as failed.
-                    p_exit_on_fail_bool = True)
+                    # IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
+                    #               run() should call exit() and force this whole process to exit, 
+                    #               so that CI marks the build as failed.
+                    p_exit_on_fail_bool = True,
+                    
+                    p_test_mongodb_host_str = p_test_mongodb_host_str)
         #------------------------
     
 #--------------------------------------------------
@@ -108,7 +114,7 @@ def build_apps(p_changed_apps_files_map):
 
     build_meta_map = gf_meta.get()['build_info_map']
     
-    #nothing changed
+    # nothing changed
     if len(p_changed_apps_files_map.keys()) == 0:
         return
     else:
@@ -197,6 +203,9 @@ def get_deployed_commit(p_domain_str = "https://gloflow.com"):
 #--------------------------------------------------
 def parse_args():
     arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
+
+    #-------------
+    # RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
 - '''+fg('yellow')+'build'+attr(0)+'''            - build app golang/web code
@@ -204,10 +213,20 @@ def parse_args():
 - '''+fg('yellow')+'test'+attr(0)+'''             - run app code tests
         ''')
 
+    #-------------
+    # MONGODB_HOST
+    arg_parser.add_argument('-mongodb_host',
+        action =  "store",
+        default = "all",
+        help =    '''mongodb host to connect to (for testing, etc.)''')
+
+    #-------------
+
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     return {
-        "run": args_namespace.run,
+        "run":          args_namespace.run,
+        "mongodb_host": args_namespace.mongodb_host,
     }
 
 #--------------------------------------------------

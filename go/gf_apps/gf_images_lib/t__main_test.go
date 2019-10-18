@@ -41,6 +41,8 @@ type Gf_test_image_data struct {
 //---------------------------------------------------
 func Test__main(p_test *testing.T) {
 
+	log_fun := gf_core.Init_log_fun()
+	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
 	//-----------------
 	//TEST_DATA
 	test__image_client_type_str      := "test_run"
@@ -56,37 +58,40 @@ func Test__main(p_test *testing.T) {
 	small_thumb_max_size_px_int            := 200
 	medium_thumb_max_size_px_int           := 400
 	large_thumb_max_size_px_int            := 600
-	//-----------------
-	test__mongodb_host_str    := "127.0.0.1"
-	test__mongodb_db_name_str := "gf_tests"
 
-	log_fun  := gf_core.Init_log_fun()
-	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun )
+	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
+	test__mongodb_db_name_str := "gf_tests"
+	//-----------------
+	// MONGODB	
+	mongo_db := gf_core.Mongo__connect(test__mongodb_host_str,
+		test__mongodb_db_name_str,
+		log_fun)
 	mongodb_coll := mongo_db.C("data_symphony")
 	
+	// RUNTIME
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_images_tests",
-		Log_fun:         log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_images_tests",
+		Log_fun:          log_fun,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//-----------------
-	
 
 	test_image_data := &Gf_test_image_data{
-		image_client_type_str:           test__image_client_type_str,
-		image_flows_names_lst:           test__image_flows_names_lst,
-		images_local_filepaths_lst:      test__images_local_filepaths_lst,
-		local_thumbs_target_dir_path_str:test__local_thumbs_target_dir_path_str,
-		origin_url_str:                  test__origin_url_str,
-		origin_page_url_str:             test__origin_page_url_str,
-		small_thumb_max_size_px_int:     small_thumb_max_size_px_int,
-		medium_thumb_max_size_px_int:    medium_thumb_max_size_px_int,
-		large_thumb_max_size_px_int:     large_thumb_max_size_px_int,
+		image_client_type_str:            test__image_client_type_str,
+		image_flows_names_lst:            test__image_flows_names_lst,
+		images_local_filepaths_lst:       test__images_local_filepaths_lst,
+		local_thumbs_target_dir_path_str: test__local_thumbs_target_dir_path_str,
+		origin_url_str:                   test__origin_url_str,
+		origin_page_url_str:              test__origin_page_url_str,
+		small_thumb_max_size_px_int:      small_thumb_max_size_px_int,
+		medium_thumb_max_size_px_int:     medium_thumb_max_size_px_int,
+		large_thumb_max_size_px_int:      large_thumb_max_size_px_int,
 	}
 
 	test__images_transformer(test_image_data,runtime_sys)
 	test__images_ops(test_image_data,runtime_sys)
 }
+
 //---------------------------------------------------
 func test__images_transformer(p_test_image_data *Gf_test_image_data, p_runtime_sys *gf_core.Runtime_sys) {
 
