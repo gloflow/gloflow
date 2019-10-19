@@ -56,7 +56,6 @@ def main():
 #--------------------------------------------------
 def test_apps(p_changed_apps_files_map):
     assert isinstance(p_changed_apps_files_map, dict)
-    assert isinstance(p_test_mongodb_host_str, basestring)
 
     print("\n\n TEST APPS ----------------------------------------------------- \n\n")
 
