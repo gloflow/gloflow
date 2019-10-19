@@ -53,6 +53,10 @@ func Test__main(p_test *testing.T) {
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
 	test__s3_bucket_name_str               := "gf--test--img"
 
+
+	// IMPORTANT!! - test images that are referenced and fetched from "http://%s/filename.jpeg"
+	//               are served by a Py HTTP server (started by gf_tests.py), and those files are served
+	//               from the gf_images_lib/tests_data dir.
 	test_post_info_map := map[string]interface{}{
 		"client_type_str":      "test_run",
 		"title_str":            "test title",
@@ -118,7 +122,7 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 	
 	
 
-
+	// CREATE_POST
 	gf_post, images_job_id_str, gf_err := Pipeline__create_post(p_test_post_info_map,
 		p_gf_images_runtime_info,
 		p_runtime_sys)
@@ -132,7 +136,9 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 
 
 
-	gf_images_lib.T__test_image_job__updates(images_job_id_str, p_gf_images_runtime_info.Jobs_mngr, p_runtime_sys)
+	gf_images_lib.T__test_image_job__updates(images_job_id_str,
+		p_gf_images_runtime_info.Jobs_mngr,
+		p_runtime_sys)
 
 
 }

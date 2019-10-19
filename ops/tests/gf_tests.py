@@ -43,7 +43,7 @@ def run(p_app_name_str,
     print("go_package_dir_path_str - %s"%(go_package_dir_path_str))
 
     #-------------
-    # TEST_SERVER - used to server assets/images that various Go functions
+    # TEST_HTTP_SERVER - used to server assets/images that various Go functions
     #               that are tested that do fetching of remote resources.
     
     if use_test_server_bool:
