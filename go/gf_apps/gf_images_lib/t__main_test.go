@@ -62,7 +62,7 @@ func Test__main(p_test *testing.T) {
 	test__image_flows_names_lst      := []string{"test_flow",}
 	test__images_local_filepaths_lst := []string{
 		"./tests_data/test_image_01.jpeg",
-		"./tests_data/test_image_02.png",
+		"./tests_data/test_image_02.jpeg",
 		"./tests_data/test_image_03.jpeg",
 	}
 	test__local_thumbs_target_dir_path_str := "./tests_data/thumbnails"
