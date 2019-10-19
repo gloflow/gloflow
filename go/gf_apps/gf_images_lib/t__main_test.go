@@ -38,9 +38,11 @@ type Gf_test_image_data struct {
 	medium_thumb_max_size_px_int     int
 	large_thumb_max_size_px_int      int
 }
+
 //---------------------------------------------------
 func Test__main(p_test *testing.T) {
 
+	fmt.Println("TEST__MAIN ==============================================")
 	log_fun := gf_core.Init_log_fun()
 	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
 	//-----------------
@@ -93,7 +95,8 @@ func Test__main(p_test *testing.T) {
 }
 
 //---------------------------------------------------
-func test__images_transformer(p_test_image_data *Gf_test_image_data, p_runtime_sys *gf_core.Runtime_sys) {
+func test__images_transformer(p_test_image_data *Gf_test_image_data,
+	p_runtime_sys *gf_core.Runtime_sys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_TRANSFORMER   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")

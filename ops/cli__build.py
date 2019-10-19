@@ -167,6 +167,7 @@ def parse_args():
     arg_parser.add_argument('-app', action = "store", default = 'gf_images',
         help = '''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
+- '''+fg('yellow')+'gf_images_lib'+attr(0)+'''
 - '''+fg('yellow')+'gf_publisher'+attr(0)+'''
 - '''+fg('yellow')+'gf_tagger'+attr(0)+'''
 - '''+fg('yellow')+'gf_landing_page'+attr(0)+'''

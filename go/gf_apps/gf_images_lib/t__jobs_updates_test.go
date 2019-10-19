@@ -27,9 +27,11 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
+
 //---------------------------------------------------
 func Test__jobs_updates(p_test *testing.T) {
 
+	fmt.Println("TEST__JOBS_UPDATES ==============================================")
 	log_fun      := gf_core.Init_log_fun()
 	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
 	//-----------------
@@ -47,7 +49,7 @@ func Test__jobs_updates(p_test *testing.T) {
 	test__image_client_type_str            := "test_run"
 	
 	test__service_templates_dir_paths_map  := map[string]interface{}{
-		"flows_str":"./templates",
+		"flows_str": "./../../../web/src/gf_apps/gf_images/templates",
 	}
 
 	// MONGODB
