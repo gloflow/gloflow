@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib
 
 import (
+	"os"
 	"fmt"
 	"testing"
 	"github.com/davecgh/go-spew/spew"
@@ -39,12 +40,22 @@ type Gf_test_image_data struct {
 	large_thumb_max_size_px_int      int
 }
 
+var log_fun func(string,string)
+var cli_args_map map[string]interface{}
+
+//---------------------------------------------------
+func TestMain(m *testing.M) {
+	log_fun = gf_core.Init_log_fun()
+	cli_args_map = gf_images_utils.CLI__parse_args(log_fun)
+	v := m.Run()
+	os.Exit(v)
+}
+
 //---------------------------------------------------
 func Test__main(p_test *testing.T) {
 
 	fmt.Println("TEST__MAIN ==============================================")
-	log_fun := gf_core.Init_log_fun()
-	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
+	
 	//-----------------
 	//TEST_DATA
 	test__image_client_type_str      := "test_run"

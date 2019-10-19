@@ -24,7 +24,6 @@ import (
 	"testing"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 )
 
@@ -32,8 +31,7 @@ import (
 func Test__jobs_updates(p_test *testing.T) {
 
 	fmt.Println("TEST__JOBS_UPDATES ==============================================")
-	log_fun      := gf_core.Init_log_fun()
-	cli_args_map := gf_images_utils.CLI__parse_args(log_fun)
+
 	//-----------------
 	//TEST_DATA
 	
