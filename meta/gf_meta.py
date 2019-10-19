@@ -32,7 +32,7 @@ def get():
         'apps_changes_deps_map': apps_changes_deps_map,
         'build_info_map': {
             #------------------------
-            #GF_SOLO
+            # GF_SOLO
             'gf_solo': {
                 'version_str':        '0.8.0.0',
                 'go_output_path_str': '%s/../build/gf_apps/apps/gf_solo/gf_solo'%(cwd_str),
@@ -40,9 +40,10 @@ def get():
                     ('%s/../go/src/apps/gf_solo/gf_php_lib/php/index.php'%(cwd_str), '%s/../go/build/apps/gf_solo/php'%(cwd_str)),
                 ]
             },
+            
             #-------------
-            #MAIN
-            #GF_IMAGES
+            # MAIN
+            # GF_IMAGES
             'gf_images': {
                 'version_str':          '0.8.0.10',
                 'go_path_str':          '%s/../go/gf_apps/gf_images'%(cwd_str),
@@ -51,15 +52,16 @@ def get():
                 'service_base_dir_str': '%s/../build/gf_apps/gf_images'%(cwd_str),
             },
             
-            #LIB
-            #GF_IMAGES_LIB
+            # LIB
+            # GF_IMAGES_LIB
             'gf_images_lib': {
                 'go_path_str':                '%s/../go/gf_apps/gf_images_lib'%(cwd_str),
                 'test_data_to_serve_dir_str': '%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str), #for tests serve data over http from this dir
             },
+
             #-------------
-            #MAIN
-            #GF_ANALYTICS
+            # MAIN
+            # GF_ANALYTICS
             'gf_analytics': {
                 'version_str':          '0.8.0.7',
                 'go_path_str':          '%s/../go/gf_apps/gf_analytics'%(cwd_str),
@@ -77,17 +79,18 @@ def get():
                 ]
             },
             #-------------
-            #LIB
-            #GF_CRAWL_LIB
+            # LIB
+            # GF_CRAWL_LIB
             'gf_crawl_lib': {
                 'go_path_str': '%s/../go/gf_apps/gf_crawl_lib'%(cwd_str),
             },
             'gf_crawl_core': {
                 'go_path_str': '%s/../go/gf_apps/gf_crawl_lib/gf_crawl_core'%(cwd_str),
             },
+
             #-------------
-            #MAIN
-            #GF_PUBLISHER
+            # MAIN
+            # GF_PUBLISHER
             'gf_publisher': {
                 'version_str':          '0.8.0.4',
                 'go_path_str':          '%s/../go/gf_apps/gf_publisher'%(cwd_str),
@@ -96,8 +99,8 @@ def get():
                 'service_base_dir_str': '%s/../build/gf_apps/gf_publisher'%(cwd_str),
             },
             
-            #LIB
-            #GF_PUBLISHER_LIB
+            # LIB
+            # GF_PUBLISHER_LIB
             'gf_publisher_lib': {
                 'go_path_str':'%s/../go/gf_apps/gf_publisher_lib'%(cwd_str),
 
@@ -106,9 +109,10 @@ def get():
                 #needs to be able to fetch images over http that come from this dir.
                 'test_data_to_serve_dir_str':'%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str),
             },
+
             #-------------
-            #MAIN
-            #GF_LANDING_PAGE
+            # MAIN
+            # GF_LANDING_PAGE
             'gf_landing_page': {
                 'version_str':          '0.8.0.11',
                 'go_path_str':          '%s/../go/gf_apps/gf_landing_page'%(cwd_str),
@@ -116,18 +120,20 @@ def get():
                 'service_name_str':     'gf_landing_page_service',
                 'service_base_dir_str': '%s/../build/gf_apps/gf_landing_page'%(cwd_str),
             },
+
             #-------------
-            #MAIN
-            #GF_TAGGER
-            # 'gf_tagger': {
-            #     'version_str':          '0.8.0.1',
-            #     'go_path_str':          '%s/../go/gf_apps/gf_tagger'%(cwd_str),
-            #     'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
-            #     'service_name_str':     'gf_tagger_service',
-            #     'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
-            # },
+            # MAIN
+            # GF_TAGGER
+            'gf_tagger': {
+                'version_str':          '0.8.0.1',
+                'go_path_str':          '%s/../go/gf_apps/gf_tagger'%(cwd_str),
+                'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
+                'service_name_str':     'gf_tagger_service',
+                'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
+            },
+
             #-------------
-            #GF_BUILDER
+            # GF_BUILDER
             'gf_builder': {
                 'version_str':         'latest',
                 'cont_image_name_str': 'gf_builder',
@@ -137,6 +143,7 @@ def get():
                 #build procedures that files/modules from many different directories. 
                 'dockerfile_path_str': '%s/../Dockerfile__gf_builder'%(cwd_str)
             },
+
             #-------------
         }
     }

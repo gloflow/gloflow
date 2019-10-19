@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"os"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -29,13 +30,13 @@ import (
 func main() {
 	log_fun := gf_core.Init_log_fun()
 
-	cli_args_map            := parse__cli_args(log_fun)
+	cli_args_map            := CLI__parse_args(log_fun)
 	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)
 	port_str                := cli_args_map["port_str"].(string)
 	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
 	mongodb_db_name_str     := cli_args_map["mongodb_db_name_str"].(string)
 
-	//START_SERVICE
+	// START_SERVICE
 	if run__start_service_bool {
 		//init_done_ch := make(chan bool)
 		Run_service__in_process(port_str,
@@ -48,14 +49,28 @@ func main() {
 }
 
 //-------------------------------------------------
-func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_tagger_service.parse__cli_args()")
+func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
+	p_log_fun("FUN_ENTER", "gf_tagger_service.CLI__parse_args()")
 
 	//-------------------
-	run__start_service_bool := flag.Bool("run__start_service", true,        "run the service daemon")
-	port_str                := flag.String("port",             "3000",      "port for the service to use")
-	mongodb_host_str        := flag.String("mongodb_host",     "127.0.0.1", "host of mongodb to use")
-	mongodb_db_name_str     := flag.String("mongodb_db_name",  "prod_db"  , "DB name to use")
+	run__start_service_bool := flag.Bool("run__start_service", true,   "run the service daemon")
+	port_str                := flag.String("port",             "3000", "port for the service to use")
+
+	// MONGODB
+	mongodb_host_str        := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
+	mongodb_db_name_str     := flag.String("mongodb_db_name", "prod_db"  , "DB name to use")
+
+	// MONGODB_ENV
+	mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
+	mongodb_db_name_env_str := os.Getenv("GF_MONGODB_DB_NAME")
+
+	if mongodb_db_name_env_str != "" {
+		*mongodb_db_name_str = mongodb_db_name_env_str
+	}
+
+	if mongodb_host_env_str != "" {
+		*mongodb_host_str = mongodb_host_env_str
+	}
 	//-------------------
 	flag.Parse()
 
@@ -88,7 +103,7 @@ func Run_service__in_process(p_port_str string,
 		Mongodb_coll:     mongodb_coll,
 	}
 	//------------------------
-	//STATIC FILES SERVING
+	// STATIC FILES SERVING
 	dashboard__url_base_str := "/tags"
 	gf_core.HTTP__init_static_serving(dashboard__url_base_str, runtime_sys)
 	//------------------------
@@ -99,7 +114,7 @@ func Run_service__in_process(p_port_str string,
 	}
 
 	//----------------------
-	//IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
+	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
 	if p_init_done_ch != nil {
 		p_init_done_ch <- true
 	}

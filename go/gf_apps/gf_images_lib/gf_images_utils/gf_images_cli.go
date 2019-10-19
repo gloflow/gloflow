@@ -17,9 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 package gf_images_utils
-
 
 import (
 	"os"
@@ -43,6 +41,7 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
 	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
 
+	// MONGODB_ENV
 	mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
 	mongodb_db_name_env_str := os.Getenv("GF_MONGODB_DB_NAME")
 
