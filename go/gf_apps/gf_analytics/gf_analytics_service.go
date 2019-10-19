@@ -22,9 +22,7 @@ package main
 import (
 	"os"
 	"fmt"
-	"flag"
 	"net/http"
-	"strings"
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
@@ -38,11 +36,12 @@ import (
 func main() {
 	log_fun := gf_core.Init_log_fun()
 
-	cli_args_map        := parse__cli_args(log_fun)
+	cli_args_map        := CLI__parse_args(log_fun)
 	run_str             := cli_args_map["run_str"].(string)
 	port_str            := cli_args_map["port_str"].(string)
-	mongodb_host_str    := cli_args_map["mongodb_host_str"].(string)
-	mongodb_db_name_str := cli_args_map["mongodb_db_name_str"].(string)
+	mongodb_host_str       := cli_args_map["mongodb_host_str"].(string)
+	mongodb_db_name_str    := cli_args_map["mongodb_db_name_str"].(string)
+	elasticsearch_host_str := cli_args_map["elasticsearch_host_str"].(string)
 	crawl_config_file_path_str := cli_args_map["crawl_config_file_path_str"].(string)
 	//-----------------
 	//MONGODB
@@ -57,7 +56,7 @@ func main() {
 		Mongodb_coll:     mongodb_coll,
 	}
 	//-----------------
-	//ELASTICSEARCH
+	// ELASTICSEARCH
  	
  	//used in case we want to skip using elasticsearch, to avoid that
  	//dependency needing to be present
@@ -66,7 +65,7 @@ func main() {
 	var esearch_client *elastic.Client
 	var gf_err         *gf_core.Gf_error
 	if run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(runtime_sys)
+		esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -78,7 +77,7 @@ func main() {
 	switch run_str {
 
 		//-----------------------------
-		//RUN CRAWLER - run a certain number of crawler cycles.
+		// RUN CRAWLER - run a certain number of crawler cycles.
 
 		case "run_crawler":
 				
@@ -126,7 +125,7 @@ func main() {
 				}
 			}
 		//-----------------------------
-		//DISCOVER DOMAINS IN DB
+		// DISCOVER DOMAINS IN DB
 
 		case "discover_domains_in_db":
 			gf_err := gf_domains_lib.Discover_domains_in_db(runtime_sys)
@@ -134,7 +133,7 @@ func main() {
 				panic(gf_err.Error)
 			}
 		//-----------------------------
-		//START SERVICE
+		// START SERVICE
 		case "start_service":
 			
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
@@ -201,54 +200,5 @@ func main() {
 				panic(err)
 			}
 		//-----------------------------
-	}
-}
-
-//-------------------------------------------------
-func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_analytics_service.parse__cli_args()")
-
-	default_command_str := "start_service"
-	//-------------------
-	run_str                           := flag.String("run",                     default_command_str,          "start_service|discover_domains_in_db|run_crawler - name of the command to run")
-	port_str                          := flag.String("port",                    "3060",                       "port for the service to use")
-	mongodb_host_str                  := flag.String("mongodb_host",            "127.0.0.1",                  "host of mongodb to use")
-	mongodb_db_name_str               := flag.String("mongodb_db_name",         "prod_db",                    "DB name to use")
-	crawler_name_str                  := flag.String("crawler_name",            "gloflow.com",                "name of the crawler to run")
-	crawler_cycles_to_run_int         := flag.Int("crawler_cycles_to_run",      1,                            "DEBUGGING - when running 'run_crawler' command this indicates how many crawler cylcles o run")
-	cluster_node_type_str             := flag.String("cluster_node_type",       "master",                     "master|worker - crawler node type")
-	crawl_config_file_path_str        := flag.String("crawl_config_file_path",  "./config/crawl_config.yaml", "local image tmp dir for crawled images before upload to permanent storage")
-	crawler_images_local_dir_path_str := flag.String("crawler_images_dir_path", "./data/images",              "local image tmp dir for crawled images before upload to permanent storage")
-	run_indexer_bool                  := flag.Bool("run_indexer",               true,                         "DEBUG - if the indexer (elasticsearch) should be used")
-	py_stats_dirs                     := flag.String("py_stats_dirs",           "./py/stats",                 "path to the dir that contains stats .py script files")
-	//-------------------
-	//ENV VARS
-	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
-	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
-	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
-
-	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
-		p_log_fun("ERROR", "ENV vars not set - GF_AWS_ACCESS_KEY_ID, GF_AWS_SECRET_ACCESS_KEY")
-		panic(1)
-	}
-	//-------------------
-
-	flag.Parse()
-
-	return map[string]interface{}{
-		"run_str":                           *run_str,
-		"port_str":                          *port_str,
-		"mongodb_host_str":                  *mongodb_host_str,
-		"mongodb_db_name_str":               *mongodb_db_name_str,
-		"crawler_name_str":                  *crawler_name_str,
-		"crawler_cycles_to_run_int":         *crawler_cycles_to_run_int,
-		"cluster_node_type_str":             *cluster_node_type_str,
-		"crawl_config_file_path_str":        *crawl_config_file_path_str,
-		"crawler_images_local_dir_path_str": *crawler_images_local_dir_path_str,
-		"run_indexer_bool":                  *run_indexer_bool,
-		"py_stats_dirs_lst":                 strings.Split(*py_stats_dirs,","),
-		"aws_access_key_id_str":             aws_access_key_id_str,
-		"aws_secret_access_key_str":         aws_secret_access_key_str,
-		"aws_token_str":                     aws_token_str,
 	}
 }

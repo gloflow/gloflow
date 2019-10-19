@@ -24,6 +24,7 @@ steps:
     image: glofloworg/gf_builder
     environment:
       GF_MONGODB_HOST: mongo
+      GF_ELASTICSEARCH_HOST: elasticsearch
       GF_AWS_ACCESS_KEY_ID:
         from_secret: gf_testing__aws_access_key_id
       GF_AWS_SECRET_ACCESS_KEY:

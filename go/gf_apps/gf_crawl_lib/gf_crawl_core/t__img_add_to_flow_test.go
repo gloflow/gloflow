@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_core
 
 import (
+	"os"
 	"fmt"
 	"testing"
 	"github.com/fatih/color"
@@ -42,6 +43,19 @@ type gf_test_config struct {
 	test__gf_images_s3_bucket_name_str      string
 }
 
+var runtime_sys *gf_core.Runtime_sys
+var crawler_runtime *Gf_crawler_runtime
+
+//---------------------------------------------------
+func TestMain(m *testing.M) {
+	runtime_sys, crawler_runtime = T__init()
+	if runtime_sys == nil || crawler_runtime == nil {
+		return
+	}
+	v := m.Run()
+	os.Exit(v)
+}
+
 //---------------------------------------------------
 func Test__img_add_to_flow(p_test *testing.T) {
 
@@ -55,9 +69,6 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	//-------------------
 	//INIT 
 
-	
-
-
 	test_config := &gf_test_config{
 		test__crawler_name_str:                  "test-crawler",
 		test__cycle_run_id_str:                  "test__cycle_run_id",
@@ -70,16 +81,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test__gf_images_s3_bucket_name_str:      "gf--test--img",
 	}
 
-
-	
-
-	runtime_sys, crawler_runtime := T__init(p_test)
-	if runtime_sys == nil || crawler_runtime == nil {
-		return
-	}
-
 	t__cleanup__test_page_imgs(test_config.test__crawler_name_str, runtime_sys)
-
 
 	//IMPORTANT!! - this function creates, by calling gf_images_utils library from gf_images app, creates
 	//              a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 

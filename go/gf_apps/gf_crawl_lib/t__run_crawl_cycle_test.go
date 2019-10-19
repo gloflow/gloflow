@@ -20,11 +20,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_lib
 
 import (
+	"os"
 	"testing"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
+
+var runtime_sys *gf_core.Runtime_sys
+var crawler_runtime *gf_crawl_core.Gf_crawler_runtime
+
+//---------------------------------------------------
+func TestMain(m *testing.M) {
+	runtime_sys, crawler_runtime = gf_crawl_core.T__init()
+	if runtime_sys == nil || crawler_runtime == nil {
+		return
+	}
+	v := m.Run()
+	os.Exit(v)
+}
 
 //-------------------------------------------------
 func Test__run_crawl_cycle(p_test *testing.T) {
@@ -32,12 +46,6 @@ func Test__run_crawl_cycle(p_test *testing.T) {
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
 	test__crawler_images_local_dir_path_str := "./test_data/crawled_images"
 	test__crawl_config_file_path_str        := "./test_data/config/test_crawl_config.yaml"
-
-
-	runtime_sys, crawler_runtime := gf_crawl_core.T__init(p_test)
-	if runtime_sys == nil || crawler_runtime == nil {
-		return
-	}
 
 	test__run_crawl_cycle(p_test,
 		test__crawler_images_local_dir_path_str,

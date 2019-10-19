@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_core
 
 import (
+	"os"
 	"testing"
 	"fmt"
 	"os/exec"
@@ -29,6 +30,72 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
+//-------------------------------------------------
+// INIT
+func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
+
+	//-------------
+	// MONGODB
+	test__mongodb_host_str      := "127.0.0.1"
+	test__mongodb_db_name_str   := "gf_tests"
+
+	// MONGODB_ENV
+	test__mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
+	test__mongodb_db_name_env_str := os.Getenv("GF_MONGODB_DB_NAME")
+
+	if test__mongodb_host_env_str != "" {
+		test__mongodb_host_str = test__mongodb_host_env_str
+	}
+
+	if test__mongodb_db_name_env_str != "" {
+		test__mongodb_host_str = test__mongodb_db_name_env_str
+	}
+
+	// ELASTICSEARCH
+	test__es_host_str := "127.0.0.1:9200"
+	
+	// ELASTICSEARCH_ENV
+	test__es_host_env_str := os.Getenv("GF_ELASTICSEARCH_HOST")
+
+	if test__es_host_env_str != "" {
+		test__es_host_str = test__es_host_env_str
+	}
+
+	test__cluster_node_type_str := "master"
+	//-------------
+
+	log_fun      := gf_core.Init_log_fun()
+	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
+	mongodb_coll := mongodb_db.C("data_symphony")
+	
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_crawl_tests",
+		Log_fun:          log_fun,
+		Mongodb_db:       mongodb_db,
+		Mongodb_coll:     mongodb_coll,
+	}
+	//-------------
+	//ELASTICSEARCH
+	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtime_sys)
+	if gf_err != nil {
+		panic("failed to get ElasticSearch client in test initialization")
+		return nil, nil
+	}
+	//-------------
+	//S3
+	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
+	//-------------
+
+	crawler_runtime := &Gf_crawler_runtime{
+		Events_ctx:            nil,
+		Esearch_client:        esearch_client,
+		S3_info:               s3_test_info.Gf_s3_info,
+		Cluster_node_type_str: test__cluster_node_type_str,
+	}
+
+	return runtime_sys, crawler_runtime
+}
 
 //---------------------------------------------------
 func t__create_test_image_ADTs(p_test *testing.T,
@@ -125,43 +192,4 @@ func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *
 	if err != nil {
 		panic(err)
 	}
-}
-
-//-------------------------------------------------
-func T__init(p_test *testing.T) (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
-
-	test__mongodb_host_str      := "127.0.0.1"
-	test__mongodb_db_name_str   := "gf_tests"
-	test__cluster_node_type_str := "master"
-	
-	log_fun      := gf_core.Init_log_fun()
-	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
-	
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_crawl_tests",
-		Log_fun:          log_fun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
-	}
-	//-------------
-	//ELASTICSEARCH
-	esearch_client, gf_err := gf_core.Elastic__get_client(runtime_sys)
-	if gf_err != nil {
-		p_test.Errorf("failed to get ElasticSearch client in test initialization")
-		return nil, nil
-	}
-	//-------------
-	//S3
-	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
-	//-------------
-
-	crawler_runtime := &Gf_crawler_runtime{
-		Events_ctx:            nil,
-		Esearch_client:        esearch_client,
-		S3_info:               s3_test_info.Gf_s3_info,
-		Cluster_node_type_str: test__cluster_node_type_str,
-	}
-
-	return runtime_sys, crawler_runtime
 }

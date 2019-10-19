@@ -31,17 +31,9 @@ import (
 func Test__links_allocator(p_test *testing.T) {
 
 	//-------------------
-	test__crawler_name_str       := "test_crawler"
-	test__block_size_int         := 100
-	
-	
-	runtime_sys, _ := T__init(p_test)
-	if runtime_sys == nil {
-		return
-	}
+	test__crawler_name_str := "test_crawler"
+	test__block_size_int   := 100
 	//-------------------
-
-
 
 	//CREATE_ALLOCATOR
 	allocator, gf_err := Link_alloc__create(test__crawler_name_str, runtime_sys)
@@ -50,8 +42,7 @@ func Test__links_allocator(p_test *testing.T) {
 		return
 	}
 	spew.Dump(allocator)
-
-
+	
 	//CREATE_ALLOCATOR_LINKS_BLOCK
 	alloc_block, gf_err := Link_alloc__create_links_block(allocator.Id_str, test__crawler_name_str, test__block_size_int, runtime_sys)
 	if gf_err != nil {

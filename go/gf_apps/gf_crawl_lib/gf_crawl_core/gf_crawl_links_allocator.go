@@ -28,16 +28,16 @@ import (
 
 //--------------------------------------------------
 type Gf_crawl_link_alloc struct {
-	Id                   bson.ObjectId              `bson:"_id,omitempty"`
-	Id_str               string                     `bson:"id_str"`
-	T_str                string                     `bson:"t"`                         //"crawler_link_alloc"
-	Creation_unix_time_f float64                    `bson:"creation_unix_time_f"`
-	Crawler_name_str     string                     `bson:"crawler_name_str"`
-	Block_size_int       int                        `bson:"block_size_int"`
-	Sleep_time_sec_int   int                        `bson:"sleep_time_sec_int"`
+	Id                   bson.ObjectId  `bson:"_id,omitempty"`
+	Id_str               string         `bson:"id_str"`
+	T_str                string         `bson:"t"`                         //"crawler_link_alloc"
+	Creation_unix_time_f float64        `bson:"creation_unix_time_f"`
+	Crawler_name_str     string         `bson:"crawler_name_str"`
+	Block_size_int       int            `bson:"block_size_int"`
+	Sleep_time_sec_int   int            `bson:"sleep_time_sec_int"`
 
 	Last_run_unix_time_f      float64
-	Current_link_block_id_str string                `bson:"current_link_block_id_str"`
+	Current_link_block_id_str string    `bson:"current_link_block_id_str"`
 }
 
 type Gf_crawl_link_alloc_block struct {
@@ -53,7 +53,6 @@ type Gf_crawl_link_alloc_block struct {
 func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
 
-	
 	allocator, gf_err := Link_alloc__create(p_crawler_name_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
