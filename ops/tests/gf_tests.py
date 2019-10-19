@@ -26,8 +26,7 @@ def run(p_app_name_str,
     p_test_name_str,
     p_app_meta_map,
     p_aws_s3_creds_map,
-    p_exit_on_fail_bool     = False,
-    p_test_mongodb_host_str = "127.0.0.1"):
+    p_exit_on_fail_bool = False):
     assert isinstance(p_test_name_str,    basestring)
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
@@ -76,9 +75,9 @@ def run(p_app_name_str,
         "go test",
         "-timeout 30s",
 
-        #"-args" - margs subsequent arguments as ones to pass to the tests themselves
-        "-args",
-        "-mongodb_host=%s"%(p_test_mongodb_host_str)
+        # #"-args" - margs subsequent arguments as ones to pass to the tests themselves
+        # "-args",
+        # "-mongodb_host=%s"%(p_test_mongodb_host_str)
     ]
 
     # specific test was selected for running, not all tests

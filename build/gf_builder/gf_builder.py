@@ -38,9 +38,7 @@ def main():
     #------------------------
     # TEST
     if args_map["run"] == "test":
-        test_mongodb_host_str = args_map["mongodb_host"]
-        test_apps(changed_apps_files_map,
-            test_mongodb_host_str)
+        test_apps(changed_apps_files_map)
 
     #------------------------
     # BUILD
@@ -56,8 +54,7 @@ def main():
     #------------------------
 
 #--------------------------------------------------
-def test_apps(p_changed_apps_files_map,
-    p_test_mongodb_host_str):
+def test_apps(p_changed_apps_files_map):
     assert isinstance(p_changed_apps_files_map, dict)
     assert isinstance(p_test_mongodb_host_str, basestring)
 
@@ -101,9 +98,7 @@ def test_apps(p_changed_apps_files_map,
                     # IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
                     #               run() should call exit() and force this whole process to exit, 
                     #               so that CI marks the build as failed.
-                    p_exit_on_fail_bool = True,
-                    
-                    p_test_mongodb_host_str = p_test_mongodb_host_str)
+                    p_exit_on_fail_bool = True)
         #------------------------
     
 #--------------------------------------------------
@@ -214,19 +209,19 @@ def parse_args():
         ''')
 
     #-------------
-    # MONGODB_HOST
-    arg_parser.add_argument('-mongodb_host',
-        action =  "store",
-        default = "all",
-        help =    '''mongodb host to connect to (for testing, etc.)''')
+    # # MONGODB_HOST
+    # arg_parser.add_argument('-mongodb_host',
+    #     action =  "store",
+    #     default = "all",
+    #     help =    '''mongodb host to connect to (for testing, etc.)''')
 
     #-------------
 
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     return {
-        "run":          args_namespace.run,
-        "mongodb_host": args_namespace.mongodb_host,
+        "run": args_namespace.run,
+        # "mongodb_host": args_namespace.mongodb_host,
     }
 
 #--------------------------------------------------
