@@ -32,8 +32,8 @@ def run(p_app_name_str,
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
 
-    print ''
-    print ' -- test %s%s%s package'%(fg('green'), p_app_name_str, attr(0))
+    print('')
+    print(' -- test %s%s%s package'%(fg('green'), p_app_name_str, attr(0)))
 
     if p_app_meta_map.has_key('test_data_to_serve_dir_str'): use_test_server_bool = True
     else:                                                    use_test_server_bool = False
@@ -75,6 +75,9 @@ def run(p_app_name_str,
     cmd_lst = [
         "go test",
         "-timeout 30s",
+
+        #"-args" - margs subsequent arguments as ones to pass to the tests themselves
+        "-args",
         "-mongodb_host=%s"%(p_test_mongodb_host_str)
     ]
 
