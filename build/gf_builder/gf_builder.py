@@ -23,6 +23,9 @@ import gf_web__build
 sys.path.append('%s/../../ops/aws'%(cwd_str))
 import gf_aws_creds
 
+sys.path.append('%s/../../ops/containers'%(cwd_str))
+import gf_containers
+
 #--------------------------------------------------
 def main():
     
@@ -52,6 +55,37 @@ def main():
         build_apps(changed_apps_files_map)
 
     #------------------------
+    # BUILD_CONTAINERS
+    elif args_map["run"] == "build_containers":
+        build_apps_containers(changed_apps_files_map)
+
+    #------------------------
+
+#--------------------------------------------------
+def build_apps_containers(p_changed_apps_files_map):
+    assert isinstance(p_changed_apps_files_map, dict)
+
+    web_meta_map = gf_web_meta.get()
+
+    # IMPORTANT!! - for each app that has any of its code changed rebuild both the Go and Web code,
+    #               since the containers has to be fully rebuilt.
+    # "all" - this key holds a map with all the apps that had either their Go or Web code changed
+    apps_names_lst = p_changed_apps_files_map["all"].keys()
+
+
+    for app_name_str in apps_names_lst:
+
+        assert build_meta_map.has_key(app_gf_package_name_str)
+        app_build_meta_map = build_meta_map[app_gf_package_name_str]
+
+
+        assert web_meta_map.has_key(app_name_str)
+        app_web_meta_map = web_meta_map[app_name_str]
+        
+        gf_containers.build(app_name_str,
+            app_build_meta_map,
+            app_web_meta_map,
+            gf_log.log_fun)
 
 #--------------------------------------------------
 def test_apps(p_changed_apps_files_map):
@@ -87,7 +121,7 @@ def test_apps(p_changed_apps_files_map):
             for app_gf_package_name_str in app_gf_packages_lst:
 
                 assert build_meta_map.has_key(app_gf_package_name_str)
-                gf_package_meta_map  = build_meta_map[app_gf_package_name_str]
+                gf_package_meta_map = build_meta_map[app_gf_package_name_str]
 
                 gf_tests.run(app_gf_package_name_str,
                     test_name_str,
@@ -112,19 +146,24 @@ def build_apps(p_changed_apps_files_map):
     if len(p_changed_apps_files_map.keys()) == 0:
         return
     else:
+
+        # IMPORTANT!! - for each app that has any of its code changed rebuild both the Go and Web code,
+        #               since the containers has to be fully rebuilt.
+        # "all" - this key holds a map with all the apps that had either their Go or Web code changed
+        apps_names_lst = p_changed_apps_files_map["all"].keys()
+
         #------------------------
         # WEB
         print("\n\nWEB--------\n\n")
-        web_meta_map   = gf_web_meta.get()
-        apps_names_lst = []
-        for app_name_str, v in p_changed_apps_files_map["web"].items():
-            apps_names_lst.append(app_name_str)
-
+            
+        web_meta_map = gf_web_meta.get()
         gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
+        
         #------------------------
         # GO
         print("\n\nGO--------\n\n")
-        for app_name_str, v in p_changed_apps_files_map["go"].items():
+        
+        for app_name_str in apps_names_lst:
 
             app_meta_map           = build_meta_map[app_name_str]
             app_go_path_str        = app_meta_map['go_path_str']
@@ -143,6 +182,7 @@ def build_apps(p_changed_apps_files_map):
                 # gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
                 # to be marked as failed because of the non-zero exit code.
                 p_exit_on_fail_bool = True)
+
         #------------------------
 
 #--------------------------------------------------
@@ -158,6 +198,7 @@ def get_changed_apps():
     # VIEW
     gf_build_changes.view_changed_apps(changed_apps_files_map, "go")
     gf_build_changes.view_changed_apps(changed_apps_files_map, "web")
+    
     return changed_apps_files_map
 
 #--------------------------------------------------
@@ -202,9 +243,10 @@ def parse_args():
     # RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
-- '''+fg('yellow')+'build'+attr(0)+'''            - build app golang/web code
-- '''+fg('yellow')+'build_containers'+attr(0)+''' - build app Docker containers
-- '''+fg('yellow')+'test'+attr(0)+'''             - run app code tests
+- '''+fg('yellow')+'test'+attr(0)+'''               - run app code tests
+- '''+fg('yellow')+'build'+attr(0)+'''              - build app golang/web code
+- '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
+- '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
         ''')
 
     #-------------

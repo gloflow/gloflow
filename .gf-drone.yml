@@ -55,6 +55,12 @@ steps:
   # BUILD_CONTAINERS
   - name: build_containers
     image: glofloworg/gf_builder
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container building and later publishing.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
