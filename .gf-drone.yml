@@ -14,6 +14,8 @@ services:
 
   - name: elasticsearch
     image: elasticsearch:7.4.0
+    ports:
+      - 9200
 
 volumes:
   - name: docker-sock
@@ -21,6 +23,15 @@ volumes:
       path: /var/run/docker.sock
 
 steps:
+
+  #-------------------------------
+  # TEST_ELASTICSEARCH
+
+  - name: test-elasticsearch
+    image: alpine:3.8
+    commands:
+      - apk add curl
+      - curl http://elasticsearch:9200
 
   #-------------------------------
   # TEST
