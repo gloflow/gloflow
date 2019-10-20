@@ -36,6 +36,7 @@ func Test__links_allocator(p_test *testing.T) {
 	allocator, gf_err := Link_alloc__create(test__crawler_name_str, runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf("links_allocator creation failed for crawler [%s]", test__crawler_name_str)
+		panic(gf_err.Error)
 		return
 	}
 	spew.Dump(allocator)
@@ -47,6 +48,7 @@ func Test__links_allocator(p_test *testing.T) {
 			test__crawler_name_str,
 			allocator.Id_str,
 			test__block_size_int)
+		panic(gf_err.Error)
 		return
 	}
 	spew.Dump(alloc_block)

@@ -90,6 +90,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test_config.test__local_image_file_path_str,
 		runtime_sys)
 	if test__local_gf_image_file_path_str == "" {
+		panic(1)
 		return
 	}
 	
@@ -103,6 +104,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		crawler_runtime,
 		runtime_sys)
 	if test__crawled_image == nil || test__crawled_image_ref == nil {
+		panic(1)
 		return
 	}
 
@@ -119,6 +121,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		crawler_runtime,
 		runtime_sys)
 	if page_imgs__pinfos_with_thumbs_lst == nil {
+		panic(1)
 		return
 	}
 
@@ -158,6 +161,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 			fmt.Sprint(test_config.test__image_flows_names_lst),
 			test_config.test__crawled_images_s3_bucket_name_str,
 			test_config.test__gf_images_s3_bucket_name_str)
+		panic(gf_err.Error)
 		return
 	}
 	//-------------------
@@ -232,6 +236,7 @@ func t__images__stage__process_images(p_test *testing.T,
 
 		if page_img__pinfo.thumbs == nil {
 			p_test.Errorf("page_img.thumbs has not been set to a gf_images_utils.Gf_image_thumbs instance pointer")
+			panic(1)
 			return nil
 		}
 	}

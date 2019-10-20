@@ -116,6 +116,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 		p_runtime_sys)
 	if gf_err != nil { 
 		p_test.Errorf("failed to prepare and create image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		panic(gf_err.Error)
 		return nil, nil
 	}
 
@@ -123,6 +124,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	exists_bool, gf_err := Image__db_create(test__crawled_image, p_crawler_runtime, p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		panic(gf_err.Error)
 		return nil, nil
 	}
 
@@ -141,6 +143,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	gf_err = Image__db_create_ref(test__crawled_image_ref, p_crawler_runtime, p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
+		panic(gf_err.Error)
 		return nil, nil
 	}
 	//-------------------
@@ -167,6 +170,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 		p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf(fmt.Sprintf("failed to create a gf_image local file path from URL [%s]", p_test__img_src_url_str))
+		panic(gf_err.Error)
 		return "", ""
 	}
 
@@ -176,6 +180,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	err := exec.Command("cp", source_abs_str, target_abs_str).Run()
 	if err != nil {
 		p_test.Errorf(fmt.Sprintf("failed to copy a image file via shell, from old path [%s] to new gf_image path [%s]", source_abs_str, target_abs_str))
+		panic(err)
 		return "", ""
 	}
 	return test__local_gf_image_file_path_str, gf_image_id_str

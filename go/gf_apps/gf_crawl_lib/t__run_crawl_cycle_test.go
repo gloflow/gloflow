@@ -65,7 +65,9 @@ func test__run_crawl_cycle(p_test *testing.T,
 
 	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_test__crawl_config_file_path_str, p_runtime_sys)
 	if gf_err != nil {
-		p_test.Errorf("failed to get all crawler definitions from config file [%s]", p_test__crawl_config_file_path_str)
+		p_test.Errorf("failed to get all crawler definitions from config file [%s]",
+			p_test__crawl_config_file_path_str)
+		panic(gf_err.Error)
 		return
 	}
 	
@@ -84,6 +86,6 @@ func test__run_crawl_cycle(p_test *testing.T,
 			crawler.Name_str,
 			p_test__crawler_images_local_dir_path_str,
 			p_test__crawled_images_s3_bucket_name_str)
-		return
+		panic(gf_err.Error)
 	}
 }
