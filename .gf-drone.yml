@@ -13,7 +13,8 @@ services:
     image: mongo
 
   - name: elasticsearch
-    image: elasticsearch:7.4.0
+    image: elasticsearch:5-alpine
+    #image: elasticsearch:7.4.0
     ports:
       - 9200
 
