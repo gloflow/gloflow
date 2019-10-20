@@ -146,7 +146,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 		origin_url_str := p_url_fetch.Url_str
 		a_href_str,_   := p_elem.Attr("href")
 
-		fmt.Println(">> "+cyan("a")+" --- crawler_page_outgoing_link FOUND - domain -"+p_url_fetch.Domain_str+" -- "+yellow(fmt.Sprint(a_href_str)))
+		fmt.Println(">> "+cyan("<a>")+" --- crawler_page_outgoing_link FOUND - domain - "+p_url_fetch.Domain_str+" -- "+yellow(fmt.Sprint(a_href_str)))
 
 		//-------------
 		if a_href_str == "" {
