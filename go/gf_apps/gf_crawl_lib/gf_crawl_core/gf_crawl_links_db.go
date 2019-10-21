@@ -44,6 +44,7 @@ func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_erro
 }
 
 //--------------------------------------------------
+// LINK_DB_GET_UNRESOLVED
 func Link__db_get_unresolved(p_crawler_name_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__get_unresolved()")
@@ -52,9 +53,9 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
 
-	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
-	fmt.Println("INFO",black("GET__UNRESOLVED_LINK")+" - for crawler - "+yellow(p_crawler_name_str))
-	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
+	fmt.Println("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
+	fmt.Println("INFO", black("GET__UNRESOLVED_LINK")+" - for crawler - "+yellow(p_crawler_name_str))
+	fmt.Println("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
 	query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
 			"t":                    "crawler_page_outgoing_link",
@@ -62,15 +63,15 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 			"valid_for_crawl_bool": true,
 			"fetched_bool":         false,
 
-			//IMPORTANT!! - get all unresolved links that also dont have any errors associated
-			//              with them. this way repeated processing of unresolved links that always cause 
-			//              an error is avoided (wasted resources)
+			// IMPORTANT!! - get all unresolved links that also dont have any errors associated
+			//               with them. this way repeated processing of unresolved links that always cause 
+			//               an error is avoided (wasted resources)
 			"error_type_str": bson.M{"$exists":false,},
 			"error_id_str":   bson.M{"$exists":false,},
 
 			/*//-------------------
-			//IMPORTANT!! - this gets all unresolved links that come from the domain 
-			//              that the crawler is assigned to
+			// IMPORTANT!! - this gets all unresolved links that come from the domain 
+			//               that the crawler is assigned to
 			//"origin_domain_str"   :p_crawler_domain_str,
 			"$or":domains_query_lst,
 			//-------------------*/
@@ -80,12 +81,15 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	var unresolved_link Gf_crawler_page_outgoing_link
 	err := query.One(&unresolved_link)
 
+	// IMPORTANT!! - link not being found in the DB is actually expected state, and should not throw an error.
+	//               instead a nil value is returned for the link without error.
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Mongo__handle_error("unresolved links for gf_crawler were not found in mongodb",
-			"mongodb_not_found_error",
-			map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return nil, gf_err
+		// gf_err := gf_core.Mongo__handle_error("unresolved links for gf_crawler were not found in mongodb",
+		// 	"mongodb_not_found_error",
+		// 	map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
+		// 	err, "gf_crawl_core", p_runtime_sys)
+		// return nil, gf_err
+		return nil, nil
 	}
 
 	if err != nil {
@@ -97,8 +101,8 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	}
 
 	//-------------------
-	//IMPORTANT!! - some unresolved links in the DB might possibly be urlescaped,
-	//              so for proper usage it is unescaped here and stored back in the unresolved_link struct.
+	// IMPORTANT!! - some unresolved links in the DB might possibly be urlescaped,
+	//               so for proper usage it is unescaped here and stored back in the unresolved_link struct.
 	unescaped_unresolved_link_url_str, err := url.QueryUnescape(unresolved_link.A_href_str)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb", "url_unescape_error",
@@ -129,7 +133,7 @@ func Link__db_get(p_link_id_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_outgoing_link by ID from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"link_id_str":p_link_id_str,},
+			map[string]interface{}{"link_id_str": p_link_id_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}
@@ -145,20 +149,20 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 	yellow := color.New(color.FgYellow).SprintFunc()
 	
 	//-------------
-	//IMPORTANT!! - REXAMINE!! - to conserve on storage for potentially large savings (should be checked empirically?), links are persisted
-	//                           in the DB only if their hash is unique. Hashes are composed of origin page URL and target URL hashed, so multiple links coming from the 
-	//                           same origin page URL, and targeting the same URL, are only stored once.
-	//                           this is a potentially loss of information, for pages that have a lot of these duplicate links. having this information 
-	//                           on pages could maybe prove useful for some kind of analysis or algo. 
-	//                           - so maybe store links even if their hashes are duplicates?
-	//                           - add some kind of tracking where these duplicates are counted for pages.
+	// IMPORTANT!! - REXAMINE!! - to conserve on storage for potentially large savings (should be checked empirically?), links are persisted
+	//                            in the DB only if their hash is unique. Hashes are composed of origin page URL and target URL hashed, so multiple links coming from the 
+	//                            same origin page URL, and targeting the same URL, are only stored once.
+	//                            this is a potentially loss of information, for pages that have a lot of these duplicate links. having this information 
+	//                            on pages could maybe prove useful for some kind of analysis or algo. 
+	//                            - so maybe store links even if their hashes are duplicates?
+	//                            - add some kind of tracking where these duplicates are counted for pages.
 	link_exists_bool, gf_err := link__db_exists(p_link.Hash_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 	//-------------
 
-	//crawler_page_outgoing_link already exists, from previous crawls, so ignore it
+	// crawler_page_outgoing_link already exists, from previous crawls, so ignore it
 	if link_exists_bool {
 		fmt.Println(">> "+yellow(">>>>>>>> - DB PAGE_LINK ALREADY EXISTS >-- ")+cyan(fmt.Sprint(p_link.A_href_str)))
 		return nil
@@ -196,7 +200,7 @@ func link__db_exists(p_link_hash_str string, p_runtime_sys *gf_core.Runtime_sys)
 		return false, gf_err
 	}
 
-	//crawler_page_outgoing_link already exists, from previous crawls, so ignore it
+	// crawler_page_outgoing_link already exists, from previous crawls, so ignore it
 	if c > 0 {
 		return true, nil
 	} else {
@@ -215,7 +219,7 @@ func Link__db_mark_import_in_progress(p_status_bool bool,
 
 	//----------------
 	update_map := bson.M{
-		"import__in_progress_bool":p_status_bool,
+		"import__in_progress_bool": p_status_bool,
 	}
 	if p_status_bool {
 		update_map["import__start_time_f"] = p_unix_time_f

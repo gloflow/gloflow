@@ -132,6 +132,8 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 			"tags_lst":            bson.M{"$exists":true,},
 		}).One(&gif)
 
+	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
+	//         if this should not return an error but instead just a "nil" value for the record.
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
@@ -168,6 +170,8 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 			"tags_lst":            bson.M{"$exists":true,},
 		}).One(&gif)
 
+	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
+	//         if this should not return an error but instead just a "nil" value for the record.
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str not found",
 			"mongodb_not_found_error",

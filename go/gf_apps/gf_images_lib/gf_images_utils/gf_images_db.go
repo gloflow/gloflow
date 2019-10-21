@@ -52,6 +52,8 @@ func DB__get_image(p_image_id_str Gf_image_id,
 	var image Gf_image
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t": "img","id_str": p_image_id_str}).One(&image)
 
+	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
+	//         if this should not return an error but instead just a "nil" value for the record.
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 			"mongodb_not_found_error",
