@@ -44,23 +44,23 @@ func images__stage__process_images(p_crawler_name_str string,
 
 	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
-		//IMPORTANT!! - skip failed images
+		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
 			continue
 		}
 
-		//IMPORTANT!! - skip images that have already been processed (and is in the DB)
+		// IMPORTANT!! - skip images that have already been processed (and is in the DB)
 		if page_img__pinfo.exists_bool {
 			continue
 		}
 
-		//IMPORTANT!! - check image is not flagged as a NSFV image
+		// IMPORTANT!! - check image is not flagged as a NSFV image
 		if page_img__pinfo.nsfv_bool {
 			continue
 		}
 
 		//----------------------------
-		//IMAGE_PROCESS
+		// IMAGE_PROCESS
 		_, gf_image_thumbs, gf_err := image__process(page_img__pinfo.page_img,
 			page_img__pinfo.gf_image_id_str, //p_gf_image_id_str
 			page_img__pinfo.local_file_path_str,
@@ -77,10 +77,10 @@ func images__stage__process_images(p_crawler_name_str string,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 
-		//UPDATE__PAGE_IMG_PINFO
+		// UPDATE__PAGE_IMG_PINFO
 		page_img__pinfo.thumbs = gf_image_thumbs
 	}
 	return p_page_imgs__pipeline_infos_lst
@@ -102,7 +102,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 	p_runtime_sys.Log_fun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("PROCESS_IMAGE"))
 
 	//----------------------------
-	//GIF
+	// GIF
 	if p_page_img.Img_ext_str == "gif" {
 
 		image_client_type_str := "gf_crawl_images" 
@@ -132,7 +132,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 
 		return nil, nil, nil
 	//----------------------------
-	//GENERAL
+	// GENERAL
 	} else {
 	
 		thumbnails_local_dir_path_str     := p_images_store_local_dir_path_str
@@ -168,7 +168,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
-	//CONFIG
+	// CONFIG
 	image_client_type_str := "gf_crawl_images" 
 	image_flows_names_lst := []string{"discovered",}
 	//----------------------
@@ -183,17 +183,17 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	}
 	//-------------------
 
-	//IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
-	//              part of a particular page
+	// IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
+	//               part of a particular page
 	if img_width_int <= 130 || img_height_int <= 130 {
 		p_runtime_sys.Log_fun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(img_width_int))+"/height-"+cyan(fmt.Sprint(img_height_int))+")"))
 		return nil, nil, nil
 	} else {
 
 		//--------------------------------
-		//TRANSFORM DOWNLOADED IMAGE - CREATE THUMBS, SAVE TO DB, AND UPLOAD TO AWS_S3
+		// TRANSFORM DOWNLOADED IMAGE - CREATE THUMBS, SAVE TO DB, AND UPLOAD TO AWS_S3
 
-		//IMPORTANT!! - a new gf_image ID is created if an external ID is not supplied
+		// IMPORTANT!! - a new gf_image ID is created if an external ID is not supplied
 		var gf_image_id_str gf_images_utils.Gf_image_id
 		if p_gf_image_id_str == "" {
 			new_gf_image_id_str, gf_err := gf_images_utils.Image_ID__create_from_url(p_page_img.Url_str, p_runtime_sys)
@@ -208,8 +208,8 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 		image_origin_url_str      := p_page_img.Url_str
 		image_origin_page_url_str := p_page_img.Origin_page_url_str
 		
-		//IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
-		//              also creates gf_image thumbnails as local files.
+		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
+		//               also creates gf_image thumbnails as local files.
 		gf_image, gf_image_thumbs, gf_err := gf_images_utils.Transform_image(gf_image_id_str,
 			image_client_type_str,
 			image_flows_names_lst,

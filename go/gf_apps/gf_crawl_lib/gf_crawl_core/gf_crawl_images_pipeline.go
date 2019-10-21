@@ -69,7 +69,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 	origin_page_url_str := p_url_fetch.Url_str
 
 	//------------------
-	//STAGE - pull all page image links
+	// STAGE - pull all page image links
 
 	page_imgs__pipeline_infos_lst := images__stage__pull_image_links(p_url_fetch,
 		p_crawler_name_str,
@@ -77,7 +77,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - create gf_image/gf_image_refs structs
+	// STAGE - create gf_image/gf_image_refs structs
 
 	page_imgs__pinfos_with_imgs_lst := images__stage__create_page_images(p_crawler_name_str,
 		p_cycle_run_id_str,
@@ -85,14 +85,14 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - persist gf_image/gf_image_ref to DB
+	// STAGE - persist gf_image/gf_image_ref to DB
 	
 	page_imgs__pinfos_with_persists_lst := images__stage__page_images_persist(p_crawler_name_str,
 		page_imgs__pinfos_with_imgs_lst,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - download gf_images from target URL
+	// STAGE - download gf_images from target URL
 	
 	page_imgs__pinfos_with_local_file_paths_lst := images__stage__download_images(p_crawler_name_str,
 		page_imgs__pinfos_with_persists_lst,
@@ -101,7 +101,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGES - process images
+	// STAGES - process images
 
 	page_imgs__pinfos_with_thumbs_lst := images__stages__process_images(p_crawler_name_str,
 		page_imgs__pinfos_with_local_file_paths_lst,
@@ -111,7 +111,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - persist all images files (S3, etc.)
+	// STAGE - persist all images files (S3, etc.)
 
 	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(p_crawler_name_str,
 		page_imgs__pinfos_with_thumbs_lst,
@@ -120,14 +120,14 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_runtime,
 		p_runtime_sys)
 	//------------------
-	//STAGE - cleanup
+	// STAGE - cleanup
 
 	images__stages_cleanup(page_imgs__pinfos_with_s3_lst, p_runtime, p_runtime_sys)
 	//------------------
 }
 
 //--------------------------------------------------
-//SINGLE_IMAGE
+// SINGLE_IMAGE
 
 func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str   string,
@@ -220,7 +220,7 @@ func images__stage__create_page_images(p_crawler_name_str string,
 	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		//------------------
-		//CRAWLER_PAGE_IMG
+		// CRAWLER_PAGE_IMG
 
 		gf_img, gf_err := images_adt__prepare_and_create(p_crawler_name_str,
 			p_cycle_run_id_str,                       //p_cycle_run_id_str
@@ -230,10 +230,10 @@ func images__stage__create_page_images(p_crawler_name_str string,
 			p_runtime_sys)
 		if gf_err != nil {
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 		//------------------
-		//CRAWLER_PAGE_IMG_REF
+		// CRAWLER_PAGE_IMG_REF
 
 		gf_img_ref := images_adt__ref_create(p_crawler_name_str,
 			p_cycle_run_id_str,
@@ -243,7 +243,7 @@ func images__stage__create_page_images(p_crawler_name_str string,
 			gf_img.Origin_page_url_domain_str,        //p_origin_page_url_domain_str
 			p_runtime_sys)
 		//------------------
-		//GIF
+		// GIF
 		if  gf_img.Img_ext_str == "gif" {
 
 			//IMPORTANT!! - all GIF images are valid_for_usage, regardless of size
@@ -271,7 +271,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 
 	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
-		//IMPORTANT!! - skip failed images
+		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
 			continue
 		}
@@ -286,7 +286,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 
 		page_img__pinfo.exists_bool = img_exists_bool
@@ -299,7 +299,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 		//------------------
 	}
@@ -317,20 +317,20 @@ func images__stages__process_images(p_crawler_name_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
 
 	//------------------
-	//STAGE - determine if image is NSFV (contains nudity)
-	//FIX!! - check if the processing cost of large images is not lower then determening NSFV first on large images,
-	//        and then processing (which is whats done now). perhaps processing all images and then taking the 
+	// // STAGE - determine if image is NSFV (contains nudity)
+	// // FIX!! - check if the processing cost of large images is not lower then determening NSFV first on large images,
+	// //         and then processing (which is whats done now). perhaps processing all images and then taking the 
 	
-	page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(p_crawler_name_str,
-		p_page_imgs__pipeline_infos_lst,
-		p_origin_page_url_str,
-		p_runtime,
-		p_runtime_sys)
+	// page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(p_crawler_name_str,
+	// 	p_page_imgs__pipeline_infos_lst,
+	// 	p_origin_page_url_str,
+	// 	p_runtime,
+	// 	p_runtime_sys)
 	//------------------
-	//STAGE - process images - resize for all thumbnail sizes
+	// STAGE - process images - resize for all thumbnail sizes
 
 	page_imgs__pinfos_with_thumbs_lst := images__stage__process_images(p_crawler_name_str,
-		page_imgs__pinfos_with_nsfv_lst,
+		p_page_imgs__pipeline_infos_lst, // page_imgs__pinfos_with_nsfv_lst,
 		p_images_store_local_dir_path_str,
 		p_origin_page_url_str,
 		p_s3_bucket_name_str,
@@ -346,18 +346,18 @@ func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipe
 	p_runtime_sys *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
 
-	//IMPORTANT!! - delete local tmp transformed image, since the files
-	//              have just been uploaded to S3 so no need for them localy anymore
-	//              crawling servers are not meant to hold their own image files,
-	//              and service runs in Docker with temporary 
+	// IMPORTANT!! - delete local tmp transformed image, since the files
+	//               have just been uploaded to S3 so no need for them localy anymore
+	//               crawling servers are not meant to hold their own image files,
+	//               and service runs in Docker with temporary 
 	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
-		//IMPORTANT!! - skip failed images
+		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
 			continue
 		}
 
-		//IMPORTANT!! - skip images that have already been processed (and is in the DB)
+		// IMPORTANT!! - skip images that have already been processed (and is in the DB)
 		if page_img__pinfo.exists_bool {
 			continue
 		}
@@ -365,7 +365,7 @@ func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipe
 		gf_err := image__cleanup(page_img__pinfo.local_file_path_str, page_img__pinfo.thumbs, p_runtime_sys)
 		if gf_err != nil {
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 	}
 
