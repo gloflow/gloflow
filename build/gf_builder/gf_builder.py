@@ -120,18 +120,19 @@ def test_apps(p_changed_apps_files_map):
             # RUN_TESTS_FOR_ALL_APP_PACKAGES
             for app_gf_package_name_str in app_gf_packages_lst:
 
-                assert build_meta_map.has_key(app_gf_package_name_str)
-                gf_package_meta_map = build_meta_map[app_gf_package_name_str]
+                print("about to run tests for - %s"%(app_gf_package_name_str))
+                if build_meta_map.has_key(app_gf_package_name_str):
+                    gf_package_meta_map = build_meta_map[app_gf_package_name_str]
 
-                gf_tests.run(app_gf_package_name_str,
-                    test_name_str,
-                    gf_package_meta_map,
-                    aws_creds_map,
+                    gf_tests.run(app_gf_package_name_str,
+                        test_name_str,
+                        gf_package_meta_map,
+                        aws_creds_map,
 
-                    # IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
-                    #               run() should call exit() and force this whole process to exit, 
-                    #               so that CI marks the build as failed.
-                    p_exit_on_fail_bool = True)
+                        # IMPORTANT!! - in case the tests that gf_test.run() executes fail, 
+                        #               run() should call exit() and force this whole process to exit, 
+                        #               so that CI marks the build as failed.
+                        p_exit_on_fail_bool = True)
         #------------------------
     
 #--------------------------------------------------
