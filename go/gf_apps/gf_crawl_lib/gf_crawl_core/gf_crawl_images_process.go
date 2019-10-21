@@ -71,8 +71,8 @@ func images__stage__process_images(p_crawler_name_str string,
 		//----------------------------
 		
 		if gf_err != nil {
-			t:="image_process__failed"
-			m:="failed processing of image with img_url_str - "+page_img__pinfo.page_img.Url_str
+			t := "image_process__failed"
+			m := "failed processing of image with img_url_str - "+page_img__pinfo.page_img.Url_str
 			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
@@ -145,6 +145,14 @@ func image__process(p_page_img *Gf_crawler_page_image,
 			return nil, nil, gf_err
 		}
 
+		// IMPORTANT!! - if gf_image is nil and there is no error then image__process_bitmap()
+		//               determined that the image is in some way invalid and should not be further processesd
+		//               (currently its nil if the image is smaller then the allowed dimension - the 
+		//               image is some small icon or banner/etc.)
+		if gf_image == nil {
+			return nil, nil, nil
+		}
+		
 		//spew.Dump(gf_image)
 
 		gf_image_id_str := gf_image.Id_str

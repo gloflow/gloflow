@@ -26,15 +26,15 @@ volumes:
 steps:
 
   #-------------------------------
-  # TEST_ELASTICSEARCH
-
-  - name: test-elasticsearch
-    image: alpine:3.8
-    commands:
-      - apk add curl
-      # wait for ES to bootup
-      - sleep 45 
-      - curl http://elasticsearch:9200
+  # # TEST_ELASTICSEARCH
+  #
+  # - name: test-elasticsearch
+  #   image: alpine:3.8
+  #   commands:
+  #     - apk add curl
+  #     # wait for ES to bootup
+  #     - sleep 45 
+  #     - curl http://elasticsearch:9200
 
   #-------------------------------
   # TEST
