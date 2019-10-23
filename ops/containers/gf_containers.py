@@ -139,7 +139,7 @@ def build_docker_image(p_image_name_str,
 	p_log_fun('INFO', '====================+++++++++++++++=====================')
 
 	cmd_lst = [
-		'sudo docker build',
+		'docker build',
 		'-f %s'%(p_dockerfile_path_str),
 		'--tag=%s'%(full_image_name_str),
 		context_dir_path_str
