@@ -95,16 +95,21 @@ def main():
     # BUILD_CONTAINERS
     elif run_str == 'build_containers':
 
-        #build using static linking, containers are based on Alpine linux, 
-        #which has a minimal stdlib and other libraries, so we want to compile 
-        #everything needed by this Go package into a single binary.
+        # build using static linking, containers are based on Alpine linux, 
+        # which has a minimal stdlib and other libraries, so we want to compile 
+        # everything needed by this Go package into a single binary.
         go_build(True)
         
+        assert build_meta_map.has_key(app_name_str)
+        app_build_meta_map = build_meta_map[app_name_str]
+
         web_meta_map = gf_web_meta.get()
+        assert web_meta_map.has_key(app_name_str)
+        app_web_meta_map = web_meta_map[app_name_str]
 
         gf_containers.build(app_name_str, 
-            build_meta_map,
-            web_meta_map,
+            app_build_meta_map,
+            app_web_meta_map,
             gf_log.log_fun)
 
     #-------------
@@ -127,14 +132,14 @@ def main():
             aws_creds_map)
 
     #-------------
-    #LIST_CHANGED_APPS
+    # LIST_CHANGED_APPS
     elif run_str == 'list_changed_apps':
         changed_apps_map = gf_build_changes.list_changed_apps(apps_changes_deps_map)
         gf_build_changes.view_changed_apps(changed_apps_map, "go")
         gf_build_changes.view_changed_apps(changed_apps_map, "web")
     
     #-------------
-    #GF_BUILDER__CONTAINER_BUILD
+    # GF_BUILDER__CONTAINER_BUILD
     elif run_str == "gf_builder__cont_build":
         dockerhub_user_str = args_map['dockerhub_user']
         gf_builder_ops.cont__build(dockerhub_user_str, gf_log.log_fun)

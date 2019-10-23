@@ -25,49 +25,45 @@ sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
 
 #-------------------------------------------------------------
-#BUILD
+# BUILD
 def build(p_app_name_str,
 	p_app_build_meta_map,
-	p_web_meta_map,
+	p_app_web_meta_map,
 	p_log_fun,
 	p_user_name_str = 'local'):
 	p_log_fun('FUN_ENTER', 'gf_containers.build()')
 	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
 	assert isinstance(p_app_name_str,       basestring)
 	assert isinstance(p_app_build_meta_map, dict)
-	assert isinstance(p_web_meta_map,       dict)
+	assert isinstance(p_app_web_meta_map,   dict)
 
 	#------------------
-	#META
-	#build_meta_map = gf_meta.get()['build_info_map']
-	#web_meta_map   = gf_web_meta.get()
+	# META
 
-	if not p_app_build_meta_map.has_key(p_app_name_str):
-		p_log_fun("ERROR", "supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
-		return
-	app_meta_map = p_app_build_meta_map[p_app_name_str]
+	#if not p_app_build_meta_map.has_key(p_app_name_str):
+	#	p_log_fun("ERROR", "supplied app (%s) does not exist in gf_meta"%(p_app_name_str))
+	#	return
+	#app_meta_map = p_app_build_meta_map[p_app_name_str]
 
-	service_name_str     = app_meta_map['service_name_str']
-	service_base_dir_str = app_meta_map['service_base_dir_str']
+	service_name_str     = p_app_build_meta_map['service_name_str']
+	service_base_dir_str = p_app_build_meta_map['service_base_dir_str']
 	assert os.path.isdir(service_base_dir_str)
 
 	service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
-	service_version_str  = app_meta_map['version_str']
+	service_version_str         = p_app_build_meta_map['version_str']
 	assert len(service_version_str.split(".")) == 4 #format x.x.x.x
 	#------------------
-	#COPY_FILES_TO_DIR
-	if app_meta_map.has_key('copy_to_dir_lst'):
-		copy_to_dir_lst = app_meta_map['copy_to_dir_lst']
+	# COPY_FILES_TO_DIR
+	if p_app_build_meta_map.has_key('copy_to_dir_lst'):
+		copy_to_dir_lst = p_app_build_meta_map['copy_to_dir_lst']
 		copy_files(copy_to_dir_lst)
 	#------------------
-	#PREPARE_WEB_FILES
-	if p_web_meta_map.has_key(p_app_name_str):
+	# PREPARE_WEB_FILES
+	
+	assert p_app_web_meta_map.has_key('pages_map')
+	pages_map = p_app_web_meta_map['pages_map']
 
-		app_web_meta_map = p_web_meta_map[p_app_name_str]
-		assert app_web_meta_map.has_key('pages_map')
-		pages_map = app_web_meta_map['pages_map']
-
-		prepare_web_files(pages_map, service_base_dir_str, p_log_fun)
+	prepare_web_files(pages_map, service_base_dir_str, p_log_fun)
 	#------------------
 
 	build_docker_image(service_name_str,
@@ -103,26 +99,26 @@ def prepare_web_files(p_pages_map,
 		build_dir_str = pg_info_map['build_dir_str']
 
 		#------------------
-		#CREATE_TARGET_DIR
+		# CREATE_TARGET_DIR
 		target_dir_str = '%s/static'%(p_service_base_dir_str)
 		gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
 		#------------------
-		#COPY_PAGE_WEB_CODE
+		# COPY_PAGE_WEB_CODE
 		gf_cli_utils.run_cmd('cp -r %s/* %s'%(build_dir_str, target_dir_str))
 		#------------------
 
 	#------------------
-	#MOVE_TEMPLATES_OUT_OF_STATIC
+	# MOVE_TEMPLATES_OUT_OF_STATIC
 
-	#IMPORTANT!! - templates should not be in the static/ dir, which would make them servable
-	#              over HTTP which we dont want. instead its moved out of the static/ dir 
-	#              to its parent dir where its private
+	# IMPORTANT!! - templates should not be in the static/ dir, which would make them servable
+	#               over HTTP which we dont want. instead its moved out of the static/ dir 
+	#               to its parent dir where its private
 	gf_cli_utils.run_cmd('rm -rf %s/../templates'%(target_dir_str)) #remove existing templates build dir
 	gf_cli_utils.run_cmd('mv %s/templates %s/..'%(target_dir_str, target_dir_str))
 	#------------------
 	
 #-------------------------------------------------------------
-#BUILD_DOCKER_IMAGE
+# BUILD_DOCKER_IMAGE
 def build_docker_image(p_image_name_str,
 	p_image_tag_str,
 	p_dockerfile_path_str,
@@ -152,8 +148,8 @@ def build_docker_image(p_image_name_str,
 	cmd_str = ' '.join(cmd_lst)
 	p_log_fun('INFO',' - %s'%(cmd_str))
 
-	#change to the dir where the Dockerfile is located, for the 'docker'
-	#tool to have the proper context
+	# change to the dir where the Dockerfile is located, for the 'docker'
+	# tool to have the proper context
 	old_cwd = os.getcwd()
 	os.chdir(context_dir_path_str)
 	
@@ -166,16 +162,16 @@ def build_docker_image(p_image_name_str,
 		assert len(p_lst) == 3
 		image_id_str = p_lst[2]
 
-		#IMPORTANT!! - check that this is a valid 12 char Docker ID
+		# IMPORTANT!! - check that this is a valid 12 char Docker ID
 		assert len(image_id_str) == 12
 		return image_id_str
 	#---------------------------------------------------
 
 	for line in r.stdout:
-		line_str = line.strip() #strip() - to remove '\n' at the end of the line
+		line_str = line.strip() # strip() - to remove '\n' at the end of the line
 
 		#------------------
-		#display the line, to update terminal display
+		# display the line, to update terminal display
 		print(line_str)
 		#------------------
 
@@ -183,5 +179,5 @@ def build_docker_image(p_image_name_str,
 			image_id_str = get_image_id_from_line(line_str)
 			return image_id_str
 
-	#change back to old dir
+	# change back to old dir
 	os.chdir(old_cwd)

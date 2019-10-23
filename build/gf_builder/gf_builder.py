@@ -65,7 +65,8 @@ def main():
 def build_apps_containers(p_changed_apps_files_map):
     assert isinstance(p_changed_apps_files_map, dict)
 
-    web_meta_map = gf_web_meta.get()
+    build_meta_map = gf_meta.get()['build_info_map']
+    web_meta_map   = gf_web_meta.get()
 
     # IMPORTANT!! - for each app that has any of its code changed rebuild both the Go and Web code,
     #               since the containers has to be fully rebuilt.
@@ -75,9 +76,8 @@ def build_apps_containers(p_changed_apps_files_map):
 
     for app_name_str in apps_names_lst:
 
-        assert build_meta_map.has_key(app_gf_package_name_str)
-        app_build_meta_map = build_meta_map[app_gf_package_name_str]
-
+        assert build_meta_map.has_key(app_name_str)
+        app_build_meta_map = build_meta_map[app_name_str]
 
         assert web_meta_map.has_key(app_name_str)
         app_web_meta_map = web_meta_map[app_name_str]
