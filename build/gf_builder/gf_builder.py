@@ -113,8 +113,9 @@ def test_apps(p_changed_apps_files_map):
             
             test_name_str = "all"
 
-            # IMPORTANT!! - get all packages that are involved in tis app, so that 
-            #               tests for all these packages can be run.
+            # IMPORTANT!! - get all packages that are dependencies of this app, so that 
+            #               tests for all these packages can be run. dont just run the tests of the app
+            #               but of all the packages that are its dependencies as well.
             app_gf_packages_lst = apps_gf_packages_map[app_name_str]
 
             # RUN_TESTS_FOR_ALL_APP_PACKAGES
@@ -158,7 +159,10 @@ def build_apps(p_changed_apps_files_map):
         print("\n\nWEB--------\n\n")
             
         web_meta_map = gf_web_meta.get()
-        gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
+
+        gf_web__build.build(apps_names_lst,
+            web_meta_map,
+            gf_log.log_fun)
         
         #------------------------
         # GO

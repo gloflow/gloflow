@@ -50,6 +50,7 @@ def list_changed_apps(p_apps_changes_deps_map,
     # DEBUGGING - mark all apps as changed
     if p_mark_all_bool:
         for a, _ in apps_gf_packages_map.items():
+            changed_apps_files_map["all"][a] = ["all"]
             changed_apps_files_map["go"][a]  = ["all"]
             changed_apps_files_map["web"][a] = ["all"]
         return changed_apps_files_map
