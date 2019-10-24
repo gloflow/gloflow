@@ -30,7 +30,8 @@ def build(p_app_name_str,
 	p_app_build_meta_map,
 	p_app_web_meta_map,
 	p_log_fun,
-	p_user_name_str = 'local'):
+	p_user_name_str     = 'local',
+	p_exit_on_fail_bool = False):
 	p_log_fun('FUN_ENTER', 'gf_containers.build()')
 	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
 	assert isinstance(p_app_name_str,       basestring)
@@ -70,7 +71,8 @@ def build(p_app_name_str,
 		service_version_str,
 		service_dockerfile_path_str,
 		p_user_name_str,
-		p_log_fun)
+		p_log_fun,
+		p_exit_on_fail_bool = p_exit_on_fail_bool)
 
 #--------------------------------------------------
 def copy_files(p_copy_to_dir_lst):
@@ -123,7 +125,8 @@ def build_docker_image(p_image_name_str,
 	p_image_tag_str,
 	p_dockerfile_path_str,
 	p_user_name_str,
-	p_log_fun):
+	p_log_fun,
+	p_exit_on_fail_bool = False):
 	p_log_fun('FUN_ENTER', 'gf_containers.build_docker_image()')
 	assert os.path.isfile(p_dockerfile_path_str)
 	assert "Dockerfile" in os.path.basename(p_dockerfile_path_str)
@@ -145,16 +148,16 @@ def build_docker_image(p_image_name_str,
 		context_dir_path_str
 	]
 
-	cmd_str = ' '.join(cmd_lst)
-	p_log_fun('INFO',' - %s'%(cmd_str))
+	c_str = ' '.join(cmd_lst)
+	p_log_fun('INFO',' - %s'%(c_str))
 
 	# change to the dir where the Dockerfile is located, for the 'docker'
 	# tool to have the proper context
 	old_cwd = os.getcwd()
 	os.chdir(context_dir_path_str)
 	
-	r = subprocess.Popen(cmd_str, shell = True, stdout = subprocess.PIPE, bufsize = 1)
-
+	# r = subprocess.Popen(c_str, shell = True, stdout = subprocess.PIPE, bufsize = 1)
+	
 	#---------------------------------------------------
 	def get_image_id_from_line(p_stdout_line_str):
 		p_lst = p_stdout_line_str.split(' ')
@@ -167,17 +170,31 @@ def build_docker_image(p_image_name_str,
 		return image_id_str
 	#---------------------------------------------------
 
-	for line in r.stdout:
-		line_str = line.strip() # strip() - to remove '\n' at the end of the line
+	# for line in r.stdout:
+	# 	line_str = line.strip() # strip() - to remove '\n' at the end of the line
+	#
+	# 	#------------------
+	# 	# display the line, to update terminal display
+	# 	print(line_str)
+	# 	#------------------
+	#
+	# 	if line_str.startswith('Successfully built'):
+	# 		image_id_str = get_image_id_from_line(line_str)
+	# 		return image_id_str
 
-		#------------------
-		# display the line, to update terminal display
-		print(line_str)
-		#------------------
+	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
+	for line_str in stdout_str:
 		if line_str.startswith('Successfully built'):
 			image_id_str = get_image_id_from_line(line_str)
 			return image_id_str
+
+	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
+    #               want to fail with a non-zero exit code as well - this way other CI 
+    #               programs will flag builds as failed.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
 
 	# change back to old dir
 	os.chdir(old_cwd)

@@ -23,8 +23,8 @@ def run_cmd(p_cmd_str, p_print_output_bool=True):
 	if p_print_output_bool: print(p_cmd_str)
 	r = delegator.run(p_cmd_str)
 
-	o=""
-	e=""
+	o = ""
+	e = ""
 	if not r.out == "":
 		o = r.out
 		if p_print_output_bool: print(o)

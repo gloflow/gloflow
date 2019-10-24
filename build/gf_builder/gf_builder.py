@@ -85,7 +85,12 @@ def build_apps_containers(p_changed_apps_files_map):
         gf_containers.build(app_name_str,
             app_build_meta_map,
             app_web_meta_map,
-            gf_log.log_fun)
+            gf_log.log_fun,
+
+            # gf_containers.build() should exit if the docker build CLI run returns with a non-zero exit code.
+            # gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+            # to be marked as failed because of the non-zero exit code.
+            p_exit_on_fail_bool = True)
 
 #--------------------------------------------------
 def test_apps(p_changed_apps_files_map):

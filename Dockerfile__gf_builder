@@ -3,11 +3,11 @@ FROM golang
 RUN apt-get update
 RUN mkdir /home/gf
 #-----------------------------
-#GIT
-#IMPORTANT!! - used by ./ops/utils/gf_build_changes.py to determine which apps changed
+# GIT
+# IMPORTANT!! - used by ./ops/utils/gf_build_changes.py to determine which apps changed
 RUN apt-get install -y git
 #-----------------------------
-#PY
+# PY
 RUN apt-get install -y python
 RUN apt-get install -y python-pip
 RUN pip install delegator.py
@@ -17,8 +17,11 @@ RUN apt-get install -y nodejs
 RUN apt-get install -y npm
 RUN npm install -g typescript
 RUN npm install -g uglify-js
+
+# DOCKER
+RUN apt-get install -y docker.io
 #-----------------------------
-#SED - used by gf_builder to inject Git commit hash into Go code
+# SED - used by gf_builder to inject Git commit hash into Go code
 RUN apt-get install -y sed
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]
