@@ -17,9 +17,11 @@
 
 import os,sys
 cwd_str = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+
 #---------------------------------------------------
 sys.path.append('%s/../../../gf_core/py'%(cwd_str))
 import gf_core_error
+
 #---------------------------------------------------
 #->:Map(new_image_info_map)
 def verify_image_info(p_image_info_map,

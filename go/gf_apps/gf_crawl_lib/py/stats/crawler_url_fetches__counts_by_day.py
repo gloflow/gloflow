@@ -15,15 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
 import datetime
 import pprint
 import pandas as pd
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+
 #-------------------------------------------------------------
 #called to find out how frequently to run the stat
 def freq():
 	return '5m'
+	
 #-------------------------------------------------------------
 def run(p_mongo_client,
 	p_log_fun,
@@ -81,7 +82,7 @@ def run(p_mongo_client,
 			],
 			allowDiskUse=True)
 
-		print 'DONE - allowDiskUse'
+		print('DONE - allowDiskUse')
 		return results
 		#print results.explain("executionStats")
 		#print coll.explain("executionStats")
@@ -124,9 +125,9 @@ def run(p_mongo_client,
 			top_domains__count_int += domain_count_int
 		top_domains_counts_per_day_lst.append(top_domains__count_int)
 
-	print len(days_lst)
-	print len(counts_lst)
-	print len(top_domains_counts_per_day_lst)
+	print(len(days_lst))
+	print(len(counts_lst))
+	print(len(top_domains_counts_per_day_lst))
 
 	df = pd.DataFrame({
 		"days":                          days_lst,
@@ -135,7 +136,7 @@ def run(p_mongo_client,
 	})
 
 	df.set_index("days", drop=True, inplace=True)
-	print df
+	print(df)
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"
 	#count_s = pd.Series(results_lst)

@@ -17,6 +17,7 @@
 
 import json
 import gf_image
+
 #---------------------------------------------------
 #->:Bool
 def image_exists(p_image_id_str,
@@ -46,6 +47,7 @@ def image_exists(p_image_id_str,
 		if data_coll.find({"id_str":p_image_id_str},{"_id":1}).limit(1).count() == 0: return False
 		else                                                                        : return True
 	#-----------
+
 #---------------------------------------------------
 #->:Image_ADT|None
 def db_get(p_image_id_str,
@@ -54,7 +56,7 @@ def db_get(p_image_id_str,
 	p_db_type_str         = 'mongo',
 	p_mongo_db_name_str   = 'prod_db',
 	p_mongo_coll_name_str = 'images'):
-	p_log_fun('FUN_ENTER','gf_image_db.db_get()')
+	p_log_fun('FUN_ENTER', 'gf_image_db.db_get()')
 	
 	#---------------
 	#MONGO
@@ -63,26 +65,24 @@ def db_get(p_image_id_str,
 		#SCALING!! - image_exists() does a full query to mongo
 		#            investigate further
 		if image_exists(p_image_id_str,
-						p_db_context_map,
-						p_log_fun,
-						p_db_type_str = 'mongo'):
+			p_db_context_map,
+			p_log_fun,
+			p_db_type_str = 'mongo'):
 
 			mongo_client        = p_db_context_map['mongodb_client']
 			gf_images_coll      = mongo_client[p_mongo_db_name_str][p_mongo_coll_name_str]
 			raw_image_info_dict = gf_images_coll.find({"id_str":p_image_id_str})[0]
-			image_info_dict     = gf_image.deserialize(raw_image_info_dict,
-													   p_log_fun)
+			image_info_dict     = gf_image.deserialize(raw_image_info_dict, p_log_fun)
 		else:
 			return None
 	#---------------
 
 	#create() - does verification and adt construction
-	image_adt = gf_image.create(image_info_dict,
-		                        p_db_context_map,
-								p_log_fun)
-	assert isinstance(image_adt,gf_image.Image_ADT)
+	image_adt = gf_image.create(image_info_dict, p_db_context_map, p_log_fun)
+	assert isinstance(image_adt, gf_image.Image_ADT)
 	
 	return image_adt
+
 #---------------------------------------------------
 def db_put(p_image_adt,
 	p_db_context_map,
@@ -90,8 +90,8 @@ def db_put(p_image_adt,
 	p_db_type_str         = 'mongo',
 	p_mongo_db_name_str   = 'prod_db',
 	p_mongo_coll_name_str = 'images'):
-	p_log_fun('FUN_ENTER','gf_image_db.db_put()')
-	assert isinstance(p_image_adt,gf_image.Image_ADT)
+	p_log_fun('FUN_ENTER', 'gf_image_db.db_put()')
+	assert isinstance(p_image_adt, gf_image.Image_ADT)
 	
 	image_info_dict = gf_image.serialize(p_image_adt,
 									p_log_fun)
@@ -104,9 +104,10 @@ def db_put(p_image_adt,
 		#spec          - a dict specifying elements which must be present for a document to be updated
 		#upsert = True - insert doc if it doesnt exist, else just update
 		p_mongo_data_collection.update({'id_str':p_image_adt.id_str}, #spec
-									image_info_dict, 
-									upsert = True)
+			image_info_dict, 
+			upsert = True)
 	#---------------
+	
 #---------------------------------------------------	
 #CAUTION!! - this is a very expensive operation for large image DB's
 

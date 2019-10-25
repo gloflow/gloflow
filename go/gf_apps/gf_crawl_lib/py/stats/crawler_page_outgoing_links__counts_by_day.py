@@ -83,7 +83,7 @@ def run(p_mongo_client,
 			],
 			allowDiskUse=True)
 
-		print 'DONE - allowDiskUse'
+		print('DONE - allowDiskUse')
 		return results
 		#print results.explain("executionStats")
 		#print coll.explain("executionStats")
@@ -136,7 +136,7 @@ def run(p_mongo_client,
 	})
 
 	df.set_index("days",drop=True,inplace=True)
-	print df
+	print(df)
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"
 	#count_s = pd.Series(results_lst)

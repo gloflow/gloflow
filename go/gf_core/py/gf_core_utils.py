@@ -30,15 +30,14 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 		p_log_fun('INFO','p_cmd_str - %s'%(p_cmd_str))
 
 		p = subprocess.Popen(p_cmd_str,
-						shell   = True,
-						stdout  = subprocess.PIPE,
-						bufsize = 1)
+			shell   = True,
+			stdout  = subprocess.PIPE,
+			bufsize = 1)
 		assert isinstance(p,subprocess.Popen)
 		#---------------------------------------------------
 		#IMPORTANT!! - workers cleanup on parent shutdown
 
-		def handle_signal_terminate(p_signum,
-								p_frame):
+		def handle_signal_terminate(p_signum, p_frame):
 			p_log_fun('INFO','+++ ++ -- SIGNAL SIGTERM RECEIVED - gf_images_main_service')
 
 			p.terminate()
@@ -50,7 +49,7 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 
 
 		bin_str = os.path.basename(p_cmd_str.split(' ')[0])
-		print envoy.run('ps -e | grep %s'%(bin_str)).std_out
+		print(envoy.run('ps -e | grep %s'%(bin_str)).std_out)
 
 
 		p.wait() #block this process and let the child run

@@ -85,7 +85,7 @@ def run(p_mongo_client,
 			],
 			allowDiskUse=True)
 
-		print 'DONE - allowDiskUse'
+		print('DONE - allowDiskUse')
 		return results
 		#print results.explain("executionStats")
 		#print coll.explain("executionStats")
@@ -126,7 +126,7 @@ def run(p_mongo_client,
 			],
 			allowDiskUse=True)
 
-		print 'DONE - allowDiskUse'
+		print('DONE - allowDiskUse')
 		return results
 	#-------------------------------------------------------------
 
@@ -175,18 +175,21 @@ def run(p_mongo_client,
 
 			top_domains_counts_per_day_lst.append(top_domains__count_int)
 		return days_lst,counts_lst,top_domains_counts_per_day_lst
+		
 	#-------------------------------------------------------------
 	def process_page_imgs_attribute(p_result):
 		counts_lst = []
 		for r in p_result:
 			counts_lst.append(r['count_int'])
 		return counts_lst
+
 	#-------------------------------------------------------------
 	def process_page_imgs_refs(p_result):
 		counts_lst = []
 		for r in p_result:
 			counts_lst.append(r['count_int'])
 		return counts_lst
+
 	#-------------------------------------------------------------
 
 	imgs__days_lst,imgs__counts_lst,imgs__top_domains_counts_per_day_lst = process__page_imgs(imgs__results)
@@ -207,7 +210,7 @@ def run(p_mongo_client,
 	})
 
 	df.set_index("days", drop=True, inplace=True)
-	print df
+	print(df)
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"
 	#count_s = pd.Series(results_lst)

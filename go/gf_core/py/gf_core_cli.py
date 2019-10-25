@@ -17,6 +17,7 @@
 
 import sys
 import argparse
+
 #-----------------------------------------------------
 #IMPORTANT!! - these arguments(service_info parameters) have precendence over
 #              what is returned by services get_service_info() function
@@ -69,7 +70,7 @@ def confirm(p_prompt_str, p_resp=False):
         if not answer_str:
             return p_resp
         if answer_str not in ['y', 'Y', 'n', 'N']:
-            print 'please enter y or n.'
+            print('please enter y or n.')
             continue
         if answer_str == 'y' or answer_str == 'Y':
             return True

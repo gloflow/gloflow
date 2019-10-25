@@ -9,16 +9,16 @@ MAILTO=""
 #                     parsed by cli__gf_crawl__stats.py
 #-----------------------------------------------
 #IMAGES - COUNTS_BY_DAY - every 5min
-*/5 * * * * python /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_imgs__counts_by_day -env_var_args=true | tee /home/gf/logs/log__crawler_page_imgs__counts_by_day.log /dev/stdout
+*/5 * * * * python3 /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_imgs__counts_by_day -env_var_args=true | tee /home/gf/logs/log__crawler_page_imgs__counts_by_day.log /dev/stdout
 #-----------------------------------------------
 #LINKS - COUNTS_BY_DAY - every 5min
-*/5 * * * * python /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__counts_by_day -env_var_args=true | tee /home/gf/logs/log__links_counts_by_day.log /dev/stdout
+*/5 * * * * python3 /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__counts_by_day -env_var_args=true | tee /home/gf/logs/log__links_counts_by_day.log /dev/stdout
 
 #LINKS_PER_CRAWLER - every 5min
-*/5 * * * * python /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__per_crawler -env_var_args=true | tee /home/gf/logs/log__links_counts_by_day.log /dev/stdout
+*/5 * * * * python3 /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__per_crawler -env_var_args=true | tee /home/gf/logs/log__links_counts_by_day.log /dev/stdout
 
 #LINKS_NULL_BREAKDOWN - every 1h
-0 * * * * python /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__null_breakdown -env_var_args=true | tee /home/gf/logs/log__links_null_breakdown.log /dev/stdout
+0 * * * * python3 /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_page_outgoing_links__null_breakdown -env_var_args=true | tee /home/gf/logs/log__links_null_breakdown.log /dev/stdout
 #-----------------------------------------------
 #FETCHES - COUNTS_BY_DAY - every 5min
-*/5 * * * * python /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_url_fetches__counts_by_day -env_var_args=true | tee /home/gf/logs/log__url_fetches_counts_by_day.log /dev/stdout
+*/5 * * * * python3 /home/gf/py/cli/cli__gf_crawl__stats.py -run=stat__crawler_url_fetches__counts_by_day -env_var_args=true | tee /home/gf/logs/log__url_fetches_counts_by_day.log /dev/stdout

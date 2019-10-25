@@ -94,10 +94,6 @@ def dispatch_process_extern_image(p_image_url_str,
 	data_items_lst = stream_responses()
 
 
-	print 'aaaaaaaaaaaaaaaaaa'
-	print data_items_lst
-
-
 	assert isinstance(data_items_lst,list)
 	assert len(data_items_lst) == 1 #just the job_output_dict
 

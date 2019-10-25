@@ -23,6 +23,7 @@ import multiprocessing
 import signal
 
 cwd_str = os.path.dirname(os.path.abspath(__file__))
+
 #--------------------------------------------------------
 #FIX!! - remove p_workers_various_params_dict from the argument list of start_new_os_process() arguments,
 #        because start_new_os_process() is handled generically in gf_ops_app_runner.py, and extra non-standard
@@ -35,13 +36,12 @@ def start_new_os_process(p_log_fun,
 	p_images_thumbnails_store_local_dir_path_str = '%s/../tests/images/output/thumbnails'%(cwd_str),
 	p_images_s3_bucket_name_str                  = 'gf--test',
 	p_service_bin_path_str                       = os.path.abspath('%s/../../../../bin/gf_images_service'%(cwd_str))):
-	p_log_fun('FUN_ENTER','gf_image_service_utils.start_new_os_process()')
+	p_log_fun('FUN_ENTER', 'gf_image_service_utils.start_new_os_process()')
 	assert isinstance(p_port_str            ,basestring)
 	assert isinstance(p_service_bin_path_str,basestring)
 
 	#---------------------------------------------------
-	def run_process(p_child_conn,
-				p_log_fun):
+	def run_process(p_child_conn, p_log_fun):
 		p_log_fun('FUN_ENTER','gf_image_service_utils.start_new_os_process().run_process()')
 
 		args_lst = [

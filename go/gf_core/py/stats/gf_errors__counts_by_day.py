@@ -34,14 +34,14 @@ def run(p_mongo_client,
 		coll    = p_mongo_client['prod_db']['data_symphony']
 		results = coll.aggregate([
 				{'$match':{
-					't':'gf_error'}},
+					't': 'gf_error'}},
 
 				{"$project":{
-					"creation_unix_time_f":1,
-					"type_str":            1,
-					"service_name_str":    1,
-					"subsystem_name_str":  1,
-					"func_name_str":       1,
+					"creation_unix_time_f": 1,
+					"type_str":             1,
+					"service_name_str":     1,
+					"subsystem_name_str":   1,
+					"func_name_str":        1,
 				}},
 				{"$group":{
 
@@ -88,7 +88,7 @@ def run(p_mongo_client,
 			],
 			allowDiskUse=True)
 
-		print 'DONE - allowDiskUse'
+		print('DONE - allowDiskUse')
 		return results
 
 		#print results.explain("executionStats")
@@ -107,11 +107,11 @@ def run(p_mongo_client,
 			'gf_error_counts_per_day':gf_error_counts_per_day_int,
 		}
 
-		print '============= ---------------'
+		print('============= ---------------')
 
 		for subsystem_errors_map in r['subsystems_errors_lst']:
 
-			print subsystem_errors_map
+			print(subsystem_errors_map)
 
 			subsystem_name_str            = subsystem_errors_map['subsystem_name_str']
 			subsystem_gf_errors_count_int = subsystem_errors_map['count_int']
@@ -126,7 +126,7 @@ def run(p_mongo_client,
 	df = pd.DataFrame(df_lst)
 
 	df.set_index("day",drop=True,inplace=True)
-	print df
+	print(df)
 
 	#---------------------------------------------
 	#PLOT

@@ -318,5 +318,6 @@ crontab configuration file path (cron runs py stats scripts)
 
 #-------------------------------------------------------------
 if __name__ == '__main__':
-	def log_fun(g, m):print('%s:%s'%(g, m))
+	def log_fun(g, m):
+		print('%s:%s'%(g, m))
 	main(log_fun)

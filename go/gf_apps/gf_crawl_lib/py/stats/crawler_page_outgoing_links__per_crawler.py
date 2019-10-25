@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 #called to find out how frequently to run the stat
 def freq():
 	return '5m'
+	
 #-------------------------------------------------------------
 def run(p_mongo_client,
 	p_log_fun,
@@ -38,7 +39,7 @@ def run(p_mongo_client,
 		],
 		allowDiskUse=True)
 
-	print 'DONE'
+	print('DONE')
 
 	names_lst  = []
 	counts_lst = []
@@ -53,7 +54,7 @@ def run(p_mongo_client,
 	})
 
 	df.set_index("name",drop=True,inplace=True)
-	print df
+	print(df)
 
 	#casting subject_alt_names_counts_lst to list() first because its a "multiprocessing.managers.ListProxy"
 	#count_s = pd.Series(results_lst)

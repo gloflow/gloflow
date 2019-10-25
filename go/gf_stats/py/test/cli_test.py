@@ -22,8 +22,11 @@ from colored import fg,bg,attr
 
 sys.path.append('%s/..'%(cwd_str))
 import cli_stats
+
 #----------------------------------------------
-def log_fun(g,m):print '%s:%s'%(g,m)
+def log_fun(g,m):
+	print('%s:%s'%(g,m))
+
 #----------------------------------------------
 def test():
 
@@ -56,9 +59,9 @@ def test():
 
 	for py_stat_str in py_stats__names_lst:
 
-		print ''
-		print '   %sTEST%s PY_STAT - %s%s%s   >>>>>>>>>>>>>> '%(fg('yellow'),attr(0),fg('blue'),py_stat_str,attr(0))
-		print ''
+		print('')
+		print('   %sTEST%s PY_STAT - %s%s%s   >>>>>>>>>>>>>> '%(fg('yellow'), attr(0), fg('blue'), py_stat_str, attr(0)))
+		print('')
 
 		cli_stats.run_py_stat(py_stat_str,
 			py_stats_dirs_lst,

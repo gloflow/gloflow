@@ -27,6 +27,7 @@ import crawler_page_outgoing_links__counts_by_day
 import crawler_page_outgoing_links__null_breakdown
 import crawler_page_outgoing_links__per_crawler
 import crawler_url_fetches__counts_by_day
+
 #-------------------------------------------------------------
 def main(p_log_fun):
 
@@ -89,6 +90,7 @@ def main(p_log_fun):
 			p_log_fun,
 			p_output_img_str = stats__config_map['crawler_url_fetches__counts_by_day']['plot_path_str'])
 	#---------------------
+
 #----------------------------------------------
 def run_batch_sequence(p_stats__config_map,
 	p_mongo_client,
@@ -96,9 +98,9 @@ def run_batch_sequence(p_stats__config_map,
 	p_log_fun('FUN_ENTER','cli__gf_crawl__stats.run_batch_sequence()')
 
 
-	print ''
-	print '         ------ RUN_BATCH >>>>'
-	print ''
+	print('')
+	print('         ------ RUN_BATCH >>>>')
+	print('')
 
 	crawler_page_outgoing_links__counts_by_day.run(p_mongo_client,
 		p_log_fun,
@@ -111,6 +113,7 @@ def run_batch_sequence(p_stats__config_map,
 	crawler_page_outgoing_links__null_breakdown.run(p_mongo_client,
 		p_log_fun,
 		p_output_img_str = p_stats__config_map['crawler_page_outgoing_links__null_breakdown']['plot_path_str'])
+
 #----------------------------------------------
 #ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
 #        instead of just picking the first element
@@ -118,8 +121,9 @@ def run_batch_sequence(p_stats__config_map,
 def get_mongodb_client(p_host_str, p_log_fun):
 	p_log_fun('FUN_ENTER','cli__gf_crawl__stats.get_mongodb_client()')
 
-	mongo_client = pymongo.MongoClient(p_host_str,27017)
+	mongo_client = pymongo.MongoClient(p_host_str, 27017)
 	return mongo_client
+
 #-------------------------------------------------------------
 def parse_args():
 	arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
@@ -169,21 +173,22 @@ if arguments should be read from the ENV variables as well the CLI
 		mongodb_host_str = os.environ['GF_MONGODB_HOST']
 		plots_dir_str    = os.environ['GF_PLOTS_DIR']
 
-		print 'mongodb_host_str - %s'%(mongodb_host_str)
-		print 'plots_dir_str    - %s'%(plots_dir_str)
+		print('mongodb_host_str - %s'%(mongodb_host_str))
+		print('plots_dir_str    - %s'%(plots_dir_str))
 
 		return {
-			'run':         args_namespace.run,
-			'mongodb_host':mongodb_host_str,
-			'plots_dir':   plots_dir_str
+			'run':          args_namespace.run,
+			'mongodb_host': mongodb_host_str,
+			'plots_dir':    plots_dir_str
 		}
 	else:
 		return {
-			'run':         args_namespace.run,
-			'mongodb_host':args_namespace.mongodb_host,
-			'plots_dir':   args_namespace.plots_dir
+			'run':          args_namespace.run,
+			'mongodb_host': args_namespace.mongodb_host,
+			'plots_dir':    args_namespace.plots_dir
 		}
 #-------------------------------------------------------------
 if __name__ == '__main__':
-	def log_fun(g,m):print '%s:%s'%(g,m)
+	def log_fun(g,m):
+		print('%s:%s'%(g,m))
 	main(log_fun)

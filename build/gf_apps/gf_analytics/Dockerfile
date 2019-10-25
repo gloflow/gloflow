@@ -27,7 +27,8 @@ RUN apk add ca-certificates
 #------------
 #PYTHON CODE
 
-RUN apk --update add python2
+RUN apk --update add python3 \
+                    python3-dev
 
 RUN apk --update add py-pip
 RUN pip install --upgrade pip
@@ -35,15 +36,14 @@ RUN pip install --upgrade pip
 #MATPLOTLIB DEPENDENCIES
 #RUN apk add alpine-sdk #adds ~400mb to container size!
 RUN apk add build-base
-RUN apk add python-dev
 RUN apk add freetype-dev
 RUN apk add libpng-dev
 
-RUN pip install matplotlib
-RUN pip install pandas
-RUN pip install pymongo
-RUN pip install delegator-py
-RUN pip install colored
+RUN python3 -mpip install --upgrade matplotlib
+RUN python3 -mpip install pandas
+RUN python3 -mpip install pymongo
+RUN python3 -mpip install delegator-py
+RUN python3 -mpip install colored
 #------------
 #SUPERVISOR
 RUN apk --update add supervisor
