@@ -44,6 +44,7 @@ def publish(p_app_name_str,
 		service_version_str,
 		p_dockerhub_user_str,
 		p_dockerhub_pass_str,
+		p_log_fun,
 		p_exit_on_fail_bool = p_exit_on_fail_bool)
 
 #-------------------------------------------------------------
@@ -149,6 +150,7 @@ def publish_docker_image(p_image_name_str,
 	p_image_tag_str,
 	p_dockerhub_user_str,
 	p_dockerhub_pass_str,
+	p_log_fun,
 	p_exit_on_fail_bool = False):	
 
 	#------------------
