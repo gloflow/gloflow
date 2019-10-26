@@ -66,6 +66,9 @@ def main():
         gf_dockerhub_user_str = args_map["gf_dockerhub_user"]
         gf_dockerhub_pass_str = args_map["gf_dockerhub_pass"]
 
+        assert not gf_dockerhub_user_str == None
+        assert not gf_dockerhub_pass_str == None
+
         publish_apps_containers(changed_apps_files_map,
             gf_dockerhub_user_str,
             gf_dockerhub_pass_str)
@@ -313,9 +316,6 @@ def parse_args():
     gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER", None)
     gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
 
-    assert not gf_dockerhub_user_str == None
-    assert not gf_dockerhub_pass_str == None
-    
     print(gf_dockerhub_user_str)
     print(gf_dockerhub_pass_str)
     #-------------
