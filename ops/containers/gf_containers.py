@@ -32,7 +32,7 @@ def publish(p_app_name_str,
 	p_dockerhub_pass_str,
 	p_log_fun,
 	p_exit_on_fail_bool = False):
-	p_log_fun('FUN_ENTER', 'gf_containers.build()')
+	p_log_fun('FUN_ENTER', 'gf_containers.publish()')
 	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
 	assert isinstance(p_app_build_meta_map, dict)
 

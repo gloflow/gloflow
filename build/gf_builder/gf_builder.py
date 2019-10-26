@@ -310,9 +310,14 @@ def parse_args():
     #-------------
     # ENV_VARS
     drone_commit_sha_str  = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
-    gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER")
-    gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P")
+    gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER", None)
+    gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
 
+    assert not gf_dockerhub_user_str == None
+    assert not gf_dockerhub_pass_str == None
+    
+    print(gf_dockerhub_user_str)
+    print(gf_dockerhub_pass_str)
     #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
