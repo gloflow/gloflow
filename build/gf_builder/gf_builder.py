@@ -95,7 +95,7 @@ def publish_apps_containers(p_changed_apps_files_map,
             app_build_meta_map,
             p_gf_dockerhub_user_str,
             p_gf_dockerhub_pass_str,
-            p_log_fun,
+            gf_log.log_fun,
             p_exit_on_fail_bool = True)
 
 #--------------------------------------------------
