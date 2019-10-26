@@ -90,3 +90,28 @@ steps:
         - master
 
   #-------------------------------
+  # PUBLISH_CONTAINERS
+  - name: publish_containers
+    image: glofloworg/gf_builder
+    environment:
+      GF_DOCKERHUB_USER:
+        from_secret: gf_os__dockerhub_user
+      GF_DOCKERHUB_P:
+        from_secret: gf_os__dockerhub_p
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container building and later publishing.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------

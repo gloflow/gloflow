@@ -19,9 +19,10 @@ import logging
 import subprocess
 import signal
 import multiprocessing
+
 #---------------------------------------------------
 def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
-	p_log_fun('FUN_ENTER','gf_core_utils.run_cmd_in_os_proc()')
+	p_log_fun('FUN_ENTER', 'gf_core_utils.run_cmd_in_os_proc()')
 	#---------------------------------------------------
 	def run_process():
 		p_log_fun('FUN_ENTER','gf_core_utils.run_cmd_in_os_proc().run_process()')

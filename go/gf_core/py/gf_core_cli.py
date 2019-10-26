@@ -19,10 +19,10 @@ import sys
 import argparse
 
 #-----------------------------------------------------
-#IMPORTANT!! - these arguments(service_info parameters) have precendence over
-#              what is returned by services get_service_info() function
+# IMPORTANT!! - these arguments(service_info parameters) have precendence over
+#               what is returned by services get_service_info() function
 
-#->:Dict(dynamic_service_info_dict)
+# ->:Dict(dynamic_service_info_dict)
 def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 	p_log_fun('FUN_ENTER', 'gf_core_cli.parse_args()')
 	assert isinstance(p_cmd_line_args_defs_map, dict)
@@ -30,8 +30,8 @@ def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 	passed_in_args_lst = sys.argv[1:]
 	p_log_fun('INFO', 'passed in args:%s'%(passed_in_args_lst))
 	
-	#RawTextHelpFormatter - so that newlines in the help text are rendered when "-h" option 
-	#                       is passed on the command line
+	# RawTextHelpFormatter - so that newlines in the help text are rendered when "-h" option 
+	#                        is passed on the command line
 	arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 
 	#load up all command line argument definitions
@@ -53,6 +53,7 @@ def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 		extracted_args_map[arg_name_str] = getattr(args_namespace,arg_name_str)
 		
 	return extracted_args_map
+
 #-----------------------------------------------------
 #->:Bool
 def confirm(p_prompt_str, p_resp=False):

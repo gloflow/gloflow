@@ -25,6 +25,28 @@ sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
 
 #-------------------------------------------------------------
+# PUBLISH
+def publish(p_app_name_str,
+	p_app_build_meta_map,
+	p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_log_fun,
+	p_exit_on_fail_bool = False):
+	p_log_fun('FUN_ENTER', 'gf_containers.build()')
+	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
+	assert isinstance(p_app_build_meta_map, dict)
+
+
+	service_name_str    = p_app_build_meta_map['service_name_str']
+	service_version_str = p_app_build_meta_map['version_str']
+
+	publish_docker_image(service_name_str,
+		service_version_str,
+		p_dockerhub_user_str,
+		p_dockerhub_pass_str,
+		p_exit_on_fail_bool = p_exit_on_fail_bool)
+
+#-------------------------------------------------------------
 # BUILD
 def build(p_app_name_str,
 	p_app_build_meta_map,
@@ -67,8 +89,10 @@ def build(p_app_name_str,
 	prepare_web_files(pages_map, service_base_dir_str, p_log_fun)
 	#------------------
 
-	build_docker_image(service_name_str,
-		service_version_str,
+	image_name_str = service_name_str
+	image_tag_str  = service_version_str
+	build_docker_image(image_name_str,
+		image_tag_str,
 		service_dockerfile_path_str,
 		p_user_name_str,
 		p_log_fun,
@@ -118,7 +142,51 @@ def prepare_web_files(p_pages_map,
 	gf_cli_utils.run_cmd('rm -rf %s/../templates'%(target_dir_str)) #remove existing templates build dir
 	gf_cli_utils.run_cmd('mv %s/templates %s/..'%(target_dir_str, target_dir_str))
 	#------------------
+
+#-------------------------------------------------------------
+# PUBLISH_DOCKER_IMAGE
+def publish_docker_image(p_image_name_str,
+	p_image_tag_str,
+	p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_exit_on_fail_bool = False):	
+
+	#------------------
+	# DOCKERHUB_LOGIN
+	cmd_lst = [
+		"docker", "login",
+		"-u", p_dockerhub_user_str,
+		"--password-stdin"
+	]
+
+	process = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+	process.stdin.write(p_dockerhub_pass_str) # write password on stdin of "docker login" command
+	stdout_str, stderr_str = process.communicate() # wait for command completion
+	print(stdout_str)
+	print(stderr_str)
+	#------------------
+	# DOCKER_PUSH
+
+	full_image_name_str = '%s/%s:%s'%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
+	cmd_lst = [
+		'docker push',
+		full_image_name_str
+	]
+
+	c_str = ' '.join(cmd_lst)
+	p_log_fun('INFO',' - %s'%(c_str))
+
+	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 	
+
+	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
+    #               want to fail with a non-zero exit code as well - this way other CI 
+    #               programs will flag builds as failed.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
+	#------------------
+
 #-------------------------------------------------------------
 # BUILD_DOCKER_IMAGE
 def build_docker_image(p_image_name_str,
@@ -168,6 +236,7 @@ def build_docker_image(p_image_name_str,
 		# IMPORTANT!! - check that this is a valid 12 char Docker ID
 		assert len(image_id_str) == 12
 		return image_id_str
+
 	#---------------------------------------------------
 
 	# for line in r.stdout:

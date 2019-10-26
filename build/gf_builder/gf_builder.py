@@ -48,8 +48,8 @@ def main():
     elif args_map["run"] == "build":
 
         #IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-        if "DRONE_COMMIT_SHA" in os.environ:
-            git_commit_hash_str = os.environ["DRONE_COMMIT_SHA"]
+        if not args_map["drone_commit_sha"] == None:
+            git_commit_hash_str = args_map["drone_commit_sha"]
             paste_git_commit_hash(git_commit_hash_str)
             
         build_apps(changed_apps_files_map)
@@ -60,8 +60,46 @@ def main():
         build_apps_containers(changed_apps_files_map)
 
     #------------------------
+    # PUBLISH_CONTAINERS
+    elif args_map["run"] == "publish_containers":
+
+        gf_dockerhub_user_str = args_map["gf_dockerhub_user"]
+        gf_dockerhub_pass_str = args_map["gf_dockerhub_pass"]
+
+        publish_apps_containers(changed_apps_files_map,
+            gf_dockerhub_user_str,
+            gf_dockerhub_pass_str)
+
+    #------------------------
 
 #--------------------------------------------------
+# PUBLISH_APPS_CONTAINERS
+def publish_apps_containers(p_changed_apps_files_map,
+    p_gf_dockerhub_user_str,
+    p_gf_dockerhub_pass_str):
+    assert isinstance(p_gf_dockerhub_user_str, basestring)
+    assert isinstance(p_gf_dockerhub_pass_str, basestring)
+    
+    build_meta_map = gf_meta.get()['build_info_map']
+    
+    # "all" - this key holds a map with all the apps that had either their Go or Web code changed
+    apps_names_lst = p_changed_apps_files_map["all"].keys()
+
+    for app_name_str in apps_names_lst:
+
+        assert build_meta_map.has_key(app_name_str)
+        app_build_meta_map = build_meta_map[app_name_str]
+
+        # PUBLISH
+        gf_containers.publish(app_name_str,
+            app_build_meta_map,
+            p_gf_dockerhub_user_str,
+            p_gf_dockerhub_pass_str,
+            p_log_fun,
+            p_exit_on_fail_bool = True)
+
+#--------------------------------------------------
+# BUILD_APPS_CONTAINERS
 def build_apps_containers(p_changed_apps_files_map):
     assert isinstance(p_changed_apps_files_map, dict)
 
@@ -142,6 +180,7 @@ def test_apps(p_changed_apps_files_map):
         #------------------------
     
 #--------------------------------------------------
+# BUILD_APPS
 def build_apps(p_changed_apps_files_map):
     assert isinstance(p_changed_apps_files_map, dict)
 
@@ -196,6 +235,7 @@ def build_apps(p_changed_apps_files_map):
         #------------------------
 
 #--------------------------------------------------
+# GET_CHANGED_APPS
 def get_changed_apps():
     print("DIFF")
     apps_changes_deps_map = gf_meta.get()['apps_changes_deps_map']
@@ -212,6 +252,7 @@ def get_changed_apps():
     return changed_apps_files_map
 
 #--------------------------------------------------
+# PASTE_GIT_COMMIT_HASH
 def paste_git_commit_hash(p_git_commit_hash_str):
     print("PASTE_GIT_COMMIT_HASH - %s"%(p_git_commit_hash_str))
 
@@ -267,11 +308,19 @@ def parse_args():
     #     help =    '''mongodb host to connect to (for testing, etc.)''')
 
     #-------------
+    # ENV_VARS
+    drone_commit_sha_str  = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
+    gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER")
+    gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P")
 
+    #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
     return {
-        "run": args_namespace.run,
+        "run":               args_namespace.run,
+        "drone_commit_sha":  drone_commit_sha_str,
+        "gf_dockerhub_user": gf_dockerhub_user_str,
+        "gf_dockerhub_pass": gf_dockerhub_pass_str,
         # "mongodb_host": args_namespace.mongodb_host,
     }
 
