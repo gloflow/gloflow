@@ -74,6 +74,10 @@ steps:
   - name: build_containers
     image: glofloworg/gf_builder
 
+    environment:
+      GF_DOCKERHUB_USER:
+        from_secret: gf_os__dockerhub_user # used to build the container for a particular user
+
     # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
     #               connect to the Docker daemon running on the host machine. this connection
     #               is whats used for container building and later publishing.
