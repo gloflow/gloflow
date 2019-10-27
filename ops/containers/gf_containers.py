@@ -188,6 +188,10 @@ def publish_docker_image(p_image_name_str,
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
 	#------------------
+	# DOCKER_LOGOUT
+	stdout_str, _, _ = gf_cli_utils.run_cmd('docker logout')
+	print(stdout_str)
+	#------------------
 
 #-------------------------------------------------------------
 # BUILD_DOCKER_IMAGE
