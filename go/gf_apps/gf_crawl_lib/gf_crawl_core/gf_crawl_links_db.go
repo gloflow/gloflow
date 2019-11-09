@@ -66,8 +66,8 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 			// IMPORTANT!! - get all unresolved links that also dont have any errors associated
 			//               with them. this way repeated processing of unresolved links that always cause 
 			//               an error is avoided (wasted resources)
-			"error_type_str": bson.M{"$exists":false,},
-			"error_id_str":   bson.M{"$exists":false,},
+			"error_type_str": bson.M{"$exists": false,},
+			"error_id_str":   bson.M{"$exists": false,},
 
 			/*//-------------------
 			// IMPORTANT!! - this gets all unresolved links that come from the domain 

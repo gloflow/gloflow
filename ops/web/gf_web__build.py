@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os,sys
+import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
@@ -44,9 +44,9 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 		#-----------------
 
 		#BUILD PAGES - build each page of the app
-		for page_name_str, page_info_map in app_map['pages_map'].items():
+		for page_name_str, page_info_map in app_map["pages_map"].items():
 
-			build_dir_str = os.path.abspath(page_info_map['build_dir_str'])
+			build_dir_str = os.path.abspath(page_info_map["build_dir_str"])
 
 			build_page(page_name_str,
 				build_dir_str,
@@ -60,31 +60,34 @@ def build_page(p_page_name_str,
     p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 	
-	print('')
-	print('')
-	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	p_log_fun('INFO', '             %sBUILD PAGE%s - %s%s%s'%(fg('cyan'), attr(0), fg('orange_red_1'), p_page_name_str, attr(0)))
-	p_log_fun('INFO', '%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s'%(fg('orange_red_1'), attr(0)))
-	print('')
-	print('')
+	print("")
+	print("")
+	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s"%(fg("orange_red_1"), attr(0)))
+	p_log_fun("INFO", "             %sBUILD PAGE%s - %s%s%s"%(fg("cyan"), attr(0), fg("orange_red_1"), p_page_name_str, attr(0)))
+	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s"%(fg("orange_red_1"), attr(0)))
+	print("")
+	print("")
 
-	p_log_fun('INFO', 'build_dir_str - %s'%(p_target_build_dir_str))
+	p_log_fun("INFO", "build_dir_str - %s"%(p_target_build_dir_str))
 	assert isinstance(p_target_build_dir_str, basestring)
-	assert os.path.isdir(p_target_build_dir_str)
 
-	if p_page_info_map.has_key('main_html_path_str'):
-		main_html_path_str = os.path.abspath(p_page_info_map['main_html_path_str'])
+	# make build dir if it doesnt exist
+	if not os.path.isdir(p_target_build_dir_str):
+		gf_u.run_cmd("mkdir -p %s"%(p_target_build_dir_str))
+
+	if p_page_info_map.has_key("main_html_path_str"):
+		main_html_path_str = os.path.abspath(p_page_info_map["main_html_path_str"])
 		assert os.path.isfile(main_html_path_str)
-		assert main_html_path_str.endswith('.html')
-		assert '.'.join(os.path.basename(main_html_path_str).split('.')[:-1]) == p_page_name_str
-		p_log_fun('INFO', 'main_html_path_str - %s'%(main_html_path_str))
+		assert main_html_path_str.endswith(".html")
+		assert ".".join(os.path.basename(main_html_path_str).split(".")[:-1]) == p_page_name_str
+		p_log_fun("INFO", "main_html_path_str - %s"%(main_html_path_str))
 
-	if p_page_info_map.has_key('url_base_str'):
-		url_base_str = p_page_info_map['url_base_str']
-		p_log_fun('INFO', 'url_base_str - %s'%(url_base_str))
+	if p_page_info_map.has_key("url_base_str"):
+		url_base_str = p_page_info_map["url_base_str"]
+		p_log_fun("INFO", "url_base_str - %s"%(url_base_str))
 
-	if p_page_info_map.has_key('main_html_path_str'):	
-		f = open(main_html_path_str, 'r')
+	if p_page_info_map.has_key("main_html_path_str"):	
+		f = open(main_html_path_str, "r")
 		main_html_str = f.read()
 		f.close()
 
@@ -92,73 +95,73 @@ def build_page(p_page_name_str,
 		
 	#---------------------------------------------------
 	def process_scripts():
-		scripts_lst = soup.findAll('script')
+		scripts_lst = soup.findAll("script")
 
-		#if there are scripts detected in the page
+		# if there are scripts detected in the page
 		if len(scripts_lst) > 0:
-			js_libs_build_dir_str = '%s/js/lib'%(p_target_build_dir_str)
-			gf_u.run_cmd('mkdir -p %s'%(js_libs_build_dir_str)) #create dir and all parent dirs
+			js_libs_build_dir_str = "%s/js/lib"%(p_target_build_dir_str)
+			gf_u.run_cmd("mkdir -p %s"%(js_libs_build_dir_str)) # create dir and all parent dirs
 
 		for script in scripts_lst:
 
-			#some <script> tags might just contain source code, and not reference an external JS file
-			if not script.has_key('src'):
+			# some <script> tags might just contain source code, and not reference an external JS file
+			if not script.has_key("src"):
 				continue
 
-			src_str = script['src']
+			src_str = script["src"]
 			
-			if src_str.startswith('http://') or src_str.startswith('https://'):
-				print('EXTERNAL_URL - DO NOTHING')
+			if src_str.startswith("http://") or src_str.startswith("https://"):
+				print("EXTERNAL_URL - DO NOTHING")
 				continue
 			
 			main_html_dir_path_str = os.path.dirname(main_html_path_str)
 			assert os.path.isdir(main_html_dir_path_str)
 			
-			local_path_str = os.path.abspath('%s/%s'%(main_html_dir_path_str, src_str))
+			local_path_str = os.path.abspath("%s/%s"%(main_html_dir_path_str, src_str))
 			print(local_path_str)
 			assert os.path.isfile(local_path_str)
 
 			#-----------------
-			if local_path_str.endswith('.ts'):
-				p_log_fun('INFO', '%s------------ TYPESCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
+			if local_path_str.endswith(".ts"):
+				p_log_fun("INFO", "%s------------ TYPESCRIPT --------------------------------%s"%(fg("yellow"), attr(0)))
 				
 				#---------------------------------------------------
 				def build_typescript(p_out_file_str):
 					
 					cmd_lst = [
-						'tsc',
-						'--module system', #needed with the "--out" option
+						"tsc",
+						"--module system", # needed with the "--out" option
 
-						#Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
-						#'--esModuleInterop',
-						'--out %s'%(p_out_file_str),
+						# Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
+						# '--esModuleInterop',
+						"--out %s"%(p_out_file_str),
 						main_ts_file_str
 					]
-					gf_u.run_cmd(' '.join(cmd_lst))
+					gf_u.run_cmd(" ".join(cmd_lst))
 
-					#minify into the same file name as the Typescript compiler output
+					# minify into the same file name as the Typescript compiler output
 					target_dir_str = os.path.dirname(p_out_file_str)
 					minify_js(p_out_file_str, [p_out_file_str], p_log_fun)
 
 				#---------------------------------------------------
 
 				main_ts_file_str       = local_path_str
-				minified_file_name_str = '%s.min.js'%('.'.join(os.path.basename(main_ts_file_str).split('.')[:-1]))
-				minified_file_path_str = '%s/js/%s'%(p_target_build_dir_str, minified_file_name_str)
+				minified_file_name_str = "%s.min.js"%(".".join(os.path.basename(main_ts_file_str).split(".")[:-1]))
+				minified_file_path_str = "%s/js/%s"%(p_target_build_dir_str, minified_file_name_str)
 
 				build_typescript(minified_file_path_str)
 
-				#HTML_MODIFY - change the src in the html tag to the minified name, and url_base (dont leave relative path)
-				script['src'] = '%s/js/%s'%(url_base_str, minified_file_name_str)
+				# HTML_MODIFY - change the src in the html tag to the minified name, and url_base (dont leave relative path)
+				script["src"] = "%s/js/%s"%(url_base_str, minified_file_name_str)
 			#-----------------
-			elif local_path_str.endswith('.js'):
-				p_log_fun('INFO', '%s------------ JAVASCRIPT --------------------------------%s'%(fg('yellow'), attr(0)))
+			elif local_path_str.endswith(".js"):
+				p_log_fun("INFO", "%s------------ JAVASCRIPT --------------------------------%s"%(fg("yellow"), attr(0)))
 
-				#IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
-				gf_u.run_cmd('cp %s %s'%(local_path_str, js_libs_build_dir_str))
+				# IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
+				gf_u.run_cmd("cp %s %s"%(local_path_str, js_libs_build_dir_str))
 
-				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
-				script['src'] = '%s/js/lib/%s'%(url_base_str, os.path.basename(local_path_str))
+				# HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+				script["src"] = "%s/js/lib/%s"%(url_base_str, os.path.basename(local_path_str))
 			#-----------------
 
 	#---------------------------------------------------
@@ -177,21 +180,22 @@ def build_page(p_page_name_str,
 				print('EXTERNAL_URL - DO NOTHING')
 				continue
 
-			#full paths are relative to the dir holding the main html file (app entry point)
+			# full paths are relative to the dir holding the main html file (app entry point)
 			full_path_str = os.path.abspath('%s/%s'%(os.path.dirname(main_html_path_str), src_str))
 			print(full_path_str)
 			assert os.path.isfile(full_path_str)
 			
-			#SASS
+			# SASS
 			if src_str.endswith('.scss'):
 				css_file_name_str = os.path.basename(src_str).replace('.scss', '.css')
 				final_src_str     = '%s/%s'%(target_dir_str, css_file_name_str)
 				gf_u.run_cmd('sass %s %s'%(full_path_str, final_src_str))
 
-				#HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
+				# HTML_MODIFY - change the src in the html tag, to include the url_base
+				#               (dont leave relative path)
 				css['href'] = '%s/css/%s/%s'%(url_base_str, p_page_name_str, css_file_name_str)
 
-			#CSS
+			# CSS
 			else:
 				
 				gf_u.run_cmd('cp %s %s'%(full_path_str, target_dir_str))
@@ -206,8 +210,8 @@ def build_page(p_page_name_str,
 		process_css()
 
 		#-----------------
-		#CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
-		#                             the modified urls for JS/CSS
+		# CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
+		#                              the modified urls for JS/CSS
 		target_html_file_path_str = '%s/templates/%s/%s.html'%(p_target_build_dir_str, p_page_name_str, p_page_name_str)
 		gf_u.run_cmd('mkdir -p %s'%(os.path.dirname(target_html_file_path_str)))
 
@@ -217,7 +221,7 @@ def build_page(p_page_name_str,
 		#-----------------
 
 	#-----------------
-	#SUBTEMPLATES
+	# SUBTEMPLATES
 	if p_page_info_map.has_key('subtemplates_lst'):
 		process_subtemplates(p_page_name_str,
 			p_target_build_dir_str,
@@ -233,14 +237,14 @@ def process_files_to_copy(p_page_info_map, p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
 	assert isinstance(p_page_info_map, dict)
 
-	print('')
-	p_log_fun('INFO', '%s------------ COPY_FILES --------------------------------%s'%(fg('yellow'), attr(0)))
-	print('')
+	print("")
+	p_log_fun("INFO", "%s------------ COPY_FILES --------------------------------%s"%(fg("yellow"), attr(0)))
+	print("")
 
-	files_to_copy_lst = p_page_info_map['files_to_copy_lst']
+	files_to_copy_lst = p_page_info_map["files_to_copy_lst"]
 	assert isinstance(files_to_copy_lst, list)
 
-	#COPY_FILES
+	# COPY_FILES
 	for file_to_copy_tpl in files_to_copy_lst:
 		assert isinstance(file_to_copy_tpl, tuple)
 		src_file_str, target_dir_str = file_to_copy_tpl
@@ -248,8 +252,8 @@ def process_files_to_copy(p_page_info_map, p_log_fun):
 		assert os.path.isfile(src_file_str)
 		assert os.path.isdir(target_dir_str)
 
-		gf_u.run_cmd('cp %s %s'%(src_file_str, target_dir_str))
-		assert os.path.isfile('%s/%s'%(target_dir_str, os.path.basename(src_file_str)))
+		gf_u.run_cmd("cp %s %s"%(src_file_str, target_dir_str))
+		assert os.path.isfile("%s/%s"%(target_dir_str, os.path.basename(src_file_str)))
 
 #---------------------------------------------------
 def process_subtemplates(p_page_name_str,
@@ -261,26 +265,26 @@ def process_subtemplates(p_page_name_str,
 	assert os.path.isdir(p_target_build_dir_str)
 	assert p_page_info_map.has_key('subtemplates_lst')
 
-	print('')
-	p_log_fun('INFO', '%s------------ SUBTEMPLATES --------------------------------%s'%(fg('yellow'), attr(0)))
-	print('')
+	print("")
+	p_log_fun("INFO", "%s------------ SUBTEMPLATES --------------------------------%s"%(fg("yellow"), attr(0)))
+	print("")
 
-	subtemplates_lst = p_page_info_map['subtemplates_lst']
+	subtemplates_lst = p_page_info_map["subtemplates_lst"]
 	assert isinstance(subtemplates_lst, list)
 
-	#SUBTEMPLATES__BUILD_DIR
-	target_subtemplates_build_dir_str = '%s/templates/%s/subtemplates'%(p_target_build_dir_str, p_page_name_str)
+	# SUBTEMPLATES__BUILD_DIR
+	target_subtemplates_build_dir_str = "%s/templates/%s/subtemplates"%(p_target_build_dir_str, p_page_name_str)
 	if not os.path.isdir(target_subtemplates_build_dir_str):
-		gf_u.run_cmd('mkdir -p %s'%(target_subtemplates_build_dir_str))
+		gf_u.run_cmd("mkdir -p %s"%(target_subtemplates_build_dir_str))
 
 	for s_path_str in subtemplates_lst:
 		print(s_path_str)
 		assert isinstance(s_path_str, basestring)
 		assert os.path.isfile(s_path_str)
-		assert s_path_str.endswith('.html')
+		assert s_path_str.endswith(".html")
 
-		#SUBTEMPLATE__COPY
-		gf_u.run_cmd('cp %s %s'%(s_path_str, target_subtemplates_build_dir_str))
+		# SUBTEMPLATE__COPY
+		gf_u.run_cmd("cp %s %s"%(s_path_str, target_subtemplates_build_dir_str))
 
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
@@ -289,11 +293,11 @@ def minify_js(p_js_target_file_str,
 	p_log_fun("FUN_ENTER", "gf_web__build.minify_js()")
 
 	cmd_lst = [
-		'uglifyjs',
-		'--output %s'%(p_js_target_file_str),
-		' '.join(p_js_files_lst),
+		"uglifyjs",
+		"--output %s"%(p_js_target_file_str),
+		" ".join(p_js_files_lst),
 	]
-	gf_u.run_cmd(' '.join(cmd_lst))
+	gf_u.run_cmd(" ".join(cmd_lst))
 
 #---------------------------------------------------
 # def build_page(p_page_name_str,

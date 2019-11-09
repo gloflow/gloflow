@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 	
 package gf_core
+
 //-------------------------------------------------------------
 func Str_in_lst(p_str string, p_lst []string) bool {
 	for _,s := range p_lst {
@@ -27,6 +28,7 @@ func Str_in_lst(p_str string, p_lst []string) bool {
 	}
 	return false
 }
+
 //-------------------------------------------------------------
 func Map_has_key(p_map interface{}, p_key_str string) bool {
 

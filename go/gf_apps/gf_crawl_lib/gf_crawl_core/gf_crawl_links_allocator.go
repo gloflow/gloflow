@@ -145,8 +145,8 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		//IMPORTANT!! - get all unresolved links that also dont have any errors associated
 		//              with them. this way rep`eated processing of unresolved links that always cause 
 		//              an error is avoided (wasted resources)
-		"error_type_str": bson.M{"$exists":false,},
-		"error_id_str":   bson.M{"$exists":false,},
+		"error_type_str": bson.M{"$exists": false,},
+		"error_id_str":   bson.M{"$exists": false,},
 	}).
 	//IMPORTANT!! - sort by date of link creation/discovery, and get the links that were discovered first,
 	//              ascending order of unix timestamps.

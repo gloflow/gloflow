@@ -22,6 +22,7 @@ package gf_core
 import (
 	"github.com/globalsign/mgo"
 )
+
 //-------------------------------------------------
 type Runtime_sys struct {
 	Service_name_str string

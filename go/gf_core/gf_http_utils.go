@@ -30,24 +30,26 @@ import (
 	"bufio"
 	"mime"
 )
+
 //---------------------------------------------------
 type Gf_http_fetch struct {
 	Url_str          string            `bson:"url_str"`
-	Status_code_int  int               `bson"status_code_int"`
+	Status_code_int  int               `bson:"status_code_int"`
 	Resp_headers_map map[string]string `bson:"resp_headers_map"`
 	Req_time_f       float64           `bson:"req_time_f"`
 	Resp_time_f      float64           `bson:"resp_time_f"`
 	Resp             *http.Response    `bson:"-"`
 }
+
 //---------------------------------------------------
 func HTTP__fetch_url(p_url_str string,
 	p_runtime_sys *Runtime_sys) (*Gf_http_fetch,*Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_http_utils.HTTP__fetch_url()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
 	client := &http.Client{
 		Timeout: time.Second * 10, //to prevent requests taking too long to return
 
-		/*IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
+		/* IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
 		setting of these headers had to be added, via the CheckRedirect function
 		that gets called on every redirect, which gives us a chance to to re-set
 		user-agent headers again to the correct value*/
@@ -119,6 +121,7 @@ func HTTP__fetch_url(p_url_str string,
 
 	return gf_http_fetch, nil
 }
+
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
 	p_runtime_sys *Runtime_sys) {
@@ -149,6 +152,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 		}
 	})
 }
+
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 	p_runtime_sys *Runtime_sys) string {
@@ -162,6 +166,7 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 	cookies_str := buffer.String()
 	return cookies_str
 }
+
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
 	p_runtime_sys *Runtime_sys) (http.Flusher, *Gf_error) {
@@ -195,6 +200,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 
 	return flusher, nil
 }
+
 //-------------------------------------------------
 func HTTP__get_streaming_response(p_url_str string,
 	p_runtime_sys *Runtime_sys) (*[]map[string]interface{}, *Gf_error) {

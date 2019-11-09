@@ -26,19 +26,20 @@ import (
 	"io/ioutil"
 	"text/template"
 )
+
 //-------------------------------------------------
 func Templates__load(p_main_template_filename_str string,
 	p_templates_dir_path_str string,
 	p_runtime_sys *Runtime_sys) (*template.Template, []string, *Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_templates.Templates__load()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.Templates__load()")
 
 	//---------------------
-	//SUB_TEMPLATES - templates that are imported into the main template
+	// SUB_TEMPLATES - templates that are imported into the main template
 	subtemplates_dir_path_str   := fmt.Sprintf("%s/subtemplates", p_templates_dir_path_str)
 	subtemplates_names_lst      := []string{}
 	subtemplates_file_paths_lst := []string{}
 
-	//load subtemplates if the subtemplates/ dir exists
+	// load subtemplates if the subtemplates/ dir exists
 	if _, err := os.Stat(subtemplates_dir_path_str); !os.IsNotExist(err) {
 
 		files_lst, err := ioutil.ReadDir(subtemplates_dir_path_str)
@@ -59,11 +60,11 @@ func Templates__load(p_main_template_filename_str string,
 		}
 	}
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 	main_template_path_str := fmt.Sprintf("%s/%s", p_templates_dir_path_str, p_main_template_filename_str)
 	templates_paths_lst    := append([]string{main_template_path_str,}, subtemplates_file_paths_lst...)
 
-	//IMPORTANT!! - load several template files into a single template name
+	// IMPORTANT!! - load several template files into a single template name
 	main__tmpl, err := template.New(p_main_template_filename_str).ParseFiles(templates_paths_lst...)
 	if err != nil {
 		gf_err := Error__create("failed to parse a template",
