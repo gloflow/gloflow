@@ -25,27 +25,28 @@ sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
 
 #-------------------------------------------------------------
-# PUBLISH
-def publish(p_app_name_str,
-	p_app_build_meta_map,
-	p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+# PULL
+def pull(p_image__full_name_str,
 	p_log_fun,
-	p_exit_on_fail_bool = False):
-	p_log_fun('FUN_ENTER', 'gf_containers.publish()')
-	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
-	assert isinstance(p_app_build_meta_map, dict)
+	p_dockerhub_user_str = None,
+	p_dockerhub_pass_str = None):
 
+	# DOCKERHUB_LOGIN
+	if not p_dockerhub_pass_str == None:
+		c = "sudo docker login -u %s -p %s"%(p_dockerhub_user_str, p_dockerhub_pass_str)
+		gf_cli_utils.run_cmd(c)
 
-	service_name_str    = p_app_build_meta_map['service_name_str']
-	service_version_str = p_app_build_meta_map['version_str']
+	# DOCKER_PULL
+	c_pull = "sudo docker pull %s"%(p_image__full_name_str)
+	p_log_fun("INFO", "c_pull - %s"%(c_pull))
 
-	publish_docker_image(service_name_str,
-		service_version_str,
-		p_dockerhub_user_str,
-		p_dockerhub_pass_str,
-		p_log_fun,
-		p_exit_on_fail_bool = p_exit_on_fail_bool)
+	r = subprocess.Popen(c_pull,
+		shell   = True,
+		stdout  = subprocess.PIPE,
+		bufsize = 1)
+	for line in r.stdout:
+		clean_line_str = line.strip()
+		print(clean_line_str)
 
 #-------------------------------------------------------------
 # BUILD
@@ -71,7 +72,8 @@ def build(p_app_name_str,
 	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
 	assert os.path.isdir(service_base_dir_str)
 
-	service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
+	# service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
+	service_dockerfile_path_str = get_service_dockerfile(p_app_build_meta_map)
 	service_version_str         = p_app_build_meta_map["version_str"]
 	# assert len(service_version_str.split(".")) == 4 # format x.x.x.x
 	#------------------
@@ -140,6 +142,28 @@ def prepare_web_files(p_pages_map,
 	gf_cli_utils.run_cmd('rm -rf %s/../templates'%(target_dir_str)) #remove existing templates build dir
 	gf_cli_utils.run_cmd('mv %s/templates %s/..'%(target_dir_str, target_dir_str))
 	#------------------
+
+#-------------------------------------------------------------
+# PUBLISH
+def publish(p_app_name_str,
+	p_app_build_meta_map,
+	p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_log_fun,
+	p_exit_on_fail_bool = False):
+	p_log_fun('FUN_ENTER', 'gf_containers.publish()')
+	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
+	assert isinstance(p_app_build_meta_map, dict)
+
+	service_name_str    = p_app_build_meta_map['service_name_str']
+	service_version_str = p_app_build_meta_map['version_str']
+
+	publish_docker_image(service_name_str,
+		service_version_str,
+		p_dockerhub_user_str,
+		p_dockerhub_pass_str,
+		p_log_fun,
+		p_exit_on_fail_bool = p_exit_on_fail_bool)
 
 #-------------------------------------------------------------
 # PUBLISH_DOCKER_IMAGE
@@ -256,3 +280,11 @@ def build_docker_image(p_image_name_str,
 
 	# change back to old dir
 	os.chdir(old_cwd)
+
+#-------------------------------------------------------------
+def get_service_dockerfile(p_app_build_meta_map):
+	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
+	assert os.path.isdir(service_base_dir_str)
+
+	service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
+	return service_dockerfile_path_str
