@@ -28,8 +28,6 @@ def run_go(p_name_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = False):
     assert isinstance(p_static_bool, bool)
-
-      
     assert os.path.isdir(p_go_dir_path_str)
 
     print(p_go_output_path_str)

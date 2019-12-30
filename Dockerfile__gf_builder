@@ -1,27 +1,26 @@
 FROM golang
 
-RUN apt-get update
 RUN mkdir /home/gf
 #-----------------------------
-# GIT
-# IMPORTANT!! - used by ./ops/utils/gf_build_changes.py to determine which apps changed
-RUN apt-get install -y git
-#-----------------------------
-# PY
-RUN apt-get install -y python
-RUN apt-get install -y python-pip
+# LIBS
+# IMPORTANT!! - do a "apt" update every time packages are installed, to avoid cached
+#               "apt" data that is stale and may result in cached IP's that break builds.
+# GIT - used by ./ops/utils/gf_build_changes.py to determine which apps changed.
+# SED - used by gf_builder to inject Git commit hash into Go code.
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    python \
+    python-pip \
+    nodejs \
+    npm \
+    docker.io \
+    sed
+
 RUN pip install delegator.py
 RUN pip install colored
 RUN pip install beautifulsoup
-RUN apt-get install -y nodejs
-RUN apt-get install -y npm
 RUN npm install -g typescript
 RUN npm install -g uglify-js
-
-# DOCKER
-RUN apt-get install -y docker.io
-#-----------------------------
-# SED - used by gf_builder to inject Git commit hash into Go code
-RUN apt-get install -y sed
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

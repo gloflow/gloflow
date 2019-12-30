@@ -3,8 +3,8 @@ type: docker
 name: gloflow
 
 workspace:
-  #IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder
-  #              container is placing all its code.
+  # IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder
+  #               container is placing all its code.
   base: /home/gf
 
 services:
@@ -13,7 +13,7 @@ services:
 
   - name: elasticsearch
     image: elasticsearch:5-alpine
-    #image: elasticsearch:7.4.0
+    # image: elasticsearch:7.4.0
     ports:
       - 9200
 
