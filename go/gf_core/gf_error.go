@@ -83,9 +83,9 @@ func Error__create(p_user_msg_str string,
 	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
 	stack_trace_str      := string(debug.Stack())
 
-	//IMPORTANT!! - number of stack frames to skip before recording. without skipping 
-	//              we would get info on this function, not its caller which is where
-	//              the error occured.
+	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
+	//               we would get info on this function, not its caller which is where
+	//               the error occured.
 	skip_stack_frames_num_int := 1
 
 	//https://golang.org/pkg/runtime/#Caller
@@ -97,7 +97,7 @@ func Error__create(p_user_msg_str string,
 
 
 	//--------------------
-	//ERROR_DEF
+	// ERROR_DEF
 
 	error_defs_map := error__get_defs()
 	error_def, ok  := error_defs_map[p_error_type_str]

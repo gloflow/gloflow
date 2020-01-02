@@ -56,8 +56,8 @@ def list_changed_apps(p_apps_changes_deps_map,
         return changed_apps_files_map
     #------------------------
 
-    #latest_commit_hash_str, _ = gf_cli_utils.run_cmd('git rev-parse HEAD')
-    #assert len(latest_commit_hash_str) == 32
+    # latest_commit_hash_str, _ = gf_cli_utils.run_cmd('git rev-parse HEAD')
+    # assert len(latest_commit_hash_str) == 32
 
     #------------------------
     # FIX!! - dont just look 1 commit back to see what changed. if localy a developer makes several commits and then uploads code

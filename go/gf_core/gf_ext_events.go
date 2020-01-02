@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	//"github.com/fatih/color"
 )
+
 //-------------------------------------------------
 
 type Events__register_producer_msg struct {
@@ -53,6 +54,7 @@ type Events_ctx struct {
 	Register_consumer_ch chan Events__register_consumer_msg
 	Events_broker_ch     chan Event__msg
 }
+
 //-------------------------------------------------
 func Events__send_event(p_events_id_str string,
 	p_type_str    string,
@@ -70,6 +72,7 @@ func Events__send_event(p_events_id_str string,
 	}
 	p_events_ctx.Events_broker_ch <- e
 }
+
 //-------------------------------------------------
 func Events__register_producer(p_events_id_str string,
 	p_events_ctx  *Events_ctx,
@@ -82,6 +85,7 @@ func Events__register_producer(p_events_id_str string,
 
 	p_events_ctx.Register_producer_ch <- register_producer_msg
 }
+
 //-------------------------------------------------
 func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__init()")
@@ -100,32 +104,32 @@ func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx 
 			select {
 
 				//-----------------
-				//REGISTER EVENTS_PRODUCER
+				// REGISTER EVENTS_PRODUCER
 				case register_producer_msg := <- register_producer_ch:
 					//p_log_fun("INFO",black("EVENTS >> REGISTER_EVENTS_PRODUCER >>>>>>>>>>>>>>>>>>>>>>>>>> -----------------"))
 					events_id_str                      := register_producer_msg.Events_id_str
 					events_consumers_map[events_id_str] = make([]chan Event__msg,0)
 				//-----------------
-				//REGISTER EVENTS_CONSUMER
+				// REGISTER EVENTS_CONSUMER
 				case register_consumer_msg := <- register_consumer_ch:
 					//p_log_fun("INFO",black("EVENTS >> REGISTER_EVENTS_CONSUMER >>>>>>>>>>>>>>>>>>>>>>>>>> -----------------"))
 					events_id_str                      := register_consumer_msg.Events_id_str
 					consumer_ch                        := make(chan Event__msg,50)
-					events_consumers_map[events_id_str] = append(events_consumers_map[events_id_str],consumer_ch)
+					events_consumers_map[events_id_str] = append(events_consumers_map[events_id_str], consumer_ch)
 				
 					register_consumer_msg.Response_ch <- consumer_ch
 				//-----------------
-				//EVENT_MSG RELAY
+				// EVENT_MSG RELAY
 				case event_msg := <- events_broker_ch:
 					//p_log_fun("INFO",black("EVENTS >> EVENTS_BROKER <- EVENTS_PRODUCER msg")+" > "+yellow(event_msg.Type_str))
 					events_id_str := event_msg.Events_id_str
 
-					//IMPORTANT!! - check that this events_id_str has consumers registered for it.
-					//              if yes, then get a list of all consumers for this events_id_str,
-					//              and go through that list sending the same event_msg to all of them
-					//              (multicast style)
-					if consumers_lst,ok := events_consumers_map[events_id_str]; ok {
-						for _,consumer_ch := range consumers_lst {
+					// IMPORTANT!! - check that this events_id_str has consumers registered for it.
+					//               if yes, then get a list of all consumers for this events_id_str,
+					//               and go through that list sending the same event_msg to all of them
+					//               (multicast style)
+					if consumers_lst, ok := events_consumers_map[events_id_str]; ok {
+						for _, consumer_ch := range consumers_lst {
 							consumer_ch <- event_msg
 						}
 					}
@@ -146,6 +150,7 @@ func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx 
 		p_runtime_sys)
 	return ctx
 }
+
 //-------------------------------------------------
 func events__init_handlers(p_sse_url_str string,
 	p_register_consumer_ch chan<- Events__register_consumer_msg,
@@ -226,6 +231,7 @@ func events__init_handlers(p_sse_url_str string,
 		}()*/
 	})
 }
+
 //-------------------------------------------------
 func events__stream_msg(p_event_msg Event__msg,
 	p_resp        http.ResponseWriter,

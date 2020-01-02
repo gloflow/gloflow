@@ -33,44 +33,44 @@ def run_go(p_name_str,
     print(p_go_output_path_str)
     assert os.path.isdir(os.path.dirname(p_go_output_path_str))
 
-    print('')
+    print("")
     if p_static_bool:
-        print(' -- %sSTATIC BINARY BUILD%s'%(fg('yellow'), attr(0)))
-    print(' -- build %s%s%s service'%(fg('green'), p_name_str, attr(0)))
-    print(' -- go_dir_path    - %s%s%s'%(fg('green'), p_go_dir_path_str, attr(0)))  
-    print(' -- go_output_path - %s%s%s'%(fg('green'), p_go_output_path_str, attr(0)))  
+        print(" -- %sSTATIC BINARY BUILD%s"%(fg("yellow"), attr(0)))
+    print(" -- build %s%s%s service"%(fg("green"), p_name_str, attr(0)))
+    print(" -- go_dir_path    - %s%s%s"%(fg("green"), p_go_dir_path_str, attr(0)))  
+    print(" -- go_output_path - %s%s%s"%(fg("green"), p_go_output_path_str, attr(0)))  
 
     cwd_str = os.getcwd()
-    os.chdir(p_go_dir_path_str) #change into the target main package dir
+    os.chdir(p_go_dir_path_str) # change into the target main package dir
 
-    #STATIC_LINKING - when deploying to containers it is not always guaranteed that all
-    #                 required libraries are present. so its safest to compile to a statically
-    #                 linked lib.
-    #                 build time a few times larger then regular, so slow for dev.
+    # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
+    #                  required libraries are present. so its safest to compile to a statically
+    #                  linked lib.
+    #                  build time a few times larger then regular, so slow for dev.
     if p_static_bool:
         args_lst = [
-            'CGO_ENABLED=0',
-            'GOOS=linux',
-            'go build',
-            '-ldflags',
+            "CGO_ENABLED=0",
+            "GOOS=linux",
+            "go build",
+            "-ldflags",
             "-s",
-            '-a',
-            '-installsuffix cgo',
-            '-o %s'%(p_go_output_path_str),
+            "-a",
+            "-installsuffix cgo",
+            "-o %s"%(p_go_output_path_str),
         ]
-        c_str = ' '.join(args_lst)
+        c_str = " ".join(args_lst)
         
-    #DYNAMIC_LINKING - fast build for dev.
+    # DYNAMIC_LINKING - fast build for dev.
     else:
-        c_str = 'go build -o %s'%(p_go_output_path_str)
+        c_str = "go build -o %s"%(p_go_output_path_str)
 
     _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
-    #IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
-    #              want to fail with a non-zero exit code as well - this way other CI 
-    #              programs will flag builds as failed.
+    # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
+    #               want to fail with a non-zero exit code as well - this way other CI 
+    #               programs will flag builds as failed.
     if not exit_code_int == 0:
         if p_exit_on_fail_bool:
             exit(exit_code_int)
 
-    os.chdir(cwd_str) #return to initial dir
+    os.chdir(cwd_str) # return to initial dir

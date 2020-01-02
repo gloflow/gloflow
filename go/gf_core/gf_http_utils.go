@@ -66,14 +66,14 @@ func HTTP__fetch_url(p_url_str string,
 		unclosed, along with a nil error.
 		If CheckRedirect is nil, the Client uses its default policy,
 		which is to stop after 10 consecutive requests.*/
-		CheckRedirect:func(req *http.Request, via []*http.Request) error {
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			req.Header.Del("User-Agent")
-			req.Header.Set("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
+			req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
 			return nil
 		},
 	}
 
-	req,err := http.NewRequest("GET",p_url_str, nil)
+	req, err := http.NewRequest("GET",p_url_str, nil)
 	if err != nil {
 		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
 			"http_client_req_error",
@@ -83,10 +83,10 @@ func HTTP__fetch_url(p_url_str string,
 	}
 
 	req.Header.Del("User-Agent")
-	req.Header.Set("User-Agent","Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
 
 	req_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
-	resp,err         := client.Do(req)
+	resp, err        := client.Do(req)
 	resp_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	if err != nil {
@@ -102,7 +102,7 @@ func HTTP__fetch_url(p_url_str string,
 
 
 
-	fmt.Println(fmt.Sprintf("http response status_code - %d",status_code_int))
+	fmt.Println(fmt.Sprintf("http response status_code - %d", status_code_int))
 
 
 	resp_headers_map := map[string]string{}
