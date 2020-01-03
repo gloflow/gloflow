@@ -45,7 +45,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "failed to read bytes using the io.Reader.ReadBytes()",
 		},
 		//---------------
-		//DATA_VERIFICATION
+		// DATA_VERIFICATION
 		"verify__invalid_value_error": error_def{
 			Descr_str: "data failed verification, not an expected value",
 		},
@@ -77,7 +77,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "image NSFV verification failed",
 		},
 		//---------------
-		//FILESYSTEM
+		// FILESYSTEM
 		"file_open_error": error_def{
 			Descr_str: "os.Create() failed to create a file - package (os)",
 		},
@@ -106,24 +106,29 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "failed to list contents of a dir in the FS",
 		},
 		//---------------
-		//ENCODE/DECODE
-		//JSON
+		// CLI
+		"cli_run_error": error_def{
+			Descr_str: "failed to run a CLI command from Go",
+		},
+		//---------------
+		// ENCODE/DECODE
+		// JSON
 		"json_decode_error": error_def{
 			Descr_str: "json.Unmarshal() failed to parse byte array - package (encoding/json)",
 		},
 		"json_encode_error": error_def{
 			Descr_str: "json.Marshal() failed to parse byte array - package (encoding/json)",
 		},
-		//YAML
+		// YAML
 		"yaml_decode_error": error_def{
 			Descr_str: "yaml.Unmarshal() failed to parse byte array - package (gopkg.in/yaml.v2)",
 		},
-		//BASE64
+		// BASE64
 		"base64_decoding_error": error_def{
 			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
 		},
 		//---------------
-		//IMAGES
+		// IMAGES
 		"image_decoding_error": error_def{
 			Descr_str: "image.Decode() failed to decode image data - package (image)",
 		},
@@ -143,7 +148,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
 		},
 		//---------------
-		//MONGODB
+		// MONGODB
 		"mongodb_find_error": error_def{
 			Descr_str:"c.Find() failed to find a mongodb document - package (mgo)",
 		},
@@ -166,7 +171,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"c.EnsureIndex() failed to create a mongodb index - package (mgo)",
 		},
 		//---------------
-		//ELASTICSEARCH
+		// ELASTICSEARCH
 		"elasticsearch_get_client":error_def{
 			Descr_str:"c.NewClient() failed to get elasticsearch client - package (elastic)",
 		},
@@ -180,7 +185,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"c.Search() failed issue a query - package (elastic)",
 		},
 		//---------------
-		//TEMPLATES
+		// TEMPLATES
 		"template_create_error":error_def{
 			Descr_str:"template.New() failed to create/load a template - package (text/template)",
 		},
@@ -188,7 +193,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"template.Execute() failed to render a template - package (text/template)",
 		},
 		//---------------
-		//HTTP
+		// HTTP
 		"http_client_req_error":{
 			Descr_str:"failed to execute a http_client request",
 		},
@@ -202,12 +207,12 @@ func error__get_defs() map[string]error_def {
 			Descr_str:"http_client received a non-OK GF error",
 		},
 		//---------------
-		//WEBSOCKETS
+		// WEBSOCKETS
 		"ws_connection_init_error":{
 			Descr_str: "websocket client failed to connect to a url",
 		},
 		//---------------
-		//S3
+		// S3
 		"s3_credentials_error": {
 			Descr_str: "S3 credentials operation failed",
 		},
@@ -218,12 +223,12 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "failed to copy a file within S3",
 		},
 		//---------------
-		//HTML_PARSING
+		// HTML_PARSING
 		"html_parse_error": {
 			Descr_str: "parsing of a HTML document failed",
 		},
 		//---------------
-		//LIBRARY_ERROR
+		// LIBRARY_ERROR
 		"library_error":{
 			Descr_str: "third-party library has failed",
 		},

@@ -116,10 +116,12 @@ def build(p_app_name_str,
 	image_tag_str  = service_version_str
 
 
-	build_docker_image(image_name_str,
-		image_tag_str,
+
+	image_full_name_str = "%s/%s:%s"%(p_user_name_str, image_name_str, image_tag_str)
+	gf_os_docker.build_image(image_full_name_str,
+		# image_tag_str,
 		service_dockerfile_path_str,
-		p_user_name_str,
+		# p_user_name_str,
 		p_log_fun,
 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 		p_docker_sudo_bool  = p_docker_sudo_bool)
@@ -205,126 +207,18 @@ def publish_docker_image(p_image_name_str,
 	p_exit_on_fail_bool = False,
 	p_docker_sudo_bool  = False):	
 
+	
 	#------------------
-	# DOCKERHUB_LOGIN
-	# cmd_lst = [
-	# 	"docker", "login",
-	# 	"-u", p_dockerhub_user_str,
-	# 	"--password-stdin"
-	# ]
-	#
-	# process = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-	# process.stdin.write(p_dockerhub_pass_str) # write password on stdin of "docker login" command
-	# stdout_str, stderr_str = process.communicate() # wait for command completion
-	# print(stdout_str)
-	# print(stderr_str)
-
-	gf_os_docker.login(p_dockerhub_user_str,
+	# DOCKER_PUSH
+	full_image_name_str = '%s/%s:%s'%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
+	gf_os_docker.push(full_image_name_str,
+		p_dockerhub_user_str,
 		p_dockerhub_pass_str,
+		p_log_fun,
 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 		p_docker_sudo_bool  = p_docker_sudo_bool)
 	#------------------
-	# DOCKER_PUSH
-
-	full_image_name_str = '%s/%s:%s'%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
-	cmd_lst = [
-		"docker push",
-		full_image_name_str
-	]
-
-	c_str = " ".join(cmd_lst)
-	p_log_fun("INFO", " - %s"%(c_str))
-
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 	
-
-	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
-    #               want to fail with a non-zero exit code as well - this way other CI 
-    #               programs will flag builds as failed.
-	if not exit_code_int == 0:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
-	#------------------
-	# DOCKER_LOGOUT
-	stdout_str, _, _ = gf_cli_utils.run_cmd("docker logout")
-	print(stdout_str)
-	#------------------
-
-#-------------------------------------------------------------
-# BUILD_DOCKER_IMAGE
-def build_docker_image(p_image_name_str,
-	p_image_tag_str,
-	p_dockerfile_path_str,
-	p_user_name_str,
-	p_log_fun,
-	p_exit_on_fail_bool = False,
-	p_docker_sudo_bool  = False):
-	p_log_fun("FUN_ENTER", "gf_containers.build_docker_image()")
-	assert os.path.isfile(p_dockerfile_path_str)
-	assert "Dockerfile" in os.path.basename(p_dockerfile_path_str)
-
-	full_image_name_str  = "%s/%s:%s"%(p_user_name_str, p_image_name_str, p_image_tag_str)
-	context_dir_path_str = os.path.dirname(p_dockerfile_path_str)
-
-	p_log_fun("INFO", "====================+++++++++++++++=====================")
-	p_log_fun("INFO", "                 BUILDING DOCKER IMAGE")
-	p_log_fun("INFO", "              %s"%(p_image_name_str))
-	p_log_fun("INFO", "Dockerfile          - %s"%(p_dockerfile_path_str))
-	p_log_fun("INFO", "full_image_name_str - %s"%(full_image_name_str))
-	p_log_fun("INFO", "====================+++++++++++++++=====================")
-
-	cmd_lst = []
-
-	# RUN_WITH_SUDO - Docker deamon runs as root, and so for docker client to be able to connect to it
-	#                 without any custom config the client needs to be run with "sudo".
-	#                 if some config is in place to avoid this, set p_docker_sudo_bool to False.
-	if p_docker_sudo_bool:
-		cmd_lst.append("sudo")
-		
-	cmd_lst.extend([
-		"docker build",
-		"-f %s"%(p_dockerfile_path_str),
-		"--tag=%s"%(full_image_name_str),
-		context_dir_path_str
-	])
-
-	c_str = " ".join(cmd_lst)
-	p_log_fun("INFO", " - %s"%(c_str))
-
-	# change to the dir where the Dockerfile is located, for the 'docker'
-	# tool to have the proper context
-	old_cwd = os.getcwd()
-	os.chdir(context_dir_path_str)
-	
-	#---------------------------------------------------
-	def get_image_id_from_line(p_stdout_line_str):
-		p_lst = p_stdout_line_str.split(' ')
-
-		assert len(p_lst) == 3
-		image_id_str = p_lst[2]
-
-		# IMPORTANT!! - check that this is a valid 12 char Docker ID
-		assert len(image_id_str) == 12
-		return image_id_str
-
-	#---------------------------------------------------
-
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
-
-	for line_str in stdout_str:
-		if line_str.startswith("Successfully built"):
-			image_id_str = get_image_id_from_line(line_str)
-			return image_id_str
-
-	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
-    #               want to fail with a non-zero exit code as well - this way other CI 
-    #               programs will flag builds as failed.
-	if not exit_code_int == 0:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
-
-	# change back to old dir
-	os.chdir(old_cwd)
 
 #-------------------------------------------------------------
 def get_service_dockerfile(p_app_build_meta_map):

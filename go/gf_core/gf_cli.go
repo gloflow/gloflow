@@ -38,7 +38,7 @@ type Gf_CLI_cmd_info struct {
 // RUN_STANDARD
 func CLI__run_standard(p_cmd_lst []string,
 	p_env_vars_map map[string]string,
-	p_runtime      *Runtime_sys) ([]string, []string, error) {
+	p_runtime      *Runtime_sys) ([]string, []string, *Gf_error) {
 
 	cli_info := &Gf_CLI_cmd_info{
 		Cmd_lst:          p_cmd_lst,
@@ -46,18 +46,19 @@ func CLI__run_standard(p_cmd_lst []string,
 		Dir_str:          "",
 		View_output_bool: true,
 	}
-	stdout_lst, stderr_lst, err := CLI__run(cli_info, p_runtime)
-	return stdout_lst, stderr_lst, err
+	stdout_lst, stderr_lst, gf_err := CLI__run(cli_info, p_runtime)
+	return stdout_lst, stderr_lst, gf_err
 }
 
 //-------------------------------------------------
 // RUN
 func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
-	p_runtime *Runtime_sys) ([]string, []string, error) {
+	p_runtime *Runtime_sys) ([]string, []string, *Gf_error) {
 
 
 
-
+	cmd_str := strings.Join(p_cmd_info.Cmd_lst, "")
+	fmt.Printf("%s\n", cmd_str)
 
 
 
@@ -89,7 +90,11 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 
 	err := cmd.Start()
 	if err != nil {
-		return nil, nil, err	
+		gf_err := Error__create("failed to Start a CLI command",
+			"cli_run_error",
+			map[string]interface{}{"cmd": cmd_str,},
+			err, "gf_core", p_runtime)
+		return nil, nil, gf_err	
 	}
 
 
@@ -134,7 +139,11 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 
 	err = cmd.Wait()
 	if err != nil {
-		return nil, nil, err
+		gf_err := Error__create("failed to Wait for a CLI command",
+			"cli_run_error",
+			map[string]interface{}{"cmd": cmd_str,},
+			err, "gf_core", p_runtime)
+		return nil, nil, gf_err
 	}
 
 	return stdout_lst, stderr_lst, nil
