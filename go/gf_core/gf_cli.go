@@ -57,7 +57,7 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 
 
 
-	cmd_str := strings.Join(p_cmd_info.Cmd_lst, "")
+	cmd_str := strings.Join(p_cmd_info.Cmd_lst, " ")
 	fmt.Printf("%s\n", cmd_str)
 
 
@@ -102,6 +102,7 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 	stdout_lst := []string{}
 	stderr_lst := []string{}
 
+	// STDOUT
 	go func() {
 		for {
 			l, err := cmd_stdout__buffer.ReadString('\n')
@@ -119,6 +120,7 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 		}
 	}()
 
+	// STDERR
 	go func() {
 		for {
 			l, err := cmd_stderr__buffer.ReadString('\n')
@@ -128,7 +130,10 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 			if err != nil {
 				continue
 			}
-
+			if p_cmd_info.View_output_bool {
+				fmt.Printf("%s\n", l)
+			}
+			
 			stderr_lst = append(stderr_lst, strings.TrimSuffix(l, "\n"))
 		}
 	}()

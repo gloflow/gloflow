@@ -232,3 +232,36 @@ def clean_stop__containers(p_cont_image_name_str, p_log_fun):
 			fabric.api.run("sudo docker stop %s"%(image_id_str)) #stop first
 			fabric.api.run("sudo docker rm %s"%(image_id_str))   #remove, to not conflict with new ones
 	#--------------------
+
+
+
+#---------------------------------------------------
+def install_base_docker(p_fab_api, p_log_fun):
+	p_log_fun("FUN_ENTER", "gf_os_docker.install_base_docker()")
+
+	p_fab_api.run("sudo apt-get clean")
+	p_fab_api.run("sudo apt-get update")
+	p_fab_api.run("sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common")
+	p_fab_api.run("sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+	
+
+	##FIX!! - hardcoding to "zesty" ubuntu version (17.04) because in 17.10 at the moment (dec 10 2017) there is no docker-ce package
+	##        so Im hardcdoing 17.04 just for the moment so that the compatible docker-ce package is used
+	##p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"')
+	#p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable"')
+
+	p_fab_api.run("sudo apt-get update")
+	p_fab_api.run("sudo apt-get install -y \
+		apt-transport-https \
+		ca-certificates \
+		curl \
+		gnupg-agent \
+		software-properties-common")
+	p_fab_api.run("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+	p_fab_api.run('sudo add-apt-repository \
+		"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+		$(lsb_release -cs) \
+		stable"')
+	p_fab_api.run("sudo apt-get update")
+	p_fab_api.run("sudo apt-get install -y docker-ce docker-ce-cli containerd.io")
+	#p_fab_api.run('sudo apt-get install -y docker-ce')

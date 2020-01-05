@@ -85,7 +85,7 @@ func error__get_defs() map[string]error_def {
 			Descr_str: "os.Open() failed to open a file - package (os)",
 		},
 		"file_read_error": error_def{
-			Descr_str: "f.Read() failed to read file - package (os)",
+			Descr_str: "f.Read()/ioutil.ReadFile() failed to read file - package (os/ioutil)",
 		},
 		"file_remove_error": error_def{
 			Descr_str: "os.Remove() failed to remove a file - package (os)",
