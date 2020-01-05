@@ -153,7 +153,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 				return 
 			}
 
-			gf_rpc_lib.Http_Respond(map[string]interface{}{"images_job_id_str":images_job_id_str}, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(map[string]interface{}{"images_job_id_str": images_job_id_str}, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 			go func() {

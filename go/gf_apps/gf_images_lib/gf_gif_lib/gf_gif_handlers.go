@@ -84,7 +84,7 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			data_map := map[string]interface{}{
 				"gif_map":gf_gif,
 			}
-			gf_rpc_lib.Http_Respond(data_map,"OK",p_resp,p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp,p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

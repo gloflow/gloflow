@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_rpc_lib
 
 import (
+	"fmt"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -32,6 +33,7 @@ type Gf_rpc_handler_run struct {
 	Start_time__unix_f float64 `bson:"start_time__unix_f"`
 	End_time__unix_f   float64 `bson:"end_time__unix_f"`
 }
+
 //-------------------------------------------------
 func Get_http_input(p_handler_url_path_str string,
 	p_resp        http.ResponseWriter,
@@ -40,8 +42,8 @@ func Get_http_input(p_handler_url_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Get_http_input()")
 
 	var i map[string]interface{}
-	body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-	err              := json.Unmarshal(body_bytes_lst, &i)
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	err               := json.Unmarshal(body_bytes_lst, &i)
 
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse json http input",
@@ -50,14 +52,16 @@ func Get_http_input(p_handler_url_path_str string,
 			err, "gf_rpc_lib", p_runtime_sys)
 
 		Error__in_handler(p_handler_url_path_str,
-			"failed parsing http-request input JSON in - "+p_handler_url_path_str, //p_user_msg_str
+			fmt.Sprintf("failed parsing http-request input JSON in - %s", p_handler_url_path_str), //p_user_msg_str
 			gf_err,
-			p_resp,p_runtime_sys)
+			p_resp,
+			p_runtime_sys)
 		return nil, gf_err
 	}
 
 	return i, nil
 }
+
 //-------------------------------------------------
 func Get_response_format(p_qs_map map[string][]string,
 	p_runtime_sys *gf_core.Runtime_sys) string {
@@ -70,21 +74,23 @@ func Get_response_format(p_qs_map map[string][]string,
 
 	return response_format_str
 }
+
 //-------------------------------------------------
-func Http_Respond(p_data interface{},
+func Http_respond(p_data interface{},
 	p_status_str  string,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_Respond()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_respond()")
 
 	r_lst, _ := json.Marshal(map[string]interface{}{
 		"status_str": p_status_str,
 		"data":       p_data,
 	})
 	
-	p_resp.Header().Set("Content-Type","application/json")
+	p_resp.Header().Set("Content-Type", "application/json")
 	p_resp.Write(r_lst)
 }
+
 //-------------------------------------------------
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
@@ -93,7 +99,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Store_rpc_handler_run()")
 
 	run := &Gf_rpc_handler_run{
-		Class_str:          "Rpc_Handler_Run", //FIX!! - thi should be "rpc_handler_run"
+		Class_str:          "rpc_handler_run", //FIX!! - thi should be "rpc_handler_run"
 		Handler_url_str:    p_handler_url_str,
 		Start_time__unix_f: p_start_time__unix_f,
 		End_time__unix_f:   p_end_time__unix_f,
@@ -110,6 +116,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 
 	return nil
 }
+
 //-------------------------------------------------
 func Error__in_handler(p_handler_url_path_str string,
 	p_user_msg_str string,
@@ -124,7 +131,7 @@ func Error__in_handler(p_handler_url_path_str string,
 		"gf_error_type_str":          p_gf_err.Type_str,
 		"gf_error_user_msg_str":      p_gf_err.User_msg_str,
 	}
-	Http_Respond(data_map,status_str,p_resp,p_runtime_sys)
+	Http_respond(data_map,status_str,p_resp,p_runtime_sys)
 
 	/*http.Error(p_resp,
 	p_usr_msg_str,

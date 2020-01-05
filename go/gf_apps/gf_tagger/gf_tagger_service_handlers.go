@@ -83,7 +83,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}
 
 			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -108,7 +108,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}
 
 			data_map := map[string][]*Gf_note{"notes_lst":notes_lst,}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -143,7 +143,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}
 
 			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -175,7 +175,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			if objects_with_tag_lst != nil {
 
 				data_map := map[string]interface{}{"objects_with_tag_lst":objects_with_tag_lst,}
-				gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+				gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			}
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

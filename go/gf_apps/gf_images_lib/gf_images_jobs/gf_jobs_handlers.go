@@ -106,7 +106,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 				"running_job_id_str":       running_job.Id_str,
 				"job_expected_outputs_lst": job_expected_outputs_lst,
 			}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
