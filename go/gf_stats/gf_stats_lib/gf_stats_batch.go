@@ -53,7 +53,7 @@ func batch__init_handlers(p_stats_url_base_str string,
 				"stats_list_lst": stats_list_lst,
 			}
 
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			//--------------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

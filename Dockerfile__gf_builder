@@ -22,7 +22,8 @@ RUN pip install \
     delegator.py \
     colored \
     beautifulsoup \
-    requests
+    requests \
+    'fabric<2.0'
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js

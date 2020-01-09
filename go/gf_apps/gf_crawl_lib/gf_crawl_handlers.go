@@ -60,7 +60,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			data_map := map[string]interface{}{
 				"recent_images_lst": recent_images_lst,
 			}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -106,7 +106,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			//------------------
 			//OUTPUT
 			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -134,7 +134,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 		//------------------
 		//OUTPUT
 		data_map := map[string]interface{}{}
-		gf_rpc_lib.Http_Respond(data_map, "OK", p_resp, p_runtime_sys)
+		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 		//------------------
 	})
 	//----------------
