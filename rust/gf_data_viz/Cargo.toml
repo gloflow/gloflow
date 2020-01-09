@@ -1,0 +1,27 @@
+
+
+[package]
+name    = "gf_data_viz"
+version = "0.1.0"
+authors = ["Ivan Trajkovic"]
+edition = "2018"
+
+#-------------------------------
+[lib]
+name = "gf_data_viz"
+
+crate-type = ["dylib"]
+
+#-------------------------------
+[dependencies.cpython]
+
+default-features = false
+
+# Python 2.7 extension
+features = ["extension-module-2-7", "python27-sys"]
+
+#-------------------------------
+[dependencies]
+rand     = {}                 # random number generator
+png      = {}                 # PNG image support
+cairo-rs = {features=["png"]} # 2D drawing
