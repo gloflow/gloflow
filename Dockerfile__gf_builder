@@ -15,12 +15,22 @@ RUN apt-get update && \
     nodejs \
     npm \
     docker.io \
-    sed
+    sed \
+    curl
 
-RUN pip install delegator.py
-RUN pip install colored
-RUN pip install beautifulsoup
+RUN pip install \
+    delegator.py \
+    colored \
+    beautifulsoup \
+    requests
+
 RUN npm install -g typescript
 RUN npm install -g uglify-js
+
+#-----------------------------
+# RUST
+# IMPORTANT!! - "-y" - passing it in at the end is for non-interactive installation, preventing
+#                      Rust installer from prompting the user for input (since we're in a container).
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

@@ -116,7 +116,7 @@ def build(p_app_name_str,
 	image_tag_str  = service_version_str
 
 
-
+	# DOCKER_BUILD
 	image_full_name_str = "%s/%s:%s"%(p_user_name_str, image_name_str, image_tag_str)
 	gf_os_docker.build_image(image_full_name_str,
 		# image_tag_str,

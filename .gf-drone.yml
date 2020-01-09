@@ -118,3 +118,19 @@ steps:
         - master
 
   #-------------------------------
+  # NOTIFY_COMPLETION
+  - name: notify_completion
+    image: glofloworg/gf_builder
+    environment:
+      GF_NOTIFY_COMPLETION_URL:
+        from_secret: gf_os__notify_completion_url
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------

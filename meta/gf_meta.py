@@ -101,48 +101,56 @@ def get():
             
             # LIB
             # GF_PUBLISHER_LIB
-            'gf_publisher_lib': {
-                'go_path_str':'%s/../go/gf_apps/gf_publisher_lib'%(cwd_str),
+            "gf_publisher_lib": {
+                "go_path_str":"%s/../go/gf_apps/gf_publisher_lib"%(cwd_str),
 
                 #for tests serve data over http from this dir.
                 #gf_publisher test runs an gf_images jobs_mngr to test post_creation, and jobs_mngr
                 #needs to be able to fetch images over http that come from this dir.
-                'test_data_to_serve_dir_str':'%s/../go/gf_apps/gf_images_lib/tests_data'%(cwd_str),
+                "test_data_to_serve_dir_str":"%s/../go/gf_apps/gf_images_lib/tests_data"%(cwd_str),
             },
 
             #-------------
             # MAIN
             # GF_LANDING_PAGE
-            'gf_landing_page': {
-                'version_str':          '0.8.0.11',
-                'go_path_str':          '%s/../go/gf_apps/gf_landing_page'%(cwd_str),
-                'go_output_path_str':   '%s/../build/gf_apps/gf_landing_page/gf_landing_page_service'%(cwd_str),
-                'service_name_str':     'gf_landing_page_service',
-                'service_base_dir_str': '%s/../build/gf_apps/gf_landing_page'%(cwd_str),
+            "gf_landing_page": {
+                "version_str":          "0.8.0.11",
+                "go_path_str":          "%s/../go/gf_apps/gf_landing_page"%(cwd_str),
+                "go_output_path_str":   "%s/../build/gf_apps/gf_landing_page/gf_landing_page_service"%(cwd_str),
+                "service_name_str":     "gf_landing_page_service",
+                "service_base_dir_str": "%s/../build/gf_apps/gf_landing_page"%(cwd_str),
             },
 
             #-------------
             # MAIN
             # GF_TAGGER
-            'gf_tagger': {
-                'version_str':          '0.8.0.1',
-                'go_path_str':          '%s/../go/gf_apps/gf_tagger'%(cwd_str),
-                'go_output_path_str':   '%s/../build/gf_apps/gf_tagger/gf_tagger_service'%(cwd_str),
-                'service_name_str':     'gf_tagger_service',
-                'service_base_dir_str': '%s/../build/gf_apps/gf_tagger'%(cwd_str),
+            "gf_tagger": {
+                "version_str":          "0.8.0.1",
+                "go_path_str":          "%s/../go/gf_apps/gf_tagger"%(cwd_str),
+                "go_output_path_str":   "%s/../build/gf_apps/gf_tagger/gf_tagger_service"%(cwd_str),
+                "service_name_str":     "gf_tagger_service",
+                "service_base_dir_str": "%s/../build/gf_apps/gf_tagger"%(cwd_str),
             },
 
             #-------------
             # GF_BUILDER
-            'gf_builder': {
-                'version_str':         'latest',
-                'cont_image_name_str': 'gf_builder',
-                'image_tag_str':       'latest',
+            "gf_builder": {
+                "version_str":         "latest",
+                "cont_image_name_str": "gf_builder",
+                "image_tag_str":       "latest",
 
                 #gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
                 #build procedures that files/modules from many different directories. 
-                'dockerfile_path_str': '%s/../Dockerfile__gf_builder'%(cwd_str)
+                "dockerfile_path_str": "%s/../Dockerfile__gf_builder"%(cwd_str)
             },
+
+            #-------------
+            # GF_DATA_VIZ
+            "gf_data_viz": {
+                "type_str":                 "lib_rust",
+                "version_str":              "latest",
+                "cargo_crate_dir_path_str": "%s/../rust/gf_data_viz"%(cwd_str),
+            }
 
             #-------------
         }

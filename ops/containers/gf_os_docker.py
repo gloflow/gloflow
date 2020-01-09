@@ -18,7 +18,10 @@
 import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
+import json
 import subprocess
+import base64
+
 import delegator
 import fabric.api
 
@@ -188,7 +191,7 @@ def login(p_dockerhub_user_str,
 			exit()
 
 #---------------------------------------------------
-# LOGIN__remote
+# LOGIN__REMOTE
 def login__remote(p_dockerhub_user_str,
 	p_dockerhub_pass_str,
 	p_log_fun):
@@ -205,6 +208,32 @@ def login__remote(p_dockerhub_user_str,
 	f.close()
 	
 	fabric.api.put(pass_f_str) # upload password file
+	#---------------------------
+	# IMPORTANT!! - specify pasword from stdin so that it doesnt show up
+	#               as a part of the final command (in logs)
+	fabric.api.run("cat %s | sudo docker login -u %s --password-stdin"%(pass_f_str, p_dockerhub_user_str))
+	#---------------------------
+	fabric.api.run("rm %s"%(pass_f_str))
+	delegator.run("rm %s"%(pass_f_str)) # clean local tmp_file that holds the dockerhub password
+
+#---------------------------------------------------
+# LOGIN__REMOTE_FROM_FILE
+def login__remote_from_file(p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_log_fun):
+	p_log_fun("FUN_ENTER", "gf_os_docker.login__remote_from_file()")
+	assert isinstance(p_dockerhub_user_str, basestring)
+	assert isinstance(p_dockerhub_pass_str, basestring)
+
+ 	#---------------------------
+ 	# UPLOAD_PASS_FILE
+
+ 	pass_f_str = "tmp_file"
+ 	f = open(pass_f_str, "w")
+ 	f.write(p_dockerhub_pass_str)
+	f.close()
+
+	fabric.api.put(pass_f_str) #upload password file
 	#---------------------------
 	# IMPORTANT!! - specify pasword from stdin so that it doesnt show up
 	#               as a part of the final command (in logs)
@@ -265,3 +294,14 @@ def install_base_docker(p_fab_api, p_log_fun):
 	p_fab_api.run("sudo apt-get update")
 	p_fab_api.run("sudo apt-get install -y docker-ce docker-ce-cli containerd.io")
 	#p_fab_api.run('sudo apt-get install -y docker-ce')
+
+#---------------------------------------------------
+def dockerhub__get_auth_config_json(p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_log_fun):
+	p_log_fun("FUN_ENTER", "gf_os_docker.dockerhub__get_auth_config_json()")
+	print(p_dockerhub_user_str)
+	auth_str             = base64.b64encode("%s:%s"%(p_dockerhub_user_str, p_dockerhub_pass_str))
+	auth_config_map      = {"auths": {"https://index.docker.io/v1/": {"auth": auth_str}}}
+	auth_config_json_str = json.dumps(auth_config_map)
+	return auth_config_json_str

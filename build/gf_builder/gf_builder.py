@@ -4,6 +4,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 import argparse
 from colored import fg, bg, attr
 import delegator
+import requests
 
 sys.path.append('%s/../../meta'%(cwd_str))
 import gf_meta
@@ -78,7 +79,27 @@ def main():
             gf_dockerhub_pass_str)
 
     #------------------------
+    # NOTIFY_COMPLETION
+    elif args_map["run"] == "notify_completion":
 
+        gf_notify_completion_url_str = args_map["gf_notify_completion_url"]
+        assert not gf_notify_completion_url_str == None
+
+        notify_completion(gf_notify_completion_url_str)
+
+    #------------------------
+
+#--------------------------------------------------
+def notify_completion(p_gf_notify_completion_url_str):
+    
+    print(" NOTIFY_COMPLETION - HTTP REQUEST - %s"%(p_gf_notify_completion_url_str))
+    r = requests.get(p_gf_notify_completion_url_str)
+    print(r.text)
+
+    if not r.status_code == 200:
+        print("notify_completio http request failed")
+        exit(1)
+        
 #--------------------------------------------------
 # PUBLISH_APPS_CONTAINERS
 def publish_apps_containers(p_changed_apps_files_map,
@@ -225,23 +246,33 @@ def build_apps(p_changed_apps_files_map):
         
         for app_name_str in apps_names_lst:
 
-            app_meta_map           = build_meta_map[app_name_str]
-            app_go_path_str        = app_meta_map['go_path_str']
-            app_go_output_path_str = app_meta_map['go_output_path_str']
+            app_meta_map = build_meta_map[app_name_str]
 
-            gf_build.run_go(app_name_str,
-                app_go_path_str,
-                app_go_output_path_str,
+            # RUST
+            if app_name_str == "gf_data_viz":
+                cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
 
-                # IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
-                #               so all binary dependencies are to be statically linked into the output binary 
-                #               without depending on standard dynamic linking.
-                p_static_bool = True, 
+                gf_build.run_rust(cargo_crate_dir_path_str)
+            
+            # GO
+            else:
                 
-                # gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
-                # gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
-                # to be marked as failed because of the non-zero exit code.
-                p_exit_on_fail_bool = True)
+                app_go_path_str        = app_meta_map['go_path_str']
+                app_go_output_path_str = app_meta_map['go_output_path_str']
+
+                gf_build.run_go(app_name_str,
+                    app_go_path_str,
+                    app_go_output_path_str,
+
+                    # IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
+                    #               so all binary dependencies are to be statically linked into the output binary 
+                    #               without depending on standard dynamic linking.
+                    p_static_bool = True, 
+                    
+                    # gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
+                    # gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+                    # to be marked as failed because of the non-zero exit code.
+                    p_exit_on_fail_bool = True)
 
         #------------------------
 
@@ -320,9 +351,10 @@ def parse_args():
 
     #-------------
     # ENV_VARS
-    drone_commit_sha_str  = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
-    gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER", None)
-    gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
+    drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
+    gf_dockerhub_user_str        = os.environ.get("GF_DOCKERHUB_USER", None)
+    gf_dockerhub_pass_str        = os.environ.get("GF_DOCKERHUB_P", None)
+    gf_notify_completion_url_str = os.environ.get("GF_NOTIFY_COMPLETION_URL", None)
 
     print(gf_dockerhub_user_str)
     print(gf_dockerhub_pass_str)
@@ -334,6 +366,7 @@ def parse_args():
         "drone_commit_sha":  drone_commit_sha_str,
         "gf_dockerhub_user": gf_dockerhub_user_str,
         "gf_dockerhub_pass": gf_dockerhub_pass_str,
+        "gf_notify_completion_url": gf_notify_completion_url_str,
         # "mongodb_host": args_namespace.mongodb_host,
     }
 

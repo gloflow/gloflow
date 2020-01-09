@@ -22,6 +22,30 @@ import delegator
 import gf_cli_utils
 
 #--------------------------------------------------
+# RUN_RUST
+def run_rust(p_cargo_crate_dir_path_str,
+    p_exit_on_fail_bool = True):
+    assert os.path.isdir(p_cargo_crate_dir_path_str)
+
+    cwd_str = os.getcwd()
+    os.chdir(p_cargo_crate_dir_path_str) # change into the target main package dir
+
+    # "rustup update stable"
+    c_str = "cargo build --release"
+
+    _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+    
+    # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
+    #               want to fail with a non-zero exit code as well - this way other CI 
+    #               programs will flag builds as failed.
+    if not exit_code_int == 0:
+        if p_exit_on_fail_bool:
+            exit(exit_code_int)
+
+    os.chdir(cwd_str) # return to initial dir
+
+#--------------------------------------------------
+# RUN_GO
 def run_go(p_name_str,
     p_go_dir_path_str,
     p_go_output_path_str,
@@ -36,6 +60,7 @@ def run_go(p_name_str,
     print("")
     if p_static_bool:
         print(" -- %sSTATIC BINARY BUILD%s"%(fg("yellow"), attr(0)))
+        
     print(" -- build %s%s%s service"%(fg("green"), p_name_str, attr(0)))
     print(" -- go_dir_path    - %s%s%s"%(fg("green"), p_go_dir_path_str, attr(0)))  
     print(" -- go_output_path - %s%s%s"%(fg("green"), p_go_output_path_str, attr(0)))  
