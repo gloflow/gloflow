@@ -129,10 +129,13 @@ def main():
 		assert web_meta_map.has_key(app_name_str)
 		app_web_meta_map = web_meta_map[app_name_str]
 
+		docker_sudo_bool = args_map["docker_sudo"]
+
 		gf_containers.build(app_name_str, 
 			app_build_meta_map,
 			app_web_meta_map,
-			gf_log.log_fun)
+			gf_log.log_fun,
+			p_docker_sudo_bool = docker_sudo_bool)
 
 	#-------------
 	# TEST

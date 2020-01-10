@@ -28,7 +28,7 @@ RUN apk add ca-certificates
 #PYTHON CODE
 
 RUN apk --update add python3 \
-                    python3-dev
+    python3-dev
 
 RUN apk --update add py-pip
 RUN pip install --upgrade pip
@@ -39,6 +39,8 @@ RUN apk add build-base
 RUN apk add freetype-dev
 RUN apk add libpng-dev
 
+# cython needed for matplotlib
+RUN python3 -mpip install cython
 RUN python3 -mpip install --upgrade matplotlib
 RUN python3 -mpip install pandas
 RUN python3 -mpip install pymongo

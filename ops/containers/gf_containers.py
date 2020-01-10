@@ -109,7 +109,8 @@ def build(p_app_name_str,
 
 	prepare_web_files(pages_map,
 		service_base_dir_str,
-		p_log_fun)
+		p_log_fun,
+		p_docker_sudo_bool = p_docker_sudo_bool)
 	#------------------
 
 	image_name_str = service_name_str
@@ -141,7 +142,8 @@ def copy_files(p_copy_to_dir_lst):
 # PREPARE_WEB_FILES
 def prepare_web_files(p_pages_map,
 	p_service_base_dir_str,
-	p_log_fun):
+	p_log_fun,
+	p_docker_sudo_bool = False):
 	p_log_fun('FUN_ENTER', 'gf_containers.prepare_web_files()')
 	assert isinstance(p_pages_map, dict)
 	assert os.path.dirname(p_service_base_dir_str)
