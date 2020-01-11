@@ -7,15 +7,14 @@ workspace:
   #               container is placing all its code.
   base: /home/gf
 
-services:
-  - name: mongo
-    image: mongo
-
-  - name: elasticsearch
-    image: elasticsearch:5-alpine
-    # image: elasticsearch:7.4.0
-    ports:
-      - 9200
+# services:
+#   - name: mongo
+#     image: mongo
+#
+#   - name: elasticsearch
+#     image: elasticsearch:5-alpine
+#     ports:
+#       - 9200
 
 volumes:
   - name: docker-sock
@@ -48,7 +47,7 @@ steps:
         from_secret: gf_testing__aws_secret_access_key
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
     when:
       event:
         - push

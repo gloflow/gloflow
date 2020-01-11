@@ -235,8 +235,6 @@ def parse_args():
 		default = "glofloworg",
 		help =    '''name of the dockerhub user to target''')
 
-	
-
 	#----------------------------
 	# RUN_WITH_SUDO - boolean flag
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".

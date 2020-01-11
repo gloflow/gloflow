@@ -28,6 +28,114 @@ import fabric.api
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils
 
+#---------------------------------------------------
+def cont_is_running(p_cont_name_str,
+	p_log_fun):
+
+	r = delegator.run("sudo docker ps -a | grep %s"%(p_cont_name_str))
+
+	if r.std_out == "":
+		print("CONTAINER NOT RUNNING -----------------------")
+		return False
+	else:
+		print("CONTAINER RUNNING -----------------------")
+		return True
+
+#-------------------------------------------------------------
+# RUN
+def run(p_full_image_name_str,
+	p_log_fun,
+	p_container_name_str = None,
+	p_ports_map          = None,
+	p_volumes_map        = None,
+	p_detached_bool      = True,
+	p_host_network_bool  = False,
+	p_exit_on_fail_bool  = False,
+	p_docker_sudo_bool   = True):
+	assert isinstance(p_full_image_name_str, basestring)
+
+	print("")
+	print("RUNNING DOCKER CONTAINER - %s"%(p_full_image_name_str))
+
+	cmd_lst = []
+	if p_docker_sudo_bool:
+		cmd_lst.append("sudo")
+
+	cmd_lst.extend([
+		"docker run",
+	])
+
+	# CONTAINER_NAME
+	if not p_container_name_str == None:
+		cmd_lst.append("--name %s"%(p_container_name_str))
+
+
+	# PORTS
+	if not p_ports_map == None:
+		for host_port_str, container_port_str in p_ports_map.items():
+			# IMPORTANT!! - "-p" publish a container's port or a range of ports to the host.
+			cmd_lst.append("-p %s:%s"%(host_port_str, container_port_str))
+
+
+	# VOLUMES
+	if not p_volumes_map == None:
+		for host_dir_str, container_dir_str in p_volumes_map.items():
+			# IMPORTANT!! - "-v" - mount a host directory into a particular directory path in the
+			#                      container filesystem.
+			cmd_lst.append("-v %s:%s"%(host_dir_str, container_dir_str))
+
+
+	# DETACHED
+	if p_detached_bool:
+		cmd_lst.append("-d")
+
+
+	# IMAGE_NAME
+	cmd_lst.append(p_full_image_name_str)
+
+
+	c_str = " ".join(cmd_lst)
+	p_log_fun("INFO", " - %s"%(c_str))
+
+	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
+
+	# CONTAINER_ID
+	container_id_str = stdout_str.strip()
+	assert len(container_id_str) == 64
+
+	return container_id_str
+
+#-------------------------------------------------------------
+# REMOVE
+def remove_by_name(p_container_name_str,
+	p_log_fun,
+	p_exit_on_fail_bool = False,
+	p_docker_sudo_bool  = True):
+
+	sudo_str = ""
+	if p_docker_sudo_bool:
+		sudo_str = "sudo"
+
+	cmd_str = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
+	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(cmd_str)
+
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
+
+
 #-------------------------------------------------------------
 # PULL_IMAGE
 def pull_remote(p_cont_image_name_str, p_log_fun):
@@ -67,9 +175,10 @@ def push(p_image_full_name_str,
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 	
 
-	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
-    #               want to fail with a non-zero exit code as well - this way other CI 
-    #               programs will flag builds as failed.
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
 	if not exit_code_int == 0:
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
@@ -150,9 +259,10 @@ def build_image(p_image_name_str,
 			image_id_str = get_image_id_from_line(line_str)
 			return image_id_str
 
-	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
-    #               want to fail with a non-zero exit code as well - this way other CI 
-    #               programs will flag builds as failed.
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
 	if not exit_code_int == 0:
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
@@ -186,6 +296,10 @@ def login(p_dockerhub_user_str,
 	print(stdout_str)
 	print(stderr_str)
 
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
 	if p_exit_on_fail_bool:
 		if not process.returncode == 0:
 			exit()
@@ -261,8 +375,6 @@ def clean_stop__containers(p_cont_image_name_str, p_log_fun):
 			fabric.api.run("sudo docker stop %s"%(image_id_str)) #stop first
 			fabric.api.run("sudo docker rm %s"%(image_id_str))   #remove, to not conflict with new ones
 	#--------------------
-
-
 
 #---------------------------------------------------
 def install_base_docker(p_fab_api, p_log_fun):
