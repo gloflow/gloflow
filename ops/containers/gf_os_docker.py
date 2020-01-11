@@ -35,11 +35,9 @@ def cont_is_running(p_cont_name_str,
 
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd("sudo docker ps -a | grep %s"%(p_cont_name_str))
 
-	
-
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
 	if "Cannot connect to the Docker daemon" in stdout_str:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
+		exit(exit_code_int)
 
 	if stdout_str == "":
 		print("CONTAINER NOT RUNNING -----------------------")
@@ -115,9 +113,9 @@ def run(p_full_image_name_str,
 
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
 	if "Cannot connect to the Docker daemon" in stdout_str:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
+		exit(exit_code_int)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
@@ -147,10 +145,10 @@ def remove_by_name(p_container_name_str,
 	cmd_str = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(cmd_str)
 
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
 	if "Cannot connect to the Docker daemon" in stdout_str:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
-			
+		exit(exit_code_int)
+
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
 	#               in other scenarious its acceptable for this command to fail, and we want the caller
@@ -198,6 +196,9 @@ def push(p_image_full_name_str,
 
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 	
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
+	if "Cannot connect to the Docker daemon" in stdout_str:
+		exit(exit_code_int)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
@@ -278,6 +279,10 @@ def build_image(p_image_name_str,
 
 	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
+	if "Cannot connect to the Docker daemon" in stdout_str:
+		exit(exit_code_int)
+
 	for line_str in stdout_str:
 		if line_str.startswith("Successfully built"):
 			image_id_str = get_image_id_from_line(line_str)
@@ -320,6 +325,10 @@ def login(p_dockerhub_user_str,
 	print(stdout_str)
 	print(stderr_str)
 
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
+	if "Cannot connect to the Docker daemon" in stdout_str:
+		exit(exit_code_int)
+		
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
 	#               in other scenarious its acceptable for this command to fail, and we want the caller
