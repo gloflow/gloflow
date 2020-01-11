@@ -46,12 +46,14 @@ def main():
 	if args_map["run"] == "test":
 
 		# TEST_SERVICES_RUN
-		test_services_run(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
+		if args_map["test_services"]:
+			test_services_run(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
 
 		test_apps(changed_apps_files_map)
 
 		# TEST_SERVICES_STOP
-		test_services_stop(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
+		if args_map["test_services"]:
+			test_services_stop(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
 
 	#------------------------
 	# BUILD
@@ -414,6 +416,14 @@ def parse_args():
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
 	# newer versions of Docker allow for non-root users to run Docker daemons. 
 	# also CI systems might run this command in containers as root-level users in which case "sudo" must not be specified.
+	arg_parser.add_argument("-test_services", action = "store_true",
+		help = "if testing services (mongo, elasticsearch, etc.) should be started in containers when running tests")
+
+	#----------------------------
+	# RUN_WITH_SUDO - boolean flag
+	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
+	# newer versions of Docker allow for non-root users to run Docker daemons. 
+	# also CI systems might run this command in containers as root-level users in which case "sudo" must not be specified.
 	arg_parser.add_argument("-docker_sudo", action = "store_true",
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
@@ -435,6 +445,7 @@ def parse_args():
 		"gf_dockerhub_user":        gf_dockerhub_user_str,
 		"gf_dockerhub_pass":        gf_dockerhub_pass_str,
 		"gf_notify_completion_url": gf_notify_completion_url_str,
+		"test_services":            args_namespace.test_services,
 		"docker_sudo":              args_namespace.docker_sudo
 		# "mongodb_host": args_namespace.mongodb_host,
 	}
