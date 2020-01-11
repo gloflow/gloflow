@@ -191,7 +191,7 @@ def test_services_run(p_log_fun,
 	#------------------------
 	# MONGODB
 	# remove container if its running
-	if gf_os_docker.cont_is_running(mongo_cont_name_str, p_log_fun):
+	if gf_os_docker.cont_is_running(mongo_cont_name_str, p_log_fun, p_docker_sudo_bool = p_docker_sudo_bool):
 		gf_os_docker.remove_by_name(mongo_cont_name_str, p_log_fun, p_docker_sudo_bool = p_docker_sudo_bool)
 
 	gf_os_docker.run(mongo_image_name_str, p_log_fun,
@@ -203,7 +203,7 @@ def test_services_run(p_log_fun,
 	#------------------------
 	# ELASTICSEARCH
 	# remove container if its running
-	if gf_os_docker.cont_is_running(search_cont_name_str, p_log_fun):
+	if gf_os_docker.cont_is_running(search_cont_name_str, p_log_fun, p_docker_sudo_bool = p_docker_sudo_bool):
 		gf_os_docker.remove_by_name(search_cont_name_str, p_log_fun, p_docker_sudo_bool = p_docker_sudo_bool)
 
 	gf_os_docker.run(search_image_name_str, p_log_fun,
