@@ -48,8 +48,9 @@ def run(p_full_image_name_str,
 	p_container_name_str = None,
 	p_ports_map          = None,
 	p_volumes_map        = None,
-	p_detached_bool      = True,
+	p_hostname_str       = None,
 	p_host_network_bool  = False,
+	p_detached_bool      = True,
 	p_exit_on_fail_bool  = False,
 	p_docker_sudo_bool   = True):
 	assert isinstance(p_full_image_name_str, basestring)
@@ -63,6 +64,7 @@ def run(p_full_image_name_str,
 
 	cmd_lst.extend([
 		"docker run",
+		"--restart=always",
 	])
 
 	# CONTAINER_NAME
@@ -84,6 +86,13 @@ def run(p_full_image_name_str,
 			#                      container filesystem.
 			cmd_lst.append("-v %s:%s"%(host_dir_str, container_dir_str))
 
+	# HOSTNAME
+	if not p_hostname_str == None:
+		cmd_lst.append("-h %s"%(p_hostname_str))
+
+	# HOST_NETWORK
+	if not p_host_network_bool == None:
+		cmd_lst.append("--net=host")
 
 	# DETACHED
 	if p_detached_bool:

@@ -194,6 +194,7 @@ def test_services_run(p_log_fun,
 
 	gf_os_docker.run(mongo_image_name_str, p_log_fun,
 		p_container_name_str = mongo_cont_name_str,
+		p_hostname_str       = "mongo",
 		p_ports_map          = {"27017": "27017"},
 		p_docker_sudo_bool   = p_docker_sudo_bool)
 
@@ -205,6 +206,7 @@ def test_services_run(p_log_fun,
 
 	gf_os_docker.run(search_image_name_str, p_log_fun,
 		p_container_name_str = search_cont_name_str,
+		p_hostname_str       = "elasticsearch",
 		p_ports_map          = {"9200": "9200"},
 		p_docker_sudo_bool   = p_docker_sudo_bool)
 
