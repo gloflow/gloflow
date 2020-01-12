@@ -38,11 +38,17 @@ steps:
   # TEST
   - name: test
     image: glofloworg/gf_builder
+
+    # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
+    #               and those containers are run with host networking.
+    #               starting this stage container with host networking as well, so that the tests can connect
+    #               to testing services and share address space.
+    network_mode: host
     environment:
     
       # TESTING_SERVICES
-      GF_MONGODB_HOST: mongo
-      GF_ELASTICSEARCH_HOST: elasticsearch:9200
+      GF_MONGODB_HOST: localhost # mongo
+      GF_ELASTICSEARCH_HOST: localhost:9200 # elasticsearch:9200
 
       GF_AWS_ACCESS_KEY_ID:
         from_secret: gf_testing__aws_access_key_id

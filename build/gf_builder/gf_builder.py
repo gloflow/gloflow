@@ -188,6 +188,10 @@ def test_services_run(p_log_fun,
 	search_cont_name_str  = "test_elasticsearch"
 	search_image_name_str = "elasticsearch:5-alpine"
 
+	# IMPORTANT!! - HOST_NETWORKING - test_services containers are started with host networking.
+	#                                 the testing stage container itself should also be run with host networking enabled,
+	#                                 so that test_services and test stage share the same network address space and can reach each other.
+	# FIX!! - find a better way to do this networking without using host networking.
 	#------------------------
 	# MONGODB
 	# remove container if its running
@@ -197,6 +201,7 @@ def test_services_run(p_log_fun,
 	gf_os_docker.run(mongo_image_name_str, p_log_fun,
 		p_container_name_str = mongo_cont_name_str,
 		p_hostname_str       = "mongo",
+		p_host_network_bool  = True,
 		p_ports_map          = {"27017": "27017"},
 		p_docker_sudo_bool   = p_docker_sudo_bool)
 
@@ -209,6 +214,7 @@ def test_services_run(p_log_fun,
 	gf_os_docker.run(search_image_name_str, p_log_fun,
 		p_container_name_str = search_cont_name_str,
 		p_hostname_str       = "elasticsearch",
+		p_host_network_bool  = True,
 		p_ports_map          = {"9200": "9200"},
 		p_docker_sudo_bool   = p_docker_sudo_bool)
 
