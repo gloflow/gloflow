@@ -337,11 +337,16 @@ def login(p_dockerhub_user_str,
 	])
 	print(" ".join(cmd_lst))
 
-	process = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+	process = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 	process.stdin.write(p_dockerhub_pass_str) # write password on stdin of "docker login" command
 	stdout_str, stderr_str = process.communicate() # wait for command completion
 	print(stdout_str)
 	print(stderr_str)
+
+	print("debug types ----")
+	print(type(stdout_str))
+	print(type(stderr_str))
+
 
 	if not stderr_str == "":
 		print(stderr_str)
