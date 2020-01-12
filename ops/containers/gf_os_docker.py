@@ -38,10 +38,13 @@ def cont_is_running(p_cont_name_str,
 	if p_docker_sudo_bool:
 		sudo_str = "sudo"
 
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd("%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str))
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd("%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str))
 
+	if not stderr_str == "":
+		print(stderr_str)
+		
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	if stdout_str == "":
@@ -116,10 +119,13 @@ def run(p_full_image_name_str,
 	c_str = " ".join(cmd_lst)
 	p_log_fun("INFO", " - %s"%(c_str))
 
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
+
+	if not stderr_str == "":
+		print(stderr_str)
 
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
@@ -148,10 +154,13 @@ def remove_by_name(p_container_name_str,
 		sudo_str = "sudo"
 
 	cmd_str = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(cmd_str)
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
+	if not stderr_str == "":
+		print(stderr_str)
+		
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
@@ -199,10 +208,13 @@ def push(p_image_full_name_str,
 	c_str = " ".join(cmd_lst)
 	p_log_fun("INFO", " - %s"%(c_str))
 
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
-	
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
+
+	if not stderr_str == "":
+		print(stderr_str)
+		
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
@@ -282,10 +294,13 @@ def build_image(p_image_name_str,
 
 	#---------------------------------------------------
 
-	stdout_str, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
+	if not stderr_str == "":
+		print(stderr_str)
+		
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	for line_str in stdout_str:
@@ -330,8 +345,11 @@ def login(p_dockerhub_user_str,
 	print(stdout_str)
 	print(stderr_str)
 
+	if not stderr_str == "":
+		print(stderr_str)
+		
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_str:
+	if "Cannot connect to the Docker daemon" in stderr_str:
 		exit(1)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
