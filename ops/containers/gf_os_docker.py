@@ -152,7 +152,7 @@ def remove_by_name(p_container_name_str,
 		sudo_str = "sudo"
 
 	cmd_str = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
-	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
+	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(cmd_str)
 
 	if not stderr_str == "":
 		print(stderr_str)
