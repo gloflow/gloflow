@@ -48,6 +48,14 @@ steps:
         from_secret: gf_testing__aws_access_key_id
       GF_AWS_SECRET_ACCESS_KEY:
         from_secret: gf_testing__aws_secret_access_key
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for running test_service containers.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
@@ -81,7 +89,7 @@ steps:
 
     # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
     #               connect to the Docker daemon running on the host machine. this connection
-    #               is whats used for container building and later publishing.
+    #               is whats used for container building.
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
@@ -106,7 +114,7 @@ steps:
 
     # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
     #               connect to the Docker daemon running on the host machine. this connection
-    #               is whats used for container building and later publishing.
+    #               is whats used for container  publishing.
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock
