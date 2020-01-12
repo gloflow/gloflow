@@ -84,13 +84,11 @@ def run(p_full_image_name_str,
 	if not p_container_name_str == None:
 		cmd_lst.append("--name %s"%(p_container_name_str))
 
-
 	# PORTS
 	if not p_ports_map == None:
 		for host_port_str, container_port_str in p_ports_map.items():
 			# IMPORTANT!! - "-p" publish a container's port or a range of ports to the host.
 			cmd_lst.append("-p %s:%s"%(host_port_str, container_port_str))
-
 
 	# VOLUMES
 	if not p_volumes_map == None:
@@ -104,7 +102,7 @@ def run(p_full_image_name_str,
 		cmd_lst.append("-h %s"%(p_hostname_str))
 
 	# HOST_NETWORK
-	if not p_host_network_bool == None:
+	if p_host_network_bool:
 		cmd_lst.append("--net=host")
 
 	# DETACHED

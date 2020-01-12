@@ -91,6 +91,8 @@ def run(p_app_name_str,
     #-------------
 
     e = os.environ.copy()
+
+    # AWS_CREDS
     e.update(p_aws_s3_creds_map)
     p = subprocess.Popen(c.split(' '), stderr=subprocess.PIPE, env=e)
     
@@ -99,7 +101,7 @@ def run(p_app_name_str,
     for l in iter(p.stderr.readline, ""):
         print(l.rstrip())
 
-    #if not p.stderr == None: print '%sTESTS FAILED%s >>>>>>>\n'%(fg('red'), attr(0))
+    # if not p.stderr == None: print '%sTESTS FAILED%s >>>>>>>\n'%(fg('red'), attr(0))
 
     p.wait() # has to be called so that p.returncode is set
     os.chdir(cwd_str) # return to initial dir
