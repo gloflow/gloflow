@@ -54,6 +54,46 @@ def cont_is_running(p_cont_name_str,
 		print("CONTAINER RUNNING -----------------------")
 		return True
 
+#---------------------------------------------------
+def cont_is_running_remote(p_cont_name_str,
+	p_log_fun,
+	p_exit_on_fail_bool = True,
+	p_docker_sudo_bool  = True):
+
+	print("CHECK IF CONTAINER IS RUNNING - %s"%(p_cont_name_str))
+	sudo_str = ""
+	if p_docker_sudo_bool:
+		sudo_str = "sudo"
+
+	c_str = "%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str)
+	out   = fabric.api.run(c_str, warn_only=True)
+
+
+	exit_code_int = out.return_code
+
+
+	stdout_and_stderr_str = out
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
+	if "Cannot connect to the Docker daemon" in stdout_and_stderr_str:
+		exit(1)
+
+	
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
+
+
+	if stdout_and_stderr_str == "":
+		print("CONTAINER NOT RUNNING")
+		return False
+	else:
+		print("CONTAINER RUNNING")
+		return True
+
 #-------------------------------------------------------------
 # RUN
 def run(p_full_image_name_str,
@@ -169,13 +209,53 @@ def remove_by_name(p_container_name_str,
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
 
+#-------------------------------------------------------------
+def remove_by_name_remote(p_container_name_str,
+	p_exit_on_fail_bool = False,
+	p_docker_sudo_bool  = True):
+
+	sudo_str = ""
+	if p_docker_sudo_bool:
+		sudo_str = "sudo"
+
+	cmd_str       = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
+	out           = fabric.api.run(cmd_str)
+	exit_code_int = out.return_code
+
+	print(out)
+
+	stdout_and_stderr_str = out
+	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
+	if "Cannot connect to the Docker daemon" in stdout_and_stderr_str:
+		exit(1)
+
+	
+	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	#               in other scenarious its acceptable for this command to fail, and we want the caller
+	#               to keep executing.
+	if not exit_code_int == 0:
+		if p_exit_on_fail_bool:
+			exit(exit_code_int)
+
+
+	
+
+
+	
 
 #-------------------------------------------------------------
 # PULL_IMAGE
-def pull_remote(p_cont_image_name_str, p_log_fun):
+def pull_remote(p_cont_image_name_str,
+	p_log_fun,
+	p_docker_sudo_bool  = False):
 	p_log_fun("FUN_ENTER", "gf_os_docker.pull_image()")
 
-	fabric.api.run("sudo docker pull %s"%(p_cont_image_name_str))
+	sudo_str = ""
+	if p_docker_sudo_bool:
+		sudo_str = "sudo"
+
+	fabric.api.run("%s docker pull %s"%(sudo_str, p_cont_image_name_str))
 
 #-------------------------------------------------------------
 # PUSH
