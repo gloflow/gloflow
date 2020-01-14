@@ -45,7 +45,7 @@ def get():
             # MAIN
             # GF_IMAGES
             'gf_images': {
-                'version_str':          '0.8.0.10',
+                'version_str':          "latest", # '0.8.0.10',
                 'go_path_str':          '%s/../go/gf_apps/gf_images'%(cwd_str),
                 'go_output_path_str':   '%s/../build/gf_apps/gf_images/gf_images_service'%(cwd_str),
                 'service_name_str':     'gf_images_service',
@@ -63,7 +63,7 @@ def get():
             # MAIN
             # GF_ANALYTICS
             'gf_analytics': {
-                'version_str':          '0.8.0.7',
+                'version_str':          "latest", # '0.8.0.7',
                 'go_path_str':          '%s/../go/gf_apps/gf_analytics'%(cwd_str),
                 'go_output_path_str':   '%s/../build/gf_apps/gf_analytics/gf_analytics_service'%(cwd_str),
                 'service_name_str':     'gf_analytics_service',
@@ -92,7 +92,7 @@ def get():
             # MAIN
             # GF_PUBLISHER
             'gf_publisher': {
-                'version_str':          '0.8.0.4',
+                'version_str':          "latest", # '0.8.0.4',
                 'go_path_str':          '%s/../go/gf_apps/gf_publisher'%(cwd_str),
                 'go_output_path_str':   '%s/../build/gf_apps/gf_publisher/gf_publisher_service'%(cwd_str),
                 'service_name_str':     'gf_publisher_service',
@@ -114,7 +114,7 @@ def get():
             # MAIN
             # GF_LANDING_PAGE
             "gf_landing_page": {
-                "version_str":          "0.8.0.11",
+                "version_str":          "latest", # "0.8.0.11",
                 "go_path_str":          "%s/../go/gf_apps/gf_landing_page"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_landing_page/gf_landing_page_service"%(cwd_str),
                 "service_name_str":     "gf_landing_page_service",
@@ -125,7 +125,7 @@ def get():
             # MAIN
             # GF_TAGGER
             "gf_tagger": {
-                "version_str":          "0.8.0.1",
+                "version_str":          "latest", # "0.8.0.1",
                 "go_path_str":          "%s/../go/gf_apps/gf_tagger"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_tagger/gf_tagger_service"%(cwd_str),
                 "service_name_str":     "gf_tagger_service",
