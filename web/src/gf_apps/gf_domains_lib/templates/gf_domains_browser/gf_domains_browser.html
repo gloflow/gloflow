@@ -21,8 +21,8 @@
 {{- range .Domains_lst}}
 	<div class="domain">
 		<div class="domain_name"><a href="http://{{.Name_str}}">{{.Name_str}}</a></div>
-		<div class="posts_count"><span class='title'>posts #</span><span class='count'>{{.Domain_posts.Count_int}}</span></div>
-		<div class="images_count"><span class='title'>images #</span><span class='count'>{{.Domain_images.Count_int}}</span></div>
+		<div class="images_count"><span class='title'>images - </span><span class='count'>{{.Domain_images.Count_int}}</span></div>
+		<div class="posts_count"><span class='title'>posts - </span><span class='count'>{{.Domain_posts.Count_int}}</span></div>
 	</div>
 {{- end}}
 </div>

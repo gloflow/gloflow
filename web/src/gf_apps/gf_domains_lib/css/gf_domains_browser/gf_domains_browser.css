@@ -22,7 +22,7 @@ body {
     padding-bottom: 4px;
     padding-left: 4px;
     margin-bottom: 4px;
-	width: 550px;
+	width: 300px;
 }
 
 #domains .domain .domain_name {
@@ -31,7 +31,11 @@ body {
 }
 #domains .domain .domain_name a {
 	text-decoration: none;
-    color: #4c4c4c;
+	color: #4c4c4c;
+	background-color: #ea5914;
+}
+#domains .domain .title {
+	font-size: 17px;
 }
 #domains .domain .count {
 	font-weight: bold;
