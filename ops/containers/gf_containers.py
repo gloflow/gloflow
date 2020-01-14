@@ -112,12 +112,12 @@ def build(p_app_name_str,
 		service_base_dir_str,
 		p_log_fun,
 		p_docker_sudo_bool = p_docker_sudo_bool)
-		
+
 	#------------------
 
 	image_name_str = service_name_str
 
-
+	# IMAGE_TAG
 	image_tag_str = None
 	if not p_git_commit_hash_str == None:
 		image_tag_str = p_git_commit_hash_str
@@ -194,7 +194,8 @@ def publish(p_app_name_str,
 	p_dockerhub_user_str,
 	p_dockerhub_pass_str,
 	p_log_fun,
-	p_exit_on_fail_bool = False):
+	p_git_commit_hash_str = None,
+	p_exit_on_fail_bool   = False):
 	p_log_fun('FUN_ENTER', 'gf_containers.publish()')
 	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
 	assert isinstance(p_app_build_meta_map, dict)
@@ -202,8 +203,15 @@ def publish(p_app_name_str,
 	service_name_str    = p_app_build_meta_map['service_name_str']
 	service_version_str = p_app_build_meta_map['version_str']
 
+	image_tag_str = None
+	if not p_git_commit_hash_str == None:
+		image_tag_str = p_git_commit_hash_str
+	else:
+		service_version_str = p_app_build_meta_map["version_str"]
+		image_tag_str       = service_version_str
+
 	publish_docker_image(service_name_str,
-		service_version_str,
+		image_tag_str,
 		p_dockerhub_user_str,
 		p_dockerhub_pass_str,
 		p_log_fun,

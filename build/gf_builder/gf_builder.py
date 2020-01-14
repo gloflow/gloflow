@@ -91,9 +91,15 @@ def main():
 		assert not gf_dockerhub_user_str == None
 		assert not gf_dockerhub_pass_str == None
 
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
+
 		publish_apps_containers(changed_apps_files_map,
 			gf_dockerhub_user_str,
-			gf_dockerhub_pass_str)
+			gf_dockerhub_pass_str,
+			p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
 	# NOTIFY_COMPLETION
@@ -121,7 +127,8 @@ def notify_completion(p_gf_notify_completion_url_str):
 # PUBLISH_APPS_CONTAINERS
 def publish_apps_containers(p_changed_apps_files_map,
 	p_gf_dockerhub_user_str,
-	p_gf_dockerhub_pass_str):
+	p_gf_dockerhub_pass_str,
+	p_git_commit_hash_str = None):
 	assert isinstance(p_gf_dockerhub_user_str, basestring)
 	assert isinstance(p_gf_dockerhub_pass_str, basestring)
 	
@@ -141,7 +148,8 @@ def publish_apps_containers(p_changed_apps_files_map,
 			p_gf_dockerhub_user_str,
 			p_gf_dockerhub_pass_str,
 			gf_log.log_fun,
-			p_exit_on_fail_bool = True)
+			p_git_commit_hash_str = p_git_commit_hash_str, 
+			p_exit_on_fail_bool   = True)
 
 #--------------------------------------------------
 # BUILD_APPS_CONTAINERS
@@ -173,7 +181,7 @@ def build_apps_containers(p_changed_apps_files_map,
 			gf_log.log_fun,
 
 			p_git_commit_hash_str = p_git_commit_hash_str,
-			
+
 			# DOCKERHUB_USER
 			p_user_name_str = p_gf_dockerhub_user_str,
 
