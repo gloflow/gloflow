@@ -74,9 +74,10 @@ def build(p_app_name_str,
 	p_app_build_meta_map,
 	p_app_web_meta_map,
 	p_log_fun,
-	p_user_name_str     = "local",
-	p_exit_on_fail_bool = False,
-	p_docker_sudo_bool  = False):
+	p_user_name_str       = "local",
+	p_git_commit_hash_str = None,
+	p_exit_on_fail_bool   = False,
+	p_docker_sudo_bool    = False):
 	p_log_fun("FUN_ENTER", "gf_containers.build()")
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
 	assert isinstance(p_app_name_str,       basestring)
@@ -95,13 +96,13 @@ def build(p_app_name_str,
 
 	# service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
 	service_dockerfile_path_str = get_service_dockerfile(p_app_build_meta_map)
-	service_version_str         = p_app_build_meta_map["version_str"]
-	# assert len(service_version_str.split(".")) == 4 # format x.x.x.x
+	
 	#------------------
 	# COPY_FILES_TO_DIR
 	if p_app_build_meta_map.has_key("copy_to_dir_lst"):
 		copy_to_dir_lst = p_app_build_meta_map["copy_to_dir_lst"]
 		copy_files(copy_to_dir_lst)
+
 	#------------------
 	# PREPARE_WEB_FILES
 	assert p_app_web_meta_map.has_key("pages_map")
@@ -111,10 +112,19 @@ def build(p_app_name_str,
 		service_base_dir_str,
 		p_log_fun,
 		p_docker_sudo_bool = p_docker_sudo_bool)
+		
 	#------------------
 
 	image_name_str = service_name_str
-	image_tag_str  = service_version_str
+
+
+	image_tag_str = None
+	if not p_git_commit_hash_str == None:
+		image_tag_str = p_git_commit_hash_str
+	else:
+		service_version_str = p_app_build_meta_map["version_str"]
+		# assert len(service_version_str.split(".")) == 4 # format x.x.x.x
+		image_tag_str = service_version_str
 
 
 	# DOCKER_BUILD

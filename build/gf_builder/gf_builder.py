@@ -72,8 +72,14 @@ def main():
 
 		gf_dockerhub_user_str = args_map["gf_dockerhub_user"]
 		
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
+
 		build_apps_containers(changed_apps_files_map,
-			gf_dockerhub_user_str)
+			gf_dockerhub_user_str,
+			p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
 	# PUBLISH_CONTAINERS
@@ -140,7 +146,8 @@ def publish_apps_containers(p_changed_apps_files_map,
 #--------------------------------------------------
 # BUILD_APPS_CONTAINERS
 def build_apps_containers(p_changed_apps_files_map,
-	p_gf_dockerhub_user_str):
+	p_gf_dockerhub_user_str,
+	p_git_commit_hash_str = None):
 	assert isinstance(p_changed_apps_files_map, dict)
 
 	build_meta_map = gf_meta.get()['build_info_map']
@@ -165,6 +172,8 @@ def build_apps_containers(p_changed_apps_files_map,
 			app_web_meta_map,
 			gf_log.log_fun,
 
+			p_git_commit_hash_str = p_git_commit_hash_str,
+			
 			# DOCKERHUB_USER
 			p_user_name_str = p_gf_dockerhub_user_str,
 
