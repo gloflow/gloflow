@@ -103,6 +103,7 @@
 	padding-bottom  : 6px;
 	padding-right   : 4px;
 
+	font-size : 11px;
 	width     : 206px;
 	text-align: center;
 	word-wrap : break-word; /*make all text display even if really long string*/
@@ -127,6 +128,7 @@
 }
 #images .image_info .origin_page_url a {
 	font-size      : 12px;
+	font-weight    : bold;
     color          : white;
 	text-decoration: none;
 	word-wrap      : break-word;
