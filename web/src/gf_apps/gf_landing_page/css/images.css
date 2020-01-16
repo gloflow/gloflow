@@ -74,6 +74,7 @@
 #images .image_info .image {
 	width   : 195px;
 	position: relative;
+	padding-bottom: 8px;
 }
 
 #images .image_info .image img {
