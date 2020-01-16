@@ -208,7 +208,7 @@ def get_image_full_names(p_image_name_str,
 	#               to the most up-to-date container image for use in situations when we dont know
 	#               the version number or git commit hash or some other tag.
 	if not image_tag_str == "latest":
-		image_full_name_latest_str = "%s/%s:latest"%(p_user_name_str, image_name_str)
+		image_full_name_latest_str = "%s/%s:latest"%(p_user_name_str, p_image_name_str)
 		image_full_names_lst.append(image_full_name_latest_str)
 
 	return image_full_names_lst
