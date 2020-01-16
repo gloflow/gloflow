@@ -31,13 +31,13 @@ def cont__build(p_dockerhub_user_name_str,
 	p_docker_sudo_bool = False):
 	assert isinstance(p_dockerhub_user_name_str, basestring)
 
-	build_meta_map = gf_meta.get()['build_info_map']
-	assert build_meta_map.has_key('gf_builder')
+	build_meta_map = gf_meta.get()["build_info_map"]
+	assert build_meta_map.has_key("gf_builder")
 
-	gf_builder_meta_map            = build_meta_map['gf_builder']
-	cont_image_name_str            = gf_builder_meta_map['cont_image_name_str']
-	cont_image_version_str         = gf_builder_meta_map['version_str']
-	cont_image_dockerfile_path_str = gf_builder_meta_map['dockerfile_path_str']
+	gf_builder_meta_map            = build_meta_map["gf_builder"]
+	cont_image_name_str            = gf_builder_meta_map["cont_image_name_str"]
+	cont_image_version_str         = gf_builder_meta_map["version_str"]
+	cont_image_dockerfile_path_str = gf_builder_meta_map["dockerfile_path_str"]
 	assert os.path.isfile(cont_image_dockerfile_path_str)
 
 	# DOCKER_BUILD
@@ -45,7 +45,7 @@ def cont__build(p_dockerhub_user_name_str,
 		cont_image_name_str,
 		cont_image_version_str)
 
-	gf_os_docker.build_image(image_full_name_str,
+	gf_os_docker.build_image([image_full_name_str],
 		cont_image_dockerfile_path_str,
 		p_log_fun,
 		p_exit_on_fail_bool = True,

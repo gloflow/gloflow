@@ -238,12 +238,6 @@ def remove_by_name_remote(p_container_name_str,
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
 
-
-	
-
-
-	
-
 #-------------------------------------------------------------
 # PULL_IMAGE
 def pull_remote(p_cont_image_name_str,
@@ -315,13 +309,14 @@ def push(p_image_full_name_str,
 
 #-------------------------------------------------------------
 # BUILD_IMAGE
-def build_image(p_image_name_str,
+def build_image(p_image_names_lst,
 	p_dockerfile_path_str,
 	p_log_fun,
+	p_build_args_map    = None,
 	p_exit_on_fail_bool = False,
 	p_docker_sudo_bool  = False):
 	p_log_fun("FUN_ENTER", "gf_os_docker.build_image()")
-
+	assert isinstance(p_image_names_lst, list)
 	print(p_dockerfile_path_str)
 	assert os.path.isfile(p_dockerfile_path_str)
 	assert "Dockerfile" in os.path.basename(p_dockerfile_path_str)
@@ -331,9 +326,8 @@ def build_image(p_image_name_str,
 
 	p_log_fun("INFO", "====================+++++++++++++++=====================")
 	p_log_fun("INFO", "                 BUILDING DOCKER IMAGE")
-	p_log_fun("INFO", "              %s"%(p_image_name_str))
-	p_log_fun("INFO", "Dockerfile     - %s"%(p_dockerfile_path_str))
-	p_log_fun("INFO", "image_name_str - %s"%(p_image_name_str))
+	p_log_fun("INFO", "image_names - %s"%(p_image_names_lst))
+	p_log_fun("INFO", "Dockerfile  - %s"%(p_dockerfile_path_str))
 	p_log_fun("INFO", "====================+++++++++++++++=====================")
 
 	cmd_lst = []
@@ -347,9 +341,19 @@ def build_image(p_image_name_str,
 	cmd_lst.extend([
 		"docker build",
 		"-f %s"%(p_dockerfile_path_str),
-		"--tag=%s"%(p_image_name_str),
-		context_dir_path_str
 	])
+
+	# TAGS - there can be multiple tags for the same image
+	for n in p_image_names_lst:
+		cmd_lst.append("--tag=%s"%(n))
+
+	# BUILD_ARGS
+	if not p_build_args_map == None:
+		for k, v in p_build_args_map.items():
+			cmd_lst.append("--build-arg %s=%s"%(k, v))
+
+	# CONTEXT_DIR
+	cmd_lst.append(context_dir_path_str)
 
 	c_str = " ".join(cmd_lst)
 	p_log_fun("INFO", " - %s"%(c_str))

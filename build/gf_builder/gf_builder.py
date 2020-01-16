@@ -2,6 +2,8 @@ import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
+import urllib
+import urlparse
 from colored import fg, bg, attr
 import delegator
 import requests
@@ -108,19 +110,50 @@ def main():
 		gf_notify_completion_url_str = args_map["gf_notify_completion_url"]
 		assert not gf_notify_completion_url_str == None
 
-		notify_completion(gf_notify_completion_url_str)
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
+
+		notify_completion(gf_notify_completion_url_str,
+			p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
 
 #--------------------------------------------------
-def notify_completion(p_gf_notify_completion_url_str):
+# NOTIFY_COMPLETION
+def notify_completion(p_gf_notify_completion_url_str,
+	p_git_commit_hash_str = None):
 	
-	print(" NOTIFY_COMPLETION - HTTP REQUEST - %s"%(p_gf_notify_completion_url_str))
-	r = requests.get(p_gf_notify_completion_url_str)
+	url_str = None
+
+	# add git_commit_hash as a querystring argument to the notify_completion URL.
+	# the entity thats receiving the completion notification needs to know what the tag
+	# is of the newly created container.
+	if not p_git_commit_hash_str == None:
+		url = urlparse.urlparse(p_gf_notify_completion_url_str)
+		
+		# QUERY_STRING
+		qs_map                 = urlparse.parse_qs(url.query)
+		qs_map["base_img_tag"] = p_git_commit_hash_str
+		qs_str                 = urllib.urlencode(qs_map)
+
+		# _replace() - "url" is of type ParseResult which is a subclass of namedtuple;
+		#              _replace is a namedtuple method that:
+		#              "returns a new instance of the named tuple replacing
+		#              specified fields with new values".
+		url_new = url._replace(query=qs_str)
+		url_str = url_new.geturl()
+	else:
+		url_str = p_gf_notify_completion_url_str
+
+	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
+
+	r = requests.get(url_str)
 	print(r.text)
 
 	if not r.status_code == 200:
-		print("notify_completio http request failed")
+		print("notify_completion http request failed")
 		exit(1)
 		
 #--------------------------------------------------
@@ -132,7 +165,7 @@ def publish_apps_containers(p_changed_apps_files_map,
 	assert isinstance(p_gf_dockerhub_user_str, basestring)
 	assert isinstance(p_gf_dockerhub_pass_str, basestring)
 	
-	build_meta_map = gf_meta.get()['build_info_map']
+	build_meta_map = gf_meta.get()["build_info_map"]
 	
 	# "all" - this key holds a map with all the apps that had either their Go or Web code changed
 	apps_names_lst = p_changed_apps_files_map["all"].keys()
@@ -158,7 +191,7 @@ def build_apps_containers(p_changed_apps_files_map,
 	p_git_commit_hash_str = None):
 	assert isinstance(p_changed_apps_files_map, dict)
 
-	build_meta_map = gf_meta.get()['build_info_map']
+	build_meta_map = gf_meta.get()["build_info_map"]
 	web_meta_map   = gf_web_meta.get()
 
 	# IMPORTANT!! - for each app that has any of its code changed rebuild both the Go and Web code,

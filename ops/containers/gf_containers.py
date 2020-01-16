@@ -114,39 +114,115 @@ def build(p_app_name_str,
 		p_docker_sudo_bool = p_docker_sudo_bool)
 
 	#------------------
+	# IMAGE_FULL_NAMES
+	image_name_str       = service_name_str
+	image_full_names_lst = get_image_full_names(image_name_str,
+		p_app_build_meta_map,
+		p_user_name_str,
+		p_git_commit_hash_str = p_git_commit_hash_str)
 
-	image_name_str = service_name_str
+	#------------------
+	# BUILD_ARGS
+	build_args_map = {}
+
+	# BASE_IMAGE_TAG - tag of the base image from which the main image thats being
+	#                  built from is inheriting from.
+	if not p_git_commit_hash_str == None:
+		build_args_map["GF_BASE_IMAGE_TAG"] = p_git_commit_hash_str
+	else:
+		build_args_map["GF_BASE_IMAGE_TAG"] = "latest"
+	
+	#------------------
+	# DOCKER_BUILD
+	gf_os_docker.build_image(image_full_names_lst,
+		service_dockerfile_path_str,
+		p_log_fun,
+		p_build_args_map    = build_args_map,
+		p_exit_on_fail_bool = p_exit_on_fail_bool,
+		p_docker_sudo_bool  = p_docker_sudo_bool)
+
+#-------------------------------------------------------------
+# PUBLISH
+def publish(p_app_name_str,
+	p_app_build_meta_map,
+	p_dockerhub_user_str,
+	p_dockerhub_pass_str,
+	p_log_fun,
+	p_git_commit_hash_str = None,
+	p_exit_on_fail_bool   = False):
+	p_log_fun("FUN_ENTER", "gf_containers.publish()")
+	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
+	assert isinstance(p_app_build_meta_map, dict)
+
+	# service_name_str    = p_app_build_meta_map["service_name_str"]
+	# service_version_str = p_app_build_meta_map["version_str"]
+	#
+	# image_tag_str = None
+	# if not p_git_commit_hash_str == None:
+	# 	image_tag_str = p_git_commit_hash_str
+	# else:
+	# 	service_version_str = p_app_build_meta_map["version_str"]
+	# 	image_tag_str       = service_version_str
+
+	image_full_names_lst = get_image_full_names(image_name_str,
+		p_app_build_meta_map,
+		p_user_name_str,
+		p_git_commit_hash_str = p_git_commit_hash_str)
+
+	for image_full_name_str in image_full_names_lst:
+		# DOCKER_PUSH
+		gf_os_docker.push(image_full_name_str,
+			p_dockerhub_user_str,
+			p_dockerhub_pass_str,
+			p_log_fun,
+			p_exit_on_fail_bool = p_exit_on_fail_bool,
+			p_docker_sudo_bool  = p_docker_sudo_bool)
+
+#-------------------------------------------------------------
+# GET_IMAGE_FULL_NAMES
+def get_image_full_names(p_image_name_str,
+	p_app_build_meta_map,
+	p_user_name_str,
+	p_git_commit_hash_str = None):
+	assert isinstance(p_image_name_str, basestring)
+	assert isinstance(p_app_build_meta_map, dict)
+	assert isinstance(p_user_name_str, basestring)
 
 	# IMAGE_TAG
 	image_tag_str = None
 	if not p_git_commit_hash_str == None:
+		# if a git commit hash was supplied, tag the image with that
 		image_tag_str = p_git_commit_hash_str
 	else:
 		service_version_str = p_app_build_meta_map["version_str"]
 		# assert len(service_version_str.split(".")) == 4 # format x.x.x.x
 		image_tag_str = service_version_str
 
+	image_full_names_lst = []
 
-	# DOCKER_BUILD
+	# standard name
 	image_full_name_str = "%s/%s:%s"%(p_user_name_str, image_name_str, image_tag_str)
-	gf_os_docker.build_image(image_full_name_str,
-		# image_tag_str,
-		service_dockerfile_path_str,
-		# p_user_name_str,
-		p_log_fun,
-		p_exit_on_fail_bool = p_exit_on_fail_bool,
-		p_docker_sudo_bool  = p_docker_sudo_bool)
+	image_full_names_lst.append(image_full_name_str)
 
-#--------------------------------------------------
+	# IMPORTANT!! - "latest" name - its important to always havea a "latest" image that points
+	#               to the most up-to-date container image for use in situations when we dont know
+	#               the version number or git commit hash or some other tag.
+	if not image_tag_str == "latest":
+		image_full_name_latest_str = "%s/%s:latest"%(p_user_name_str, image_name_str)
+		image_full_names_lst.append(image_full_name_latest_str)
+
+	return image_full_names_lst
+
+#-------------------------------------------------------------
 def copy_files(p_copy_to_dir_lst):
     assert isinstance(p_copy_to_dir_lst, list)
 
-    print('')
-    print('             COPY FILES')
+    print("")
+    print("             COPY FILES")
     for src_f_str, target_dir_str in p_copy_to_dir_lst:
         if not os.path.isdir(target_dir_str):
-			gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
-        gf_cli_utils.run_cmd('cp %s %s'%(src_f_str, target_dir_str))
+			gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
+        gf_cli_utils.run_cmd("cp %s %s"%(src_f_str, target_dir_str))
 
 #-------------------------------------------------------------
 # PREPARE_WEB_FILES
@@ -154,24 +230,24 @@ def prepare_web_files(p_pages_map,
 	p_service_base_dir_str,
 	p_log_fun,
 	p_docker_sudo_bool = False):
-	p_log_fun('FUN_ENTER', 'gf_containers.prepare_web_files()')
+	p_log_fun("FUN_ENTER", "gf_containers.prepare_web_files()")
 	assert isinstance(p_pages_map, dict)
 	assert os.path.dirname(p_service_base_dir_str)
 
 	for pg_name_str, pg_info_map in p_pages_map.items():
 		assert isinstance(pg_info_map, dict)
-		assert pg_info_map.has_key('build_dir_str')
-		assert os.path.isdir(pg_info_map['build_dir_str'])
+		assert pg_info_map.has_key("build_dir_str")
+		assert os.path.isdir(pg_info_map["build_dir_str"])
 
-		build_dir_str = os.path.abspath(pg_info_map['build_dir_str'])
+		build_dir_str = os.path.abspath(pg_info_map["build_dir_str"])
 
 		#------------------
 		# CREATE_TARGET_DIR
-		target_dir_str = os.path.abspath('%s/static'%(p_service_base_dir_str))
-		gf_cli_utils.run_cmd('mkdir -p %s'%(target_dir_str))
+		target_dir_str = os.path.abspath("%s/static"%(p_service_base_dir_str))
+		gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
 		#------------------
 		# COPY_PAGE_WEB_CODE
-		gf_cli_utils.run_cmd('cp -r %s/* %s'%(build_dir_str, target_dir_str))
+		gf_cli_utils.run_cmd("cp -r %s/* %s"%(build_dir_str, target_dir_str))
 		#------------------
 
 	#------------------
@@ -183,63 +259,32 @@ def prepare_web_files(p_pages_map,
 	#               templates are originally in the static/ dir because durring the build process they were
 	#               handled together with other static content (html/css/js files) and as output moved
 	#               into that static/ dir from other locations while in development.
-	gf_cli_utils.run_cmd('rm -rf %s/../templates'%(target_dir_str)) # remove existing templates build dir
-	gf_cli_utils.run_cmd('mv %s/templates %s/..'%(target_dir_str, target_dir_str))
+	gf_cli_utils.run_cmd("rm -rf %s/../templates"%(target_dir_str)) # remove existing templates build dir
+	gf_cli_utils.run_cmd("mv %s/templates %s/.."%(target_dir_str, target_dir_str))
 	#------------------
 
 #-------------------------------------------------------------
-# PUBLISH
-def publish(p_app_name_str,
-	p_app_build_meta_map,
-	p_dockerhub_user_str,
-	p_dockerhub_pass_str,
-	p_log_fun,
-	p_git_commit_hash_str = None,
-	p_exit_on_fail_bool   = False):
-	p_log_fun('FUN_ENTER', 'gf_containers.publish()')
-	p_log_fun('INFO',      'p_app_name_str - %s'%(p_app_name_str))
-	assert isinstance(p_app_build_meta_map, dict)
-
-	service_name_str    = p_app_build_meta_map['service_name_str']
-	service_version_str = p_app_build_meta_map['version_str']
-
-	image_tag_str = None
-	if not p_git_commit_hash_str == None:
-		image_tag_str = p_git_commit_hash_str
-	else:
-		service_version_str = p_app_build_meta_map["version_str"]
-		image_tag_str       = service_version_str
-
-	publish_docker_image(service_name_str,
-		image_tag_str,
-		p_dockerhub_user_str,
-		p_dockerhub_pass_str,
-		p_log_fun,
-		p_exit_on_fail_bool = p_exit_on_fail_bool)
-
-#-------------------------------------------------------------
-# PUBLISH_DOCKER_IMAGE
-def publish_docker_image(p_image_name_str,
-	p_image_tag_str,
-	p_dockerhub_user_str,
-	p_dockerhub_pass_str,
-	p_log_fun,
-	p_exit_on_fail_bool = False,
-	p_docker_sudo_bool  = False):	
-
-	
-	#------------------
-	# DOCKER_PUSH
-	full_image_name_str = '%s/%s:%s'%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
-	gf_os_docker.push(full_image_name_str,
-		p_dockerhub_user_str,
-		p_dockerhub_pass_str,
-		p_log_fun,
-		p_exit_on_fail_bool = p_exit_on_fail_bool,
-		p_docker_sudo_bool  = p_docker_sudo_bool)
-	#------------------
-	
-
+# # PUBLISH_DOCKER_IMAGE
+# def publish_docker_image(p_image_full_name_str,
+# 	p_image_tag_str,
+# 	p_dockerhub_user_str,
+# 	p_dockerhub_pass_str,
+# 	p_log_fun,
+# 	p_exit_on_fail_bool = False,
+# 	p_docker_sudo_bool  = False):	
+#
+# 	#------------------
+#	
+# 	full_image_name_str = "%s/%s:%s"%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
+# 	# DOCKER_PUSH
+# 	gf_os_docker.push(full_image_name_str,
+# 		p_dockerhub_user_str,
+# 		p_dockerhub_pass_str,
+# 		p_log_fun,
+# 		p_exit_on_fail_bool = p_exit_on_fail_bool,
+# 		p_docker_sudo_bool  = p_docker_sudo_bool)
+# 	#------------------
+#	
 #-------------------------------------------------------------
 def get_service_dockerfile(p_app_build_meta_map):
 	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
