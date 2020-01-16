@@ -171,7 +171,8 @@ def publish(p_app_name_str,
 		p_app_build_meta_map,
 		p_dockerhub_user_str,
 		p_git_commit_hash_str = p_git_commit_hash_str)
-
+	assert isinstance(image_full_names_lst, list)
+	
 	for image_full_name_str in image_full_names_lst:
 		# DOCKER_PUSH
 		gf_os_docker.push(image_full_name_str,

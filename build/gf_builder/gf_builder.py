@@ -2,7 +2,6 @@ import os, sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import argparse
-import urllib
 import urlparse
 from colored import fg, bg, attr
 import delegator
@@ -138,9 +137,10 @@ def notify_completion(p_gf_notify_completion_url_str,
 		url = urlparse.urlparse(p_gf_notify_completion_url_str)
 		
 		# QUERY_STRING
-		qs_map                 = urlparse.parse_qs(url.query)
-		qs_map["base_img_tag"] = p_git_commit_hash_str
-		qs_str                 = urllib.urlencode(qs_map)
+		qs_lst = urlparse.parse_qsl(url.query)
+		qs_lst.append(("base_img_tag", p_git_commit_hash_str)) # .parse_qs() places all values in lists
+
+		qs_str = "&".join(["%s=%s"%(k, v) for k, v in qs_lst])
 
 		# _replace() - "url" is of type ParseResult which is a subclass of namedtuple;
 		#              _replace is a namedtuple method that:
