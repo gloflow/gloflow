@@ -149,7 +149,8 @@ def publish(p_app_name_str,
 	p_dockerhub_pass_str,
 	p_log_fun,
 	p_git_commit_hash_str = None,
-	p_exit_on_fail_bool   = False):
+	p_exit_on_fail_bool   = False,
+	p_docker_sudo_bool    = False):
 	p_log_fun("FUN_ENTER", "gf_containers.publish()")
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
 	assert isinstance(p_app_build_meta_map, dict)

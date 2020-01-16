@@ -49,13 +49,15 @@ def main():
 
 		# TEST_SERVICES_RUN
 		if args_map["test_services"]:
-			test_services_run(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
+			test_services_run(log_fun,
+				p_docker_sudo_bool = args_map["docker_sudo"])
 
 		test_apps(changed_apps_files_map)
 
 		# TEST_SERVICES_STOP
 		if args_map["test_services"]:
-			test_services_stop(log_fun, p_docker_sudo_bool = args_map["docker_sudo"])
+			test_services_stop(log_fun,
+				p_docker_sudo_bool = args_map["docker_sudo"])
 
 	#------------------------
 	# BUILD
@@ -81,7 +83,8 @@ def main():
 
 		build_apps_containers(changed_apps_files_map,
 			gf_dockerhub_user_str,
-			p_git_commit_hash_str = git_commit_hash_str)
+			p_git_commit_hash_str = git_commit_hash_str,
+			p_docker_sudo_bool    = args_map["docker_sudo"])
 
 	#------------------------
 	# PUBLISH_CONTAINERS
@@ -101,7 +104,8 @@ def main():
 		publish_apps_containers(changed_apps_files_map,
 			gf_dockerhub_user_str,
 			gf_dockerhub_pass_str,
-			p_git_commit_hash_str = git_commit_hash_str)
+			p_git_commit_hash_str = git_commit_hash_str,
+			p_docker_sudo_bool    = args_map["docker_sudo"])
 
 	#------------------------
 	# NOTIFY_COMPLETION
@@ -161,7 +165,8 @@ def notify_completion(p_gf_notify_completion_url_str,
 def publish_apps_containers(p_changed_apps_files_map,
 	p_gf_dockerhub_user_str,
 	p_gf_dockerhub_pass_str,
-	p_git_commit_hash_str = None):
+	p_git_commit_hash_str = None,
+	p_docker_sudo_bool    = True):
 	assert isinstance(p_gf_dockerhub_user_str, basestring)
 	assert isinstance(p_gf_dockerhub_pass_str, basestring)
 	
@@ -182,13 +187,15 @@ def publish_apps_containers(p_changed_apps_files_map,
 			p_gf_dockerhub_pass_str,
 			gf_log.log_fun,
 			p_git_commit_hash_str = p_git_commit_hash_str, 
-			p_exit_on_fail_bool   = True)
+			p_exit_on_fail_bool   = True,
+			p_docker_sudo_bool    = p_docker_sudo_bool)
 
 #--------------------------------------------------
 # BUILD_APPS_CONTAINERS
 def build_apps_containers(p_changed_apps_files_map,
 	p_gf_dockerhub_user_str,
-	p_git_commit_hash_str = None):
+	p_git_commit_hash_str = None,
+	p_docker_sudo_bool    = True):
 	assert isinstance(p_changed_apps_files_map, dict)
 
 	build_meta_map = gf_meta.get()["build_info_map"]
@@ -221,7 +228,8 @@ def build_apps_containers(p_changed_apps_files_map,
 			# gf_containers.build() should exit if the docker build CLI run returns with a non-zero exit code.
 			# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
 			# to be marked as failed because of the non-zero exit code.
-			p_exit_on_fail_bool = True)
+			p_exit_on_fail_bool = True,
+			p_docker_sudo_bool  = p_docker_sudo_bool)
 
 #--------------------------------------------------
 def test_services_run(p_log_fun,
