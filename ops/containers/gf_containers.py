@@ -201,7 +201,7 @@ def get_image_full_names(p_image_name_str,
 	image_full_names_lst = []
 
 	# standard name
-	image_full_name_str = "%s/%s:%s"%(p_user_name_str, image_name_str, image_tag_str)
+	image_full_name_str = "%s/%s:%s"%(p_user_name_str, p_image_name_str, image_tag_str)
 	image_full_names_lst.append(image_full_name_str)
 
 	# IMPORTANT!! - "latest" name - its important to always havea a "latest" image that points
