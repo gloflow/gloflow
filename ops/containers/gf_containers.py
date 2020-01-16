@@ -154,7 +154,9 @@ def publish(p_app_name_str,
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
 	assert isinstance(p_app_build_meta_map, dict)
 
-	# service_name_str    = p_app_build_meta_map["service_name_str"]
+	service_name_str = p_app_build_meta_map["service_name_str"]
+	image_name_str   = service_name_str
+
 	# service_version_str = p_app_build_meta_map["version_str"]
 	#
 	# image_tag_str = None
@@ -166,7 +168,7 @@ def publish(p_app_name_str,
 
 	image_full_names_lst = get_image_full_names(image_name_str,
 		p_app_build_meta_map,
-		p_user_name_str,
+		p_dockerhub_user_str,
 		p_git_commit_hash_str = p_git_commit_hash_str)
 
 	for image_full_name_str in image_full_names_lst:
