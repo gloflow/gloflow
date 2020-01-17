@@ -28,9 +28,10 @@ export function init(p_log_fun) {
 		init_image_date(p_e, p_log_fun);
 	});
 }
+
 //-------------------------------------------------
-//REMOVE!! - this function has been moved to flows_browser/gf_images_viewer.ts, as a general viewer,
-//           to use universaly gf_images/gf_landing_page
+// REMOVE!! - this function has been moved to flows_browser/gf_images_viewer.ts, as a general viewer,
+//            to use universaly gf_images/gf_landing_page
 
 function init_image_viewer(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images.init_image_viewer()');
@@ -50,13 +51,13 @@ function init_image_viewer(p_image_element, p_log_fun) {
 		$('body').append(image_view);
 
 		//----------------------
-		//BAKCGROUND
+		// BAKCGROUND
 		const bg = $(image_view).find('#background');
 
 		//position the background vertically where the user has scrolled to
 		$(bg).css('top',$(window).scrollTop()+'px');
 		//----------------------
-		//IMPORTANT!! - turn off vertical scrolling while viewing the image
+		// IMPORTANT!! - turn off vertical scrolling while viewing the image
 		$("body").css("overflow","hidden");
 		//----------------------
 		const image_detail = $(image_view).find('#image_detail');

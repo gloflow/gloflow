@@ -86,9 +86,9 @@
 /*IMAGE DOMINANT COLOR*/
 #images .image_info .img_dominant_color {
 	background-color: rgb(59, 124, 156);
-    position        : absolute;
-    bottom          : 10px;
-    left            : -40px;
+    position:         absolute;
+    top:              0px;
+    left:             -40px;
 }
 #images .image_info .img_dominant_color .color {
 	margin: 5px;

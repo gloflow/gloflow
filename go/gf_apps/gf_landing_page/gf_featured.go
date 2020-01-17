@@ -22,6 +22,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"net/url"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
@@ -39,7 +40,8 @@ type Gf_featured_img struct {
 	Title_str                      string
 	Image_url_str                  string
 	Image_thumbnail_medium_url_str string
-	Image_origin_page_url_str      string
+	Image_origin_page_url_str      string // for each featured image this is the URL used in links
+	Image_origin_page_url_host_str string // this is displayed in the user UI for each featured image
 	Creation_unix_time_str         string
 }
 
@@ -61,13 +63,20 @@ func get_featured_imgs(p_max_random_cursor_position_int int, //500
 	}
 
 	featured_imgs_lst := []*Gf_featured_img{}
-	for _,img := range imgs_lst {
+	for _, img := range imgs_lst {
+
+		// FIX!! - create a proper gf_er
+		origin_page_url, err := url.Parse(img.Origin_page_url_str)
+		if err != nil {
+			continue
+		}
 
 		featured := &Gf_featured_img{
 			Title_str:                      img.Title_str,
 			Image_url_str:                  img.Thumbnail_small_url_str,
 			Image_thumbnail_medium_url_str: img.Thumbnail_medium_url_str,
 			Image_origin_page_url_str:      img.Origin_page_url_str,
+			Image_origin_page_url_host_str: origin_page_url.Host,
 			Creation_unix_time_str:         strconv.FormatFloat(img.Creation_unix_time_f, 'f', 6, 64),
 		}
 		featured_imgs_lst = append(featured_imgs_lst, featured)
@@ -110,7 +119,7 @@ func posts_to_featured(p_posts_lst []*gf_publisher_lib.Gf_post, p_runtime_sys *g
 	//            be included in the final output. This is due to past issues/bugs in the gf_image and 
 	//			  gf_publisher.
 	featured_elements_with_no_errors_lst := []*Gf_featured_post{}
-	for _,featured := range featured_posts_lst {
+	for _, featured := range featured_posts_lst {
 		p_runtime_sys.Log_fun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
 
 		//
