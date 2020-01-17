@@ -37,7 +37,7 @@ body {
 
 #right_section {
 	position: relative;
-	left    : 40%;
+	left    : 35%;
 }
 
 @media (max-width: 600px) {
