@@ -46,6 +46,7 @@ export function run(p_log_fun) {
 		$(parent_div).append(img_dominant_color_e);
 		//-------------------
 	});
+
 	//------------------------
 	//FEATURED_IMAGES
 	$.each($('#featured_images .image img'),(i, p_img)=>{
@@ -64,6 +65,7 @@ export function run(p_log_fun) {
 		$(parent_div).append(img_dominant_color_e);
 		//-------------------
 	});
+
 	//------------------------
 
 	const job_results_map = {
@@ -124,12 +126,15 @@ export function run(p_log_fun) {
 	    const hex = c.toString(16);
 	    return hex.length == 1 ? "0" + hex : hex;
 	}
+	
 	//--------------------------------------------------------
 	function rgb_to_hex(r,g,b) {
 	    return to_hex(r) + to_hex(g) + to_hex(b);
 	}
+	
 	//--------------------------------------------------------
 }
+
 //--------------------------------------------------------
 function send_calc_results(p_job_results_map, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_calc.send_calc_results()')

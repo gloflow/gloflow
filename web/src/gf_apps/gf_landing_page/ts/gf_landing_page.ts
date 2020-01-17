@@ -39,6 +39,7 @@ $(document).ready(()=>{
 				break;
 		}
 	}
+
 	//-------------------------------------------------
 	$("time.timeago").timeago();
 
@@ -51,6 +52,7 @@ $(document).ready(()=>{
 	});
 	//----------------------
 });
+
 //--------------------------------------------------------
 export function init_remote(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_landing_page.init_remote()');
@@ -79,6 +81,7 @@ export function init_remote(p_log_fun) {
 	}
 	//--------------------------------------------------------
 }
+
 //--------------------------------------------------------
 function init(p_register_user_email_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_landing_page.init()');
@@ -109,19 +112,21 @@ function init(p_register_user_email_fun, p_log_fun) {
 			const label_element      = $(post_images_number).find('.label');
 
 			//HACK!! - "-1" was visually inferred
-			$(post_images_number).css('right','-'+($(post_images_number).outerWidth()-1)+'px');
-			$(label_element).css('left',$(post_images_number).outerWidth()+'px');
+			$(post_images_number).css('right', '-'+($(post_images_number).outerWidth()-1)+'px');
+			$(label_element).css('left', $(post_images_number).outerWidth()+'px');
 
 			$(p_post).mouseover((p_e)=>{
-				$(post_images_number).css('visibility','visible');
+				$(post_images_number).css('visibility', 'visible');
 			});
 			$(p_post).mouseout((p_e)=>{
-				$(post_images_number).css('visibility','hidden');
+				$(post_images_number).css('visibility', 'hidden');
 			});
 		});
 	}
+	
 	//--------------------------------------------------------
 }
+
 //--------------------------------------------------------
 function load_static_data(p_log_fun) :Object[] {
 	p_log_fun('FUN_ENTER', 'gf_landing_page.load_static_data()');
@@ -146,6 +151,7 @@ function load_static_data(p_log_fun) :Object[] {
 
 	return featured_elements_infos_lst;
 }
+
 //--------------------------------------------------------
 /*layout(Function p_log_fun) {
 	//p_log_fun('FUN_ENTER','gf_landing_page.layout()');
