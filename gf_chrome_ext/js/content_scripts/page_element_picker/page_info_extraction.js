@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //---------------------------------------------------
-//ADD!! - detect you tube embeds in other non-youtube.com pages
-//        via the <embed> tag
+// ADD!! - detect you tube embeds in other non-youtube.com pages
+//         via the <embed> tag
 
 //->:List<:Dict(video_info_map)>
 function get_videos_info(p_log_fun) {
@@ -36,13 +36,13 @@ function get_videos_info(p_log_fun) {
 	if (page_url_str.match("^http:\/\/www.youtube.com\/watch") || page_url_str.match("^https:\/\/www.youtube.com\/watch")) {
 
 		const youtube_video_embed_url_str = $('link[itemprop="embedURL"]').attr('href');
-		p_log_fun('INFO','youtube_video_embed_url_str:'+youtube_video_embed_url_str);
+		p_log_fun('INFO', 'youtube_video_embed_url_str:'+youtube_video_embed_url_str);
 		
 		const video_info_map = {
-			'type_str':        'video',
-			'page_url_str':    page_url_str,
-			'video_source_str':'youtube',
-			'embed_url_str':   youtube_video_embed_url_str
+			'type_str':         'video',
+			'page_url_str':     page_url_str,
+			'video_source_str': 'youtube',
+			'embed_url_str':    youtube_video_embed_url_str
 		};
 		
 		videos_info_lst.push(video_info_map);

@@ -16,71 +16,77 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 //---------------------------------------------------
 function display_page_info(p_page_images_infos_lst,
 	p_page_videos_infos_lst,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','display_page_info.display_page_info()');
+	p_log_fun('FUN_ENTER', 'display_page_info.display_page_info()');
 
-	const container = $(
-		'<div id="page_info_container">' +
-			'<div id="collection"></div>'+
-			'<div id="selected_elements_preview"></div>'+
-		'</div>');
-	$('body').append(container);
+	const gf_container = $(
+		`<div id="page_info_container">
+			<div id="parameters">
+				<input id="gf_host" value="https://gloflow.com"></input>
+			</div>
+			<div id="collection"></div>
+			<div id="selected_elements_preview"></div>
+		</div>`);
+	$("body").append(gf_container);
 
-	$(container).css('height',$(document).height());
+	$(gf_container).css('height', $(document).height());
 
 	create_close_btn();
 
-	//IMAGES
+	// IMAGES
 	$.each(p_page_images_infos_lst,
 		(p_i, p_image_map) => {
 			view_image(p_image_map);
 		});
 
-	//VIDEOS
+	// VIDEOS
 	$.each(p_page_videos_infos_lst,
 		(p_i, p_video_map) => {
 			view_video(p_video_map);
 		});
 	
 	//------------
-	//MASONRY
+	// MASONRY
 
-	$(container).find('#collection').masonry(
+	$(gf_container).find("#collection").masonry(
 		{
-			columnWidth: 20,
-			gutter:      10,
-			itemSelector:'.image_in_page'
+			columnWidth:  20,
+			gutter:       10,
+			itemSelector: ".image_in_page"
 		});
+
 	//------------
 
 	check_images_exist_in_system(p_page_images_infos_lst, p_log_fun);
 
-	//$(document).resize(function() {
-	//	$('#page_info_container').css('width',$(document).width());
-	//	$('#page_info_container').css('height',$(document).height());
-	//});
+	// $(document).resize(function() {
+	// 	$('#page_info_gf_container').css('width',$(document).width());
+	//	$('#page_info_gf_container').css('height',$(document).height());
+	// });
 
 	//---------------------------------------------------
 	function create_close_btn() {
-		p_log_fun('FUN_ENTER','display_page_info.display_page_info().create_close_btn()');
+		p_log_fun("FUN_ENTER", "display_page_info.display_page_info().create_close_btn()");
 
-		const close_btn_element = $('<div id="close_btn"></div>');
-		$(container).append(close_btn_element);
+		const close_btn_element = $(`<div id="close_btn"></div>`);
+		$(gf_container).append(close_btn_element);
 
 		//--------
-		//CSS
+		// CSS
 		const icons_chrome_ext_url_str = 'url('+chrome.extension.getURL('assets/icons.png')+')';
 		$(close_btn_element).css('background-image', icons_chrome_ext_url_str);
 		//--------
 		
-		$(document).on('click','#page_info_container #close_btn',
+		$(document).on('click', '#page_info_container #close_btn',
 			() => {
-				$(container).remove();
+				$(gf_container).remove();
 			});
 	}
+
 	//---------------------------------------------------
 	function view_image(p_image_map) {
 		//p_log_fun('FUN_ENTER','display_page_info.display_page_info().view_image()');
@@ -100,30 +106,32 @@ function display_page_info(p_page_images_infos_lst,
 		//-----------------
 		//GIF
 		if (full_img_src_str.split('.').pop() == 'gif') {
-			//$(img).addClass('gf_gif');
-			//$(img).attr("data-playon","hover"); //GIF_PLAYER API
-			//$(img).gifplayer();
+			// $(img).addClass('gf_gif');
+			// $(img).attr("data-playon","hover"); //GIF_PLAYER API
+			// $(img).gifplayer();
 		}
 		//-----------------
 
-		$(container).find('#collection').append(image_in_page_element);
+		$(gf_container).find('#collection').append(image_in_page_element);
 			$(img).load(() => {
 				const img_id_str = 'id_'+hash_code(full_img_src_str, p_log_fun);
 				
-				const img_id_clean_str = img_id_str.replace('-','_');
-				p_log_fun('INFO','img_id_clean_str - '+img_id_clean_str);
+				const img_id_clean_str = img_id_str.replace('-', '_');
+				p_log_fun('INFO', 'img_id_clean_str - '+img_id_clean_str);
 
 				init_image_hud(img_id_clean_str,
 					image_in_page_element,
 					p_image_map,
+					gf_container,
 					p_log_fun);
 
 				//-------------------
-				//IMPORTANT!! - reload the masonry layout with the newly loaded image
-				$(container).find('#collection').masonry();
+				// IMPORTANT!! - reload the masonry layout with the newly loaded image
+				$(gf_container).find('#collection').masonry();
 				//-------------------
 			});
 	}
+
 	//---------------------------------------------------
 	function view_video(p_video_map) {
 		//p_log_fun('FUN_ENTER','display_page_info.display_page_info().view_video()');
@@ -145,8 +153,10 @@ function display_page_info(p_page_images_infos_lst,
 		$(container).find('#collection').masonry();
 		//-------------------
 	}
+
 	//---------------------------------------------------
 }
+
 //---------------------------------------------------
 function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 	p_log_fun('FUN_ENTER','display_page_info.check_images_exist_in_system()');
@@ -210,12 +220,14 @@ function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 	}
 	//---------------------------------------------------
 }
+
 //---------------------------------------------------
 //HUD
 //---------------------------------------------------
 function init_image_hud(p_image_id_str,
 	p_image_in_page_element,
 	p_image_info_map,
+	p_gf_container_element,
 	p_log_fun) {
 	//p_log_fun('FUN_ENTER','display_page_info.init_image_hud()');
 
@@ -250,7 +262,7 @@ function init_image_hud(p_image_id_str,
 	//--------------	
 	if (img_ext_str == 'gif') {
 		//-------------------
-		//ADD_TO_GIF_BTN
+		// ADD_TO_GIF_BTN
 		const gif_btn = $(
 				'<div id="'+p_image_id_str+'" class="add_to_gif_flow_btn" title="add gif to gif-flow">'+
 					'<div class="symbol">'+
@@ -261,7 +273,7 @@ function init_image_hud(p_image_id_str,
 		$(hud).find('#actions').append(gif_btn);
 	} else {
 		//-------------------
-		//ADD_TO_IMAGE_FLOW BTN
+		// ADD_TO_IMAGE_FLOW BTN
 		const flow_btn = $(
 				'<div class="add_to_image_flow_btn" title="add image to image-flow">'+
 					'<div class="symbol">'+
@@ -272,8 +284,8 @@ function init_image_hud(p_image_id_str,
 		$(hud).find('#actions').append(flow_btn);
 	}
 	//--------------
-	//IMPORTANT!! - testing for image dimensions, so that this info is not displayed if
-	//              the image is too small, since it will obstruct actions div.
+	// IMPORTANT!! - testing for image dimensions, so that this info is not displayed if
+	//               the image is too small, since it will obstruct actions div.
 	if (img_height > 120) {
 		$(hud).append('<div class="img_height">height: <span>'+img_height+'</span>px</div>');
 		$(hud).append('<div class="img_width">width: <span>'+img_width+'</span>px</div>');	
@@ -284,67 +296,72 @@ function init_image_hud(p_image_id_str,
 	$(hud).find('.add_to_image_flow_btn .icon').css('background-image',icons_chrome_ext_url_str);
 	$(hud).find('.add_to_post_btn .icon').css('background-image',icons_chrome_ext_url_str);
 	//------------
-	//ADD_TO_GIF_FLOW
+	// ADD_TO_GIF_FLOW
 
 	const add_to_gif_flow__selector_str = '#'+p_image_id_str+' .add_to_gif_flow_btn';
-	$(document).on('click',add_to_gif_flow__selector_str,()=>{
+	$(document).on('click', add_to_gif_flow__selector_str,()=>{
 
-		const image_flows_names_lst = ['general','gifs'];
+		const image_flows_names_lst = ["general", "gifs"];
+		const gf_host_str           = $(p_gf_container_element).find("input#gf_host").val();
+
 		add_image_to_flow(full_img_src_str,
 			image_flows_names_lst,
+			gf_host_str,
 			()=>{
 
 				//-------------------
-				//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
+				// IMPORTANT!! - adding the .btn_ok class activates the CSS animation
 				$(hud).find('.add_to_image_flow_btn .icon').addClass('btn_ok');
 				//-------------------
-				$(hud).find('.add_to_image_flow_btn').css('pointer-events','none');
+				$(hud).find('.add_to_image_flow_btn').css('pointer-events', 'none');
 			},
 			(p_error_data_map)=>{},
 			p_log_fun);
 	});
 	//------------
-	//ADD_TO_IMAGE_FLOW
+	// ADD_TO_IMAGE_FLOW
 	const add_to_image_flow__selector_str = '#'+p_image_id_str+' .add_to_image_flow_btn';
-	$(document).on('click',add_to_image_flow__selector_str,()=>{
+	$(document).on("click", add_to_image_flow__selector_str, ()=>{
 		
 		/*const image_origin_page_url_str = window.location.href;
 		//-------------------
-		//IMPORTANT!! - since request to host_str is made from the context of the page in which the 
-		//              content is located, browser security imposes that the same protocol (http|https)
-		//              is used to communicate with host_str as with the origin-domain of the page
+		// IMPORTANT!! - since request to host_str is made from the context of the page in which the 
+		//               content is located, browser security imposes that the same protocol (http|https)
+		//               is used to communicate with host_str as with the origin-domain of the page
 		const origin_url_str = window.location.href;
 		const protocol_str   = origin_url_str.split('://')[0];
-		//const host_str       = protocol_str+'://127.0.0.1:3050';
+		// const host_str       = protocol_str+'://127.0.0.1:3050';
 		const host_str       = protocol_str+'://gloflow.com';
 		//-------------------
 
 		http__add_image_to_flow(full_img_src_str,
-					image_origin_page_url_str,
-					host_str,
-					(p_images_job_id_str,
-					p_image_id_str,
-					p_thumbnail_small_relative_url_str)=>{
+			image_origin_page_url_str,
+			host_str,
+			(p_images_job_id_str,
+			p_image_id_str,
+			p_thumbnail_small_relative_url_str)=>{
 
-						//-------------------
-						//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
-						$(hud).find('.add_to_image_flow_btn .icon').addClass('btn_ok');
-						//-------------------
-
-						$(hud).find('.add_to_image_flow_btn').css('pointer-events','none');
-					},
-					p_log_fun);*/
-
-		const image_flows_names_lst = ['general'];
-		add_image_to_flow(full_img_src_str,
-			image_flows_names_lst,
-			()=>{
 				//-------------------
-				//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
+				// IMPORTANT!! - adding the .btn_ok class activates the CSS animation
 				$(hud).find('.add_to_image_flow_btn .icon').addClass('btn_ok');
 				//-------------------
 
 				$(hud).find('.add_to_image_flow_btn').css('pointer-events','none');
+			},
+			p_log_fun);*/
+
+		const image_flows_names_lst = ["general"];
+		const gf_host_str           = $(p_gf_container_element).find("input#gf_host").val();
+		add_image_to_flow(full_img_src_str,
+			image_flows_names_lst,
+			gf_host_str,
+			()=>{
+				//-------------------
+				//IMPORTANT!! - adding the .btn_ok class activates the CSS animation
+				$(hud).find(".add_to_image_flow_btn .icon").addClass("btn_ok");
+				//-------------------
+
+				$(hud).find(".add_to_image_flow_btn").css("pointer-events", "none");
 			},
 			(p_error_data_map)=>{},
 			p_log_fun);
@@ -352,13 +369,13 @@ function init_image_hud(p_image_id_str,
 	//------------
 
 	//------------
-	//ADD_TO_POST
+	// ADD_TO_POST
 	const add_to_post__selector_str = '#'+p_image_id_str+' .add_to_post_btn';
-	$(document).on('click',add_to_post__selector_str,()=>{
+	$(document).on('click', add_to_post__selector_str,()=>{
 		add_image_to_post(p_image_info_map,p_log_fun);
 	});
 	//------------
-	//GIF
+	// GIF
 	if (full_img_src_str.split('.').pop() == 'gif') {
 
 		//$(p_image_in_page_element).find('.gf_gif').gifplayer();
@@ -380,13 +397,14 @@ function init_image_hud(p_image_id_str,
 			hud_attached_bool = true;
 		}
 		else {
-			$(hud).css('visibility','visible');
+			$(hud).css('visibility', 'visible');
 		}
 	});
 	$(p_image_in_page_element).mouseleave((p_e)=>{
-		$(hud).css('visibility','hidden'); //.remove();
+		$(hud).css('visibility', 'hidden'); //.remove();
 	});
 }
+
 //---------------------------------------------------
 function init_video_hud(p_video_in_page_element, p_video_info_map, p_log_fun) {
 	//p_log_fun('FUN_ENTER','display_page_info.init_video_hud()');
@@ -405,47 +423,57 @@ function init_video_hud(p_video_in_page_element, p_video_info_map, p_log_fun) {
 	$(p_video_in_page_element).mouseenter(function(p_e) {
 		$(p_video_in_page_element).append(hud);
 	});
+
 	$(p_video_in_page_element).mouseleave(function(p_e) {
 		$(hud).remove();
 	});
 }
+
 //---------------------------------------------------
 function add_image_to_flow(p_full_img_src_str,
 	p_images_flows_names_lst,
+	p_gf_host_str,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','display_page_info.add_image_to_flow()');
+	p_log_fun("FUN_ENTER", "display_page_info.add_image_to_flow()");
 
 	const image_origin_page_url_str = window.location.href;
-	//-------------------
-	//IMPORTANT!! - since request to host_str is made from the context of the page in which the 
-	//              content is located, browser security imposes that the same protocol (http|https)
-	//              is used to communicate with host_str as with the origin-domain of the page
-	const origin_url_str = window.location.href;
-	const protocol_str   = origin_url_str.split('://')[0];
-	const host_str       = protocol_str+'://gloflow.com';
-	//-------------------
+	// //-------------------
+	// // IMPORTANT!! - since request to host_str is made from the context of the page in which the 
+	// //               content is located, browser security imposes that the same protocol (http|https)
+	// //               is used to communicate with host_str as with the origin-domain of the page
+	// const origin_url_str = window.location.href;
+	// const protocol_str   = origin_url_str.split("://")[0];
+	// const host_str       = `${protocol_str}://gloflow.com`;
+	// //-------------------
 
 	http__add_image_to_flow(p_full_img_src_str,
 		image_origin_page_url_str,
 		p_images_flows_names_lst,
-		host_str,
+		p_gf_host_str, // host_str,
 		(p_images_job_id_str, p_image_id_str, p_thumbnail_small_relative_url_str)=>{
+
+			console.log("image added")
+			console.log(`image job ID    - ${p_images_job_id_str}`)
+			console.log(`image ID        - ${p_image_id_str}`)
+			console.log(`thumb small URL - ${p_thumbnail_small_relative_url_str}`)
+
 			p_on_complete_fun();
 		},
 		(p_error_data_map)=>{p_on_error_fun(p_error_data_map)},
 		p_log_fun);
 }
+
 //---------------------------------------------------
 function view_gif_info(p_full_img_src_str, p_host_str, p_log_fun) {
-	p_log_fun('FUN_ENTER','display_page_info.view_gif_info()');
+	p_log_fun("FUN_ENTER", "display_page_info.view_gif_info()");
 
 	http__gif_get_info(p_full_img_src_str,
 		p_host_str,
 		(p_gif_map)=>{
 
-			const preview_frames_s3_urls_lst = p_gif_map['preview_frames_s3_urls_lst'];
+			const preview_frames_s3_urls_lst = p_gif_map["preview_frames_s3_urls_lst"];
 
 			console.log("GIF FRAMES URLS ------------------");
 			console.log(preview_frames_s3_urls_lst);

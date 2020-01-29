@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+
 //---------------------------------------------------
 function hash_code(p_str,
 			p_log_fun) {
@@ -28,16 +29,17 @@ function hash_code(p_str,
 	}
 	return hash;
 }
+
 //---------------------------------------------------
 function get_image_histogram(p_on_complete_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER','utils.get_image_histogram()');
+	p_log_fun('FUN_ENTER', 'utils.get_image_histogram()');
 
 	const hist_map = {};	
 	const img       = new Image();
 	img.onload      = () => {
 		Pixastic.process(img,"colorhistogram", {
-			paint:      true,
-			returnValue:hist_map
+			paint:       true,
+			returnValue: hist_map
 		});
 		hist_map.rvals; // <- array[255] red channel
 		hist_map.gvals; // <- array[255] green channel
