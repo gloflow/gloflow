@@ -43,6 +43,7 @@ import gf_web__build
 
 sys.path.append("%s/containers"%(cwd_str))
 import gf_containers
+import gf_local_cluster
 
 sys.path.append("%s/gf_builder"%(cwd_str))
 import gf_builder_ops
@@ -91,9 +92,20 @@ def main():
 		gf_build.run_rust(cargo_crate_dir_path_str)
 
 	#--------------------------------------------------
+	# AWS_CREDS
+	def aws_creds_get():
+		
+		aws_creds_file_path_str     = args_map["aws_creds"]
+		aws_creds_file_path_abs_str = os.path.abspath(aws_creds_file_path_str)
+		print(aws_creds_file_path_abs_str)
+		assert os.path.isfile(aws_creds_file_path_abs_str)
+
+		aws_creds_map = gf_s3_utils.parse_creds(aws_creds_file_path_str)
+		
+		return aws_creds_map
 
 	#-------------
-	#BUILD_GO
+	# BUILD_GO
 	if run_str == "build" or run_str == "build_go":
 		
 		#build using dynamic linking, its quicker while in dev.
@@ -102,7 +114,6 @@ def main():
 	#-------------
 	# BUILD_RUST
 	elif run_str == "build_rust":
-		
 		rust_build()
 	
 	#-------------
@@ -129,28 +140,25 @@ def main():
 		assert web_meta_map.has_key(app_name_str)
 		app_web_meta_map = web_meta_map[app_name_str]
 
-		docker_sudo_bool = args_map["docker_sudo"]
+
+		dockerhub_user_str = args_map["dockerhub_user"]
+		docker_sudo_bool   = args_map["docker_sudo"]
 
 		gf_containers.build(app_name_str, 
 			app_build_meta_map,
 			app_web_meta_map,
 			gf_log.log_fun,
+			p_user_name_str    = dockerhub_user_str,
 			p_docker_sudo_bool = docker_sudo_bool)
 
 	#-------------
 	# TEST
 	elif run_str == "test":
 
-		app_meta_map            = build_meta_map[app_name_str]
-		aws_creds_file_path_str = args_map["aws_creds"]
-
-		aws_creds_file_path_abs_str = os.path.abspath(aws_creds_file_path_str)
-		print(aws_creds_file_path_abs_str)
-		assert os.path.isfile(aws_creds_file_path_abs_str)
-
-		aws_creds_map = gf_s3_utils.parse_creds(aws_creds_file_path_str)
+		app_meta_map  = build_meta_map[app_name_str]
 		test_name_str = args_map["test_name"]
-		
+		aws_creds_map = aws_creds_get()
+
 		gf_tests.run(app_name_str,
 			test_name_str,
 			app_meta_map,
@@ -164,6 +172,18 @@ def main():
 		gf_build_changes.view_changed_apps(changed_apps_map, "web")
 	
 	#-------------
+	# START_CLUSTER_LOCAL
+
+	elif run_str == "start_cluster_local":
+		
+		docker_sudo_bool = args_map["docker_sudo"]
+		aws_creds_map    = aws_creds_get()
+
+
+		gf_local_cluster.start(aws_creds_map,
+			p_docker_sudo_bool = docker_sudo_bool)
+
+	#-------------
 	# GF_BUILDER__CONTAINER_BUILD
 	elif run_str == "gf_builder__cont_build":
 		dockerhub_user_str = args_map["dockerhub_user"]
@@ -172,7 +192,7 @@ def main():
 		gf_builder_ops.cont__build(dockerhub_user_str,
 			gf_log.log_fun,
 			p_docker_sudo_bool = docker_sudo_bool)
-
+	
 	#-------------
 	else:
 		print("unknown run command - %s"%(run_str))
@@ -193,6 +213,7 @@ def parse_args():
 - '''+fg('yellow')+'build_containers'+attr(0)+'''       - build app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''                   - run app code tests
 - '''+fg('yellow')+'list_changed_apps'+attr(0)+'''      - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
+- '''+fg('yellow')+'start_cluster_local'+attr(0)+'''    - start a local GF cluster using docker-compose
 - '''+fg('yellow')+'gf_builder__cont_build'+attr(0)+''' - build gf_builder container (for monorepo CI)
 
 		''')

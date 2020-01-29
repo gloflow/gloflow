@@ -1,0 +1,95 @@
+version: "3"
+services:
+
+  #------------------------
+  # SYSTEM
+  #------------------------
+  # GF_MONGODB
+  gf_mongodb:
+    image:          mongo
+    container_name: gf_mongo
+    hostname:       gf_mongo
+
+  #------------------------
+  # GF_ELASTICSEARCH
+  gf_elasticsearch:
+    image:          elasticsearch:6.8.6 # 7.5.1 # docker.elastic.co/elasticsearch/elasticsearch-oss:6.0.1
+    container_name: gf_elasticsearch
+    hostname:       gf_elasticsearch
+    # environment:
+    #   - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    # ulimits:
+    #   memlock:
+    #     soft: -1
+    #     hard: -1
+
+  #------------------------
+  # GF_NGINX
+  gf_nginx:
+    image:          nginx
+    container_name: gf_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - gf_images
+      - gf_publisher
+      - gf_analytics
+      - gf_landing_page
+
+  #------------------------
+  # APPS
+  #------------------------
+  # GF_IMAGES
+  gf_images:
+    image:          glofloworg/gf_images_service:latest
+    container_name: gf_images
+    hostname:       gf_images
+    volumes:
+      # IMPORTANT!! - overwrite existing gf_images_config.yaml in the container (pre-packaged) with 
+      #               custom gf_images config for local_cluster
+      - ./gf_images_config.yaml:/home/gf/config/gf_images_config.yaml
+    environment:
+      - "GF_MONGODB_HOST=gf_mongo"
+      - "GF_IMAGES_S3_BUCKET_NAME=${GF_IMAGES_S3_BUCKET_NAME}"
+      - "GF_AWS_ACCESS_KEY_ID=${GF_AWS_ACCESS_KEY_ID}"
+      - "GF_AWS_SECRET_ACCESS_KEY=${GF_AWS_SECRET_ACCESS_KEY}"
+    depends_on:
+      - gf_mongodb
+
+  #------------------------
+  # GF_ANALYTICS
+  gf_analytics:
+    image:          glofloworg/gf_analytics_service:latest
+    container_name: gf_analytics
+    hostname:       gf_analytics
+    environment:
+      - "GF_MONGODB_HOST=gf_mongo"
+      - "GF_ELASTICSEARCH_HOST=gf_elasticsearch:9200"
+      - "GF_AWS_ACCESS_KEY_ID=${GF_AWS_ACCESS_KEY_ID}"
+      - "GF_AWS_SECRET_ACCESS_KEY=${GF_AWS_SECRET_ACCESS_KEY}"
+    depends_on:
+      - gf_mongodb
+
+  #------------------------
+  # GF_LANDING_PAGE
+  gf_landing_page:
+    image:          glofloworg/gf_landing_page_service:latest
+    container_name: gf_landing_page
+    hostname:       gf_landing_page
+    environment:
+      - "GF_MONGODB_HOST=gf_mongo"
+    depends_on:
+      - gf_mongodb
+
+  #------------------------
+  # GF_PUBLISHER
+  gf_publisher:
+    image:          glofloworg/gf_publisher_service:latest
+    container_name: gf_publisher
+    hostname:       gf_publisher
+    environment:
+      - "GF_MONGODB_HOST=gf_mongo"
+    depends_on:
+      - gf_mongodb

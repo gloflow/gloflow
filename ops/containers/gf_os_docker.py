@@ -25,7 +25,7 @@ import base64
 import delegator
 import fabric.api
 
-sys.path.append('%s/../utils'%(cwd_str))
+sys.path.append("%s/../utils"%(cwd_str))
 import gf_cli_utils
 
 #---------------------------------------------------

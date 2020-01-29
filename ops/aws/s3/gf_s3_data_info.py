@@ -33,8 +33,8 @@ def stats__image_buckets_general(p_aws_access_key_id_str,
 		print(bucket.name)
 
 	#-------------------
-	main_images__bucket_info_map    = process_bucket('gf--img',             gf_s3_info.imgs__bucket)
-	crawler_images__bucket_info_map = process_bucket('gf--discovered--img', gf_s3_info.discovered_imgs__bucket)
+	main_images__bucket_info_map    = process_bucket("gf--img",             gf_s3_info.imgs__bucket)
+	crawler_images__bucket_info_map = process_bucket("gf--discovered--img", gf_s3_info.discovered_imgs__bucket)
 	#-------------------
 	
 	view_bucket_info([crawler_images__bucket_info_map, main_images__bucket_info_map])
@@ -46,10 +46,10 @@ def process_bucket(p_name_str, p_bucket):
 	total_size_kb_int        = 0
 	counts_per_day_map       = {}
 	counts_per_file_type_map = {
-		'thumbnails/':     0, #used??
-		'thumbnails':      0,
-		'thumbnails_jpeg': 0,
-		'thumbnails_png':  0
+		"thumbnails/":     0, #used??
+		"thumbnails":      0,
+		"thumbnails_jpeg": 0,
+		"thumbnails_png":  0
 	}
 
 	for o in p_bucket.objects.all():
@@ -67,8 +67,8 @@ def process_bucket(p_name_str, p_bucket):
 
 		file_ext_str = file_name_str.split('.')[-1:][0].lower()
 
-		if file_ext_str == 'jpg':
-			file_ext_str = 'jpeg'
+		if file_ext_str == "jpg":
+			file_ext_str = "jpeg"
 
 		#FILE_EXTENSION_COUNTS
 		if counts_per_file_type_map.has_key(file_ext_str):
@@ -77,11 +77,11 @@ def process_bucket(p_name_str, p_bucket):
 			counts_per_file_type_map[file_ext_str] = 1
 
 		#THUMBNAILS
-		if 'thumbnails/' in file_name_str:
-			counts_per_file_type_map['thumbnails'] += 1
+		if "thumbnails/" in file_name_str:
+			counts_per_file_type_map["thumbnails"] += 1
 
-			if file_ext_str == 'jpeg':  counts_per_file_type_map['thumbnails_jpeg'] += 1
-			elif file_ext_str == 'png': counts_per_file_type_map['thumbnails_png'] += 1
+			if file_ext_str == "jpeg":  counts_per_file_type_map["thumbnails_jpeg"] += 1
+			elif file_ext_str == "png": counts_per_file_type_map["thumbnails_png"] += 1
 		#-------------------
 		#TOTAL_FILE_COUNTS_PER_DAY
 
@@ -92,16 +92,16 @@ def process_bucket(p_name_str, p_bucket):
 			counts_per_day_map[day_str] = 0
 		#-------------------
 
-		print '%s - %s - %sKB'%(i,file_name_str,file_size_kb_int)
+		print("%s - %s - %sKB")%(i,file_name_str,file_size_kb_int)
 
 		total_size_kb_int += file_size_kb_int
 		i+=1
 
 	return {
-		'name_str':                 p_name_str,
-		'total_size_kb_int':        total_size_kb_int,
-		'counts_per_day_map':       counts_per_day_map,
-		'counts_per_file_type_map': counts_per_file_type_map,
+		"name_str":                 p_name_str,
+		"total_size_kb_int":        total_size_kb_int,
+		"counts_per_day_map":       counts_per_day_map,
+		"counts_per_file_type_map": counts_per_file_type_map,
 	}
 
 #---------------------------------------------------
@@ -109,29 +109,29 @@ def view_bucket_info(p_infos_lst):
 
 	#-------------------------
 	for info_map in p_infos_lst:
-		print ''
-		print ''
-		print ''
+		print("")
+		print("")
+		print("")
 		print 'bucket_name_str - %s'%(info_map['name_str'])
-		print ''
+		print("")
 
 		sorted_lst = info_map['counts_per_day_map'].items()
 		sorted_lst.sort()
 		
 		for k,v in sorted_lst:
-			print '%s -- %s'%(k, v) 
+			print('%s -- %s'%(k, v)) 
 
-		print ''
-		print ''
-		print ''
+		print("")
+		print("")
+		print("")
 		for k,v in info_map['counts_per_file_type_map'].items():
 			print '%s%s%s -- %s'%(bg('blue'), k, attr(0), v)
 
 		total_size_mb_int = info_map['total_size_kb_int']/1024
 		print 'total size - %s%s%smb'%(bg('green'), total_size_mb_int, attr(0))
-		print ''
-		print ''
-		print ''
+		print("")
+		print("")
+		print("")
 	#-------------------------
 
 	df_lst = []

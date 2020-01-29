@@ -19,15 +19,28 @@ from colored import fg, bg, attr
 import delegator
 
 #---------------------------------------------------
-def run_cmd(p_cmd_str, p_print_output_bool=True):
-	if p_print_output_bool: print(p_cmd_str)
-	r = delegator.run(p_cmd_str)
+def run_cmd(p_cmd_str,
+	p_env_map           = None,
+	p_print_output_bool = True):
+	
+	if p_print_output_bool:
+		print(p_cmd_str)
+	
+	if not p_env_map == None:
+		r = delegator.run(p_cmd_str, env=p_env_map)
+	else:	
+		r = delegator.run(p_cmd_str)
 
 	o = ""
 	e = ""
+
+	# sometimes commands dont return any stdout
 	if not r.out == "":
 		o = r.out
-		if p_print_output_bool: print(o)
+		if p_print_output_bool:
+			print(o)
+
+	# sometimes commands dont return any stderr
 	if not r.err == "":
 		e = r.err
 		if p_print_output_bool: print(e)
