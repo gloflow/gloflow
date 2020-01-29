@@ -24,13 +24,13 @@ export function init(p_image_element,
 	p_img_thumb_medium_url_str :string,
 	p_flow_name_str            :string,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_image_viewer.init()');
+	p_log_fun("FUN_ENTER", "gf_image_viewer.init()");
 
 	//const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 
-	$(p_image_element).find('img').click(()=>{
+	$(p_image_element).find("img").click(()=>{
 
-		console.log('click')
+		console.log("click")
 
 		const image_view = $(`
 			<div id="image_viewer">
@@ -46,19 +46,19 @@ export function init(p_image_element,
 
 		//----------------------
 		//BAKCGROUND
-		const bg = $(image_view).find('#background');
+		const bg = $(image_view).find("#background");
 
 		//position the background vertically where the user has scrolled to
-		$(bg).css('top',$(window).scrollTop()+'px');
+		$(bg).css("top", $(window).scrollTop()+"px");
 		//----------------------
 		//IMPORTANT!! - turn off vertical scrolling while viewing the image
 		$("body").css("overflow", "hidden");
 		//----------------------
 
 
-		$(image_view).find('img').on('load', ()=>{
+		$(image_view).find("img").on("load", ()=>{
 
-			const image_detail = $(image_view).find('#image_detail');
+			const image_detail = $(image_view).find("#image_detail");
 			$(image_detail).css("position", "absolute");
 
 			//Math.max() - returns the largest of zero or more numbers.

@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //--------------------------------------------------------
 export function init(p_register_user_email_fun, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_email_registration.init()');
+	p_log_fun("FUN_ENTER", "gf_email_registration.init()");
 
 	const register_email_form = $(`
 		<div id='register_email_form'>
@@ -38,53 +38,54 @@ export function init(p_register_user_email_fun, p_log_fun) {
 				</div>
 			</form>
 		</div>`);
-	$('#register').append(register_email_form);
+		
+	$("#register").append(register_email_form);
 
-	const submit_register_email_form_button = $(register_email_form).find('#submit_register_email_form_button');
+	const submit_register_email_form_button = $(register_email_form).find("#submit_register_email_form_button");
 	
 	//this button reveals the email registration form
 	var email_form_visible_bool :boolean = false;
-	$('#register #register_email_button').click((p_event)=>{
+	$("#register #register_email_button").click((p_event)=>{
 		
 		if (email_form_visible_bool == false) {
-			$(register_email_form).css('opacity','1.0');
+			$(register_email_form).css("opacity", "1.0");
 			email_form_visible_bool = true;
 
 			//layout_email_form(p_log_fun);
 		}
 		else {
-			$(register_email_form).css('opacity','0.0');
+			$(register_email_form).css("opacity", "0.0");
 			email_form_visible_bool = false;
 		}
 	});
 
 	$(submit_register_email_form_button).click((p_event)=>{
-			const inputed_email_str :string = $(register_email_form).find('#user_email_input').val();
+			const inputed_email_str :string = $(register_email_form).find("#user_email_input").val();
 			register_user_email(inputed_email_str);
 		});
 	
 	//--------------------------------------------------------
 	function register_user_email(p_inputed_email_str :string) {
-		p_log_fun('FUN_ENTER', 'gf_email_registration.init().register_user_email()');
+		p_log_fun("FUN_ENTER", "gf_email_registration.init().register_user_email()");
 
 		p_register_user_email_fun(p_inputed_email_str,
 
 			//p_onComplete_fun
 			(p_status_str :string,
 			p_msg_str     :string)=>{
-				console.assert(p_status_str == 'success' || p_status_str == 'error');
+				console.assert(p_status_str == "success" || p_status_str == "error");
 
-				p_log_fun('INFO', 'email registration DONE');
-				p_log_fun('INFO', 'p_status_str:$p_status_str');
+				p_log_fun("INFO", "email registration DONE");
+				p_log_fun("INFO", "p_status_str:$p_status_str");
 
 				switch(p_status_str) {
-					case 'success':
-						$(submit_register_email_form_button).find('.button_title').text('success');
-						$(submit_register_email_form_button).css('background-color', 'rgb(80, 173, 36)');
+					case "success":
+						$(submit_register_email_form_button).find(".button_title").text("success");
+						$(submit_register_email_form_button).css("background-color", "rgb(80, 173, 36)");
 						break;
-					case 'error':
-						$(submit_register_email_form_button).find('.button_title').text('error');
-						$(submit_register_email_form_button).css('background-color', 'rgb(255, 10, 0)');
+					case "error":
+						$(submit_register_email_form_button).find(".button_title").text("error");
+						$(submit_register_email_form_button).css("background-color", "rgb(255, 10, 0)");
 
 						const error_msg = $(`
 							<div class="button_title">$p_msg_str</div>
@@ -99,7 +100,7 @@ export function init(p_register_user_email_fun, p_log_fun) {
 }
 /*//--------------------------------------------------------
 function layout_email_button(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_email_registration.layout_email_button()');
+	p_log_fun("FUN_ENTER",'gf_email_registration.layout_email_button()');
 
 	final DivElement btn_element = query('#register_email_button');
 
