@@ -31,7 +31,7 @@ export function init(p_image_element,
 	//const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 
 	//----------------------
-	//GIF_INDICATOR
+	// GIF_INDICATOR
 
 	const gif_indicator_e = $('<div class="gif_indicator">GIF</div>');
 	$(p_image_element).append(gif_indicator_e);
@@ -47,11 +47,11 @@ export function init(p_image_element,
 	//offsetWidth/Height - The width and height of the entire element, including borders and padding, excluding margins.
 	const gif_indicator_x_int = img_x_int + (img_element.offsetWidth - $(gif_indicator_e)[0].offsetWidth)/2;
 	const gif_indicator_y_int = img_y_int + (img_element.offsetHeight - $(gif_indicator_e)[0].offsetHeight)/2;
-	$(gif_indicator_e).css('left',gif_indicator_x_int+'px');
-	$(gif_indicator_e).css('top' ,gif_indicator_y_int+'px');
+	$(gif_indicator_e).css('left', gif_indicator_x_int+'px');
+	$(gif_indicator_e).css('top' , gif_indicator_y_int+'px');
 
 
-	$(gif_indicator_e).on('click',()=>{
+	$(gif_indicator_e).on('click', ()=>{
 
 		//IMPORTANT!! - when gif_indicator is clicked activate the click event handler
 		//              on the <img> tag of the GIF.

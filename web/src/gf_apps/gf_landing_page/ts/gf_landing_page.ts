@@ -24,6 +24,9 @@ import * as gf_email_registration from "./gf_email_registration";
 import * as gf_images             from "./gf_images";
 import * as gf_procedural_art     from "./gf_procedural_art";
 
+// GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (its a JS file)
+declare var gf_upload__init;
+
 $(document).ready(()=>{
 	//-------------------------------------------------
 	function log_fun(p_g,p_m) {
@@ -46,10 +49,10 @@ $(document).ready(()=>{
 	init_remote(log_fun);
 
 	//----------------------
-	//IMPORTANT!! - wait for all images in the page to load first
-	$(window).on("load", ()=>{
-		gf_calc.run(log_fun);
-	});
+	// //IMPORTANT!! - wait for all images in the page to load first
+	// $(window).on("load", ()=>{
+	// 	gf_calc.run(log_fun);
+	// });
 	//----------------------
 });
 
@@ -83,7 +86,9 @@ export function init_remote(p_log_fun) {
 }
 
 //--------------------------------------------------------
-function init(p_register_user_email_fun, p_log_fun) {
+// INIT
+function init(p_register_user_email_fun,
+	p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_landing_page.init()");
 
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
@@ -94,7 +99,7 @@ function init(p_register_user_email_fun, p_log_fun) {
 	init_posts_img_num();
 	gf_images.init(p_log_fun);
 
-	//draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
+	// draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
 	$(window).resize(()=>{
 
 		//small screen widths dont display procedural_art
@@ -102,6 +107,12 @@ function init(p_register_user_email_fun, p_log_fun) {
 			gf_procedural_art.init(p_log_fun);
 		}
 	});
+
+	// UPLOAD__INIT
+	// use "" so that no host is set in URL's for issued requests (forces usage of origin host that the page came from)
+	const target_full_host_str = "";
+	gf_upload__init(target_full_host_str);
+
 	//--------------------------------------------------------
 	function init_posts_img_num() {
 		p_log_fun("FUN_ENTER", "gf_landing_page.init().init_posts_img_num()");
