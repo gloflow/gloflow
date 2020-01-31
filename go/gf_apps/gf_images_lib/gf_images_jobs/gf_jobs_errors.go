@@ -66,6 +66,7 @@ func job_error__send(p_job_error_type_str string,
 	//------------
 	return nil
 }
+
 //-------------------------------------------------
 func job_error__persist(p_job_id_str string,
 	p_error_type_str       string,
@@ -75,9 +76,9 @@ func job_error__persist(p_job_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_errors.job_error__persist()")
 
 	job_error := Job_Error{
-		Type_str:            p_error_type_str,
-		Error_str:           p_error_str,
-		Image_source_url_str:p_image_source_url_str,
+		Type_str:             p_error_type_str,
+		Error_str:            p_error_str,
+		Image_source_url_str: p_image_source_url_str,
 	}
 
 	err := p_runtime_sys.Mongodb_coll.Update(bson.M{

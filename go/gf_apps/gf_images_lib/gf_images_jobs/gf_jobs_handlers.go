@@ -37,11 +37,11 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------
-	//running_jobs_map := map[string]*Running_job{}
+	// running_jobs_map := map[string]*Running_job{}
 
-	//START_JOB
+	// START_JOB
 	http.HandleFunc("/images/jobs/start", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/jobs/start ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -53,7 +53,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 				return
 			}
 			
-			p_runtime_sys.Log_fun("INFO","input_map - "+fmt.Sprint(input_map))
+			p_runtime_sys.Log_fun("INFO", "input_map - "+fmt.Sprint(input_map))
 
 			job_type_str                           := input_map["job_type_str"].(string)
 			client_type_str                        := input_map["client_type_str"].(string)
@@ -73,16 +73,16 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			images_urls_lst   := strings.Split(images_urls_str, ",")
 
 			imgs_origin_pages_urls_str,_ := url.QueryUnescape(url_encoded_imgs_origin_pages_urls_str)
-			imgs_origin_pages_urls_lst   := strings.Split(imgs_origin_pages_urls_str,",")
+			imgs_origin_pages_urls_lst   := strings.Split(imgs_origin_pages_urls_str, ",")
 			
-			p_runtime_sys.Log_fun("INFO","url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
-			p_runtime_sys.Log_fun("INFO","url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
+			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
+			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
 
-			images_to_process_lst := []Image_to_process{}
+			images_to_process_lst := []Gf_image_extern_to_process{}
 			for i, image_url_str := range images_urls_lst {
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
-				img_to_process            := Image_to_process{
+				img_to_process            := Gf_image_extern_to_process{
 					Source_url_str:      image_url_str,
 					Origin_page_url_str: image_origin_page_url_str,
 				}
@@ -90,7 +90,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			}
 			//-------------------
 
-			running_job, job_expected_outputs_lst, gf_err := Job__start(client_type_str,
+			running_job, job_expected_outputs_lst, gf_err := Client__run_extern_imgs(client_type_str,
 				images_to_process_lst,
 				flows_names_lst,
 				p_jobs_mngr_ch,
@@ -115,10 +115,11 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			}()
 		}
 	})
+
 	//---------------------
-	//GET_JOB_STATUS - SSE
+	// GET_JOB_STATUS - SSE
 	http.HandleFunc("/images/jobs/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/jobs/status ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
 
 		if p_req.Method == "GET" {
 			
@@ -143,13 +144,13 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			job_updates_ch := Job__get_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 			//-------------------------
 
-			//don't close the connection, sending messages and flushing the response each time there is a new message to send along.
-			//NOTE: we could loop endlessly; however, then you could not easily detect clients that dettach and the
-			//server would continue to send them messages long after they're gone due to the "keep-alive" header.  One of
-			//the nifty aspects of SSE is that clients automatically reconnect when they lose their connection.
-			//a better way to do this is to use the CloseNotifier interface that will appear in future releases of
-			//Go (this is written as of 1.0.3):
-			//https://code.google.com/p/go/source/detail?name=3292433291b2
+			// don't close the connection, sending messages and flushing the response each time there is a new message to send along.
+			// NOTE: we could loop endlessly; however, then you could not easily detect clients that dettach and the
+			// server would continue to send them messages long after they're gone due to the "keep-alive" header.  One of
+			// the nifty aspects of SSE is that clients automatically reconnect when they lose their connection.
+			// a better way to do this is to use the CloseNotifier interface that will appear in future releases of
+			// Go (this is written as of 1.0.3):
+			// https://code.google.com/p/go/source/detail?name=3292433291b2
 
 			flusher,ok := p_resp.(http.Flusher)
 			if !ok {
@@ -167,17 +168,17 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			p_resp.Header().Set("Content-Type",                "text/event-stream")
 			p_resp.Header().Set("Cache-Control",               "no-cache")
 			p_resp.Header().Set("Connection",                  "keep-alive")
-			p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+			p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
 			for {
 
-				//IMPORTANT!! - jobs_mngr, after processing a job and sending all status messages that it has to send, 
-				//              does NOT close the channel. if the status messages client receiver, via this HTTP (SSE) handler
-				//              is slow to connect/consume messages, then the jobs_mngr will complete the job (and close the channel)
-				//              faster then the client here will consume them, and so a closed channel will be encoutered before all
-				//              its messages were consumed.
-				//              to avoid this a channel is not closed, and instead the last update message is waited for here, or an error,
-				//              and cleanup only done after that.
+				// IMPORTANT!! - jobs_mngr, after processing a job and sending all status messages that it has to send, 
+				//               does NOT close the channel. if the status messages client receiver, via this HTTP (SSE) handler
+				//               is slow to connect/consume messages, then the jobs_mngr will complete the job (and close the channel)
+				//               faster then the client here will consume them, and so a closed channel will be encoutered before all
+				//               its messages were consumed.
+				//               to avoid this a channel is not closed, and instead the last update message is waited for here, or an error,
+				//               and cleanup only done after that.
 				job_update := <- job_updates_ch
 				
 				sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
@@ -190,7 +191,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 				flusher.Flush()
 
-				//IMPORTANT!! - this is the last update message, so exit the loop
+				// IMPORTANT!! - this is the last update message, so exit the loop
 				if job_update.Type_str == JOB_UPDATE_TYPE__ERROR || job_update.Type_str == JOB_UPDATE_TYPE__COMPLETED {
 					Job__cleanup(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 					break
