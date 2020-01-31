@@ -52,12 +52,28 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 	if mongodb_host_env_str != "" {
 		*mongodb_host_str = mongodb_host_env_str
 	}
+	
 	//-------------------
-	// ENV VARS
+	// AWS_CREDS
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
 	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
 
+	if len(aws_access_key_id_str) != 20 {
+		panic("GF_AWS_ACCESS_KEY_ID ENV var not set/of correct length")
+	}
+
+	if len(aws_secret_access_key_str) != 40 {
+		panic("GF_AWS_SECRET_ACCESS_KEY ENV var not set/of correct length")
+	}
+
+	//-------------------
+	// AWS_S3
+
+	images_s3_bucket_name_env_str := os.Getenv("GF_IMAGES_S3_BUCKET_NAME")
+	if images_s3_bucket_name_env_str != "" {
+		*images_s3_bucket_name_str = images_s3_bucket_name_env_str
+	}
 	//-------------------
 
 	flag.Parse()

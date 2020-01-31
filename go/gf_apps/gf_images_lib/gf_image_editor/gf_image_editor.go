@@ -74,8 +74,8 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	//--------------------------
 	//INPUT
 	var input *Gf_edited_image__save__http_input
-	body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-	err              := json.Unmarshal(body_bytes_lst, input)
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	err               := json.Unmarshal(body_bytes_lst, input)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse json edited_image_save http_input",
 			"json_decode_error",

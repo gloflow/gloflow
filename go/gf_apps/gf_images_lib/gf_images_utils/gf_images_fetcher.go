@@ -109,11 +109,11 @@ func Download_file(p_image_url_str string,
 	}
 	defer gf_http_fetch.Resp.Body.Close()
 	//-----------------------
-	//STATUS_CODE CHECK
+	// STATUS_CODE CHECK
 
-	//IMPORTANT!! - check if the reponse is as expected
-	//				"2" - 2xx - response success
-	//              "3" - 3xx - response redirection
+	// IMPORTANT!! - check if the reponse is as expected
+	// 	  			 "2" - 2xx - response success
+	//               "3" - 3xx - response redirection
 	if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
 
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -155,7 +155,7 @@ func Download_file(p_image_url_str string,
 	p_runtime_sys.Log_fun("INFO", "final_url_str - "+final_url_str)
 
 	//--------------
-	//WRITE TO FILE
+	// WRITE TO FILE
 	fmt.Printf("p_local_image_file_path_str - %s\n", p_local_image_file_path_str)
 
 	out, c_err := os.Create(p_local_image_file_path_str)
@@ -180,6 +180,7 @@ func Download_file(p_image_url_str string,
 			cp_err, "gf_images_utils", p_runtime_sys)
 		return gf_err
 	}
+	
 	//--------------
 
 	return nil

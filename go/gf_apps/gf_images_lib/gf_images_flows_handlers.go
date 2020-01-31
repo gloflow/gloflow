@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib
 
 import (
+	"fmt"
 	"time"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -34,7 +35,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
 
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 
 	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
@@ -60,12 +61,13 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	
 	//-------------------------------------------------
 	http.HandleFunc("/images/flows/add_img", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/add_img ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
+
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
@@ -75,14 +77,14 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) //if image is from a page, the url of the page
 			client_type_str           := i_map["client_type_str"].(string)
 
-			//flow_name_str := "general" //i["flow_name_str"].(string) //DEPRECATED
+			// flow_name_str := "general" //i["flow_name_str"].(string) //DEPRECATED
 			flows_names_lst := []string{}
-			for _,s := range i_map["flows_names_lst"].([]interface{}) {
+			for _, s := range i_map["flows_names_lst"].([]interface{}) {
 				flows_names_lst = append(flows_names_lst, s.(string))
 			}
 			//--------------------------
 
-			running_job_id_str,thumb_small_relative_url_str,image_id_str,n_gf_err := Flows__add_extern_image(image_extern_url_str,
+			running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := Flows__add_extern_image(image_extern_url_str,
 				image_origin_page_url_str,
 				flows_names_lst,
 				client_type_str,
@@ -96,7 +98,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 				return
 			}
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			
 			data_map := map[string]interface{}{
 				"images_job_id_str":                running_job_id_str,
@@ -112,18 +114,19 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}()
 		}
 	})
+
 	//-------------------------------------------------
-	//IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
-	//                         if the image url has already been fetched/transformed and gf_image exists for it
+	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
+	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
 	http.HandleFunc("/images/flows/imgs_exist", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/imgs_exist ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
@@ -131,7 +134,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 
 			images_extern_urls__untyped_lst := i_map["images_extern_urls_lst"].([]interface{})
 			images_extern_urls_lst          := []string{}
-			for _,u := range images_extern_urls__untyped_lst {
+			for _, u := range images_extern_urls__untyped_lst {
 				u_str                 := u.(string)
 				images_extern_urls_lst = append(images_extern_urls_lst, u_str)
 			}
@@ -148,7 +151,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 				return
 			}
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			
 			data_map := map[string]interface{}{
 				"existing_images_lst": existing_images_lst,
@@ -163,26 +166,29 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 		}
 	})
 	//-------------------------------------------------
-	//FLOWS_BROWSER
+	// FLOWS_BROWSER
 	//-------------------------------------------------
 	http.HandleFunc("/images/flows/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/flows/browser ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
+
 		if p_req.Method == "GET" {
 
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
+			//------------------
+			// INPUT
 			qs_map := p_req.URL.Query()
 
 			flow_name_str := "general" //default
-			if a_lst,ok := qs_map["fname"]; ok {
+			if a_lst, ok := qs_map["fname"]; ok {
 				flow_name_str = a_lst[0]
 			}
 
 			//------------------
-			//RENDER_TEMPLATE
+			// RENDER_TEMPLATE
 			gf_err := flows__render_initial_page(flow_name_str,
-				3,  //p_initial_pages_num_int int,
-				10, //p_page_size_int int,
+				3,  // p_initial_pages_num_int int,
+				10, // p_page_size_int int,
 				gf_templates.flows_browser__tmpl,
 				gf_templates.flows_browser__subtemplates_names_lst,
 				p_resp,
@@ -200,10 +206,10 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 		}
 	})
 	//-------------------------------------------------
-	//GET_BROWSER_PAGE (slice of posts data series)
+	// GET_BROWSER_PAGE (slice of posts data series)
 	http.HandleFunc("/images/flows/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
 
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/flows/browser_page ----------")
 		if p_req.Method == "GET" {
 
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -215,10 +221,10 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}
 
 			//--------------------
-			//OUTPUT
+			// OUTPUT
 			
 			data_map := map[string]interface{}{
-				"pages_lst":pages_lst,
+				"pages_lst": pages_lst,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 			//------------------

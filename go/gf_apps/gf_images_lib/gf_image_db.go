@@ -27,16 +27,34 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //---------------------------------------------------
-func DB__get_random_imgs_range(p_imgs_num_to_get_int int, //5
-	p_max_random_cursor_position_int int, //2000
+func DB__put_image_upload_info(p_image_upload_info *Gf_image_upload_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+
+
+	err := p_runtime_sys.Mongodb_coll.Insert(p_image_upload_info)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
+			"mongodb_insert_error",
+			map[string]interface{}{"upload_gf_image_id_str": p_image_upload_info.Upload_gf_image_id_str,},
+			err, "gf_images_lib", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
+	p_max_random_cursor_position_int int, // 2000
 	p_flow_name_str                  string,
-	p_runtime_sys                    *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image,*gf_core.Gf_error) {
+	p_runtime_sys                    *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_db.DB__get_random_imgs_range()")
 
 	rand.Seed(time.Now().Unix())
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
-	p_runtime_sys.Log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	p_runtime_sys.Log_fun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 	var imgs_lst []*gf_images_utils.Gf_image
 	err := p_runtime_sys.Mongodb_coll.Find(bson.M{

@@ -34,12 +34,12 @@ import (
 type Gf_image_id string
 
 //---------------------------------------------------
-//CREATES_ID
+// CREATES_ID
 func Image_ID__create_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create_from_url()")
 	
-	//urlparse() - used so that any possible url query parameters are not used in the 
-	//             os.path.basename() result
+	// urlparse() - used so that any possible url query parameters are not used in the 
+	//              os.path.basename() result
 	url,err := url.Parse(p_image_url_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to create image ID",
@@ -52,8 +52,8 @@ func Image_ID__create_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 	image_path_str      := url.Path
 	image_ext_str       := filepath.Ext(image_path_str)
 	clean_image_ext_str := strings.Trim(strings.ToLower(image_ext_str),".")
-	//image_file_name_str := path.Base(image_path_str)
-	//image_ext_str       := strings.Split(image_file_name_str,".")[1]
+	// image_file_name_str := path.Base(image_path_str)
+	// image_ext_str       := strings.Split(image_file_name_str,".")[1]
 
 	normalized_ext_str,ok := Image__check_image_format(clean_image_ext_str, p_runtime_sys)
 	if !ok {
@@ -61,7 +61,7 @@ func Image_ID__create_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 
 		gf_err := gf_core.Error__create(usr_msg_str,
 			"verify__invalid_image_extension_error",
-			map[string]interface{}{"image_url_str":p_image_url_str,},
+			map[string]interface{}{"image_url_str": p_image_url_str,},
 			err, "gf_images_utils", p_runtime_sys)
 		return "", gf_err
 	}
@@ -72,8 +72,8 @@ func Image_ID__create_from_url(p_image_url_str string, p_runtime_sys *gf_core.Ru
 }
 
 //---------------------------------------------------
-//CREATES_ID
-//p_image_type_str - :String - "jpeg"|"gif"|"png"
+// CREATES_ID
+// p_image_type_str - :String - "jpeg"|"gif"|"png"
 
 func Image_ID__create(p_image_path_str string,
 	p_image_format_str string,
@@ -81,8 +81,9 @@ func Image_ID__create(p_image_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()
-	
-	h.Write([]byte(fmt.Sprint(float64(time.Now().UnixNano())/1000000000.0)))
+		
+	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	h.Write([]byte(fmt.Sprint(current_unix_time_f)))
 	h.Write([]byte(p_image_path_str))
 	h.Write([]byte(p_image_format_str))
 

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_image_editor
 
 import (
+	"fmt"
 	"time"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -32,7 +33,7 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 
 	//---------------------
 	http.HandleFunc("/images/editor/save", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/editor/save ----------")
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

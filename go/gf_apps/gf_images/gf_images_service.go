@@ -47,25 +47,31 @@ func main() {
 		"gif_str":   "./templates",
 	}
 
-	//fmt.Println("AWS------------------------------------------")
-	//fmt.Println(aws_access_key_id_str)
-	//fmt.Println(aws_secret_access_key_str)
-	//fmt.Println(aws_token_str)
+	config_file_path_str := "./config/gf_images_config.yaml"
 
-	//START_SERVICE
+	// fmt.Println("AWS------------------------------------------")
+	// fmt.Println(aws_access_key_id_str)
+	// fmt.Println(aws_secret_access_key_str)
+	// fmt.Println(aws_token_str)
+
+	// START_SERVICE
 	if run__start_service_bool {
 
-		gf_images_lib.Run_service(port_str,
-			mongodb_host_str,
-			mongodb_db_name_str,
-			images_store_local_dir_path_str,
-			images_thumbnails_store_local_dir_path_str,
-			images_main_s3_bucket_name_str,
-			aws_access_key_id_str,
-			aws_secret_access_key_str,
-			aws_token_str,
-			templates_dir_paths_map,
-			nil, //init_done_ch,
+		service_info := &gf_images_lib.Gf_service_info{
+			Port_str:                                   port_str,
+			Mongodb_host_str:                           mongodb_host_str,
+			Mongodb_db_name_str:                        mongodb_db_name_str,
+			Images_store_local_dir_path_str:            images_store_local_dir_path_str,
+			Images_thumbnails_store_local_dir_path_str: images_thumbnails_store_local_dir_path_str,
+			Images_main_s3_bucket_name_str:             images_main_s3_bucket_name_str,
+			AWS_access_key_id_str:                      aws_access_key_id_str,
+			AWS_secret_access_key_str:                  aws_secret_access_key_str,
+			AWS_token_str:                              aws_token_str,
+			Templates_dir_paths_map:                    templates_dir_paths_map,
+			Config_file_path_str:                       config_file_path_str,
+		}
+		gf_images_lib.Run_service(service_info,
+			nil, // init_done_ch,
 			log_fun)
 	}
 }

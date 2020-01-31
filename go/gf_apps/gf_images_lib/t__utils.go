@@ -34,7 +34,7 @@ func T__test_image_job__updates(p_job_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 	//-------------
-	//TEST_JOB_UPDATES
+	// TEST_JOB_UPDATES
 	job_updates_ch := gf_images_jobs.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
 
 	for ;; {
@@ -53,7 +53,7 @@ func T__test_image_job__updates(p_job_id_str string,
 			panic(fmt.Sprintf("job_update is expected to be of type 'ok' but instead is - %s", job_update_type_str))
 		}
 		
-		//test complete
+		// test complete
 		if job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__COMPLETED {
 			break
 		}

@@ -1,0 +1,22 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+uploaded_images_s3_bucket: gf--local--cluster--uploaded--img
+
+#----------------------------
+# flows that dont have a dedicated S3 bucket use this default one
+images_flow_to_s3_bucket_default: gf--local--cluster--img
+
+images_flow_to_s3_bucket:
+  general:    gf--local--cluster--img
+  discovered: gf--local--cluster--discovered--img

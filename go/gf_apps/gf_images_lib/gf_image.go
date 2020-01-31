@@ -38,12 +38,12 @@ func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
 
 		//-----------
 		set := map[string]bool{}
-		for _,t_str := range p_image.Tags_lst {
+		for _, t_str := range p_image.Tags_lst {
 			set[t_str] = true
 		}
 		//-----------
 		list_no_duplicates_lst := []string{}
-		for k_str,_ := range set {
+		for k_str, _ := range set {
 			list_no_duplicates_lst = append(list_no_duplicates_lst, k_str)
 		}
 

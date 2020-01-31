@@ -36,7 +36,7 @@ import (
 //---------------------------------------------------
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
-	p_runtime_sys        *gf_core.Runtime_sys) (image.Image,*gf_core.Gf_error) {
+	p_runtime_sys        *gf_core.Runtime_sys) (image.Image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__load_file()")
 
 	file, fs_err := os.Open(p_image_local_file_path_str)
@@ -47,7 +47,7 @@ func Image__load_file(p_image_local_file_path_str string,
 				"local_image_file_path_str": p_image_local_file_path_str,
 			},
 			fs_err, "gf_images_utils", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 	defer file.Close()
 
@@ -56,7 +56,7 @@ func Image__load_file(p_image_local_file_path_str string,
 	
 	if p_normalized_ext_str == "png" {
 		//PNG
-		img,img_err = png.Decode(file)
+		img, img_err = png.Decode(file)
 		if img_err != nil {
 			gf_err := gf_core.Error__create("failed to decode PNG file while transforming image",
 				"png_decoding_error",
@@ -64,7 +64,7 @@ func Image__load_file(p_image_local_file_path_str string,
 					"local_image_file_path_str":p_image_local_file_path_str,
 				},
 				img_err, "gf_images_utils", p_runtime_sys)
-			return nil,gf_err
+			return nil, gf_err
 		}
 	} else {
 		//JPEG,etc.
@@ -84,10 +84,11 @@ func Image__load_file(p_image_local_file_path_str string,
 }
 
 //---------------------------------------------------
-//VAR
+// VAR
 //---------------------------------------------------
-func Get_image_original_filename_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_original_filename_from_url()")
+func Get_image_original_filename_from_url(p_image_url_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
 
 	url,err := url.Parse(p_image_url_str)
 	if err != nil {
@@ -110,7 +111,7 @@ func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 	p_runtime_sys                     *gf_core.Runtime_sys) (string, Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Create_gf_image_file_path_from_url()")
 
-	//IMPORTANT!! - gf_image_id can be supplied externally. if its not supplied then a new gf_image_id is generated
+	// IMPORTANT!! - gf_image_id can be supplied externally. if its not supplied then a new gf_image_id is generated
 	var gf_image_id_str Gf_image_id
 	if p_gf_image_id_str == "" {
 		new_gf_image_id_str, _ := Image_ID__create_from_url(p_image_url_str, p_runtime_sys)
@@ -124,8 +125,8 @@ func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 		return "", "", gf_err
 	}
 
-	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
-	//              instead of the old original_image naming scheme.
+	// IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
+	//               instead of the old original_image naming scheme.
 	local_image_file_name_str := fmt.Sprintf("%s.%s", gf_image_id_str, ext_str)
 	local_image_file_path_str := fmt.Sprintf("%s/%s", p_images_store_local_dir_path_str, local_image_file_name_str)
 
@@ -137,7 +138,7 @@ func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 //---------------------------------------------------
 func Get_image_title_from_url(p_image_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_title_from_url()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_title_from_url()")
 	
 	url,err := url.Parse(p_image_url_str)
 	if err != nil {
@@ -156,7 +157,7 @@ func Get_image_title_from_url(p_image_url_str string,
 
 //---------------------------------------------------
 func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.Runtime_sys) (int,int) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_dimensions__from_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_image()")
 
 	p          := p_img.Bounds()
 	width_int  := p.Max.X - p.Min.X
@@ -165,7 +166,8 @@ func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.
 }
 
 //---------------------------------------------------
-func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
+func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (int, int, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_filepath()")
 
 	//-------------------
@@ -195,36 +197,36 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string, p_r
 //---------------------------------------------------
 func Get_image_dimensions__from_file(p_file io.Reader,
 	p_img_extension_str string,
-	p_runtime_sys       *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_dimensions__from_file()")
+	p_runtime_sys       *gf_core.Runtime_sys) (int, int, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_file()")
 
 	var image_config image.Config
 	var config_err   error
 
 	//-------------------
-	//JPEG
+	// JPEG
 	if p_img_extension_str == "jpeg" {
 		image_config, config_err = jpeg.DecodeConfig(p_file)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for JPEG image file to get image dimensions",
 				"image_decoding_config_error",
-				map[string]interface{}{"img_extension_str":p_img_extension_str,},
+				map[string]interface{}{"img_extension_str": p_img_extension_str,},
 				config_err, "gf_images_utils", p_runtime_sys)
 			return 0, 0, gf_err
 		}
 	//-------------------
-	//PNG
+	// PNG
 	} else if p_img_extension_str == "png" {
 		image_config, config_err = png.DecodeConfig(p_file)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for PNG image file to get image dimensions",
 				"image_decoding_config_error",
-				map[string]interface{}{"img_extension_str":p_img_extension_str,},
+				map[string]interface{}{"img_extension_str": p_img_extension_str,},
 				config_err, "gf_images_utils", p_runtime_sys)
 			return 0, 0, gf_err
 		}
 	//-------------------
-	//GENERAL
+	// GENERAL
 	} else {
 		image_config, _, config_err = image.DecodeConfig(p_file)
 		if config_err != nil {
@@ -244,7 +246,8 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 }
 
 //---------------------------------------------------
-func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
+func Get_image_ext_from_url(p_image_url_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
 	
 	fmt.Println("p_image_url_str - "+p_image_url_str)
@@ -255,7 +258,7 @@ func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runti
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to get image extension",
 			"url_parse_error",
-			map[string]interface{}{"image_url_str":p_image_url_str,},
+			map[string]interface{}{"image_url_str": p_image_url_str,},
 			err, "gf_images_utils", p_runtime_sys)
 		return "", gf_err
 	}
@@ -268,36 +271,35 @@ func Get_image_ext_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runti
 	normalized_ext_str,ok := Image__check_image_format(clean_ext_str,p_runtime_sys)
 
 	if !ok {
-		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image url - %s",ext_str,p_image_url_str),
+		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image url - %s", ext_str, p_image_url_str),
 			"verify__invalid_image_extension_error",
 			map[string]interface{}{
-				"image_url_str":p_image_url_str,
-				"ext_str":      ext_str,
+				"image_url_str": p_image_url_str,
+				"ext_str":       ext_str,
 			},
 			nil, "gf_images_utils", p_runtime_sys)
 		return "", gf_err
 	}
 
-
 	return normalized_ext_str,nil
 }
 
 //---------------------------------------------------	
-func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runtime_sys) (string,bool) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Image__check_image_format()")
+func Image__check_image_format(p_format_str string, p_runtime_sys *gf_core.Runtime_sys) (string, bool) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__check_image_format()")
 	
 	if p_format_str != "jpeg" && 
 		p_format_str != "jpg" &&
 		p_format_str != "gif" &&
 		p_format_str != "png" {
 
-		//IMPORTANT!! - format is not a valid image format, so 'false' is returned
+		// IMPORTANT!! - format is not a valid image format, so 'false' is returned
 		return p_format_str, false
 	}
 
 	var normalized_format_str string
 
-	//normalize "jpg" (variation on jpeg) to "jpeg"
+	// normalize "jpg" (variation on jpeg) to "jpeg"
 	if p_format_str == "jpg" {
 		normalized_format_str = "jpeg"
 	} else {

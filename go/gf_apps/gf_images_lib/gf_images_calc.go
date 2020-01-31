@@ -23,6 +23,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Browser__job_run_result struct {
 	Id                           bson.ObjectId `bson:"_id,omitempty"`

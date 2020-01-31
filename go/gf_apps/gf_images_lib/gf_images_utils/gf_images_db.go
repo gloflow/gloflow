@@ -30,9 +30,9 @@ func DB__put_image(p_image *Gf_image,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__put_image()")
 	
-	//spec          - a dict specifying elements which must be present for a document to be updated
-	//upsert = True - insert doc if it doesnt exist, else just update
-	_,err := p_runtime_sys.Mongodb_coll.Upsert(bson.M{"t": "img","id_str": p_image.Id_str,}, p_image)
+	// spec          - a dict specifying elements which must be present for a document to be updated
+	// upsert = True - insert doc if it doesnt exist, else just update
+	_, err := p_runtime_sys.Mongodb_coll.Upsert(bson.M{"t": "img","id_str": p_image.Id_str,}, p_image)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
 			"mongodb_update_error",
