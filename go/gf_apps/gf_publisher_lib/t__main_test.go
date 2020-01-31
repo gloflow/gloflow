@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //---------------------------------------------------
@@ -49,10 +50,9 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_db_name_str := "gf_tests"
 
 	test__http_server_host_str      := "localhost:8000"
-	test__images_local_dir_path_str := "./tests_data"
+	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
-	test__s3_bucket_name_str               := "gf--test--img"
-
+	test__config_file_path_str             := "./../gf_images_lib/test_config/gf_images_config.yaml"
 
 	// IMPORTANT!! - test images that are referenced and fetched from "http://%s/filename.jpeg"
 	//               are served by a Py HTTP server (started by gf_tests.py), and those files are served
@@ -97,10 +97,20 @@ func Test__main(p_test *testing.T) {
 	// S3
 	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
 	//-------------
+
+
+	// CONFIG
+	img_config, gf_err := gf_images_utils.Config__get(test__config_file_path_str, runtime_sys)
+	if gf_err != nil {
+		return
+	}
+
+	//-------------
+
 	// GF_IMAGES_LIB JOBS_MNGR
 	jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
 		test__images_thumbs_local_dir_path_str,
-		test__s3_bucket_name_str,
+		img_config,
 		gf_s3_test_info.Gf_s3_info,
 		runtime_sys)
 

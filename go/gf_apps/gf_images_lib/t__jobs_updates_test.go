@@ -40,7 +40,7 @@ func Test__jobs_updates(p_test *testing.T) {
 	test__gf_images_service_port_str       := "8010"
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
-	test__s3_bucket_name_str               := "gf--test--img"
+	// test__s3_bucket_name_str               := "gf--test--img"
 	
 	test__image_flows_names_lst            := []string{"test_flow",}
 	test__image_url_str                    := fmt.Sprintf("http://%s/test_image_01.jpeg", test__http_server_host_str)
@@ -79,13 +79,6 @@ func Test__jobs_updates(p_test *testing.T) {
 		return
 	}
 
-	// //-------------
-	// // CONFIG
-	// img_config, gf_err := Config__get(config_file_path_str, runtime_sys)
-	// if gf_err != nil {
-	// 	return
-	// }
-
 	//-------------
 	// S3
 	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
@@ -107,7 +100,7 @@ func Test__jobs_updates(p_test *testing.T) {
 		Mongodb_db_name_str:                        test__mongodb_db_name_str,
 		Images_store_local_dir_path_str:            test__images_local_dir_path_str,
 		Images_thumbnails_store_local_dir_path_str: test__images_thumbs_local_dir_path_str,
-		Images_main_s3_bucket_name_str:             test__s3_bucket_name_str,
+		Images_main_s3_bucket_name_str:             img_config.Images_flow_to_s3_bucket_default_str, // test__s3_bucket_name_str,
 		AWS_access_key_id_str:                      gf_s3_test_info.Aws_access_key_id_str,
 		AWS_secret_access_key_str:                  gf_s3_test_info.Aws_secret_access_key_str,
 		AWS_token_str:                              gf_s3_test_info.Aws_token_str,
