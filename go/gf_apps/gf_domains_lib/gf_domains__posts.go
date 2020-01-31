@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_domains_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"net/url"
 	"github.com/globalsign/mgo/bson"
-	"github.com/fatih/color"
+	// "github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //---------------------------------------------------
@@ -100,9 +100,9 @@ type Gf_domain_posts struct {
 func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_posts, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
 
-	cyan   := color.New(color.FgCyan).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-	p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
+	// cyan   := color.New(color.FgCyan).SprintFunc()
+	// yellow := color.New(color.FgYellow).SprintFunc()
+	// p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
 	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
 
@@ -179,7 +179,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 		domain_posts_lst = append(domain_posts_lst, domain_posts)
 	}
 
-	p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
+	// p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
 	//---------------
 
 	return domain_posts_lst, nil

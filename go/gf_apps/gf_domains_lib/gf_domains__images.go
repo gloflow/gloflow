@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_domains_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"strings"
 	"net/url"
 	"github.com/globalsign/mgo/bson"
@@ -138,7 +138,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_
 		domain_images_lst = append(domain_images_lst,v)
 	}
 
-	p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> DOMAIN_IMAGES FOUND - ")+cyan(fmt.Sprint(len(domain_images_lst))))
+	// p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> DOMAIN_IMAGES FOUND - ")+cyan(fmt.Sprint(len(domain_images_lst))))
 	//----------------------
 
 	return domain_images_lst,nil

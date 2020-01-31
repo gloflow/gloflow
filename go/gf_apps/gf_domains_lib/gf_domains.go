@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/globalsign/mgo/bson"
-	"github.com/fatih/color"
+	// "github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
@@ -95,7 +95,7 @@ func Discover_domains_in_db(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_erro
 func accumulate_domains(p_posts_domains_lst []Gf_domain_posts,
 	p_images_domains_lst []Gf_domain_images,
 	p_runtime_sys        *gf_core.Runtime_sys) map[string]Gf_domain {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains.accumulate_domains()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains.accumulate_domains()")
 
 	domains_map := map[string]Gf_domain{}
 
@@ -150,16 +150,16 @@ func accumulate_domains(p_posts_domains_lst []Gf_domain_posts,
 //--------------------------------------------------
 func db__persist_domains(p_domains_map map[string]Gf_domain,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains.db__persist_domains()")
+	//p_runtime_sys.Log_fun("FUN_ENTER","gf_domains.db__persist_domains()")
 
-	cyan   := color.New(color.FgCyan).SprintFunc()
-	yellow := color.New(color.FgYellow).SprintFunc()
-	white  := color.New(color.FgWhite).SprintFunc()
+	// cyan   := color.New(color.FgCyan).SprintFunc()
+	// yellow := color.New(color.FgYellow).SprintFunc()
+	// white  := color.New(color.FgWhite).SprintFunc()
 
 	i := 0
 	for _, d := range p_domains_map {
 
-		p_runtime_sys.Log_fun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
+		// p_runtime_sys.Log_fun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
 
 		//IMPORTANT!! -  finds a single document matching the provided selector document 
 		//               and modifies it according to the update document. If no document 

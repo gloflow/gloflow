@@ -102,6 +102,9 @@ func error__get_defs() map[string]error_def {
 		"file_buffer_copy_error": error_def{
 			Descr_str: "using a file as a source/target of a buffer copy failed - (io.Copy(),etc.)",
 		},
+		"file_stat_error": error_def{
+			Descr_str: "getting info on a file via a stat() system call (golang API or CLI) failed - (os.Stat())",
+		},
 		"dir_list_error": error_def{
 			Descr_str: "failed to list contents of a dir in the FS",
 		},
@@ -219,8 +222,14 @@ func error__get_defs() map[string]error_def {
 		"s3_file_upload_error": {
 			Descr_str: "failed to upload a file to S3 bucket",
 		},
+		"s3_file_upload_url_presign_error": {
+			Descr_str: "failed to get a presigned URL for uploading a file to S3 bucket",
+		},
 		"s3_file_copy_error": {
 			Descr_str: "failed to copy a file within S3",
+		},
+		"s3_file_download_error": {
+			Descr_str: "failed to download a file from S3 to a local FS",
 		},
 		//---------------
 		// HTML_PARSING

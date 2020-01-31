@@ -22,17 +22,58 @@ package gf_core
 import (
 	"fmt"
 	"context"
+	"syscall"
+	"errors"
+	"net/http"
+	"time"
 	"github.com/olivere/elastic"
 )
+
+//-------------------------------------------------
+// ELASTICSEARCH_CONNECTION_RETRY
+type Gf_elasticsearch_retrier struct {
+	backoff elastic.Backoff
+}
+
+func new_gf_elasticsearch_retrier() *Gf_elasticsearch_retrier {
+	return &Gf_elasticsearch_retrier{
+		backoff: elastic.NewExponentialBackoff(10 * time.Millisecond, 8 * time.Second),
+	}
+}
+
+func (p_retrier *Gf_elasticsearch_retrier) Retry(p_ctx context.Context,
+	p_retry_int int,
+	p_req       *http.Request,
+	p_resp      *http.Response,
+	p_err       error) (time.Duration, bool, error) {
+
+	// dont attempt to retry if a connection is refused
+	if p_err == syscall.ECONNREFUSED {
+		return 0, false, errors.New("elasticsearch server or network is down")
+	}
+
+	// stop retries after a certain number of them has already happened
+	if p_retry_int >= 5 {
+		return 0, false, nil
+	}
+
+	// have retirer determine the next wait period
+	wait, stop_bool := p_retrier.backoff.Next(p_retry_int)
+	return wait, stop_bool, nil
+}
 
 //-------------------------------------------------
 func Elastic__get_client(p_es_host_str string, p_runtime_sys *Runtime_sys) (*elastic.Client, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
 
 	//es_host_str := "127.0.0.1:9200"
-	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("es_host_str - %s", p_es_host_str))
+	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("es_host - %s", p_es_host_str))
 
-	elasticsearch_client, err := elastic.NewClient(elastic.SetURL(fmt.Sprintf("http://%s", p_es_host_str)))
+	url_str := fmt.Sprintf("http://%s", p_es_host_str)
+
+	elasticsearch_client, err := elastic.NewClient(elastic.SetURL(url_str),
+		elastic.SetRetrier(new_gf_elasticsearch_retrier()))
+
 	if err != nil {
 		gf_err := Error__create("failed to create an ElasticSearch client",
 			"elasticsearch_get_client",

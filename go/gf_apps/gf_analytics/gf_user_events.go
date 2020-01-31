@@ -64,9 +64,9 @@ func user_event__parse_input(p_req *http.Request,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_user_events.user_event__parse_input()")
 
 	//--------------------
-	input            := Gf_user_event_input{}
-	body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-	err              := json.Unmarshal(body_bytes_lst, &input)
+	input             := Gf_user_event_input{}
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	err               := json.Unmarshal(body_bytes_lst, &input)
 	//--------------------
 	session_id_str := session__get_id_cookie(p_req, p_resp, p_runtime_sys)
 	//--------------------
