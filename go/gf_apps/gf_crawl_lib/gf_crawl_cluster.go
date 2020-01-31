@@ -176,8 +176,8 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 		if p_req.Method == "POST" {
 
 			var imgs_refs_lst []gf_crawl_core.Gf_crawler_page_image_ref
-			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-			err              := json.Unmarshal(body_bytes_lst,&imgs_refs_lst)
+			body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+			err               := json.Unmarshal(body_bytes_lst,&imgs_refs_lst)
 			if err != nil {
 				panic(err)
 				return
@@ -202,14 +202,14 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 
 			if crawler, ok := crawlers_map[crawler_name_str]; ok {
 
-				//domains_lst := crawler.Domains_lst
+				// domains_lst := crawler.Domains_lst
 
 				unresolved_link, gf_err := gf_crawl_core.Link__db_get_unresolved(crawler.Name_str, p_runtime_sys)
 				if gf_err != nil {
 					return
 				}
 				//------------------
-				//OUTPUT
+				// OUTPUT
 				
 				r_map := map[string]interface{}{
 					"status_str":      "OK",
@@ -232,10 +232,10 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 		if p_req.Method == "GET" {
 
 			//---------------------
-			//INPUT
+			// INPUT
 			var input Gf_json_msg__link__get_unresolved
-			body_bytes_lst,_ := ioutil.ReadAll(p_req.Body)
-			err              := json.Unmarshal(body_bytes_lst, &input)
+			body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+			err               := json.Unmarshal(body_bytes_lst, &input)
 			if err != nil {
 				panic(err)
 				return 
@@ -256,7 +256,7 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 			}
 
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			
 			r_map := map[string]interface{}{
 				"status_str": "OK",

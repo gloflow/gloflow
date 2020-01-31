@@ -29,9 +29,9 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 	p_log_fun("FUN_ENTER", "gf_publisher_cli.CLI__parse_args()")
 
 	//-------------------
-	run__start_service_bool         := flag.Bool("run__start_service",               true,                      "run the service daemon")
-	port_str                        := flag.String("port",                           "2020",                    "port for the service to use")
-	gf_images_service_host_port_str := flag.String("gf_images_service_host_port_str","gf_images_service_1:3050","gf_images service host")
+	run__start_service_bool         := flag.Bool("run__start_service",                true,                       "run the service daemon")
+	port_str                        := flag.String("port",                            "2020",                     "port for the service to use")
+	gf_images_service_host_port_str := flag.String("gf_images_service_host_port_str", "gf_images_service_1:3050", "gf_images service host")
 	
 	// MONGODB
 	mongodb_host_str                := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")

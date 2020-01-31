@@ -165,7 +165,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	//POST_STATUS
 	
 	http.HandleFunc("/posts/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/status ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/status ----------")
 	})
 	//---------------------
 	/*http.HandleFunc("/posts/create_with_updates",func(p_resp http.ResponseWriter,
@@ -174,11 +174,11 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		})*/
 
 	http.HandleFunc("/posts/update", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/update ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/update ----------")
 	})
 
 	http.HandleFunc("/posts/delete", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/delete ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/delete ----------")
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -204,25 +204,25 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//POSTS_BROWSER
+	// POSTS_BROWSER
 	http.HandleFunc("/posts/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/browser ----------")
 
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------
-			//response_format_str - "json"|"html"
+			// response_format_str - "json"|"html"
 
 			qs_map := p_req.URL.Query()
 
-			//response_format_str - "j"(for json)|"h"(for html)
+			// response_format_str - "j"(for json)|"h"(for html)
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 			//--------------------
 
 			gf_err := Render_initial_pages(response_format_str,
-				6, //p_initial_pages_num_int int
-				5, //p_page_size_int
+				6, // p_initial_pages_num_int int
+				5, // p_page_size_int
 				gf_templates.posts_browser__tmpl,
 				gf_templates.posts_browser__subtemplates_names_lst,
 				p_resp,
@@ -243,7 +243,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//GET_BROWSER_PAGE (slice of posts data series)
+	// GET_BROWSER_PAGE (slice of posts data series)
 	http.HandleFunc("/posts/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/browser_page ----------")
 
@@ -251,7 +251,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 			
 			//--------------------
-			//INPUT
+			// INPUT
 
 			qs_map := p_req.URL.Query()
 
@@ -299,7 +299,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}
 
 			//------------
-			//JSON RESPONSE
+			// JSON RESPONSE
 
 			r_lst,_ := json.Marshal(serialized_pages_lst)
 			r_str   := string(r_lst)
@@ -314,7 +314,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//POSTS_ELEMENTS
+	// POSTS_ELEMENTS
 	http.HandleFunc("/posts_elements/create", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 

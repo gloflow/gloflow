@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 func main() {
 	log_fun := gf_core.Init_log_fun()
@@ -44,44 +45,46 @@ func main() {
 			log_fun)
 	}
 }
+
 //-------------------------------------------------
-func parse__cli_args(p_log_fun func(string,string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER","gf_landing_page_service.parse__cli_args()")
+func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
+	p_log_fun("FUN_ENTER", "gf_landing_page_service.parse__cli_args()")
 
 	//-------------------
-	run__start_service_bool := flag.Bool("run__start_service",true,       "run the service daemon")
-	port_str                := flag.String("port",            "2000",     "port for the service to use")
-	mongodb_host_str        := flag.String("mongodb_host",    "127.0.0.1","host of mongodb to use")
-	mongodb_db_name_str     := flag.String("mongodb_db_name", "prod_db",  "DB name to use")
+	run__start_service_bool := flag.Bool("run__start_service", true,        "run the service daemon")
+	port_str                := flag.String("port",             "2000",      "port for the service to use")
+	mongodb_host_str        := flag.String("mongodb_host",     "127.0.0.1", "host of mongodb to use")
+	mongodb_db_name_str     := flag.String("mongodb_db_name",  "prod_db",   "DB name to use")
 	//-------------------
 	flag.Parse()
 
 	return map[string]interface{}{
-		"run__start_service_bool":*run__start_service_bool,
-		"port_str":               *port_str,
-		"mongodb_host_str":       *mongodb_host_str,
-		"mongodb_db_name_str":    *mongodb_db_name_str,
+		"run__start_service_bool": *run__start_service_bool,
+		"port_str":                *port_str,
+		"mongodb_host_str":        *mongodb_host_str,
+		"mongodb_db_name_str":     *mongodb_db_name_str,
 	}
 }
+
 //-------------------------------------------------
 func Run_service__in_process(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
-	p_log_fun             func(string,string)) {
-	p_log_fun("FUN_ENTER","gf_landing_page_service.Run_service__in_process()")
+	p_log_fun             func(string, string)) {
+	p_log_fun("FUN_ENTER", "gf_landing_page_service.Run_service__in_process()")
 
-	p_log_fun("INFO","")
-	p_log_fun("INFO"," >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
-	p_log_fun("INFO","")
+	p_log_fun("INFO", "")
+	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
+	p_log_fun("INFO", "")
 
 	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str:"gf_landing_page",
-		Log_fun:         p_log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_landing_page",
+		Log_fun:          p_log_fun,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//------------------------
 	//STATIC FILES SERVING
@@ -101,14 +104,14 @@ func Run_service__in_process(p_port_str string,
 	}
 	//----------------------
 
-	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
-	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_port_str,nil)
+	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
+	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.Log_fun("ERROR",msg_str)
-		runtime_sys.Log_fun("ERROR",fmt.Sprint(http_err))
+		runtime_sys.Log_fun("ERROR", msg_str)
+		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

@@ -23,13 +23,14 @@ import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------
-//TAGS
+// TAGS
 //------------------------------------------
 func Add_tags_to_post_in_db(p_post_title_str string,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.Add_tags_to_post_in_db()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.Add_tags_to_post_in_db()")
 	
 	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
 	if gf_err != nil {
@@ -37,7 +38,7 @@ func Add_tags_to_post_in_db(p_post_title_str string,
 	}
 
 	add_tags_to_post(post, p_tags_lst, p_runtime_sys)
-	fmt.Println(fmt.Sprintf(" --------- post tags - %s",post.Tags_lst))
+	fmt.Println(fmt.Sprintf(" --------- post tags - %s", post.Tags_lst))
 
 	gf_err = DB__update_post(post, p_runtime_sys)
 	if gf_err != nil {
@@ -46,11 +47,12 @@ func Add_tags_to_post_in_db(p_post_title_str string,
 
 	return post, nil
 }
+
 //------------------------------------------
 func add_tags_to_post(p_post *Gf_post,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.add_tags_to_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
 		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
@@ -77,12 +79,13 @@ func add_tags_to_post(p_post *Gf_post,
 		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
 	}
 }
+
 //---------------------------------------------------
 func get_posts_small_thumbnails_urls(p_posts_lst []*Gf_post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}
-	for _,post := range p_posts_lst {
+	for _, post := range p_posts_lst {
 
 		post_small_thumbnails_urls_lst := []string{}
 		for _,post_element := range post.Post_elements_lst {
@@ -94,6 +97,7 @@ func get_posts_small_thumbnails_urls(p_posts_lst []*Gf_post, p_runtime_sys *gf_c
 	}
 	return posts_small_thumbnails_urls_map
 }
+
 /*//------------------------------------------
 //VARIOUS
 //---------------------------------------------------

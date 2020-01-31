@@ -32,21 +32,25 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 
 	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 	//--------------
-	//USER_EVENT
+	// USER_EVENT
 	http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST --- /a/ue")
 
-		if p_req.Method == "OPTIONS" {
-			p_resp.Header().Set("Access-Control-Allow-Origin","*")
-			p_resp.Header().Set("Access-Control-Allow-Origin","Origin, X-Requested-With, Content-Type, Accept")
-		}
+		// CORS - preflight request
+		gf_rpc_lib.Http_CORS_preflight_handle(p_req, p_resp)
+		// if p_req.Method == "OPTIONS" {
+		// 	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+		// 	p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
+		// }
+		
+		
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -57,7 +61,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			cookies_lst := p_req.Cookies()
 			cookies_str := gf_core.HTTP__serialize_cookies(cookies_lst,p_runtime_sys)
 			//-----------------
-			//BROWSER INFORMATION
+			// BROWSER INFORMATION
 			user_agent_str := p_req.UserAgent()
 			user_agent     := uaparser.Parse(user_agent_str)
 
@@ -71,7 +75,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			os_name_str    := user_agent.OS.Name
 			os_version_str := user_agent.OS.Version
 			//-----------------
-			//INPUT
+			// INPUT
 			input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
 			if gf_err != nil {
 				//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
@@ -92,8 +96,8 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 
 			gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
 			if gf_err != nil {
-				//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
-				//              this handler should be fire-and-forget from the users/clients perspective.
+				// IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
+				//               this handler should be fire-and-forget from the users/clients perspective.
 				return
 			}
 			//-----------------
@@ -113,7 +117,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------
-			//RENDER TEMPLATE
+			// RENDER TEMPLATE
 			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
 				p_resp,

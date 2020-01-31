@@ -24,7 +24,6 @@ package gf_crawl_core
 
 import (
 	"fmt"
-	"path/filepath"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
@@ -157,10 +156,10 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		fmt.Printf("t_medium_s3_path_str      - %s\n", t_medium_s3_path_str)
 		fmt.Printf("t_large_s3_path_str       - %s\n", t_large_s3_path_str)
 
-		//ADD!! - copy t_small_s3_path_str first, and then copy original_file_s3_path_str and medium/large thumb in separate goroutines
-		//        (in parallel and after the response returns back to the user). 
-		//        this is critical to improve perceived user response time, since the small thumb is necessary to view an image in flows, 
-		//        but the original_file and medium/large thumbs are not (and can take much longer to S3 copy without the user noticing).
+		// ADD!! - copy t_small_s3_path_str first, and then copy original_file_s3_path_str and medium/large thumb in separate goroutines
+		//         (in parallel and after the response returns back to the user). 
+		//         this is critical to improve perceived user response time, since the small thumb is necessary to view an image in flows, 
+		//         but the original_file and medium/large thumbs are not (and can take much longer to S3 copy without the user noticing).
 		files_to_copy_lst := []string{
 			original_file_s3_path_str,
 			t_small_s3_path_str, 
@@ -170,15 +169,16 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		
 		for _, s3_path_str := range files_to_copy_lst {
 
-			//IMPORTANT!! - the Crawler_page_img has alread been uploaded to S3, so we dont need 
-			//              to download it from S3 and reupload to gf_images S3 bucket. Instead we do 
-			//              a file copy operation within the S3 system without downloading here.
+			// IMPORTANT!! - the Crawler_page_img has alread been uploaded to S3, so we dont need 
+			//               to download it from S3 and reupload to gf_images S3 bucket. Instead we do 
+			//               a file copy operation within the S3 system without downloading here.
 
-			source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", source_gf_crawl_s3_bucket_str, s3_path_str))
+			// source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", source_gf_crawl_s3_bucket_str, s3_path_str))
 
-			gf_err := gf_core.S3__copy_file(p_gf_images_s3_bucket_name_str, //p_target_bucket_name_str,
-				source_bucket_and_file__s3_path_str, //p_source_file__s3_path_str
-				s3_path_str,                         //p_target_file__s3_path_str
+			gf_err := gf_core.S3__copy_file(source_gf_crawl_s3_bucket_str, // p_source_file__s3_path_str
+				s3_path_str,
+				p_gf_images_s3_bucket_name_str, // p_target_bucket_name_str,
+				s3_path_str,                    // p_target_file__s3_path_str
 				p_runtime.S3_info,
 				p_runtime_sys)
 			if gf_err != nil {
