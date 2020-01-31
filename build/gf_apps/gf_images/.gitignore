@@ -1,7 +1,6 @@
 
 
 
-*
-!.gitignore
-!Dockerfile
-!supervisor.conf
+templates/
+static/
+gf_images_service
