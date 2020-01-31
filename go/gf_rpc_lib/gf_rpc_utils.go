@@ -76,6 +76,17 @@ func Get_response_format(p_qs_map map[string][]string,
 }
 
 //-------------------------------------------------
+func Http_CORS_preflight_handle(p_req *http.Request,
+	p_resp http.ResponseWriter) {
+	
+	// CORS - preflight request
+	if p_req.Method == "OPTIONS" {
+		p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+		p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
+	}
+}
+
+//-------------------------------------------------
 func Http_respond(p_data interface{},
 	p_status_str  string,
 	p_resp        http.ResponseWriter,

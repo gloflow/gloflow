@@ -20,14 +20,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"bytes"
+	"bufio"
 	"strings"
+	"io/ioutil"
 	"path/filepath"
 	"encoding/json"
 	"net/http"
-	"bufio"
 	"mime"
 )
 
@@ -41,9 +43,98 @@ type Gf_http_fetch struct {
 	Resp             *http.Response    `bson:"-"`
 }
 
+
+
+//---------------------------------------------------
+// PUT_FILE
+func HTTP__put_file(p_target_url_str string,
+	p_file_path_str string,
+	p_headers_map   map[string]string,
+	p_runtime_sys   *Runtime_sys) (*http.Response, *Gf_error) {
+
+
+
+	// FILE_OPEN
+	f, err := os.Open(p_file_path_str)
+	if err != nil {
+		gf_err := Error__create("failed to open a file on the local FS that is to be sent to AWS S3",
+			"file_open_error",
+			map[string]interface{}{
+				"target_url_str": p_target_url_str,
+				"file_path_str":  p_file_path_str,
+			},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+	buffer := bufio.NewReader(f)
+
+
+
+	req, err := http.NewRequest(http.MethodPut, p_target_url_str, buffer)
+    if err != nil {
+        gf_err := Error__create("failed to create a HTTP PUT request to upload file to S3",
+			"http_client_req_error",
+			map[string]interface{}{
+				"target_url_str": p_target_url_str,
+				"file_path_str":  p_file_path_str,
+			},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	// golang http client sets "Transfer-Encoding": "chunked", 
+	// which is rejected by some servers (AWS, etc.). so here we turn that off.
+	req.TransferEncoding = []string{"identity"}
+
+
+
+	// FILE_SIZE
+	fi, err := os.Stat(p_file_path_str)
+    if err != nil {
+		gf_err := Error__create("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
+			"file_stat_error",
+			map[string]interface{}{
+				"target_url_str": p_target_url_str,
+				"file_path_str":  p_file_path_str,
+			},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+    }
+	req.ContentLength = fi.Size()
+
+
+	// HEADERS
+	for k, v := range p_headers_map {
+    	req.Header.Set(k, v)
+	}
+
+    client := http.Client{}
+
+	p_runtime_sys.Log_fun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
+    resp, err := client.Do(req)
+    if err != nil {
+		gf_err := Error__create("failed to execute a HTTP PUT request to upload file to S3",
+			"http_client_req_error",
+			map[string]interface{}{
+				"target_url_str": p_target_url_str,
+				"file_path_str":  p_file_path_str,
+			},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+    }
+
+
+
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(bodyBytes))
+
+	return resp, nil
+}
+
+
 //---------------------------------------------------
 func HTTP__fetch_url(p_url_str string,
-	p_runtime_sys *Runtime_sys) (*Gf_http_fetch,*Gf_error) {
+	p_runtime_sys *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
 	client := &http.Client{
@@ -73,13 +164,13 @@ func HTTP__fetch_url(p_url_str string,
 		},
 	}
 
-	req, err := http.NewRequest("GET",p_url_str, nil)
+	req, err := http.NewRequest("GET", p_url_str, nil)
 	if err != nil {
 		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	req.Header.Del("User-Agent")
@@ -94,7 +185,7 @@ func HTTP__fetch_url(p_url_str string,
 			"http_client_req_error",
 			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_core", p_runtime_sys)
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	status_code_int := resp.StatusCode
@@ -106,7 +197,7 @@ func HTTP__fetch_url(p_url_str string,
 
 
 	resp_headers_map := map[string]string{}
-	for k,v := range headers_map {
+	for k, v := range headers_map {
 		resp_headers_map[k] = v[0]
 	}
 
@@ -138,12 +229,12 @@ func HTTP__init_static_serving(p_url_base_str string,
 			path_str := p_req.URL.Path
 
 			//remove url_base
-			file_path_str      := strings.Replace(path_str,url_str,"",1) //"1" - just replace one occurance
+			file_path_str      := strings.Replace(path_str, url_str, "", 1) // "1" - just replace one occurance
 			file_ext_str       := filepath.Ext(file_path_str)
 			file_mime_type_str := mime.TypeByExtension(file_ext_str)
 			local_path_str     := "./static/"+file_path_str
 
-			p_resp.Header().Set("Content-Type",file_mime_type_str)
+			p_resp.Header().Set("Content-Type", file_mime_type_str)
 
 			p_runtime_sys.Log_fun("INFO","file_path_str  - "+file_path_str)
 			p_runtime_sys.Log_fun("INFO","local_path_str - "+local_path_str)
@@ -194,7 +285,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 	p_resp.Header().Set("Content-Type",                "text/event-stream")
 	p_resp.Header().Set("Cache-Control",               "no-cache")
 	p_resp.Header().Set("Connection",                  "keep-alive")
-	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+	p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
 	flusher.Flush()
 
