@@ -29,6 +29,7 @@ import gf_web_meta
 
 sys.path.append("%s/utils"%(cwd_str))
 import gf_build
+import gf_build_rust
 import gf_build_changes
 import gf_log
 
@@ -47,7 +48,6 @@ import gf_local_cluster
 
 sys.path.append("%s/gf_builder"%(cwd_str))
 import gf_builder_ops
-import gf_rust
 
 #--------------------------------------------------
 def main():
@@ -92,10 +92,10 @@ def main():
 		assert os.path.isdir(cargo_crate_dir_path_str)
 
 		# BUILD
-		gf_rust.build(cargo_crate_dir_path_str)
+		gf_build_rust.build(cargo_crate_dir_path_str)
 
 
-		gf_rust.prepare_libs(app_name_str,
+		gf_build_rust.prepare_libs(app_name_str,
 			cargo_crate_dir_path_str,
 			app_meta_map["type_str"])
 	#--------------------------------------------------

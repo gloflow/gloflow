@@ -15,11 +15,32 @@ def get():
     # FIX!!       - have an automated way of determening this graph (no time for that right now).
     apps_changes_deps_map = {
         "apps_gf_packages_map": {
-            "gf_images":       ["gf_images",       "gf_images_lib"],
-            "gf_analytics":    ["gf_analytics",    "gf_crawl_lib",     "gf_domains_lib"],
-            "gf_publisher":    ["gf_publisher",    "gf_publisher_lib", "gf_images_lib"],
-            "gf_landing_page": ["gf_landing_page", "gf_images_lib",    "gf_publisher_lib"],
-            #"gf_tagger":       ["gf_images_lib", "gf_publisher_lib", "gf_tagger"],
+
+            "gf_images":[
+                "gf_images",
+                "gf_images_lib",
+            ],
+
+            "gf_analytics": [
+                "gf_analytics",
+                "gf_crawl_lib",
+                "gf_domains_lib"
+            ],
+            "gf_publisher": [
+                "gf_publisher",
+                "gf_publisher_lib",
+                "gf_images_lib"
+            ],
+            "gf_landing_page": [
+                "gf_landing_page",
+                "gf_images_lib",
+                "gf_publisher_lib"
+            ],
+            # "gf_tagger": [
+            #     "gf_images_lib",
+            #     "gf_publisher_lib",
+            #     "gf_tagger"
+            # ],
         },
 
         "system_packages_lst": [

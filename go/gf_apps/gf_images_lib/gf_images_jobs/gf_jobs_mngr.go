@@ -236,8 +236,8 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
 					}
 
-					// // RUST
-					// run_job_rust()
+					// RUST
+					run_job_rust()
 
 				//------------------------
 				// GET_JOB_UPDATE_CH

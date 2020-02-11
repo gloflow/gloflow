@@ -14,6 +14,7 @@ import gf_web_meta
 sys.path.append('%s/../../ops/utils'%(cwd_str))
 import gf_build_changes
 import gf_build
+import gf_build_rust
 import gf_log
 
 sys.path.append('%s/../../ops/tests'%(cwd_str))
@@ -69,6 +70,11 @@ def main():
 			
 		build_apps(changed_apps_files_map)
 
+	#------------------------
+	# BUILD_RUST
+	elif args_map["run"] == "build_rust":
+
+		build_rust()
 	#------------------------
 	# BUILD_CONTAINERS
 	elif args_map["run"] == "build_containers":
@@ -339,7 +345,28 @@ def test_apps(p_changed_apps_files_map):
 						#               so that CI marks the build as failed.
 						p_exit_on_fail_bool = True)
 		#------------------------
+
+#--------------------------------------------------
+# BUILD_RUST
+def build_rust():
+
+	apps_names_lst = [
+		"gf_data_viz",
+		"gf_images_jobs"
+	]
+	build_meta_map = gf_meta.get()["build_info_map"]
 	
+	for app_name_str in apps_names_lst:
+		print("\n\nRUST-------- %s\n\n"%(app_name_str))
+			
+		app_meta_map = build_meta_map[app_name_str]
+		assert app_meta_map["type_str"] == "lib_rust"
+
+		cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
+		assert os.path.dirname(cargo_crate_dir_path_str)
+
+		gf_build_rust.build(cargo_crate_dir_path_str)
+
 #--------------------------------------------------
 # BUILD_APPS
 def build_apps(p_changed_apps_files_map):
@@ -370,35 +397,28 @@ def build_apps(p_changed_apps_files_map):
 			gf_log.log_fun)
 		
 		#------------------------
+		# GO
 		for app_name_str in apps_names_lst:
 
 			app_meta_map = build_meta_map[app_name_str]
 
-			# RUST
-			if app_name_str == "gf_data_viz":
-				cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
+			print("\n\nGO--------\n\n")
+			app_go_path_str        = app_meta_map["go_path_str"]
+			app_go_output_path_str = app_meta_map["go_output_path_str"]
 
-				gf_build.run_rust(cargo_crate_dir_path_str)
-			
-			# GO
-			else:
-				print("\n\nGO--------\n\n")
-				app_go_path_str        = app_meta_map["go_path_str"]
-				app_go_output_path_str = app_meta_map["go_output_path_str"]
+			gf_build.run_go(app_name_str,
+				app_go_path_str,
+				app_go_output_path_str,
 
-				gf_build.run_go(app_name_str,
-					app_go_path_str,
-					app_go_output_path_str,
-
-					# IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
-					#               so all binary dependencies are to be statically linked into the output binary 
-					#               without depending on standard dynamic linking.
-					p_static_bool = True, 
-					
-					# gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
-					# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
-					# to be marked as failed because of the non-zero exit code.
-					p_exit_on_fail_bool = True)
+				# IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
+				#               so all binary dependencies are to be statically linked into the output binary 
+				#               without depending on standard dynamic linking.
+				p_static_bool = True, 
+				
+				# gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
+				# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+				# to be marked as failed because of the non-zero exit code.
+				p_exit_on_fail_bool = True)
 
 		#------------------------
 
@@ -464,6 +484,7 @@ def parse_args():
 		help = '''
 - '''+fg('yellow')+'test'+attr(0)+'''               - run app code tests
 - '''+fg('yellow')+'build'+attr(0)+'''              - build app golang/web code
+- '''+fg('yellow')+'build_rust'+attr(0)+'''         - build app rust code
 - '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
 		''')

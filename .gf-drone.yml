@@ -35,6 +35,20 @@ steps:
   #     - curl http://elasticsearch:9200
 
   #-------------------------------
+  # BUILD_RUST - Rust libs need to be built first, for the test pipeline stage
+  #              to work and be able to properly load Rust compiled GF libs.
+  - name: build_rust
+    image: glofloworg/gf_builder
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
   # TEST
   - name: test
     image: glofloworg/gf_builder
@@ -72,8 +86,8 @@ steps:
         - master
 
   #-------------------------------
-  # BUILD
-  - name: build
+  # BUILD_GO
+  - name: build_go
     image: glofloworg/gf_builder
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
