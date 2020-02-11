@@ -47,6 +47,7 @@ import gf_local_cluster
 
 sys.path.append("%s/gf_builder"%(cwd_str))
 import gf_builder_ops
+import gf_rust
 
 #--------------------------------------------------
 def main():
@@ -78,7 +79,8 @@ def main():
 
 	#--------------------------------------------------
 	def rust_build():
-		assert app_name_str == "gf_data_viz"
+		assert app_name_str == "gf_data_viz" or \
+			app_name_str == "gf_images_jobs"
 
 
 		app_meta_map = build_meta_map[app_name_str]
@@ -89,8 +91,13 @@ def main():
 		cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
 		assert os.path.isdir(cargo_crate_dir_path_str)
 
-		gf_build.run_rust(cargo_crate_dir_path_str)
+		# BUILD
+		gf_rust.build(cargo_crate_dir_path_str)
 
+
+		gf_rust.prepare_libs(app_name_str,
+			cargo_crate_dir_path_str,
+			app_meta_map["type_str"])
 	#--------------------------------------------------
 	# AWS_CREDS
 	def aws_creds_get():

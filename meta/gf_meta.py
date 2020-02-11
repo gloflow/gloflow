@@ -156,6 +156,14 @@ def get():
             },
 
             #-------------
+            # GF_IMAGES_JOBS
+            "gf_images_jobs": {
+                "type_str":                 "lib_rust",
+                "version_str":              "latest",
+                "cargo_crate_dir_path_str": "%s/../rust/gf_images_jobs"%(cwd_str),
+            },
+
+            #-------------
             # GF_DATA_VIZ
             "gf_data_viz": {
                 "type_str":                 "lib_rust",

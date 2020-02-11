@@ -1,0 +1,16 @@
+
+
+[package]
+name = "gf_images_jobs"
+version = "0.1.0"
+authors = ["Ivan Trajkovic <ivan.ebiz@gmail.com>"]
+edition = "2018"
+
+#-------------------------------
+[lib]
+name = "gf_images_jobs"
+
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2.2"

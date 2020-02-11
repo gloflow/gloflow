@@ -75,9 +75,7 @@ fn generate_of_type(p_dataset_name_str :&str,
     
     for i in 0..objs_number_int {
 
-
         draw_rect(p_gf_config, p_gf_runtime_gfx)
-        
     }
 }
 

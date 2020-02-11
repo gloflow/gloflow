@@ -15,11 +15,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
+
 import signal
 import subprocess
 
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 
 #--------------------------------------------------
 def run(p_app_name_str,
@@ -89,11 +91,28 @@ def run(p_app_name_str,
     c = " ".join(cmd_lst)
     print(c)
     #-------------
-
+    # ENV
     e = os.environ.copy()
+    
+    # RUST - add compiled libraries (*.so) build directory path, so that they can
+    #        be loaded at test run time.
+    if "type_str" in p_app_meta_map.keys() and p_app_meta_map["type_str"] == "lib_rust":
+        
+        # LD_LIBRARY_PATH - contains a list of paths that should be searched by the linker when a program starts.
+        e["LD_LIBRARY_PATH"] = os.path.abspath("%s/../../rust/build"%(modd_str))
 
-    # AWS_CREDS
-    e.update(p_aws_s3_creds_map)
+    e["LD_LIBRARY_PATH"] = os.path.abspath("%s/../../rust/build"%(modd_str))
+    
+    print(e)
+    print("")
+    print(modd_str)
+    print("LD_LIBRARY_PATH" in e.keys())
+
+    # print(e["LD_LIBRARY_PATH"])
+    e.update(p_aws_s3_creds_map) # AWS_CREDS
+    #-------------
+
+    # RUN
     p = subprocess.Popen(c.split(' '), stderr=subprocess.PIPE, env=e)
     
     # IMPORTANT!! - stderr is used and read, because thats what contains the log lines from Go programs that has

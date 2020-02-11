@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+/*BosaC.Jan30.2020. <3 volim te zauvek*/
 
 package gf_images_jobs
 
@@ -25,7 +26,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -235,15 +236,12 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
 					}
 
+					// // RUST
+					// run_job_rust()
 
 				//------------------------
 				// GET_JOB_UPDATE_CH
 				case "get_job_update_ch":
-
-					fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-					fmt.Println(job_msg.job_id_str)
-					spew.Dump(running_jobs_map)
-					// panic(1)
 
 					job_id_str := job_msg.job_id_str
 

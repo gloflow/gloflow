@@ -211,7 +211,7 @@ def remove_by_name(p_container_name_str,
 
 #-------------------------------------------------------------
 def remove_by_name_remote(p_container_name_str,
-	p_exit_on_fail_bool = False,
+	p_exit_on_fail_bool = True,
 	p_docker_sudo_bool  = True):
 
 	sudo_str = ""
