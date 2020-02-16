@@ -7,6 +7,10 @@ RUN mkdir /home/gf
 #               "apt" data that is stale and may result in cached IP's that break builds.
 # GIT - used by ./ops/utils/gf_build_changes.py to determine which apps changed.
 # SED - used by gf_builder to inject Git commit hash into Go code.
+
+# libglib2.0-dev - Rust build dependency
+# libcairo2-dev  - Rust build dependency - Cairo 2D drawing lib
+
 RUN apt-get update && \
     apt-get install -y \
     git \
@@ -16,7 +20,9 @@ RUN apt-get update && \
     npm \
     docker.io \
     sed \
-    curl
+    curl \
+    libglib2.0-dev \
+    libcairo2-dev
 
 RUN pip install \
     delegator.py \

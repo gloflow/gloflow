@@ -369,6 +369,9 @@ def build_rust():
 
 		gf_build_rust.build(cargo_crate_dir_path_str)
 
+		gf_build_rust.prepare_libs(app_name_str,
+			cargo_crate_dir_path_str,
+			app_meta_map["type_str"])
 #--------------------------------------------------
 # BUILD_APPS
 def build_apps(p_changed_apps_files_map):
