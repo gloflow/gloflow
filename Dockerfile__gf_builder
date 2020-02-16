@@ -33,6 +33,7 @@ RUN npm install -g uglify-js
 #                      Rust installer from prompting the user for input (since we're in a container).
 RUN curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
+RUN echo 'export PATH=$PATH:/root/.cargo/bin' >> /root/.bashrc
 RUN cargo --version
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

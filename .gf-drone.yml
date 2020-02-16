@@ -38,7 +38,7 @@ steps:
   # BUILD_RUST - Rust libs need to be built first, for the test pipeline stage
   #              to work and be able to properly load Rust compiled GF libs.
   - name: build_rust
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
@@ -51,7 +51,7 @@ steps:
   #-------------------------------
   # TEST
   - name: test
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
 
     # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
     #               and those containers are run with host networking.
@@ -88,7 +88,7 @@ steps:
   #-------------------------------
   # BUILD_GO
   - name: build_go
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python -u /home/gf/build/gf_builder/gf_builder.py -run=build
@@ -101,7 +101,7 @@ steps:
   #-------------------------------
   # BUILD_CONTAINERS
   - name: build_containers
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
 
     environment:
       GF_DOCKERHUB_USER:
@@ -125,7 +125,7 @@ steps:
   #-------------------------------
   # PUBLISH_CONTAINERS
   - name: publish_containers
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
     environment:
       GF_DOCKERHUB_USER:
         from_secret: gf_os__dockerhub_user
@@ -150,7 +150,7 @@ steps:
   #-------------------------------
   # NOTIFY_COMPLETION
   - name: notify_completion
-    image: glofloworg/gf_builder
+    image: glofloworg/gf_builder:latest
     environment:
       GF_NOTIFY_COMPLETION_URL:
         from_secret: gf_os__notify_completion_url

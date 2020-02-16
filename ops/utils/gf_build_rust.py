@@ -32,7 +32,11 @@ def build(p_cargo_crate_dir_path_str,
 
 
     print("----------->")
+    print(os.environ)
     print(os.environ["PATH"])
+    import delegator
+    print(delegator.run("cat /root/.bashrc").out)
+    print(delegator.run("ls -al /root/.cargo/bin").out)
 
     # "rustup update stable"
     c_str = "cargo build --release"
