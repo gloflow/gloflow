@@ -344,6 +344,7 @@ def test_apps(p_changed_apps_files_map):
 						#               run() should call exit() and force this whole process to exit, 
 						#               so that CI marks the build as failed.
 						p_exit_on_fail_bool = True)
+						
 		#------------------------
 
 #--------------------------------------------------
@@ -372,6 +373,7 @@ def build_rust():
 		gf_build_rust.prepare_libs(app_name_str,
 			cargo_crate_dir_path_str,
 			app_meta_map["type_str"])
+
 #--------------------------------------------------
 # BUILD_APPS
 def build_apps(p_changed_apps_files_map):

@@ -21,7 +21,7 @@ package gf_images_jobs
 
 
 /*
-#cgo LDFLAGS: -L/media/ivan/data/SoftDev/gloflow/rust/build -lgf_images_jobs
+#cgo LDFLAGS: -L../../../../rust/build -lgf_images_jobs
 #include "./../../../../rust/gf_images_jobs/gf_images_jobs.h"
 */
 import "C"

@@ -28,36 +28,37 @@ def run(p_app_name_str,
     p_test_name_str,
     p_app_meta_map,
     p_aws_s3_creds_map,
-    p_exit_on_fail_bool = False):
+    p_exit_on_fail_bool         = False,
+    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))):
     assert isinstance(p_test_name_str,    basestring)
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
 
-    print('')
-    print(' -- test %s%s%s package'%(fg('green'), p_app_name_str, attr(0)))
+    print("")
+    print(" -- test %s%s%s package"%(fg("green"), p_app_name_str, attr(0)))
 
-    if p_app_meta_map.has_key('test_data_to_serve_dir_str'): use_test_server_bool = True
+    if p_app_meta_map.has_key("test_data_to_serve_dir_str"): use_test_server_bool = True
     else:                                                    use_test_server_bool = False
 
-    #GO_PACKAGE_DIR
-    go_package_dir_path_str = p_app_meta_map['go_path_str']
+    # GO_PACKAGE_DIR
+    go_package_dir_path_str = p_app_meta_map["go_path_str"]
     assert os.path.isdir(go_package_dir_path_str)
     print("go_package_dir_path_str - %s"%(go_package_dir_path_str))
 
     #-------------
     # TEST_HTTP_SERVER - used to server assets/images that various Go functions
-    #               that are tested that do fetching of remote resources.
+    #                    that are tested that do fetching of remote resources.
     
     if use_test_server_bool:
-        test_data_dir_str = p_app_meta_map['test_data_to_serve_dir_str']
+        test_data_dir_str = p_app_meta_map["test_data_to_serve_dir_str"]
         assert os.path.isdir(test_data_dir_str)
 
-        print('')
-        print('STARTING TEST DATA PYTHON HTTP SERVER ----------------------------')
+        print("")
+        print("STARTING TEST DATA PYTHON HTTP SERVER ----------------------------")
 
-        #run the python simple server in the dir where the test data is located, so that its served over http
+        # run the python simple server in the dir where the test data is located, so that its served over http
         c_lst = ["cd %s && python -m SimpleHTTPServer 8000"%(test_data_dir_str)]
-        print(' '.join(c_lst))
+        print(" ".join(c_lst))
 
         # IMPORTANT!! - "cd" and py server are run by the shell, which is their parent process, so a session ID is attached
         #               so that its made a group leader. later when the os.killpg() termination signal is sent to that 
@@ -77,16 +78,15 @@ def run(p_app_name_str,
         "go test",
         "-timeout 30s",
 
-        # #"-args" - margs subsequent arguments as ones to pass to the tests themselves
+        # # "-args" - margs subsequent arguments as ones to pass to the tests themselves
         # "-args",
         # "-mongodb_host=%s"%(p_test_mongodb_host_str)
     ]
 
     # specific test was selected for running, not all tests
-    if not p_test_name_str == 'all':
-        cmd_lst.append("-v") #verbose
+    if not p_test_name_str == "all":
+        cmd_lst.append("-v") # verbose
         cmd_lst.append(p_test_name_str)
-
 
     c = " ".join(cmd_lst)
     print(c)
@@ -95,25 +95,16 @@ def run(p_app_name_str,
     e = os.environ.copy()
     
     # RUST - add compiled libraries (*.so) build directory path, so that they can
-    #        be loaded at test run time.
-    if "type_str" in p_app_meta_map.keys() and p_app_meta_map["type_str"] == "lib_rust":
-        
-        # LD_LIBRARY_PATH - contains a list of paths that should be searched by the linker when a program starts.
-        e["LD_LIBRARY_PATH"] = os.path.abspath("%s/../../rust/build"%(modd_str))
-
-    e["LD_LIBRARY_PATH"] = os.path.abspath("%s/../../rust/build"%(modd_str))
+    #        be loaded at test run time
+    print("dynamic libs (LD_LIBRARY_PATH env var) - %s"%(p_dynamic_libs_dir_path_str))
+    e["LD_LIBRARY_PATH"] = p_dynamic_libs_dir_path_str
     
-    print(e)
-    print("")
-    print(modd_str)
-    print("LD_LIBRARY_PATH" in e.keys())
-
-    # print(e["LD_LIBRARY_PATH"])
-    e.update(p_aws_s3_creds_map) # AWS_CREDS
+    # AWS_CREDS
+    e.update(p_aws_s3_creds_map)
     #-------------
 
     # RUN
-    p = subprocess.Popen(c.split(' '), stderr=subprocess.PIPE, env=e)
+    p = subprocess.Popen(c.split(" "), stderr=subprocess.PIPE, env=e)
     
     # IMPORTANT!! - stderr is used and read, because thats what contains the log lines from Go programs that has
     #               color codes preserved in log lines.
