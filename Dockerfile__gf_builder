@@ -27,11 +27,12 @@ RUN pip install \
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js
-
 #-----------------------------
 # RUST
 # IMPORTANT!! - "-y" - passing it in at the end is for non-interactive installation, preventing
 #                      Rust installer from prompting the user for input (since we're in a container).
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo --version
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

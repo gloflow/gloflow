@@ -30,6 +30,10 @@ def build(p_cargo_crate_dir_path_str,
     cwd_str = os.getcwd()
     os.chdir(p_cargo_crate_dir_path_str) # change into the target main package dir
 
+
+    print("----------->")
+    print(os.environ["PATH"])
+
     # "rustup update stable"
     c_str = "cargo build --release"
 

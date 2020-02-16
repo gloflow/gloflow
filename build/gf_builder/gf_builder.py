@@ -350,6 +350,8 @@ def test_apps(p_changed_apps_files_map):
 # BUILD_RUST
 def build_rust():
 
+	print("building RUST...")
+	
 	apps_names_lst = [
 		"gf_data_viz",
 		"gf_images_jobs"

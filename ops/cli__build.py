@@ -238,6 +238,7 @@ def parse_args():
 - '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
 
+- '''+fg('yellow')+'gf_images_jobs'+attr(0)+'''
 - '''+fg('yellow')+'gf_data_viz'+attr(0)+'''
 
 		''')
