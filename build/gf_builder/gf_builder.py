@@ -1,5 +1,5 @@
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
 import urlparse
@@ -7,26 +7,26 @@ from colored import fg, bg, attr
 import delegator
 import requests
 
-sys.path.append('%s/../../meta'%(cwd_str))
+sys.path.append('%s/../../meta'%(modd_str))
 import gf_meta
 import gf_web_meta
 
-sys.path.append('%s/../../ops/utils'%(cwd_str))
+sys.path.append('%s/../../ops/utils'%(modd_str))
 import gf_build_changes
 import gf_build
 import gf_build_rust
 import gf_log
 
-sys.path.append('%s/../../ops/tests'%(cwd_str))
+sys.path.append('%s/../../ops/tests'%(modd_str))
 import gf_tests
 
-sys.path.append('%s/../../ops/web'%(cwd_str))
+sys.path.append('%s/../../ops/web'%(modd_str))
 import gf_web__build
 
-sys.path.append('%s/../../ops/aws'%(cwd_str))
+sys.path.append('%s/../../ops/aws'%(modd_str))
 import gf_aws_creds
 
-sys.path.append('%s/../../ops/containers'%(cwd_str))
+sys.path.append('%s/../../ops/containers'%(modd_str))
 import gf_os_docker
 import gf_containers
 
@@ -451,7 +451,7 @@ def get_changed_apps():
 def paste_git_commit_hash(p_git_commit_hash_str):
 	print("PASTE_GIT_COMMIT_HASH - %s"%(p_git_commit_hash_str))
 
-	golang_sys_release_info_file_path_str = "%s/../../go/gf_core/gf_sys_release_info.go"%(cwd_str)
+	golang_sys_release_info_file_path_str = "%s/../../go/gf_core/gf_sys_release_info.go"%(modd_str)
 	assert os.path.isfile(golang_sys_release_info_file_path_str)
 	
 	original_word_regex_str = 'Git_commit_str: "",' #this is the original line of Go code

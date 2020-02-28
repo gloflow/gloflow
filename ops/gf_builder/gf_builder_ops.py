@@ -16,13 +16,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-sys.path.append('%s/../containers'%(cwd_str))
+sys.path.append('%s/../containers'%(modd_str))
 # import gf_containers
 import gf_os_docker
 
-sys.path.append('%s/../meta'%(cwd_str))
+sys.path.append('%s/../meta'%(modd_str))
 import gf_meta
 
 #---------------------------------------------------

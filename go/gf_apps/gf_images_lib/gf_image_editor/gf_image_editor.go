@@ -72,14 +72,14 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
-	//INPUT
+	// INPUT
 	var input *Gf_edited_image__save__http_input
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
 	err               := json.Unmarshal(body_bytes_lst, input)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse json edited_image_save http_input",
 			"json_decode_error",
-			map[string]interface{}{"handler_url_path_str":p_handler_url_path_str,},
+			map[string]interface{}{"handler_url_path_str": p_handler_url_path_str,},
 			err, "gf_image_editor", p_runtime_sys)
 		return gf_err
 	}
@@ -87,9 +87,9 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	new_title_str       := input.Title_str
 	source_image_id_str := input.Source_image_id_str
 	//--------------------------
-	//SAVE_BASE64_DATA_TO_FILE
-	//IMPORTANT!! - save first, and then create a G
-	processing_info,gf_err := save_edited_image(source_image_id_str, input.Image_base64_data_str, p_runtime_sys)
+	// SAVE_BASE64_DATA_TO_FILE
+	// IMPORTANT!! - save first, and then create a G
+	processing_info, gf_err := save_edited_image(source_image_id_str, input.Image_base64_data_str, p_runtime_sys)
 	if err != nil {
 		return gf_err
 	}

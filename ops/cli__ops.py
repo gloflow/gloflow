@@ -15,17 +15,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os,sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
 from colored import fg, bg, attr
 import delegator
 
-sys.path.append('%s/../meta'%(cwd_str))
+sys.path.append('%s/../meta'%(modd_str))
 import gf_meta
 
-sys.path.append('%s/aws/s3'%(cwd_str))
+sys.path.append('%s/aws/s3'%(modd_str))
 import gf_s3_data_info
 import gf_s3_utils
 
@@ -49,6 +49,7 @@ def main():
         aws_access_key_id_str     = aws_creds_map['GF_AWS_ACCESS_KEY_ID']
         aws_secret_access_key_str = aws_creds_map['GF_AWS_SECRET_ACCESS_KEY']
         gf_s3_data_info.stats__image_buckets_general(aws_access_key_id_str, aws_secret_access_key_str)
+        
     #-------------
 
 #--------------------------------------------------
@@ -64,7 +65,7 @@ def parse_args():
         ''')
     #-------------
     #AWS_S3_CREDS
-    arg_parser.add_argument('-aws_creds', action = "store", default = '%s/../../creds/aws/s3.txt'%(cwd_str), help = '''path to the file containing AWS S3 credentials to be used''')
+    arg_parser.add_argument('-aws_creds', action = "store", default = '%s/../../creds/aws/s3.txt'%(modd_str), help = '''path to the file containing AWS S3 credentials to be used''')
     #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
@@ -73,5 +74,6 @@ def parse_args():
         "aws_creds": args_namespace.aws_creds,
     }
     return args_map
+
 #--------------------------------------------------
 main()

@@ -16,24 +16,41 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-sys.path.append("%s/../meta"%(cwd_str))
+sys.path.append("%s/../meta"%(modd_str))
 import gf_cli_utils
 
 #--------------------------------------------------
 # BUILD
 def build(p_cargo_crate_dir_path_str,
+    p_static_bool       = False,
     p_exit_on_fail_bool = True):
     assert os.path.isdir(p_cargo_crate_dir_path_str)
     print("BUILD...")
+
     cwd_str = os.getcwd()
-    os.chdir(p_cargo_crate_dir_path_str) # change into the target main package dir
+    os.chdir(os.path.abspath(p_cargo_crate_dir_path_str)) # change into the target main package dir
 
     # "rustup update stable"
-    c_str = "cargo build --release"
 
-    _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+    c_lst = [
+        # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings
+        "cargo build",
+    ]
+
+    if p_static_bool:
+        # MUSL - staticaly compile libc compatible lib into the output binary. without MUSL
+        #        rust statically compiles all program libs except the standard lib.
+        # x86_64-unknown-linux-musl - for 64-bit Linux.
+        #                             for this to work "rustup" has to be used to install this
+        #                             build target into the Rust toolchain. 
+        #                             (for GF CI this is done in the gf_builder Dockerfile__gf_builder)
+        c_lst.append("--target x86_64-unknown-linux-musl")
+    else:
+        c_lst.append("--release")
+
+    _, _, exit_code_int = gf_cli_utils.run_cmd(" ".join(c_lst))
     
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
     #               want to fail with a non-zero exit code as well - this way other CI 
@@ -54,17 +71,55 @@ def prepare_libs(p_name_str,
     print("PREPARE LIBS...")
 
 
-    target_build_dir_path_str = "%s/../../rust/build"%(cwd_str)
+    target_build_dir_path_str = "%s/../../rust/build"%(modd_str)
 
-    target_lib_file_path_str = None
+    target_lib_file_path_lst = []
     if p_type_str == "lib_rust":
-        target_lib_file_path_str = "%s/target/release/lib%s.so"%(p_cargo_crate_dir_path_str,
-            p_name_str)
-    
+        
+
+        #-------------
+        # FIX!! - dont hardcode the app_name here like this, but parse Cargo.toml to detect if 
+        #         one of the Crate types is "staticlib".
+        if p_name_str == "gf_images_jobs":
+
+        
+            # RUST_PY - CPYTHON_EXTENSION - this lib is Python extension written in Rust.
+            #                               at the moment in GF the convention is for these Rust libs to have a postfix "_py".
+            if p_cargo_crate_dir_path_str.endswith("_py"):
+                
+                # DYNAMIC_LIB
+                # IMPORTANT!! - Rust compiles this dynamic lib with the "lib" prefix, but the Python VM
+                #               requires extension libs to not have the "lib" prefix.
+                source__py_lib_file_path_str = "%s/target/release/lib%s_py.so"%(p_cargo_crate_dir_path_str, p_name_str)
+                target__py_lib_file_path_str = "%s/%s_py.so"%(target_build_dir_path_str, p_name_str)
+
+                assert os.path.isfile(source__py_lib_file_path_str)
+                target_lib_file_path_lst.append((source__py_lib_file_path_str, target__py_lib_file_path_str))
+
+            else:
+
+                # STATIC_LIB
+                source__static_lib_file_path_str = "%s/target/release/lib%s.a"%(p_cargo_crate_dir_path_str, p_name_str)
+                assert os.path.isfile(source__static_lib_file_path_str)
+                target_lib_file_path_lst.append((source__static_lib_file_path_str, target_build_dir_path_str))
+
+                # DYNAMIC_LIB
+                source__dynamic_lib_file_path_str = "%s/target/release/lib%s.so"%(p_cargo_crate_dir_path_str, p_name_str)
+                assert os.path.isfile(source__dynamic_lib_file_path_str)
+                target_lib_file_path_lst.append((source__dynamic_lib_file_path_str, target_build_dir_path_str))
+
+        #-------------
+        # ALL
+        else:
+            target_lib_file_path_lst.append(("%s/target/release/lib%s.so"%(p_cargo_crate_dir_path_str, p_name_str), target_build_dir_path_str))
+
+        #-------------
 
 
-    c_str = "cp %s %s"%(target_lib_file_path_str, target_build_dir_path_str)
-    _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+    # COPY_FILES
+    for source_f, target_f in target_lib_file_path_lst:
+        c_str = "cp %s %s"%(source_f, target_f)
+        _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
 
 

@@ -16,37 +16,37 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
 
 from colored import fg, bg, attr
 import delegator
 
-sys.path.append("%s/../meta"%(cwd_str))
+sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 import gf_web_meta
 
-sys.path.append("%s/utils"%(cwd_str))
+sys.path.append("%s/utils"%(modd_str))
 import gf_build
 import gf_build_rust
 import gf_build_changes
 import gf_log
 
-sys.path.append("%s/tests"%(cwd_str))
+sys.path.append("%s/tests"%(modd_str))
 import gf_tests
 
-sys.path.append("%s/aws/s3"%(cwd_str))
+sys.path.append("%s/aws/s3"%(modd_str))
 import gf_s3_utils
 
-sys.path.append("%s/web"%(cwd_str))
+sys.path.append("%s/web"%(modd_str))
 import gf_web__build
 
-sys.path.append("%s/containers"%(cwd_str))
+sys.path.append("%s/containers"%(modd_str))
 import gf_containers
 import gf_local_cluster
 
-sys.path.append("%s/gf_builder"%(cwd_str))
+sys.path.append("%s/gf_builder"%(modd_str))
 import gf_builder_ops
 
 #--------------------------------------------------
@@ -68,7 +68,7 @@ def main():
 	def go_build(p_static_bool):
 		
 		app_meta_map = build_meta_map[app_name_str]
-		if not app_meta_map.has_key('go_output_path_str'):
+		if not app_meta_map.has_key("go_output_path_str"):
 			print("not a main package")
 			exit()
 			
@@ -78,7 +78,7 @@ def main():
 			p_static_bool = p_static_bool)
 
 	#--------------------------------------------------
-	def rust_build():
+	def rust_build(p_static_bool):
 		assert app_name_str == "gf_data_viz" or \
 			app_name_str == "gf_images_jobs"
 
@@ -87,17 +87,28 @@ def main():
 		assert "type_str" in app_meta_map.keys()
 		assert app_meta_map["type_str"] == "lib_rust"
 
-		assert "cargo_crate_dir_path_str" in app_meta_map.keys()
-		cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
-		assert os.path.isdir(cargo_crate_dir_path_str)
+		assert "cargo_crate_dir_paths_lst" in app_meta_map.keys()
+		cargo_crate_dir_paths_lst = app_meta_map["cargo_crate_dir_paths_lst"]
+		assert isinstance(cargo_crate_dir_paths_lst, list)
+		for d_str in cargo_crate_dir_paths_lst:
+			assert os.path.isdir(d_str)
 
-		# BUILD
-		gf_build_rust.build(cargo_crate_dir_path_str)
+		for d_str in cargo_crate_dir_paths_lst:
 
+			print("")
+			print("------------------------------------------------------------")
+			print("       BUILD CARGO CRATE - %s"%(d_str))
+			print("")
 
-		gf_build_rust.prepare_libs(app_name_str,
-			cargo_crate_dir_path_str,
-			app_meta_map["type_str"])
+			# BUILD
+			gf_build_rust.build(d_str,
+				p_static_bool = p_static_bool)
+
+			# PREPARE_LIBS
+			gf_build_rust.prepare_libs(app_name_str,
+				d_str,
+				app_meta_map["type_str"])
+
 	#--------------------------------------------------
 	# AWS_CREDS
 	def aws_creds_get():
@@ -121,7 +132,10 @@ def main():
 	#-------------
 	# BUILD_RUST
 	elif run_str == "build_rust":
-		rust_build()
+
+		# STATIC_LINKING - outputed libs (imported by Go) should contain their
+		#                  own versions of libs statically linked into them.
+		rust_build(False)
 	
 	#-------------
 	# BUILD_WEB
@@ -135,6 +149,7 @@ def main():
 	# BUILD_CONTAINERS
 	elif run_str == "build_containers":
 
+		# STATIC_LINKING
 		# build using static linking, containers are based on Alpine linux, 
 		# which has a minimal stdlib and other libraries, so we want to compile 
 		# everything needed by this Go package into a single binary.
@@ -254,7 +269,7 @@ def parse_args():
 	# AWS_S3_CREDS
 	arg_parser.add_argument('-aws_creds',
 		action =  "store",
-		default = "%s/../../creds/aws/s3.txt"%(cwd_str),
+		default = "%s/../../creds/aws/s3.txt"%(modd_str),
 		help =    '''path to the file containing AWS S3 credentials to be used''')
 
 	#-------------

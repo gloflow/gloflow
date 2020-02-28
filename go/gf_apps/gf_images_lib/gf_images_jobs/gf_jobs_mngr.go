@@ -148,46 +148,11 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				//------------------------
 				// START_JOB_EXTERN_IMAGES
 				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
-				case "start_job":
+				case "start_job_transform_imgs":
 
-					// RUNNING_JOB
-					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.client_type_str,
-						job_msg.job_updates_ch,
-						p_runtime_sys)
-					if gf_err != nil {
-						continue
-					}
-
-					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					running_jobs_map[running_job.Id_str] = job_msg.job_updates_ch
-
-					// SEND_MSG
-					job_msg.job_init_ch <- running_job
 					
-					//------------------------
-					// ADD!! - due to legacy reasons the "general" flow is still used as the main flow
-					//         that images are added to when a external_images job is processed.
-					//         this should be generalized so that images are added to dedicated flow S3 buckets
-					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
-					s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
-					//------------------------
-
-					run_job_gf_err := run_job__extern_imgs(running_job.Id_str,
-						job_msg.client_type_str,
-						job_msg.images_extern_to_process_lst,
-						job_msg.flows_names_lst,
-						job_msg.job_updates_ch,
-						p_images_store_local_dir_path_str,
-						p_images_thumbnails_store_local_dir_path_str,
-						s3_bucket_name_str,
-						p_s3_info,
-						p_runtime_sys)
-
-					if run_job_gf_err != nil {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__FAILED, running_job.Id_str, p_runtime_sys)
-					} else {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
-					}
+					// RUST
+					run_job_rust()
 				
 				//------------------------
 				// START_JOB_UPLOADED_IMAGES
@@ -238,6 +203,50 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					// RUST
 					run_job_rust()
+				
+				//------------------------
+				// START_JOB_EXTERN_IMAGES
+				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
+				case "start_job":
+
+					// RUNNING_JOB
+					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.client_type_str,
+						job_msg.job_updates_ch,
+						p_runtime_sys)
+					if gf_err != nil {
+						continue
+					}
+
+					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
+					running_jobs_map[running_job.Id_str] = job_msg.job_updates_ch
+
+					// SEND_MSG
+					job_msg.job_init_ch <- running_job
+					
+					//------------------------
+					// ADD!! - due to legacy reasons the "general" flow is still used as the main flow
+					//         that images are added to when a external_images job is processed.
+					//         this should be generalized so that images are added to dedicated flow S3 buckets
+					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
+					s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
+					//------------------------
+
+					run_job_gf_err := run_job__extern_imgs(running_job.Id_str,
+						job_msg.client_type_str,
+						job_msg.images_extern_to_process_lst,
+						job_msg.flows_names_lst,
+						job_msg.job_updates_ch,
+						p_images_store_local_dir_path_str,
+						p_images_thumbnails_store_local_dir_path_str,
+						s3_bucket_name_str,
+						p_s3_info,
+						p_runtime_sys)
+
+					if run_job_gf_err != nil {
+						_ = db__jobs_mngr__update_job_status(JOB_STATUS__FAILED, running_job.Id_str, p_runtime_sys)
+					} else {
+						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
+					}
 
 				//------------------------
 				// GET_JOB_UPDATE_CH

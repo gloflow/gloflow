@@ -15,7 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
+
 from colored import fg, bg, attr
 import delegator
 
@@ -27,7 +29,8 @@ def run_go(p_name_str,
     p_go_dir_path_str,
     p_go_output_path_str,
     p_static_bool       = False,
-    p_exit_on_fail_bool = False):
+    p_exit_on_fail_bool = True,
+    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))):
     assert isinstance(p_static_bool, bool)
     assert os.path.isdir(p_go_dir_path_str)
 
@@ -45,23 +48,37 @@ def run_go(p_name_str,
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) # change into the target main package dir
 
-    # _, _, exit_code_int = gf_cli_utils.run_cmd("go get -u")
-    # print("")
-    # print("")
+    # GO_GET
+    _, _, exit_code_int = gf_cli_utils.run_cmd("go get -u")
+    print("")
+    print("")
 
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
     #                  required libraries are present. so its safest to compile to a statically
     #                  linked lib.
     #                  build time a few times larger then regular, so slow for dev.
+    # "-ldflags '-s'" - omit the symbol table and debug information.
+    # "-a" - forces all packages to be rebuilt
     if p_static_bool:
+        
+        # https://golang.org/cmd/link/
+        # IMPORTANT!! - "CGO_ENABLED=0" and "-installsuffix cgo" no longer necessary since golang 1.10.
+        #               "CGO_ENABLED=0" we also dont want to disable since Rust libs are used in Go via CGO.
+        # "-extldflags flags" - Set space-separated flags to pass to the external linker
         args_lst = [
-            "CGO_ENABLED=0",
+            # "CGO_ENABLED=0",
             "GOOS=linux",
             "go build",
-            "-ldflags",
-            "-s",
             "-a",
-            "-installsuffix cgo",
+            # "-installsuffix cgo",
+
+            # LINKER_FLAGS
+            # "-ldl" - "-l" provides lib path. links in  /usr/lib/libdl.so/.a
+            #          this is needed to prevent Rust .a lib errors relating
+            #          to undefined references to "dlsym","dladdr"
+            ('''-ldflags '-s -extldflags "-static -ldl"' ''').strip(),
+            
+            
             "-o %s"%(p_go_output_path_str),
         ]
         c_str = " ".join(args_lst)
