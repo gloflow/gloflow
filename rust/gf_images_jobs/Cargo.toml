@@ -1,7 +1,7 @@
 
 
 [package]
-name = "gf_images_jobs"
+name    = "gf_images_jobs"
 version = "0.1.0"
 authors = ["Ivan Trajkovic <ivan.ebiz@gmail.com>"]
 edition = "2018"
@@ -10,7 +10,32 @@ edition = "2018"
 [lib]
 name = "gf_images_jobs"
 
-crate-type = ["cdylib"]
+# "staticlib" - compile .a lib for static linking into Go GF binaries
+# "cdylib"    - compile .so lib (dynamic) for loading into Go GF test runs
+
+# FIX!! - if "cdylib" is used then gf_images_jobs_py that uses this lib cant compile. 
+#         but make sure that using "dylib" still works when loading the resulting .so lib
+#         dynamically in Go tests that use gf_images_jobs.so
+# rlib - Rust lib, needed for other libs to be able to link this lib into them properly.
+#        currently needed for gf_images_jobs_py cpython lib.
+crate-type = ["staticlib", "dylib", "rlib"] # "cdylib"]
 
 [dependencies]
-libc = "0.2.2"
+libc  = "0.2.2"
+image = "0.21.1"
+rand  = ""
+num   = "0.2.1"
+
+# https://docs.rs/palette/0.5.0/palette/
+# A library that makes linear color calculations and conversion easy and accessible for anyone
+palette = "0.5"
+
+#-------------------------------
+[build]
+
+# "linux-musl" - In order to statically link Linux binaries.
+#                By default, Rust will statically link all Rust code. However, if you 
+#                use the standard library, it will dynamically link to 
+#                the system's libc implementation. to get a 100% static binary MUSL is used.
+#                https://doc.rust-lang.org/edition-guide/rust-2018/platform-and-target-support/musl-support-for-fully-static-binaries.html
+target="x86_64-unknown-linux-musl"

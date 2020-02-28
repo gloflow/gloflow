@@ -17,7 +17,7 @@ crate-type = ["dylib"]
 
 default-features = false
 
-# Python 2.7 extension
+# python 2.7 extension
 features = ["extension-module-2-7", "python27-sys"]
 
 #-------------------------------
