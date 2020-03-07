@@ -17,17 +17,43 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-mod ml_datasets;
+
+
+
+use crate::gf_tf;
+
+use gf_data_viz;
 
 //-------------------------------------------------
 #[allow(non_snake_case)]
-pub fn ml_datasets_generate(p_dataset_name_str: String,
-    p_img_width_int:       u32,
-    p_img_height_int:      u32,
+pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
+    p_img_width_int:  u32,
+    p_img_height_int: u32,
     p_target_dir_path_str: String) {
 
-    ml_datasets::generate(p_dataset_name_str,
+
+
+
+    println!("ML generating in Rust - {} - {}/{} - {}",
+        p_dataset_name_str,
         p_img_width_int,
         p_img_height_int,
         p_target_dir_path_str);
+
+    gf_data_viz::ml_datasets_generate(p_dataset_name_str,
+        p_img_width_int,
+        p_img_height_int,
+        p_target_dir_path_str);
+
+
+
+
+    
+    gf_tf::write_file();
+
+
+
+
+
+
 }

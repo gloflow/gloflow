@@ -22,9 +22,12 @@ crate-type = ["staticlib", "dylib", "rlib"] # "cdylib"]
 
 [dependencies]
 libc  = "0.2.2"
-image = "0.21.1"
+image = ""
 rand  = ""
 num   = "0.2.1"
+tensorflow  = "0.14.0"
+gf_core     = {path="../gf_core",     version="0.1.0"}
+gf_data_viz = {path="../gf_data_viz", version="0.1.0"}
 
 # https://docs.rs/palette/0.5.0/palette/
 # A library that makes linear color calculations and conversion easy and accessible for anyone

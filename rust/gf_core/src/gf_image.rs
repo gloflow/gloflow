@@ -17,17 +17,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-mod ml_datasets;
+use std::fs::File;
+
+use image;
+use cairo;
 
 //-------------------------------------------------
+// SAVE_IMAGE_BUFF
 #[allow(non_snake_case)]
-pub fn ml_datasets_generate(p_dataset_name_str: String,
-    p_img_width_int:       u32,
-    p_img_height_int:      u32,
-    p_target_dir_path_str: String) {
+pub fn save_image_buff(p_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
+    p_img_target_file_path_str: &str) {
 
-    ml_datasets::generate(p_dataset_name_str,
-        p_img_width_int,
-        p_img_height_int,
-        p_target_dir_path_str);
+    let img: image::DynamicImage = image::ImageRgba8(p_img_buff);
+    img.save(p_img_target_file_path_str).unwrap();
+}
+
+//-------------------------------------------------
+// SAVE_CAIRO
+#[allow(non_snake_case)]
+pub fn save_cairo(p_surface: &cairo::ImageSurface,
+    p_img_target_file_path_str: &str) {
+
+    let mut file = File::create(p_img_target_file_path_str)
+        .expect("failed to create a file to FS");
+
+    p_surface.write_to_png(&mut file)
+        .expect("failed to save a PNG image to a file in FS");
 }

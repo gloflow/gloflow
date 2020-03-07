@@ -17,19 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-extern crate image;
-use image::{GenericImageView, ImageBuffer};
 
 extern crate libc;
 use std::ffi::CStr; // https://doc.rust-lang.org/1.0.0/std/ffi/struct.CString.html
 
 use std::str::FromStr;
 
-mod gf_image;
-mod gf_image_transform;
+
+
+
+pub mod gf_image_collage;
+
 mod gf_image_color;
-mod gf_image_collage;
+mod gf_image_generate;
 mod gf_image_io;
+mod gf_image_transform;
+mod gf_image;
+mod gf_tf;
 
 //-------------------------------------------------
 // C_API
@@ -130,15 +134,15 @@ pub extern "C" fn c__create_collage(p_input_imgs_files_paths_c_lst: Vec<*const l
     //---------------------
 
     let imgs_collage_config = gf_image_collage::GFimageCollageConfig {
-        input_imgs_files_paths_lst: loaded_imgs_files_paths_lst,
-        output_img_file_path_str:   output_img_file_path_str,
-        width_int:                  400,
-        height_int:                 400,
-        rows_num_int:               5,
-        columns_num_int:            5,
+        output_img_file_path_str: output_img_file_path_str,
+        width_int:                400,
+        height_int:               400,
+        rows_num_int:             5,
+        columns_num_int:          5,
     };
 
-    gf_image_collage::create(&imgs_collage_config);
+    gf_image_collage::create(loaded_imgs_files_paths_lst,
+        &imgs_collage_config);
 }
 
 //-------------------------------------------------
@@ -206,14 +210,53 @@ pub fn create_collage(p_input_imgs_files_paths_lst: Vec<String>,
     p_columns_num_int:            u32) {
 
     let imgs_collage_config = gf_image_collage::GFimageCollageConfig {
-        
-        input_imgs_files_paths_lst: p_input_imgs_files_paths_lst,
-        output_img_file_path_str:   p_output_img_file_path_c_str,
+        output_img_file_path_str: p_output_img_file_path_c_str,
         width_int:       p_width_int,
         height_int:      p_height_int,
         rows_num_int:    p_rows_num_int,
         columns_num_int: p_columns_num_int,
     };
 
-    gf_image_collage::create(&imgs_collage_config);
+    gf_image_collage::create(p_input_imgs_files_paths_lst,
+        &imgs_collage_config);
 }
+
+//-------------------------------------------------
+#[allow(non_snake_case)]
+pub fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
+    p_img_width_int:  u32,
+    p_img_height_int: u32,
+    p_target_dir_path_str: String) {
+
+
+
+
+    gf_image_generate::ml_dataset_to_tfrecords(p_dataset_name_str,
+        p_img_width_int,
+        p_img_height_int,
+        p_target_dir_path_str);
+
+
+
+
+
+}
+
+
+
+//-------------------------------------------------
+/*#[allow(non_snake_case)]
+pub fn add_img_from_buffer_to_collage(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
+    p_collage_img_buff:    &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
+    p_row_int:             u32,
+    p_column_int:          u32,
+    p_imgs_collage_config: &gf_image_collage::GFimageCollageConfig) -> (u32, u32, bool) {
+
+    let (new_row_int, new_column_int, full_bool) = gf_image_collage::add_img_from_buffer(p_img_buff,
+        p_collage_img_buff,
+        p_row_int,
+        p_column_int,
+        p_imgs_collage_config);
+
+    return (new_row_int, new_column_int, full_bool);
+}*/

@@ -17,72 +17,98 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-extern crate cairo;
-extern crate rand;
-
-use cairo::{ ImageSurface, Format, Context };
 use std::fs;
 use std::fs::File;
+use rand;
+use cairo;
+
+use gf_core;
 
 //-------------------------------------------------
-struct GfConfig {
-    image_width_int     : u32,
-    image_height_int    : u32,
-    target_dir_path_str : String,
+struct GFconfig {
+    image_width_int:     u32,
+    image_height_int:    u32,
+    target_dir_path_str: String,
 }
 
 struct GFruntimeGfx {
-    canvas: ImageSurface,
-    ctx:    Context,
+    canvas: cairo::ImageSurface,
+    ctx:    cairo::Context,
 }
 
 //-------------------------------------------------
-pub fn generate(p_dataset_name_str : String,
-    p_image_width_int     : u32,
-    p_image_height_int    : u32,
-    p_target_dir_path_str : String) {
+#[allow(non_snake_case)]
+pub fn generate(p_dataset_name_str: String,
+    p_image_width_int:     u32,
+    p_image_height_int:    u32,
+    p_target_dir_path_str: String) {
 
     let gf_runtime_gfx = runtime_get_graphics(p_image_width_int,
         p_image_height_int);
 
-    let gf_config = GfConfig{
+    let gf_config = GFconfig{
         image_width_int:     p_image_width_int,
         image_height_int:    p_image_height_int,
         target_dir_path_str: p_target_dir_path_str,
     };
 
+
+
+    println!("==============>>>");
+
     // TRAIN_DATASET
-    generate_of_type(&p_dataset_name_str,
+    generate_for_env(&p_dataset_name_str,
         &"train",
         &gf_config,
         &gf_runtime_gfx);
 
     // VALIDATION_DATASET
-    generate_of_type(&p_dataset_name_str,
+    generate_for_env(&p_dataset_name_str,
         &"validation",
         &gf_config,
         &gf_runtime_gfx);
 }
 
 //-------------------------------------------------
-fn generate_of_type(p_dataset_name_str :&str,
-    p_type_str       : &str,
-    p_gf_config      : &GfConfig,
-    p_gf_runtime_gfx : &GFruntimeGfx) {
+#[allow(non_snake_case)]
+fn generate_for_env(p_dataset_name_str: &str,
+    p_env_str:        &str,
+    p_gf_config:      &GFconfig,
+    p_gf_runtime_gfx: &GFruntimeGfx) {
+
+    
+
+
+    println!(" generate for ENV - {}", p_env_str);
 
 
     let objs_number_int = 100;
     
     for i in 0..objs_number_int {
 
-        draw_rect(p_gf_config, p_gf_runtime_gfx)
+        println!("==============>>> 111111");
+        draw_rect(p_gf_config, p_gf_runtime_gfx);
+
+
+        // IMPORTANT!! - ".png" is relevant here, because currently gf_core Rust Crate
+        //               Cargo.toml specifies "cairo-rs" dependency with feature for "png"
+        //               enabled only. have not tested saving cairo Surfaces to .jpeg.
+        let output_file_path_str = format!("{}/{}-{}.png",
+            p_gf_config.target_dir_path_str,
+            p_dataset_name_str,
+            i);
+
+        // SAVE_FILE
+        gf_core::gf_image::save_cairo(&p_gf_runtime_gfx.canvas,
+            &output_file_path_str);
     }
 }
 
-
 //-------------------------------------------------
-fn draw_rect(p_gf_config : &GfConfig,
-    p_gf_runtime_gfx : &GFruntimeGfx) {
+// DRAW_RECT
+#[allow(non_snake_case)]
+fn draw_rect(p_gf_config: &GFconfig,
+    p_gf_runtime_gfx: &GFruntimeGfx) {
 
     let gfx_ctx         = &p_gf_runtime_gfx.ctx;
     let randomize_bool  = true;
@@ -102,35 +128,17 @@ fn draw_rect(p_gf_config : &GfConfig,
     gfx_ctx.rectangle(x as f64, y as f64, w as f64, h as f64);
 }
 
-
 //-------------------------------------------------
-fn image_save_to_file(p_target_file_name_str : String,
-    p_target_dir_path_str : String,
-    p_surface             : &ImageSurface) {
+#[allow(non_snake_case)]
+fn runtime_get_graphics(p_image_width_int: u32,
+    p_image_height_int: u32) -> GFruntimeGfx {
 
-
-
-    let filename_str = format!("{}/{}",
-        p_target_dir_path_str,
-        p_target_file_name_str);
-
-    let mut file = File::create(filename_str)
-        .expect("failed to create a file to FS");
-
-    p_surface.write_to_png(&mut file)
-        .expect("failed to save a PNG image to a file in FS");
-}
-
-//-------------------------------------------------
-fn runtime_get_graphics(p_image_width_int : u32,
-    p_image_height_int : u32) -> GFruntimeGfx {
-
-    let surface = ImageSurface::create(Format::ARgb32,
+    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32,
         p_image_width_int as i32,
         p_image_height_int as i32)
-        .expect("Cairo failed to create a drawing surface");
+        .expect("failed to create a drawing surface with the Cairo backend");
 
-    let ctx = Context::new(&surface);
+    let ctx = cairo::Context::new(&surface);
 
     let gf_runtime_gfx = GFruntimeGfx{
         canvas: surface,

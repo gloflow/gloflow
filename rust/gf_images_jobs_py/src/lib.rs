@@ -17,58 +17,63 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// PyObject - a reference to a Python object
-#[macro_use] extern crate cpython;
-use cpython::{PyObject, PyResult, Python}; // PyTuple, PyDict};
 use std::collections::HashMap;
+use image::{GenericImageView};
+
+use pyo3::wrap_pyfunction;
+use pyo3::prelude::*;
+use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
+use numpy::{IntoPyArray, PyArrayDyn, PyArray2, PyArray3, PyArray4};
 
 use gf_images_jobs;
+
+mod gf_numpy_view;
 
 //-------------------------------------------------
 // PY_C_API
 //-------------------------------------------------
-py_module_initializer!(gf_images_jobs_py, initgf_images_jobs_py, PyInit_gf_images_jobs_py, |py, m| {
+#[pymodule]
+fn gf_images_jobs_py(py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_wrapped(wrap_pyfunction!(apply_transforms))?;
+    m.add_wrapped(wrap_pyfunction!(create_collage))?;
+    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_2D))?;
+    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_3D))?;
+    m.add_wrapped(wrap_pyfunction!(view_numpy_arr_4D))?;
+    m.add_wrapped(wrap_pyfunction!(generate_ml_dataset_to_tfrecords))?;
 
-    m.add(py, "__doc__", "GloFlow images_jobs")?;
+        
 
-    m.add(py, "apply_transforms", py_fn!(py, 
-        py__apply_transforms(a: Vec<String>,
-            b: String,
-            c: String)))?;
 
-    m.add(py, "create_collage", 
-        py_fn!(py, py__create_collage(a: Vec<String>,
-            b: String,
-            c: u32,
-            d: u32,
-            e: u32,
-            f: u32)))?;
     Ok(())
-});
+}
 
 //-------------------------------------------------
+// APPLY_TRANSFORMS
+#[pyfunction]
 #[allow(non_snake_case)]
-fn py__apply_transforms(p_py: Python,
+fn apply_transforms(// p_py: Python,
     p_transforms_lst:           Vec<String>,
     p_img_source_file_path_str: String,
-    p_img_target_file_path_str: String) -> PyResult<PyObject> {
+    p_img_target_file_path_str: String) -> PyResult<()> {
 
     gf_images_jobs::apply_transforms(p_transforms_lst,
         &p_img_source_file_path_str,
         &p_img_target_file_path_str);
 
-    Ok(p_py.None())
+    Ok(())
 }
 
 //-------------------------------------------------
+// CREATE_COLLAGE
+#[pyfunction]
 #[allow(non_snake_case)]
-fn py__create_collage(p_py: Python,
+fn create_collage(// p_py: Python,
     p_img_file_paths_lst:         Vec<String>,
     p_output_img_file_path_c_str: String,
     p_width_int:                  u32,
     p_height_int:                 u32,
     p_rows_num_int:               u32,
-    p_columns_num_int:            u32) -> PyResult<PyObject> {
+    p_columns_num_int:            u32) -> PyResult<()> {
     
 
     gf_images_jobs::create_collage(p_img_file_paths_lst,
@@ -78,5 +83,73 @@ fn py__create_collage(p_py: Python,
         p_rows_num_int,
         p_columns_num_int);
 
-    Ok(p_py.None())
+    Ok(())
+}
+
+//-------------------------------------------------
+// VIEW_NUMPY_ARR_2D
+#[pyfunction]
+#[allow(non_snake_case)]
+fn view_numpy_arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
+    p_img_target_file_path_str: String) -> PyResult<()> {
+
+    gf_numpy_view::arr_2D(p_numpy_2d_lst,
+        p_img_target_file_path_str);
+
+    Ok(())
+}
+
+//-------------------------------------------------
+// VIEW_NUMPY_ARR_3D
+#[pyfunction]
+#[allow(non_snake_case)]
+fn view_numpy_arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
+    p_img_target_file_path_str: String) -> PyResult<()> {
+
+    gf_numpy_view::arr_3D(p_numpy_3d_lst,
+        p_img_target_file_path_str);
+
+    Ok(())
+}
+
+//-------------------------------------------------
+// VIEW_NUMPY_ARR_4D
+#[pyfunction]
+#[allow(non_snake_case)]
+fn view_numpy_arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
+    p_img_target_file_path_str: String,
+    p_width_int:       u32,
+    p_height_int:      u32,
+    p_rows_num_int:    u32,
+    p_columns_num_int: u32) -> PyResult<()> {
+
+    gf_numpy_view::arr_4D(p_numpy_4d_lst,
+        p_img_target_file_path_str,
+        p_width_int,
+        p_height_int,
+        p_rows_num_int,
+        p_columns_num_int);
+
+    Ok(())
+}
+
+//-------------------------------------------------
+// CREATE_ML_DATASET
+#[pyfunction]
+#[allow(non_snake_case)]
+fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
+    p_img_width_int:  u32,
+    p_img_height_int: u32,
+    p_target_dir_path_str: String) -> PyResult<()> {
+
+
+
+    gf_images_jobs::generate_ml_dataset_to_tfrecords(p_dataset_name_str,
+        p_img_width_int,
+        p_img_height_int,
+        p_target_dir_path_str);
+
+
+
+    Ok(())
 }

@@ -22,6 +22,13 @@ sys.path.append("%s/../meta"%(modd_str))
 import gf_cli_utils
 
 #--------------------------------------------------
+# RUST NIGHTLY
+# rustup self update                 - rustup update
+# rustup toolchain install nightly   - rustup install Rust nightly
+# rustup run nightly rustc --version - rstup test Rust nightly
+# rustup default nightly             - rustup make Rust nightly the global default
+
+#--------------------------------------------------
 # BUILD
 def build(p_cargo_crate_dir_path_str,
     p_static_bool       = False,
@@ -36,7 +43,9 @@ def build(p_cargo_crate_dir_path_str,
 
     c_lst = [
         # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings
+        # "RUSTFLAGS='-L %s'"%(os.path.abspath("%s/../../rust/gf_images_jobs/test"%(modd_str))),
         "cargo build",
+        # "--verbose",
     ]
 
     if p_static_bool:

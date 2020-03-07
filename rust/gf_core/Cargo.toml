@@ -1,22 +1,20 @@
 
 
 [package]
-name    = "gf_data_viz"
+name    = "gf_core"
 version = "0.1.0"
 authors = ["Ivan Trajkovic"]
 edition = "2018"
 
 #-------------------------------
 [lib]
-name = "gf_data_viz"
+name = "gf_core"
 
 # rlib - Rust lib, needed for other libs to be able to link this lib into them properly.
 #        currently needed for gf_images_jobs_py cpython lib.
-crate-type = ["dylib", "rlib"]
+crate-type = ["rlib"]
 
 #-------------------------------
 [dependencies]
-rand     = {}                 # random number generator
-png      = {}                 # PNG image support
+image    = ""
 cairo-rs = {features=["png"]} # 2D drawing
-gf_core  = {path="../gf_core", version="0.1.0"}
