@@ -84,8 +84,8 @@ pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
 #[allow(non_snake_case)]
 pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     p_img_target_file_path_str: String,
-    p_width_int:       u32,
-    p_height_int:      u32,
+    p_width_int:       u64,
+    p_height_int:      u64,
     p_rows_num_int:    u32,
     p_columns_num_int: u32) {
 
@@ -106,7 +106,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
 
 
 
-    let mut collage_img_buff = image::ImageBuffer::new(p_width_int, p_height_int);
+    let mut collage_img_buff = image::ImageBuffer::new(p_width_int as u32, p_height_int as u32);
     let arr                  = p_numpy_4d_lst.as_array_mut();
 
     let mut row_int    = 0;
@@ -179,8 +179,8 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
 
 
 
-    let cell_width_int  = p_width_int / p_columns_num_int;
-    let cell_height_int = p_height_int / p_rows_num_int;
+    let cell_width_int  = p_width_int as u32 / p_columns_num_int;
+    let cell_height_int = p_height_int as u32 / p_rows_num_int;
 
     for i in 0..numpy_shape_lst[0] {
 
@@ -196,10 +196,10 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
             for x in 0..img_width_int-1 {
 
                 // draw border on edges
-                if (x == 0 || y == 0 || x == (img_width_int-1) || y == (img_height_int-1)) {
+                if x == 0 || y == 0 || x == (img_width_int-1) || y == (img_height_int-1) {
 
-                    let global_x_int = img_column_int*cell_width_int + x as u32;
-                    let global_y_int = img_row_int*cell_height_int + y as u32;
+                    let global_x_int = img_column_int * cell_width_int + x as u32;
+                    let global_y_int = img_row_int * cell_height_int + y as u32;
                     println!("img px [row/column {}/{}] global x/y - {}/{}", y, x, global_x_int, global_y_int);
 
 

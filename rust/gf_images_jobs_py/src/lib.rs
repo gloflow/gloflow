@@ -70,8 +70,8 @@ fn apply_transforms(// p_py: Python,
 fn create_collage(// p_py: Python,
     p_img_file_paths_lst:         Vec<String>,
     p_output_img_file_path_c_str: String,
-    p_width_int:                  u32,
-    p_height_int:                 u32,
+    p_width_int:                  u64,
+    p_height_int:                 u64,
     p_rows_num_int:               u32,
     p_columns_num_int:            u32) -> PyResult<()> {
     
@@ -118,8 +118,8 @@ fn view_numpy_arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
 #[allow(non_snake_case)]
 fn view_numpy_arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     p_img_target_file_path_str: String,
-    p_width_int:       u32,
-    p_height_int:      u32,
+    p_width_int:       u64,
+    p_height_int:      u64,
     p_rows_num_int:    u32,
     p_columns_num_int: u32) -> PyResult<()> {
 
@@ -138,18 +138,18 @@ fn view_numpy_arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
 #[pyfunction]
 #[allow(non_snake_case)]
 fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
-    p_img_width_int:  u32,
-    p_img_height_int: u32,
+    p_classes_lst:         Vec<String>,
+    p_elements_num_int:    u64,
+    p_img_width_int:       u64,
+    p_img_height_int:      u64,
     p_target_dir_path_str: String) -> PyResult<()> {
 
-
-
     gf_images_jobs::generate_ml_dataset_to_tfrecords(p_dataset_name_str,
+        p_classes_lst,
+        p_elements_num_int,
         p_img_width_int,
         p_img_height_int,
         p_target_dir_path_str);
-
-
 
     Ok(())
 }

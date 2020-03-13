@@ -17,14 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 extern crate libc;
 use std::ffi::CStr; // https://doc.rust-lang.org/1.0.0/std/ffi/struct.CString.html
 
 use std::str::FromStr;
-
-
-
 
 pub mod gf_image_collage;
 
@@ -34,6 +30,8 @@ mod gf_image_io;
 mod gf_image_transform;
 mod gf_image;
 mod gf_tf;
+
+mod gf_protobuff;
 
 //-------------------------------------------------
 // C_API
@@ -204,8 +202,8 @@ pub fn apply_transforms(p_transformations_lst: Vec<String>,
 #[allow(non_snake_case)]
 pub fn create_collage(p_input_imgs_files_paths_lst: Vec<String>,
     p_output_img_file_path_c_str: String,
-    p_width_int:                  u32,
-    p_height_int:                 u32,
+    p_width_int:                  u64,
+    p_height_int:                 u64,
     p_rows_num_int:               u32,
     p_columns_num_int:            u32) {
 
@@ -224,39 +222,16 @@ pub fn create_collage(p_input_imgs_files_paths_lst: Vec<String>,
 //-------------------------------------------------
 #[allow(non_snake_case)]
 pub fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
-    p_img_width_int:  u32,
-    p_img_height_int: u32,
+    p_classes_lst:         Vec<String>,
+    p_elements_num_int:    u64,
+    p_img_width_int:       u64,
+    p_img_height_int:      u64,
     p_target_dir_path_str: String) {
 
-
-
-
     gf_image_generate::ml_dataset_to_tfrecords(p_dataset_name_str,
+        p_classes_lst,
+        p_elements_num_int,
         p_img_width_int,
         p_img_height_int,
         p_target_dir_path_str);
-
-
-
-
-
 }
-
-
-
-//-------------------------------------------------
-/*#[allow(non_snake_case)]
-pub fn add_img_from_buffer_to_collage(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
-    p_collage_img_buff:    &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
-    p_row_int:             u32,
-    p_column_int:          u32,
-    p_imgs_collage_config: &gf_image_collage::GFimageCollageConfig) -> (u32, u32, bool) {
-
-    let (new_row_int, new_column_int, full_bool) = gf_image_collage::add_img_from_buffer(p_img_buff,
-        p_collage_img_buff,
-        p_row_int,
-        p_column_int,
-        p_imgs_collage_config);
-
-    return (new_row_int, new_column_int, full_bool);
-}*/

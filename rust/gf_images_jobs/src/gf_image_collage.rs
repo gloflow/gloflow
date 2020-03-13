@@ -24,8 +24,8 @@ use crate::gf_image_io;
 //-------------------------------------------------
 pub struct GFimageCollageConfig {
     pub output_img_file_path_str: String,
-    pub width_int:                u32,
-    pub height_int:               u32,
+    pub width_int:                u64,
+    pub height_int:               u64,
     pub rows_num_int:             u32,
     pub columns_num_int:          u32,
 }
@@ -43,8 +43,8 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
 
 
     // COLLAGE_IMG_BUFFER
-    let mut collage_img_buff = image::ImageBuffer::new(p_imgs_collage_config.width_int,
-        p_imgs_collage_config.height_int);
+    let mut collage_img_buff = image::ImageBuffer::new(p_imgs_collage_config.width_int as u32,
+        p_imgs_collage_config.height_int as u32);
 
     for img_file_path_str in p_input_imgs_files_paths_lst.iter() {
 
@@ -97,8 +97,8 @@ pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<
     p_imgs_collage_config: &GFimageCollageConfig) -> (u32, u32, bool) {
 
     // CELL_DIMENSIONS
-    let cell_width_int:  u32 = p_imgs_collage_config.width_int / p_imgs_collage_config.columns_num_int;
-    let cell_height_int: u32 = p_imgs_collage_config.height_int / p_imgs_collage_config.rows_num_int;
+    let cell_width_int  = p_imgs_collage_config.width_int as u32 / p_imgs_collage_config.columns_num_int;
+    let cell_height_int = p_imgs_collage_config.height_int as u32 / p_imgs_collage_config.rows_num_int;
 
     //---------------------
     // NEW_DIMENSIONS - fit an image so that the smaller dimension (width or height) is assigned the 
@@ -148,10 +148,10 @@ pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<
     let collage_window__x_int = p_column_int * cell_width_int;
     let collage_window__y_int = p_row_int * cell_height_int;
 
-    for x in 0..cell_width_int {
+    for x in 0..cell_width_int as u32 {
         let collage__global_x_int = collage_window__x_int + x;
 
-        for y in 0..cell_height_int {
+        for y in 0..cell_height_int as u32 {
             
             let collage__global_y_int = collage_window__y_int + y;
             let px                    = croped_img_buff.get_pixel(x, y);

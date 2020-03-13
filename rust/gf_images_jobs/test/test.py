@@ -1,158 +1,45 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
+# GloFlow application and media management/publishing platform
+# Copyright (C) 2020 Ivan Trajkovic
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-
-
-
-print("%s/../../build"%(modd_str))
-
+import random
+import numpy as np
 
 import delegator
 print(delegator.run("ls -al %s"%("%s/../../build"%(modd_str))).out)
-
-
-
-import tensorflow as tf
-
-
-# EAGER_EXECUTION - necessary for calls to TF API's to work outside of 
-#                   a graph session run.
-tf.compat.v1.enable_eager_execution(
-    config         = None,
-    device_policy  = None,
-    execution_mode = None)
-
-print("TensorFlow version - %s"%(tf.__version__))
-assert tf.__version__ == "1.15.0"
-
-
-
-print("\n\nRUN THIS TEST WITH - 'LD_LIBRARY_PATH=. python3 test.py'\n\n")
-assert "LD_LIBRARY_PATH" in os.environ.keys()
 
 sys.path.append("%s/../../build"%(modd_str))
 import gf_images_jobs_py as gf_images_jobs
 
 
+print("TEST ------------------------------------------------------------------------")
+print("\n\nRUN THIS TEST WITH - 'LD_LIBRARY_PATH=. python3 test.py'\n\n")
+assert "LD_LIBRARY_PATH" in os.environ.keys()
 
-
-print("TEST ------------------------------")
 print(dir(gf_images_jobs))
-
-
-import numpy as np
-
-#---------------------------------------------------------------------------
-def test__tensorflow():
-
-
-    print("creating ML dataset...")
-    dataset_name_str            = "test"
-    dataset_target_dir_path_str = "%s/data/output_ml/generated"%(modd_str)
-    gf_images_jobs.generate_ml_dataset_to_tfrecords(dataset_name_str,
-        128, 128,
-        dataset_target_dir_path_str)
-
-
-
-    test__file_path_str = "%s/data/output_ml/gf_test.tfrecord"%(modd_str)
-
-    # dataset contains serialized tf.train.Example messages
-    dataset = tf.data.TFRecordDataset(
-        test__file_path_str,
-        compression_type   = None,
-        buffer_size        = None,
-        num_parallel_reads = 4) # load the file in parallel
-        
-    assert isinstance(dataset, tf.data.Dataset)
-    print(dataset)
-    print(dataset.element_spec)
-
-    def map_f(p_example):
-        # assert isinstance(p_example, tf.data.Tensor)
-
-        print("map F")
-        print(p_example)
-
-
-        label_shape_lst = []
-        img_shape_lst   = [100, 100]
-
-        # "label" - has to be of type tf.int64. TensorFlow only allows float32, int64, string types.
-        #           event though in Rust examples/record are packed as a list of bytes (u8).
-        features_def_map = {
-            "label": tf.compat.v1.io.FixedLenFeature(label_shape_lst, tf.int64),
-            "img":   tf.compat.v1.io.FixedLenFeature(img_shape_lst,   tf.string)
-        }
-
-        # FixedLenFeature(shape, dtype) - configuration for parsing a fixed-length input feature
-        example = tf.compat.v1.io.parse_single_example(p_example,
-            features = features_def_map)
-
-        #print(example)
-
-        return example
-
-    dataset.map(map_f)
-
-    
-    # inspect the type of each element component
-    print("element spec")
-    print(dataset.element_spec)
-
-    for tensor in dataset.take(10):
-        print("-------")
-        #assert isinstance(raw_record, tf.python.framework.ops.EagerTensor)
-        
-        
-        print(type(tensor))
-        print(tensor.dtype)
-        print(tensor.shape)
-        print(dir(tensor))
-
-
-        # reshaped_tensor = np.reshape(tensor.numpy(), (1000, 1000))
-        # print(reshaped_tensor)
-
-
-        print(len(tensor.numpy()))
-
-
-        # print(repr(raw_record))
-
-#---------------------------------------------------------------------------
-test__tensorflow()
-
-
-
-exit()
-
-
-
-x = np.arange(10, dtype=np.float64) # 1_000_000_000, dtype=np.float64)
-
-x_in_gb = x.nbytes/1024/1024/1024
-print(x_in_gb)
 
 #---------------------------------------------------------------------------
 def test__numpy():
 
-    import random
-
+    x       = np.arange(10, dtype=np.float64) # 1_000_000_000, dtype=np.float64)
+    x_in_gb = x.nbytes / 1024 / 1024 / 1024
+    print(x_in_gb)
 
     #---------------------------
     # 4D
@@ -229,11 +116,9 @@ def test__numpy():
 
     x = np.array(x_lst, dtype=np.float64)
 
-
     # print("sleep 10s...")
     # import time
     # time.sleep(10)
-
 
     print("draw...")
     output_file_path_str = "%s/test/output/test__numpy_2d.jpeg"%(modd_str)
@@ -243,8 +128,6 @@ def test__numpy():
     #---------------------------
 #---------------------------------------------------------------------------
 test__numpy()
-
-
 
 
 #---------------------------------------------------------------------------

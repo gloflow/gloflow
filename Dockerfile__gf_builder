@@ -1,6 +1,7 @@
 FROM golang
 
 RUN mkdir /home/gf
+
 #-----------------------------
 # LIBS
 # IMPORTANT!! - do a "apt" update every time packages are installed, to avoid cached
@@ -33,6 +34,7 @@ RUN pip install \
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js
+
 #-----------------------------
 # RUST
 # IMPORTANT!! - "-y" - passing it in at the end is for non-interactive installation, preventing
@@ -45,5 +47,13 @@ RUN cargo --version
 #        we want libc compiled into the binary in order to deploy to targets
 #        dont have a libc compatible standard library (Alpine Linux, etc.).
 RUN rustup target add x86_64-unknown-linux-musl
+
+#-----------------------------
+# PROTOCOL_BUFFERS_COMPILER - "protoc"
+
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-aarch_64.zip
+RUN unzip protoc-3.11.4-linux-aarch_64.zip .
+RUN cp bin/protoc /usr/bin
+
 #-----------------------------
 #ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

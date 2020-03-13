@@ -17,4 +17,40 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-pub mod ml_datasets;
+
+
+
+
+use protoc_rust;
+
+
+
+fn main() {
+
+
+
+    let protobuff_input_lst = [
+        // "src/protobuff/tf.proto"
+
+
+        "src/gf_protobuff/tf_feature.proto",
+        "src/gf_protobuff/tf_example.proto"
+    ];
+
+
+
+    protoc_rust::run(protoc_rust::Args {
+        out_dir:   "src/gf_protobuff",
+        input:     &protobuff_input_lst,
+        includes:  &["src/gf_protobuff"],
+        customize: protoc_rust::Customize{
+            ..Default::default()
+        },
+
+    }).expect("ERROR!! - failed to build Rust protobuffers in gf_images_jobs")
+
+
+
+
+
+}

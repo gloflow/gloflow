@@ -27,8 +27,10 @@ use gf_data_viz;
 //-------------------------------------------------
 #[allow(non_snake_case)]
 pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
-    p_img_width_int:  u32,
-    p_img_height_int: u32,
+    p_classes_lst:         Vec<String>,
+    p_elements_num_int:    u64,
+    p_img_width_int:       u64,
+    p_img_height_int:      u64,
     p_target_dir_path_str: String) {
 
 
@@ -40,7 +42,9 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
         p_img_height_int,
         p_target_dir_path_str);
 
-    gf_data_viz::ml_datasets_generate(p_dataset_name_str,
+    gf_data_viz::ml_datasets::generate(p_dataset_name_str,
+        p_classes_lst,
+        p_elements_num_int,
         p_img_width_int,
         p_img_height_int,
         p_target_dir_path_str);
@@ -48,8 +52,8 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
 
 
 
-    
-    gf_tf::write_file();
+    let output_file_path_str = "./data/output_ml/gf_rust_test.tfrecords";
+    gf_tf::write_file(output_file_path_str);
 
 
 
