@@ -59,7 +59,7 @@ type Image_exists__check struct {
 // 		"general":    "gf--img",
 // 		"discovered": "gf--discovered--img", // "gf--img--discover"
 // 	}
-
+//
 // 	return flow_to_s3_bucket_map
 // }
 

@@ -49,17 +49,7 @@ type Gf_service_info struct {
 // An HTTP servr is started and listens on a supplied port.
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
-func Run_service(/*p_port_str string,
-	p_mongodb_host_str                           string,
-	p_mongodb_db_name_str                        string,
-	p_images_store_local_dir_path_str            string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	p_images_main_s3_bucket_name_str             string,
-	p_aws_access_key_id_str                      string,
-	p_aws_secret_access_key_str                  string,
-	p_aws_token_str                              string,
-	p_templates_dir_paths_map                    map[string]interface{},*/
-	p_service_info *Gf_service_info,
+func Run_service(p_service_info *Gf_service_info,
 	p_init_done_ch chan bool,
 	p_log_fun      func(string, string)) {
 	p_log_fun("FUN_ENTER", "gf_images_service.Run_service()")
