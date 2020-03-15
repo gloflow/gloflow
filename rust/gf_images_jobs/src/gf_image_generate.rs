@@ -17,12 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
-
-use crate::gf_tf;
-
 use gf_data_viz;
+use gf_core;
 
 //-------------------------------------------------
 #[allow(non_snake_case)]
@@ -32,8 +28,6 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
     p_img_width_int:       u64,
     p_img_height_int:      u64,
     p_target_dir_path_str: String) {
-
-
 
 
     println!("ML generating in Rust - {} - {}/{} - {}",
@@ -50,14 +44,8 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
         p_target_dir_path_str);
 
 
-
-
     let output_file_path_str = "./data/output_ml/gf_rust_test.tfrecords";
-    gf_tf::write_file(output_file_path_str);
-
-
-
-
+    gf_core::gf_tf::get_tf_records__writer(output_file_path_str);
 
 
 }

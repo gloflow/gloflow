@@ -29,9 +29,6 @@ mod gf_image_generate;
 mod gf_image_io;
 mod gf_image_transform;
 mod gf_image;
-mod gf_tf;
-
-mod gf_protobuff;
 
 //-------------------------------------------------
 // C_API

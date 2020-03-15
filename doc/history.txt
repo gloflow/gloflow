@@ -6,8 +6,9 @@
 GloFlow history
 
 this repository is the latest GF repo.
-old repo was too large and contained too many binary files and third-party library repositories that accumulated over the last 5 years. 
-before GF was versioned with Git, it was versioned with Subversion. I unfortunatelly never merged that Subversion history into the old Git repo, and that history has been lost. 
+old repo was too large and contained too many binary files and third-party library repositories that accumulated over the last 5 years (while Git was used). 
+before GF was versioned with Git, it was versioned with Subversion. I unfortunatelly never merged that Subversion history into the old Git repo, and that history has been lost.
+Before subversion no version control was used.
 The oldest DB records for images/posts are from ~2012, which were created by the original Python server code - and so Im estimating that the initial GF code was created then.
 
 since then I rewrote the backend services 3 times. 

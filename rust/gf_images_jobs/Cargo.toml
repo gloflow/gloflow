@@ -28,10 +28,10 @@ libc  = "0.2.2"
 image = ""
 rand  = ""
 num   = "0.2.1"
-tensorflow  = "0.14.0"
+# tensorflow  = "0.14.0"
 
-# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protobuf = "2"
+# # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
+# protobuf = "2"
 
 # GF
 gf_core     = {path="../gf_core",     version="0.1.0"}
@@ -41,14 +41,12 @@ gf_data_viz = {path="../gf_data_viz", version="0.1.0"}
 # A library that makes linear color calculations and conversion easy and accessible for anyone
 palette = "0.5"
 
-png = ""
-
-#-------------------------------
-[build-dependencies]
-
-# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protoc-rust = "2.0"
-
+# #-------------------------------
+# [build-dependencies]
+#
+# # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
+# protoc-rust = "2.0"
+#
 #-------------------------------
 [build]
 

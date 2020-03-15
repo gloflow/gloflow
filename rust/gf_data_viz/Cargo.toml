@@ -16,7 +16,9 @@ crate-type = ["dylib", "rlib"]
 
 #-------------------------------
 [dependencies]
-rand     = {}                 # random number generator
-png      = {}                 # PNG image support
-cairo-rs = {features=["png"]} # 2D drawing
-gf_core  = {path="../gf_core", version="0.1.0"}
+rand       = {}                 # random number generator
+image      = {}
+png        = {}                 # PNG image support
+cairo-rs   = {features=["png"]} # 2D drawing
+tensorflow = "0.14.0"
+gf_core    = {path="../gf_core", version="0.1.0"}

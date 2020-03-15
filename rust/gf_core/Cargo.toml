@@ -12,9 +12,21 @@ name = "gf_core"
 
 # rlib - Rust lib, needed for other libs to be able to link this lib into them properly.
 #        currently needed for gf_images_jobs_py cpython lib.
-crate-type = ["rlib"]
+crate-type = ["dylib", "rlib"]
 
 #-------------------------------
 [dependencies]
 image    = ""
+png      = ""
 cairo-rs = {features=["png"]} # 2D drawing
+
+# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
+protobuf = "2"
+
+tensorflow  = "0.14.0"
+
+#-------------------------------
+[build-dependencies]
+
+# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
+protoc-rust = "2.0"
