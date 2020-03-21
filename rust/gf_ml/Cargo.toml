@@ -1,14 +1,14 @@
 
 
 [package]
-name    = "gf_core"
+name    = "gf_ml"
 version = "0.1.0"
 authors = ["Ivan Trajkovic"]
 edition = "2018"
 
 #-------------------------------
 [lib]
-name = "gf_core"
+name = "gf_ml"
 
 # rlib - Rust lib, needed for other libs to be able to link this lib into them properly.
 #        currently needed for gf_images_jobs_py cpython lib.
@@ -16,12 +16,11 @@ crate-type = ["dylib", "rlib"]
 
 #-------------------------------
 [dependencies]
+rand     = {}                 # random number generator
 image    = "0.21.3"
-png      = "0.14.0"
+png      = "0.14.0"           # PNG image support
 cairo-rs = {features=["png"]} # 2D drawing
-
-# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protobuf = "" # "2"
+gf_core  = {path="../gf_core", version="0.1.0"}
 
 # IMPORTANT!! - "0.14.0" doesnt contain some of the tensorflow::io functions that I need,
 #               but which are present in the main repo "master" branch. 
@@ -29,9 +28,3 @@ protobuf = "" # "2"
 #               github repo to use the latest version of the code.
 # tensorflow = "0.14.0
 tensorflow = {git = "https://github.com/tensorflow/rust"} # "0.14.0
-
-#-------------------------------
-[build-dependencies]
-
-# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protoc-rust = "2.0"

@@ -57,9 +57,13 @@ def main():
     img_height_int   = 32
     img_channels_int = 4 # RGBA
 
-    test_py_tfrecord_file_str   = "./data/output_ml/gf_py_test.tfrecords"
-    test_rust_tfrecord_file_str = "./data/output_ml/gf_rust_test.tfrecords"
+    test_py_tfrecords_file_str   = "./data/output_ml/gf_py_test.tfrecords"
+    test_rust_tfrecords_file_str = "./data/output_ml/gf_rust_test.tfrecords"
 
+
+
+    test_ml_tf_records_train__file_str    = "./data/output_ml/generated/test__train.tfrecords"
+    test_ml_tf_records_validate__file_str = "./data/output_ml/generated/test__validate.tfrecords"
     #---------------------------
 
     # GENERATE_ML_DATASET
@@ -70,9 +74,53 @@ def main():
         img_height_int,
         dataset_target_dir_path_str)
 
+    
+    print("----------------")
+    print("test .tfrecords reading")
+
+    assert os.path.isfile(test_ml_tf_records_train__file_str)
+    gf_images_jobs.view_ml_dataset_from_tfrecords(test_ml_tf_records_train__file_str,
+        img_width_int,
+        img_height_int)
+
+    exit()
+
+
+
+    test__tf_record_processing(test_rust_tfrecords_file_str,
+        img_width_int,
+        img_height_int,
+        p_img_channels_int = img_channels_int)
+    
+    
+    # PY_TFRECORDS
+    test__py_write_tfrecord(test_py_tfrecords_file_str)
+    test__py_read_tfrecord(test_py_tfrecords_file_str, p_view_bool = True)
+    
+    # RUST_TFRECORDS
+    test__py_read_tfrecord(test_rust_tfrecords_file_str, p_view_bool = True)
+
+
+
+
+
+
+    
+
+
+
+#---------------------------------------------------------------------------
+def test__tf_record_processing(p_tfrecord_path_str,
+    p_img_width_int,
+    p_img_height_int,
+
+    # 4 - channels for RGBA
+    p_img_channels_int = 4):
+    assert os.path.isfile(p_tfrecord_path_str)
+
     # dataset contains serialized tf.train.Example messages
     dataset = tf.data.TFRecordDataset(
-        test_rust_tfrecord_file_str,
+        p_tfrecord_path_str,
         compression_type   = None,
         buffer_size        = None,
         num_parallel_reads = 4) # load the file in parallel
@@ -89,7 +137,7 @@ def main():
         # print(p_example)
 
         label_shape_lst = []
-        img_shape_lst   = [img_width_int, img_height_int, 4] # 4 - channels for RGBA
+        img_shape_lst   = [p_img_width_int, p_img_height_int, p_img_channels_int] 
 
         # FixedLenFeature(shape, dtype) - configuration for parsing a fixed-length input feature
         features_def_map = {
@@ -109,17 +157,10 @@ def main():
     print("element spec - %s"%(parsed_dataset.element_spec)) # inspect the type of each element component
 
     w, h, channels_int = parsed_dataset.element_spec["img"].shape
-    assert img_width_int == w
-    assert img_height_int == h
-    assert channels_int == img_channels_int
-  
-    # PY_TFRECORDS
-    test__py_write_tfrecord(test_py_tfrecord_file_str)
-    test__py_read_tfrecord(test_py_tfrecord_file_str, p_view_bool = True)
+    assert p_img_width_int == w
+    assert p_img_height_int == h
+    assert channels_int == p_img_channels_int
     
-    # RUST_TFRECORDS
-    test__py_read_tfrecord(test_rust_tfrecord_file_str, p_view_bool = True)
-
 #---------------------------------------------------------------------------
 def test__py_write_tfrecord(p_tfrecord_path_str):
     #---------------------------------------------------------------------------

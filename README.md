@@ -5,8 +5,9 @@
 Media publishing/management/manipulation system.
 
 screenshots:
-![alt text](https://gloflow.com/images/d/thumbnails/34235e14afaa6baaff802c659ff5cd06_thumb_medium.png "GloFlow screenshot 1")
-![alt text](https://gloflow.com/images/d/thumbnails/4ae445a94deea001d04d2b4068391c1f_thumb_medium.png "GloFlow screenshot 2")
+<img align="left" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/34235e14afaa6baaff802c659ff5cd06_thumb_medium.png">
+<img align="left" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/4ae445a94deea001d04d2b4068391c1f_thumb_medium.png">
+
 
 (note: this is alpha software, not feature complete, and still missing more code that needs to be migrated to this repo)
 

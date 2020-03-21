@@ -233,7 +233,7 @@ fn runtime_get_graphics(p_image_width_int: u64,
         p_image_height_int as i32)
         .expect("failed to create a drawing surface with the Cairo backend");*/
         
-    let mut buff: Vec<u8> = vec![0; (p_image_width_int * p_image_height_int * 4) as usize];
+    let buff: Vec<u8> = vec![0; (p_image_width_int * p_image_height_int * 4) as usize];
 
     // the number of bytes between the start of rows in the buffer as allocated.
     // this value should always be computed by cairo_format_stride_for_width() before allocating the data buffer.

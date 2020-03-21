@@ -32,6 +32,7 @@ CIE L*a*b* - device independent color space.
     two colors is equal to their numerical difference).*/
 
 //-------------------------------------------------
+#[allow(non_snake_case)]
 pub fn saturate_selective(p_gf_img: &mut gf_image::GFimage,
     p_color_ref:          &gf_image::GFcolorRGB,
     p_saturation_level_f: f32) {
@@ -91,12 +92,13 @@ pub fn saturate_selective(p_gf_img: &mut gf_image::GFimage,
 // CIE76 - 1976 formula that related a measured color difference to a known set of CIELAB coordinates.
 //         standard Euclidian distance in LAB space.
 // FIX!! - implement the 1994 and 2000 formulas for dinstance.
+#[allow(non_snake_case)]
 pub fn distance(p_color_1: Lab, p_color_2: Lab) -> f32 {
 
-    let l_delta_sq_f = (p_color_2.l - p_color_1.l).powf(2.0);
-    let a_delta_sq_f = (p_color_2.a - p_color_1.a).powf(2.0);
-    let b_delta_sq_f = (p_color_2.b - p_color_1.b).powf(2.0);
-    let deltas_sum_f = l_delta_sq_f + a_delta_sq_f + b_delta_sq_f;
+    let l_delta_sq_f   = (p_color_2.l - p_color_1.l).powf(2.0);
+    let a_delta_sq_f   = (p_color_2.a - p_color_1.a).powf(2.0);
+    let b_delta_sq_f   = (p_color_2.b - p_color_1.b).powf(2.0);
+    let deltas_sum_f   = l_delta_sq_f + a_delta_sq_f + b_delta_sq_f;
     let lab_distance_f = deltas_sum_f.sqrt();
 
     return lab_distance_f;

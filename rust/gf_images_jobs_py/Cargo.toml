@@ -15,6 +15,7 @@ crate-type = ["dylib"]
 
 #-------------------------------
 [dependencies]
+gf_core        = {path="../gf_core",        version="0.1.0"}
 gf_images_jobs = {path="../gf_images_jobs", version="0.1.0"}
 numpy   = ""
 ndarray = ""

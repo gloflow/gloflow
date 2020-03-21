@@ -40,6 +40,7 @@ def build(p_cargo_crate_dir_path_str,
     os.chdir(os.path.abspath(p_cargo_crate_dir_path_str)) # change into the target main package dir
 
     # "rustup update stable"
+    # _, _, exit_code_int = gf_cli_utils.run_cmd("cargo clean")
 
     c_lst = [
         # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings

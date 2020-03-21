@@ -90,6 +90,7 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
 }
 
 //-------------------------------------------------
+#[allow(non_snake_case)]
 pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_collage_img_buff:    &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_row_int:             u32,
@@ -182,6 +183,7 @@ pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<
 }
 
 //-------------------------------------------------
+#[allow(non_snake_case)]
 fn get_img_new_dimensions(p_img_width_int: u32,
     p_img_height_int:  u32,
     p_cell_width_int:  u32,
