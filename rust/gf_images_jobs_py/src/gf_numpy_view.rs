@@ -21,6 +21,7 @@ use std::collections::HashMap;
 use image;
 use numpy::{PyArray2, PyArray3, PyArray4};
 
+use gf_core;
 use gf_images_jobs;
 
 //-------------------------------------------------
@@ -89,14 +90,12 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     p_rows_num_int:    u32,
     p_columns_num_int: u32) {
 
-    
 
     let numpy_shape_lst = p_numpy_4d_lst.shape();
     assert!(numpy_shape_lst[3] == 3); // on 3rd axis the shape is always 3 (RGB)
 
-
-
-    let imgs_collage_config = gf_images_jobs::gf_image_collage::GFimageCollageConfig {
+    // COLLAGE
+    let imgs_collage_config = gf_core::gf_image_collage::GFimageCollageConfig {
         output_img_file_path_str: p_img_target_file_path_str,
         width_int:       p_width_int,
         height_int:      p_height_int,
@@ -104,13 +103,11 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
         columns_num_int: p_columns_num_int,
     };
 
-
-
     let mut collage_img_buff = image::ImageBuffer::new(p_width_int as u32, p_height_int as u32);
-    let arr                  = p_numpy_4d_lst.as_array_mut();
-
     let mut row_int    = 0;
     let mut column_int = 0;
+
+    let numpy_4d_arr = p_numpy_4d_lst.as_array_mut();
 
     let mut img_index_to_collage_coord_map = HashMap::new();
 
@@ -118,9 +115,9 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     for i in 0..numpy_shape_lst[0] {
         
 
-
-        let image_3d = arr.subview(ndarray::Axis(0), i);
-        println!("image {}", i);
+        // get individual image - get "i"-th element on the 0-th axis of the numpy array
+        let image_3d = numpy_4d_arr.subview(ndarray::Axis(0), i);
+        // println!("image {}", i);
 
         let img_width_int  = numpy_shape_lst[2]; // columns are in rows, so index is 2
         let img_height_int = numpy_shape_lst[1]; // images are packed by row, so index is 1
@@ -143,21 +140,18 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
                 //           (which itself is a 1D array of RGB values).
                 let col = row_2d.subview(ndarray::Axis(0), x);
 
+                // PIXEL
                 let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
-
-                
-                *pixel = image::Rgba([
+                *pixel    = image::Rgba([
                     (col[0]) as u8,
                     (col[1]) as u8,
                     (col[2]) as u8,
                     255 as u8]);
-
             }
         }
 
-        
-
-        let (new_row_int, new_column_int, full_bool) = gf_images_jobs::gf_image_collage::add_img_from_buffer(&img_buff,
+        // COLLAGE
+        let (new_row_int, new_column_int, full_bool) = gf_core::gf_image_collage::add_img_from_buffer(&img_buff,
             &mut collage_img_buff,
             row_int,
             column_int,
@@ -165,7 +159,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
         
         // memories the coordinate in the collage of this image. this is potentially needed later
         // to query where the image was placed in a 2D matrix of the collage.
-        img_index_to_collage_coord_map.insert(i, (new_row_int, new_column_int));
+        img_index_to_collage_coord_map.insert(i as u32, (row_int, column_int));
 
         if full_bool {
             break;
@@ -175,46 +169,12 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
         column_int = new_column_int;
     }
 
+    // DRAW_BORDERS
+    gf_core::gf_image_collage::draw_borders(&mut collage_img_buff,
+        p_rows_num_int,
+        p_columns_num_int,
+        img_index_to_collage_coord_map);
 
-
-
-
-    let cell_width_int  = p_width_int as u32 / p_columns_num_int;
-    let cell_height_int = p_height_int as u32 / p_rows_num_int;
-
-    for i in 0..numpy_shape_lst[0] {
-
-        let img_width_int  = numpy_shape_lst[2]; // columns are in rows, so index is 2
-        let img_height_int = numpy_shape_lst[1]; // images are packed by row, so index is 1
-
-
-
-        let (img_row_int, img_column_int) = img_index_to_collage_coord_map.get(&i).unwrap();
-        println!("img [{}] row/column - {}/{}", i, img_row_int, img_column_int);
-
-        for y in 0..img_height_int-1 {
-            for x in 0..img_width_int-1 {
-
-                // draw border on edges
-                if x == 0 || y == 0 || x == (img_width_int-1) || y == (img_height_int-1) {
-
-                    let global_x_int = img_column_int * cell_width_int + x as u32;
-                    let global_y_int = img_row_int * cell_height_int + y as u32;
-                    println!("img px [row/column {}/{}] global x/y - {}/{}", y, x, global_x_int, global_y_int);
-
-
-
-                    let pixel = collage_img_buff.get_pixel_mut(global_x_int, global_y_int);
-                    *pixel = image::Rgba([0, 0, 0, 255 as u8]);
-
-                }
-            }
-        }
-
-    }
-
-
-
-
+    // SAVE_FILE
     collage_img_buff.save(&imgs_collage_config.output_img_file_path_str).unwrap();
 }

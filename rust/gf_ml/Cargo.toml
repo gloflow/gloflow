@@ -28,3 +28,7 @@ gf_core  = {path="../gf_core", version="0.1.0"}
 #               github repo to use the latest version of the code.
 # tensorflow = "0.14.0
 tensorflow = {git = "https://github.com/tensorflow/rust"} # "0.14.0
+
+# HTTP_CLIENT
+# Linux requirement: OpenSSL 1.0.1, 1.0.2, or 1.1.0 with headers
+reqwest = { version = "0.10", features = ["blocking", "json"] }

@@ -26,6 +26,7 @@ use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
 use numpy::{IntoPyArray, PyArrayDyn, PyArray2, PyArray3, PyArray4};
 
 use gf_core;
+use gf_ml;
 use gf_images_jobs;
 
 mod gf_numpy_view;
@@ -40,8 +41,8 @@ fn gf_images_jobs_py(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(view_numpy_arr_2D))?;
     m.add_wrapped(wrap_pyfunction!(view_numpy_arr_3D))?;
     m.add_wrapped(wrap_pyfunction!(view_numpy_arr_4D))?;
-    m.add_wrapped(wrap_pyfunction!(generate_ml_dataset_to_tfrecords))?;
-    m.add_wrapped(wrap_pyfunction!(view_ml_dataset_from_tfrecords))?;
+    m.add_wrapped(wrap_pyfunction!(generate_ml_dataset))?;
+    m.add_wrapped(wrap_pyfunction!(view_ml_dataset))?;
 
     Ok(())
 }
@@ -135,14 +136,14 @@ fn view_numpy_arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
 // GENERATE_ML_DATASET_TO_TFRECORDS
 #[pyfunction]
 #[allow(non_snake_case)]
-fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
+fn generate_ml_dataset(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
     p_elements_num_int:    u64,
     p_img_width_int:       u64,
     p_img_height_int:      u64,
     p_target_dir_path_str: String) -> PyResult<()> {
 
-    gf_images_jobs::generate_ml_dataset_to_tfrecords(p_dataset_name_str,
+    gf_images_jobs::generate_ml_dataset(p_dataset_name_str,
         p_classes_lst,
         p_elements_num_int,
         p_img_width_int,
@@ -153,16 +154,32 @@ fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
 }
 
 //-------------------------------------------------
+fn generate_and_register_ml_dataset() {
+
+
+}
+
+//-------------------------------------------------
 // VIEW_ML_DATASET_FROM_TFRECORDS
 #[pyfunction]
 #[allow(non_snake_case)]
-fn view_ml_dataset_from_tfrecords(p_target_file_path_str: String,
-    p_img_width_int:  u64,
-    p_img_height_int: u64) -> PyResult<()> {
+fn view_ml_dataset(p_tfrecords_file_path_str: String,
+    p_img_target_file_path_str:   String,
+    p_tf_example__img_width_int:  u64,
+    p_tf_example__img_height_int: u64,
+    p_collage__img_width_int:     u64,
+    p_collage__img_height_int:    u64,
+    p_collage__rows_num_int:      u32,
+    p_collage__columns_num_int:   u32) -> PyResult<()> {
 
-    gf_core::gf_tf::read_tf_records(&p_target_file_path_str,
-        p_img_width_int,
-        p_img_height_int);
+    gf_ml::gf_datasets_view::view_tf_records(&p_tfrecords_file_path_str,
+        &p_img_target_file_path_str,
+        p_tf_example__img_width_int,
+        p_tf_example__img_height_int,
+        p_collage__img_width_int,
+        p_collage__img_height_int,
+        p_collage__rows_num_int,
+        p_collage__columns_num_int);
 
     Ok(())
 }

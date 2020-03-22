@@ -22,7 +22,7 @@ use std::ffi::CStr; // https://doc.rust-lang.org/1.0.0/std/ffi/struct.CString.ht
 
 use std::str::FromStr;
 
-pub mod gf_image_collage;
+use gf_core;
 
 mod gf_image_color;
 mod gf_image_generate;
@@ -128,7 +128,7 @@ pub extern "C" fn c__create_collage(p_input_imgs_files_paths_c_lst: Vec<*const l
 
     //---------------------
 
-    let imgs_collage_config = gf_image_collage::GFimageCollageConfig {
+    let imgs_collage_config = gf_core::gf_image_collage::GFimageCollageConfig {
         output_img_file_path_str: output_img_file_path_str,
         width_int:                400,
         height_int:               400,
@@ -136,7 +136,7 @@ pub extern "C" fn c__create_collage(p_input_imgs_files_paths_c_lst: Vec<*const l
         columns_num_int:          5,
     };
 
-    gf_image_collage::create(loaded_imgs_files_paths_lst,
+    gf_core::gf_image_collage::create(loaded_imgs_files_paths_lst,
         &imgs_collage_config);
 }
 
@@ -204,7 +204,7 @@ pub fn create_collage(p_input_imgs_files_paths_lst: Vec<String>,
     p_rows_num_int:               u32,
     p_columns_num_int:            u32) {
 
-    let imgs_collage_config = gf_image_collage::GFimageCollageConfig {
+    let imgs_collage_config = gf_core::gf_image_collage::GFimageCollageConfig {
         output_img_file_path_str: p_output_img_file_path_c_str,
         width_int:       p_width_int,
         height_int:      p_height_int,
@@ -212,13 +212,13 @@ pub fn create_collage(p_input_imgs_files_paths_lst: Vec<String>,
         columns_num_int: p_columns_num_int,
     };
 
-    gf_image_collage::create(p_input_imgs_files_paths_lst,
+    gf_core::gf_image_collage::create(p_input_imgs_files_paths_lst,
         &imgs_collage_config);
 }
 
 //-------------------------------------------------
 #[allow(non_snake_case)]
-pub fn generate_ml_dataset_to_tfrecords(p_dataset_name_str: String,
+pub fn generate_ml_dataset(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
     p_elements_num_int:    u64,
     p_img_width_int:       u64,

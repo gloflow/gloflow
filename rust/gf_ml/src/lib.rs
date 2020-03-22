@@ -18,3 +18,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 pub mod gf_datasets;
+pub mod gf_datasets_view;
+mod gf_ml_client;

@@ -25,6 +25,7 @@ use cairo;
 use tensorflow;
 
 use gf_core;
+use crate::gf_ml_client;
 
 //-------------------------------------------------
 struct GFdatasetConfig {
@@ -41,6 +42,38 @@ struct GFruntimeGfx {
 }
 
 //-------------------------------------------------
+// GENERATE_AND_REGISTER - generates a dataset and registers the newly generated dataset with
+//                         a remote GF ML server.
+#[allow(non_snake_case)]
+pub fn generate_and_register(p_dataset_name_str: String,
+    p_classes_lst:         Vec<String>,
+    p_elements_num_int:    u64,
+    p_image_width_int:     u64,
+    p_image_height_int:    u64,
+    p_target_dir_path_str: String,
+    p_gf_ml_host_str:      String) {
+
+
+
+    
+
+
+    generate(p_dataset_name_str,
+        p_classes_lst,
+        p_elements_num_int,
+        p_image_width_int,
+        p_image_height_int,
+        p_target_dir_path_str);
+
+
+
+    let url_str = format!("{}/ml/dataset/create", p_gf_ml_host_str);
+    gf_ml_client::get_blocking(url_str.as_ref());
+
+}
+
+//-------------------------------------------------
+// GENERATE
 #[allow(non_snake_case)]
 pub fn generate(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
@@ -49,7 +82,7 @@ pub fn generate(p_dataset_name_str: String,
     p_image_height_int:    u64,
     p_target_dir_path_str: String) {
 
-    let mut gf_runtime_gfx  = runtime_get_graphics(p_image_width_int,
+    let mut gf_runtime_gfx = runtime_get_graphics(p_image_width_int,
         p_image_height_int);
 
     let gf_dataset_config = GFdatasetConfig{
@@ -81,6 +114,7 @@ pub fn generate(p_dataset_name_str: String,
 }
 
 //-------------------------------------------------
+// GENERATE_FOR_ENVIRONMENT
 #[allow(non_snake_case)]
 fn generate_for_env(p_env_str: &str,
     p_classes_lst:                    &Vec<String>,
@@ -128,7 +162,7 @@ fn generate_for_env(p_env_str: &str,
 }
 
 //-------------------------------------------------
-// DRAW_RECT
+// DRAW_RECTANGLES
 #[allow(non_snake_case)]
 fn draw_rects(p_target_dir_str: String,
     p_tf_records_writer: &mut tensorflow::io::RecordWriter<std::io::BufWriter<std::fs::File>>,
@@ -216,7 +250,7 @@ fn draw_rects(p_target_dir_str: String,
             surface_data).unwrap();
         
         // WRITE_TF_RECORD
-        gf_core::gf_tf::write_tf_records__from_img_buffer(img_buffer,
+        gf_core::gf_tf::write_tf_example__from_img_buffer(img_buffer,
             label_int,
             p_tf_records_writer);
         //-----------------
@@ -224,6 +258,7 @@ fn draw_rects(p_target_dir_str: String,
 }
 
 //-------------------------------------------------
+// RUNTIME_GET_GRAPHICS
 #[allow(non_snake_case)]
 fn runtime_get_graphics(p_image_width_int: u64,
     p_image_height_int: u64) -> GFruntimeGfx {

@@ -52,7 +52,7 @@ def main():
     dataset_name_str            = "test"
     dataset_target_dir_path_str = "%s/data/output_ml/generated"%(modd_str)
     classes_lst                 = ["rect"]
-    elements_num_int            = 10
+    elements_num_int            = 2000
     img_width_int    = 32
     img_height_int   = 32
     img_channels_int = 4 # RGBA
@@ -67,26 +67,47 @@ def main():
     #---------------------------
 
     # GENERATE_ML_DATASET
-    gf_images_jobs.generate_ml_dataset_to_tfrecords(dataset_name_str,
+    gf_images_jobs.generate_ml_dataset(dataset_name_str,
         classes_lst,
         elements_num_int,
         img_width_int,
         img_height_int,
         dataset_target_dir_path_str)
 
+    # GENERATE_AND_REGISTER_ML_DATASET - generates .tfrecords of images and issues
+    #                                    HTTP request to "gf_ml" server to register the generated dataset.
+    # gf_images_jobs.generate_and_register_ml_dataset(dataset_name_str,
+    #     classes_lst,
+    #     elements_num_int,
+    #     img_width_int,
+    #     img_height_int,
+    #     dataset_target_dir_path_str)
+
     
     print("----------------")
     print("test .tfrecords reading")
 
+    tf_example__img_width_int  = img_width_int
+    tf_example__img_height_int = img_height_int
+    collage__img_width_int     = 1000
+    collage__img_height_int    = 1000
+    collage__rows_num_int      = 40
+    collage__columns_num_int   = 40
+
     assert os.path.isfile(test_ml_tf_records_train__file_str)
-    gf_images_jobs.view_ml_dataset_from_tfrecords(test_ml_tf_records_train__file_str,
-        img_width_int,
-        img_height_int)
+    gf_images_jobs.view_ml_dataset(test_ml_tf_records_train__file_str,
+        "./generated_dataset_collage.png",
+        tf_example__img_width_int,
+        tf_example__img_height_int,
+        collage__img_width_int,
+        collage__img_height_int,
+        collage__rows_num_int,
+        collage__columns_num_int)
 
     exit()
 
 
-
+    
     test__tf_record_processing(test_rust_tfrecords_file_str,
         img_width_int,
         img_height_int,

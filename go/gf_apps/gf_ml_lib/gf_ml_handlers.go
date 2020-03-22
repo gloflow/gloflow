@@ -17,7 +17,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-pub mod gf_image_collage;
-pub mod gf_image;
-pub mod gf_tf;
-mod gf_protobuff;
+import (
+	"github.com/gloflow/gloflow/go/gf_core"
+)
+
+//-------------------------------------------------
+func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_handlers.init_handlers()") {
+
+
+
+
+
+	//---------------------
+	// DATASETS_CREATE - register a dataset
+
+	http.HandleFunc("/ml/datasets/register", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /ml/datasets/register ----------")
+
+
+	})
+
+
+
+
+
+
+
+
+
+
+
+
+}

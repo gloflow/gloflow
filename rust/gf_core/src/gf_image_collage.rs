@@ -17,9 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+use std::collections::HashMap;
 use image::{GenericImageView};
-
-use crate::gf_image_io;
 
 //-------------------------------------------------
 pub struct GFimageCollageConfig {
@@ -34,13 +33,8 @@ pub struct GFimageCollageConfig {
 pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
     p_imgs_collage_config: &GFimageCollageConfig) {
 
-    /*// CELL_DIMENSIONS
-    let cell_width_int:  u32 = p_imgs_collage_config.width_int / p_imgs_collage_config.columns_num_int;
-    let cell_height_int: u32 = p_imgs_collage_config.height_int / p_imgs_collage_config.rows_num_int;*/
-
     let mut row_int    = 0;
     let mut column_int = 0;
-
 
     // COLLAGE_IMG_BUFFER
     let mut collage_img_buff = image::ImageBuffer::new(p_imgs_collage_config.width_int as u32,
@@ -51,10 +45,9 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
         //---------------------
         // OPEN_FILE
         println!("{}", img_file_path_str);
-        let gf_img = gf_image_io::native__open_image(img_file_path_str);
-
-
-        let gf_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>> = gf_img.raw_img.to_rgba();
+        
+        let img:         image::DynamicImage                          = image::open(img_file_path_str).unwrap();
+        let gf_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>> = img.to_rgba();
 
         // ADD_IMAGE_FROM_BUFFER
         let (new_row_int, new_column_int, full_bool) = add_img_from_buffer(&gf_img_buff,
@@ -70,26 +63,13 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
         row_int    = new_row_int;
         column_int = new_column_int;
         //---------------------
-
-        /*// right edge of the image has been reached
-        if column_int == (p_imgs_collage_config.columns_num_int - 1) {
-            column_int = 0; // move back to the left of the image
-
-            // last row has been completed, dont draw any more images, no more cells left.
-            if row_int == p_imgs_collage_config.rows_num_int - 1 {
-                break
-            } else {
-                row_int += 1; // move one row down
-            }
-        } else {
-            column_int += 1; // move one column to the right
-        }*/
     }
 
     collage_img_buff.save(&p_imgs_collage_config.output_img_file_path_str).unwrap();
 }
 
 //-------------------------------------------------
+// ADD_IMG_FROM_BUFFER
 #[allow(non_snake_case)]
 pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_collage_img_buff:    &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
@@ -221,4 +201,52 @@ fn get_img_new_dimensions(p_img_width_int: u32,
 
 
     return (new_width_f, new_height_f);
+}
+
+//-------------------------------------------------
+// DRAW_BORDERS
+#[allow(non_snake_case)]
+pub fn draw_borders(p_collage_img_buff: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, 
+    p_rows_num_int:                   u32,
+    p_columns_num_int:                u32,
+    p_img_index_to_collage_coord_map: HashMap<u32, (u32, u32)>) {
+
+    let cells_num_int   = p_rows_num_int * p_columns_num_int;
+    let cell_width_int  = p_collage_img_buff.width() / p_columns_num_int;
+    let cell_height_int = p_collage_img_buff.height() / p_rows_num_int;
+
+    for i in 0..cells_num_int {
+
+        let (img_row_int, img_column_int) = p_img_index_to_collage_coord_map.get(&i).unwrap();
+
+        // HORIZONTAL_BORDERS (TOP/BOTTM)
+        let global_y_top_int    = img_row_int * cell_height_int + 0 as u32;
+        let global_y_bottom_int = img_row_int * cell_height_int + cell_height_int-1 as u32;
+        for x in 0..cell_width_int {
+            let global_x_int = img_column_int * cell_width_int + x as u32;
+
+            // TOP
+            let pixel = p_collage_img_buff.get_pixel_mut(global_x_int, global_y_top_int);
+            *pixel = image::Rgba([0, 0, 0, 255 as u8]);
+
+            // BOTTOM
+            let pixel = p_collage_img_buff.get_pixel_mut(global_x_int, global_y_bottom_int);
+            *pixel = image::Rgba([0, 0, 0, 255 as u8]);
+        }
+
+        // VERTICAL_BORDRS (LEFT/RIGHT)
+        let global_x_left_int  = img_column_int * cell_width_int + 0 as u32;
+        let global_x_right_int = img_column_int * cell_width_int + cell_width_int-1 as u32;
+        for y in 0..cell_height_int {
+            let global_y_int = img_row_int * cell_height_int + y as u32;
+
+            // LEFT
+            let pixel = p_collage_img_buff.get_pixel_mut(global_x_left_int, global_y_int);
+            *pixel = image::Rgba([0, 0, 0, 255 as u8]);
+
+            // RIGHT
+            let pixel = p_collage_img_buff.get_pixel_mut(global_x_right_int, global_y_int);
+            *pixel = image::Rgba([0, 0, 0, 255 as u8]);
+        }
+    }
 }

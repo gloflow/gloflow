@@ -44,16 +44,18 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 	if gf_err != nil {
 		return gf_err
 	}
+	
 	//---------------------
-	//HIDDEN DASHBOARD
+	// HIDDEN DASHBOARD
 
 	http.HandleFunc("/posts/dash/18956180__42115/", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/dash ----------")
 
 
 	})
+
 	//---------------------
-	//GET_POST
+	// GET_POST
 	http.HandleFunc("/posts/", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/ ----------")
 
@@ -61,19 +63,19 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------
-			//response_format_str - "j"(for json)|"h"(for html)
+			// response_format_str - "j"(for json)|"h"(for html)
 
 			qs_map := p_req.URL.Query()
 
 			//response_format_str - "j"(for json)|"h"(for html)
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 			//--------------------
-			//POST_TITLE
+			// POST_TITLE
 
 			url_str          := p_req.URL.Path
 			url_elements_lst := strings.Split(url_str, "/")
 
-			//IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
+			// IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
 			if len(url_elements_lst) != 3 {
 				usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s", url_str)
 				gf_err      := gf_core.Error__create(usr_msg_str,
@@ -86,15 +88,15 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 			raw_post_title_str := url_elements_lst[2]
 
-			//IMPORTANT!! - replaceAll() - is used here because at the time of testing all titles were still
-			//                             with their spaces (" ") encoded as "+". So for the title to be correct,
-			//                             for lookups against the internal DB, this is decoded.
-			//decodeComponent() - this decodes the percentage encoded symbols. it does not remove
-			//                    "+" encoded spaces (" "), and the need for replaceAll()
+			// IMPORTANT!! - replaceAll() - is used here because at the time of testing all titles were still
+			//                              with their spaces (" ") encoded as "+". So for the title to be correct,
+			//                              for lookups against the internal DB, this is decoded.
+			// decodeComponent() - this decodes the percentage encoded symbols. it does not remove
+			//                     "+" encoded spaces (" "), and the need for replaceAll()
 			post_title_encoded_str := strings.Replace(raw_post_title_str, "+", " ", -1)
 
-			//QueryUnescape() - converting each 3-byte encoded substring of the form "%AB" into the
-			//                  hex-decoded byte 0xAB. It returns an error if any % is not followed by two hexadecimal digits.
+			// QueryUnescape() - converting each 3-byte encoded substring of the form "%AB" into the
+			//                   hex-decoded byte 0xAB. It returns an error if any % is not followed by two hexadecimal digits.
 			post_title_str, err := url.QueryUnescape(post_title_encoded_str)
 			if err != nil {
 
@@ -130,7 +132,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//POST_CREATE
+	// POST_CREATE
 	http.HandleFunc("/posts/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/create ----------")
 
@@ -138,7 +140,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//------------
-			//INPUT
+			// INPUT
 			i_map, gf_err := gf_rpc_lib.Get_http_input("/posts/create", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
@@ -146,7 +148,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			post_info_map := i_map
 			//------------
 
-			_,images_job_id_str, gf_err := Pipeline__create_post(post_info_map, p_gf_images_runtime_info, p_runtime_sys)
+			_, images_job_id_str, gf_err := Pipeline__create_post(post_info_map, p_gf_images_runtime_info, p_runtime_sys)
 
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/posts/create", "create_post pipeline failed", gf_err, p_resp, p_runtime_sys)
@@ -162,7 +164,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 		}
 	})
 	//---------------------
-	//POST_STATUS
+	// POST_STATUS
 	
 	http.HandleFunc("/posts/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/status ----------")
@@ -203,6 +205,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
+
 	//---------------------
 	// POSTS_BROWSER
 	http.HandleFunc("/posts/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -242,6 +245,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
+
 	//---------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 	http.HandleFunc("/posts/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -313,12 +317,14 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
+
 	//---------------------
 	// POSTS_ELEMENTS
 	http.HandleFunc("/posts_elements/create", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 
 	})
+
 	//---------------------
 
 	return nil

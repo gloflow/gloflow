@@ -71,7 +71,9 @@ def test__numpy():
 
     print("draw 4d...")
 
-    output_file_path_str = "%s/test/output/test__numpy_4d.jpeg"%(modd_str)
+    output_file_path_str = "%s/data/output/test__numpy_4d.jpeg"%(modd_str)
+    assert os.path.isdir(os.path.dirname(output_file_path_str))
+
     gf_images_jobs.view_numpy_arr_4D(x_4d,
         output_file_path_str,
         1000, # collage width
@@ -102,7 +104,9 @@ def test__numpy():
     # time.sleep(10)
 
     print("draw 3d...")
-    output_file_path_str = "%s/test/output/test__numpy_3d.jpeg"%(modd_str)
+    output_file_path_str = "%s/data/output/test__numpy_3d.jpeg"%(modd_str)
+    assert os.path.isdir(os.path.dirname(output_file_path_str))
+
     gf_images_jobs.view_numpy_arr_3D(x_3d,
         output_file_path_str)
 
@@ -121,11 +125,14 @@ def test__numpy():
     # time.sleep(10)
 
     print("draw...")
-    output_file_path_str = "%s/test/output/test__numpy_2d.jpeg"%(modd_str)
+    output_file_path_str = "%s/data/output/test__numpy_2d.jpeg"%(modd_str)
+    assert os.path.isdir(os.path.dirname(output_file_path_str))
+
     gf_images_jobs.view_numpy_arr_2D(x,
         output_file_path_str)
 
     #---------------------------
+
 #---------------------------------------------------------------------------
 test__numpy()
 
@@ -135,12 +142,17 @@ def test__collage():
 
 
     collage__files_lst       = []
-    output_file_path_str = "%s/test/output/test__collage.jpeg"%(modd_str)
+    output_file_path_str = "%s/data/output/test__collage.jpeg"%(modd_str)
+    assert os.path.isfile(output_file_path_str)
+
     for i in range(0, 300):
         collage__files_lst.extend([
-            "%s/data/input/50b230e8933860a01cd5da61d082887a.jpeg"%(modd_str),
-            "%s/data/input/49a180a9ab8548b69f50e0bb2c96b4d0_thumb_small.jpeg"%(modd_str),
+            "%s/data/input/test_img_1.jpeg"%(modd_str),
+            "%s/data/input/test_img_2.jpeg"%(modd_str),
         ])
+
+    for f in collage__files_lst:
+        assert os.path.isfile(f)
 
     gf_images_jobs.create_collage(collage__files_lst,
         output_file_path_str,
@@ -157,10 +169,13 @@ test__collage()
 #---------------------------------------------------------------------------
 def test__transforms():
 
-    img_source_file_path_str = "%s/data/input/50b230e8933860a01cd5da61d082887a.jpeg"%(modd_str)
+    img_source_file_path_str = "%s/data/input/test_img_2.jpeg"%(modd_str)
+    assert os.path.isfile(img_source_file_path_str)
 
     # NOISE
-    output_f_str = "%s/test/output/test_output__noise.jpeg"%(modd_str)
+    output_f_str = "%s/data/output/test_output__noise.jpeg"%(modd_str)
+    assert os.path.isdir(os.path.dirname(output_f_str))
+
     gf_images_jobs.apply_transforms(["noise"],
         img_source_file_path_str,
         output_f_str)
@@ -169,7 +184,9 @@ def test__transforms():
     for i in range(0, 3):
 
         factor_f     = i * 100.0
-        output_f_str = "%s/test/output/test_output__contrast_%s.jpeg"%(modd_str, i)
+        output_f_str = "%s/data/output/test_output__contrast_%s.jpeg"%(modd_str, i)
+        assert os.path.isdir(os.path.dirname(output_f_str))
+
         gf_images_jobs.apply_transforms(["contrast:%s"%(factor_f)],
             img_source_file_path_str,
             output_f_str)
@@ -177,11 +194,15 @@ def test__transforms():
 
     # SATURATE
 
-    saturation_img_source_file_path_str = "%s/data/input/49a180a9ab8548b69f50e0bb2c96b4d0_thumb_small.jpeg"%(modd_str)
+    saturation_img_source_file_path_str = "%s/data/input/test_img_1.jpeg"%(modd_str)
+    assert os.path.isfile(saturation_img_source_file_path_str)
+
     for i in range(0, 3):
 
         factor_f     = i * 0.5
-        output_f_str = "%s/test/output/test_output__saturate_%s.jpeg"%(modd_str, i)
+        output_f_str = "%s/data/output/test_output__saturate_%s.jpeg"%(modd_str, i)
+        assert os.path.isdir(os.path.dirname(output_f_str))
+
         gf_images_jobs.apply_transforms(["saturate:%s"%(factor_f)],
             saturation_img_source_file_path_str,
             output_f_str)

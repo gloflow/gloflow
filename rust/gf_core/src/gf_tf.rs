@@ -34,105 +34,73 @@ use crate::gf_protobuff::tf_feature::{Features, Feature, Int64List, BytesList};
 use crate::gf_protobuff::tf_example::{Example};
 
 //-------------------------------------------------
-// READ
+#[allow(non_snake_case)]
+pub fn read_tf_example__to_img_buffer(p_raw_tf_example: &[u8],
+    p_img_width_int:  u64,
+    p_img_height_int: u64) -> (image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, u64) {
+
+    // mut - tf_example is mutable here because we're using "taking" (.take_features(), .take_bytes_list(), .take_value()) sub-values
+    //       of a TF Example, and they all require to be operating on a mutable reference of the Example.
+    let mut tf_example = protobuf::parse_from_bytes::<Example>(p_raw_tf_example).unwrap();
+
+    // println!("PARSED EXAMPLE");
+    // println!("{:?}", tf_example);
+
+    let tf_features = tf_example.take_features();
+    let mut tf_features_map: ::std::collections::HashMap<::std::string::String, Feature> = tf_features.feature;
+    // println!("{:?}", tf_features_map);
+    
+    //-----------------
+    // FEATURE__IMG
+
+    // FEATURE__IMG
+    let tf_feature__img = tf_features_map.get_mut("img").unwrap();
+    let tf_feature__img_png_bytes_lst: std::vec::Vec<u8> = tf_feature__img.take_bytes_list().take_value().first().unwrap().to_vec();
+    // println!("{:?}", tf_feature__img_png_bytes_lst);
+
+    // using Cursor because it implements a reader trait which is needed by png::Decoder::new
+    // from Rust docs: "Cursors are typically used with in-memory buffers to allow them to implement Read and/or Write"
+    let tf_feature__img_png_reader_lst: ::std::io::Cursor<std::vec::Vec<u8>> = ::std::io::Cursor::new(tf_feature__img_png_bytes_lst);
+    
+    // PNG_DECODING
+    let png_decoder = png::Decoder::new(tf_feature__img_png_reader_lst);
+    let (info, mut png_reader) = png_decoder.read_info().unwrap();
+
+    let mut img_buf = vec![0; info.buffer_size()];
+    png_reader.next_frame(&mut img_buf).unwrap();
+    
+    // IMAGE_BUFFER
+    let gf_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>> = image::ImageBuffer::from_raw(p_img_width_int as u32,
+        p_img_height_int as u32,
+        img_buf).unwrap();
+
+    //-----------------
+    // FEATURE__LABEL
+    let tf_feature__label     = tf_features_map.get("label").unwrap();
+    let tf_feature__label_int = tf_feature__label.get_int64_list().get_value()[0];
+    // println!("{:?}", tf_feature__label_int);
+
+    //-----------------
+    return (gf_img_buff, tf_feature__label_int as u64)
+}
+
 //-------------------------------------------------
 #[allow(non_snake_case)]
-pub fn read_tf_records(p_target_file_path_str: &str,
-    p_img_width_int:  u64,
-    p_img_height_int: u64) {
-
+pub fn get_tf_records__reader(p_target_file_path_str: &str) -> tensorflow::io::RecordReader<std::io::BufReader<std::fs::File>> {
 
     let input      = std::fs::File::open(p_target_file_path_str).unwrap();
     let input_buff = std::io::BufReader::new(input);
 
     let mut tf_records_reader = tensorflow::io::RecordReader::new(input_buff);
-    let mut tf_example_raw    = [0u8; 3000]; // buffer for individual examples read in from a .tfrecords file
-
-    loop {
-
-
-        let next = tf_records_reader.read_next(&mut tf_example_raw);
-
-
-        println!("{:?}", next);
-
-
-        match next {
-
-            Ok(resp) => match resp {
-                Some(len) => { 
-                    println!("data received");
-
-
-
-                    let data_lst = &tf_example_raw[0..len];
-                    
-
-                    // mut - tf_example is mutable here because we're using "taking" (.take_features(), .take_bytes_list(), .take_value()) sub-values
-                    //       of a TF Example, and they all require to be operating on a mutable reference of the Example.
-                    let mut tf_example = protobuf::parse_from_bytes::<Example>(&data_lst).unwrap();
-
-                    println!("PARSED EXAMPLE");
-                    println!("{:?}", tf_example);
-
-
-
-                    let tf_features = tf_example.take_features();
-                    let mut tf_features_map: ::std::collections::HashMap<::std::string::String, Feature> = tf_features.feature;
-
-
-                    let tf_feature__label     = tf_features_map.get("label").unwrap();
-                    let tf_feature__label_int = tf_feature__label.get_int64_list().get_value()[0];
-                    
-                    
-                    
-                    let tf_feature__img = tf_features_map.get_mut("img").unwrap();
-                    let tf_feature__img_png_bytes_lst: std::vec::Vec<u8> = tf_feature__img.take_bytes_list().take_value().first().unwrap().to_vec();
-
-                    // println!("{:?}", tf_features_map);
-                    // println!("{:?}", tf_feature__label_int);
-                    // println!("{:?}", tf_feature__img_png_bytes_lst);
-
-
-                    // PNG_DECODING
-
-                    // using Cursor because it implements a reader trait which is needed by png::Decoder::new
-                    // from Rust docs: "Cursors are typically used with in-memory buffers to allow them to implement Read and/or Write"
-                    let tf_feature__img_png_reader_lst: ::std::io::Cursor<std::vec::Vec<u8>> = ::std::io::Cursor::new(tf_feature__img_png_bytes_lst);
-
-                    let png_decoder = png::Decoder::new(tf_feature__img_png_reader_lst);
-                    let (info, mut png_reader) = png_decoder.read_info().unwrap();
-
-                    let mut img_buf = vec![0; info.buffer_size()];
-                    png_reader.next_frame(&mut img_buf).unwrap();
-                    
-                    // IMAGE_BUFFER
-                    let gf_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>> = image::ImageBuffer::from_raw(p_img_width_int as u32,
-                        p_img_height_int as u32,
-                        img_buf).unwrap();
-
-                    
-                    println!(" ======= {:?}", gf_img_buff);
-
-
-                },
-                None => break,
-            }, 
-
-            Err(tensorflow::io::RecordReadError::CorruptFile) | Err(tensorflow::io::RecordReadError::IoError { .. }) => {
-                break;
-            }
-            _ => {}
-        }
-    }
+    return tf_records_reader;
 }
 
 //-------------------------------------------------
 // WRITE
 //-------------------------------------------------
-// WRITE_TF_RECORDS__FROM_IMG_BUFFER
+// WRITE_TF_EXAMPLE__FROM_IMG_BUFFER
 #[allow(non_snake_case)]
-pub fn write_tf_records__from_img_buffer(p_img_buffer: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
+pub fn write_tf_example__from_img_buffer(p_img_buffer: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_label_int:      u64,
     p_records_writer: &mut tensorflow::io::RecordWriter<std::io::BufWriter<std::fs::File>>) {
 
@@ -199,8 +167,8 @@ pub fn write_tf_records__from_img_buffer(p_img_buffer: image::ImageBuffer<image:
 }
 
 //-------------------------------------------------
-// WRITE_TF_RECORDS__TO_FILE
-pub fn write_tf_records__to_file(p_output_file_path_str: &str) {
+// WRITE_TF_EXAMPLES__FROM_FILES
+pub fn write_tf_examples__from_files(p_output_file_path_str: &str) {
     
     let label_int         = 0 as u64;
     let img_file_path_str = "data/output_ml/generated/train/rect/test-rect-0.png";
@@ -215,7 +183,7 @@ pub fn write_tf_records__to_file(p_output_file_path_str: &str) {
     let gf_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>> = img.to_rgba();
 
     // WRITE_TF_RECORD
-    write_tf_records__from_img_buffer(gf_img_buff,
+    write_tf_example__from_img_buffer(gf_img_buff,
         label_int,
         &mut tf_records_writer);
 
