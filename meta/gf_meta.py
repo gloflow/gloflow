@@ -64,8 +64,22 @@ def get():
         "aws_s3_map":                        aws_s3_map,
         "build_info_map": {
             #------------------------
+            # GF_ML_WORKER
+            "gf_ml_worker": {
+                "type_str":             "main_py",
+                "version_str":          "latest",
+                "service_name_str":     "gf_ml_worker",
+                "service_base_dir_str": "%s/../build/gf_apps/gf_ml_worker"%(cwd_str),
+                "copy_to_dir_lst": [
+                    ("%s/../py/gf_apps/gf_ml_worker/gf_simple_model.py"%(cwd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(cwd_str)),
+                    ("%s/../py/gf_apps/gf_ml_worker/requirements.txt"%(cwd_str),   "%s/../build/gf_apps/gf_ml_worker/py"%(cwd_str)),
+                ]
+            },
+
+            #------------------------
             # GF_SOLO
             "gf_solo": {
+                "type_str":           "main_go",
                 "version_str":        "0.8.0.0",
                 "go_output_path_str": "%s/../build/gf_apps/apps/gf_solo/gf_solo"%(cwd_str),
                 "copy_to_dir_lst": [
@@ -77,6 +91,7 @@ def get():
             # MAIN
             # GF_IMAGES
             "gf_images": {
+                "type_str":             "main_go",
                 "version_str":          "latest", # "0.8.0.10",
                 "go_path_str":          "%s/../go/gf_apps/gf_images"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_images/gf_images_service"%(cwd_str),
@@ -87,6 +102,7 @@ def get():
             # LIB
             # GF_IMAGES_LIB
             "gf_images_lib": {
+                "type_str":                   "lib_go",
                 "go_path_str":                "%s/../go/gf_apps/gf_images_lib"%(cwd_str),
                 "test_data_to_serve_dir_str": "%s/../go/gf_apps/gf_images_lib/tests_data"%(cwd_str), #for tests serve data over http from this dir
             },
@@ -95,6 +111,7 @@ def get():
             # MAIN
             # GF_ANALYTICS
             "gf_analytics": {
+                "type_str":             "main_go",
                 "version_str":          "latest", # "0.8.0.7",
                 "go_path_str":          "%s/../go/gf_apps/gf_analytics"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_analytics/gf_analytics_service"%(cwd_str),
@@ -114,9 +131,11 @@ def get():
             # LIB
             # GF_CRAWL_LIB
             "gf_crawl_lib": {
+                "type_str":    "lib_go",
                 "go_path_str": "%s/../go/gf_apps/gf_crawl_lib"%(cwd_str),
             },
             "gf_crawl_core": {
+                "type_str":    "lib_go",
                 "go_path_str": "%s/../go/gf_apps/gf_crawl_lib/gf_crawl_core"%(cwd_str),
             },
 
@@ -124,6 +143,7 @@ def get():
             # MAIN
             # GF_PUBLISHER
             "gf_publisher": {
+                "type_str":             "main_go",
                 "version_str":          "latest", # "0.8.0.4",
                 "go_path_str":          "%s/../go/gf_apps/gf_publisher"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_publisher/gf_publisher_service"%(cwd_str),
@@ -134,7 +154,8 @@ def get():
             # LIB
             # GF_PUBLISHER_LIB
             "gf_publisher_lib": {
-                "go_path_str":"%s/../go/gf_apps/gf_publisher_lib"%(cwd_str),
+                "type_str":    "lib_go",
+                "go_path_str": "%s/../go/gf_apps/gf_publisher_lib"%(cwd_str),
 
                 # for tests serve data over http from this dir.
                 # gf_publisher test runs an gf_images jobs_mngr to test post_creation, and jobs_mngr
@@ -146,6 +167,7 @@ def get():
             # MAIN
             # GF_LANDING_PAGE
             "gf_landing_page": {
+                "type_str":             "main_go",
                 "version_str":          "latest", # "0.8.0.11",
                 "go_path_str":          "%s/../go/gf_apps/gf_landing_page"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_landing_page/gf_landing_page_service"%(cwd_str),
@@ -157,6 +179,7 @@ def get():
             # MAIN
             # GF_TAGGER
             "gf_tagger": {
+                "type_str":             "main_go",
                 "version_str":          "latest", # "0.8.0.1",
                 "go_path_str":          "%s/../go/gf_apps/gf_tagger"%(cwd_str),
                 "go_output_path_str":   "%s/../build/gf_apps/gf_tagger/gf_tagger_service"%(cwd_str),
@@ -167,6 +190,7 @@ def get():
             #-------------
             # GF_BUILDER
             "gf_builder": {
+                "type_str":            "custom",
                 "version_str":         "latest",
                 "cont_image_name_str": "gf_builder",
                 "image_tag_str":       "latest",
@@ -184,16 +208,6 @@ def get():
                 "cargo_crate_dir_paths_lst": [
                     "%s/../rust/gf_images_jobs"%(cwd_str),
                     "%s/../rust/gf_images_jobs_py"%(cwd_str),
-                ]
-            },
-
-            #-------------
-            # GF_DATA_VIZ
-            "gf_data_viz": {
-                "type_str":    "lib_rust",
-                "version_str": "latest",
-                "cargo_crate_dir_paths_lst": [
-                    "%s/../rust/gf_data_viz"%(cwd_str),
                 ]
             }
 

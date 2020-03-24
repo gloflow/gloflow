@@ -39,6 +39,7 @@ RUN npm install -g uglify-js
 # RUST
 # IMPORTANT!! - "-y" - passing it in at the end is for non-interactive installation, preventing
 #                      Rust installer from prompting the user for input (since we're in a container).
+
 RUN curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --version
@@ -56,4 +57,4 @@ RUN unzip protoc-3.11.4-linux-aarch_64.zip .
 RUN cp bin/protoc /usr/bin
 
 #-----------------------------
-#ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]
+# ENTRYPOINT ["python", "/home/gf/build/gf_builder/gf_builder.py"]

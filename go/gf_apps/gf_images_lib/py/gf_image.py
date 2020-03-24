@@ -49,6 +49,7 @@ class Image_ADT():
 		self.dominant_color_hex_str = p_props_dict.get('dominant_color_hex_str',None)
 		
 		self.tags_lst = p_props_dict.get('tags_lst',None)
+		
 #---------------------------------------------------
 #->:Image_ADT
 def create(p_image_info_map,

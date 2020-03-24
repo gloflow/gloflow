@@ -72,8 +72,8 @@ def pull(p_image__full_name_str,
 # BUILD
 def build(p_app_name_str,
 	p_app_build_meta_map,
-	p_app_web_meta_map,
 	p_log_fun,
+	p_app_web_meta_map    = None,
 	p_user_name_str       = "local",
 	p_git_commit_hash_str = None,
 	p_exit_on_fail_bool   = False,
@@ -82,7 +82,6 @@ def build(p_app_name_str,
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
 	assert isinstance(p_app_name_str,       basestring)
 	assert isinstance(p_app_build_meta_map, dict)
-	assert isinstance(p_app_web_meta_map,   dict)
 
 	#------------------
 	# META
@@ -105,13 +104,15 @@ def build(p_app_name_str,
 
 	#------------------
 	# PREPARE_WEB_FILES
-	assert p_app_web_meta_map.has_key("pages_map")
-	pages_map = p_app_web_meta_map["pages_map"]
+	if not p_app_web_meta_map == None:
+		assert isinstance(p_app_web_meta_map, dict)
+		assert "pages_map" in p_app_web_meta_map.keys()
+		pages_map = p_app_web_meta_map["pages_map"]
 
-	prepare_web_files(pages_map,
-		service_base_dir_str,
-		p_log_fun,
-		p_docker_sudo_bool = p_docker_sudo_bool)
+		prepare_web_files(pages_map,
+			service_base_dir_str,
+			p_log_fun,
+			p_docker_sudo_bool = p_docker_sudo_bool)
 
 	#------------------
 	# IMAGE_FULL_NAMES

@@ -149,29 +149,41 @@ def main():
 	# BUILD_CONTAINERS
 	elif run_str == "build_containers":
 
-		# STATIC_LINKING
-		# build using static linking, containers are based on Alpine linux, 
-		# which has a minimal stdlib and other libraries, so we want to compile 
-		# everything needed by this Go package into a single binary.
-		go_build(True)
-		
+
+
 		assert build_meta_map.has_key(app_name_str)
 		app_build_meta_map = build_meta_map[app_name_str]
 
-		web_meta_map = gf_web_meta.get()
-		assert web_meta_map.has_key(app_name_str)
-		app_web_meta_map = web_meta_map[app_name_str]
-
-
+		if app_build_meta_map["type_str"] == "main_go":
+			# STATIC_LINKING
+			# build using static linking, containers are based on Alpine linux, 
+			# which has a minimal stdlib and other libraries, so we want to compile 
+			# everything needed by this Go package into a single binary.
+			go_build(True)
+		
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
 
-		gf_containers.build(app_name_str, 
-			app_build_meta_map,
-			app_web_meta_map,
-			gf_log.log_fun,
-			p_user_name_str    = dockerhub_user_str,
-			p_docker_sudo_bool = docker_sudo_bool)
+		if app_name_str == "gf_builder":
+
+			gf_builder_ops.cont__build(dockerhub_user_str,
+				gf_log.log_fun,
+				p_docker_sudo_bool = docker_sudo_bool)
+
+
+		else:
+			
+			app_web_meta_map = None
+			web_meta_map     = gf_web_meta.get()
+			if app_name_str in web_meta_map.keys():
+				app_web_meta_map = web_meta_map[app_name_str]
+
+			gf_containers.build(app_name_str, 
+				app_build_meta_map,
+				gf_log.log_fun,
+				p_app_web_meta_map = app_web_meta_map,
+				p_user_name_str    = dockerhub_user_str,
+				p_docker_sudo_bool = docker_sudo_bool)
 
 	#-------------
 	# TEST
@@ -206,14 +218,14 @@ def main():
 			p_docker_sudo_bool = docker_sudo_bool)
 
 	#-------------
-	# GF_BUILDER__CONTAINER_BUILD
-	elif run_str == "gf_builder__cont_build":
-		dockerhub_user_str = args_map["dockerhub_user"]
-		docker_sudo_bool   = args_map["docker_sudo"]
-
-		gf_builder_ops.cont__build(dockerhub_user_str,
-			gf_log.log_fun,
-			p_docker_sudo_bool = docker_sudo_bool)
+	# # GF_BUILDER__CONTAINER_BUILD
+	# elif run_str == "gf_builder__cont_build":
+	# 	dockerhub_user_str = args_map["dockerhub_user"]
+	# 	docker_sudo_bool   = args_map["docker_sudo"]
+	#
+	# 	gf_builder_ops.cont__build(dockerhub_user_str,
+	# 		gf_log.log_fun,
+	# 		p_docker_sudo_bool = docker_sudo_bool)
 	
 	#-------------
 	else:
@@ -229,14 +241,13 @@ def parse_args():
 	# RUN
 	arg_parser.add_argument("-run", action = "store", default = "build",
 		help = '''
-- '''+fg('yellow')+'build | build_go'+attr(0)+'''       - build app golang code
-- '''+fg('yellow')+'build_rust'+attr(0)+'''             - build app golang code
-- '''+fg('yellow')+'build_web'+attr(0)+'''              - build app web code (ts/js/css/html)
-- '''+fg('yellow')+'build_containers'+attr(0)+'''       - build app Docker containers
-- '''+fg('yellow')+'test'+attr(0)+'''                   - run app code tests
-- '''+fg('yellow')+'list_changed_apps'+attr(0)+'''      - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
-- '''+fg('yellow')+'start_cluster_local'+attr(0)+'''    - start a local GF cluster using docker-compose
-- '''+fg('yellow')+'gf_builder__cont_build'+attr(0)+''' - build gf_builder container (for monorepo CI)
+- '''+fg('yellow')+'build | build_go'+attr(0)+'''    - build app golang code
+- '''+fg('yellow')+'build_rust'+attr(0)+'''          - build app golang code
+- '''+fg('yellow')+'build_web'+attr(0)+'''           - build app web code (ts/js/css/html)
+- '''+fg('yellow')+'build_containers'+attr(0)+'''    - build app Docker containers
+- '''+fg('yellow')+'test'+attr(0)+'''                - run app code tests
+- '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
+- '''+fg('yellow')+'start_cluster_local'+attr(0)+''' - start a local GF cluster using docker-compose
 
 		''')
 		
@@ -254,7 +265,9 @@ def parse_args():
 - '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
 
 - '''+fg('yellow')+'gf_images_jobs'+attr(0)+'''
-- '''+fg('yellow')+'gf_data_viz'+attr(0)+'''
+- '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
+
+- '''+fg('yellow')+'gf_builder'+attr(0)+'''
 
 		''')
 

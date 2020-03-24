@@ -37,7 +37,7 @@ def cont__build(p_dockerhub_user_name_str,
 	gf_builder_meta_map            = build_meta_map["gf_builder"]
 	cont_image_name_str            = gf_builder_meta_map["cont_image_name_str"]
 	cont_image_version_str         = gf_builder_meta_map["version_str"]
-	cont_image_dockerfile_path_str = gf_builder_meta_map["dockerfile_path_str"]
+	cont_image_dockerfile_path_str = os.path.abspath(gf_builder_meta_map["dockerfile_path_str"])
 	assert os.path.isfile(cont_image_dockerfile_path_str)
 
 	# DOCKER_BUILD
@@ -50,9 +50,3 @@ def cont__build(p_dockerhub_user_name_str,
 		p_log_fun,
 		p_exit_on_fail_bool = True,
 		p_docker_sudo_bool  = p_docker_sudo_bool)
-
-	# gf_containers.build_docker_image(cont_image_name_str,
-	#     cont_image_version_str,
-	# 	cont_image_dockerfile_path_str,
-	# 	p_dockerhub_user_name_str,
-	# 	p_log_fun)

@@ -21,6 +21,7 @@ package main
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 )
 
 //-------------------------------------------------
@@ -30,6 +31,9 @@ func main() {
 
 
 
+
+
+	gf_identity_lib.Run_service()
 
 
 
