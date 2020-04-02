@@ -68,7 +68,7 @@ def confirm(p_prompt_str, p_resp=False):
         p_prompt_str = '%s %s|%s: ' % (p_prompt_str, 'n', 'y')
         
     while True:
-        answer_str = raw_input(p_prompt_str)
+        answer_str = input(p_prompt_str)
         if not answer_str:
             return p_resp
         if answer_str not in ['y', 'Y', 'n', 'N']:

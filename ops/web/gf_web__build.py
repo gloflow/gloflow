@@ -20,7 +20,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
 from colored import fg, bg, attr
-import BeautifulSoup as bs
+from bs4 import BeautifulSoup as bs
 
 sys.path.append('%s/../utils'%(cwd_str))
 import gf_cli_utils as gf_u

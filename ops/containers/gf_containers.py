@@ -80,7 +80,7 @@ def build(p_app_name_str,
 	p_docker_sudo_bool    = False):
 	p_log_fun("FUN_ENTER", "gf_containers.build()")
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
-	assert isinstance(p_app_name_str,       basestring)
+	assert isinstance(p_app_name_str,       str)
 	assert isinstance(p_app_build_meta_map, dict)
 
 	#------------------
@@ -98,7 +98,7 @@ def build(p_app_name_str,
 	
 	#------------------
 	# COPY_FILES_TO_DIR
-	if p_app_build_meta_map.has_key("copy_to_dir_lst"):
+	if "copy_to_dir_lst" in p_app_build_meta_map.keys():
 		copy_to_dir_lst = p_app_build_meta_map["copy_to_dir_lst"]
 		copy_files(copy_to_dir_lst)
 
@@ -189,9 +189,9 @@ def get_image_full_names(p_image_name_str,
 	p_app_build_meta_map,
 	p_user_name_str,
 	p_git_commit_hash_str = None):
-	assert isinstance(p_image_name_str, basestring)
+	assert isinstance(p_image_name_str, str)
 	assert isinstance(p_app_build_meta_map, dict)
-	assert isinstance(p_user_name_str, basestring)
+	assert isinstance(p_user_name_str, str)
 
 	# IMAGE_TAG
 	image_tag_str = None
@@ -220,14 +220,14 @@ def get_image_full_names(p_image_name_str,
 
 #-------------------------------------------------------------
 def copy_files(p_copy_to_dir_lst):
-    assert isinstance(p_copy_to_dir_lst, list)
+	assert isinstance(p_copy_to_dir_lst, list)
 
-    print("")
-    print("             COPY FILES")
-    for src_f_str, target_dir_str in p_copy_to_dir_lst:
-        if not os.path.isdir(target_dir_str):
+	print("")
+	print("             COPY FILES")
+	for src_f_str, target_dir_str in p_copy_to_dir_lst:
+		if not os.path.isdir(target_dir_str):
 			gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
-        gf_cli_utils.run_cmd("cp %s %s"%(src_f_str, target_dir_str))
+		gf_cli_utils.run_cmd("cp %s %s"%(src_f_str, target_dir_str))
 
 #-------------------------------------------------------------
 # PREPARE_WEB_FILES

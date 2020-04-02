@@ -23,7 +23,7 @@ import subprocess
 import base64
 
 import delegator
-import fabric.api
+import fabric # fabric.api
 
 sys.path.append("%s/../utils"%(cwd_str))
 import gf_cli_utils
@@ -482,12 +482,12 @@ def login__remote_from_file(p_dockerhub_user_str,
 	assert isinstance(p_dockerhub_user_str, basestring)
 	assert isinstance(p_dockerhub_pass_str, basestring)
 
- 	#---------------------------
- 	# UPLOAD_PASS_FILE
+	#---------------------------
+	# UPLOAD_PASS_FILE
 
- 	pass_f_str = "tmp_file"
- 	f = open(pass_f_str, "w")
- 	f.write(p_dockerhub_pass_str)
+	pass_f_str = "tmp_file"
+	f = open(pass_f_str, "w")
+	f.write(p_dockerhub_pass_str)
 	f.close()
 
 	fabric.api.put(pass_f_str) #upload password file

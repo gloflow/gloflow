@@ -55,6 +55,7 @@ func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
 	port_str                := flag.String("port",             "2000",      "port for the service to use")
 	mongodb_host_str        := flag.String("mongodb_host",     "127.0.0.1", "host of mongodb to use")
 	mongodb_db_name_str     := flag.String("mongodb_db_name",  "prod_db",   "DB name to use")
+	
 	//-------------------
 	flag.Parse()
 
