@@ -29,7 +29,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
+	// "go.mongodb.org/mongo-driver/mongo/readpref"
 	"github.com/globalsign/mgo"
 )
 
@@ -68,7 +68,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 	p_runtime_sys *Runtime_sys) (*mongo.Database, *Gf_error) {
 
 	connect_timeout_in_sec_int := 3
-	ctx, _ := context.WithTimeout(context.Background(), connect_timeout_in_sec_int * time.Second)
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
 
 	mongo_options := options.Client().ApplyURI(p_mongo_server_url_str)
 	mongo_client, err := mongo.Connect(ctx, mongo_options)
