@@ -29,7 +29,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	// "go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"github.com/globalsign/mgo"
 )
 
@@ -76,6 +76,18 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 
 		gf_err := Error__create("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
+			map[string]interface{}{
+				"mongo_server_url_str": p_mongo_server_url_str,
+			}, err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	// test new connection
+	ctx, _ = context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
+	err = mongo_client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		gf_err := Error__create("failed to ping a MongoDB server at target url",
+			"mongodb_ping_error",
 			map[string]interface{}{
 				"mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)

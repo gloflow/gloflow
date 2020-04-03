@@ -161,6 +161,9 @@ func error__get_defs() map[string]error_def {
 		"mongodb_connect_error":error_def{
 			Descr_str: "failed to connect to a mongodb host - package (go.mongodb.org/mongo-driver)",
 		},
+		"mongodb_ping_error":error_def{
+			Descr_str: "failed to ping a mongodb host - package (go.mongodb.org/mongo-driver)",
+		},		
 		"mongodb_find_error": error_def{
 			Descr_str:"c.Find() failed to find a mongodb document - package (mgo)",
 		},
