@@ -109,6 +109,7 @@ func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx 
 					//p_log_fun("INFO",black("EVENTS >> REGISTER_EVENTS_PRODUCER >>>>>>>>>>>>>>>>>>>>>>>>>> -----------------"))
 					events_id_str                      := register_producer_msg.Events_id_str
 					events_consumers_map[events_id_str] = make([]chan Event__msg,0)
+
 				//-----------------
 				// REGISTER EVENTS_CONSUMER
 				case register_consumer_msg := <- register_consumer_ch:
@@ -118,6 +119,7 @@ func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx 
 					events_consumers_map[events_id_str] = append(events_consumers_map[events_id_str], consumer_ch)
 				
 					register_consumer_msg.Response_ch <- consumer_ch
+
 				//-----------------
 				// EVENT_MSG RELAY
 				case event_msg := <- events_broker_ch:
@@ -133,6 +135,7 @@ func Events__init(p_sse_url_str string, p_runtime_sys *Runtime_sys) *Events_ctx 
 							consumer_ch <- event_msg
 						}
 					}
+					
 				//-----------------
 			}
 		}

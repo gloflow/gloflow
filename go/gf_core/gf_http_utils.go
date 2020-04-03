@@ -43,8 +43,6 @@ type Gf_http_fetch struct {
 	Resp             *http.Response    `bson:"-"`
 }
 
-
-
 //---------------------------------------------------
 // PUT_FILE
 func HTTP__put_file(p_target_url_str string,

@@ -31,6 +31,7 @@ func error__get_defs() map[string]error_def {
 		"panic_error": error_def{
 			Descr_str: "a golang panic was caught with recover()",
 		},
+
 		//---------------
 		"int_parse_error": error_def{
 			Descr_str: "failed to parse an integer string",
@@ -44,6 +45,7 @@ func error__get_defs() map[string]error_def {
 		"io_reader_error": error_def{
 			Descr_str: "failed to read bytes using the io.Reader.ReadBytes()",
 		},
+
 		//---------------
 		// DATA_VERIFICATION
 		"verify__invalid_value_error": error_def{
@@ -76,6 +78,7 @@ func error__get_defs() map[string]error_def {
 		"verify__invalid_image_nsfv_error": error_def{
 			Descr_str: "image NSFV verification failed",
 		},
+
 		//---------------
 		// FILESYSTEM
 		"file_open_error": error_def{
@@ -108,6 +111,7 @@ func error__get_defs() map[string]error_def {
 		"dir_list_error": error_def{
 			Descr_str: "failed to list contents of a dir in the FS",
 		},
+
 		//---------------
 		// CLI
 		"cli_run_error": error_def{
@@ -130,6 +134,7 @@ func error__get_defs() map[string]error_def {
 		"base64_decoding_error": error_def{
 			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
 		},
+
 		//---------------
 		// IMAGES
 		"image_decoding_error": error_def{
@@ -150,8 +155,12 @@ func error__get_defs() map[string]error_def {
 		"gif_decoding_frames_error": error_def{
 			Descr_str: "gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
 		},
+
 		//---------------
 		// MONGODB
+		"mongodb_connect_error":error_def{
+			Descr_str: "failed to connect to a mongodb host - package (go.mongodb.org/mongo-driver)",
+		},
 		"mongodb_find_error": error_def{
 			Descr_str:"c.Find() failed to find a mongodb document - package (mgo)",
 		},
@@ -173,6 +182,7 @@ func error__get_defs() map[string]error_def {
 		"mongodb_ensure_index_error":error_def{
 			Descr_str:"c.EnsureIndex() failed to create a mongodb index - package (mgo)",
 		},
+
 		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client":error_def{

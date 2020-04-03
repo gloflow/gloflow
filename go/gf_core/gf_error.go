@@ -88,13 +88,12 @@ func Error__create(p_user_msg_str string,
 	//               the error occured.
 	skip_stack_frames_num_int := 1
 
-	//https://golang.org/pkg/runtime/#Caller
+	// https://golang.org/pkg/runtime/#Caller
 	program_counter, file_str, line_num_int,_ := runtime.Caller(skip_stack_frames_num_int)
 
-	//FuncForPC - returns a *Func describing the function that contains the given program counter address
+	// FuncForPC - returns a *Func describing the function that contains the given program counter address
 	function          := runtime.FuncForPC(program_counter)
 	function_name_str := function.Name()
-
 
 	//--------------------
 	// ERROR_DEF
@@ -104,8 +103,8 @@ func Error__create(p_user_msg_str string,
 	if !ok {
 		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
 	}
-	//--------------------
 
+	//--------------------
 
 	gf_error := Gf_error{
 		Id_str:               id_str,
@@ -124,7 +123,6 @@ func Error__create(p_user_msg_str string,
 		Line_num_int:         line_num_int,
 	}
 
-
 	red      := color.New(color.FgRed).SprintFunc()
 	cyan     := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow   := color.New(color.FgYellow).SprintFunc()
@@ -132,7 +130,7 @@ func Error__create(p_user_msg_str string,
 	green    := color.New(color.FgBlack, color.BgGreen).SprintFunc()
 
 	//--------------------
-	//VIEW
+	// VIEW
 	fmt.Printf("\n\n  %s ------------- %s\n\n\n", red("FAILED FUNCTION CALL"), yellow(function_name_str))
 
 	fmt.Printf("GF_ERROR:\n")
@@ -156,12 +154,14 @@ func Error__create(p_user_msg_str string,
 		p_user_msg_str))
 
 	fmt.Printf("\n\n")
+
 	//--------------------
-	//PERSIST
+	// PERSIST
 	err := p_runtime_sys.Mongodb_coll.Insert(gf_error)
 	if err != nil {
 
 	}
+	
 	//--------------------
 
 	return &gf_error
