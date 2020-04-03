@@ -79,7 +79,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 			map[string]interface{}{
 				"mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)
-		return gf_err
+		return nil, gf_err
 	}
 
 	mongo_db := mongo_client.Database(p_db_name_str)
@@ -95,7 +95,7 @@ func Mongo__connect(p_mongodb_host_str string,
 	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
 	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
 	
-	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
+	session, err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
 	if err != nil {
 		panic(err)
 	}
