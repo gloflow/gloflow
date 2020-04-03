@@ -92,7 +92,7 @@ func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
 	p_log_fun             func(string, string)) *mgo.Database {
 	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
-	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str)))
+	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
 	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
 	
 	session,err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
@@ -109,7 +109,7 @@ func Mongo__connect(p_mongodb_host_str string,
 	// Monotonic consistency - will read from a slave if possible, for better load distribution.
 	//                         once the first write happens the connection is switched to the master.
 	session.SetMode(mgo.Monotonic, true)
-	
+
 	//--------------------
 
 	db := session.DB(p_mongodb_db_name_str)
