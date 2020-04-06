@@ -18,11 +18,11 @@
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-sys.path.append('%s/../containers'%(modd_str))
+sys.path.append("%s/../containers"%(modd_str))
 # import gf_containers
 import gf_os_docker
 
-sys.path.append('%s/../meta'%(modd_str))
+sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 
 #---------------------------------------------------

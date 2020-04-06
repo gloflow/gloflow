@@ -15,34 +15,20 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
+
 from colored import fg, bg, attr
 import delegator
+
+sys.path.append("%s/../../go/gf_core/py"%(modd_str))
+import gf_core_lib
 
 #---------------------------------------------------
 def run_cmd(p_cmd_str,
 	p_env_map           = None,
 	p_print_output_bool = True):
 	
-	if p_print_output_bool:
-		print(p_cmd_str)
-	
-	if not p_env_map == None:
-		r = delegator.run(p_cmd_str, env=p_env_map)
-	else:	
-		r = delegator.run(p_cmd_str)
-
-	o = ""
-	e = ""
-
-	# sometimes commands dont return any stdout
-	if not r.out == "":
-		o = r.out
-		if p_print_output_bool:
-			print(o)
-
-	# sometimes commands dont return any stderr
-	if not r.err == "":
-		e = r.err
-		if p_print_output_bool: print(e)
-	
-	return o, e, r.return_code
+	return gf_core_cli.run_cmd(p_cmd_str,
+		p_env_map           = p_env_map,
+		p_print_output_bool = p_print_output_bool)

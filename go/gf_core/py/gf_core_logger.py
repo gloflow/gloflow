@@ -20,7 +20,7 @@ import clint
 
 #----------------------------------------------
 def get_log_fun(p_log_fun):
-	p_log_fun('FUN_ENTER', 'gf_core_logger.get_log_fun()')
+	# p_log_fun("FUN_ENTER", "gf_core_logger.get_log_fun()")
 	
 	#----------------------------------------------	
 	def log_color_display_fun(p_group, p_msg):

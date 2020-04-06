@@ -17,6 +17,37 @@
 
 import sys
 import argparse
+import delegator
+
+#---------------------------------------------------
+def run_cmd(p_cmd_str,
+	p_env_map           = None,
+	p_print_output_bool = True):
+	
+	if p_print_output_bool:
+		print(p_cmd_str)
+	
+	if not p_env_map == None:
+		assert isinstance(p_env_map, dict)
+		r = delegator.run(p_cmd_str, env=p_env_map)
+	else:	
+		r = delegator.run(p_cmd_str)
+
+	o = ""
+	e = ""
+
+	# sometimes commands dont return any stdout
+	if not r.out == "":
+		o = r.out
+		if p_print_output_bool:
+			print(o)
+
+	# sometimes commands dont return any stderr
+	if not r.err == "":
+		e = r.err
+		if p_print_output_bool: print(e)
+	
+	return o, e, r.return_code
 
 #-----------------------------------------------------
 # DEPRECATED!! - all users of this function will be migrated to using Pythongs stdlib argparse
@@ -58,23 +89,24 @@ def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 
 #-----------------------------------------------------
 def confirm(p_prompt_str, p_resp=False):
-    	
-    if p_prompt_str is None:
-        p_prompt_str = 'Confirm'
+	prompt_str = None
+	if p_prompt_str is None:
+		prompt_str = "Confirm"
 
-    if p_resp:
-        p_prompt_str = '%s %s|%s: ' % (p_prompt_str, 'y', 'n')
-    else:
-        p_prompt_str = '%s %s|%s: ' % (p_prompt_str, 'n', 'y')
-        
-    while True:
-        answer_str = input(p_prompt_str)
-        if not answer_str:
-            return p_resp
-        if answer_str not in ['y', 'Y', 'n', 'N']:
-            print('please enter y or n.')
-            continue
-        if answer_str == 'y' or answer_str == 'Y':
-            return True
-        if answer_str == 'n' or answer_str == 'N':
-            return False
+	if p_resp:
+		prompt_str = "%s %s|%s: "%(p_prompt_str, "y", "n")
+	else:
+		prompt_str = "%s %s|%s: "%(p_prompt_str, "n", "y")
+		
+	while True:
+
+		answer_str = input(prompt_str)
+		if not answer_str:
+			return p_resp
+		if answer_str not in ["y", "Y", "n", "N"]:
+			print("please enter y or n.")
+			continue
+		if answer_str == "y" or answer_str == "Y":
+			return True
+		if answer_str == "n" or answer_str == "N":
+			return False
