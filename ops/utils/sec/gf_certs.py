@@ -133,7 +133,9 @@ def generate__ca_intermediate(p_output_files_base_str,
 # LEAF
 def generate__cert_leaf(p_output_files_base_str,
 	p_ca_base_str,
-	p_config__file_path_str):
+	p_config__file_path_str,
+	p_hostname_str = None,
+	p_sudo_bool    = False):
 
 	# INTERMEDIATE_CA
 	ca_cert__file_path_str = "%s.pem"%(p_ca_base_str)
@@ -143,6 +145,10 @@ def generate__cert_leaf(p_output_files_base_str,
 	
 	#-----------------
 	# GENERATE
+
+	c_lst.append('''echo "{}"''')
+	c_lst.append("|")
+
 	if p_sudo_bool:
 		c_lst.append("sudo")
 
@@ -153,8 +159,13 @@ def generate__cert_leaf(p_output_files_base_str,
 		"-ca=%s"%(ca_cert__file_path_str),
 		"-ca-key=%s"%(ca_key__file_path_str),
 		"-config=%s"%(p_config__file_path_str),
-		'''-hostname="server.global.nomad,localhost,127.0.0.1"''', "-",
 	])
+
+	if not p_hostname_str == None:
+		c_lst.append('''-hostname="%s"'''%(p_hostname_str))
+
+	# pass-in CSRJSON from stdin from the initial 'echo "{}"'
+	c_lst.append("-")
 
 	#-----------------
 	c_lst.append("|")
@@ -186,8 +197,8 @@ def archive_if_exists(p_files_base_str, p_sudo_bool = False):
 
 	# list all files in target dir
 	# "-1"  - force output to be one entry per line
-	# "^%s" - pattern matches the file_base only at the start of the line
-	stdout_str, _, return_code = gf_core_cli.run_cmd("%s ls -1 %s | grep '^%s'"%(sudo_str, dir_str, file_base_str),
+	# "^%s\.\|^%s-key\." - pattern matches the file_base only at the start of the line with a postfix "." or "-key."
+	stdout_str, _, return_code = gf_core_cli.run_cmd("%s ls -1 %s | grep '^%s\.\|^%s-key\.'"%(sudo_str, dir_str, file_base_str, file_base_str),
 		p_env_map = None,
 		p_print_output_bool = True)
 	
@@ -201,7 +212,7 @@ def archive_if_exists(p_files_base_str, p_sudo_bool = False):
 
 		# IMPORTANT!! - ask use if they want to recreate/archive existing certs. if they dont
 		#               dont archive and return False
-		print("CERT ALREADY EXISTS")
+		print("CERT ALREADY EXISTS - %s"%(file_base_str))
 		if not gf_core_cli.confirm("recreate cert (and archive old)?"):
 			return False
 
