@@ -218,7 +218,7 @@ def archive_if_exists(p_files_base_str, p_sudo_bool = False):
 
 		archive_time = time.time()
 
-		# process each file that needs to be archived
+		# process each file that needs to be archivedp_ca_intermediate__output_files_base_str
 		for l in lines_lst:
 			file_name_str = l.split()[-1:][0]
 			file_path_str = "%s/%s"%(dir_str, file_name_str)
@@ -231,3 +231,36 @@ def archive_if_exists(p_files_base_str, p_sudo_bool = False):
 				exit()
 	
 	return True
+
+#-------------------------------------------------------------
+def combine_ca_chain(p_output_files_base_str,
+	p_ca_intermediate__output_files_base_str,
+	p_ca_leaf__output_files_base_str,
+	p_sudo_bool = False):
+
+	output_file_str = "%s_full.pem"%(p_output_files_base_str)
+
+	c_lst = []
+	if p_sudo_bool:
+		c_lst.append("sudo")
+
+	c_lst.extend([
+		"touch %s"%(output_file_str),
+		"&&"
+	])
+	
+	if p_sudo_bool:
+		c_lst.append("sudo")
+
+	c_lst.extend(["bash -c 'cat %s %s > %s'"%(
+		"%s.pem"%(p_ca_leaf__output_files_base_str),
+		"%s.pem"%(p_ca_intermediate__output_files_base_str),
+		output_file_str
+	)])
+
+	_, _, return_code = gf_core_cli.run_cmd(" ".join(c_lst), p_env_map = None)
+	if not return_code == 0:
+		print("CLI failed...")
+		exit()
+
+	return output_file_str
