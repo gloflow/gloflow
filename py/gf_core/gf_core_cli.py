@@ -50,17 +50,17 @@ def run_cmd(p_cmd_str,
 	return o, e, r.return_code
 
 #-----------------------------------------------------
-# DEPRECATED!! - all users of this function will be migrated to using Pythongs stdlib argparse
+# DEPRECATED!! - all users of this function will be migrated to using Pythons stdlib argparse
 #                directly. once they all migrate to this remove this function and this abstraction.
 # IMPORTANT!! - these arguments(service_info parameters) have precendence over
 #               what is returned by services get_service_info() function
 
 def parse_args(p_cmd_line_args_defs_map, p_log_fun):
-	p_log_fun('FUN_ENTER', 'gf_core_cli.parse_args()')
+	p_log_fun("FUN_ENTER", "gf_core_cli.parse_args()")
 	assert isinstance(p_cmd_line_args_defs_map, dict)
 	
 	passed_in_args_lst = sys.argv[1:]
-	p_log_fun('INFO', 'passed in args:%s'%(passed_in_args_lst))
+	p_log_fun("INFO", "passed in args:%s"%(passed_in_args_lst))
 	
 	# RawTextHelpFormatter - so that newlines in the help text are rendered when "-h" option 
 	#                        is passed on the command line
@@ -68,11 +68,11 @@ def parse_args(p_cmd_line_args_defs_map, p_log_fun):
 
 	#load up all command line argument definitions
 	for arg_name_str, arg_def_map in p_cmd_line_args_defs_map.items():
-		arg_default  = arg_def_map['default']
-		arg_help_str = arg_def_map['help']
+		arg_default  = arg_def_map["default"]
+		arg_help_str = arg_def_map["help"]
 		
 
-		arg_parser.add_argument('-%s'%(arg_name_str), 
+		arg_parser.add_argument("-%s"%(arg_name_str), 
 			action  = "store",
 			default = arg_default,
 			help    = arg_help_str)
