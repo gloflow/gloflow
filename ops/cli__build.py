@@ -62,13 +62,13 @@ def main():
 	run_str    = args_map["run"]
 
 	app_name_str = args_map["app"]
-	assert build_meta_map.has_key(app_name_str)
+	assert app_name_str in build_meta_map.keys()
 
 	#--------------------------------------------------
 	def go_build(p_static_bool):
 		
 		app_meta_map = build_meta_map[app_name_str]
-		if not app_meta_map.has_key("go_output_path_str"):
+		if not "go_output_path_str" in app_meta_map.keys():
 			print("not a main package")
 			exit()
 			
@@ -151,7 +151,7 @@ def main():
 
 
 
-		assert build_meta_map.has_key(app_name_str)
+		assert app_name_str in build_meta_map.keys()
 		app_build_meta_map = build_meta_map[app_name_str]
 
 		if app_build_meta_map["type_str"] == "main_go":

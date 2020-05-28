@@ -142,6 +142,8 @@ def build(p_app_name_str,
 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 		p_docker_sudo_bool  = p_docker_sudo_bool)
 
+	#------------------
+
 #-------------------------------------------------------------
 # PUBLISH
 def publish(p_app_name_str,
@@ -250,9 +252,11 @@ def prepare_web_files(p_pages_map,
 		# CREATE_TARGET_DIR
 		target_dir_str = os.path.abspath("%s/static"%(p_service_base_dir_str))
 		gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
+
 		#------------------
 		# COPY_PAGE_WEB_CODE
 		gf_cli_utils.run_cmd("cp -r %s/* %s"%(build_dir_str, target_dir_str))
+
 		#------------------
 
 	#------------------
@@ -266,6 +270,7 @@ def prepare_web_files(p_pages_map,
 	#               into that static/ dir from other locations while in development.
 	gf_cli_utils.run_cmd("rm -rf %s/../templates"%(target_dir_str)) # remove existing templates build dir
 	gf_cli_utils.run_cmd("mv %s/templates %s/.."%(target_dir_str, target_dir_str))
+	
 	#------------------
 
 #-------------------------------------------------------------
@@ -289,7 +294,7 @@ def prepare_web_files(p_pages_map,
 # 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 # 		p_docker_sudo_bool  = p_docker_sudo_bool)
 # 	#------------------
-#	
+
 #-------------------------------------------------------------
 def get_service_dockerfile(p_app_build_meta_map):
 	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]

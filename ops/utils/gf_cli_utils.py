@@ -21,8 +21,8 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 from colored import fg, bg, attr
 import delegator
 
-sys.path.append("%s/../../go/gf_core/py"%(modd_str))
-import gf_core_lib
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
 
 #---------------------------------------------------
 def run_cmd(p_cmd_str,

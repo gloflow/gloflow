@@ -23,7 +23,6 @@ import subprocess
 # sys.path.append("%s/../gf_core"%(modd_str))
 # import gf_core_cli
 
-
 #-------------------------------------------------------------
 # SERVICES__CATALOG
 def services__catalog(p_auth_token_str,
@@ -145,10 +144,5 @@ def agent__start(p_name_str,
 	c_str = " ".join(cmd_lst)
 	print(c_str)
 	consul_agent_p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, bufsize=1)
-
-	# stdout_str, _, return_code = gf_core_cli.run_cmd(" ".join(cmd_lst), p_env_map = None)
-	# if not return_code == 0:
-	# 	print("CLI failed...")
-	# 	exit()
-
+	
 	return consul_agent_p

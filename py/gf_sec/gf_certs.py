@@ -234,8 +234,7 @@ def archive_if_exists(p_files_base_str, p_sudo_bool = False):
 
 #-------------------------------------------------------------
 def combine_ca_chain(p_output_files_base_str,
-	p_ca_intermediate__output_files_base_str,
-	p_ca_leaf__output_files_base_str,
+	p_cert_chain__file_paths_lst,
 	p_sudo_bool = False):
 
 	output_file_str = "%s_full.pem"%(p_output_files_base_str)
@@ -252,9 +251,13 @@ def combine_ca_chain(p_output_files_base_str,
 	if p_sudo_bool:
 		c_lst.append("sudo")
 
-	c_lst.extend(["bash -c 'cat %s %s > %s'"%(
-		"%s.pem"%(p_ca_leaf__output_files_base_str),
-		"%s.pem"%(p_ca_intermediate__output_files_base_str),
+
+	for f in p_cert_chain__file_paths_lst:
+		assert f.endswith(".pem")
+
+	# child-certs go first in the list, before their parent certs.
+	c_lst.extend(["bash -c 'cat %s > %s'"%(
+		" ".join(p_cert_chain__file_paths_lst),
 		output_file_str
 	)])
 
