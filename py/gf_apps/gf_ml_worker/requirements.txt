@@ -1,0 +1,4 @@
+tensorflow
+numpy
+matplotlib
+delegator-py

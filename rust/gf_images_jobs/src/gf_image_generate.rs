@@ -44,8 +44,8 @@ pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
         p_target_dir_path_str);
 
 
-    let output_file_path_str = "./data/output_ml/gf_rust_test.tfrecords";
-    gf_core::gf_tf::get_tf_records__writer(output_file_path_str);
+    // let output_file_path_str = format!("{}/gf_rust_test.tfrecords", p_target_dir_path_str);
+    // gf_core::gf_tf::get_tf_records__writer(output_file_path_str);
 
 
 }
