@@ -226,7 +226,7 @@ def acl_policy_apply(p_name_str,
 			# path to a PEM encoded CA cert file to use to verify the Nomad server SSL certificate.
 			"-ca-cert=%s"%(p_ca_intermediate__file_path_str),
 			
-			# ath to a PEM encoded client certificate for TLS authentication to the Nomad server.
+			# path to a PEM encoded client certificate for TLS authentication to the Nomad server.
 			"-client-cert=%s"%(p_cert_combined__file_path_str),
 			"-client-key=%s"%(p_cert_key__file_path_str),
 		])

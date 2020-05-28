@@ -23,8 +23,42 @@ import subprocess
 # sys.path.append("%s/../gf_core"%(modd_str))
 # import gf_core_cli
 
+
 #-------------------------------------------------------------
-def agent_start(p_name_str,
+# SERVICES__CATALOG
+def services__catalog(p_auth_token_str,
+	p_ca_intermediate__file_path_str = None,
+	p_cert_combined__file_path_str   = None,
+	p_cert_key__file_path_str        = None,
+	p_host_str                       = "127.0.0.1:8501"):
+
+	# cmd_lst = []
+	# if p_sudo_bool:
+	# 	cmd_lst.append("sudo")
+	#
+	# cmd_lst.extend([
+	# 	"CONSUL_HTTP_TOKEN=%s"%(p_auth_token_str),
+	# 	"consul catalog services",
+	# 	"-tags",
+	# 	"-http-addr=https://%s"%(p_host_str),
+	# ])
+	
+	# CONSUL_HTTP_API
+	assert os.path.isfile(p_ca_intermediate__file_path_str)
+	assert os.path.isfile(p_cert_combined__file_path_str)
+	assert os.path.isfile(p_cert_key__file_path_str)
+
+	url_str = "https://%s/v1/catalog/services"%(p_host_str)
+	r = requests.get(url_str,
+		verify=p_ca_intermediate__file_path_str,
+		cert=(p_cert_combined__file_path_str, p_cert_key__file_path_str))
+
+
+	print(r.text)
+	
+#-------------------------------------------------------------
+# AGENT__START
+def agent__start(p_name_str,
 	p_type_str                 = "server",
 	p_container_image_name_str = "consul:1.7.2",
 	p_config__file_path_str    = None,
