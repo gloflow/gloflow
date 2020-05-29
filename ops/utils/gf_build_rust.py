@@ -18,8 +18,8 @@
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-sys.path.append("%s/../meta"%(modd_str))
-import gf_cli_utils
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
 
 #--------------------------------------------------
 # RUST NIGHTLY
@@ -32,36 +32,57 @@ import gf_cli_utils
 # BUILD
 def build(p_cargo_crate_dir_path_str,
     p_static_bool       = False,
-    p_exit_on_fail_bool = True):
+    p_exit_on_fail_bool = True,
+    p_verbose_bool      = False):
     assert os.path.isdir(p_cargo_crate_dir_path_str)
     print("BUILD...")
-
+    
     cwd_str = os.getcwd()
     os.chdir(os.path.abspath(p_cargo_crate_dir_path_str)) # change into the target main package dir
 
+    #-------------
     # "rustup update stable"
     # _, _, exit_code_int = gf_cli_utils.run_cmd("cargo clean")
+
+    #-------------
 
     c_lst = [
         # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings
         # "RUSTFLAGS='-L %s'"%(os.path.abspath("%s/../../rust/gf_images_jobs/test"%(modd_str))),
         "cargo build",
-        # "--verbose",
     ]
 
+    if p_verbose_bool:
+        c_lst.append("--verbose")
+
+    # STATIC_LINKING - some outputed libs (imported by Go for example) should contain their
+	#                  own versions of libs statically linked into them.
     if p_static_bool:
+
+        #-------------
         # MUSL - staticaly compile libc compatible lib into the output binary. without MUSL
         #        rust statically compiles all program libs except the standard lib.
+        # musl-gcc - musl-gcc is a wrapper around GCC that uses the musl C standard library
+        #            implementation to build programs. It is well suited for being linked with other libraries
+        #            into a single static executable with no shared dependencies.
+        #            its used by "cargo build" if we target linux-musl.
+        #            "sudo apt-get install musl-tools" - make sure its installed
+        #
         # x86_64-unknown-linux-musl - for 64-bit Linux.
         #                             for this to work "rustup" has to be used to install this
         #                             build target into the Rust toolchain. 
         #                             (for GF CI this is done in the gf_builder Dockerfile__gf_builder)
         c_lst.append("--target x86_64-unknown-linux-musl")
+
+        #-------------
+
+    # DYNAMIC_LINKING
     else:
         c_lst.append("--release")
 
-    _, _, exit_code_int = gf_cli_utils.run_cmd(" ".join(c_lst))
-    
+    # _, _, exit_code_int = gf_cli_utils.run_cmd(" ".join(c_lst))
+    _, _, exit_code_int = gf_core_cli.run(" ".join(c_lst))
+
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
     #               want to fail with a non-zero exit code as well - this way other CI 
     #               programs will flag builds as failed.
@@ -129,7 +150,7 @@ def prepare_libs(p_name_str,
     # COPY_FILES
     for source_f, target_f in target_lib_file_path_lst:
         c_str = "cp %s %s"%(source_f, target_f)
-        _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+        _, _, exit_code_int = gf_core_cli.run(c_str) # gf_cli_utils.run_cmd(c_str)
 
 
 

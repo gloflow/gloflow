@@ -78,35 +78,44 @@ def main():
 			p_static_bool = p_static_bool)
 
 	#--------------------------------------------------
-	def rust_build(p_static_bool):
+	def rust_build():
 		assert app_name_str == "gf_data_viz" or \
 			app_name_str == "gf_images_jobs"
 
-
+		# APP_META
 		app_meta_map = build_meta_map[app_name_str]
 		assert "type_str" in app_meta_map.keys()
 		assert app_meta_map["type_str"] == "lib_rust"
 
-		assert "cargo_crate_dir_paths_lst" in app_meta_map.keys()
-		cargo_crate_dir_paths_lst = app_meta_map["cargo_crate_dir_paths_lst"]
-		assert isinstance(cargo_crate_dir_paths_lst, list)
-		for d_str in cargo_crate_dir_paths_lst:
-			assert os.path.isdir(d_str)
+		# CARGO_CRATE_DIR_PATHS
+		assert "cargo_crate_specs_lst" in app_meta_map.keys()
+		cargo_crate_specs_lst = app_meta_map["cargo_crate_specs_lst"]
+		assert isinstance(cargo_crate_specs_lst, list)
+		for s_map in cargo_crate_specs_lst:
+			assert "dir_path_str" in s_map.keys()
+			assert os.path.isdir(s_map["dir_path_str"])
 
-		for d_str in cargo_crate_dir_paths_lst:
+		for s_map in cargo_crate_specs_lst:
+
+			dir_path_str = s_map["dir_path_str"]
 
 			print("")
 			print("------------------------------------------------------------")
-			print("       BUILD CARGO CRATE - %s"%(d_str))
+			print("       BUILD CARGO CRATE - %s"%(dir_path_str))
 			print("")
 
+			# STATIC
+			static_bool = False
+			if "static_bool" in s_map.keys():
+				static_bool = s_map["static_bool"]
+
 			# BUILD
-			gf_build_rust.build(d_str,
-				p_static_bool = p_static_bool)
+			gf_build_rust.build(dir_path_str,
+				p_static_bool = static_bool)
 
 			# PREPARE_LIBS
 			gf_build_rust.prepare_libs(app_name_str,
-				d_str,
+				dir_path_str,
 				app_meta_map["type_str"])
 
 	#--------------------------------------------------
@@ -132,10 +141,8 @@ def main():
 	#-------------
 	# BUILD_RUST
 	elif run_str == "build_rust":
-
-		# STATIC_LINKING - outputed libs (imported by Go) should contain their
-		#                  own versions of libs statically linked into them.
-		rust_build(False)
+		
+		rust_build()
 	
 	#-------------
 	# BUILD_WEB

@@ -15,11 +15,41 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import sys
+import sys, os
 import argparse
+import subprocess
+
 import delegator
 
 #---------------------------------------------------
+# RUN
+def run(p_cmd_str,
+	p_env_map = {}):
+
+	# env map has to contains all the parents ENV vars as well
+	p_env_map.update(os.environ)
+
+	p = subprocess.Popen(p_cmd_str,
+		env     = p_env_map,
+		shell   = True,
+		stdout  = subprocess.PIPE,
+		stderr  = subprocess.PIPE,
+		bufsize = 1)
+
+	for line in iter(p.stdout.readline, b''):	
+		line_str = line.strip().decode("utf-8")
+		print(line_str)
+
+	for line in iter(p.stderr.readline, b''):	
+		line_str = line.strip().decode("utf-8")
+		print(line_str)
+
+	p.communicate()
+	
+	return "", "", p.returncode
+
+#---------------------------------------------------
+# DEPRECATED!! - move all users over to run()
 def run_cmd(p_cmd_str,
 	p_env_map           = None,
 	p_print_output_bool = True):
@@ -30,7 +60,7 @@ def run_cmd(p_cmd_str,
 	if not p_env_map == None:
 		assert isinstance(p_env_map, dict)
 		r = delegator.run(p_cmd_str, env=p_env_map)
-	else:	
+	else:
 		r = delegator.run(p_cmd_str)
 
 	o = ""

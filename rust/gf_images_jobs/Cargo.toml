@@ -37,6 +37,10 @@ gf_ml   = {path="../gf_ml",   version="0.1.0"}
 # A library that makes linear color calculations and conversion easy and accessible for anyone
 palette = "0.5"
 
+# IMPORTANT!! - MUSL-static-linked compilation wont succeed without this.
+#               its not used directly, but instead by one of the dependencies.
+openssl = { version = "0.10", features = ["vendored"] }
+
 #-------------------------------
 [build]
 

@@ -23,12 +23,9 @@ cairo-rs = {features=["png"]} # 2D drawing
 # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
 protobuf = "" # "2"
 
-# IMPORTANT!! - "0.14.0" doesnt contain some of the tensorflow::io functions that I need,
-#               but which are present in the main repo "master" branch. 
-#               so until a "0.15.0" crate is released, we have to link directly to the 
-#               github repo to use the latest version of the code.
-# tensorflow = "0.14.0
-tensorflow = {git = "https://github.com/tensorflow/rust"} # "0.14.0
+# TENSORFLOW
+tensorflow = "0.15.0"
+# tensorflow = {git = "https://github.com/tensorflow/rust"}
 
 #-------------------------------
 [build-dependencies]

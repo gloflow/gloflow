@@ -101,6 +101,17 @@ def get():
                 ]
             },
 
+            #-------------
+            # GF_IMAGES_JOBS
+            "gf_images_jobs": {
+                "type_str":    "lib_rust",
+                "version_str": "latest",
+                "cargo_crate_specs_lst": [
+                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": False},
+                    {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
+                ]
+            },
+
             #------------------------
             # GF_SOLO
             "gf_solo": {
@@ -225,17 +236,6 @@ def get():
                 # build procedures that files/modules from many different directories. 
                 "dockerfile_path_str": "%s/../Dockerfile__gf_builder"%(modd_str)
             },
-
-            #-------------
-            # GF_IMAGES_JOBS
-            "gf_images_jobs": {
-                "type_str":    "lib_rust",
-                "version_str": "latest",
-                "cargo_crate_dir_paths_lst": [
-                    "%s/../rust/gf_images_jobs"%(modd_str),
-                    "%s/../rust/gf_images_jobs_py"%(modd_str),
-                ]
-            }
 
             #-------------
         }
