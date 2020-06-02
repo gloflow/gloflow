@@ -18,7 +18,7 @@ ADD ./py /home/gf/py
 
 # FIX!! - this should be compiled staticaly into gf_images_jobs_py.so
 RUN apt-get update
-RUN apt-get install -y libcairo2-dev
+# RUN apt-get install -y libcairo2-dev
 
 #------------
 # RUN

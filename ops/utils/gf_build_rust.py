@@ -102,7 +102,8 @@ def prepare_libs(p_name_str,
     print("PREPARE LIBS...")
 
 
-    target_build_dir_path_str = "%s/../../rust/build"%(modd_str)
+    target_build_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))
+    assert os.path.isdir(target_build_dir_path_str)
 
     target_lib_file_path_lst = []
     if p_type_str == "lib_rust":

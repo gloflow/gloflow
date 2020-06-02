@@ -107,7 +107,7 @@ def get():
                 "type_str":    "lib_rust",
                 "version_str": "latest",
                 "cargo_crate_specs_lst": [
-                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": False},
+                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": True},
                     {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
                 ]
             },
