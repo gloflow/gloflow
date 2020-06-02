@@ -90,7 +90,7 @@ def load__generated(p_generate_bool = False):
 		num_parallel_reads = 32)
 
     print(dataset)
-    exit()
+    return dataset
 
 #----------------------------------------------
 # LOAD__CIFAR10

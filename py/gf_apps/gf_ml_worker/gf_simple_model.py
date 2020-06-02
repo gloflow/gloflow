@@ -22,69 +22,88 @@ import matplotlib.pyplot as plt
 
 import gf_data
 
-
-
-
-
 #----------------------------------------------
 def main():
 
-
-
-    print("d")
-    gf_data.load__generated()
-
-
-    
+    # GENERATE_DATA
+    generated__dataset = gf_data.load__generated()
 
     # DATA_INPUT
     data_map = gf_data.load__cifar10()
 
     # CREATE
-    model = create()
+    model = create(data_map)
 
     # FIT
     train_tf_history = fit(data_map, model)
 
-
-
-
+    # EVALUATE
     evaluate(data_map,
         train_tf_history,
         model)
 
-
-
 #----------------------------------------------
 # CREATE
-def create():
-
+def create(p_data_map):
 
     print(" --- CREATE MODEL ")
-    model = models.Sequential()
+    # model = models.Sequential()
 
+    print(p_data_map["train_images"][:1].shape)
+
+    #---------------------------
     # CONV_1
-    model.add(layers.Conv2D(32, (3, 3), activation="relu", input_shape=(32, 32, 3)))
-    model.add(layers.MaxPooling2D((2, 2)))
+    # model.add(layers.Conv2D(32, (3, 3), activation="relu", input_shape=(32, 32, 3)))
+    # model.add(layers.MaxPooling2D((2, 2)))
+
+    input_l          = layers.Input(shape=(32, 32, 3))
+    conv1_l    = layers.Conv2D(32, (3, 3), activation="relu")(input_l)
+    maxpool1_l = layers.MaxPooling2D((2, 2))(conv1_l)
+
+    print(maxpool1_l)
     
+    #---------------------------
     # CONV_2
-    model.add(layers.Conv2D(64, (3, 3), activation="relu"))
-    model.add(layers.MaxPooling2D((2, 2)))
+    # model.add(layers.Conv2D(64, (3, 3), activation="relu"))
+    # model.add(layers.MaxPooling2D((2, 2)))
 
+    conv2_l    = layers.Conv2D(64, (3, 3), activation="relu")(maxpool1_l)
+    maxpool2_l = layers.MaxPooling2D((2, 2))(conv2_l)
+
+    #---------------------------
+    # # CONV_3
+    # model.add(layers.Conv2D(128, (3, 3), activation="relu"))
+    # model.add(layers.MaxPooling2D((2, 2)))
+    # 
+    # model.add(layers.Conv2D(128, (2, 2), activation="relu"))
+    # model.add(layers.MaxPooling2D((2, 2)))
+    # 
+    # CONV_4
+    # model.add(layers.Conv2D(256, (2, 2), activation="relu"))
+    # model.add(layers.MaxPooling2D((2, 2)))
+
+    #---------------------------
     # CONV_3
-    model.add(layers.Conv2D(64, (3, 3), activation="relu"))
+    # model.add(layers.Conv2D(64, (3, 3), activation="relu"))
+    conv3_l = layers.Conv2D(64, (3, 3), activation="relu")(maxpool2_l)
 
+    #---------------------------
     # FLATTEN
-    model.add(layers.Flatten())
+    # model.add(layers.Flatten())
+    flatten_l = layers.Flatten()(conv3_l)
 
+    #---------------------------
     # DENSE - 64
-    model.add(layers.Dense(64, activation="relu"))
+    # model.add(layers.Dense(64, activation="relu"))
+    dense1_l = layers.Dense(64, activation="relu")(flatten_l)
     
+    #---------------------------
     # DENSE - 10
-    model.add(layers.Dense(10))
-
-
-
+    # model.add(layers.Dense(10))
+    dense2_l = layers.Dense(10)(dense1_l)
+    
+    #---------------------------
+    model = tf.keras.models.Model(inputs=input_l, outputs=dense2_l)
     model.summary()
 
     # COMPILE
@@ -100,20 +119,39 @@ def fit(p_data_map,
     p_model):
 
     print(" --- FIT MODEL ")
-    epochs_num_int = 10
+    epochs_num_int   = 1
+    examples_num_int = 100
 
 
     print("run...")
-    train_tf_history = p_model.fit(p_data_map["train_images"][:10],
-        p_data_map["train_labels"][:10],
+    train_tf_history = p_model.fit(p_data_map["train_images"][:examples_num_int],
+        p_data_map["train_labels"][:examples_num_int],
         epochs          = epochs_num_int,
-        validation_data = (p_data_map["test_images"][:10], p_data_map["test_labels"][:10]))
+        validation_data = (p_data_map["test_images"][:examples_num_int], p_data_map["test_labels"][:examples_num_int]))
 
 
     print(train_tf_history)
 
 
+    for v in p_model.trainable_weights:
+        print(v)
 
+        print(v.shape)
+
+
+
+    x = p_data_map["train_images"][0]
+
+
+
+    import numpy as np
+
+    # add one dimension to the tensor, to be (w, h, 3) -> (1, w, h, 3) 
+    x_expanded = np.expand_dims(x, 0)
+    y = p_model.predict(x_expanded)
+
+    print(y)
+    exit()
 
     return train_tf_history
 
@@ -150,7 +188,6 @@ def evaluate(p_data_map,
 
 
     plt.show()
-
 
 #----------------------------------------------
 main()
