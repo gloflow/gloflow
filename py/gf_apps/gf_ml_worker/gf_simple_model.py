@@ -20,16 +20,16 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 
-import gf_data
+import gf_ml_data
 
 #----------------------------------------------
 def main():
 
     # GENERATE_DATA
-    generated__dataset = gf_data.load__generated()
+    generated__dataset = gf_ml_data.load__generated(p_generate_bool=True)
 
     # DATA_INPUT
-    data_map = gf_data.load__cifar10()
+    data_map = gf_ml_data.load__cifar10()
 
     # CREATE
     model = create(data_map)
@@ -56,7 +56,7 @@ def create(p_data_map):
     # model.add(layers.Conv2D(32, (3, 3), activation="relu", input_shape=(32, 32, 3)))
     # model.add(layers.MaxPooling2D((2, 2)))
 
-    input_l          = layers.Input(shape=(32, 32, 3))
+    input_l    = layers.Input(shape=(32, 32, 3))
     conv1_l    = layers.Conv2D(32, (3, 3), activation="relu")(input_l)
     maxpool1_l = layers.MaxPooling2D((2, 2))(conv1_l)
 

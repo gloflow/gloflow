@@ -96,8 +96,8 @@ pub fn generate(p_dataset_name_str: String,
     };
 
     // TFRECORDS_FILE_PATHS
-    let tf_records_file_path__train_str    = format!("{}/{}__train.tfrecords", &gf_dataset_config.target_dir_path_str, &gf_dataset_config.name_str);
-    let tf_records_file_path__validate_str = format!("{}/{}__validate.tfrecords", &gf_dataset_config.target_dir_path_str, &gf_dataset_config.name_str);
+    let tf_records_file_path__train_str    = format!("{}/tfrecords/{}__train.tfrecords", &gf_dataset_config.target_dir_path_str, &gf_dataset_config.name_str);
+    let tf_records_file_path__validate_str = format!("{}/tfrecords/{}__validate.tfrecords", &gf_dataset_config.target_dir_path_str, &gf_dataset_config.name_str);
 
     // TRAIN_DATASET
     generate_for_env(&"train",

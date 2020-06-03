@@ -21,11 +21,14 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 import tensorflow as tf
 from tensorflow.keras import datasets
 
+import sklearn.datasets
+import sklearn.model_selection
+
 #---------------------------
 # GF_IMAGES_JOBS
 
 print('''
-RUN WITH - 'LD_LIBRARY_PATH=../../build/ python3 gf_simple_model.py'
+RUN WITH - 'LD_LIBRARY_PATH=./../../../rust/build python3 gf_simple_model.py'
 ''')
 
 # os.environ["LD_LIBRARY_PATH"] = "%s/../../../rust/build"%(modd_str)
@@ -51,7 +54,7 @@ def load__generated(p_generate_bool = False):
     print("load generated...")
 
     dataset_target_dir_path_str = "%s/test/data/output/generated"%(modd_str)
-    dataset_train_file_path_str = "%s/test__train.tfrecords"%(dataset_target_dir_path_str)
+    dataset_train_file_path_str = "%s/tfrecords/test__train.tfrecords"%(dataset_target_dir_path_str)
 
     # GENERATE
     if p_generate_bool:
@@ -135,9 +138,6 @@ def load__cifar10():
     #----------------------------------------------
     # show_dataset()
 
-
-
-
     data_map = {
         "train_images": train_images,
         "train_labels": train_labels,
@@ -145,6 +145,26 @@ def load__cifar10():
         "test_labels":  test_labels
     }
 
-
-
     return data_map
+
+#----------------------------------------------
+# LOAD__MNIST
+def load__mnist():
+
+    # https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html
+    dataset = sklearn.datasets.load_digits()
+    imgs_examples_ndarr = dataset.data
+    imgs_labels_ndarr   = dataset.target
+
+
+
+
+    # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
+    # Split arrays or matrices into random train and test subsets.
+    # shuffle - randomize data before splitting it
+    imgs_train, imgs_test, labels_train, labels_test = sklearn.model_selection.train_test_split(imgs_examples_ndarr,
+        imgs_labels_ndarr,
+        shuffle=True)
+
+
+    return imgs_train, imgs_test, labels_train, labels_test

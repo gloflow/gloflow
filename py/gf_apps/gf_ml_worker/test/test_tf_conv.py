@@ -20,11 +20,15 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import numpy as np
 import matplotlib.pyplot as plt
-import skimage.io
 
 import tensorflow as tf
 import tensorflow.keras.layers
 tf.compat.v1.enable_eager_execution() # EAGER_EXEC
+
+import tensorflow.keras.utils
+
+sys.path.append("%s/utils"%(modd_str))
+import gf_ml_test_data
 
 #----------------------------------------------
 def main():
@@ -42,49 +46,15 @@ def main():
         tf.debugging.set_log_device_placement(True)
 
     #----------------------------------------------
-    def load_data():
-
-        input_img_path_str = "%s/../../../../rust/gf_images_jobs/test/data/input/test_img_1.jpeg"%(modd_str)
-        assert os.path.isfile(input_img_path_str)
-
-        input_img = skimage.io.imread(input_img_path_str)
-        assert isinstance(input_img, np.ndarray)
-        print("input img - %s"%(str(input_img.shape)))
-
-        #----------------------------------------------
-        def img_crop(p_img_np, p_width_int, p_height_int):
-            h, w, _       = p_img_np.shape
-            crop_origin_x = w//2 - p_width_int//2
-            crop_origin_y = h//2 - p_height_int//2
-            img_crop = p_img_np[crop_origin_x:crop_origin_x+p_width_int, 
-                crop_origin_y:crop_origin_y+p_height_int]
-            return img_crop
-
-        #----------------------------------------------
-
-        img_croped            = img_crop(input_img, 64, 64)
-        input_img_transformed = img_croped.astype("float32")
-
-        # plt.imshow(input_img_transformed.astype("uint8"))
-        # plt.show()
-
-        input_img_batch = np.expand_dims(input_img_transformed, 0)
-        print(input_img_batch.shape)
-
-        return input_img_batch
-
-    #----------------------------------------------
 
     tf_set_cpu_target()
 
-    input_img_batch       = load_data()
+    input_img_batch       = gf_ml_test_data.load_data()
     input_img_transformed = np.squeeze(input_img_batch, 0) # drop 1st (batch) dimension
 
 
     basic_conv_model(input_img_batch)
 
-
-    exit()
 
 
     test_conv_layer(input_img_batch)
@@ -126,7 +96,9 @@ def basic_conv_model(p_input_img_batch):
     tf_conv_l_ouput_fn = tf.keras.backend.function([model.layers[0].input],
         [model.layers[1].output])
 
-    print("AAAAAAAAAAAAAa")
+
+
+
     conv_output = tf_conv_l_ouput_fn(p_input_img_batch)
     print(conv_output[0].shape)
 
@@ -135,6 +107,10 @@ def basic_conv_model(p_input_img_batch):
 
 
 
+
+
+    # PLOT_MODEL
+    tensorflow.keras.utils.plot_model(model, to_file="%s/data/output/tf_model.png"%(modd_str))
 
 
     #----------------------------------------------
@@ -232,7 +208,19 @@ def plot_conv_layer(p_tf_conv_l):
     print(w.shape)
     print(b.shape)
     
-    n = np.reshape(w, (filters_num_int, 5, 5, 3))
+
+
+    print(w.shape)
+
+
+    # w             - (width, height, channels_num, filters_num)
+    # w.transpose() - (filters_num, width, height, channels_num)
+    # [3, 0, 1, 2]  - move the last axis (filters_num) to be the first
+    n = np.transpose(w, axes=[3, 0, 1, 2])
+
+
+    print(n.shape)
+ 
     
     print(n.shape)
     print(n[0].shape)
@@ -250,6 +238,9 @@ def plot_conv_layer(p_tf_conv_l):
 
         filter_weights = n[i]
         ax.set_title("filter %s"%(i))
+
+
+
         ax.imshow(filter_weights)
 
 
