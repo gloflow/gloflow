@@ -15,18 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__))
+
 import pandas as pd
 import matplotlib.pyplot as plt 
 import boto3
 from colored import fg,bg,attr
 
-import gf_s3_utils
+sys.path.append("%s/../../../py/gf_aws"%(modd_str))
+import gf_aws_s3
+
 #---------------------------------------------------
 def stats__image_buckets_general(p_aws_access_key_id_str,
 	p_aws_secret_access_key_str):
 
-	gf_s3_info = gf_s3_utils.s3_connect(p_aws_access_key_id_str, p_aws_secret_access_key_str)
-	assert isinstance(gf_s3_info, gf_s3_utils.Gf_s3_info)
+	gf_s3_info = gf_aws_s3.s3_connect(p_aws_access_key_id_str, p_aws_secret_access_key_str)
+	assert isinstance(gf_s3_info, gf_aws_s3.Gf_s3_info)
 
 	#LIST_BUCKETS
 	for bucket in gf_s3_info.s3_resource.buckets.all():
@@ -132,6 +137,7 @@ def view_bucket_info(p_infos_lst):
 		print("")
 		print("")
 		print("")
+
 	#-------------------------
 
 	df_lst = []
@@ -139,13 +145,13 @@ def view_bucket_info(p_infos_lst):
 
 		day_counts_sorted_lst = sorted([(d_str,c_int) for d_str,c_int in bucket_info_map['counts_per_day_map'].items()])
 
-		#days_lst   = []
-		#counts_lst = []
-		for d,c in day_counts_sorted_lst:
+		# days_lst   = []
+		# counts_lst = []
+		for d, c in day_counts_sorted_lst:
 
-			#all_buckets__days_set.add(d)
-			#days_lst.append(d)
-			#counts_lst.append(c)
+			# all_buckets__days_set.add(d)
+			# days_lst.append(d)
+			# counts_lst.append(c)
 
 			bname_str = bucket_info_map['name_str']
 			d = {
@@ -156,11 +162,12 @@ def view_bucket_info(p_infos_lst):
 			df_lst.append(d)
 
 
-	#df_columns_map = {
-	#	"days":        list(all_buckets__days_set),
-	#	"total_counts":counts_lst,
-	#}
-	#df = pd.DataFrame(data=df_columns_map)
+	# df_columns_map = {
+	# 	"days":        list(all_buckets__days_set),
+	# 	"total_counts":counts_lst,
+	# }
+	# df = pd.DataFrame(data=df_columns_map)
+
 	df = pd.DataFrame(df_lst)
 	df.set_index("day", drop=True, inplace=True)
 	df = df.fillna(0)
@@ -168,17 +175,18 @@ def view_bucket_info(p_infos_lst):
 	#print df
 
 	#-------------------------
-	#PLOT
+	# PLOT
 
 	df.plot.line(figsize=(10, 6), alpha=0.75)
 
-	#fig = plt.figure(figsize=(30,10))
+	# fig = plt.figure(figsize=(30,10))
 
 	plt.title("S3 buckets info per day", fontsize=18)
 	plt.xlabel("day",                    fontsize=14)
 	plt.ylabel('# of images',            fontsize=14)
 	plt.xticks(size = 6)
-	plt.axes().yaxis.grid() #horizontal-grid
+	plt.axes().yaxis.grid() # horizontal-grid
 
 	plt.show()
+
 	#-------------------------

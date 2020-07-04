@@ -27,7 +27,9 @@ import gf_meta
 
 sys.path.append('%s/aws/s3'%(modd_str))
 import gf_s3_data_info
-import gf_s3_utils
+
+sys.path.append('%s/../py/gf_aws'%(modd_str))
+import gf_aws_s3
 
 #--------------------------------------------------
 def main():
@@ -41,7 +43,7 @@ def main():
     run_str    = args_map['run']
 
     aws_creds_file_path_str = args_map['aws_creds']
-    aws_creds_map           = gf_s3_utils.parse_creds(aws_creds_file_path_str)
+    aws_creds_map           = gf_aws_s3.parse_creds(aws_creds_file_path_str)
     assert isinstance(aws_creds_map,dict)
 
     #-------------

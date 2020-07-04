@@ -36,8 +36,8 @@ import gf_log
 sys.path.append("%s/tests"%(modd_str))
 import gf_tests
 
-sys.path.append("%s/aws/s3"%(modd_str))
-import gf_s3_utils
+sys.path.append("%s/../py/gf_aws/gf_aws_s3"%(modd_str))
+import gf_aws_s3
 
 sys.path.append("%s/web"%(modd_str))
 import gf_web__build
@@ -127,7 +127,7 @@ def main():
 		print(aws_creds_file_path_abs_str)
 		assert os.path.isfile(aws_creds_file_path_abs_str)
 
-		aws_creds_map = gf_s3_utils.parse_creds(aws_creds_file_path_str)
+		aws_creds_map = gf_aws_s3.parse_creds(aws_creds_file_path_str)
 		
 		return aws_creds_map
 

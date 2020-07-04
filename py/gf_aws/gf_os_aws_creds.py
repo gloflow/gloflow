@@ -45,7 +45,7 @@ def get_from_env_vars():
     aws_creds_map = {
         "aws_access_key_id_str": os.environ["GF_AWS_ACCESS_KEY_ID"],
         "aws_secret_access_key": os.environ["GF_AWS_SECRET_ACCESS_KEY"],
-        #"aws_token_str":         os.environ["GF_AWS_TOKEN"]
+        #"aws_token_str": os.environ["GF_AWS_TOKEN"]
     }
     return aws_creds_map
     
