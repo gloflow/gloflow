@@ -51,7 +51,7 @@ func runtime__get(p_use_db_bool bool,
 
 	// CONFIG
 	config_dir_path_str := "./config/"
-	config_name_str     := "gf_eth_monitor_cli"
+	config_name_str     := "gf_eth_monitor"
 	
 	config, err := config__init(config_dir_path_str, config_name_str)
 	if err != nil {
@@ -131,8 +131,8 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	// START_SERVICE
 	cmd__start_service := &cobra.Command{
 		Use:   "service",
-		Short: "start the cmonkey service",
-		Long:  "start the cmonkey in a target cluster",
+		Short: "start the gf_eth_monitor service",
+		Long:  "start the gf_eth_monitor service in a target cluster",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
 
@@ -145,6 +145,8 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 			service_info := gf_eth_monitor_lib.GF_service_info{
 				Port_str: runtime.config.Port_str,
 			}
+
+			// RUN_SERVICE
 			gf_eth_monitor_lib.Run_service(&service_info, runtime.runtime_sys)			
 		},
 	}

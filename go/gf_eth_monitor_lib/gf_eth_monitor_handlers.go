@@ -25,7 +25,8 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func init_handlers(p_queue_info *GF_queue_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 

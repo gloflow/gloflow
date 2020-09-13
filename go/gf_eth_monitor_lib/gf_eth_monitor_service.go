@@ -35,9 +35,16 @@ func Run_service(p_service_info *GF_service_info,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
+	// QUEUE
+	queue_name_str := "gf_eth_monitor"
+	queue_info, err := init_queue(queue_name_str)
+	if err != nil {
+		panic(err)
+	}
+
 	//-------------
 	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(queue_info, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -45,9 +52,9 @@ func Run_service(p_service_info *GF_service_info,
 	//-------------
 
 	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", p_service_info.Port_str))
 	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
+	http_err := http.ListenAndServe(fmt.Sprintf(":%s", p_service_info.Port_str), nil)
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
 		p_runtime_sys.Log_fun("ERROR", msg_str)

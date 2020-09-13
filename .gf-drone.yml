@@ -1,0 +1,95 @@
+kind: pipeline
+type: docker
+name: gloflow-ethmonitor
+
+workspace:
+  # IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder
+  #               container is placing all its code.
+  base: /home/gf
+
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
+
+steps:
+
+  #-------------------------------
+  # BUILD_GO
+  - name: build_go
+    image: glofloworg/gf_builder:latest
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/py/ops/build.py
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # BUILD_CONTAINERS
+  - name: build_containers
+    image: glofloworg/gf_builder:latest
+
+    environment:
+      GF_DOCKERHUB_USER:
+        from_secret: gf_os__dockerhub_user # used to build the container for a particular user
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container building.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # PUBLISH_CONTAINERS
+  - name: publish_containers
+    image: glofloworg/gf_builder:latest
+    environment:
+      GF_DOCKERHUB_USER:
+        from_secret: gf_os__dockerhub_user
+      GF_DOCKERHUB_P:
+        from_secret: gf_os__dockerhub_p
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container  publishing.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # NOTIFY_COMPLETION
+  - name: notify_completion
+    image: glofloworg/gf_builder:latest
+    environment:
+      GF_NOTIFY_COMPLETION_URL:
+        from_secret: gf_os__notify_completion_url
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
