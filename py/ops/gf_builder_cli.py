@@ -112,7 +112,7 @@ def build_go(p_name_str,
 		#               "CGO_ENABLED=0" we also dont want to disable since Rust libs are used in Go via CGO.
 		# "-extldflags flags" - Set space-separated flags to pass to the external linker
 		args_lst = [
-			# "CGO_ENABLED=0",
+			"CGO_ENABLED=0",
 			"GOOS=linux",
 			"go build",
 			"-a",
@@ -128,7 +128,8 @@ def build_go(p_name_str,
 			"-o %s"%(p_go_output_path_str),
 		]
 		c_str = " ".join(args_lst)
-		
+		print(c_str)
+
 	# DYNAMIC_LINKING - fast build for dev.
 	else:
 		c_str = "go build -o %s"%(p_go_output_path_str)
@@ -270,7 +271,7 @@ def parse_args():
 	# ENV_VARS
 	drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
 	gf_docker_user_str           = os.environ.get("GF_DOCKER_USER", None)
-	gf_docker_pass_str           = os.environ.get("GF_DOCKER_PASS", None)
+	gf_docker_pass_str           = os.environ.get("GF_DOCKER_P", None)
 	gf_notify_completion_url_str = os.environ.get("GF_NOTIFY_COMPLETION_URL", None)
 
 	#-------------

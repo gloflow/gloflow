@@ -50,7 +50,7 @@ func runtime__get(p_use_db_bool bool,
 	p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
 
 	// CONFIG
-	config_dir_path_str := "./config/"
+	config_dir_path_str := "./../config/"
 	config_name_str     := "gf_eth_monitor"
 	
 	config, err := config__init(config_dir_path_str, config_name_str)
