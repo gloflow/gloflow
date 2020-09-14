@@ -29,13 +29,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
-
-
-
-
 	//---------------------
-	
-
 	http.HandleFunc("/ethm/v1/register", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /ethm/v1/register ----------")
 
@@ -44,16 +38,5 @@ func init_handlers(p_queue_info *GF_queue_info,
 
 	//---------------------
 
-
-
-
 	return nil
-
-
-
-
-
-
-
-
 }

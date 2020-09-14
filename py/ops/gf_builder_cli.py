@@ -38,7 +38,8 @@ def main():
 	service_cont_image_tag_str  = "latest"
 	service_cont_image_name_str = f"glofloworg/gf_eth_monitor:{service_cont_image_tag_str}"
 	service_cont_dockerfile_path_str = f"{modd_str}/../../Dockerfile"
-
+	docker_user_str                  = "glofloworg"
+	
 	#------------------------
 	# BUILD
 	if args_map["run"] == "build":
@@ -52,15 +53,20 @@ def main():
 	# BUILD_CONTAINER
 	elif args_map["run"] == "build_containers":
 		
-		
 		build_containers(service_cont_image_name_str,
 			service_cont_dockerfile_path_str,
-			p_sudo_bool = True)
+			p_docker_sudo_bool=True)
 
 	#------------------------
 	# PUBLISH_CONTAINER
 	elif args_map["run"] == "publish_containers":
-		True
+		docker_pass_str = args_map["gf_docker_pass_str"]
+		assert not docker_pass_str == None
+
+		publish_containers(service_cont_image_name_str,
+			docker_user_str,
+			docker_pass_str,
+			p_docker_sudo_bool=True)
 
 	#------------------------
 
@@ -141,7 +147,7 @@ def build_go(p_name_str,
 #--------------------------------------------------
 def build_containers(p_cont_image_name_str,
 	p_dockerfile_path_str,
-	p_sudo_bool=False):
+	p_docker_sudo_bool=False):
 	
 	docker_context_dir_str = f"{modd_str}/../.."
 
@@ -152,7 +158,7 @@ def build_containers(p_cont_image_name_str,
 	assert os.path.isfile(p_dockerfile_path_str)
 
 	c_lst = []
-	if p_sudo_bool:
+	if p_docker_sudo_bool:
 		c_lst.append("sudo")
 
 	c_lst.extend([
@@ -169,6 +175,74 @@ def build_containers(p_cont_image_name_str,
 	for line in iter(p.stdout.readline, b''):	
 		line_str = line.strip().decode("utf-8").strip()
 		print(line_str)
+
+	if not p.returncode == 0:
+		exit()
+
+#--------------------------------------------------
+def publish_containers(p_cont_image_name_str,
+	p_docker_user_str,
+	p_docker_pass_str,
+	p_docker_sudo_bool=False):
+	print("BUILDING CONTAINER -----------=========================")
+	print(f"container image name - {p_cont_image_name_str}")
+
+	# LOGIN
+	docker_login(p_docker_user_str,
+		p_docker_pass_str,
+		p_docker_sudo_bool = p_docker_sudo_bool)
+
+	#------------------------
+	c_lst = []
+	if p_docker_sudo_bool:
+		c_lst.append("sudo")
+
+	c_lst.extend([
+		f"docker push {p_cont_image_name_str}"
+	])
+
+	c_str = " ".join(c_lst)
+	print(c_str)
+	p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
+	
+	for line in iter(p.stdout.readline, b''):	
+		line_str = line.strip().decode("utf-8").strip()
+		print(line_str)
+
+	if not p.returncode == 0:
+		exit()
+
+	#------------------------
+
+#-------------------------------------------------------------
+# DOCKER_LOGIN
+def docker_login(p_docker_user_str,
+	p_docker_pass_str,
+	p_docker_sudo_bool = False):
+	assert isinstance(p_docker_user_str, str)
+	assert isinstance(p_docker_pass_str, str)
+
+	cmd_lst = []
+	if p_docker_sudo_bool:
+		cmd_lst.append("sudo")
+		
+	cmd_lst.extend([
+		"docker", "login",
+		"-u", p_docker_user_str,
+		"--password-stdin"
+	])
+	print(" ".join(cmd_lst))
+
+	print(bytes(p_docker_pass_str.encode("utf-8")))
+	p = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+	p.stdin.write(bytes(p_docker_pass_str.encode("utf-8"))) # write password on stdin of "docker login" command
+	
+	stdout_str, stderr_str = p.communicate() # wait for command completion
+	print(stdout_str)
+	print(stderr_str)
+
+	if not p.returncode == 0:
+		exit()
 
 #--------------------------------------------------
 def parse_args():
