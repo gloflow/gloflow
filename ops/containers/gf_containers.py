@@ -30,16 +30,16 @@ import gf_os_docker
 # PULL
 def pull(p_image__full_name_str,
 	p_log_fun,
-	p_dockerhub_user_str = None,
-	p_dockerhub_pass_str = None,
-	p_exit_on_fail_bool  = True,
-	p_docker_sudo_bool   = False):
+	p_docker_user_str   = None,
+	p_docker_pass_str   = None,
+	p_exit_on_fail_bool = True,
+	p_docker_sudo_bool  = False):
 
 	# often times public containers are being pulled, so no login is needed for that and 
 	# callers dont submit their credentials.
-	if not p_dockerhub_pass_str == None and not p_dockerhub_pass_str == "":
-		gf_os_docker.login(p_dockerhub_user_str,
-			p_dockerhub_pass_str,
+	if not p_docker_pass_str == None and not p_docker_pass_str == "":
+		gf_os_docker.login(p_docker_user_str,
+			p_docker_pass_str,
 			p_exit_on_fail_bool = True,
 			p_docker_sudo_bool  = p_docker_sudo_bool)
 
@@ -148,8 +148,8 @@ def build(p_app_name_str,
 # PUBLISH
 def publish(p_app_name_str,
 	p_app_build_meta_map,
-	p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+	p_docker_user_str,
+	p_docker_pass_str,
 	p_log_fun,
 	p_git_commit_hash_str = None,
 	p_exit_on_fail_bool   = False,
@@ -172,15 +172,15 @@ def publish(p_app_name_str,
 
 	image_full_names_lst = get_image_full_names(image_name_str,
 		p_app_build_meta_map,
-		p_dockerhub_user_str,
+		p_docker_user_str,
 		p_git_commit_hash_str = p_git_commit_hash_str)
 	assert isinstance(image_full_names_lst, list)
 	
 	for image_full_name_str in image_full_names_lst:
 		# DOCKER_PUSH
 		gf_os_docker.push(image_full_name_str,
-			p_dockerhub_user_str,
-			p_dockerhub_pass_str,
+			p_docker_user_str,
+			p_docker_pass_str,
 			p_log_fun,
 			p_exit_on_fail_bool = p_exit_on_fail_bool,
 			p_docker_sudo_bool  = p_docker_sudo_bool)
@@ -277,19 +277,19 @@ def prepare_web_files(p_pages_map,
 # # PUBLISH_DOCKER_IMAGE
 # def publish_docker_image(p_image_full_name_str,
 # 	p_image_tag_str,
-# 	p_dockerhub_user_str,
-# 	p_dockerhub_pass_str,
+# 	p_docker_user_str,
+# 	p_docker_pass_str,
 # 	p_log_fun,
 # 	p_exit_on_fail_bool = False,
 # 	p_docker_sudo_bool  = False):	
 #
 # 	#------------------
 #	
-# 	full_image_name_str = "%s/%s:%s"%(p_dockerhub_user_str, p_image_name_str, p_image_tag_str)
+# 	full_image_name_str = "%s/%s:%s"%(p_docker_user_str, p_image_name_str, p_image_tag_str)
 # 	# DOCKER_PUSH
 # 	gf_os_docker.push(full_image_name_str,
-# 		p_dockerhub_user_str,
-# 		p_dockerhub_pass_str,
+# 		p_docker_user_str,
+# 		p_docker_pass_str,
 # 		p_log_fun,
 # 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 # 		p_docker_sudo_bool  = p_docker_sudo_bool)

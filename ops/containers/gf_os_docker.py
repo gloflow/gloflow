@@ -67,28 +67,27 @@ def cont_is_running_remote(p_cont_name_str,
 		sudo_str = "sudo"
 
 	c_str = "%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str)
-	out   = p_fab_conn.run(c_str, warn=True) # fabric.api.run(c_str, warn_only=True)
+	print(c_str)
+	r = p_fab_conn.run(c_str, warn=True)
+	if not r.stdout == "": print(r.stdout)
+	if not r.stderr == "": print(r.stderr)
 
 
-	exit_code_int = out.return_code
 
-
-	stdout_and_stderr_str = out
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_and_stderr_str:
+	if "Cannot connect to the Docker daemon" in r.stderr:
+		print("cannot connect to Docker daemon")
 		exit(1)
-
 	
-	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
-    #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
-	#               in other scenarious its acceptable for this command to fail, and we want the caller
-	#               to keep executing.
-	if not exit_code_int == 0:
-		if p_exit_on_fail_bool:
-			exit(exit_code_int)
+	# # IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
+    # #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
+	# #               in other scenarious its acceptable for this command to fail, and we want the caller
+	# #               to keep executing.
+	# if not r.return_code == 0:
+	# 	if p_exit_on_fail_bool:
+	# 		exit(r.return_code)
 
-
-	if stdout_and_stderr_str == "":
+	if r.stdout == "":
 		print("CONTAINER NOT RUNNING")
 		return False
 	else:
@@ -107,7 +106,7 @@ def run(p_full_image_name_str,
 	p_detached_bool      = True,
 	p_exit_on_fail_bool  = False,
 	p_docker_sudo_bool   = True):
-	assert isinstance(p_full_image_name_str, basestring)
+	assert isinstance(p_full_image_name_str, str)
 
 	print("")
 	print("RUNNING DOCKER CONTAINER - %s"%(p_full_image_name_str))
@@ -221,12 +220,13 @@ def remove_by_name_remote(p_container_name_str,
 		sudo_str = "sudo"
 
 	cmd_str       = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
-	out           = p_fab_conn.run(cmd_str) # fabric.api.run(cmd_str)
-	exit_code_int = out.return_code
+	r             = p_fab_conn.run(cmd_str) # fabric.api.run(cmd_str)
+	exit_code_int = r.return_code
 
-	stdout_and_stderr_str = out
+	stdout_and_stderr_str = r.stdout+r.stderr
+	
 	# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	if "Cannot connect to the Docker daemon" in stdout_and_stderr_str:
+	if "Cannot connect to the Docker daemon" in r.stdout:
 		exit(1)
 
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
@@ -250,25 +250,29 @@ def pull_remote(p_cont_image_name_str,
 		sudo_str = "sudo"
 
 	c_str = "%s docker pull %s"%(sudo_str, p_cont_image_name_str)
-	# fabric.api.run()
 	p_fab_conn.run(c_str)
 
 #-------------------------------------------------------------
 # PUSH
 def push(p_image_full_name_str,
-	p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+	p_docker_user_str,
+	p_docker_pass_str,
 	p_log_fun,
+	p_host_str          = None,
 	p_exit_on_fail_bool = False,
 	p_docker_sudo_bool  = False):
 	p_log_fun("FUN_ENTER", "gf_os_docker.push()")
+	p_log_fun("INFO",      f"image_full_name - {p_image_full_name_str}")
+	assert isinstance(p_docker_user_str, str)
 
 	#------------------
 	# LOGIN
-	login(p_dockerhub_user_str,
-		p_dockerhub_pass_str,
+	login(p_docker_user_str,
+		p_docker_pass_str,
+		p_host_str          = p_host_str,
 		p_exit_on_fail_bool = p_exit_on_fail_bool,
 		p_docker_sudo_bool  = p_docker_sudo_bool)
+
 
 	#------------------
 	cmd_lst = []
@@ -426,12 +430,15 @@ def build_image(p_image_names_lst,
 
 #-------------------------------------------------------------
 # LOGIN
-def login(p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+def login(p_docker_user_str,
+	p_docker_pass_str,
+	p_host_str          = None,
 	p_exit_on_fail_bool = True,
 	p_docker_sudo_bool  = False):
-	assert isinstance(p_dockerhub_user_str, basestring)
-	assert isinstance(p_dockerhub_pass_str, basestring)
+	assert isinstance(p_docker_user_str, str)
+	assert isinstance(p_docker_pass_str, str)
+
+
 
 	cmd_lst = []
 	if p_docker_sudo_bool:
@@ -439,21 +446,24 @@ def login(p_dockerhub_user_str,
 		
 	cmd_lst.extend([
 		"docker", "login",
-		"-u", p_dockerhub_user_str,
+		"-u", p_docker_user_str,
 		"--password-stdin"
 	])
+
+	# HOST
+	if not p_host_str == None:
+		cmd_lst.append(p_host_str)
+
 	print(" ".join(cmd_lst))
-
 	process = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-	process.stdin.write(p_dockerhub_pass_str) # write password on stdin of "docker login" command
-	stdout_str, stderr_str = process.communicate() # wait for command completion
+	
+	# STDIN_WRITE
+	process.stdin.write(bytes(p_docker_pass_str.encode())) # write password on stdin of "docker login" command
+	
+	stdout, stderr = process.communicate() # wait for command completion
+	stdout_str = stdout.decode()
+	stderr_str = stderr.decode()
 	print(stdout_str)
-	print(stderr_str)
-
-	print("debug types ----")
-	print(type(stdout_str))
-	print(type(stderr_str))
-
 
 	if not stderr_str == "":
 		print(stderr_str)
@@ -472,28 +482,29 @@ def login(p_dockerhub_user_str,
 
 #---------------------------------------------------
 # LOGIN__REMOTE
-def login__remote(p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+def login__remote(p_docker_user_str,
+	p_docker_pass_str,
 	p_fab_conn,
 	p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_os_docker.login__remote()")
-	assert isinstance(p_dockerhub_user_str, basestring)
-	assert isinstance(p_dockerhub_pass_str, basestring)
+	assert isinstance(p_docker_user_str, str)
+	assert isinstance(p_docker_pass_str, str)
 
 	#---------------------------
 	# UPLOAD_PASS_FILE
 
 	pass_f_str = "tmp_file"
 	f = open(pass_f_str, "w")
-	f.write(p_dockerhub_pass_str)
+	f.write(p_docker_pass_str)
 	f.close()
 	
 	fabric.api.put(pass_f_str) # upload password file
+	
 	#---------------------------
 	# IMPORTANT!! - specify pasword from stdin so that it doesnt show up
 	#               as a part of the final command (in logs)
 
-	c_str = "cat %s | sudo docker login -u %s --password-stdin"%(pass_f_str, p_dockerhub_user_str)
+	c_str = "cat %s | sudo docker login -u %s --password-stdin"%(pass_f_str, p_docker_user_str)
 	p_fab_conn.run(c_str)
 	# fabric.api.run(c_str)
 
@@ -503,27 +514,38 @@ def login__remote(p_dockerhub_user_str,
 
 #---------------------------------------------------
 # LOGIN__REMOTE_FROM_FILE
-def login__remote_from_file(p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+def login__remote_from_file(p_docker_user_str,
+	p_docker_pass_str,
 	p_fab_conn,
-	p_log_fun):
+	p_log_fun,
+	p_ecr_bool           = False,
+	p_aws_account_id_str = None,
+	p_region_str         = "us-east-1"):
 	p_log_fun("FUN_ENTER", "gf_os_docker.login__remote_from_file()")
-	assert isinstance(p_dockerhub_user_str, basestring)
-	assert isinstance(p_dockerhub_pass_str, basestring)
+	assert isinstance(p_docker_user_str, str)
+	assert isinstance(p_docker_pass_str, str)
 
 	#---------------------------
 	# UPLOAD_PASS_FILE
 
 	pass_f_str = "tmp_file"
 	f = open(pass_f_str, "w")
-	f.write(p_dockerhub_pass_str)
+	f.write(p_docker_pass_str)
 	f.close()
 
-	p_fab_conn.put(pass_f_str) #upload password file
+	p_fab_conn.put(pass_f_str) # upload password file
+
 	#---------------------------
 	# IMPORTANT!! - specify pasword from stdin so that it doesnt show up
 	#               as a part of the final command (in logs)
-	p_fab_conn.run("cat %s | sudo docker login -u %s --password-stdin"%(pass_f_str, p_dockerhub_user_str))
+
+	if p_ecr_bool:
+		assert not p_aws_account_id_str == None
+		ecr_acc_str = f"{p_aws_account_id_str}.dkr.ecr.{p_region_str}.amazonaws.com"
+		p_fab_conn.run(f"cat {pass_f_str} | sudo docker login -u {p_docker_user_str} --password-stdin {ecr_acc_str}")
+	else:
+		p_fab_conn.run(f"cat {pass_f_str} | sudo docker login -u {p_docker_user_str} --password-stdin")
+	
 	#---------------------------
 	p_fab_conn.run("rm %s"%(pass_f_str))
 	delegator.run("rm %s"%(pass_f_str)) # clean local tmp_file that holds the dockerhub password
@@ -552,45 +574,55 @@ def clean_stop__containers(p_cont_image_name_str,
 	#--------------------
 
 #---------------------------------------------------
-def install_base_docker(p_fab_conn, p_log_fun):
+def install_base_docker(p_fab_conn,
+	p_log_fun,
+	p_os_type_str = "ubuntu"):
 	p_log_fun("FUN_ENTER", "gf_os_docker.install_base_docker()")
-
-	p_fab_conn.run("sudo apt-get clean")
-	p_fab_conn.run("sudo apt-get update")
-	p_fab_conn.run("sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common")
-	p_fab_conn.run("sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+	assert p_os_type_str == "ubuntu" or p_os_type_str == "amazon_linux_2"
 	
+	if p_os_type_str == "ubuntu":
+		p_fab_conn.run("sudo apt-get clean")
+		p_fab_conn.run("sudo apt-get update")
+		p_fab_conn.run("sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common")
+		p_fab_conn.run("sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+		
 
-	# last one validated for Kubernetes installations
-	# docker_version_str = "17.06.0~ce-0~ubuntu"
+		# last one validated for Kubernetes installations
+		# docker_version_str = "17.06.0~ce-0~ubuntu"
 
-	##FIX!! - hardcoding to "zesty" ubuntu version (17.04) because in 17.10 at the moment (dec 10 2017) there is no docker-ce package
-	##        so Im hardcdoing 17.04 just for the moment so that the compatible docker-ce package is used
-	##p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"')
-	#p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable"')
+		##FIX!! - hardcoding to "zesty" ubuntu version (17.04) because in 17.10 at the moment (dec 10 2017) there is no docker-ce package
+		##        so Im hardcdoing 17.04 just for the moment so that the compatible docker-ce package is used
+		##p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"')
+		#p_fab_api.run('sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable"')
 
-	p_fab_conn.run("sudo apt-get update")
-	p_fab_conn.run("sudo apt-get install -y \
-		apt-transport-https \
-		ca-certificates \
-		curl \
-		gnupg-agent \
-		software-properties-common")
-	p_fab_conn.run("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
-	p_fab_conn.run('sudo add-apt-repository \
-		"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-		$(lsb_release -cs) \
-		stable"')
-	p_fab_conn.run("sudo apt-get update")
-	p_fab_conn.run("sudo apt-get install -y docker-ce docker-ce-cli containerd.io")
+		p_fab_conn.run("sudo apt-get update")
+		p_fab_conn.run("sudo apt-get install -y \
+			apt-transport-https \
+			ca-certificates \
+			curl \
+			gnupg-agent \
+			software-properties-common")
+		p_fab_conn.run("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+		p_fab_conn.run('sudo add-apt-repository \
+			"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+			$(lsb_release -cs) \
+			stable"')
+		p_fab_conn.run("sudo apt-get update")
+		p_fab_conn.run("sudo apt-get install -y docker-ce docker-ce-cli containerd.io")
+
+	elif p_os_type_str == "amazon_linux_2":
+
+		p_fab_conn.run("sudo yum -y install docker")
+		p_fab_conn.run("sudo systemctl start docker")
+
 
 #---------------------------------------------------
-def dockerhub__get_auth_config_json(p_dockerhub_user_str,
-	p_dockerhub_pass_str,
+def dockerhub__get_auth_config_json(p_docker_user_str,
+	p_docker_pass_str,
 	p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_os_docker.dockerhub__get_auth_config_json()")
 
-	auth_str             = base64.b64encode("%s:%s"%(p_dockerhub_user_str, p_dockerhub_pass_str))
+	auth_str             = base64.b64encode("%s:%s"%(p_docker_user_str, p_docker_pass_str))
 	auth_config_map      = {"auths": {"https://index.docker.io/v1/": {"auth": auth_str}}}
 	auth_config_json_str = json.dumps(auth_config_map)
 	return auth_config_json_str

@@ -20,6 +20,8 @@ import subprocess
 import signal
 import multiprocessing
 
+import delegator
+
 #---------------------------------------------------
 def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_core_utils.run_cmd_in_os_proc()")
@@ -59,3 +61,10 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 	parent_conn, child_conn = multiprocessing.Pipe()
 	process                 = multiprocessing.Process(target = run_process)
 	process.start()
+
+#---------------------------------------------------
+def get_self_ip():
+	r           = delegator.run('''dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}' ''')
+	self_ip_str = r.out.strip()
+	assert len(self_ip_str.split(".")) == 4
+	return self_ip_str

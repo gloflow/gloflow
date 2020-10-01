@@ -134,7 +134,7 @@ steps:
 
     # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
     #               connect to the Docker daemon running on the host machine. this connection
-    #               is whats used for container  publishing.
+    #               is whats used for container publishing.
     volumes:
       - name: docker-sock
         path: /var/run/docker.sock

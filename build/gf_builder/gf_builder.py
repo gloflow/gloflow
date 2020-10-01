@@ -159,6 +159,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
 
+	# HTTP_GET
 	r = requests.get(url_str)
 	print(r.text)
 

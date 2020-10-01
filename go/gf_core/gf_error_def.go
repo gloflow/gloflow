@@ -117,6 +117,7 @@ func error__get_defs() map[string]error_def {
 		"cli_run_error": error_def{
 			Descr_str: "failed to run a CLI command from Go",
 		},
+
 		//---------------
 		// ENCODE/DECODE
 		// JSON
@@ -200,6 +201,7 @@ func error__get_defs() map[string]error_def {
 		"elasticsearch_query_index":error_def{
 			Descr_str:"c.Search() failed issue a query - package (elastic)",
 		},
+
 		//---------------
 		// TEMPLATES
 		"template_create_error":error_def{
@@ -208,6 +210,7 @@ func error__get_defs() map[string]error_def {
 		"template_render_error":error_def{
 			Descr_str:"template.Execute() failed to render a template - package (text/template)",
 		},
+
 		//---------------
 		// HTTP
 		"http_client_req_error":{
@@ -222,11 +225,22 @@ func error__get_defs() map[string]error_def {
 		"http_client_gf_status_error":{
 			Descr_str:"http_client received a non-OK GF error",
 		},
+
 		//---------------
 		// WEBSOCKETS
 		"ws_connection_init_error":{
 			Descr_str: "websocket client failed to connect to a url",
 		},
+		
+		//---------------
+		// AWS
+		"aws_general_error": {
+			Descr_str: "AWS general error",
+		},
+		"aws_ecs_service_update_error": {
+			Descr_str: "failed to update an AWS ECS service",
+		},
+
 		//---------------
 		// S3
 		"s3_credentials_error": {
@@ -244,16 +258,19 @@ func error__get_defs() map[string]error_def {
 		"s3_file_download_error": {
 			Descr_str: "failed to download a file from S3 to a local FS",
 		},
+
 		//---------------
 		// HTML_PARSING
 		"html_parse_error": {
 			Descr_str: "parsing of a HTML document failed",
 		},
+
 		//---------------
 		// LIBRARY_ERROR
 		"library_error":{
 			Descr_str: "third-party library has failed",
 		},
+
 		//---------------
 	}
 	return error_defs_map
