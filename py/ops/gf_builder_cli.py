@@ -20,6 +20,8 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
 import subprocess
+import urllib.parse
+import requests
 
 from colored import fg, bg, attr
 import delegator
@@ -69,6 +71,59 @@ def main():
 			p_docker_sudo_bool=True)
 
 	#------------------------
+	# NOTIFY_COMPLETION
+	elif args_map["run"] == "notify_completion":
+
+		gf_notify_completion_url_str = args_map["gf_notify_completion_url"]
+		assert not gf_notify_completion_url_str == None
+
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
+
+		notify_completion(gf_notify_completion_url_str,
+			p_git_commit_hash_str = git_commit_hash_str)
+
+	#------------------------
+
+#--------------------------------------------------
+# NOTIFY_COMPLETION
+def notify_completion(p_gf_notify_completion_url_str,
+	p_git_commit_hash_str = None):
+	
+	url_str = None
+
+	# add git_commit_hash as a querystring argument to the notify_completion URL.
+	# the entity thats receiving the completion notification needs to know what the tag
+	# is of the newly created container.
+	if not p_git_commit_hash_str == None:
+		url = urllib.parse.urlparse(p_gf_notify_completion_url_str)
+		
+		# QUERY_STRING
+		qs_lst = urllib.parse.parse_qsl(url.query)
+		qs_lst.append(("base_img_tag", p_git_commit_hash_str)) # .parse_qs() places all values in lists
+
+		qs_str = "&".join(["%s=%s"%(k, v) for k, v in qs_lst])
+
+		# _replace() - "url" is of type ParseResult which is a subclass of namedtuple;
+		#              _replace is a namedtuple method that:
+		#              "returns a new instance of the named tuple replacing
+		#              specified fields with new values".
+		url_new = url._replace(query=qs_str)
+		url_str = url_new.geturl()
+	else:
+		url_str = p_gf_notify_completion_url_str
+
+	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
+
+	# HTTP_GET
+	r = requests.get(url_str)
+	print(r.text)
+
+	if not r.status_code == 200:
+		print("notify_completion http request failed")
+		exit(1)
 
 #--------------------------------------------------
 # BUILD_GO
@@ -256,6 +311,7 @@ def parse_args():
 - '''+fg('yellow')+'build'+attr(0)+'''              - build app golang/web code
 - '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
+- '''+fg('yellow')+'notify_completion'+attr(0)+'''  - notify remote HTTP endpoint of build completion
 		''')
 
 	#----------------------------
