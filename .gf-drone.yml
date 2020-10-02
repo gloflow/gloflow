@@ -19,8 +19,8 @@ steps:
   - name: build_go
     image: glofloworg/gf_builder:latest
     commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/py/ops/build.py
+      # "-u" - run unbuffered for stdout/stderr
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py
     when:
       event:
         - push
@@ -43,8 +43,8 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
+      # "-u" - run unbuffered for stdout/stderr
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build_containers
     when:
       event:
         - push
@@ -68,8 +68,8 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
+      # "-u" - run unbuffered for stdout/stderr
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=publish_containers
     when:
       event:
         - push
@@ -84,8 +84,8 @@ steps:
       GF_NOTIFY_COMPLETION_URL:
         from_secret: gf_os__notify_completion_url
     commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
+      # "-u" - run unbuffered for stdout/stderr
+      - python -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
     when:
       event:
         - push
