@@ -49,7 +49,7 @@ def main():
 		build_go(service_name_str,
 			service_dir_path_str,
 			service_bin_output_path_str,
-			p_static_bool = True)
+			p_static_bool = False)
 
 	#------------------------
 	# BUILD_CONTAINER
@@ -57,7 +57,7 @@ def main():
 		
 		build_containers(service_cont_image_name_str,
 			service_cont_dockerfile_path_str,
-			p_docker_sudo_bool=True)
+			p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
 	# PUBLISH_CONTAINER
@@ -68,7 +68,7 @@ def main():
 		publish_containers(service_cont_image_name_str,
 			docker_user_str,
 			docker_pass_str,
-			p_docker_sudo_bool=True)
+			p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
 	# NOTIFY_COMPLETION
@@ -319,7 +319,7 @@ def parse_args():
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
 	# newer versions of Docker allow for non-root users to run Docker daemons. 
 	# also CI systems might run this command in containers as root-level users in which case "sudo" must not be specified.
-	arg_parser.add_argument("-docker_sudo", action = "store_true",
+	arg_parser.add_argument("-docker_sudo", action = "store_true", default=False,
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
 	#-------------
@@ -332,13 +332,14 @@ def parse_args():
 	#-------------
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
+
 	return {
 		"run":                      args_namespace.run,
 		"drone_commit_sha":         drone_commit_sha_str,
 		"gf_docker_user_str":       gf_docker_user_str,
 		"gf_docker_pass_str":       gf_docker_pass_str,
 		"gf_notify_completion_url": gf_notify_completion_url_str,
-		"docker_sudo":              args_namespace.docker_sudo
+		"docker_sudo_bool":         args_namespace.docker_sudo
 	}
 
 #--------------------------------------------------
