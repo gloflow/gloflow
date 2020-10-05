@@ -56,9 +56,9 @@ steps:
   - name: publish_containers
     image: glofloworg/gf_builder:latest
     environment:
-      GF_DOCKERHUB_USER:
+      GF_DOCKER_USER:
         from_secret: gf_os__dockerhub_user
-      GF_DOCKERHUB_P:
+      GF_DOCKER_PASS:
         from_secret: gf_os__dockerhub_p
 
     # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
