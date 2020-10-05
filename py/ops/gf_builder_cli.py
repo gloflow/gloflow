@@ -74,7 +74,7 @@ def main():
 	# NOTIFY_COMPLETION
 	elif args_map["run"] == "notify_completion":
 
-		gf_notify_completion_url_str = args_map["gf_notify_completion_url"]
+		gf_notify_completion_url_str = args_map["gf_notify_completion_url_str"]
 		assert not gf_notify_completion_url_str == None
 
 		# GIT_COMMIT_HASH
@@ -338,8 +338,8 @@ def parse_args():
 		"drone_commit_sha":         drone_commit_sha_str,
 		"gf_docker_user_str":       gf_docker_user_str,
 		"gf_docker_pass_str":       gf_docker_pass_str,
-		"gf_notify_completion_url": gf_notify_completion_url_str,
-		"docker_sudo_bool":         args_namespace.docker_sudo
+		"gf_notify_completion_url_str": gf_notify_completion_url_str,
+		"docker_sudo_bool":             args_namespace.docker_sudo
 	}
 
 #--------------------------------------------------

@@ -85,7 +85,7 @@ steps:
         from_secret: gf_os__notify_completion_url
     commands:
       # "-u" - run unbuffered for stdout/stderr
-      - python -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
     when:
       event:
         - push
