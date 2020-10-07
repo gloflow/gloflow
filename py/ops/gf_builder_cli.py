@@ -171,13 +171,10 @@ def build_containers(p_cont_image_name_str,
 
 	c_str = " ".join(c_lst)
 	print(c_str)
-	p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
-	
-	for line in iter(p.stdout.readline, b''):	
-		line_str = line.strip().decode("utf-8").strip()
-		print(line_str)
 
-	if not p.returncode == 0:
+	_, _, exit_code_int = gf_core_cli.run(c_str)
+
+	if not exit_code_int == 0:
 		exit()
 
 #--------------------------------------------------
@@ -204,13 +201,10 @@ def publish_containers(p_cont_image_name_str,
 
 	c_str = " ".join(c_lst)
 	print(c_str)
-	p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
-	
-	for line in iter(p.stdout.readline, b''):	
-		line_str = line.strip().decode("utf-8").strip()
-		print(line_str)
 
-	if not p.returncode == 0:
+	_, _, exit_code_int = gf_core_cli.run(c_str)
+
+	if not exit_code_int == 0:
 		exit()
 
 	#------------------------
