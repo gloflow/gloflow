@@ -20,6 +20,8 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
 import subprocess
+import urllib.parse
+import requests
 
 from colored import fg, bg, attr
 import delegator
@@ -47,7 +49,7 @@ def main():
 		build_go(service_name_str,
 			service_dir_path_str,
 			service_bin_output_path_str,
-			p_static_bool = True)
+			p_static_bool = False)
 
 	#------------------------
 	# BUILD_CONTAINER
@@ -55,7 +57,7 @@ def main():
 		
 		build_containers(service_cont_image_name_str,
 			service_cont_dockerfile_path_str,
-			p_docker_sudo_bool=True)
+			p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
 	# PUBLISH_CONTAINER
@@ -66,9 +68,62 @@ def main():
 		publish_containers(service_cont_image_name_str,
 			docker_user_str,
 			docker_pass_str,
-			p_docker_sudo_bool=True)
+			p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
+	# NOTIFY_COMPLETION
+	elif args_map["run"] == "notify_completion":
+
+		gf_notify_completion_url_str = args_map["gf_notify_completion_url_str"]
+		assert not gf_notify_completion_url_str == None
+
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
+
+		notify_completion(gf_notify_completion_url_str,
+			p_git_commit_hash_str = git_commit_hash_str)
+
+	#------------------------
+
+#--------------------------------------------------
+# NOTIFY_COMPLETION
+def notify_completion(p_gf_notify_completion_url_str,
+	p_git_commit_hash_str = None):
+	
+	url_str = None
+
+	# add git_commit_hash as a querystring argument to the notify_completion URL.
+	# the entity thats receiving the completion notification needs to know what the tag
+	# is of the newly created container.
+	if not p_git_commit_hash_str == None:
+		url = urllib.parse.urlparse(p_gf_notify_completion_url_str)
+		
+		# QUERY_STRING
+		qs_lst = urllib.parse.parse_qsl(url.query)
+		qs_lst.append(("base_img_tag", p_git_commit_hash_str)) # .parse_qs() places all values in lists
+
+		qs_str = "&".join(["%s=%s"%(k, v) for k, v in qs_lst])
+
+		# _replace() - "url" is of type ParseResult which is a subclass of namedtuple;
+		#              _replace is a namedtuple method that:
+		#              "returns a new instance of the named tuple replacing
+		#              specified fields with new values".
+		url_new = url._replace(query=qs_str)
+		url_str = url_new.geturl()
+	else:
+		url_str = p_gf_notify_completion_url_str
+
+	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
+
+	# HTTP_GET
+	r = requests.get(url_str)
+	print(r.text)
+
+	if not r.status_code == 200:
+		print("notify_completion http request failed")
+		exit(1)
 
 #--------------------------------------------------
 # BUILD_GO
@@ -251,6 +306,7 @@ def parse_args():
 - '''+fg('yellow')+'build'+attr(0)+'''              - build app golang/web code
 - '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
+- '''+fg('yellow')+'notify_completion'+attr(0)+'''  - notify remote HTTP endpoint of build completion
 		''')
 
 	#----------------------------
@@ -258,7 +314,7 @@ def parse_args():
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
 	# newer versions of Docker allow for non-root users to run Docker daemons. 
 	# also CI systems might run this command in containers as root-level users in which case "sudo" must not be specified.
-	arg_parser.add_argument("-docker_sudo", action = "store_true",
+	arg_parser.add_argument("-docker_sudo", action = "store_true", default=False,
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
 	#-------------
@@ -271,13 +327,14 @@ def parse_args():
 	#-------------
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
+
 	return {
 		"run":                      args_namespace.run,
 		"drone_commit_sha":         drone_commit_sha_str,
 		"gf_docker_user_str":       gf_docker_user_str,
 		"gf_docker_pass_str":       gf_docker_pass_str,
-		"gf_notify_completion_url": gf_notify_completion_url_str,
-		"docker_sudo":              args_namespace.docker_sudo
+		"gf_notify_completion_url_str": gf_notify_completion_url_str,
+		"docker_sudo_bool":             args_namespace.docker_sudo
 	}
 
 #--------------------------------------------------
