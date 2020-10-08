@@ -35,6 +35,7 @@ func Run_service(p_service_info *GF_service_info,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
+	//-------------
 	// QUEUE
 	queue_name_str := "gf_eth_monitor"
 	queue_info, err := init_queue(queue_name_str)

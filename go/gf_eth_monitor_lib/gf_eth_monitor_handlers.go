@@ -30,12 +30,20 @@ func init_handlers(p_queue_info *GF_queue_info,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 	//---------------------
-	http.HandleFunc("/ethm/v1/register", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /ethm/v1/register ----------")
+	// REGISTER
+	http.HandleFunc("/gfethm/v1/register", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /gfethm/v1/register ----------")
 
 
 	})
 
+	//---------------------
+	// HEALTH
+	http.HandleFunc("/gfethm/v1/health", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /gfethm/v1/health ----------")
+		p_resp.Write([]byte("ok"))
+
+	})
 	//---------------------
 
 	return nil
