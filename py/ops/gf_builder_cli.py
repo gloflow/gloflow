@@ -118,7 +118,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
 
 	# HTTP_GET
-	r = requests.get(url_str)
+	r = requests.post(url_str)
 	print(r.text)
 
 	if not r.status_code == 200:
@@ -209,7 +209,7 @@ def build_containers(p_cont_image_name_str,
 
 	print("BUILDING CONTAINER -----------=========================")
 	print(f"container image name - {p_cont_image_name_str}")
-	print(f"dockerfile          - {p_dockerfile_path_str}")
+	print(f"dockerfile           - {p_dockerfile_path_str}")
 	
 	assert os.path.isfile(p_dockerfile_path_str)
 
