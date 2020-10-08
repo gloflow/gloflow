@@ -102,7 +102,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 		
 		# QUERY_STRING
 		qs_lst = urllib.parse.parse_qsl(url.query)
-		qs_lst.append(("base_img_tag", p_git_commit_hash_str)) # .parse_qs() places all values in lists
+		qs_lst.append(("git_commit", p_git_commit_hash_str)) # .parse_qs() places all values in lists
 
 		qs_str = "&".join(["%s=%s"%(k, v) for k, v in qs_lst])
 
@@ -118,7 +118,10 @@ def notify_completion(p_gf_notify_completion_url_str,
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
 
 	# HTTP_GET
-	r = requests.post(url_str)
+	data_map = {
+		"app_name": "gf_eth_monitor"
+	}
+	r = requests.post(url_str, data=data_map)
 	print(r.text)
 
 	if not r.status_code == 200:
