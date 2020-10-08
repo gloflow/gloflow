@@ -321,7 +321,7 @@ def parse_args():
 	# ENV_VARS
 	drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
 	gf_docker_user_str           = os.environ.get("GF_DOCKER_USER", None)
-	gf_docker_pass_str           = os.environ.get("GF_DOCKER_P", None)
+	gf_docker_pass_str           = os.environ.get("GF_DOCKER_PASS", None)
 	gf_notify_completion_url_str = os.environ.get("GF_NOTIFY_COMPLETION_URL", None)
 
 	#-------------
