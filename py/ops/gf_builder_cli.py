@@ -21,6 +21,7 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 import argparse
 import subprocess
 import urllib.parse
+import json
 import requests
 
 from colored import fg, bg, attr
@@ -121,7 +122,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 	data_map = {
 		"app_name": "gf_eth_monitor"
 	}
-	r = requests.post(url_str, data=data_map)
+	r = requests.post(url_str, data=json.dumps(data_map))
 	print(r.text)
 
 	if not r.status_code == 200:
