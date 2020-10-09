@@ -46,8 +46,7 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_use_db_bool bool,
-	p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
+func runtime__get(p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
 
 	// CONFIG
 	config_dir_path_str := "./../config/"
@@ -66,26 +65,22 @@ func runtime__get(p_use_db_bool bool,
 		Log_fun:          p_log_fun,	
 	}
 
-	// some callers of runtime__get() dont need a DB context to work with, 
-	// so dont force them to have a reachable DB available for connecting.
-	if p_use_db_bool {
+	//--------------------
+	// MONGODB
+	mongodb_host_str := config.Mongodb_host_str
+	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
-		// IMPORTANT - mongodb that is used by curious_monkey, and is 
-		//             running in the same container as the rest of curious_monkey
-		mongo_db, gf_err := gf_core.Mongo__connect_new(config.Mongodb_host_str,
-			config.Mongodb_db_name_str,
-			runtime_sys)
-
-		if gf_err != nil {
-			return nil, gf_err.Error
-		}
-
-		mongo_coll := mongo_db.Collection(config.Mongodb_coll_name_str)
-
-		runtime_sys.Mongo_db   = mongo_db
-		runtime_sys.Mongo_coll = mongo_coll
+	mongo_db, gf_err := gf_core.Mongo__connect_new(config.Mongodb_host_str,
+		config.Mongodb_db_name_str,
+		runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err.Error
 	}
 
+	// mongo_coll := mongo_db.Collection(config.Mongodb_coll_name_str)
+	runtime_sys.Mongo_db = mongo_db
+
+	//--------------------
 	// RUNTIME
 	runtime := &GF_eth_monitor_runtime{
 		config:      config,
@@ -118,6 +113,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - MONGODB_HOST
+	cmd__base.PersistentFlags().StringP("mongodb_host", "m", "MONGODB HOST", "mongodb host to which to connect") // Cobra CLI argument
+	err = viper.BindPFlag("mongodb_host", cmd__base.PersistentFlags().Lookup("mongodb_host"))                   // Bind Cobra CLI argument to a Viper configuration (for default value)
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("mongodb_host", "GF_MONGODB_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 
 	// START
 	cmd__start := &cobra.Command{
@@ -135,9 +146,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		Long:  "start the gf_eth_monitor service in a target cluster",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
-
-			use_db_bool := true
-			runtime, err := runtime__get(use_db_bool, p_log_fun)
+			runtime, err := runtime__get(p_log_fun)
 			if err != nil {
 				return
 			}

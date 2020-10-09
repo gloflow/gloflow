@@ -3,9 +3,9 @@ module github.com/gloflow/gloflow-ethmonitor
 go 1.14
 
 require (
-	github.com/aws/aws-sdk-go v1.35.5
+	github.com/aws/aws-sdk-go v1.35.7
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gloflow/gloflow v0.0.0-20201001180008-4dd763626582
+	github.com/gloflow/gloflow v0.0.0-20201009002545-af9f7d73243e
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/klauspost/compress v1.11.1 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
@@ -22,8 +22,8 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.4.2 // indirect
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
-	golang.org/x/sync v0.0.0-20200930132711-30421366ff76 // indirect
-	golang.org/x/sys v0.0.0-20201007165808-a893ed343c85 // indirect
+	golang.org/x/sync v0.0.0-20201008141435-b3e1573b7520 // indirect
+	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

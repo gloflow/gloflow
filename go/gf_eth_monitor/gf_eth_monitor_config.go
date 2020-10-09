@@ -28,9 +28,8 @@ type GF_config struct {
 	Port_str string `mapstructure:"port"`
 	
 	// MONGODB - this is the dedicated mongodb DB
-	Mongodb_host_str      string `mapstructure:"mongodb_host"`
-	Mongodb_db_name_str   string `mapstructure:"mongodb_db_name"`
-	Mongodb_coll_name_str string `mapstructure:"mongodb_coll_name"`
+	Mongodb_host_str    string `mapstructure:"mongodb_host"`
+	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
 }
 
 //-------------------------------------------------------------

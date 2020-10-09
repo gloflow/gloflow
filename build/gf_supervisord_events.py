@@ -17,7 +17,7 @@
 
 import os
 import signal
-import supervisor
+from supervisor import childutils
 
 #--------------------------------------------------
 def main():
@@ -25,14 +25,15 @@ def main():
     while True:
         
         # block until supervisord delivers an event
-        headers, body = supervisor.childutils.listener.wait()
-        supervisor.childutils.listener.ok()
+        headers, body = childutils.listener.wait()
+        childutils.listener.ok()
         print("SUPERVISORD EVENT RECEIVED ------------")
 
-        if headers["PROCESS_STATE_FATAL"]:
+        if headers["eventname"] == "PROCESS_STATE_FATAL":
 
             print("SUPERVISORD EVENT RECEIVED - PROCESS_STATE_FATAL ------------")
 
+            # IMPORTANT!! - if process enters fatal state then exit the whole container/supervisord parent
             supervisord_pid_int = os.getppid()
             os.kill(supervisord_pid_int, signal.SIGTERM)
 
