@@ -51,7 +51,7 @@ def main():
 			service_dir_path_str,
 			service_bin_output_path_str,
 			p_static_bool = args_map["static_bool"])
-
+	
 	#------------------------
 	# BUILD_CONTAINER
 	elif args_map["run"] == "build_containers":

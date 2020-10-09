@@ -22,11 +22,11 @@ ADD ./config/supervisor.conf /home/gf/config/supervisor.conf
 #        this way the supervisor will run as the main process, and the container wont exit
 CMD /usr/bin/supervisord -n -c /home/gf/config/supervisor.conf
 
+# process supervisord events
+ADD build/gf_supervisord_events.py /home/gf/bin/gf_supervisord_events.py
+
 #------------
 ADD config/gf_eth_monitor.yaml /home/gf/config/gf_eth_monitor.yaml
 ADD build/gf_eth_monitor       /home/gf/bin/gf_eth_monitor
-
-
-
 
 RUN chown -R gf /home/gf
