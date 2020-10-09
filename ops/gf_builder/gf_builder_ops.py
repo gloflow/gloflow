@@ -19,20 +19,43 @@ import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 sys.path.append("%s/../containers"%(modd_str))
-# import gf_containers
 import gf_os_docker
+import gf_containers
 
 sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
+
+
+
+#---------------------------------------------------
+def cont__publish(p_dockerhub_user_name_str,
+	p_log_fun,
+	p_docker_sudo_bool = False):
+	assert isinstance(p_dockerhub_user_name_str, str)
+
+
+
+	# PUBLISH
+	app_name_str = "gf_builder"
+	gf_containers.publish(app_name_str,
+		app_build_meta_map,
+		p_gf_dockerhub_user_str,
+		p_gf_dockerhub_pass_str,
+		gf_log.log_fun,
+		p_git_commit_hash_str = p_git_commit_hash_str, 
+		p_exit_on_fail_bool   = True,
+		p_docker_sudo_bool    = p_docker_sudo_bool)
+
+
 
 #---------------------------------------------------
 def cont__build(p_dockerhub_user_name_str,
 	p_log_fun,
 	p_docker_sudo_bool = False):
-	assert isinstance(p_dockerhub_user_name_str, basestring)
+	assert isinstance(p_dockerhub_user_name_str, str)
 
 	build_meta_map = gf_meta.get()["build_info_map"]
-	assert build_meta_map.has_key("gf_builder")
+	assert "gf_builder" in build_meta_map.keys()
 
 	gf_builder_meta_map            = build_meta_map["gf_builder"]
 	cont_image_name_str            = gf_builder_meta_map["cont_image_name_str"]

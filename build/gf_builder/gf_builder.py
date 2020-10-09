@@ -2,7 +2,7 @@ import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import argparse
-import urlparse
+import urllib.parse
 from colored import fg, bg, attr
 import delegator
 import requests
@@ -23,8 +23,8 @@ import gf_tests
 sys.path.append('%s/../../ops/web'%(modd_str))
 import gf_web__build
 
-sys.path.append('%s/../../ops/aws'%(modd_str))
-import gf_aws_creds
+sys.path.append('%s/../../py/gf_aws'%(modd_str))
+import gf_os_aws_creds
 
 sys.path.append('%s/../../ops/containers'%(modd_str))
 import gf_os_docker
@@ -140,10 +140,10 @@ def notify_completion(p_gf_notify_completion_url_str,
 	# the entity thats receiving the completion notification needs to know what the tag
 	# is of the newly created container.
 	if not p_git_commit_hash_str == None:
-		url = urlparse.urlparse(p_gf_notify_completion_url_str)
+		url = urllib.parse.urlparse(p_gf_notify_completion_url_str)
 		
 		# QUERY_STRING
-		qs_lst = urlparse.parse_qsl(url.query)
+		qs_lst = urllib.parse.parse_qsl(url.query)
 		qs_lst.append(("base_img_tag", p_git_commit_hash_str)) # .parse_qs() places all values in lists
 
 		qs_str = "&".join(["%s=%s"%(k, v) for k, v in qs_lst])
@@ -159,8 +159,8 @@ def notify_completion(p_gf_notify_completion_url_str,
 
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
 
-	# HTTP_GET
-	r = requests.get(url_str)
+	# HTTP_POST
+	r = requests.post(url_str)
 	print(r.text)
 
 	if not r.status_code == 200:
@@ -309,7 +309,7 @@ def test_apps(p_changed_apps_files_map):
 	apps_gf_packages_map  = apps_changes_deps_map["apps_gf_packages_map"]
 
 	# AWS_CREDS
-	aws_creds_map = gf_aws_creds.get_from_env_vars()
+	aws_creds_map = gf_os_aws_creds.get_from_env_vars()
 	assert isinstance(aws_creds_map, dict)
 
 	# nothing changed
@@ -466,6 +466,7 @@ def paste_git_commit_hash(p_git_commit_hash_str):
 	#                 "g" - global, replace all not just first instance
 	c = "sed -i 's/%s/%s/g' %s"%(original_word_regex_str, new_word_regex_str, golang_sys_release_info_file_path_str)
 	print(c)
+	
 	#------------------------
 
 	r = delegator.run(c)
@@ -495,6 +496,7 @@ def parse_args():
 - '''+fg('yellow')+'build_rust'+attr(0)+'''         - build app rust code
 - '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
+- '''+fg('yellow')+'notify_completion'+attr(0)+'''  - notify remote HTTP endpoint of build completion
 		''')
 
 	#-------------

@@ -41,7 +41,7 @@ steps:
     image: glofloworg/gf_builder:latest
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
     when:
       event:
         - push
@@ -78,7 +78,7 @@ steps:
 
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
     when:
       event:
         - push
@@ -91,7 +91,7 @@ steps:
     image: glofloworg/gf_builder:latest
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build
     when:
       event:
         - push
@@ -115,7 +115,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
     when:
       event:
         - push
@@ -140,7 +140,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
     when:
       event:
         - push
@@ -156,7 +156,7 @@ steps:
         from_secret: gf_os__notify_completion_url
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
     when:
       event:
         - push

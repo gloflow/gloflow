@@ -30,13 +30,16 @@ import (
 
 //-------------------------------------------------------------
 func AWS_ECR__update_service(p_service_name_str string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_cluster_name_str string,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	fmt.Printf("AWS ECS UPDATE_SERVICE - %s\n", p_service_name_str)
 
 	svc := ecs.New(session.New())
+	
 	input := &ecs.UpdateServiceInput{
 		Service: aws.String(p_service_name_str),
+		Cluster: aws.String(p_cluster_name_str),
 		
 		// IMPORTANT!! - for "dev" cluster only, when the same tagged container image
 		//               is deployed again.

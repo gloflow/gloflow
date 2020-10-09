@@ -20,8 +20,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 
 import boto3
 
-sys.path.append('%s/..'%(cwd_str))
-import gf_aws_creds
+import gf_os_aws_creds
 
 #--------------------------------------------------
 class Gf_s3_info:

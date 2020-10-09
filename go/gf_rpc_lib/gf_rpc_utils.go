@@ -47,7 +47,7 @@ func Get_http_input(p_handler_url_path_str string,
 
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse json http input",
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{"handler_url_path_str": p_handler_url_path_str,},
 			err, "gf_rpc_lib", p_runtime_sys)
 

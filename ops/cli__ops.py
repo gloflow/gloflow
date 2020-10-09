@@ -34,9 +34,9 @@ import gf_aws_s3
 #--------------------------------------------------
 def main():
     
-    print ''
-    print '                   -------------  %sOPS%s %sGLOFLOW%s  -------------'%(bg('dark_orange_3a'), attr(0), bg('cyan'), attr(0))
-    print ''
+    print('')
+    print('                   -------------  %sOPS%s %sGLOFLOW%s  -------------'%(bg('dark_orange_3a'), attr(0), bg('cyan'), attr(0)))
+    print('')
 
     b_meta_map = gf_meta.get()['build_info_map']
     args_map   = parse_args()

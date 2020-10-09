@@ -36,7 +36,7 @@ import gf_log
 sys.path.append("%s/tests"%(modd_str))
 import gf_tests
 
-sys.path.append("%s/../py/gf_aws/gf_aws_s3"%(modd_str))
+sys.path.append("%s/../py/gf_aws"%(modd_str))
 import gf_aws_s3
 
 sys.path.append("%s/web"%(modd_str))
@@ -193,6 +193,19 @@ def main():
 				p_docker_sudo_bool = docker_sudo_bool)
 
 	#-------------
+	# PUBLISH_CONTAINERS
+	elif run_str == "publish_containers":
+
+		dockerhub_user_str = args_map["dockerhub_user"]
+		docker_sudo_bool   = args_map["docker_sudo"]
+
+		if app_name_str == "gf_builder":
+
+			gf_builder_ops.cont__publish(dockerhub_user_str,
+				gf_log.log_fun,
+				p_docker_sudo_bool = docker_sudo_bool)
+		
+	#-------------
 	# TEST
 	elif run_str == "test":
 
@@ -252,6 +265,7 @@ def parse_args():
 - '''+fg('yellow')+'build_rust'+attr(0)+'''          - build app golang code
 - '''+fg('yellow')+'build_web'+attr(0)+'''           - build app web code (ts/js/css/html)
 - '''+fg('yellow')+'build_containers'+attr(0)+'''    - build app Docker containers
+- '''+fg('yellow')+'publish_containers'+attr(0)+'''  - publish app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''                - run app code tests
 - '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
 - '''+fg('yellow')+'start_cluster_local'+attr(0)+''' - start a local GF cluster using docker-compose

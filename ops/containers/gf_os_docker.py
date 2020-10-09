@@ -364,7 +364,7 @@ def build_image(p_image_names_lst,
 	cmd_lst.append(context_dir_path_str)
 
 	c_str = " ".join(cmd_lst)
-	p_log_fun("INFO", " - %s"%(c_str))
+	p_log_fun("INFO", c_str)
 
 	# change to the dir where the Dockerfile is located, for the 'docker'
 	# tool to have the proper context
@@ -400,23 +400,12 @@ def build_image(p_image_names_lst,
 		if line_str.startswith("Successfully built"):
 			image_id_str = get_image_id_from_line(line_str)
 			print("image ID - %s"%(image_id_str))
-
-	# stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
-	# if not stderr_str == "":
-	# 	print(stderr_str)
-	# 
-	# # IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
-	# if "Cannot connect to the Docker daemon" in stderr_str:
-	# 	exit(1)
-	# 
-	# for line_str in stdout_str:
-	# 	if line_str.startswith("Successfully built"):
-	# 		image_id_str = get_image_id_from_line(line_str)
-	# 		return image_id_str
+	
 
 	p.communicate()
 	exit_code_int = p.returncode
 	
+
 	# IMPORTANT!! - if command returns a non-zero exit code in some environments (CI) we
     #               want to fail with that a non-zero exit code - this way CI will flag builds as failed.
 	#               in other scenarious its acceptable for this command to fail, and we want the caller
