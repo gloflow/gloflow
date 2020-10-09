@@ -50,7 +50,7 @@ def main():
 		build_go(service_name_str,
 			service_dir_path_str,
 			service_bin_output_path_str,
-			p_static_bool = False)
+			p_static_bool = args_map["static_bool"])
 
 	#------------------------
 	# BUILD_CONTAINER
@@ -321,6 +321,11 @@ def parse_args():
 	arg_parser.add_argument("-docker_sudo", action = "store_true", default=False,
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
+	#----------------------------
+	# STATIC - boolean flag
+	arg_parser.add_argument("-static", action = "store_true", default=False,
+		help = "compile binaries with static linking")
+
 	#-------------
 	# ENV_VARS
 	drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
@@ -338,7 +343,8 @@ def parse_args():
 		"gf_docker_user_str":       gf_docker_user_str,
 		"gf_docker_pass_str":       gf_docker_pass_str,
 		"gf_notify_completion_url_str": gf_notify_completion_url_str,
-		"docker_sudo_bool":             args_namespace.docker_sudo
+		"docker_sudo_bool":             args_namespace.docker_sudo,
+		"static_bool":                  args_namespace.static
 	}
 
 #--------------------------------------------------
