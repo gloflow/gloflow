@@ -21,7 +21,7 @@ steps:
     commands:
       # "-u"      - run unbuffered for stdout/stderr
       # "-static" - compile Go binary with static linking, needed to run in Alpine containers
-      - python3 -u /home/gf/py/ops/gf_builder_cli.py -static
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build -static
     when:
       event:
         - push
