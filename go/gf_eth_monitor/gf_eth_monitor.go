@@ -68,9 +68,10 @@ func runtime__get(p_log_fun func(string, string)) (*GF_eth_monitor_runtime, erro
 	//--------------------
 	// MONGODB
 	mongodb_host_str := config.Mongodb_host_str
+	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
 	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
-	mongo_db, gf_err := gf_core.Mongo__connect_new(config.Mongodb_host_str,
+	mongo_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
 		config.Mongodb_db_name_str,
 		runtime_sys)
 	if gf_err != nil {
@@ -109,6 +110,13 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	err := viper.BindPFlag("port", cmd__base.PersistentFlags().Lookup("port"))                                  // Bind Cobra CLI argument to a Viper configuration (for default value)
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+	
+	// ENV
+	err = viper.BindEnv("port", "GF_PORT")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
 

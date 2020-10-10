@@ -33,14 +33,17 @@ def run(p_cmd_str,
 		stderr  = subprocess.PIPE,
 		bufsize = 1)
 
+	stdout_lst = []
 	for line in iter(p.stdout.readline, b''):	
 		line_str = line.strip().decode("utf-8")
 		print(line_str)
-
+		stdout_lst.append(line_str)
+	stderr_lst = []
 	for line in iter(p.stderr.readline, b''):	
 		line_str = line.strip().decode("utf-8")
 		print(line_str)
+		stderr_lst.append(line_str)
 
 	p.communicate()
 	
-	return "", "", p.returncode
+	return stdout_lst, stderr_lst, p.returncode

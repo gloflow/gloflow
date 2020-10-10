@@ -292,10 +292,15 @@ def docker_login(p_docker_user_str,
 	p.stdin.write(bytes(p_docker_pass_str.encode("utf-8"))) # write password on stdin of "docker login" command
 	
 	stdout_str, stderr_str = p.communicate() # wait for command completion
-	print(stdout_str)
-	print(stderr_str)
+	if not stdout_str == "": print(stdout_str)
+	if not stderr_str == "": print(stderr_str)
 
 	if not p.returncode == 0:
+		exit()
+
+	# ERROR
+	if "Error" in stderr_str or "unauthorized" in stderr_str:
+		print("failed to Docker login")
 		exit()
 
 #--------------------------------------------------
