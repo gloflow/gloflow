@@ -48,6 +48,7 @@ func init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 
 
 	// QUEUE_URL
+	fmt.Printf("get AWS SQS queue - %s\n", p_queue_name_str)
 	result_url, err := svc.GetQueueUrl(&sqs.GetQueueUrlInput{
 		QueueName: aws.String(p_queue_name_str),
 	})

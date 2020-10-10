@@ -30,6 +30,9 @@ type GF_config struct {
 	// MONGODB - this is the dedicated mongodb DB
 	Mongodb_host_str    string `mapstructure:"mongodb_host"`
 	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
+	
+	// AWS_SQS
+	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
 }
 
 //-------------------------------------------------------------

@@ -77,6 +77,7 @@ func runtime__get(p_log_fun func(string, string)) (*GF_eth_monitor_runtime, erro
 	if gf_err != nil {
 		return nil, gf_err.Error
 	}
+	fmt.Printf("mongodb connected...\n")
 
 	// mongo_coll := mongo_db.Collection(config.Mongodb_coll_name_str)
 	runtime_sys.Mongo_db = mongo_db
@@ -138,6 +139,23 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	//--------------------
 
+	// CLI_ARGUMENT - AWS_SQS_QUEUE
+	cmd__base.PersistentFlags().StringP("aws_sqs_queue", "q", "AWS SQS QUEUE", "AWS SQS queue from which to consume events")
+	err = viper.BindPFlag("aws_sqs_queue", cmd__base.PersistentFlags().Lookup("aws_sqs_queue"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("aws_sqs_queue", "GF_AWS_SQS_QUEUE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+
 	// START
 	cmd__start := &cobra.Command{
 		Use:   "start",
@@ -160,7 +178,8 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 			}
 			
 			service_info := gf_eth_monitor_lib.GF_service_info{
-				Port_str: runtime.config.Port_str,
+				Port_str:           runtime.config.Port_str,
+				SQS_queue_name_str: runtime.config.AWS_SQS_queue_str,
 			}
 
 			// RUN_SERVICE

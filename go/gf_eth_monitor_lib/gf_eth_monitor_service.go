@@ -27,7 +27,8 @@ import (
 
 //-------------------------------------------------
 type GF_service_info struct {
-	Port_str string
+	Port_str           string
+	SQS_queue_name_str string
 }
 
 //-------------------------------------------------
@@ -37,7 +38,7 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 	// QUEUE
-	queue_name_str := "gf_eth_monitor"
+	queue_name_str := p_service_info.SQS_queue_name_str
 	queue_info, err := init_queue(queue_name_str)
 	if err != nil {
 		panic(err)
