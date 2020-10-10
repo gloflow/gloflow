@@ -53,6 +53,8 @@ func init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 		QueueName: aws.String(p_queue_name_str),
 	})
 	if err != nil {
+		fmt.Println(fmt.Sprint(err))
+
 		if aerr, ok := err.(awserr.Error); ok && aerr.Code() == sqs.ErrCodeQueueDoesNotExist {
 			panic(fmt.Sprintf("Unable to find queue - %s", p_queue_name_str))
 			return nil, err
