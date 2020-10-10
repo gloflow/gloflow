@@ -234,14 +234,15 @@ def build_containers(p_cont_image_name_str,
 	_, _, exit_code_int = gf_core_cli.run(c_str)
 
 	if not exit_code_int == 0:
-		exit()
+		exit(1)
 
 #--------------------------------------------------
 def publish_containers(p_cont_image_name_str,
 	p_docker_user_str,
 	p_docker_pass_str,
 	p_docker_sudo_bool=False):
-	print("BUILDING CONTAINER -----------=========================")
+
+	print("PUBLISHING CONTAINER -----------=========================")
 	print(f"container image name - {p_cont_image_name_str}")
 
 	# LOGIN
@@ -264,7 +265,7 @@ def publish_containers(p_cont_image_name_str,
 	_, _, exit_code_int = gf_core_cli.run(c_str)
 
 	if not exit_code_int == 0:
-		exit()
+		exit(1)
 
 	#------------------------
 
@@ -300,12 +301,12 @@ def docker_login(p_docker_user_str,
 		print(stderr_str)
 
 	if not p.returncode == 0:
-		exit()
+		exit(1)
 
 	# ERROR
 	if "Error" in stderr_str or "unauthorized" in stderr_str:
 		print("failed to Docker login")
-		exit()
+		exit(1)
 
 #--------------------------------------------------
 def parse_args():
