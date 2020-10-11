@@ -53,10 +53,9 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", p_service_info.Port_str))
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	http_err := http.ListenAndServe(fmt.Sprintf(":%s", p_service_info.Port_str), nil)
+
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
 		p_runtime_sys.Log_fun("ERROR", msg_str)
