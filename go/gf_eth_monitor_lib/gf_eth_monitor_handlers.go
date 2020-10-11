@@ -46,5 +46,8 @@ func init_handlers(p_queue_info *GF_queue_info,
 	})
 	//---------------------
 
+	fs := http.FileServer(http.Dir("../static"))
+  	http.Handle("/", fs)
+
 	return nil
 }
