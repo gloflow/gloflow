@@ -28,6 +28,6 @@ ADD build/gf_supervisord_events.py /home/gf/bin/gf_supervisord_events.py
 #------------
 ADD config/gf_eth_monitor.yaml /home/gf/config/gf_eth_monitor.yaml
 ADD build/gf_eth_monitor       /home/gf/bin/gf_eth_monitor
-ADD static                     /home/gf/static
+COPY static                    /home/gf/static
 
 RUN chown -R gf /home/gf

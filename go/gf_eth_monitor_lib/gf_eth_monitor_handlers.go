@@ -40,7 +40,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 	//---------------------
 	// HEALTH
 	http.HandleFunc("/gfethm/v1/health", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /gfethm/v1/health ----------")
+		// p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /gfethm/v1/health ----------")
 		p_resp.Write([]byte("ok"))
 
 	})
