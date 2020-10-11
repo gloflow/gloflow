@@ -26,8 +26,12 @@ CMD /usr/bin/supervisord -n -c /home/gf/config/supervisor.conf
 ADD build/gf_supervisord_events.py /home/gf/bin/gf_supervisord_events.py
 
 #------------
+# STATIC
+RUN mkdir -p /home/gf/static
+COPY static /home/gf/static
+
+#------------
 ADD config/gf_eth_monitor.yaml /home/gf/config/gf_eth_monitor.yaml
 ADD build/gf_eth_monitor       /home/gf/bin/gf_eth_monitor
-COPY static                    /home/gf/static
 
 RUN chown -R gf /home/gf
