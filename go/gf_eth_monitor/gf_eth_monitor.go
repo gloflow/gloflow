@@ -21,16 +21,19 @@ package main
 
 import (
 	"fmt"
+	"path"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 )
 
 //-------------------------------------------------
 type GF_eth_monitor_runtime struct {
-	config      *GF_config
-	runtime_sys *gf_core.Runtime_sys
+	config          *GF_config
+	runtime_sys     *gf_core.Runtime_sys
+	influxdb_client *influxdb2.Client
 }
 
 //-------------------------------------------------
@@ -46,11 +49,12 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
+func runtime__get(p_config_path_str string,
+	p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
 
 	// CONFIG
-	config_dir_path_str := "./../config/"
-	config_name_str     := "gf_eth_monitor"
+	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
+	config_name_str     := path.Base(p_config_path_str) // "gf_eth_monitor"
 	
 	config, err := config__init(config_dir_path_str, config_name_str)
 	if err != nil {
@@ -83,13 +87,28 @@ func runtime__get(p_log_fun func(string, string)) (*GF_eth_monitor_runtime, erro
 	runtime_sys.Mongo_db = mongo_db
 
 	//--------------------
+	// INFLUXDB
+	influxdb_host_str := config.Influxdb_host_str
+	influxdb_client   := influxdb__init(influxdb_host_str)
+
+	//--------------------
 	// RUNTIME
 	runtime := &GF_eth_monitor_runtime{
-		config:      config,
-		runtime_sys: runtime_sys,
+		config:          config,
+		runtime_sys:     runtime_sys,
+		influxdb_client: influxdb_client,
 	}
 
 	return runtime, nil
+}
+
+
+//-------------------------------------------------
+func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
+
+	fmt.Println("influxdb get client...")
+	client := influxdb2.NewClient(p_influxdb_host_str, "my-token")
+	return &client
 }
 
 //-------------------------------------------------
@@ -106,9 +125,16 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - CONFIG
+	cli_config_path_str := "./../config/gf_eth_monitor" // default value
+	cmd__base.PersistentFlags().StringVarP(&cli_config_path_str, "config", "", "CONFIG",
+		"config file path on the local FS")
+
+	//--------------------
 	// CLI_ARGUMENT - PORT
-	cmd__base.PersistentFlags().StringP("port", "p", "PORT NUMBER", "port on which to listen for HTTP traffic") // Cobra CLI argument
-	err := viper.BindPFlag("port", cmd__base.PersistentFlags().Lookup("port"))                                  // Bind Cobra CLI argument to a Viper configuration (for default value)
+	cmd__base.PersistentFlags().StringP("port", "p", "PORT NUMBER",
+		"port on which to listen for HTTP traffic") // Cobra CLI argument
+	err := viper.BindPFlag("port", cmd__base.PersistentFlags().Lookup("port")) // Bind Cobra CLI argument to a Viper configuration (for default value)
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
@@ -122,9 +148,26 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - PORT__METRICS
+	cmd__base.PersistentFlags().StringP("port_metrics", "", "METRICS PORT NUMBER",
+		"port on which to listen for metrics HTTP traffic")
+	err = viper.BindPFlag("port_metrics", cmd__base.PersistentFlags().Lookup("port_metrics"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+	
+	// ENV
+	err = viper.BindEnv("port_metrics", "GF_PORT_METRICS")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// CLI_ARGUMENT - MONGODB_HOST
 	cmd__base.PersistentFlags().StringP("mongodb_host", "m", "MONGODB HOST", "mongodb host to which to connect") // Cobra CLI argument
-	err = viper.BindPFlag("mongodb_host", cmd__base.PersistentFlags().Lookup("mongodb_host"))                   // Bind Cobra CLI argument to a Viper configuration (for default value)
+	err = viper.BindPFlag("mongodb_host", cmd__base.PersistentFlags().Lookup("mongodb_host"))                    // Bind Cobra CLI argument to a Viper configuration (for default value)
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
@@ -138,7 +181,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - INFLUXDB_HOST
+	cmd__base.PersistentFlags().StringP("influxdb_host", "i", "INFLUXDB HOST", "influxdb host to which to connect") // Cobra CLI argument
+	err = viper.BindPFlag("influxdb_host", cmd__base.PersistentFlags().Lookup("influxdb_host"))                     // Bind Cobra CLI argument to a Viper configuration (for default value)
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
 
+	// ENV
+	err = viper.BindEnv("influxdb_host", "GF_INFLUXDB_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// CLI_ARGUMENT - AWS_SQS_QUEUE
 	cmd__base.PersistentFlags().StringP("aws_sqs_queue", "q", "AWS SQS QUEUE", "AWS SQS queue from which to consume events")
 	err = viper.BindPFlag("aws_sqs_queue", cmd__base.PersistentFlags().Lookup("aws_sqs_queue"))
@@ -155,7 +213,6 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
-
 	// START
 	cmd__start := &cobra.Command{
 		Use:   "start",
@@ -172,7 +229,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		Long:  "start the gf_eth_monitor service in a target cluster",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
-			runtime, err := runtime__get(p_log_fun)
+			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
 			if err != nil {
 				return
 			}
@@ -180,15 +237,56 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 			service_info := gf_eth_monitor_lib.GF_service_info{
 				Port_str:           runtime.config.Port_str,
 				SQS_queue_name_str: runtime.config.AWS_SQS_queue_str,
+				Influxdb_client:    runtime.influxdb_client,
 			}
 
 			// RUN_SERVICE
-			gf_eth_monitor_lib.Run_service(&service_info, runtime.runtime_sys)			
+			gf_eth_monitor_lib.Run_service(&service_info,
+				runtime.runtime_sys)			
 		},
 	}
 
+	//--------------------
+	// TEST
+	cmd__test := &cobra.Command{
+		Use:   "test",
+		Short: "test some functionility",
+		Run:   func(p_cmd *cobra.Command, p_args []string) {
+
+		},
+	}
+
+	// TEST_ETH_NODE_EVENT_PROCESS
+	cmd__test_eth_node_event_process := &cobra.Command{
+		Use:   "eth_node_event_process",
+		Short: "test Eth node event processing",
+		Run:   func(p_cmd *cobra.Command, p_args []string) {
+
+
+
+
+			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
+			if err != nil {
+				return
+			}
+
+
+			SQS_queue_name_str := runtime.config.AWS_SQS_queue_str
+			queue_info, err    := gf_eth_monitor_lib.Event__init_queue(SQS_queue_name_str)
+			if err != nil {
+				panic(err)
+			}
+
+			// PROCESS_SINGLE_EVENT
+			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, nil)
+		},
+	}
+
+	//--------------------
 	cmd__start.AddCommand(cmd__start_service)
+	cmd__test.AddCommand(cmd__test_eth_node_event_process)
 	cmd__base.AddCommand(cmd__start)
+	cmd__base.AddCommand(cmd__test)
 
 	return cmd__base
 }

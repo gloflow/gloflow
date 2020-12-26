@@ -26,7 +26,9 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_queue_info *GF_queue_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_service_info *GF_service_info,
+	p_metrics      *GF_metrics,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 	//---------------------
@@ -40,9 +42,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 	//---------------------
 	// HEALTH
 	http.HandleFunc("/gfethm/v1/health", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		// p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /gfethm/v1/health ----------")
 		p_resp.Write([]byte("ok"))
-
 	})
 	//---------------------
 

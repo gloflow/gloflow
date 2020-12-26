@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
-    "fmt"
+	"fmt"
+	"encoding/json"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
     "github.com/aws/aws-sdk-go/aws/session"
-    "github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -36,7 +38,7 @@ type GF_queue_info struct {
 
 //-------------------------------------------------
 // INIT_QUEUE
-func init_queue(p_queue_name_str string) (*GF_queue_info, error) {
+func Event__init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -73,11 +75,27 @@ func init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 }
 
 //-------------------------------------------------
-func process(p_queue_info *GF_queue_info) {
+func event__start_sqs_consumer(p_queue_info *GF_queue_info,
+	p_metrics *GF_metrics) {
 
-	// 10min - before this call returns if no message is present
-	timeout_sec_int := 60*10
+	go func() {
 
+		for {
+			Event__process_from_sqs(p_queue_info, p_metrics)
+		}
+	}()
+}
+
+//-------------------------------------------------
+func Event__process_from_sqs(p_queue_info *GF_queue_info,
+	p_metrics *GF_metrics) {
+
+	// 20s - before this call returns if no message is present.
+	// Must be >= 0 and <= 20
+	timeout_sec_int := 20
+
+
+	// SQS_RECEIVE_MESSAGE
 	result, err := p_queue_info.aws_client.ReceiveMessage(&sqs.ReceiveMessageInput{
 		QueueUrl:       aws.String(p_queue_info.url_str),
 		AttributeNames: aws.StringSlice([]string{
@@ -102,4 +120,40 @@ func process(p_queue_info *GF_queue_info) {
 	if len(result.Messages) > 0 {
 		fmt.Println(result.Messages)
 	}
+
+
+
+	for _, m := range result.Messages {
+		
+		SQS_timestamp_str := *m.Attributes["SentTimestamp"]
+		fmt.Printf("SQS_timestamp - %s\n", SQS_timestamp_str)
+
+		// JSON_DECODE
+		var event_map map[string]interface{}
+		json.Unmarshal([]byte(*m.Body), &event_map)
+
+		//---------------------------
+		// EVENT__PROCESS
+		event__process(event_map, p_metrics)
+
+		//---------------------------
+	}
+}
+
+//-------------------------------------------------
+func event__process(p_event_map map[string]interface{},
+	p_metrics *GF_metrics,) {
+
+
+
+	fmt.Println(" PROCESS EVENT ================")
+	spew.Dump(p_event_map)
+
+
+
+	if p_metrics != nil {
+		p_metrics.counter__sqs_msgs_num.Inc()
+	}
+
+	
 }

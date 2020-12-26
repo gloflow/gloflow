@@ -30,6 +30,9 @@ import delegator
 sys.path.append("%s/../utils"%(modd_str))
 import gf_core_cli
 
+sys.path.append("%s/../test"%(modd_str))
+import gf_test
+
 #--------------------------------------------------
 def main():
 
@@ -44,8 +47,16 @@ def main():
 	docker_user_str                  = "glofloworg"
 	
 	#------------------------
+	# TEST
+
+	if args_map["run"] == "test":
+
+		gf_test.run()
+
+
+	#------------------------
 	# BUILD
-	if args_map["run"] == "build":
+	elif args_map["run"] == "build":
 
 		build_go(service_name_str,
 			service_dir_path_str,
@@ -187,12 +198,12 @@ def build_go(p_name_str,
 			"-o %s"%(p_go_output_path_str),
 		]
 		c_str = " ".join(args_lst)
-		print(c_str)
 
 	# DYNAMIC_LINKING - fast build for dev.
 	else:
 		c_str = "go build -o %s"%(p_go_output_path_str)
 
+	print(c_str)
 	_, _, exit_code_int = gf_core_cli.run(c_str)
 
 	# IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we

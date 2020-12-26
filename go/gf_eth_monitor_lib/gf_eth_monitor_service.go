@@ -22,13 +22,16 @@ package gf_eth_monitor_lib
 import (
 	"fmt"
 	"net/http"
+	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type GF_service_info struct {
 	Port_str           string
+	Port_metrics_str   string
 	SQS_queue_name_str string
+	Influxdb_client    *influxdb2.Client
 }
 
 //-------------------------------------------------
@@ -36,17 +39,34 @@ func Run_service(p_service_info *GF_service_info,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
+
+
 	//-------------
-	// QUEUE
-	queue_name_str := p_service_info.SQS_queue_name_str
-	queue_info, err := init_queue(queue_name_str)
-	if err != nil {
-		panic(err)
+	// METRICS
+	metrics_port_int := 9110
+
+	metrics, gf_err := metrics__init(metrics_port_int)
+	if gf_err != nil {
+		panic(gf_err.Error)
 	}
 
 	//-------------
+	// QUEUE
+	queue_name_str  := p_service_info.SQS_queue_name_str
+	queue_info, err := Event__init_queue(queue_name_str)
+	if err != nil {
+		fmt.Println("failed to initialize event queue")
+		panic(err)
+	}
+
+	
+
+	//-------------
 	// HANDLERS
-	gf_err := init_handlers(queue_info, p_runtime_sys)
+	gf_err = init_handlers(queue_info,
+		p_service_info,
+		metrics,
+		p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
