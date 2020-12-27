@@ -30,13 +30,6 @@ import (
 )
 
 //-------------------------------------------------
-type GF_eth_monitor_runtime struct {
-	config          *GF_config
-	runtime_sys     *gf_core.Runtime_sys
-	influxdb_client *influxdb2.Client
-}
-
-//-------------------------------------------------
 func main() {
 
 	log_fun := gf_core.Init_log_fun()
@@ -50,7 +43,7 @@ func main() {
 
 //-------------------------------------------------
 func runtime__get(p_config_path_str string,
-	p_log_fun func(string, string)) (*GF_eth_monitor_runtime, error) {
+	p_log_fun func(string, string)) (*gf_eth_monitor_lib.GF_runtime, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
@@ -75,33 +68,34 @@ func runtime__get(p_config_path_str string,
 	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
 	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
-	mongo_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
 		config.Mongodb_db_name_str,
 		runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err.Error
 	}
-	fmt.Printf("mongodb connected...\n")
+	runtime_sys.Mongo_db = mongodb_db
 
-	// mongo_coll := mongo_db.Collection(config.Mongodb_coll_name_str)
-	runtime_sys.Mongo_db = mongo_db
+	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
 	// INFLUXDB
 	influxdb_host_str := config.Influxdb_host_str
 	influxdb_client   := influxdb__init(influxdb_host_str)
 
+	fmt.Printf("influxdb connected...\n")
+
 	//--------------------
 	// RUNTIME
-	runtime := &GF_eth_monitor_runtime{
-		config:          config,
-		runtime_sys:     runtime_sys,
-		influxdb_client: influxdb_client,
+	runtime := &gf_eth_monitor_lib.GF_runtime{
+		Config:          config,
+		Influxdb_client: influxdb_client,
+		Mongodb_db:      mongodb_db,
+		Runtime_sys:     runtime_sys,
 	}
 
 	return runtime, nil
 }
-
 
 //-------------------------------------------------
 func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
@@ -235,15 +229,14 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 				return
 			}
 			
-			service_info := gf_eth_monitor_lib.GF_service_info{
-				Port_str:           runtime.config.Port_str,
-				SQS_queue_name_str: runtime.config.AWS_SQS_queue_str,
-				Influxdb_client:    runtime.influxdb_client,
-			}
+			/*service_info := gf_eth_monitor_lib.GF_service_info{
+				Port_str:           runtime.Config.Port_str,
+				SQS_queue_name_str: runtime.Config.AWS_SQS_queue_str,
+				Influxdb_client:    runtime.Influxdb_client,
+			}*/
 
 			// RUN_SERVICE
-			gf_eth_monitor_lib.Run_service(&service_info,
-				runtime.runtime_sys)			
+			gf_eth_monitor_lib.Run_service(runtime)			
 		},
 	}
 
@@ -272,14 +265,14 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 			}
 
 
-			SQS_queue_name_str := runtime.config.AWS_SQS_queue_str
+			SQS_queue_name_str := runtime.Config.AWS_SQS_queue_str
 			queue_info, err    := gf_eth_monitor_lib.Event__init_queue(SQS_queue_name_str)
 			if err != nil {
 				panic(err)
 			}
 
 			// PROCESS_SINGLE_EVENT
-			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, nil)
+			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, nil, runtime)
 		},
 	}
 

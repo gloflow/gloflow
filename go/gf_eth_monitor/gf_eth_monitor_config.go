@@ -22,27 +22,12 @@ package main
 import (
 	"strings"
 	"github.com/spf13/viper"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 )
 
 //-------------------------------------------------------------
-type GF_config struct {
-	Port_str string `mapstructure:"port"`
-	
-	// MONGODB - this is the dedicated mongodb DB
-	Mongodb_host_str    string `mapstructure:"mongodb_host"`
-	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
-
-	// INFLUXDB
-	Influxdb_host_str    string `mapstructure:"influxdb_host"`
-	Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
-
-	// AWS_SQS
-	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
-}
-
-//-------------------------------------------------------------
 func config__init(p_config_dir_path_str string,
-	p_config_file_name_str string) (*GF_config, error) {
+	p_config_file_name_str string) (*gf_eth_monitor_lib.GF_config, error) {
 
 
 	config_name_str := strings.Split(p_config_file_name_str, ".")[0] // viper expects just the file name, without extension
@@ -71,7 +56,7 @@ func config__init(p_config_dir_path_str string,
 	}
 
 	// CONFIG
-	config := &GF_config{}
+	config := &gf_eth_monitor_lib.GF_config{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, err

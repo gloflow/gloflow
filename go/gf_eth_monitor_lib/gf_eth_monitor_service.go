@@ -22,22 +22,29 @@ package gf_eth_monitor_lib
 import (
 	"fmt"
 	"net/http"
+	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
+/*type GF_service_info struct {
 	Port_str           string
 	Port_metrics_str   string
 	SQS_queue_name_str string
-	Influxdb_client    *influxdb2.Client
+	// Influxdb_client    *influxdb2.Client
+}*/
+
+type GF_runtime struct {
+	Config          *GF_config
+	Influxdb_client *influxdb2.Client
+	Mongodb_db      *mongo.Database
+	Runtime_sys     *gf_core.Runtime_sys
 }
 
 //-------------------------------------------------
-func Run_service(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
+func Run_service(p_runtime *GF_runtime) {
+	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
 
 
@@ -52,36 +59,36 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 	// QUEUE
-	queue_name_str  := p_service_info.SQS_queue_name_str
+	queue_name_str  := p_runtime.Config.AWS_SQS_queue_str
 	queue_info, err := Event__init_queue(queue_name_str)
 	if err != nil {
 		fmt.Println("failed to initialize event queue")
 		panic(err)
 	}
 
-	
 	// QUEUE_START_CONSUMING
-	event__start_sqs_consumer(queue_info, metrics)
+	event__start_sqs_consumer(queue_info, metrics, p_runtime)
 
 	//-------------
 	// HANDLERS
 	gf_err = init_handlers(queue_info,
-		p_service_info,
 		metrics,
-		p_runtime_sys)
+		p_runtime)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
 	//-------------
 
-	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", p_service_info.Port_str))
-	http_err := http.ListenAndServe(fmt.Sprintf(":%s", p_service_info.Port_str), nil)
+	port_str := p_runtime.Config.Port_str
+
+	p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
+	http_err := http.ListenAndServe(fmt.Sprintf(":%s", port_str), nil)
 
 	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
-		p_runtime_sys.Log_fun("ERROR", msg_str)
-		p_runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
+		msg_str := fmt.Sprintf("cant start listening on port - ", port_str)
+		p_runtime.Runtime_sys.Log_fun("ERROR", msg_str)
+		p_runtime.Runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

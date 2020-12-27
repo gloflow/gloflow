@@ -76,19 +76,21 @@ func Event__init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 
 //-------------------------------------------------
 func event__start_sqs_consumer(p_queue_info *GF_queue_info,
-	p_metrics *GF_metrics) {
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
 
 	go func() {
 
 		for {
-			Event__process_from_sqs(p_queue_info, p_metrics)
+			Event__process_from_sqs(p_queue_info, p_metrics, p_runtime)
 		}
 	}()
 }
 
 //-------------------------------------------------
 func Event__process_from_sqs(p_queue_info *GF_queue_info,
-	p_metrics *GF_metrics) {
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
 
 	// 20s - before this call returns if no message is present.
 	// Must be >= 0 and <= 20
@@ -134,7 +136,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		//---------------------------
 		// EVENT__PROCESS
-		event__process(event_map, p_metrics)
+		event__process(event_map, p_metrics, p_runtime)
 
 		//---------------------------
 
@@ -153,18 +155,45 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 //-------------------------------------------------
 func event__process(p_event_map map[string]interface{},
-	p_metrics *GF_metrics,) {
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
 
 
 
 	fmt.Println(" PROCESS EVENT ================")
 	spew.Dump(p_event_map)
 
+	event__time_unix_f := p_event_map["time_sec"].(float64)
+	event__module_str  := p_event_map["module"].(string)
+	event__type_str    := p_event_map["type"].(string)
+	
+	if event__module_str == "protocol_manager" && event__type_str == "handle_new_peer" {
+
+		
+		event__data_map := p_event_map["data"].(map[string]interface{})
 
 
+		peer_name_str      := event__data_map["name"].(string)
+		peer_enode_id_str  := event__data_map["peer_enode_id"].(string)
+		peer_remote_ip_str := event__data_map["remote_address"].(string)
+		node_ip_str        := event__data_map["local_address"].(string)
+
+
+		peer__new_lifecycle := &GF_eth_peer__new_lifecycle{
+			T_str:              "peer_new_lifecycle",
+			Peer_name_str:      peer_name_str, 
+			Peer_enode_id_str:  peer_enode_id_str,
+			Peer_remote_ip_str: peer_remote_ip_str,
+			Node_public_ip_str: node_ip_str,
+			Event_time_unix_f:  event__time_unix_f,
+		}
+
+		// DB_WRITE
+		eth_peers__db_write(peer__new_lifecycle, p_metrics, p_runtime)
+	}
+
+	// METRICS
 	if p_metrics != nil {
 		p_metrics.counter__sqs_msgs_num.Inc()
 	}
-
-	
 }

@@ -30,23 +30,38 @@ import (
 
 //-------------------------------------------------
 type GF_metrics struct {
-	counter__sqs_msgs_num prometheus.Counter
+	counter__sqs_msgs_num                      prometheus.Counter
+	counter__http_req_num__get_peers           prometheus.Counter
+	counter__db_writes_num__new_peer_lifecycle prometheus.Counter
 }
 
 //-------------------------------------------------
 func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 
 
-
-
+	//---------------------------
+	// SQS_MSGS_NUM
 	counter__sqs_msgs_num := prometheus.NewCounter(prometheus.CounterOpts{
 		Name: "gf_eth_monitor__sqs_msgs_num",
 		Help: "number of session leave SDS HTTP requests received by the MMS",
 	})
 
+	// HTTP_REQ_NUM__GET_PEERS
+	counter__http_req_num__get_peers := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_eth_monitor__http_req_num__get_peers",
+		Help: "number of HTTP requests received to get peers",
+	})
 
+	// HTTP_REQ_NUM__GET_PEERS
+	counter__db_writes_num__new_peer_lifecycle := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_eth_monitor__db_writes_num__new_peer_lifecycle",
+		Help: "number of DB write operations for the new_peer_lifecycle",
+	})
 
+	//---------------------------
 	prometheus.MustRegister(counter__sqs_msgs_num)
+	prometheus.MustRegister(counter__http_req_num__get_peers)
+	prometheus.MustRegister(counter__db_writes_num__new_peer_lifecycle)
 
 
 
@@ -72,7 +87,9 @@ func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 
 
 	metrics := &GF_metrics{
-		counter__sqs_msgs_num: counter__sqs_msgs_num,
+		counter__sqs_msgs_num:                      counter__sqs_msgs_num,
+		counter__http_req_num__get_peers:           counter__http_req_num__get_peers,
+		counter__db_writes_num__new_peer_lifecycle: counter__db_writes_num__new_peer_lifecycle,
 	}
 
 	return metrics, nil
