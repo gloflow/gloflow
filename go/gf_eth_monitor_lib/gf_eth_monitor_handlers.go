@@ -38,7 +38,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 
 
 
-		peer_names_lst := eth_peers__get_pipeline(p_runtime)
+		peer_names_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
 		
 
 		// METRICS

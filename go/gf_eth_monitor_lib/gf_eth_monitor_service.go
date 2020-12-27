@@ -28,13 +28,6 @@ import (
 )
 
 //-------------------------------------------------
-/*type GF_service_info struct {
-	Port_str           string
-	Port_metrics_str   string
-	SQS_queue_name_str string
-	// Influxdb_client    *influxdb2.Client
-}*/
-
 type GF_runtime struct {
 	Config          *GF_config
 	Influxdb_client *influxdb2.Client
@@ -60,7 +53,7 @@ func Run_service(p_runtime *GF_runtime) {
 	//-------------
 	// QUEUE
 	queue_name_str  := p_runtime.Config.AWS_SQS_queue_str
-	queue_info, err := Event__init_queue(queue_name_str)
+	queue_info, err := Event__init_queue(queue_name_str, metrics)
 	if err != nil {
 		fmt.Println("failed to initialize event queue")
 		panic(err)

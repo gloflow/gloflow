@@ -266,7 +266,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 			SQS_queue_name_str := runtime.Config.AWS_SQS_queue_str
-			queue_info, err    := gf_eth_monitor_lib.Event__init_queue(SQS_queue_name_str)
+			queue_info, err    := gf_eth_monitor_lib.Event__init_queue(SQS_queue_name_str, nil)
 			if err != nil {
 				panic(err)
 			}

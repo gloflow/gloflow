@@ -20,7 +20,8 @@ type GF_eth_peer__new_lifecycle struct {
 
 //-------------------------------------------------
 // GET_PIPELINE
-func eth_peers__get_pipeline(p_runtime *GF_runtime) []string {
+func eth_peers__get_pipeline(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) []string {
 
 
 
@@ -31,7 +32,14 @@ func eth_peers__get_pipeline(p_runtime *GF_runtime) []string {
 	q   := bson.M{"t": "peer_new_lifecycle", }
 
 	cur, err := p_runtime.Mongodb_db.Collection(coll_name_str).Find(ctx, q)
-	if err != nil { log.Fatal(err) }
+	if err != nil {
+		log.Fatal(err)
+	
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.counter__errs_num.Inc()
+		}
+	}
 	defer cur.Close(ctx)
 
 
@@ -53,6 +61,11 @@ func eth_peers__get_pipeline(p_runtime *GF_runtime) []string {
 
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
+
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.counter__errs_num.Inc()
+		}
 	}
 
 
@@ -75,6 +88,12 @@ func eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 			"mongodb_insert_error",
 			map[string]interface{}{"peer_name_str": p_peer_new_lifecycle.Peer_name_str,},
 			err, "gf_eth_monitor_lib", p_runtime.Runtime_sys)
+
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.counter__errs_num.Inc()
+		}
+		
 		return gf_err
 	}
 
@@ -85,7 +104,4 @@ func eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 	}
 
 	return nil
-
-
-
 }

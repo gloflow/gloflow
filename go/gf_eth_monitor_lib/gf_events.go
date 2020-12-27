@@ -38,7 +38,8 @@ type GF_queue_info struct {
 
 //-------------------------------------------------
 // INIT_QUEUE
-func Event__init_queue(p_queue_name_str string) (*GF_queue_info, error) {
+func Event__init_queue(p_queue_name_str string,
+	p_metrics *GF_metrics) (*GF_queue_info, error) {
 
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -61,6 +62,12 @@ func Event__init_queue(p_queue_name_str string) (*GF_queue_info, error) {
 			panic(fmt.Sprintf("Unable to find queue - %s", p_queue_name_str))
 			return nil, err
 		}
+
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.counter__errs_num.Inc()
+		}
+
 		return nil, err
 	}
 
@@ -116,6 +123,11 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 	})
 	if err != nil {
 		panic(fmt.Sprintf("Unable to receive message from queue - %s - %v", p_queue_info.name_str, err))
+
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.counter__errs_num.Inc()
+		}
 	}
 	
 	fmt.Printf("Received %d messages.\n", len(result.Messages))
@@ -149,6 +161,10 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 		if err != nil {
 			panic(fmt.Sprintf("failed to delete message from queue - %s - %v", p_queue_info.name_str, err))
 
+			// METRICS
+			if p_metrics != nil {
+				p_metrics.counter__errs_num.Inc()
+			}
 		}
 	}
 }
@@ -169,15 +185,12 @@ func event__process(p_event_map map[string]interface{},
 	
 	if event__module_str == "protocol_manager" && event__type_str == "handle_new_peer" {
 
-		
 		event__data_map := p_event_map["data"].(map[string]interface{})
-
 
 		peer_name_str      := event__data_map["name"].(string)
 		peer_enode_id_str  := event__data_map["peer_enode_id"].(string)
 		peer_remote_ip_str := event__data_map["remote_address"].(string)
 		node_ip_str        := event__data_map["local_address"].(string)
-
 
 		peer__new_lifecycle := &GF_eth_peer__new_lifecycle{
 			T_str:              "peer_new_lifecycle",
