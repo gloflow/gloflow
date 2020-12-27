@@ -60,6 +60,8 @@ func Run_service(p_service_info *GF_service_info,
 	}
 
 	
+	// QUEUE_START_CONSUMING
+	event__start_sqs_consumer(queue_info, metrics)
 
 	//-------------
 	// HANDLERS

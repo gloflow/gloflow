@@ -40,7 +40,7 @@ func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 
 
 	counter__sqs_msgs_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__",
+		Name: "gf_eth_monitor__sqs_msgs_num",
 		Help: "number of session leave SDS HTTP requests received by the MMS",
 	})
 
