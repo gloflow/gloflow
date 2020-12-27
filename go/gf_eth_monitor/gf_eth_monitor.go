@@ -126,8 +126,9 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	//--------------------
 	// CLI_ARGUMENT - CONFIG
-	cli_config_path_str := "./../config/gf_eth_monitor" // default value
-	cmd__base.PersistentFlags().StringVarP(&cli_config_path_str, "config", "", "CONFIG",
+	cli_config_path__default_str := "./../config/gf_eth_monitor"
+	var cli_config_path_str string
+	cmd__base.PersistentFlags().StringVarP(&cli_config_path_str, "config", "", cli_config_path__default_str,
 		"config file path on the local FS")
 
 	//--------------------

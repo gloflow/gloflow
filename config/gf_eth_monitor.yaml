@@ -12,4 +12,5 @@ mongodb_host:  "127.0.0.1:27017"
 # INFLUXDB
 influxdb_host: "127.0.0.1:8086"
 
+# SQS
 aws_sqs_queue: "gf_eth_monitor"
