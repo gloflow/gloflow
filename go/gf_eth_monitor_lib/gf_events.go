@@ -137,6 +137,17 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 		event__process(event_map, p_metrics)
 
 		//---------------------------
+
+		// DELETE_MESSAGE
+		// https://docs.aws.amazon.com/sdk-for-go/api/service/sqs/#SQS.DeleteMessage
+		_, err := p_queue_info.aws_client.DeleteMessage(&sqs.DeleteMessageInput{
+			QueueUrl:      aws.String(p_queue_info.url_str),
+			ReceiptHandle: m.ReceiptHandle,
+		})
+		if err != nil {
+			panic(fmt.Sprintf("failed to delete message from queue - %s - %v", p_queue_info.name_str, err))
+
+		}
 	}
 }
 
