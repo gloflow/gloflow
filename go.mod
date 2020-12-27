@@ -2,6 +2,8 @@ module github.com/gloflow/gloflow-ethmonitor
 
 go 1.14
 
+// replace github.com/gloflow/gloflow => ./../gloflow
+
 require (
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
 	github.com/aws/aws-sdk-go v1.36.15

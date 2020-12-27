@@ -226,7 +226,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
 			if err != nil {
-				return
+				panic(err)
 			}
 			
 			/*service_info := gf_eth_monitor_lib.GF_service_info{
@@ -261,7 +261,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
 			if err != nil {
-				return
+				panic(err)
 			}
 
 
