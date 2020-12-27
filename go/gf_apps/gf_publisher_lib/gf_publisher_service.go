@@ -90,12 +90,13 @@ func Run_service(p_port_str string,
 	}
 
 	//------------------------
-	//STATIC FILES SERVING
+	// STATIC FILES SERVING
 	static_files__url_base_str := "/posts"
 	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
+	
 	//------------------------
 
-	//TEMPLATES_DIR
+	// TEMPLATES_DIR
 	templates_dir_path_str := "./templates"
 	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
 		p_log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
@@ -109,10 +110,11 @@ func Run_service(p_port_str string,
 	}
 
 	//----------------------
-	//IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
+	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
 	if p_init_done_ch != nil {
 		p_init_done_ch <- true
 	}
+
 	//----------------------
 	runtime_sys.Log_fun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	runtime_sys.Log_fun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)

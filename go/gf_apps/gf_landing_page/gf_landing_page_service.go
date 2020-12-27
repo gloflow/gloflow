@@ -88,9 +88,10 @@ func Run_service__in_process(p_port_str string,
 		Mongodb_coll:     mongodb_coll,
 	}
 	//------------------------
-	//STATIC FILES SERVING
+	// STATIC FILES SERVING
 	static_files__url_base_str := "/landing"
 	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
+
 	//------------------------
 	
 	gf_err := init_handlers(runtime_sys)
@@ -99,10 +100,11 @@ func Run_service__in_process(p_port_str string,
 	}
 
 	//----------------------
-	//IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
+	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
 	if p_init_done_ch != nil {
 		p_init_done_ch <- true
 	}
+
 	//----------------------
 
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")

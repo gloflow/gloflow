@@ -28,17 +28,16 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_service_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
 
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 	
 	gf_templates, gf_err := tmpl__load(p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-
 
 	/*main_template_filename_str := "gf_tag_objects.html"
 	templates_dir_path_str     := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
@@ -57,10 +56,11 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
 	}*/
+
 	//---------------------
-	//NOTES
+	// NOTES
 	//---------------------
-	//ADD_NOTE
+	// ADD_NOTE
 
 	http.HandleFunc("/tags/add_note", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/add_note ----------")
@@ -92,8 +92,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}()
 		}
 	})
+
 	//---------------------
-	//GET_NOTES
+	// GET_NOTES
 
 	http.HandleFunc("/tags/get_notes", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/get_notes ----------")
@@ -117,10 +118,11 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}()
 		}
 	})
+
 	//---------------------
-	//TAGS
+	// TAGS
 	//---------------------
-	//ADD_TAGS
+	// ADD_TAGS
 
 	http.HandleFunc("/tags/add_tags", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_tags ----------")
@@ -152,8 +154,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}()
 		}
 	})
+	
 	//---------------------
-	//GET_OBJECTS_WITH_TAG
+	// GET_OBJECTS_WITH_TAG
 
 	http.HandleFunc("/tags/objects", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/objects ----------")
@@ -185,6 +188,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}()
 		}
 	})
+
 	//---------------------
 
 	return nil

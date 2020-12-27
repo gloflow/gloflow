@@ -82,6 +82,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			for _, s := range i_map["flows_names_lst"].([]interface{}) {
 				flows_names_lst = append(flows_names_lst, s.(string))
 			}
+
 			//--------------------------
 
 			running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := Flows__add_extern_image(image_extern_url_str,
@@ -165,6 +166,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}()
 		}
 	})
+
 	//-------------------------------------------------
 	// FLOWS_BROWSER
 	//-------------------------------------------------
@@ -205,6 +207,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}()
 		}
 	})
+
 	//-------------------------------------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 	http.HandleFunc("/images/flows/browser_page", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -227,6 +230,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 				"pages_lst": pages_lst,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+			
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -235,6 +239,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 			}()
 		}
 	})
+
 	//-------------------------------------------------
 
 	return nil

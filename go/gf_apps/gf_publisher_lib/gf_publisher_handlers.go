@@ -67,8 +67,9 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 			qs_map := p_req.URL.Query()
 
-			//response_format_str - "j"(for json)|"h"(for html)
+			// response_format_str - "j"(for json)|"h"(for html)
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+
 			//--------------------
 			// POST_TITLE
 
@@ -109,7 +110,8 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 				gf_rpc_lib.Error__in_handler("/posts/", usr_msg_str, gf_err, p_resp, p_runtime_sys)
 				return
 			}
-			p_runtime_sys.Log_fun("INFO","post_title_str - "+post_title_str)
+			p_runtime_sys.Log_fun("INFO", "post_title_str - "+post_title_str)
+
 			//--------------------
 
 			gf_err := Pipeline__get_post(post_title_str,
@@ -131,6 +133,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
+
 	//---------------------
 	// POST_CREATE
 	http.HandleFunc("/posts/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -163,6 +166,7 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 			}()
 		}
 	})
+	
 	//---------------------
 	// POST_STATUS
 	

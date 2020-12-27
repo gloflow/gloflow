@@ -74,6 +74,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 
 			os_name_str    := user_agent.OS.Name
 			os_version_str := user_agent.OS.Version
+
 			//-----------------
 			// INPUT
 			input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
@@ -82,6 +83,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 				//              this handler should be fire-and-forget from the users/clients perspective.
 				return
 			}
+			
 			//-----------------
 						
 			gf_req_ctx := &Gf_user_event_req_ctx {
@@ -109,6 +111,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			}()
 		}
 	})
+
 	//--------------
 	http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/analytics_dashboard__ff0099__ooo ----------")
@@ -134,6 +137,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			}()
 		}
 	})
+
 	//--------------
 	return nil
 }

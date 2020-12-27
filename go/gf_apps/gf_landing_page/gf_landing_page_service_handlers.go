@@ -53,6 +53,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			err, "gf_landing_page", p_runtime_sys)
 		return gf_err
 	}*/
+	
 	//---------------------
 	http.HandleFunc("/landing/main/", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /landing/main/ ----------")
@@ -71,10 +72,12 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			}
 		}
 	})
+
 	//---------------------
 	http.HandleFunc("/landing/register_invite_email", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 	})
+
 	//---------------------
 	return nil
 }

@@ -156,6 +156,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 				"upload_info_map": upload_info,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -214,6 +215,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 				"images_job_id_str": running_job.Id_str,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+			
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

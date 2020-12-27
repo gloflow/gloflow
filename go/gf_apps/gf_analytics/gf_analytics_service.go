@@ -58,8 +58,8 @@ func main() {
 	//-----------------
 	// ELASTICSEARCH
  	
- 	//used in case we want to skip using elasticsearch, to avoid that
- 	//dependency needing to be present
+ 	// used in case we want to skip using elasticsearch, to avoid that
+ 	// dependency needing to be present
 	run_indexer_bool := cli_args_map["run_indexer_bool"].(bool)
 
 	var esearch_client *elastic.Client
@@ -72,6 +72,7 @@ func main() {
 	}
 
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> - "+fmt.Sprint(esearch_client))
+
 	//-----------------
 
 	switch run_str {
@@ -94,7 +95,7 @@ func main() {
 
 
 			//-------------
-			//AWS_S3
+			// AWS_S3
 			images_s3_bucket_name_str := "gf--discovered--img"
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
@@ -103,6 +104,7 @@ func main() {
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
+
 			//-------------
 
 			crawler_runtime := &gf_crawl_core.Gf_crawler_runtime{
@@ -112,7 +114,7 @@ func main() {
 				Cluster_node_type_str: cluster_node_type_str,
 			}
 
-			//run a certain number of crawl cycles
+			// run a certain number of crawl cycles
 			for i := 0; i < crawler_cycles_to_run_int; i++ {
 
 				err := gf_crawl_lib.Run_crawler_cycle(crawler,
@@ -124,6 +126,7 @@ func main() {
 					panic(err)
 				}
 			}
+
 		//-----------------------------
 		// DISCOVER DOMAINS IN DB
 
@@ -132,6 +135,7 @@ func main() {
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
+
 		//-----------------------------
 		// START SERVICE
 		case "start_service":
@@ -140,12 +144,12 @@ func main() {
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 			py_stats_dirs_lst                 := cli_args_map["py_stats_dirs_lst"].([]string)
 
-			//AWS
+			// AWS
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
 
-			//TEMPLATES_DIR
+			// TEMPLATES_DIR
 			templates_dir_path_str := "./templates"
 			if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
 				log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
@@ -154,15 +158,16 @@ func main() {
 
 			init_handlers(templates_dir_path_str, runtime_sys)
 			//------------------------
-			//GF_DOMAINS
+			// GF_DOMAINS
 			gf_domains_lib.DB_index__init(runtime_sys)
 			gf_domains_lib.Init_domains_aggregation(runtime_sys)
 			gf_err := gf_domains_lib.Init_handlers(templates_dir_path_str, runtime_sys)
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
+
 			//------------------------
-			//GF_CRAWL
+			// GF_CRAWL
 
 			gf_crawl_lib.Init(crawler_images_local_dir_path_str,
 				cluster_node_type_str,
@@ -172,9 +177,10 @@ func main() {
 				aws_secret_access_key_str,
 				aws_token_str,
 				esearch_client,
-				runtime_sys)			
+				runtime_sys)
+
 			//------------------------
-			//GF_STATS
+			// GF_STATS
 
 			stats_url_base_str    := "/a/stats"
 			py_stats_dir_path_str := py_stats_dirs_lst[0]
@@ -183,10 +189,12 @@ func main() {
 			if gf_err != nil {
 				panic(gf_err.Error)
 			}
+
 			//------------------------
-			//STATIC FILES SERVING
+			// STATIC FILES SERVING
 			static_files__url_base_str := "/a"
 			gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
+
 			//------------------------
 
 			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -199,6 +207,7 @@ func main() {
 				log_fun("ERROR", msg_str)
 				panic(err)
 			}
+
 		//-----------------------------
 	}
 }
