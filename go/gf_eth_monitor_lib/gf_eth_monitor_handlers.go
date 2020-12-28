@@ -38,7 +38,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 
 
 
-		peer_names_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
+		peer_names_groups_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
 		
 
 		// METRICS
@@ -51,7 +51,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 		//------------------
 		// OUTPUT
 		data_map := map[string]interface{}{
-			"peer_names_lst": peer_names_lst,
+			"peer_names_groups_lst": peer_names_groups_lst,
 		}
 		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.Runtime_sys)
 
