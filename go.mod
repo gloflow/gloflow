@@ -5,14 +5,19 @@ go 1.14
 // replace github.com/gloflow/gloflow => ./../gloflow
 
 require (
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/aristanetworks/goarista v0.0.0-20201218012658-e901e4a75e4f // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
 	github.com/aws/aws-sdk-go v1.36.19
+	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
+	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/deepmap/oapi-codegen v1.4.1 // indirect
+	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gloflow/gloflow v0.0.0-20201009002545-af9f7d73243e
-	github.com/golang/snappy v0.0.2 // indirect
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.1
 	github.com/influxdata/line-protocol v0.0.0-20201012155213-5f565037cbc9 // indirect
@@ -23,6 +28,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/prometheus/client_golang v1.9.0
+	github.com/shirou/gopsutil v3.20.12+incompatible // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/afero v1.5.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

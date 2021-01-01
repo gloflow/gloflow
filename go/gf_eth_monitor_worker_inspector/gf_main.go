@@ -66,6 +66,8 @@ func main() {
 
 
 
+	eth_rpc__init()
+
 
 	
 	log.WithFields(log.Fields{"port": port_int,}).Info("STARTING HTTP SERVER")

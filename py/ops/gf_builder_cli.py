@@ -111,14 +111,18 @@ def main():
 		if "DRONE_COMMIT" in os.environ.keys():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
-		notify_completion(gf_notify_completion_url_str,
-			p_git_commit_hash_str = git_commit_hash_str)
+		for service_name_str, v in services_map.items():
+			
+			notify_completion(gf_notify_completion_url_str,
+				service_name_str,
+				p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
 
 #--------------------------------------------------
 # NOTIFY_COMPLETION
 def notify_completion(p_gf_notify_completion_url_str,
+	p_service_name_str,
 	p_git_commit_hash_str = None):
 	
 	url_str = None
@@ -148,7 +152,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 
 	# HTTP_GET
 	data_map = {
-		"app_name": "gf_eth_monitor"
+		"app_name": p_service_name_str # "gf_eth_monitor"
 	}
 	r = requests.post(url_str, data=json.dumps(data_map))
 	print(r.text)
