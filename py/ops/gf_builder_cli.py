@@ -112,7 +112,7 @@ def main():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
 		for service_name_str, v in services_map.items():
-			
+
 			notify_completion(gf_notify_completion_url_str,
 				service_name_str,
 				p_git_commit_hash_str = git_commit_hash_str)
@@ -160,6 +160,14 @@ def notify_completion(p_gf_notify_completion_url_str,
 	if not r.status_code == 200:
 		print("notify_completion http request failed")
 		exit(1)
+
+
+	r_map = json.loads(r.text)
+
+	if r_map["status_str"] == "ERROR":
+		print("notify_completion failed")
+		exit(1)
+
 
 #--------------------------------------------------
 # BUILD_GO
