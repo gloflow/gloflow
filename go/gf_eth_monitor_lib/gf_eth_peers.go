@@ -51,7 +51,7 @@ func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 
 
-			p_metrics.gauge__peers_unique_names_num.Add(float64(unique_peer_names_num_int))
+			p_metrics.gauge__peers_unique_names_num.Set(float64(unique_peer_names_num_int))
 
 			// SLEEP
 			time.Sleep(60 * time.Second)
