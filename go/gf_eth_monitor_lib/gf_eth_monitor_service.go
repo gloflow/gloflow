@@ -50,6 +50,9 @@ func Run_service(p_runtime *GF_runtime) {
 		panic(gf_err.Error)
 	}
 
+
+	eth_peers__init_continuous_metrics(metrics, p_runtime)
+
 	//-------------
 	// QUEUE
 	queue_name_str  := p_runtime.Config.AWS_SQS_queue_str
