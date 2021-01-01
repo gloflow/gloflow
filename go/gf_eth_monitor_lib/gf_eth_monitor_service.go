@@ -43,9 +43,9 @@ func Run_service(p_runtime *GF_runtime) {
 
 	//-------------
 	// METRICS
-	metrics_port_int := 9110
+	port_metrics_int := 9110
 
-	metrics, gf_err := metrics__init(metrics_port_int)
+	metrics, gf_err := metrics__init(port_metrics_int)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

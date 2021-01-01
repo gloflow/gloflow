@@ -38,13 +38,25 @@ def main():
 
 	args_map = parse_args()
 
-	service_name_str            = "gf_eth_monitor"
-	service_dir_path_str        = "%s/../../go/gf_eth_monitor"%(modd_str)
-	service_bin_output_path_str = "%s/../../build/gf_eth_monitor"%(modd_str)
-	service_cont_image_tag_str  = "latest"
-	service_cont_image_name_str = f"glofloworg/gf_eth_monitor:{service_cont_image_tag_str}"
-	service_cont_dockerfile_path_str = f"{modd_str}/../../Dockerfile"
-	docker_user_str                  = "glofloworg"
+	docker_user_str            = "glofloworg"
+	service_cont_image_tag_str = "latest"
+
+	services_map = {
+		"gf_eth_monitor": {
+			"service_name_str":                 "gf_eth_monitor",
+			"service_dir_path_str":             "%s/../../go/gf_eth_monitor"%(modd_str),
+			"service_bin_output_path_str":      "%s/../../build/gf_eth_monitor"%(modd_str),
+			"service_cont_image_name_str":      f"glofloworg/gf_eth_monitor:{service_cont_image_tag_str}",
+			"service_cont_dockerfile_path_str": f"{modd_str}/../../Dockerfile",
+		},
+		"gf_eth_monitor_worker_inspector": {
+			"service_name_str":                 "gf_eth_monitor_worker_inspector",
+			"service_dir_path_str":             "%s/../../go/gf_eth_monitor_worker_inspector"%(modd_str),
+			"service_bin_output_path_str":      "%s/../../build/gf_eth_monitor_worker_inspector"%(modd_str),
+			"service_cont_image_name_str":      f"glofloworg/gf_eth_monitor_worker_inspector:{service_cont_image_tag_str}",
+			"service_cont_dockerfile_path_str": f"{modd_str}/../../Dockerfile__worker_inspector",
+		}
+	}
 	
 	#------------------------
 	# TEST
@@ -58,18 +70,22 @@ def main():
 	# BUILD
 	elif args_map["run"] == "build":
 
-		build_go(service_name_str,
-			service_dir_path_str,
-			service_bin_output_path_str,
-			p_static_bool = args_map["static_bool"])
-	
+
+		for service_name_str, v in services_map.items():
+			
+			build_go(service_name_str,
+				v["service_dir_path_str"],
+				v["service_bin_output_path_str"],
+				p_static_bool = args_map["static_bool"])
+				
 	#------------------------
 	# BUILD_CONTAINER
 	elif args_map["run"] == "build_containers":
 		
-		build_containers(service_cont_image_name_str,
-			service_cont_dockerfile_path_str,
-			p_docker_sudo_bool=args_map["docker_sudo_bool"])
+		for service_name_str, v in services_map.items():
+			build_containers(v["service_cont_image_name_str"],
+				v["service_cont_dockerfile_path_str"],
+				p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
 	# PUBLISH_CONTAINER
@@ -77,10 +93,11 @@ def main():
 		docker_pass_str = args_map["gf_docker_pass_str"]
 		assert not docker_pass_str == None
 
-		publish_containers(service_cont_image_name_str,
-			docker_user_str,
-			docker_pass_str,
-			p_docker_sudo_bool=args_map["docker_sudo_bool"])
+		for service_name_str, v in services_map.items():
+			publish_containers(v["service_cont_image_name_str"],
+				docker_user_str,
+				docker_pass_str,
+				p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
 	#------------------------
 	# NOTIFY_COMPLETION
@@ -153,7 +170,7 @@ def build_go(p_name_str,
 	print(p_go_output_path_str)
 	assert os.path.isdir(os.path.dirname(p_go_output_path_str))
 
-	print("")
+	print("=============================")
 	if p_static_bool:
 		print(" -- %sSTATIC BINARY BUILD%s"%(fg("yellow"), attr(0)))
 		

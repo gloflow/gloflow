@@ -3,6 +3,7 @@ package gf_eth_monitor_lib
 import (
 	"log"
 	"context"
+	"time"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -24,6 +25,42 @@ type Gf_eth_peer__db_aggregate__name_group struct {
 	Name_str             string   `bson:"_id"                  json:"name_str"`
 	Peers_remote_ips_lst []string `bson:"peers_remote_ips_lst" json:"peers_remote_ips_lst"`
 	Count_int            int      `bson:"count_int"            json:"count_int"`
+}
+
+//-------------------------------------------------
+// metrics that are continuously calculated
+
+func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
+
+
+
+	go func() {
+
+
+
+
+		for {
+			
+			peer_names_groups_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
+
+
+
+			unique_peer_names_num_int := len(peer_names_groups_lst)
+
+
+
+
+			p_metrics.gauge__peers_unique_names_num.Add(float64(unique_peer_names_num_int))
+
+			// SLEEP
+			time.Sleep(60 * time.Second)
+		}
+
+
+	}()
+
+
 }
 
 //-------------------------------------------------
