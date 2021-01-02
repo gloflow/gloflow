@@ -43,7 +43,7 @@ func main() {
 
 	port_int         := 2000
 	port_metrics_int := 9120
-
+	worker_inspector__geth__host_str := "127.0.0.1"
 
 
 	log_fun := gf_core.Init_log_fun()
@@ -62,7 +62,7 @@ func main() {
 
 	//-------------
 	// ETH_CLIENT
-	eth_client := eth_rpc__init()
+	eth_client := eth_rpc__init(worker_inspector__geth__host_str)
 	runtime.Eth_rpc_client = eth_client
 
 	//-------------

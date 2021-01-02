@@ -56,25 +56,24 @@ func eth_rpc__get_block(p_block_int int64, p_runtime *GF_runtime) *eth_types.Blo
 
 
 //-------------------------------------------------
-func eth_rpc__init() *ethclient.Client {
+func eth_rpc__init(p_host_str string) *ethclient.Client {
 
-	geth_host_str := "54.147.190.195" // "127.0.0.1"
 	geth_port_int := 8545
 
-	url_str := fmt.Sprintf("http://%s:%d", geth_host_str, geth_port_int)
+	url_str := fmt.Sprintf("http://%s:%d", p_host_str, geth_port_int)
 	client, err := ethclient.Dial(url_str)
     if err != nil {
 		log.Fatal(err)
 
 		log.WithFields(log.Fields{
 			"url_str":   url_str,
-			"geth_host": geth_host_str,
+			"geth_host": p_host_str,
 			"port":      geth_port_int,
 			"err":       err}).Fatal("failed to connect json-rpc connect to Eth node")
 		panic(1)
     }
 
-	log.WithFields(log.Fields{"host": geth_host_str, "port": geth_port_int}).Info("Connected to Ethereum node")
+	log.WithFields(log.Fields{"host": p_host_str, "port": geth_port_int}).Info("Connected to Ethereum node")
 	
 
 	return client
