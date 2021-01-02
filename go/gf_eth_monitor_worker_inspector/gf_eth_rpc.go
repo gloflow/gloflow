@@ -21,24 +21,61 @@ package main
 
 import (
 	"fmt"
+	"math/big"
+	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/ethereum/go-ethereum/ethclient"
+	eth_types "github.com/ethereum/go-ethereum/core/types"
+	"github.com/davecgh/go-spew/spew"
 )
 
+
 //-------------------------------------------------
-func eth_rpc__init() {
+func eth_rpc__get_block(p_block_int int64, p_runtime *GF_runtime) *eth_types.Block {
 
-	geth_host_str := "127.0.0.1"
-	geth_port_int := 8545
 
-	url_str := fmt.Sprintf("https://%s:%d", geth_host_str, geth_port_int)
+
+	ctx := context.Background()
+	block, err := p_runtime.Eth_rpc_client.BlockByNumber(ctx, big.NewInt(p_block_int))
+	if err != nil {
+
+
+
+		fmt.Println(err)
+		panic(1)
+	}
+
+
+
+
+	spew.Dump(block)
+
+	return block
+
+}
+
+
+//-------------------------------------------------
+func eth_rpc__init() *ethclient.Client {
+
+	geth_host_str := "54.147.190.195" // "127.0.0.1"
+	geth_port_int := 8546
+
+	url_str := fmt.Sprintf("http://%s:%d", geth_host_str, geth_port_int)
 	client, err := ethclient.Dial(url_str)
     if err != nil {
 		log.Fatal(err)
-		panic(err)
+
+		log.WithFields(log.Fields{
+			"url_str":   url_str,
+			"geth_host": geth_host_str,
+			"port":      geth_port_int,
+			"err":       err}).Fatal("failed to connect json-rpc connect to Eth node")
+		panic(1)
     }
 
 	log.WithFields(log.Fields{"host": geth_host_str, "port": geth_port_int}).Info("Connected to Ethereum node")
-	_ = client
+	
 
+	return client
 }

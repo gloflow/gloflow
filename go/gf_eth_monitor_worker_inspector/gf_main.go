@@ -24,12 +24,14 @@ import (
 	"fmt"
 	"net/http"
 	log "github.com/sirupsen/logrus"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type GF_runtime struct {
-	Runtime_sys *gf_core.Runtime_sys
+	Eth_rpc_client *ethclient.Client
+	Runtime_sys    *gf_core.Runtime_sys
 }
 
 //-------------------------------------------------
@@ -59,22 +61,21 @@ func main() {
 	}
 
 	//-------------
+	// ETH_CLIENT
+	eth_client := eth_rpc__init()
+	runtime.Eth_rpc_client = eth_client
 
+	//-------------
+	// HANDLERS
 	init_handlers(metrics, runtime)
 
-
-
-
-
-	eth_rpc__init()
-
-
+	//-------------
 	
 	log.WithFields(log.Fields{"port": port_int,}).Info("STARTING HTTP SERVER")
 	http_err := http.ListenAndServe(fmt.Sprintf(":%d", port_int), nil)
 
 	if http_err != nil {
-		log.WithFields(log.Fields{"port": port_int,}).Fatal("cant start HTTP listening on port")
+		log.WithFields(log.Fields{"port": port_int, "err": http_err}).Fatal("cant start HTTP listening on port")
 		panic(http_err)
 	}
 }

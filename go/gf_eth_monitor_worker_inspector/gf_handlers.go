@@ -20,9 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -41,9 +44,33 @@ func init_handlers(p_metrics *GF_metrics,
 
 
 		//------------------
+		// INPUT
+		qs_map := p_req.URL.Query()
+
+		var block_num_int int64
+		if b_lst, ok := qs_map["b"]; ok {
+			block_num_str := b_lst[0]
+
+			i, err := strconv.Atoi(block_num_str)
+			if err != nil {
+				gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
+					fmt.Sprintf("invalid input argument - %s", i),
+					nil, p_resp, p_runtime.Runtime_sys)
+				return
+			}
+			block_num_int = int64(i)
+		}
+		
+		//------------------
+
+
+		block := eth_rpc__get_block(block_num_int, p_runtime)
+
+
+		//------------------
 		// OUTPUT
 		data_map := map[string]interface{}{
-			
+			"block": spew.Sdump(block),
 		}
 		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.Runtime_sys)
 
