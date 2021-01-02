@@ -32,4 +32,5 @@ type Runtime_sys struct {
 	Mongo_coll   *mongo.Collection
 	Mongodb_db   *mgo.Database   // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
 	Mongodb_coll *mgo.Collection // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
+	Debug_bool   bool            // if debug mode is enabled (some places will print extra info in debug mode)
 }

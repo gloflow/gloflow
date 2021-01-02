@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //---------------------------------------------------
 type Gf_test_image_data struct {
 	image_client_type_str            string
@@ -74,6 +75,7 @@ func Test__main(p_test *testing.T) {
 
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
+	
 	//-----------------
 	// MONGODB	
 	mongodb_db := gf_core.Mongo__connect(test__mongodb_host_str,

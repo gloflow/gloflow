@@ -142,6 +142,12 @@ func Error__in_handler(p_handler_url_path_str string,
 		"gf_error_type_str":          p_gf_err.Type_str,
 		"gf_error_user_msg_str":      p_gf_err.User_msg_str,
 	}
+
+	// DEBUG
+	if p_runtime_sys.Debug_bool {
+		data_map["error"] = p_gf_err.Error
+	}
+
 	Http_respond(data_map,status_str,p_resp,p_runtime_sys)
 
 	/*http.Error(p_resp,
