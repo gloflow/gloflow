@@ -59,7 +59,7 @@ func eth_rpc__get_block(p_block_int int64, p_runtime *GF_runtime) *eth_types.Blo
 func eth_rpc__init() *ethclient.Client {
 
 	geth_host_str := "54.147.190.195" // "127.0.0.1"
-	geth_port_int := 8546
+	geth_port_int := 8545
 
 	url_str := fmt.Sprintf("http://%s:%d", geth_host_str, geth_port_int)
 	client, err := ethclient.Dial(url_str)
