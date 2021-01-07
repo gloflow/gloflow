@@ -69,6 +69,7 @@ func Error__create_with_hook(p_user_msg_str string,
 	return gf_error
 }
 
+
 //-------------------------------------------------
 func Error__create(p_user_msg_str string,
 	p_error_type_str     string,
@@ -77,6 +78,29 @@ func Error__create(p_user_msg_str string,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
+
+	error_defs_map := error__get_defs()
+	
+	gf_err := Error__create_with_defs(p_user_msg_str,
+		p_error_type_str,
+		p_error_data_map,
+		p_error,
+		p_subsystem_name_str,
+		error_defs_map,
+		p_runtime_sys)
+
+	return gf_err
+}
+
+//-------------------------------------------------
+func Error__create_with_defs(p_user_msg_str string,
+	p_error_type_str     string,
+	p_error_data_map     map[string]interface{},
+	p_error              error,
+	p_subsystem_name_str string,
+	p_err_defs_map       map[string]Error_def,
+	p_runtime_sys        *Runtime_sys) *Gf_error {
+
 
 
 	creation_unix_time_f := float64(time.Now().UnixNano()) / 1000000000.0
@@ -98,8 +122,7 @@ func Error__create(p_user_msg_str string,
 	//--------------------
 	// ERROR_DEF
 
-	error_defs_map := error__get_defs()
-	error_def, ok  := error_defs_map[p_error_type_str]
+	error_def, ok := p_err_defs_map[p_error_type_str]
 	if !ok {
 		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
 	}
