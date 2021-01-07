@@ -26,12 +26,13 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 )
 
 //-------------------------------------------------
 type GF_runtime struct {
-	Eth_rpc_client *ethclient.Client
-	Runtime_sys    *gf_core.Runtime_sys
+	eth_rpc_client *ethclient.Client
+	runtime_sys    *gf_core.Runtime_sys
 }
 
 //-------------------------------------------------
@@ -62,8 +63,11 @@ func main() {
 
 	//-------------
 	// ETH_CLIENT
-	eth_client := eth_rpc__init(worker_inspector__geth__host_str)
-	runtime.Eth_rpc_client = eth_client
+	eth_client, gf_err := gf_eth_monitor_lib.Eth_rpc__init(worker_inspector__geth__host_str, runtime.runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+	runtime.eth_rpc_client = eth_client
 
 	//-------------
 	// HANDLERS
@@ -92,7 +96,7 @@ func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
 	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
-		Runtime_sys: runtime_sys,
+		runtime_sys: runtime_sys,
 	}
 
 	return runtime, nil

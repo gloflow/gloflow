@@ -23,8 +23,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"context"
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -36,12 +38,12 @@ func init_handlers(p_metrics *GF_metrics,
 	// GET_BLOCKS
 	http.HandleFunc("/gfethm_worker_inspect/v1/blocks", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		
+		ctx := context.Background()
+
 		// METRICS
 		if p_metrics != nil {
 			p_metrics.counter__http_req_num__get_blocks.Inc()
 		}
-
-
 
 		//------------------
 		// INPUT
@@ -55,7 +57,7 @@ func init_handlers(p_metrics *GF_metrics,
 			if err != nil {
 				gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
 					fmt.Sprintf("invalid input argument - %s", i),
-					nil, p_resp, p_runtime.Runtime_sys)
+					nil, p_resp, p_runtime.runtime_sys)
 				return
 			}
 			block_num_int = int64(i)
@@ -63,21 +65,27 @@ func init_handlers(p_metrics *GF_metrics,
 		
 		//------------------
 
+		// GET_BLOCK
+		gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block(block_num_int,
+			p_runtime.eth_rpc_client,
+			ctx,
+			p_runtime.runtime_sys)
+		if gf_err != nil {
+			
 
-		block := eth_rpc__get_block(block_num_int, p_runtime)
-
+			gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
+				fmt.Sprintf("failed to get block - %s", block_num_int),
+				gf_err, p_resp, p_runtime.runtime_sys)
+		}
 
 		//------------------
 		// OUTPUT
 		data_map := map[string]interface{}{
-			"block": spew.Sdump(block),
+			"block": spew.Sdump(gf_block),
 		}
-		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.Runtime_sys)
+		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.runtime_sys)
 
 		//------------------
-
-
-
 	})
 
 	//---------------------
