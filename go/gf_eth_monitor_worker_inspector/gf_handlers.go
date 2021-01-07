@@ -27,7 +27,7 @@ import (
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -81,7 +81,7 @@ func init_handlers(p_metrics *GF_metrics,
 		//------------------
 		// OUTPUT
 		data_map := map[string]interface{}{
-			"block": spew.Sdump(gf_block),
+			"block": gf_block, // spew.Sdump(),
 		}
 		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.runtime_sys)
 

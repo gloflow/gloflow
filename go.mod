@@ -1,6 +1,6 @@
 module github.com/gloflow/gloflow-ethmonitor
 
-go 1.14
+go 1.15
 
 // replace github.com/gloflow/gloflow => ./../gloflow
 
@@ -16,7 +16,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gloflow/gloflow v0.0.0-20201009002545-af9f7d73243e
+	github.com/gloflow/gloflow v0.0.0-20210107041515-99039f1ae7b7
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.1
