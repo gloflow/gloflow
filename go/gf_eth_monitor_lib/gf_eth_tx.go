@@ -25,8 +25,9 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-
-	Logs []*eth_types.Log `json:"logs"`
+	Gas_used_int uint64           `json:"gas_used_int"`
+	Logs         []*eth_types.Log `json:"logs_lst"`
+	
 }
 
 //-------------------------------------------------

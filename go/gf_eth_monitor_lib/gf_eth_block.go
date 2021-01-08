@@ -25,9 +25,12 @@ import (
 
 //-------------------------------------------------
 type GF_eth__block struct {
-
-	Txs_lst []*GF_eth__tx `json:"txs_lst"`
-	Block   string        `json:"block"` // *eth_types.Block `json:"block"`
+	Block_num_int     uint64        `json:"block_num_int"`
+	Gas_used_int      uint64        `json:"gas_used_int"`
+	Gas_limit_int     uint64        `json:"gas_limit_int"`
+	Coinbase_addr_str string        `json:"coinbase_addr_str"`
+	Txs_lst           []*GF_eth__tx `json:"txs_lst"`
+	Block             string        `json:"block"` // *eth_types.Block `json:"block"`
 }
 
 //-------------------------------------------------

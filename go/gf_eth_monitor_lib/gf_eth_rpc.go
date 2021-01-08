@@ -32,89 +32,6 @@ import (
 )
 
 //-------------------------------------------------
-func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
-	p_ctx            context.Context,
-	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
-
-	tx_hash_hex_str := p_tx_hash.Hex()
-	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, p_tx_hash)
-	if err != nil {
-
-		error_defs_map := error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit in gf_eth_monitor",
-			"eth_rpc__get_tx_receipt",
-			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
-		return nil, gf_err
-	}
-
-	// GET_LOGS
-	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
-		p_ctx,
-		p_eth_rpc_client,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	tx := &GF_eth__tx{
-		Logs: logs,
-	}
-
-	return tx, nil
-}
-
-//-------------------------------------------------
-func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
-	p_ctx            context.Context,
-	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*eth_types.Log, *gf_core.Gf_error) {
-
-
-	
-	/*
-	type Log struct {
-		// Consensus fields:
-		// address of the contract that generated the event
-		Address common.Address `json:"address" gencodec:"required"`
-		// list of topics provided by the contract.
-		Topics []common.Hash `json:"topics" gencodec:"required"`
-
-		// supplied by the contract, usually ABI-encoded
-		Data []byte `json:"data" gencodec:"required"`
-
-		// Derived fields. These fields are filled in by the node
-		// but not secured by consensus.
-		// block in which the transaction was included
-		BlockNumber uint64 `json:"blockNumber"`
-
-		// hash of the transaction
-		TxHash common.Hash `json:"transactionHash" gencodec:"required"`
-		// index of the transaction in the block
-		TxIndex uint `json:"transactionIndex"`
-		// hash of the block in which the transaction was included
-		BlockHash common.Hash `json:"blockHash"`
-		// index of the log in the block
-		Index uint `json:"logIndex"`
-
-		// The Removed field is true if this log was reverted due to a chain reorganisation.
-		// You must pay attention to this field if you receive logs through a filter query.
-		Removed bool `json:"removed"`
-	}*/
-	logs_lst := []*eth_types.Log{}
-	for _, l := range p_tx_receipt.Logs {
-
-		// data__byte_lst := l.Data
-		// fmt.Println(data__byte_lst)
-
-		logs_lst = append(logs_lst, l)
-	}
-
-	return logs_lst, nil
-}
-
-//-------------------------------------------------
 // GET_BLOCK
 func Eth_rpc__get_block(p_block_num_int int64,
 	p_eth_rpc_client *ethclient.Client,
@@ -226,13 +143,104 @@ func Eth_rpc__get_block(p_block_num_int int64,
 
 
 	gf_block := &GF_eth__block{
-		Txs_lst: txs_lst,
-		Block:   spew.Sdump(block),
+		Block_num_int:     block.Number().Uint64(),
+		Gas_used_int:      block.GasUsed(),
+		Gas_limit_int:     block.GasLimit(),
+		Coinbase_addr_str: block.Coinbase().Hex(),
+		Txs_lst:           txs_lst,
+		Block:             spew.Sdump(block),
 	}
 
 	
 
 	return gf_block, nil
+}
+
+//-------------------------------------------------
+func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
+	p_ctx            context.Context,
+	p_eth_rpc_client *ethclient.Client,
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
+
+	tx_hash_hex_str := p_tx_hash.Hex()
+	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, p_tx_hash)
+	if err != nil {
+
+		error_defs_map := error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit in gf_eth_monitor",
+			"eth_rpc__get_tx_receipt",
+			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
+			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+		return nil, gf_err
+	}
+
+	// GET_LOGS
+	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
+		p_ctx,
+		p_eth_rpc_client,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+
+	gas_used_int := tx_receipt.GasUsed
+	tx := &GF_eth__tx{
+		Gas_used_int: gas_used_int,
+		Logs:         logs,
+	}
+
+	return tx, nil
+}
+
+//-------------------------------------------------
+func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
+	p_ctx            context.Context,
+	p_eth_rpc_client *ethclient.Client,
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*eth_types.Log, *gf_core.Gf_error) {
+
+
+	
+	/*
+	type Log struct {
+		// Consensus fields:
+		// address of the contract that generated the event
+		Address common.Address `json:"address" gencodec:"required"`
+		// list of topics provided by the contract.
+		Topics []common.Hash `json:"topics" gencodec:"required"`
+
+		// supplied by the contract, usually ABI-encoded
+		Data []byte `json:"data" gencodec:"required"`
+
+		// Derived fields. These fields are filled in by the node
+		// but not secured by consensus.
+		// block in which the transaction was included
+		BlockNumber uint64 `json:"blockNumber"`
+
+		// hash of the transaction
+		TxHash common.Hash `json:"transactionHash" gencodec:"required"`
+		// index of the transaction in the block
+		TxIndex uint `json:"transactionIndex"`
+		// hash of the block in which the transaction was included
+		BlockHash common.Hash `json:"blockHash"`
+		// index of the log in the block
+		Index uint `json:"logIndex"`
+
+		// The Removed field is true if this log was reverted due to a chain reorganisation.
+		// You must pay attention to this field if you receive logs through a filter query.
+		Removed bool `json:"removed"`
+	}*/
+	logs_lst := []*eth_types.Log{}
+	for _, l := range p_tx_receipt.Logs {
+
+		// data__byte_lst := l.Data
+		// fmt.Println(data__byte_lst)
+
+		logs_lst = append(logs_lst, l)
+	}
+
+	return logs_lst, nil
 }
 
 //-------------------------------------------------
