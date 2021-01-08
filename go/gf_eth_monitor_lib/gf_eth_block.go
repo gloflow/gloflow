@@ -20,14 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
-	eth_types "github.com/ethereum/go-ethereum/core/types"
+	// eth_types "github.com/ethereum/go-ethereum/core/types"
 )
 
 //-------------------------------------------------
 type GF_eth__block struct {
 
-	Txs_lst []*GF_eth__tx
-	Block   *eth_types.Block
+	Txs_lst []*GF_eth__tx `json:"txs_lst"`
+	Block   string        `json:"block"` // *eth_types.Block `json:"block"`
 }
 
 //-------------------------------------------------

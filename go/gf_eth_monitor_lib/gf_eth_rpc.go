@@ -49,9 +49,7 @@ func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
 		return nil, gf_err
 	}
 
-
-
-
+	// GET_LOGS
 	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
 		p_ctx,
 		p_eth_rpc_client,
@@ -64,8 +62,6 @@ func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
 		Logs: logs,
 	}
 
-
-
 	return tx, nil
 }
 
@@ -77,9 +73,6 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 
 
 	
-
-
-
 	/*
 	type Log struct {
 		// Consensus fields:
@@ -112,18 +105,13 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 	logs_lst := []*eth_types.Log{}
 	for _, l := range p_tx_receipt.Logs {
 
-
 		// data__byte_lst := l.Data
 		// fmt.Println(data__byte_lst)
-
-
 
 		logs_lst = append(logs_lst, l)
 	}
 
-
 	return logs_lst, nil
-
 }
 
 //-------------------------------------------------
@@ -133,7 +121,6 @@ func Eth_rpc__get_block(p_block_num_int int64,
 	p_ctx            context.Context,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block, *gf_core.Gf_error) {
 
-	
 	
 	/*
 	type Header struct {
@@ -165,7 +152,6 @@ func Eth_rpc__get_block(p_block_num_int int64,
 	
 
 
-	
 	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, big.NewInt(p_block_num_int))
 	if err != nil {
 
@@ -241,10 +227,10 @@ func Eth_rpc__get_block(p_block_num_int int64,
 
 	gf_block := &GF_eth__block{
 		Txs_lst: txs_lst,
-		Block:   block,
+		Block:   spew.Sdump(block),
 	}
 
-	spew.Dump(gf_block)
+	
 
 	return gf_block, nil
 }
