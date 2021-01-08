@@ -40,6 +40,7 @@ func Eth_rpc__get_block(p_block_num_int int64,
 
 	
 	/*
+	
 	type Header struct {
 		ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"`
 		UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"`
@@ -82,53 +83,11 @@ func Eth_rpc__get_block(p_block_num_int int64,
 
 
 	txs_lst := []*GF_eth__tx{}
-	for _, t := range block.Transactions() {
+	for _, tx := range block.Transactions() {
 
-		/*
-		type Transaction
-
-		func NewContractCreation(nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
-		func NewTransaction(nonce uint64, to common.Address, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
-		func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, error)
-		func (tx *Transaction) AsMessage(s Signer) (Message, error)
-		func (tx *Transaction) ChainId() *big.Int
-		func (tx *Transaction) CheckNonce() bool
-		func (tx *Transaction) Cost() *big.Int
-		func (tx *Transaction) Data() []byte
-		func (tx *Transaction) DecodeRLP(s *rlp.Stream) error
-		func (tx *Transaction) EncodeRLP(w io.Writer) error
-		func (tx *Transaction) Gas() uint64
-		func (tx *Transaction) GasPrice() *big.Int
-		func (tx *Transaction) GasPriceCmp(other *Transaction) int
-		func (tx *Transaction) GasPriceIntCmp(other *big.Int) int
-		func (tx *Transaction) Hash() common.Hash
-		func (tx *Transaction) MarshalJSON() ([]byte, error)
-		func (tx *Transaction) Nonce() uint64
-		func (tx *Transaction) Protected() bool
-		func (tx *Transaction) RawSignatureValues() (v, r, s *big.Int)
-		func (tx *Transaction) Size() common.StorageSize
-		func (tx *Transaction) To() *common.Address
-		func (tx *Transaction) UnmarshalJSON(input []byte) error
-		func (tx *Transaction) Value() *big.Int
-		func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, error)
-		*/
-
-
-
-		t.Gas()
-		t.GasPrice()
-		// :common.Hash - represents the 32 byte Keccak256 hash of arbitrary data.
-		//                in this case its a hash of signed transaction data.
-		tx_hash := t.Hash()
-		t.Value()
 		
-		
-		address := t.To()
-		if address == nil {
-			// its a contract creation transaction
-		}
 
-		gf_tx, gf_err := Eth_rpc__get_tx(tx_hash, p_ctx, p_eth_rpc_client, p_runtime_sys)
+		gf_tx, gf_err := Eth_rpc__get_tx(tx, p_ctx, p_eth_rpc_client, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -157,13 +116,86 @@ func Eth_rpc__get_block(p_block_num_int int64,
 }
 
 //-------------------------------------------------
-func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
+func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
 
-	tx_hash_hex_str := p_tx_hash.Hex()
-	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, p_tx_hash)
+
+
+
+	/*
+	type Transaction
+
+	func NewContractCreation(nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
+	func NewTransaction(nonce uint64, to common.Address, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
+	func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, error)
+	func (tx *Transaction) AsMessage(s Signer) (Message, error)
+	func (tx *Transaction) ChainId() *big.Int
+	func (tx *Transaction) CheckNonce() bool
+	func (tx *Transaction) Cost() *big.Int
+	func (tx *Transaction) Data() []byte
+	func (tx *Transaction) DecodeRLP(s *rlp.Stream) error
+	func (tx *Transaction) EncodeRLP(w io.Writer) error
+	func (tx *Transaction) Gas() uint64
+	func (tx *Transaction) GasPrice() *big.Int
+	func (tx *Transaction) GasPriceCmp(other *Transaction) int
+	func (tx *Transaction) GasPriceIntCmp(other *big.Int) int
+	func (tx *Transaction) Hash() common.Hash
+	func (tx *Transaction) MarshalJSON() ([]byte, error)
+	func (tx *Transaction) Nonce() uint64
+	func (tx *Transaction) Protected() bool
+	func (tx *Transaction) RawSignatureValues() (v, r, s *big.Int)
+	func (tx *Transaction) Size() common.StorageSize
+	func (tx *Transaction) To() *common.Address
+	func (tx *Transaction) UnmarshalJSON(input []byte) error
+	func (tx *Transaction) Value() *big.Int
+	func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, error)
+	*/
+
+	/*t.Gas()
+	t.GasPrice()
+	// :common.Hash - represents the 32 byte Keccak256 hash of arbitrary data.
+	//                in this case its a hash of signed transaction data.
+	tx_hash := t.Hash()
+	t.Value()
+	
+	
+	address := t.To()
+	if address == nil {
+		// its a contract creation transaction
+	}*/
+
+
+
+
+
+
+	/*
+	type Receipt struct {
+		// Consensus fields: These fields are defined by the Yellow Paper
+		PostState         []byte `json:"root"`
+		Status            uint64 `json:"status"`
+		CumulativeGasUsed uint64 `json:"cumulativeGasUsed" gencodec:"required"`
+		Bloom             Bloom  `json:"logsBloom"         gencodec:"required"`
+		Logs              []*Log `json:"logs"              gencodec:"required"`
+
+		// Implementation fields: These fields are added by geth when processing a transaction.
+		// They are stored in the chain database.
+		TxHash          common.Hash    `json:"transactionHash" gencodec:"required"`
+		ContractAddress common.Address `json:"contractAddress"`
+		GasUsed         uint64         `json:"gasUsed" gencodec:"required"`
+
+		// Inclusion information: These fields provide information about the inclusion of the
+		// transaction corresponding to this receipt.
+		BlockHash        common.Hash `json:"blockHash,omitempty"`
+		BlockNumber      *big.Int    `json:"blockNumber,omitempty"`
+		TransactionIndex uint        `json:"transactionIndex"`
+	}
+	*/
+	tx_hash         := p_tx.Hash() // :eth_common.Hash
+	tx_hash_hex_str := tx_hash.Hex()
+	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, tx_hash)
 	if err != nil {
 
 		error_defs_map := error__get_defs()
@@ -187,6 +219,8 @@ func Eth_rpc__get_tx(p_tx_hash eth_common.Hash,
 
 	gas_used_int := tx_receipt.GasUsed
 	tx := &GF_eth__tx{
+		Hash_str:     tx_receipt.TxHash.Hex(),
+		Index_int:    tx_receipt.TransactionIndex,
 		Gas_used_int: gas_used_int,
 		Logs:         logs,
 	}
@@ -207,6 +241,7 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 		// Consensus fields:
 		// address of the contract that generated the event
 		Address common.Address `json:"address" gencodec:"required"`
+
 		// list of topics provided by the contract.
 		Topics []common.Hash `json:"topics" gencodec:"required"`
 
@@ -236,6 +271,31 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 
 		// data__byte_lst := l.Data
 		// fmt.Println(data__byte_lst)
+
+		// COST - The base cost of logging operations is 375 gas. On top of that,
+		//        every included topic costs an additional 375 gas.
+		//        Finally, each byte of data costs 8 gas.
+
+		// TOPIC - used to describe the event.
+		//         can only hold a maximum of 32 bytes of data.
+		//         first topic usually consists of the signature (a keccak256 hash)
+		//         of the name of the event that occurred, including the types
+		//         (uint256, string, etc.) of its parameters.
+		//         topics should only reliably be used for data that strongly
+		//         narrows down search queries (like addresses)
+		topics_lst := []eth_common.Hash{}
+
+		// l.Topics() - list of topics provided by the contract
+		for _, topic := range l.Topics {
+			topics_lst = append(topics_lst, topic)
+		}
+
+		// DATA - while topics are searchable, data is not.
+		//        including data is a lot cheaper than including topics.
+		//        supplied by the contract, usually ABI-encoded.
+		data_bytes_lst := l.Data
+		fmt.Println(data_bytes_lst)
+
 
 		logs_lst = append(logs_lst, l)
 	}

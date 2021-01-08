@@ -25,9 +25,10 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
+	Hash_str     string           `json:"hash_str"`
+	Index_int    uint             `json:"index_int"` // position of the transaction in the block
 	Gas_used_int uint64           `json:"gas_used_int"`
 	Logs         []*eth_types.Log `json:"logs_lst"`
-	
 }
 
 //-------------------------------------------------
