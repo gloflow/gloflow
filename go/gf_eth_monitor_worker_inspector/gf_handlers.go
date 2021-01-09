@@ -22,7 +22,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"context"
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -47,22 +46,12 @@ func init_handlers(p_metrics *GF_metrics,
 
 		//------------------
 		// INPUT
-		qs_map := p_req.URL.Query()
 
-		var block_num_int int64
-		if b_lst, ok := qs_map["b"]; ok {
-			block_num_str := b_lst[0]
-
-			i, err := strconv.Atoi(block_num_str)
-			if err != nil {
-				gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
-					fmt.Sprintf("invalid input argument - %s", i),
-					nil, p_resp, p_runtime.runtime_sys)
-				return
-			}
-			block_num_int = int64(i)
+		block_num_int, err := gf_eth_monitor_lib.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
+		if err != nil {
+			return
 		}
-		
+
 		//------------------
 
 		// GET_BLOCK
@@ -74,8 +63,9 @@ func init_handlers(p_metrics *GF_metrics,
 			
 
 			gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
-				fmt.Sprintf("failed to get block - %s", block_num_int),
+				fmt.Sprintf("failed to get block - %d", block_num_int),
 				gf_err, p_resp, p_runtime.runtime_sys)
+			return
 		}
 
 		//------------------

@@ -98,6 +98,7 @@ func runtime__get(p_config_path_str string,
 }
 
 //-------------------------------------------------
+// INFLUXDB
 func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
 
 	fmt.Println("influxdb get client...")
@@ -202,6 +203,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	// ENV
 	err = viper.BindEnv("aws_sqs_queue", "GF_AWS_SQS_QUEUE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - WORKERS_INSPECTORS_HOSTS
+	cmd__base.PersistentFlags().StringP("workers_inspectors_hosts", "", "WORKERS INSPECTORS HOSTS", "list of all workers inspectors hosts, ',' separated")
+	err = viper.BindPFlag("workers_inspectors_hosts", cmd__base.PersistentFlags().Lookup("workers_inspectors_hosts"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("workers_inspectors_hosts", "GF_WORKERS_INSPECTORS_HOSTS")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

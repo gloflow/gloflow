@@ -6,7 +6,7 @@ go 1.15
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/aristanetworks/goarista v0.0.0-20201218012658-e901e4a75e4f // indirect
+	github.com/aristanetworks/goarista v0.0.0-20210107181124-fad53805024e // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
 	github.com/aws/aws-sdk-go v1.36.23
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
@@ -41,8 +41,8 @@ require (
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
-	golang.org/x/sys v0.0.0-20210105210732-16f7687f5001 // indirect
-	golang.org/x/text v0.3.4 // indirect
+	golang.org/x/sys v0.0.0-20210108172913-0df2131ae363 // indirect
+	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

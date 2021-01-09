@@ -33,7 +33,7 @@ import (
 
 //-------------------------------------------------
 // GET_BLOCK
-func Eth_rpc__get_block(p_block_num_int int64,
+func Eth_rpc__get_block(p_block_num_int uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block, *gf_core.Gf_error) {
@@ -62,7 +62,7 @@ func Eth_rpc__get_block(p_block_num_int int64,
 	// Time - the unix timestamp for when the block was collated
 
 	*/
-	header, err := p_eth_rpc_client.HeaderByNumber(p_ctx, big.NewInt(p_block_num_int))
+	header, err := p_eth_rpc_client.HeaderByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +70,7 @@ func Eth_rpc__get_block(p_block_num_int int64,
 	
 
 
-	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, big.NewInt(p_block_num_int))
+	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 
 		error_defs_map := error__get_defs()

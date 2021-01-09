@@ -33,34 +33,21 @@ type Gf_eth_peer__db_aggregate__name_group struct {
 func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 	p_runtime *GF_runtime) {
 
-
-
 	go func() {
-
-
 
 
 		for {
 			
 			peer_names_groups_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
 
-
-
 			unique_peer_names_num_int := len(peer_names_groups_lst)
-
-
-
 
 			p_metrics.gauge__peers_unique_names_num.Set(float64(unique_peer_names_num_int))
 
 			// SLEEP
 			time.Sleep(60 * time.Second)
 		}
-
-
 	}()
-
-
 }
 
 //-------------------------------------------------

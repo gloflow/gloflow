@@ -15,3 +15,6 @@ influxdb_host: "127.0.0.1:8086"
 
 # SQS
 aws_sqs_queue: "gf_eth_monitor"
+
+
+workers_inspectors_hosts: "127.0.0.1:2000"

@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
+	"fmt"
+	"strings"
+	"github.com/gloflow/gloflow/go/gf_core"
 	// eth_types "github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -34,3 +37,50 @@ type GF_eth__block struct {
 }
 
 //-------------------------------------------------
+func eth_block__get_block_pipeline(p_block_int uint64,
+	p_runtime *GF_runtime) *gf_core.Gf_error {
+
+
+
+	workers_inspectors_hosts_lst := strings.Split(p_runtime.Config.Workers_inspectors_hosts_str, ",")
+
+
+
+	for _, host_str := range workers_inspectors_hosts_lst {
+
+
+
+		gf_err := eth_block__worker_inspector__get_block(p_block_int, host_str, p_runtime)
+		if gf_err != nil {
+			return gf_err
+		}
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
+func eth_block__worker_inspector__get_block(p_block_int uint64,
+	p_host_str string,
+	p_runtime  *GF_runtime) *gf_core.Gf_error {
+
+
+
+
+
+	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?block=%s", p_host_str, p_block_int)
+
+	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(url_str, p_runtime.Runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	fmt.Println(gf_http_fetch)
+
+
+
+
+
+	return nil
+
+}

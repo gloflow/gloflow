@@ -36,4 +36,8 @@ type GF_config struct {
 
 	// AWS_SQS
 	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
+
+	// WORKERS_INSPECTORS_HOSTS - list of "," separated hosts, that are used by gf_eth_monitor__masters
+	//                            to reach a worker_inspector service running on each worker.
+	Workers_inspectors_hosts_str string `mapstructure:"workers_inspectors_hosts"`
 }
