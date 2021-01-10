@@ -27,10 +27,15 @@ import (
 //-------------------------------------------------
 type Runtime_sys struct {
 	Service_name_str string
-	Log_fun      func(string,string)
+	Log_fun      func(string, string)
 	Mongo_db     *mongo.Database
-	Mongo_coll   *mongo.Collection
+	Mongo_coll   *mongo.Collection // main mongodb collection to use when none is specified
+	Debug_bool   bool              // if debug mode is enabled (some places will print extra info in debug mode)
+
+	// ERRORS
+	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
+	Errors_send_to_sentry_bool  bool // if errors should be sent to Sentry service
+
 	Mongodb_db   *mgo.Database   // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
 	Mongodb_coll *mgo.Collection // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
-	Debug_bool   bool            // if debug mode is enabled (some places will print extra info in debug mode)
 }
