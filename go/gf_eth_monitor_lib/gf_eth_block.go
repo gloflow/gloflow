@@ -27,7 +27,9 @@ import (
 )
 
 //-------------------------------------------------
-type GF_eth__block struct {
+// BLOCK__INTERNAL - internal representation of the block, with fields
+//                   that are not visible to the external public users.
+type GF_eth__block__int struct {
 	Block_num_int     uint64        `json:"block_num_int"`
 	Gas_used_int      uint64        `json:"gas_used_int"`
 	Gas_limit_int     uint64        `json:"gas_limit_int"`

@@ -20,17 +20,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
-	"fmt"
 	"strconv"
 	"net/http"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	// "github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 func Http__get_arg__block_num(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (uint64, error) {
+	p_runtime_sys *gf_core.Runtime_sys) (uint64, *gf_core.Gf_error) {
 
 
 
@@ -44,15 +43,47 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 
 		i, err := strconv.Atoi(block_num_str)
 		if err != nil {
-			gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
-				fmt.Sprintf("invalid input argument - %s", i),
-				nil, p_resp, p_runtime_sys)
-			return 0, err 
+			
+
+
+
+			gf_err := gf_core.Error__create("failed to read apps__info from YAML file in Cmonkeyd",
+				"verify__value_not_integer_error",
+				map[string]interface{}{"block_num": block_num_str,},
+				err, "gf_eth_monitor_lib", p_runtime_sys)
+
+
+
+			return 0, gf_err 
 		}
 		block_num_int = uint64(i)
 	}
 	
+
+
+
+	
+
+
+
 	//------------------
 
 	return block_num_int, nil
+}
+
+
+//-------------------------------------------------
+func Http__get_arg__miner_addr(p_resp http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+
+
+
+
+
+	miner_addr_str := ""
+	return miner_addr_str, nil
+
+
+
 }

@@ -36,7 +36,7 @@ import (
 func Eth_rpc__get_block(p_block_num_int uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
 	
 	/*
@@ -101,7 +101,7 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 
 
 
-	gf_block := &GF_eth__block{
+	gf_block := &GF_eth__block__int{
 		Block_num_int:     block.Number().Uint64(),
 		Gas_used_int:      block.GasUsed(),
 		Gas_limit_int:     block.GasLimit(),

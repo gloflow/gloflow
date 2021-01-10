@@ -32,44 +32,70 @@ func init_handlers(p_queue_info *GF_queue_info,
 	p_runtime      *GF_runtime) *gf_core.Gf_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
+	
+
+	//---------------------
+	// GET_MINER
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
+		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+
+
+			// INPUT
+			miner_addr_str, gf_err := Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/gfethm/v1/miner",
+					fmt.Sprintf("invalid input argument"),
+					gf_err, p_resp, p_runtime.Runtime_sys)
+				return nil, gf_err
+			}
+			
 
 
 
+			fmt.Println(miner_addr_str)
+
+
+			data_map := map[string]interface{}{}
+			return data_map, nil
+		},
+		p_runtime.Runtime_sys)
 
 	//---------------------
 	// GET_BLOCK
-	http.HandleFunc("/gfethm/v1/block", func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
+		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 
-
-
-		block_num_int, err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
-		if err != nil {
-			return
-		}
-
-
-
-
-
-
-		gf_err := eth_block__get_block_pipeline(block_num_int, p_runtime)
-
-		if gf_err != nil {
-			gf_rpc_lib.Error__in_handler("/gfethm/v1/block",
-				fmt.Sprintf("failed to get block - %d", block_num_int),
-				gf_err, p_resp, p_runtime.Runtime_sys)
-			return
-		}
+			// INPUT
+			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/gfethm/v1/block",
+					fmt.Sprintf("invalid input argument"),
+					gf_err, p_resp, p_runtime.Runtime_sys)
+				return nil, gf_err
+			}
 
 
 
 
 
-		
 
+			gf_err = eth_block__get_block_pipeline(block_num_int, p_runtime)
 
-	})
+			if gf_err != nil {
+				gf_rpc_lib.Error__in_handler("/gfethm/v1/block",
+					fmt.Sprintf("failed to get block - %d", block_num_int),
+					gf_err, p_resp, p_runtime.Runtime_sys)
+					return nil, gf_err
+			}
+			
+
+			data_map := map[string]interface{}{}
+			return data_map, nil
+
+		},
+		p_runtime.Runtime_sys)
 
 	//---------------------
 	// GET_PEERS
