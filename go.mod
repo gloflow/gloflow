@@ -16,7 +16,8 @@ require (
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gloflow/gloflow v0.0.0-20210107041515-99039f1ae7b7
+	github.com/getsentry/sentry-go v0.9.0 // indirect
+	github.com/gloflow/gloflow v0.0.0-20210110010924-f5e2c037a0cd
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.1
@@ -35,7 +36,6 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/ugorji/go v1.1.4 // indirect
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
 	go.mongodb.org/mongo-driver v1.4.4
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect

@@ -40,4 +40,7 @@ type GF_config struct {
 	// WORKERS_INSPECTORS_HOSTS - list of "," separated hosts, that are used by gf_eth_monitor__masters
 	//                            to reach a worker_inspector service running on each worker.
 	Workers_inspectors_hosts_str string `mapstructure:"workers_inspectors_hosts"`
+
+	// SENTRY_ENDPOINT
+	Sentry_endpoint_str string `mapstructure:"sentry_endpoint"`
 }

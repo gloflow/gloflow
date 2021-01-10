@@ -59,7 +59,10 @@ func runtime__get(p_config_path_str string,
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_eth_monitor",
-		Log_fun:          p_log_fun,	
+		Log_fun:          p_log_fun,
+
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,	
 	}
 
 	//--------------------
@@ -219,6 +222,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	// ENV
 	err = viper.BindEnv("workers_inspectors_hosts", "GF_WORKERS_INSPECTORS_HOSTS")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - SENTRY_ENDPOINT
+	cmd__base.PersistentFlags().StringP("sentry_endpoint", "", "SENTRY ENDPOINT", "Sentry endpoint to send errors to")
+	err = viper.BindPFlag("sentry_endpoint", cmd__base.PersistentFlags().Lookup("sentry_endpoint"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

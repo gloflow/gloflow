@@ -39,7 +39,13 @@ type GF_runtime struct {
 func Run_service(p_runtime *GF_runtime) {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
-
+	//-------------
+	// SENTRY
+	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
+	err := gf_core.Error__init_sentry(sentry_endpoint_str)
+	if err != nil {
+		panic(err)
+	}
 
 	//-------------
 	// METRICS
