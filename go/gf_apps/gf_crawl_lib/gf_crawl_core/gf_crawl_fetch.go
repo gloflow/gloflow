@@ -31,7 +31,7 @@ import (
 )
 
 //--------------------------------------------------
-//ELASTIC_SEARCH - INDEXED
+// ELASTIC_SEARCH - INDEXED
 type Gf_crawler_url_fetch struct {
 	Id                   bson.ObjectId     `bson:"_id,omitempty"`
 	Id_str               string            `bson:"id_str"               json:"id_str"`
@@ -53,7 +53,7 @@ type Gf_crawler_url_fetch struct {
 }
 
 //--------------------------------------------------
-//FETCH_URL
+// FETCH_URL
 
 func Fetch__url(p_url_str string,
 	p_link             *Gf_crawler_page_outgoing_link,
@@ -83,7 +83,7 @@ func Fetch__url(p_url_str string,
 			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)
 
-		_,fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
+		_, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
 		if fe_gf_err != nil {
 			return nil, "", fe_gf_err
 		}
@@ -102,9 +102,9 @@ func Fetch__url(p_url_str string,
 		Domain_str:           domain_str,
 		Url_str:              p_url_str,
 		Start_time_f:         start_time_f,
-		//End_time_f           :end_time_f,
-		//Page_text_str        :doc.Text(),
-		//goquery_doc          :doc,
+		//End_time_f           : end_time_f,
+		//Page_text_str        : doc.Text(),
+		//goquery_doc          : doc,
 	}
 
 	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(fetch)
@@ -125,7 +125,7 @@ func Fetch__url(p_url_str string,
 		return nil, "", gf_err
 	}
 	//-------------------
-	//HTTP REQUEST
+	// HTTP REQUEST
 
 	doc, gf_err := gf_crawl_utils.Get__html_doc_over_http(p_url_str, p_runtime_sys)
 
@@ -144,8 +144,9 @@ func Fetch__url(p_url_str string,
 	}
 
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
+
 	//-------------
-	//UPDATE FETCH
+	// UPDATE FETCH
 	fetch.End_time_f    = end_time_f
 	fetch.Page_text_str = doc.Text()
 	fetch.goquery_doc   = doc

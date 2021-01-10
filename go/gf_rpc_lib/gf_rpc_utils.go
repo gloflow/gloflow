@@ -34,6 +34,43 @@ type Gf_rpc_handler_run struct {
 	End_time__unix_f   float64 `bson:"end_time__unix_f"`
 }
 
+type handler_http func(http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.Gf_error)
+
+//-------------------------------------------------
+func Create_handler__http(p_path_str string,
+	p_handler_fun handler_http,
+	p_runtime_sys *gf_core.Runtime_sys) {
+
+
+
+
+	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+
+
+
+		// HANDLER
+		data_map, gf_err := p_handler_fun(p_resp, p_req)
+		if gf_err != nil {
+
+			Error__in_handler(p_path_str,
+				fmt.Sprintf("handler %s failed", p_path_str),
+				gf_err, p_resp, p_runtime_sys)
+
+			return
+		}
+
+
+		//------------------
+		// OUTPUT
+		Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
+		//------------------
+	})
+
+
+}
+
 //-------------------------------------------------
 func Get_http_input(p_handler_url_path_str string,
 	p_resp        http.ResponseWriter,

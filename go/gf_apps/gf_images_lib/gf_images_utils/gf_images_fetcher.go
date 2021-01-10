@@ -33,7 +33,7 @@ import (
 type Image_fetch__error struct {
 	Id                   bson.ObjectId `json:"-"                    bson:"_id,omitempty"`
 	Id_str               string        `json:"id_str"               bson:"id_str"` 
-	T_str                string        `json:"-"                    bson:"t"` //img_fetch_error
+	T_str                string        `json:"-"                    bson:"t"` // img_fetch_error
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	Image_url_str        string        `json:"image_url_str"        bson:"image_url_str"`
 	Status_code_int      int           `json:"status_code_int"      bson:"status_code_int"`
@@ -47,9 +47,9 @@ func Fetcher__get_extern_image(p_image_url_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.Fetcher__get_extern_image()")
 
 	if p_random_time_delay_bool {
-		//FIX!! - have a sleep time per domain, so that there"s no wait time if the next image
-		//        thats processed comes from a different domain
-		//        (store these time counters per domain in redis)
+		// FIX!! - have a sleep time per domain, so that there"s no wait time if the next image
+		//         thats processed comes from a different domain
+		//         (store these time counters per domain in redis)
 
 		rand.Seed(42)
 		max_time_to_sleep_sec_int := 3
@@ -58,27 +58,29 @@ func Fetcher__get_extern_image(p_image_url_str string,
 	}
 
 	//--------------
-	//NEW_IMAGE_LOCAL_FILE_PATH
+	// NEW_IMAGE_LOCAL_FILE_PATH
 
-	//IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
-	//              instead of the old original_image naming scheme.
+	// IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
+	//               instead of the old original_image naming scheme.
 	new_image_local_file_path_str, image_id_str, gf_err := Create_gf_image_file_path_from_url("", p_image_url_str, p_images_store_local_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", "", gf_err
-	}	
+	}
+
 	//--------------
-	//HTTP DOWNLOAD
+	// HTTP DOWNLOAD
 
 	gf_err = Download_file(p_image_url_str, new_image_local_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", "", gf_err
 	}
+	
 	//--------------
 
-	//LOG
+	// LOG
 	analytics__log_image_fetch(p_image_url_str, p_runtime_sys)
 	
-	//check if local file exists
+	// check if local file exists
 	if _, err := os.Stat(new_image_local_file_path_str); os.IsNotExist(err) {
 		gf_err := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
 			"file_missing_error",
@@ -108,6 +110,7 @@ func Download_file(p_image_url_str string,
 		return gf_err
 	}
 	defer gf_http_fetch.Resp.Body.Close()
+	
 	//-----------------------
 	// STATUS_CODE CHECK
 
@@ -149,6 +152,7 @@ func Download_file(p_image_url_str string,
 			nil, "gf_images_utils", p_runtime_sys)
 		return gf_err
 	}
+
 	//-----------------------
 
 	final_url_str := gf_http_fetch.Resp.Request.URL.String() //after possible redirects, this is the url

@@ -39,6 +39,7 @@ func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sy
 		return nil, gf_err
 	}
 	defer gf_http_fetch.Resp.Body.Close()
+	
 	//-----------------------
 	
 	if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
