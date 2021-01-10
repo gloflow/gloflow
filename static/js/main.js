@@ -50,7 +50,7 @@ function http__get_block(p_block_num_int,
 	p_on_complete_fun,
 	p_on_error_fun) {
 
-	const url_str = "/gfethm/v1/block?block="+p_block_num_int;
+	const url_str = "/gfethm/v1/block?b="+p_block_num_int;
 
 
 	//-------------------------
