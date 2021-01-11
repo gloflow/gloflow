@@ -106,10 +106,11 @@ func client__start_job(p_input_images_urls_lst []string,
 	fmt.Println("")
 	fmt.Println("")
 
+	// FIX!! - REMOVE THIS!! - instead use gf_rpc_client function
 	data_lst,_  := json.Marshal(data_map)
 	_,body,errs := gorequest.New().
 		Post(url_str).
-		Set("accept","application/json").
+		Set("accept", "application/json").
 		Send(string(data_lst)).
 		End()
 
@@ -126,6 +127,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	fmt.Println(fmt.Sprintf("images_service %s RESPONSE", url_str))
 	p_runtime_sys.Log_fun("INFO", fmt.Sprint(body))
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
+
 	//------------------
 
 	r_map := map[string]interface{}{}
@@ -154,6 +156,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	}
 
 	r_data_map := r_map["data"].(map[string]interface{})
+
 	//-----------------
 	//RUNNING_JOB_ID
 
@@ -167,6 +170,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	}
 
 	running_job_id_str := r_data_map["running_job_id_str"].(string)
+
 	//-----------------
 	//JUB_RESULT_IMAGES
 	job_expected_outputs_untyped_lst := r_data_map["job_expected_outputs_lst"].([]interface{})
@@ -184,6 +188,7 @@ func client__start_job(p_input_images_urls_lst []string,
 		}
 		images_outputs_lst = append(images_outputs_lst, image_output)
 	}
+	
 	//-----------------
 
 	return running_job_id_str, images_outputs_lst, nil

@@ -181,8 +181,9 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			fmt.Println("  > gf_url          - "+old_gif.Gf_url_str)
 
 			//IMPORTANT!! - old_gif.Gf_url_str in is form - "/images/d/gif"
-			gif__full_gf_url_str := fmt.Sprintf("http://%s%s",p_gf_domain_str,old_gif.Gf_url_str)
-			gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(gif__full_gf_url_str,p_runtime_sys)
+			gif__full_gf_url_str  := fmt.Sprintf("http://%s%s",p_gf_domain_str,old_gif.Gf_url_str)
+			user_agent_str        := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+			gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(gif__full_gf_url_str, user_agent_str, p_runtime_sys)
 
 			//IMPORTANT!! - http response body must be closed, regardless of if its used or not (by goland docs)
 			defer gf_http_fetch.Resp.Body.Close()
@@ -208,10 +209,10 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 			
 
-			//FAILED_TO_FETCH_GF_URL
+			// FAILED_TO_FETCH_GF_URL
 			if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
 
-				//REBUILD_GIF
+				// REBUILD_GIF
 				rg__gf_err := migrate__rebuild_gif(&old_gif,
 					p_images_store_local_dir_path_str,
 					p_s3_bucket_name_str,
@@ -222,15 +223,15 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				}
 			}
 			//-----------------------
-			//FETCH_FIRST_PREVIEW_FRAME
+			// FETCH_FIRST_PREVIEW_FRAME
 			frame_url_str := old_gif.Preview_frames_s3_urls_lst[0]
 		
-
-			fpf__gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(frame_url_str,p_runtime_sys)
+			user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+			fpf__gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(frame_url_str, user_agent_str, p_runtime_sys)
 			
-			//IMPORTANT!! - common error for malformed url's is:
-			//              "parse /images/d/gif/%!!(MISSING)s(*string=0xc4201f4040).gif: invalid URL escape "%!!(MISSING)s""
-			//              so for them GIF's are rebuilt as well.
+			// IMPORTANT!! - common error for malformed url's is:
+			//               "parse /images/d/gif/%!!(MISSING)s(*string=0xc4201f4040).gif: invalid URL escape "%!!(MISSING)s""
+			//               so for them GIF's are rebuilt as well.
 			if gf_err != nil && strings.HasPrefix(fmt.Sprint(gf_err.Error),"parse") {
 
 				rg__gf_err := migrate__rebuild_gif(&old_gif,
@@ -247,8 +248,9 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				continue
 			}
 
-			//IMPORTANT!! - http response body must be closed, regardless of if its used or not (by goland docs)
+			// IMPORTANT!! - http response body must be closed, regardless of if its used or not (by goland docs)
 			defer fpf__gf_http_fetch.Resp.Body.Close()
+
 			//-----------------------
 		}
 	}()

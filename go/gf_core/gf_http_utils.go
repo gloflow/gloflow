@@ -132,7 +132,8 @@ func HTTP__put_file(p_target_url_str string,
 
 //---------------------------------------------------
 func HTTP__fetch_url(p_url_str string,
-	p_runtime_sys *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
+	p_user_agent_str string,
+	p_runtime_sys    *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
 	client := &http.Client{
@@ -157,7 +158,7 @@ func HTTP__fetch_url(p_url_str string,
 		which is to stop after 10 consecutive requests.*/
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			req.Header.Del("User-Agent")
-			req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
+			req.Header.Set("User-Agent", p_user_agent_str)
 			return nil
 		},
 	}
@@ -172,7 +173,7 @@ func HTTP__fetch_url(p_url_str string,
 	}
 
 	req.Header.Del("User-Agent")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1")
+	req.Header.Set("User-Agent", p_user_agent_str)
 
 	req_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 	resp, err        := client.Do(req)

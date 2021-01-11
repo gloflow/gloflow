@@ -27,8 +27,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //-------------------------------------------------
-type Gf_rpc_handler_run struct {
-	Class_str          string  `bson:"class_str"` //Rpc_Handler_Run
+type GF_rpc_handler_run struct {
+	Class_str          string  `bson:"class_str"` // Rpc_Handler_Run
 	Handler_url_str    string  `bson:"handler_url_str"`
 	Start_time__unix_f float64 `bson:"start_time__unix_f"`
 	End_time__unix_f   float64 `bson:"end_time__unix_f"`
@@ -38,16 +38,13 @@ type handler_http func(http.ResponseWriter, *http.Request) (map[string]interface
 
 //-------------------------------------------------
 func Create_handler__http(p_path_str string,
-	p_handler_fun handler_http,
+	p_handler_fun  handler_http,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 
 
 
 	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
-
-
-
 
 		// HANDLER
 		data_map, gf_err := p_handler_fun(p_resp, p_req)
@@ -146,7 +143,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Store_rpc_handler_run()")
 
-	run := &Gf_rpc_handler_run{
+	run := &GF_rpc_handler_run{
 		Class_str:          "rpc_handler_run", //FIX!! - thi should be "rpc_handler_run"
 		Handler_url_str:    p_handler_url_str,
 		Start_time__unix_f: p_start_time__unix_f,

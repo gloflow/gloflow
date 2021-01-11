@@ -192,13 +192,23 @@ func Error__create_with_defs(p_user_msg_str string,
 	// SENTRY
 	if p_runtime_sys.Errors_send_to_sentry_bool {
 		
-		sentry.ConfigureScope(func(scope *sentry.Scope) {
+		/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
 			scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
 			scope.SetExtra("gf_error.type",           gf_error.Type_str)
-		})
+		})*/
 
-		sentry.CaptureException(p_error)
+		sentry.WithScope(func(scope *sentry.Scope) {
+
+
+			scope.SetTag("gf_error.service_name",   gf_error.Service_name_str)
+			scope.SetTag("gf_error.subsystem_name", gf_error.Subsystem_name_str)
+			scope.SetTag("gf_error.type",           gf_error.Type_str)
+
+			// scope.SetLevel(sentry.LevelWarning);
+
+			sentry.CaptureException(p_error)
+		})
 
 		// FLUSH
 		defer sentry.Flush(2 * time.Second)
@@ -214,7 +224,10 @@ func Error__init_sentry(p_sentry_endpoint_str string) error {
 
 
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: "https://cd76629a23ba48899c7832e4a9d39c5a@o502595.ingest.sentry.io/5585117",
+		Dsn: p_sentry_endpoint_str,
+
+		// TRACING
+		TracesSampleRate: 1.0,
 	})
 	if err != nil {
 		return err

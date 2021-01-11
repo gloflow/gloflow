@@ -139,6 +139,27 @@ func error__get_defs() map[string]Error_def {
 		},
 
 		//---------------
+		// HTTP
+		"http_client_req_error": Error_def{
+			Descr_str:"failed to execute a http_client request",
+		},
+		"http_client_req_status_error": Error_def{
+			Descr_str:"http_client received a non 2xx/3xx HTTP status code",
+		},
+		"http_server_flusher_not_supported_error": Error_def{
+			Descr_str:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
+		},
+		"http_client_gf_status_error": Error_def{
+			Descr_str:"http_client received a non-OK GF error",
+		},
+		
+		//---------------
+		// WEBSOCKETS
+		"ws_connection_init_error": Error_def{
+			Descr_str: "websocket client failed to connect to a url",
+		},
+		
+		//---------------
 		// IMAGES
 		"image_decoding_error": Error_def{
 			Descr_str: "image.Decode() failed to decode image data - package (image)",
@@ -212,32 +233,14 @@ func error__get_defs() map[string]Error_def {
 		"template_render_error": Error_def{
 			Descr_str:"template.Execute() failed to render a template - package (text/template)",
 		},
-
-		//---------------
-		// HTTP
-		"http_client_req_error": Error_def{
-			Descr_str:"failed to execute a http_client request",
-		},
-		"http_client_req_status_error": Error_def{
-			Descr_str:"http_client received a non 2xx/3xx HTTP status code",
-		},
-		"http_server_flusher_not_supported_error": Error_def{
-			Descr_str:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
-		},
-		"http_client_gf_status_error": Error_def{
-			Descr_str:"http_client received a non-OK GF error",
-		},
-
-		//---------------
-		// WEBSOCKETS
-		"ws_connection_init_error": Error_def{
-			Descr_str: "websocket client failed to connect to a url",
-		},
 		
 		//---------------
 		// AWS
 		"aws_general_error": Error_def{
 			Descr_str: "AWS general error",
+		},
+		"aws_ec2_instances_describe_error": Error_def{
+			Descr_str: "failed to describe EC2 instances",
 		},
 		"aws_ecs_service_update_error": Error_def{
 			Descr_str: "failed to update an AWS ECS service",
