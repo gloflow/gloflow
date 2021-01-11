@@ -26,7 +26,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
     "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
 
 //-------------------------------------------------
@@ -39,7 +40,7 @@ type GF_queue_info struct {
 //-------------------------------------------------
 // INIT_QUEUE
 func Event__init_queue(p_queue_name_str string,
-	p_metrics *GF_metrics) (*GF_queue_info, error) {
+	p_metrics *gf_eth_monitor_core.GF_metrics) (*GF_queue_info, error) {
 
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -65,7 +66,7 @@ func Event__init_queue(p_queue_name_str string,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.counter__errs_num.Inc()
+			p_metrics.Counter__errs_num.Inc()
 		}
 
 		return nil, err
@@ -83,8 +84,8 @@ func Event__init_queue(p_queue_name_str string,
 
 //-------------------------------------------------
 func event__start_sqs_consumer(p_queue_info *GF_queue_info,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) {
+	p_metrics *gf_eth_monitor_core.GF_metrics,
+	p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	go func() {
 
@@ -96,8 +97,8 @@ func event__start_sqs_consumer(p_queue_info *GF_queue_info,
 
 //-------------------------------------------------
 func Event__process_from_sqs(p_queue_info *GF_queue_info,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) {
+	p_metrics *gf_eth_monitor_core.GF_metrics,
+	p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	// 20s - before this call returns if no message is present.
 	// Must be >= 0 and <= 20
@@ -126,7 +127,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.counter__errs_num.Inc()
+			p_metrics.Counter__errs_num.Inc()
 		}
 	}
 	
@@ -163,7 +164,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 			// METRICS
 			if p_metrics != nil {
-				p_metrics.counter__errs_num.Inc()
+				p_metrics.Counter__errs_num.Inc()
 			}
 		}
 	}
@@ -171,13 +172,13 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 //-------------------------------------------------
 func event__process(p_event_map map[string]interface{},
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) {
+	p_metrics *gf_eth_monitor_core.GF_metrics,
+	p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 
 
-	fmt.Println(" PROCESS EVENT ================")
-	spew.Dump(p_event_map)
+	// fmt.Println(" PROCESS EVENT ================")
+	// spew.Dump(p_event_map)
 
 	event__time_unix_f := p_event_map["time_sec"].(float64)
 	event__module_str  := p_event_map["module"].(string)
@@ -192,7 +193,7 @@ func event__process(p_event_map map[string]interface{},
 		peer_remote_ip_str := event__data_map["remote_address"].(string)
 		node_ip_str        := event__data_map["local_address"].(string)
 
-		peer__new_lifecycle := &GF_eth_peer__new_lifecycle{
+		peer__new_lifecycle := &gf_eth_monitor_core.GF_eth_peer__new_lifecycle{
 			T_str:              "peer_new_lifecycle",
 			Peer_name_str:      peer_name_str, 
 			Peer_enode_id_str:  peer_enode_id_str,
@@ -202,11 +203,11 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		eth_peers__db_write(peer__new_lifecycle, p_metrics, p_runtime)
+		gf_eth_monitor_core.Eth_peers__db_write(peer__new_lifecycle, p_metrics, p_runtime)
 	}
 
 	// METRICS
 	if p_metrics != nil {
-		p_metrics.counter__sqs_msgs_num.Inc()
+		p_metrics.Counter__sqs_msgs_num.Inc()
 	}
 }

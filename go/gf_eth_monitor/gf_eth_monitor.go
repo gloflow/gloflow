@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 )
 
@@ -43,7 +44,7 @@ func main() {
 
 //-------------------------------------------------
 func runtime__get(p_config_path_str string,
-	p_log_fun func(string, string)) (*gf_eth_monitor_lib.GF_runtime, error) {
+	p_log_fun func(string, string)) (*gf_eth_monitor_core.GF_runtime, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
@@ -90,7 +91,7 @@ func runtime__get(p_config_path_str string,
 
 	//--------------------
 	// RUNTIME
-	runtime := &gf_eth_monitor_lib.GF_runtime{
+	runtime := &gf_eth_monitor_core.GF_runtime{
 		Config:          config,
 		Influxdb_client: influxdb_client,
 		Mongodb_db:      mongodb_db,
@@ -212,16 +213,32 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
-	// CLI_ARGUMENT - WORKERS_INSPECTORS_HOSTS
-	cmd__base.PersistentFlags().StringP("workers_inspectors_hosts", "", "WORKERS INSPECTORS HOSTS", "list of all workers inspectors hosts, ',' separated")
-	err = viper.BindPFlag("workers_inspectors_hosts", cmd__base.PersistentFlags().Lookup("workers_inspectors_hosts"))
+	// CLI_ARGUMENT - WORKERS_AWS_DISCOVERY
+	cmd__base.PersistentFlags().StringP("workers_aws_discovery", "", "WORKERS HOSTS", "if AWS EC2 discovery should be enbaled to dynamicaly discover workers")
+	err = viper.BindPFlag("workers_aws_discovery", cmd__base.PersistentFlags().Lookup("workers_aws_discovery"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
 	}
 
 	// ENV
-	err = viper.BindEnv("workers_inspectors_hosts", "GF_WORKERS_INSPECTORS_HOSTS")
+	err = viper.BindEnv("workers_aws_discovery", "GF_WORKERS_AWS_DISCOVERY")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - WORKERS_HOSTS
+	cmd__base.PersistentFlags().StringP("workers_hosts", "", "WORKERS HOSTS", "list of all workers hosts, ',' separated")
+	err = viper.BindPFlag("workers_hosts", cmd__base.PersistentFlags().Lookup("workers_hosts"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("workers_hosts", "GF_WORKERS_HOSTS")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

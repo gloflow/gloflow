@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2021 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +17,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_lib
+package gf_eth_monitor_core
+
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/influxdata/influxdb-client-go/v2"
+	"github.com/gloflow/gloflow/go/gf_core"
+)
+
+//-------------------------------------------------------------
+type GF_runtime struct {
+	Config          *GF_config
+	Influxdb_client *influxdb2.Client
+	Mongodb_db      *mongo.Database
+	Runtime_sys     *gf_core.Runtime_sys
+}
 
 //-------------------------------------------------------------
 type GF_config struct {
@@ -37,9 +51,13 @@ type GF_config struct {
 	// AWS_SQS
 	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
 
-	// WORKERS_INSPECTORS_HOSTS - list of "," separated hosts, that are used by gf_eth_monitor__masters
-	//                            to reach a worker_inspector service running on each worker.
-	Workers_inspectors_hosts_str string `mapstructure:"workers_inspectors_hosts"`
+	// WORKERS_AWS_DISCOVERY - if AWS API's should be used for workers discovery,
+	//                         or if the hardcoded workers_host config is used.
+	Workers_aws_discovery_bool bool `mapstructure:"workers_aws_discovery"`
+
+	// WORKERS_HOSTS - list of "," separated hosts, that are used by gf_eth_monitor__masters
+	//                 to reach a worker_inspector service running on each worker.
+	Workers_hosts_str string `mapstructure:"workers_hosts"`
 
 	// SENTRY_ENDPOINT
 	Sentry_endpoint_str string `mapstructure:"sentry_endpoint"`

@@ -28,6 +28,7 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -36,7 +37,7 @@ import (
 func Eth_rpc__get_block(p_block_num_int uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__block__int, *gf_core.Gf_error) {
 
 	
 	/*
@@ -82,7 +83,7 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 	}
 
 
-	txs_lst := []*GF_eth__tx{}
+	txs_lst := []*gf_eth_monitor_core.GF_eth__tx{}
 	for _, tx := range block.Transactions() {
 
 		
@@ -101,7 +102,7 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 
 
 
-	gf_block := &GF_eth__block__int{
+	gf_block := &gf_eth_monitor_core.GF_eth__block__int{
 		Block_num_int:     block.Number().Uint64(),
 		Gas_used_int:      block.GasUsed(),
 		Gas_limit_int:     block.GasLimit(),
@@ -119,7 +120,7 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__tx, *gf_core.Gf_error) {
 
 
 
@@ -218,7 +219,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 
 	gas_used_int := tx_receipt.GasUsed
-	tx := &GF_eth__tx{
+	tx := &gf_eth_monitor_core.GF_eth__tx{
 		Hash_str:     tx_receipt.TxHash.Hex(),
 		Index_int:    tx_receipt.TransactionIndex,
 		Gas_used_int: gas_used_int,

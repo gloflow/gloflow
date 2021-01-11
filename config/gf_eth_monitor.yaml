@@ -16,8 +16,9 @@ influxdb_host: "127.0.0.1:8086"
 # SQS
 aws_sqs_queue: "gf_eth_monitor"
 
-# WORKERS_INSPECTORS_HOSTS
-workers_inspectors_hosts: "127.0.0.1:2000"
+# WORKERS
+workers_aws_discovery: true 
+workers_hosts:         "127.0.0.1"
 
 # SENTRY_ENDPOINT
 sentry_endpoint: ""

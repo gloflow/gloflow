@@ -22,14 +22,17 @@ package gf_eth_monitor_lib
 import (
 	"fmt"
 	"net/http"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
 
 //-------------------------------------------------
 func init_handlers(p_queue_info *GF_queue_info,
-	p_metrics      *GF_metrics,
-	p_runtime      *GF_runtime) *gf_core.Gf_error {
+	p_get_hosts_fn func() []string,
+	p_metrics      *gf_eth_monitor_core.GF_metrics,
+	p_runtime      *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 	
@@ -39,6 +42,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
 		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
+			
 
 			// INPUT
 			miner_addr_str, gf_err := Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
@@ -66,7 +70,10 @@ func init_handlers(p_queue_info *GF_queue_info,
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
 		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
+			ctx := p_req.Context()
+			span_root := sentry.TransactionFromContext(ctx)
 
+			//------------------
 			// INPUT
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
@@ -76,12 +83,18 @@ func init_handlers(p_queue_info *GF_queue_info,
 				return nil, gf_err
 			}
 
+			//------------------
+			// PIPELINE
 
+			
+			span_pipeline := sentry.StartSpan(span_root.Context(), "get_block_pipeline")
 
-
-
-
-			gf_err = eth_block__get_block_pipeline(block_num_int, p_runtime)
+			block_from_workers_map, gf_err := gf_eth_monitor_core.Eth_block__get_block_pipeline(block_num_int,
+				p_get_hosts_fn,
+				span_pipeline.Context(),
+				p_runtime)
+			
+			span_pipeline.Finish()
 
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/gfethm/v1/block",
@@ -90,8 +103,13 @@ func init_handlers(p_queue_info *GF_queue_info,
 					return nil, gf_err
 			}
 			
+			//------------------
+			data_map := map[string]interface{}{
+				"block_from_workers_map": block_from_workers_map,
+			}
 
-			data_map := map[string]interface{}{}
+			span_root.Finish()
+
 			return data_map, nil
 
 		},
@@ -102,11 +120,11 @@ func init_handlers(p_queue_info *GF_queue_info,
 	http.HandleFunc("/gfethm/v1/peers", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		
 		// PEERS__GET
-		peer_names_groups_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
+		peer_names_groups_lst := gf_eth_monitor_core.Eth_peers__get_pipeline(p_metrics, p_runtime)
 		
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.counter__http_req_num__get_peers.Inc()
+			p_metrics.Counter__http_req_num__get_peers.Inc()
 		}
 
 		//------------------

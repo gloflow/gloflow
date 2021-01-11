@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_lib
+package gf_eth_monitor_core
 
 import (
 	"fmt"
@@ -31,15 +31,15 @@ import (
 //-------------------------------------------------
 type GF_metrics struct {
 	
-	counter__sqs_msgs_num                      prometheus.Counter
-	counter__http_req_num__get_peers           prometheus.Counter
-	gauge__peers_unique_names_num              prometheus.Gauge
-	counter__db_writes_num__new_peer_lifecycle prometheus.Counter
-	counter__errs_num                          prometheus.Counter
+	Counter__sqs_msgs_num                      prometheus.Counter
+	Counter__http_req_num__get_peers           prometheus.Counter
+	Gauge__peers_unique_names_num              prometheus.Gauge
+	Counter__db_writes_num__new_peer_lifecycle prometheus.Counter
+	Counter__errs_num                          prometheus.Counter
 }
 
 //-------------------------------------------------
-func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
+func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 
 
 	//---------------------------
@@ -109,11 +109,11 @@ func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 
 
 	metrics := &GF_metrics{
-		counter__sqs_msgs_num:                      counter__sqs_msgs_num,
-		counter__http_req_num__get_peers:           counter__http_req_num__get_peers,
-		gauge__peers_unique_names_num:              gauge__peers_unique_names_num,
-		counter__db_writes_num__new_peer_lifecycle: counter__db_writes_num__new_peer_lifecycle,
-		counter__errs_num:                          counter__errs_num,
+		Counter__sqs_msgs_num:                      counter__sqs_msgs_num,
+		Counter__http_req_num__get_peers:           counter__http_req_num__get_peers,
+		Gauge__peers_unique_names_num:              gauge__peers_unique_names_num,
+		Counter__db_writes_num__new_peer_lifecycle: counter__db_writes_num__new_peer_lifecycle,
+		Counter__errs_num:                          counter__errs_num,
 	}
 
 	return metrics, nil

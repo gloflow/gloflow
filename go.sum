@@ -231,6 +231,8 @@ github.com/gloflow/gloflow v0.0.0-20210107041515-99039f1ae7b7 h1:te9rRwX7LWb9iJD
 github.com/gloflow/gloflow v0.0.0-20210107041515-99039f1ae7b7/go.mod h1:r6XjFJo2CBmjO9aCb/aMvVDGUuomru0Xr1LDZdRfpG0=
 github.com/gloflow/gloflow v0.0.0-20210110010924-f5e2c037a0cd h1:dyUjrwpeMwhfBqI6IpPUNTMyKw8poJ3u6m+c/BV6Dug=
 github.com/gloflow/gloflow v0.0.0-20210110010924-f5e2c037a0cd/go.mod h1:r6XjFJo2CBmjO9aCb/aMvVDGUuomru0Xr1LDZdRfpG0=
+github.com/gloflow/gloflow v0.0.0-20210110042937-e0c70e98b343 h1:tT6rOG0YlRNjPY7/ZHVUE02hFwQ7Fr5dlcnx3fKZH7Q=
+github.com/gloflow/gloflow v0.0.0-20210110042937-e0c70e98b343/go.mod h1:r6XjFJo2CBmjO9aCb/aMvVDGUuomru0Xr1LDZdRfpG0=
 github.com/go-check/check v0.0.0-20180628173108-788fd7840127/go.mod h1:9ES+weclKsC9YodN5RgxqK/VD9HM9JsCSh7rNhMZE98=
 github.com/go-chi/chi v4.0.2+incompatible/go.mod h1:eB3wogJHnLi3x/kFX2A+IbTBlXxmMeXJVKy9tTv1XzQ=
 github.com/go-errors/errors v1.0.1/go.mod h1:f4zRHt4oKfwPJE5k8C9vpYG+aDHdBFUsgrm6/TyX73Q=
@@ -989,6 +991,8 @@ golang.org/x/sys v0.0.0-20210105210732-16f7687f5001 h1:/dSxr6gT0FNI1MO5WLJo8mTmI
 golang.org/x/sys v0.0.0-20210105210732-16f7687f5001/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210108172913-0df2131ae363 h1:wHn06sgWHMO1VsQ8F+KzDJx/JzqfsNLnc+oEi07qD7s=
 golang.org/x/sys v0.0.0-20210108172913-0df2131ae363/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061 h1:DQmQoKxQWtyybCtX/3dIuDBcAhFszqq8YiNeS6sNu1c=
+golang.org/x/sys v0.0.0-20210110051926-789bb1bd4061/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

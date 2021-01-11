@@ -1,4 +1,23 @@
-package gf_eth_monitor_lib
+/*
+GloFlow application and media management/publishing platform
+Copyright (C) 2020 Ivan Trajkovic
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+package gf_eth_monitor_core
 
 import (
 	"log"
@@ -21,7 +40,7 @@ type GF_eth_peer__new_lifecycle struct {
 	Event_time_unix_f  float64 `bson:"event_time_unix_f"`
 }
 
-type Gf_eth_peer__db_aggregate__name_group struct {
+type GF_eth_peer__db_aggregate__name_group struct {
 	Name_str             string   `bson:"_id"                  json:"name_str"`
 	Peers_remote_ips_lst []string `bson:"peers_remote_ips_lst" json:"peers_remote_ips_lst"`
 	Count_int            int      `bson:"count_int"            json:"count_int"`
@@ -30,7 +49,7 @@ type Gf_eth_peer__db_aggregate__name_group struct {
 //-------------------------------------------------
 // metrics that are continuously calculated
 
-func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
+func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 	p_runtime *GF_runtime) {
 
 	go func() {
@@ -38,11 +57,11 @@ func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 		for {
 			
-			peer_names_groups_lst := eth_peers__get_pipeline(p_metrics, p_runtime)
+			peer_names_groups_lst := Eth_peers__get_pipeline(p_metrics, p_runtime)
 
 			unique_peer_names_num_int := len(peer_names_groups_lst)
 
-			p_metrics.gauge__peers_unique_names_num.Set(float64(unique_peer_names_num_int))
+			p_metrics.Gauge__peers_unique_names_num.Set(float64(unique_peer_names_num_int))
 
 			// SLEEP
 			time.Sleep(60 * time.Second)
@@ -52,8 +71,8 @@ func eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 // GET_PIPELINE
-func eth_peers__get_pipeline(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) []*Gf_eth_peer__db_aggregate__name_group {
+func Eth_peers__get_pipeline(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) []*GF_eth_peer__db_aggregate__name_group {
 
 
 
@@ -85,17 +104,17 @@ func eth_peers__get_pipeline(p_metrics *GF_metrics,
 	
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.counter__errs_num.Inc()
+			p_metrics.Counter__errs_num.Inc()
 		}
 	}
 	defer cursor.Close(ctx)
 
 
 
-	peer_names_groups_lst := []*Gf_eth_peer__db_aggregate__name_group{}
+	peer_names_groups_lst := []*GF_eth_peer__db_aggregate__name_group{}
 	for cursor.Next(ctx) {
 
-		var peer_name_group Gf_eth_peer__db_aggregate__name_group
+		var peer_name_group GF_eth_peer__db_aggregate__name_group
 		err := cursor.Decode(&peer_name_group)
 		if err != nil {
 			log.Fatal(err)
@@ -145,7 +164,7 @@ func eth_peers__get_pipeline(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 // DB_WRITE
-func eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
+func Eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
@@ -161,7 +180,7 @@ func eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.counter__errs_num.Inc()
+			p_metrics.Counter__errs_num.Inc()
 		}
 		
 		return gf_err
@@ -170,7 +189,7 @@ func eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 
 	// METRICS
 	if p_metrics != nil {
-		p_metrics.counter__db_writes_num__new_peer_lifecycle.Inc()
+		p_metrics.Counter__db_writes_num__new_peer_lifecycle.Inc()
 	}
 
 	return nil

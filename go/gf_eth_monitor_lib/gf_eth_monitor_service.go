@@ -22,21 +22,13 @@ package gf_eth_monitor_lib
 import (
 	"fmt"
 	"net/http"
-	"go.mongodb.org/mongo-driver/mongo"
-	"github.com/influxdata/influxdb-client-go/v2"
+	
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
 
 //-------------------------------------------------
-type GF_runtime struct {
-	Config          *GF_config
-	Influxdb_client *influxdb2.Client
-	Mongodb_db      *mongo.Database
-	Runtime_sys     *gf_core.Runtime_sys
-}
-
-//-------------------------------------------------
-func Run_service(p_runtime *GF_runtime) {
+func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
 	//-------------
@@ -51,13 +43,12 @@ func Run_service(p_runtime *GF_runtime) {
 	// METRICS
 	port_metrics_int := 9110
 
-	metrics, gf_err := metrics__init(port_metrics_int)
+	metrics, gf_err := gf_eth_monitor_core.Metrics__init(port_metrics_int)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-
-	eth_peers__init_continuous_metrics(metrics, p_runtime)
+	gf_eth_monitor_core.Eth_peers__init_continuous_metrics(metrics, p_runtime)
 
 	//-------------
 	// QUEUE
@@ -71,9 +62,19 @@ func Run_service(p_runtime *GF_runtime) {
 	// QUEUE_START_CONSUMING
 	event__start_sqs_consumer(queue_info, metrics, p_runtime)
 
+
+	//-------------
+	// WORKER_DISCOVERY
+
+	var get_hosts_fn func() []string
+	if p_runtime.Config.Workers_aws_discovery_bool {
+		get_hosts_fn, _ = gf_eth_monitor_core.Worker__discovery__init(p_runtime.Runtime_sys)
+	}
+
 	//-------------
 	// HANDLERS
 	gf_err = init_handlers(queue_info,
+		get_hosts_fn,
 		metrics,
 		p_runtime)
 	if gf_err != nil {
