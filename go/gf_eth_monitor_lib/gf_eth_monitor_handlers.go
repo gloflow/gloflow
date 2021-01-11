@@ -71,7 +71,14 @@ func init_handlers(p_queue_info *GF_queue_info,
 		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			ctx := p_req.Context()
+			
+			// IMPORTANT!! - if this request is downstream of some upstream transaction that has already been
+			//               started, then span_root will be that span and will be non-nil. 
+			//               otherwise this is the first span in the transaction, and needs to be created.
 			span_root := sentry.TransactionFromContext(ctx)
+			if span_root == nil {
+				span_root = sentry.StartSpan(ctx, "http__get_block")
+			}
 
 			//------------------
 			// INPUT

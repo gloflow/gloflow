@@ -17,7 +17,7 @@ require (
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.9.0
-	github.com/gloflow/gloflow v0.0.0-20210110042937-e0c70e98b343
+	github.com/gloflow/gloflow v0.0.0-20210111031626-2d1b84f730e6
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.1

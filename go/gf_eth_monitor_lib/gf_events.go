@@ -72,7 +72,7 @@ func Event__init_queue(p_queue_name_str string,
 		return nil, err
 	}
 
-	fmt.Println(result_url)
+	// fmt.Println(result_url)
 
 	queue_info := &GF_queue_info{
 		name_str:   p_queue_name_str,
@@ -131,10 +131,10 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 		}
 	}
 	
-	fmt.Printf("Received %d messages.\n", len(result.Messages))
-	if len(result.Messages) > 0 {
-		fmt.Println(result.Messages)
-	}
+	// fmt.Printf("Received %d messages.\n", len(result.Messages))
+	// if len(result.Messages) > 0 {
+	// 	fmt.Println(result.Messages)
+	// }
 
 
 
