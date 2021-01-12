@@ -55,9 +55,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	//---------------------
 
 	span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
-
-	hub := sentry.GetHubFromContext(p_ctx)
-	hub.Scope().SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
+	span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 
 	var workers_inspectors_hosts_lst []string
 	if p_runtime.Config.Workers_aws_discovery_bool {

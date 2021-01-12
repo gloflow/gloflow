@@ -22,7 +22,7 @@ package gf_eth_monitor_lib
 import (
 	"fmt"
 	"net/http"
-	
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
@@ -86,7 +86,14 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	port_str := p_runtime.Config.Port_str
 
 	p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
-	http_err := http.ListenAndServe(fmt.Sprintf(":%s", port_str), nil)
+	
+	
+	
+
+
+	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
+
+	http_err := http.ListenAndServe(fmt.Sprintf(":%s", port_str), sentry_handler)
 
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", port_str)
