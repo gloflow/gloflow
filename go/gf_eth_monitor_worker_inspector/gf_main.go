@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"net/http"
 	log "github.com/sirupsen/logrus"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
@@ -45,7 +46,7 @@ func main() {
 	port_int         := 2000
 	port_metrics_int := 9120
 	worker_inspector__geth__host_str := "127.0.0.1"
-
+	sentry_endpoint_str              := os.Getenv("GF_SENTRY_ENDPOINT")
 
 	log_fun := gf_core.Init_log_fun()
 	runtime, err := runtime__get(log_fun)
@@ -54,6 +55,14 @@ func main() {
 	}
 
 	
+	//-------------
+	// SENTRY
+	
+	err = gf_core.Error__init_sentry(sentry_endpoint_str)
+	if err != nil {
+		panic(err)
+	}
+
 	//-------------
 	// METRICS
 	metrics, gf_err := metrics__init(port_metrics_int)
@@ -76,7 +85,9 @@ func main() {
 	//-------------
 	
 	log.WithFields(log.Fields{"port": port_int,}).Info("STARTING HTTP SERVER")
-	http_err := http.ListenAndServe(fmt.Sprintf(":%d", port_int), nil)
+
+	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
+	http_err := http.ListenAndServe(fmt.Sprintf(":%d", port_int), sentry_handler)
 
 	if http_err != nil {
 		log.WithFields(log.Fields{"port": port_int, "err": http_err}).Fatal("cant start HTTP listening on port")
@@ -87,10 +98,14 @@ func main() {
 //-------------------------------------------------
 func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
 
+	//--------------------
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_eth_monitor",
-		Log_fun:          p_log_fun,	
+		Log_fun:          p_log_fun,
+		
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,
 	}
 
 	//--------------------
@@ -99,5 +114,6 @@ func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
 		runtime_sys: runtime_sys,
 	}
 
+	//--------------------
 	return runtime, nil
 }
