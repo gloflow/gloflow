@@ -72,16 +72,23 @@ func init_handlers(p_queue_info *GF_queue_info,
 
 			ctx := p_req.Context()
 			
-			// IMPORTANT!! - if this request is downstream of some upstream transaction that has already been
+			hub := sentry.GetHubFromContext(ctx)
+			hub.Scope().SetTag("url", p_req.URL.Path)
+			hub.Scope().SetTransaction("http__get_block")
+
+			/*// IMPORTANT!! - if this request is downstream of some upstream transaction that has already been
 			//               started, then span_root will be that span and will be non-nil. 
 			//               otherwise this is the first span in the transaction, and needs to be created.
 			span_root := sentry.TransactionFromContext(ctx)
 			if span_root == nil {
 				span_root = sentry.StartSpan(ctx, "http__get_block")
-			}
+			}*/
 
 			//------------------
 			// INPUT
+
+			span_input := sentry.StartSpan(ctx, "get_block_pipeline")
+
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/gfethm/v1/block",
@@ -90,11 +97,13 @@ func init_handlers(p_queue_info *GF_queue_info,
 				return nil, gf_err
 			}
 
+			span_input.Finish()
+
 			//------------------
 			// PIPELINE
 
 			
-			span_pipeline := sentry.StartSpan(span_root.Context(), "get_block_pipeline")
+			span_pipeline := sentry.StartSpan(ctx, "get_block_pipeline")
 
 			block_from_workers_map, gf_err := gf_eth_monitor_core.Eth_block__get_block_pipeline(block_num_int,
 				p_get_hosts_fn,
@@ -115,7 +124,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 				"block_from_workers_map": block_from_workers_map,
 			}
 
-			span_root.Finish()
+			// span_root.Finish()
 
 			return data_map, nil
 
