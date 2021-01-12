@@ -54,7 +54,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 
 	//---------------------
 
-	span := sentry.StartSpan(p_ctx, "get_worker_hosts")
+	span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
 
 	var workers_inspectors_hosts_lst []string
 	if p_runtime.Config.Workers_aws_discovery_bool {
@@ -64,7 +64,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 		workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
 	}
 
-	span.Finish()
+	span__get_worker_hosts.Finish()
 
 	//---------------------
 
@@ -76,8 +76,8 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 
 		
 		// SPAN
-		span_name_str := fmt.Sprintf("worker_inspector__get_block:%s", host_str)
-		span          := sentry.StartSpan(p_ctx, span_name_str)
+		span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", host_str)
+		span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
 
 		// GET_BLOCK
 		gf_block, gf_err := eth_block__worker_inspector__get_block(p_block_int,
@@ -85,7 +85,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 			worker_inspector__port_int,
 			p_runtime.Runtime_sys)
 
-		span.Finish()
+		span__get_blocks.Finish()
 
 		if gf_err != nil {
 			return nil, gf_err
