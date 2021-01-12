@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/http"
 	"context"
+	"github.com/getsentry/sentry-go"
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
@@ -38,6 +39,9 @@ func init_handlers(p_metrics *GF_metrics,
 	http.HandleFunc("/gfethm_worker_inspect/v1/blocks", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		
 		ctx := context.Background()
+		hub := sentry.GetHubFromContext(ctx)
+		hub.Scope().SetTag("url", p_req.URL.Path)
+		hub.Scope().SetTransaction("http__worker_inspector__get_block")
 
 		// METRICS
 		if p_metrics != nil {
@@ -54,11 +58,17 @@ func init_handlers(p_metrics *GF_metrics,
 
 		//------------------
 
+
+		span_pipeline := sentry.StartSpan(ctx, "get_block_eth_rpc")
+
 		// GET_BLOCK
 		gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block(block_num_int,
 			p_runtime.eth_rpc_client,
 			ctx,
 			p_runtime.runtime_sys)
+
+		span_pipeline.Finish()
+
 		if gf_err != nil {
 			
 

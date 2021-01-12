@@ -87,7 +87,7 @@ func init_handlers(p_queue_info *GF_queue_info,
 			//------------------
 			// INPUT
 
-			span_input := sentry.StartSpan(ctx, "get_block_pipeline")
+			span_input := sentry.StartSpan(ctx, "get_input")
 
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
