@@ -22,6 +22,7 @@ package gf_core
 import (
 	"fmt"
 	"time"
+	"strings"
 	"runtime"
 	"runtime/debug"
 	"github.com/fatih/color"
@@ -220,14 +221,38 @@ func Error__create_with_defs(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func Error__init_sentry(p_sentry_endpoint_str string) error {
+func Error__init_sentry(p_sentry_endpoint_str string,
+	p_http_handlers__to_trace_map map[string]bool,
+	p_sample_rate_f               float64) error {
 
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn: p_sentry_endpoint_str,
 
 		// TRACING
-		TracesSampleRate: 1.0,
+		// TracesSampleRate: p_sample_rate_f, // 1.0,
+
+		TracesSampler: sentry.TracesSamplerFunc(func(p_ctx sentry.SamplingContext) sentry.Sampled {
+
+			hub                  := sentry.GetHubFromContext(p_ctx.Span.Context())
+			transaction_name_str := hub.Scope().Transaction()
+			handler_path_str     := strings.Split(transaction_name_str, " ")[1]
+
+			// exclude traces of all transactions that are not for expected handlers
+			if _, ok := p_http_handlers__to_trace_map[handler_path_str]; !ok {
+				
+				// exclude
+				return sentry.SampledFalse
+			}
+
+			return sentry.UniformTracesSampler(p_sample_rate_f).Sample(p_ctx)
+
+			// // Sample all other transactions for testing. On
+			// // production, use TracesSampleRate with a rate adequate
+			// // for your traffic, or use the SamplingContext to
+			// // customize sampling per-transaction.
+			// return sentry.SampledTrue
+		}),
 	})
 	if err != nil {
 		return err
