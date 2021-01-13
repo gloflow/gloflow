@@ -34,7 +34,15 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	//-------------
 	// SENTRY
 	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
-	err := gf_core.Error__init_sentry(sentry_endpoint_str)
+	sentry_samplerate_f := 1.0
+	sentry_trace_handlers_map := map[string]bool{
+		"/gfethm/v1/miner": true,
+		"/gfethm/v1/block": true,
+		"/gfethm/v1/peers": true,
+	}
+	err := gf_core.Error__init_sentry(sentry_endpoint_str,
+		sentry_trace_handlers_map,
+		sentry_samplerate_f)
 	if err != nil {
 		panic(err)
 	}

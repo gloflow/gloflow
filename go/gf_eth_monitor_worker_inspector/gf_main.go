@@ -58,7 +58,14 @@ func main() {
 	//-------------
 	// SENTRY
 	
-	err = gf_core.Error__init_sentry(sentry_endpoint_str)
+	sentry_samplerate_f := 1.0
+	sentry_trace_handlers_map := map[string]bool{
+		"/gfethm_worker_inspect/v1/blocks": true,
+	}
+
+	err = gf_core.Error__init_sentry(sentry_endpoint_str,
+		sentry_trace_handlers_map,
+		sentry_samplerate_f)
 	if err != nil {
 		panic(err)
 	}
