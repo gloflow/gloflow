@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	// eth_types "github.com/ethereum/go-ethereum/core/types"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -69,9 +70,6 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 
 	//---------------------
 
-
-
-
 	block_from_workers_map := map[string]*GF_eth__block__int{}
 	for _, host_str := range workers_inspectors_hosts_lst {
 
@@ -112,7 +110,7 @@ func eth_block__worker_inspector__get_block(p_block_int uint64,
 	
 
 
-	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?block=%s", p_host_str, p_port_int, p_block_int)
+	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?block=%d", p_host_str, p_port_int, p_block_int)
 
 	data_map, gf_err := gf_rpc_lib.Client__request(url_str, p_runtime_sys)
 	if gf_err != nil {

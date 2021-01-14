@@ -29,10 +29,9 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_queue_info *GF_queue_info,
-	p_get_hosts_fn func() []string,
-	p_metrics      *gf_eth_monitor_core.GF_metrics,
-	p_runtime      *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
+func init_handlers(p_get_hosts_fn func() []string,
+	p_metrics *gf_eth_monitor_core.GF_metrics,
+	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 	

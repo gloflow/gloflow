@@ -36,9 +36,9 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 
 	// CONFIG
 	update_period_sec     := 2*60 * time.Second // 2min
-	target_instances_tags_lst := []map[string]string{
-		{"Name": "gf_eth_monitor__worker__archive"},
-		{"Name": "gf_eth_monitor__worker__fast"},
+	target_instances_tags_lst := [][]map[string]string{
+		{{"Name": "gf_eth_monitor__worker__archive"}},
+		{{"Name": "gf_eth_monitor__worker__fast"}},
 	}
 
 	get_hosts_ch        := make(worker_inspector__get_hosts_ch, 100) // client requests for hosts are received on this channel
@@ -81,17 +81,24 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 	go func() {
 		for {
 
+			aws_instances_all_lst := []*ec2.Instance{}
+			for _, instance_tags_lst := range target_instances_tags_lst {
+				aws_instances_lst, gf_err := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime_sys)
+				if gf_err != nil {
+					discovery_errors_ch <- gf_err
+
+					// SLEEP - sleep after error as well
+					time.Sleep(update_period_sec)
+					continue
+				}
+
+				aws_instances_all_lst = append(aws_instances_all_lst, aws_instances_lst...)
+			} 
+
+
 			
-			aws_instances_lst, gf_err := gf_aws.AWS_EC2__describe_instances__by_tags(target_instances_tags_lst, p_runtime_sys)
-			if gf_err != nil {
-				discovery_errors_ch <- gf_err
 
-				// SLEEP - sleep after error as well
-				time.Sleep(update_period_sec)
-				continue
-			}
-
-			new_instances_ch <- aws_instances_lst
+			new_instances_ch <- aws_instances_all_lst
 			
 			// SLEEP
 			time.Sleep(update_period_sec)

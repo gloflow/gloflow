@@ -140,8 +140,8 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 	for _, m := range result.Messages {
 		
-		SQS_timestamp_str := *m.Attributes["SentTimestamp"]
-		fmt.Printf("SQS_timestamp - %s\n", SQS_timestamp_str)
+		// SQS_timestamp_str := *m.Attributes["SentTimestamp"]
+		// fmt.Printf("SQS_timestamp - %s\n", SQS_timestamp_str)
 
 		// JSON_DECODE
 		var event_map map[string]interface{}

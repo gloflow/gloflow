@@ -22,3 +22,6 @@ workers_hosts:         "127.0.0.1"
 
 # SENTRY_ENDPOINT
 sentry_endpoint: ""
+
+# EVENTS_CONSUME
+events_consume: true

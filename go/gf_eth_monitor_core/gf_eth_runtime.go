@@ -61,4 +61,8 @@ type GF_config struct {
 
 	// SENTRY_ENDPOINT
 	Sentry_endpoint_str string `mapstructure:"sentry_endpoint"`
+
+	// EVENTS - flag to turn on/off event consumption and processing from queues. 
+	//          mostly used for debugging and testing.
+	Events_consume_bool bool `mapstructure:"events_consume"`
 }

@@ -261,6 +261,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - EVENTS_CONSUME
+	cmd__base.PersistentFlags().StringP("events_consume", "", "EVENTS CONSUME", "on/off consumption and processing of events from queue")
+	err = viper.BindPFlag("events_consume", cmd__base.PersistentFlags().Lookup("events_consume"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("events_consume", "GF_EVENTS_CONSUME")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// START
 	cmd__start := &cobra.Command{
 		Use:   "start",
@@ -303,10 +319,10 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		},
 	}
 
-	// TEST_ETH_NODE_EVENT_PROCESS
-	cmd__test_eth_node_event_process := &cobra.Command{
-		Use:   "eth_node_event_process",
-		Short: "test Eth node event processing",
+	// TEST_WORKER_EVENT_PROCESS
+	cmd__test_worker_event_process := &cobra.Command{
+		Use:   "worker_event_process",
+		Short: "test processing of worker events",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
 
@@ -331,7 +347,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	//--------------------
 	cmd__start.AddCommand(cmd__start_service)
-	cmd__test.AddCommand(cmd__test_eth_node_event_process)
+	cmd__test.AddCommand(cmd__test_worker_event_process)
 	cmd__base.AddCommand(cmd__start)
 	cmd__base.AddCommand(cmd__test)
 
