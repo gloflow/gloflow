@@ -63,13 +63,11 @@ def main():
 
 	if args_map["run"] == "test":
 
-		gf_test.run()
-
+		gf_test.run_all()
 
 	#------------------------
 	# BUILD
 	elif args_map["run"] == "build":
-
 
 		for service_name_str, v in services_map.items():
 			
