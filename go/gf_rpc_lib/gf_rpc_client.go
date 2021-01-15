@@ -26,7 +26,7 @@ import (
 	"io/ioutil"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
