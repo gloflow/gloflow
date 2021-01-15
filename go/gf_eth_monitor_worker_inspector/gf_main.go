@@ -22,8 +22,10 @@ package main
 import (
 	"os"
 	"fmt"
+	"time"
 	"net/http"
 	log "github.com/sirupsen/logrus"
+	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -59,16 +61,21 @@ func main() {
 	// SENTRY
 	
 	sentry_samplerate_f := 1.0
-	sentry_trace_handlers_map := map[string]bool{
-		"/gfethm_worker_inspect/v1/blocks": true,
+	sentry_transaction_to_trace_map := map[string]bool{
+		"GET /gfethm_worker_inspect/v1/blocks": true,
+
+		
+		// "http__worker_inspector__get_block": true,
 	}
 
 	err = gf_core.Error__init_sentry(sentry_endpoint_str,
-		sentry_trace_handlers_map,
+		sentry_transaction_to_trace_map,
 		sentry_samplerate_f)
 	if err != nil {
 		panic(err)
 	}
+
+	defer sentry.Flush(2 * time.Second)
 
 	//-------------
 	// METRICS
@@ -108,7 +115,7 @@ func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
 	//--------------------
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor",
+		Service_name_str: "gf_eth_monitor_worker_inspector",
 		Log_fun:          p_log_fun,
 		
 		// SENTRY - enable it for error reporting

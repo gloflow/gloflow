@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/getsentry/sentry-go"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
@@ -34,7 +35,7 @@ import (
 
 //-------------------------------------------------
 // GET_BLOCK
-func Eth_rpc__get_block(p_block_num_int uint64,
+func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
 	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__block__int, *gf_core.Gf_error) {
@@ -63,14 +64,20 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 	// Time - the unix timestamp for when the block was collated
 
 	*/
+
+	span := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
+
 	header, err := p_eth_rpc_client.HeaderByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(header)
 	
+	span.Finish()
 
 
+
+	span = sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 
@@ -81,6 +88,10 @@ func Eth_rpc__get_block(p_block_num_int uint64,
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
+
+	span.Finish()
+
+
 
 
 	txs_lst := []*gf_eth_monitor_core.GF_eth__tx{}
@@ -196,6 +207,8 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	*/
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
+
+	span := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
 	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, tx_hash)
 	if err != nil {
 
@@ -206,8 +219,10 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
+	span.Finish()
 
 	// GET_LOGS
+	span = sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
 	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
 		p_ctx,
 		p_eth_rpc_client,
@@ -215,6 +230,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	if gf_err != nil {
 		return nil, gf_err
 	}
+	span.Finish()
 
 
 

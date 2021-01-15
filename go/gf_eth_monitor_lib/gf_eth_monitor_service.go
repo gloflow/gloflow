@@ -22,7 +22,9 @@ package gf_eth_monitor_lib
 import (
 	
 	"fmt"
+	"time"
 	"net/http"
+	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
@@ -42,9 +44,11 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
 	sentry_samplerate_f := 1.0
 	sentry_trace_handlers_map := map[string]bool{
-		"/gfethm/v1/miner": true,
-		"/gfethm/v1/block": true,
-		"/gfethm/v1/peers": true,
+		// "/gfethm/v1/miner": true,
+		// "/gfethm/v1/block": true,
+		// "/gfethm/v1/peers": true,
+		// "http__master__get_block": true,
+		"GET /gfethm/v1/block": true,
 	}
 	err := gf_core.Error__init_sentry(sentry_endpoint_str,
 		sentry_trace_handlers_map,
@@ -52,6 +56,8 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	if err != nil {
 		panic(err)
 	}
+
+	defer sentry.Flush(2 * time.Second)
 
 	//-------------
 	// METRICS
@@ -84,6 +90,8 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	var get_hosts_fn func() []string
 	if p_runtime.Config.Workers_aws_discovery_bool {
+
+		
 		get_hosts_fn, _ = gf_eth_monitor_core.Worker__discovery__init(p_runtime.Runtime_sys)
 	}
 

@@ -73,7 +73,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			
 			hub := sentry.GetHubFromContext(ctx)
 			hub.Scope().SetTag("url", p_req.URL.Path)
-			hub.Scope().SetTransaction("http__get_block")
+			// hub.Scope().SetTransaction("http__master__get_block")
 
 			/*// IMPORTANT!! - if this request is downstream of some upstream transaction that has already been
 			//               started, then span_root will be that span and will be non-nil. 

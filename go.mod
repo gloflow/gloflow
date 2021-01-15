@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210107181124-fad53805024e // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.36.26
+	github.com/aws/aws-sdk-go v1.36.27
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -22,7 +22,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.1
 	github.com/influxdata/line-protocol v0.0.0-20201012155213-5f565037cbc9 // indirect
-	github.com/klauspost/compress v1.11.6 // indirect
+	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mitchellh/mapstructure v1.4.1

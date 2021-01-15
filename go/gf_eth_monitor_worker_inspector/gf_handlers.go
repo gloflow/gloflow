@@ -20,11 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
-	"context"
+	// "context"
 	"github.com/getsentry/sentry-go"
-	// "github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 	// "github.com/davecgh/go-spew/spew"
@@ -36,57 +36,60 @@ func init_handlers(p_metrics *GF_metrics,
 
 	//---------------------
 	// GET_BLOCKS
-	http.HandleFunc("/gfethm_worker_inspect/v1/blocks", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		
-		ctx := context.Background()
-		hub := sentry.GetHubFromContext(ctx)
-		hub.Scope().SetTag("url", p_req.URL.Path)
-		hub.Scope().SetTransaction("http__worker_inspector__get_block")
 
-		// METRICS
-		if p_metrics != nil {
-			p_metrics.counter__http_req_num__get_blocks.Inc()
-		}
+	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/blocks",
+		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		//------------------
-		// INPUT
+			ctx := p_req.Context()
+			hub := sentry.GetHubFromContext(ctx)
+			hub.Scope().SetTag("url", p_req.URL.Path)
+			// hub.Scope().SetTransaction("http__worker_inspector__get_block") // set custom transaction name
 
-		block_num_int, err := gf_eth_monitor_lib.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
-		if err != nil {
-			return
-		}
+			// METRICS
+			if p_metrics != nil {
+				p_metrics.counter__http_req_num__get_blocks.Inc()
+			}
 
-		//------------------
+			//------------------
+			// INPUT
 
+			block_num_int, gf_err := gf_eth_monitor_lib.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
 
-		span_pipeline := sentry.StartSpan(ctx, "get_block_eth_rpc")
+			if gf_err != nil {
+				return nil, gf_err
+			}
 
-		// GET_BLOCK
-		gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block(block_num_int,
-			p_runtime.eth_rpc_client,
-			ctx,
-			p_runtime.runtime_sys)
+			//------------------
+			// GET_BLOCK
 
-		span_pipeline.Finish()
+			span_pipeline := sentry.StartSpan(ctx, "eth_rpc__get_block__pipeline")
 
-		if gf_err != nil {
-			
+			gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block__pipeline(block_num_int,
+				p_runtime.eth_rpc_client,
+				ctx,
+				p_runtime.runtime_sys)
 
-			gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
-				fmt.Sprintf("failed to get block - %d", block_num_int),
-				gf_err, p_resp, p_runtime.runtime_sys)
-			return
-		}
+			span_pipeline.Finish()
 
-		//------------------
-		// OUTPUT
-		data_map := map[string]interface{}{
-			"block": gf_block, // spew.Sdump(),
-		}
-		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.runtime_sys)
+			if gf_err != nil {
+				
+				// gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
+				// 	fmt.Sprintf("failed to get block - %d", block_num_int),
+				// 	gf_err, p_resp, p_runtime.runtime_sys)
+				return nil, gf_err
+			}
 
-		//------------------
-	})
+			//------------------
+			// OUTPUT
+			data_map := map[string]interface{}{
+				"block": gf_block, // spew.Sdump(),
+			}
+			return data_map, nil
+			// gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.runtime_sys)
+
+			//------------------
+		},
+		p_runtime.runtime_sys)
 
 	//---------------------
 	// HEALTH
