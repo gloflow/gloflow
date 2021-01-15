@@ -22,13 +22,14 @@ package gf_core
 import (
 	"fmt"
 	"time"
-	"strings"
+	// "strings"
+	"errors"
 	"runtime"
 	"runtime/debug"
 	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
 	"github.com/getsentry/sentry-go"
-	//"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -48,6 +49,53 @@ type Gf_error struct {
 	Function_name_str    string                 `bson:"func_name_str"`
 	File_str             string                 `bson:"file_str"`
 	Line_num_int         int                    `bson:"line_num_int"`
+}
+
+
+//-------------------------------------------------
+func Panic__check_and_handle(p_user_msg_str string,
+	p_panic_data_map     map[string]interface{},
+	p_subsystem_name_str string,
+	p_runtime_sys        *Runtime_sys) {
+
+	// call to recover stops the unwinding and returns the argument passed to panic
+	// If the goroutine is not panicking, recover returns nil.
+	if panic_info := recover(); panic_info != nil {
+
+		err := errors.New(fmt.Sprint(panic_info))
+
+
+		//--------------------
+		// SENTRY
+		if p_runtime_sys.Errors_send_to_sentry_bool {
+			
+			/*sentry.ConfigureScope(func(scope *sentry.Scope) {
+				scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
+				scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
+				scope.SetExtra("gf_error.type",           gf_error.Type_str)
+			})*/
+
+			sentry.WithScope(func(scope *sentry.Scope) {
+
+
+				scope.SetTag("gf_panic.service_name",   p_runtime_sys.Service_name_str)
+				scope.SetTag("gf_panic.subsystem_name", p_subsystem_name_str)
+				scope.SetTag("gf_panic.type",           "panic_error")
+
+				for k, v := range p_panic_data_map {
+					scope.SetTag(fmt.Sprintf("gf_panic.%s", k),
+						fmt.Sprint(v))
+				}
+
+				// scope.SetLevel(sentry.LevelWarning);
+
+				sentry.CaptureException(err)
+			})
+
+			// FLUSH
+			defer sentry.Flush(2 * time.Second)
+		}
+	}
 }
 
 //-------------------------------------------------
@@ -79,7 +127,7 @@ func Error__create(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
 
 	error_defs_map := error__get_defs()
 	
@@ -103,7 +151,7 @@ func Error__create_with_defs(p_user_msg_str string,
 	p_err_defs_map       map[string]Error_def,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
 
-
+	
 
 	creation_unix_time_f := float64(time.Now().UnixNano()) / 1000000000.0
 	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
@@ -148,15 +196,18 @@ func Error__create_with_defs(p_user_msg_str string,
 		Line_num_int:         line_num_int,
 	}
 
+
 	red      := color.New(color.FgRed).SprintFunc()
 	cyan     := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow   := color.New(color.FgYellow).SprintFunc()
 	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
 	green    := color.New(color.FgBlack, color.BgGreen).SprintFunc()
 
+
+
 	//--------------------
 	// VIEW
-	fmt.Printf("\n\n  %s ------------- %s\n\n\n", red("FAILED FUNCTION CALL"), yellow(function_name_str))
+	// fmt.Printf("\n\n  %s ------------- %s\n\n\n", red("FAILED FUNCTION CALL"), yellow(function_name_str))
 
 	fmt.Printf("GF_ERROR:\n")
 	fmt.Printf("file           - %s\n", yellowBg(gf_error.File_str))
@@ -206,9 +257,23 @@ func Error__create_with_defs(p_user_msg_str string,
 			scope.SetTag("gf_error.subsystem_name", gf_error.Subsystem_name_str)
 			scope.SetTag("gf_error.type",           gf_error.Type_str)
 
+			for k, v := range gf_error.Data_map {
+				scope.SetTag(fmt.Sprintf("gf_error.%s", k),
+					fmt.Sprint(v))
+			}
+
 			// scope.SetLevel(sentry.LevelWarning);
 
-			sentry.CaptureException(p_error)
+			if p_error != nil {
+				sentry.CaptureException(p_error)
+			} else {
+
+				// IMPORTANT!! - in case the GF_error doesnt have a correspoting
+				//               golang error. this is for GF error conditions that are 
+				//               not caused by a golang error.
+				err := errors.New(fmt.Sprintf("GF error - %s", gf_error.Type_str))
+				sentry.CaptureException(err)
+			}
 		})
 
 		// FLUSH
@@ -222,30 +287,46 @@ func Error__create_with_defs(p_user_msg_str string,
 
 //-------------------------------------------------
 func Error__init_sentry(p_sentry_endpoint_str string,
-	p_http_handlers__to_trace_map map[string]bool,
-	p_sample_rate_f               float64) error {
+	p_transactions__to_trace_map map[string]bool,
+	p_sample_rate_f              float64) error {
+
 
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn: p_sentry_endpoint_str,
+
+		// Enable printing of SDK debug messages.
+		// Useful when getting started or trying to figure something out.
+		Debug: true,
 
 		// TRACING
 		// TracesSampleRate: p_sample_rate_f, // 1.0,
 
 		TracesSampler: sentry.TracesSamplerFunc(func(p_ctx sentry.SamplingContext) sentry.Sampled {
 
+
+			
 			hub                  := sentry.GetHubFromContext(p_ctx.Span.Context())
 			transaction_name_str := hub.Scope().Transaction()
-			handler_path_str     := strings.Split(transaction_name_str, " ")[1]
+			// handler_path_str     := strings.Split(transaction_name_str, " ")[1]
+
+
+
+			fmt.Printf("SENTRY TX - %s\n", transaction_name_str)
+
+
 
 			// exclude traces of all transactions that are not for expected handlers
-			if _, ok := p_http_handlers__to_trace_map[handler_path_str]; !ok {
+			if _, ok := p_transactions__to_trace_map[transaction_name_str]; !ok {
 				
 				// exclude
+
+				fmt.Println("SENTRY TX EXCLUDE")
 				return sentry.SampledFalse
 			}
 
-			return sentry.UniformTracesSampler(p_sample_rate_f).Sample(p_ctx)
+			fmt.Println("INCLUDE")
+			return sentry.SampledTrue // sentry.UniformTracesSampler(p_sample_rate_f).Sample(p_ctx)
 
 			// // Sample all other transactions for testing. On
 			// // production, use TracesSampleRate with a rate adequate

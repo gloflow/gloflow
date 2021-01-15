@@ -26,12 +26,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------------------
 func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*ec2.Instance, *gf_core.Gf_error) {
-
 
 
 	svc := ec2.New(session.New())
@@ -55,6 +55,7 @@ func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
 		Filters: filters_lst,
 	}
 
+
 	result, err := svc.DescribeInstances(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
@@ -72,6 +73,8 @@ func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
 			err, "gf_aws", p_runtime_sys)
 		return nil, gf_err
 	}
+
+
 
 
 	instances_lst := []*ec2.Instance{}

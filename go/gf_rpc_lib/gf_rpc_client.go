@@ -24,14 +24,20 @@ import (
 	"fmt"
 	"encoding/json"
 	"io/ioutil"
+	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 func Client__request(p_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 
+	yellow   := color.New(color.FgYellow).SprintFunc()
+	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
 
+	fmt.Printf("%s - REQUEST SENT - %s\n", yellow("gf_rpc_client"), yellowBg(p_url_str))
+	
 	//-----------------------
 	// FETCH_URL
 	user_agent_str := "gf_rpc_client"
@@ -50,13 +56,14 @@ func Client__request(p_url_str string,
 	err := json.Unmarshal(body_bytes_lst, &resp_map)
 	if err != nil {
 		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
-			"json_unmarshal_error",
+			"json_decode_error",
 			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_rpc_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 
 	//-----------------------
+
 
 	r_status_str := resp_map["status_str"].(string)
 
@@ -69,7 +76,7 @@ func Client__request(p_url_str string,
 		gf_err := gf_core.Error__create(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
 			"http_client_gf_status_error",
 			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_rpc_lib", p_runtime_sys)
+			nil, "gf_rpc_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 

@@ -41,10 +41,19 @@ func Create_handler__http(p_path_str string,
 	p_handler_fun  handler_http,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
-
-
-
 	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+		//------------------
+		// PANIC_HANDLING
+
+		// IMPORTANT!! - only defered functions are run when a panic initiates in a goroutine
+		//               as execution unwinds up the call-stack. in Panic__check_and_handle() 
+		//               recover() is executed for check for panic conditions. if panic exists
+		//               it is treated as an error that gets processed, and the go routine exits.
+		defer Panic__check_and_handle(p_resp, p_req, p_runtime_sys)
+
+		//------------------
+		p_resp.Header().Set("Content-Type", "application/json")
 
 		// HANDLER
 		data_map, gf_err := p_handler_fun(p_resp, p_req)
@@ -57,15 +66,12 @@ func Create_handler__http(p_path_str string,
 			return
 		}
 
-
 		//------------------
 		// OUTPUT
 		Http_respond(data_map, "OK", p_resp, p_runtime_sys)
 
 		//------------------
 	})
-
-
 }
 
 //-------------------------------------------------
@@ -163,18 +169,43 @@ func Store_rpc_handler_run(p_handler_url_str string,
 }
 
 //-------------------------------------------------
+func Panic__check_and_handle(p_resp http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) {
+
+	// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
+	//               and then proceed to process the panic as an error 
+	//               with gf_core.Panic__check_and_handle()
+	if panic_info := recover(); panic_info != nil {
+		path_str := p_req.URL.Path
+		Error__in_handler(path_str,
+			fmt.Sprintf("handler %s failed unexpectedly", path_str),
+			nil, p_resp, p_runtime_sys)
+
+
+		user_msg__internal_str := "gf_rpc handler panicked"
+		gf_core.Panic__check_and_handle(user_msg__internal_str,
+			map[string]interface{}{"handler_path_str": path_str},
+			"gf_rpc", p_runtime_sys)
+	}
+}
+
+//-------------------------------------------------
 func Error__in_handler(p_handler_url_path_str string,
 	p_user_msg_str string,
 	p_gf_err       *gf_core.Gf_error,
 	p_resp         http.ResponseWriter,
 	p_runtime_sys  *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_rpc_utils.Error__in_handler()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Error__in_handler()")
 
 	status_str := "ERROR"
 	data_map   := map[string]interface{}{
 		"handler_error_user_msg_str": p_user_msg_str,
-		"gf_error_type_str":          p_gf_err.Type_str,
-		"gf_error_user_msg_str":      p_gf_err.User_msg_str,
+	}
+
+	if p_gf_err != nil {
+		data_map["gf_error_type_str"] =     p_gf_err.Type_str
+		data_map["gf_error_user_msg_str"] = p_gf_err.User_msg_str
 	}
 
 	// DEBUG
@@ -182,7 +213,7 @@ func Error__in_handler(p_handler_url_path_str string,
 		data_map["error"] = p_gf_err.Error
 	}
 
-	Http_respond(data_map,status_str,p_resp,p_runtime_sys)
+	Http_respond(data_map, status_str, p_resp, p_runtime_sys)
 
 	/*http.Error(p_resp,
 	p_usr_msg_str,
