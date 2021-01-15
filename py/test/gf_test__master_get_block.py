@@ -92,5 +92,10 @@ def run(p_aws_region_str):
 
 	#--------------------------------------------------
 	test()
-	
+
+
+
+
+	time.sleep(20)
+
 	p.terminate()
