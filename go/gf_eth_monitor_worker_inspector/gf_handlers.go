@@ -63,6 +63,7 @@ func init_handlers(p_metrics *GF_metrics,
 			// GET_BLOCK
 
 			span_pipeline := sentry.StartSpan(ctx, "eth_rpc__get_block__pipeline")
+			defer span_pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block__pipeline(block_num_int,
 				p_runtime.eth_rpc_client,

@@ -18,6 +18,7 @@
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
+
 import subprocess
 import threading
 
@@ -40,9 +41,7 @@ def run(p_aws_region_str):
 		]
 
 
-
-		print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd")
-		print(os.environ["GF_SENTRY_ENDPOINT"])
+		print(f'GF_SENTRY_ENDPOINT - {os.environ["GF_SENTRY_ENDPOINT"]}')
 
 
 		p = subprocess.Popen(cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
@@ -61,23 +60,18 @@ def run(p_aws_region_str):
 		t = threading.Thread(target=gf_test_utils.read_process_stdout, args=(p.stdout, "gf_eth_monitor", "magenta"))
 		t.start()
 
-
 		return p
 
 	#--------------------------------------------------
-
-
+	
 	p = start_master()
 
 	import time
 	time.sleep(10)
 
-
 	#--------------------------------------------------
 	def test():
 		import requests
-
-
 
 		print("MAKINT TEST CLIENT REQUEST")
 		url_str = "http://127.0.0.1:4050/gfethm/v1/block?b=100"
@@ -88,6 +82,30 @@ def run(p_aws_region_str):
 
 
 		print(r.text)
+
+
+		import json
+		r_map = json.loads(r.text)
+
+		assert r_map["status_str"] == "OK"
+		assert "data" in r_map.keys()
+		assert "block_from_workers_map" in r_map["data"]
+		
+		for worker_host_str, block_info_map in r_map["data"]["block_from_workers_map"].items():
+			assert isinstance(worker_host_str, str)
+			assert isinstance(block_info_map, dict)
+
+
+			assert "block_num_int"     in block_info_map.keys()
+			assert "gas_used_int"      in block_info_map.keys()
+			assert "gas_limit_int"     in block_info_map.keys()
+			assert "coinbase_addr_str" in block_info_map.keys()
+			assert "txs_lst"           in block_info_map.keys()
+			assert "block"             in block_info_map.keys()
+		
+
+
+
 		print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TEST COMPLETE ----------------")
 
 	#--------------------------------------------------

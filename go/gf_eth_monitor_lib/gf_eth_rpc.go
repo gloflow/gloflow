@@ -40,7 +40,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	p_ctx            context.Context,
 	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__block__int, *gf_core.Gf_error) {
 
-	
+	//------------------
 	/*
 	
 	type Header struct {
@@ -65,53 +65,52 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 
 	*/
 
-	span := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
+	span__get_header := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
+	defer span__get_header.Finish() // in case a panic happens before the main .Finish() for this span
 
 	header, err := p_eth_rpc_client.HeaderByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
-		panic(err)
+		error_defs_map := error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to read apps__info from YAML file in Cmonkeyd",
+			"eth_rpc__get_header",
+			map[string]interface{}{"block_num": p_block_num_int,},
+			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+		return nil, gf_err
 	}
 	fmt.Println(header)
 	
-	span.Finish()
+	span__get_header.Finish()
 
+	//------------------
 
+	span__get_block := sentry.StartSpan(p_ctx, "eth_rpc__get_block")
+	defer span__get_block.Finish() // in case a panic happens before the main .Finish() for this span
 
-	span = sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 
 		error_defs_map := error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to read apps__info from YAML file in Cmonkeyd",
-			"file_read_error",
+			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_int,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
 
-	span.Finish()
+	span__get_block.Finish()
 
-
-
+	//------------------
 
 	txs_lst := []*gf_eth_monitor_core.GF_eth__tx{}
 	for _, tx := range block.Transactions() {
-
-		
 
 		gf_tx, gf_err := Eth_rpc__get_tx(tx, p_ctx, p_eth_rpc_client, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
 
-		fmt.Println(gf_tx)
-
-
-
 		txs_lst = append(txs_lst, gf_tx)
 	}
-
-
 
 	gf_block := &gf_eth_monitor_core.GF_eth__block__int{
 		Block_num_int:     block.Number().Uint64(),
@@ -122,8 +121,6 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 		Block:             spew.Sdump(block),
 	}
 
-	
-
 	return gf_block, nil
 }
 
@@ -132,7 +129,6 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__tx, *gf_core.Gf_error) {
-
 
 
 
@@ -179,10 +175,6 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	}*/
 
 
-
-
-
-
 	/*
 	type Receipt struct {
 		// Consensus fields: These fields are defined by the Yellow Paper
@@ -208,7 +200,11 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
 
-	span := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
+	//------------------
+	// GET_TX_RECEIPT
+	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
+	span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
+
 	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, tx_hash)
 	if err != nil {
 
@@ -219,10 +215,13 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
-	span.Finish()
+	span__get_tx_receipt.Finish()
 
+	//------------------
 	// GET_LOGS
-	span = sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
+	span__parse_tx_logs := sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
+	span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
+
 	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
 		p_ctx,
 		p_eth_rpc_client,
@@ -230,8 +229,9 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	if gf_err != nil {
 		return nil, gf_err
 	}
-	span.Finish()
+	span__parse_tx_logs.Finish()
 
+	//------------------
 
 
 	gas_used_int := tx_receipt.GasUsed

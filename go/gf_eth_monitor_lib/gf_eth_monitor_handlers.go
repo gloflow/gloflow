@@ -83,27 +83,29 @@ func init_handlers(p_get_hosts_fn func() []string,
 			//------------------
 			// INPUT
 
-			span_input := sentry.StartSpan(ctx, "get_input")
+			span__input := sentry.StartSpan(ctx, "get_input")
+			defer span__input.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
-			span_input.Finish()
+			span__input.Finish()
 
 			//------------------
 			// PIPELINE
 
 			
-			span_pipeline := sentry.StartSpan(ctx, "get_block_pipeline")
+			span__pipeline := sentry.StartSpan(ctx, "get_block_pipeline")
+			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_from_workers_map, gf_err := gf_eth_monitor_core.Eth_block__get_block_pipeline(block_num_int,
 				p_get_hosts_fn,
-				span_pipeline.Context(),
+				span__pipeline.Context(),
 				p_runtime)
 			
-			span_pipeline.Finish()
+			span__pipeline.Finish()
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -117,7 +119,6 @@ func init_handlers(p_get_hosts_fn func() []string,
 			// span_root.Finish()
 
 			return data_map, nil
-
 		},
 		p_runtime.Runtime_sys)
 
