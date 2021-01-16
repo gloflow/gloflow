@@ -61,6 +61,7 @@ export function init(p_log_fun) {
 	} else {
 		flow_name_str = qs_flow_name_str;
 	}
+	
 	//-----------------
 	gf_sys_panel.init(p_log_fun);
 	//-----------------

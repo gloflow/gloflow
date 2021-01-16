@@ -22,14 +22,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 declare var Caman;
 //-------------------------------------------------
 export function init(p_target_image_div_element, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_image_editor.init()');
+	p_log_fun("FUN_ENTER", "gf_image_editor.init()");
 
-	const target_image = $(p_target_image_div_element).find('img')[0];
+	const target_image = $(p_target_image_div_element).find("img")[0];
 	var width_int  = target_image.clientWidth;
 	var height_int = target_image.clientHeight;
 
-	console.log('img width  - '+width_int);
-	console.log('img height - '+height_int);
+	console.log("img width  - "+width_int);
+	console.log("img height - "+height_int);
 
 
 	const container = $(`
@@ -41,7 +41,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 
 	//-------------------------------------------------
 	function create_pane() {
-		p_log_fun('FUN_ENTER', 'gf_image_editor.init().create_pane()');
+		p_log_fun("FUN_ENTER", "gf_image_editor.init().create_pane()");
 
 		const editor_pane = $(`
 			<div class='editor_pane'>
@@ -90,19 +90,19 @@ export function init(p_target_image_div_element, p_log_fun) {
 				</div>
 			</div`);
 
-		$(editor_pane).find('input[type=range]').change(apply_filters_fun);
+		$(editor_pane).find("input[type=range]").change(apply_filters_fun);
 		//-------------------------------------------------
 		function apply_filters_fun() {
 			
-			const contrast   = parseInt($('#contrast').val());
-			const brightness = parseInt($('#brightness').val());
-			const saturation = parseInt($('#saturation').val());
-			const sharpen    = parseInt($('#sharpen').val());
-			const sepia      = parseInt($('#sepia').val());
-			const noise      = parseInt($('#noise').val());
-			const hue        = parseInt($('#hue').val());
+			const contrast   = parseInt($("#contrast").val());
+			const brightness = parseInt($("#brightness").val());
+			const saturation = parseInt($("#saturation").val());
+			const sharpen    = parseInt($("#sharpen").val());
+			const sepia      = parseInt($("#sepia").val());
+			const noise      = parseInt($("#noise").val());
+			const hue        = parseInt($("#hue").val());
 
-			Caman('.editor_pane canvas', target_image, function() {
+			Caman(".editor_pane canvas", target_image, function() {
 				this.revert(false);
 				
 				this.contrast(contrast);
@@ -112,19 +112,23 @@ export function init(p_target_image_div_element, p_log_fun) {
 				this.sepia(sepia);
 				this.noise(noise);
 				this.hue(hue);
+
 				this.render(()=>console.log('filter applied'));
 			});
 		}
 		//-------------------------------------------------
 			
-		const canvas = $(editor_pane).find('canvas')[0];
-		Caman(canvas, $(target_image).attr('src'), function () {
-			this.render();
+		const canvas = $(editor_pane).find("canvas")[0];
+		
+		Caman(canvas, $(target_image).attr("src"), ()=>{
+
+			// console.log("aaa");
+			// this.render();
 		});
 
 		//-------------
 		//SAVE_MODIFIED_IMAGE
-		$(editor_pane).find('.save_btn').on('click', ()=>{
+		$(editor_pane).find(".save_btn").on("click", ()=>{
 			save_modified_image(editor_pane);
 		});
 		//-------------
@@ -133,19 +137,20 @@ export function init(p_target_image_div_element, p_log_fun) {
 	}
 	//-------------------------------------------------
 	function save_modified_image(p_editor_pane) {
-		p_log_fun('FUN_ENTER', 'gf_image_editor.init().save_modified_image()');
+		p_log_fun("FUN_ENTER", "gf_image_editor.init().save_modified_image()");
 
-		const canvas            = $(p_editor_pane).find('.modified_image_canvas')[0];
+		const canvas            = $(p_editor_pane).find(".modified_image_canvas")[0];
 		const canvas_base64_str = (canvas as HTMLCanvasElement).toDataURL();
 
 		console.log(canvas_base64_str);
 
 		http_save(canvas_base64_str)
 	}
+
 	//-------------------------------------------------
 
 	var opened_bool = false;
-	$(container).find('.open_editor_btn').on('click', ()=>{
+	$(container).find(".open_editor_btn").on("click", ()=>{
 
 		if (opened_bool) {
 			return;
@@ -153,7 +158,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 
 		const editor_pane = create_pane()
 
-		$(editor_pane).find('.close_btn').on('click',()=>{
+		$(editor_pane).find(".close_btn").on("click", ()=>{
 			$(editor_pane).remove();
 			opened_bool = false;
 		});
@@ -165,6 +170,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 
 	return container;
 }
+
 //-------------------------------------------------
 function http_save(p_canvas_base64_str) {
 
@@ -174,5 +180,8 @@ function http_save(p_canvas_base64_str) {
 		data: { 
 			imgBase64: p_canvas_base64_str
 		}
-		}).done((p_data)=>{});
+		}).done((p_data)=>{
+
+
+		});
 }

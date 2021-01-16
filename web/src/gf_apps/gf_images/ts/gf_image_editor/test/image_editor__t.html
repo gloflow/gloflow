@@ -14,38 +14,47 @@ body {
 }
 </style>
 
+<script type="text/javascript" src="ln__system.min.js"></script>
+<script type="text/javascript" src="ln__system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
+    
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="ln__caman.full.min.js"></script>
+<script type="text/javascript" src="ln__caman4.1.1.full.min.js"></script>
 <script type="text/javascript" src="gf_image_editor__test_build.js"></script>
 
 <script type="text/javascript">
 
 
-$(document).ready(()=>{
-    //-------------------------------------------------
-    function log_fun(p_g,p_m) {
-        var msg_str = p_g+':'+p_m
-        //chrome.extension.getBackgroundPage().console.log(msg_str);
+System.import("gf_image_editor").then(function(gf_image_editor_mod){
 
-        switch (p_g) {
-            case "INFO":
-                console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
-                break;
-            case "FUN_ENTER":
-                console.log("%cFUN_ENTER"+":"+"%c"+p_m,"color:yellow; background-color:lightgray","background-color:lightgray");
-                break;
+    $(document).ready(()=>{
+        //-------------------------------------------------
+        function log_fun(p_g, p_m) {
+            var msg_str = p_g+':'+p_m
+            //chrome.extension.getBackgroundPage().console.log(msg_str);
+
+            switch (p_g) {
+                case "INFO":
+                    console.log("%cINFO"+":"+"%c"+p_m,"color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
+                    break;
+                case "FUN_ENTER":
+                    console.log("%cFUN_ENTER"+":"+"%c"+p_m,"color:yellow; background-color:lightgray","background-color:lightgray");
+                    break;
+            }
         }
-    }
-    //-------------------------------------------------
+        //-------------------------------------------------
 
 
-    console.log('test');
+        console.log('test');
 
-    const target_image_div_e = $('#target_img');
-	gf_image_editor.init(target_image_div_e,log_fun);
+        const target_image_div_e = $("#target_img");
+        console.log(gf_image_editor_mod)
+        gf_image_editor_mod.init(target_image_div_e, log_fun);
 
 
+    });
 });
+
+
 
 
 

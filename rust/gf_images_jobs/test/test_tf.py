@@ -97,7 +97,7 @@ def main():
 
     assert os.path.isfile(test_ml_tf_records_train__file_str)
     gf_images_jobs.view_ml_dataset(test_ml_tf_records_train__file_str,
-        "./generated_dataset_collage.png",
+        "./data__test/generated_dataset_collage.png",
         tf_example__img_width_int,
         tf_example__img_height_int,
         collage__img_width_int,
