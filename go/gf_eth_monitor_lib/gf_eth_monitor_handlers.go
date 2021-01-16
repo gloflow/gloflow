@@ -71,6 +71,9 @@ func init_handlers(p_get_hosts_fn func() []string,
 			hub.Scope().SetTag("url", p_req.URL.Path)
 			// hub.Scope().SetTransaction("http__master__get_block")
 
+			span__root := sentry.StartSpan(ctx, "http__master__get_block", sentry.ContinueFromRequest(p_req))
+			defer span__root.Finish()
+
 			/*// IMPORTANT!! - if this request is downstream of some upstream transaction that has already been
 			//               started, then span_root will be that span and will be non-nil. 
 			//               otherwise this is the first span in the transaction, and needs to be created.
@@ -82,7 +85,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			//------------------
 			// INPUT
 
-			span__input := sentry.StartSpan(ctx, "get_input")
+			span__input := sentry.StartSpan(span__root.Context(), "get_input")
 			defer span__input.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp, p_req, p_runtime.Runtime_sys)
@@ -96,7 +99,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			// PIPELINE
 
 			
-			span__pipeline := sentry.StartSpan(ctx, "get_block_pipeline")
+			span__pipeline := sentry.StartSpan(span__root.Context(), "get_block_pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_from_workers_map, gf_err := gf_eth_monitor_core.Eth_block__get_block_pipeline(block_num_int,

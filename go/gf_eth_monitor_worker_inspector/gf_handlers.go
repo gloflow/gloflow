@@ -45,6 +45,11 @@ func init_handlers(p_metrics *GF_metrics,
 			hub.Scope().SetTag("url", p_req.URL.Path)
 			// hub.Scope().SetTransaction("http__worker_inspector__get_block") // set custom transaction name
 
+			
+
+			span__root := sentry.StartSpan(ctx, "http__worker_inspector__get_block", sentry.ContinueFromRequest(p_req))
+			defer span__root.Finish()
+			 
 			// METRICS
 			if p_metrics != nil {
 				p_metrics.counter__http_req_num__get_blocks.Inc()
@@ -62,7 +67,7 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// GET_BLOCK
 
-			span__pipeline := sentry.StartSpan(ctx, "eth_rpc__get_block__pipeline")
+			span__pipeline := sentry.StartSpan(span__root.Context(), "eth_rpc__get_block__pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block__pipeline(block_num_int,
