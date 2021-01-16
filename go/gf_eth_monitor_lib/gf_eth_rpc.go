@@ -78,7 +78,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 		return nil, gf_err
 	}
 	fmt.Println(header)
-	
+
 	span__get_header.Finish()
 
 	//------------------
@@ -203,7 +203,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	//------------------
 	// GET_TX_RECEIPT
 	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
-	span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
+	defer span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
 
 	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, tx_hash)
 	if err != nil {
@@ -220,7 +220,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	//------------------
 	// GET_LOGS
 	span__parse_tx_logs := sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
-	span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
+	defer span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
 
 	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
 		p_ctx,
