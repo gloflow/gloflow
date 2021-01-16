@@ -223,7 +223,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	defer span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
 
 	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
-		p_ctx,
+		span__parse_tx_logs.Context(),
 		p_eth_rpc_client,
 		p_runtime_sys)
 	if gf_err != nil {

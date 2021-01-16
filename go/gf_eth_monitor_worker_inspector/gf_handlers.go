@@ -62,21 +62,17 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// GET_BLOCK
 
-			span_pipeline := sentry.StartSpan(ctx, "eth_rpc__get_block__pipeline")
-			defer span_pipeline.Finish() // in case a panic happens before the main .Finish() for this span
+			span__pipeline := sentry.StartSpan(ctx, "eth_rpc__get_block__pipeline")
+			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block__pipeline(block_num_int,
 				p_runtime.eth_rpc_client,
-				ctx,
+				span__pipeline.Context(),
 				p_runtime.runtime_sys)
 
-			span_pipeline.Finish()
+			span__pipeline.Finish()
 
 			if gf_err != nil {
-				
-				// gf_rpc_lib.Error__in_handler("/gfethm_worker_inspect/v1/blocks",
-				// 	fmt.Sprintf("failed to get block - %d", block_num_int),
-				// 	gf_err, p_resp, p_runtime.runtime_sys)
 				return nil, gf_err
 			}
 
@@ -86,7 +82,6 @@ func init_handlers(p_metrics *GF_metrics,
 				"block": gf_block, // spew.Sdump(),
 			}
 			return data_map, nil
-			// gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.runtime_sys)
 
 			//------------------
 		},

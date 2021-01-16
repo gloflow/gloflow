@@ -67,7 +67,6 @@ func init_handlers(p_get_hosts_fn func() []string,
 		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			ctx := p_req.Context()
-			
 			hub := sentry.GetHubFromContext(ctx)
 			hub.Scope().SetTag("url", p_req.URL.Path)
 			// hub.Scope().SetTransaction("http__master__get_block")
