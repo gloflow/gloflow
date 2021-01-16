@@ -68,7 +68,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	span__get_header := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
 	defer span__get_header.Finish() // in case a panic happens before the main .Finish() for this span
 
-	header, err := p_eth_rpc_client.HeaderByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
+	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 		error_defs_map := error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to read apps__info from YAML file in Cmonkeyd",
@@ -86,7 +86,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	span__get_block := sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	defer span__get_block.Finish() // in case a panic happens before the main .Finish() for this span
 
-	block, err := p_eth_rpc_client.BlockByNumber(p_ctx, new(big.Int).SetUint64(p_block_num_int))
+	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 
 		error_defs_map := error__get_defs()
@@ -101,10 +101,13 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 
 	//------------------
 
+	span__get_txs := sentry.StartSpan(p_ctx, "eth_rpc__get_txs")
+	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
+
 	txs_lst := []*gf_eth_monitor_core.GF_eth__tx{}
 	for _, tx := range block.Transactions() {
 
-		gf_tx, gf_err := Eth_rpc__get_tx(tx, p_ctx, p_eth_rpc_client, p_runtime_sys)
+		gf_tx, gf_err := Eth_rpc__get_tx(tx, span__get_txs.Context(), p_eth_rpc_client, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -112,6 +115,9 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 		txs_lst = append(txs_lst, gf_tx)
 	}
 
+	span__get_txs.Finish()
+
+	//------------------
 	gf_block := &gf_eth_monitor_core.GF_eth__block__int{
 		Block_num_int:     block.Number().Uint64(),
 		Gas_used_int:      block.GasUsed(),
@@ -205,7 +211,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
 	defer span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
 
-	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(p_ctx, tx_hash)
+	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
 	if err != nil {
 
 		error_defs_map := error__get_defs()

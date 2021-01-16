@@ -77,7 +77,8 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 		// SPAN
 		span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", host_str)
 		span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
-
+		defer span__get_blocks.Finish()
+		
 		// GET_BLOCK
 		gf_block, gf_err := eth_block__worker_inspector__get_block(p_block_int,
 			host_str,
