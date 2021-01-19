@@ -22,7 +22,7 @@ package main
 import (
 	// "fmt"
 	"net/http"
-	// "context"
+	"context"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -38,16 +38,11 @@ func init_handlers(p_metrics *GF_metrics,
 	// GET_BLOCKS
 
 	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/blocks",
-		func(p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
-
-			ctx := p_req.Context()
-			hub := sentry.GetHubFromContext(ctx)
-			hub.Scope().SetTag("url", p_req.URL.Path)
-			// hub.Scope().SetTransaction("http__worker_inspector__get_block") // set custom transaction name
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			
 
-			span__root := sentry.StartSpan(ctx, "http__worker_inspector__get_block", sentry.ContinueFromRequest(p_req))
+			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_block", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()
 			 
 			// METRICS
@@ -84,11 +79,14 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// OUTPUT
 			data_map := map[string]interface{}{
-				"block": gf_block, // spew.Sdump(),
+				"block_map": gf_block, // spew.Sdump(),
 			}
-			return data_map, nil
 
 			//------------------
+
+			span__root.Finish()
+
+			return data_map, nil
 		},
 		p_runtime.runtime_sys)
 

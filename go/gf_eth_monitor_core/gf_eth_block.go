@@ -49,8 +49,6 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	p_ctx          context.Context,
 	p_runtime      *GF_runtime) (map[string]*GF_eth__block__int, *gf_core.Gf_error) {
 
-	
-
 	worker_inspector__port_int := uint(2000)
 
 	//---------------------
@@ -69,35 +67,31 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	span__get_worker_hosts.Finish()
 
 	//---------------------
+	// WORKERS_INSPECTORS__ALL
+
+	span := sentry.StartSpan(p_ctx, "workers_inspectors__all")
+	defer span.Finish()
 
 	block_from_workers_map := map[string]*GF_eth__block__int{}
 	for _, host_str := range workers_inspectors_hosts_lst {
 
-		
-		// SPAN
-		span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", host_str)
-		span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
-		defer span__get_blocks.Finish()
-		
 		// GET_BLOCK
 		gf_block, gf_err := eth_block__worker_inspector__get_block(p_block_int,
 			host_str,
 			worker_inspector__port_int,
+			span.Context(),
 			p_runtime.Runtime_sys)
-
-		span__get_blocks.Finish()
 
 		if gf_err != nil {
 			return nil, gf_err
 		}
 
-
-
 		block_from_workers_map[host_str] = gf_block
-
-
 	}
 
+	span.Finish()
+
+	//---------------------
 	return block_from_workers_map, nil
 }
 
@@ -105,6 +99,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 func eth_block__worker_inspector__get_block(p_block_int uint64,
 	p_host_str    string,
 	p_port_int    uint,
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
 
@@ -113,18 +108,34 @@ func eth_block__worker_inspector__get_block(p_block_int uint64,
 
 	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?block=%d", p_host_str, p_port_int, p_block_int)
 
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, p_runtime_sys)
+	//-----------------------
+	
+
+
+	// SPAN
+	span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", p_host_str)
+	span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
+	
+	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions
+	// across services.
+	sentry_trace_id_str := span__get_blocks.ToSentryTrace()
+	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
+		
+	// GF_RPC_CLIENT
+	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
+	span__get_blocks.Finish()
+
 	fmt.Println(data_map)
 
-
+	block_map := data_map["block_map"].(map[string]interface{})
 
 	// DECODE_TO_STRUCT
 	var gf_block GF_eth__block__int
-	mapstructure.Decode(data_map, &gf_block)
+	mapstructure.Decode(block_map, &gf_block)
 
 
 	

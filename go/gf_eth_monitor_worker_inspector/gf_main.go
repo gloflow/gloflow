@@ -63,9 +63,6 @@ func main() {
 	sentry_samplerate_f := 1.0
 	sentry_transaction_to_trace_map := map[string]bool{
 		"GET /gfethm_worker_inspect/v1/blocks": true,
-
-		
-		// "http__worker_inspector__get_block": true,
 	}
 
 	err = gf_core.Error__init_sentry(sentry_endpoint_str,

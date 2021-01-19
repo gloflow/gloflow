@@ -49,6 +49,8 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 		// "/gfethm/v1/peers": true,
 		// "http__master__get_block": true,
 		"GET /gfethm/v1/block": true,
+		"GET /test": true,
+		// "http__master__get_block": true,
 	}
 	err := gf_core.Error__init_sentry(sentry_endpoint_str,
 		sentry_trace_handlers_map,
@@ -58,6 +60,7 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	}
 
 	defer sentry.Flush(2 * time.Second)
+
 
 	//-------------
 	// METRICS
@@ -84,14 +87,12 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 		event__start_sqs_consumer(queue_info, metrics, p_runtime)
 	}
 
-
 	//-------------
 	// WORKER_DISCOVERY
 
 	var get_hosts_fn func() []string
 	if p_runtime.Config.Workers_aws_discovery_bool {
 
-		
 		get_hosts_fn, _ = gf_eth_monitor_core.Worker__discovery__init(p_runtime.Runtime_sys)
 	}
 
@@ -109,14 +110,9 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	port_str := p_runtime.Config.Port_str
 
 	p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
-	
-	
-	
-
 
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
-
-	http_err := http.ListenAndServe(fmt.Sprintf(":%s", port_str), sentry_handler)
+	http_err       := http.ListenAndServe(fmt.Sprintf(":%s", port_str), sentry_handler)
 
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", port_str)
