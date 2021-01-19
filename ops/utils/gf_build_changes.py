@@ -28,8 +28,8 @@ def list_changed_apps(p_apps_changes_deps_map,
     p_commits_lookback_int = 1,
     p_mark_all_bool        = False):
     assert isinstance(p_apps_changes_deps_map, dict)
-    assert p_apps_changes_deps_map.has_key('apps_gf_packages_map')
-    assert p_apps_changes_deps_map.has_key('system_packages_lst')
+    assert "apps_gf_packages_map" in p_apps_changes_deps_map.keys()
+    assert "system_packages_lst" in p_apps_changes_deps_map.keys()
     assert isinstance(p_commits_lookback_int, int)
 
     apps_gf_packages_map = p_apps_changes_deps_map['apps_gf_packages_map']
@@ -78,7 +78,7 @@ def list_changed_apps(p_apps_changes_deps_map,
         assert p_type_str == "go" or p_type_str == "web"
         for a, _ in apps_gf_packages_map.items():
 
-            if changed_apps_files_map[p_type_str].has_key(a):
+            if a in changed_apps_files_map[p_type_str].keys():
                 changed_apps_files_map["all"][a].append(p_file_changed_str)
                 changed_apps_files_map[p_type_str][a].append(p_file_changed_str)
             else:
@@ -100,7 +100,7 @@ def list_changed_apps(p_apps_changes_deps_map,
         # add this file (p_file_path_str) to those apps lists of changed files.
         for app_str in dependant_apps_lst:
             
-            if changed_apps_files_map.has_key(app_str):
+            if app_str in changed_apps_files_map.keys():
                 changed_apps_files_map["all"][app_str].append(p_file_changed_str)
                 changed_apps_files_map[p_type_str][app_str].append(p_file_changed_str)
             else:  

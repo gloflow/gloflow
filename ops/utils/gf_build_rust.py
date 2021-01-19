@@ -29,12 +29,13 @@ import gf_core_cli
 # rustup default nightly             - rustup make Rust nightly the global default
 
 #--------------------------------------------------
-# BUILD
-def build(p_cargo_crate_dir_path_str,
+# RUN
+def run(p_cargo_crate_dir_path_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = True,
     p_verbose_bool      = False):
     assert os.path.isdir(p_cargo_crate_dir_path_str)
+    
     print("BUILD...")
     
     cwd_str = os.getcwd()
@@ -102,6 +103,12 @@ def prepare_libs(p_name_str,
     print("PREPARE LIBS...")
 
 
+    #-------------
+    # EXTERN_LIB
+    prepare_libs__extern(p_exit_on_fail_bool = p_exit_on_fail_bool)
+
+    #-------------
+
     target_build_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))
     assert os.path.isdir(target_build_dir_path_str)
 
@@ -163,4 +170,24 @@ def prepare_libs(p_name_str,
             exit(exit_code_int)
     
 
+#--------------------------------------------------
+def prepare_libs__extern(p_exit_on_fail_bool = True):
 
+    tf__version_str  = "1.15.0"
+    tf__filename_str = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
+    tf__url_str      = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
+
+
+
+    # DOWNLOAD
+    _, _, exit_code_int = gf_core_cli.run(f"curl {tf__url_str} --output tflib.tar.gz")
+    if not exit_code_int == 0:
+        if p_exit_on_fail_bool:
+            exit(exit_code_int)
+
+    
+
+    # FIX!! - COMPLETE!!
+    #         download TF lib and place it in appropriate dir, to have a fresh TF libs
+    #         in the build server context, without including the lib in the repo itself.
+    print("FIIIIIIIIIIINIIIIIIIISSHHH!!!")

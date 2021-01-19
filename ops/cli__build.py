@@ -28,7 +28,7 @@ import gf_meta
 import gf_web_meta
 
 sys.path.append("%s/utils"%(modd_str))
-import gf_build
+import gf_build_go
 import gf_build_rust
 import gf_build_changes
 import gf_log
@@ -72,7 +72,7 @@ def main():
 			print("not a main package")
 			exit()
 			
-		gf_build.run_go(app_name_str,
+		gf_build_go.run(app_name_str,
 			app_meta_map["go_path_str"],
 			app_meta_map["go_output_path_str"],
 			p_static_bool = p_static_bool)
@@ -110,7 +110,7 @@ def main():
 				static_bool = s_map["static_bool"]
 
 			# BUILD
-			gf_build_rust.build(dir_path_str,
+			gf_build_rust.run(dir_path_str,
 				p_static_bool = static_bool)
 
 			# PREPARE_LIBS

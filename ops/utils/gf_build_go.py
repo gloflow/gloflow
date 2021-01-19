@@ -24,8 +24,8 @@ import delegator
 import gf_cli_utils
 
 #--------------------------------------------------
-# RUN_GO
-def run_go(p_name_str,
+# RUN
+def run(p_name_str,
     p_go_dir_path_str,
     p_go_output_path_str,
     p_static_bool       = False,
@@ -53,6 +53,10 @@ def run_go(p_name_str,
     print("")
     print("")
 
+
+    dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build")
+
+    #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
     #                  required libraries are present. so its safest to compile to a statically
     #                  linked lib.
@@ -61,11 +65,15 @@ def run_go(p_name_str,
     # "-a" - forces all packages to be rebuilt
     if p_static_bool:
         
+        
         # https://golang.org/cmd/link/
         # IMPORTANT!! - "CGO_ENABLED=0" and "-installsuffix cgo" no longer necessary since golang 1.10.
         #               "CGO_ENABLED=0" we also dont want to disable since Rust libs are used in Go via CGO.
         # "-extldflags flags" - Set space-separated flags to pass to the external linker
         args_lst = [
+            
+            f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str}",
+
             # "CGO_ENABLED=0",
             "GOOS=linux",
             "go build",
@@ -82,12 +90,15 @@ def run_go(p_name_str,
             "-o %s"%(p_go_output_path_str),
         ]
         c_str = " ".join(args_lst)
-        
+    
+    #-----------------------------
     # DYNAMIC_LINKING - fast build for dev.
     else:
-        c_str = "go build -o %s"%(p_go_output_path_str)
+        
+        c_str = f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go build -o {p_go_output_path_str}"
 
-    print(c_str)
+    #-----------------------------
+    
     _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
