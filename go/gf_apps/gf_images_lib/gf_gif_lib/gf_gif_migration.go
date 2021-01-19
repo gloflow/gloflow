@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"context"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -182,8 +183,13 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 			//IMPORTANT!! - old_gif.Gf_url_str in is form - "/images/d/gif"
 			gif__full_gf_url_str  := fmt.Sprintf("http://%s%s",p_gf_domain_str,old_gif.Gf_url_str)
+			headers_map           := map[string]string{}
 			user_agent_str        := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(gif__full_gf_url_str, user_agent_str, p_runtime_sys)
+			gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(gif__full_gf_url_str,
+				headers_map,
+				user_agent_str,
+				context.Background(),
+				p_runtime_sys)
 
 			//IMPORTANT!! - http response body must be closed, regardless of if its used or not (by goland docs)
 			defer gf_http_fetch.Resp.Body.Close()
@@ -225,9 +231,13 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			//-----------------------
 			// FETCH_FIRST_PREVIEW_FRAME
 			frame_url_str := old_gif.Preview_frames_s3_urls_lst[0]
-		
-			user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			fpf__gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(frame_url_str, user_agent_str, p_runtime_sys)
+			headers_map    = map[string]string{}
+			user_agent_str = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+			fpf__gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(frame_url_str,
+				headers_map,
+				user_agent_str,
+				context.Background(),
+				p_runtime_sys)
 			
 			// IMPORTANT!! - common error for malformed url's is:
 			//               "parse /images/d/gif/%!!(MISSING)s(*string=0xc4201f4040).gif: invalid URL escape "%!!(MISSING)s""

@@ -25,6 +25,7 @@ import (
 	"io"
 	"math/rand"
 	"time"
+	"context"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -105,8 +106,11 @@ func Download_file(p_image_url_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.Download_file()")
 
 	//-----------------------
+	headers_map    := map[string]string{}
 	user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_image_url_str, user_agent_str, p_runtime_sys)
+	ctx            := context.Background()
+
+	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_image_url_str, headers_map, user_agent_str, ctx, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

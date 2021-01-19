@@ -24,6 +24,7 @@ import (
 	"time"
 	"bytes"
 	"math/rand"
+	"context"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -35,7 +36,12 @@ func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.Runtime_sy
 
 	//-----------------------
 	user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-	gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(p_url_str, user_agent_str, p_runtime_sys)
+	headers_map    := map[string]string{}
+	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
+		headers_map,
+		user_agent_str,
+		context.Background(),
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

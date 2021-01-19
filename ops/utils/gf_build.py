@@ -87,6 +87,7 @@ def run_go(p_name_str,
     else:
         c_str = "go build -o %s"%(p_go_output_path_str)
 
+    print(c_str)
     _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
@@ -97,3 +98,5 @@ def run_go(p_name_str,
             exit(exit_code_int)
 
     os.chdir(cwd_str) # return to initial dir
+
+    print("build done...")
