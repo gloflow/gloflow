@@ -372,7 +372,7 @@ def build_rust():
 	print("building RUST...")
 	
 	apps_names_lst = [
-		"gf_data_viz",
+		# "gf_data_viz",
 		"gf_images_jobs"
 	]
 	build_meta_map = gf_meta.get()["build_info_map"]

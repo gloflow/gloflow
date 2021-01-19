@@ -111,7 +111,7 @@ def get():
                     {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
                 ]
             },
-
+            
             #------------------------
             # GF_SOLO
             "gf_solo": {
