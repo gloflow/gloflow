@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"io/ioutil"
+	"context"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
@@ -31,6 +32,8 @@ import (
 
 //-------------------------------------------------
 func Client__request(p_url_str string,
+	p_headers_map map[string]string,
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 
 	yellow   := color.New(color.FgYellow).SprintFunc()
@@ -38,11 +41,14 @@ func Client__request(p_url_str string,
 
 	fmt.Printf("%s - REQUEST SENT - %s\n", yellow("gf_rpc_client"), yellowBg(p_url_str))
 	
+
 	//-----------------------
 	// FETCH_URL
 	user_agent_str := "gf_rpc_client"
 	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
+		p_headers_map,
 		user_agent_str,
+		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
@@ -63,7 +69,6 @@ func Client__request(p_url_str string,
 	}
 
 	//-----------------------
-
 
 	r_status_str := resp_map["status_str"].(string)
 

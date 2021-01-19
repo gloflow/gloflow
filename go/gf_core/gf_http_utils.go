@@ -26,6 +26,7 @@ import (
 	"bytes"
 	"bufio"
 	"strings"
+	"context"
 	"io/ioutil"
 	"path/filepath"
 	"encoding/json"
@@ -41,6 +42,104 @@ type Gf_http_fetch struct {
 	Req_time_f       float64           `bson:"req_time_f"`
 	Resp_time_f      float64           `bson:"resp_time_f"`
 	Resp             *http.Response    `bson:"-"`
+}
+
+//---------------------------------------------------
+func HTTP__fetch_url(p_url_str string,
+	p_headers_map    map[string]string,
+	p_user_agent_str string,
+	p_ctx            context.Context,
+	p_runtime_sys    *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
+
+	client := &http.Client{
+		Timeout: time.Second * 10, //to prevent requests taking too long to return
+
+		/* IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
+		setting of these headers had to be added, via the CheckRedirect function
+		that gets called on every redirect, which gives us a chance to to re-set
+		user-agent headers again to the correct value*/
+		/*CheckRedirect specifies the policy for handling redirects.
+		If CheckRedirect is not nil, the client calls it before
+		following an HTTP redirect. The arguments req and via are
+		the upcoming request and the requests made already, oldest
+		first. If CheckRedirect returns an error, the Client's Get
+		method returns both the previous Response (with its Body
+		closed) and CheckRedirect's error (wrapped in a url.Error)
+		instead of issuing the Request req.
+		As a special case, if CheckRedirect returns ErrUseLastResponse,
+		then the most recent response is returned with its body
+		unclosed, along with a nil error.
+		If CheckRedirect is nil, the Client uses its default policy,
+		which is to stop after 10 consecutive requests.*/
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			req.Header.Del("User-Agent")
+			req.Header.Set("User-Agent", p_user_agent_str)
+			return nil
+		},
+	}
+
+	req, err := http.NewRequest("GET", p_url_str, nil)
+	if err != nil {
+		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
+			"http_client_req_error",
+			map[string]interface{}{"url_str": p_url_str,},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	//-------------------------
+	// HEADERS
+	for k, v := range p_headers_map {
+		req.Header.Set(k, v)
+	}
+
+	//-------------------------
+	// USER_AGENT
+	req.Header.Del("User-Agent")
+	req.Header.Set("User-Agent", p_user_agent_str)
+
+	//-------------------------
+	// req_with_ctx := req.WithContext(p_ctx)
+
+	// EXECUTE
+	req_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
+	resp, err        := client.Do(req)
+	resp_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+
+	if err != nil {
+		gf_err := Error__create("http fetch failed to execute HTTP request to fetch a url",
+			"http_client_req_error",
+			map[string]interface{}{"url_str": p_url_str,},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	status_code_int := resp.StatusCode
+	headers_map     := resp.Header
+
+
+
+	fmt.Println(fmt.Sprintf("http response status_code - %d", status_code_int))
+
+
+	resp_headers_map := map[string]string{}
+	for k, v := range headers_map {
+		resp_headers_map[k] = v[0]
+	}
+
+	gf_http_fetch := &Gf_http_fetch{
+		Url_str:          p_url_str, 
+		Status_code_int:  status_code_int,
+		Resp_headers_map: resp_headers_map,
+		Req_time_f:       req_unix_time_f,
+		Resp_time_f:      resp_unix_time_f,
+		Resp:             resp,
+	}
+
+
+	
+	return gf_http_fetch, nil
 }
 
 //---------------------------------------------------
@@ -129,102 +228,17 @@ func HTTP__put_file(p_target_url_str string,
 	return resp, nil
 }
 
-
-//---------------------------------------------------
-func HTTP__fetch_url(p_url_str string,
-	p_user_agent_str string,
-	p_runtime_sys    *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
-
-	client := &http.Client{
-		Timeout: time.Second * 10, //to prevent requests taking too long to return
-
-		/* IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
-		setting of these headers had to be added, via the CheckRedirect function
-		that gets called on every redirect, which gives us a chance to to re-set
-		user-agent headers again to the correct value*/
-		/*CheckRedirect specifies the policy for handling redirects.
-		If CheckRedirect is not nil, the client calls it before
-		following an HTTP redirect. The arguments req and via are
-		the upcoming request and the requests made already, oldest
-		first. If CheckRedirect returns an error, the Client's Get
-		method returns both the previous Response (with its Body
-		closed) and CheckRedirect's error (wrapped in a url.Error)
-		instead of issuing the Request req.
-		As a special case, if CheckRedirect returns ErrUseLastResponse,
-		then the most recent response is returned with its body
-		unclosed, along with a nil error.
-		If CheckRedirect is nil, the Client uses its default policy,
-		which is to stop after 10 consecutive requests.*/
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			req.Header.Del("User-Agent")
-			req.Header.Set("User-Agent", p_user_agent_str)
-			return nil
-		},
-	}
-
-	req, err := http.NewRequest("GET", p_url_str, nil)
-	if err != nil {
-		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
-			"http_client_req_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
-	}
-
-	req.Header.Del("User-Agent")
-	req.Header.Set("User-Agent", p_user_agent_str)
-
-	req_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
-	resp, err        := client.Do(req)
-	resp_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-
-	if err != nil {
-		gf_err := Error__create("http fetch failed to execute HTTP request to fetch a url",
-			"http_client_req_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
-	}
-
-	status_code_int := resp.StatusCode
-	headers_map     := resp.Header
-
-
-
-	fmt.Println(fmt.Sprintf("http response status_code - %d", status_code_int))
-
-
-	resp_headers_map := map[string]string{}
-	for k, v := range headers_map {
-		resp_headers_map[k] = v[0]
-	}
-
-	gf_http_fetch := &Gf_http_fetch{
-		Url_str:          p_url_str, 
-		Status_code_int:  status_code_int,
-		Resp_headers_map: resp_headers_map,
-		Req_time_f:       req_unix_time_f,
-		Resp_time_f:      resp_unix_time_f,
-		Resp:             resp,
-	}
-
-
-	
-	return gf_http_fetch, nil
-}
-
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
 	p_runtime_sys *Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_static_serving()")
 
-	//IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
-	//              match this are /*/static/some_further_text, and those will only match
-	//              if the spec here ends with "/"
+	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
+	//               match this are /*/static/some_further_text, and those will only match
+	//               if the spec here ends with "/"
 	url_str := p_url_base_str+"/static/"
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
-		//fmt.Println("FILE SERVE >>>>>>>>")
+		// fmt.Println("FILE SERVE >>>>>>>>")
 
 		if p_req.Method == "GET" {
 			path_str := p_req.URL.Path
@@ -276,7 +290,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 		return nil, gf_err
 	}
 
-	//IMPORTANT!! - listening for the closing of the http connections
+	// IMPORTANT!! - listening for the closing of the http connections
 	notify := p_resp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
