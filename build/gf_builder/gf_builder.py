@@ -383,14 +383,19 @@ def build_rust():
 		app_meta_map = build_meta_map[app_name_str]
 		assert app_meta_map["type_str"] == "lib_rust"
 
-		cargo_crate_dir_path_str = app_meta_map["cargo_crate_dir_path_str"]
-		assert os.path.dirname(cargo_crate_dir_path_str)
 
-		gf_build_rust.run(cargo_crate_dir_path_str)
 
-		gf_build_rust.prepare_libs(app_name_str,
-			cargo_crate_dir_path_str,
-			app_meta_map["type_str"])
+		for cargo_crate_map in app_meta_map["cargo_crate_specs_lst"]:
+
+
+			cargo_crate_dir_path_str = cargo_crate_map["dir_path_str"]
+			assert os.path.dirname(cargo_crate_dir_path_str)
+
+			gf_build_rust.run(cargo_crate_dir_path_str)
+
+			gf_build_rust.prepare_libs(app_name_str,
+				cargo_crate_dir_path_str,
+				app_meta_map["type_str"])
 
 #--------------------------------------------------
 # BUILD_APPS
