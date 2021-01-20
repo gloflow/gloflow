@@ -35,11 +35,14 @@ import (
 // BLOCK__INTERNAL - internal representation of the block, with fields
 //                   that are not visible to the external public users.
 type GF_eth__block__int struct {
+	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
+	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
 	Block_num_int     uint64        `mapstructure:"block_num_int"     json:"block_num_int"`
 	Gas_used_int      uint64        `mapstructure:"gas_used_int"      json:"gas_used_int"`
 	Gas_limit_int     uint64        `mapstructure:"gas_limit_int"     json:"gas_limit_int"`
 	Coinbase_addr_str string        `mapstructure:"coinbase_addr_str" json:"coinbase_addr_str"`
 	Txs_lst           []*GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"`
+	Time              uint64        `mapstructure:"time_int"          json:"time_int"`
 	Block             string        `mapstructure:"block"             json:"block"` // *eth_types.Block `json:"block"`
 }
 
@@ -52,7 +55,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	worker_inspector__port_int := uint(2000)
 
 	//---------------------
-
+	// GET_WORKER_HOSTS
 	span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
 	span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 

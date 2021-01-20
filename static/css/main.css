@@ -12,6 +12,10 @@ body {
     background-color: lightgray;
 }
 
+.block .block_from_worker {
+	margin-top: 9px;
+	background-color: #c4c4c4;
+}
 
 .block .block_from_worker .block_num {
     font-weight: bold;

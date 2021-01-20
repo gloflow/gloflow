@@ -82,7 +82,43 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	span__get_header.Finish()
 
 	//------------------
+	// BLOCK_BY_NUMBER
 
+	/*
+	type Block
+
+    func NewBlock(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt, hasher Hasher) *Block
+    func NewBlockWithHeader(header *Header) *Block
+    func (b *Block) Bloom() Bloom
+    func (b *Block) Body() *Body
+    func (b *Block) Coinbase() common.Address
+    func (b *Block) DecodeRLP(s *rlp.Stream) error
+    func (b *Block) DeprecatedTd() *big.Int
+    func (b *Block) Difficulty() *big.Int
+    func (b *Block) EncodeRLP(w io.Writer) error
+    func (b *Block) Extra() []byte
+    func (b *Block) GasLimit() uint64
+    func (b *Block) GasUsed() uint64
+    func (b *Block) Hash() common.Hash
+    func (b *Block) Header() *Header
+    func (b *Block) MixDigest() common.Hash
+    func (b *Block) Nonce() uint64
+    func (b *Block) Number() *big.Int
+    func (b *Block) NumberU64() uint64
+    func (b *Block) ParentHash() common.Hash
+    func (b *Block) ReceiptHash() common.Hash
+    func (b *Block) Root() common.Hash
+    func (b *Block) SanityCheck() error
+    func (b *Block) Size() common.StorageSize
+    func (b *Block) Time() uint64
+    func (b *Block) Transaction(hash common.Hash) *Transaction
+    func (b *Block) Transactions() Transactions
+    func (b *Block) TxHash() common.Hash
+    func (b *Block) UncleHash() common.Hash
+    func (b *Block) Uncles() []*Header
+    func (b *Block) WithBody(transactions []*Transaction, uncles []*Header) *Block
+    func (b *Block) WithSeal(header *Header) *Block
+	*/
 	span__get_block := sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	defer span__get_block.Finish() // in case a panic happens before the main .Finish() for this span
 
@@ -100,7 +136,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	span__get_block.Finish()
 
 	//------------------
-
+	// GET_TRANSACTIONS
 	span__get_txs := sentry.StartSpan(p_ctx, "eth_rpc__get_txs")
 	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
 
@@ -119,11 +155,14 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 
 	//------------------
 	gf_block := &gf_eth_monitor_core.GF_eth__block__int{
+		Hash_str:          block.Hash().Hex(),
+		Parent_hash_str:   block.ParentHash().Hex(),
 		Block_num_int:     block.Number().Uint64(),
 		Gas_used_int:      block.GasUsed(),
 		Gas_limit_int:     block.GasLimit(),
 		Coinbase_addr_str: block.Coinbase().Hex(),
 		Txs_lst:           txs_lst,
+		Time:              block.Time(),
 		Block:             spew.Sdump(block),
 	}
 

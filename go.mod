@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210107181124-fad53805024e // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.36.28
+	github.com/aws/aws-sdk-go v1.36.29
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -38,11 +38,11 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
-	go.mongodb.org/mongo-driver v1.4.4
+	go.mongodb.org/mongo-driver v1.4.5
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
-	golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78 // indirect
+	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
