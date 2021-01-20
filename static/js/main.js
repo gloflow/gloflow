@@ -29,7 +29,22 @@ function main() {
 
             http__get_block(block_int,
                 function(p_block_from_workers_map) {
-        
+                    
+
+                    
+                        
+                        
+                    const block_element = $(`<div class="block">
+                        <div class="block_metadata">
+                            <a href="https://etherscan.io/block/${block_int}" target="_blank">etherscan.io</a> 
+                        </div>
+
+
+                    </div>`);
+                    $("body").append(block_element);
+
+
+
         
                     Object.entries(p_block_from_workers_map).forEach(e=> {
         
@@ -48,9 +63,9 @@ function main() {
         
         
         
-                        $("body").append(`<div>
-                            <div>block #${block_int} loaded...</div>
-                            <div>worker host - <span>${worker_host_str}</span></div>
+                        $(block_element).append(`<div class="block_from_worker">
+                            <div>block #        <span class="block_num">${block_int}</span></div>
+                            <div>worker host:   <span>${worker_host_str}</span></div>
                             <div>gas used:      <span>${gas_used_int}</span></div>
                             <div>gas limit:     <span>${gas_limit_int}</span></div>
                             <div>coinbase addr: <span>${coinbase_addr_str}</span></div>
