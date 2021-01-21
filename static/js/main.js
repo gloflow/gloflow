@@ -31,7 +31,7 @@ function main() {
                 function(p_block_from_workers_map) {
                     
 
-                    render__block_from_workers(p_block_from_workers_map);
+                    render__block_from_workers(block_int, p_block_from_workers_map);
                     
         
         
@@ -47,11 +47,11 @@ function main() {
 
 //---------------------------------------------------
 
-function render__block_from_workers(p_block_from_workers_map) {
+function render__block_from_workers(p_block_int, p_block_from_workers_map) {
                             
     const block_element = $(`<div class="block">
         <div class="block_metadata">
-            <a href="https://etherscan.io/block/${block_int}" target="_blank">etherscan.io</a> 
+            <a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a> 
         </div>
 
 
@@ -60,7 +60,7 @@ function render__block_from_workers(p_block_from_workers_map) {
 
 
     //---------------------------------------------------
-    function render__block(p_block_map, p_block_parent_element) {
+    function render__block(p_block_int, p_block_map, p_block_parent_element) {
 
         const gas_used_int      = p_block_map["gas_used_int"];
         const gas_limit_int     = p_block_map["gas_limit_int"];
@@ -73,7 +73,7 @@ function render__block_from_workers(p_block_from_workers_map) {
 
 
         $(p_block_parent_element).append(`<div class="block_from_worker">
-            <div>block #        <span class="block_num">${block_int}</span></div>
+            <div>block #        <span class="block_num">${p_block_int}</span></div>
             <div>hash:          <span class="block_hash">${hash_str}</span>
             <div>parent hash:   <span class="block_hash">${parent_hash_str}</span>
             <div>time:          <span class="block_hash">${time_int}</span>
@@ -103,7 +103,7 @@ function render__block_from_workers(p_block_from_workers_map) {
 
 
 
-        render__block(block_map, block_element);
+        render__block(p_block_int, block_map, block_element);
 
 
         
