@@ -60,7 +60,10 @@ function render__block_from_workers(p_block_int, p_block_from_workers_map) {
 
 
     //---------------------------------------------------
-    function render__block(p_block_int, p_block_map, p_block_parent_element) {
+    function render__block(p_block_int,
+        p_worker_host_str,
+        p_block_map,
+        p_block_parent_element) {
 
         const gas_used_int      = p_block_map["gas_used_int"];
         const gas_limit_int     = p_block_map["gas_limit_int"];
@@ -78,10 +81,10 @@ function render__block_from_workers(p_block_int, p_block_from_workers_map) {
             <div>parent hash:   <span class="block_hash">${parent_hash_str}</span>
             <div>time:          <span class="block_hash">${time_int}</span>
             <div>txs num:       <span class="block_hash">${txs_num_int}</span>
-            <div>worker host:   <span>${worker_host_str}</span></div>
             <div>gas used:      <span>${gas_used_int}</span></div>
             <div>gas limit:     <span>${gas_limit_int}</span></div>
             <div>coinbase addr: <span>${coinbase_addr_str}</span></div>
+            <div>worker host:   <span>${p_worker_host_str}</span></div>
         </div>`);
 
 
@@ -103,7 +106,7 @@ function render__block_from_workers(p_block_int, p_block_from_workers_map) {
 
 
 
-        render__block(p_block_int, block_map, block_element);
+        render__block(p_block_int, worker_host_str, block_map, block_element);
 
 
         
