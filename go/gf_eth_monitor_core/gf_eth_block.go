@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	// eth_types "github.com/ethereum/go-ethereum/core/types"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -78,7 +78,7 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	block_from_workers_map := map[string]*GF_eth__block__int{}
 	for _, host_str := range workers_inspectors_hosts_lst {
 
-		// GET_BLOCK
+		// GET_BLOCK__FROM_WORKER
 		gf_block, gf_err := eth_block__worker_inspector__get_block(p_block_int,
 			host_str,
 			worker_inspector__port_int,
@@ -136,10 +136,26 @@ func eth_block__worker_inspector__get_block(p_block_int uint64,
 
 	block_map := data_map["block_map"].(map[string]interface{})
 
+
+
+
+	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>111111111111111111111111111111111111111111111111>>>>>>>>>>")
+	spew.Dump(block_map)
+
+
+
+
+
 	// DECODE_TO_STRUCT
 	var gf_block GF_eth__block__int
-	mapstructure.Decode(block_map, &gf_block)
-
+	err := mapstructure.Decode(block_map, &gf_block)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to load response block_map into a GF_eth__block__int struct",
+			"mapstruct__decode",
+			map[string]interface{}{"url_str": url_str,},
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}
 
 	
 

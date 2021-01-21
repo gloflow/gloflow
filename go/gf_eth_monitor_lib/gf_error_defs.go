@@ -33,7 +33,14 @@ func error__get_defs() map[string]gf_core.Error_def {
 
 	error_defs_map := map[string]gf_core.Error_def{
 
+
 		//---------------
+		"mapstruct__decode": gf_core.Error_def{
+			Descr_str: "failed to decode a map into a struct using mapstructure lib",
+		},
+		
+		//---------------
+		// ETH_RPC
 		"eth_rpc__dial": gf_core.Error_def{
 			Descr_str: "failed to get Dial/Connect to Ethereum RPC-JSON API",
 		},

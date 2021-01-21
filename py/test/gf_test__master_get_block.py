@@ -73,8 +73,12 @@ def run(p_aws_region_str):
 	def test():
 		import requests
 
+
+
+		block_num_int = 10
+
 		print("MAKINT TEST CLIENT REQUEST")
-		url_str = "http://127.0.0.1:4050/gfethm/v1/block?b=100"
+		url_str = f"http://127.0.0.1:4050/gfethm/v1/block?b={block_num_int}"
 
 		print(url_str)
 
@@ -104,6 +108,9 @@ def run(p_aws_region_str):
 			assert "block"             in block_info_map.keys()
 		
 
+
+
+			# assert block_num_int == block_info_map["block_num_int"]
 
 
 		print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TEST COMPLETE ----------------")

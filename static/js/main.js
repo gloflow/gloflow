@@ -31,46 +31,8 @@ function main() {
                 function(p_block_from_workers_map) {
                     
 
+                    render__block_from_workers(p_block_from_workers_map);
                     
-                        
-                        
-                    const block_element = $(`<div class="block">
-                        <div class="block_metadata">
-                            <a href="https://etherscan.io/block/${block_int}" target="_blank">etherscan.io</a> 
-                        </div>
-
-
-                    </div>`);
-                    $("body").append(block_element);
-
-
-
-        
-                    Object.entries(p_block_from_workers_map).forEach(e=> {
-        
-                        const worker_host_str = e[0];
-                        const block_map       = e[1];
-        
-        
-                        console.log(block_map)
-        
-        
-        
-        
-                        const gas_used_int      = block_map["gas_used_int"];
-                        const gas_limit_int     = block_map["gas_limit_int"];
-                        const coinbase_addr_str = block_map["coinbase_addr_str"];
-        
-        
-        
-                        $(block_element).append(`<div class="block_from_worker">
-                            <div>block #        <span class="block_num">${block_int}</span></div>
-                            <div>worker host:   <span>${worker_host_str}</span></div>
-                            <div>gas used:      <span>${gas_used_int}</span></div>
-                            <div>gas limit:     <span>${gas_limit_int}</span></div>
-                            <div>coinbase addr: <span>${coinbase_addr_str}</span></div>
-                        </div>`);
-                    });
         
         
                     
@@ -82,6 +44,74 @@ function main() {
 
     
 }
+
+//---------------------------------------------------
+
+function render__block_from_workers(p_block_from_workers_map) {
+                            
+    const block_element = $(`<div class="block">
+        <div class="block_metadata">
+            <a href="https://etherscan.io/block/${block_int}" target="_blank">etherscan.io</a> 
+        </div>
+
+
+    </div>`);
+    $("body").append(block_element);
+
+
+    //---------------------------------------------------
+    function render__block(p_block_map, p_block_parent_element) {
+
+        const gas_used_int      = p_block_map["gas_used_int"];
+        const gas_limit_int     = p_block_map["gas_limit_int"];
+        const coinbase_addr_str = p_block_map["coinbase_addr_str"];
+
+        const hash_str        = p_block_map["hash_str"];
+        const parent_hash_str = p_block_map["parent_hash_str"];
+        const time_int        = p_block_map["time_int"];
+        const txs_num_int     = p_block_map["txs_lst"].length
+
+
+        $(p_block_parent_element).append(`<div class="block_from_worker">
+            <div>block #        <span class="block_num">${block_int}</span></div>
+            <div>hash:          <span class="block_hash">${hash_str}</span>
+            <div>parent hash:   <span class="block_hash">${parent_hash_str}</span>
+            <div>time:          <span class="block_hash">${time_int}</span>
+            <div>txs num:       <span class="block_hash">${txs_num_int}</span>
+            <div>worker host:   <span>${worker_host_str}</span></div>
+            <div>gas used:      <span>${gas_used_int}</span></div>
+            <div>gas limit:     <span>${gas_limit_int}</span></div>
+            <div>coinbase addr: <span>${coinbase_addr_str}</span></div>
+        </div>`);
+
+
+
+    }
+
+    //---------------------------------------------------
+
+
+
+    Object.entries(p_block_from_workers_map).forEach(e=> {
+
+        const worker_host_str = e[0];
+        const block_map       = e[1];
+
+
+        console.log(block_map)
+
+
+
+
+        render__block(block_map, block_element);
+
+
+        
+    });
+
+}
+
+
 
 //---------------------------------------------------
 function http__get_block(p_block_num_int,
