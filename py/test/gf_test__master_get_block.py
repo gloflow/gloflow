@@ -53,7 +53,7 @@ def run(p_aws_region_str):
 				"GF_SENTRY_ENDPOINT":    os.environ["GF_SENTRY_ENDPOINT"],
 
 				"GF_EVENTS_CONSUME":        "false",
-				"GF_WORKERS_AWS_DISCOVERY": "false" # use the localy started worker_inspector, at test startup
+				"GF_WORKERS_AWS_DISCOVERY": "true" # "false" # use the localy started worker_inspector, at test startup
 			})
 
 

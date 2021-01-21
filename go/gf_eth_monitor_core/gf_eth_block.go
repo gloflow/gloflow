@@ -28,7 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	// eth_types "github.com/ethereum/go-ethereum/core/types"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -109,7 +109,7 @@ func eth_block__worker_inspector__get_block(p_block_int uint64,
 	
 
 
-	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?block=%d", p_host_str, p_port_int, p_block_int)
+	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?b=%d", p_host_str, p_port_int, p_block_int)
 
 	//-----------------------
 	
@@ -135,13 +135,6 @@ func eth_block__worker_inspector__get_block(p_block_int uint64,
 	fmt.Println(data_map)
 
 	block_map := data_map["block_map"].(map[string]interface{})
-
-
-
-
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>111111111111111111111111111111111111111111111111>>>>>>>>>>")
-	spew.Dump(block_map)
-
 
 
 
