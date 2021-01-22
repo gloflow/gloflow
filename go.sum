@@ -257,6 +257,8 @@ github.com/gloflow/gloflow v0.0.0-20210115040250-b6655223d1cf h1:nohPtiWe/jvuDLa
 github.com/gloflow/gloflow v0.0.0-20210115040250-b6655223d1cf/go.mod h1:r6XjFJo2CBmjO9aCb/aMvVDGUuomru0Xr1LDZdRfpG0=
 github.com/gloflow/gloflow v0.0.0-20210119044949-c16fdffffd3c h1:+DUgeXf61rvtAQQ6QINhMAmeoW1tTagnPq2FkQ2Kj8Y=
 github.com/gloflow/gloflow v0.0.0-20210119044949-c16fdffffd3c/go.mod h1:+66TiJA0/eExPytZR81MxDvsaT2W09bZT/aF0HeGALs=
+github.com/gloflow/gloflow v0.0.0-20210122023658-be579e74ee1e h1:LMXXVrQQUG2rcibU4BEVSHcr9+FTB7r9x3kttJXeE7g=
+github.com/gloflow/gloflow v0.0.0-20210122023658-be579e74ee1e/go.mod h1:+66TiJA0/eExPytZR81MxDvsaT2W09bZT/aF0HeGALs=
 github.com/go-check/check v0.0.0-20180628173108-788fd7840127/go.mod h1:9ES+weclKsC9YodN5RgxqK/VD9HM9JsCSh7rNhMZE98=
 github.com/go-chi/chi v4.0.2+incompatible/go.mod h1:eB3wogJHnLi3x/kFX2A+IbTBlXxmMeXJVKy9tTv1XzQ=
 github.com/go-errors/errors v1.0.1/go.mod h1:f4zRHt4oKfwPJE5k8C9vpYG+aDHdBFUsgrm6/TyX73Q=

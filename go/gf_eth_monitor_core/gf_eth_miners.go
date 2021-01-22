@@ -22,6 +22,7 @@ package gf_eth_monitor_core
 import (
 
 	"context"
+	"strings"
 	// "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -49,8 +50,8 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 
 
 
-
-	q := bson.M{"addr_str": p_miner_address_str, }
+	miner_address_lower_str := strings.ToLower(p_miner_address_str)
+	q := bson.M{"addr_str": miner_address_lower_str, }
 
 	cur, err := p_runtime.Mongodb_db.Collection(coll_name_str).Find(p_ctx, q)
 	if err != nil {
@@ -65,7 +66,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 
 		gf_err := gf_core.Mongo__handle_error("failed to find Miner with gives address in DB",
 			"mongodb_find_error",
-			map[string]interface{}{"miner_addr_str": p_miner_address_str,},
+			map[string]interface{}{"miner_addr_str": miner_address_lower_str,},
 			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
