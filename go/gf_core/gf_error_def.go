@@ -189,27 +189,31 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "failed to ping a mongodb host - package (go.mongodb.org/mongo-driver)",
 		},		
 		"mongodb_find_error": Error_def{
-			Descr_str:"c.Find() failed to find a mongodb document - package (mgo)",
+			Descr_str:"c.Find() failed to find a mongodb document",
 		},
 		"mongodb_not_found_error": Error_def{
-			Descr_str:"target document not found in mongodb - package (mgo)",
+			Descr_str:"target document not found in mongodb",
 		},
 		"mongodb_insert_error": Error_def{
-			Descr_str:"c.Insert() failed to insert/create new mongodb document - package (mgo)",
+			Descr_str:"c.Insert() failed to insert/create new mongodb document",
 		},
 		"mongodb_update_error": Error_def{
-			Descr_str:"c.Update() failed to update a mongodb document- package (mgo)",
+			Descr_str:"c.Update() failed to update a mongodb document",
 		},
 		"mongodb_delete_error": Error_def{
-			Descr_str:"c.Update() failed to update a mongodb document- package (mgo)",
+			Descr_str:"c.Update() failed to update a mongodb document",
 		},
 		"mongodb_aggregation_error": Error_def{
-			Descr_str:"pipe.All() failed to run a aggregation pipeline in mongodb - package (mgo)",
+			Descr_str:"failed to run a aggregation pipeline in mongodb",
 		},
 		"mongodb_ensure_index_error": Error_def{
-			Descr_str:"c.EnsureIndex() failed to create a mongodb index - package (mgo)",
+			Descr_str:"c.EnsureIndex() failed to create a mongodb index",
+		},
+		"mongodb_cursor_decode": Error_def{
+			Descr_str:"failed to decode value from the mongodb results Cursor",
 		},
 
+		
 		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client": Error_def{

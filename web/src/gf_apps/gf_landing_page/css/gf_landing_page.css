@@ -6,6 +6,7 @@ body {
 	max-width: 100%;
     overflow-x: hidden;
 }
+
 /*------------------------------------------------------------*/
 #left_section {
 	position: absolute;
@@ -54,9 +55,9 @@ body {
 	}
 }
 /*------------------------------------------------------------*/
-/*REGISTER EMAIL BUTTON*/
+/* REGISTER EMAIL BUTTON */
 
-/*@media all and (max-width: 1000px) and (min-width: 520px) {}*/
+/* @media all and (max-width: 1000px) and (min-width: 520px) {} */
 
 #register {
 	position: absolute;
