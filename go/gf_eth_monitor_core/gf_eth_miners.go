@@ -30,8 +30,8 @@ import (
 
 //-------------------------------------------------
 type GF_eth__miner__int struct {
-	Name_str        string `bson:"name_str"`
-	Address_hex_str string `bson:"addr_str"`
+	Name_str        string `bson:"name_str" json:"name_str"`
+	Address_hex_str string `bson:"addr_str" json:"address_hex_str"`
 }
 
 //-------------------------------------------------

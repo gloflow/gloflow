@@ -28,10 +28,12 @@ function main() {
             
 
             http__get_block(block_int,
-                function(p_block_from_workers_map) {
+                function(p_block_from_workers_map, p_miners_lst) {
                     
 
-                    render__block_from_workers(block_int, p_block_from_workers_map);
+                    render__block_from_workers(block_int,
+                        p_block_from_workers_map,
+                        p_miners_lst);
                     
         
         
@@ -46,17 +48,37 @@ function main() {
 }
 
 //---------------------------------------------------
-
-function render__block_from_workers(p_block_int, p_block_from_workers_map) {
+function render__block_from_workers(p_block_int,
+    p_block_from_workers_map,
+    p_miners_lst) {
                             
     const block_element = $(`<div class="block">
         <div class="block_metadata">
-            <a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a> 
-        </div>
+            <a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a>
 
+            <div class="miners">
+
+            </div>
+        </div>
+        
 
     </div>`);
     $("body").append(block_element);
+
+
+
+
+    Object.entries(p_miners_lst).forEach(e=> {
+
+        const miner_map             = e[1];
+        const miner_name_str        = miner_map["name_str"];
+        const miner_address_hex_str = miner_map["address_hex_str"];
+
+        $(block_element).find(".miners").append(`<div class="miner_info">
+            miner: <span class="miner_name">${miner_name_str}</span>
+        </div>`);
+
+    });
 
 
     //---------------------------------------------------
@@ -75,7 +97,7 @@ function render__block_from_workers(p_block_int, p_block_from_workers_map) {
         const txs_num_int     = p_block_map["txs_lst"].length
 
 
-        $(p_block_parent_element).append(`<div class="block_from_worker">
+        const block_from_worker__element = $(`<div class="block_from_worker">
             <div>block #        <span class="block_num">${p_block_int}</span></div>
             <div>hash:          <span class="block_hash">${hash_str}</span>
             <div>parent hash:   <span class="block_hash">${parent_hash_str}</span>
@@ -83,9 +105,12 @@ function render__block_from_workers(p_block_int, p_block_from_workers_map) {
             <div>txs num:       <span class="block_hash">${txs_num_int}</span>
             <div>gas used:      <span>${gas_used_int}</span></div>
             <div>gas limit:     <span>${gas_limit_int}</span></div>
-            <div>coinbase addr: <span>${coinbase_addr_str}</span></div>
             <div>worker host:   <span>${p_worker_host_str}</span></div>
+            <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str}</span></div>
+            
         </div>`);
+
+        $(p_block_parent_element).append(block_from_worker__element);
 
 
 
@@ -132,10 +157,11 @@ function http__get_block(p_block_num_int,
             
 			console.log('data_map["status_str"] - '+p_data_map["status_str"]);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status_str"] == "OK") {
 
-				const block_from_workers_map = p_data_map['data']["block_from_workers_map"];
-				p_on_complete_fun(block_from_workers_map);
+				const block_from_workers_map = p_data_map["data"]["block_from_workers_map"];
+                const miners_lst             = p_data_map["data"]["miners_lst"];
+                p_on_complete_fun(block_from_workers_map, miners_lst);
 			}
 			else {
 				p_on_error_fun(p_data_map["data"]);
