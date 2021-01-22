@@ -94,6 +94,8 @@ def run(p_aws_region_str):
 		assert r_map["status_str"] == "OK"
 		assert "data" in r_map.keys()
 		assert "block_from_workers_map" in r_map["data"]
+		assert "miners_lst" in r_map["data"]
+		assert isinstance(r_map["data"]["miners_lst"], list)
 		
 		for worker_host_str, block_info_map in r_map["data"]["block_from_workers_map"].items():
 			assert isinstance(worker_host_str, str)

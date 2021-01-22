@@ -81,9 +81,10 @@ func init_handlers(p_get_hosts_fn func() []string,
 			span__pipeline := sentry.StartSpan(span__root.Context(), "get_block_pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
-			block_from_workers_map, gf_err := gf_eth_monitor_core.Eth_block__get_block_pipeline(block_num_int,
+			block_from_workers_map, miners_lst, gf_err := gf_eth_monitor_core.Eth_blocks__get_block_pipeline(block_num_int,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
+				p_metrics,
 				p_runtime)
 			
 			span__pipeline.Finish()
@@ -95,6 +96,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			//------------------
 			data_map := map[string]interface{}{
 				"block_from_workers_map": block_from_workers_map,
+				"miners_lst":             miners_lst,
 			}
 
 			span__root.Finish()
@@ -119,6 +121,13 @@ func init_handlers(p_get_hosts_fn func() []string,
 
 
 
+
+
+			
+
+
+
+
 			fmt.Println(miner_addr_str)
 
 
@@ -129,25 +138,28 @@ func init_handlers(p_get_hosts_fn func() []string,
 
 	//---------------------
 	// GET_PEERS
-	http.HandleFunc("/gfethm/v1/peers", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		
-		// PEERS__GET
-		peer_names_groups_lst := gf_eth_monitor_core.Eth_peers__get_pipeline(p_metrics, p_runtime)
-		
-		// METRICS
-		if p_metrics != nil {
-			p_metrics.Counter__http_req_num__get_peers.Inc()
-		}
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/peers",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		//------------------
-		// OUTPUT
-		data_map := map[string]interface{}{
-			"peer_names_groups_lst": peer_names_groups_lst,
-		}
-		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime.Runtime_sys)
+		
+			// METRICS
+			if p_metrics != nil {
+				p_metrics.Counter__http_req_num__get_peers.Inc()
+			}
 
-		//------------------
-	})
+			// PEERS__GET
+			peer_names_groups_lst, gf_err := gf_eth_monitor_core.Eth_peers__db__get_pipeline(p_metrics, p_runtime)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+			
+
+			data_map := map[string]interface{}{
+				"peer_names_groups_lst": peer_names_groups_lst,
+			}
+			return data_map, nil
+		},
+		p_runtime.Runtime_sys)
 
 	//---------------------
 	// HEALTH

@@ -26,8 +26,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
     "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -149,8 +150,11 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		//---------------------------
 		// EVENT__PROCESS
-		event__process(event_map, p_metrics, p_runtime)
-
+		gf_err := event__process(event_map, p_metrics, p_runtime)
+		if gf_err != nil {
+			// attempt to process remaining messages
+			continue
+		}
 		//---------------------------
 
 		// DELETE_MESSAGE
@@ -173,7 +177,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 //-------------------------------------------------
 func event__process(p_event_map map[string]interface{},
 	p_metrics *gf_eth_monitor_core.GF_metrics,
-	p_runtime *gf_eth_monitor_core.GF_runtime) {
+	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 
 
 
@@ -203,11 +207,16 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		gf_eth_monitor_core.Eth_peers__db_write(peer__new_lifecycle, p_metrics, p_runtime)
+		gf_err := gf_eth_monitor_core.Eth_peers__db__write(peer__new_lifecycle, p_metrics, p_runtime)
+		if gf_err != nil {
+			return gf_err
+		}
 	}
 
 	// METRICS
 	if p_metrics != nil {
 		p_metrics.Counter__sqs_msgs_num.Inc()
 	}
+
+	return nil
 }

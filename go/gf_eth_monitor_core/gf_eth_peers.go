@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
-	"log"
+	// "log"
 	"context"
 	"time"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -56,8 +56,14 @@ func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 
 		for {
-			
-			peer_names_groups_lst := Eth_peers__get_pipeline(p_metrics, p_runtime)
+			//---------------------
+			// GET_PEERS
+			peer_names_groups_lst, gf_err := Eth_peers__db__get_pipeline(p_metrics, p_runtime)
+			if gf_err != nil {
+
+			}
+
+			//---------------------
 
 			unique_peer_names_num_int := len(peer_names_groups_lst)
 
@@ -71,8 +77,8 @@ func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 // GET_PIPELINE
-func Eth_peers__get_pipeline(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) []*GF_eth_peer__db_aggregate__name_group {
+func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group, *gf_core.Gf_error) {
 
 
 
@@ -100,12 +106,19 @@ func Eth_peers__get_pipeline(p_metrics *GF_metrics,
 
 	cursor, err := coll.Aggregate(ctx, pipeline)
 	if err != nil {
-		log.Fatal(err)
+		
 	
 		// METRICS
 		if p_metrics != nil {
 			p_metrics.Counter__errs_num.Inc()
 		}
+
+		gf_err := gf_core.Mongo__handle_error("failed to get all Eth peers grouped by peer_name",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return nil, gf_err
+
 	}
 	defer cursor.Close(ctx)
 
@@ -117,13 +130,19 @@ func Eth_peers__get_pipeline(p_metrics *GF_metrics,
 		var peer_name_group GF_eth_peer__db_aggregate__name_group
 		err := cursor.Decode(&peer_name_group)
 		if err != nil {
-			log.Fatal(err)
+			
+
+			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of peers-by-name aggregation",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			return nil, gf_err
 		}
 	
 		peer_names_groups_lst = append(peer_names_groups_lst, &peer_name_group)
 	}
 
-	return peer_names_groups_lst
+	return peer_names_groups_lst, nil
 
 	/*q := bson.M{"t": "peer_new_lifecycle", }
 
@@ -164,7 +183,7 @@ func Eth_peers__get_pipeline(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 // DB_WRITE
-func Eth_peers__db_write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
+func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 

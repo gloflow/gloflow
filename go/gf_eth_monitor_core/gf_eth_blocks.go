@@ -47,10 +47,12 @@ type GF_eth__block__int struct {
 }
 
 //-------------------------------------------------
-func Eth_block__get_block_pipeline(p_block_int uint64,
+func Eth_blocks__get_block_pipeline(p_block_int uint64,
 	p_get_hosts_fn func() []string,
-	p_ctx          context.Context,
-	p_runtime      *GF_runtime) (map[string]*GF_eth__block__int, *gf_core.Gf_error) {
+	
+	p_ctx     context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (map[string]*GF_eth__block__int, []*GF_eth__miner__int, *gf_core.Gf_error) {
 
 	worker_inspector__port_int := uint(2000)
 
@@ -70,36 +72,64 @@ func Eth_block__get_block_pipeline(p_block_int uint64,
 	span__get_worker_hosts.Finish()
 
 	//---------------------
-	// WORKERS_INSPECTORS__ALL
+	// GET_BLOCKS__FROM_WORKERS_INSPECTORS__ALL
 
-	span := sentry.StartSpan(p_ctx, "workers_inspectors__all")
+	span := sentry.StartSpan(p_ctx, "get_blocks__workers_inspectors__all")
 	defer span.Finish()
 
 	block_from_workers_map := map[string]*GF_eth__block__int{}
+	
 	for _, host_str := range workers_inspectors_hosts_lst {
 
 		// GET_BLOCK__FROM_WORKER
-		gf_block, gf_err := eth_block__worker_inspector__get_block(p_block_int,
+		gf_block, gf_err := eth_blocks__worker_inspector__get_block(p_block_int,
 			host_str,
 			worker_inspector__port_int,
 			span.Context(),
 			p_runtime.Runtime_sys)
 
 		if gf_err != nil {
-			return nil, gf_err
+			return nil, nil, gf_err
 		}
 
+
+
+
 		block_from_workers_map[host_str] = gf_block
+
+
+
+
 	}
 
 	span.Finish()
 
 	//---------------------
-	return block_from_workers_map, nil
+	// GET_MINERS - that own this address, potentially multiple records for the same address
+
+
+	// get coinbase address from the block comming from the first worker_inspector
+	var block_miner_addr_hex_str string
+	for _, gf_block := range block_from_workers_map {
+		block_miner_addr_hex_str = gf_block.Coinbase_addr_str
+		break
+	}
+
+	miners_lst, gf_err := Eth_miners__db__get_info(block_miner_addr_hex_str,
+		p_metrics,
+		p_ctx,
+		p_runtime)
+	if gf_err != nil {
+		return nil, nil, gf_err
+	}
+
+	//---------------------
+
+	return block_from_workers_map, miners_lst, nil
 }
 
 //-------------------------------------------------
-func eth_block__worker_inspector__get_block(p_block_int uint64,
+func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 	p_host_str    string,
 	p_port_int    uint,
 	p_ctx         context.Context,
