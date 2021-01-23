@@ -50,8 +50,11 @@ func error__get_defs() map[string]gf_core.Error_def {
 		"eth_rpc__get_block": gf_core.Error_def{
 			Descr_str: "failed to get Block via Ethereum RPC-JSON API",
 		},
+		"eth_rpc__get_tx": gf_core.Error_def{
+			Descr_str: "failed to get Transaction via Ethereum RPC-JSON API",
+		},
 		"eth_rpc__get_tx_receipt": gf_core.Error_def{
-			Descr_str: "failed to get Receipt via Ethereum RPC-JSON API",
+			Descr_str: "failed to get Transaction Receipt via Ethereum RPC-JSON API",
 		},
 
 		//---------------

@@ -25,10 +25,16 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-	Hash_str     string           `json:"hash_str"`
-	Index_int    uint             `json:"index_int"` // position of the transaction in the block
-	Gas_used_int uint64           `json:"gas_used_int"`
-	Logs         []*eth_types.Log `json:"logs_lst"`
+	Hash_str      string           `json:"hash_str"`
+	Index_int     uint             `json:"index_int"` // position of the transaction in the block
+	Gas_used_int  uint64           `json:"gas_used_int"`
+	Nonce_int     uint64           `json:"nonce_int"`
+	Size_f        float64          `json:"size_f"`
+	To_addr_str   string           `json:"to_addr_str"`
+	Value_int     int64            `json:"value_int"`
+	Gas_price_int int64            `json:"gas_price_int"`
+	Cost_int      int64            `json:"cost_int"`
+	Logs          []*eth_types.Log `json:"logs_lst"`
 }
 
 //-------------------------------------------------

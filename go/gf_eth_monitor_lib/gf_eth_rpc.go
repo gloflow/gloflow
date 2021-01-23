@@ -175,7 +175,55 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__tx, *gf_core.Gf_error) {
 
+	
+	tx_hash         := p_tx.Hash() // :eth_common.Hash
+	tx_hash_hex_str := tx_hash.Hex()
 
+	//------------------
+	// GET_TX_RECEIPT
+
+	/*
+	type Receipt struct {
+		// Consensus fields: These fields are defined by the Yellow Paper
+		PostState         []byte `json:"root"`
+		Status            uint64 `json:"status"`
+		CumulativeGasUsed uint64 `json:"cumulativeGasUsed" gencodec:"required"`
+		Bloom             Bloom  `json:"logsBloom"         gencodec:"required"`
+		Logs              []*Log `json:"logs"              gencodec:"required"`
+
+		// Implementation fields: These fields are added by geth when processing a transaction.
+		// They are stored in the chain database.
+		TxHash          common.Hash    `json:"transactionHash" gencodec:"required"`
+		ContractAddress common.Address `json:"contractAddress"`
+		GasUsed         uint64         `json:"gasUsed" gencodec:"required"`
+
+		// Inclusion information: These fields provide information about the inclusion of the
+		// transaction corresponding to this receipt.
+		BlockHash        common.Hash `json:"blockHash,omitempty"`
+		BlockNumber      *big.Int    `json:"blockNumber,omitempty"`
+		TransactionIndex uint        `json:"transactionIndex"`
+	}
+	*/
+
+	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
+	defer span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
+
+	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
+	if err != nil {
+
+		error_defs_map := error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
+			"eth_rpc__get_tx_receipt",
+			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
+			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+		return nil, gf_err
+	}
+	span__get_tx_receipt.Finish()
+
+
+
+	//------------------
+	// GET_TX
 
 	/*
 	type Transaction
@@ -220,47 +268,25 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	}*/
 
 
-	/*
-	type Receipt struct {
-		// Consensus fields: These fields are defined by the Yellow Paper
-		PostState         []byte `json:"root"`
-		Status            uint64 `json:"status"`
-		CumulativeGasUsed uint64 `json:"cumulativeGasUsed" gencodec:"required"`
-		Bloom             Bloom  `json:"logsBloom"         gencodec:"required"`
-		Logs              []*Log `json:"logs"              gencodec:"required"`
+	span__get_tx := sentry.StartSpan(p_ctx, "eth_rpc__get_tx")
+	defer span__get_tx.Finish() // in case a panic happens before the main .Finish() for this span
 
-		// Implementation fields: These fields are added by geth when processing a transaction.
-		// They are stored in the chain database.
-		TxHash          common.Hash    `json:"transactionHash" gencodec:"required"`
-		ContractAddress common.Address `json:"contractAddress"`
-		GasUsed         uint64         `json:"gasUsed" gencodec:"required"`
-
-		// Inclusion information: These fields provide information about the inclusion of the
-		// transaction corresponding to this receipt.
-		BlockHash        common.Hash `json:"blockHash,omitempty"`
-		BlockNumber      *big.Int    `json:"blockNumber,omitempty"`
-		TransactionIndex uint        `json:"transactionIndex"`
-	}
-	*/
-	tx_hash         := p_tx.Hash() // :eth_common.Hash
-	tx_hash_hex_str := tx_hash.Hex()
-
-	//------------------
-	// GET_TX_RECEIPT
-	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
-	defer span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
-
-	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
+	tx, _, err := p_eth_rpc_client.TransactionByHash(span__get_tx.Context(), tx_hash)
 	if err != nil {
-
 		error_defs_map := error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit in gf_eth_monitor",
-			"eth_rpc__get_tx_receipt",
+		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
+			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
-	span__get_tx_receipt.Finish()
+
+	span__get_tx.Finish()
+
+
+
+
+	
 
 	//------------------
 	// GET_LOGS
@@ -279,15 +305,23 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	//------------------
 
 
+
+
 	gas_used_int := tx_receipt.GasUsed
-	tx := &gf_eth_monitor_core.GF_eth__tx{
-		Hash_str:     tx_receipt.TxHash.Hex(),
-		Index_int:    tx_receipt.TransactionIndex,
-		Gas_used_int: gas_used_int,
-		Logs:         logs,
+	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
+		Hash_str:      tx_receipt.TxHash.Hex(),
+		Index_int:     tx_receipt.TransactionIndex,
+		Gas_used_int:  gas_used_int,
+		Nonce_int:     tx.Nonce(),
+		Size_f:        float64(tx.Size()),
+		To_addr_str:   tx.To().Hex(),
+		Value_int:     tx.Value().Int64(),
+		Gas_price_int: tx.GasPrice().Int64(),
+		Cost_int:      tx.Cost().Int64(),
+		Logs:          logs,
 	}
 
-	return tx, nil
+	return gf_tx, nil
 }
 
 //-------------------------------------------------

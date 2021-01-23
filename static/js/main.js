@@ -30,6 +30,7 @@ function main() {
             http__get_block(block_int,
                 function(p_block_from_workers_map, p_miners_lst) {
                     
+                    $(".block").remove(); // remove old block display if any
 
                     render__block_from_workers(block_int,
                         p_block_from_workers_map,
@@ -59,6 +60,7 @@ function render__block_from_workers(p_block_int,
             <div class="miners">
 
             </div>
+            
         </div>
         
 
@@ -94,15 +96,14 @@ function render__block_from_workers(p_block_int,
         const hash_str        = p_block_map["hash_str"];
         const parent_hash_str = p_block_map["parent_hash_str"];
         const time_int        = p_block_map["time_int"];
-        const txs_num_int     = p_block_map["txs_lst"].length
+        
 
 
         const block_from_worker__element = $(`<div class="block_from_worker">
             <div>block #        <span class="block_num">${p_block_int}</span></div>
             <div>hash:          <span class="block_hash">${hash_str}</span>
-            <div>parent hash:   <span class="block_hash">${parent_hash_str}</span>
-            <div>time:          <span class="block_hash">${time_int}</span>
-            <div>txs num:       <span class="block_hash">${txs_num_int}</span>
+            <div>parent hash:   <span class="block_parent_hash">${parent_hash_str}</span>
+            <div>time:          <span class="block_time">${time_int}</span>
             <div>gas used:      <span>${gas_used_int}</span></div>
             <div>gas limit:     <span>${gas_limit_int}</span></div>
             <div>worker host:   <span>${p_worker_host_str}</span></div>
@@ -114,6 +115,48 @@ function render__block_from_workers(p_block_int,
 
 
 
+
+        const txs_lst     = p_block_map["txs_lst"];
+        const txs_element = render__block_txs(txs_lst);
+
+        $(block_from_worker__element).append(txs_element);
+
+    }
+
+    //---------------------------------------------------
+    function render__block_txs(p_txs_lst) {
+
+        const txs_element = $(`<div class="txs">
+            <div>txs # <span>${p_txs_lst.length}</span></div>
+            <div class="txs_list">
+
+            </div>
+        </div>`);
+
+        Object.entries(p_txs_lst).forEach(e => {
+
+            const tx_map          = e[1];
+            const tx_hash_str     = tx_map["hash_str"];
+            const tx_gas_used_int = tx_map["gas_used_int"];
+
+            const tx_element = $(`<div class="tx">
+                <div class="etherscan_link"><a href="https://etherscan.io/address/${tx_hash_str}">etherscan.io</a></div>
+                <div class="tx_hash">hash - <span>${tx_hash_str}</span></div>
+                <div class="tx_gas_used">gas used - <span>${tx_gas_used_int}</span></div>
+            </div>`);
+
+            
+            $(txs_element).find(".txs_list").append(tx_element);
+
+
+            if (tx_gas_used_int > 21000) {
+
+                $(tx_element).find(".tx_gas_used span").addClass("not_just_value_transfer");
+
+            }
+        });
+
+        return txs_element;
     }
 
     //---------------------------------------------------
