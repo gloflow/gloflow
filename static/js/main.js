@@ -135,14 +135,32 @@ function render__block_from_workers(p_block_int,
 
         Object.entries(p_txs_lst).forEach(e => {
 
-            const tx_map          = e[1];
-            const tx_hash_str     = tx_map["hash_str"];
-            const tx_gas_used_int = tx_map["gas_used_int"];
+            const tx_map           = e[1];
+            const tx_hash_str      = tx_map["hash_str"];
+            const tx_from_addr_str = tx_map["from_addr_str"];
+            const tx_to_addr_str   = tx_map["to_addr_str"];
+            const tx_value_int     = tx_map["value_int"];
+            const tx_gas_used_int  = tx_map["gas_used_int"];
+            const tx_gas_price_int = tx_map["gas_price_int"];
+            const tx_nonce_int     = tx_map["nonce_int"];
+            const tx_size_f        = tx_map["size_f"];
+            const tx_cost_int      = tx_map["cost_int"];
+
+
 
             const tx_element = $(`<div class="tx">
-                <div class="etherscan_link"><a href="https://etherscan.io/address/${tx_hash_str}">etherscan.io</a></div>
-                <div class="tx_hash">hash - <span>${tx_hash_str}</span></div>
-                <div class="tx_gas_used">gas used - <span>${tx_gas_used_int}</span></div>
+                <div class="etherscan_link"><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
+                <div class="tx_hash">hash           - <span>${tx_hash_str}</span></div>
+                <div class="source_destination">
+                    <div class="to_addr">From       - <span>${tx_to_addr_str}</span></div>
+                    <div class="from_addr">To       - <span>${tx_to_addr_str}</span></div>
+                </div>
+                <div class="tx_value">value         - <span>${tx_value_int}</span></div>
+                <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
+                <div class="tx_gas_price">gas price - <span>${tx_gas_price_int}</span></div>
+                <div class="tx_nonce">nonce         - <span>${tx_nonce_int}</span></div>
+                <div class="tx_size">size           - <span>${tx_size_f}</span></div>
+                <div class="tx_cost">cost           - <span>${tx_cost_int}</span></div>
             </div>`);
 
             

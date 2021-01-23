@@ -13,8 +13,8 @@ body {
 }
 
 .block .block_from_worker {
-	margin-top: 9px;
-	background-color: #c4c4c4;
+	margin-top: 20px;
+	background-color: #e3e3e3;
 }
 
 .block .block_from_worker .block_num {

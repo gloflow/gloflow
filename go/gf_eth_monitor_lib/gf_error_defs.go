@@ -33,7 +33,6 @@ func error__get_defs() map[string]gf_core.Error_def {
 
 	error_defs_map := map[string]gf_core.Error_def{
 
-
 		//---------------
 		"mapstruct__decode": gf_core.Error_def{
 			Descr_str: "failed to decode a map into a struct using mapstructure lib",
@@ -56,7 +55,10 @@ func error__get_defs() map[string]gf_core.Error_def {
 		"eth_rpc__get_tx_receipt": gf_core.Error_def{
 			Descr_str: "failed to get Transaction Receipt via Ethereum RPC-JSON API",
 		},
-
+		"eth_rpc__get_tx_sender": gf_core.Error_def{
+			Descr_str: "failed to get Transaction Sender via Ethereum RPC-JSON API",
+		},
+		
 		//---------------
 		
 	}

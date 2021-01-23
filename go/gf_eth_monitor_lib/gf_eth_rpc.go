@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"math/big"
 	"context"
+	"strings"
 	log "github.com/sirupsen/logrus"
 	"github.com/getsentry/sentry-go"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -141,9 +142,15 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
 
 	txs_lst := []*gf_eth_monitor_core.GF_eth__tx{}
-	for _, tx := range block.Transactions() {
+	for i, tx := range block.Transactions() {
 
-		gf_tx, gf_err := Eth_rpc__get_tx(tx, span__get_txs.Context(), p_eth_rpc_client, p_runtime_sys)
+		tx_index_int := uint(i)
+		gf_tx, gf_err := Eth_rpc__get_tx(tx,
+			tx_index_int,
+			block.Hash(),
+			span__get_txs.Context(),
+			p_eth_rpc_client,
+			p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -171,6 +178,8 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 
 //-------------------------------------------------
 func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
+	p_tx_index_int   uint,
+	p_block_hash     eth_common.Hash,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) (*gf_eth_monitor_core.GF_eth__tx, *gf_core.Gf_error) {
@@ -303,20 +312,33 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	span__parse_tx_logs.Finish()
 
 	//------------------
+	// GET_TX_SENDER
 
+	sender_addr, err := p_eth_rpc_client.TransactionSender(p_ctx, tx, p_block_hash, p_tx_index_int)
+	if err != nil {
+		error_defs_map := error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
+			"eth_rpc__get_tx_sender",
+			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
+			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+		return nil, gf_err
+	}
 
+	//------------------
 
 
 	gas_used_int := tx_receipt.GasUsed
 	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
 		Hash_str:      tx_receipt.TxHash.Hex(),
 		Index_int:     tx_receipt.TransactionIndex,
+		From_addr_str: strings.ToLower(sender_addr.Hex()),
+		To_addr_str:   strings.ToLower(tx.To().Hex()),
+		Value_int:     tx.Value().Int64(),
 		Gas_used_int:  gas_used_int,
+		Gas_price_int: tx.GasPrice().Int64(),
 		Nonce_int:     tx.Nonce(),
 		Size_f:        float64(tx.Size()),
-		To_addr_str:   tx.To().Hex(),
-		Value_int:     tx.Value().Int64(),
-		Gas_price_int: tx.GasPrice().Int64(),
+		
 		Cost_int:      tx.Cost().Int64(),
 		Logs:          logs,
 	}
