@@ -73,7 +73,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 		error_defs_map := error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to read apps__info from YAML file in Cmonkeyd",
+		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_int,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
@@ -128,7 +128,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	if err != nil {
 
 		error_defs_map := error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to read apps__info from YAML file in Cmonkeyd",
+		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_int,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)

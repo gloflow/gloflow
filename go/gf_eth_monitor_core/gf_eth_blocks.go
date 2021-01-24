@@ -77,8 +77,9 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 	span := sentry.StartSpan(p_ctx, "get_blocks__workers_inspectors__all")
 	defer span.Finish()
 
-	block_from_workers_map := map[string]*GF_eth__block__int{}
-	
+	block_from_workers_map   := map[string]*GF_eth__block__int{}
+	gf_errs_from_workers_map := map[string]*gf_core.Gf_error{}
+
 	for _, host_str := range workers_inspectors_hosts_lst {
 
 		// GET_BLOCK__FROM_WORKER
@@ -89,7 +90,14 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 			p_runtime.Runtime_sys)
 
 		if gf_err != nil {
-			return nil, nil, gf_err
+			gf_errs_from_workers_map[host_str] = gf_err
+			
+			// mark a block coming from this worker_inspector host as nil,
+			// and continue processing other hosts. 
+			// a particular host may fail to return a particular block for various reasons,
+			// it might not have synced to that block. 
+			block_from_workers_map[host_str] = nil
+			continue
 		}
 
 

@@ -42,7 +42,7 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 		i, err := strconv.Atoi(block_num_str)
 		if err != nil {
 		
-			gf_err := gf_core.Error__create("failed to read apps__info from YAML file in Cmonkeyd",
+			gf_err := gf_core.Error__create("failed to parse input querystring arg as a an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"block_num": block_num_str,},
 				err, "gf_eth_monitor_lib", p_runtime_sys)
