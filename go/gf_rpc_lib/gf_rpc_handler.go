@@ -70,6 +70,13 @@ func Create_handler__http(p_path_str string,
 		//------------------
 		// HANDLER
 		data_map, gf_err := p_handler_fun(span__root.Context(), p_resp, p_req)
+
+		//------------------
+		// TRACE
+		span__root.Finish()
+
+		//------------------
+		// ERROR
 		if gf_err != nil {
 
 			Error__in_handler(p_path_str,
@@ -78,11 +85,7 @@ func Create_handler__http(p_path_str string,
 
 			return
 		}
-
-		//------------------
-		// TRACE
-		span__root.Finish()
-
+		
 		//------------------
 		// OUTPUT
 		Http_respond(data_map, "OK", p_resp, p_runtime_sys)
