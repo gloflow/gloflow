@@ -81,7 +81,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			span__pipeline := sentry.StartSpan(span__root.Context(), "get_block_pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
-			block_from_workers_map, miners_lst, gf_err := gf_eth_monitor_core.Eth_blocks__get_block_pipeline(block_num_int,
+			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_block_pipeline(block_num_int,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				p_metrics,
@@ -96,7 +96,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 			//------------------
 			data_map := map[string]interface{}{
 				"block_from_workers_map": block_from_workers_map,
-				"miners_lst":             miners_lst,
+				"miners_map":             miners_map,
 			}
 
 			span__root.Finish()

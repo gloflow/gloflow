@@ -38,7 +38,7 @@ type GF_eth__miner__int struct {
 func Eth_miners__db__get_info(p_miner_address_str string,
 	p_metrics *GF_metrics,
 	p_ctx     context.Context,
-	p_runtime *GF_runtime) ([]*GF_eth__miner__int, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
 
 
 
@@ -73,7 +73,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 	defer cur.Close(p_ctx)
 
 
-	miners_lst := []*GF_eth__miner__int{}
+	miners_map := map[string]*GF_eth__miner__int{}
 	for cur.Next(p_ctx) {
 
 		var miner GF_eth__miner__int
@@ -89,8 +89,8 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 			return nil, gf_err
 		}
 	
-		miners_lst = append(miners_lst, &miner)
+		miners_map[miner.Name_str] = &miner
 	}
 
-	return miners_lst, nil
+	return miners_map, nil
 }

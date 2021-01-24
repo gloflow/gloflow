@@ -330,16 +330,16 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	gas_used_int := tx_receipt.GasUsed
 	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
 		Hash_str:      tx_receipt.TxHash.Hex(),
-		Index_int:     tx_receipt.TransactionIndex,
+		Index_int:     uint64(tx_receipt.TransactionIndex),
 		From_addr_str: strings.ToLower(sender_addr.Hex()),
 		To_addr_str:   strings.ToLower(tx.To().Hex()),
-		Value_int:     tx.Value().Int64(),
+		Value_int:     tx.Value().Uint64(),
 		Gas_used_int:  gas_used_int,
-		Gas_price_int: tx.GasPrice().Int64(),
+		Gas_price_int: tx.GasPrice().Uint64(),
 		Nonce_int:     tx.Nonce(),
 		Size_f:        float64(tx.Size()),
 		
-		Cost_int:      tx.Cost().Int64(),
+		Cost_int:      tx.Cost().Uint64(),
 		Logs:          logs,
 	}
 

@@ -28,13 +28,13 @@ function main() {
             
 
             http__get_block(block_int,
-                function(p_block_from_workers_map, p_miners_lst) {
+                function(p_block_from_workers_map, p_miners_map) {
                     
                     $(".block").remove(); // remove old block display if any
 
                     render__block_from_workers(block_int,
                         p_block_from_workers_map,
-                        p_miners_lst);
+                        p_miners_map);
                     
         
         
@@ -51,7 +51,7 @@ function main() {
 //---------------------------------------------------
 function render__block_from_workers(p_block_int,
     p_block_from_workers_map,
-    p_miners_lst) {
+    p_miners_map) {
                             
     const block_element = $(`<div class="block">
         <div class="block_metadata">
@@ -69,18 +69,19 @@ function render__block_from_workers(p_block_int,
 
 
 
+    if (p_miners_map != undefined) {
+        Object.entries(p_miners_map).forEach(e=> {
 
-    Object.entries(p_miners_lst).forEach(e=> {
+            const miner_map             = e[1];
+            const miner_name_str        = miner_map["name_str"];
+            const miner_address_hex_str = miner_map["address_hex_str"];
 
-        const miner_map             = e[1];
-        const miner_name_str        = miner_map["name_str"];
-        const miner_address_hex_str = miner_map["address_hex_str"];
+            $(block_element).find(".miners").append(`<div class="miner_info">
+                miner: <span class="miner_name">${miner_name_str}</span>
+            </div>`);
 
-        $(block_element).find(".miners").append(`<div class="miner_info">
-            miner: <span class="miner_name">${miner_name_str}</span>
-        </div>`);
-
-    });
+        });
+    }
 
 
     //---------------------------------------------------
@@ -147,15 +148,17 @@ function render__block_from_workers(p_block_int,
             const tx_cost_int      = tx_map["cost_int"];
 
 
+            // there are 10^18 Wei in Eth
+            const tx_value_eth_int = tx_value_int / Math.pow(10, 18);
 
             const tx_element = $(`<div class="tx">
                 <div class="etherscan_link"><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
                 <div class="tx_hash">hash           - <span>${tx_hash_str}</span></div>
                 <div class="source_destination">
-                    <div class="to_addr">From       - <span>${tx_to_addr_str}</span></div>
+                    <div class="to_addr">From       - <span>${tx_from_addr_str}</span></div>
                     <div class="from_addr">To       - <span>${tx_to_addr_str}</span></div>
                 </div>
-                <div class="tx_value">value         - <span>${tx_value_int}</span></div>
+                <div class="tx_value">value         - <span>${tx_value_eth_int}</span>eth</div>
                 <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
                 <div class="tx_gas_price">gas price - <span>${tx_gas_price_int}</span></div>
                 <div class="tx_nonce">nonce         - <span>${tx_nonce_int}</span></div>
@@ -221,8 +224,8 @@ function http__get_block(p_block_num_int,
 			if (p_data_map["status_str"] == "OK") {
 
 				const block_from_workers_map = p_data_map["data"]["block_from_workers_map"];
-                const miners_lst             = p_data_map["data"]["miners_lst"];
-                p_on_complete_fun(block_from_workers_map, miners_lst);
+                const miners_map             = p_data_map["data"]["miners_map"];
+                p_on_complete_fun(block_from_workers_map, miners_map);
 			}
 			else {
 				p_on_error_fun(p_data_map["data"]);

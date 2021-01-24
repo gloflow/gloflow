@@ -52,7 +52,7 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 	
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (map[string]*GF_eth__block__int, []*GF_eth__miner__int, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
 
 	worker_inspector__port_int := uint(2000)
 
@@ -115,7 +115,7 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 		break
 	}
 
-	miners_lst, gf_err := Eth_miners__db__get_info(block_miner_addr_hex_str,
+	miners_map, gf_err := Eth_miners__db__get_info(block_miner_addr_hex_str,
 		p_metrics,
 		p_ctx,
 		p_runtime)
@@ -125,7 +125,7 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 
 	//---------------------
 
-	return block_from_workers_map, miners_lst, nil
+	return block_from_workers_map, miners_map, nil
 }
 
 //-------------------------------------------------
