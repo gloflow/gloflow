@@ -55,7 +55,7 @@ function render__block_from_workers(p_block_int,
                             
     const block_element = $(`<div class="block">
         <div class="block_metadata">
-            <a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a>
+            
 
             <div class="miners">
 
@@ -100,15 +100,20 @@ function render__block_from_workers(p_block_int,
         
 
 
+        const creation_time_f      = parseFloat(time_int);
+		const creation_date        = new Date(creation_time_f*1000);
+        const timeago_str          = $.timeago(creation_date);
+            
+
         const block_from_worker__element = $(`<div class="block_from_worker">
-            <div>block #        <span class="block_num">${p_block_int}</span></div>
-            <div>hash:          <span class="block_hash">${hash_str}</span>
-            <div>parent hash:   <span class="block_parent_hash">${parent_hash_str}</span>
-            <div>time:          <span class="block_time">${time_int}</span>
+            <div>block #        <span class="block_num">${p_block_int} </span><a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a></div>
+            <div>hash:          <span class="block_hash">${hash_str}</span></div>
+            <div>parent hash:   <span class="block_parent_hash">${parent_hash_str}</span></div>
+            <div>time:          <span class="block_time">${creation_date} </span><span class="block_timeago">(${timeago_str})</span></div>
             <div>gas used:      <span>${gas_used_int}</span></div>
             <div>gas limit:     <span>${gas_limit_int}</span></div>
             <div>worker host:   <span>${p_worker_host_str}</span></div>
-            <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str}</span></div>
+            <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str} </span>(<a href="https://etherscan.io/address/${coinbase_addr_str}" target="_blank">etherscan.io</a>)</div>
             
         </div>`);
 
@@ -148,11 +153,10 @@ function render__block_from_workers(p_block_int,
             const tx_cost_int      = tx_map["cost_int"];
 
             const tx_element = $(`<div class="tx">
-                <div class="etherscan_link"><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
-                <div class="tx_hash">hash           - <span>${tx_hash_str}</span></div>
+                <div class="tx_hash">hash           - <span>${tx_hash_str} </span><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
                 <div class="source_destination">
-                    <div class="to_addr">From       - <span>${tx_from_addr_str}</span></div>
-                    <div class="from_addr">To       - <span>${tx_to_addr_str}</span></div>
+                    <div class="to_addr">From       - <span>${tx_from_addr_str} </span>(<a href="https://etherscan.io/address/${tx_from_addr_str}" target="_blank">etherscan.io</a>)</div>
+                    <div class="from_addr">To       - <span>${tx_to_addr_str} </span>(<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>)</div>
                 </div>
                 <div class="tx_value">value         - <span>${tx_value_eth_f}</span>eth</div>
                 <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
