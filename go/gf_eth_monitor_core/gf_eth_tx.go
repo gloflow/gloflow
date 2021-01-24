@@ -29,7 +29,7 @@ type GF_eth__tx struct {
 	Index_int     uint64           `json:"index_int"     bson:"index_int"` // position of the transaction in the block
 	From_addr_str string           `json:"from_addr_str" bson:"from_addr_str"`
 	To_addr_str   string           `json:"to_addr_str"   bson:"to_addr_str"`
-	Value_int     uint64           `json:"value_int"     bson:"value_int"`
+	Value_eth_f   float64          `json:"value_eth_f"   bson:"value_eth_f"`
 	Gas_used_int  uint64           `json:"gas_used_int"  bson:"gas_used_int"`
 	Gas_price_int uint64           `json:"gas_price_int" bson:"gas_price_int"`
 	Nonce_int     uint64           `json:"nonce_int"     bson:"nonce_int"`

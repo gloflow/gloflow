@@ -21,6 +21,7 @@ package gf_eth_monitor_lib
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 	"context"
 	"strings"
@@ -326,6 +327,12 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	//------------------
 
+	// IMPORTANT!! - tx value is in Wei units, to convert to Eth we divide by 10^18.
+	//               its important to do the conversion in Go process space, instead of transmit
+	//               Wei value via JSON; JSON/JS support floats of 32bit size only, and would lose precision
+	//               in transmission.
+	tx_value_f        := new(big.Float).SetInt(tx.Value())
+	tx_value_eth_f, _ := new(big.Float).Quo(tx_value_f, big.NewFloat(math.Pow(10, 18))).Float64()
 
 	gas_used_int := tx_receipt.GasUsed
 	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
@@ -333,7 +340,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 		Index_int:     uint64(tx_receipt.TransactionIndex),
 		From_addr_str: strings.ToLower(sender_addr.Hex()),
 		To_addr_str:   strings.ToLower(tx.To().Hex()),
-		Value_int:     tx.Value().Uint64(),
+		Value_eth_f:   tx_value_eth_f, // tx.Value().Uint64(),
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
 		Nonce_int:     tx.Nonce(),
