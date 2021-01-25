@@ -79,31 +79,3 @@ func Http_CORS_preflight_handle(p_req *http.Request,
 		p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
 	}
 }
-
-
-
-
-
-//-------------------------------------------------
-func Panic__check_and_handle(p_resp http.ResponseWriter,
-	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) {
-
-	path_str := p_req.URL.Path
-
-	user_msg__internal_str := "gf_rpc handler panicked"
-	panic_recovered_bool := gf_core.Panic__check_and_handle(user_msg__internal_str,
-		map[string]interface{}{"handler_path_str": path_str},
-		"gf_rpc", p_runtime_sys)
-
-	
-	// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
-	//               and then proceed to process the panic as an error 
-	//               with gf_core.Panic__check_and_handle()
-	if panic_recovered_bool {
-		
-		Error__in_handler(path_str,
-			fmt.Sprintf("handler %s failed unexpectedly", path_str),
-			nil, p_resp, p_runtime_sys)
-	}
-}

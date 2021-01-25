@@ -47,6 +47,8 @@ func Create_handler__http(p_path_str string,
 
 	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
+		path_str := p_req.URL.Path
+
 		//------------------
 		// PANIC_HANDLING
 
@@ -54,12 +56,27 @@ func Create_handler__http(p_path_str string,
 		//               as execution unwinds up the call-stack. in Panic__check_and_handle() 
 		//               recover() is executed for check for panic conditions. if panic exists
 		//               it is treated as an error that gets processed, and the go routine exits.
-		defer Panic__check_and_handle(p_resp, p_req, p_runtime_sys)
 
+		user_msg__internal_str := "gf_rpc handler panicked"
+		defer gf_core.Panic__check_and_handle(user_msg__internal_str,
+			map[string]interface{}{"handler_path_str": path_str},
+			// oncomplete_fn
+			func() {
+				
+				// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
+				//               and then proceed to process the panic as an error 
+				//               with gf_core.Panic__check_and_handle()
+				Error__in_handler(path_str,
+					fmt.Sprintf("handler %s failed unexpectedly", path_str),
+					nil, p_resp, p_runtime_sys)
+			},
+			"gf_rpc_lib", p_runtime_sys)
+
+		//------------------
 		ctx := p_req.Context()
 
 		hub := sentry.GetHubFromContext(ctx)
-		hub.Scope().SetTag("url", p_req.URL.Path)
+		hub.Scope().SetTag("url", path_str)
 
 		//------------------
 		// TRACE

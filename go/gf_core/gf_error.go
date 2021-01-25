@@ -55,15 +55,15 @@ type Gf_error struct {
 //-------------------------------------------------
 func Panic__check_and_handle(p_user_msg_str string,
 	p_panic_data_map     map[string]interface{},
+	p_oncomplete_fn      func(),
 	p_subsystem_name_str string,
-	p_runtime_sys        *Runtime_sys) bool {
+	p_runtime_sys        *Runtime_sys) {
 
 	// call to recover stops the unwinding and returns the argument passed to panic
 	// If the goroutine is not panicking, recover returns nil.
 	if panic_info := recover(); panic_info != nil {
 
 		err := errors.New(fmt.Sprint(panic_info))
-
 
 		//--------------------
 		// SENTRY
@@ -97,10 +97,11 @@ func Panic__check_and_handle(p_user_msg_str string,
 		}
 
 		//--------------------
-		return true // panic recovered
-	}
 
-	return false
+		if p_oncomplete_fn != nil {
+			p_oncomplete_fn()
+		}
+	}
 }
 
 //-------------------------------------------------
