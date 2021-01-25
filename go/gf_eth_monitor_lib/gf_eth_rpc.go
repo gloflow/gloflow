@@ -325,8 +325,26 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 		return nil, gf_err
 	}
 
-	//------------------
+	sender_addr_str := strings.ToLower(sender_addr.Hex())
 
+	//------------------
+	// TX_TO
+	var to_str string
+	if tx.To() == nil {
+
+		// SELF - these are "cancelation transactions", meant to cancel TX's in mempool,
+		//        that for some reason (usually too little gas) are not getting
+		//        mined into a block. these cancelation tx's have the same nonce as the
+		//        tx's that are not getting mined, and have the same address in 
+		//        From and To ("self"). these transaction have a gas price set to an appropriate
+		//        level to get mined into a block, and have no action effectively canceling
+		//        the old tx. 
+		to_str = "self"
+	} else {
+		to_str = strings.ToLower(tx.To().Hex())
+	}
+
+	//------------------
 	// IMPORTANT!! - tx value is in Wei units, to convert to Eth we divide by 10^18.
 	//               its important to do the conversion in Go process space, instead of transmit
 	//               Wei value via JSON; JSON/JS support floats of 32bit size only, and would lose precision
@@ -338,8 +356,8 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
 		Hash_str:      tx_receipt.TxHash.Hex(),
 		Index_int:     uint64(tx_receipt.TransactionIndex),
-		From_addr_str: strings.ToLower(sender_addr.Hex()),
-		To_addr_str:   strings.ToLower(tx.To().Hex()),
+		From_addr_str: sender_addr_str,
+		To_addr_str:   to_str,
 		Value_eth_f:   tx_value_eth_f, // tx.Value().Uint64(),
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
