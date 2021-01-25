@@ -75,6 +75,7 @@ func init_handlers(p_get_hosts_fn func() []string,
 
 			span__input.Finish()
 
+
 			//------------------
 			// PIPELINE
 

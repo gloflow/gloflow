@@ -68,20 +68,17 @@ function render__block_from_workers(p_block_int,
     $("body").append(block_element);
 
 
+    Object.entries(p_miners_map).forEach(e=> {
 
-    if (p_miners_map != undefined) {
-        Object.entries(p_miners_map).forEach(e=> {
+        const miner_map             = e[1];
+        const miner_name_str        = miner_map["name_str"];
+        const miner_address_hex_str = miner_map["address_hex_str"];
 
-            const miner_map             = e[1];
-            const miner_name_str        = miner_map["name_str"];
-            const miner_address_hex_str = miner_map["address_hex_str"];
+        $(block_element).find(".miners").append(`<div class="miner_info">
+            miner: <span class="miner_name">${miner_name_str}</span>
+        </div>`);
 
-            $(block_element).find(".miners").append(`<div class="miner_info">
-                miner: <span class="miner_name">${miner_name_str}</span>
-            </div>`);
-
-        });
-    }
+    });
 
 
     //---------------------------------------------------
@@ -155,8 +152,8 @@ function render__block_from_workers(p_block_int,
             const tx_element = $(`<div class="tx">
                 <div class="tx_hash">hash           - <span>${tx_hash_str} </span><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
                 <div class="source_destination">
-                    <div class="to_addr">From       - <span>${tx_from_addr_str} </span>(<a href="https://etherscan.io/address/${tx_from_addr_str}" target="_blank">etherscan.io</a>)</div>
-                    <div class="from_addr">To       - <span>${tx_to_addr_str} </span>(<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>)</div>
+                    <div class="from_addr">From   - <span>${tx_from_addr_str} </span>(<a href="https://etherscan.io/address/${tx_from_addr_str}" target="_blank">etherscan.io</a>)</div>
+                    <div class="to_addr">To       - <span>${tx_to_addr_str} </span></div>
                 </div>
                 <div class="tx_value">value         - <span>${tx_value_eth_f}</span>eth</div>
                 <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
@@ -165,6 +162,18 @@ function render__block_from_workers(p_block_int,
                 <div class="tx_size">size           - <span>${tx_size_f}</span></div>
                 <div class="tx_cost">cost           - <span>${tx_cost_int}</span></div>
             </div>`);
+
+
+            // for new_contract transactions, where the To() returned by Eth node is nil, to_addr is set to "new_contract" by worker_inspector.
+            // dont include etherescan.io validation link for those
+            if (tx_to_addr_str == "new_contract") {
+
+            }
+            // for all transactions include the etherscan.io validation link
+            else {
+                $(tx_element).find(".to_addr").append('<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>')
+            }
+
 
             
             $(txs_element).find(".txs_list").append(tx_element);

@@ -62,6 +62,14 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 
 
 					inst__dns_name_str := *inst.PublicDnsName
+
+					// IMPORTANT!! - only register instances that have a public DNS name.
+					//               they might not have that DNS name assigned, if they're 
+					//               not reachable from outside their VPC, or if they're terminated...
+					if inst__dns_name_str == "" {
+						continue
+					}
+
 					hosts_lst = append(hosts_lst, inst__dns_name_str)
 				}
 				
@@ -77,7 +85,7 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 	}()
 
 	//-------------------------------------------------
-	// DISCOVER
+	// DISCOVER - runs continuously
 	go func() {
 		for {
 

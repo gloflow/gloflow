@@ -332,14 +332,17 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	var to_str string
 	if tx.To() == nil {
 
-		// SELF - these are "cancelation transactions", meant to cancel TX's in mempool,
-		//        that for some reason (usually too little gas) are not getting
-		//        mined into a block. these cancelation tx's have the same nonce as the
-		//        tx's that are not getting mined, and have the same address in 
-		//        From and To ("self"). these transaction have a gas price set to an appropriate
-		//        level to get mined into a block, and have no action effectively canceling
-		//        the old tx. 
-		to_str = "self"
+		// // SELF - these are "cancelation transactions", meant to cancel TX's in mempool,
+		// //        that for some reason (usually too little gas) are not getting
+		// //        mined into a block. these cancelation tx's have the same nonce as the
+		// //        tx's that are not getting mined, and have the same address in 
+		// //        From and To ("self"). these transaction have a gas price set to an appropriate
+		// //        level to get mined into a block, and have no action effectively canceling
+		// //        the old tx. 
+		// to_str = "self"
+
+		// NEW_CONTRACT - if To() is nil, then its a new contract creation transaction
+		to_str = "new_contract"
 	} else {
 		to_str = strings.ToLower(tx.To().Hex())
 	}
