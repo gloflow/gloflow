@@ -329,20 +329,32 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	//------------------
 	// TX_TO
-	var to_str string
-	if tx.To() == nil {
+	var to_str                string
+	var new_contract_addr_str string
 
-		// // SELF - these are "cancelation transactions", meant to cancel TX's in mempool,
-		// //        that for some reason (usually too little gas) are not getting
-		// //        mined into a block. these cancelation tx's have the same nonce as the
-		// //        tx's that are not getting mined, and have the same address in 
-		// //        From and To ("self"). these transaction have a gas price set to an appropriate
-		// //        level to get mined into a block, and have no action effectively canceling
-		// //        the old tx. 
-		// to_str = "self"
+	// NEW CONTRACT - if To() is nil and the ContractAddress is set,
+	//                then its a new contract creation transaction.
+	if tx.To() == nil && tx_receipt.ContractAddress.Hex() != "" {
 
-		// NEW_CONTRACT - if To() is nil, then its a new contract creation transaction
-		to_str = "new_contract"
+		
+		to_str                = "new_contract"
+		new_contract_addr_str = tx_receipt.ContractAddress.Hex()
+
+	// SELF_TRANSACTION
+	// CHECK!! - make sure this is a sufficient condition to mark this transaction as "self".
+	} else if tx.To() == nil {
+
+
+		// SELF - these are "cancelation transactions", meant to cancel TX's in mempool,
+		//        that for some reason (usually too little gas) are not getting
+		//        mined into a block. these cancelation tx's have the same nonce as the
+		//        tx's that are not getting mined, and have the same address in 
+		//        From and To ("self"). these transaction have a gas price set to an appropriate
+		//        level to get mined into a block, and have no action effectively canceling
+		//        the old tx.
+		to_str = "self"
+
+	// REGULAR
 	} else {
 		to_str = strings.ToLower(tx.To().Hex())
 	}
@@ -362,13 +374,14 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 		From_addr_str: sender_addr_str,
 		To_addr_str:   to_str,
 		Value_eth_f:   tx_value_eth_f, // tx.Value().Uint64(),
+
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
 		Nonce_int:     tx.Nonce(),
 		Size_f:        float64(tx.Size()),
-		
 		Cost_int:      tx.Cost().Uint64(),
-		Logs:          logs,
+		Contract_new_addr_str: new_contract_addr_str,
+		Logs:                  logs,
 	}
 
 	return gf_tx, nil

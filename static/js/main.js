@@ -164,14 +164,17 @@ function render__block_from_workers(p_block_int,
             </div>`);
 
 
+            // NEW_CONTRACT
             // for new_contract transactions, where the To() returned by Eth node is nil, to_addr is set to "new_contract" by worker_inspector.
             // dont include etherescan.io validation link for those
             if (tx_to_addr_str == "new_contract") {
+                const contract_new_addr_str = tx_map["contract_new_addr_str"]; 
 
+                $(tx_element).find(".to_addr").append(`<a href="https://etherscan.io/address/${contract_new_addr_str}" target="_blank">etherscan.io</a>`)
             }
             // for all transactions include the etherscan.io validation link
             else {
-                $(tx_element).find(".to_addr").append('<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>')
+                $(tx_element).find(".to_addr").append(`<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>`)
             }
 
 

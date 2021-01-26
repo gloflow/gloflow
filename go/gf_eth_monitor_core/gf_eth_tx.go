@@ -25,17 +25,18 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-	Hash_str      string           `json:"hash_str"      bson:"hash_str"`
-	Index_int     uint64           `json:"index_int"     bson:"index_int"` // position of the transaction in the block
-	From_addr_str string           `json:"from_addr_str" bson:"from_addr_str"`
-	To_addr_str   string           `json:"to_addr_str"   bson:"to_addr_str"`
-	Value_eth_f   float64          `json:"value_eth_f"   bson:"value_eth_f"`
-	Gas_used_int  uint64           `json:"gas_used_int"  bson:"gas_used_int"`
-	Gas_price_int uint64           `json:"gas_price_int" bson:"gas_price_int"`
-	Nonce_int     uint64           `json:"nonce_int"     bson:"nonce_int"`
-	Size_f        float64          `json:"size_f"        bson:"size_f"`
-	Cost_int      uint64           `json:"cost_int"      bson:"cost_int"`
-	Logs          []*eth_types.Log `json:"logs_lst"      bson:"logs_lst"`
+	Hash_str              string           `json:"hash_str"      bson:"hash_str"`
+	Index_int             uint64           `json:"index_int"     bson:"index_int"` // position of the transaction in the block
+	From_addr_str         string           `json:"from_addr_str" bson:"from_addr_str"`
+	To_addr_str           string           `json:"to_addr_str"   bson:"to_addr_str"`
+	Value_eth_f           float64          `json:"value_eth_f"   bson:"value_eth_f"`
+	Gas_used_int          uint64           `json:"gas_used_int"  bson:"gas_used_int"`
+	Gas_price_int         uint64           `json:"gas_price_int" bson:"gas_price_int"`
+	Nonce_int             uint64           `json:"nonce_int"     bson:"nonce_int"`
+	Size_f                float64          `json:"size_f"        bson:"size_f"`
+	Cost_int              uint64           `json:"cost_int"      bson:"cost_int"`
+	Contract_new_addr_str string           `json:"contract_new_addr_str" bson:"contract_new_addr_str"`
+	Logs                  []*eth_types.Log `json:"logs_lst"              bson:"logs_lst"`
 }
 
 //-------------------------------------------------
