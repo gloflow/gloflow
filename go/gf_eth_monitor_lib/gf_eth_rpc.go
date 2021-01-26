@@ -72,7 +72,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 
 	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_int,},
@@ -127,7 +127,7 @@ func Eth_rpc__get_block__pipeline(p_block_num_int uint64,
 	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_int))
 	if err != nil {
 
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_int,},
@@ -221,7 +221,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
 	if err != nil {
 
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -283,7 +283,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	tx, _, err := p_eth_rpc_client.TransactionByHash(span__get_tx.Context(), tx_hash)
 	if err != nil {
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -317,7 +317,7 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	sender_addr, err := p_eth_rpc_client.TransactionSender(p_ctx, tx, p_block_hash, p_tx_index_int)
 	if err != nil {
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -329,16 +329,41 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	//------------------
 	// TX_TO
-	var to_str                string
-	var new_contract_addr_str string
+	var to_str        string
+	var contract__new *gf_eth_monitor_core.GF_eth__contract_new
 
 	// NEW CONTRACT - if To() is nil and the ContractAddress is set,
 	//                then its a new contract creation transaction.
 	if tx.To() == nil && tx_receipt.ContractAddress.Hex() != "" {
 
 		
-		to_str                = "new_contract"
-		new_contract_addr_str = tx_receipt.ContractAddress.Hex()
+		to_str = "new_contract"
+		new_contract_addr_str := strings.ToLower(tx_receipt.ContractAddress.Hex())
+
+
+
+
+		//------------------
+		// NEW_CONTRACT_CODE
+		block_num_int := tx_receipt.BlockNumber.Uint64()
+		code_bytes_lst, gf_err := gf_eth_monitor_core.Eth_contract__get_code(new_contract_addr_str,
+			block_num_int,
+			p_ctx,
+			p_eth_rpc_client,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		contract__new = &gf_eth_monitor_core.GF_eth__contract_new{
+			Addr_str:       new_contract_addr_str,
+			Code_bytes_lst: code_bytes_lst,
+			Block_num_int:  block_num_int,
+		}
+
+		//------------------
+
+
 
 	// SELF_TRANSACTION
 	// CHECK!! - make sure this is a sufficient condition to mark this transaction as "self".
@@ -369,19 +394,21 @@ func Eth_rpc__get_tx(p_tx *eth_types.Transaction,
 
 	gas_used_int := tx_receipt.GasUsed
 	gf_tx := &gf_eth_monitor_core.GF_eth__tx{
-		Hash_str:      tx_receipt.TxHash.Hex(),
-		Index_int:     uint64(tx_receipt.TransactionIndex),
-		From_addr_str: sender_addr_str,
-		To_addr_str:   to_str,
-		Value_eth_f:   tx_value_eth_f, // tx.Value().Uint64(),
+		Hash_str:       tx_receipt.TxHash.Hex(),
+		Index_int:      uint64(tx_receipt.TransactionIndex),
+		From_addr_str:  sender_addr_str,
+		To_addr_str:    to_str,
+		Value_eth_f:    tx_value_eth_f, // tx.Value().Uint64(),
+		Data_bytes_lst: tx.Data(),
 
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
 		Nonce_int:     tx.Nonce(),
 		Size_f:        float64(tx.Size()),
 		Cost_int:      tx.Cost().Uint64(),
-		Contract_new_addr_str: new_contract_addr_str,
-		Logs:                  logs,
+		Logs_lst:      logs,
+
+		Contract_new:  contract__new,
 	}
 
 	return gf_tx, nil
@@ -482,7 +509,7 @@ func Eth_rpc__init(p_host_str string,
 			"err":       err}).Fatal("failed to connect json-rpc connect to Eth node")
 		
 			
-		error_defs_map := error__get_defs()
+		error_defs_map := gf_eth_monitor_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},

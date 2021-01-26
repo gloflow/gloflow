@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_lib
+package gf_eth_monitor_core
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -29,7 +29,7 @@ type Error_def struct {
 }
 
 //-------------------------------------------------
-func error__get_defs() map[string]gf_core.Error_def {
+func Error__get_defs() map[string]gf_core.Error_def {
 
 	error_defs_map := map[string]gf_core.Error_def{
 
@@ -58,7 +58,10 @@ func error__get_defs() map[string]gf_core.Error_def {
 		"eth_rpc__get_tx_sender": gf_core.Error_def{
 			Descr_str: "failed to get Transaction Sender via Ethereum RPC-JSON API",
 		},
-		
+		"eth_rpc__get_contract_code": gf_core.Error_def{
+			Descr_str: "failed to Contract code via Ethereum RPC-JSON API",
+		},
+
 		//---------------
 		
 	}

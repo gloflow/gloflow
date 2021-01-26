@@ -171,7 +171,6 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 
 	span__get_blocks.Finish()
 
-	fmt.Println(data_map)
 
 	block_map := data_map["block_map"].(map[string]interface{})
 
