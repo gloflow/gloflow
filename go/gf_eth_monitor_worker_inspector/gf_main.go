@@ -30,11 +30,13 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
 
 //-------------------------------------------------
 type GF_runtime struct {
 	eth_rpc_client *ethclient.Client
+	py_plugins     *gf_eth_monitor_core.GF_py_plugins
 	runtime_sys    *gf_core.Runtime_sys
 }
 
@@ -47,11 +49,13 @@ func main() {
 
 	port_int         := 2000
 	port_metrics_int := 9120
-	worker_inspector__geth__host_str := "127.0.0.1"
-	sentry_endpoint_str              := os.Getenv("GF_SENTRY_ENDPOINT")
+	geth__port_int   := 8545
+	geth__host_str   := "127.0.0.1"
+	sentry_endpoint_str          := os.Getenv("GF_SENTRY_ENDPOINT")
+	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 
 	log_fun := gf_core.Init_log_fun()
-	runtime, err := runtime__get(log_fun)
+	runtime, err := runtime__get(py_plugins_base_dir_path_str, log_fun)
 	if err != nil {
 		panic(err)
 	}
@@ -83,7 +87,9 @@ func main() {
 
 	//-------------
 	// ETH_CLIENT
-	eth_client, gf_err := gf_eth_monitor_lib.Eth_rpc__init(worker_inspector__geth__host_str, runtime.runtime_sys)
+	eth_client, gf_err := gf_eth_monitor_lib.Eth_rpc__init(geth__host_str,
+		geth__port_int,
+		runtime.runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -107,7 +113,8 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
+func runtime__get(p_py_plugins_base_dir_path_str string,
+	p_log_fun func(string, string)) (*GF_runtime, error) {
 
 	//--------------------
 	// RUNTIME_SYS
@@ -120,9 +127,16 @@ func runtime__get(p_log_fun func(string, string)) (*GF_runtime, error) {
 	}
 
 	//--------------------
+	// PY_PLUGINS
+	py_plugins := &gf_eth_monitor_core.GF_py_plugins {
+		Base_dir_path_str: p_py_plugins_base_dir_path_str,
+	}
+
+	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
 		runtime_sys: runtime_sys,
+		py_plugins:  py_plugins,
 	}
 
 	//--------------------

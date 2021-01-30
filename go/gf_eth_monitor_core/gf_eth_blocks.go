@@ -83,11 +83,13 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 
 	for _, host_str := range workers_inspectors_hosts_lst {
 
+		ctx := span.Context()
+
 		// GET_BLOCK__FROM_WORKER
 		gf_block, gf_err := eth_blocks__worker_inspector__get_block(p_block_int,
 			host_str,
 			worker_inspector__port_int,
-			span.Context(),
+			ctx,
 			p_runtime.Runtime_sys)
 
 		if gf_err != nil {
@@ -100,6 +102,31 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 			block_from_workers_map[host_str] = nil
 			continue
 		}
+
+
+
+
+
+		for _, tx := range gf_block.Txs_lst {
+
+
+			// this is a new_contract transaction
+			if tx.Contract_new != nil {
+
+
+				gf_err := Eth_contract__enrich(ctx, p_metrics, p_runtime)
+				if gf_err != nil {
+					return nil, nil, gf_err
+				}
+
+
+
+			}
+
+
+		}
+
+
 
 
 
@@ -120,8 +147,14 @@ func Eth_blocks__get_block_pipeline(p_block_int uint64,
 	// get coinbase address from the block comming from the first worker_inspector
 	var block_miner_addr_hex_str string
 	for _, gf_block := range block_from_workers_map {
-		block_miner_addr_hex_str = gf_block.Coinbase_addr_str
-		break
+		
+		// if worker failed to return a block, it will be set to nil, so go to the 
+		// next one from which a coinbase could be acquired.
+		if gf_block != nil {
+			block_miner_addr_hex_str = gf_block.Coinbase_addr_str
+			break
+		}
+
 	}
 
 	miners_map, gf_err := Eth_miners__db__get_info(block_miner_addr_hex_str,
@@ -171,24 +204,24 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 
 	span__get_blocks.Finish()
 
+	//-----------------------
 
 	block_map := data_map["block_map"].(map[string]interface{})
-
-
 
 
 	// DECODE_TO_STRUCT
 	var gf_block GF_eth__block__int
 	err := mapstructure.Decode(block_map, &gf_block)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to load response block_map into a GF_eth__block__int struct",
+
+		error_defs_map := Error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to load response block_map into a GF_eth__block__int struct",
 			"mapstruct__decode",
 			map[string]interface{}{"url_str": url_str,},
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
 
-	
 
 	return &gf_block, nil
 

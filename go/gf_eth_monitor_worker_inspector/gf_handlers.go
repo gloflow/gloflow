@@ -68,6 +68,7 @@ func init_handlers(p_metrics *GF_metrics,
 			gf_block, gf_err := gf_eth_monitor_lib.Eth_rpc__get_block__pipeline(block_num_int,
 				p_runtime.eth_rpc_client,
 				span__pipeline.Context(),
+				p_runtime.py_plugins,
 				p_runtime.runtime_sys)
 
 			span__pipeline.Finish()

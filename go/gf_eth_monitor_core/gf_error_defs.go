@@ -39,6 +39,11 @@ func Error__get_defs() map[string]gf_core.Error_def {
 		},
 		
 		//---------------
+		"eth_contract__not_supported_type": gf_core.Error_def{
+			Descr_str: "eth contract type encountered is not supported",
+		},
+
+		//---------------
 		// ETH_RPC
 		"eth_rpc__dial": gf_core.Error_def{
 			Descr_str: "failed to get Dial/Connect to Ethereum RPC-JSON API",

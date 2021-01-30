@@ -13,7 +13,24 @@ RUN chown -R gf /home/gf
 RUN apk add --update bash
 
 #------------
-ENTRYPOINT ["/home/gf/bin/gf_eth_monitor_worker_inspector"]
+ENTRYPOINT ["/home/gf/gf_eth_monitor_worker_inspector"]
 
 #------------
-ADD build/gf_eth_monitor_worker_inspector /home/gf/bin/gf_eth_monitor_worker_inspector
+# PY
+
+RUN apk --update add python3
+RUN apk --update add py-pip
+RUN pip install --upgrade pip
+
+RUN pip install -r requirements__worker_inspector.txt
+
+
+
+
+
+
+RUN mkdir -p /home/gf/py/plugins
+ADD py/plugins/gf_plugin__get_contract_info.py /home/gf/py/plugins/gf_plugin__get_contract_info.py
+
+#------------
+ADD build/gf_eth_monitor_worker_inspector /home/gf/gf_eth_monitor_worker_inspector

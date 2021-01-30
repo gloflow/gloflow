@@ -37,11 +37,13 @@ def run_all():
 	assert "GF_SENTRY_ENDPOINT" in os.environ.keys()
 
 
-	aws_region_str        = "us-east-1"
-	test_gf_geth_path_str = f"{modd_str}/../../../gloflow_go-ethereum/build/bin/geth"
-	data_dir_path_str     = f"{modd_str}/test_data_geth"
-	assert os.path.isfile(test_gf_geth_path_str)
+	aws_region_str               = "us-east-1"
+	test_gf_geth_path_str        = f"{modd_str}/../../../gloflow_go-ethereum/build/bin/geth"
+	data_dir_path_str            = f"{modd_str}/test_data_geth"
+	py_plugins_base_dir_path_str = f"{modd_str}/../plugins"
 
+	assert os.path.isfile(test_gf_geth_path_str)
+	assert os.path.isfile(py_plugins_base_dir_path_str)
 
 
 	
@@ -51,6 +53,7 @@ def run_all():
 	# INIT
 	p, p__worker_inspector = init(test_gf_geth_path_str,
 		data_dir_path_str,
+		py_plugins_base_dir_path_str,
 		aws_region_str)
 
 
@@ -79,8 +82,9 @@ def run_all():
 #--------------------------------------------------
 def init(p_geth_bin_path_str,
 	p_geth_data_dir_path_str,
+	p_py_plugins_base_dir_path_str,
 	p_aws_region_str):
-	
+	assert os.path.isdir(p_py_plugins_base_dir_path_str)
 
 	#-------------------------------------------------------------
 	# START_GETH
@@ -128,7 +132,8 @@ def init(p_geth_bin_path_str,
 		]
 		p = subprocess.Popen(cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
 			env={
-				"GF_SENTRY_ENDPOINT": os.environ["GF_SENTRY_ENDPOINT"],
+				"GF_SENTRY_ENDPOINT":          os.environ["GF_SENTRY_ENDPOINT"],
+				"GF_PY_PLUGINS_BASE_DIR_PATH": p_py_plugins_base_dir_path_str,
 			})
 
 		t = threading.Thread(target=gf_test_utils.read_process_stdout, args=(p.stdout, "gf_eth_monitor__worker_inspector", "yellow"))

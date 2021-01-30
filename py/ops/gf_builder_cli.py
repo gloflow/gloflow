@@ -192,6 +192,7 @@ def build_go(p_name_str,
 	os.chdir(p_go_dir_path_str) # change into the target main package dir
 
 	# GO_GET
+	print("go get")
 	_, _, exit_code_int = gf_core_cli.run("go get -u")
 	print("")
 	print("")
