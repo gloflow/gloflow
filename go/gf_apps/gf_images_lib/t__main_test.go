@@ -90,6 +90,7 @@ func Test__main(p_test *testing.T) {
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
+
 	//-----------------
 
 	test_image_data := &Gf_test_image_data{
@@ -123,9 +124,11 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
+
 		//---------------
 		test__image_id_str := gf_images_utils.Image_ID__create(image_local_file_path_str,format_str,p_runtime_sys)
 		fmt.Println("test__image_id_str - "+test__image_id_str)
+
 		//---------------
 
 		image_thumbs, gf_image, gf_err := gf_images_utils.Trans__process_image(test__image_id_str,
@@ -151,7 +154,8 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 }
 
 //---------------------------------------------------
-func test__images_ops(p_test_image_data *Gf_test_image_data, p_runtime_sys *gf_core.Runtime_sys) {
+func test__images_ops(p_test_image_data *Gf_test_image_data,
+	p_runtime_sys *gf_core.Runtime_sys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_OPS   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -196,7 +200,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	fmt.Println(fmt.Sprintf("test__image dimensions - %d/%d",img_width_int,img_height_int))
 
 	//---------------
-	img, gf_err := gf_images_utils.Image__load_file(p_test__image_local_filepath_str,p_test__image_format_str, p_runtime_sys)
+	img, gf_err := gf_images_utils.Image__load_file(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

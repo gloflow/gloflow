@@ -51,6 +51,7 @@ func Test__upload(p_test *testing.T) {
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
 	// test__s3_bucket_name_str               := "gf--test--img"
+
 	//-------------
 	
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
@@ -147,5 +148,6 @@ func Test__upload(p_test *testing.T) {
 	}
 
 	T__test_image_job__updates(running_job.Id_str, jobs_mngr, runtime_sys)
+	
 	//-------------
 }

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 import (
+	// "fmt"
 	"strings"
 	"path/filepath"
 	"encoding/json"
@@ -31,8 +32,6 @@ func CLI_py__run(p_py_path_str string,
 	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
 	
 
-
-	
 	py_abs_path_str, _ := filepath.Abs(p_py_path_str)
 
 	cmd_info := GF_CLI_cmd_info {
@@ -41,7 +40,6 @@ func CLI_py__run(p_py_path_str string,
 		Dir_str:          "",
 		View_output_bool: true,
 	}
-
 
 
 	// RUN
@@ -58,33 +56,23 @@ func CLI_py__run(p_py_path_str string,
 	}
 
 
-
-
 	return parsed_output_lst, nil
 }
-
 
 //-------------------------------------------------
 func cli_py__parse_output(p_stdout_lst []string,
 	p_stdout_prefix_str string,
 	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
 
-
-
 	output_lst := []map[string]interface{}{}
 	for _, l_str := range p_stdout_lst {
 
-
-
-
 		if strings.HasPrefix(l_str, p_stdout_prefix_str) {
 
-
-
+			// remove the stdout prefix of the Py program stdout
 			output_str := strings.Replace(l_str, p_stdout_prefix_str, "", 1)
 
-
-
+			// JSON_DECODE
 			var o map[string]interface{}
 			err := json.Unmarshal([]byte(output_str), &o)
 

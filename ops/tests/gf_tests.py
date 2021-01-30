@@ -90,6 +90,7 @@ def run(p_app_name_str,
 
     c = " ".join(cmd_lst)
     print(c)
+
     #-------------
     # ENV
     e = os.environ.copy()
@@ -101,8 +102,8 @@ def run(p_app_name_str,
     
     # AWS_CREDS
     e.update(p_aws_s3_creds_map)
+    
     #-------------
-
     # RUN
     p = subprocess.Popen(c.split(" "), stderr=subprocess.PIPE, env=e)
     
@@ -113,8 +114,9 @@ def run(p_app_name_str,
 
     # if not p.stderr == None: print '%sTESTS FAILED%s >>>>>>>\n'%(fg('red'), attr(0))
 
-    p.wait() # has to be called so that p.returncode is set
+    p.wait()          # has to be called so that p.returncode is set
     os.chdir(cwd_str) # return to initial dir
+
     #-------------
 
     # kill HTTP test server used to serve assets that need to come over HTTP

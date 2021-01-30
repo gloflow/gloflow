@@ -56,8 +56,6 @@ func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 	p_runtime_sys *Runtime_sys) ([]string, []string, *Gf_error) {
 
 
-
-
 	stdout_ch, stderr_ch, done_ch, gf_err := CLI__run_core(p_cmd_info,
 		true,
 		p_runtime_sys)
@@ -65,18 +63,26 @@ func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 		return nil, nil, gf_err
 	}
 
-	stdout_lst := []string{}
-	stderr_lst := []string{}
-	for {
-		select {
-		case stdout_l_str := <- stdout_ch:
-			stdout_lst = append(stdout_lst, stdout_l_str)
-		case stderr_l_str := <- stderr_ch:
-			stderr_lst = append(stdout_lst, stderr_l_str)
-		case _ = <- done_ch:
-			break
+
+	//-------------------------------------------------
+	consume_fn := func() ([]string, []string) {
+		stdout_lst := []string{}
+		stderr_lst := []string{}
+		for {
+			select {
+			case stdout_l_str := <- stdout_ch:
+				stdout_lst = append(stdout_lst, stdout_l_str)
+			case stderr_l_str := <- stderr_ch:
+				stderr_lst = append(stdout_lst, stderr_l_str)
+			case _ = <- done_ch:
+				return stdout_lst, stderr_lst
+			}
 		}
+		return nil, nil
 	}
+
+	//-------------------------------------------------
+	stdout_lst, stderr_lst := consume_fn()
 
 	return stdout_lst, stderr_lst, nil
 }
@@ -113,6 +119,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	cmd_stderr__buffer    := bufio.NewReader(cmd_stderr__reader)
 
 	done_ch := make(chan bool)
+	
 	//----------------------
 	// START
 	err := cmd.Start()
