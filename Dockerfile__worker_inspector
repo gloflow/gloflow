@@ -18,7 +18,9 @@ ENTRYPOINT ["/home/gf/gf_eth_monitor_worker_inspector"]
 #------------
 # PY
 
+RUN apk --update add build-base
 RUN apk --update add python3
+RUN apk --update add python3-dev
 RUN apk --update add py-pip
 RUN pip install --upgrade pip
 
