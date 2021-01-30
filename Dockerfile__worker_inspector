@@ -22,7 +22,8 @@ RUN apk --update add python3
 RUN apk --update add py-pip
 RUN pip install --upgrade pip
 
-RUN pip install -r requirements__worker_inspector.txt
+ADD requirements__worker_inspector.txt /home/gf/requirements__worker_inspector.txt
+RUN pip install -r /home/gf/requirements__worker_inspector.txt
 
 
 
