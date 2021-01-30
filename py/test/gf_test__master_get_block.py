@@ -53,7 +53,7 @@ def run(p_aws_region_str):
 				"GF_SENTRY_ENDPOINT":    os.environ["GF_SENTRY_ENDPOINT"],
 
 				"GF_EVENTS_CONSUME":        "false",
-				"GF_WORKERS_AWS_DISCOVERY": "true" # "false" # use the localy started worker_inspector, at test startup
+				"GF_WORKERS_AWS_DISCOVERY": "false" # "true" # "false" # use the localy started worker_inspector, at test startup
 			})
 
 
@@ -77,7 +77,7 @@ def run(p_aws_region_str):
 
 		block_num_int = 10
 
-		print("MAKINT TEST CLIENT REQUEST")
+		print("MAKING TEST CLIENT REQUEST")
 		url_str = f"http://127.0.0.1:4050/gfethm/v1/block?b={block_num_int}"
 
 		print(url_str)
@@ -94,8 +94,8 @@ def run(p_aws_region_str):
 		assert r_map["status_str"] == "OK"
 		assert "data" in r_map.keys()
 		assert "block_from_workers_map" in r_map["data"]
-		assert "miners_lst" in r_map["data"]
-		assert isinstance(r_map["data"]["miners_lst"], list)
+		assert "miners_map" in r_map["data"]
+		assert isinstance(r_map["data"]["miners_map"], dict)
 		
 		for worker_host_str, block_info_map in r_map["data"]["block_from_workers_map"].items():
 			assert isinstance(worker_host_str, str)

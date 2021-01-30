@@ -43,7 +43,7 @@ def run_all():
 	py_plugins_base_dir_path_str = f"{modd_str}/../plugins"
 
 	assert os.path.isfile(test_gf_geth_path_str)
-	assert os.path.isfile(py_plugins_base_dir_path_str)
+	assert os.path.isdir(py_plugins_base_dir_path_str)
 
 
 	
