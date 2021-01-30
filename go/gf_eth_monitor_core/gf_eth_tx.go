@@ -237,6 +237,18 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 
 
 
+		// PY_PLUGIN - get info on a new contract
+
+		gf_err = py__run_plugin__get_contract_info(new_contract_addr_str,
+			p_py_plugins,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+
+		//------------------
+
 	// SELF_TRANSACTION
 	// CHECK!! - make sure this is a sufficient condition to mark this transaction as "self".
 	} else if tx.To() == nil {
@@ -257,15 +269,6 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 	}
 
 
-
-	//------------------
-
-	// PY_PLUGIN - get info on a contract
-
-	gf_err = py__run_plugin__get_contract_info(p_py_plugins, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
 
 	//------------------
 	// IMPORTANT!! - tx value is in Wei units, to convert to Eth we divide by 10^18.

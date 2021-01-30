@@ -30,14 +30,21 @@ type GF_py_plugins struct {
 }
 
 //-------------------------------------------------
-func py__run_plugin__get_contract_info(p_plugins_info *GF_py_plugins,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func py__run_plugin__get_contract_info(p_new_contract_addr_str string,
+	p_plugins_info *GF_py_plugins,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 
-	py_path_str       := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
+	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
+	args_lst := []string{
+		fmt.Sprintf("-contract_addr=%s", p_new_contract_addr_str),
+	}
 	stdout_prefix_str := "GF_OUT:"
 
-	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str, stdout_prefix_str, p_runtime_sys)
+	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str,
+		args_lst,
+		stdout_prefix_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
