@@ -115,8 +115,8 @@ def run_batch_sequence(p_stats__config_map,
 		p_output_img_str = p_stats__config_map['crawler_page_outgoing_links__null_breakdown']['plot_path_str'])
 
 #----------------------------------------------
-#ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
-#        instead of just picking the first element
+# ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
+#         instead of just picking the first element
 
 def get_mongodb_client(p_host_str, p_log_fun):
 	p_log_fun('FUN_ENTER','cli__gf_crawl__stats.get_mongodb_client()')
@@ -141,6 +141,7 @@ def parse_args():
 - stat__crawler_url_fetches__counts_by_day          - various counts of url_fetch's per day 
 
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-mongodb_host', 
 		action  = "store",
@@ -148,6 +149,7 @@ def parse_args():
 		help    = '''
 host of the Mongodb server
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-plots_dir', 
 		action  = "store",
@@ -155,6 +157,7 @@ host of the Mongodb server
 		help    = '''
 dir in which to place generated plots
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-env_var_args', 
 		action  = "store",
@@ -162,6 +165,7 @@ dir in which to place generated plots
 		help    = '''
 if arguments should be read from the ENV variables as well the CLI 
 					''')
+
 	#---------------------------------
 
 	passed_in_args_lst = sys.argv[1:]
@@ -187,6 +191,7 @@ if arguments should be read from the ENV variables as well the CLI
 			'mongodb_host': args_namespace.mongodb_host,
 			'plots_dir':    args_namespace.plots_dir
 		}
+		
 #-------------------------------------------------------------
 if __name__ == '__main__':
 	def log_fun(g,m):

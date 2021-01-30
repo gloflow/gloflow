@@ -43,6 +43,3 @@ def create_or_update_batch(p_secrets_map,
         else:
             aws_client.create_secret(Name = secret_name_str,
                 SecretString = secret_value_str)
-
-
-

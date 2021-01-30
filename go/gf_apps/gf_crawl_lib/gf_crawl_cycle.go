@@ -34,7 +34,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
-	p_runtime_sys.Log_fun("INFO"     , "p_s3_bucket_name_str - "+p_s3_bucket_name_str)
+	p_runtime_sys.Log_fun("INFO",      "p_s3_bucket_name_str - "+p_s3_bucket_name_str)
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()

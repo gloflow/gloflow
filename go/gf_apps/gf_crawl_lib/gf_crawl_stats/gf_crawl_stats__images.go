@@ -136,13 +136,14 @@ func stats__gifs(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *g
 	}
 	return data_map, nil
 }
+
 //-------------------------------------------------
 func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__images.stats__crawled_images_domains()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__images.stats__crawled_images_domains()")
 
 	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
-				"t":"crawler_page_img",
+				"t": "crawler_page_img",
 			},
 		},
 		bson.M{"$project":bson.M{
@@ -159,13 +160,13 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 		},
 		bson.M{"$group":bson.M{
 				"_id":                     "$domain_str",
-				"imgs_count_int":          bson.M{"$sum"     :1},
-				"creation_unix_times_lst": bson.M{"$push"    :"$creation_unix_time_f"},
-				"urls_lst":                bson.M{"$push"    :"$url_str"},
-				"origin_urls_lst":         bson.M{"$addToSet":"$origin_url_str"},
-				"downloaded_lst":          bson.M{"$push"    :"$downloaded_bool"},
-				"valid_for_usage_lst":     bson.M{"$push"    :"$valid_for_usage_bool"},
-				"s3_stored_lst":           bson.M{"$push"    :"$s3_stored_bool"},
+				"imgs_count_int":          bson.M{"$sum":      1},
+				"creation_unix_times_lst": bson.M{"$push":     "$creation_unix_time_f"},
+				"urls_lst":                bson.M{"$push":     "$url_str"},
+				"origin_urls_lst":         bson.M{"$addToSet": "$origin_url_str"},
+				"downloaded_lst":          bson.M{"$push":     "$downloaded_bool"},
+				"valid_for_usage_lst":     bson.M{"$push":     "$valid_for_usage_bool"},
+				"s3_stored_lst":           bson.M{"$push":     "$s3_stored_bool"},
 			},
 		},
 		/*bson.M{"$group":bson.M{

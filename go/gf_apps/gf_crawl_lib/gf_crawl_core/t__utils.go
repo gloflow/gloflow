@@ -63,6 +63,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	}
 
 	test__cluster_node_type_str := "master"
+
 	//-------------
 
 	log_fun      := gf_core.Init_log_fun()
@@ -75,6 +76,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
+
 	//-------------
 	//ELASTICSEARCH
 	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtime_sys)
@@ -82,9 +84,11 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 		panic("failed to get ElasticSearch client in test initialization")
 		return nil, nil
 	}
+
 	//-------------
 	//S3
 	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
+
 	//-------------
 
 	crawler_runtime := &Gf_crawler_runtime{
@@ -107,7 +111,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_crawler_page_image, *Gf_crawler_page_image_ref) {
 
 	//-------------------
-	//CRAWLED_IMAGE_CREATE
+	// CRAWLED_IMAGE_CREATE
 	test__crawled_image, gf_err := images_adt__prepare_and_create(p_test__crawler_name_str,
 		p_test__cycle_run_id_str,
 		p_test__img_src_url_str,
@@ -120,7 +124,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 		return nil, nil
 	}
 
-	//DB - CRAWLED_IMAGE_PERSIST
+	// DB - CRAWLED_IMAGE_PERSIST
 	exists_bool, gf_err := Image__db_create(test__crawled_image, p_crawler_runtime, p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
@@ -129,32 +133,34 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	}
 
 	assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
+
 	//-------------------
-	//CRAWLED_IMAGE_REF_CREATE
+	// CRAWLED_IMAGE_REF_CREATE
 	test__crawled_image_ref := images_adt__ref_create(p_test__crawler_name_str,
 		p_test__cycle_run_id_str,
-		test__crawled_image.Url_str,                    //p_image_url_str
-		test__crawled_image.Domain_str,                 //p_image_url_domain_str
-		test__crawled_image.Origin_page_url_str,        //p_origin_page_url_str
-		test__crawled_image.Origin_page_url_domain_str, //p_origin_page_url_domain_str
+		test__crawled_image.Url_str,                    // p_image_url_str
+		test__crawled_image.Domain_str,                 // p_image_url_domain_str
+		test__crawled_image.Origin_page_url_str,        // p_origin_page_url_str
+		test__crawled_image.Origin_page_url_domain_str, // p_origin_page_url_domain_str
 		p_runtime_sys)
 
-	//DB - CRAWLED_IMAGE_REF_PERSIST
+	// DB - CRAWLED_IMAGE_REF_PERSIST
 	gf_err = Image__db_create_ref(test__crawled_image_ref, p_crawler_runtime, p_runtime_sys)
 	if gf_err != nil {
 		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
 		panic(gf_err.Error)
 		return nil, nil
 	}
+
 	//-------------------
 
 	return test__crawled_image, test__crawled_image_ref
 }
 
 //-------------------------------------------------
-//given some human readable (or arbitrarily named) local image file, create a new image file with the same content, that is named
-//according to the gf_images image file naming scheme. here for testing this is done manually via this function, but in the gf_crawl pipeline
-//this is done by calling the native gf_image functions that create this gf_images based name.
+// given some human readable (or arbitrarily named) local image file, create a new image file with the same content, that is named
+// according to the gf_images image file naming scheme. here for testing this is done manually via this function, but in the gf_crawl pipeline
+// this is done by calling the native gf_image functions that create this gf_images based name.
 
 func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
@@ -164,7 +170,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
-	//IMPORTANT!! - creates a new gf_image ID from the image URL
+	// IMPORTANT!! - creates a new gf_image ID from the image URL
 	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
 		test__local_image_dir_path_str,
 		p_runtime_sys)

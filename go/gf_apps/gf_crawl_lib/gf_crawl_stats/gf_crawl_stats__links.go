@@ -96,7 +96,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	}
 
 	//--------------------
-	//AGGREGATE DAY COUNTS - app-layer DB join
+	// AGGREGATE DAY COUNTS - app-layer DB join
 	new_links_counts_map := map[int]*Gf_stat__links_in_day{}
 	keys_lst             := []int{}
 	for _, l := range results_lst {
@@ -110,14 +110,16 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			stat_r = stat
 		} else {
 			//-----------------
-			//CREATE_NEW
+			// CREATE_NEW
 			stat                                 := &Gf_stat__links_in_day{}
 			new_links_counts_map[year_day_id_int] = stat
 			stat_r                                = stat
 
 			keys_lst = append(keys_lst, year_day_id_int)
+
 			//-----------------
 		}
+
 		//--------------
 
 		stat_r.Total_count_int = stat_r.Total_count_int+1
@@ -130,6 +132,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			stat_r.Fetched_total_int = stat_r.Fetched_total_int + 1
 		}
 	}
+
 	//--------------------
 
 	sort.Ints(keys_lst)
@@ -202,7 +205,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 }
 //-------------------------------------------------
 func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__links.stats__crawled_links_domains()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__crawled_links_domains()")
 
 	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{

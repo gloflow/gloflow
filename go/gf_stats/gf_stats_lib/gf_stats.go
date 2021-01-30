@@ -40,7 +40,7 @@ type Stat_query_run__extern_result struct {
 type Stat_query_run struct {
 	Id                 bson.ObjectId          `bson:"_id,omitempty"`
 	Id_str             string                 `bson:"id_str"`
-	T_str              string                 `bson:"t_str"` //"stat_query_run",
+	T_str              string                 `bson:"t_str"` // "stat_query_run",
 	Stat_name_str      string                 `bson:"stat_name_str"`
 	Start_time__unix_f float64                `bson:"start_time__unix_f"`
 	End_time__unix_f   float64                `bson:"end_time__unix_f"`
@@ -55,15 +55,16 @@ func Init(p_stats_url_base_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats.Init()")
 
 	//----------------
-	//BATCH__HANDLERS
+	// BATCH__HANDLERS
 	gf_err := batch__init_handlers(p_stats_url_base_str, p_py_stats_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-	//----------------
-	//QUERY__HANDLERS
 
-	//collect all query funs into a single map
+	//----------------
+	// QUERY__HANDLERS
+
+	// collect all query funs into a single map
 	query_funs_map := map[string]func(*gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error){}
 
 	for _, stats_query_funs_map := range p_stats_query_funs_groups_lst {
@@ -72,8 +73,8 @@ func Init(p_stats_url_base_str string,
 			if _, ok := query_funs_map[stat_name_str]; !ok {
 				query_funs_map[stat_name_str] = query_fun
 			} else {
-				//panicking here since this is only run on code initialization, and is a 
-				//development time error (not an expected error)
+				// panicking here since this is only run on code initialization, and is a 
+				// development time error (not an expected error)
 				panic("there is a duplicate stat name in several query_funs_groups")
 			}
 		} 
@@ -99,7 +100,7 @@ func query__init_handlers(p_stats_url_base_str string,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 			i, gf_err := gf_rpc_lib.Get_http_input(url_str, p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
@@ -108,7 +109,7 @@ func query__init_handlers(p_stats_url_base_str string,
 			stat_name_str := i["stat_name_str"].(string)
 			
 			//--------------------------
-			//RUN_QUERY_FUNCTION
+			// RUN_QUERY_FUNCTION
 			
 			query_fun_result, gf_err := query__run_fun(stat_name_str, p_stats_query_funs_map, p_runtime_sys)
 			if gf_err != nil {
@@ -116,6 +117,7 @@ func query__init_handlers(p_stats_url_base_str string,
 				return
 			}
 			gf_rpc_lib.Http_respond(query_fun_result, "OK", p_resp, p_runtime_sys)
+
 			//--------------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

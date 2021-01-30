@@ -37,14 +37,14 @@ type Client_job_image_output struct {
 	Thumbnail_small_relative_url_str  string
 	Thumbnail_medium_relative_url_str string
 	Thumbnail_large_relative_url_str  string
-	//Fetch_ok_bool                     bool
-	//Transform_ok_bool                 bool
+	// Fetch_ok_bool                     bool
+	// Transform_ok_bool                 bool
 }
 
 //-------------------------------------------------
-//p_input_images_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
-//                                       was found. this is valid for gf_chrome_ext image sources.
-//                                       its not relevant for direct image uploads from clients.
+// p_input_images_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
+//                                        was found. this is valid for gf_chrome_ext image sources.
+//                                        its not relevant for direct image uploads from clients.
 
 func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
 	p_input_images_origin_pages_urls_lst  []string,
@@ -75,7 +75,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__start_job()")
 
 	//------------------
-	//HTTP REQUEST
+	// HTTP REQUEST
 
 	p_runtime_sys.Log_fun("INFO","p_target__image_service_host_port_str - "+p_target__image_service_host_port_str)
 
@@ -85,9 +85,9 @@ func client__start_job(p_input_images_urls_lst []string,
 		"client_type_str": p_client_type_str,
 		"imgs_urls_str":   strings.Join(p_input_images_urls_lst, ","),
 
-		//imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
-		//                             was found. this is valid for gf_chrome_ext image sources.
-		//                             its not relevant for direct image uploads from clients.
+		// imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
+		//                              was found. this is valid for gf_chrome_ext image sources.
+		//                              its not relevant for direct image uploads from clients.
 		"imgs_origin_pages_urls_str": strings.Join(p_input_images_origin_pages_urls_lst, ","),
 	}
 
@@ -107,8 +107,8 @@ func client__start_job(p_input_images_urls_lst []string,
 	fmt.Println("")
 
 	// FIX!! - REMOVE THIS!! - instead use gf_rpc_client function
-	data_lst,_  := json.Marshal(data_map)
-	_,body,errs := gorequest.New().
+	data_lst, _  := json.Marshal(data_map)
+	_, body,errs := gorequest.New().
 		Post(url_str).
 		Set("accept", "application/json").
 		Send(string(data_lst)).
@@ -158,7 +158,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	r_data_map := r_map["data"].(map[string]interface{})
 
 	//-----------------
-	//RUNNING_JOB_ID
+	// RUNNING_JOB_ID
 
 	if _, ok := r_data_map["running_job_id_str"]; !ok {
 		err_usr_msg := fmt.Sprintf("%s response didnt return 'running_job_id_str'", url_str)
@@ -172,7 +172,7 @@ func client__start_job(p_input_images_urls_lst []string,
 	running_job_id_str := r_data_map["running_job_id_str"].(string)
 
 	//-----------------
-	//JUB_RESULT_IMAGES
+	// JUB_RESULT_IMAGES
 	job_expected_outputs_untyped_lst := r_data_map["job_expected_outputs_lst"].([]interface{})
 	images_outputs_lst               := []*Client_job_image_output{}
 
@@ -183,8 +183,8 @@ func client__start_job(p_input_images_urls_lst []string,
 			Thumbnail_small_relative_url_str:  o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
 			Thumbnail_medium_relative_url_str: o.(map[string]interface{})["thumbnail_medium_relative_url_str"].(string),
 			Thumbnail_large_relative_url_str:  o.(map[string]interface{})["thumbnail_large_relative_url_str"].(string),
-			//Fetch_ok_bool                    :fetch_ok_bool,
-			//Transform_ok_bool                :transform_ok_bool,
+			// Fetch_ok_bool                    :fetch_ok_bool,
+			// Transform_ok_bool                :transform_ok_bool,
 		}
 		images_outputs_lst = append(images_outputs_lst, image_output)
 	}

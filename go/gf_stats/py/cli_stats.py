@@ -137,6 +137,7 @@ def crontab__build_config(p_py_stats_dirs_lst,
 				py_stat__file_name_no_ext_str = py_stat__file_name_str.split('.')[0]
 				m                             = import_module(py_stat__file_name_no_ext_str, p_py_stats_dirs_lst, p_log_fun)
 				py_stat__files_lst.append((m, py_stat__file_name_str))
+
 	#-------------------------
 
 	f = open(p_crontab_file_path_str, 'w+') #create file
@@ -164,7 +165,7 @@ MAILTO=""
 		print('')
 
 		#-------------------------
-		#CRON
+		# CRON
 		py_stat__file_name_no_ext_str = os.path.basename(py_f_str).split('.')[0]
 		py_stat__name_str             = py_stat__file_name_no_ext_str
 		
@@ -184,19 +185,19 @@ MAILTO=""
 			'tee /home/gf/logs/log__%s.log /dev/stdout'%(py_stat__name_str)
 		]
 
-		#minute   hour   day   month   dayofweek   command"
+		# minute   hour   day   month   dayofweek   command"
 		#
-		#minute    - any integer from 0 to 59
-		#hour      - any integer from 0 to 23
-		#day       - any integer from 1 to 31 (must be a valid day if a month is specified) 
-		#month     - any integer from 1 to 12 (or the short name of the month such as jan or feb) 
-		#dayofweek - any integer from 0 to 7, where 0 or 7 represents Sunday (or the short name of the week such as sun or mon) 
-		#"/" - used to specify step values
-		#      in the minute field "/n" means run command every n-th minute
+		# minute    - any integer from 0 to 59
+		# hour      - any integer from 0 to 23
+		# day       - any integer from 1 to 31 (must be a valid day if a month is specified) 
+		# month     - any integer from 1 to 12 (or the short name of the month such as jan or feb) 
+		# dayofweek - any integer from 0 to 7, where 0 or 7 represents Sunday (or the short name of the week such as sun or mon) 
+		# "/" - used to specify step values
+		#       in the minute field "/n" means run command every n-th minute
 
 		if run_frequency_minute_int == 0:
 
-			#IMPORTANT!! - for once an hour, CRON has a different notation
+			# IMPORTANT!! - for once an hour, CRON has a different notation
 			min_str = str(run_frequency_minute_int)
 		else:
 			min_str = '*/%d'%(run_frequency_minute_int)
@@ -209,10 +210,11 @@ MAILTO=""
 	f.close()
 
 	#-------------------------
-	#IMPORTANT!! - set the generated crontab file for usage by crond
+	# IMPORTANT!! - set the generated crontab file for usage by crond
 	r = delegator.run('crontab %s'%(p_crontab_file_path_str))
 	if not r.out == "": print(r.out)
 	if not r.err == "": print(r.err)
+
 	#-------------------------
 
 	return py_stats__names_lst
@@ -235,8 +237,8 @@ def crontab__run(p_crontab_file_path_str, p_log_fun):
 	if not r.err == "": print(r.err)
 
 #----------------------------------------------
-#ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
-#        instead of just picking the first element
+# ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
+#         instead of just picking the first element
 
 def get_mongodb_client(p_host_str, p_log_fun):
 	p_log_fun('FUN_ENTER', 'cli_stats.get_mongodb_client()')
@@ -257,8 +259,9 @@ def parse_args():
 - %scrontab_config%s    - build out a crontab config file only
 - %srun_py_stat%s       - run specified py_stat (.py script file)
 					'''%(fg('yellow'),attr(0),
-					fg('yellow'),attr(0),
-					fg('yellow'),attr(0)))
+	fg('yellow'),attr(0),
+	fg('yellow'),attr(0)))
+
 	#---------------------------------
 	arg_parser.add_argument('-mongodb_host',
 		action  = "store",
@@ -266,6 +269,7 @@ def parse_args():
 		help    = '''
 host of the Mongodb server
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-py_stat',
 		action  = "store",
@@ -273,6 +277,7 @@ host of the Mongodb server
 		help    = '''
 name of the py_stat (.py script file, but without extension) to run
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-py_stats_dirs', 
 		action  = "store",
@@ -280,6 +285,7 @@ name of the py_stat (.py script file, but without extension) to run
 		help    = '''
 dirs in which to look for py stats scripts (.py) - ',' separated list
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-plots_dir', 
 		action  = "store",
@@ -287,6 +293,7 @@ dirs in which to look for py stats scripts (.py) - ',' separated list
 		help    = '''
 dir in which to place generated plots
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-cli_stats_path',
 		action  = "store",
@@ -294,6 +301,7 @@ dir in which to place generated plots
 		help    = '''
 filepath to the cli_stats.py python script (used for crontab config to run it from the right path)
 					''')
+
 	#---------------------------------
 	arg_parser.add_argument('-crontab_file_path', 
 		action  = "store",
@@ -301,6 +309,7 @@ filepath to the cli_stats.py python script (used for crontab config to run it fr
 		help    = '''
 crontab configuration file path (cron runs py stats scripts)
 					''')
+
 	#---------------------------------
 
 	passed_in_args_lst = sys.argv[1:]

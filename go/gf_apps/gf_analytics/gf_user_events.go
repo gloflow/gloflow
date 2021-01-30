@@ -70,6 +70,7 @@ func user_event__parse_input(p_req *http.Request,
 	
 	//--------------------
 	session_id_str := session__get_id_cookie(p_req, p_resp, p_runtime_sys)
+
 	//--------------------
 
 	if err != nil {
@@ -89,12 +90,13 @@ func user_event__create(p_input *Gf_user_event_input,
 	
 	creation_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 	//--------------------
-	//ID
+	// ID
 	h := md5.New()
 	h.Write([]byte(fmt.Sprint(creation_time__unix_f)))
 	h.Write([]byte("user_event"))
 	sum        := h.Sum(nil)
 	id_hex_str := hex.EncodeToString(sum)
+	
 	//--------------------
 	
 	gf_user_event := &Gf_user_event{

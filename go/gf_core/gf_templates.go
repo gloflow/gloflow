@@ -59,6 +59,7 @@ func Templates__load(p_main_template_filename_str string,
 			}
 		}
 	}
+
 	//---------------------
 	// TEMPLATES
 	main_template_path_str := fmt.Sprintf("%s/%s", p_templates_dir_path_str, p_main_template_filename_str)
@@ -73,6 +74,7 @@ func Templates__load(p_main_template_filename_str string,
 			err, "gf_core", p_runtime_sys)
 		return nil, nil, gf_err
 	}
+	
 	//---------------------
 
 	return main__tmpl, subtemplates_names_lst, nil

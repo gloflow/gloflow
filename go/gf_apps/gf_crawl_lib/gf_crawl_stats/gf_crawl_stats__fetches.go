@@ -23,12 +23,14 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //-------------------------------------------------
 type Gf_stat__crawled_url_fetches struct {
 	Url_str         string    `bson:"_id"             json:"url_str"`
 	Count_int       int       `bson:"count_int"       json:"count_int"`
 	Start_times_lst []float64 `bson:"start_times_lst" json:"start_times_lst"`
 }
+
 //-------------------------------------------------
 func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_days()")
@@ -43,17 +45,18 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[str
 	}
 	return data_map, nil
 }
+
 //-------------------------------------------------
 func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
 
 	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
-		bson.M{"$match":bson.M{
-				"t": "crawler_url_fetch",
+		bson.M{"$match": bson.M{
+				"t":     "crawler_url_fetch",
 			},
 		},
 
-		bson.M{"$project":bson.M{
+		bson.M{"$project": bson.M{
 				"id_str":       true,
 				"start_time_f": true,
 				"end_time_f":   true,
@@ -64,14 +67,14 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 		},
 
 		bson.M{"$group":bson.M{
-				"_id":            "$url_str",
-				"count_int":      bson.M{"$sum" :1},
-				"start_times_lst":bson.M{"$push":"$start_time_f"},
+				"_id":             "$url_str",
+				"count_int":       bson.M{"$sum" :1},
+				"start_times_lst": bson.M{"$push":"$start_time_f"},
 			},
 		},
 
 		bson.M{"$sort":bson.M{
-				"count_int":-1,
+				"count_int": -1,
 			},
 		},
 	})

@@ -66,7 +66,7 @@ func (p_retrier *Gf_elasticsearch_retrier) Retry(p_ctx context.Context,
 func Elastic__get_client(p_es_host_str string, p_runtime_sys *Runtime_sys) (*elastic.Client, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
 
-	//es_host_str := "127.0.0.1:9200"
+	// es_host_str := "127.0.0.1:9200"
 	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("es_host - %s", p_es_host_str))
 
 	url_str := fmt.Sprintf("http://%s", p_es_host_str)
@@ -82,7 +82,7 @@ func Elastic__get_client(p_es_host_str string, p_runtime_sys *Runtime_sys) (*ela
 		return nil, gf_err	
 	}
 
-	//ping elasticsearch server
+	// ping elasticsearch server
 	ctx                     := context.Background()
 	ping_url_str            := fmt.Sprintf("http://%s", p_es_host_str)
 	es_info, resp_code, err := elasticsearch_client.Ping(ping_url_str).Do(ctx)

@@ -181,6 +181,7 @@ func S3__upload_file(p_target_file__local_path_str string,
 		return "", gf_err
 	}
 	defer file.Close()
+	
 	//-----------------
 
 	file_info,_   := file.Stat()

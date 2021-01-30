@@ -31,18 +31,18 @@ import (
 func Complete_url(p_url_str string,
 	p_domain_str  string,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.complete_url()")
+	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.complete_url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	//full url, no work to be done
+	// full url, no work to be done
 	if strings.HasPrefix(p_url_str, "http://") || strings.HasPrefix(p_url_str, "https://") {
 		return p_url_str, nil
 	} else {
 
 		//-----------------
-		//RELATIVE_URL
+		// RELATIVE_URL
 		u,err := url.Parse("http://"+p_domain_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to parse a domain to complete a url",
@@ -55,11 +55,12 @@ func Complete_url(p_url_str string,
 			return "", gf_err
 		}
 
-		//IMPORTANT!! - path.Join() handles cases where p_url_str might start with "/" or not
+		// IMPORTANT!! - path.Join() handles cases where p_url_str might start with "/" or not
 		u.Path        = path.Join(u.Path,p_url_str)
 		full_url_str := u.String()
 
 		p_runtime_sys.Log_fun("INFO", cyan("COMPLETED_URL")+" - "+yellow(full_url_str))
+
 		//-----------------
 
 		return full_url_str, nil
@@ -71,7 +72,7 @@ func Complete_url(p_url_str string,
 func Get_domain(p_link_url_str string,
 	p_origin_url_str string,
 	p_runtime_sys    *gf_core.Runtime_sys) (string, string, *gf_core.Gf_error) {
-	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.get_domain()")
+	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.get_domain()")
 
 	origin_url,err := url.Parse(p_origin_url_str)
 	if err != nil {
@@ -90,8 +91,8 @@ func Get_domain(p_link_url_str string,
 	origin_domain_str := strings.TrimPrefix(origin_url.Host, "www.")
 
 
-	//IMPORTANT!! - "//" - is for "scheme relative" or "protocol relative" URI's, which are 
-	//                     correctly parsed by the "url" library 
+	// IMPORTANT!! - "//" - is for "scheme relative" or "protocol relative" URI's, which are 
+	//                      correctly parsed by the "url" library 
 	if strings.HasPrefix(p_link_url_str, "//") {
 		url,err := url.Parse(p_link_url_str)
 		if err != nil {
@@ -108,9 +109,9 @@ func Get_domain(p_link_url_str string,
 		domain_str = strings.TrimPrefix(url.Host, "www.")
 
 	} else if strings.HasPrefix(p_link_url_str, "/") {
-		//IMPORTANT!! - if p_link_url_str starts with "/" it is a relative link, and therefore
-		//              shares the domain with the origin_url_str, url of the page from which the link
-		//              was extracted.
+		// IMPORTANT!! - if p_link_url_str starts with "/" it is a relative link, and therefore
+		//               shares the domain with the origin_url_str, url of the page from which the link
+		//               was extracted.
 		domain_str = origin_domain_str //since this is a relative url, url_domain and origin_domain are the same
 	} else {
 		url,err := url.Parse(p_link_url_str)
