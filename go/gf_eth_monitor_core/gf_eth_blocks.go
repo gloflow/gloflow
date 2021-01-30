@@ -217,7 +217,10 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 		error_defs_map := Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to load response block_map into a GF_eth__block__int struct",
 			"mapstruct__decode",
-			map[string]interface{}{"url_str": url_str,},
+			map[string]interface{}{
+				"url_str":   url_str,
+				"block_map": block_map,
+			},
 			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}

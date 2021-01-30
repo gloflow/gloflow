@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/big"
 	"context"
+	"encoding/base64"
 	"github.com/getsentry/sentry-go"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
@@ -39,7 +40,8 @@ type GF_eth__tx struct {
 	From_addr_str         string           `json:"from_addr_str"  bson:"from_addr_str"`
 	To_addr_str           string           `json:"to_addr_str"    bson:"to_addr_str"`
 	Value_eth_f           float64          `json:"value_eth_f"    bson:"value_eth_f"`
-	Data_bytes_lst        []byte           `json:"data_bytes_lst" bson:"data_bytes_lst"`
+	Data_bytes_lst        []byte           `json:"-"              bson:"-"`
+	Data_b64_str          string           `json:"data_b64_str"   bson:"data_b64_str"`
 	Gas_used_int          uint64           `json:"gas_used_int"   bson:"gas_used_int"`
 	Gas_price_int         uint64           `json:"gas_price_int"  bson:"gas_price_int"`
 	Nonce_int             uint64           `json:"nonce_int"      bson:"nonce_int"`
@@ -273,14 +275,22 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 	tx_value_f        := new(big.Float).SetInt(tx.Value())
 	tx_value_eth_f, _ := new(big.Float).Quo(tx_value_f, big.NewFloat(math.Pow(10, 18))).Float64()
 
+	// TX_DATA
+	data_bytes_lst := tx.Data()
+	data_b64_str   := base64.StdEncoding.EncodeToString(data_bytes_lst) // base64
+
 	gas_used_int := tx_receipt.GasUsed
+
 	gf_tx := &GF_eth__tx{
 		Hash_str:       tx_receipt.TxHash.Hex(),
 		Index_int:      uint64(tx_receipt.TransactionIndex),
 		From_addr_str:  sender_addr_str,
 		To_addr_str:    to_str,
 		Value_eth_f:    tx_value_eth_f, // tx.Value().Uint64(),
-		Data_bytes_lst: tx.Data(),
+
+		// DATA
+		Data_bytes_lst: data_bytes_lst,
+		Data_b64_str:   data_b64_str,
 
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
