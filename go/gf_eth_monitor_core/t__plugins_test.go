@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2020 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,34 +20,47 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
+	"os"
 	"fmt"
+	"testing"
+	// "github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-type GF_py_plugins struct {
-	Base_dir_path_str string
+//---------------------------------------------------
+func TestMain(m *testing.M) {
+	v := m.Run()
+	os.Exit(v)
 }
 
-//-------------------------------------------------
-func py__run_plugin__get_contract_info(p_plugins_info *GF_py_plugins,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+//---------------------------------------------------
+func Test__plugins(p_test *testing.T) {
+
+	fmt.Println("TEST__MAIN ==============================================")
+	
 
 
-	py_path_str       := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
-	stdout_prefix_str := "GF_OUT:"
+	//--------------------
+	// RUNTIME_SYS
+	log_fun     := gf_core.Init_log_fun()
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_eth_monitor_core__tests",
+		Log_fun:          log_fun,
+		
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,
+	}
 
-	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str, stdout_prefix_str, p_runtime_sys)
+	//--------------------
+
+
+	plugins_info := &GF_py_plugins{
+		Base_dir_path_str: "./../../py/plugins",
+	}
+	gf_err := py__run_plugin__get_contract_info(plugins_info, runtime_sys)
 	if gf_err != nil {
-		return gf_err
+		p_test.Fail()
 	}
 
 
-	for _, o := range outputs_lst {
-
-		fmt.Println(o)
-
-	}
-
-	return nil
 }

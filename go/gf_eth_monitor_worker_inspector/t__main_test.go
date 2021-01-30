@@ -1,6 +1,11 @@
+
+
+
+
+
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2020 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,37 +22,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package main
 
 import (
+	"os"
 	"fmt"
-	"github.com/gloflow/gloflow/go/gf_core"
+	"testing"
+	// "github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-type GF_py_plugins struct {
-	Base_dir_path_str string
+//---------------------------------------------------
+func TestMain(m *testing.M) {
+	v := m.Run()
+	os.Exit(v)
 }
 
-//-------------------------------------------------
-func py__run_plugin__get_contract_info(p_plugins_info *GF_py_plugins,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+//---------------------------------------------------
+func Test__main(p_test *testing.T) {
+
+	fmt.Println("TEST__MAIN ==============================================")
+	
 
 
-	py_path_str       := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
-	stdout_prefix_str := "GF_OUT:"
 
-	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str, stdout_prefix_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-
-	for _, o := range outputs_lst {
-
-		fmt.Println(o)
-
-	}
-
-	return nil
 }

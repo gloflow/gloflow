@@ -15,20 +15,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
-
-
+import json
 
 #--------------------------------------------------
 def main():
-    
-    
-    geth__port_int = 8545
+	
+	
+	geth__port_int = 8545
 	geth__host_str = "127.0.0.1"
 
 
+	print("WORKS")
 
+
+
+	out_map = {}
+	print(f"GF_OUT:{json.dumps(out_map)}")
 
 #--------------------------------------------------
 main()

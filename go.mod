@@ -12,12 +12,12 @@ require (
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
-	github.com/deepmap/oapi-codegen v1.4.2 // indirect
+	github.com/deepmap/oapi-codegen v1.5.0 // indirect
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.9.0
-	github.com/gloflow/gloflow v0.0.0-20210125014111-1f845d2fc366
+	github.com/gloflow/gloflow v0.0.0-20210130000741-007d7e6a9e16
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.2
@@ -37,6 +37,7 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.7.0
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
 	go.mongodb.org/mongo-driver v1.4.5
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
