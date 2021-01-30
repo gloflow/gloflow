@@ -27,7 +27,7 @@ import (
 )
 
 //-------------------------------------------------
-type Gf_CLI_cmd_info struct {
+type GF_CLI_cmd_info struct {
 	Cmd_lst          []string
 	Env_vars_map     map[string]string
 	Dir_str          string
@@ -38,24 +38,53 @@ type Gf_CLI_cmd_info struct {
 // RUN_STANDARD
 func CLI__run_standard(p_cmd_lst []string,
 	p_env_vars_map map[string]string,
-	p_runtime      *Runtime_sys) ([]string, []string, *Gf_error) {
+	p_runtime_sys  *Runtime_sys) ([]string, []string, *Gf_error) {
 
-	cli_info := &Gf_CLI_cmd_info{
+	cli_info := &GF_CLI_cmd_info{
 		Cmd_lst:          p_cmd_lst,
 		Env_vars_map:     p_env_vars_map,
 		Dir_str:          "",
 		View_output_bool: true,
 	}
-	stdout_lst, stderr_lst, gf_err := CLI__run(cli_info, p_runtime)
+	stdout_lst, stderr_lst, gf_err := CLI__run(cli_info, p_runtime_sys)
 	return stdout_lst, stderr_lst, gf_err
 }
 
 //-------------------------------------------------
 // RUN
-func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
-	p_runtime *Runtime_sys) ([]string, []string, *Gf_error) {
+func CLI__run(p_cmd_info *GF_CLI_cmd_info,
+	p_runtime_sys *Runtime_sys) ([]string, []string, *Gf_error) {
 
 
+
+
+	stdout_ch, stderr_ch, done_ch, gf_err := CLI__run_core(p_cmd_info,
+		true,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, nil, gf_err
+	}
+
+	stdout_lst := []string{}
+	stderr_lst := []string{}
+	for {
+		select {
+		case stdout_l_str := <- stdout_ch:
+			stdout_lst = append(stdout_lst, stdout_l_str)
+		case stderr_l_str := <- stderr_ch:
+			stderr_lst = append(stdout_lst, stderr_l_str)
+		case _ = <- done_ch:
+			break
+		}
+	}
+
+	return stdout_lst, stderr_lst, nil
+}
+
+//-------------------------------------------------
+func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
+	p_wait_for_completion_bool bool,
+	p_runtime_sys              *Runtime_sys) (chan string, chan string, chan bool, *Gf_error) {
 
 	cmd_str := strings.Join(p_cmd_info.Cmd_lst, " ")
 	fmt.Printf("%s\n", cmd_str)
@@ -78,35 +107,32 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 	// STDOUT
 	cmd_stdout__reader, _ := cmd.StdoutPipe()
 	cmd_stdout__buffer    := bufio.NewReader(cmd_stdout__reader)
+	
 	// STDERR
 	cmd_stderr__reader, _ := cmd.StderrPipe()
 	cmd_stderr__buffer    := bufio.NewReader(cmd_stderr__reader)
 
-
-
-
-
-
-
+	done_ch := make(chan bool)
+	//----------------------
+	// START
 	err := cmd.Start()
 	if err != nil {
 		gf_err := Error__create("failed to Start a CLI command",
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
-			err, "gf_core", p_runtime)
-		return nil, nil, gf_err	
+			err, "gf_core", p_runtime_sys)
+		return nil, nil, nil, gf_err	
 	}
 
-
-
-	stdout_lst := []string{}
-	stderr_lst := []string{}
-
+	//----------------------
 	// STDOUT
+
+	stdout_ch := make(chan string, 100)
 	go func() {
 		for {
 			l, err := cmd_stdout__buffer.ReadString('\n')
 			if fmt.Sprint(err) == "EOF" {
+				done_ch <- true
 				return
 			}
 			if err != nil {
@@ -115,16 +141,21 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 			if p_cmd_info.View_output_bool {
 				fmt.Printf("%s\n", l)
 			}
-
-			stdout_lst = append(stdout_lst, strings.TrimSuffix(l, "\n"))
+			l_str := strings.TrimSuffix(l, "\n")
+			stdout_ch <- l_str
+			// stdout_lst = append(stdout_lst, )
 		}
 	}()
 
+	//----------------------
 	// STDERR
+
+	stderr_ch := make(chan string, 100)
 	go func() {
 		for {
 			l, err := cmd_stderr__buffer.ReadString('\n')
 			if fmt.Sprint(err) == "EOF" {
+				done_ch <- true
 				return
 			}
 			if err != nil {
@@ -133,25 +164,30 @@ func CLI__run(p_cmd_info *Gf_CLI_cmd_info,
 			if p_cmd_info.View_output_bool {
 				fmt.Printf("%s\n", l)
 			}
-			
-			stderr_lst = append(stderr_lst, strings.TrimSuffix(l, "\n"))
+			l_str := strings.TrimSuffix(l, "\n")
+			stderr_ch <- l_str
+			// stderr_lst = append(stderr_lst, strings.TrimSuffix(l, "\n"))
 		}
 	}()
 
+	//----------------------
+	// WAIT
 
 
-
-
-	err = cmd.Wait()
-	if err != nil {
-		gf_err := Error__create("failed to Wait for a CLI command",
-			"cli_run_error",
-			map[string]interface{}{"cmd": cmd_str,},
-			err, "gf_core", p_runtime)
-		return nil, nil, gf_err
+	if p_wait_for_completion_bool {
+		err = cmd.Wait()
+		if err != nil {
+			gf_err := Error__create("failed to Wait for a CLI command to complete",
+				"cli_run_error",
+				map[string]interface{}{"cmd": cmd_str,},
+				err, "gf_core", p_runtime_sys)
+			return nil, nil, nil, gf_err
+		}
 	}
 
-	return stdout_lst, stderr_lst, nil
+	//----------------------
+
+	return stdout_ch, stderr_ch, done_ch, nil
 }
 
 //-------------------------------------------------
