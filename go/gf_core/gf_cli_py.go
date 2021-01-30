@@ -28,14 +28,18 @@ import (
 
 //-------------------------------------------------
 func CLI_py__run(p_py_path_str string,
+	p_args_lst          []string,
 	p_stdout_prefix_str string,
 	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
 	
 
 	py_abs_path_str, _ := filepath.Abs(p_py_path_str)
 
+	cmd_lst := []string{"python3", "-u", py_abs_path_str,}
+	cmd_lst = append(cmd_lst, p_args_lst...)
+
 	cmd_info := GF_CLI_cmd_info {
-		Cmd_lst:          []string{"python3", "-u", py_abs_path_str,},
+		Cmd_lst:          cmd_lst,
 		Env_vars_map:     map[string]string{},
 		Dir_str:          "",
 		View_output_bool: true,
