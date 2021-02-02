@@ -42,6 +42,9 @@ func Error__get_defs() map[string]gf_core.Error_def {
 		"eth_contract__not_supported_type": gf_core.Error_def{
 			Descr_str: "eth contract type encountered is not supported",
 		},
+		"eth_contract__abi_not_loadable": gf_core.Error_def{
+			Descr_str: "eth contract ABI cant be parsed from JSON to ABI struct",
+		},
 
 		//---------------
 		// ETH_RPC

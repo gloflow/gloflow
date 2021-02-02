@@ -24,9 +24,12 @@ import (
 	"fmt"
 	"context"
 	"math/big"
+	"strings"
 	"encoding/base64"
+	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -50,12 +53,9 @@ func Eth_contract__enrich(p_ctx context.Context,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
 
-	abi_type_str := ""
+	abi_type_str := "erc20"
 	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
-		
-
-
 		return gf_err
 	}
 
@@ -65,13 +65,53 @@ func Eth_contract__enrich(p_ctx context.Context,
 
 
 	return nil
-
 }
 
+//-------------------------------------------------
+func Eth_contract__get_abi(p_ctx context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (*abi.ABI, *gf_core.Gf_error) {
 
+	abi_type_str := "erc20"
+	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+
+	
+
+
+
+	abi_def_lst := abis_lst[0].Def_lst
+	abi_def_str, _ := json.Marshal(abi_def_lst)
+
+
+
+	abi, err := abi.JSON(strings.NewReader(string(abi_def_str)))
+	if err != nil {
+		error_defs_map := Error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("cant load ABI JSON whos definition was loaded from DB",
+			"eth_contract__abi_not_loadable",
+			map[string]interface{}{
+				"abi_type_str": abi_type_str,
+				"abi_def_str":  abi_def_str,
+			},
+			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+		return nil, gf_err
+	}
+
+
+
+
+	
+
+
+	return &abi, nil
+}
 
 //-------------------------------------------------
-
 func Eth_contract__db__get_abi(p_abi_type_str string,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,

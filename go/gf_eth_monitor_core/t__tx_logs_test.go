@@ -24,39 +24,16 @@ import (
 	"fmt"
 	"testing"
 	// "github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-func Test__plugins(p_test *testing.T) {
+func Test__get_tx_logs(p_test *testing.T) {
 
 	fmt.Println("TEST__MAIN ==============================================")
 	
 
 
-	//--------------------
-	// RUNTIME_SYS
-	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
-		Log_fun:          log_fun,
-		
-		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
-	}
-
-	//--------------------
-
-	new_contract_addr_str := "0xTestContractAddr"
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
-	}
-	gf_err := py__run_plugin__get_contract_info(new_contract_addr_str,
-		plugins_info,
-		runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
 
 
 }

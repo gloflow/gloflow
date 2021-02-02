@@ -26,6 +26,7 @@ import (
 	"math/big"
 	"context"
 	"encoding/base64"
+	// "encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
@@ -313,6 +314,27 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 	}
 
 	return gf_tx, nil
+}
+
+
+
+//-------------------------------------------------
+func Eth_rpc__enrich_tx_logs(p_tx_logs []*GF_eth__log,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	
+
+	
+
+
+
+
+	
+
+
+	return nil
+
+
 }
 
 //-------------------------------------------------

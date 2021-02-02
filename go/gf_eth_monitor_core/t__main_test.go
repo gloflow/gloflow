@@ -1,3 +1,6 @@
+
+
+
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2021 Ivan Trajkovic
@@ -17,29 +20,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+
+
+
+
+
+
+
+
+
+
+
 package gf_eth_monitor_core
+
+
+
 
 import (
 	"os"
-	"fmt"
 	"testing"
-	// "github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+
+
+
+
+
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 	v := m.Run()
 	os.Exit(v)
-}
-
-//---------------------------------------------------
-func Test__get_block_pipeline(p_test *testing.T) {
-
-	fmt.Println("TEST__MAIN ==============================================")
-	
-
-
-
-
 }

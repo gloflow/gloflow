@@ -30,7 +30,7 @@ def main():
 
 
 	contract_addr_str = args_map["contract_addr_str"]
-
+	assert not contract_addr_str == None
 
 
 	
@@ -51,7 +51,7 @@ def parse_args():
 	arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 	#----------------------------
 	# CONTRACT_ADDRESS
-	arg_parser.add_argument("-contract_addr", action = "store_true", default=None,
+	arg_parser.add_argument("-contract_addr", action = "store", default=None,
 		help = "address of the target contract")
 
 	#-------------
