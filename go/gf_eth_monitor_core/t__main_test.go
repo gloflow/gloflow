@@ -1,6 +1,3 @@
-
-
-
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2021 Ivan Trajkovic
@@ -20,32 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
-
-
-
-
-
-
-
-
-
 package gf_eth_monitor_core
-
-
-
 
 import (
 	"os"
 	"testing"
 )
-
-
-
-
-
-
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
