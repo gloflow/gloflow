@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
-	"fmt"
+	// "fmt"
 	"strings"
 	"math"
 	"math/big"
@@ -53,9 +53,9 @@ type GF_eth__tx struct {
 
 // eth_types.Log
 type GF_eth__log struct {
-	Address_str string   `json:"address_str" bson:"address_str"`
-	Topics_lst  []string `json:"topics_lst"  bson:"topics_lst"`
-	Data_str    string   `json:"data_str"    bson:"data_str"` 
+	Address_str  string   `json:"address_str"  bson:"address_str"` // address of the contract that generated the log
+	Topics_lst   []string `json:"topics_lst"   bson:"topics_lst"`  // list of topics provided by the contract
+	Data_b64_str string   `json:"data_b64_str" bson:"data_64_str"` // supplied by contract, usually ABI-encoded
 }
 
 //-------------------------------------------------
@@ -384,12 +384,12 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 		//        including data is a lot cheaper than including topics.
 		//        supplied by the contract, usually ABI-encoded.
 		data_bytes_lst := l.Data
-		fmt.Println(data_bytes_lst)
+		data_b64_str   := base64.StdEncoding.EncodeToString(data_bytes_lst) // base64
 
 		tx_log := &GF_eth__log{
-			Address_str: l.Address.Hex(),
-			Topics_lst:  topics_lst,
-			Data_str:    string(data_bytes_lst),
+			Address_str:  l.Address.Hex(),
+			Topics_lst:   topics_lst,
+			Data_b64_str: data_b64_str,
 		}
 
 		logs_lst = append(logs_lst, tx_log)
