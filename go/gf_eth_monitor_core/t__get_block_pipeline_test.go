@@ -34,33 +34,12 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
-func Test__plugins(p_test *testing.T) {
+func Test__get_block_pipeline(p_test *testing.T) {
 
 	fmt.Println("TEST__MAIN ==============================================")
 	
 
 
-	//--------------------
-	// RUNTIME_SYS
-	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
-		Log_fun:          log_fun,
-		
-		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
-	}
-
-	//--------------------
-
-
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
-	}
-	gf_err := py__run_plugin__get_contract_info(plugins_info, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
 
 
 }

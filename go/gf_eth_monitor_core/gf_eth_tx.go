@@ -35,20 +35,27 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-	Hash_str              string           `json:"hash_str"       bson:"hash_str"`
-	Index_int             uint64           `json:"index_int"      bson:"index_int"` // position of the transaction in the block
-	From_addr_str         string           `json:"from_addr_str"  bson:"from_addr_str"`
-	To_addr_str           string           `json:"to_addr_str"    bson:"to_addr_str"`
-	Value_eth_f           float64          `json:"value_eth_f"    bson:"value_eth_f"`
-	Data_bytes_lst        []byte           `json:"-"              bson:"-"`
-	Data_b64_str          string           `json:"data_b64_str"   bson:"data_b64_str"`
-	Gas_used_int          uint64           `json:"gas_used_int"   bson:"gas_used_int"`
-	Gas_price_int         uint64           `json:"gas_price_int"  bson:"gas_price_int"`
-	Nonce_int             uint64           `json:"nonce_int"      bson:"nonce_int"`
-	Size_f                float64          `json:"size_f"         bson:"size_f"`
-	Cost_int              uint64           `json:"cost_int"       bson:"cost_int"`
+	Hash_str       string                `json:"hash_str"         bson:"hash_str"`
+	Index_int      uint64                `json:"index_int"        bson:"index_int"` // position of the transaction in the block
+	From_addr_str  string                `json:"from_addr_str"    bson:"from_addr_str"`
+	To_addr_str    string                `json:"to_addr_str"      bson:"to_addr_str"`
+	Value_eth_f    float64               `json:"value_eth_f"      bson:"value_eth_f"`
+	Data_bytes_lst []byte                `json:"-"                bson:"-"`
+	Data_b64_str   string                `json:"data_b64_str"     bson:"data_b64_str"`
+	Gas_used_int   uint64                `json:"gas_used_int"     bson:"gas_used_int"`
+	Gas_price_int  uint64                `json:"gas_price_int"    bson:"gas_price_int"`
+	Nonce_int      uint64                `json:"nonce_int"        bson:"nonce_int"`
+	Size_f         float64               `json:"size_f"           bson:"size_f"`
+	Cost_int       uint64                `json:"cost_int"         bson:"cost_int"`
 	Contract_new   *GF_eth__contract_new `json:"contract_new_map" bson:"contract_new_map"`
-	Logs_lst       []*eth_types.Log      `json:"logs_lst"         bson:"logs_lst"`
+	Logs_lst       []*GF_eth__log        `json:"logs_lst"         bson:"logs_lst"`
+}
+
+// eth_types.Log
+type GF_eth__log struct {
+	Address_str string   `json:"address_str" bson:"address_str"`
+	Topics_lst  []string `json:"topics_lst"  bson:"topics_lst"`
+	Data_str    string   `json:"data_str"    bson:"data_str"` 
 }
 
 //-------------------------------------------------
@@ -312,7 +319,7 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*eth_types.Log, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.Gf_error) {
 
 
 	
@@ -345,8 +352,11 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 		// The Removed field is true if this log was reverted due to a chain reorganisation.
 		// You must pay attention to this field if you receive logs through a filter query.
 		Removed bool `json:"removed"`
-	}*/
-	logs_lst := []*eth_types.Log{}
+	}
+	*/
+
+
+	logs_lst := []*GF_eth__log{} // eth_types.Log{}
 	for _, l := range p_tx_receipt.Logs {
 
 		// data__byte_lst := l.Data
@@ -363,11 +373,11 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 		//         (uint256, string, etc.) of its parameters.
 		//         topics should only reliably be used for data that strongly
 		//         narrows down search queries (like addresses)
-		topics_lst := []eth_common.Hash{}
+		topics_lst := []string{}
 
 		// l.Topics() - list of topics provided by the contract
 		for _, topic := range l.Topics {
-			topics_lst = append(topics_lst, topic)
+			topics_lst = append(topics_lst, topic.Hex())
 		}
 
 		// DATA - while topics are searchable, data is not.
@@ -376,8 +386,13 @@ func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
 		data_bytes_lst := l.Data
 		fmt.Println(data_bytes_lst)
 
+		tx_log := &GF_eth__log{
+			Address_str: l.Address.Hex(),
+			Topics_lst:  topics_lst,
+			Data_str:    string(data_bytes_lst),
+		}
 
-		logs_lst = append(logs_lst, l)
+		logs_lst = append(logs_lst, tx_log)
 	}
 
 	return logs_lst, nil
