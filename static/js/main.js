@@ -138,7 +138,14 @@ function render__block_from_workers(p_block_int,
 
         Object.entries(p_txs_lst).forEach(e => {
 
-            const tx_map           = e[1];
+            const tx_map = e[1];
+
+            // if transaction failed to be loaded from a block on the backend,
+            // it will be marked as null, and we should skip to the next transaction
+            if (tx_map == null) {
+                return
+            }
+            
             const tx_hash_str      = tx_map["hash_str"];
             const tx_from_addr_str = tx_map["from_addr_str"];
             const tx_to_addr_str   = tx_map["to_addr_str"];

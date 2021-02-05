@@ -98,8 +98,18 @@ func Test__worker(p_test *testing.T) {
 	spew.Dump(gf_block)
 
 
+	abi_type_str := "erc20"
+	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, metrics, runtime)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+	abis_map := map[string]*GF_eth__abi{
+		"erc20": abis_lst[0],
+	}
 
-	abis_map := t__get_abis()
+
+	
+	// abis_map := t__get_abis()
 
 	gf_err = eth_tx__enrich_from_block(gf_block,
 		abis_map,
