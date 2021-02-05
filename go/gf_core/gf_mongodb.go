@@ -33,6 +33,25 @@ import (
 	"github.com/globalsign/mgo"
 )
 
+
+//-------------------------------------------------
+func Mongo__insert(p_record interface{},
+	p_coll_name_str string,
+	p_ctx           *context.Context,
+	p_runtime_sys   *Runtime_sys) *Gf_error {
+
+	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(*p_ctx, p_record)
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to insert a new record into the DB",
+			"mongodb_insert_error",
+			map[string]interface{}{"coll_name_str": p_coll_name_str,},
+			err, "gf_core", p_runtime_sys)
+		
+		return gf_err
+	}
+	return nil
+}
+
 //-------------------------------------------------
 func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
 	p_coll_name_str string,
