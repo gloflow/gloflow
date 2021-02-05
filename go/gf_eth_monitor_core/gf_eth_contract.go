@@ -48,46 +48,50 @@ type GF_eth__abi struct {
 }
 
 //-------------------------------------------------
-func Eth_contract__enrich(p_ctx context.Context,
+func Eth_contract__enrich(p_gf_abi *GF_eth__abi,
+	p_ctx     context.Context,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
 
-	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
+	// abi_type_str := "erc20"
+	abi, gf_err := Eth_contract__get_abi(p_gf_abi, p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
 		return gf_err
 	}
 
 
 
-	fmt.Println(abis_lst)
+	fmt.Println(abi)
 
 
 	return nil
 }
 
 //-------------------------------------------------
-func Eth_contract__get_abi(p_ctx context.Context,
+func Eth_contract__get_abi(p_gf_abi *GF_eth__abi,
+	p_ctx     context.Context,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) (*abi.ABI, *gf_core.Gf_error) {
 
-	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
-	if gf_err != nil {
+	//---------------------
+	/*// VALIDATE
+	if p_abi_type_str != "erc20" {
+		error_defs_map := Error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("ABI type is not supported",
+			"eth_contract__abi_not_loadable",
+			map[string]interface{}{
+				"abi_type_str": p_abi_type_str,
+			},
+			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 
+	//---------------------
+	// LOAD
 
-
-	
-
-
-
-	abi_def_lst := abis_lst[0].Def_lst
+	abi_def_lst := p_gf_abi.Def_lst // abis_lst[0].Def_lst
 	abi_def_str, _ := json.Marshal(abi_def_lst)
-
-
 
 	abi, err := abi.JSON(strings.NewReader(string(abi_def_str)))
 	if err != nil {
@@ -95,18 +99,14 @@ func Eth_contract__get_abi(p_ctx context.Context,
 		gf_err := gf_core.Error__create_with_defs("cant load ABI JSON whos definition was loaded from DB",
 			"eth_contract__abi_not_loadable",
 			map[string]interface{}{
-				"abi_type_str": abi_type_str,
+				"abi_type_str": p_gf_abi.Type_str,
 				"abi_def_str":  abi_def_str,
 			},
-			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 
-
-
-
-	
-
+	//---------------------
 
 	return &abi, nil
 }

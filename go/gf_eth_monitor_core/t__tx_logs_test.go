@@ -73,13 +73,15 @@ func Test__get_tx_logs(p_test *testing.T) {
 	}
 
 
-
-
-	abi_map       := t__get_erc20_abi()
+	//--------------------
+	// DB_INSERT
+	abis_map       := t__get_abis()
 	coll_name_str := "gf_eth_meta__contracts_abi"
-	gf_err = gf_core.Mongo__insert(abi_map, coll_name_str, &ctx, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
+	for _, gf_abi := range abis_map {
+		gf_err = gf_core.Mongo__insert(gf_abi, coll_name_str, &ctx, runtime_sys)
+		if gf_err != nil {
+			p_test.Fail()
+		}
 	}
 
 	//--------------------
@@ -99,7 +101,11 @@ func Test__get_tx_logs(p_test *testing.T) {
 			Data_hex_str: "0x000000000000000000000000000000000000000000000000000000001a8e8db0",	
 		},
 	}
+
+
+	
 	decoded_logs_lst, gf_err := Eth_tx__enrich_logs(tx_logs,
+		abis_map,
 		ctx,
 		metrics,
 		runtime)
@@ -120,7 +126,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 }
 
 //---------------------------------------------------
-func t__get_erc20_abi() map[string]interface{} {
+func t__get_abis() map[string]*GF_eth__abi {
 	abi_json_str := `[
 		{
 			"constant": true,
@@ -347,9 +353,11 @@ func t__get_erc20_abi() map[string]interface{} {
 	abi_lst := []map[string]interface{}{}
 	json.Unmarshal([]byte(abi_json_str), &abi_lst)
 	
-	abi_map := map[string]interface{}{
-		"type_str": "erc20",
-		"def_lst":  abi_lst,
+	abis_map := map[string]*GF_eth__abi{
+		"erc20": &GF_eth__abi{
+			Type_str: "erc20",
+			Def_lst:  abi_lst,
+		},
 	}
-	return abi_map
+	return abis_map
 }

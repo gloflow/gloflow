@@ -6,9 +6,9 @@ go 1.15
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/aristanetworks/goarista v0.0.0-20210202022423-c5adc46619b7 // indirect
+	github.com/aristanetworks/goarista v0.0.0-20210204223745-64c208b2a430 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.37.3
+	github.com/aws/aws-sdk-go v1.37.5
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.9.0
-	github.com/gloflow/gloflow v0.0.0-20210130060822-c00300747d31
+	github.com/gloflow/gloflow v0.0.0-20210205020950-d98f5eda25ee
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.2

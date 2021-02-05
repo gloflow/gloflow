@@ -61,7 +61,53 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
-func Eth_tx__get(p_tx *eth_types.Transaction,
+func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
+	p_abis_map map[string]*GF_eth__abi,
+	p_ctx      context.Context,
+	p_metrics  *GF_metrics,
+	p_runtime  *GF_runtime) *gf_core.Gf_error {
+	
+
+
+	for _, tx := range p_gf_block.Txs_lst {
+
+
+		// IMPORTANT!! - if worker_inspector encounters an error while loading
+		//               the transaction, or whichever mechanisms the transaction comes from,
+		//               it is marked as nil. so skip.
+		if tx == nil {
+			continue
+		}
+
+		//------------------
+		// NEW_CONTRACT - check if its a new_contract transaction.
+		//                if it is then load/decode contract information
+		if tx.Contract_new != nil {
+
+			// TEMPORARY!! - we just assume the new contract has a erc20 ABI, for testing purposes.
+			//               generalize a way to specify an ABI to use to decode new contracts.
+			gf_abi := p_abis_map["erc20"]
+			gf_err := Eth_contract__enrich(gf_abi, p_ctx, p_metrics, p_runtime)
+			if gf_err != nil {
+				return gf_err
+			}
+		}
+
+		//------------------
+		// LOGS - check if the transaction has any logs
+		if len(tx.Logs_lst) > 0 {
+
+
+		
+		}
+
+		//------------------
+	}
+	return nil
+}
+
+//-------------------------------------------------
+func Eth_tx__load(p_tx *eth_types.Transaction,
 	p_tx_index_int   uint,
 	p_block_hash     eth_common.Hash,
 	p_ctx            context.Context,
@@ -319,17 +365,19 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 
 //-------------------------------------------------
 func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
-	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_abis_map map[string]*GF_eth__abi,
+	p_ctx      context.Context,
+	p_metrics  *GF_metrics,
+	p_runtime  *GF_runtime) ([]map[string]interface{}, *gf_core.Gf_error) {
 	
 
 	
 
 
 
-
-	abi, gf_err := Eth_contract__get_abi(p_ctx,
+	gf_abi := p_abis_map["erc20"]
+	abi, gf_err := Eth_contract__get_abi(gf_abi,
+		p_ctx,
 		p_metrics,
 		p_runtime)
 	if gf_err != nil {

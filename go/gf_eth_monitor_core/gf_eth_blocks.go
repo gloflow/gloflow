@@ -105,24 +105,43 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 			continue
 		}
 
-		for _, tx := range gf_block.Txs_lst {
 
-			// this is a new_contract transaction
-			if tx.Contract_new != nil {
+		
 
-				gf_err := Eth_contract__enrich(ctx, p_metrics, p_runtime)
-				if gf_err != nil {
-					return nil, nil, gf_err
-				}
-			}
+		//---------------------
 
 
-			if len(tx.Logs_lst) > 0 {
-
-
-				
-			}
+		// TEMPORARY!! - move getting of abis_map out of this function.
+		// DB_GET
+		abi_type_str := "erc20"
+		abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
+		if gf_err != nil {
+			return nil, nil, gf_err
 		}
+		abis_map := map[string]*GF_eth__abi{
+			"erc20": abis_lst[0],
+		}
+
+
+		//---------------------
+
+		gf_err = eth_tx__enrich_from_block(gf_block,
+			abis_map,
+			ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			gf_errs_from_workers_map[host_str] = gf_err
+			
+			// mark a block coming from this worker_inspector host as nil,
+			// and continue processing other hosts. 
+			// a particular host may fail to return a particular block for various reasons,
+			// it might not have synced to that block. 
+			block_from_workers_map[host_str] = nil
+			continue
+		}
+
+		
 
 		block_from_workers_map[host_str] = gf_block
 	}
@@ -320,7 +339,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	for i, tx := range block.Transactions() {
 
 		tx_index_int := uint(i)
-		gf_tx, gf_err := Eth_tx__get(tx,
+		gf_tx, gf_err := Eth_tx__load(tx,
 			tx_index_int,
 			block.Hash(),
 			span__get_txs.Context(),
