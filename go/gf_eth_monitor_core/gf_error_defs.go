@@ -45,6 +45,9 @@ func Error__get_defs() map[string]gf_core.Error_def {
 		"eth_contract__abi_not_loadable": gf_core.Error_def{
 			Descr_str: "eth contract ABI cant be parsed from JSON to ABI struct",
 		},
+		"eth_tx_log__decode": gf_core.Error_def{
+			Descr_str: "eth transaction log failed to be decoded with a given ABI",
+		},
 
 		//---------------
 		// ETH_RPC

@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
-	// "fmt"
+	"fmt"
 	"strings"
 	"math"
 	"math/big"
@@ -32,6 +32,7 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -108,7 +109,7 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
 	span__get_tx_receipt.Finish()
@@ -170,7 +171,7 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -186,7 +187,7 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 	span__parse_tx_logs := sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
 	defer span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
 
-	logs, gf_err := Eth_rpc__get_tx_logs(tx_receipt,
+	logs, gf_err := Eth_tx__get_logs(tx_receipt,
 		span__parse_tx_logs.Context(),
 		p_eth_rpc_client,
 		p_runtime_sys)
@@ -204,7 +205,7 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -316,29 +317,100 @@ func Eth_tx__get(p_tx *eth_types.Transaction,
 	return gf_tx, nil
 }
 
-
-
 //-------------------------------------------------
-func Eth_rpc__enrich_tx_logs(p_tx_logs []*GF_eth__log,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
+	p_ctx     context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) ([]map[string]interface{}, *gf_core.Gf_error) {
 	
 
 	
 
 
+
+
+	abi, gf_err := Eth_contract__get_abi(p_ctx,
+		p_metrics,
+		p_runtime)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+
+
+
+
+	spew.Dump(abi)
 	
 
-	
+
+	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAA----------------")
+
+	decoded_logs_lst := []map[string]interface{}{}
+	for _, l := range p_tx_logs {
+		
 
 
-	return nil
+		fmt.Println(">>>>>>>>>>>>>>>>")
 
 
+		fmt.Println(len(l.Topics_lst))
+
+		
+
+		event_1_map := map[string]interface{}{}
+		event_2_map := map[string]interface{}{}
+		event_3_map := map[string]interface{}{}
+
+		abi.UnpackIntoMap(event_1_map, "Transfer", eth_common.HexToHash(l.Topics_lst[0]).Bytes())
+		abi.UnpackIntoMap(event_2_map, "Transfer", eth_common.HexToHash(l.Topics_lst[1]).Bytes())
+		abi.UnpackIntoMap(event_3_map, "Transfer", eth_common.HexToHash(l.Topics_lst[2]).Bytes())
+
+
+		hash          := eth_common.HexToHash(l.Data_hex_str)
+		log_bytes_lst := hash.Bytes()
+
+		event_map := map[string]interface{}{}
+
+		// UnpackIntoMap - unpacks a log into the provided map[string]interface{}.
+		err := abi.UnpackIntoMap(event_map, "Transfer", log_bytes_lst)
+		if err != nil {
+			error_defs_map := Error__get_defs()
+			gf_err := gf_core.Error__create_with_defs("failed to decode a Tx Log",
+				"eth_tx_log__decode",
+				map[string]interface{}{
+					"address_str":  l.Address_str,
+					"data_hex_str": l.Data_hex_str,
+				},
+				err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			return nil, gf_err
+		}
+		
+		spew.Dump(log_bytes_lst)
+		spew.Dump(event_map)
+		spew.Dump(event_1_map)
+		spew.Dump(event_2_map)
+		spew.Dump(event_3_map)
+
+
+		fmt.Println(eth_common.BigToHash(event_1_map["value"].(*big.Int)).Hex())
+		fmt.Println(eth_common.BigToHash(event_2_map["value"].(*big.Int)).Hex())
+		fmt.Println(eth_common.BigToHash(event_3_map["value"].(*big.Int)).Hex())
+
+
+
+		decoded_logs_lst = append(decoded_logs_lst, event_map)
+	}
+
+
+
+
+	return decoded_logs_lst, nil
 }
 
 //-------------------------------------------------
-func Eth_rpc__get_tx_logs(p_tx_receipt *eth_types.Receipt,
+func Eth_tx__get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.Gf_error) {

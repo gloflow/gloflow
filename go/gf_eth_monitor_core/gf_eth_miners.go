@@ -53,7 +53,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 	miner_address_lower_str := strings.ToLower(p_miner_address_str)
 	q := bson.M{"addr_str": miner_address_lower_str, }
 
-	cur, err := p_runtime.Mongodb_db.Collection(coll_name_str).Find(p_ctx, q)
+	cur, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
 	if err != nil {
 
 
@@ -83,9 +83,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-
-
-
+				
 			return nil, gf_err
 		}
 	

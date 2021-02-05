@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
-	"go.mongodb.org/mongo-driver/mongo"
+	"fmt"
+	// "go.mongodb.org/mongo-driver/mongo"
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -29,7 +30,7 @@ import (
 type GF_runtime struct {
 	Config          *GF_config
 	Influxdb_client *influxdb2.Client
-	Mongodb_db      *mongo.Database
+	// Mongodb_db      *mongo.Database
 	Runtime_sys     *gf_core.Runtime_sys
 }
 
@@ -65,4 +66,56 @@ type GF_config struct {
 	// EVENTS - flag to turn on/off event consumption and processing from queues. 
 	//          mostly used for debugging and testing.
 	Events_consume_bool bool `mapstructure:"events_consume"`
+}
+
+//-------------------------------------------------
+func Runtime__get(p_config *GF_config,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_runtime, error) {
+
+
+
+
+	//--------------------
+	// MONGODB
+	mongodb_host_str := p_config.Mongodb_host_str
+	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
+	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
+
+	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+		p_config.Mongodb_db_name_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err.Error
+	}
+	p_runtime_sys.Mongo_db = mongodb_db
+
+	fmt.Printf("mongodb connected...\n")
+
+	//--------------------
+	// INFLUXDB
+	influxdb_host_str := p_config.Influxdb_host_str
+	influxdb_client   := influxdb__init(influxdb_host_str)
+
+	fmt.Printf("influxdb connected...\n")
+
+	//--------------------
+	// RUNTIME
+	runtime := &GF_runtime{
+		Config:          p_config,
+		Influxdb_client: influxdb_client,
+		// Mongodb_db:      mongodb_db,
+		Runtime_sys:     p_runtime_sys,
+	}
+
+	//--------------------
+	return runtime, nil
+}
+
+//-------------------------------------------------
+// INFLUXDB
+func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
+
+	fmt.Println("influxdb get client...")
+	client := influxdb2.NewClient(p_influxdb_host_str, "my-token")
+	return &client
 }

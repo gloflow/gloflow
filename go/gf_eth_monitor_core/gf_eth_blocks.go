@@ -117,7 +117,6 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 			}
 
 
-
 			if len(tx.Logs_lst) > 0 {
 
 
@@ -165,16 +164,9 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
-
-	
-
-
 	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?b=%d", p_host_str, p_port_int, p_block_int)
 
 	//-----------------------
-	
-
-
 	// SPAN
 	span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", p_host_str)
 	span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
@@ -213,9 +205,7 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 		return nil, gf_err
 	}
 
-
 	return &gf_block, nil
-
 }
 
 //-------------------------------------------------

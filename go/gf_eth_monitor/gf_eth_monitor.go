@@ -24,7 +24,7 @@ import (
 	"path"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/influxdata/influxdb-client-go/v2"
+	
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
@@ -66,48 +66,12 @@ func runtime__get(p_config_path_str string,
 		Errors_send_to_sentry_bool: true,	
 	}
 
-	//--------------------
-	// MONGODB
-	mongodb_host_str := config.Mongodb_host_str
-	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
-	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
-
-	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
-		config.Mongodb_db_name_str,
-		runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err.Error
-	}
-	runtime_sys.Mongo_db = mongodb_db
-
-	fmt.Printf("mongodb connected...\n")
-
-	//--------------------
-	// INFLUXDB
-	influxdb_host_str := config.Influxdb_host_str
-	influxdb_client   := influxdb__init(influxdb_host_str)
-
-	fmt.Printf("influxdb connected...\n")
-
-	//--------------------
-	// RUNTIME
-	runtime := &gf_eth_monitor_core.GF_runtime{
-		Config:          config,
-		Influxdb_client: influxdb_client,
-		Mongodb_db:      mongodb_db,
-		Runtime_sys:     runtime_sys,
+	runtime, err := gf_eth_monitor_core.Runtime__get(config, runtime_sys)
+	if err != nil {
+		return nil, err
 	}
 
 	return runtime, nil
-}
-
-//-------------------------------------------------
-// INFLUXDB
-func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
-
-	fmt.Println("influxdb get client...")
-	client := influxdb2.NewClient(p_influxdb_host_str, "my-token")
-	return &client
 }
 
 //-------------------------------------------------

@@ -83,7 +83,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 
 
 	coll_name_str := "gf_eth_peers"
-	coll := p_runtime.Mongodb_db.Collection(coll_name_str)
+	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
 
 	ctx := context.Background()
 
@@ -190,7 +190,7 @@ func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 
 
 	coll_name_str := "gf_eth_peers"
-	_, err := p_runtime.Mongodb_db.Collection(coll_name_str).InsertOne(context.Background(), p_peer_new_lifecycle)
+	_, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).InsertOne(context.Background(), p_peer_new_lifecycle)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
 			"mongodb_insert_error",

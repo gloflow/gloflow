@@ -136,18 +136,15 @@ func Eth_contract__db__get_abi(p_abi_type_str string,
 
 	q := bson.M{"type_str": p_abi_type_str, }
 
-	cur, err := p_runtime.Mongodb_db.Collection(coll_name_str).Find(p_ctx, q)
+	cur, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
 	if err != nil {
-
-
-
 
 		// METRICS
 		if p_metrics != nil {
 			p_metrics.Counter__errs_num.Inc()
 		}
 
-		gf_err := gf_core.Mongo__handle_error("failed to find Miner with gives address in DB",
+		gf_err := gf_core.Mongo__handle_error("failed to find Contract ABI with given type in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"type_str": p_abi_type_str,},
 			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
@@ -166,8 +163,6 @@ func Eth_contract__db__get_abi(p_abi_type_str string,
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-
-
 
 			return nil, gf_err
 		}
