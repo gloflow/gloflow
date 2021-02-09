@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use std::fs::File;
 
 use image;
@@ -24,7 +26,6 @@ use cairo;
 
 //-------------------------------------------------
 // SAVE_IMAGE_BUFF
-#[allow(non_snake_case)]
 pub fn save_image_buff(p_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_img_target_file_path_str: &str) {
 
@@ -34,7 +35,6 @@ pub fn save_image_buff(p_img_buff: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
 
 //-------------------------------------------------
 // SAVE_CAIRO
-#[allow(non_snake_case)]
 pub fn save_cairo(p_surface: &cairo::ImageSurface,
     p_img_target_file_path_str: &str) {
 

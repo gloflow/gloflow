@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use image::{GenericImageView, GenericImage};
 use palette::{Srgb, Srgba, Lab, Lch, Pixel, Saturate};
 
@@ -32,7 +34,6 @@ CIE L*a*b* - device independent color space.
     two colors is equal to their numerical difference).*/
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn saturate_selective(p_gf_img: &mut gf_image::GFimage,
     p_color_ref:          &gf_image::GFcolorRGB,
     p_saturation_level_f: f32) {
@@ -92,7 +93,6 @@ pub fn saturate_selective(p_gf_img: &mut gf_image::GFimage,
 // CIE76 - 1976 formula that related a measured color difference to a known set of CIELAB coordinates.
 //         standard Euclidian distance in LAB space.
 // FIX!! - implement the 1994 and 2000 formulas for dinstance.
-#[allow(non_snake_case)]
 pub fn distance(p_color_1: Lab, p_color_2: Lab) -> f32 {
 
     let l_delta_sq_f   = (p_color_2.l - p_color_1.l).powf(2.0);

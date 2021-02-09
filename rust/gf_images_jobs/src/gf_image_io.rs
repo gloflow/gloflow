@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use image;
 
 use image::{GenericImageView};
@@ -24,7 +26,6 @@ use crate::gf_image;
 use gf_core;
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn native__open_image(p_img_source_file_path_str: &str) -> gf_image::GFimage {
 
     // DynamicImage - enumeration over all supported ImageBuffer<P> types
@@ -41,7 +42,6 @@ pub fn native__open_image(p_img_source_file_path_str: &str) -> gf_image::GFimage
 }
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn native__save_image(p_gf_img: &gf_image::GFimage,
     p_img_target_file_path_str: &str) {
 

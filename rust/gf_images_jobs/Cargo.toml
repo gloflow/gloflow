@@ -18,7 +18,8 @@ name = "gf_images_jobs"
 #         dynamically in Go tests that use gf_images_jobs.so
 # rlib - Rust lib, needed for other libs to be able to link this lib into them properly.
 #        currently needed for gf_images_jobs_py cpython lib.
-crate-type = ["staticlib", "dylib", "rlib"] # "cdylib"]
+
+crate-type = ["staticlib", "rlib"] # "dylib", "cdylib"]
 
 #-------------------------------
 # DEPENDENCIES

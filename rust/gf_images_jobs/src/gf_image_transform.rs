@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use crate::gf_image_color;
 use crate::gf_image;
 
@@ -25,7 +27,6 @@ use rand::Rng;
 
 //-------------------------------------------------
 // TRANSFORMATION__SATURATION
-#[allow(non_snake_case)]
 pub fn saturate(p_gf_img: &mut gf_image::GFimage,
     p_color_ref:          &gf_image::GFcolorRGB,
     p_saturation_level_f: f32) {
@@ -42,11 +43,9 @@ pub fn saturate(p_gf_img: &mut gf_image::GFimage,
 
 //-------------------------------------------------
 // TRANSFORMATION__BRIGHTNESS
-#[allow(non_snake_case)]
-pub fn brightness(p_gf_img: &mut gf_image::GFimage) {
-
-
-} 
+// pub fn brightness(p_gf_img: &mut gf_image::GFimage) {
+//
+// }
 
 //-------------------------------------------------
 // TRANSFORMATION__CONTRAST
@@ -55,7 +54,6 @@ pub fn brightness(p_gf_img: &mut gf_image::GFimage) {
 
 // p_contrast_level_f - input contrast_level used by the caller of this function
 //                      to modify the contrast in an image.
-#[allow(non_snake_case)]
 pub fn contrast(p_gf_img: &mut gf_image::GFimage,
     p_contrast_level_f: f32) {
     
@@ -111,7 +109,6 @@ pub fn contrast(p_gf_img: &mut gf_image::GFimage,
 
 //-------------------------------------------------
 // TRANSFORMATION__NOISE
-#[allow(non_snake_case)]
 pub fn noise(p_gf_img: &mut gf_image::GFimage) {
 
     let mut rng = rand::thread_rng();

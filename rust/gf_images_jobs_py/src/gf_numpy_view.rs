@@ -17,16 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use std::collections::HashMap;
 use image;
 use numpy::{PyArray2, PyArray3, PyArray4};
 
 use gf_core;
-use gf_images_jobs;
+// use gf_images_jobs;
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_2D
-#[allow(non_snake_case)]
 pub fn arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
     p_img_target_file_path_str: String) {
 
@@ -47,7 +48,6 @@ pub fn arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_3D
-#[allow(non_snake_case)]
 pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
     p_img_target_file_path_str: String) {
 
@@ -60,14 +60,14 @@ pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
     for y in 0..numpy_shape_lst[0] {
 
         // Axis(0) - gives us the first dimension of the 3D NumPy array (rows).
-        let row_2d = arr.subview(ndarray::Axis(0), y);
+        let row_2d = arr.index_axis(ndarray::Axis(0), y);
 
         for x in 0..numpy_shape_lst[1] {
             
             // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
             //           which here represents the individual pixel in a particular column
             //           (which itself is a 1D array of RGB values).
-            let col   = row_2d.subview(ndarray::Axis(0), x);
+            let col   = row_2d.index_axis(ndarray::Axis(0), x);
             let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
             *pixel    = image::Rgba([
                 (col[0]) as u8,
@@ -82,7 +82,6 @@ pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
 
 //-------------------------------------------------
 // VIEW_NUMPY_ARR_4D
-#[allow(non_snake_case)]
 pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     p_img_target_file_path_str: String,
     p_width_int:       u64,
@@ -116,7 +115,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
         
 
         // get individual image - get "i"-th element on the 0-th axis of the numpy array
-        let image_3d = numpy_4d_arr.subview(ndarray::Axis(0), i);
+        let image_3d = numpy_4d_arr.index_axis(ndarray::Axis(0), i);
         // println!("image {}", i);
 
         let img_width_int  = numpy_shape_lst[2]; // columns are in rows, so index is 2
@@ -130,7 +129,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
         for y in 0..img_height_int {
 
             // Axis(0) - gives us the first dimension of the image 3D NumPy array (rows).
-            let row_2d = image_3d.subview(ndarray::Axis(0), y);
+            let row_2d = image_3d.index_axis(ndarray::Axis(0), y);
             
             // image row is composed of 1D pixels represented as arrays
             for x in 0..img_width_int {
@@ -138,7 +137,7 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
                 // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
                 //           which here represents the individual pixel in a particular column
                 //           (which itself is a 1D array of RGB values).
-                let col = row_2d.subview(ndarray::Axis(0), x);
+                let col = row_2d.index_axis(ndarray::Axis(0), x);
 
                 // PIXEL
                 let pixel = img_buff.get_pixel_mut(x as u32, y as u32);

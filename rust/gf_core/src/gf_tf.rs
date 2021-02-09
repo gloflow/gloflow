@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 // use std::io;
 // use std::fs;
 use std::collections::{HashMap};
@@ -34,7 +36,6 @@ use crate::gf_protobuff::tf_feature::{Features, Feature, Int64List, BytesList};
 use crate::gf_protobuff::tf_example::{Example};
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn read_tf_example__to_img_buffer(p_raw_tf_example: &[u8],
     p_img_width_int:  u64,
     p_img_height_int: u64) -> (image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, u64) {
@@ -85,13 +86,13 @@ pub fn read_tf_example__to_img_buffer(p_raw_tf_example: &[u8],
 }
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn get_tf_records__reader(p_target_file_path_str: &str) -> tensorflow::io::RecordReader<std::io::BufReader<std::fs::File>> {
 
     let input      = std::fs::File::open(p_target_file_path_str).unwrap();
     let input_buff = std::io::BufReader::new(input);
 
-    let mut tf_records_reader = tensorflow::io::RecordReader::new(input_buff);
+    // let mut tf_records_reader
+    let tf_records_reader = tensorflow::io::RecordReader::new(input_buff);
     return tf_records_reader;
 }
 
@@ -99,7 +100,6 @@ pub fn get_tf_records__reader(p_target_file_path_str: &str) -> tensorflow::io::R
 // WRITE
 //-------------------------------------------------
 // WRITE_TF_EXAMPLE__FROM_IMG_BUFFER
-#[allow(non_snake_case)]
 pub fn write_tf_example__from_img_buffer(p_img_buffer: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_label_int:      u64,
     p_records_writer: &mut tensorflow::io::RecordWriter<std::io::BufWriter<std::fs::File>>) {
@@ -187,7 +187,7 @@ pub fn write_tf_examples__from_files(p_output_file_path_str: &str) {
         label_int,
         &mut tf_records_writer);
 
-    for x in 0..10 {
+    for _ in 0..10 {
 
         //-----------------
         // WRITE_RECORD

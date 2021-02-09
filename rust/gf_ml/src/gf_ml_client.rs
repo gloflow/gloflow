@@ -17,28 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
-
-use std::collections::HashMap;
-
+// use std::collections::HashMap;
 
 //-------------------------------------------------
 pub fn get_blocking(p_url_str: &str) {
 
-
-
-
-
-
-    let mut resp = reqwest::blocking::get(p_url_str).unwrap();
+    let resp = reqwest::blocking::get(p_url_str).unwrap();
 
     println!("{:#?}", resp);
     println!("Status: {}", resp.status());
     println!("Headers:\n{:?}", resp.headers());
 
-    resp.json::<HashMap<String, String>>();
+    // resp.json::<HashMap<String, String>>();
     
-
-
-
 }

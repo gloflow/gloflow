@@ -17,12 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use std::collections::HashMap;
 use tensorflow;
 use gf_core;
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn view_tf_records(p_tfrecords_file_path_str: &str,
     p_img_target_file_path_str:   &str,
     p_tf_example__img_width_int:  u64,
@@ -63,7 +64,7 @@ pub fn view_tf_records(p_tfrecords_file_path_str: &str,
                     let data_lst = &tf_example_raw_buffer_lst[0..len];
                     
                     // READ_TF_EXAMPLE
-                    let (gf_img_buff, gf_img_label_int) = gf_core::gf_tf::read_tf_example__to_img_buffer(&data_lst,
+                    let (gf_img_buff, _) = gf_core::gf_tf::read_tf_example__to_img_buffer(&data_lst,
                         p_tf_example__img_width_int,
                         p_tf_example__img_height_int);
 

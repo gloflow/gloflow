@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use std::f64::consts::PI;
 use std::fs;
 // use std::fs::File;
@@ -45,7 +47,7 @@ struct GFruntimeGfx {
 //-------------------------------------------------
 // GENERATE_AND_REGISTER - generates a dataset and registers the newly generated dataset with
 //                         a remote GF ML server.
-#[allow(non_snake_case)]
+
 pub fn generate_and_register(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
     p_elements_num_int:    u64,
@@ -75,7 +77,6 @@ pub fn generate_and_register(p_dataset_name_str: String,
 
 //-------------------------------------------------
 // GENERATE
-#[allow(non_snake_case)]
 pub fn generate(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
     p_elements_num_int:    u64,
@@ -116,7 +117,6 @@ pub fn generate(p_dataset_name_str: String,
 
 //-------------------------------------------------
 // GENERATE_FOR_ENVIRONMENT
-#[allow(non_snake_case)]
 fn generate_for_env(p_env_str: &str,
     p_classes_lst:                    &Vec<String>,
     p_tfrecords_output_file_path_str: &str,
@@ -176,7 +176,6 @@ fn generate_for_env(p_env_str: &str,
 
 //-------------------------------------------------
 // DRAW_CIRCLES
-#[allow(non_snake_case)]
 fn draw_circles(p_target_dir_str: String,
     p_tf_records_writer: &mut tensorflow::io::RecordWriter<std::io::BufWriter<std::fs::File>>,
     p_gf_dataset_config: &GFdatasetConfig,
@@ -270,18 +269,10 @@ fn draw_circles(p_target_dir_str: String,
             
         //-----------------
     }
-
-
-
 }
-
-
-
-
 
 //-------------------------------------------------
 // DRAW_RECTANGLES
-#[allow(non_snake_case)]
 fn draw_rects(p_target_dir_str: String,
     p_tf_records_writer: &mut tensorflow::io::RecordWriter<std::io::BufWriter<std::fs::File>>,
     p_gf_dataset_config: &GFdatasetConfig,
@@ -378,7 +369,6 @@ fn draw_rects(p_target_dir_str: String,
 
 //-------------------------------------------------
 // RUNTIME_GET_GRAPHICS
-#[allow(non_snake_case)]
 fn runtime_get_graphics(p_image_width_int: u64,
     p_image_height_int: u64) -> GFruntimeGfx {
 

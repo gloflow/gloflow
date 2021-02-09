@@ -17,11 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use gf_ml;
-use gf_core;
+// use gf_core;
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 pub fn ml_dataset_to_tfrecords(p_dataset_name_str: String,
     p_classes_lst:         Vec<String>,
     p_elements_num_int:    u64,

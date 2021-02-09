@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 extern crate libc;
 use std::ffi::CStr; // https://doc.rust-lang.org/1.0.0/std/ffi/struct.CString.html
 

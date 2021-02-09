@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#![allow(non_snake_case)]
+
 use std::collections::HashMap;
 use image::{GenericImageView};
 
@@ -70,7 +72,6 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
 
 //-------------------------------------------------
 // ADD_IMG_FROM_BUFFER
-#[allow(non_snake_case)]
 pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_collage_img_buff:    &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
     p_row_int:             u32,
@@ -163,7 +164,6 @@ pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<
 }
 
 //-------------------------------------------------
-#[allow(non_snake_case)]
 fn get_img_new_dimensions(p_img_width_int: u32,
     p_img_height_int:  u32,
     p_cell_width_int:  u32,
@@ -205,7 +205,6 @@ fn get_img_new_dimensions(p_img_width_int: u32,
 
 //-------------------------------------------------
 // DRAW_BORDERS
-#[allow(non_snake_case)]
 pub fn draw_borders(p_collage_img_buff: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, 
     p_rows_num_int:                   u32,
     p_columns_num_int:                u32,
