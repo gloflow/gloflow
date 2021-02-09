@@ -18,6 +18,8 @@
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
+from colored import fg, bg, attr
+
 sys.path.append("%s/../../py/gf_core"%(modd_str))
 import gf_core_cli
 
@@ -36,7 +38,7 @@ def run(p_cargo_crate_dir_path_str,
     p_verbose_bool      = False):
     assert os.path.isdir(p_cargo_crate_dir_path_str)
     
-    print("BUILD...")
+    print(f"{fg('yellow')}BUILD{attr(0)}")
     
     cwd_str = os.getcwd()
     os.chdir(os.path.abspath(p_cargo_crate_dir_path_str)) # change into the target main package dir
@@ -100,8 +102,9 @@ def prepare_libs(p_name_str,
     p_exit_on_fail_bool = True):
     assert os.path.isdir(p_cargo_crate_dir_path_str)
     assert p_type_str == "lib_rust"
-    print("PREPARE LIBS...")
 
+
+    print(f"{fg('yellow')}PREPARE LIBS{attr(0)}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     #-------------
     # EXTERN_LIB
@@ -173,6 +176,11 @@ def prepare_libs(p_name_str,
 #--------------------------------------------------
 def prepare_libs__extern(p_exit_on_fail_bool = True):
 
+
+    #-------------
+    # TENSORFLOW
+    print(f"{fg('green')}prepare TensorFlow lib{attr(0)}")
+
     tf__version_str  = "1.15.0"
     tf__filename_str = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
     tf__url_str      = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
@@ -185,6 +193,7 @@ def prepare_libs__extern(p_exit_on_fail_bool = True):
         if p_exit_on_fail_bool:
             exit(exit_code_int)
 
+    #-------------
     
 
     # FIX!! - COMPLETE!!

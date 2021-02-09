@@ -52,8 +52,12 @@ func HTTP__fetch_url(p_url_str string,
 	p_runtime_sys    *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
+
+	// TIMEOUT
+	timeout_sec := time.Second * 10
+
 	client := &http.Client{
-		Timeout: time.Second * 10, //to prevent requests taking too long to return
+		Timeout: timeout_sec, // time.Second * 10, // to prevent requests taking too long to return
 
 		/* IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
 		setting of these headers had to be added, via the CheckRedirect function
@@ -71,7 +75,7 @@ func HTTP__fetch_url(p_url_str string,
 		then the most recent response is returned with its body
 		unclosed, along with a nil error.
 		If CheckRedirect is nil, the Client uses its default policy,
-		which is to stop after 10 consecutive requests.*/
+		which is to stop after 10 consecutive requests. */
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			req.Header.Del("User-Agent")
 			req.Header.Set("User-Agent", p_user_agent_str)
