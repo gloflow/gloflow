@@ -25,7 +25,7 @@ import (
 	"context"
 	"math/big"
 	"strings"
-	"encoding/base64"
+	// "encoding/base64"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -38,7 +38,8 @@ import (
 type GF_eth__contract_new struct {
 	Addr_str       string `json:"addr_str"`
 	Code_bytes_lst []byte `json:"-"` // in json serialization []byte is not included, just the base64 encoding
-	Code_b64_str   string `json:"code_b64_str"`
+	Code_hex_str   string `json:"code_hex_str"`
+	// Code_b64_str   string `json:"code_b64_str"`
 	Block_num_int  uint64 `json:"block_num_int"`
 }
 
@@ -64,6 +65,13 @@ func Eth_contract__enrich(p_gf_abi *GF_eth__abi,
 
 	fmt.Println(abi)
 
+
+
+
+
+
+
+	
 
 	return nil
 }
@@ -190,14 +198,17 @@ func Eth_contract__get_via_rpc(p_contract_addr_str string,
 	}
 
 
-	// base64
-	code_b64_str := base64.StdEncoding.EncodeToString(code_bytes_lst)
+	// // base64
+	// code_b64_str := base64.StdEncoding.EncodeToString(code_bytes_lst)
 
+
+	code_hex_str := eth_common.BytesToHash(code_bytes_lst).Hex()
 
 	contract__new := &GF_eth__contract_new{
 		Addr_str:       p_contract_addr_str,
 		Code_bytes_lst: code_bytes_lst,
-		Code_b64_str:   code_b64_str,
+		Code_hex_str:   code_hex_str,
+		// Code_b64_str:   code_b64_str,
 		Block_num_int:  p_block_num_int,
 	}
 
@@ -211,11 +222,9 @@ func Eth_contract__get_code(p_contract_addr_str string,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) ([]byte, *gf_core.Gf_error) {
 
-
-
-
-
 	contract_addr := eth_common.HexToAddress(p_contract_addr_str)
+
+	// CODE_AT
 	code_bytes_lst, err := p_eth_rpc_client.CodeAt(p_ctx,
 		contract_addr,
 		big.NewInt(0).SetUint64(p_block_num_int))
@@ -229,19 +238,10 @@ func Eth_contract__get_code(p_contract_addr_str string,
 		return nil, gf_err
 	}
 
-
-
 	return code_bytes_lst, nil
-
-
-
-	
-
-
 }
 
 //-------------------------------------------------
-
 func Eth_contract__is_type_valid(p_type_str string) bool {
 	types_map := map[string]bool{
 		"erc20": true,
