@@ -21,10 +21,10 @@ package gf_eth_monitor_core
 
 import (
 	"fmt"
-	"bytes"
 	"time"
 	"net/http"
 	"io/ioutil"
+	"strings"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -49,9 +49,8 @@ func Eth_rpc__call(p_input_json_str string,
 	timeout_sec := time.Second * 10
 	client      := &http.Client{Timeout: timeout_sec,}
 
-	url_str         := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
-	input_bytes_lst := []byte(p_input_json_str)
-	req, _ := http.NewRequest("POST", url_str, bytes.NewBuffer(input_bytes_lst))
+	url_str := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
+	req, _  := http.NewRequest("POST", url_str, strings.NewReader(p_input_json_str))
 	req.Header.Set("Content-Type", "application/json")
 	
 
