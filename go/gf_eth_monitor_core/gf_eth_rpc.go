@@ -49,17 +49,27 @@ func Eth_rpc__call(p_input_json_str string,
 	timeout_sec := time.Second * 10
 	client      := &http.Client{Timeout: timeout_sec,}
 
-	url_str := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
-	req, _  := http.NewRequest("POST", url_str, strings.NewReader(p_input_json_str))
+	url_str  := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
+	req, err := http.NewRequest("POST", url_str, strings.NewReader(p_input_json_str))
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to construct HTTP POST request using JSON input",
+			"http_client_req_error",
+			map[string]interface{}{
+				"url_str":        url_str,
+				"input_json_str": p_input_json_str,
+			},
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}
 	req.Header.Set("Content-Type", "application/json")
 	
 
 	resp, err := client.Do(req)
 	if err != nil {
-		gf_err := gf_core.Error__create("http fetch failed to execute HTTP request to fetch a url",
+		gf_err := gf_core.Error__create("failed to execute HTTP POST request to eth_rpc API",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": url_str,},
-			err, "gf_core", p_runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -107,7 +117,7 @@ func Eth_rpc__init(p_host_str string,
 		gf_err := gf_core.Error__create_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
 		return nil, gf_err
     }
 
