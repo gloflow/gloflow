@@ -79,13 +79,12 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	// HEX_DECODE
 	code_bytes_lst, err := hex.DecodeString(p_bytecode_hex_str)
 	if err != nil {
-		error_defs_map := Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to decode contract bytecode hex string into byte list",
+		gf_err := gf_core.Error__create("failed to decode contract bytecode hex string into byte list",
 			"decode_hex",
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 

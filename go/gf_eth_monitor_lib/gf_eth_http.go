@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
+	"strings"
 	"strconv"
 	"net/http"
 	"encoding/hex"
@@ -34,7 +35,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 
 	qs_map := p_req.URL.Query()
 
-	var tx_hex_str string
+	var tx_hex_clean_str string
 	if tx_lst, ok := qs_map["tx"]; ok {
 
 		tx_hex_str := tx_lst[0]
@@ -49,7 +50,18 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 			return "", gf_err
 		}
 
-		_, err := hex.DecodeString(tx_hex_str)
+		// check tax ID is prefixed with "0x"
+		if !strings.HasPrefix(tx_hex_str, "0x") {
+			gf_err := gf_core.Error__create("supplied transaction ID is not prefixed with '0x'",
+				"verify__invalid_value_error",
+				map[string]interface{}{"tx_hex_str": tx_hex_str,},
+				nil, "gf_eth_monitor_lib", p_runtime_sys)
+			return "", gf_err
+		}
+
+		// check is Hex
+		tx_hex_clean_str := strings.TrimPrefix(tx_hex_str, "0x")
+		_, err := hex.DecodeString(tx_hex_clean_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("supplied transaction ID is not a hex string",
 				"decode_hex",
@@ -59,7 +71,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		}
 
 	}
-	return tx_hex_str, nil
+	return tx_hex_clean_str, nil
 }
 
 //-------------------------------------------------
