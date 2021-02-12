@@ -144,11 +144,11 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
 		},
 		// HEX
-		"decode_hex": gf_core.Error_def{
+		"decode_hex": Error_def{
 			Descr_str: "failed to decode hex string",
 		},
 		// MAPSTRUCT
-		"mapstruct__decode": gf_core.Error_def{
+		"mapstruct__decode": Error_def{
 			Descr_str: "failed to decode a map into a struct using mapstructure lib",
 		},
 
