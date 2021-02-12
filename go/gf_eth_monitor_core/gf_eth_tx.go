@@ -61,6 +61,35 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
+func Eth_tx__trace(p_tx_hash_str string,
+	p_eth_rpc_host_str string,
+	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+
+	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
+	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 
+	//               generic implementation of a client for the standard ethereum RPC API.
+	input_str := fmt.Sprintf(`{
+		"id":     1,
+		"method": "debug_traceTransaction",
+		"params": ["%s", {
+			"disableStack":   true,
+			"disableMemory":  true,
+			"disableStorage": true
+		}]
+	}`, p_tx_hash_str)
+
+	
+	output_map, gf_err := Eth_rpc__call(input_str,
+		p_eth_rpc_host_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	return output_map, nil
+}
+
+//-------------------------------------------------
 func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 	p_abis_map map[string]*GF_eth__abi,
 	p_ctx      context.Context,

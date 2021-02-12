@@ -29,15 +29,16 @@ import (
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
+	// "github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 )
 
 //-------------------------------------------------
 type GF_runtime struct {
-	eth_rpc_client *ethclient.Client
-	py_plugins     *gf_eth_monitor_core.GF_py_plugins
-	runtime_sys    *gf_core.Runtime_sys
+	eth_rpc_host_str string
+	eth_rpc_client   *ethclient.Client
+	py_plugins       *gf_eth_monitor_core.GF_py_plugins
+	runtime_sys      *gf_core.Runtime_sys
 }
 
 //-------------------------------------------------
@@ -55,12 +56,11 @@ func main() {
 	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 
 	log_fun := gf_core.Init_log_fun()
-	runtime, err := runtime__get(py_plugins_base_dir_path_str, log_fun)
+	runtime, err := runtime__get(geth__host_str, py_plugins_base_dir_path_str, log_fun)
 	if err != nil {
 		panic(err)
 	}
 
-	
 	//-------------
 	// SENTRY
 	
@@ -87,7 +87,7 @@ func main() {
 
 	//-------------
 	// ETH_CLIENT
-	eth_client, gf_err := gf_eth_monitor_lib.Eth_rpc__init(geth__host_str,
+	eth_client, gf_err := gf_eth_monitor_core.Eth_rpc__init(geth__host_str,
 		geth__port_int,
 		runtime.runtime_sys)
 	if gf_err != nil {
@@ -113,8 +113,9 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_py_plugins_base_dir_path_str string,
-	p_log_fun func(string, string)) (*GF_runtime, error) {
+func runtime__get(p_eth_rpc_host_str string,
+	p_py_plugins_base_dir_path_str string,
+	p_log_fun                      func(string, string)) (*GF_runtime, error) {
 
 	//--------------------
 	// RUNTIME_SYS
@@ -135,8 +136,9 @@ func runtime__get(p_py_plugins_base_dir_path_str string,
 	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
-		runtime_sys: runtime_sys,
-		py_plugins:  py_plugins,
+		eth_rpc_host_str: p_eth_rpc_host_str,
+		runtime_sys:      runtime_sys,
+		py_plugins:       py_plugins,
 	}
 
 	//--------------------

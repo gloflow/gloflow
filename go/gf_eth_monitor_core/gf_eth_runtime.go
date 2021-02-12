@@ -30,8 +30,8 @@ import (
 type GF_runtime struct {
 	Config          *GF_config
 	Influxdb_client *influxdb2.Client
-	// Mongodb_db      *mongo.Database
 	Runtime_sys     *gf_core.Runtime_sys
+	// Mongodb_db *mongo.Database
 }
 
 //-------------------------------------------------------------

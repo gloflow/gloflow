@@ -17,22 +17,71 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_lib
+package gf_eth_monitor_core
 
 import (
 	"fmt"
-	
-	// "context"
-	// "strings"
+	"bytes"
+	"time"
+	"net/http"
+	"io/ioutil"
+	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	// "github.com/getsentry/sentry-go"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/getsentry/sentry-go"
 	// eth_types "github.com/ethereum/go-ethereum/core/types"
 	// eth_common "github.com/ethereum/go-ethereum/common"
-	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 	// "github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------
+func Eth_rpc__call(p_input_json_str string,
+	p_eth_node_host_str string,
+	p_runtime_sys       *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+	
+
+	eth_http_port_int := 8545
+
+	//-----------------------
+	// HTTP_POST
+
+	timeout_sec := time.Second * 10
+	client      := &http.Client{Timeout: timeout_sec,}
+
+	url_str         := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
+	input_bytes_lst := []byte(p_input_json_str)
+	req, _ := http.NewRequest("POST", p_eth_node_host_str, bytes.NewBuffer(input_bytes_lst))
+	req.Header.Set("Content-Type", "application/json")
+	
+
+	resp, err := client.Do(req)
+	if err != nil {
+		gf_err := gf_core.Error__create("http fetch failed to execute HTTP request to fetch a url",
+			"http_client_req_error",
+			map[string]interface{}{"url_str": url_str,},
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	//-----------------------
+	// JSON_DECODE
+	body_bytes_lst, _ := ioutil.ReadAll(resp.Body)
+
+	var output_map map[string]interface{}
+	err = json.Unmarshal(body_bytes_lst, &output_map)
+	if err != nil {
+		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
+			"json_decode_error",
+			map[string]interface{}{"url_str": url_str,},
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}
+	
+	//-----------------------
+
+	return output_map, nil
+}
 
 //-------------------------------------------------
 // INIT
@@ -55,7 +104,7 @@ func Eth_rpc__init(p_host_str string,
 			"err":       err}).Fatal("failed to connect json-rpc connect to Eth node")
 		
 			
-		error_defs_map := gf_eth_monitor_core.Error__get_defs()
+		error_defs_map := Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},

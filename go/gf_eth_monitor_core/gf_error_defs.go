@@ -34,14 +34,6 @@ func Error__get_defs() map[string]gf_core.Error_def {
 	error_defs_map := map[string]gf_core.Error_def{
 
 		//---------------
-		"decode_hex": gf_core.Error_def{
-			Descr_str: "failed to decode hex string",
-		},
-		"mapstruct__decode": gf_core.Error_def{
-			Descr_str: "failed to decode a map into a struct using mapstructure lib",
-		},
-		
-		//---------------
 		// ETH_CONTRACT
 		"eth_contract__not_supported_type": gf_core.Error_def{
 			Descr_str: "eth contract type encountered is not supported",
