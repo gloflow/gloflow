@@ -65,12 +65,18 @@ func error__get_defs() map[string]Error_def {
 		"verify__invalid_key_value_error": Error_def{
 			Descr_str: "data failed verification, the key does not have the expected value",
 		},
+
+		// length
 		"verify__string_too_short_error": Error_def{
 			Descr_str: "data failed verification, the string is too short",
 		},
 		"verify__string_too_long_error": Error_def{
 			Descr_str: "data failed verification, the string is too long",
 		},
+		"verify__string_not_correct_length_error": Error_def{
+			Descr_str: "data failed verification, the string is too long",
+		},
+
 		"verify__invalid_image_extension_error": Error_def{
 			Descr_str: "an unsupported image file extension was encountered",
 		},
@@ -136,6 +142,14 @@ func error__get_defs() map[string]Error_def {
 		// BASE64
 		"base64_decoding_error": Error_def{
 			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
+		},
+		// HEX
+		"decode_hex": gf_core.Error_def{
+			Descr_str: "failed to decode hex string",
+		},
+		// MAPSTRUCT
+		"mapstruct__decode": gf_core.Error_def{
+			Descr_str: "failed to decode a map into a struct using mapstructure lib",
 		},
 
 		//---------------
