@@ -51,7 +51,7 @@ func Eth_rpc__call(p_input_json_str string,
 
 	url_str         := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
 	input_bytes_lst := []byte(p_input_json_str)
-	req, _ := http.NewRequest("POST", p_eth_node_host_str, bytes.NewBuffer(input_bytes_lst))
+	req, _ := http.NewRequest("POST", url_str, bytes.NewBuffer(input_bytes_lst))
 	req.Header.Set("Content-Type", "application/json")
 	
 
