@@ -72,9 +72,9 @@ func Eth_tx__trace(p_tx_hash_str string,
 		"id":     1,
 		"method": "debug_traceTransaction",
 		"params": ["%s", {
-			"disableStack":   true,
-			"disableMemory":  true,
-			"disableStorage": true
+			"disableStack":   false,
+			"disableMemory":  false,
+			"disableStorage": false
 		}]
 	}`, p_tx_hash_str)
 
