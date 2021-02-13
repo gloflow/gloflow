@@ -60,7 +60,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		}
 
 		// check is Hex
-		tx_hex_clean_str := strings.TrimPrefix(tx_hex_str, "0x")
+		tx_hex_clean_str = strings.TrimPrefix(tx_hex_str, "0x")
 		_, err := hex.DecodeString(tx_hex_clean_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("supplied transaction ID is not a hex string",
