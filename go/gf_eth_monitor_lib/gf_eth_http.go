@@ -35,10 +35,10 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 
 	qs_map := p_req.URL.Query()
 
-	var tx_hex_clean_str string
+	var tx_hex_str string
 	if tx_lst, ok := qs_map["tx"]; ok {
 
-		tx_hex_str := tx_lst[0]
+		tx_hex_str = tx_lst[0]
 
 		// IMPORTANT!! - TX hashes are 64 chars long, but have to contain
 		//               the "0x" prefix, so the total is 66.
@@ -60,7 +60,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		}
 
 		// check is Hex
-		tx_hex_clean_str = strings.TrimPrefix(tx_hex_str, "0x")
+		tx_hex_clean_str := strings.TrimPrefix(tx_hex_str, "0x")
 		_, err := hex.DecodeString(tx_hex_clean_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("supplied transaction ID is not a hex string",
@@ -71,7 +71,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		}
 
 	}
-	return tx_hex_clean_str, nil
+	return tx_hex_str, nil
 }
 
 //-------------------------------------------------
