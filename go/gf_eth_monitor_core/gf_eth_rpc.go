@@ -49,7 +49,7 @@ func Eth_rpc__call(p_input_json_str string,
 	timeout_sec := time.Second * 10
 	client      := &http.Client{Timeout: timeout_sec,}
 
-	url_str  := fmt.Sprintf("http://%s:%s", p_eth_node_host_str, eth_http_port_int)
+	url_str  := fmt.Sprintf("http://%s:%d", p_eth_node_host_str, eth_http_port_int)
 	req, err := http.NewRequest("POST", url_str, strings.NewReader(p_input_json_str))
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to construct HTTP POST request using JSON input",
