@@ -118,13 +118,13 @@ func Http_respond(p_data interface{},
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_respond()")
 
-	r_lst, _ := json.Marshal(map[string]interface{}{
+	r_byte_lst, _ := json.Marshal(map[string]interface{}{
 		"status_str": p_status_str,
 		"data":       p_data,
 	})
 	
 	p_resp.Header().Set("Content-Type", "application/json")
-	p_resp.Write(r_lst)
+	p_resp.Write(r_byte_lst)
 }
 
 //-------------------------------------------------

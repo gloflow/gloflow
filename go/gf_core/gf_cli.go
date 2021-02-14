@@ -24,11 +24,13 @@ import (
 	"strings"
 	"os/exec"
 	"bufio"
+	"io"
 )
 
 //-------------------------------------------------
 type GF_CLI_cmd_info struct {
 	Cmd_lst          []string
+	Stdin_data_str   *string // data to be passed via stdin
 	Env_vars_map     map[string]string
 	Dir_str          string
 	View_output_bool bool
@@ -55,14 +57,12 @@ func CLI__run_standard(p_cmd_lst []string,
 func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 	p_runtime_sys *Runtime_sys) ([]string, []string, *Gf_error) {
 
-
 	stdout_ch, stderr_ch, done_ch, gf_err := CLI__run_core(p_cmd_info,
 		true,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
-
 
 	//-------------------------------------------------
 	consume_fn := func() ([]string, []string) {
@@ -99,36 +99,52 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 
 	cmd_name_str := p_cmd_info.Cmd_lst[0]
 	cmd_args_lst := p_cmd_info.Cmd_lst[1:]
-	cmd := exec.Command(cmd_name_str, cmd_args_lst...)
+	p := exec.Command(cmd_name_str, cmd_args_lst...)
 
 
 
 
 	// CMD_DIR
 	if p_cmd_info.Dir_str != "" {
-		cmd.Dir = p_cmd_info.Dir_str
+		p.Dir = p_cmd_info.Dir_str
 	}
 
+	// STDIN
+	stdin, err := p.StdinPipe()
+	if err != nil {
+		gf_err := Error__create("failed to get STDIN pipe of a CLI process",
+			"cli_run_error",
+			map[string]interface{}{"cmd": cmd_str,},
+			err, "gf_core", p_runtime_sys)
+		return nil, nil, nil, gf_err 
+	}
+	// defer stdin.Close()
 
 	// STDOUT
-	cmd_stdout__reader, _ := cmd.StdoutPipe()
+	cmd_stdout__reader, _ := p.StdoutPipe()
 	cmd_stdout__buffer    := bufio.NewReader(cmd_stdout__reader)
 	
 	// STDERR
-	cmd_stderr__reader, _ := cmd.StderrPipe()
+	cmd_stderr__reader, _ := p.StderrPipe()
 	cmd_stderr__buffer    := bufio.NewReader(cmd_stderr__reader)
 
 	done_ch := make(chan bool)
 	
 	//----------------------
 	// START
-	err := cmd.Start()
+	err = p.Start()
 	if err != nil {
 		gf_err := Error__create("failed to Start a CLI command",
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
 			err, "gf_core", p_runtime_sys)
 		return nil, nil, nil, gf_err	
+	}
+
+	//----------------------
+	// STDIN - input is written to stdin after the process is started
+	if p_cmd_info.Stdin_data_str != nil {
+		io.WriteString(stdin, fmt.Sprintf("%s\n", *p_cmd_info.Stdin_data_str))
 	}
 
 	//----------------------
@@ -180,9 +196,8 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	//----------------------
 	// WAIT
 
-
 	if p_wait_for_completion_bool {
-		err = cmd.Wait()
+		err = p.Wait()
 		if err != nil {
 			gf_err := Error__create("failed to Wait for a CLI command to complete",
 				"cli_run_error",

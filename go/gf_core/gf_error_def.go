@@ -227,7 +227,6 @@ func error__get_defs() map[string]Error_def {
 			Descr_str:"failed to decode value from the mongodb results Cursor",
 		},
 
-		
 		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client": Error_def{

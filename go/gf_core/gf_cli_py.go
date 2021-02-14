@@ -29,6 +29,7 @@ import (
 //-------------------------------------------------
 func CLI_py__run(p_py_path_str string,
 	p_args_lst          []string,
+	p_input_stdin_str   *string,
 	p_stdout_prefix_str string,
 	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
 	
@@ -40,6 +41,7 @@ func CLI_py__run(p_py_path_str string,
 
 	cmd_info := GF_CLI_cmd_info {
 		Cmd_lst:          cmd_lst,
+		Stdin_data_str:   p_input_stdin_str,
 		Env_vars_map:     map[string]string{},
 		Dir_str:          "",
 		View_output_bool: true,
