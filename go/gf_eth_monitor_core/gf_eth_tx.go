@@ -32,6 +32,7 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -53,6 +54,23 @@ type GF_eth__tx struct {
 	Logs_lst       []*GF_eth__log        `json:"logs_lst"         bson:"logs_lst"`
 }
 
+type GF_eth__tx_trace struct {
+	Gas_used_int       uint64                     `json:"gas_used_int"`
+	Value_returned_str string                     `json:"value_returned_str"`	
+	Failed_bool        bool                       `json:"failed_bool"`
+	Opcodes_lst        []*GF_eth__tx_trace_opcode `json:"opcodes_lst"`
+}
+
+type GF_eth__tx_trace_opcode struct {
+	Op_str            string   `json:"op_str"`
+	Pc_int            uint     `json:"pc_int"`            // program counter
+	Gas_cost_int      uint     `json:"gas_cost_int"`
+	Gas_remaining_int uint64   `json:"gas_remaining_int"` // decreasing count of how much gas is left before this Op executes
+	Stack_lst         []string `json:"stack_lst"`
+	Memory_lst        []string `json:"memory_lst"`
+	Storage_lst       []string `json:"storage_lst"`
+}
+
 // eth_types.Log
 type GF_eth__log struct {
 	Address_str  string   `json:"address_str"  bson:"address_str"`  // address of the contract that generated the log
@@ -61,7 +79,93 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
-func Eth_tx__trace(p_tx_hash_str string,
+func Eth_tx__plot_trace() {
+
+
+
+}
+
+
+//-------------------------------------------------
+func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
+	p_host_str    string,
+	p_port_int    uint,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
+
+	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/tx/trace?tx=%s",
+		p_host_str,
+		p_port_int,
+		p_tx_hash_str)
+
+	//-----------------------
+	// SPAN
+	span_name_str    := fmt.Sprintf("worker_inspector__get_tx_trace:%s", p_host_str)
+	span__get_tx_trace := sentry.StartSpan(p_ctx, span_name_str)
+	
+	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions
+	// across services.
+	sentry_trace_id_str := span__get_tx_trace.ToSentryTrace()
+	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
+		
+	// GF_RPC_CLIENT
+	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	span__get_tx_trace.Finish()
+
+	//-----------------------
+
+	trace_map  := data_map["trace_map"].(map[string]interface{})
+	result_map := trace_map["result"].(map[string]interface{})
+
+	gf_opcodes_lst := []*GF_eth__tx_trace_opcode{}
+	for _, op := range result_map["structLogs"].([]interface{}) {
+
+		op_map := op.(map[string]interface{})
+
+		stack_lst := []string{}
+		for _, s := range op_map["stack"].([]interface{}) {
+			stack_lst = append(stack_lst, s.(string))
+		}
+
+		memory_lst := []string{}
+		for _, s := range op_map["memory"].([]interface{}) {
+			memory_lst = append(memory_lst, s.(string))
+		}
+
+		storage_lst := []string{}
+		for _, s := range op_map["stack"].([]interface{}) {
+			storage_lst = append(storage_lst, s.(string))
+		}
+
+		gf_opcode := &GF_eth__tx_trace_opcode{
+			Op_str:            op_map["op"].(string),
+			Pc_int:            uint(op_map["pc"].(float64)),
+			Gas_cost_int:      uint(op_map["gasCost"].(float64)),
+			Gas_remaining_int: uint64(op_map["gas"].(float64)),
+			Stack_lst:         stack_lst,
+			Memory_lst:        memory_lst,
+			Storage_lst:       storage_lst,
+		}
+
+		gf_opcodes_lst = append(gf_opcodes_lst, gf_opcode)
+	}
+
+	gf_tx_trace := &GF_eth__tx_trace{
+		Gas_used_int:       uint64(result_map["gas"].(float64)),
+		Value_returned_str: result_map["returnValue"].(string),
+		Failed_bool:        result_map["failed"].(bool),
+		Opcodes_lst:        gf_opcodes_lst,
+	}
+
+	return gf_tx_trace, nil
+}
+
+//-------------------------------------------------
+func Eth_tx__get_trace(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 

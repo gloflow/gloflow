@@ -79,7 +79,7 @@ func Test__worker(p_test *testing.T) {
 	//--------------------
 
 	// GET_BLOCK__FROM_WORKER
-	gf_block, gf_err := eth_blocks__worker_inspector__get_block(uint64(block_int),
+	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
 		host_str,
 		uint(worker_inspector__port_int),
 		ctx,

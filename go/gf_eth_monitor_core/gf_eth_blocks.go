@@ -88,7 +88,7 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 		ctx := span.Context()
 
 		// GET_BLOCK__FROM_WORKER
-		gf_block, gf_err := eth_blocks__worker_inspector__get_block(p_block_int,
+		gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(p_block_int,
 			host_str,
 			worker_inspector__port_int,
 			ctx,
@@ -177,13 +177,17 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 }
 
 //-------------------------------------------------
-func eth_blocks__worker_inspector__get_block(p_block_int uint64,
+// GET_BLOCK__FROM_WORKER_INSPECTOR
+func eth_blocks__get_block__from_worker_inspector(p_block_int uint64,
 	p_host_str    string,
 	p_port_int    uint,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
-	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?b=%d", p_host_str, p_port_int, p_block_int)
+	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?b=%d",
+		p_host_str,
+		p_port_int,
+		p_block_int)
 
 	//-----------------------
 	// SPAN
@@ -226,7 +230,7 @@ func eth_blocks__worker_inspector__get_block(p_block_int uint64,
 }
 
 //-------------------------------------------------
-// GET_BLOCK
+// GET_BLOCK__PIPELINE
 func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,

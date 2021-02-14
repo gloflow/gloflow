@@ -59,52 +59,6 @@ package gf_eth_monitor_core
 */
 
 /*
-3x - Environmental Information
-
-0x30    ADDRESS         Get address of currently executing account
-0x31    BALANCE         Get balance of the given account
-0x32    ORIGIN          Get execution origination address
-0x33    CALLER          Get caller address. This is the address of the account that is directly responsible for this execution
-0x34    CALLVALUE       Get deposited value by the instruction/transaction responsible for this execution
-0x35    CALLDATALOAD    Get input data of current environment
-0x36    CALLDATASIZE    Get size of input data in current environment
-0x37    CALLDATACOPY    Copy input data in current environment to memory This pertains to the input data passed with the message call instruction or transaction
-0x38    CODESIZE        Get size of code running in current environment
-0x39    CODECOPY        Copy code running in current environment to memory
-0x3a    GASPRICE        Get price of gas in current environment
-0x3b    EXTCODESIZE     Get size of an account's code
-0x3c    EXTCODECOPY     Copy an account's code to memory
-*/
-
-/*
-4x - Block Information
-
-0x40    BLOCKHASH   Get the hash of one of the 256 most recent complete blocks
-0x41    COINBASE    Get the block's beneficiary address
-0x42    TIMESTAMP   Get the block's timestamp
-0x43    NUMBER      Get the block's number
-0x44    DIFFICULTY  Get the block's difficulty
-0x45    GASLIMIT    Get the block's gas limit
-*/
-
-/*
-5x - Stack, Memory, Storage and Flow Operations
-
-0x50    POP         Remove item from stack
-0x51    MLOAD       Load word from memory
-0x52    MSTORE      Save word to memory
-0x53    MSTORE8     Save byte to memory
-0x54    SLOAD       Load word from storage
-0x55    SSTORE      Save word to storage
-0x56    JUMP        Alter the program counter
-0x57    JUMPI       Conditionally alter the program counter
-0x58    PC          Get the value of the program counter prior to the increment
-0x59    MSIZE       Get the size of active memory in bytes
-0x5a    GAS         Get the amount of available gas, including the corresponding reduction
-0x5b    JUMPDEST    Mark a valid destination for jumps
-*/
-
-/*
 6x & 7x - Push Operations
 
 0x60    PUSH1   Place 1 byte item on stack
@@ -132,24 +86,150 @@ package gf_eth_monitor_core
 */
 
 /*
-ax - Logging Operations
-
-0xa0    LOG0    Append log record with no topics
-0xa1    LOG1    Append log record with one topic
-...
-0xa4    LOG4    Append log record with four topics
-*/
-
-/*
-fx - System operations
-
-0xf0    CREATE          Create a new account with associated code
-0xf1    CALL            Message-call into an account
-0xf2    CALLCODE        Message-call into this account with alternative account's code
-0xf3    RETURN          Halt execution returning output data
-0xf4    DELEGATECALL    Message-call into this account with an alternative account's code, but persisting the current values for `sender` and `value`
-*/
-
-/*
 0xff    SELFDESTRUCT    Halt execution and register account for later deletion
 */
+
+//-------------------------------------------------
+type gf_eth_opcode struct {
+	Important_bool bool // if the opcode is important for GF analysis
+}
+
+//-------------------------------------------------
+func Eth_opscodes__get_tables() map[string]map[string]gf_eth_opcode {
+
+
+	/*
+	3x - Environmental Information
+
+	0x30    ADDRESS         Get address of currently executing account
+	0x31    BALANCE         Get balance of the given account
+	0x32    ORIGIN          Get execution origination address
+	0x33    CALLER          Get caller address. This is the address of the account that is directly responsible for this execution
+	0x34    CALLVALUE       Get deposited value by the instruction/transaction responsible for this execution
+	0x35    CALLDATALOAD    Get input data of current environment
+	0x36    CALLDATASIZE    Get size of input data in current environment
+	0x37    CALLDATACOPY    Copy input data in current environment to memory This pertains to the input data passed with the message call instruction or transaction
+	0x38    CODESIZE        Get size of code running in current environment
+	0x39    CODECOPY        Copy code running in current environment to memory
+	0x3a    GASPRICE        Get price of gas in current environment
+	0x3b    EXTCODESIZE     Get size of an account's code
+	0x3c    EXTCODECOPY     Copy an account's code to memory
+	*/
+	ops__env_map := map[string]gf_eth_opcode{
+		"ADDRESS":      gf_eth_opcode{Important_bool: false},
+		"BALANCE":      gf_eth_opcode{Important_bool: false},
+		"ORIGIN":       gf_eth_opcode{Important_bool: true},
+		"CALLER":       gf_eth_opcode{Important_bool: true},
+		"CALLVALUE":    gf_eth_opcode{Important_bool: true},
+		"CALLDATALOAD": gf_eth_opcode{Important_bool: true},
+		"CALLDATASIZE": gf_eth_opcode{Important_bool: false},
+		"CALLDATACOPY": gf_eth_opcode{Important_bool: false},
+		"CODESIZE":     gf_eth_opcode{Important_bool: false},
+		"CODECOPY":     gf_eth_opcode{Important_bool: false},
+		"GASPRICE":     gf_eth_opcode{Important_bool: false},
+		"EXTCODESIZE":  gf_eth_opcode{Important_bool: false},
+		"EXTCODECOPY":  gf_eth_opcode{Important_bool: false},
+	}
+
+	/*
+	4x - Block Information
+
+	0x40    BLOCKHASH   Get the hash of one of the 256 most recent complete blocks
+	0x41    COINBASE    Get the block's beneficiary address
+	0x42    TIMESTAMP   Get the block's timestamp
+	0x43    NUMBER      Get the block's number
+	0x44    DIFFICULTY  Get the block's difficulty
+	0x45    GASLIMIT    Get the block's gas limit
+	*/
+	/*ops__block_map := map[string]interface{}{
+		"BLOCKHASH":  gf_eth_opcode{Important_bool: false},
+		"COINBASE":   gf_eth_opcode{Important_bool: false},
+		"TIMESTAMP":  gf_eth_opcode{Important_bool: false},
+		"NUMBER":     gf_eth_opcode{Important_bool: false},
+		"DIFFICULTY": gf_eth_opcode{Important_bool: false},
+		"GASLIMIT":   gf_eth_opcode{Important_bool: false},
+	}*/
+
+	/*
+	5x - Stack, Memory, Storage and Flow Operations
+
+	0x50    POP         Remove item from stack
+	0x51    MLOAD       Load word from memory
+	0x52    MSTORE      Save word to memory
+	0x53    MSTORE8     Save byte to memory
+	0x54    SLOAD       Load word from storage
+	0x55    SSTORE      Save word to storage
+	0x56    JUMP        Alter the program counter
+	0x57    JUMPI       Conditionally alter the program counter
+	0x58    PC          Get the value of the program counter prior to the increment
+	0x59    MSIZE       Get the size of active memory in bytes
+	0x5a    GAS         Get the amount of available gas, including the corresponding reduction
+	0x5b    JUMPDEST    Mark a valid destination for jumps
+	*/
+	ops__memory_map := map[string]gf_eth_opcode{
+		"POP":      gf_eth_opcode{Important_bool: false},
+		"MLOAD":    gf_eth_opcode{Important_bool: true},
+		"MSTORE":   gf_eth_opcode{Important_bool: true},
+		"MSTORE8":  gf_eth_opcode{Important_bool: true},
+		"SLOAD":    gf_eth_opcode{Important_bool: true},
+		"SSTORE":   gf_eth_opcode{Important_bool: true},
+		"JUMP":     gf_eth_opcode{Important_bool: false},
+		"JUMPI":    gf_eth_opcode{Important_bool: false},
+		"PC":       gf_eth_opcode{Important_bool: false},
+		"MSIZE":    gf_eth_opcode{Important_bool: false},
+		"GAS":      gf_eth_opcode{Important_bool: false},
+		"JUMPDEST": gf_eth_opcode{Important_bool: false},
+	}
+
+	/*
+	fx - System operations
+
+	0xf0    CREATE          Create a new account with associated code
+	0xf1    CALL            Message-call into an account
+	0xf2    CALLCODE        Message-call into this account with alternative account's code
+	0xf3    RETURN          Halt execution returning output data
+	0xf4    DELEGATECALL    Message-call into this account with an alternative account's code, but persisting the current values for `sender` and `value`
+	*/
+	ops__sys_map := map[string]gf_eth_opcode{
+		"CREATE":       gf_eth_opcode{Important_bool: true},
+		"CALL":         gf_eth_opcode{Important_bool: true},
+		"CALLCODE":     gf_eth_opcode{Important_bool: true},
+		"RETURN":       gf_eth_opcode{Important_bool: true},
+		"DELEGATECALL": gf_eth_opcode{Important_bool: true},
+	}
+
+
+	/*
+	ax - Logging Operations
+
+	0xa0    LOG0    Append log record with no topics
+	0xa1    LOG1    Append log record with one topic
+	...
+	0xa4    LOG4    Append log record with four topics
+	*/
+	ops__log_map := map[string]gf_eth_opcode{
+		"LOG0": gf_eth_opcode{Important_bool: true},
+		"LOG1": gf_eth_opcode{Important_bool: true},
+		"LOG2": gf_eth_opcode{Important_bool: true},
+		"LOG3": gf_eth_opcode{Important_bool: true},
+		"LOG4": gf_eth_opcode{Important_bool: true},
+	}
+
+
+
+
+
+	ops_map := map[string]map[string]gf_eth_opcode{
+		"env_map":    ops__env_map,
+		"memory_map": ops__memory_map,
+		"sys_map":    ops__sys_map,
+		"log_map":    ops__log_map,
+	}
+
+
+
+
+
+	return ops_map
+
+}

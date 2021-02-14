@@ -63,7 +63,7 @@ func init_handlers(p_metrics *GF_metrics,
 
 
 			// GET_TRACE
-			trace_map, gf_err := gf_eth_monitor_core.Eth_tx__trace(tx_hex_str,
+			trace_map, gf_err := gf_eth_monitor_core.Eth_tx__get_trace(tx_hex_str,
 				p_runtime.eth_rpc_host_str,
 				p_runtime.runtime_sys)
 			if gf_err != nil {
