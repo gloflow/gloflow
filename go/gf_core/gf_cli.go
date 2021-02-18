@@ -162,7 +162,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 				continue
 			}
 			if p_cmd_info.View_output_bool {
-				fmt.Printf("%s\n", l)
+				fmt.Printf("%s", l)
 			}
 			l_str := strings.TrimSuffix(l, "\n")
 			stdout_ch <- l_str
