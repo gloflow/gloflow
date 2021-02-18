@@ -54,7 +54,7 @@ def parse_args():
 	arg_parser.add_argument("-contract_addr", action = "store", default=None,
 		help = "address of the target contract")
 
-	#-------------
+	#----------------------------
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 

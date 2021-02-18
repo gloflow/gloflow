@@ -66,9 +66,9 @@ type GF_eth__tx_trace_opcode struct {
 	Pc_int            uint     `json:"pc_int"`            // program counter
 	Gas_cost_int      uint     `json:"gas_cost_int"`
 	Gas_remaining_int uint64   `json:"gas_remaining_int"` // decreasing count of how much gas is left before this Op executes
-	Stack_lst         []string `json:"stack_lst"`
-	Memory_lst        []string `json:"memory_lst"`
-	Storage_lst       []string `json:"storage_lst"`
+	Stack_lst         []string          `json:"stack_lst"`
+	Memory_lst        []string          `json:"memory_lst"`
+	Storage_map       map[string]string `json:"storage_map"`
 }
 
 // eth_types.Log
@@ -136,19 +136,19 @@ func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
 			memory_lst = append(memory_lst, s.(string))
 		}
 
-		storage_lst := []string{}
-		for _, s := range op_map["stack"].([]interface{}) {
-			storage_lst = append(storage_lst, s.(string))
+		storage_map := map[string]string{}
+		for k, v := range op_map["storage"].(map[string]interface{}) {
+			storage_map[k] = v.(string)
 		}
 
 		gf_opcode := &GF_eth__tx_trace_opcode{
-			Op_str:            op_map["op"].(string),
+			Op_str:            strings.TrimSpace(op_map["op"].(string)),
 			Pc_int:            uint(op_map["pc"].(float64)),
 			Gas_cost_int:      uint(op_map["gasCost"].(float64)),
 			Gas_remaining_int: uint64(op_map["gas"].(float64)),
 			Stack_lst:         stack_lst,
 			Memory_lst:        memory_lst,
-			Storage_lst:       storage_lst,
+			Storage_map:       storage_map,
 		}
 
 		gf_opcodes_lst = append(gf_opcodes_lst, gf_opcode)
