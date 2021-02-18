@@ -26,6 +26,21 @@ CMD /usr/bin/supervisord -n -c /home/gf/config/supervisor.conf
 ADD build/gf_supervisord_events.py /home/gf/bin/gf_supervisord_events.py
 
 #------------
+# PY
+
+RUN apk --update add build-base
+RUN apk --update add python3
+RUN apk --update add python3-dev
+RUN apk --update add py-pip
+RUN pip install --upgrade pip
+
+ADD py/plugins/requirements.txt /home/gf/requirements__plugins.txt
+RUN pip install -r /home/gf/requirements__plugins.txt
+
+RUN mkdir -p /home/gf/py/plugins
+ADD py/plugins/gf_plugin__plot_tx_trace.py /home/gf/py/plugins/gf_plugin__plot_tx_trace.py
+
+#------------
 # STATIC
 RUN mkdir -p /home/gf/static
 COPY static /home/gf/static
