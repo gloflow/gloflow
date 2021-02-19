@@ -33,7 +33,7 @@ import (
 //---------------------------------------------------
 func Test__get_tx_logs(p_test *testing.T) {
 
-	fmt.Println("TEST__MAIN ==============================================")
+	fmt.Println("TEST__TX_LOGS ==============================================")
 	
 
 	ctx := context.Background()

@@ -241,6 +241,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - PY_PLUGINS
+	cmd__base.PersistentFlags().StringP("py_plugins_dir_path", "", "PY PLUGINS DIR PATH", "path to the directory holding Py plugin files")
+	err = viper.BindPFlag("py_plugins_dir_path", cmd__base.PersistentFlags().Lookup("py_plugins_dir_path"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("py_plugins_dir_path", "GF_PY_PLUGINS_BASE_DIR_PATH")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// START
 	cmd__start := &cobra.Command{
 		Use:   "start",

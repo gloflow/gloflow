@@ -49,30 +49,28 @@ type GF_eth__block__int struct {
 
 //-------------------------------------------------
 func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
-	p_get_hosts_fn func() []string,
-	
-	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
+	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
+	p_ctx                 context.Context,
+	p_metrics             *GF_metrics,
+	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
 
-	worker_inspector__port_int := uint(2000)
+	
 
 	//---------------------
 	// GET_WORKER_HOSTS
-	span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
-	span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 
-	var workers_inspectors_hosts_lst []string
-	if p_runtime.Config.Workers_aws_discovery_bool {
-		workers_inspectors_hosts_lst = p_get_hosts_fn()
-	} else {
-		workers_inspectors_hosts_str := p_runtime.Config.Workers_hosts_str
-		workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
-	}
+	// span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
+	// span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
+	// var workers_inspectors_hosts_lst []string
+	// if p_runtime.Config.Workers_aws_discovery_bool {
+	// 	workers_inspectors_hosts_lst = p_get_worker_hosts_fn()
+	// } else {
+	// 	workers_inspectors_hosts_str := p_runtime.Config.Workers_hosts_str
+	// 	workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
+	// }
+	// span__get_worker_hosts.Finish()
 
-
-
-	span__get_worker_hosts.Finish()
+	workers_inspectors_hosts_lst := p_get_worker_hosts_fn(p_ctx, p_runtime)
 
 	//---------------------
 	// GET_BLOCKS__FROM_WORKERS_INSPECTORS__ALL
@@ -83,25 +81,24 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 	block_from_workers_map   := map[string]*GF_eth__block__int{}
 	gf_errs_from_workers_map := map[string]*gf_core.Gf_error{}
 
-	for _, host_str := range workers_inspectors_hosts_lst {
+	for _, host_port_str := range workers_inspectors_hosts_lst {
 
 		ctx := span.Context()
 
 		// GET_BLOCK__FROM_WORKER
 		gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(p_block_int,
-			host_str,
-			worker_inspector__port_int,
+			host_port_str,
 			ctx,
 			p_runtime.Runtime_sys)
 
 		if gf_err != nil {
-			gf_errs_from_workers_map[host_str] = gf_err
+			gf_errs_from_workers_map[host_port_str] = gf_err
 			
 			// mark a block coming from this worker_inspector host as nil,
 			// and continue processing other hosts. 
 			// a particular host may fail to return a particular block for various reasons,
 			// it might not have synced to that block. 
-			block_from_workers_map[host_str] = nil
+			block_from_workers_map[host_port_str] = nil
 			continue
 		}
 
@@ -131,19 +128,19 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			gf_errs_from_workers_map[host_str] = gf_err
+			gf_errs_from_workers_map[host_port_str] = gf_err
 			
 			// mark a block coming from this worker_inspector host as nil,
 			// and continue processing other hosts. 
 			// a particular host may fail to return a particular block for various reasons,
 			// it might not have synced to that block. 
-			block_from_workers_map[host_str] = nil
+			block_from_workers_map[host_port_str] = nil
 			continue
 		}
 
 		
 
-		block_from_workers_map[host_str] = gf_block
+		block_from_workers_map[host_port_str] = gf_block
 	}
 
 	span.Finish()
@@ -179,19 +176,17 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 //-------------------------------------------------
 // GET_BLOCK__FROM_WORKER_INSPECTOR
 func eth_blocks__get_block__from_worker_inspector(p_block_int uint64,
-	p_host_str    string,
-	p_port_int    uint,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
+	p_host_port_str string,
+	p_ctx           context.Context,
+	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
-	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/blocks?b=%d",
-		p_host_str,
-		p_port_int,
+	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?b=%d",
+		p_host_port_str,
 		p_block_int)
 
 	//-----------------------
 	// SPAN
-	span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", p_host_str)
+	span_name_str    := fmt.Sprintf("worker_inspector__get_block:%s", p_host_port_str)
 	span__get_blocks := sentry.StartSpan(p_ctx, span_name_str)
 	
 	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions

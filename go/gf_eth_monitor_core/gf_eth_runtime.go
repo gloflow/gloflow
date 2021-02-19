@@ -30,8 +30,8 @@ import (
 type GF_runtime struct {
 	Config          *GF_config
 	Influxdb_client *influxdb2.Client
+	Py_plugins      *GF_py_plugins
 	Runtime_sys     *gf_core.Runtime_sys
-	// Mongodb_db *mongo.Database
 }
 
 //-------------------------------------------------------------
@@ -66,6 +66,9 @@ type GF_config struct {
 	// EVENTS - flag to turn on/off event consumption and processing from queues. 
 	//          mostly used for debugging and testing.
 	Events_consume_bool bool `mapstructure:"events_consume"`
+
+	// PY_PLUGINS
+	Py_plugins_dir_path_str string `mapstructure:"py_plugins_dir_path"`
 }
 
 //-------------------------------------------------
@@ -98,12 +101,19 @@ func Runtime__get(p_config *GF_config,
 
 	fmt.Printf("influxdb connected...\n")
 
+
+
+	// PY_PLUGINS
+	plugins_info := &GF_py_plugins{
+		Base_dir_path_str: p_config.Py_plugins_dir_path_str,
+	}
+
 	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
 		Config:          p_config,
 		Influxdb_client: influxdb_client,
-		// Mongodb_db:      mongodb_db,
+		Py_plugins:      plugins_info,
 		Runtime_sys:     p_runtime_sys,
 	}
 

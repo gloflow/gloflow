@@ -27,11 +27,6 @@ RUN pip install --upgrade pip
 ADD requirements__worker_inspector.txt /home/gf/requirements__worker_inspector.txt
 RUN pip install -r /home/gf/requirements__worker_inspector.txt
 
-
-
-
-
-
 RUN mkdir -p /home/gf/py/plugins
 ADD py/plugins/gf_plugin__get_contract_info.py /home/gf/py/plugins/gf_plugin__get_contract_info.py
 

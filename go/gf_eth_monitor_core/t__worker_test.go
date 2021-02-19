@@ -36,8 +36,7 @@ func Test__worker(p_test *testing.T) {
 	ctx := context.Background()
 
 	block_int := 4634748
-	host_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST")
-	worker_inspector__port_int := 2000
+	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
 
 	//--------------------
@@ -80,8 +79,7 @@ func Test__worker(p_test *testing.T) {
 
 	// GET_BLOCK__FROM_WORKER
 	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
-		host_str,
-		uint(worker_inspector__port_int),
+		host_port_str,
 		ctx,
 		runtime_sys)
 

@@ -20,7 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
+	"fmt"
 	"time"
+	"context"
+	"strings"
+	"github.com/getsentry/sentry-go"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_aws"
@@ -32,7 +36,7 @@ import (
 type worker_inspector__get_hosts_ch chan chan []string
 
 //-------------------------------------------------
-func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []string, chan *gf_core.Gf_error) {
+func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func(context.Context, *GF_runtime) []string, chan *gf_core.Gf_error) {
 
 	// CONFIG
 	update_period_sec     := 2*60 * time.Second // 2min
@@ -49,6 +53,9 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 	// MAIN
 	go func() {
 
+		// PORT
+		port_int := uint(2000)
+
 		var hosts_lst []string
 		for {
 			select {
@@ -61,7 +68,8 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 
 
 
-					inst__dns_name_str := *inst.PublicDnsName
+					inst__dns_name_str  := *inst.PublicDnsName
+					inst__host_port_str := fmt.Sprintf("%s:%d", inst__dns_name_str, port_int)
 
 					// IMPORTANT!! - only register instances that have a public DNS name.
 					//               they might not have that DNS name assigned, if they're 
@@ -70,11 +78,12 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 						continue
 					}
 
-					hosts_lst = append(hosts_lst, inst__dns_name_str)
+					hosts_lst = append(hosts_lst, inst__host_port_str)
 				}
 				
 			//-----------------------------
-			// MSG__GET_HOSTS
+			// MSG__GET_HOSTS - requests for hosts_lst made from clients of this goroutine are made
+			//                  by sending the channel on which to send the response on.
 			case get_hosts__reply_ch := <- get_hosts_ch:
 
 				get_hosts__reply_ch <- hosts_lst
@@ -114,13 +123,42 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func() []strin
 	}()
 	
 	//-------------------------------------------------
+	// GET_WORKER_HOSTS_FN
+	get_worker_hosts_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
 
-	get_hosts_fn := func() []string {
+		
 
-		reply_ch := make(chan []string)
-		get_hosts_ch <- reply_ch
-		hosts_lst := <- reply_ch
-		return hosts_lst
+		span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
+		span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
+
+		var workers_inspectors_hosts_lst []string
+		if p_runtime.Config.Workers_aws_discovery_bool {
+
+			reply_ch := make(chan []string)
+			get_hosts_ch       <- reply_ch // send the channel (on which to receive the response) to the main hosts resolving goroutine 
+			hosts_ports_lst := <- reply_ch // wait for a response from the resolving goroutine to the hosts request 
+
+			workers_inspectors_hosts_lst = hosts_ports_lst
+
+		} else {
+			workers_inspectors_hosts_str := p_runtime.Config.Workers_hosts_str
+			workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
+		}
+
+
+
+		span__get_worker_hosts.Finish()
+
+
+		return workers_inspectors_hosts_lst
+
+
+		// reply_ch := make(chan []string)
+		// get_hosts_ch <- reply_ch
+		// hosts_lst := <- reply_ch
+		// return hosts_lst
 	}
-	return get_hosts_fn, discovery_errors_ch
+
+	//-------------------------------------------------
+	return get_worker_hosts_fn, discovery_errors_ch
 }

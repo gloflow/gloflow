@@ -31,7 +31,7 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_get_hosts_fn func() []string,
+func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_runtime) []string,
 	p_metrics *gf_eth_monitor_core.GF_metrics,
 	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
@@ -51,6 +51,56 @@ func init_handlers(p_get_hosts_fn func() []string,
 		span__root_222.Finish()
 	})
 
+	//---------------------
+	// GET_TX_TRACE_PLOT
+
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+
+			span__root := sentry.StartSpan(p_ctx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(p_req))
+			defer span__root.Finish()
+			
+			//------------------
+			// INPUT
+
+			tx_hex_str, gf_err := Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+
+
+
+			//------------------
+			span__pipeline := sentry.StartSpan(span__root.Context(), "plot_tx_trace")
+
+			plot_svg_str, gf_err := gf_eth_monitor_core.Eth_tx__plot_trace(tx_hex_str,
+				p_get_hosts_fn,
+				span__pipeline.Context(),
+				p_runtime.Py_plugins,
+				p_runtime)
+
+			span__pipeline.Finish()
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------
+			// OUTPUT
+			data_map := map[string]interface{}{
+				"plot_svg_str": plot_svg_str,
+			}
+
+			//------------------
+			span__root.Finish()
+
+			return data_map, nil
+
+		},
+		p_runtime.Runtime_sys)
+		
 	//---------------------
 	// GET_BLOCK
 
@@ -94,11 +144,13 @@ func init_handlers(p_get_hosts_fn func() []string,
 			}
 			
 			//------------------
+			// OUTPUT
 			data_map := map[string]interface{}{
 				"block_from_workers_map": block_from_workers_map,
 				"miners_map":             miners_map,
 			}
 
+			//------------------
 			span__root.Finish()
 
 			return data_map, nil
@@ -130,8 +182,11 @@ func init_handlers(p_get_hosts_fn func() []string,
 
 			fmt.Println(miner_addr_str)
 
-
+			//------------------
+			// OUTPUT
 			data_map := map[string]interface{}{}
+
+			//------------------
 			return data_map, nil
 		},
 		p_runtime.Runtime_sys)
@@ -153,10 +208,13 @@ func init_handlers(p_get_hosts_fn func() []string,
 				return nil, gf_err
 			}
 			
-
+			//------------------
+			// OUTPUT
 			data_map := map[string]interface{}{
 				"peer_names_groups_lst": peer_names_groups_lst,
 			}
+
+			//------------------
 			return data_map, nil
 		},
 		p_runtime.Runtime_sys)

@@ -31,8 +31,7 @@ func Test__contract_opcodes(p_test *testing.T) {
 
 	ctx := context.Background()
 
-	host_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST")
-	worker_inspector__port_int := 2000
+	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
 	runtime, _ := t__get_runtime(p_test)
 
@@ -41,8 +40,7 @@ func Test__contract_opcodes(p_test *testing.T) {
 
 	// GET_TRACE
 	gf_tx_trace, gf_err := Eth_tx__get_trace__from_worker_inspector(tx_id_hex_str,
-		host_str,
-		uint(worker_inspector__port_int),
+		host_port_str,
 		ctx,
 		runtime.Runtime_sys)
 	if gf_err != nil {
@@ -69,7 +67,7 @@ func Test__contract_opcodes(p_test *testing.T) {
 		Base_dir_path_str: "./../../py/plugins",
 	}
 
-	gf_err = py__run_plugin__plot_tx_trace(tx_id_hex_str,
+	_, gf_err = py__run_plugin__plot_tx_trace(tx_id_hex_str,
 		gf_tx_trace,
 		plugins_info,
 		runtime.Runtime_sys)
@@ -78,6 +76,9 @@ func Test__contract_opcodes(p_test *testing.T) {
 		p_test.Fail()
 
 	}
+
+
+
 
 	//--------------------
 }

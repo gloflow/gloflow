@@ -79,28 +79,58 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
-func Eth_tx__plot_trace() {
+func Eth_tx__plot_trace(p_tx_id_hex_str string,
+	p_get_hosts_fn func(context.Context, *GF_runtime) []string,
+	p_ctx          context.Context,
+	p_py_plugins   *GF_py_plugins,
+	p_runtime      *GF_runtime) (string, *gf_core.Gf_error) {
 
 
 
+	//-----------------------
+	// WORKER_INSPECTOR__HOST_PORT
+	host_port_str := p_get_hosts_fn(p_ctx, p_runtime)[0]
+
+	// GET_TRACE
+	gf_tx_trace, gf_err := Eth_tx__get_trace__from_worker_inspector(p_tx_id_hex_str,
+		host_port_str,
+		p_ctx,
+		p_runtime.Runtime_sys)
+
+	if gf_err != nil {
+		return "", gf_err
+	}
+
+	//-----------------------
+	// PY_PLUGIN__PLOT
+	plot_svg_str, gf_err := py__run_plugin__plot_tx_trace(p_tx_id_hex_str,
+		gf_tx_trace,
+		p_py_plugins,
+		p_runtime.Runtime_sys)
+
+	if gf_err != nil {
+		return "", gf_err
+	}
+
+	//-----------------------
+
+	return plot_svg_str, nil
 }
 
 
 //-------------------------------------------------
 func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
-	p_host_str    string,
-	p_port_int    uint,
-	p_ctx         context.Context,
+	p_host_port_str string,
+	p_ctx           context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
 
-	url_str := fmt.Sprintf("http://%s:%d/gfethm_worker_inspect/v1/tx/trace?tx=%s",
-		p_host_str,
-		p_port_int,
+	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
+	p_host_port_str,
 		p_tx_hash_str)
 
 	//-----------------------
 	// SPAN
-	span_name_str    := fmt.Sprintf("worker_inspector__get_tx_trace:%s", p_host_str)
+	span_name_str      := fmt.Sprintf("worker_inspector__get_tx_trace:%s", p_host_port_str)
 	span__get_tx_trace := sentry.StartSpan(p_ctx, span_name_str)
 	
 	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions
