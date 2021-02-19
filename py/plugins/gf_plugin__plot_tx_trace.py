@@ -226,7 +226,13 @@ def main():
 
 
 	# FILE_SAVE
-	dwg.save()
+	if args_map["stdout_bool"]:
+
+		svg_str = dwg.tostring()
+		out_map = {"svg_str": svg_str}
+		print(f"GF_OUT:{json.dumps(out_map)}")
+	else:
+		dwg.save()
 
 #--------------------------------------------------
 def parse_args():
@@ -237,11 +243,17 @@ def parse_args():
 		help = "hex ID of the target transaction")
 
 	#----------------------------
+	# STDOUT
+	arg_parser.add_argument('-stdout', action='store_true')
+
+	#----------------------------
+
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 
 	return {
-		"tx_id_str": args_namespace.tx_id
+		"tx_id_str":   args_namespace.tx_id,
+		"stdout_bool": args_namespace.stdout
 	}
 
 #--------------------------------------------------

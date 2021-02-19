@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210217214619-5a14f8ca694d // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.37.14
+	github.com/aws/aws-sdk-go v1.37.15
 	github.com/btcsuite/btcd v0.21.0-beta // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/influxdata/influxdb-client-go/v2 v2.2.2
-	github.com/influxdata/line-protocol v0.0.0-20201012155213-5f565037cbc9 // indirect
+	github.com/influxdata/line-protocol v0.0.0-20210219174132-3da7e03c5204 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
@@ -44,7 +44,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210218145215-b8e89b74b9df // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
-	golang.org/x/sys v0.0.0-20210218155724-8ebf48af031b // indirect
+	golang.org/x/sys v0.0.0-20210219172841-57ea560cfca1 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

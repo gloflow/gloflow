@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -41,6 +41,9 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 	py_path_str := fmt.Sprintf("%s/gf_plugin__plot_tx_trace.py", p_plugins_info.Base_dir_path_str)
 	args_lst := []string{
 		fmt.Sprintf("-tx_id=%s", p_tx_id_str),
+
+		// write SVG output to stdout instead of to a file
+		"-stdout",
 	}
 	stdout_prefix_str := "GF_OUT:"
 
@@ -64,15 +67,10 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 
 
 
+	// spew.Dump(outputs_lst)
+	svg_str := outputs_lst[0]["svg_str"].(string)
 
-	spew.Dump(outputs_lst)
-
-
-	return "", nil
-
-
-
-
+	return svg_str, nil
 }
 
 //-------------------------------------------------
