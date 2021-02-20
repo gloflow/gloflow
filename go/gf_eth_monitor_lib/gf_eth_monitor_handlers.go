@@ -54,6 +54,49 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	//---------------------
 	// GET_TX_TRACE_PLOT
 
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+
+			span__root := sentry.StartSpan(p_ctx, "http__master__favorites_tx_add", sentry.ContinueFromRequest(p_req))
+			defer span__root.Finish()
+
+			//------------------
+			// INPUT
+
+			tx_hex_str, gf_err := Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------
+
+			span__pipeline := sentry.StartSpan(span__root.Context(), "plot_tx_trace")
+
+			gf_err = gf_eth_monitor_core.Eth_favorites__add_tx(tx_hex_str,
+				span__pipeline.Context(),
+				p_runtime)
+
+			span__pipeline.Finish()
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+
+
+			//------------------
+			// OUTPUT
+			data_map := map[string]interface{}{}
+
+			//------------------
+			return data_map, nil
+		},
+		p_runtime.Runtime_sys)
+
+	//---------------------
+	// GET_TX_TRACE_PLOT
+
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
@@ -68,9 +111,6 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			if gf_err != nil {
 				return nil, gf_err
 			}
-
-
-
 
 			//------------------
 			span__pipeline := sentry.StartSpan(span__root.Context(), "plot_tx_trace")
@@ -94,10 +134,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			}
 
 			//------------------
-			span__root.Finish()
-
 			return data_map, nil
-
 		},
 		p_runtime.Runtime_sys)
 		
@@ -114,7 +151,6 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			// INPUT
 
 			span__input := sentry.StartSpan(span__root.Context(), "get_input")
-			defer span__input.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp,
 				p_req,
@@ -129,7 +165,6 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			// PIPELINE
 
 			span__pipeline := sentry.StartSpan(span__root.Context(), "get_block_pipeline")
-			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
 			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_block_from_workers__pipeline(block_num_int,
 				p_get_hosts_fn,
@@ -162,24 +197,12 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-			
-
 			// INPUT
 			miner_addr_str, gf_err := Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
 			
-
-
-
-
-
-			
-
-
-
-
 			fmt.Println(miner_addr_str)
 
 			//------------------
@@ -196,7 +219,6 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/peers",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		
 			// METRICS
 			if p_metrics != nil {
 				p_metrics.Counter__http_req_num__get_peers.Inc()

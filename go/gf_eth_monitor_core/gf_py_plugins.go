@@ -65,9 +65,6 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 		return "", gf_err
 	}
 
-
-
-	// spew.Dump(outputs_lst)
 	svg_str := outputs_lst[0]["svg_str"].(string)
 
 	return svg_str, nil

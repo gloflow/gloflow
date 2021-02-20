@@ -37,7 +37,7 @@ def main():
 
 	l = sys.stdin.readline()
 	print(">>>>>>>>>>>>>>>>>>>>>>>>>>")
-	print(l.strip())
+	# print(l.strip())
 
 
 
