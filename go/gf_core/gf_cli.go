@@ -57,7 +57,7 @@ func CLI__run_standard(p_cmd_lst []string,
 func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 	p_runtime_sys *Runtime_sys) ([]string, []string, *Gf_error) {
 
-	stdout_ch, stderr_ch, done_ch, gf_err := CLI__run_core(p_cmd_info,
+	stdout_ch, stderr_ch, gf_err := CLI__run_core(p_cmd_info,
 		true,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -71,11 +71,19 @@ func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 		for {
 			select {
 			case stdout_l_str := <- stdout_ch:
-				stdout_lst = append(stdout_lst, stdout_l_str)
+
+				if stdout_l_str == "EOF" {
+					return stdout_lst, stderr_lst
+				} else {
+					stdout_lst = append(stdout_lst, stdout_l_str)
+				}
+				
 			case stderr_l_str := <- stderr_ch:
 				stderr_lst = append(stdout_lst, stderr_l_str)
-			case _ = <- done_ch:
-				return stdout_lst, stderr_lst
+
+			// case _ = <- done_ch:
+			// 	return stdout_lst, stderr_lst
+			
 			}
 		}
 		return nil, nil
@@ -90,7 +98,7 @@ func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 //-------------------------------------------------
 func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	p_wait_for_completion_bool bool,
-	p_runtime_sys              *Runtime_sys) (chan string, chan string, chan bool, *Gf_error) {
+	p_runtime_sys              *Runtime_sys) (chan string, chan string, *Gf_error) {
 
 	cmd_str := strings.Join(p_cmd_info.Cmd_lst, " ")
 	fmt.Printf("%s\n", cmd_str)
@@ -116,7 +124,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
 			err, "gf_core", p_runtime_sys)
-		return nil, nil, nil, gf_err 
+		return nil, nil, gf_err 
 	}
 	// defer stdin.Close()
 
@@ -128,7 +136,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	cmd_stderr__reader, _ := p.StderrPipe()
 	cmd_stderr__buffer    := bufio.NewReader(cmd_stderr__reader)
 
-	done_ch := make(chan bool)
+	// done_ch := make(chan bool)
 	
 	//----------------------
 	// START
@@ -138,7 +146,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
 			err, "gf_core", p_runtime_sys)
-		return nil, nil, nil, gf_err	
+		return nil, nil, gf_err	
 	}
 
 	//----------------------
@@ -151,11 +159,13 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	// STDOUT
 
 	stdout_ch := make(chan string, 100)
-	go func() {
+	go func(p_stdout_ch chan string) {
 		for {
 			l, err := cmd_stdout__buffer.ReadString('\n')
+
 			if fmt.Sprint(err) == "EOF" {
-				done_ch <- true
+				p_stdout_ch <- "EOF"
+				// done_ch <- true
 				return
 			}
 			if err != nil {
@@ -165,10 +175,10 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 				fmt.Printf("%s", l)
 			}
 			l_str := strings.TrimSuffix(l, "\n")
-			stdout_ch <- l_str
-			// stdout_lst = append(stdout_lst, )
+
+			p_stdout_ch <- l_str
 		}
-	}()
+	}(stdout_ch)
 
 	//----------------------
 	// STDERR
@@ -177,10 +187,10 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	go func() {
 		for {
 			l, err := cmd_stderr__buffer.ReadString('\n')
-			if fmt.Sprint(err) == "EOF" {
-				done_ch <- true
-				return
-			}
+			// if fmt.Sprint(err) == "EOF" {
+			// 	done_ch <- true
+			// 	return
+			// }
 			if err != nil {
 				continue
 			}
@@ -189,7 +199,6 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 			}
 			l_str := strings.TrimSuffix(l, "\n")
 			stderr_ch <- l_str
-			// stderr_lst = append(stderr_lst, strings.TrimSuffix(l, "\n"))
 		}
 	}()
 
@@ -203,13 +212,13 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 				"cli_run_error",
 				map[string]interface{}{"cmd": cmd_str,},
 				err, "gf_core", p_runtime_sys)
-			return nil, nil, nil, gf_err
+			return nil, nil, gf_err
 		}
 	}
 
 	//----------------------
 
-	return stdout_ch, stderr_ch, done_ch, nil
+	return stdout_ch, stderr_ch, nil // done_ch, nil
 }
 
 //-------------------------------------------------

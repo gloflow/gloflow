@@ -61,7 +61,6 @@ func CLI_py__run(p_py_path_str string,
 		return nil, gf_err
 	}
 
-
 	return parsed_output_lst, nil
 }
 
@@ -70,17 +69,17 @@ func cli_py__parse_output(p_stdout_lst []string,
 	p_stdout_prefix_str string,
 	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
 
-	output_lst := []map[string]interface{}{}
+	outputs_lst := []map[string]interface{}{}
 	for _, l_str := range p_stdout_lst {
-
+		
 		if strings.HasPrefix(l_str, p_stdout_prefix_str) {
 
 			// remove the stdout prefix of the Py program stdout
 			output_str := strings.Replace(l_str, p_stdout_prefix_str, "", 1)
 
 			// JSON_DECODE
-			var o map[string]interface{}
-			err := json.Unmarshal([]byte(output_str), &o)
+			var output_map map[string]interface{}
+			err := json.Unmarshal([]byte(output_str), &output_map)
 
 			if err != nil {
 				gf_err := Error__create("failed to parse json output in py program stdout",
@@ -89,8 +88,10 @@ func cli_py__parse_output(p_stdout_lst []string,
 					err, "gf_core", p_runtime_sys)
 				return nil, gf_err
 			}
+
+			outputs_lst = append(outputs_lst, output_map)
 		}
 	}
 
-	return output_lst, nil
+	return outputs_lst, nil
 }
