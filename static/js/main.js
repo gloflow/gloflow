@@ -156,12 +156,14 @@ function render__block_from_workers(p_block_int,
             const tx_size_f        = tx_map["size_f"];
             const tx_cost_int      = tx_map["cost_int"];
 
+            // TRANSACTION
             const tx_element = $(`<div class="tx">
                 <div class="tx_hash">hash           - <span>${tx_hash_str} </span><a href="https://etherscan.io/tx/${tx_hash_str}" target="_blank">etherscan.io</a></div>
                 <div class="source_destination">
                     <div class="from_addr">From   - <span>${tx_from_addr_str} </span>(<a href="https://etherscan.io/address/${tx_from_addr_str}" target="_blank">etherscan.io</a>)</div>
                     <div class="to_addr">To       - <span>${tx_to_addr_str} </span></div>
                 </div>
+                
                 <div class="tx_value">value         - <span>${tx_value_eth_f}</span>eth</div>
                 <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
                 <div class="tx_gas_price">gas price - <span>${tx_gas_price_int}</span></div>
@@ -169,6 +171,8 @@ function render__block_from_workers(p_block_int,
                 <div class="tx_size">size           - <span>${tx_size_f}</span></div>
                 <div class="tx_cost">cost           - <span>${tx_cost_int}</span></div>
             </div>`);
+
+            
 
             //----------------------------
             // NEW_CONTRACT
@@ -193,14 +197,23 @@ function render__block_from_workers(p_block_int,
             }
 
 
-            
             $(txs_element).find(".txs_list").append(tx_element);
 
-
             if (tx_gas_used_int > 21000) {
-
                 $(tx_element).find(".tx_gas_used span").addClass("not_just_value_transfer");
 
+
+
+
+                // TX_TRACE_BUTTON - trace TX's that are not simple value transfers
+                $(tx_element).append(`<div class="trace_btn">trace</div>`);
+                $(tx_element).find(".trace_btn").on('click', function() {
+                    get_trace(tx_hash_str,
+                        // p_on_error_fun
+                        function() {
+                            $(tx_element).find(".trace_btn").css("background-color", "red");
+                        });
+                })
             }
         });
 
@@ -209,18 +222,10 @@ function render__block_from_workers(p_block_int,
 
     //---------------------------------------------------
 
-
-
     Object.entries(p_block_from_workers_map).forEach(e=> {
 
         const worker_host_str = e[0];
         const block_map       = e[1];
-
-
-        console.log(block_map)
-
-
-
 
         // NO_BLOCK - from a particular worker. so just skip it.
         if (block_map == null) {
@@ -228,14 +233,55 @@ function render__block_from_workers(p_block_int,
         }
 
         render__block(p_block_int, worker_host_str, block_map, block_element);
-
-
-        
     });
-
 }
 
+//---------------------------------------------------
+function get_trace(p_tx_id_str, p_on_error_fun) {
 
+
+
+
+    http__get_trace(p_tx_id_str,
+        function(p_tx_trace_svg_str) {
+
+            $("body").append(`<div id="tx_trace"></div>`)
+            const draw = SVG().addTo('#tx_trace');
+            draw.svg(p_tx_trace_svg_str);
+
+        },
+        function(){
+            p_on_error_fun();
+        })
+}
+
+//---------------------------------------------------
+function http__get_trace(p_tx_id_str,
+    p_on_complete_fun,
+	p_on_error_fun) {
+
+    const url_str = "/gfethm/v1/tx/trace/plot?tx="+p_tx_id_str;
+
+    //-------------------------
+	// HTTP AJAX
+	$.get(url_str,
+		function(p_data_map) {
+            console.log('response received');
+            
+			console.log('data_map["status_str"] - '+p_data_map["status_str"]);
+			
+			if (p_data_map["status_str"] == "OK") {
+
+				const tx_trace_svg_str = p_data_map["data"]["plot_svg_str"];
+                p_on_complete_fun(tx_trace_svg_str);
+			}
+			else {
+				p_on_error_fun(p_data_map["data"]);
+			}
+        });
+        
+	//-------------------------	
+}
 
 //---------------------------------------------------
 function http__get_block(p_block_num_int,
@@ -243,7 +289,6 @@ function http__get_block(p_block_num_int,
 	p_on_error_fun) {
 
 	const url_str = "/gfethm/v1/block?b="+p_block_num_int;
-
 
 	//-------------------------
 	// HTTP AJAX
