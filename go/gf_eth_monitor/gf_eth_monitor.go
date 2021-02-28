@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"os"
 	"fmt"
 	"path"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	
+	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
@@ -34,6 +35,7 @@ import (
 func main() {
 
 	log_fun := gf_core.Init_log_fun()
+	log.SetOutput(os.Stdout)
 
 	cmd__base := cmds_init(log_fun)
 	err := cmd__base.Execute()

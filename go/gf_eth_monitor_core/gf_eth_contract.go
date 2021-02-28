@@ -196,7 +196,7 @@ func Eth_contract__db__get_abi(p_abi_type_str string,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.Counter__errs_num.Inc()
+			p_metrics.Errs_num__counter.Inc()
 		}
 
 		gf_err := gf_core.Mongo__handle_error("failed to find Contract ABI with given type in DB",

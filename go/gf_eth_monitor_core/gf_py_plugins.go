@@ -22,6 +22,7 @@ package gf_eth_monitor_core
 import (
 	"fmt"
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -66,6 +67,9 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 	}
 
 	svg_str := outputs_lst[0]["svg_str"].(string)
+
+	// LOG
+	log.WithFields(log.Fields{"tx_id": p_tx_id_str, "py_path": py_path_str}).Info("py_plugin gf_plugin__plot_tx_trace.py complete...")
 
 	return svg_str, nil
 }

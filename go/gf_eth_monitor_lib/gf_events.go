@@ -67,7 +67,7 @@ func Event__init_queue(p_queue_name_str string,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.Counter__errs_num.Inc()
+			p_metrics.Errs_num__counter.Inc()
 		}
 
 		return nil, err
@@ -128,7 +128,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.Counter__errs_num.Inc()
+			p_metrics.Errs_num__counter.Inc()
 		}
 	}
 	
@@ -168,7 +168,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 			// METRICS
 			if p_metrics != nil {
-				p_metrics.Counter__errs_num.Inc()
+				p_metrics.Errs_num__counter.Inc()
 			}
 		}
 	}
@@ -215,7 +215,7 @@ func event__process(p_event_map map[string]interface{},
 
 	// METRICS
 	if p_metrics != nil {
-		p_metrics.Counter__sqs_msgs_num.Inc()
+		p_metrics.SQS__msgs_num__counter.Inc()
 	}
 
 	return nil

@@ -25,6 +25,7 @@ import (
 	"time"
 	"net/http"
 	"context"
+	log "github.com/sirupsen/logrus"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -104,7 +105,8 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	port_str := p_runtime.Config.Port_str
 
-	p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
+	// p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
+	log.WithFields(log.Fields{"port": port_str,}).Info("STARTING HTTP SERVER")
 
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
 	http_err       := http.ListenAndServe(fmt.Sprintf(":%s", port_str), sentry_handler)

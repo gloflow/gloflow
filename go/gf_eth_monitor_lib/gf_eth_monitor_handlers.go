@@ -119,6 +119,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				p_runtime.Py_plugins,
+				p_metrics,
 				p_runtime)
 
 			span__pipeline.Finish()
@@ -223,7 +224,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			// METRICS
 			if p_metrics != nil {
-				p_metrics.Counter__http_req_num__get_peers.Inc()
+				p_metrics.Peers__http_req_num__get_peers__counter.Inc()
 			}
 
 			// PEERS__GET

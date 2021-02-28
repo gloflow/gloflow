@@ -67,7 +67,7 @@ func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 			unique_peer_names_num_int := len(peer_names_groups_lst)
 
-			p_metrics.Gauge__peers_unique_names_num.Set(float64(unique_peer_names_num_int))
+			p_metrics.Peers__unique_names_num__gauge.Set(float64(unique_peer_names_num_int))
 
 			// SLEEP
 			time.Sleep(60 * time.Second)
@@ -110,7 +110,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 	
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.Counter__errs_num.Inc()
+			p_metrics.Errs_num__counter.Inc()
 		}
 
 		gf_err := gf_core.Mongo__handle_error("failed to get all Eth peers grouped by peer_name",
@@ -199,7 +199,7 @@ func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 
 		// METRICS
 		if p_metrics != nil {
-			p_metrics.Counter__errs_num.Inc()
+			p_metrics.Errs_num__counter.Inc()
 		}
 		
 		return gf_err
@@ -208,7 +208,7 @@ func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 
 	// METRICS
 	if p_metrics != nil {
-		p_metrics.Counter__db_writes_num__new_peer_lifecycle.Inc()
+		p_metrics.DB__writes_num__new_peer_lifecycle__counter.Inc()
 	}
 
 	return nil

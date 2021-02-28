@@ -22,6 +22,7 @@ package gf_eth_monitor_core
 import (
 	"fmt"
 	"strings"
+	"time"
 	"math"
 	"math/big"
 	"context"
@@ -83,13 +84,15 @@ func Eth_tx__plot_trace(p_tx_id_hex_str string,
 	p_get_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx          context.Context,
 	p_py_plugins   *GF_py_plugins,
+	p_metrics      *GF_metrics,
 	p_runtime      *GF_runtime) (string, *gf_core.Gf_error) {
 
 
 
 	//-----------------------
 	// WORKER_INSPECTOR__HOST_PORT
-	host_port_str := p_get_hosts_fn(p_ctx, p_runtime)[0]
+	host_port_str      := p_get_hosts_fn(p_ctx, p_runtime)[0]
+	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 	// GET_TRACE
 	gf_tx_trace, gf_err := Eth_tx__get_trace__from_worker_inspector(p_tx_id_hex_str,
@@ -97,16 +100,33 @@ func Eth_tx__plot_trace(p_tx_id_hex_str string,
 		p_ctx,
 		p_runtime.Runtime_sys)
 
+	end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+	// METRICS
+	if p_metrics != nil {
+		delta_time__unix_f := end_time__unix_f - start_time__unix_f
+		p_metrics.Tx_trace__worker_inspector_durration__gauge.Set(delta_time__unix_f)
+	}
+
 	if gf_err != nil {
 		return "", gf_err
 	}
 
 	//-----------------------
 	// PY_PLUGIN__PLOT
+
+	start_time__unix_f = float64(time.Now().UnixNano()) / 1000000000.0
 	plot_svg_str, gf_err := py__run_plugin__plot_tx_trace(p_tx_id_hex_str,
 		gf_tx_trace,
 		p_py_plugins,
 		p_runtime.Runtime_sys)
+	end_time__unix_f = float64(time.Now().UnixNano())/1000000000.0
+	
+	// METRICS
+	if p_metrics != nil {
+		delta_time__unix_f := end_time__unix_f - start_time__unix_f
+		p_metrics.Tx_trace__py_plugin__plot_durration__gauge.Set(delta_time__unix_f)
+	}
 
 	if gf_err != nil {
 		return "", gf_err
