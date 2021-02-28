@@ -52,7 +52,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	})
 
 	//---------------------
-	// GET_TX_TRACE_PLOT
+	// GET_FAVORITES_TX_ADD
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
@@ -83,13 +83,13 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 				return nil, gf_err
 			}
 
-
-
 			//------------------
 			// OUTPUT
 			data_map := map[string]interface{}{}
 
 			//------------------
+			span__root.Finish()
+
 			return data_map, nil
 		},
 		p_runtime.Runtime_sys)
@@ -134,6 +134,8 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			}
 
 			//------------------
+			span__root.Finish()
+
 			return data_map, nil
 		},
 		p_runtime.Runtime_sys)

@@ -46,6 +46,15 @@ body {
 	margin-bottom: 7px;
 }
 
+/*TRACE_BTN*/
+.block .txs .tx .trace_btn {
+	background-color: #abee67;
+	width: 36px;
+	text-align: center;
+	padding: 7px;
+	cursor: pointer;
+}
+
 .block .txs .tx .source_destination {
 	background-color: #abee67;
 }

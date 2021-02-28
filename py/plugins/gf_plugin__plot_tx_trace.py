@@ -87,12 +87,12 @@ def main():
 	for op_map in tx_trace_map["opcodes_lst"]:
 		
 
-		print("--------------------")
+		# print("--------------------")
 		# print(op_map)
 
 		op_str       = op_map["op_str"].strip()
 		gas_cost_int = int(op_map["gas_cost_int"])
-		print(f"{op_str}-{gas_cost_int}")
+		# print(f"{op_str}-{gas_cost_int}")
 
 
 
@@ -224,6 +224,7 @@ def main():
 	#--------------------------------------------------
 	draw_archs()
 
+	print("done drawing...")
 
 	# FILE_SAVE
 	if args_map["stdout_bool"]:
