@@ -208,7 +208,9 @@ function render__block_from_workers(p_block_int,
                 // TX_TRACE_BUTTON - trace TX's that are not simple value transfers
                 $(tx_element).append(`<div class="trace_btn">trace</div>`);
                 $(tx_element).find(".trace_btn").on('click', function() {
-                    get_trace(tx_hash_str,
+
+                    // VIEW_TRACE
+                    view_trace(tx_hash_str,
                         // p_on_error_fun
                         function() {
                             $(tx_element).find(".trace_btn").css("background-color", "red");
@@ -237,10 +239,7 @@ function render__block_from_workers(p_block_int,
 }
 
 //---------------------------------------------------
-function get_trace(p_tx_id_str, p_on_error_fun) {
-
-
-
+function view_trace(p_tx_id_str, p_on_error_fun) {
 
     http__get_trace(p_tx_id_str,
         function(p_tx_trace_svg_str) {
@@ -249,6 +248,28 @@ function get_trace(p_tx_id_str, p_on_error_fun) {
             const draw = SVG().addTo('#tx_trace');
             draw.svg(p_tx_trace_svg_str);
 
+
+
+            
+
+            // IMPORTANT!! - position the plot depending on where the user scroll
+            //               to, to always keep the plot in view when the user opens it.
+            const current_global_scroll_y = $(window).scrollTop();
+            $("body #tx_trace").css("top", `${current_global_scroll_y+200}px`);
+
+            const svg_e = $("body #tx_trace svg")[0];
+            const svg_plot_bbox = svg_e.getBBox();
+
+            //----------------------------
+            // CSS
+            const svg_plot_height_int = Math.floor(svg_plot_bbox.height);
+            $(svg_e).css("background-color", "white");
+            $(svg_e).css("height", `${svg_plot_height_int}px`);
+
+            // FIX!! - limit the possible width of svg plots (gas cost of instructions), in py_plugin
+            $(svg_e).css("width", `${2000}px`);
+
+            //----------------------------
         },
         function(){
             p_on_error_fun();

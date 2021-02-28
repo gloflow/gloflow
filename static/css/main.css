@@ -81,6 +81,7 @@ body {
 /*TX_TRACE*/
 div#tx_trace {
 	position: absolute;
-	top:  200px;
+	
+	/* top - is determined programmatically depending on global Y scroll position */
 	left: 200px;
 }
