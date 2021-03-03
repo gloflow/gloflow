@@ -264,7 +264,7 @@ function view_trace(p_tx_id_str, p_on_error_fun) {
             // CSS
             const svg_plot_height_int = Math.floor(svg_plot_bbox.height);
             $(svg_e).css("background-color", "white");
-            $(svg_e).css("height", `${svg_plot_height_int}px`);
+            $(svg_e).css("height", `${svg_plot_height_int+100}px`);
 
             // FIX!! - limit the possible width of svg plots (gas cost of instructions), in py_plugin
             $(svg_e).css("width", `${2000}px`);

@@ -21,6 +21,7 @@ package gf_eth_monitor_lib
 
 import (
 	"fmt"
+	"context"
 	"encoding/json"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -85,19 +86,21 @@ func Event__init_queue(p_queue_name_str string,
 
 //-------------------------------------------------
 func event__start_sqs_consumer(p_queue_info *GF_queue_info,
+	p_ctx     context.Context,
 	p_metrics *gf_eth_monitor_core.GF_metrics,
 	p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	go func() {
 
 		for {
-			Event__process_from_sqs(p_queue_info, p_metrics, p_runtime)
+			Event__process_from_sqs(p_queue_info, p_ctx, p_metrics, p_runtime)
 		}
 	}()
 }
 
 //-------------------------------------------------
 func Event__process_from_sqs(p_queue_info *GF_queue_info,
+	p_ctx     context.Context,
 	p_metrics *gf_eth_monitor_core.GF_metrics,
 	p_runtime *gf_eth_monitor_core.GF_runtime) {
 
@@ -150,7 +153,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		//---------------------------
 		// EVENT__PROCESS
-		gf_err := event__process(event_map, p_metrics, p_runtime)
+		gf_err := event__process(event_map, p_ctx, p_metrics, p_runtime)
 		if gf_err != nil {
 			// attempt to process remaining messages
 			continue
@@ -176,6 +179,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 //-------------------------------------------------
 func event__process(p_event_map map[string]interface{},
+	p_ctx     context.Context,
 	p_metrics *gf_eth_monitor_core.GF_metrics,
 	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 
@@ -207,7 +211,7 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		gf_err := gf_eth_monitor_core.Eth_peers__db__write(peer__new_lifecycle, p_metrics, p_runtime)
+		gf_err := gf_eth_monitor_core.Eth_peers__db__write(peer__new_lifecycle, p_ctx, p_metrics, p_runtime)
 		if gf_err != nil {
 			return gf_err
 		}

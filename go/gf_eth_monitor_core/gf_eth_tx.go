@@ -56,6 +56,7 @@ type GF_eth__tx struct {
 }
 
 type GF_eth__tx_trace struct {
+	Tx_hash_str        string                     `json:"tx_hash_str"`
 	Gas_used_int       uint64                     `json:"gas_used_int"`
 	Value_returned_str string                     `json:"value_returned_str"`	
 	Failed_bool        bool                       `json:"failed_bool"`
@@ -80,7 +81,36 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
-func Eth_tx__plot_trace(p_tx_id_hex_str string,
+func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
+	p_ctx     context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) *gf_core.Gf_error {
+
+	coll_name_str := "gf_eth_txs_traces"
+
+	records_lst    := []interface{}{}
+	txs_hashes_lst := []string{}
+	for _, tx := range p_txs_traces_lst {
+		records_lst    = append(records_lst, interface{}(tx))
+		txs_hashes_lst = append(txs_hashes_lst, tx.Tx_hash_str)
+	}
+
+	gf_err := gf_core.Mongo__insert_bulk(records_lst,
+		coll_name_str,
+		map[string]interface{}{
+			"txs_hashes_lst":     txs_hashes_lst,
+			"caller_err_msg_str": "failed to bulk insert Eth txs_traces into DB",
+		},
+		p_ctx, p_runtime.Runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
+func Eth_tx_trace__plot(p_tx_id_hex_str string,
 	p_get_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx          context.Context,
 	p_py_plugins   *GF_py_plugins,
@@ -95,7 +125,7 @@ func Eth_tx__plot_trace(p_tx_id_hex_str string,
 	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 	// GET_TRACE
-	gf_tx_trace, gf_err := Eth_tx__get_trace__from_worker_inspector(p_tx_id_hex_str,
+	gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(p_tx_id_hex_str,
 		host_port_str,
 		p_ctx,
 		p_runtime.Runtime_sys)
@@ -137,12 +167,11 @@ func Eth_tx__plot_trace(p_tx_id_hex_str string,
 	return plot_svg_str, nil
 }
 
-
 //-------------------------------------------------
-func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
+func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
+	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
 	p_host_port_str,
@@ -205,6 +234,7 @@ func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
 	}
 
 	gf_tx_trace := &GF_eth__tx_trace{
+		Tx_hash_str:        p_tx_hash_str,
 		Gas_used_int:       uint64(result_map["gas"].(float64)),
 		Value_returned_str: result_map["returnValue"].(string),
 		Failed_bool:        result_map["failed"].(bool),
@@ -215,7 +245,7 @@ func Eth_tx__get_trace__from_worker_inspector(p_tx_hash_str string,
 }
 
 //-------------------------------------------------
-func Eth_tx__get_trace(p_tx_hash_str string,
+func Eth_tx_trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 

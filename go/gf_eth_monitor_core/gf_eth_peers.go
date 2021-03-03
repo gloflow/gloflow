@@ -184,18 +184,28 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 //-------------------------------------------------
 // DB_WRITE
 func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
+	p_ctx     context.Context,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
 
 
 	coll_name_str := "gf_eth_peers"
-	_, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).InsertOne(context.Background(), p_peer_new_lifecycle)
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
+	// _, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).InsertOne(context.Background(), p_peer_new_lifecycle)
+	gf_err := gf_core.Mongo__insert(p_peer_new_lifecycle,
+		coll_name_str,
+		map[string]interface{}{
+			"peer_name_str":      p_peer_new_lifecycle.Peer_name_str,
+			"caller_err_msg_str": "failed to insert a new Peer lifecycle into the DB",
+		},
+		p_ctx,
+		p_runtime.Runtime_sys)
+	if gf_err != nil {
+
+		/*gf_err := gf_core.Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{"peer_name_str": p_peer_new_lifecycle.Peer_name_str,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)*/
 
 		// METRICS
 		if p_metrics != nil {
@@ -204,7 +214,6 @@ func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 		
 		return gf_err
 	}
-
 
 	// METRICS
 	if p_metrics != nil {

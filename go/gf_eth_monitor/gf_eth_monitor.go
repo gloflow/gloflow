@@ -23,6 +23,7 @@ import (
 	"os"
 	"fmt"
 	"path"
+	"context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "github.com/sirupsen/logrus"
@@ -322,8 +323,10 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 				panic(err)
 			}
 
+			ctx := context.Background()
+
 			// PROCESS_SINGLE_EVENT
-			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, nil, runtime)
+			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, ctx, nil, runtime)
 		},
 	}
 

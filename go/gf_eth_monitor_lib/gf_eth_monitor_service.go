@@ -20,11 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_lib
 
 import (
-	
 	"fmt"
 	"time"
-	"net/http"
 	"context"
+	"net/http"
 	log "github.com/sirupsen/logrus"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
@@ -81,7 +80,9 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 		}
 
 		// QUEUE_START_CONSUMING
-		event__start_sqs_consumer(queue_info, metrics, p_runtime)
+
+		ctx := context.Background()
+		event__start_sqs_consumer(queue_info, ctx, metrics, p_runtime)
 	}
 
 	//-------------

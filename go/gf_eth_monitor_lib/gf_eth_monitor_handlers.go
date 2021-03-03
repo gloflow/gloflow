@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"net/http"
 	"context"
-	"time"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -36,20 +35,54 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
+
+
 	//---------------------
-	// REMOVE!! - temporary, just to test Sentry spans issue.
-	http.HandleFunc("/test", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		
-		ctx := p_req.Context()
+	// GET_BLOCK_PERSIST_BULK
 
-		span__root := sentry.StartSpan(ctx, "1111111111")
-		time.Sleep(2 * time.Second)
-		span__root.Finish()
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/persist_bulk",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		span__root_222 := sentry.StartSpan(span__root.Context(), "2222222222222222")
-		time.Sleep(2 * time.Second)
-		span__root_222.Finish()
-	})
+			span__root := sentry.StartSpan(p_ctx, "http__master__block_persist_bulk", sentry.ContinueFromRequest(p_req))
+			defer span__root.Finish()
+
+
+			//------------------
+			// INPUT
+
+			block_start_uint, block_end_uint, gf_err := Http__get_arg__block_range(p_resp, p_req, p_runtime.Runtime_sys)
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------
+
+			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_persist_bulk")
+
+			gf_err = gf_eth_monitor_core.Eth_blocks__persist_bulk__pipeline(block_start_uint,
+				block_end_uint,
+				p_get_hosts_fn,
+				span__pipeline.Context(),
+				p_metrics,
+				p_runtime)
+			
+			span__pipeline.Finish()
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------
+			// OUTPUT
+			data_map := map[string]interface{}{}
+
+			//------------------
+			span__root.Finish()
+
+			return data_map, nil
+		},
+		p_runtime.Runtime_sys)
 
 	//---------------------
 	// GET_FAVORITES_TX_ADD
@@ -71,9 +104,9 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			//------------------
 
-			span__pipeline := sentry.StartSpan(span__root.Context(), "plot_tx_trace")
+			span__pipeline := sentry.StartSpan(span__root.Context(), "favorites_tx_add")
 
-			gf_err = gf_eth_monitor_core.Eth_favorites__add_tx(tx_hex_str,
+			gf_err = gf_eth_monitor_core.Eth_favorites__tx_add(tx_hex_str,
 				span__pipeline.Context(),
 				p_runtime)
 
@@ -113,9 +146,9 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			}
 
 			//------------------
-			span__pipeline := sentry.StartSpan(span__root.Context(), "plot_tx_trace")
+			span__pipeline := sentry.StartSpan(span__root.Context(), "tx_trace_plot")
 
-			plot_svg_str, gf_err := gf_eth_monitor_core.Eth_tx__plot_trace(tx_hex_str,
+			plot_svg_str, gf_err := gf_eth_monitor_core.Eth_tx_trace__plot(tx_hex_str,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				p_runtime.Py_plugins,
@@ -167,9 +200,9 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			//------------------
 			// PIPELINE
 
-			span__pipeline := sentry.StartSpan(span__root.Context(), "get_block_pipeline")
+			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_get_from_workers")
 
-			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_block_from_workers__pipeline(block_num_int,
+			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_from_workers__pipeline(block_num_int,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				p_metrics,

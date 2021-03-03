@@ -48,7 +48,91 @@ type GF_eth__block__int struct {
 }
 
 //-------------------------------------------------
-func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
+func Eth_blocks__persist_bulk__pipeline(p_block_start_uint uint64,
+	p_block_end_uint      uint64,
+	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
+	p_ctx                 context.Context,
+	p_metrics             *GF_metrics,
+	p_runtime             *GF_runtime) *gf_core.Gf_error {
+
+
+
+
+	
+
+	block_get__errs_lst := []*gf_core.Gf_error{}
+	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
+
+		block_uint := b
+
+		//---------------------
+		// GET_BLOCK - gets the same block from all the workers that it gets, and the resulting maps
+		//             are key-ed by worker_host.
+		block_from_workers_map, miners_map, gf_err := Eth_blocks__get_from_workers__pipeline(block_uint,
+			p_get_worker_hosts_fn,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+
+
+		if gf_err != nil {
+			block_get__errs_lst = append(block_get__errs_lst, gf_err)
+
+			// continue processing subsequent blocks
+			continue
+		} else {
+			block_get__errs_lst = append(block_get__errs_lst, nil)
+		}
+
+
+		spew.Dump(miners_map)
+
+		//---------------------
+		// IMPORTANT!! - for now just get the block from the first worker_host,
+		//               regardless of how many workers are registered.
+		var gf_block *GF_eth__block__int
+		for worker_host_str := range block_from_workers_map {
+			gf_block = block_from_workers_map[worker_host_str]
+			break
+		}
+
+
+		txs_traces_lst := []*GF_eth__tx_trace{}
+		for _, tx := range gf_block.Txs_lst {
+
+
+			tx_hash_str   := tx.Hash_str
+			host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
+
+
+
+			// GET_TRACE
+			gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(tx_hash_str,
+				host_port_str,
+				p_ctx,
+				p_runtime.Runtime_sys)
+
+			if gf_err != nil {
+
+			}
+
+			txs_traces_lst = append(txs_traces_lst, gf_tx_trace)
+		}
+
+		//---------------------
+	}
+
+	
+
+
+	
+
+	return nil
+
+}
+
+//-------------------------------------------------
+func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
@@ -86,7 +170,7 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 		ctx := span.Context()
 
 		// GET_BLOCK__FROM_WORKER
-		gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(p_block_int,
+		gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(p_block_uint,
 			host_port_str,
 			ctx,
 			p_runtime.Runtime_sys)
@@ -175,14 +259,14 @@ func Eth_blocks__get_block_from_workers__pipeline(p_block_int uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__FROM_WORKER_INSPECTOR
-func eth_blocks__get_block__from_worker_inspector(p_block_int uint64,
+func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
 	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?b=%d",
 		p_host_port_str,
-		p_block_int)
+		p_block_uint)
 
 	//-----------------------
 	// SPAN
@@ -234,7 +318,6 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 
 	//------------------
 	/*
-	
 	type Header struct {
 		ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"`
 		UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"`
@@ -254,7 +337,6 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	}
 
 	// Time - the unix timestamp for when the block was collated
-
 	*/
 
 	span__get_header := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
