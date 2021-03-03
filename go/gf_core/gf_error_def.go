@@ -211,6 +211,9 @@ func error__get_defs() map[string]Error_def {
 		"mongodb_insert_error": Error_def{
 			Descr_str:"c.Insert() failed to insert/create new mongodb document",
 		},
+		"mongodb_insert_bulk_error": Error_def{
+			Descr_str:"c.InsertMany() failed to insert/create new mongodb documents",
+		},
 		"mongodb_update_error": Error_def{
 			Descr_str:"c.Update() failed to update a mongodb document",
 		},

@@ -53,7 +53,7 @@ func init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 		
 
 		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 			ip_str       := p_req.RemoteAddr
 			clean_ip_str := strings.Split(ip_str,":")[0]

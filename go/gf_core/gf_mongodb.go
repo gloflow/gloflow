@@ -33,18 +33,40 @@ import (
 	"github.com/globalsign/mgo"
 )
 
+//-------------------------------------------------
+func Mongo__insert_bulk(p_record_lst []interface{},
+	p_coll_name_str string,
+	p_meta_map      map[string]interface{}, // data describing the DB write op 
+	p_ctx           context.Context,
+	p_runtime_sys   *Runtime_sys) *Gf_error {
+
+
+	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertMany(p_ctx, p_record_lst)
+	if err != nil {
+		p_meta_map["coll_name_str"] = p_coll_name_str
+		gf_err := Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
+			"mongodb_insert_bulk_error",
+			p_meta_map,
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
 
 //-------------------------------------------------
 func Mongo__insert(p_record interface{},
 	p_coll_name_str string,
-	p_ctx           *context.Context,
+	p_meta_map      map[string]interface{}, // data describing the DB write op 
+	p_ctx           context.Context,
 	p_runtime_sys   *Runtime_sys) *Gf_error {
 
-	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(*p_ctx, p_record)
+	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(p_ctx, p_record)
 	if err != nil {
+		p_meta_map["coll_name_str"] = p_coll_name_str
 		gf_err := Mongo__handle_error("failed to insert a new record into the DB",
 			"mongodb_insert_error",
-			map[string]interface{}{"coll_name_str": p_coll_name_str,},
+			p_meta_map,
 			err, "gf_core", p_runtime_sys)
 		
 		return gf_err
