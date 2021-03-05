@@ -60,7 +60,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_persist_bulk")
 
-			gf_err = gf_eth_monitor_core.Eth_blocks__persist_bulk__pipeline(block_start_uint,
+			gf_err = gf_eth_monitor_core.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
 				block_end_uint,
 				p_get_hosts_fn,
 				span__pipeline.Context(),

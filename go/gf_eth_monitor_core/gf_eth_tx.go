@@ -22,7 +22,7 @@ package gf_eth_monitor_core
 import (
 	"fmt"
 	"strings"
-	"time"
+	
 	"math"
 	"math/big"
 	"context"
@@ -33,7 +33,7 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -41,6 +41,9 @@ import (
 type GF_eth__tx struct {
 	Hash_str       string                `json:"hash_str"         bson:"hash_str"`
 	Index_int      uint64                `json:"index_int"        bson:"index_int"` // position of the transaction in the block
+	Block_num_int  uint64                `json:"block_num_int"    bson:"block_num_int"`
+	Block_hash_str string                `json:"block_hash_str"   bson:"block_hash_str"`
+
 	From_addr_str  string                `json:"from_addr_str"    bson:"from_addr_str"`
 	To_addr_str    string                `json:"to_addr_str"      bson:"to_addr_str"`
 	Value_eth_f    float64               `json:"value_eth_f"      bson:"value_eth_f"`
@@ -55,24 +58,6 @@ type GF_eth__tx struct {
 	Logs_lst       []*GF_eth__log        `json:"logs_lst"         bson:"logs_lst"`
 }
 
-type GF_eth__tx_trace struct {
-	Tx_hash_str        string                     `json:"tx_hash_str"`
-	Gas_used_int       uint64                     `json:"gas_used_int"`
-	Value_returned_str string                     `json:"value_returned_str"`	
-	Failed_bool        bool                       `json:"failed_bool"`
-	Opcodes_lst        []*GF_eth__tx_trace_opcode `json:"opcodes_lst"`
-}
-
-type GF_eth__tx_trace_opcode struct {
-	Op_str            string   `json:"op_str"`
-	Pc_int            uint     `json:"pc_int"`            // program counter
-	Gas_cost_int      uint     `json:"gas_cost_int"`
-	Gas_remaining_int uint64   `json:"gas_remaining_int"` // decreasing count of how much gas is left before this Op executes
-	Stack_lst         []string          `json:"stack_lst"`
-	Memory_lst        []string          `json:"memory_lst"`
-	Storage_map       map[string]string `json:"storage_map"`
-}
-
 // eth_types.Log
 type GF_eth__log struct {
 	Address_str  string   `json:"address_str"  bson:"address_str"`  // address of the contract that generated the log
@@ -81,196 +66,39 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
-func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
+func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
-	coll_name_str := "gf_eth_txs_traces"
+	
+
+	coll_name_str := "gf_eth_txs"
 
 	records_lst    := []interface{}{}
 	txs_hashes_lst := []string{}
-	for _, tx := range p_txs_traces_lst {
+	for _, tx := range p_txs_lst {
 		records_lst    = append(records_lst, interface{}(tx))
-		txs_hashes_lst = append(txs_hashes_lst, tx.Tx_hash_str)
+		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
 	}
+
 
 	gf_err := gf_core.Mongo__insert_bulk(records_lst,
 		coll_name_str,
 		map[string]interface{}{
 			"txs_hashes_lst":     txs_hashes_lst,
-			"caller_err_msg_str": "failed to bulk insert Eth txs_traces into DB",
+			"caller_err_msg_str": "failed to bulk insert Eth txs (GF_eth__tx) into DB",
 		},
 		p_ctx, p_runtime.Runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
+
+
+
+
 	return nil
-}
-
-//-------------------------------------------------
-func Eth_tx_trace__plot(p_tx_id_hex_str string,
-	p_get_hosts_fn func(context.Context, *GF_runtime) []string,
-	p_ctx          context.Context,
-	p_py_plugins   *GF_py_plugins,
-	p_metrics      *GF_metrics,
-	p_runtime      *GF_runtime) (string, *gf_core.Gf_error) {
-
-
-
-	//-----------------------
-	// WORKER_INSPECTOR__HOST_PORT
-	host_port_str      := p_get_hosts_fn(p_ctx, p_runtime)[0]
-	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
-
-	// GET_TRACE
-	gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(p_tx_id_hex_str,
-		host_port_str,
-		p_ctx,
-		p_runtime.Runtime_sys)
-
-	end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-	// METRICS
-	if p_metrics != nil {
-		delta_time__unix_f := end_time__unix_f - start_time__unix_f
-		p_metrics.Tx_trace__worker_inspector_durration__gauge.Set(delta_time__unix_f)
-	}
-
-	if gf_err != nil {
-		return "", gf_err
-	}
-
-	//-----------------------
-	// PY_PLUGIN__PLOT
-
-	start_time__unix_f = float64(time.Now().UnixNano()) / 1000000000.0
-	plot_svg_str, gf_err := py__run_plugin__plot_tx_trace(p_tx_id_hex_str,
-		gf_tx_trace,
-		p_py_plugins,
-		p_runtime.Runtime_sys)
-	end_time__unix_f = float64(time.Now().UnixNano())/1000000000.0
-	
-	// METRICS
-	if p_metrics != nil {
-		delta_time__unix_f := end_time__unix_f - start_time__unix_f
-		p_metrics.Tx_trace__py_plugin__plot_durration__gauge.Set(delta_time__unix_f)
-	}
-
-	if gf_err != nil {
-		return "", gf_err
-	}
-
-	//-----------------------
-
-	return plot_svg_str, nil
-}
-
-//-------------------------------------------------
-func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
-	p_host_port_str string,
-	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
-
-	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
-	p_host_port_str,
-		p_tx_hash_str)
-
-	//-----------------------
-	// SPAN
-	span_name_str      := fmt.Sprintf("worker_inspector__get_tx_trace:%s", p_host_port_str)
-	span__get_tx_trace := sentry.StartSpan(p_ctx, span_name_str)
-	
-	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions
-	// across services.
-	sentry_trace_id_str := span__get_tx_trace.ToSentryTrace()
-	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
-		
-	// GF_RPC_CLIENT
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	span__get_tx_trace.Finish()
-
-	//-----------------------
-
-	trace_map  := data_map["trace_map"].(map[string]interface{})
-	result_map := trace_map["result"].(map[string]interface{})
-
-	gf_opcodes_lst := []*GF_eth__tx_trace_opcode{}
-	for _, op := range result_map["structLogs"].([]interface{}) {
-
-		op_map := op.(map[string]interface{})
-
-		stack_lst := []string{}
-		for _, s := range op_map["stack"].([]interface{}) {
-			stack_lst = append(stack_lst, s.(string))
-		}
-
-		memory_lst := []string{}
-		for _, s := range op_map["memory"].([]interface{}) {
-			memory_lst = append(memory_lst, s.(string))
-		}
-
-		storage_map := map[string]string{}
-		for k, v := range op_map["storage"].(map[string]interface{}) {
-			storage_map[k] = v.(string)
-		}
-
-		gf_opcode := &GF_eth__tx_trace_opcode{
-			Op_str:            strings.TrimSpace(op_map["op"].(string)),
-			Pc_int:            uint(op_map["pc"].(float64)),
-			Gas_cost_int:      uint(op_map["gasCost"].(float64)),
-			Gas_remaining_int: uint64(op_map["gas"].(float64)),
-			Stack_lst:         stack_lst,
-			Memory_lst:        memory_lst,
-			Storage_map:       storage_map,
-		}
-
-		gf_opcodes_lst = append(gf_opcodes_lst, gf_opcode)
-	}
-
-	gf_tx_trace := &GF_eth__tx_trace{
-		Tx_hash_str:        p_tx_hash_str,
-		Gas_used_int:       uint64(result_map["gas"].(float64)),
-		Value_returned_str: result_map["returnValue"].(string),
-		Failed_bool:        result_map["failed"].(bool),
-		Opcodes_lst:        gf_opcodes_lst,
-	}
-
-	return gf_tx_trace, nil
-}
-
-//-------------------------------------------------
-func Eth_tx_trace__get(p_tx_hash_str string,
-	p_eth_rpc_host_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-
-	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
-	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 
-	//               generic implementation of a client for the standard ethereum RPC API.
-	input_str := fmt.Sprintf(`{
-		"id":     1,
-		"method": "debug_traceTransaction",
-		"params": ["%s", {
-			"disableStack":   false,
-			"disableMemory":  false,
-			"disableStorage": false
-		}]
-	}`, p_tx_hash_str)
-
-	
-	output_map, gf_err := Eth_rpc__call(input_str,
-		p_eth_rpc_host_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	return output_map, nil
 }
 
 //-------------------------------------------------
@@ -310,8 +138,7 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 		// LOGS - check if the transaction has any logs
 		if len(tx.Logs_lst) > 0 {
 
-
-		
+			
 		}
 
 		//------------------
@@ -323,6 +150,7 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 func Eth_tx__load(p_tx *eth_types.Transaction,
 	p_tx_index_int   uint,
 	p_block_hash     eth_common.Hash,
+	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_py_plugins     *GF_py_plugins,
@@ -555,6 +383,9 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	gf_tx := &GF_eth__tx{
 		Hash_str:       tx_receipt.TxHash.Hex(),
 		Index_int:      uint64(tx_receipt.TransactionIndex),
+		Block_num_int:  p_block_num_int,
+		Block_hash_str: p_block_hash.Hex(),
+
 		From_addr_str:  sender_addr_str,
 		To_addr_str:    to_str,
 		Value_eth_f:    tx_value_eth_f, // tx.Value().Uint64(),
@@ -584,9 +415,6 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 	p_runtime  *GF_runtime) ([]map[string]interface{}, *gf_core.Gf_error) {
 	
 
-	
-
-
 
 	gf_abi := p_abis_map["erc20"]
 	abi, gf_err := Eth_contract__get_abi(gf_abi,
@@ -598,27 +426,13 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 	}
 
 
-
-
-
-
 	spew.Dump(abi)
 	
-
-
-	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAA----------------")
 
 	decoded_logs_lst := []map[string]interface{}{}
 	for _, l := range p_tx_logs {
 		
-
-
-		fmt.Println(">>>>>>>>>>>>>>>>")
-
-
-		fmt.Println(len(l.Topics_lst))
-
-		
+		// fmt.Println(len(l.Topics_lst))
 
 		event_1_map := map[string]interface{}{}
 		event_2_map := map[string]interface{}{}
@@ -659,13 +473,8 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 		fmt.Println(eth_common.BigToHash(event_2_map["value"].(*big.Int)).Hex())
 		fmt.Println(eth_common.BigToHash(event_3_map["value"].(*big.Int)).Hex())
 
-
-
 		decoded_logs_lst = append(decoded_logs_lst, event_map)
 	}
-
-
-
 
 	return decoded_logs_lst, nil
 }

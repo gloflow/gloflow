@@ -66,7 +66,7 @@ function main() {
 }
 
 //---------------------------------------------------
-function render__block_from_workers(p_block_int,
+function render__block_from_workers(p_block_uint,
     p_block_from_workers_map,
     p_miners_map) {
                             
@@ -84,7 +84,7 @@ function render__block_from_workers(p_block_int,
     </div>`);
     $("body").append(block_element);
 
-
+    // MINERS
     Object.entries(p_miners_map).forEach(e=> {
 
         const miner_map             = e[1];
@@ -99,18 +99,18 @@ function render__block_from_workers(p_block_int,
 
 
     //---------------------------------------------------
-    function render__block(p_block_int,
+    function render__block(p_block_uint,
         p_worker_host_str,
         p_block_map,
         p_block_parent_element) {
 
-        const gas_used_int      = p_block_map["gas_used_int"];
-        const gas_limit_int     = p_block_map["gas_limit_int"];
+        const gas_used_uint     = p_block_map["gas_used_uint"];
+        const gas_limit_uint    = p_block_map["gas_limit_uint"];
         const coinbase_addr_str = p_block_map["coinbase_addr_str"];
 
         const hash_str        = p_block_map["hash_str"];
         const parent_hash_str = p_block_map["parent_hash_str"];
-        const time_int        = p_block_map["time_int"];
+        const time_int        = p_block_map["time_uint"];
         
 
 
@@ -120,12 +120,12 @@ function render__block_from_workers(p_block_int,
             
 
         const block_from_worker__element = $(`<div class="block_from_worker">
-            <div>block #        <span class="block_num">${p_block_int} </span><a href="https://etherscan.io/block/${p_block_int}" target="_blank">etherscan.io</a></div>
+            <div>block #        <span class="block_num">${p_block_uint} </span><a href="https://etherscan.io/block/${p_block_uint}" target="_blank">etherscan.io</a></div>
             <div>hash:          <span class="block_hash">${hash_str}</span></div>
             <div>parent hash:   <span class="block_parent_hash">${parent_hash_str}</span></div>
             <div>time:          <span class="block_time">${creation_date} </span><span class="block_timeago">(${timeago_str})</span></div>
-            <div>gas used:      <span>${gas_used_int}</span></div>
-            <div>gas limit:     <span>${gas_limit_int}</span></div>
+            <div>gas used:      <span>${gas_used_uint}</span></div>
+            <div>gas limit:     <span>${gas_limit_uint}</span></div>
             <div>worker host:   <span>${p_worker_host_str}</span></div>
             <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str} </span>(<a href="https://etherscan.io/address/${coinbase_addr_str}" target="_blank">etherscan.io</a>)</div>
             
@@ -163,15 +163,15 @@ function render__block_from_workers(p_block_int,
                 return
             }
             
-            const tx_hash_str      = tx_map["hash_str"];
-            const tx_from_addr_str = tx_map["from_addr_str"];
-            const tx_to_addr_str   = tx_map["to_addr_str"];
-            const tx_value_eth_f   = tx_map["value_eth_f"];
-            const tx_gas_used_int  = tx_map["gas_used_int"];
-            const tx_gas_price_int = tx_map["gas_price_int"];
-            const tx_nonce_int     = tx_map["nonce_int"];
-            const tx_size_f        = tx_map["size_f"];
-            const tx_cost_int      = tx_map["cost_int"];
+            const tx_hash_str       = tx_map["hash_str"];
+            const tx_from_addr_str  = tx_map["from_addr_str"];
+            const tx_to_addr_str    = tx_map["to_addr_str"];
+            const tx_value_eth_f    = tx_map["value_eth_f"];
+            const tx_gas_used_uint  = tx_map["gas_used_uint"];
+            const tx_gas_price_uint = tx_map["gas_price_uint"];
+            const tx_nonce_int      = tx_map["nonce_int"];
+            const tx_size_f         = tx_map["size_f"];
+            const tx_cost_int       = tx_map["cost_int"];
 
             // TRANSACTION
             const tx_element = $(`<div class="tx">
@@ -182,8 +182,8 @@ function render__block_from_workers(p_block_int,
                 </div>
                 
                 <div class="tx_value">value         - <span>${tx_value_eth_f}</span>eth</div>
-                <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
-                <div class="tx_gas_price">gas price - <span>${tx_gas_price_int}</span></div>
+                <div class="tx_gas_used">gas used   - <span>${tx_gas_used_uint}</span></div>
+                <div class="tx_gas_price">gas price - <span>${tx_gas_price_uint}</span></div>
                 <div class="tx_nonce">nonce         - <span>${tx_nonce_int}</span></div>
                 <div class="tx_size">size           - <span>${tx_size_f}</span></div>
                 <div class="tx_cost">cost           - <span>${tx_cost_int}</span></div>
@@ -216,7 +216,7 @@ function render__block_from_workers(p_block_int,
 
             $(txs_element).find(".txs_list").append(tx_element);
 
-            if (tx_gas_used_int > 21000) {
+            if (tx_gas_used_uint > 21000) {
                 $(tx_element).find(".tx_gas_used span").addClass("not_just_value_transfer");
 
 
@@ -251,7 +251,7 @@ function render__block_from_workers(p_block_int,
             return
         }
 
-        render__block(p_block_int, worker_host_str, block_map, block_element);
+        render__block(p_block_uint, worker_host_str, block_map, block_element);
     });
 }
 

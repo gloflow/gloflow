@@ -38,17 +38,22 @@ import (
 type GF_eth__block__int struct {
 	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
 	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
-	Block_num_int     uint64        `mapstructure:"block_num_int"     json:"block_num_int"`
-	Gas_used_int      uint64        `mapstructure:"gas_used_int"      json:"gas_used_int"`
-	Gas_limit_int     uint64        `mapstructure:"gas_limit_int"     json:"gas_limit_int"`
-	Coinbase_addr_str string        `mapstructure:"coinbase_addr_str" json:"coinbase_addr_str"`
-	Txs_lst           []*GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"`
-	Time              uint64        `mapstructure:"time_int"          json:"time_int"`
-	Block             string        `mapstructure:"block"             json:"block"` // *eth_types.Block `json:"block"`
+	Block_num_uint    uint64        `mapstructure:"block_num_int"     json:"block_num_int"     bson:"block_num_uint"`
+	Gas_used_uint     uint64        `mapstructure:"gas_used_uint"     json:"gas_used_uint"     bson:"gas_used_uint"`
+	Gas_limit_uint    uint64        `mapstructure:"gas_limit_uint"    json:"gas_limit_uint"    bson:"gas_limit_uint"`
+	Coinbase_addr_str string        `mapstructure:"coinbase_addr_str" json:"coinbase_addr_str" bson:"coinbase_addr_str"`
+
+	// txs_lst       - not stored in DB. blocks are stored in their own table/collection, separate from TX's themselves (which are in their own).
+	// tx_hashes_lst - these are stored in the DB, and used to lookup TX's that are in their own collection.
+	Txs_lst        []*GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"            bson:"-"`
+	Txs_hashes_lst []string      `mapstructure:"txs_hashes_lst"    json:"txs_hashes_lst"     bson:"txs_hashes_lst"`
+
+	Time_uint uint64 `mapstructure:"time_int"          json:"time_uint"`
+	Block     string `mapstructure:"block"             json:"block"` // *eth_types.Block `json:"block"`
 }
 
 //-------------------------------------------------
-func Eth_blocks__persist_bulk__pipeline(p_block_start_uint uint64,
+func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx                 context.Context,
@@ -60,7 +65,7 @@ func Eth_blocks__persist_bulk__pipeline(p_block_start_uint uint64,
 
 	
 
-	block_get__errs_lst := []*gf_core.Gf_error{}
+	block__errs_lst := []*gf_core.Gf_error{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
 
 		block_uint := b
@@ -76,18 +81,14 @@ func Eth_blocks__persist_bulk__pipeline(p_block_start_uint uint64,
 
 
 		if gf_err != nil {
-			block_get__errs_lst = append(block_get__errs_lst, gf_err)
-
-			// continue processing subsequent blocks
-			continue
+			block__errs_lst = append(block__errs_lst, gf_err)
+			continue // continue processing subsequent blocks
 		} else {
-			block_get__errs_lst = append(block_get__errs_lst, nil)
+			block__errs_lst = append(block__errs_lst, nil)
 		}
-
 
 		spew.Dump(miners_map)
 
-		//---------------------
 		// IMPORTANT!! - for now just get the block from the first worker_host,
 		//               regardless of how many workers are registered.
 		var gf_block *GF_eth__block__int
@@ -96,39 +97,81 @@ func Eth_blocks__persist_bulk__pipeline(p_block_start_uint uint64,
 			break
 		}
 
+		//---------------------
+		// DB_WRITE__BLOCK
 
-		txs_traces_lst := []*GF_eth__tx_trace{}
+		gf_err = Eth_blocks__db_write_bulk([]*GF_eth__block__int{gf_block,},
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			block__errs_lst = append(block__errs_lst, gf_err)
+			continue // continue processing subsequent blocks
+		}
+
+		//---------------------
+		// DB_WRITE__TXS
+		gf_err = eth_tx__db__write_bulk(gf_block.Txs_lst,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			block__errs_lst = append(block__errs_lst, gf_err)
+			continue // continue processing subsequent blocks
+		}
+
+		//---------------------
+		// TRACES
+		tx_hashes_lst := []string{}
 		for _, tx := range gf_block.Txs_lst {
+			tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
+		}
 
+		worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
 
-			tx_hash_str   := tx.Hash_str
-			host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
-
-
-
-			// GET_TRACE
-			gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(tx_hash_str,
-				host_port_str,
-				p_ctx,
-				p_runtime.Runtime_sys)
-
-			if gf_err != nil {
-
-			}
-
-			txs_traces_lst = append(txs_traces_lst, gf_tx_trace)
+		gf_err, _ = Eth_tx_trace__get_and_persist_bulk(tx_hashes_lst,
+			worker_inspector_host_port_str,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			return gf_err
 		}
 
 		//---------------------
 	}
 
-	
+	return nil
+}
+
+//-------------------------------------------------
+func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
+	p_ctx     context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) *gf_core.Gf_error {
 
 
-	
+	records_lst     := []interface{}{}
+	blocks_nums_lst := []uint64{}
+	for _, b := range p_gf_blocks_lst {
+		records_lst     = append(records_lst, interface{}(b))
+		blocks_nums_lst = append(blocks_nums_lst, b.Block_num_uint)
+	}
+
+	coll_name_str := "gf_eth_blocks"
+	gf_err := gf_core.Mongo__insert_bulk(records_lst,
+		coll_name_str,
+		map[string]interface{}{
+			"blocks_nums_lst":    blocks_nums_lst,
+			"caller_err_msg_str": "failed to bulk insert Eth blocks (GF_eth__block__int) into DB",
+		},
+		p_ctx,
+		p_runtime.Runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
 	return nil
-
 }
 
 //-------------------------------------------------
@@ -310,7 +353,7 @@ func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__PIPELINE
-func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
+func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
 	p_py_plugins     *GF_py_plugins,
@@ -342,12 +385,12 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	span__get_header := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
 	defer span__get_header.Finish() // in case a panic happens before the main .Finish() for this span
 
-	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_int))
+	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 		error_defs_map := Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
-			map[string]interface{}{"block_num": p_block_num_int,},
+			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
@@ -396,13 +439,13 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	span__get_block := sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	defer span__get_block.Finish() // in case a panic happens before the main .Finish() for this span
 
-	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_int))
+	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 
 		error_defs_map := Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
-			map[string]interface{}{"block_num": p_block_num_int,},
+			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
 		return nil, gf_err
 	}
@@ -421,6 +464,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 		gf_tx, gf_err := Eth_tx__load(tx,
 			tx_index_int,
 			block.Hash(),
+			p_block_num_uint,
 			span__get_txs.Context(),
 			p_eth_rpc_client,
 			p_py_plugins,
@@ -438,16 +482,28 @@ func Eth_blocks__get_block__pipeline(p_block_num_int uint64,
 	span__get_txs.Finish()
 
 	//------------------
+
+
+	txs_hashes_lst := []string{}
+	for _, tx := range txs_lst {
+		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
+	}
+
+
+
 	gf_block := &GF_eth__block__int{
 		Hash_str:          block.Hash().Hex(),
 		Parent_hash_str:   block.ParentHash().Hex(),
-		Block_num_int:     block.Number().Uint64(),
-		Gas_used_int:      block.GasUsed(),
-		Gas_limit_int:     block.GasLimit(),
+		Block_num_uint:    block.Number().Uint64(),
+		Gas_used_uint:     block.GasUsed(),
+		Gas_limit_uint:    block.GasLimit(),
 		Coinbase_addr_str: strings.ToLower(block.Coinbase().Hex()),
-		Txs_lst:           txs_lst,
-		Time:              block.Time(),
-		Block:             spew.Sdump(block),
+
+		Txs_lst:        txs_lst,
+		Txs_hashes_lst: txs_hashes_lst,
+
+		Time_uint: block.Time(),
+		Block:     spew.Sdump(block),
 	}
 
 	return gf_block, nil
