@@ -87,12 +87,8 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	//-------------
 	// WORKER_DISCOVERY
-
-	var get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_runtime) []string
-	if p_runtime.Config.Workers_aws_discovery_bool {
-		get_hosts_fn, _ = gf_eth_monitor_core.Worker__discovery__init(p_runtime.Runtime_sys)
-	}
-
+	get_hosts_fn, _ := gf_eth_monitor_core.Worker__discovery__init(p_runtime)
+	
 	//-------------
 	// HANDLERS
 	gf_err = init_handlers(get_hosts_fn,

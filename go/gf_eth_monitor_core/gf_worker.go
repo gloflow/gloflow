@@ -36,13 +36,13 @@ import (
 type worker_inspector__get_hosts_ch chan chan []string
 
 //-------------------------------------------------
-func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func(context.Context, *GF_runtime) []string, chan *gf_core.Gf_error) {
+func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_runtime) []string, chan *gf_core.Gf_error) {
 
 	// CONFIG
-	update_period_sec     := 2*60 * time.Second // 2min
+	update_period_sec         := 2*60 * time.Second // 2min
 	target_instances_tags_lst := [][]map[string]string{
 		{{"Name": "gf_eth_monitor__worker__archive"}},
-		{{"Name": "gf_eth_monitor__worker__fast"}},
+		// {{"Name": "gf_eth_monitor__worker__fast"}},
 	}
 
 	get_hosts_ch        := make(worker_inspector__get_hosts_ch, 100) // client requests for hosts are received on this channel
@@ -100,7 +100,7 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func(context.C
 
 			aws_instances_all_lst := []*ec2.Instance{}
 			for _, instance_tags_lst := range target_instances_tags_lst {
-				aws_instances_lst, gf_err := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime_sys)
+				aws_instances_lst, gf_err := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime.Runtime_sys)
 				if gf_err != nil {
 					discovery_errors_ch <- gf_err
 
@@ -123,11 +123,10 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func(context.C
 	}()
 	
 	//-------------------------------------------------
-	// GET_WORKER_HOSTS_FN
-	get_worker_hosts_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
+	// GET_WORKER_HOSTS__DYNAMIC_FN
+	get_worker_hosts__dynamic_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
 
-		
-
+	
 		span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
 		span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 
@@ -145,20 +144,26 @@ func Worker__discovery__init(p_runtime_sys *gf_core.Runtime_sys) (func(context.C
 			workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
 		}
 
-
-
 		span__get_worker_hosts.Finish()
 
-
 		return workers_inspectors_hosts_lst
-
-
-		// reply_ch := make(chan []string)
-		// get_hosts_ch <- reply_ch
-		// hosts_lst := <- reply_ch
-		// return hosts_lst
 	}
 
 	//-------------------------------------------------
+	// GET_WORKER_HOSTS__STATIC_FN
+	get_worker_hosts__static_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
+		worker_hosts_lst := strings.Split(p_runtime.Config.Workers_hosts_str, ",")
+		return worker_hosts_lst
+	}
+	
+	//-------------------------------------------------
+
+	var get_worker_hosts_fn func(context.Context, *GF_runtime) []string
+	if p_runtime.Config.Workers_aws_discovery_bool {
+		get_worker_hosts_fn = get_worker_hosts__dynamic_fn
+	} else {
+		get_worker_hosts_fn = get_worker_hosts__static_fn
+	}
+
 	return get_worker_hosts_fn, discovery_errors_ch
 }

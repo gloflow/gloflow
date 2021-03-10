@@ -80,5 +80,4 @@ func Test__contract(p_test *testing.T) {
 	for _, gf_opcode := range opcodes_lst {
 		fmt.Printf("%s - %s\n", gf_opcode.Addr_hex_str, gf_opcode.Op_and_args_str)
 	}
-
 }

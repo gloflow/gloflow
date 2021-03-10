@@ -51,35 +51,29 @@ func Test__get_tx_logs(p_test *testing.T) {
 
 	config := &GF_config{
 		Mongodb_host_str:    "localhost:27017",
-		Mongodb_db_name_str: "gf_test",
+		Mongodb_db_name_str: "gf_eth_monitor",
 	}
 	runtime, err := Runtime__get(config, runtime_sys)
 	if err != nil {
 		p_test.Fail()
 	}
 
-	// METRICS
-	metrics_port := 9110
-	metrics, gf_err := Metrics__init(metrics_port)
-	if gf_err != nil {
-		p_test.Fail()
-	}
-
-
 	//--------------------
 	// DB_INSERT
 	abis_map       := t__get_abis()
 	coll_name_str := "gf_eth_meta__contracts_abi"
 	for _, gf_abi := range abis_map {
-		gf_err = gf_core.Mongo__insert(gf_abi, coll_name_str, &ctx, runtime_sys)
+		gf_err := gf_core.Mongo__insert(gf_abi, coll_name_str,
+			map[string]interface{}{
+				"caller_err_msg_str": "failed to insert contract ABI record into DB in gf_eth_monitor test t__tx_logs_test",
+			},
+			ctx, runtime_sys)
 		if gf_err != nil {
 			p_test.Fail()
 		}
 	}
 
 	//--------------------
-
-
 
 	// TETHER_ERC20_TX_LOG
 	// https://etherscan.io/tx/0x0cc8148371a953793498823ecff6754d0a5f2ee648a1bdb696100a9dd8538d05
@@ -95,12 +89,10 @@ func Test__get_tx_logs(p_test *testing.T) {
 		},
 	}
 
-
-	
 	decoded_logs_lst, gf_err := Eth_tx__enrich_logs(tx_logs,
 		abis_map,
 		ctx,
-		metrics,
+		nil,
 		runtime)
 	if gf_err != nil {
 		p_test.Fail()
@@ -111,8 +103,6 @@ func Test__get_tx_logs(p_test *testing.T) {
 	value_int := decoded_logs_lst[0]["value"].(*big.Int).Uint64()
 	assert.EqualValues(p_test, value_int, 445550000, "the decoded event Eth log value should be equal to 445550000")
 	
-
-
 
 
 

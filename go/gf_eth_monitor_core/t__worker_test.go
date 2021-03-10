@@ -35,7 +35,7 @@ func Test__worker(p_test *testing.T) {
 	
 	ctx := context.Background()
 
-	block_int := 4634748
+	block_int     := 4634748
 	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
 
@@ -50,44 +50,24 @@ func Test__worker(p_test *testing.T) {
 		Errors_send_to_sentry_bool: true,
 	}
 
-
 	config := &GF_config{
 		Mongodb_host_str:    "localhost:27017",
-		Mongodb_db_name_str: "gf_test",
+		Mongodb_db_name_str: "gf_eth_monitor",
 	}
 	runtime, err := Runtime__get(config, runtime_sys)
 	if err != nil {
 		p_test.Fail()
 	}
 
-
-
-
-
-	
-
-	
-	// METRICS
-	metrics_port := 9110
-	metrics, gf_err := Metrics__init(metrics_port)
-	if gf_err != nil {
-		p_test.Fail()
-	}
-
-
 	//--------------------
-
-	// GET_BLOCK__FROM_WORKER
+	// GET_BLOCK__FROM_WORKER_INSPECTOR
 	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
 		host_port_str,
 		ctx,
 		runtime_sys)
 
 	if gf_err != nil {
-
 		p_test.Fail()
-
-
 	}
 
 
@@ -97,7 +77,7 @@ func Test__worker(p_test *testing.T) {
 
 
 	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, metrics, runtime)
+	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, nil, runtime)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -112,10 +92,9 @@ func Test__worker(p_test *testing.T) {
 	gf_err = eth_tx__enrich_from_block(gf_block,
 		abis_map,
 		ctx,
-		metrics,
+		nil,
 		runtime)
 	if gf_err != nil {
-
 		p_test.Fail()
 	}
 

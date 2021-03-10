@@ -60,7 +60,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_persist_bulk")
 
-			gf_err = gf_eth_monitor_core.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
+			gf_errs_lst := gf_eth_monitor_core.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
 				block_end_uint,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
@@ -69,8 +69,11 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			
 			span__pipeline.Finish()
 
-			if gf_err != nil {
-				return nil, gf_err
+			if len(gf_errs_lst) > 0 {
+
+				// FIX!! - see if all errors should be returned maybe.
+				gf_err__first := gf_errs_lst[0]
+				return nil, gf_err__first
 			}
 
 			//------------------

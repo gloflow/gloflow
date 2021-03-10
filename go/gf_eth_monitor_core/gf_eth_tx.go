@@ -29,33 +29,32 @@ import (
 	"encoding/base64"
 	// "encoding/json"
 	"github.com/getsentry/sentry-go"
+	"go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
-	
 	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-	Hash_str       string                `json:"hash_str"         bson:"hash_str"`
-	Index_int      uint64                `json:"index_int"        bson:"index_int"` // position of the transaction in the block
-	Block_num_int  uint64                `json:"block_num_int"    bson:"block_num_int"`
-	Block_hash_str string                `json:"block_hash_str"   bson:"block_hash_str"`
-
-	From_addr_str  string                `json:"from_addr_str"    bson:"from_addr_str"`
-	To_addr_str    string                `json:"to_addr_str"      bson:"to_addr_str"`
-	Value_eth_f    float64               `json:"value_eth_f"      bson:"value_eth_f"`
-	Data_bytes_lst []byte                `json:"-"                bson:"-"`
-	Data_b64_str   string                `json:"data_b64_str"     bson:"data_b64_str"`
-	Gas_used_int   uint64                `json:"gas_used_int"     bson:"gas_used_int"`
-	Gas_price_int  uint64                `json:"gas_price_int"    bson:"gas_price_int"`
-	Nonce_int      uint64                `json:"nonce_int"        bson:"nonce_int"`
-	Size_f         float64               `json:"size_f"           bson:"size_f"`
-	Cost_int       uint64                `json:"cost_int"         bson:"cost_int"`
-	Contract_new   *GF_eth__contract_new `json:"contract_new_map" bson:"contract_new_map"`
-	Logs_lst       []*GF_eth__log        `json:"logs_lst"         bson:"logs_lst"`
+	Hash_str       string                `mapstructure:"hash_str"         json:"hash_str"         bson:"hash_str"`
+	Index_int      uint64                `mapstructure:"index_int"        json:"index_int"        bson:"index_int"` // position of the transaction in the block
+	Block_num_int  uint64                `mapstructure:"block_num_int"    json:"block_num_int"    bson:"block_num_int"`
+	Block_hash_str string                `mapstructure:"block_hash_str"   json:"block_hash_str"   bson:"block_hash_str"`
+	From_addr_str  string                `mapstructure:"from_addr_str"    json:"from_addr_str"    bson:"from_addr_str"`
+	To_addr_str    string                `mapstructure:"to_addr_str"      json:"to_addr_str"      bson:"to_addr_str"`
+	Value_eth_f    float64               `mapstructure:"value_eth_f"      json:"value_eth_f"      bson:"value_eth_f"`
+	Data_bytes_lst []byte                `mapstructure:"-"                json:"-"                bson:"-"`
+	Data_b64_str   string                `mapstructure:"data_b64_str"     json:"data_b64_str"     bson:"-"`
+	Gas_used_int   uint64                `mapstructure:"gas_used_int"     json:"gas_used_int"     bson:"gas_used_int"`
+	Gas_price_int  uint64                `mapstructure:"gas_price_int"    json:"gas_price_int"    bson:"gas_price_int"`
+	Nonce_int      uint64                `mapstructure:"nonce_int"        json:"nonce_int"        bson:"nonce_int"`
+	Size_f         float64               `mapstructure:"size_f"           json:"size_f"           bson:"size_f"`
+	Cost_int       uint64                `mapstructure:"cost_int"         json:"cost_int"         bson:"cost_int"`
+	Contract_new   *GF_eth__contract_new `mapstructure:"contract_new_map" json:"contract_new_map" bson:"contract_new_map"`
+	Logs_lst       []*GF_eth__log        `mapstructure:"logs_lst"         json:"logs_lst"         bson:"logs_lst"`
 }
 
 // eth_types.Log
@@ -66,6 +65,41 @@ type GF_eth__log struct {
 }
 
 //-------------------------------------------------
+// DB__GET
+func eth_tx__db__get(p_tx_hash_str string,
+	p_ctx     context.Context,
+	p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (*GF_eth__tx, *gf_core.Gf_error) {
+
+	coll_name_str := "gf_eth_txs"
+
+
+	q := bson.M{"hash_str": p_tx_hash_str, }
+
+	var gf_tx GF_eth__tx
+	err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx, q).Decode(&gf_tx)
+	if err != nil {
+
+
+
+
+		// METRICS
+		if p_metrics != nil {
+			p_metrics.Errs_num__counter.Inc()
+		}
+
+		gf_err := gf_core.Mongo__handle_error("failed to find Transaction with gives hash in DB",
+			"mongodb_find_error",
+			map[string]interface{}{"tx_hash_str": p_tx_hash_str,},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return nil, gf_err
+	}
+
+	return &gf_tx, nil
+}
+
+//-------------------------------------------------
+// DB__WRITE_BULK
 func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
@@ -156,7 +190,6 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	p_py_plugins     *GF_py_plugins,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
 
-	
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
 
@@ -205,10 +238,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 	//------------------
 	// GET_TX
-
-	/*
-	type Transaction
-
+	/*type Transaction
 	func NewContractCreation(nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
 	func NewTransaction(nonce uint64, to common.Address, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte) *Transaction
 	func SignTx(tx *Transaction, s Signer, prv *ecdsa.PrivateKey) (*Transaction, error)
@@ -232,8 +262,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	func (tx *Transaction) To() *common.Address
 	func (tx *Transaction) UnmarshalJSON(input []byte) error
 	func (tx *Transaction) Value() *big.Int
-	func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, error)
-	*/
+	func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, error)*/
 
 	/*t.Gas()
 	t.GasPrice()
@@ -241,7 +270,6 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	//                in this case its a hash of signed transaction data.
 	tx_hash := t.Hash()
 	t.Value()
-	
 	
 	address := t.To()
 	if address == nil {
@@ -263,11 +291,6 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	}
 
 	span__get_tx.Finish()
-
-
-
-
-	
 
 	//------------------
 	// GET_LOGS
@@ -403,6 +426,11 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 		Contract_new:  contract__new,
 	}
+
+
+
+	spew.Dump(gf_tx)
+
 
 	return gf_tx, nil
 }

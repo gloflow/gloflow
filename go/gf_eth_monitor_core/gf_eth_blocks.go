@@ -48,8 +48,9 @@ type GF_eth__block__int struct {
 	Txs_lst        []*GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"            bson:"-"`
 	Txs_hashes_lst []string      `mapstructure:"txs_hashes_lst"    json:"txs_hashes_lst"     bson:"txs_hashes_lst"`
 
-	Time_uint uint64 `mapstructure:"time_int"          json:"time_uint"`
-	Block     string `mapstructure:"block"             json:"block"` // *eth_types.Block `json:"block"`
+	Time_uint uint64 `mapstructure:"time_int" json:"time_uint"`
+	
+	// Block string `mapstructure:"block" json:"block"` // *eth_types.Block `json:"block"`
 }
 
 //-------------------------------------------------
@@ -58,14 +59,14 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
-	p_runtime             *GF_runtime) *gf_core.Gf_error {
+	p_runtime             *GF_runtime) []*gf_core.Gf_error {
 
 
 
 
 	
 
-	block__errs_lst := []*gf_core.Gf_error{}
+	gf_errs_lst := []*gf_core.Gf_error{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
 
 		block_uint := b
@@ -81,10 +82,8 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 
 
 		if gf_err != nil {
-			block__errs_lst = append(block__errs_lst, gf_err)
+			gf_errs_lst = append(gf_errs_lst, gf_err)
 			continue // continue processing subsequent blocks
-		} else {
-			block__errs_lst = append(block__errs_lst, nil)
 		}
 
 		spew.Dump(miners_map)
@@ -105,7 +104,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			block__errs_lst = append(block__errs_lst, gf_err)
+			gf_errs_lst = append(gf_errs_lst, gf_err)
 			continue // continue processing subsequent blocks
 		}
 
@@ -116,7 +115,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			block__errs_lst = append(block__errs_lst, gf_err)
+			gf_errs_lst = append(gf_errs_lst, gf_err)
 			continue // continue processing subsequent blocks
 		}
 
@@ -135,13 +134,14 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			return gf_err
+			gf_errs_lst = append(gf_errs_lst, gf_err)
+			continue
 		}
 
 		//---------------------
 	}
 
-	return nil
+	return gf_errs_lst
 }
 
 //-------------------------------------------------
@@ -181,7 +181,6 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 	p_metrics             *GF_metrics,
 	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
 
-	
 
 	//---------------------
 	// GET_WORKER_HOSTS
@@ -231,10 +230,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 
 
 		
-
 		//---------------------
-
-
 		// TEMPORARY!! - move getting of abis_map out of this function.
 		// DB_GET
 		abi_type_str := "erc20"
@@ -242,13 +238,14 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 		if gf_err != nil {
 			return nil, nil, gf_err
 		}
+
 		abis_map := map[string]*GF_eth__abi{
 			"erc20": abis_lst[0],
 		}
 
-
 		//---------------------
 
+		
 		gf_err = eth_tx__enrich_from_block(gf_block,
 			abis_map,
 			ctx,
@@ -306,6 +303,8 @@ func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
 	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
+
+
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?b=%d",
 		p_host_port_str,
@@ -503,7 +502,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 		Txs_hashes_lst: txs_hashes_lst,
 
 		Time_uint: block.Time(),
-		Block:     spew.Sdump(block),
+		// Block:     spew.Sdump(block),
 	}
 
 	return gf_block, nil

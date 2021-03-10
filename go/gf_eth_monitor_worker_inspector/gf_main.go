@@ -51,7 +51,7 @@ func main() {
 	port_int         := 2000
 	port_metrics_int := 9120
 	geth__port_int   := 8545
-	geth__host_str   := "127.0.0.1"
+	geth__host_str               := os.Getenv("GF_GETH_HOST") // "127.0.0.1"
 	sentry_endpoint_str          := os.Getenv("GF_SENTRY_ENDPOINT")
 	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 

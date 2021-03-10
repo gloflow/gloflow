@@ -47,7 +47,7 @@ func t__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
 
 	config := &GF_config{
 		Mongodb_host_str:    "localhost:27017",
-		Mongodb_db_name_str: "gf_test",
+		Mongodb_db_name_str: "gf_eth_monitor",
 	}
 
 	// RUNTIME
@@ -55,16 +55,8 @@ func t__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
 	if err != nil {
 		p_test.Fail()
 	}
-
-	// METRICS
-	metrics_port := 9110
-	metrics, gf_err := Metrics__init(metrics_port)
-	if gf_err != nil {
-		p_test.Fail()
-	}
-
-
-	return runtime, metrics
+	
+	return runtime, nil
 }
 
 //---------------------------------------------------
