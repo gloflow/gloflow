@@ -17,6 +17,31 @@
 
 import os
 import subprocess
+import threading
+from colored import fg, bg, attr
+
+
+#---------------------------------------------------
+def run__view_realtime(p_cmd_lst,
+	p_env_map,
+	p_view__type_str,
+	p_view__color_str):
+
+	# When shell=True the shell is the child process, and the commands are its children.
+	# So any SIGTERM or SIGKILL will kill the shell but not its child processes.
+	# The best way I can think of is to use shell=False, otherwise when you kill
+	# the parent shell process, it will leave a defunct shell process.
+	# CMD also has to be a list here, since its not being passed in as a string
+	# to the child shell.
+	p = subprocess.Popen(p_cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
+		env=p_env_map)
+
+	t = threading.Thread(target=read_process_stdout, args=(p.stdout, p_view__type_str, p_view__color_str))
+	t.start()
+
+	return p
+
+
 
 #---------------------------------------------------
 # RUN
@@ -47,3 +72,21 @@ def run(p_cmd_str,
 	p.communicate()
 	
 	return stdout_lst, stderr_lst, p.returncode
+
+#-------------------------------------------------------------
+def read_process_stdout(p_out,
+	p_view_type_str,
+	p_view_color_str):
+
+	for line in iter(p_out.readline, b''):
+		
+		header_color_str = fg(p_view_color_str)
+		line_str         = line.strip().decode("utf-8")
+
+		# ERROR
+		if "ERROR" in line_str or "error" in line_str:
+			print("%s%s:%s%s%s%s"%(header_color_str, p_view_type_str, attr(0), bg("red"), line_str, attr(0)))
+		else:
+			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
+
+	p_out.close()

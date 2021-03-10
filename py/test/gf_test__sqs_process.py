@@ -15,18 +15,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-
-
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
-
-
-import subprocess
-
 from colored import fg, bg, attr
 
-import gf_test_utils
+sys.path.append("%s/../utils"%(modd_str))
+import gf_core_cli
 
 #--------------------------------------------------
 def run(p_aws_region_str):
@@ -39,20 +34,19 @@ def run(p_aws_region_str):
 
 
 
-
+	# FIX!! - specify which SQS queue to consume a message from, this will use the default
+	#         queue name, not the test queue.
 	bin_str = f"{modd_str}/../../build/gf_eth_monitor"
 	cmd_lst = [
 		bin_str,
 		"test", "worker_event_process",
 		f"--config={modd_str}/../../config/gf_eth_monitor.yaml"
 	]
-	p = subprocess.Popen(cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
-		env={
+	
+	p = gf_core_cli.run__view_realtime(cmd_lst, {
 			"AWS_REGION":            p_aws_region_str,
 			"AWS_ACCESS_KEY_ID":     os.environ["AWS_ACCESS_KEY_ID"],
 			"AWS_SECRET_ACCESS_KEY": os.environ["AWS_SECRET_ACCESS_KEY"],
 			"GF_AWS_SQS_QUEUE":      os.environ["GF_AWS_SQS_QUEUE"]
-		})
-
-
-	gf_test_utils.read_process_stdout(p.stdout, "gf_eth_monitor", "green")
+		},
+		"gf_eth_monitor", "green")

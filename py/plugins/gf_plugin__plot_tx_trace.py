@@ -91,7 +91,7 @@ def main():
 		# print(op_map)
 
 		op_str       = op_map["op_str"].strip()
-		gas_cost_int = int(op_map["gas_cost_int"])
+		gas_cost_int = int(op_map["gas_cost_uint"])
 		# print(f"{op_str}-{gas_cost_int}")
 
 

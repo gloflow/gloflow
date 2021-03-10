@@ -12,6 +12,10 @@ volumes:
     host:
       path: /var/run/docker.sock
 
+services:
+  - name:  mongo
+    image: mongo
+
 steps:
 
   #-------------------------------
@@ -22,6 +26,88 @@ steps:
       # "-u"      - run unbuffered for stdout/stderr
       # "-static" - compile Go binary with static linking, needed to run in Alpine containers
       - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build -static
+    when:
+      event:
+        - push
+      branch:
+        - master
+  
+  #-------------------------------
+  # TEST_GO
+  # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
+  #               to be tested by integration Py tests.
+  - name: test_go
+    image: glofloworg/gf_builder:latest
+    
+    #-------------------------------
+    # ENV
+    environment:
+
+      AWS_ACCESS_KEY_ID:
+        from_secret: gf_testing__aws_access_key_id
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: gf_testing__aws_secret_access_key
+      
+      GF_SENTRY_ENDPOINT:
+        from_secret: gf_os__sentry_endpoint_test
+      
+      # IMPORTANT!! - external geth host is used, to not start Geth on the build server (for sec reasons),
+      #               and not be able to expect some reasonable level of state-sync with the public chain.
+      GF_GETH_HOST:
+        from_secret: gf_os__geth_host_test
+      
+      # local worker_inspector is started, freshly built in the previous stage.
+      # this ENV var is used by tests in case a remote worker_inspector should be used when testing master.
+      GF_WORKER_INSPECTOR_HOST_PORT: "127.0.0.1"
+
+      GF_AWS_SQS_QUEUE:
+        from_secret: gf_os__aws_sqs_queue_test
+    
+    #-------------------------------
+    commands:
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=test_go
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # TEST_PY
+  # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
+  #               to be tested by integration Py tests.
+  - name: test_py
+    image: glofloworg/gf_builder:latest
+    
+    #-------------------------------
+    # ENV
+    environment:
+
+      GF_WORKERS_AWS_DISCOVERY: "true"
+
+      AWS_ACCESS_KEY_ID:
+        from_secret: gf_testing__aws_access_key_id
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: gf_testing__aws_secret_access_key
+      
+      GF_SENTRY_ENDPOINT:
+        from_secret: gf_os__sentry_endpoint_test
+      
+      # IMPORTANT!! - external geth host is used, to not start Geth on the build server (for sec reasons),
+      #               and not be able to expect some reasonable level of state-sync with the public chain.
+      GF_GETH_HOST:
+        from_secret: gf_os__geth_host_test
+      
+      # local worker_inspector is started, freshly built in the previous stage.
+      # this ENV var is used by tests in case a remote worker_inspector should be used when testing master.
+      GF_WORKER_INSPECTOR_HOST_PORT: "127.0.0.1"
+
+      GF_AWS_SQS_QUEUE:
+        from_secret: gf_os__aws_sqs_queue_test
+    
+    #-------------------------------
+    commands:
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=test_py -test_ci
     when:
       event:
         - push

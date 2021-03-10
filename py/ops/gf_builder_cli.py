@@ -59,11 +59,19 @@ def main():
 	}
 	
 	#------------------------
-	# TEST
+	# TEST_GO
 
-	if args_map["run"] == "test":
+	if args_map["run"] == "test_go":
+		
+		gf_test.run_go()
 
-		gf_test.run_all()
+	#------------------------
+	# TEST_PY
+
+	elif args_map["run"] == "test_py":
+
+		test_ci_bool = args_map["test_ci_bool"]
+		gf_test.run_py(test_ci_bool)
 
 	#------------------------
 	# BUILD
@@ -81,7 +89,7 @@ def main():
 	elif args_map["run"] == "build_containers":
 		
 		for service_name_str, v in services_map.items():
-			build_containers(v["service_cont_image_name_str"],
+			gf_ops_container.build(v["service_cont_image_name_str"],
 				v["service_cont_dockerfile_path_str"],
 				p_docker_sudo_bool=args_map["docker_sudo_bool"])
 
@@ -92,7 +100,7 @@ def main():
 		assert not docker_pass_str == None
 
 		for service_name_str, v in services_map.items():
-			publish_containers(v["service_cont_image_name_str"],
+			gf_ops_container.publish(v["service_cont_image_name_str"],
 				docker_user_str,
 				docker_pass_str,
 				p_docker_sudo_bool=args_map["docker_sudo_bool"])
@@ -243,109 +251,7 @@ def build_go(p_name_str,
 
 	os.chdir(cwd_str) # return to initial dir
 
-#--------------------------------------------------
-def build_containers(p_cont_image_name_str,
-	p_dockerfile_path_str,
-	p_docker_sudo_bool=False):
-	
-	docker_context_dir_str = f"{modd_str}/../.."
 
-	print("BUILDING CONTAINER -----------=========================")
-	print(f"container image name - {p_cont_image_name_str}")
-	print(f"dockerfile           - {p_dockerfile_path_str}")
-	
-	assert os.path.isfile(p_dockerfile_path_str)
-
-	c_lst = []
-	if p_docker_sudo_bool:
-		c_lst.append("sudo")
-
-	c_lst.extend([
-		"docker build",
-		f"-f {p_dockerfile_path_str}",
-		f"--tag={p_cont_image_name_str}",
-		docker_context_dir_str
-	])
-
-	c_str = " ".join(c_lst)
-	print(c_str)
-
-	_, _, exit_code_int = gf_core_cli.run(c_str)
-
-	if not exit_code_int == 0:
-		exit(1)
-
-#--------------------------------------------------
-def publish_containers(p_cont_image_name_str,
-	p_docker_user_str,
-	p_docker_pass_str,
-	p_docker_sudo_bool=False):
-
-	print("PUBLISHING CONTAINER -----------=========================")
-	print(f"container image name - {p_cont_image_name_str}")
-
-	# LOGIN
-	docker_login(p_docker_user_str,
-		p_docker_pass_str,
-		p_docker_sudo_bool = p_docker_sudo_bool)
-
-	#------------------------
-	c_lst = []
-	if p_docker_sudo_bool:
-		c_lst.append("sudo")
-
-	c_lst.extend([
-		f"docker push {p_cont_image_name_str}"
-	])
-
-	c_str = " ".join(c_lst)
-	print(c_str)
-
-	_, _, exit_code_int = gf_core_cli.run(c_str)
-
-	if not exit_code_int == 0:
-		exit(1)
-
-	#------------------------
-
-#-------------------------------------------------------------
-# DOCKER_LOGIN
-def docker_login(p_docker_user_str,
-	p_docker_pass_str,
-	p_docker_sudo_bool = False):
-	assert isinstance(p_docker_user_str, str)
-	assert isinstance(p_docker_pass_str, str)
-
-	cmd_lst = []
-	if p_docker_sudo_bool:
-		cmd_lst.append("sudo")
-		
-	cmd_lst.extend([
-		"docker", "login",
-		"-u", p_docker_user_str,
-		"--password-stdin"
-	])
-	print(" ".join(cmd_lst))
-
-	p = subprocess.Popen(cmd_lst, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-	p.stdin.write(bytes(p_docker_pass_str.encode("utf-8"))) # write password on stdin of "docker login" command
-	
-	stdout, stderr = p.communicate() # wait for command completion
-	stdout_str = stdout.decode("ascii")
-	stderr_str = stderr.decode("ascii")
-
-	if not stdout_str == "":
-		print(stdout_str)
-	if not stderr_str == "":
-		print(stderr_str)
-
-	if not p.returncode == 0:
-		exit(1)
-
-	# ERROR
-	if "Error" in stderr_str or "unauthorized" in stderr_str:
-		print("failed to Docker login")
-		exit(1)
 
 #--------------------------------------------------
 def parse_args():
@@ -355,7 +261,8 @@ def parse_args():
 	# RUN
 	arg_parser.add_argument("-run", action = "store", default = "build",
 		help = '''
-- '''+fg('yellow')+'test'+attr(0)+'''               - run app code tests
+- '''+fg('yellow')+'test_go'+attr(0)+'''            - run app Go code tests
+- '''+fg('yellow')+'test_py'+attr(0)+'''            - run app Py code tests
 - '''+fg('yellow')+'build'+attr(0)+'''              - build app golang/web code
 - '''+fg('yellow')+'build_containers'+attr(0)+'''   - build app Docker containers
 - '''+fg('yellow')+'publish_containers'+attr(0)+''' - publish app Docker containers
@@ -375,6 +282,13 @@ def parse_args():
 	arg_parser.add_argument("-static", action = "store_true", default=False,
 		help = "compile binaries with static linking")
 
+	#----------------------------
+	# TEST_CI - boolean flag
+	# IMPORTANT!! - flag to indicate if tests are run in a CI env (non-local on a remote machine or in a CI environment) or localy on a dev machine.
+	#               affects on how supporting services for tests are started up, if local dir paths should be used or if a CI layout is expected.
+	arg_parser.add_argument("-test_ci", action = "store_true", default=False,
+		help = "run tests in a CI environment")
+
 	#-------------
 	# ENV_VARS
 	drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
@@ -387,13 +301,14 @@ def parse_args():
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 
 	return {
-		"run":                      args_namespace.run,
-		"drone_commit_sha":         drone_commit_sha_str,
-		"gf_docker_user_str":       gf_docker_user_str,
-		"gf_docker_pass_str":       gf_docker_pass_str,
+		"run":                          args_namespace.run,
+		"drone_commit_sha":             drone_commit_sha_str,
+		"gf_docker_user_str":           gf_docker_user_str,
+		"gf_docker_pass_str":           gf_docker_pass_str,
 		"gf_notify_completion_url_str": gf_notify_completion_url_str,
 		"docker_sudo_bool":             args_namespace.docker_sudo,
-		"static_bool":                  args_namespace.static
+		"static_bool":                  args_namespace.static,
+		"test_ci_bool":                 args_namespace.test_ci,
 	}
 
 #--------------------------------------------------
