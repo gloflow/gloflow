@@ -20,7 +20,6 @@ import subprocess
 import threading
 from colored import fg, bg, attr
 
-
 #---------------------------------------------------
 def run__view_realtime(p_cmd_lst,
 	p_env_map,
@@ -41,7 +40,23 @@ def run__view_realtime(p_cmd_lst,
 
 	return p
 
+#-------------------------------------------------------------
+def read_process_stdout(p_out,
+	p_view_type_str,
+	p_view_color_str):
 
+	for line in iter(p_out.readline, b''):
+		
+		header_color_str = fg(p_view_color_str)
+		line_str         = line.strip().decode("utf-8")
+
+		# ERROR
+		if "ERROR" in line_str or "error" in line_str:
+			print("%s%s:%s%s%s%s"%(header_color_str, p_view_type_str, attr(0), bg("red"), line_str, attr(0)))
+		else:
+			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
+
+	p_out.close()
 
 #---------------------------------------------------
 # RUN
@@ -72,21 +87,3 @@ def run(p_cmd_str,
 	p.communicate()
 	
 	return stdout_lst, stderr_lst, p.returncode
-
-#-------------------------------------------------------------
-def read_process_stdout(p_out,
-	p_view_type_str,
-	p_view_color_str):
-
-	for line in iter(p_out.readline, b''):
-		
-		header_color_str = fg(p_view_color_str)
-		line_str         = line.strip().decode("utf-8")
-
-		# ERROR
-		if "ERROR" in line_str or "error" in line_str:
-			print("%s%s:%s%s%s%s"%(header_color_str, p_view_type_str, attr(0), bg("red"), line_str, attr(0)))
-		else:
-			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
-
-	p_out.close()

@@ -46,7 +46,9 @@ func Eth_rpc__call(p_input_json_str string,
 	//-----------------------
 	// HTTP_POST
 
-	timeout_sec := time.Second * 10
+	// IMPORTANT!! - some eth operations, like transactiont tracing, could take a significant amount of time.
+	//               so timeout has to be sufficiently large.
+	timeout_sec := time.Second * 60
 	client      := &http.Client{Timeout: timeout_sec,}
 
 	url_str  := fmt.Sprintf("http://%s:%d", p_eth_node_host_str, eth_http_port_int)
@@ -72,6 +74,8 @@ func Eth_rpc__call(p_input_json_str string,
 			err, "gf_eth_monitor_core", p_runtime_sys)
 		return nil, gf_err
 	}
+
+	
 
 	//-----------------------
 	// JSON_DECODE

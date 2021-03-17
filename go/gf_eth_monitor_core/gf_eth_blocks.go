@@ -23,9 +23,12 @@ import (
 	"fmt"
 	"strings"
 	"context"
+	"time"
 	"math/big"
 	"github.com/getsentry/sentry-go"
 	"github.com/mitchellh/mapstructure"
+	"go.mongodb.org/mongo-driver/bson"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -36,6 +39,9 @@ import (
 // BLOCK__INTERNAL - internal representation of the block, with fields
 //                   that are not visible to the external public users.
 type GF_eth__block__int struct {
+	DB_id                 string `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	Creation_time__unix_f float64            `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
+
 	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
 	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
 	Block_num_uint    uint64        `mapstructure:"block_num_int"     json:"block_num_int"     bson:"block_num_uint"`
@@ -54,17 +60,34 @@ type GF_eth__block__int struct {
 }
 
 //-------------------------------------------------
+// metrics that are continuously calculated
+
+func Eth_blocks__init_continuous_metrics(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
+	go func() {
+		for {
+			//---------------------
+			// GET_BLOCKS_COUNTS
+			blocks_count_int, gf_err := Eth_blocks__db__get_count(p_metrics, p_runtime)
+			if gf_err != nil {
+				time.Sleep(60 * time.Second) // SLEEP
+				continue
+			}
+			p_metrics.Block__db_count__gauge.Set(float64(blocks_count_int))
+
+			//---------------------
+			time.Sleep(60 * time.Second) // SLEEP
+		}
+	}()
+}
+
+//-------------------------------------------------
 func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
 	p_runtime             *GF_runtime) []*gf_core.Gf_error {
-
-
-
-
-	
 
 	gf_errs_lst := []*gf_core.Gf_error{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
@@ -79,7 +102,6 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 			p_ctx,
 			p_metrics,
 			p_runtime)
-
 
 		if gf_err != nil {
 			gf_errs_lst = append(gf_errs_lst, gf_err)
@@ -109,39 +131,72 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 		}
 
 		//---------------------
-		// DB_WRITE__TXS
-		gf_err = eth_tx__db__write_bulk(gf_block.Txs_lst,
-			p_ctx,
-			p_metrics,
-			p_runtime)
-		if gf_err != nil {
-			gf_errs_lst = append(gf_errs_lst, gf_err)
-			continue // continue processing subsequent blocks
+		
+		// some blocks (especially early ones) dont have any transactions in them
+		if len(gf_block.Txs_lst) > 0 {
+
+			//---------------------
+			// DB_WRITE__TXS
+
+			gf_err = eth_tx__db__write_bulk(gf_block.Txs_lst,
+				p_ctx,
+				p_metrics,
+				p_runtime)
+			if gf_err != nil {
+				gf_errs_lst = append(gf_errs_lst, gf_err)
+				continue // continue processing subsequent blocks
+			}
+
+			//---------------------
+			// TRACES
+			tx_hashes_lst := []string{}
+			for _, tx := range gf_block.Txs_lst {
+				tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
+			}
+
+			worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
+
+			gf_err, _ = Eth_tx_trace__get_and_persist_bulk(tx_hashes_lst,
+				worker_inspector_host_port_str,
+				p_ctx,
+				p_metrics,
+				p_runtime)
+			if gf_err != nil {
+				gf_errs_lst = append(gf_errs_lst, gf_err)
+				continue
+			}
+
+			//---------------------
 		}
 
-		//---------------------
-		// TRACES
-		tx_hashes_lst := []string{}
-		for _, tx := range gf_block.Txs_lst {
-			tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
-		}
-
-		worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
-
-		gf_err, _ = Eth_tx_trace__get_and_persist_bulk(tx_hashes_lst,
-			worker_inspector_host_port_str,
-			p_ctx,
-			p_metrics,
-			p_runtime)
-		if gf_err != nil {
-			gf_errs_lst = append(gf_errs_lst, gf_err)
-			continue
-		}
-
-		//---------------------
 	}
 
 	return gf_errs_lst
+}
+
+//-------------------------------------------------
+func Eth_blocks__db__get_count(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+
+	coll_name_str := "gf_eth_blocks"
+	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+
+	ctx := context.Background()
+	
+	count_int, err := coll.CountDocuments(ctx, bson.M{})
+	if err != nil {
+
+		// METRICS
+		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+
+		gf_err := gf_core.Mongo__handle_error("failed to DB count Blocks",
+			"mongodb_count_error",
+			map[string]interface{}{},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return 0, gf_err
+	}
+
+	return count_int, nil
 }
 
 //-------------------------------------------------
@@ -150,16 +205,17 @@ func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
-
+	ids_lst         := []string{}
 	records_lst     := []interface{}{}
 	blocks_nums_lst := []uint64{}
 	for _, b := range p_gf_blocks_lst {
+		ids_lst         = append(ids_lst, b.DB_id)
 		records_lst     = append(records_lst, interface{}(b))
 		blocks_nums_lst = append(blocks_nums_lst, b.Block_num_uint)
 	}
 
 	coll_name_str := "gf_eth_blocks"
-	gf_err := gf_core.Mongo__insert_bulk(records_lst,
+	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
 		coll_name_str,
 		map[string]interface{}{
 			"blocks_nums_lst":    blocks_nums_lst,
@@ -488,10 +544,10 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
 	}
 
-
+	block_hash_hex_str := block.Hash().Hex()
 
 	gf_block := &GF_eth__block__int{
-		Hash_str:          block.Hash().Hex(),
+		Hash_str:          block_hash_hex_str,
 		Parent_hash_str:   block.ParentHash().Hex(),
 		Block_num_uint:    block.Number().Uint64(),
 		Gas_used_uint:     block.GasUsed(),
@@ -502,8 +558,28 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 		Txs_hashes_lst: txs_hashes_lst,
 
 		Time_uint: block.Time(),
-		// Block:     spew.Sdump(block),
+		// Block: spew.Sdump(block),
 	}
+
+	//------------------
+	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
+	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
+	//               
+	db_id_hex_str         := gf_core.Hash_val(gf_block)
+	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
+	
+	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to decode Block struct hash hex signature to create Mongodb ObjectID",
+			"decode_hex",
+			map[string]interface{}{"block_hash_hex_str": block_hash_hex_str, },
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}*/
+	gf_block.DB_id                 = db_id_hex_str // obj_id_str
+	gf_block.Creation_time__unix_f = creation_time__unix_f
+
+	//------------------
 
 	return gf_block, nil
 }

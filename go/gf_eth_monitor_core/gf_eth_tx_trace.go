@@ -24,28 +24,33 @@ import (
 	"context"
 	"time"
 	"strings"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/getsentry/sentry-go"
+	// "go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
 )
 
 //-------------------------------------------------
 type GF_eth__tx_trace struct {
-	Tx_hash_str        string                     `json:"tx_hash_str"`
-	Gas_used_uint      uint64                     `json:"gas_used_uint"`
-	Value_returned_str string                     `json:"value_returned_str"`	
-	Failed_bool        bool                       `json:"failed_bool"`
-	Opcodes_lst        []*GF_eth__tx_trace_opcode `json:"opcodes_lst"`
+	DB_id                 string         `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	Creation_time__unix_f float64                    `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
+	Tx_hash_str           string                     `mapstructure:"tx_hash_str"           json:"tx_hash_str"        bson:"tx_hash_str"`
+	Gas_used_uint         uint64                     `mapstructure:"gas_used_uint"         json:"gas_used_uint"      bson:"gas_used_uint"`
+	Value_returned_str    string                     `mapstructure:"value_returned_str"    json:"value_returned_str" bson:"value_returned_str"`	
+	Failed_bool           bool                       `mapstructure:"failed_bool"           json:"failed_bool"        bson:"failed_bool"`
+	Opcodes_lst           []*GF_eth__tx_trace_opcode `mapstructure:"opcodes_lst"           json:"opcodes_lst"        bson:"opcodes_lst"`
 }
 
 type GF_eth__tx_trace_opcode struct {
-	Op_str            string            `json:"op_str"`
-	Pc_int            uint              `json:"pc_int"`             // program counter
-	Gas_cost_uint      uint             `json:"gas_cost_uint"`
-	Gas_remaining_uint uint64           `json:"gas_remaining_uint"` // decreasing count of how much gas is left before this Op executes
-	Stack_lst         []string          `json:"stack_lst"`
-	Memory_lst        []string          `json:"memory_lst"`
-	Storage_map       map[string]string `json:"storage_map"`
+	Op_str            string            `mapstructure:"op_str"             json:"op_str"             bson:"op_str"`
+	Pc_int            uint              `mapstructure:"pc_int"             json:"pc_int"             bson:"pc_int"`             // program counter
+	Gas_cost_uint      uint             `mapstructure:"gas_cost_uint"      json:"gas_cost_uint"      bson:"gas_cost_uint"`
+	Gas_remaining_uint uint64           `mapstructure:"gas_remaining_uint" json:"gas_remaining_uint" bson:"gas_remaining_uint"` // decreasing count of how much gas is left before this Op executes
+	Stack_lst         []string          `mapstructure:"stack_lst"          json:"stack_lst"          bson:"stack_lst"`
+	Memory_lst        []string          `mapstructure:"memory_lst"         json:"memory_lst"         bson:"memory_lst"`
+	Storage_map       map[string]string `mapstructure:"storage_map"        json:"storage_map"        bson:"storage_map"`
 }
 
 //-------------------------------------------------
@@ -105,14 +110,16 @@ func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 
 	coll_name_str := "gf_eth_txs_traces"
 
+	ids_lst        := []string{}
 	records_lst    := []interface{}{}
 	txs_hashes_lst := []string{}
 	for _, tx := range p_txs_traces_lst {
+		ids_lst        = append(ids_lst, tx.DB_id)
 		records_lst    = append(records_lst, interface{}(tx))
 		txs_hashes_lst = append(txs_hashes_lst, tx.Tx_hash_str)
 	}
 
-	gf_err := gf_core.Mongo__insert_bulk(records_lst,
+	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
 		coll_name_str,
 		map[string]interface{}{
 			"txs_hashes_lst":     txs_hashes_lst,
@@ -251,6 +258,9 @@ func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 		gf_opcodes_lst = append(gf_opcodes_lst, gf_opcode)
 	}
 
+
+	
+	
 	gf_tx_trace := &GF_eth__tx_trace{
 		Tx_hash_str:        p_tx_hash_str,
 		Gas_used_uint:      uint64(result_map["gas"].(float64)),
@@ -258,6 +268,29 @@ func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 		Failed_bool:        result_map["failed"].(bool),
 		Opcodes_lst:        gf_opcodes_lst,
 	}
+
+
+	//------------------
+	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
+	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
+	//               
+	db_id_hex_str         := gf_core.Hash_val(gf_tx_trace)
+	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
+	
+	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to decode Tx_trace struct hash hex signature to create Mongodb ObjectID",
+			"decode_hex",
+			map[string]interface{}{"tx_hash_str": p_tx_hash_str, },
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}*/
+	gf_tx_trace.DB_id                 = db_id_hex_str // obj_id_str
+	gf_tx_trace.Creation_time__unix_f = creation_time__unix_f
+
+	//------------------
+
+
 
 	return gf_tx_trace, nil
 }
@@ -290,3 +323,57 @@ func Eth_tx_trace__get(p_tx_hash_str string,
 
 	return output_map, nil
 }
+
+//-------------------------------------------------
+// metrics that are continuously calculated
+
+func Eth_tx_trace__init_continuous_metrics(p_metrics *GF_metrics,
+	
+	p_runtime *GF_runtime) {
+	go func() {
+		
+		ctx := context.Background()
+		for {
+			//---------------------
+			// GET_BLOCKS_COUNTS
+			// blocks_count_int, gf_err := Eth_tx_trace__db__get_count(p_metrics, p_runtime)
+
+			db_coll_stats, gf_err := gf_stats_lib.Db_stats__coll("gf_eth_txs_traces", ctx, p_runtime.Runtime_sys)
+			blocks_count_int := db_coll_stats.Docs_count_int
+			
+			if gf_err != nil {
+				time.Sleep(60 * time.Second) // SLEEP
+				continue
+			}
+			p_metrics.Block__db_count__gauge.Set(float64(blocks_count_int))
+
+			//---------------------
+			time.Sleep(60 * time.Second) // SLEEP
+		}
+	}()
+}
+
+/*//-------------------------------------------------
+func Eth_tx_trace__db__get_count(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+
+	coll_name_str := "gf_eth_txs_traces"
+	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+
+	ctx := context.Background()
+	
+	count_int, err := coll.CountDocuments(ctx, bson.M{})
+	if err != nil {
+
+		// METRICS
+		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+
+		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions Trace",
+			"mongodb_count_error",
+			map[string]interface{}{},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return 0, gf_err
+	}
+
+	return count_int, nil
+}*/

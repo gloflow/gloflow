@@ -24,16 +24,12 @@ sys.path.append("%s/../utils"%(modd_str))
 import gf_core_cli
 
 #--------------------------------------------------
-def run(p_aws_region_str):
+def run(p_test_ci_bool, p_aws_region_str):
 
-	
+
 	print(f"    {fg('green')}TEST SQS_PROCESS{attr(0)} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-
-
-
-
-
+	
+	
 	# FIX!! - specify which SQS queue to consume a message from, this will use the default
 	#         queue name, not the test queue.
 	bin_str = f"{modd_str}/../../build/gf_eth_monitor"
@@ -42,7 +38,7 @@ def run(p_aws_region_str):
 		"test", "worker_event_process",
 		f"--config={modd_str}/../../config/gf_eth_monitor.yaml"
 	]
-	
+
 	p = gf_core_cli.run__view_realtime(cmd_lst, {
 			"AWS_REGION":            p_aws_region_str,
 			"AWS_ACCESS_KEY_ID":     os.environ["AWS_ACCESS_KEY_ID"],
@@ -50,3 +46,5 @@ def run(p_aws_region_str):
 			"GF_AWS_SQS_QUEUE":      os.environ["GF_AWS_SQS_QUEUE"]
 		},
 		"gf_eth_monitor", "green")
+
+	

@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_monitor_core
 
 import (
-
 	"context"
 	"strings"
 	// "go.mongodb.org/mongo-driver/mongo"
@@ -56,13 +55,8 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 	cur, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
 	if err != nil {
 
-
-
-
 		// METRICS
-		if p_metrics != nil {
-			p_metrics.Errs_num__counter.Inc()
-		}
+		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
 
 		gf_err := gf_core.Mongo__handle_error("failed to find Miner with gives address in DB",
 			"mongodb_find_error",

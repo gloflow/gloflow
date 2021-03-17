@@ -27,8 +27,11 @@ import gf_test__sqs_process
 import gf_test__master_get_block
 
 #--------------------------------------------------
-def run_go():
+def run_go(p_test_ci_bool):
 
+	aws_region_str = "us-east-1"
+	py_plugins_base_dir_path_str = f"{modd_str}/../plugins"
+	
 	# CI
 	if p_test_ci_bool:
 		
@@ -61,7 +64,6 @@ def run_py(p_test_ci_bool):
 
 
 	aws_region_str               = "us-east-1"
-	data_dir_path_str            = f"{modd_str}/test_data_geth"
 	py_plugins_base_dir_path_str = f"{modd_str}/../plugins"
 
 	# CI
@@ -74,6 +76,7 @@ def run_py(p_test_ci_bool):
 	else:
 
 		test_gf_geth_path_str = f"{modd_str}/../../../gloflow_go-ethereum/build/bin/geth"
+		data_dir_path_str     = f"{modd_str}/test_data_geth"
 		assert os.path.isfile(test_gf_geth_path_str)
 		assert os.path.isdir(py_plugins_base_dir_path_str)
 

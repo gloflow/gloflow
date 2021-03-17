@@ -171,7 +171,7 @@ function render__block_from_workers(p_block_uint,
             const tx_gas_price_uint = tx_map["gas_price_uint"];
             const tx_nonce_int      = tx_map["nonce_int"];
             const tx_size_f         = tx_map["size_f"];
-            const tx_cost_int       = tx_map["cost_int"];
+            const tx_cost_gwei_f    = tx_map["cost_gwei_f"];
 
             // TRANSACTION
             const tx_element = $(`<div class="tx">
@@ -186,7 +186,7 @@ function render__block_from_workers(p_block_uint,
                 <div class="tx_gas_price">gas price - <span>${tx_gas_price_uint}</span></div>
                 <div class="tx_nonce">nonce         - <span>${tx_nonce_int}</span></div>
                 <div class="tx_size">size           - <span>${tx_size_f}</span></div>
-                <div class="tx_cost">cost           - <span>${tx_cost_int}</span></div>
+                <div class="tx_cost">cost           - <span>${tx_cost_gwei_f}</span></div>
             </div>`);
 
             

@@ -46,6 +46,11 @@ type GF_eth_peer__db_aggregate__name_group struct {
 	Count_int            int      `bson:"count_int"            json:"count_int"`
 }
 
+type GF_eth_peer__db_aggregate__name_group_counts struct {
+	Name_str  string `bson:"_id"       json:"name_str"`
+	Count_int int    `bson:"count_int" json:"count_int"`
+}
+
 //-------------------------------------------------
 // metrics that are continuously calculated
 
@@ -53,26 +58,79 @@ func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 	p_runtime *GF_runtime) {
 
 	go func() {
-
-
 		for {
 			//---------------------
-			// GET_PEERS
-			peer_names_groups_lst, gf_err := Eth_peers__db__get_pipeline(p_metrics, p_runtime)
+			// GET_PEERS_COUNTS
+			peer_names_groups_counts_lst, gf_err := Eth_peers__db__get_count(p_metrics, p_runtime)
 			if gf_err != nil {
-
+				time.Sleep(60 * time.Second) // SLEEP
+				continue
 			}
 
 			//---------------------
-
-			unique_peer_names_num_int := len(peer_names_groups_lst)
-
+			unique_peer_names_num_int := len(peer_names_groups_counts_lst)
 			p_metrics.Peers__unique_names_num__gauge.Set(float64(unique_peer_names_num_int))
 
-			// SLEEP
-			time.Sleep(60 * time.Second)
+			time.Sleep(60 * time.Second) // SLEEP
 		}
 	}()
+}
+
+//-------------------------------------------------
+func Eth_peers__db__get_count(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group_counts, *gf_core.Gf_error) {
+
+	coll_name_str := "gf_eth_peers"
+	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+
+	ctx := context.Background()
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.D{{"t", "peer_new_lifecycle"}}},
+		},
+		{
+			{"$group", bson.D{
+				{"_id",       "$peer_name_str"},
+				{"count_int", bson.D{{"$sum", 1}}},
+			}},
+		},
+	}
+
+	cursor, err := coll.Aggregate(ctx, pipeline)
+	if err != nil {
+		
+		// METRICS
+		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+
+		gf_err := gf_core.Mongo__handle_error("failed to DB get count Eth peers grouped by peer_name",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return nil, gf_err
+
+	}
+	defer cursor.Close(ctx)
+
+	peer_names_groups_lst := []*GF_eth_peer__db_aggregate__name_group_counts{}
+	for cursor.Next(ctx) {
+
+		var peer_name_group GF_eth_peer__db_aggregate__name_group_counts
+		err := cursor.Decode(&peer_name_group)
+		if err != nil {
+			
+
+			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of peers-by-name counts aggregation",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			return nil, gf_err
+		}
+	
+		peer_names_groups_lst = append(peer_names_groups_lst, &peer_name_group)
+	}
+
+	return peer_names_groups_lst, nil
 }
 
 //-------------------------------------------------
@@ -90,7 +148,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 
 
 
-	// Start Aggregation Example 1
+	
 	pipeline := mongo.Pipeline{
 		{
 			{"$match", bson.D{{"t", "peer_new_lifecycle"}}},
@@ -113,7 +171,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 			p_metrics.Errs_num__counter.Inc()
 		}
 
-		gf_err := gf_core.Mongo__handle_error("failed to get all Eth peers grouped by peer_name",
+		gf_err := gf_core.Mongo__handle_error("failed to DB get all Eth peers grouped by peer_name",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)

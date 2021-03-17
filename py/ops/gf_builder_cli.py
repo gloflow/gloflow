@@ -29,6 +29,7 @@ import delegator
 
 sys.path.append("%s/../utils"%(modd_str))
 import gf_core_cli
+import gf_ops_container
 
 sys.path.append("%s/../test"%(modd_str))
 import gf_test
@@ -63,7 +64,8 @@ def main():
 
 	if args_map["run"] == "test_go":
 		
-		gf_test.run_go()
+		test_ci_bool = args_map["test_ci_bool"]
+		gf_test.run_go(test_ci_bool)
 
 	#------------------------
 	# TEST_PY

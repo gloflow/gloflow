@@ -38,9 +38,16 @@ type GF_metrics struct {
 	Peers__http_req_num__get_peers__counter prometheus.Counter
 	Peers__unique_names_num__gauge          prometheus.Gauge
 
+	// BLOCK
+	Block__db_count__gauge prometheus.Gauge
+
+	// TX
+	Tx__db_count__gauge prometheus.Gauge
+
 	// TX_TRACE
 	Tx_trace__worker_inspector_durration__gauge prometheus.Gauge
 	Tx_trace__py_plugin__plot_durration__gauge  prometheus.Gauge
+	Tx_trace__db_count__gauge                   prometheus.Gauge
 
 	// DB
 	DB__writes_num__new_peer_lifecycle__counter  prometheus.Counter
@@ -77,6 +84,24 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 		})
 	
 	//---------------------------
+	// BLOCK
+	block__db_count__gauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			// Namespace: "gf",
+			Name:      "block__db_count__gauge",
+			Help:      "how many block records are in the DB",
+		})
+
+	//---------------------------
+	// TX
+	tx__db_count__gauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			// Namespace: "gf",
+			Name:      "tx__db_count__gauge",
+			Help:      "how many tx records are in the DB",
+		})
+
+	//---------------------------
 	// TX_TRACE
 	
 	tx_trace__worker_inspector_durration__gauge := prometheus.NewGauge(
@@ -92,7 +117,14 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 			Name:      "tx_trace__py_plugin__plot_durration__gauge",
 			Help:      "how long the tx_trace py_plugin plot execution takes",
 		})
-		
+
+	tx_trace__db_count__gauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			// Namespace: "gf",
+			Name:      "tx_trace__db_count__gauge",
+			Help:      "how many tx_trace records are in the DB",
+		})
+	
 	//---------------------------
 	// DB_WRITES_NUM__NEW_PEER_LIFECYCLE
 	counter__db_writes_num__new_peer_lifecycle := prometheus.NewCounter(prometheus.CounterOpts{
@@ -111,8 +143,11 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 	prometheus.MustRegister(counter__sqs_msgs_num)
 	prometheus.MustRegister(counter__http_req_num__get_peers)
 	prometheus.MustRegister(gauge__peers_unique_names_num)
+	prometheus.MustRegister(block__db_count__gauge)
+	prometheus.MustRegister(tx__db_count__gauge)
 	prometheus.MustRegister(tx_trace__worker_inspector_durration__gauge)
 	prometheus.MustRegister(tx_trace__py_plugin__plot_durration__gauge)
+	prometheus.MustRegister(tx_trace__db_count__gauge)
 	prometheus.MustRegister(counter__db_writes_num__new_peer_lifecycle)
 	prometheus.MustRegister(counter__errs_num)
 
@@ -142,8 +177,11 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 		SQS__msgs_num__counter:                      counter__sqs_msgs_num,
 		Peers__http_req_num__get_peers__counter:     counter__http_req_num__get_peers,
 		Peers__unique_names_num__gauge:              gauge__peers_unique_names_num,
+		Block__db_count__gauge:                      block__db_count__gauge,
+		Tx__db_count__gauge:                         tx__db_count__gauge,
 		Tx_trace__worker_inspector_durration__gauge: tx_trace__worker_inspector_durration__gauge,
 		Tx_trace__py_plugin__plot_durration__gauge:  tx_trace__py_plugin__plot_durration__gauge,
+		Tx_trace__db_count__gauge:                   tx_trace__db_count__gauge,
 		DB__writes_num__new_peer_lifecycle__counter: counter__db_writes_num__new_peer_lifecycle,
 		Errs_num__counter:                           counter__errs_num,
 	}

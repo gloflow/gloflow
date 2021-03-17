@@ -22,7 +22,7 @@ package gf_eth_monitor_core
 import (
 	"fmt"
 	"strings"
-	
+	"time"
 	"math"
 	"math/big"
 	"context"
@@ -30,6 +30,7 @@ import (
 	// "encoding/json"
 	"github.com/getsentry/sentry-go"
 	"go.mongodb.org/mongo-driver/bson"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
@@ -39,20 +40,22 @@ import (
 
 //-------------------------------------------------
 type GF_eth__tx struct {
-	Hash_str       string                `mapstructure:"hash_str"         json:"hash_str"         bson:"hash_str"`
-	Index_int      uint64                `mapstructure:"index_int"        json:"index_int"        bson:"index_int"` // position of the transaction in the block
+	DB_id                 string         `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	Creation_time__unix_f float64        `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
+	Hash_str              string         `mapstructure:"hash_str"              json:"hash_str"              bson:"hash_str"`
+	Index_int             uint64         `mapstructure:"index_int"             json:"index_int"             bson:"index_int"` // position of the transaction in the block
 	Block_num_int  uint64                `mapstructure:"block_num_int"    json:"block_num_int"    bson:"block_num_int"`
 	Block_hash_str string                `mapstructure:"block_hash_str"   json:"block_hash_str"   bson:"block_hash_str"`
 	From_addr_str  string                `mapstructure:"from_addr_str"    json:"from_addr_str"    bson:"from_addr_str"`
 	To_addr_str    string                `mapstructure:"to_addr_str"      json:"to_addr_str"      bson:"to_addr_str"`
 	Value_eth_f    float64               `mapstructure:"value_eth_f"      json:"value_eth_f"      bson:"value_eth_f"`
-	Data_bytes_lst []byte                `mapstructure:"-"                json:"-"                bson:"-"`
+	// Data_bytes_lst []byte                `mapstructure:"-"                json:"-"                bson:"-"`
 	Data_b64_str   string                `mapstructure:"data_b64_str"     json:"data_b64_str"     bson:"-"`
 	Gas_used_int   uint64                `mapstructure:"gas_used_int"     json:"gas_used_int"     bson:"gas_used_int"`
 	Gas_price_int  uint64                `mapstructure:"gas_price_int"    json:"gas_price_int"    bson:"gas_price_int"`
 	Nonce_int      uint64                `mapstructure:"nonce_int"        json:"nonce_int"        bson:"nonce_int"`
 	Size_f         float64               `mapstructure:"size_f"           json:"size_f"           bson:"size_f"`
-	Cost_int       uint64                `mapstructure:"cost_int"         json:"cost_int"         bson:"cost_int"`
+	Cost_gwei_f    float64                `mapstructure:"cost_gwei_f"    json:"cost_gwei_f"    bson:"cost_gwei_f"`
 	Contract_new   *GF_eth__contract_new `mapstructure:"contract_new_map" json:"contract_new_map" bson:"contract_new_map"`
 	Logs_lst       []*GF_eth__log        `mapstructure:"logs_lst"         json:"logs_lst"         bson:"logs_lst"`
 }
@@ -62,6 +65,53 @@ type GF_eth__log struct {
 	Address_str  string   `json:"address_str"  bson:"address_str"`  // address of the contract that generated the log
 	Topics_lst   []string `json:"topics_lst"   bson:"topics_lst"`   // list of topics provided by the contract
 	Data_hex_str string   `json:"data_hex_str" bson:"data_hex_str"` // supplied by contract, usually ABI-encoded
+}
+
+//-------------------------------------------------
+// metrics that are continuously calculated
+
+func Eth_tx__init_continuous_metrics(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) {
+	go func() {
+		for {
+			//---------------------
+			// GET_BLOCKS_COUNTS
+			blocks_count_int, gf_err := Eth_tx__db__get_count(p_metrics, p_runtime)
+			if gf_err != nil {
+				time.Sleep(60 * time.Second) // SLEEP
+				continue
+			}
+			p_metrics.Block__db_count__gauge.Set(float64(blocks_count_int))
+
+			//---------------------
+			time.Sleep(60 * time.Second) // SLEEP
+		}
+	}()
+}
+
+//-------------------------------------------------
+func Eth_tx__db__get_count(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+
+	coll_name_str := "gf_eth_txs"
+	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+
+	ctx := context.Background()
+	
+	count_int, err := coll.CountDocuments(ctx, bson.M{})
+	if err != nil {
+
+		// METRICS
+		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+
+		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
+			"mongodb_count_error",
+			map[string]interface{}{},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return 0, gf_err
+	}
+
+	return count_int, nil
 }
 
 //-------------------------------------------------
@@ -105,19 +155,19 @@ func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 	p_metrics *GF_metrics,
 	p_runtime *GF_runtime) *gf_core.Gf_error {
 
-	
-
 	coll_name_str := "gf_eth_txs"
 
+	ids_lst        := []string{}
 	records_lst    := []interface{}{}
 	txs_hashes_lst := []string{}
 	for _, tx := range p_txs_lst {
+		ids_lst        = append(ids_lst, tx.DB_id)
 		records_lst    = append(records_lst, interface{}(tx))
 		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
 	}
 
 
-	gf_err := gf_core.Mongo__insert_bulk(records_lst,
+	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
 		coll_name_str,
 		map[string]interface{}{
 			"txs_hashes_lst":     txs_hashes_lst,
@@ -400,11 +450,11 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	// TX_DATA
 	data_bytes_lst := tx.Data()
 	data_b64_str   := base64.StdEncoding.EncodeToString(data_bytes_lst) // base64
-
-	gas_used_int := tx_receipt.GasUsed
+	gas_used_int   := tx_receipt.GasUsed
+	cost_gwei_f    := float64(tx.Cost().Uint64()) / 1_000_000_000.0
 
 	gf_tx := &GF_eth__tx{
-		Hash_str:       tx_receipt.TxHash.Hex(),
+		Hash_str:       tx_hash_hex_str,
 		Index_int:      uint64(tx_receipt.TransactionIndex),
 		Block_num_int:  p_block_num_int,
 		Block_hash_str: p_block_hash.Hex(),
@@ -414,23 +464,46 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 		Value_eth_f:    tx_value_eth_f, // tx.Value().Uint64(),
 
 		// DATA
-		Data_bytes_lst: data_bytes_lst,
+		// Data_bytes_lst: data_bytes_lst, // REMOVE!! - is this needed at all?
 		Data_b64_str:   data_b64_str,
 
 		Gas_used_int:  gas_used_int,
 		Gas_price_int: tx.GasPrice().Uint64(),
 		Nonce_int:     tx.Nonce(),
 		Size_f:        float64(tx.Size()),
-		Cost_int:      tx.Cost().Uint64(),
+		Cost_gwei_f:   cost_gwei_f, // tx.Cost().Uint64(),
 		Logs_lst:      logs,
 
 		Contract_new:  contract__new,
 	}
 
+	//------------------
+	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
+	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
+	//               
+	db_id_hex_str         := fmt.Sprintf("0x%s", gf_core.Hash_val(gf_tx))
+	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
+	
 
+
+	fmt.Println(db_id_hex_str)
+
+
+	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to decode Tx struct hash hex signature to create Mongodb ObjectID",
+			"decode_hex",
+			map[string]interface{}{"tx_hash_hex_str": tx_hash_hex_str, },
+			err, "gf_eth_monitor_core", p_runtime_sys)
+		return nil, gf_err
+	}*/
+
+	gf_tx.DB_id                 = db_id_hex_str // obj_id_str
+	gf_tx.Creation_time__unix_f = creation_time__unix_f
+
+	//------------------
 
 	spew.Dump(gf_tx)
-
 
 	return gf_tx, nil
 }
