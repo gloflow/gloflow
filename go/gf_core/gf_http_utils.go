@@ -54,7 +54,7 @@ func HTTP__fetch_url(p_url_str string,
 
 
 	// TIMEOUT
-	timeout_sec := time.Second * 10
+	timeout_sec := time.Second * 60
 
 	client := &http.Client{
 		Timeout: timeout_sec, // time.Second * 10, // to prevent requests taking too long to return

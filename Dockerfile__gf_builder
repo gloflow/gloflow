@@ -24,7 +24,8 @@ RUN apt-get update && \
     curl \
     libglib2.0-dev \
     libcairo2-dev \
-    zip
+    zip \
+    libglib2.0-dev 
 
 RUN pip3 install \
     delegator.py \
@@ -45,6 +46,13 @@ RUN curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --version
 
+# RUST_NIGHTLY - needed by PyO3 package
+RUN rustup self update
+RUN rustup toolchain install nightly
+RUN rustup run nightly rustc --version
+RUN rustup default nightly
+
+
 # MUSL - used as a replacement for glibc in order to achieve 100% static linking of output binary.
 #        we want libc compiled into the binary in order to deploy to targets
 #        dont have a libc compatible standard library (Alpine Linux, etc.).
@@ -53,11 +61,13 @@ RUN rustup target add x86_64-unknown-linux-musl
 #-----------------------------
 # PROTOCOL_BUFFERS_COMPILER - "protoc"
 
-RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-aarch_64.zip
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
 RUN ls -al
-RUN unzip protoc-3.11.4-linux-aarch_64.zip
-RUN rm protoc-3.11.4-linux-aarch_64.zip
+RUN unzip protoc-3.11.4-linux-x86_64.zip
+RUN rm protoc-3.11.4-linux-x86_64.zip
 RUN cp bin/protoc /usr/bin
+
+
 
 #-----------------------------
 # ENTRYPOINT ["python3", "/home/gf/build/gf_builder/gf_builder.py"]

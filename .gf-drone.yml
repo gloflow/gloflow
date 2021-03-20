@@ -49,6 +49,19 @@ steps:
         - master
 
   #-------------------------------
+  # BUILD_GO_AND_WEB
+  - name: build_go_and_web
+    image: glofloworg/gf_builder:latest
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build
+    when:
+      event:
+        - push
+      branch:
+        - master
+  
+  #-------------------------------
   # TEST
   - name: test
     image: glofloworg/gf_builder:latest
@@ -79,19 +92,6 @@ steps:
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
-    when:
-      event:
-        - push
-      branch:
-        - master
-
-  #-------------------------------
-  # BUILD_GO
-  - name: build_go
-    image: glofloworg/gf_builder:latest
-    commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build
     when:
       event:
         - push

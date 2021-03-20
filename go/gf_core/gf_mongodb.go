@@ -27,6 +27,7 @@ import (
 	"encoding/json"
 	"os/exec"
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -34,21 +35,43 @@ import (
 )
 
 //-------------------------------------------------
-func Mongo__insert_bulk(p_record_lst []interface{},
+func Mongo__insert_bulk(p_ids_lst []string,
+	p_record_lst    []interface{},
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op 
 	p_ctx           context.Context,
 	p_runtime_sys   *Runtime_sys) *Gf_error {
 
+	models := []mongo.WriteModel{}
+	for i, id_str := range p_ids_lst {
 
-	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertMany(p_ctx, p_record_lst)
+		replacement_doc := p_record_lst[i]
+
+		// FIX!! - "$set" - replaces existing doc with _id with this new one. 
+		//                  but if ID is some sort of hash of the document (as is in a few GF apps)
+		//                  than the contents of those documents are the same as well (their _id/hashes are the same),
+		//                  so the DB update with a replacement doc is redundant. 
+		//                  fix this special (but frequent in GF) case.
+		model := mongo.NewUpdateOneModel().
+			SetFilter(bson.D{{"_id", id_str}}).
+			SetUpdate(bson.M{"$set": replacement_doc,}).
+			SetUpsert(true) // upsert=true - insert new document if the _id doesnt exist
+		models = append(models, model)
+	}
+
+	opts := options.BulkWrite().SetOrdered(false)
+
+	r, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).BulkWrite(p_ctx, models, opts)
 	if err != nil {
-		p_meta_map["coll_name_str"] = p_coll_name_str
-		gf_err := Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
-			"mongodb_insert_bulk_error",
+		gf_err := Mongo__handle_error("failed to bulk write new documents into the DB",
+			"mongodb_write_bulk_error",
 			p_meta_map,
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_core", p_runtime_sys)
 		return gf_err
+	}
+
+	if r.MatchedCount != 0 {
+		fmt.Println("matched and replaced an existing document")
 	}
 
 	return nil

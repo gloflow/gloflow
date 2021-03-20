@@ -30,15 +30,15 @@ def run(p_app_name_str,
     p_aws_s3_creds_map,
     p_exit_on_fail_bool         = False,
     p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))):
-    assert isinstance(p_test_name_str,    basestring)
+    assert isinstance(p_test_name_str,    str)
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
 
     print("")
     print(" -- test %s%s%s package"%(fg("green"), p_app_name_str, attr(0)))
 
-    if p_app_meta_map.has_key("test_data_to_serve_dir_str"): use_test_server_bool = True
-    else:                                                    use_test_server_bool = False
+    if "test_data_to_serve_dir_str" in p_app_meta_map.keys(): use_test_server_bool = True
+    else:                                                     use_test_server_bool = False
 
     # GO_PACKAGE_DIR
     go_package_dir_path_str = p_app_meta_map["go_path_str"]

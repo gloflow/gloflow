@@ -396,10 +396,11 @@ def build_image(p_image_names_lst,
 		if "Cannot connect to the Docker daemon" in line_str:
 			exit(1)
 		
-		# CONTAINER_STARTED
-		if line_str.startswith("Successfully built"):
-			image_id_str = get_image_id_from_line(line_str)
-			print("image ID - %s"%(image_id_str))
+		# # CONTAINER_STARTED
+		# if line_str.startswith("Successfully built"):
+		#
+		# 	image_id_str = get_image_id_from_line(line_str)
+		# 	print("image ID - %s"%(image_id_str))
 	
 
 	p.communicate()

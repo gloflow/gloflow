@@ -77,7 +77,7 @@ def process_bucket(p_name_str, p_bucket):
 			file_ext_str = "jpeg"
 
 		# FILE_EXTENSION_COUNTS
-		if counts_per_file_type_map.has_key(file_ext_str):
+		if file_ext_str in counts_per_file_type_map.keys():
 			counts_per_file_type_map[file_ext_str] += 1
 		else:
 			counts_per_file_type_map[file_ext_str] = 1
@@ -93,7 +93,7 @@ def process_bucket(p_name_str, p_bucket):
 		#TOTAL_FILE_COUNTS_PER_DAY
 
 		day_str = '%s-%02d-%02d'%(dt.year,dt.month,dt.day)
-		if counts_per_day_map.has_key(day_str):
+		if day_str in counts_per_day_map.keys():
 			counts_per_day_map[day_str] += 1
 		else:
 			counts_per_day_map[day_str] = 0

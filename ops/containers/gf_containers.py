@@ -86,6 +86,7 @@ def build(p_app_name_str,
 	#------------------
 	# META
 
+	
 	assert "service_name_str" in p_app_build_meta_map
 	assert "service_base_dir_str" in p_app_build_meta_map
 
@@ -243,7 +244,7 @@ def prepare_web_files(p_pages_map,
 
 	for pg_name_str, pg_info_map in p_pages_map.items():
 		assert isinstance(pg_info_map, dict)
-		assert pg_info_map.has_key("build_dir_str")
+		assert "build_dir_str" in pg_info_map.keys()
 		assert os.path.isdir(pg_info_map["build_dir_str"])
 
 		build_dir_str = os.path.abspath(pg_info_map["build_dir_str"])

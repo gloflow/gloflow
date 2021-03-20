@@ -25,15 +25,11 @@ import gf_containers
 sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 
-
-
 #---------------------------------------------------
 def cont__publish(p_dockerhub_user_name_str,
 	p_log_fun,
 	p_docker_sudo_bool = False):
 	assert isinstance(p_dockerhub_user_name_str, str)
-
-
 
 	# PUBLISH
 	app_name_str = "gf_builder"
@@ -45,8 +41,6 @@ def cont__publish(p_dockerhub_user_name_str,
 		p_git_commit_hash_str = p_git_commit_hash_str, 
 		p_exit_on_fail_bool   = True,
 		p_docker_sudo_bool    = p_docker_sudo_bool)
-
-
 
 #---------------------------------------------------
 def cont__build(p_dockerhub_user_name_str,

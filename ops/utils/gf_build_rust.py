@@ -31,6 +31,23 @@ import gf_core_cli
 # rustup default nightly             - rustup make Rust nightly the global default
 
 #--------------------------------------------------
+# RUN_IN_CONTAINER
+def run_in_cont():
+
+
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+    cmd_lst = [
+        "sudo", "docker", "run", 
+        "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
+        "glofloworg/gf_builder:latest",
+        "python3", "-u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_rust"
+    ]
+    p = gf_core_cli.run__view_realtime(cmd_lst, {},
+        "gf_build_rust", "green")
+
+    p.wait()
+
+#--------------------------------------------------
 # RUN
 def run(p_cargo_crate_dir_path_str,
     p_static_bool       = False,
@@ -106,11 +123,7 @@ def prepare_libs(p_name_str,
 
     print(f"{fg('yellow')}PREPARE LIBS{attr(0)}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-    #-------------
-    # EXTERN_LIB
-    prepare_libs__extern(p_exit_on_fail_bool = p_exit_on_fail_bool)
-
-    #-------------
+    
 
     target_build_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))
     assert os.path.isdir(target_build_dir_path_str)
@@ -124,7 +137,13 @@ def prepare_libs(p_name_str,
         #         one of the Crate types is "staticlib".
         if p_name_str == "gf_images_jobs":
 
-        
+            #-------------
+            # EXTERN_LIB
+            prepare_libs__extern(p_tf_libs_bool=True,
+                p_exit_on_fail_bool=p_exit_on_fail_bool)
+
+            #-------------
+            
             # RUST_PY - CPYTHON_EXTENSION - this lib is Python extension written in Rust.
             #                               at the moment in GF the convention is for these Rust libs to have a postfix "_py".
             if p_cargo_crate_dir_path_str.endswith("_py"):
@@ -174,29 +193,33 @@ def prepare_libs(p_name_str,
     
 
 #--------------------------------------------------
-def prepare_libs__extern(p_exit_on_fail_bool = True):
-
+def prepare_libs__extern(p_tf_libs_bool=False,
+    p_exit_on_fail_bool=True):
 
     #-------------
     # TENSORFLOW
-    print(f"{fg('green')}prepare TensorFlow lib{attr(0)}")
+    # IMPORTANT!! - download TF lib and place it in appropriate dir, to have a fresh TF libs
+    #               in the build server context, without including the lib in the repo itself.
+    if p_tf_libs_bool:
 
-    tf__version_str  = "1.15.0"
-    tf__filename_str = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
-    tf__url_str      = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
+        print(f"{fg('green')}prepare TensorFlow lib{attr(0)}")
 
+        lib_file_name_str  = "tflib.tar.gz"
+        target_lib_dir_str = f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
+        tf__version_str    = "1.15.0"
+        tf__filename_str   = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
+        tf__url_str        = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
 
+        gf_core_cli.run(f"mkdir -p {target_lib_dir_str}")
 
-    # DOWNLOAD
-    _, _, exit_code_int = gf_core_cli.run(f"curl {tf__url_str} --output tflib.tar.gz")
-    if not exit_code_int == 0:
-        if p_exit_on_fail_bool:
-            exit(exit_code_int)
+        # DOWNLOAD
+        _, _, exit_code_int = gf_core_cli.run(f"curl {tf__url_str} --output {lib_file_name_str}")
+        if not exit_code_int == 0:
+            if p_exit_on_fail_bool:
+                exit(exit_code_int)
+
+        # UNPACK
+        gf_core_cli.run(f"mv {lib_file_name_str} {target_lib_dir_str}/{lib_file_name_str}")
+        gf_core_cli.run(f"tar -xvzf {target_lib_dir_str}/{lib_file_name_str} -C {target_lib_dir_str}")
 
     #-------------
-    
-
-    # FIX!! - COMPLETE!!
-    #         download TF lib and place it in appropriate dir, to have a fresh TF libs
-    #         in the build server context, without including the lib in the repo itself.
-    print("FIIIIIIIIIIINIIIIIIIISSHHH!!!")

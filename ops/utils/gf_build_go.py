@@ -23,6 +23,31 @@ import delegator
 
 import gf_cli_utils
 
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
+
+#--------------------------------------------------
+# RUN_IN_CONTAINER
+def run_in_cont(p_name_str,
+    p_go_dir_path_str,
+    p_go_output_path_str,
+    p_static_bool = False):
+
+
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+    cmd_lst = [
+        "sudo", "docker", "run", 
+        f"-v {repo_local_path_str}:/home/gf", # mount repo into the container
+        "glofloworg/gf_builder:latest",
+        "python3 -u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_go"
+    ]
+    p = gf_core_cli.run__view_realtime(cmd_lst, {
+
+        },
+        "gf_build_go", "green")
+
+    p.wait()
+
 #--------------------------------------------------
 # RUN
 def run(p_name_str,
@@ -48,13 +73,20 @@ def run(p_name_str,
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) # change into the target main package dir
 
-    # GO_GET
-    _, _, exit_code_int = gf_cli_utils.run_cmd("go get -u")
-    print("")
-    print("")
 
 
+    # RUST_DYNAMIC_LIBS
     dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build")
+
+
+
+    
+    # GO_GET
+    _, _, exit_code_int = gf_cli_utils.run_cmd(f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go get -u")
+    print("")
+    print("")
+
+    
 
     #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
@@ -99,6 +131,7 @@ def run(p_name_str,
 
     #-----------------------------
     
+    print(c_str)
     _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we

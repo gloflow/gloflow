@@ -19,6 +19,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	
 package gf_core
 
+import (
+	"fmt"
+	"crypto/sha256"
+)
+
+//-------------------------------------------------------------
+func Hash_val(p_val interface{}) string {
+
+	h := sha256.New()
+	h.Write([]byte(fmt.Sprintf("%v", p_val)))
+	hash_hex_str := fmt.Sprintf("%x", h.Sum(nil))
+	return hash_hex_str
+}
+
 //-------------------------------------------------------------
 func Str_in_lst(p_str string, p_lst []string) bool {
 	for _,s := range p_lst {

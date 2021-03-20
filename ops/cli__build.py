@@ -65,7 +65,20 @@ def main():
 	assert app_name_str in build_meta_map.keys()
 
 	#--------------------------------------------------
-	def go_build(p_static_bool):
+	def go_build_app_in_cont(p_static_bool):
+
+
+		app_meta_map = build_meta_map[app_name_str]
+		if not "go_output_path_str" in app_meta_map.keys():
+			print("not a main package")
+			exit()
+
+		gf_build_go.run_in_cont(app_name_str,
+			app_meta_map["go_path_str"],
+			app_meta_map["go_output_path_str"])
+
+	#--------------------------------------------------
+	def go_build_app(p_static_bool):
 		
 		app_meta_map = build_meta_map[app_name_str]
 		if not "go_output_path_str" in app_meta_map.keys():
@@ -78,7 +91,12 @@ def main():
 			p_static_bool = p_static_bool)
 
 	#--------------------------------------------------
-	def rust_build():
+	def rust_build_apps_in_cont():
+		print("RUST BUILD IN CONTAINER...")
+		gf_build_rust.run_in_cont()
+
+	#--------------------------------------------------
+	def rust_build_apps():
 		assert app_name_str == "gf_data_viz" or \
 			app_name_str == "gf_images_jobs"
 
@@ -136,14 +154,19 @@ def main():
 	if run_str == "build" or run_str == "build_go":
 		
 		#build using dynamic linking, its quicker while in dev.
-		go_build(False)
+		go_build_app_in_cont(False)
 
 	#-------------
 	# BUILD_RUST
 	elif run_str == "build_rust":
 		
-		rust_build()
-	
+		build_in_container_bool = args_map["build_in_cont"]
+
+		if build_in_container_bool:
+			rust_build_apps_in_cont()
+		else:
+			rust_build_apps()
+
 	#-------------
 	# BUILD_WEB
 	elif run_str == "build_web":
@@ -166,10 +189,14 @@ def main():
 			# build using static linking, containers are based on Alpine linux, 
 			# which has a minimal stdlib and other libraries, so we want to compile 
 			# everything needed by this Go package into a single binary.
-			go_build(True)
+			go_build_app_in_cont(True)
 		
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
+
+
+
+		
 
 		if app_name_str == "gf_builder":
 
@@ -313,6 +340,11 @@ def parse_args():
 		default = "glofloworg",
 		help =    '''name of the dockerhub user to target''')
 
+	#-------------
+	# BUILD_IN_CONT
+	arg_parser.add_argument("-build_in_cont", action = "store_true", default=True,
+		help = "build inside of a gf_builder container")
+
 	#----------------------------
 	# RUN_WITH_SUDO - boolean flag
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
@@ -332,6 +364,7 @@ def parse_args():
 		"aws_creds":      args_namespace.aws_creds,
 		"dockerhub_user": args_namespace.dockerhub_user,
 		"docker_sudo":    args_namespace.docker_sudo,
+		"build_in_cont":  args_namespace.build_in_cont,
 	}
 	return args_map
 

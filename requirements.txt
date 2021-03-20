@@ -3,3 +3,6 @@ fabric
 clint
 pymongo
 boto3
+bs4
+colored
+delegator-py
