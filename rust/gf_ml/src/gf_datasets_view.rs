@@ -45,14 +45,19 @@ pub fn view_tf_records(p_tfrecords_file_path_str: &str,
         columns_num_int: p_collage__columns_num_int
     };
 
+    // gf_collage image buffer
     let mut collage_img_buff = image::ImageBuffer::new(imgs_collage_config.width_int as u32, imgs_collage_config.height_int as u32);
     let mut row_int    = 0;
     let mut column_int = 0;
     let mut img_index_to_collage_coord_map = HashMap::new();
 
     let mut i = 0;
+
+    // keep iterating over all tf_examples in a tf_records and filling a gf_collage,
+    // until there is no more visual room for new tf_examples to be displayed.
     loop {
 
+        // read the next tf_example into a buffer from tf_records
         let next = tf_records_reader.read_next(&mut tf_example_raw_buffer_lst);
 
         match next {
@@ -63,12 +68,12 @@ pub fn view_tf_records(p_tfrecords_file_path_str: &str,
 
                     let data_lst = &tf_example_raw_buffer_lst[0..len];
                     
-                    // READ_TF_EXAMPLE
+                    // READ_TF_EXAMPLE - read tf_example from its buffer into a gf_img
                     let (gf_img_buff, _) = gf_core::gf_tf::read_tf_example__to_img_buffer(&data_lst,
                         p_tf_example__img_width_int,
                         p_tf_example__img_height_int);
 
-                    // IMAGE_COLLAGE
+                    // IMAGE_COLLAGE - add gf_img to a gf_collage
                     let (new_row_int, new_column_int, full_bool) = gf_core::gf_image_collage::add_img_from_buffer(&gf_img_buff,
                         &mut collage_img_buff,
                         row_int,
@@ -79,6 +84,7 @@ pub fn view_tf_records(p_tfrecords_file_path_str: &str,
                     // to query where the image was placed in a 2D matrix of the collage.
                     img_index_to_collage_coord_map.insert(i as u32, (row_int, column_int));
                     
+                    // exit loop if the gf_collage is full of gf_img's
                     if full_bool {
                         break;
                     }

@@ -31,4 +31,4 @@ tensorflow = "0.15.0"
 [build-dependencies]
 
 # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protoc-rust = "2.0"
+protoc-rust = "2.8.0"

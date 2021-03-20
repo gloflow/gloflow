@@ -37,8 +37,6 @@ pub fn saturate(p_gf_img: &mut gf_image::GFimage,
     gf_image_color::saturate_selective(p_gf_img,
         p_color_ref,
         p_saturation_level_f);
-
-
 }
 
 //-------------------------------------------------

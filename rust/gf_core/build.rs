@@ -20,12 +20,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 use protoc_rust;
 
 fn main() {
-
+    
+    // TENSORFLOW_PROTOBUFF_DEFS
     let protobuff_input_lst = [
         "src/gf_protobuff/tf_feature.proto",
         "src/gf_protobuff/tf_example.proto"
     ];
 
+    // IMPORTANT!! - generates .rs files from protobuff definitions.
+    //               this is run only once durring the build stage, 
+    //               and generates static .rs files, which are then used in
+    //               the final build of the Rust binary.
     protoc_rust::run(protoc_rust::Args {
         out_dir:   "src/gf_protobuff",
         input:     &protobuff_input_lst,

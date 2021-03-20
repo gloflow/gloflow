@@ -57,10 +57,6 @@ pub fn generate_and_register(p_dataset_name_str: String,
     p_gf_ml_host_str:      String) {
 
 
-
-    
-
-
     generate(p_dataset_name_str,
         p_classes_lst,
         p_elements_num_int,
@@ -68,11 +64,8 @@ pub fn generate_and_register(p_dataset_name_str: String,
         p_image_height_int,
         p_target_dir_path_str);
 
-
-
     let url_str = format!("{}/ml/dataset/create", p_gf_ml_host_str);
     gf_ml_client::get_blocking(url_str.as_ref());
-
 }
 
 //-------------------------------------------------
