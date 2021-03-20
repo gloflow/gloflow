@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_tagger_lib
 
 import (
 	"strings"
@@ -30,14 +30,14 @@ import (
 )
 
 //---------------------------------------------------
-//AUTHORIZED
+// AUTHORIZED
 
 func pipeline__add_tags(p_input_data_map map[string]interface{},
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_pipelines.pipeline__add_tags()")
 
 	//----------------
-	//INPUT
+	// INPUT
 	if _,ok := p_input_data_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
@@ -65,6 +65,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
 	object_extern_id_str := strings.TrimSpace(p_input_data_map["o_id"].(string))
 	tags_str             := strings.TrimSpace(p_input_data_map["tags"].(string))
+
 	//----------------
 	gf_err := add_tags_to_object(tags_str,
 		object_type_str,
@@ -73,6 +74,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//----------------
 	return nil
 }
@@ -83,14 +85,14 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_pipelines.pipeline__get_objects_with_tag()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_pipelines.pipeline__get_objects_with_tag()")
 
 	//----------------
-	//INPUT
+	// INPUT
 	qs_map := p_req.URL.Query()
 	var err error
 
-	//response_format_str - "j"(for json)|"h"(for html)
+	// response_format_str - "j"(for json)|"h"(for html)
 	response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 
 	if _,ok := qs_map["otype"]; !ok {
@@ -109,11 +111,11 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 		return nil, gf_err
 	}
 
-	//TrimSpace() - Returns the string without any leading and trailing whitespace.
+	// TrimSpace() - Returns the string without any leading and trailing whitespace.
 	object_type_str := strings.TrimSpace(qs_map["otype"][0])
 	tag_str         := strings.TrimSpace(qs_map["tag"][0])
 
-	//PAGE_INDEX
+	// PAGE_INDEX
 	page_index_int := 0
 	if a_lst,ok := qs_map["pg_index"]; ok {
 		input_val          := a_lst[0]
@@ -127,7 +129,7 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 		}
 	}
 
-	//PAGE_SIZE
+	// PAGE_SIZE
 	page_size_int := 10
 	if a_lst,ok := qs_map["pg_size"]; ok {
 		input_val         := a_lst[0]
@@ -140,11 +142,12 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 			return nil, gf_err
 		}
 	}
+
 	//----------------
 
 	switch response_format_str {
 		//------------------
-		//HTML RENDERING
+		// HTML RENDERING
 		case "html":
 			p_runtime_sys.Log_fun("INFO","HTML RESPONSE >>")
 			gf_err := render_objects_with_tag(tag_str,
@@ -157,8 +160,9 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 			if gf_err != nil {
 				return nil, gf_err
 			}
+
 		//------------------
-		//JSON EXPORT
+		// JSON EXPORT
 		case "json":
 			p_runtime_sys.Log_fun("INFO","JSON RESPONSE >>")
 			objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
@@ -170,10 +174,11 @@ func pipeline__get_objects_with_tag(p_req *http.Request,
 				return nil, gf_err
 			}
 
-			//FIX!! - objects_with_tag_lst - have to be exported for external use, not just serialized
+			// FIX!! - objects_with_tag_lst - have to be exported for external use, not just serialized
 			//                                from their internal representation
 
 			return objects_with_tag_lst, nil
+
 		//------------------
 	}
 	return nil, nil

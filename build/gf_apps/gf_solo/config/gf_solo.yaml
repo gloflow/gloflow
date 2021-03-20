@@ -1,0 +1,47 @@
+
+
+
+
+# PORTS
+port:         1900
+port_metrics: 9110
+
+# MONGODB
+mongodb_host:    "127.0.0.1:27017"
+mongodb_db_name: "gf"
+
+# SENTRY_ENDPOINT
+sentry_endpoint: ""
+
+
+
+
+
+templates_dir_paths: 
+
+#--------------------
+# GF_IMAGES
+images__store_local_dir_path:            ""
+images__thumbnails_store_local_dir_path: ""
+images__main_s3_bucket_name:             ""
+
+images__uploaded_s3_bucket:        ""
+images__flow_to_s3_bucket_default: ""
+images__flow_to_s3_bucket:         ""
+
+#--------------------
+# GF_ANALYTICS
+analytics__py_stats_dirs:     ""
+analytics__run_indexer:      ""
+
+#--------------------
+# GF_CRAWL
+crawl__config_file_path:      ""
+crawl__cluster_node_type:     ""
+crawl__images_local_dir_path: ""
+
+#--------------------
+# AWS
+aws_access_key_id:     ""
+aws_secret_access_key: ""
+aws_token:             ""

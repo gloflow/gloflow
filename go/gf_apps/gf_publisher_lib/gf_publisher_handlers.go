@@ -32,7 +32,7 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_templates_dir_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")

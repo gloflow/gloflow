@@ -17,14 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+package gf_ml_lib
+
 import (
+	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_handlers.init_handlers()") {
+func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_handlers.init_handlers()")
 
 
 
@@ -42,12 +44,12 @@ func init_handlers(p_gf_images_runtime_info *Gf_images_extern_runtime_info,
 
 
 
+	//---------------------
 
 
 
 
 
 
-
-
+	return nil
 }

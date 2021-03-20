@@ -26,7 +26,7 @@ import (
 )
 
 //-------------------------------------------------
-type Gf_config struct {
+type GF_config struct {
 
 	// UPLOADED_IMAGES - this is a special dedicated bucket, separate from buckets for all other flows.
 	//                   Mainly because users are pushing data to it directly and so we want to possibly handle
@@ -40,7 +40,7 @@ type Gf_config struct {
 
 //-------------------------------------------------
 func Config__get_s3_bucket_for_flow(p_flow_name_str string,
-	p_config *Gf_config) string {
+	p_config *GF_config) string {
 
 	var s3_bucket_name_final_str string
 	if s3_bucket_str, ok := p_config.Images_flow_to_s3_bucket_map[p_flow_name_str]; !ok {
@@ -53,7 +53,7 @@ func Config__get_s3_bucket_for_flow(p_flow_name_str string,
 
 //-------------------------------------------------
 func Config__get(p_config_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_config, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_config, *gf_core.Gf_error) {
 
 	config_str, err := ioutil.ReadFile(p_config_path_str) 
 	if err != nil {
@@ -66,7 +66,7 @@ func Config__get(p_config_path_str string,
 	}
 
 
-	config := &Gf_config{}
+	config := &GF_config{}
 	err = yaml.Unmarshal([]byte(config_str), config)
 	if err != nil {
 

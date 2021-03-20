@@ -30,7 +30,7 @@ import (
 )
 
 //-------------------------------------------------
-type Gf_service_info struct {
+type GF_service_info struct {
 	Port_str                                   string
 	Mongodb_host_str                           string
 	Mongodb_db_name_str                        string
@@ -40,8 +40,88 @@ type Gf_service_info struct {
 	AWS_access_key_id_str                      string
 	AWS_secret_access_key_str                  string
 	AWS_token_str                              string
-	Templates_dir_paths_map                    map[string]interface{}
+	Templates_dir_paths_map                    map[string]string
 	Config_file_path_str                       string
+}
+
+//-------------------------------------------------
+func Init_service(p_service_info *GF_service_info,
+	p_config      *gf_images_utils.GF_config,
+	p_runtime_sys *gf_core.Runtime_sys) {
+
+	
+
+	//-------------
+	// DB_INDEXES
+	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
+	db_index__init(p_runtime_sys)
+
+	//-------------
+	// S3
+	s3_info, gf_err := gf_core.S3__init(p_service_info.AWS_access_key_id_str,
+		p_service_info.AWS_secret_access_key_str,
+		p_service_info.AWS_token_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
+	//-------------
+	// JOBS_MANAGER
+	jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
+		p_service_info.Images_thumbnails_store_local_dir_path_str,
+		// p_service_info.Images_main_s3_bucket_name_str,
+		p_config,
+		s3_info,
+		p_runtime_sys)
+
+	//-------------
+	// IMAGE_FLOWS
+	flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
+	gf_err = Flows__init_handlers(flows__templates_dir_path_str, jobs_mngr_ch, p_runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
+	//-------------
+	// GIF
+	gf_err = gf_gif_lib.Gif__init_handlers(p_runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
+	//-------------
+	// IMAGE_EDITOR
+	gf_image_editor.Init_handlers(p_runtime_sys)
+	
+	//-------------
+	/*gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
+							*p_images_main_s3_bucket_name_str,
+							s3_client,
+							s3_uploader, //s3_client,
+							mongodb_coll,
+							p_log_fun)*/
+	
+	//-------------
+	// JOBS_MANAGER
+	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch, p_runtime_sys)
+
+	//-------------
+	// HANDLERS
+	gf_err = init_handlers(jobs_mngr_ch,
+		p_config,
+		s3_info,
+		p_runtime_sys)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
+	//------------------------
+	// DASHBOARD SERVING
+	static_files__url_base_str := "/images"
+	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+
+	//------------------------
 }
 
 //-------------------------------------------------
@@ -49,7 +129,7 @@ type Gf_service_info struct {
 // An HTTP servr is started and listens on a supplied port.
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
-func Run_service(p_service_info *Gf_service_info,
+func Run_service(p_service_info *GF_service_info,
 	p_init_done_ch chan bool,
 	p_log_fun      func(string, string)) {
 	p_log_fun("FUN_ENTER", "gf_images_service.Run_service()")
@@ -98,84 +178,18 @@ func Run_service(p_service_info *Gf_service_info,
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
-	
+
 	//-------------
 	// CONFIG
 
-	img_config, gf_err := gf_images_utils.Config__get(p_service_info.Config_file_path_str, runtime_sys)
+	gf_config, gf_err := gf_images_utils.Config__get(p_service_info.Config_file_path_str, runtime_sys)
 	if gf_err != nil {
 		return
 	}
 
-	//-------------
-	// DB_INDEXES
-	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	db_index__init(runtime_sys)
-
-	//-------------
-	// S3
-	s3_info, gf_err := gf_core.S3__init(p_service_info.AWS_access_key_id_str,
-		p_service_info.AWS_secret_access_key_str,
-		p_service_info.AWS_token_str,
-		runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
-
-	//-------------
-	// JOBS_MANAGER
-	jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
-		p_service_info.Images_thumbnails_store_local_dir_path_str,
-		// p_service_info.Images_main_s3_bucket_name_str,
-		img_config,
-		s3_info,
-		runtime_sys)
-
-	//-------------
-	// IMAGE_FLOWS
-	flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"].(string)
-	gf_err = Flows__init_handlers(flows__templates_dir_path_str, jobs_mngr_ch, runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
-
-	//-------------
-	// GIF
-	gf_err = gf_gif_lib.Gif__init_handlers(runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
-
-	//-------------
-	// IMAGE_EDITOR
-	gf_image_editor.Init_handlers(runtime_sys)
-	
-	//-------------
-	/*gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
-							*p_images_main_s3_bucket_name_str,
-							s3_client,
-							s3_uploader, //s3_client,
-							mongodb_coll,
-							p_log_fun)*/
-	
-	//-------------
-	// JOBS_MANAGER
-	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch, runtime_sys)
-
-	//-------------
-	// HANDLERS
-	gf_err = init_handlers(jobs_mngr_ch,
-		img_config,
-		s3_info,
-		runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
-
 	//------------------------
-	// DASHBOARD SERVING
-	static_files__url_base_str := "/images"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
+	// INIT
+	Init_service(p_service_info, gf_config, runtime_sys)
 
 	//------------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
@@ -186,11 +200,11 @@ func Run_service(p_service_info *Gf_service_info,
 	//----------------------
 
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", p_service_info.Port_str))
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
+	http_err := http.ListenAndServe(fmt.Sprintf(":%s", p_service_info.Port_str), nil)
 	if http_err != nil {
-		msg_str := "cant start listening on port - "+p_service_info.Port_str
+		msg_str := fmt.Sprintf("cant start listening on port - %s", p_service_info.Port_str)
 		runtime_sys.Log_fun("ERROR", msg_str)
 		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		

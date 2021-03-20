@@ -3,4 +3,5 @@
 
 templates/
 static/
+tf_lib/
 gf_images_service

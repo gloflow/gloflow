@@ -124,7 +124,7 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	// p_s3_bucket_name_str                         string,
-	p_config                                     *gf_images_utils.Gf_config,
+	p_config                                     *gf_images_utils.GF_config,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
@@ -152,6 +152,8 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					
 					// RUST
+					// FIX!! - this just runs Rust job code for testing.
+					//         pass in proper job_cmd argument.
 					run_job_rust()
 				
 				//------------------------
@@ -181,6 +183,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					//         this should be generalized so that images are added to dedicated flow S3 buckets
 					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
 					target_s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
+
 					//------------------------
 
 					run_job_gf_err := run_job__uploaded_imgs(running_job.Id_str,
@@ -201,7 +204,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
 					}
 
+
 					// RUST
+					// FIX!! - this just runs Rust job code for testing.
+					//         pass in proper job_cmd argument.
 					run_job_rust()
 				
 				//------------------------
@@ -229,6 +235,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					//         this should be generalized so that images are added to dedicated flow S3 buckets
 					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
 					s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
+
 					//------------------------
 
 					run_job_gf_err := run_job__extern_imgs(running_job.Id_str,
@@ -296,8 +303,6 @@ func db__jobs_mngr__create_running_job(p_running_job *Gf_running_job,
 	}
 	return nil
 }
-
-
 
 //-------------------------------------------------
 func db__jobs_mngr__update_job_status(p_status_str job_status_val,

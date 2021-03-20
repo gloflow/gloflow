@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_analytics_lib
 
 import (
 	"fmt"
@@ -31,6 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//-------------------------------------------------
 type Gf_user_event_input struct {
 	Type_str string                 `json:"type_str"`
 	Data_map map[string]interface{} `json:"d"`

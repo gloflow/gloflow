@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_tagger_lib
 
 import (
 	"time"
@@ -69,7 +69,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//------------
-			//INPUT
+			// INPUT
 			i_map, gf_err := gf_rpc_lib.Get_http_input("/tags/add_note", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return

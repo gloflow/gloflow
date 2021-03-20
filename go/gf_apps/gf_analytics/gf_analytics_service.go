@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2021 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,12 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"os"
 	"fmt"
-	"net/http"
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_apps"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_domains_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
@@ -43,8 +41,13 @@ func main() {
 	mongodb_db_name_str    := cli_args_map["mongodb_db_name_str"].(string)
 	elasticsearch_host_str := cli_args_map["elasticsearch_host_str"].(string)
 	crawl_config_file_path_str := cli_args_map["crawl_config_file_path_str"].(string)
+	
+	// used in case we want to skip using elasticsearch, to avoid that
+ 	// dependency needing to be present
+	run_indexer_bool := cli_args_map["run_indexer_bool"].(bool)
+
 	//-----------------
-	//MONGODB
+	// MONGODB
 
 	mongodb_db   := gf_core.Mongo__connect(mongodb_host_str, mongodb_db_name_str, log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
@@ -55,26 +58,9 @@ func main() {
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
+	
 	//-----------------
-	// ELASTICSEARCH
  	
- 	// used in case we want to skip using elasticsearch, to avoid that
- 	// dependency needing to be present
-	run_indexer_bool := cli_args_map["run_indexer_bool"].(bool)
-
-	var esearch_client *elastic.Client
-	var gf_err         *gf_core.Gf_error
-	if run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
-		if gf_err != nil {
-			panic(gf_err.Error)
-		}
-	}
-
-	fmt.Println("ELASTIC_SEARCH_CLIENT >>> - "+fmt.Sprint(esearch_client))
-
-	//-----------------
-
 	switch run_str {
 
 		//-----------------------------
@@ -106,7 +92,17 @@ func main() {
 			}
 
 			//-------------
+			// ELASTICSEARCH
+			var esearch_client *elastic.Client
+			if run_indexer_bool {
+				esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
+				if gf_err != nil {
+					panic(gf_err.Error)
+				}
+			}
+			fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
 
+			//-------------
 			crawler_runtime := &gf_crawl_core.Gf_crawler_runtime{
 				Events_ctx:            nil,
 				Esearch_client:        esearch_client,
@@ -139,74 +135,36 @@ func main() {
 		//-----------------------------
 		// START SERVICE
 		case "start_service":
+			crawl_config_file_path_str      := cli_args_map["crawl_config_file_path_str"]
+			crawl_cluster_node_type_str     := cli_args_map["cluster_node_type_str"].(string)
+			crawl_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 			
-			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
-			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
-			py_stats_dirs_lst                 := cli_args_map["py_stats_dirs_lst"].([]string)
+			py_stats_dirs_lst               := cli_args_map["py_stats_dirs_lst"].([]string)
 
 			// AWS
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
 
-			// TEMPLATES_DIR
-			templates_dir_path_str := "./templates"
-			if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-				log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
-				panic(1)
+			config := &GF_analytics_config{
+				Port_str: port_str,
+
+				Crawl__config_file_path_str:      crawl_config_file_path_str,
+				Crawl__cluster_node_type_str:     crawl_cluster_node_type_str,
+				Crawl__images_local_dir_path_str: crawl_images_local_dir_path_str,
+
+				Py_stats_dirs_lst:      py_stats_dirs_lst,
+				Run_indexer_bool:       run_indexer_bool,
+				Elasticsearch_host_str: elasticsearch_host_str,
+
+				AWS_access_key_id_str:     aws_access_key_id_str,
+				AWS_secret_access_key_str: aws_secret_access_key_str,
+				AWS_token_str:             aws_token_str,
 			}
 
-			init_handlers(templates_dir_path_str, runtime_sys)
-			//------------------------
-			// GF_DOMAINS
-			gf_domains_lib.DB_index__init(runtime_sys)
-			gf_domains_lib.Init_domains_aggregation(runtime_sys)
-			gf_err := gf_domains_lib.Init_handlers(templates_dir_path_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
-			}
-
-			//------------------------
-			// GF_CRAWL
-
-			gf_crawl_lib.Init(crawler_images_local_dir_path_str,
-				cluster_node_type_str,
-				crawl_config_file_path_str,
-				templates_dir_path_str,
-				aws_access_key_id_str,
-				aws_secret_access_key_str,
-				aws_token_str,
-				esearch_client,
+			gf_analytics_lib.Run_service(config,
 				runtime_sys)
 
-			//------------------------
-			// GF_STATS
-
-			stats_url_base_str    := "/a/stats"
-			py_stats_dir_path_str := py_stats_dirs_lst[0]
-
-			gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
-			}
-
-			//------------------------
-			// STATIC FILES SERVING
-			static_files__url_base_str := "/a"
-			gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
-
-			//------------------------
-
-			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-			log_fun("INFO", "STARTING HTTP SERVER - PORT - "+port_str)
-			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-			
-			err := http.ListenAndServe(":"+port_str, nil)
-			if err != nil {
-				msg_str := "cant start listening on port - "+port_str
-				log_fun("ERROR", msg_str)
-				panic(err)
-			}
 
 		//-----------------------------
 	}

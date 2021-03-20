@@ -86,6 +86,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 
 	return imgs_lst, nil
 }
+
 //---------------------------------------------------
 func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_db.DB__image_exists()")

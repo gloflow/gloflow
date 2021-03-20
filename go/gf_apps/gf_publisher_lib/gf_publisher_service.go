@@ -28,16 +28,41 @@ import (
 )
 
 //-------------------------------------------------
-type Gf_images_extern_runtime_info struct {
+type GF_images_extern_runtime_info struct {
 	Jobs_mngr             gf_images_jobs.Jobs_mngr
-	Service_host_port_str string //"http://127.0.0.1:2060"
+	Service_host_port_str string // "http://127.0.0.1:2060"
+}
+
+//-------------------------------------------------
+func Init_service(p_gf_images_runtime_info *GF_images_extern_runtime_info,
+	p_runtime_sys *gf_core.Runtime_sys) {
+
+	//------------------------
+	// STATIC FILES SERVING
+	static_files__url_base_str := "/posts"
+	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+	
+	//------------------------
+
+	// TEMPLATES_DIR
+	templates_dir_path_str := "./templates"
+	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
+		p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+		panic(1)
+	}
+
+	err := init_handlers(p_gf_images_runtime_info, templates_dir_path_str, p_runtime_sys)
+	if err != nil {
+		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
+		panic(msg_str)
+	}
 }
 
 //-------------------------------------------------
 func Run_service(p_port_str string,
 	p_mongodb_host_str       string,
 	p_mongodb_db_name_str    string,
-	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_init_done_ch           chan bool,
 	p_log_fun                func(string,string)) {
 	p_log_fun("FUN_ENTER","gf_publisher_service.Run_service()")
@@ -90,24 +115,8 @@ func Run_service(p_port_str string,
 	}
 
 	//------------------------
-	// STATIC FILES SERVING
-	static_files__url_base_str := "/posts"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, runtime_sys)
-	
-	//------------------------
-
-	// TEMPLATES_DIR
-	templates_dir_path_str := "./templates"
-	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-		p_log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
-		panic(1)
-	}
-
-	err := init_handlers(p_gf_images_runtime_info, templates_dir_path_str, runtime_sys)
-	if err != nil {
-		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
-		panic(msg_str)
-	}
+	// INIT
+	Init_service(p_gf_images_runtime_info, runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

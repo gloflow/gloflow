@@ -36,7 +36,7 @@ type Gf_images_client_result struct {
 
 //---------------------------------------------------
 func process_external_images(p_post *Gf_post,
-	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
+	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
 

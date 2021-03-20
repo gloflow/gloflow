@@ -32,6 +32,7 @@ def get():
 				}
 			}
 		},
+
 		#-----------------------------
 		"gf_images":{
 			"pages_map":{
@@ -73,8 +74,9 @@ def get():
 					# 	]
 					# }
 				},
+
 				#-------------
-				#IMAGES_DASHBOARD
+				# IMAGES_DASHBOARD
 				"gf_images_dashboard":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_images"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_images/templates/gf_images_dashboard/gf_images_dashboard.html"%(modd_str),
@@ -111,11 +113,12 @@ def get():
 				#-------------
 			}
 		},
+
 		#-----------------------------
 		"gf_publisher":{
 			"pages_map":{
 				#-------------
-				#GF_POST
+				# GF_POST
 				"gf_post":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html"%(modd_str),
@@ -150,8 +153,9 @@ def get():
 					# 	]
 					# }
 				},
+
 				#-------------
-				#GF_POSTS_BROWSER
+				# GF_POSTS_BROWSER
 				"gf_posts_browser":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html"%(modd_str),
@@ -190,14 +194,16 @@ def get():
 					# 	]
 					# }
 				}
+
 				#-------------
 			}
 		},
+
 		#-----------------------------
 		"gf_analytics":{
 			"pages_map":{
 				#-------------
-				#DASHBOARD
+				# DASHBOARD
 				"gf_analytics_dashboard":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_analytics/templates/gf_analytics_dashboard/gf_analytics_dashboard.html"%(modd_str),
@@ -256,8 +262,9 @@ def get():
 					# 	]
 					# }
 				},
+
 				#-------------
-				#CRAWL_DASHBOARD
+				# CRAWL_DASHBOARD
 				"gf_crawl_dashboard":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_crawl_lib/templates/gf_crawl_dashboard/gf_crawl_dashboard.html"%(modd_str),
@@ -307,11 +314,12 @@ def get():
 					# 	("%s/../web/src/gf_apps/gf_crawl_lib/assets/icons.png"%(modd_str), "%s/../web/build/gf_apps/gf_analytics/assets"%(modd_str),),
 					# ]
 				},
-				#-------------
-				#DOMAINS_BROWSER
 
-				#IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
-				#              belong to neither gf_images nor gf_publisher. maybe it should be its own app?
+				#-------------
+				# DOMAINS_BROWSER
+
+				# IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
+				#               belong to neither gf_images nor gf_publisher. maybe it should be its own app?
 				"gf_domains_browser":{
 					"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
 					"main_html_path_str": "%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser/gf_domains_browser.html"%(modd_str),
@@ -349,9 +357,11 @@ def get():
 					# 	]
 					# }
 				}
+
 				#-------------
 			}
 		},
+
 		#-----------------------------
 		# "gf_user":{
 		# 	"pages_map":{
@@ -375,7 +385,7 @@ def get():
 		# 					("%s/../web/src/gf_apps/gf_user/css/gf_user_profile.css"%(modd_str), "%s/../web/build/gf_apps/gf_user/css"%(modd_str))
 		# 				]
 		# 			},
-
+		#
 		# 			#static files to copy without change
 		# 			"files_to_copy_lst":[
 		# 				("%s/../web/src/gf_apps/gf_user/gf_user_profile.html"%(modd_str), "%s/../web/build/gf_apps/gf_user"%(modd_str),)

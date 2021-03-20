@@ -55,7 +55,7 @@ func Upload__init(p_image_name_str string,
 	p_flows_names_lst  []string,
 	p_client_type_str  string,
 	p_s3_info          *gf_core.Gf_s3_info,
-	p_config           *gf_images_utils.Gf_config,
+	p_config           *gf_images_utils.GF_config,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.Gf_error) {
 	
 	//------------------

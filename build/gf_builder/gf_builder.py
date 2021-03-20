@@ -85,13 +85,15 @@ def main():
 			git_commit_hash_str = args_map["drone_commit_sha"]
 			paste_git_commit_hash(git_commit_hash_str)
 			
-		build_apps(changed_apps_files_map)
+		build_apps(changed_apps_files_map,
+			p_static_bool=True)
 
 	#------------------------
 	# BUILD_RUST
 	elif args_map["run"] == "build_rust":
 
 		build_rust()
+
 	#------------------------
 	# BUILD_CONTAINERS
 	elif args_map["run"] == "build_containers":
@@ -391,15 +393,18 @@ def build_rust():
 			cargo_crate_dir_path_str = cargo_crate_map["dir_path_str"]
 			assert os.path.dirname(cargo_crate_dir_path_str)
 
+			# RUN
 			gf_build_rust.run(cargo_crate_dir_path_str)
 
+			# PREPARE_LIBS
 			gf_build_rust.prepare_libs(app_name_str,
 				cargo_crate_dir_path_str,
 				app_meta_map["type_str"])
 
 #--------------------------------------------------
 # BUILD_APPS
-def build_apps(p_changed_apps_files_map):
+def build_apps(p_changed_apps_files_map,
+	p_static_bool=True):
 	assert isinstance(p_changed_apps_files_map, dict)
 
 	print("\n\n BUILD APPS ----------------------------------------------------- \n\n")
@@ -414,7 +419,7 @@ def build_apps(p_changed_apps_files_map):
 		# IMPORTANT!! - for each app that has any of its code changed rebuild both the Go and Web code,
 		#               since the containers has to be fully rebuilt.
 		# "all" - this key holds a map with all the apps that had either their Go or Web code changed
-		apps_names_lst = p_changed_apps_files_map["all"].keys()
+		apps_names_lst = list(p_changed_apps_files_map["all"].keys())
 
 		#------------------------
 		# WEB
@@ -443,7 +448,7 @@ def build_apps(p_changed_apps_files_map):
 				# IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
 				#               so all binary dependencies are to be statically linked into the output binary 
 				#               without depending on standard dynamic linking.
-				p_static_bool = True, 
+				p_static_bool = p_static_bool, 
 				
 				# gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
 				# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
@@ -553,6 +558,7 @@ def parse_args():
 
 	print(gf_dockerhub_user_str)
 	print(gf_dockerhub_pass_str)
+	
 	#-------------
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)

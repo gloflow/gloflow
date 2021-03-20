@@ -42,7 +42,7 @@ func main() {
 	aws_secret_access_key_str                  := cli_args_map["aws_secret_access_key_str"].(string)
 	aws_token_str                              := cli_args_map["aws_token_str"].(string)
 
-	templates_dir_paths_map := map[string]interface{}{
+	templates_dir_paths_map := map[string]string{
 		"flows_str": "./templates",
 		"gif_str":   "./templates",
 	}
@@ -57,7 +57,7 @@ func main() {
 	// START_SERVICE
 	if run__start_service_bool {
 
-		service_info := &gf_images_lib.Gf_service_info{
+		service_info := &gf_images_lib.GF_service_info{
 			Port_str:                                   port_str,
 			Mongodb_host_str:                           mongodb_host_str,
 			Mongodb_db_name_str:                        mongodb_db_name_str,

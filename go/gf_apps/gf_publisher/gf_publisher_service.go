@@ -35,10 +35,10 @@ func main() {
 	mongodb_db_name_str     := cli_args_map["mongodb_db_name_str"].(string)
 	gf_images_service_host_port_str := cli_args_map["gf_images_service_host_port_str"].(string)
 
-	//START_SERVICE
+	// START_SERVICE
 	if run__start_service_bool {
 
-		gf_images_runtime := &gf_publisher_lib.Gf_images_extern_runtime_info{
+		gf_images_runtime := &gf_publisher_lib.GF_images_extern_runtime_info{
 			Jobs_mngr:             nil, //indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
 			Service_host_port_str: gf_images_service_host_port_str,
 		}

@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2019 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_ml_lib
+package gf_landing_page_lib
 
 import (
 	"fmt"
@@ -26,61 +26,61 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
-	Port_str                string
-	Mongodb_host_str        string
-	Mongodb_db_name_str     string
-	Templates_dir_paths_map map[string]interface{}
-	Config_file_path_str    string
-}
-
-
-//-------------------------------------------------
 func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_service.Init_service()")
 
-	//-------------
+	//------------------------
+	// STATIC FILES SERVING
+	static_files__url_base_str := "/landing"
+	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+
+	//------------------------
 	// HANDLERS
 	gf_err := init_handlers(p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-	//-------------
+	//------------------------
 }
 
 //-------------------------------------------------
-func Run_service(p_service_info *GF_service_info,
-	p_init_done_ch chan bool,
-	p_log_fun      func(string, string)) {
-	p_log_fun("FUN_ENTER", "gf_ml_service.Run_service()")
+func Run_service(p_port_str string,
+	p_mongodb_host_str    string,
+	p_mongodb_db_name_str string,
+	p_init_done_ch        chan bool,
+	p_log_fun             func(string, string)) {
+	p_log_fun("FUN_ENTER", "gf_landing_page_service.Run_service()")
 
-	//-------------
-	// RUNTIME_SYS
-	mongodb_db := gf_core.Mongo__connect(p_service_info.Mongodb_host_str,
-		p_service_info.Mongodb_db_name_str,
-		p_log_fun)
-	mongodb_coll := mongodb_db.C("g_ml")
+	p_log_fun("INFO", "")
+	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
+	p_log_fun("INFO", "")
+
+	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
+	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_ml",
+		Service_name_str: "gf_landing_page",
 		Log_fun:          p_log_fun,
-		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
-
-	//-------------
+	//------------------------
 	// INIT
 	Init_service(runtime_sys)
 
-	//-------------
+	//----------------------
+	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
+	if p_init_done_ch != nil {
+		p_init_done_ch <- true
+	}
+
+	//----------------------
 
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
+	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
+		msg_str := "cant start listening on port - "+p_port_str
 		runtime_sys.Log_fun("ERROR", msg_str)
 		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		

@@ -32,10 +32,12 @@ type Gf_image struct {
 	Id_str               Gf_image_id   `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
+	
 	//---------------
 	Client_type_str      string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
 	Title_str            string        `json:"title_str"            bson:"title_str"`
 	Flows_names_lst      []string      `json:"flows_names_lst"      bson:"flows_names_lst"` // image can bellong to multiple flows
+
 	//---------------
 	// RESOLVED_SOURCE_URL
 	// IMPORTANT!! - when the image comes from an external url (as oppose to it being 

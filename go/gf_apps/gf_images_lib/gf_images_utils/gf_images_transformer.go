@@ -104,12 +104,14 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
+
 	//--------------------------
 	/* //DOMINANT COLOR DETERMINATION
 	//it"s computed only for non-gif"s
 	dominant_color_hex_str := gf_images_utils_graphic.get_dominant_image_color(p_image_local_file_path_str,p_log_fun)*/
 	//--------------------------
-	image_width_int, image_height_int := Get_image_dimensions__from_image(img,p_runtime_sys)
+	image_width_int, image_height_int := Get_image_dimensions__from_image(img, p_runtime_sys)
+
 	//--------------------------
 
 	// SECURITY ISSUE!!
@@ -138,6 +140,7 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 		Width_int:                      image_width_int,
 		Height_int:                     image_height_int,
 	}
+
 	//--------------------------
 	// IMAGE_CREATE
 
@@ -146,6 +149,7 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
+
 	//--------------------------
 
 	return gf_image, gf_image_thumbs, nil
@@ -174,10 +178,10 @@ func resize_image(p_img image.Image,
 	}
 	defer out.Close()
 
-	//IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
-	//              and so for these kinds of images it comes out with much smaller file size
+	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
+	//               and so for these kinds of images it comes out with much smaller file size
 	// write new image to file
-	//jpeg.Encode(out, m, nil)
+	// jpeg.Encode(out, m, nil)
 	jpeg.Encode(out, m, nil)
 
 	return nil
