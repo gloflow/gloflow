@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_crawl_stats from "./../../../gf_crawl_lib/ts/stats/gf_crawl_stats";
+import * as gf_crawl_stats from "./../../../gf_crawl_lib/ts/gf_crawl_stats/gf_crawl_stats";
 import * as gf_stats       from "./../../../../gf_stats/ts/gf_stats";
 
 $(document).ready(()=>{

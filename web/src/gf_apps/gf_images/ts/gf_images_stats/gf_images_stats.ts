@@ -36,7 +36,7 @@ export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_
 		$(plot).remove()
 	});
 	//------------------------------
-	//FORMAT DATA
+	// FORMAT DATA
 
 	const d3_data_lst = [];
 	$.each(p_completed_image_jobs_runtime_infos_lst,function(p_i,p_data_map){
@@ -47,6 +47,7 @@ export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_
 			y:runtime_duration_sec_f
 		});
 	});
+
 	//------------------------------
 
 	nv.addGraph(function(){
@@ -87,13 +88,15 @@ export function stat_view__completed_image_jobs_runtime_infos(p_completed_image_
 		return chart;
 	});
 }
+
 //-------------------------------------------------
 export function stat_view__image_jobs_errors(p_image_jobs_errors_lst, p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_images_stats.stat_view__image_jobs_errors()');
 	
 }
+
 //-------------------------------------------------
-//HTTP
+// HTTP
 //-------------------------------------------------
 export function http__get_stat_data(p_stat_name_str,
 	p_onComplete_fun,

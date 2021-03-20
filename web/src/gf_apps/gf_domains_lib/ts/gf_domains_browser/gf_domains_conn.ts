@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
+import * as gf_color from "./../../../../gf_core/ts/gf_color";
+
 //-----------------------------------------------------
 /*activate_conn(Function p_log_fun) {
 	p_log_fun('FUN_ENTER','domains_conn.activate_conn()');
@@ -30,14 +32,11 @@ export function draw_connectivity(p_domains_lst :Object[],
 	p_height_int        :number,
 	p_color_int         :number,
 	p_log_fun) :PIXI.Container {
-	//{int     p_width_int :300,
-	//int      p_height_int:300,
-	//int      p_color_int :0xF31111FF}) :PIXI.Sprite {
-	p_log_fun('FUN_ENTER','gf_domains_conn.draw_connectivity()');
+	p_log_fun('FUN_ENTER', 'gf_domains_conn.draw_connectivity()');
 
 	const container = new PIXI.Container();
 	//------------------
-	//BACKGROUND
+	// BACKGROUND
 	/*shape.graphics.moveTo(0, 0);
     shape.graphics.beginPath();
     
@@ -64,6 +63,7 @@ export function draw_connectivity(p_domains_lst :Object[],
 		p_height_int); //p_height_px
 
 	container.addChild(graphics);
+
 	//------------------
 
 
@@ -86,10 +86,9 @@ export function draw_connectivity(p_domains_lst :Object[],
 			
 			graphics.endFill(); //.closePath();
 
-			//graphics.strokeColor(gf_color.get_hex('lightgray'), 1);
-			graphics.lineStyle(1, //lineWidth
-				gf_color.get_int('lightgrey'), //color
-				1);                            //alpha
+			graphics.lineStyle(1, // lineWidth
+				gf_color.get_int('lightgrey'), // color
+				1);                            // alpha
 		}
     }
 	return container;

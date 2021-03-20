@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/pixi.js.d.ts" />
 
+import * as gf_color from "./../../../../gf_core/ts/gf_color";
+
 //-----------------------------------------------------
 export function draw(p_domains_lst :Object[],
 	p_width_int  :number,
@@ -26,30 +28,27 @@ export function draw(p_domains_lst :Object[],
 	p_ctx_map    :Object,
 	p_onPick_fun,
 	p_log_fun) :PIXI.Container {
-	//{int      p_width_int :200,
-	//int      p_height_int:600}) :PIXI.Sprite {
-	p_log_fun('FUN_ENTER','gf_domains_infos.draw()');
+	p_log_fun('FUN_ENTER', 'gf_domains_infos.draw()');
 
 	const container               = new PIXI.Container();
 	const domain_info_padding_int = 5;
 	//--------------
-	//TOP_DOMAINS
+	// TOP_DOMAINS
 	
 	var top_domains_lst :Object[];
 	if (p_domains_lst.length > 30) top_domains_lst = p_domains_lst.slice(0,30);
 	else                           top_domains_lst = p_domains_lst;
+
 	//--------------
-	//100:height=domain_percent_of_all:x
-	//x=(height*domain_percent_of_all)/100;
-	
 	const domains_count_int               :number = top_domains_lst.length;
 	const domain_percent_of_all           :number = 100/domains_count_int;
 	const new_scaled_domain_info_height_f :number = ((p_height_int*domain_percent_of_all)/100);
 
-	p_log_fun('INFO','>>>>>>>>>>>>>>>>>>>');
-	p_log_fun('INFO','domains_count_int               - '+domains_count_int);
-	p_log_fun('INFO','domain_percent_of_all           - '+domain_percent_of_all);
-	p_log_fun('INFO','new_scaled_domain_info_height_f - '+new_scaled_domain_info_height_f);
+	p_log_fun('INFO', '>>>>>>>>>>>>>>>>>>>');
+	p_log_fun('INFO', 'domains_count_int               - '+domains_count_int);
+	p_log_fun('INFO', 'domain_percent_of_all           - '+domain_percent_of_all);
+	p_log_fun('INFO', 'new_scaled_domain_info_height_f - '+new_scaled_domain_info_height_f);
+
 	//--------------
 	const domains_stats_lst :PIXI.Container[] = [];
 
@@ -58,20 +57,21 @@ export function draw(p_domains_lst :Object[],
 
     	const domain_info_height_int :number = new_scaled_domain_info_height_f - 2*domain_info_padding_int;
 		const domain_info :PIXI.Container = draw_domain_info(domain_info_map,
-			20, //p_width_int
-			domain_info_height_int, //p_height_int
+			20, // p_width_int
+			domain_info_height_int, // p_height_int
 			gf_color.get_int('lightgrey'),
 			p_ctx_map,
 			p_onPick_fun,
 			p_log_fun);
 
-    	//domain_info.height = new_scaled_domain_info_height_f;
+    	// domain_info.height = new_scaled_domain_info_height_f;
 
     	//--------------
-    	//LAYOUT
+    	// LAYOUT
     	if (last != null) {
     		domain_info.y = domain_info_padding_int + last.y + last.height + domain_info_padding_int;
     	}
+
     	//--------------
     	container.addChild(domain_info);
 
@@ -82,7 +82,7 @@ export function draw(p_domains_lst :Object[],
     }
 
     //--------------
-	//SELECTOR_BAR
+	// SELECTOR_BAR
 	const selector_bar_spr :PIXI.Container = init_selector_bar(domains_stats_lst,
 		top_domains_lst,
 		60,              //p_width_int
@@ -92,9 +92,11 @@ export function draw(p_domains_lst :Object[],
 		p_log_fun);
 	selector_bar_spr.x = 10;
 	container.addChild(selector_bar_spr);
+
 	//--------------
     return container;
 }
+
 //-----------------------------------------------------
 function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 	p_domains_lst :Object[],
@@ -103,12 +105,11 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 	p_color_int   :number,
 	p_onPick_fun,
 	p_log_fun) :PIXI.Container {
-	//{int      p_width_int :30,
-	//int       p_height_int:100
-	p_log_fun('FUN_ENTER','gf_domains_infos.init_selector_bar()');
+	p_log_fun('FUN_ENTER', 'gf_domains_infos.init_selector_bar()');
 
 	const container     = new PIXI.Container();
 	const background_gr = new PIXI.Graphics();
+
 	//---------------
 	draw_background(background_gr,
 		p_width_int,
@@ -116,18 +117,18 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 		p_color_int,
 		p_log_fun);
 	container.addChild(background_gr);
+
 	//---------------
-	//SCROOL_INDICATOR
+	// SCROOL_INDICATOR
 	const scroll_indicator_gr = new PIXI.Graphics();
 	draw_background(scroll_indicator_gr,
 		p_width_int,
-		1, //p_height_int
+		1, // p_height_int
 		gf_color.get_int('gray'),
 		p_log_fun);
-		//p_width_int :p_width_int,
-		//p_height_int:1);
 
 	container.addChild(scroll_indicator_gr);
+
 	//---------------
 
 	//-----------------------------------------------------
@@ -138,11 +139,11 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 			var ds :PIXI.Container = p_domains_stats_lst[i];
 
 			//--------------------
-			//IMPORTANT!! - hitTestObject() - hit detection
-			//                                if the horizontal selector bar crosses
-			//                                the domain_stats sprite (its bounding box)
-			//                                this will return True (bool)
-			//if (domain_stats.hitTestObject(scroll_indicator_gr)) {
+			// IMPORTANT!! - hitTestObject() - hit detection
+			//                                 if the horizontal selector bar crosses
+			//                                 the domain_stats sprite (its bounding box)
+			//                                 this will return True (bool)
+			// if (domain_stats.hitTestObject(scroll_indicator_gr)) {
 
 			if (hitTestObject(ds.x,
 				ds.y,
@@ -157,6 +158,7 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 					'domain_stats': ds
 				};
 			}
+
 			//--------------------
 		}
 		//-----------------------------------------------------
@@ -164,6 +166,7 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 			if (x1 + w1 > x2) if (x1 < x2 + w2) if (y1 + h1 > y2) if (y1 < y2 + h2) return true;
 			return false;
 		}
+
 		//-----------------------------------------------------
 		/*function hitTestObject(r1, r2) {
 
@@ -173,15 +176,16 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 				(r2.y + r2.height) < r1.y);
 		}*/
 	}
+
 	//-----------------------------------------------------
 	function on_pick(p_domain_info_map :Object,
 		p_selected_domain_stats :PIXI.Container) {
-		p_log_fun('FUN_ENTER','gf_domains_infos.init_selector_bar().on_pick()');
+		p_log_fun('FUN_ENTER', 'gf_domains_infos.init_selector_bar().on_pick()');
 
 		const posts_count_int :number = p_domain_info_map['posts_count_int'];
 		
 		/*//---------------
-		//DRAW POSTS COUNT TEXT
+		// DRAW POSTS COUNT TEXT
 		final TextField posts_count_txt = new TextField();
 
 		posts_count_txt.defaultTextFormat = new TextFormat('Arial', 18, Color.White);
@@ -193,11 +197,13 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 		posts_count_txt.wordWrap = true;
 		
 		container.addChild(posts_count_txt);
+
 		//---------------*/
 		
 		/*gf_domain.activate(p_domain_info_map,
-						p_log_fun);*/
+			p_log_fun);*/
 	}
+
 	//-----------------------------------------------------
 		
 	container.interactive = true;
@@ -206,16 +212,16 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 	var current_i_int = 0;
 	//container.addEventListener(MouseEvent.MOUSE_DOWN,
 	
-	container.on('mousedown',(p_e)=>{
+	container.on('mousedown', (p_e)=>{
 			
-			//move_subscription = container.addEventListener(MouseEvent.MOUSE_MOVE,(p_e)=>{
-			container.on('mousemove',(p_e)=>{
+			// move_subscription = container.addEventListener(MouseEvent.MOUSE_MOVE,(p_e)=>{
+			container.on('mousemove', (p_e)=>{
 
 				const mouse_y_int :number = parseInt(p_e.localY);
 
-				//HACK!! - stagexl for some reason sometimes reports localY as 1 or 2. 
-				//         so here Im filtering that out, to avoid flickering due 
-				//         to sudden repositioning of scroll_indicator_gr
+				// HACK!! - stagexl for some reason sometimes reports localY as 1 or 2. 
+				//          so here Im filtering that out, to avoid flickering due 
+				//          to sudden repositioning of scroll_indicator_gr
 				if (mouse_y_int > 2) scroll_indicator_gr.y = mouse_y_int;
 
 
@@ -224,11 +230,11 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 				const i                     :number         = selected_map['i'];
 
 				//--------------------------
-				//IMPORTANT!! - client function
+				// IMPORTANT!! - client function
 					
-				//only run the client function if the selected domain 
-				//has actually changed... to avoid flickering/changing
-				//data that has not changed
+				// only run the client function if the selected domain 
+				// has actually changed... to avoid flickering/changing
+				// data that has not changed
 				if (i != current_i_int) {
 					current_i_int = i;
 
@@ -237,11 +243,12 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 					on_pick(domain_info_map, selected_domain_stats);
 					p_onPick_fun(domain_info_map);
 				}
+
 				//--------------------------
 			});
 		});
 
-	//container.addEventListener(MouseEvent.MOUSE_UP,
+	// container.addEventListener(MouseEvent.MOUSE_UP,
 	container.on('mouseup',
 		(p_e)=>{
 			if (move_subscription!=null) {
@@ -250,6 +257,7 @@ function init_selector_bar(p_domains_stats_lst :PIXI.Container[],
 		});
 	return container;
 }
+
 //-----------------------------------------------------
 function draw_domain_info(p_domain_info_map :Object,
 	p_width_int  :number,
@@ -258,16 +266,13 @@ function draw_domain_info(p_domain_info_map :Object,
 	p_ctx_map    :Object,
 	p_onPick_fun,
 	p_log_fun) :PIXI.Container {
-	//{int     p_width_int :20,
-	//int      p_height_int:30,
-	//int      p_color_int :Color.LightGray}) :PIXI.Sprite {
 	//p_log_fun('FUN_ENTER','gf_domains_infos.draw_domain_info()');
 
 	const items_count_int :number = p_domain_info_map['posts_count_int'] + p_domain_info_map['images_count_int'];
 	const container               = new PIXI.Container();
 	
 	//---------------
-	//DRAW BACKGROUND
+	// DRAW BACKGROUND
 	const graphics = new PIXI.Graphics();
 	container.addChild(graphics);
 
@@ -278,8 +283,9 @@ function draw_domain_info(p_domain_info_map :Object,
 		p_log_fun);
 
 	container.addChild(graphics);
+
 	//---------------
-	//SIZING
+	// SIZING
 	if (items_count_int > 50) {
 		container.width  = 70;
 		container.height = 25;
@@ -292,6 +298,7 @@ function draw_domain_info(p_domain_info_map :Object,
 		container.width  = 30;
 		container.height = 10;
 	}
+
 	//---------------
 	
 	/*container.addEventListener(MouseEvent.MOUSE_OVER,
@@ -365,27 +372,26 @@ function draw_domain_info(p_domain_info_map :Object,
 
 	return container;
 }
+
 //-----------------------------------------------------
 function draw_background(p_graphics :PIXI.Graphics,
 	p_width_int  :number,
 	p_height_int :number,
 	p_color_int  :number,
 	p_log_fun) {
-	//{int     p_width_int :20,
-	//int      p_height_int:20}) {
 
 	p_graphics.clear();
 	p_graphics.moveTo(0, 0);
 
     p_graphics.beginFill(p_color_int); //.beginPath();
-    //p_graphics.lineStyle(1,p_color_int);
+    // p_graphics.lineStyle(1,p_color_int);
 
-    //single_page_height_px-1 - so that a little space is shown between pages
-	p_graphics.drawRect(0,0, //x/y 
-		p_width_int,   //p_width_px 
-		p_height_int); //p_height_px
+    // single_page_height_px-1 - so that a little space is shown between pages
+	p_graphics.drawRect(0,0, // x/y 
+		p_width_int,         // p_width_px 
+		p_height_int);       // p_height_px
 
 	p_graphics.endFill(); //.closePath();
-	//p_graphics.strokeColor(p_color_int,1);
-	//p_graphics.fillColor(p_color_int);
+	// p_graphics.strokeColor(p_color_int,1);
+	// p_graphics.fillColor(p_color_int);
 }
