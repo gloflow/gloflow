@@ -1,0 +1,50 @@
+FROM ubuntu:20.04
+
+#------------
+# DIRS
+RUN mkdir /home/gf
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/config
+RUN mkdir -p /home/gf/data
+RUN mkdir -p /home/gf/libs
+
+WORKDIR /home/gf
+
+#------------
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    python3-pip
+
+#------------
+# GF_IMAGES_JOBS__C_DEPENDENCIES
+# IMPORTANT!! - to indicate non-interactive, otherwise tzdata dependency
+#               will always prompt for user input in block the execution.
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get install -y \
+    libglib2.0 \
+    libcairo2-dev
+
+#------------
+# PY_DEPENDENCIES
+ADD ./requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+#------------
+ADD templates templates
+ADD ./static  static
+ADD ./libs    libs
+
+# FILES_FOR_PARTICULAR_SERVICES
+ADD ./gf_analytics gf_analytics
+ADD ./gf_ml_worker gf_ml_worker
+
+# MAIN
+ADD ./gf_solo             gf_solo
+ADD ./config/gf_solo.yaml config/gf_solo.yaml
+
+# ENTRYPOINT ["gf_solo"]
+
+# C_LIBS - so that the libs can be loaded by linker/gf_solo
+ENV LD_LIBRARY_PATH=libs
+CMD ["/home/gf/gf_solo", "start", "service"]

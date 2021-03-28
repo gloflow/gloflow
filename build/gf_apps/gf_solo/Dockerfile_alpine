@@ -1,0 +1,32 @@
+FROM alpine:3.12.0
+
+RUN apk update
+RUN apk upgrade
+RUN apk add bash
+
+#------------
+# DIRS
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/config
+RUN mkdir -p /home/gf/data
+
+#------------
+# IMPORTANT!! - without ca-certificates when the fetcher runs a GET on the image url, 
+#               if its a https:// address, it will return an error
+#               "x509: failed to load system roots and no roots provided"
+RUN apk add ca-certificates
+
+#------------
+ADD ./templates /home/gf/templates
+ADD ./static    /home/gf/static
+
+
+# FILES_FOR_PARTICULAR_SERVICES
+ADD ./gf_analytics /home/gf/gf_analytics
+ADD ./gf_ml_worker /home/gf/gf_ml_worker
+
+# MAIN
+ADD ./gf_solo /home/gf/gf_solo
+
+ENTRYPOINT ["/home/gf/gf_solo"]
+CMD ["/home/gf/gf_solo", "start", "service"]

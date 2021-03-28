@@ -48,7 +48,7 @@ func runtime__get(p_config_path_str string,
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
-	config_name_str     := path.Base(p_config_path_str) // "gf_eth_monitor"
+	config_name_str     := path.Base(p_config_path_str) // "gf_solo"
 	
 	config, err := config__init(config_dir_path_str, config_name_str)
 	if err != nil {
@@ -59,7 +59,7 @@ func runtime__get(p_config_path_str string,
 
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor",
+		Service_name_str: "gf_solo",
 		Log_fun:          p_log_fun,
 
 		// SENTRY - enable it for error reporting
@@ -75,8 +75,8 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	// BASE
 	cmd__base := &cobra.Command{
-		Use:   "gf_eth_monitor",
-		Short: "gf_eth_monitor server",
+		Use:   "gf_solo",
+		Short: "gf_solo",
 		Long:  "",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
