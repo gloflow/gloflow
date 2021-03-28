@@ -11,7 +11,11 @@ edition = "2018"
 name = "gf_images_jobs_py"
 
 # "dylib" - compile .so lib (dynamic) for loading into Py VM
-crate-type = ["dylib"]
+crate-type =["dylib"]
+
+# "staticlib" - compile statically to include all the dependency libs
+#               for deployments into other Linux distros (Alpine, etc.)
+# crate-type = ["staticlib"] 
 
 #-------------------------------
 [dependencies]

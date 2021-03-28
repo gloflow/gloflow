@@ -19,7 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #![allow(non_snake_case)]
 
-extern crate libc;
+//-----------
+// extern crate libc;
+use std::os::raw::c_char;
+
+//-----------
 use std::ffi::CStr; // https://doc.rust-lang.org/1.0.0/std/ffi/struct.CString.html
 
 use std::str::FromStr;
@@ -37,9 +41,9 @@ mod gf_image;
 //-------------------------------------------------
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn c__run_job(p_job_name: *const libc::c_char,
-    p_img_source_file_path_str: *const libc::c_char,
-    p_img_target_file_path_str: *const libc::c_char) {
+pub extern "C" fn c__run_job(p_job_name: *const c_char, // *const libc::c_char,
+    p_img_source_file_path_str: *const c_char,   // *const libc::c_char,
+    p_img_target_file_path_str: *const c_char) { // *const libc::c_char) {
     
     //---------------------
     // INPUT
@@ -64,9 +68,9 @@ pub extern "C" fn c__run_job(p_job_name: *const libc::c_char,
 //-------------------------------------------------
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn c__apply_transforms(p_transforms_c_lst: Vec<*const libc::c_char>,
-    p_img_source_file_path_c_str: *const libc::c_char,
-    p_img_target_file_path_c_str: *const libc::c_char) {
+pub extern "C" fn c__apply_transforms(p_transforms_c_lst: Vec<*const c_char>, // Vec<*const libc::c_char>,
+    p_img_source_file_path_c_str: *const c_char,   // *const libc::c_char,
+    p_img_target_file_path_c_str: *const c_char) { // *const libc::c_char) {
 
     //---------------------
     // INPUT
@@ -104,8 +108,8 @@ pub extern "C" fn c__apply_transforms(p_transforms_c_lst: Vec<*const libc::c_cha
 //-------------------------------------------------
 #[no_mangle]
 #[allow(non_snake_case)]
-pub extern "C" fn c__create_collage(p_input_imgs_files_paths_c_lst: Vec<*const libc::c_char>,
-    p_output_img_file_path_c_str: *const libc::c_char) {
+pub extern "C" fn c__create_collage(p_input_imgs_files_paths_c_lst: Vec<*const c_char>, // Vec<*const libc::c_char>,
+    p_output_img_file_path_c_str: *const c_char) { // *const libc::c_char) {
 
     //---------------------
     // INPUT

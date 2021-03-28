@@ -25,7 +25,7 @@ crate-type = ["staticlib", "rlib"] # "dylib", "cdylib"]
 # DEPENDENCIES
 
 [dependencies]
-libc  = "0.2.2"
+# libc  = "0.2.2"
 image = "0.21.3"
 rand  = ""
 num   = "0.2.1"
@@ -43,11 +43,13 @@ palette = "0.5"
 openssl = { version = "0.10", features = ["vendored"] }
 
 #-------------------------------
-[build]
-
-# "linux-musl" - In order to statically link Linux binaries.
-#                By default, Rust will statically link all Rust code. However, if you 
-#                use the standard library, it will dynamically link to 
-#                the system's libc implementation. to get a 100% static binary MUSL is used.
-#                https://doc.rust-lang.org/edition-guide/rust-2018/platform-and-target-support/musl-support-for-fully-static-binaries.html
-target="x86_64-unknown-linux-musl"
+# [build]
+# 
+# # "linux-musl" - In order to statically link Linux binaries.
+# #                By default, Rust will statically link all Rust code. However, if you 
+# #                use the standard library, it will dynamically link to 
+# #                the system's libc implementation. to get a 100% static binary MUSL is used.
+# #                https://doc.rust-lang.org/edition-guide/rust-2018/platform-and-target-support/musl-support-for-fully-static-binaries.html
+# #
+# # "x86_64-unknown-linux-musl" - for 64-bit Linux.
+# target="x86_64-unknown-linux-musl"

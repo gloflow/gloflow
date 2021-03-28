@@ -9,30 +9,43 @@ RUN mkdir /home/gf
 # GIT - used by ./ops/utils/gf_build_changes.py to determine which apps changed.
 # SED - used by gf_builder to inject Git commit hash into Go code.
 
-# libglib2.0-dev - Rust build dependency
-# libcairo2-dev  - Rust build dependency - Cairo 2D drawing lib
+
 
 RUN apt-get update && \
     apt-get install -y \
     git \
     python3 \
     python3-pip \
-    nodejs \
-    npm \
     docker.io \
     sed \
     curl \
-    libglib2.0-dev \
-    libcairo2-dev \
-    zip \
-    libglib2.0-dev 
+    zip
 
+# libglib2.0-dev # Rust build dependency
+# libcairo2-dev  # Rust build dependency - Cairo 2D drawing lib
+
+# RUST_DEPENDENCIES
+RUN apt-get install -y \
+    libglib2.0-dev \
+    libcairo2-dev
+
+# PY_DEPENDENCIES
 RUN pip3 install \
     delegator.py \
     colored \
     beautifulsoup4 \
     requests \
     'fabric<2.0'
+
+# IMPORTANT!! - Rust compilation to MUSL target run musl-gcc for building
+#               some of the dependencies (open-ssl). so installing it here.
+RUN apt-get install -y musl-tools
+
+#-----------------------------
+# NODEJS_TOOLS
+RUN apt-get install -y \
+    nodejs \
+    npm
 
 RUN npm install -g typescript
 RUN npm install -g uglify-js
@@ -53,10 +66,11 @@ RUN rustup run nightly rustc --version
 RUN rustup default nightly
 
 
-# MUSL - used as a replacement for glibc in order to achieve 100% static linking of output binary.
+# MUSL - INSTALL_RUST_TARGET
+#        used as a replacement for glibc in order to achieve 100% static linking of output binary.
 #        we want libc compiled into the binary in order to deploy to targets
 #        dont have a libc compatible standard library (Alpine Linux, etc.).
-RUN rustup target add x86_64-unknown-linux-musl
+RUN rustup target add x86_64-unknown-linux-musl --toolchain=nightly
 
 #-----------------------------
 # PROTOCOL_BUFFERS_COMPILER - "protoc"
@@ -67,7 +81,10 @@ RUN unzip protoc-3.11.4-linux-x86_64.zip
 RUN rm protoc-3.11.4-linux-x86_64.zip
 RUN cp bin/protoc /usr/bin
 
-
-
 #-----------------------------
 # ENTRYPOINT ["python3", "/home/gf/build/gf_builder/gf_builder.py"]
+
+
+
+
+# RUN apt-get install -y libc6
