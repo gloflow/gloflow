@@ -1,0 +1,54 @@
+FROM alpine:3.12.0
+
+RUN apk update
+
+RUN apk add build-base # needed for Rust builds (GCC)
+RUN apk add curl
+
+# RUST_DEPENDENCIES
+# RUN apk add glib
+RUN apk add cairo-dev
+
+RUN apk add python3 \
+    py3-pip \
+    perl # used by some Rust dependencies for build scripts
+
+RUN pip3 install \
+    delegator.py \
+    colored \
+    beautifulsoup4 \
+    requests
+
+#-----------------------------
+# RUST
+# IMPORTANT!! - "-y" - passing it in at the end is for non-interactive installation, preventing
+#                      Rust installer from prompting the user for input (since we're in a container).
+
+RUN curl -sf -L https://static.rust-lang.org/rustup.sh | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo --version
+
+# RUST_NIGHTLY - needed by PyO3 package
+RUN rustup self update
+RUN rustup toolchain install nightly
+RUN rustup run nightly rustc --version
+RUN rustup default nightly
+
+# MUSL - INSTALL_RUST_TARGET
+#        used as a replacement for glibc in order to achieve 100% static linking of output binary.
+#        we want libc compiled into the binary in order to deploy to targets
+#        dont have a libc compatible standard library (Alpine Linux, etc.).
+RUN rustup target add x86_64-unknown-linux-musl --toolchain=nightly
+
+#-----------------------------
+# PROTOCOL_BUFFERS_COMPILER - "protoc"
+
+# RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.11.4/protoc-3.11.4-linux-x86_64.zip
+# RUN ls -al
+# RUN unzip protoc-3.11.4-linux-x86_64.zip
+# RUN rm protoc-3.11.4-linux-x86_64.zip
+# RUN cp bin/protoc /usr/bin
+
+RUN apk add protoc
+
+#-----------------------------

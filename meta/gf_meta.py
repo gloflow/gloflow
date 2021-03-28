@@ -89,7 +89,18 @@ def get():
                 "go_output_path_str":   "%s/../build/gf_apps/gf_solo/gf_solo"%(modd_str),
                 "service_name_str":     "gf_solo",
                 "service_base_dir_str": "%s/../build/gf_apps/gf_solo"%(modd_str),
+                "service_dockerfile_path_str": "%s/../build/gf_apps/gf_solo/Dockerfile_ubuntu"%(modd_str),
                 "copy_to_dir_lst":    [
+                    
+                    #------------------------
+                    # TENSORFLOW C_LIBS
+                    ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+                    ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+
+                    #------------------------
+                    # GF_IMAGES_JOBS
+                    
+                    ("%s/../rust/build/libgf_images_jobs.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
 
                     #------------------------
                     # GF_ML_WORKER
@@ -102,8 +113,7 @@ def get():
                     # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
                     # libtensorflow.so     - TensorFlow C lib
                     ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str),       "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
-                    ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+                    
 
                     #------------------------
                     # GF_ANALYTICS
@@ -148,7 +158,7 @@ def get():
                 "type_str":    "lib_rust",
                 "version_str": "latest",
                 "cargo_crate_specs_lst": [
-                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": True},
+                    {"dir_path_str": "%s/../rust/gf_images_jobs"%(modd_str), "static_bool": False}, # True},
                     {"dir_path_str": "%s/../rust/gf_images_jobs_py"%(modd_str)},
                 ]
             },

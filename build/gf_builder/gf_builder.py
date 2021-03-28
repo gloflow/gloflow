@@ -80,7 +80,7 @@ def main():
 	# BUILD
 	elif args_map["run"] == "build":
 
-		#IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
 		if not args_map["drone_commit_sha"] == None:
 			git_commit_hash_str = args_map["drone_commit_sha"]
 			paste_git_commit_hash(git_commit_hash_str)
@@ -89,10 +89,37 @@ def main():
 			p_static_bool=True)
 
 	#------------------------
+	# BUILD_GO
+	elif args_map["run"] == "build_go":
+
+		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+		if not args_map["drone_commit_sha"] == None:
+			git_commit_hash_str = args_map["drone_commit_sha"]
+			paste_git_commit_hash(git_commit_hash_str)
+
+		build_apps(changed_apps_files_map,
+			p_build_web_bool = False,
+			p_build_go_bool  = True,
+			p_static_bool    = True)
+
+	#------------------------
 	# BUILD_RUST
 	elif args_map["run"] == "build_rust":
 
 		build_rust()
+
+	#------------------------
+	# BUILD_WEB
+	elif args_map["run"] == "build_web":
+
+		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+		if not args_map["drone_commit_sha"] == None:
+			git_commit_hash_str = args_map["drone_commit_sha"]
+			paste_git_commit_hash(git_commit_hash_str)
+
+		build_apps(changed_apps_files_map,
+			p_build_web_bool = True,
+			p_build_go_bool  = False)
 
 	#------------------------
 	# BUILD_CONTAINERS
@@ -392,9 +419,16 @@ def build_rust():
 
 			cargo_crate_dir_path_str = cargo_crate_map["dir_path_str"]
 			assert os.path.dirname(cargo_crate_dir_path_str)
+			
+			# IMPORTANT!! - it can be specified on a per-crate basis if it should
+			#               be compiled statically or not.
+			#               for gf_images_jobs_py for example we specifically want to
+			#               build a dynamic lib (even in Alpine) for importing into the Py VM.
+			static_bool = cargo_crate_map.get("static_bool", False)
 
 			# RUN
-			gf_build_rust.run(cargo_crate_dir_path_str)
+			gf_build_rust.run(cargo_crate_dir_path_str, 
+				p_static_bool=static_bool)
 
 			# PREPARE_LIBS
 			gf_build_rust.prepare_libs(app_name_str,
@@ -404,7 +438,9 @@ def build_rust():
 #--------------------------------------------------
 # BUILD_APPS
 def build_apps(p_changed_apps_files_map,
-	p_static_bool=True):
+	p_build_web_bool = True,
+	p_build_go_bool  = True,
+	p_static_bool    = True):
 	assert isinstance(p_changed_apps_files_map, dict)
 
 	print("\n\n BUILD APPS ----------------------------------------------------- \n\n")
@@ -423,37 +459,39 @@ def build_apps(p_changed_apps_files_map,
 
 		#------------------------
 		# WEB
-		print("\n\nWEB--------\n\n")
-			
-		web_meta_map = gf_web_meta.get()
+		if p_build_web_bool:
+			print("\n\nWEB--------\n\n")
 
-		gf_web__build.build(apps_names_lst,
-			web_meta_map,
-			gf_log.log_fun)
+			web_meta_map = gf_web_meta.get()
+
+			gf_web__build.build(apps_names_lst,
+				web_meta_map,
+				gf_log.log_fun)
 		
 		#------------------------
 		# GO
-		for app_name_str in apps_names_lst:
+		if p_build_go_bool:
+			for app_name_str in apps_names_lst:
 
-			app_meta_map = build_meta_map[app_name_str]
+				app_meta_map = build_meta_map[app_name_str]
 
-			print("\n\nGO--------\n\n")
-			app_go_path_str        = app_meta_map["go_path_str"]
-			app_go_output_path_str = app_meta_map["go_output_path_str"]
+				print("\n\nGO--------\n\n")
+				app_go_path_str        = app_meta_map["go_path_str"]
+				app_go_output_path_str = app_meta_map["go_output_path_str"]
 
-			gf_build_go.run(app_name_str,
-				app_go_path_str,
-				app_go_output_path_str,
+				gf_build_go.run(app_name_str,
+					app_go_path_str,
+					app_go_output_path_str,
 
-				# IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
-				#               so all binary dependencies are to be statically linked into the output binary 
-				#               without depending on standard dynamic linking.
-				p_static_bool = p_static_bool, 
-				
-				# gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
-				# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
-				# to be marked as failed because of the non-zero exit code.
-				p_exit_on_fail_bool = True)
+					# IMPORTANT!! - binaries are packaged in Alpine Linux, which uses a different standard library then stdlib, 
+					#               so all binary dependencies are to be statically linked into the output binary 
+					#               without depending on standard dynamic linking.
+					p_static_bool = p_static_bool, 
+					
+					# gf_build.run_go() should exit if the "go build" CLI run returns with a non-zero exit code.
+					# gf_builder.py is meant to run in CI environments, and so we want the stage in which it runs 
+					# to be marked as failed because of the non-zero exit code.
+					p_exit_on_fail_bool = True)
 
 		#------------------------
 

@@ -153,19 +153,22 @@ def main():
 	# BUILD_GO
 	if run_str == "build" or run_str == "build_go":
 		
-		#build using dynamic linking, its quicker while in dev.
-		go_build_app_in_cont(False)
+		build_outof_cont_bool = args_map["build_outof_cont"]
+		if build_outof_cont_bool:
+			go_build_app(False)
+		else:
+			go_build_app_in_cont(False)
 
 	#-------------
 	# BUILD_RUST
 	elif run_str == "build_rust":
 		
-		build_in_container_bool = args_map["build_in_cont"]
+		build_outof_cont_bool = args_map["build_outof_cont"]
 
-		if build_in_container_bool:
-			rust_build_apps_in_cont()
-		else:
+		if build_outof_cont_bool:
 			rust_build_apps()
+		else:
+			rust_build_apps_in_cont()
 
 	#-------------
 	# BUILD_WEB
@@ -185,6 +188,7 @@ def main():
 		app_build_meta_map = build_meta_map[app_name_str]
 
 		if app_build_meta_map["type_str"] == "main_go":
+			
 			# STATIC_LINKING
 			# build using static linking, containers are based on Alpine linux, 
 			# which has a minimal stdlib and other libraries, so we want to compile 
@@ -341,9 +345,9 @@ def parse_args():
 		help =    '''name of the dockerhub user to target''')
 
 	#-------------
-	# BUILD_IN_CONT
-	arg_parser.add_argument("-build_in_cont", action = "store_true", default=True,
-		help = "build inside of a gf_builder container")
+	# BUILD_OUTOF_CONT
+	arg_parser.add_argument("-build_outof_cont", action = "store_true", default=False,
+		help = "build outside of a gf_builder container")
 
 	#----------------------------
 	# RUN_WITH_SUDO - boolean flag
@@ -364,7 +368,7 @@ def parse_args():
 		"aws_creds":      args_namespace.aws_creds,
 		"dockerhub_user": args_namespace.dockerhub_user,
 		"docker_sudo":    args_namespace.docker_sudo,
-		"build_in_cont":  args_namespace.build_in_cont,
+		"build_outof_cont": args_namespace.build_outof_cont,
 	}
 	return args_map
 

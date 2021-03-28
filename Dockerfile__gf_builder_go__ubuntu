@@ -1,0 +1,35 @@
+FROM ubuntu:20.04
+
+RUN mkdir /home/gf
+
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    python3-pip \
+    wget
+
+# PY_DEPENDENCIES
+RUN pip3 install \
+    delegator.py \
+    colored \
+    beautifulsoup4 \
+    requests \
+    boto3
+
+# RUST_DEPENDENCIES
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
+    # libglib2.0-dev \
+    libcairo2-dev
+    
+#-----------------------------
+# GO
+RUN wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.2.linux-amd64.tar.gz
+
+# has to be added this way to PATH, to work in a Dockerfile
+ENV PATH=$PATH:/usr/local/go/bin
+
+RUN go version
+
+#-----------------------------
+# ENTRYPOINT ["python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_go"]

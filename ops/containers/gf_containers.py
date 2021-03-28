@@ -243,6 +243,7 @@ def prepare_web_files(p_pages_map,
 	assert os.path.dirname(p_service_base_dir_str)
 
 	for pg_name_str, pg_info_map in p_pages_map.items():
+		print(f"\n======== {fg('green')}{'%s'%(pg_name_str)}{attr(0)} --------------------------------")
 		assert isinstance(pg_info_map, dict)
 		assert "build_dir_str" in pg_info_map.keys()
 		assert os.path.isdir(pg_info_map["build_dir_str"])
@@ -301,5 +302,9 @@ def get_service_dockerfile(p_app_build_meta_map):
 	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
 	assert os.path.isdir(service_base_dir_str)
 
-	service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
+	if "service_dockerfile_path_str" in p_app_build_meta_map.keys():
+		service_dockerfile_path_str = p_app_build_meta_map["service_dockerfile_path_str"]
+	else:
+		service_dockerfile_path_str = "%s/Dockerfile"%(service_base_dir_str)
+
 	return service_dockerfile_path_str

@@ -1,0 +1,37 @@
+FROM golang:1.16-alpine3.12
+
+
+
+
+
+RUN apk update
+
+# easiest method of running any graphical glibc program on Alpine
+RUN apk add flatpak
+
+RUN apk add build-base # needed for Rust builds (GCC)
+
+
+
+
+# # RUST_DEPENDENCIES
+RUN apk add glib-dev
+RUN apk add cairo-dev
+
+
+
+RUN apk add python3 \
+    py3-pip
+
+RUN pip3 install \
+    delegator.py \
+    colored \
+    beautifulsoup4 \
+    requests
+
+
+
+RUN apk add glib
+
+
+RUN go version

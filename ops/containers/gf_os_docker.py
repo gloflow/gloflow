@@ -23,7 +23,6 @@ import subprocess
 import base64
 
 import delegator
-import fabric # fabric.api
 
 sys.path.append("%s/../utils"%(cwd_str))
 import gf_cli_utils
@@ -220,7 +219,7 @@ def remove_by_name_remote(p_container_name_str,
 		sudo_str = "sudo"
 
 	cmd_str       = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
-	r             = p_fab_conn.run(cmd_str) # fabric.api.run(cmd_str)
+	r             = p_fab_conn.run(cmd_str)
 	exit_code_int = r.return_code
 
 	stdout_and_stderr_str = r.stdout+r.stderr
@@ -480,6 +479,8 @@ def login__remote(p_docker_user_str,
 	assert isinstance(p_docker_user_str, str)
 	assert isinstance(p_docker_pass_str, str)
 
+	import fabric
+	
 	#---------------------------
 	# UPLOAD_PASS_FILE
 
