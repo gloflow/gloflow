@@ -75,7 +75,7 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 			browser_job_result.Browser__id_f = m["f"].(float64)
 		}
 
-		err := p_runtime_sys.Mongodb_coll.Insert(browser_job_result)
+		err := p_runtime_sys.Mongo_coll.Insert(browser_job_result)
 		if err != nil {
 
 			gf_err := gf_core.Mongo__handle_error("failed to insert a Browser__job_run_result in mongodb",

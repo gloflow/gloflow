@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"net/http"
+	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -191,14 +192,28 @@ func Stat_run__create(p_stat_name_str string,
 		Result_data_map:    p_results_data_lst,
 	}
 
-	err := p_runtime_sys.Mongo_coll.Insert(run)
+	ctx := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	gf_err := gf_core.Mongo__insert(run,
+		coll_name_str,
+		map[string]interface{}{
+			"stat_name_str":      p_stat_name_str,
+			"caller_err_msg_str": "failed to persist a stat_run",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*err := p_runtime_sys.Mongo_coll.Insert(run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to persist a stat_run",
 			"mongodb_insert_error",
 			map[string]interface{}{"stat_name_str": p_stat_name_str,},
 			err, "gf_stats_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 
 	return nil
 }

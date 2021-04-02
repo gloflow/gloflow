@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -174,7 +175,7 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 
 	p_runtime_sys.Log_fun("INFO", "DB INSERT - img_upload_info")
 	
-	err := p_runtime_sys.Mongodb_db.C("gf_images_upload_info").Insert(p_upload_info)
+	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Insert(p_upload_info)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
 			"mongodb_insert_error",
@@ -190,7 +191,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.Gf_error) {
 
 	var upload_info Gf_image_upload_info
-	err := p_runtime_sys.Mongodb_db.C("gf_images_upload_info").Find(bson.M{
+	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Find(bson.M{
 		"t":                      "img_upload_info",
 		"upload_gf_image_id_str": p_upload_gf_image_id_str,
 	}).One(&upload_info)

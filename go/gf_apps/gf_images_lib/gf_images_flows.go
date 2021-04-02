@@ -124,6 +124,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 	if gf_err != nil {
 		return nil, gf_err
 	}
+
 	//------------------
 	return pages_lst, nil
 }
@@ -156,7 +157,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		}
 
 		// ADD!! - log this error
-		db_err := p_runtime_sys.Mongodb_coll.Insert(check)
+		db_err := p_runtime_sys.Mongo_coll.Insert(check)
 		if db_err != nil {
 			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
 				"mongodb_insert_error",
@@ -226,7 +227,7 @@ func flows__create(p_images_flow_name_str string,
 		Creation_unix_time_f: creation_unix_time_f,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Insert(*flow)
+	err := p_runtime_sys.Mongo_coll.Insert(*flow)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
 			"mongodb_insert_error",

@@ -21,6 +21,8 @@ package gf_images_jobs
 
 import (
 	"fmt"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -82,7 +84,8 @@ func job_error__persist(p_job_id_str string,
 		Image_source_url_str: p_image_source_url_str,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img_running_job",
 			"id_str": p_job_id_str,
 		},

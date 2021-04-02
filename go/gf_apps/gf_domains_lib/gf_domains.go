@@ -166,16 +166,35 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// white  := color.New(color.FgWhite).SprintFunc()
 
+	ctx := context.Background()
+	
 	i := 0
 	for _, d := range p_domains_map {
 
 		// p_runtime_sys.Log_fun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
 
-		//IMPORTANT!! -  finds a single document matching the provided selector document 
-		//               and modifies it according to the update document. If no document 
-		//               matching the selector is found, the update document is applied 
-		//               to the selector document and the result is inserted in the collection
-		_, err := p_runtime_sys.Mongo_coll.Upsert(bson.M{
+		// IMPORTANT!! -  finds a single document matching the provided selector document 
+		//                and modifies it according to the update document. If no document 
+		//                matching the selector is found, the update document is applied 
+		//                to the selector document and the result is inserted in the collection
+
+		// UPSERT
+		query := bson.M{
+			"t":        "domain",
+			"name_str": d.Name_str,
+		}
+		gf_err := gf_core.Mongo__upsert(query,
+			d,
+			map[string]interface{}{
+				"domain_name_str":    d.Name_str,
+				"caller_err_msg_str": "failed to persist a domain in mongodb",},
+			p_runtime_sys.Mongo_coll,
+			ctx, p_runtime_sys)
+		if gf_err != nil {
+			return gf_err
+		}
+		
+		/*_, err := p_runtime_sys.Mongo_coll.Upsert(bson.M{
 			"t":        "domain",
 			"name_str": d.Name_str,
 		}, d)
@@ -185,7 +204,8 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 				map[string]interface{}{"domain_name_str":d.Name_str,},
 				err, "gf_domains_lib", p_runtime_sys)
 			return gf_err
-		}
+		}*/
+
 		i+=1
 	}
 	return nil

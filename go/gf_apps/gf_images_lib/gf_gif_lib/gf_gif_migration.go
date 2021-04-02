@@ -190,11 +190,11 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 			cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
+				_ = gf_core.Mongo__handle_error("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
 					"mongodb_aggregation_error",
 					nil,
 					err, "gf_gif_lib", p_runtime_sys)
-				return nil, gf_err
+				continue
 			}
 			defer cursor.Close(ctx)
 			
@@ -211,11 +211,11 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			var old_gif Gf_gif
 			err = cursor.Decode(&old_gif)
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
+				_ = gf_core.Mongo__handle_error("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
 					"mongodb_cursor_decode",
 					nil,
 					err, "gf_gif_lib", p_runtime_sys)
-				return nil, gf_err
+				continue
 			}
 
 			//-----------------------
@@ -361,11 +361,11 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 
 			cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
+				_ = gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
 					"mongodb_aggregation_error",
 					nil,
 					err, "gf_gif_lib", p_runtime_sys)
-				return nil, gf_err
+				continue
 			}
 			defer cursor.Close(ctx)
 
@@ -382,23 +382,32 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			var img gf_images_utils.Gf_image
 			err = cursor.Decode(&img)
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
+				_ = gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
 					"mongodb_cursor_decode",
 					nil,
 					err, "gf_gif_lib", p_runtime_sys)
-				return nil, gf_err
+				continue
 			}
 
 			//---------------------
 
 			var gif Gf_gif
+			err = p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+				"t":                   "gif",
+				"origin_url_str":      img.Origin_url_str,
+				"title_str":           bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
+				"origin_page_url_str": bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
+				"tags_lst":            bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
+			}).Decode(&gif)
+				
+			/*var gif Gf_gif
 			err = p_runtime_sys.Mongo_coll.Find(bson.M{
 					"t":                   "gif",
 					"origin_url_str":      img.Origin_url_str,
 					"title_str":           bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
 					"origin_page_url_str": bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
 					"tags_lst":            bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
-				}).One(&gif)
+				}).One(&gif)*/
 
 			// IMPORTANT!! - a "gif" object was not found in the DB for an "img"
 			//               with "gif" format. so a new gif is created
@@ -481,13 +490,23 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	//----------------
 	// UPDATE_GIF_TO_OLD_CREATION_TIME - so that when sorted lists of GIFs from the DB are fetched
 	//                                   these newly created GIFs are returned in proper positon.
-	err := p_runtime_sys.Mongo_coll.Update(bson.M{
+
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+			"t":      "gif",
+			"id_str": new_gif.Id_str,
+		},
+		bson.M{
+			"$set": bson.M{"creation_unix_time_f": p_old_gif.Creation_unix_time_f},
+		})
+
+	/*err := p_runtime_sys.Mongo_coll.Update(bson.M{
 			"t":      "gif",
 			"id_str": new_gif.Id_str,
 		},
 		bson.M{
 			"$set": bson.M{"creation_unix_time_f":p_old_gif.Creation_unix_time_f},
-		})
+		})*/
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a new migrated GIF with an old creation_unix_time_f (of the old GIF) in mongodb",
@@ -516,8 +535,12 @@ func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_utils.Gf_image_id
 	// IMPORTANT!! - GIF is not linked to a particular GF_Image
 	if p_gif__gf_image_id_str != "" {
 
+		ctx := context.Background()
 		var gf_img gf_images_utils.Gf_image
-		err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
+		err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).Decode(&gf_img)
+
+		// err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
+		
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to find images with GIF id_str",
 				"mongodb_find_error",

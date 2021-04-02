@@ -23,7 +23,9 @@ package gf_images_jobs
 import (
 	"fmt"
 	"time"
+	"context"
 	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -102,13 +104,13 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 
 	running_job := &Gf_running_job{
-		Id_str:                       job_id_str,
-		T_str:                        "img_running_job",
-		Client_type_str:              p_client_type_str,
-		Status_str:                   "running",
-		Start_time_f:                 job_start_time_f,
+		Id_str:          job_id_str,
+		T_str:           "img_running_job",
+		Client_type_str: p_client_type_str,
+		Status_str:      "running",
+		Start_time_f:    job_start_time_f,
+		job_updates_ch:  p_job_updates_ch,
 		// Images_extern_to_process_lst: p_images_extern_to_process_lst,
-		job_updates_ch:               p_job_updates_ch,
 	}
 
 	// DB
@@ -151,7 +153,6 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
 				case "start_job_transform_imgs":
 
-					
 					// RUST
 					// FIX!! - this just runs Rust job code for testing.
 					//         pass in proper job_cmd argument.
@@ -291,7 +292,23 @@ func db__jobs_mngr__create_running_job(p_running_job *Gf_running_job,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 
-	db_err := p_runtime_sys.Mongodb_coll.Insert(p_running_job)
+	ctx           := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	gf_err        := gf_core.Mongo__insert(p_running_job,
+		coll_name_str,
+		map[string]interface{}{
+			"running_job_id_str": p_running_job.Id_str,
+			"client_type_str":    p_running_job.Client_type_str,
+			"caller_err_msg_str": "failed to create a Running_job record in the DB",
+		},
+		ctx,
+		p_runtime_sys)
+	
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*db_err := p_runtime_sys.Mongo_coll.Insert(p_running_job)
 	if db_err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
 			"mongodb_insert_error",
@@ -301,7 +318,8 @@ func db__jobs_mngr__create_running_job(p_running_job *Gf_running_job,
 			},
 			db_err, "gf_images_jobs", p_runtime_sys)
 		return gf_err
-	}
+	}*/
+
 	return nil
 }
 
@@ -317,13 +335,15 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 		panic(fmt.Sprintf("job status value thats not allowed - %s", p_status_str))
 	}
 
+	ctx := context.Background()
+
 	job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-	err            := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	_, err         := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img_running_job",
 			"id_str": p_job_id_str,
 		},
 		bson.M{
-			"$set":bson.M{
+			"$set": bson.M{
 				"status_str": p_status_str,
 				"end_time_f": job_end_time_f,
 			},

@@ -116,13 +116,22 @@ func gif_db__delete(p_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
 
-	err := p_runtime_sys.Mongo_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": p_id_str,
 		},
 		bson.M{
 			"$set": bson.M{"deleted_bool": true,},
 		})
+		
+	/*err := p_runtime_sys.Mongo_coll.Update(bson.M{
+			"t":      "gif",
+			"id_str": p_id_str,
+		},
+		bson.M{
+			"$set": bson.M{"deleted_bool": true,},
+		})*/
 	
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF as deleted in mongodb",
@@ -139,7 +148,20 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_img_id()")
 
+
+	ctx := context.Background()
+
 	var gif Gf_gif
+	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+			"t":                   "gif",
+			"deleted_bool":        false,
+			"gf_image_id_str":     p_gf_img_id_str,
+			"title_str":           bson.M{"$exists": true,},
+			"origin_page_url_str": bson.M{"$exists": true,},
+			"tags_lst":            bson.M{"$exists": true,},
+		}).Decode(&gif)
+
+	/*var gif Gf_gif
 	err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
@@ -147,7 +169,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 			"title_str":           bson.M{"$exists":true,},
 			"origin_page_url_str": bson.M{"$exists":true,},
 			"tags_lst":            bson.M{"$exists":true,},
-		}).One(&gif)
+		}).One(&gif)*/
 
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
@@ -177,7 +199,19 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
 
+	ctx := context.Background()
+
 	var gif Gf_gif
+	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+			"t":                   "gif",
+			"deleted_bool":        false,
+			"origin_url_str":      p_origin_url_str,
+			"title_str":           bson.M{"$exists": true,},
+			"origin_page_url_str": bson.M{"$exists": true,},
+			"tags_lst":            bson.M{"$exists": true,},
+		}).Decode(&gif)
+
+	/*var gif Gf_gif
 	err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
@@ -185,7 +219,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 			"title_str":           bson.M{"$exists":true,},
 			"origin_page_url_str": bson.M{"$exists":true,},
 			"tags_lst":            bson.M{"$exists":true,},
-		}).One(&gif)
+		}).One(&gif)*/
 
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
@@ -239,6 +273,10 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 		ctx,
 		p_runtime_sys)
 
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
 	gifs_lst := []Gf_gif{}
 	for cursor.Next(ctx) {
 
@@ -287,11 +325,19 @@ func gif_db__update_image_id(p_gif_id_str string,
 	p_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
-	err := p_runtime_sys.Mongo_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": p_gif_id_str,
 		},
 		bson.M{"$set": bson.M{"gf_image_id_str": p_image_id_str,},})
+
+	/*err := p_runtime_sys.Mongo_coll.Update(bson.M{
+			"t":      "gif",
+			"id_str": p_gif_id_str,
+		},
+		bson.M{"$set": bson.M{"gf_image_id_str": p_image_id_str,},})*/
+
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to mark a GIF's gf_image_id_str in mongodb",
 			"mongodb_update_error",
