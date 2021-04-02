@@ -27,14 +27,15 @@ import (
 	"encoding/hex"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
 
 //--------------------------------------------------
 type Gf_crawler_page_outgoing_link struct {
-	Id                    bson.ObjectId `bson:"_id,omitempty"`
+	Id                    primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                string        `bson:"id_str"`
 	T_str                 string        `bson:"t"`                    //"crawler_page_outgoing_link"
 	Creation_unix_time_f  float64       `bson:"creation_unix_time_f"`
@@ -45,8 +46,8 @@ type Gf_crawler_page_outgoing_link struct {
 	Origin_url_str        string        `bson:"origin_url_str"`       //page url from whos html this element was extracted
 	Origin_url_domain_str string        `bson:"origin_url_domain_str"`
 
-	//IMPORTANT!! - this is a hash of the . it 
-	Hash_str              string        `bson:"hash_str"`
+	// IMPORTANT!! - this is a hash of the . it 
+	Hash_str string `bson:"hash_str"`
 
 
 	Valid_for_crawl_bool  bool          `bson:"valid_for_crawl_bool"`  //if the link should be crawled, or if it should be ignored
@@ -54,15 +55,18 @@ type Gf_crawler_page_outgoing_link struct {
 	Fetched_bool          bool          `bson:"fetched_bool"`          //indicator if the link has been fetched (its html downloaded and parsed)
 	Fetch_last_id_str     string        `bson:"fetch_last_id_str"`
 	Fetch_last_time_f     float64       `bson:"fetch_last_time_f"`
+
 	//-------------------
-	//IMPORTANT!! - indicates if this link hasis currently being processed by some 
-	//              crawler master/worker in the cluster
+	// IMPORTANT!! - indicates if this link hasis currently being processed by some 
+	//               crawler master/worker in the cluster
 	Import__in_progress_bool bool       `bson:"import__in_progress_bool"`
 	Import__start_time_f     float64    `bson:"import__start_time_f"` //when has the "in_progress" flag been set. for detecting interrupted/incomplete imports
+	
 	//-------------------
-	//IMPORTANT!! - last error that occured/interupted processing of this link
+	// IMPORTANT!! - last error that occured/interupted processing of this link
 	Error_type_str string               `bson:"error_type_str,omitempty"`
 	Error_id_str   string               `bson:"error_id_str,omitempty"`
+
 	//-------------------
 }
 
@@ -74,14 +78,14 @@ func link__create(p_url_str string,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
 
 	//-------------
-	//DOMAIN
+	// DOMAIN
 	domain_str, origin_url_domain_str, gf_err := gf_crawl_utils.Get_domain(p_url_str, p_origin_url_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 	//-------------
-	//COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
-	//                  and complete them to get the full url
+	// COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
+	//                   and complete them to get the full url
 	
 	complete_a_href_str, gf_err := gf_crawl_utils.Complete_url(p_url_str, domain_str, p_runtime_sys)
 	if gf_err != nil {
@@ -93,14 +97,15 @@ func link__create(p_url_str string,
 	id_str               := fmt.Sprintf("outgoing_link:%f", creation_unix_time_f)
 
 	//-------------
-	//HASH
-	//IMPORTANT!! - this hash uniquely identifies links going to the same target URL that were discovered on the same origin page URL. 
-	//              if a particular origin page has several links in it that point to the same target URL, then all those links
-	//              will have the same hash (which can be used for efficient queries or grouping).
-	hash        := md5.New()
+	// HASH
+	// IMPORTANT!! - this hash uniquely identifies links going to the same target URL that were discovered on the same origin page URL. 
+	//               if a particular origin page has several links in it that point to the same target URL, then all those links
+	//               will have the same hash (which can be used for efficient queries or grouping).
+	hash := md5.New()
 	hash.Write([]byte(p_origin_url_str))
 	hash.Write([]byte(p_url_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
+
 	//-------------
 
 	link__valid_for_crawl_bool := link__verify_for_crawl(p_url_str, domain_str, p_runtime_sys)
@@ -152,25 +157,29 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 		if a_href_str == "" {
 			return
 		}
+
 		//-------------
-		//IMPORTANT!! - links on some pages only contain the protocol specifier
+		// IMPORTANT!! - links on some pages only contain the protocol specifier
 		if a_href_str == "http://" {
 			return
 		}
+
 		//-------------
-		//"#" in html <a> tags is an anchor for a section of the page itself, scrolling the user to it
-		//so it doesnt represent a new page itself and should not be persisted/used
+		// "#" in html <a> tags is an anchor for a section of the page itself, scrolling the user to it
+		// so it doesnt represent a new page itself and should not be persisted/used
 		if strings.HasPrefix(a_href_str,"#") {
 			return
 		}
+
 		//-------------
-		//IMPORTANT!! - some sites have this javascript string as the a href value, 
-		//              and it indicates to do nothing, but still look like a link
+		// IMPORTANT!! - some sites have this javascript string as the a href value, 
+		//               and it indicates to do nothing, but still look like a link
 		if strings.Contains(a_href_str,"javascript:void(0)") {
 			return
 		}
+
 		//-------------
-		//CREATE_LINK
+		// CREATE_LINK
 
 		link,gf_err := link__create(a_href_str,
 			origin_url_str,
@@ -184,12 +193,14 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 				gf_err, p_runtime, p_runtime_sys)
 			return
 		}
+
 		//-------------
 
 		crawled_links_lst = append(crawled_links_lst, link)
 	})
+
 	//--------------
-	//STAGE - PERSIST ALL LINKS
+	// STAGE - PERSIST ALL LINKS
 	for _, link := range crawled_links_lst {
 
 		gf_err := link__db_create(link, p_runtime_sys)
@@ -201,6 +212,7 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 			return
 		}
 	}
+
 	//--------------
 }
 
@@ -208,15 +220,15 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 func link__verify_for_crawl(p_url_str string,
 	p_domain_str  string,
 	p_runtime_sys *gf_core.Runtime_sys) bool {
-	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
+	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
 
 	blacklisted_domains_map := get_domains_blacklist(p_runtime_sys)
 
-	//dont crawl these mainstream sites
+	// dont crawl these mainstream sites
 	if val_bool,ok := blacklisted_domains_map[p_domain_str]; ok {
 		return val_bool
 	}
 
-	//unknown domains are whitelisted for crawling
+	// unknown domains are whitelisted for crawling
 	return true
 }

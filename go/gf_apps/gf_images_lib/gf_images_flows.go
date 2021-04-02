@@ -24,7 +24,8 @@ import (
 	"time"
 	"strconv"
 	"net/http"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
@@ -35,7 +36,7 @@ import (
 //               over time adds images to it... 
 
 type Images_flow struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
 	T_str                string        `bson:"t"`
 	Creation_unix_time_f float64       `bson:"creation_unix_time_f"`
@@ -43,7 +44,7 @@ type Images_flow struct {
 }
 
 type Image_exists__check struct {
-	Id                         bson.ObjectId `bson:"_id,omitempty"`
+	Id                         primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`
 	Creation_unix_time_f       float64       `bson:"creation_unix_time_f"`

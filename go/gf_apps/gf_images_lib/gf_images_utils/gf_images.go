@@ -21,14 +21,15 @@ package gf_images_utils
 
 import (
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 type Gf_image struct {
 
-	Id                   bson.ObjectId `json:"-"                    bson:"_id,omitempty"`
+	Id                  primitive.ObjectID `json:"-"                    bson:"_id,omitempty"`
 	Id_str               Gf_image_id   `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
@@ -60,17 +61,21 @@ type Gf_image struct {
 	Thumbnail_small_url_str  string `json:"thumbnail_small_url_str"  bson:"thumbnail_small_url_str"`
 	Thumbnail_medium_url_str string `json:"thumbnail_medium_url_str" bson:"thumbnail_medium_url_str"`
 	Thumbnail_large_url_str  string `json:"thumbnail_large_url_str"  bson:"thumbnail_large_url_str"`
+	
 	//---------------
 	Format_str string `json:"format_str" bson:"format_str"` // "jpeg"|"png"|"gif"
 	Width_int  int    `json:"width_str"  bson:"width_int"`
 	Height_int int    `json:"height_str" bson:"height_int"`
+
 	//---------------
 	// COLORS
 	Dominant_color_hex_str string `json:"dominant_color_hex_str"`
 	Pallete_str            string `json:"pallete_str"`
+
 	//---------------
 	// TAGS
 	Tags_lst []string `json:"tags_lst" bson:"tags_lst"`
+
 	//---------------
 
 	// DEPRECATED!! - all images have the flows_names_lst member now, so flow_name_str can be removed both here from the 
@@ -130,11 +135,11 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 
 	//----------------------------------
 	// DB PERSIST
-
 	db_gf_err := DB__put_image(image, p_runtime_sys)
 	if db_gf_err != nil {
 		return nil, db_gf_err
 	}
+
 	//----------------------------------
 
 	return image,nil

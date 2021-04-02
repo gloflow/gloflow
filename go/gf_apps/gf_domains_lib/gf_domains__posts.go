@@ -22,7 +22,10 @@ package gf_domains_lib
 import (
 	// "fmt"
 	"net/url"
-	"github.com/globalsign/mgo/bson"
+	"context"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	// "github.com/globalsign/mgo/bson"
 	// "github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -91,11 +94,13 @@ import (
 	"main_image_thumbnail_medium_url_str" : null,
 	"t" : "post"
 }*/
+
 //---------------------------------------------------
 type Gf_domain_posts struct {
 	Name_str  string `bson:"name_str"`
 	Count_int int    `bson:"count_int"`
 }
+
 //---------------------------------------------------
 func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_posts, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
@@ -104,7 +109,43 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
-	pipe := p_runtime_sys.Mongodb_coll.Pipe([]bson.M{
+
+
+	ctx := context.Background()
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.M{"t": "post"}},
+		},
+		{
+			// IMPORTANT!! - for each document create a new one that only contains the "post_elements_lst"
+			//               field, since this is where the url string is contained, in the post_element
+			//               of type 'link'
+			{"$project", bson.M{
+				"_id":               false, //suppression of the "_id" field
+				"post_elements_lst": "$post_elements_lst",
+			}},
+		},
+		{
+			// ATTENTION!! - potentially creates a large number of docs. for large amounts of original docs
+			//               with large post_elements_lst members, this may overflow memory.
+			//               figure out how to horizontally partition this op. 
+			// 
+			// create as many new docs as there are post_elements in the current doc,
+			// where the new docs contain all the fields of the original source doc.
+			{"$unwind", "$post_elements_lst"},
+		},
+		{
+			{"$match", bson.M{"post_elements_lst.type_str": "link"}},
+		},
+		{
+			{"$project", bson.M{
+				"_id":                 false, // suppression of the "_id" field
+				"post_extern_url_str": "$post_elements_lst.extern_url_str",
+			}},
+		},
+	}
+
+	/*pipe := p_runtime_sys.Mongo_coll.Pipe([]bson.M{
 
 		bson.M{"$match": bson.M{"t": "post",},},
 
@@ -134,13 +175,24 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 				"post_extern_url_str": "$post_elements_lst.extern_url_str",
 			},
 		},
-	})
+	})*/
 	
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	if err != nil {
+
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_domains_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
 	type Posts_extern_urls_result struct {
 		Post_extern_url_str string `bson:"post_extern_url_str"`
 	}
 
-	results_lst := []Posts_extern_urls_result{}
+	/*results_lst := []Posts_extern_urls_result{}
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
@@ -148,9 +200,26 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 			"mongodb_aggregation_error",
 			nil, err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err
+	}*/
+	
+	results_lst := []Posts_extern_urls_result{}
+	for cursor.Next(ctx) {
+
+		var r Posts_extern_urls_result
+		err := cursor.Decode(&r)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_domains_lib", p_runtime_sys)
+			return nil, gf_err
+		}
+	
+		results_lst = append(results_lst, r)
 	}
+
 	//---------------
-	//IMPORTANT!! - application level join. move this to Db with the apporpriate "domain_str" field
+	// IMPORTANT!! - application level join. move this to Db with the apporpriate "domain_str" field
 
 	parsed_domains_map := map[string]int{}
 	for _,r := range results_lst {
@@ -168,6 +237,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 			parsed_domains_map[domain_str] = 1
 		}
 	}
+
 	//---------------
 	domain_posts_lst := []Gf_domain_posts{}
 	for domain_str, count_int := range parsed_domains_map {

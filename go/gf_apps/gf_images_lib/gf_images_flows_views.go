@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
+
 //-------------------------------------------------
 func flows__render_initial_page(p_flow_name_str string,
 	p_initial_pages_num_int  int, //6
@@ -38,21 +39,21 @@ func flows__render_initial_page(p_flow_name_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
-	//GET_TEMPLATE_DATA
+	// GET_TEMPLATE_DATA
 
 	pages_lst := [][]*gf_images_utils.Gf_image{}
 
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
 		start_position_int := i*p_page_size_int
-		//int end_position_int   = start_position_int+p_page_size_int;
+		// int end_position_int   = start_position_int+p_page_size_int;
 
 		p_runtime_sys.Log_fun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
 		//------------
-		//DB GET PAGE
+		// DB GET PAGE
 
-		//initial page might be larger then subsequent pages, that are requested 
-		//dynamically by the front-end
+		// initial page might be larger then subsequent pages, that are requested 
+		// dynamically by the front-end
 		page_lst, gf_err := flows_db__get_page(p_flow_name_str, //"general", //p_flow_name_str
 			start_position_int, //p_cursor_start_position_int
 			p_page_size_int,    //p_elements_num_int
@@ -61,10 +62,12 @@ func flows__render_initial_page(p_flow_name_str string,
 		if gf_err != nil {
 			return gf_err
 		}
+
 		//------------
 
 		pages_lst = append(pages_lst, page_lst)
 	}
+
 	//---------------------
 	gf_err := flows__render_template(pages_lst, p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
 	if gf_err != nil {
@@ -73,6 +76,7 @@ func flows__render_initial_page(p_flow_name_str string,
 
 	return nil
 }
+
 //-------------------------------------------------
 func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //list-of-lists
 	p_tmpl                   *template.Template,

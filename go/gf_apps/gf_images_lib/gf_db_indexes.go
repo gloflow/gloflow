@@ -24,7 +24,7 @@ import (
 )
 
 //--------------------------------------------------
-func db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
+func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	indexes_keys_lst := [][]string{
 		[]string{"t", }, //all stat queries first match on "t"
@@ -40,6 +40,6 @@ func db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
 		[]string{"t", "flows_names_lst", "origin_url_str"},
 	}
 	
-	gf_errs_lst := gf_core.Mongo__ensure_index(indexes_keys_lst, "data_symphony", p_runtime_sys)
-	return gf_errs_lst
+	gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "data_symphony", p_runtime_sys)
+	return gf_err
 }

@@ -23,7 +23,10 @@ import (
 	"fmt"
 	"time"
 	"net/url"
-	"github.com/globalsign/mgo/bson"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -36,7 +39,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_img_height_int            int,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
-	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
+	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
 	img_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
@@ -60,6 +63,7 @@ func gif_db__create(p_image_source_url_str string,
 			err, "gf_gif_lib", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//--------------
 
 	gif := &Gf_gif{
@@ -80,7 +84,19 @@ func gif_db__create(p_image_source_url_str string,
 		Tags_lst:                   []string{},
 	}
 
-	err = p_runtime_sys.Mongodb_coll.Insert(gif)
+
+	ctx           := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	gf_err         = gf_core.Mongo__insert(gif,
+		coll_name_str,
+		map[string]interface{}{
+			"image_source_url_str":      p_image_source_url_str,
+			"image_origin_page_url_str": p_image_origin_page_url_str,
+		},
+		ctx,
+		p_runtime_sys)
+
+	/*err = p_runtime_sys.Mongo_coll.Insert(gif)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a GIF in mongodb",
 			"mongodb_insert_error",
@@ -88,9 +104,10 @@ func gif_db__create(p_image_source_url_str string,
 				"image_source_url_str":      p_image_source_url_str,
 				"image_origin_page_url_str": p_image_origin_page_url_str,
 			},
-			err,"gf_gif_lib",p_runtime_sys)
+			err, "gf_gif_lib", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
+
 	return gif, nil
 }
 
@@ -99,7 +116,7 @@ func gif_db__delete(p_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	err := p_runtime_sys.Mongo_coll.Update(bson.M{
 			"t":      "gif",
 			"id_str": p_id_str,
 		},
@@ -123,7 +140,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_img_id()")
 
 	var gif Gf_gif
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
 			"gf_image_id_str":     p_gf_img_id_str,
@@ -161,7 +178,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
 
 	var gif Gf_gif
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
 			"origin_url_str":      p_origin_url_str,
@@ -192,15 +209,53 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 }
 
 //--------------------------------------------------
-func gif_db__get_page(p_cursor_start_position_int int, //0
-	p_elements_num_int int,                //50
-	p_runtime_sys      *gf_core.Runtime_sys) ([]*Gf_gif, *gf_core.Gf_error) {
+func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
+	p_elements_num_int int,                // 50
+	p_runtime_sys      *gf_core.Runtime_sys) ([]Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_page()")
 
-	gifs_lst := []*Gf_gif{}
+	ctx := context.Background()
 
-	//descending - true - sort the latest items first
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	find_opts := options.Find()
+    find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
+	find_opts.SetSkip(int64(p_cursor_start_position_int))
+    find_opts.SetLimit(int64(p_elements_num_int))
+
+	cursor, gf_err := gf_core.Mongo__find(bson.M{
+			"t":                      "gif",
+			"valid_bool":             true,
+			"preview_frames_num_int": bson.M{"$gte": 0},
+			"title_str":              bson.M{"$exists": true,},
+			"origin_page_url_str":    bson.M{"$exists": true,},
+			"tags_lst":               bson.M{"$exists": true,},
+		},
+		find_opts,
+		map[string]interface{}{
+			"cursor_start_position_int": p_cursor_start_position_int,
+			"elements_num_int":          p_elements_num_int,
+			"caller_err_msg_str":        "GIFs pages failed to be retreived",
+		},
+		p_runtime_sys.Mongo_coll,
+		ctx,
+		p_runtime_sys)
+
+	gifs_lst := []Gf_gif{}
+	for cursor.Next(ctx) {
+
+		var gf_gif Gf_gif
+		err := cursor.Decode(&gf_gif)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get GIFs",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_gif_lib", p_runtime_sys)
+
+			return nil, gf_err
+		}
+		gifs_lst = append(gifs_lst, gf_gif)
+	}
+
+	/*err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                      "gif",
 			"valid_bool":             true,
 			"preview_frames_num_int": bson.M{"$gte":0},
@@ -222,9 +277,9 @@ func gif_db__get_page(p_cursor_start_position_int int, //0
 			},
 			err, "gf_gif_lib", p_runtime_sys)
 		return nil,gf_err
-	}
+	}*/
 
-	return gifs_lst,nil
+	return gifs_lst, nil
 }
 
 //--------------------------------------------------
@@ -232,7 +287,7 @@ func gif_db__update_image_id(p_gif_id_str string,
 	p_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	err := p_runtime_sys.Mongo_coll.Update(bson.M{
 			"t":      "gif",
 			"id_str": p_gif_id_str,
 		},

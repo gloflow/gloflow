@@ -23,7 +23,8 @@ import (
 	"fmt"
 	"time"
 	"net/http"
-	"github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -38,7 +39,7 @@ type Stat_query_run__extern_result struct {
 }
 
 type Stat_query_run struct {
-	Id                 bson.ObjectId          `bson:"_id,omitempty"`
+	Id                 primitive.ObjectID     `bson:"_id,omitempty"`
 	Id_str             string                 `bson:"id_str"`
 	T_str              string                 `bson:"t_str"` // "stat_query_run",
 	Stat_name_str      string                 `bson:"stat_name_str"`
@@ -190,7 +191,7 @@ func Stat_run__create(p_stat_name_str string,
 		Result_data_map:    p_results_data_lst,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Insert(run)
+	err := p_runtime_sys.Mongo_coll.Insert(run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to persist a stat_run",
 			"mongodb_insert_error",

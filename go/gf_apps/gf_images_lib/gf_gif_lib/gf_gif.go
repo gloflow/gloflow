@@ -31,28 +31,31 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/fatih/color"
-	"github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //--------------------------------------------------
 type Gf_gif struct {
-	Id                         bson.ObjectId `json:"-"                          bson:"_id,omitempty"`
+	Id                         primitive.ObjectID `json:"-"                          bson:"_id,omitempty"`
 	Id_str                     string        `json:"id_str"                     bson:"id_str"` 
 	T_str                      string        `json:"-"                          bson:"t"` //"gif"
 	Creation_unix_time_f       float64       `json:"creation_unix_time_f"       bson:"creation_unix_time_f"`
 	Deleted_bool               bool          `json:"deleted_bool"               bson:"deleted_bool"`
 	Deleted_unix_time_f        float64       `json:"deleted_unix_time_f"        bson:"deleted_unix_time_f"`
+	
 	//------------------
-	//indicates if GIF data in here is valid:
-	//  - urls are correct and work
-	//  - gif dimensions are correct
-	//  - frames number is correct
-	//this is a new field, and some old GIF's might be valid but not contain this field.
-	//in scenarios where a gif is indicated as valid, but shows to have any of its data not correct
-	//(or its link dont work) then this field will be set to false. 
+	// indicates if GIF data in here is valid:
+	//   - urls are correct and work
+	//   - gif dimensions are correct
+	//   -  frames number is correct
+	// this is a new field, and some old GIF's might be valid but not contain this field.
+	// in scenarios where a gif is indicated as valid, but shows to have any of its data not correct
+	// (or its link dont work) then this field will be set to false. 
 	Valid_bool                 bool          `json:"valid_bool"                 bson:"valid_bool"`
+	
 	//------------------
 	Title_str                  string        `json:"title_str"                  bson:"title_str"`
 	Gf_url_str                 string        `json:"gf_url_str"                 bson:"gf_url_str"`
@@ -96,7 +99,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_utils.Gf_image_id,
 		return nil,gf_err
 	}
 	//-----------------------
-	//SAVE_IMAGE TO FS (S3)
+	// SAVE_IMAGE TO FS (S3)
 
 	img_title_str,gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
 	if gf_err != nil {
@@ -114,6 +117,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	}
 
 	fmt.Println(s3_resp_str)
+
 	//-----------------------
 	
 	return gif,nil
@@ -133,7 +137,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
-	//FETCH
+	// FETCH
 	local_image_file_path_str, _, f_gf_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		false, //p_random_time_delay_bool
@@ -142,11 +146,11 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 		return nil, "", f_gf_err
 	}
 	//-----------------------
-	//IMPORTANT!! - save first N frames of the GIF, to be uploaded to S3, and 
-	//              served in UI's as GIF preview animations. this is an 
-	//              optimization to handle really large GIF's an in general all GIF's
-	//              (to save on bandwidth and download the full GIF only when the 
-	//              user explicitly wants to view the full version)
+	// IMPORTANT!! - save first N frames of the GIF, to be uploaded to S3, and 
+	//               served in UI's as GIF preview animations. this is an 
+	//               optimization to handle really large GIF's an in general all GIF's
+	//               (to save on bandwidth and download the full GIF only when the 
+	//               user explicitly wants to view the full version)
 
 	frames_num_int, frames_s3_urls_lst, var_gf_err, frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
@@ -161,20 +165,20 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	for _, frame_gf_err := range frames_gf_errs_lst {
 		if frame_gf_err != nil {
 
-			//FIX!! - return all errors to the user, to know exactly which frames failed, 
-			//        even though most likely all frames failed.
+			// FIX!! - return all errors to the user, to know exactly which frames failed, 
+			//         even though most likely all frames failed.
 			return nil, "", frame_gf_err
 		}
 	}
 
 	//-----------------------
-	//GIF_GET_DIMENSIONS
+	// GIF_GET_DIMENSIONS
 	img_width_int, img_height_int, gf_err := gif__get_dimensions(local_image_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
 	//-----------------------
-	//GIF_OBJ_CREATE
+	// GIF_OBJ_CREATE
 	gif, gf_err := gif_db__create(p_image_source_url_str,
 		p_image_origin_page_url_str,
 		img_width_int,
@@ -186,11 +190,11 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 		return nil, "", gf_err
 	}
 	//-----------------------
-	//IMAGE_CREATE
+	// IMAGE_CREATE
 
 	if p_create_new_db_img_bool {
 
-		//IMAGE_ID
+		// IMAGE_ID
 		var gf_image_id_str gf_images_utils.Gf_image_id
 		if p_gf_image_id_str == "" {
 			new_image_id_str, i_err := gf_images_utils.Image_ID__create_from_url(p_image_source_url_str, p_runtime_sys)
@@ -202,7 +206,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 			gf_image_id_str = p_gf_image_id_str
 		}
 
-		//IMAGE_TITLE
+		// IMAGE_TITLE
 		image_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str,p_runtime_sys)
 		if gf_err != nil {
 			return nil,"",gf_err
@@ -211,8 +215,8 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 		gif_first_frame_str := gif.Preview_frames_s3_urls_lst[0]
 
 		//-----------------------
-		//DEPRECATED!! - remove this, Image_new_info should be used only, and should be validated directly, 
-		//               not via gf_images_utils.Image__verify_image_info()
+		// DEPRECATED!! - remove this, Image_new_info should be used only, and should be validated directly, 
+		//                not via gf_images_utils.Image__verify_image_info()
 
 		gf_image_info_map := map[string]interface{}{
 			"id_str":                         string(gf_image_id_str),
@@ -255,16 +259,16 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 			Format_str:                     verified_image_info_map["format_str"].(string),                     //"gif",
 		}
 
-		//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
-		//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
-		//              these two structs are related by origin_url
+		// IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
+		//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
+		//               these two structs are related by origin_url
 
 		_, c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
 		if c_gf_err != nil {
 			return nil, "", c_gf_err
 		}
 
-		//link the new gf_image DB record to the gf_gif DB record
+		// link the new gf_image DB record to the gf_gif DB record
 		gif_db__update_image_id(gif.Id_str, verified_gf_image_id_str, p_runtime_sys)
 	}
 	//-----------------------
@@ -277,8 +281,8 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_s3_bucket_name_str         string,
 	p_s3_info                    *gf_core.Gf_s3_info,
-	p_runtime_sys                *gf_core.Runtime_sys) (int,[]string,*gf_core.Gf_error,[]*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.gif__s3_upload_preview_frames()")
+	p_runtime_sys                *gf_core.Runtime_sys) (int, []string, *gf_core.Gf_error, []*gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.gif__s3_upload_preview_frames()")
 
 	max_num__of_preview_frames_int      := 10
 	frames_images_file_paths_lst,gf_err := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, p_runtime_sys)
@@ -290,9 +294,9 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 
 	preview_frames_num_int := len(frames_images_file_paths_lst)
 
-	//ADD!! - make thumbnails out of individual frames - to reduce/standardize their size
+	// ADD!! - make thumbnails out of individual frames - to reduce/standardize their size
 	//-----------------------
-	//SAVE_IMAGES TO FS (S3)
+	// SAVE_IMAGES TO FS (S3)
 	preview_frames_s3_urls_lst := []string{}
 	gf_errors_lst              := make([]*gf_core.Gf_error,len(frames_images_file_paths_lst))
 	for i,frame_image_file_path_str := range frames_images_file_paths_lst {
@@ -322,8 +326,8 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
-	p_runtime_sys                *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Gif__frames__save_to_fs()")
+	p_runtime_sys                *gf_core.Runtime_sys) ([]string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
 	black := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
@@ -334,7 +338,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_runtime_sys.Log_fun("INFO","")
 
 	//---------------------
-	//GIF_GET_DIMENSIONS
+	// GIF_GET_DIMENSIONS
 	img_width_int,img_height_int,gf_err := gif__get_dimensions(p_local_file_path_src,p_runtime_sys)
 	if gf_err != nil {
 		return nil,gf_err
@@ -351,7 +355,8 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	}
 
 	//---------------------
-	//IMPORTANT!! - gif.DecodeAll - can and will panic frequently, because a lot of the GIF images on the internet are somewhat broken
+	// IMPORTANT!! - gif.DecodeAll - can and will panic frequently,
+	//                               because a lot of the GIF images on the internet are somewhat broken
 	defer func() {
 		if r := recover(); r != nil {
 			_ = gf_core.Error__create("Gif__frames__save_to_fs() has failed, a panic was caught, likely from gif.DecodeAll()",
@@ -370,6 +375,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 			gif_err,"gf_gif_lib",p_runtime_sys)
 		return nil,gf_err
 	}
+
 	//---------------------
 
 	overpaint_image := image.NewRGBA(image.Rect(0,0,img_width_int,img_height_int))
@@ -384,19 +390,20 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	source_file_name_str := filepath.Base(p_local_file_path_src)
 	new_files_names_lst  := []string{}
 
-	//IMPORTANT!! - save GIF frames to .png files on local filesystem
+	// IMPORTANT!! - save GIF frames to .png files on local filesystem
 	for i,frame_img := range gif_image.Image {
 
 		//-------------------
-		//IMPORTANT!! - if p_frames_num_to_get_int is 0, the caller wants all GIF frames, so no need 
-		//              to check if the current GIF frame ("i") is larger then the max number of frames
-		//              the user wants saves.
+		// IMPORTANT!! - if p_frames_num_to_get_int is 0, the caller wants all GIF frames, so no need 
+		//               to check if the current GIF frame ("i") is larger then the max number of frames
+		//               the user wants saves.
 		//              
-		//IMPORTANT!! - a GIF might have fewer frames then are asked for in p_frames_num_to_get_int
+		// IMPORTANT!! - a GIF might have fewer frames then are asked for in p_frames_num_to_get_int
 
 		if p_frames_num_to_get_int != 0 && i > p_frames_num_to_get_int {
 			break //expected number of frames has been saved, so exit the loop
 		}
+
 		//-------------------
 
 		draw.Draw(overpaint_image,
@@ -406,7 +413,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 			draw.Over)
 
 		//-------------------
-		//save current frame
+		// save current frame
 		new_file_name_str := fmt.Sprintf("%s/%s_%d.png", p_frames_images_dir_path_str, source_file_name_str, i)
 		file,err          := os.Create(new_file_name_str)
 		if err != nil {
@@ -427,6 +434,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		}
 
 		file.Close()
+
 		//-------------------
 		fmt.Sprint("++++++++  new_file_name_str - "+new_file_name_str)
 
@@ -451,7 +459,8 @@ func gif__get_dimensions(p_local_file_path_src string,
 	}
 
 	//---------------------
-	//IMPORTANT!! - gif.DecodeAll - can and will panic frequently, because a lot of the GIF images on the internet are somewhat broken
+	// IMPORTANT!! - gif.DecodeAll - can and will panic frequently,
+	//                               because a lot of the GIF images on the internet are somewhat broken
 	defer func() {
 		if r := recover(); r != nil {
 			_ = gf_core.Error__create("gif__get_dimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
@@ -470,6 +479,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 			gif_err,"gf_gif_lib",p_runtime_sys)
 		return 0,0,gf_err
 	}
+
 	//---------------------
 
 	var lowestX  int
@@ -498,7 +508,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 //--------------------------------------------------
 func gif__get_hash(p_image_local_file_path_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.gif__get_hash()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.gif__get_hash()")
 
 	hash := sha256.New()
 

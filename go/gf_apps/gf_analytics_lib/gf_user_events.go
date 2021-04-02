@@ -27,7 +27,8 @@ import (
 	"net/http"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -48,7 +49,7 @@ type Gf_user_event_req_ctx struct {
 }
 
 type Gf_user_event struct {
-	Id                   bson.ObjectId          `json:"-"                    bson:"_id,omitempty"`
+	Id                   primitive.ObjectID     `json:"-"                    bson:"_id,omitempty"`
 	Id_str               string                 `json:"id_str"               bson:"id_str"`
 	T_str                string                 `json:"-"                    bson:"t"` //"usr_event"
 	Creation_unix_time_f float64                `json:"creation_unix_time_f" bson:"creation_unix_time_f"`

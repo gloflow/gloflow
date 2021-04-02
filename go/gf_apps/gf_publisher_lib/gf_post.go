@@ -22,14 +22,15 @@ package gf_publisher_lib
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //------------------------------------------------
 type Gf_post struct {
-	Id                    bson.ObjectId  `bson:"_id,omitempty"`
+	Id                    primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                string         `bson:"id_str"`
 	T_str                 string         `bson:"t"`                //"post"
 	Deleted_bool          bool           `bson:"deleted_bool"`
@@ -40,11 +41,13 @@ type Gf_post struct {
 	Poster_user_name_str  string         `bson:"poster_user_name_str"` //user-name of the user that posted this post
 
 	//------------
-	//GF_IMAGES
+	// GF_IMAGES
 	Thumbnail_url_str string                        `bson:"thumbnail_url_str"` //SYMPHONY 0.3
 	Images_ids_lst    []gf_images_utils.Gf_image_id `bson:"images_ids_lst"`
+	
 	//------------
 	Post_elements_lst []*Gf_post_element `bson:"post_elements_lst"`
+	
 	//------------
 	Tags_lst  []string                   `bson:"tags_lst"`
 	Notes_lst []*Gf_post_note            `bson:"notes_lst"`      //SYMPHONY 0.3 - notes are chunks of text (for now) that can be attached to a post

@@ -105,13 +105,13 @@ func Run_service(p_port_str string,
                  |############\`
     p_log_fun("INFO",logo_str)
     
-	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
+	mongo_db   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
+	mongo_coll := mongo_db.Collection("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_publisher",
 		Log_fun:          p_log_fun,
-		Mongodb_coll:     mongodb_coll,
+		Mongo_coll:       mongo_coll,
 	}
 
 	//------------------------

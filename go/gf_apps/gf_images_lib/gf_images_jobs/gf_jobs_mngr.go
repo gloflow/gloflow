@@ -23,7 +23,8 @@ package gf_images_jobs
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	// "github.com/davecgh/go-spew/spew"
@@ -33,7 +34,7 @@ import (
 type Jobs_mngr chan Job_msg
 
 type Gf_running_job struct {
-	Id              bson.ObjectId `bson:"_id,omitempty"`
+	Id              primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str          string        `bson:"id_str"`
 	T_str           string        `bson:"t"`
 	Client_type_str string        `bson:"client_type_str"`

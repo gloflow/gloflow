@@ -21,7 +21,7 @@ package gf_crawl_core
 
 import (
 	"github.com/fatih/color"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
@@ -30,13 +30,13 @@ import (
 func Image__db_create(p_img *Gf_crawler_page_image,
 	p_runtime     *Gf_crawler_runtime,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
-	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create()")
+	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_db.Image__db_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//------------
-	//MASTER
+	// MASTER
 	if p_runtime.Cluster_node_type_str == "master" {
 
 		c,err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
@@ -54,7 +54,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 			return false, gf_err
 		}
 
-		//crawler_page_img already exists, from previous crawls, so ignore it
+		// crawler_page_img already exists, from previous crawls, so ignore it
 		var exists_bool bool
 		if c > 0 {
 			p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
@@ -63,7 +63,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 			return exists_bool, nil
 		} else {
 				
-			//IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
+			// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
 			err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_img)
 			if err != nil {
 				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img in mongodb",
@@ -81,11 +81,12 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 		}
 	}
 	//------------
-	//WORKER
+	// WORKER
 	if p_runtime.Cluster_node_type_str == "worker" {
 
 		//ADD!! - issue a HTTP request for this data to a remote 'master' node
 	}
+	
 	//------------
 
 	return false, nil

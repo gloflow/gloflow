@@ -23,14 +23,15 @@ import (
 	"time"
 	"fmt"
 	"context"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
 type Gf_index__query_run struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
 	T_str                string        `bson:"t"` //"index__query_run"
 	Run_time_milisec_int int64         `bson:"run_time_milisec_int"`
@@ -52,9 +53,9 @@ func Index__query(p_term_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_index.Index__query()")
 
 
-	//ADD!! - use termquery result relevance
-	//      - a terms query would incorporate the percentage of terms that were found
-	//      - https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html
+	// ADD!! - use termquery result relevance
+	//       - a terms query would incorporate the percentage of terms that were found
+	//       - https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html
 
 	index_name_str := "gf_crawl_pages"
 	field_name_str := "page_text_str"
@@ -86,7 +87,7 @@ func Index__query(p_term_str string,
 	query_run_time_milisec_int := query_result.TookInMillis
 
 	//----------------
-	//HITS
+	// HITS
 	var search_hits *elastic.SearchHits = query_result.Hits
 	total_hits_int                     := search_hits.TotalHits
 	hits_score_max_f                   := search_hits.MaxScore
@@ -98,17 +99,18 @@ func Index__query(p_term_str string,
 	for _, search_hit := range hits_lst {
 
 		//-------------------
-		//relevance - the algorithm that we use to calculate how similar 
-		//            the contents of a full-text field are to a full-text query string.
-		//          - standard similarity algorithm used in Elasticsearch is known as 
-		//            term frequency/inverse document frequency, or TF/IDF
-		//          - Individual queries may combine the TF/IDF score with other 
-		//            factors such as the term proximity in phrase queries, 
-		//            or term similarity in fuzzy queries
+		// relevance - the algorithm that we use to calculate how similar 
+		//             the contents of a full-text field are to a full-text query string.
+		//           - standard similarity algorithm used in Elasticsearch is known as 
+		//             term frequency/inverse document frequency, or TF/IDF
+		//           - Individual queries may combine the TF/IDF score with other 
+		//             factors such as the term proximity in phrase queries, 
+		//             or term similarity in fuzzy queries
 		//          
-		//          - "_score" - field in results
+		//           - "_score" - field in results
 		hit_score_f    := search_hit.Score
 		hits_scores_lst = append(hits_scores_lst, *hit_score_f)
+
 		//-------------------
 
 		var highlights_map map[string][]string = search_hit.Highlight
@@ -123,6 +125,7 @@ func Index__query(p_term_str string,
 
 		hits_urls_lst = append(hits_urls_lst, hit__url_str)
 	}
+	
 	//----------------
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0

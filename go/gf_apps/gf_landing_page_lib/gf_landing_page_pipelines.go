@@ -24,6 +24,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
 //------------------------------------------------
 func Pipeline__get_landing_page(p_max_random_cursor_position_int int, //500
 	p_featured_posts_to_get_int int, //5

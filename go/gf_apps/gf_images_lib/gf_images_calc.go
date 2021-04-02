@@ -20,13 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_lib
 
 import (
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type Browser__job_run_result struct {
-	Id                           bson.ObjectId `bson:"_id,omitempty"`
+	Id                           primitive.ObjectID `bson:"_id,omitempty"`
 	T_str                        string        `bson:"t"`
 	Img__id_str                  string        `bson:"img__id_str"`
 	Img__dominant_color_str      string        `bson:"img__dominant_color_str"`
@@ -38,7 +39,7 @@ type Browser__job_run_result struct {
 
 //-------------------------------------------------
 type Browser__ai_classify__job_run_result struct {
-	Id                           bson.ObjectId `bson:"_id,omitempty"`
+	Id                           primitive.ObjectID `bson:"_id,omitempty"`
 	T_str                        string        `bson:"t"`
 	Img__id_str                  string        `bson:"img__id_str"`
 	Browser__unix_start_time_str float64       `bson:"browser__unix_start_time_str"`

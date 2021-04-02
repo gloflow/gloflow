@@ -135,20 +135,35 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_handler.Store_rpc_handler_run()")
 
 	run := &GF_rpc_handler_run{
-		Class_str:          "rpc_handler_run", //FIX!! - thi should be "rpc_handler_run"
+		Class_str:          "rpc_handler_run", // FIX!! - thi should be "rpc_handler_run"
 		Handler_url_str:    p_handler_url_str,
 		Start_time__unix_f: p_start_time__unix_f,
 		End_time__unix_f:   p_end_time__unix_f,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Insert(run)
+	ctx           := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+
+	gf_err := gf_core.Mongo__insert(run,
+		coll_name_str,
+		map[string]interface{}{
+			"handler_url_str":    p_handler_url_str,
+			"caller_err_msg_str": "failed to insert rpc_handler_run",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	/*err := p_runtime_sys.Mongo_coll.Insert(run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert rpc_handler_run",
             "mongodb_insert_error",
             map[string]interface{}{"handler_url_str": p_handler_url_str,},
             err, "gf_rpc_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 
 	return nil
 }

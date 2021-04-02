@@ -24,7 +24,10 @@ import (
 	"time"
 	"strconv"
 	"sort"
-	"github.com/globalsign/mgo/bson"
+	"context"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -62,7 +65,26 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 		Valid_for_crawl_bool bool    `bson:"valid_for_crawl_bool"`
 		Fetched_bool         bool    `bson:"fetched_bool"`
 	}
-	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+
+	ctx := context.Background()
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.M{"t": "crawler_page_outgoing_link"}},
+		},
+		{
+			{"$project", bson.D{
+				{"creation_unix_time_f", true},
+				{"valid_for_crawl_bool", true},
+				{"fetched_bool",         true},
+			}},
+		},
+		{
+			{"$sort", bson.M{"creation_unix_time_f": -1}},
+		},
+	}
+
+	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
 				"t": "crawler_page_outgoing_link",
 			},
@@ -71,21 +93,32 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 				"creation_unix_time_f": true,
 				"valid_for_crawl_bool": true,
 				"fetched_bool":         true,
-				//"id_str"               :true,
-				//"cycle_run_id_str"     :true,
-				//"domain_str"           :true,
-				//"a_href_str"           :true, //actual link from the html <a> page ('href' parameter)
-				//"origin_url_str"       :true, //page url from whos html this element was extracted
-				//"images_processed_bool":true,
+				// "id_str"               :true,
+				// "cycle_run_id_str"     :true,
+				// "domain_str"           :true,
+				// "a_href_str"           :true, //actual link from the html <a> page ('href' parameter)
+				// "origin_url_str"       :true, //page url from whos html this element was extracted
+				// "images_processed_bool":true,
 			},
 		},
 		bson.M{"$sort": bson.M{
 				"creation_unix_time_f": -1,
 			},
 		},
-	})
+	})*/
 
-	results_lst := []Minimal_link{}
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	if err != nil {
+
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get new links by day",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
+	/*results_lst := []Minimal_link{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -93,7 +126,26 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
+	}*/
+
+	results_lst := []Minimal_link{}
+	for cursor.Next(ctx) {
+
+		var r Minimal_link
+		err := cursor.Decode(&r)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get new links by day",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_crawl_stats", p_runtime_sys)
+			return nil, gf_err
+		}
+	
+		results_lst = append(results_lst, r)
 	}
+
+
+
 
 	//--------------------
 	// AGGREGATE DAY COUNTS - app-layer DB join
@@ -155,24 +207,58 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 	}
 	return data_map,nil
 }
+
 //-------------------------------------------------
 func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__unresolved_links()")
 
-	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
-		bson.M{"$match":bson.M{
+
+
+	ctx := context.Background()
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.D{
+				{"t",                    "crawler_page_outgoing_link"},
+				{"valid_for_crawl_bool", true},
+				{"fetched_bool",         false},
+			}},
+		},
+		{
+			{"$sort", bson.D{{"creation_unix_time_f", -1}}},
+		},
+		{
+			{"$group", bson.D{
+				{"_id",         bson.M{"origin_domain_str": "$origin_domain_str", "origin_url_str": "$origin_url_str",}},
+				{"count_int",   bson.M{"$sum":  1}},
+				{"a_hrefs_lst", bson.M{"$push": "$a_href_str"}},
+			}},
+		},
+		{
+			{"$group", bson.M{
+				"_id":                           "$_id.origin_domain_str",
+				"origin_urls_lst":               bson.M{"$push": "$_id.origin_url_str"},
+				"counts__from_origin_urls_lst":  bson.M{"$push": "$count_int"},
+				"a_hrefs__from_origin_urls_lst": bson.M{"$push": "$a_hrefs_lst"},
+			}},
+		},
+
+	}
+
+	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+		bson.M{"$match": bson.M{
 				"t":                    "crawler_page_outgoing_link",
 				"valid_for_crawl_bool": true,
 				"fetched_bool":         false,
 			},
 		},
 
-		bson.M{"$sort":bson.M{
+		bson.M{"$sort": bson.M{
 				"creation_unix_time_f": -1,
 			},
 		},
 
-		bson.M{"$group":bson.M{
+		bson.M{"$group": bson.M{
 				"_id":         bson.M{"origin_domain_str": "$origin_domain_str", "origin_url_str": "$origin_url_str",},
 				"count_int":   bson.M{"$sum":  1},
 				"a_hrefs_lst": bson.M{"$push": "$a_href_str",},
@@ -186,9 +272,22 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 				"a_hrefs__from_origin_urls_lst": bson.M{"$push": "$a_hrefs_lst"},
 			},
 		},
-	})
+	})*/
 
-	results_lst := []Gf_stat__unresolved_links{}
+
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	if err != nil {
+
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to unresolved links",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
+
+	/*results_lst := []Gf_stat__unresolved_links{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -196,24 +295,81 @@ func stats__unresolved_links(p_runtime_sys *gf_core.Runtime_sys) (map[string]int
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
+	}*/
+
+	results_lst := []Gf_stat__unresolved_links{}
+	for cursor.Next(ctx) {
+
+		var r Gf_stat__unresolved_links
+		err := cursor.Decode(&r)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to unresolved links",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_crawl_stats", p_runtime_sys)
+			return nil, gf_err
+		}
+	
+		results_lst = append(results_lst, r)
 	}
 
 	data_map := map[string]interface{}{
-		"unresolved_links_lst":results_lst,
+		"unresolved_links_lst": results_lst,
 	}
-	return data_map,nil
+	return data_map, nil
 }
+
 //-------------------------------------------------
 func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__crawled_links_domains()")
 
-	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+
+
+	ctx := context.Background()
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.M{"t": "crawler_page_outgoing_link"}},
+		},
+		{
+			{"$project", bson.M{
+				"id_str":                true,
+				"creation_unix_time_f":  true,
+				"cycle_run_id_str":      true,
+				"domain_str":            true,
+				"a_href_str":            true, // actual link from the html <a> page ('href' parameter)
+				"origin_url_str":        true, // page url from whos html this element was extracted
+				"valid_for_crawl_bool":  true,
+				"fetched_bool":          true,
+				"images_processed_bool": true,
+			}},
+		},
+		{
+			{"$group", bson.M{
+				"_id":                     "$domain_str",
+				"links_count_int":         bson.M{"$sum":      1},
+				"creation_unix_times_lst": bson.M{"$push":     "$creation_unix_time_f"},
+				"a_href_lst":              bson.M{"$push":     "$a_href_str"},
+				"origin_urls_lst":         bson.M{"$addToSet": "$origin_url_str"},
+				"valid_for_crawl_lst":     bson.M{"$push":     "$valid_for_crawl_bool"},  // if the link is to be crawled/followed, or should be ignored
+				"fetched_lst":             bson.M{"$push":     "$fetched_bool"},          // if the link's HTML was downloaded
+				"images_processed_lst":    bson.M{"$push":     "$images_processed_bool"}, // if the images of this links HTML page were downloaded/processed
+			},},
+		},
+		{
+			{"$sort", bson.M{"links_count_int": -1}},
+		},
+	}
+
+
+
+	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
 				"t": "crawler_page_outgoing_link",
 			},
 		},
 
-		bson.M{"$project":bson.M{
+		bson.M{"$project": bson.M{
 				"id_str":                true,
 				"creation_unix_time_f":  true,
 				"cycle_run_id_str":      true,
@@ -226,7 +382,7 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 			},
 		},
 
-		bson.M{"$group":bson.M{
+		bson.M{"$group": bson.M{
 				"_id":                     "$domain_str",
 				"links_count_int":         bson.M{"$sum":      1},
 				"creation_unix_times_lst": bson.M{"$push":     "$creation_unix_time_f"},
@@ -242,9 +398,21 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 				"links_count_int": -1,
 			},
 		},
-	})
+	})*/
 
-	results_lst := []Gf_stat__crawled_links_domain{}
+
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	if err != nil {
+
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawled links domains",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_images_stats", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
+	/*results_lst := []Gf_stat__crawled_links_domain{}
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
@@ -252,7 +420,24 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.Runtime_sys) (map[strin
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
+	}*/
+
+	results_lst := []Gf_stat__crawled_links_domain{}
+	for cursor.Next(ctx) {
+
+		var r Gf_stat__crawled_links_domain
+		err := cursor.Decode(&r)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawled links domains",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_images_stats", p_runtime_sys)
+			return nil, gf_err
+		}
+	
+		results_lst = append(results_lst, r)
 	}
+
 
 	data_map := map[string]interface{}{
 		"crawled_links_domains_lst": results_lst,

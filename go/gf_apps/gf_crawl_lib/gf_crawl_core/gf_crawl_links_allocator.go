@@ -22,13 +22,14 @@ package gf_crawl_core
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
 type Gf_crawl_link_alloc struct {
-	Id                   bson.ObjectId  `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID  `bson:"_id,omitempty"`
 	Id_str               string         `bson:"id_str"`
 	T_str                string         `bson:"t"`                         //"crawler_link_alloc"
 	Creation_unix_time_f float64        `bson:"creation_unix_time_f"`
@@ -41,7 +42,7 @@ type Gf_crawl_link_alloc struct {
 }
 
 type Gf_crawl_link_alloc_block struct {
-	Id                       bson.ObjectId `bson:"_id,omitempty"`
+	Id                       primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                   string        `bson:"id_str"`
 	Creation_unix_time_f     float64       `bson:"creation_unix_time_f"`
 	T_str                    string        `bson:"t"`                     //"crawler_link_alloc_block"
@@ -66,7 +67,7 @@ func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_
 
 			}
 
-			//SLEEP
+			// SLEEP
 			sleep_length := time.Second * time.Duration(allocator.Sleep_time_sec_int)
 			time.Sleep(sleep_length)
 		}
@@ -79,13 +80,13 @@ func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_
 func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawl_link_alloc, *gf_core.Gf_error) {
 
 	block_size_int     := 100
-	sleep_time_sec_int := 60*20 //20min
+	sleep_time_sec_int := 60*20 // 20min
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("gf_crawl_link_alloc:%s:%f", p_crawler_name_str, creation_unix_time_f)
 
-	//IMPORTANT!! - there can be multiple allocators operating in a single cluster. potentially they can have different allocations strategies,
-	//              or may have different limitations on the range of values for various filters used by allocation function.
+	// IMPORTANT!! - there can be multiple allocators operating in a single cluster. potentially they can have different allocations strategies,
+	//               or may have different limitations on the range of values for various filters used by allocation function.
 	allocator := &Gf_crawl_link_alloc{
 		Id_str:                    id_str,
 		T_str:                     "crawler_link_alloc", 
@@ -96,7 +97,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 		Current_link_block_id_str: "",
 	}
 
-	//DB
+	// DB
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(allocator)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc in mongodb",
@@ -170,7 +171,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	}
 
 	//-------------------
-	//CREATE_LINK_ALLOCATOR_BLOCK
+	// CREATE_LINK_ALLOCATOR_BLOCK
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("gf_crawl_link_alloc_block:%s:%f", p_crawler_name_str, creation_unix_time_f)
@@ -183,7 +184,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		Unresolved_links_ids_lst: unresolved_links_ids_lst,
 	}
 
-	//DB
+	// DB
 	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(block)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc_block in mongodb",
@@ -194,6 +195,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
 	}
+	
 	//-------------------
 
 	return block, nil

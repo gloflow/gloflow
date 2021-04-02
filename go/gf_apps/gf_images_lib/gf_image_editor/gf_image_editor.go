@@ -30,14 +30,15 @@ import (
 	"encoding/base64"
 	"image"
 	"image/png"
-	"github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
 //-------------------------------------------------
 type Gf_edited_image struct {
-	Id                   bson.ObjectId               `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID          `bson:"_id,omitempty"`
 	Id_str               string                      `bson:"id_str"` 
 	T_str                string                      `bson:"t"` //"img_edited"
 	Creation_unix_time_f float64                     `bson:"creation_unix_time_f"`
@@ -93,6 +94,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	if err != nil {
 		return gf_err
 	}
+
 	//--------------------------
 
 
@@ -112,6 +114,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	if gf_err != nil {
 		return gf_err
 	}
+	
 	//--------------------------
 
 	return nil

@@ -23,7 +23,8 @@ import (
 	"fmt"
 	"time"
 	"net/url"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -33,22 +34,23 @@ import (
 //--------------------------------------------------
 // ELASTIC_SEARCH - INDEXED
 type Gf_crawler_url_fetch struct {
-	Id                   bson.ObjectId     `bson:"_id,omitempty"`
-	Id_str               string            `bson:"id_str"               json:"id_str"`
-	T_str                string            `bson:"t"                    json:"t"` //"crawler_url_fetch"
-	Creation_unix_time_f float64           `bson:"creation_unix_time_f" json:"creation_unix_time_f"`
-	Cycle_run_id_str     string            `bson:"cycle_run_id_str"     json:"cycle_run_id_str"`
-	Domain_str           string            `bson:"domain_str"           json:"domain_str"`
-	Url_str              string            `bson:"url_str"              json:"url_str"`
-	Start_time_f         float64           `bson:"start_time_f"         json:"-"`
-	End_time_f           float64           `bson:"end_time_f"           json:"-"`
-	Page_text_str        string            `bson:"page_text_str"        json:"page_text_str"` //full text of the page html - indexed in ES
-	goquery_doc          *goquery.Document `bson:"-"                    json:"-"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
+	Id_str               string             `bson:"id_str"               json:"id_str"`
+	T_str                string             `bson:"t"                    json:"t"` //"crawler_url_fetch"
+	Creation_unix_time_f float64            `bson:"creation_unix_time_f" json:"creation_unix_time_f"`
+	Cycle_run_id_str     string             `bson:"cycle_run_id_str"     json:"cycle_run_id_str"`
+	Domain_str           string             `bson:"domain_str"           json:"domain_str"`
+	Url_str              string             `bson:"url_str"              json:"url_str"`
+	Start_time_f         float64            `bson:"start_time_f"         json:"-"`
+	End_time_f           float64            `bson:"end_time_f"           json:"-"`
+	Page_text_str        string             `bson:"page_text_str"        json:"page_text_str"` //full text of the page html - indexed in ES
+	goquery_doc          *goquery.Document  `bson:"-"                    json:"-"`
 
 	//-------------------
-	//IMPORTANT!! - last error that occured/interupted processing of this link
+	// IMPORTANT!! - last error that occured/interupted processing of this link
 	Error_type_str       string            `bson:"error_type_str,omitempty"`
 	Error_id_str         string            `bson:"error_id_str,omitempty"`
+
 	//-------------------
 }
 
@@ -124,6 +126,7 @@ func Fetch__url(p_url_str string,
 
 		return nil, "", gf_err
 	}
+	
 	//-------------------
 	// HTTP REQUEST
 

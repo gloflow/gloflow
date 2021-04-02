@@ -22,13 +22,14 @@ package gf_crawl_core
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
 type Gf_crawler_error struct {
-	Id                   bson.ObjectId          `bson:"_id,omitempty"    json:"-"`
+	Id                   primitive.ObjectID     `bson:"_id,omitempty"    json:"-"`
 	Id_str               string                 `bson:"id_str"           json:"id_str"`
 	T_str                string                 `bson:"t"                json:"t"` //"crawler_error"
 	Creation_unix_time_f float64                `bson:"creation_unix_time_f"`

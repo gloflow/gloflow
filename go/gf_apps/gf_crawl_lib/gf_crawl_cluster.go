@@ -25,14 +25,15 @@ import (
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 
 //--------------------------------------------------
 type Gf_crawler_cluster_worker struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"               json:"id_str"`
 	T_str                string        `bson:"t"                    json:"t"`            // "crawler_cluster_worker"
 	Creation_unix_time_f float64       `bson:"creation_unix_time_f" json:"creation_unix_time_f"`

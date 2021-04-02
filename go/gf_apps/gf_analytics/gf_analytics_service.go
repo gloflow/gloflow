@@ -49,14 +49,14 @@ func main() {
 	//-----------------
 	// MONGODB
 
-	mongodb_db   := gf_core.Mongo__connect(mongodb_host_str, mongodb_db_name_str, log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
+	mongo_db   := gf_core.Mongo__connect_new(mongodb_host_str, mongodb_db_name_str, log_fun)
+	mongo_coll := mongo_db.Collection("data_symphony")
 
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_analytics",
 		Log_fun:          log_fun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
+		Mongo_db:         mongo_db,
+		Mongo_coll:       mongo_coll,
 	}
 	
 	//-----------------

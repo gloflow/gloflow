@@ -21,7 +21,7 @@ package gf_images_jobs
 
 import (
 	"fmt"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
@@ -63,6 +63,7 @@ func job_error__send(p_job_error_type_str string,
 			p_image_source_url_str,
 			p_runtime_sys)
 	}()
+	
 	//------------
 	return nil
 }

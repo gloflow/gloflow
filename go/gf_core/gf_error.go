@@ -24,6 +24,7 @@ import (
 	"time"
 	// "strings"
 	"errors"
+	"context"
 	"runtime"
 	"runtime/debug"
 	"github.com/fatih/color"
@@ -240,7 +241,9 @@ func Error__create_with_defs(p_user_msg_str string,
 	//--------------------
 	// DB_PERSIST
 	if p_runtime_sys.Errors_send_to_mongodb_bool {
-		err := p_runtime_sys.Mongodb_coll.Insert(gf_error)
+		
+		ctx := context.Background()
+		_, err := p_runtime_sys.Mongo_coll.InsertOne(ctx, gf_error)
 		if err != nil {
 
 		}

@@ -31,8 +31,50 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"github.com/globalsign/mgo"
+	// "github.com/globalsign/mgo"
 )
+
+//-------------------------------------------------
+func Mongo__find(p_query bson.M,
+	p_opts        *options.FindOptions,
+	p_meta_map    map[string]interface{}, // data describing the DB write op
+	p_coll        *mongo.Collection,
+	p_ctx         context.Context,
+	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *Gf_error) {
+
+	cur, err := p_coll.Find(p_ctx, p_query, p_opts)
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to find records in DB",
+			"mongodb_find_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+	// defer cur.Close(p_ctx)
+	return cur, nil
+}
+
+//-------------------------------------------------
+func Mongo__upsert(p_query bson.M,
+	p_record      interface{},
+	p_meta_map    map[string]interface{}, // data describing the DB write op
+	p_coll        *mongo.Collection,
+	p_ctx         context.Context,
+	p_runtime_sys *Runtime_sys) *Gf_error {
+
+
+	_, err := p_coll.UpdateOne(p_ctx, p_query, p_record,
+		options.Update().SetUpsert(true))
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to update/upsert document in the DB",
+			"mongodb_update_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
 
 //-------------------------------------------------
 func Mongo__insert_bulk(p_ids_lst []string,
@@ -100,10 +142,50 @@ func Mongo__insert(p_record interface{},
 //-------------------------------------------------
 func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
 	p_coll_name_str string,
-	p_runtime_sys   *Runtime_sys) []*Gf_error {
+	p_runtime_sys   *Runtime_sys) ([]string, *Gf_error) {
 
-	gf_errs_lst := []*Gf_error{}
+	var indexView *mongo.IndexView
+
+	models := []mongo.IndexModel{}
 	for _, index_keys_lst := range p_indexes_keys_lst {
+		
+		keys_bson := bson.D{}
+		for j, k := range index_keys_lst {
+			keys_bson[j] = bson.E{k, 1}
+		}
+		model := mongo.IndexModel{
+		
+			Keys: keys_bson, // bson.D{{"name", 1}, {"email", 1}},
+			
+			// Keys:    bson.D{{"name", 1}, {"age", 1}},
+			// Options: options.Index().SetName("nameAge"),
+		}
+
+		models = append(models, model)
+	}
+
+	// CREATE_INDEX
+	opts               := options.CreateIndexes().SetMaxTime(2 * time.Second)
+	indexes_names, err := indexView.CreateMany(context.TODO(), models, opts)
+	if err != nil {
+		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+			return []string{}, nil
+		} else {
+			gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db indexes on fields"), 
+				"mongodb_ensure_index_error",
+				map[string]interface{}{"indexes_keys_lst": p_indexes_keys_lst,},
+				err, "gf_core", p_runtime_sys)
+			return nil, gf_err
+		}
+	}
+
+
+
+	return indexes_names, nil
+
+	/*gf_errs_lst := []*Gf_error{}
+	for _, index_keys_lst := range p_indexes_keys_lst {
+		
 		doc_type__index := mgo.Index{
 			Key:        index_keys_lst, 
 			Unique:     false, // index must necessarily contain only a single document per Key
@@ -111,19 +193,22 @@ func Mongo__ensure_index(p_indexes_keys_lst [][]string,
 			Background: true,  // other connections will be allowed to proceed using the collection without the index while it's being built
 			Sparse:     true,  // only documents containing the provided Key fields will be included in the index
 		}
-	
-		err := p_runtime_sys.Mongodb_db.C(p_coll_name_str).EnsureIndex(doc_type__index)
-		if err != nil {
-			if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
-				continue // ignore, index already exists
-			} else {
-				gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
-					"mongodb_ensure_index_error", nil, err, "gf_core", p_runtime_sys)
-				gf_errs_lst = append(gf_errs_lst, gf_err)
+		
+		if p_runtime_sys.Mongo_db.Collection(p_coll_name_str) != nil {
+			err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).EnsureIndex(doc_type__index)
+			if err != nil {
+				if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
+					continue // ignore, index already exists
+				} else {
+					gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
+						"mongodb_ensure_index_error", nil, err, "gf_core", p_runtime_sys)
+					gf_errs_lst = append(gf_errs_lst, gf_err)
+				}
 			}
+		} else {
+			fmt.Printf("mongodb collection %s doesnt exist\n", p_coll_name_str)
 		}
-	}
-	return gf_errs_lst
+	}*/
 }
 
 //-------------------------------------------------
@@ -164,7 +249,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 }
 
 //-------------------------------------------------
-func Mongo__connect(p_mongodb_host_str string,
+/*func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
 	p_log_fun             func(string, string)) *mgo.Database {
 	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
@@ -190,7 +275,7 @@ func Mongo__connect(p_mongodb_host_str string,
 
 	db := session.DB(p_mongodb_db_name_str)
 	return db
-}
+}*/
 
 //--------------------------------------------------------------------
 func Mongo__handle_error(p_user_msg_str string,

@@ -28,14 +28,14 @@ import (
 )
 
 //------------------------------------------------
-//CREATE_POST
+// CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_runtime_sys            *gf_core.Runtime_sys) (*Gf_post, string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
-	//VERIFY INPUT
+	// VERIFY INPUT
 	max_title_chars_int       := 100
 	max_description_chars_int := 1000
 	post_element_tag_max_int  := 20
@@ -50,7 +50,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 		return nil, "", gf_err
 	}
 	//----------------------
-	//CREATE POST
+	// CREATE POST
 	post, gf_err := create_new_post(verified_post_info_map, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
@@ -58,7 +58,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 
 	p_runtime_sys.Log_fun("INFO","post - "+fmt.Sprint(post))
 	//----------------------
-	//PERSIST POST
+	// PERSIST POST
 	gf_err = DB__create_post(post, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
@@ -90,12 +90,12 @@ func Pipeline__get_post(p_post_title_str string,
 	}
 
 	//------------------
-	//HACK!!
-	//some of the post_adt.tags_lst have tags that are empty strings (")
-	//which showup as artifacts in the HTML since each tag gets a <div></div>
-	//so here a post_adt is modified in place. 
-	//this will over time correct/remove empty string tags, but the source cause of this
-	//(on post tagging/creation) is still there, so find that and fix it.
+	// HACK!!
+	// some of the post_adt.tags_lst have tags that are empty strings (")
+	// which showup as artifacts in the HTML since each tag gets a <div></div>
+	// so here a post_adt is modified in place. 
+	// this will over time correct/remove empty string tags, but the source cause of this
+	// (on post tagging/creation) is still there, so find that and fix it.
 	whole_tags_lst := []string{}
 	for _,tag_str := range post.Tags_lst {
 		if tag_str != "" {

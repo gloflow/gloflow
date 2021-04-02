@@ -22,7 +22,8 @@ package gf_images_lib
 import (
 	"fmt"
 	"time"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
@@ -35,7 +36,7 @@ import (
 // It contains the ID of the future gf_image that will be created in the system to represent
 // the image that the client is wanting to upload.
 type Gf_image_upload_info struct {
-	Id                     bson.ObjectId               `json:"-"                      bson:"_id,omitempty"`
+	Id                     primitive.ObjectID          `json:"-"                      bson:"_id,omitempty"`
 	T_str                  string                      `json:"-"                      bson:"t"` // "img_upload_info"
 	Creation_unix_time_f   float64                     `json:"creation_unix_time_f"   bson:"creation_unix_time_f"`
 	Name_str               string                      `json:"name_str"               bson:"name_str"`

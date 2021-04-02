@@ -31,7 +31,7 @@ import (
 func Complete_url(p_url_str string,
 	p_domain_str  string,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.complete_url()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawler_url.complete_url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

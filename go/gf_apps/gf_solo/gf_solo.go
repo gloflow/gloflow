@@ -57,6 +57,7 @@ func runtime__get(p_config_path_str string,
 		return nil, nil, err
 	}
 
+	//--------------------
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_solo",
@@ -66,7 +67,28 @@ func runtime__get(p_config_path_str string,
 		Errors_send_to_sentry_bool: true,	
 	}
 
+	//--------------------
+	// MONGODB
+	mongodb_host_str := config.Mongodb_host_str
+	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
+	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
+	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+		config.Mongodb_db_name_str,
+		runtime_sys)
+	if gf_err != nil {
+		return nil, nil, gf_err.Error
+	}
+
+
+	fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd")
+	fmt.Println(mongodb_db)
+
+
+	runtime_sys.Mongo_db = mongodb_db
+	fmt.Printf("mongodb connected...\n")
+
+	//--------------------
 	return runtime_sys, config, nil
 }
 

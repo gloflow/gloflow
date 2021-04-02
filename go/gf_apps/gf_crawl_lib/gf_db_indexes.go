@@ -26,24 +26,25 @@ import (
 
 //--------------------------------------------------
 func db_index__init(p_runtime *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	
 	indexes_keys_lst := [][]string{
-		[]string{"t", }, //all stat queries first match on "t"
+		[]string{"t", }, // all stat queries first match on "t"
 		[]string{"t", "hash_str"},
 	}
 
-	gf_errs_lst := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
-	if len(gf_errs_lst) > 0 {
-		return gf_errs_lst
+	gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
 
 	//-------------
-	//LINK_INDEXES
-	gf_errs_lst = gf_crawl_core.Link__db_index__init(p_runtime_sys)
-	if len(gf_errs_lst) > 0 {
-		return gf_errs_lst
+	// LINK_INDEXES
+	gf_err = gf_crawl_core.Link__db_index__init(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
 	}
+	
 	//-------------
 	return nil
 }

@@ -23,7 +23,8 @@ package gf_crawl_lib
 import (
 	"time"
 	"math/rand"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/olivere/elastic"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -35,11 +36,11 @@ import (
 type Gf_crawler struct {
 	Name_str      string
 	Start_url_str string
-	//Domains_lst   []string //some sites have multiple domains
+	// Domains_lst   []string //some sites have multiple domains
 }
 
 type Gf_crawler_cycle_run struct {
-	Id                   bson.ObjectId `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
 	T_str                string        `bson:"t"` //"crawler_cycle_run"
 	Creation_unix_time_f float64       `bson:"creation_unix_time_f"`
@@ -81,8 +82,9 @@ func Init(p_images_local_dir_path_str string,
 		S3_info:               gf_s3_info,
 		Cluster_node_type_str: p_cluster_node_type_str,
 	}
+
 	//--------------
-	//IMPORTANT!! - make sure mongo has indexes build for relevant queries
+	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	db_index__init(runtime, p_runtime_sys)
 	
 	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
@@ -95,8 +97,9 @@ func Init(p_images_local_dir_path_str string,
 		crawled_images_s3_bucket_name_str,
 		runtime,
 		p_runtime_sys)*/
+
 	//--------------
-	//HTTP_HANDLERS
+	// HTTP_HANDLERS
 	gf_err = init_handlers(crawled_images_s3_bucket_name_str,
 		gf_images_s3_bucket_name_str,
 		p_templates_dir_path_str,
@@ -106,11 +109,12 @@ func Init(p_images_local_dir_path_str string,
 		return gf_err
 	}
 		
-	//HTTP_HANDLERS__CLUSTER
+	// HTTP_HANDLERS__CLUSTER
 	gf_err = cluster__init_handlers(p_crawl_config_file_path_str, runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+	
 	//--------------
 
 	return nil

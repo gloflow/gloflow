@@ -32,7 +32,7 @@ func Init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_handlers.Init_handlers()")
 
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 
 	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
@@ -58,7 +58,7 @@ func Init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 	//---------------------
 
 	//---------------------
-	//POSTS_ELEMENTS
+	// POSTS_ELEMENTS
 	http.HandleFunc("/a/domains/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/domains/browser ----------")
 
@@ -75,14 +75,15 @@ func Init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map,
 															p_log_fun)*/
 			//--------------------
-			//GET DOMAINS FROM DB
+			// GET DOMAINS FROM DB
 			domains_lst, gf_err := db__get_domains(p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/domains/browser", "rpc_handler failed getting domains", gf_err, p_resp, p_runtime_sys)
 				return
 			}
+
 			//--------------------
-			//RENDER TEMPLATE
+			// RENDER TEMPLATE
 			gf_err = domains_browser__render_template(domains_lst,
 				gf_templates.domains_browser__tmpl,
 				gf_templates.domains_browser__subtemplates_names_lst,
@@ -100,6 +101,7 @@ func Init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runti
 			}()
 		}
 	})
+	
 	//---------------------
 
 	return nil

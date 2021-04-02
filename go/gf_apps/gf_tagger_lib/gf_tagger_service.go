@@ -38,13 +38,13 @@ func main() {
 
 	// START_SERVICE
 	if run__start_service_bool {
-		//init_done_ch := make(chan bool)
+		// init_done_ch := make(chan bool)
 		Run_service__in_process(port_str,
 			mongodb_host_str,
 			mongodb_db_name_str,
 			nil, //init_done_ch,
 			log_fun)
-		//<-init_done_ch
+		// <-init_done_ch
 	}
 }
 
@@ -71,6 +71,7 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 	if mongodb_host_env_str != "" {
 		*mongodb_host_str = mongodb_host_env_str
 	}
+
 	//-------------------
 	flag.Parse()
 
@@ -89,6 +90,7 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
 	// STATIC FILES SERVING
 	dashboard__url_base_str := "/tags"
 	gf_core.HTTP__init_static_serving(dashboard__url_base_str, p_runtime_sys)
+
 	//------------------------
 
 	gf_err := init_handlers(p_runtime_sys)
@@ -111,19 +113,20 @@ func Run_service__in_process(p_port_str string,
 	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
 	p_log_fun("INFO", "")
 	
-	mongodb_db   := gf_core.Mongo__connect(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
+	mongo_db   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
+	mongo_coll := mongo_db.Collection("data_symphony")
 
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_tagger",
 		Log_fun:          p_log_fun,
-		Mongodb_coll:     mongodb_coll,
+		Mongo_coll:       mongo_coll,
 	}
 
 	//------------------------
 	// STATIC FILES SERVING
 	dashboard__url_base_str := "/tags"
 	gf_core.HTTP__init_static_serving(dashboard__url_base_str, runtime_sys)
+
 	//------------------------
 
 	gf_err := init_handlers(runtime_sys)
@@ -136,6 +139,7 @@ func Run_service__in_process(p_port_str string,
 	if p_init_done_ch != nil {
 		p_init_done_ch <- true
 	}
+
 	//----------------------
 
 	p_log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")

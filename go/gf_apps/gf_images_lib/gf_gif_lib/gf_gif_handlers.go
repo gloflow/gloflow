@@ -30,7 +30,7 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------
-	//GIF_GET_INFO
+	// GIF_GET_INFO
 	http.HandleFunc("/images/gif/get_info", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/gif/get_info ----------")
@@ -38,7 +38,7 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 
 			qs_map := p_req.URL.Query()
 
@@ -51,11 +51,12 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 			if a_lst,ok := qs_map["gfimg_id"]; ok {
 				gf_img_id_str = a_lst[0]
 			}
+			
 			//--------------------------
 			var gf_gif *Gf_gif
 			var gf_err *gf_core.Gf_error
 
-			//BY_ORIGIN_URL
+			// BY_ORIGIN_URL
 			if origin_url_str != "" {
 				p_runtime_sys.Log_fun("INFO","origin_url_str - "+origin_url_str)
 
@@ -67,7 +68,7 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 					return
 				}
 
-			//BY_GF_IMG_ID
+			// BY_GF_IMG_ID
 			} else if gf_img_id_str != "" {
 				p_runtime_sys.Log_fun("INFO","gf_img_id_str - "+gf_img_id_str)
 
@@ -79,12 +80,14 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 					return
 				}
 			}
+
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			data_map := map[string]interface{}{
 				"gif_map":gf_gif,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp,p_runtime_sys)
+			
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

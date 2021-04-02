@@ -26,13 +26,14 @@ import (
 	"math/rand"
 	"time"
 	"context"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type Image_fetch__error struct {
-	Id                   bson.ObjectId `json:"-"                    bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `json:"-"                    bson:"_id,omitempty"`
 	Id_str               string        `json:"id_str"               bson:"id_str"` 
 	T_str                string        `json:"-"                    bson:"t"` // img_fetch_error
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
@@ -135,7 +136,19 @@ func Download_file(p_image_url_str string,
 			Status_code_int:      gf_http_fetch.Status_code_int,
 		}
 
-		err := p_runtime_sys.Mongodb_coll.Insert(fetch_error)
+		ctx := context.Background()
+		coll_name_str := p_runtime_sys.Mongo_coll.Name()
+		gf_err := gf_core.Mongo__insert(fetch_error,
+			coll_name_str,
+			map[string]interface{}{
+				"image_url_str":             p_image_url_str,
+				"local_image_file_path_str": p_local_image_file_path_str,
+				"caller_err_msg_str":        "failed to insert a Image_fetch__error into mongodb",
+			},
+			ctx,
+			p_runtime_sys)
+			
+		/*err := p_runtime_sys.Mongo_coll.Insert(fetch_error)
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to insert a Image_fetch__error into mongodb",
 				"mongodb_insert_error",
@@ -145,9 +158,9 @@ func Download_file(p_image_url_str string,
 				},
 				err,"gf_images_utils",p_runtime_sys)
 			return gf_err
-		}
+		}*/
 
-		gf_err := gf_core.Error__create("image fetching failed with HTTP status error",
+		gf_err = gf_core.Error__create("image fetching failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
 				"image_url_str":             p_image_url_str,

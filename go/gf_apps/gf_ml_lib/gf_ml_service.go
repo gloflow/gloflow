@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_ml_lib
 
 import (
+	"os"
 	"fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -33,7 +34,6 @@ type GF_service_info struct {
 	Templates_dir_paths_map map[string]interface{}
 	Config_file_path_str    string
 }
-
 
 //-------------------------------------------------
 func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
@@ -57,18 +57,23 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 	// RUNTIME_SYS
-	mongodb_db := gf_core.Mongo__connect(p_service_info.Mongodb_host_str,
-		p_service_info.Mongodb_db_name_str,
-		p_log_fun)
-	mongodb_coll := mongodb_db.C("g_ml")
 	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_ml",
 		Log_fun:          p_log_fun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
 	}
 
+	mongo_db, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
+		p_service_info.Mongodb_db_name_str,
+		runtime_sys)
+	if gf_err != nil {
+		os.Exit(-1)
+	}
+
+	mongo_coll := mongo_db.Collection("g_ml")
+
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_coll
 	//-------------
 	// INIT
 	Init_service(runtime_sys)

@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"net/url"
 	"github.com/fatih/color"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
-func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_error {
+func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")
 
 	indexes_keys_lst := [][]string{
@@ -39,8 +39,8 @@ func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) []*gf_core.Gf_erro
 		[]string{"t", "hash_str", "valid_for_crawl_bool"}, //Link__mark_as_resolved()
 	}
 
-	gf_errs_lst := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
-	return gf_errs_lst
+	gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
+	return gf_err
 }
 
 //--------------------------------------------------

@@ -20,7 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_stats
 
 import (
-	"github.com/globalsign/mgo/bson"
+	"context"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -50,7 +53,36 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.Runtime_sys) (map[str
 func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
 
-	pipe := p_runtime_sys.Mongodb_db.C("gf_crawl").Pipe([]bson.M{
+
+	ctx := context.Background()
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.M{"t": "crawler_url_fetch"}},
+		},
+		{
+			{"$project", bson.M{
+				"id_str":       true,
+				"start_time_f": true,
+				"end_time_f":   true,
+				"domain_str":   true,
+				"url_str":      true, // actual link from the HTML <a> page ('href' parameter)
+				// "errors_num_i":bson.M{"$size":"$errors_lst",},
+			}},
+		},
+		{
+			{"$group", bson.M{
+				"_id":             "$url_str",
+				"count_int":       bson.M{"$sum":  1},
+				"start_times_lst": bson.M{"$push": "$start_time_f"},
+			}},
+		},
+		{
+			{"$sort", bson.M{"count_int": -1}},
+		},
+	}
+
+
+	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
 				"t":     "crawler_url_fetch",
 			},
@@ -61,25 +93,36 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 				"start_time_f": true,
 				"end_time_f":   true,
 				"domain_str":   true,
-				"url_str":      true, //actual link from the HTML <a> page ('href' parameter)
-				//"errors_num_i":bson.M{"$size":"$errors_lst",},
+				"url_str":      true, // actual link from the HTML <a> page ('href' parameter)
+				// "errors_num_i":bson.M{"$size":"$errors_lst",},
 			},
 		},
 
-		bson.M{"$group":bson.M{
+		bson.M{"$group": bson.M{
 				"_id":             "$url_str",
-				"count_int":       bson.M{"$sum" :1},
-				"start_times_lst": bson.M{"$push":"$start_time_f"},
+				"count_int":       bson.M{"$sum":  1},
+				"start_times_lst": bson.M{"$push": "$start_time_f"},
 			},
 		},
 
-		bson.M{"$sort":bson.M{
+		bson.M{"$sort": bson.M{
 				"count_int": -1,
 			},
 		},
-	})
+	})*/
 
-	results_lst := []Gf_stat__crawled_url_fetches{}
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	if err != nil {
+
+		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_crawl_stats", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
+	/*results_lst := []Gf_stat__crawled_url_fetches{}
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
@@ -87,8 +130,23 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 	
+	results_lst := []Gf_stat__crawled_url_fetches{}
+	for cursor.Next(ctx) {
+
+		var r Gf_stat__crawled_url_fetches
+		err := cursor.Decode(&r)
+		if err != nil {
+			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+				"mongodb_cursor_decode",
+				map[string]interface{}{},
+				err, "gf_crawl_stats", p_runtime_sys)
+			return nil, gf_err
+		}
+		results_lst = append(results_lst, r)
+	}
+
 	data_map := map[string]interface{}{
 		"crawled_url_fetches_lst": results_lst,
 	}

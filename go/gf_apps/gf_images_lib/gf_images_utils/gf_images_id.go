@@ -35,7 +35,8 @@ type Gf_image_id string
 
 //---------------------------------------------------
 // CREATES_ID
-func Image_ID__create_from_url(p_image_url_str string, p_runtime_sys *gf_core.Runtime_sys) (Gf_image_id, *gf_core.Gf_error) {
+func Image_ID__create_from_url(p_image_url_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create_from_url()")
 	
 	// urlparse() - used so that any possible url query parameters are not used in the 

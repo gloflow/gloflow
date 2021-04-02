@@ -24,7 +24,8 @@ import (
 	"time"
 	"crypto/md5"
 	"encoding/hex"
-	"github.com/globalsign/mgo/bson"
+	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -34,7 +35,7 @@ import (
 //---------------------------------------------------
 type Gf_crawler_page_image_id string
 type Gf_crawler_page_image struct {
-	Id                         bson.ObjectId            `bson:"_id,omitempty"`
+	Id                         primitive.ObjectID       `bson:"_id,omitempty"`
 	Id_str                     Gf_crawler_page_image_id `bson:"id_str"`
 	T_str                      string                   `bson:"t"`                          //"crawler_page_img"
 	Creation_unix_time_f       float64                  `bson:"creation_unix_time_f"`
@@ -64,11 +65,11 @@ type Gf_crawler_page_image struct {
 	Gf_image_id_str            gf_images_utils.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
 }
 	
-//IMPORTANT!! - reference to an image, on a particular page. 
-//              the same image, with the same Url_str can appear on multiple pages, and this 
-//              struct tracks that, one record per reference
+// IMPORTANT!! - reference to an image, on a particular page. 
+//               the same image, with the same Url_str can appear on multiple pages, and this 
+//               struct tracks that, one record per reference
 type Gf_crawler_page_image_ref struct {
-	Id                         bson.ObjectId `bson:"_id,omitempty"`
+	Id                         primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`                          //"crawler_page_img_ref"
 	Creation_unix_time_f       float64       `bson:"creation_unix_time_f"`
