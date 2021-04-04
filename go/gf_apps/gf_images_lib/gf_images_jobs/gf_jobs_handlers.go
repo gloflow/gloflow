@@ -47,7 +47,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 			input_map,gf_err := gf_rpc_lib.Get_http_input("/images/jobs/start", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
@@ -60,14 +60,15 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			url_encoded_imgs_urls_str              := input_map["imgs_urls_str"].(string)
 			url_encoded_imgs_origin_pages_urls_str := input_map["imgs_origin_pages_urls_str"].(string)
 
-			//ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
+			// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 			flows_names_lst := []string{"general",}
 
 			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
 			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("client_type_str - %s", client_type_str))
 			p_runtime_sys.Log_fun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
+
 			//-------------------
-			//IMAGES_TO_PROCESS
+			// IMAGES_TO_PROCESS
 			
 			images_urls_str,_ := url.QueryUnescape(url_encoded_imgs_urls_str)
 			images_urls_lst   := strings.Split(images_urls_str, ",")
@@ -88,6 +89,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 				}
 				images_to_process_lst = append(images_to_process_lst, img_to_process)
 			}
+
 			//-------------------
 
 			running_job, job_expected_outputs_lst, gf_err := Client__run_extern_imgs(client_type_str,
@@ -101,12 +103,13 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			}
 			
  			//------------------
-			//OUTPUT
+			// OUTPUT
 			data_map := map[string]interface{}{
 				"running_job_id_str":       running_job.Id_str,
 				"job_expected_outputs_lst": job_expected_outputs_lst,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -205,5 +208,6 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			}()
 		}
 	})
+	
 	//---------------------
 }

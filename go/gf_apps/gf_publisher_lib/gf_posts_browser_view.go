@@ -26,19 +26,19 @@ import (
 )
 
 //---------------------------------------------------
-func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-lists
+func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, // list-of-lists
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_posts_page_size_int    int, //5
+	p_posts_page_size_int    int, // 5
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_view.posts_browser__render_template()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_posts_browser_view.posts_browser__render_template()")
 
 	pages_lst := [][]map[string]interface{}{}
-	for _,posts_page_lst := range p_posts_pages_lst {
+	for _, posts_page_lst := range p_posts_pages_lst {
 
 		page_posts_lst := []map[string]interface{}{}
-		for _,post := range posts_page_lst {
+		for _, post := range posts_page_lst {
 
 			post_info_map := map[string]interface{}{
 				"post_title_str":             post.Title_str,
@@ -46,13 +46,14 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 				"post_thumbnail_url_str":     post.Thumbnail_url_str,
 				"images_number_int":          len(post.Images_ids_lst),
 			}
+
 			//---------------
-			//TAGS
+			// TAGS
 			if len(post.Tags_lst) > 0 {
 				post_tags_lst := []string{}
-				for _,tag_str := range post.Tags_lst {
+				for _, tag_str := range post.Tags_lst {
 
-					//IMPORTANT!! - some tags attached to posts are emtpy strings ""
+					// IMPORTANT!! - some tags attached to posts are emtpy strings ""
 					if tag_str != "" {
 						post_tags_lst = append(post_tags_lst, tag_str)
 					}
@@ -63,6 +64,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 			} else {
 				post_info_map["post_has_tags_bool"] = false
 			}
+
 			//---------------
 
 			page_posts_lst = append(page_posts_lst, post_info_map)
@@ -75,14 +77,14 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 	type tmpl_data struct {
 		Posts_pages_lst  [][]map[string]interface{}
 		Sys_release_info gf_core.Sys_release_info
-		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
+		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Posts_pages_lst:  pages_lst,
 		Sys_release_info: sys_release_info,
 		//-------------------------------------------------
-		//IS_SUBTEMPLATE_DEFINED
+		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
 			for _, n := range p_subtemplates_names_lst {
 				if n == p_subtemplate_name_str {
@@ -91,6 +93,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, //list-of-li
 			}
 			return false
 		},
+
 		//-------------------------------------------------
 	})
 

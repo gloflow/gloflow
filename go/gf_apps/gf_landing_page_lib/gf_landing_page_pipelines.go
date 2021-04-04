@@ -42,7 +42,9 @@ func Pipeline__get_landing_page(p_max_random_cursor_position_int int, //500
 		return gf_err
 	}
 
-	featured_imgs_lst, gf_err := get_featured_imgs(p_max_random_cursor_position_int, p_featured_imgs_to_get_int, p_runtime_sys)
+	featured_imgs_lst, gf_err := get_featured_imgs(p_max_random_cursor_position_int,
+		p_featured_imgs_to_get_int,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

@@ -26,18 +26,18 @@ import (
 )
 
 //---------------------------------------------------
-//external post_info is the one that comes from outside the system
-//(it does not have an id assigned to it)
+// external post_info is the one that comes from outside the system
+// (it does not have an id assigned to it)
 
 func verify_external_post_info(p_post_info_map map[string]interface{},
-	p_max_title_chars_int       int, //100
-	p_max_description_chars_int int, //1000
-	p_post_element_tag_max_int  int, //20
+	p_max_title_chars_int       int, // 100
+	p_max_description_chars_int int, // 1000
+	p_post_element_tag_max_int  int, // 20
 	p_runtime_sys               *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_external_post_info()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_verify.verify_external_post_info()")
 
 	//-------------------
-	//CLIENT_TYPE
+	// CLIENT_TYPE
 	if _,ok := p_post_info_map["client_type_str"]; !ok {
 		gf_err := gf_core.Error__create("post client_type_str not supplied",
 			"verify__missing_key_error",
@@ -46,8 +46,9 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 		return nil, gf_err
 	}
 	client_type_str := p_post_info_map["client_type_str"].(string)
+
 	//-------------------
-	//TITLE
+	// TITLE
 	if _,ok := p_post_info_map["title_str"]; !ok {
 		gf_err := gf_core.Error__create("post title_str not supplied",
 			"verify__missing_key_error",
@@ -68,18 +69,19 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 		return nil, gf_err
 	}
 
-	//ATTENTION!!
-	//FB is removing/having problems with these symbols in url endings, and since the url to posts is composed of 
-	//the post title, FB breaks these links
-	//so striping them off right here avoids that
+	// ATTENTION!!
+	// FB is removing/having problems with these symbols in url endings, and since the url to posts is composed of 
+	// the post title, FB breaks these links
+	// so striping them off right here avoids that
 
 	clean_title_str   := title_str
 	replace_chars_lst := []string{"[",",",":","#","%","&","!","]","$"}
 	for _,c := range replace_chars_lst {
 		strings.Replace(clean_title_str,c,"",-1)
 	}
+
 	//-------------------
-	//DESCRIPTION
+	// DESCRIPTION
 	if _,ok := p_post_info_map["description_str"]; !ok {
 		gf_err := gf_core.Error__create("post description_str not supplied",
 			"verify__missing_key_error",
@@ -99,14 +101,16 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------------	
-	//TAGS
+	// TAGS
 	tags_lst, gf_err := verify_tags(p_post_info_map, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
+
 	//-------------------
-	//POSTER_USER_NAME
+	// POSTER_USER_NAME
 	if _,ok := p_post_info_map["poster_user_name_str"]; !ok {
 		gf_err := gf_core.Error__create("post poster_user_name_str not supplied",
 			"verify__missing_key_error",
@@ -114,16 +118,18 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 			nil, "gf_publisher_lib", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------------
-	//POST ELEMENTS
+	// POST ELEMENTS
 	gf_err = verify_post_elements(p_post_info_map, p_post_element_tag_max_int, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
+
 	//-------------------
 
-	//"id_str" - not included here since p_post_info_map comes from outside the system
-	//           and the internal id"s are for now not passed outside (or coming in from outside)
+	// "id_str" - not included here since p_post_info_map comes from outside the system
+	//            and the internal id"s are for now not passed outside (or coming in from outside)
 	verified_post_info_map := map[string]interface{}{
 		"client_type_str":      client_type_str,
 		"title_str":            clean_title_str,
@@ -135,11 +141,12 @@ func verify_external_post_info(p_post_info_map map[string]interface{},
 	
 	return verified_post_info_map, nil
 }
+
 //---------------------------------------------------
 func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) ([]string, *gf_core.Gf_error) { 
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
-	if _,ok := p_post_info_map["tags_str"]; !ok {
+	if _, ok := p_post_info_map["tags_str"]; !ok {
 		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the tags_str key",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
@@ -155,13 +162,14 @@ func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.
 
 	return tags_lst, nil
 }
+
 //---------------------------------------------------
 func verify_post_elements(p_post_info_map map[string]interface{},
 	p_post_element_tag_max_int int,
 	p_runtime_sys              *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
-	if _,ok := p_post_info_map["post_elements_lst"]; !ok {
+	if _, ok := p_post_info_map["post_elements_lst"]; !ok {
 		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the post_elements_lst key",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
@@ -170,7 +178,7 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	}
 	post_elements_lst := p_post_info_map["post_elements_lst"].([]interface{})
 
-	//verify each individiaul post_element
+	// verify each individiaul post_element
 	for _,post_element := range post_elements_lst {
 		post_element_map := post_element.(map[string]interface{})
 		gf_err           := verify_post_element(post_element_map, p_post_element_tag_max_int, p_runtime_sys)
@@ -179,10 +187,10 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 		}
 
 		//------------------------
-		//SECURITY
-		//ADD!! - have a external-url checking routines/whitelists/blacklists
-		//        and other url sanitization routines,
-		//        to prevent various XSS attacks
+		// SECURITY
+		// ADD!! - have a external-url checking routines/whitelists/blacklists
+		//         and other url sanitization routines,
+		//         to prevent various XSS attacks
 		//------------------------
 	}
 
@@ -196,7 +204,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 	p_runtime_sys.Log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
 
 	//--------------
-	//POST_ELEMENT_TYPE
+	// POST_ELEMENT_TYPE
 	post_element_type_str := p_post_element_info_map["type_str"].(string)
 
 	gf_err := verify_post_element_type(post_element_type_str, p_runtime_sys)
@@ -209,9 +217,9 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		post_element_type_str == "video" ||
 		post_element_type_str == "iframe") {	 
 
-		//FIX!! - new versions of post_element_info_map format use extern_url_str
-		//        instead of url_str. so when all post"s in the DB are updated to this format
-		//        remove p_post_element_info_map has_key "url_str" check from this assert
+		// FIX!! - new versions of post_element_info_map format use extern_url_str
+		//         instead of url_str. so when all post"s in the DB are updated to this format
+		//         remove p_post_element_info_map has_key "url_str" check from this assert
 		if !(gf_core.Map_has_key(p_post_element_info_map,"url_str") || gf_core.Map_has_key(p_post_element_info_map,"extern_url_str")) {
 		
 			gf_err := gf_core.Error__create("p_post_element_info_map doesnt contain url_str|extern_url_str",
@@ -221,8 +229,9 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 			return gf_err
 		}
 	}
+
 	//--------------
-	//TAGS - OPTIONAL 
+	// TAGS - OPTIONAL 
 	if pe_tags_lst, ok := p_post_element_info_map["tags_lst"]; ok {
 		for _,tag_str := range pe_tags_lst.([]string) {
 
@@ -238,6 +247,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 			}
 		}
 	}
+	
 	//--------------
 	return nil
 }

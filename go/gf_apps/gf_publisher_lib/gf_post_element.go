@@ -32,45 +32,49 @@ type Gf_post_element struct {
 
 	Id_str string `bson:"id_str"`
 
-	//type_str - "link"|"image"|"video"|"iframe"|"text"
+	// type_str - "link"|"image"|"video"|"iframe"|"text"
 	Type_str        string `bson:"type_str"`
 	Description_str string `bson:"description_str"`
 
-	//post_elements can be created after/before their hosting post has been created
-	//so their creation datetimes might be different then the post creation datetime
+	// post_elements can be created after/before their hosting post has been created
+	// so their creation datetimes might be different then the post creation datetime
 	Creation_datetime_str string `bson:"creation_datetime_str"`
 
-	//FIX!! - if type_str == "image" this url_str should be the external source link if 
-	//        the PostElement_ADT is a composite of external stuff
+	// FIX!! - if type_str == "image" this url_str should be the external source link if 
+	//         the PostElement_ADT is a composite of external stuff
 	//----------------------
-	//if type_str == "link"|"image"|"video"|"iframe" then PostElement_ADT has 
-	//a external url associated with it
+	// if type_str == "link"|"image"|"video"|"iframe" then PostElement_ADT has 
+	// a external url associated with it
 	Extern_url_str string `bson:"extern_url_str"`
+	
 	//----------------------
-	//if type_str == "image"|"video" then source_page_url_str represents the URL of
-	//the page from which this post_element was extracted from (if it wasnt uploaded directly)
+	// if type_str == "image"|"video" then source_page_url_str represents the URL of
+	// the page from which this post_element was extracted from (if it wasnt uploaded directly)
 	Origin_page_url_str string `bson:"origin_page_url_str"`
+	
 	//----------------------
-	//GEOMETRIC PROPS
+	// GEOMETRIC PROPS
 		
-	//this is the index unique for the element, in a maximum of 3d space
-	//lower orders (1d,2d) are done in the 3d tuple (x,y,0)
-	//this is used for graphical/positioning ops
-	//FIX!! - postfix is "_tpl" for legacy reasons. should be "_lst"
+	// this is the index unique for the element, in a maximum of 3d space
+	// lower orders (1d,2d) are done in the 3d tuple (x,y,0)
+	// this is used for graphical/positioning ops
+	// FIX!! - postfix is "_tpl" for legacy reasons. should be "_lst"
 	Post_index_3_lst []int `bson:"post_index_3_lst"`
 	Width_int        int   `bson:"width_int"`  //in pixels
 	Height_int       int   `bson:"height_int"` //in pixels
+	
 	//----------------------
-	//IMAGE - if type_str == "image"
+	// IMAGE - if type_str == "image"
 
 	Image_id_str gf_images_utils.Gf_image_id
 
-	//only thumbnail urls are tracked here in the Post_ADT, not the full-size (which is tracked
-	//in Image_ADT), since the fullsize internal url is never used (that would be copyright infringement).
-	//using thumbnails falls into fair-use
+	// only thumbnail urls are tracked here in the Post_ADT, not the full-size (which is tracked
+	// in Image_ADT), since the fullsize internal url is never used (that would be copyright infringement).
+	// using thumbnails falls into fair-use
 	Img_thumbnail_small_url_str  string `bson:"img_thumbnail_small_url_str"`
 	Img_thumbnail_medium_url_str string `bson:"img_thumbnail_medium_url_str"`
 	Img_thumbnail_large_url_str  string `bson:"img_thumbnail_large_url_str"`
+	
 	//----------------------
 
 	Tags_lst   []string               `bson:"tags_lst"`
@@ -93,15 +97,17 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 
 		//--------------------
 		//
-		//1d index stored in the 3d index slot
-		//this is the placement order for the post element
+		// 1d index stored in the 3d index slot
+		// this is the placement order for the post element
 		post_index_3_lst := []int{i, 0, 0,}
+
 		//--------------------
-		//POST_ELEMENT_ID
+		// POST_ELEMENT_ID
 	
-		//FIX!! - post_index_3_str shouldnt be serialized in ID as a list
-		//example ID output - "pub_pe:test_post_"title:[0, 0, 0]"
+		// FIX!! - post_index_3_str shouldnt be serialized in ID as a list
+		// example ID output - "pub_pe:test_post_"title:[0, 0, 0]"
 		post_index_3_str := fmt.Sprint(post_index_3_lst) //post_element_map["post_index_3_lst"])
+
 		//------------------
 		post_element_id_str               := fmt.Sprintf("pub_pe:%s:%s", p_post_title_str, post_index_3_str)
 		post_element__type_str            := post_element_map["type_str"].(string)
@@ -117,7 +123,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 			Extern_url_str:        extern_url_str,
 			Origin_page_url_str:   post_element__origin_page_url_str,
 			Post_index_3_lst:      post_index_3_lst,
-			//Description_str      :post_element_map["description_str"].(string),
+			// Description_str      :post_element_map["description_str"].(string),
 		}
 		
 		post_elements_lst = append(post_elements_lst, post_element)
@@ -130,7 +136,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_first_image_post_element()")
 
-	for _,post_element := range p_post.Post_elements_lst {
+	for _, post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == "image" {
 			return post_element
 		}
@@ -150,7 +156,7 @@ func get_post_elements_of_type(p_post *Gf_post,
 	}
 	
 	post_elements_lst := []*Gf_post_element{}
-	for _,post_element := range p_post.Post_elements_lst {
+	for _, post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == p_type_str {
 			post_elements_lst = append(post_elements_lst, post_element)
 		}

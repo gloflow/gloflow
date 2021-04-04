@@ -134,6 +134,7 @@ func process_external_images(p_post *Gf_post,
 
 	// IMPORTANT!! - list of all images in this post
 	p_post.Images_ids_lst = result.image_ids_lst
+
 	//----------------
 	/*// POST THUMBNAIL
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
@@ -143,6 +144,7 @@ func process_external_images(p_post *Gf_post,
 
 	p_post.Thumbnail_url_str = result.post_thumbnail_str
 	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
+
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
 	// in the initiation of image post_elements)
@@ -150,6 +152,7 @@ func process_external_images(p_post *Gf_post,
 	if gf_err != nil {
 		return "", gf_err
 	}
+
 	//----------------
 
 	return result.running_job_id_str, nil
@@ -174,6 +177,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 	if gf_err != nil {
 		return nil, gf_err
 	}
+
 	//--------------------
 
 	image_ids_lst := []gf_images_utils.Gf_image_id{}
@@ -199,12 +203,14 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 		image_ids_lst = append(image_ids_lst, output.Image_id_str)
 		//--------------------
 	}
+
 	//--------------------
 	// POST THUMBNAIL
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
 	first_image_url_str := outputs_lst[0].Image_source_url_str
 	first_post_element  := p_post_elements_map[first_image_url_str]
 	post_thumbnail_str  := first_post_element.Img_thumbnail_small_url_str
+
 	//--------------------
 
 	result := &Gf_images_client_result{
@@ -272,6 +278,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 		post_element.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
 		post_element.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
 		image_ids_lst = append(image_ids_lst, output.Image_id_str)
+
 		//--------------------
 	}
 	//--------------------
@@ -280,6 +287,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*Gf_post
 	first_image_url_str := outputs_lst[0].Image_source_url_str
 	first_post_element  := p_post_elements_map[first_image_url_str]
 	post_thumbnail_str  := first_post_element.Img_thumbnail_small_url_str
+	
 	//--------------------
 
 	result := &Gf_images_client_result{

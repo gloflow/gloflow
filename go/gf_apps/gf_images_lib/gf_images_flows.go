@@ -24,6 +24,7 @@ import (
 	"time"
 	"strconv"
 	"net/http"
+	"context"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -37,18 +38,18 @@ import (
 
 type Images_flow struct {
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               string        `bson:"id_str"`
-	T_str                string        `bson:"t"`
-	Creation_unix_time_f float64       `bson:"creation_unix_time_f"`
-	Name_str             string        `bson:"name_str"`
+	Id_str               string             `bson:"id_str"`
+	T_str                string             `bson:"t"`
+	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+	Name_str             string             `bson:"name_str"`
 }
 
 type Image_exists__check struct {
 	Id                         primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str                     string        `bson:"id_str"`
-	T_str                      string        `bson:"t"`
-	Creation_unix_time_f       float64       `bson:"creation_unix_time_f"`
-	Images_extern_urls_lst     []string      `bson:"images_extern_urls_lst"`
+	Id_str                     string             `bson:"id_str"`
+	T_str                      string             `bson:"t"`
+	Creation_unix_time_f       float64            `bson:"creation_unix_time_f"`
+	Images_extern_urls_lst     []string           `bson:"images_extern_urls_lst"`
 }
 
 // //-------------------------------------------------
@@ -156,8 +157,20 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 			Images_extern_urls_lst: p_images_extern_urls_lst,
 		}
 
-		// ADD!! - log this error
-		db_err := p_runtime_sys.Mongo_coll.Insert(check)
+		ctx           := context.Background()
+		coll_name_str := p_runtime_sys.Mongo_coll.Name()
+		_              = gf_core.Mongo__insert(check,
+			coll_name_str,
+			map[string]interface{}{
+				"images_extern_urls_lst": p_images_extern_urls_lst,
+				"flow_name_str":          p_flow_name_str,
+				"client_type_str":        p_client_type_str,
+				"caller_err_msg_str":     "failed to insert a img_exists_check in mongodb",
+			},
+			ctx,
+			p_runtime_sys)
+			
+		/*db_err := p_runtime_sys.Mongo_coll.Insert(check)
 		if db_err != nil {
 			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
 				"mongodb_insert_error",
@@ -168,8 +181,9 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 				},
 				db_err, "gf_images_lib", p_runtime_sys)
 			return
-		}
+		}*/
 	}()
+
 	//-------------------------
 
 	return existing_images_lst, nil
@@ -203,6 +217,7 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 	if gf_err != nil {
 		return nil, nil, gf_images_utils.Gf_image_id(""), gf_err
 	}
+
 	//------------------
 
 	image_id_str                     := gf_images_utils.Gf_image_id(job_expected_outputs_lst[0].Image_id_str)
@@ -220,14 +235,25 @@ func flows__create(p_images_flow_name_str string,
 	id_str               := fmt.Sprintf("img_flow:%f",float64(time.Now().UnixNano())/1000000000.0)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	flow   := &Images_flow{
+	flow := &Images_flow{
 		Id_str:               id_str,
 		T_str:                "img_flow",
 		Name_str:             p_images_flow_name_str,
 		Creation_unix_time_f: creation_unix_time_f,
 	}
 
-	err := p_runtime_sys.Mongo_coll.Insert(*flow)
+	ctx           := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	_              = gf_core.Mongo__insert(flow,
+		coll_name_str,
+		map[string]interface{}{
+			"images_flow_name_str": p_images_flow_name_str,
+			"caller_err_msg_str":   "failed to insert a image Flow in mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	
+	/*err := p_runtime_sys.Mongo_coll.Insert(*flow)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
 			"mongodb_insert_error",
@@ -236,7 +262,7 @@ func flows__create(p_images_flow_name_str string,
 			},
 			err, "gf_images_lib", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 
 	return flow, nil
 }

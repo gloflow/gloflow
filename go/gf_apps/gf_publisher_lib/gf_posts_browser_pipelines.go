@@ -68,15 +68,15 @@ func Render_initial_pages(p_response_format_str string,
 	
 	posts_pages_lst := [][]*Gf_post{}
 
-	for i:=0;i<p_initial_pages_num_int;i++ {
+	for i:=0; i < p_initial_pages_num_int; i++ {
 
 		start_position_int := i*p_page_size_int
-		//int end_position_int   = start_position_int+p_page_size_int;
+		// int end_position_int   = start_position_int+p_page_size_int;
 
 		p_runtime_sys.Log_fun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
 
-		//initial page might be larger then subsequent pages, that are requested 
-		//dynamically by the front-end
+		// initial page might be larger then subsequent pages, that are requested 
+		// dynamically by the front-end
 		page_lst, gf_err := DB__get_posts_page(start_position_int, p_page_size_int, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err

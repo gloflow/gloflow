@@ -36,12 +36,13 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_handlers.init_handlers()")
 	
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 
 	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//----------------
 	http.HandleFunc("/a/crawl/image/recent", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
@@ -55,12 +56,14 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/recent", "failed to get recently crawled images", gf_err, p_resp, p_runtime_sys)
 				return
 			}
+
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			data_map := map[string]interface{}{
 				"recent_images_lst": recent_images_lst,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
 			//------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -70,6 +73,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			}()
 		}
 	})
+
 	//----------------
 	http.HandleFunc("/a/crawl/image/add_to_flow", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/add_to_flow ----------")
@@ -78,7 +82,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
-			//INPUT
+			// INPUT
 			i, gf_err := gf_rpc_lib.Get_http_input("/a/crawl/image/add_to_flow", p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to get input for adding a crawled image to a flow", gf_err, p_resp, p_runtime_sys)
@@ -91,8 +95,8 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			for _, s := range i["flows_names_lst"].([]interface{}) {
 				flows_names_lst = append(flows_names_lst, s.(string))
 			}
+
 			//--------------------------
-			
 			gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 				flows_names_lst,
 				p_crawled_images_s3_bucket_name_str,
@@ -103,10 +107,12 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to add a crawled image to a gf_images flow", gf_err, p_resp, p_runtime_sys)
 				return
 			}
+
 			//------------------
-			//OUTPUT
+			// OUTPUT
 			data_map := map[string]interface{}{}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+			
 			//------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -123,7 +129,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 		query_term_str := p_req.URL.Query()["term"][0]
 		p_runtime_sys.Log_fun("INFO", "query_term_str - "+query_term_str)
 
-		//IMPORTANT!! - only query if the indexer is enabled
+		// IMPORTANT!! - only query if the indexer is enabled
 		if p_runtime.Esearch_client != nil {
 			gf_err := gf_crawl_core.Index__query(query_term_str, p_runtime, p_runtime_sys)
 			if gf_err != nil {
@@ -132,9 +138,10 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			}
 		}
 		//------------------
-		//OUTPUT
+		// OUTPUT
 		data_map := map[string]interface{}{}
 		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
 		//------------------
 	})
 	//----------------
@@ -145,7 +152,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------
-			//RENDER TEMPLATE
+			// RENDER TEMPLATE
 			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
 				p_resp,
@@ -162,6 +169,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			}()
 		}
 	})
+	
 	//--------------
 
 	return nil

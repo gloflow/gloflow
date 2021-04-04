@@ -109,8 +109,6 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_p
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
-
-
 	ctx := context.Background()
 	pipeline := mongo.Pipeline{
 		{

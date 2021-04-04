@@ -76,6 +76,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_cycle_run_id_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGE - create gf_image/gf_image_refs structs
 
@@ -84,6 +85,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		page_imgs__pipeline_infos_lst,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGE - persist gf_image/gf_image_ref to DB
 	
@@ -91,6 +93,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		page_imgs__pinfos_with_imgs_lst,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGE - download gf_images from target URL
 	
@@ -100,6 +103,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		origin_page_url_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGES - process images
 
@@ -110,6 +114,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGE - persist all images files (S3, etc.)
 
@@ -119,6 +124,7 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	// STAGE - cleanup
 
@@ -142,6 +148,7 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	if gf_err != nil {
 		return nil, nil, "", gf_err
 	}
+
 	//------------------------
 	image, image_thumbs, gf_err := image__process(p_image,
 		"", //p_gf_image_id_str
@@ -153,6 +160,7 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	if gf_err != nil {
 		return nil, nil, "", gf_err
 	}
+
 	//------------------------
 	gf_err = image_s3__upload(p_image,
 		local_image_file_path_str,
@@ -163,13 +171,14 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	if gf_err != nil {
 		return nil, nil, "", gf_err
 	}
+
 	//------------------------
 
 	return image, image_thumbs, local_image_file_path_str, nil
 }
 
 //--------------------------------------------------
-//STAGES
+// STAGES
 //--------------------------------------------------
 func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
 	p_crawler_name_str string,
@@ -188,13 +197,13 @@ func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
 		img_src_str, _      := p_elem.Attr("src")
 		origin_page_url_str := p_url_fetch.Url_str
 		
-		//GF_PAGE_IMG__LINK
+		// GF_PAGE_IMG__LINK
 		page_img_link := &gf_page_img_link{
 			img_src_str:         img_src_str,
 			origin_page_url_str: origin_page_url_str,
 		}
 
-		//GF_PAGE_IMG__PIPELINE_INFO
+		// GF_PAGE_IMG__PIPELINE_INFO
 		page_img__pipeline_info := &gf_page_img__pipeline_info{
 			link: page_img_link,
 		}
@@ -223,9 +232,9 @@ func images__stage__create_page_images(p_crawler_name_str string,
 		// CRAWLER_PAGE_IMG
 
 		gf_img, gf_err := images_adt__prepare_and_create(p_crawler_name_str,
-			p_cycle_run_id_str,                       //p_cycle_run_id_str
-			page_img__pinfo.link.img_src_str,         //p_img_src_url_str
-			page_img__pinfo.link.origin_page_url_str, //p_origin_page_url_str
+			p_cycle_run_id_str,                       // p_cycle_run_id_str
+			page_img__pinfo.link.img_src_str,         // p_img_src_url_str
+			page_img__pinfo.link.origin_page_url_str, // p_origin_page_url_str
 			p_runtime,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -237,11 +246,12 @@ func images__stage__create_page_images(p_crawler_name_str string,
 
 		gf_img_ref := images_adt__ref_create(p_crawler_name_str,
 			p_cycle_run_id_str,
-			gf_img.Url_str,                           //p_image_url_str
-			gf_img.Domain_str,                        //p_image_url_domain_str
-			page_img__pinfo.link.origin_page_url_str, //p_origin_page_url_str
-			gf_img.Origin_page_url_domain_str,        //p_origin_page_url_domain_str
+			gf_img.Url_str,                           // p_image_url_str
+			gf_img.Domain_str,                        // p_image_url_domain_str
+			page_img__pinfo.link.origin_page_url_str, // p_origin_page_url_str
+			gf_img.Origin_page_url_domain_str,        // p_origin_page_url_domain_str
 			p_runtime_sys)
+
 		//------------------
 		// GIF
 		if  gf_img.Img_ext_str == "gif" {
@@ -277,6 +287,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		}
 
 		page_img := page_img__pinfo.page_img
+
 		//------------------
 		img_exists_bool, gf_err := Image__db_create(page_img__pinfo.page_img, p_runtime, p_runtime_sys)
 		if gf_err != nil {
@@ -290,6 +301,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		}
 
 		page_img__pinfo.exists_bool = img_exists_bool
+
 		//------------------
 		gf_err = Image__db_create_ref(page_img__pinfo.page_img_ref, p_runtime, p_runtime_sys)
 		if gf_err != nil {
@@ -301,6 +313,7 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 			page_img__pinfo.gf_error = gf_err
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
+		
 		//------------------
 	}
 	return p_page_imgs__pipeline_infos_lst

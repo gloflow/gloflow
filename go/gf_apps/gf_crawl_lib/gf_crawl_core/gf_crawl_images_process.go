@@ -115,7 +115,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 			gif_download_and_frames__local_dir_path_str,
 			image_client_type_str,
 			image_flows_names_lst,
-			true, //p_create_new_db_img_bool
+			true, // p_create_new_db_img_bool
 			p_s3_bucket_name_str,
 			p_runtime.S3_info,
 			p_runtime_sys)
@@ -131,6 +131,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 		}
 
 		return nil, nil, nil
+
 	//----------------------------
 	// GENERAL
 	} else {
@@ -163,6 +164,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 
 		return gf_image, gf_image_thumbs, nil
 	}
+	
 	//----------------------------
 	return nil, nil, nil
 }

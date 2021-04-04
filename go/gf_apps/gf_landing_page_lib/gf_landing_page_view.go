@@ -48,7 +48,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 		Featured_imgs_lst:  p_featured_imgs_lst,
 		Sys_release_info:   sys_release_info,
 		//-------------------------------------------------
-		//IS_SUBTEMPLATE_DEFINED
+		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
 			for _, n := range p_subtemplates_names_lst {
 				if n == p_subtemplate_name_str {

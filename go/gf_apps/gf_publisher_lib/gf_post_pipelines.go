@@ -49,6 +49,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
+
 	//----------------------
 	// CREATE POST
 	post, gf_err := create_new_post(verified_post_info_map, p_runtime_sys)
@@ -57,12 +58,14 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	}
 
 	p_runtime_sys.Log_fun("INFO","post - "+fmt.Sprint(post))
+
 	//----------------------
 	// PERSIST POST
 	gf_err = DB__create_post(post, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
+
 	//----------------------
 	//IMAGES
 	//IMPORTANT - long-lasting image operation
@@ -70,6 +73,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	if img_gf_err != nil {
 		return nil, "", img_gf_err
 	}
+
 	//----------------------
 
 	return post, images_job_id_str, nil
@@ -107,31 +111,33 @@ func Pipeline__get_post(p_post_title_str string,
 
 	switch p_response_format_str {
 		//------------------
-		//HTML RENDERING
+		// HTML RENDERING
 		case "html":
 
-			//SCALABILITY!!
-			//ADD!! - cache this result in redis, and server it from there
-			//        only re-generate the template every so often
-			//        or figure out some quick way to check if something changed
+			// SCALABILITY!!
+			// ADD!! - cache this result in redis, and server it from there
+			//         only re-generate the template every so often
+			//         or figure out some quick way to check if something changed
 			gf_err := post__render_template(post, p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
 			if gf_err != nil {
 				return gf_err
 			}
+
 		//------------------
-		//JSON EXPORT
+		// JSON EXPORT
 		case "json":
 
 			post_byte_lst,err := json.Marshal(post)
 			if err != nil {
 				gf_err := gf_core.Error__create("failed to serialize a Post into JSON form",
 					"json_marshal_error",
-					map[string]interface{}{"post_title_str":p_post_title_str,},
+					map[string]interface{}{"post_title_str": p_post_title_str,},
 					err, "gf_publisher_lib", p_runtime_sys)
 				return gf_err
 			}
 			post_str := string(post_byte_lst)
 			p_resp.Write([]byte(post_str))
+
 		//------------------
 	}
 	return nil

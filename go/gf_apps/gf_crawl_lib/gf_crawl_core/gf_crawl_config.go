@@ -37,10 +37,11 @@ type Gf_crawler_def struct {
 }
 
 //--------------------------------------------------
-func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_core.Runtime_sys) (map[string]Gf_crawler_def, *gf_core.Gf_error) {
+func Get_all_crawlers(p_crawl_config_file_path_str string,
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]Gf_crawler_def, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_config.Get_all_crawlers()")
 
-	//no config file found, so use hard-coded crawler definitions
+	// no config file found, so use hard-coded crawler definitions
 	if _, err := os.Stat(p_crawl_config_file_path_str); os.IsNotExist(err) {
 
 		crawlers_map := map[string]Gf_crawler_def{
@@ -53,7 +54,7 @@ func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_cor
 	} else {
 
 		//-------------
-		//OPEN_CONFIG_FILE
+		// OPEN_CONFIG_FILE
 		config_byte_lst, fs_err := ioutil.ReadFile(p_crawl_config_file_path_str)
 		if fs_err != nil {
 			gf_err := gf_core.Error__create("failed to read a local file to load the image",
@@ -62,8 +63,9 @@ func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_cor
 				fs_err, "gf_crawl_lib", p_runtime_sys)
 			return nil, gf_err
 		}
+		
 		//-------------
-		//PARSE_YAML
+		// PARSE_YAML
 		crawl_config := Gf_crawl_config{}
 		err = yaml.Unmarshal(config_byte_lst, &crawl_config)
 		if err != nil {
@@ -74,7 +76,7 @@ func Get_all_crawlers(p_crawl_config_file_path_str string, p_runtime_sys *gf_cor
 			return nil, gf_err
 		}
 
-		//index crawler_defs by name
+		// index crawler_defs by name
 		crawlers_map := map[string]Gf_crawler_def{}
 		for _, crawler_def := range crawl_config.Crawlers_defs_lst {
 			crawlers_map[crawler_def.Name_str] = crawler_def

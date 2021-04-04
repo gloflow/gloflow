@@ -58,20 +58,21 @@ func add_tags_to_post(p_post *Gf_post,
 		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
 
 		//---------------
-		//eliminate duplicates from the list, in case 
-		//some of the tags just added already exist in the list of all tags
+		// eliminate duplicates from the list, in case 
+		// some of the tags just added already exist in the list of all tags
 
 		encountered_map   := map[string]bool{}
 		no_dupliactes_lst := []string{}
 
-		for _,t_str := range p_post.Tags_lst {
+		for _, t_str := range p_post.Tags_lst {
 			if encountered_map[t_str] {
-				//tuplicate exists
+				// tuplicate exists
 			} else {
 				encountered_map[t_str] = true
 				no_dupliactes_lst      = append(no_dupliactes_lst, t_str)
  			}
 		}
+
 		//---------------
 		
 		p_post.Tags_lst = no_dupliactes_lst
@@ -82,7 +83,7 @@ func add_tags_to_post(p_post *Gf_post,
 
 //---------------------------------------------------
 func get_posts_small_thumbnails_urls(p_posts_lst []*Gf_post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_utils.get_posts_small_thumbnails_urls()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}
 	for _, post := range p_posts_lst {

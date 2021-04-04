@@ -23,7 +23,9 @@ import (
 	"fmt"
 	"time"
 	"net/url"
+	"context"
 	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/fatih/color"
@@ -75,10 +77,10 @@ func Fetch__url(p_url_str string,
 	start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	//-------------------
-	url,err := url.Parse(p_url_str)
+	url, err := url.Parse(p_url_str)
 	if err != nil {
-		t:="fetcher_parse_url__failed"
-		m:=fmt.Sprintf("failed to parse url for fetch - %s", p_url_str)
+		t := "fetcher_parse_url__failed"
+		m := fmt.Sprintf("failed to parse url for fetch - %s", p_url_str)
 
 		gf_err := gf_core.Error__create(m,
 			"url_parse_error",
@@ -104,15 +106,38 @@ func Fetch__url(p_url_str string,
 		Domain_str:           domain_str,
 		Url_str:              p_url_str,
 		Start_time_f:         start_time_f,
-		//End_time_f           : end_time_f,
-		//Page_text_str        : doc.Text(),
-		//goquery_doc          : doc,
+		// End_time_f           : end_time_f,
+		// Page_text_str        : doc.Text(),
+		// goquery_doc          : doc,
 	}
 
-	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(fetch)
+	t := "fetch_record_persist__failed"
+	m := fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
+
+	ctx           := context.Background()
+	coll_name_str := "gf_crawl"
+	gf_err        := gf_core.Mongo__insert(fetch,
+		coll_name_str,
+		map[string]interface{}{
+			"url_str":            p_url_str,
+			"caller_err_msg_str": m,
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		
+		_, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
+		if fe_gf_err != nil {
+			return nil, "", fe_gf_err
+		}
+
+		return nil, "", gf_err
+	}
+
+	/*err = p_runtime_sys.Mongo_db.C("gf_crawl").Insert(fetch)
 	if err != nil {
-		t:="fetch_record_persist__failed"
-		m:=fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
+		t := "fetch_record_persist__failed"
+		m := fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
 		
 		gf_err := gf_core.Mongo__handle_error(m,
 			"mongodb_insert_error",
@@ -125,7 +150,7 @@ func Fetch__url(p_url_str string,
 		}
 
 		return nil, "", gf_err
-	}
+	}*/
 	
 	//-------------------
 	// HTTP REQUEST
@@ -153,11 +178,15 @@ func Fetch__url(p_url_str string,
 	fetch.End_time_f    = end_time_f
 	fetch.Page_text_str = doc.Text()
 	fetch.goquery_doc   = doc
-	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{"id_str": fetch.Id_str, "t": "crawler_url_fetch"},
-		bson.M{"$set":bson.M{
+	_, err = p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
+			"id_str": fetch.Id_str,
+			"t":      "crawler_url_fetch",
+		},
+		bson.M{"$set": bson.M{
 			"end_time_f":    end_time_f,
 			"page_text_str": doc.Text(),
 		}})
+		
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to to update fetch record with end_time and page_text",
 			"mongodb_update_error",
@@ -165,8 +194,9 @@ func Fetch__url(p_url_str string,
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, "", gf_err
 	}
+
 	//-------------
-	//SEND_EVENT
+	// SEND_EVENT
 	if p_runtime.Events_ctx != nil {
 		events_id_str  := "crawler_events"
 		event_type_str := "fetch__http_request__done"
@@ -178,19 +208,20 @@ func Fetch__url(p_url_str string,
 		}
 
 		gf_core.Events__send_event(events_id_str,
-			event_type_str, //p_type_str
-			msg_str,        //p_msg_str
+			event_type_str, // p_type_str
+			msg_str,        // p_msg_str
 			data_map,
 			p_runtime.Events_ctx,
 			p_runtime_sys)
 	}
+
 	//-------------
 	
 	return fetch, domain_str, nil
 }
 
 //--------------------------------------------------
-//FETCH__PARSE_RESULT
+// FETCH__PARSE_RESULT
 
 func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
@@ -199,17 +230,18 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_fetch.Fetch__parse_result()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_fetch.Fetch__parse_result()")
 
 	//----------------
-	//GET LINKS
+	// GET LINKS
 	Links__get_outgoing_in_page(p_url_fetch,
 		p_cycle_run_id_str,
 		p_crawler_name_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//----------------
-	//GET IMAGES
+	// GET IMAGES
 	images_pipe__from_html(p_url_fetch,
 		p_cycle_run_id_str,
 		p_crawler_name_str,
@@ -217,16 +249,18 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
-	//----------------
-	//INDEX URL_FETCH
 
-	//IMPORTANT!! - index only if the indexer is initialized
+	//----------------
+	// INDEX URL_FETCH
+
+	// IMPORTANT!! - index only if the indexer is initialized
 	if p_runtime.Esearch_client != nil {
 		gf_err := index__add_to__of_url_fetch(p_url_fetch, p_runtime, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
 	}
+
 	//----------------
 
 	return nil
@@ -254,7 +288,7 @@ func fetch__error(p_error_type_str string,
 	}
 
 	if p_link != nil {
-		//IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
+		// IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
 		lm_err := link__db_mark_as_failed(crawler_error, p_link, p_runtime, p_runtime_sys)
 		if lm_err != nil {
 			return nil, lm_err
@@ -271,10 +305,12 @@ func fetch__mark_as_failed(p_error *Gf_crawler_error,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_fetch.fetch__mark_as_failed()")
 
+	ctx := context.Background()
+
 	p_fetch.Error_id_str   = p_error.Id_str
 	p_fetch.Error_type_str = p_error.Type_str
 
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"id_str": p_fetch.Id_str,
 			"t":      "crawler_url_fetch",
 		},

@@ -47,13 +47,13 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	green := color.New(color.BgGreen, color.FgBlack).SprintFunc()
 	cyan := color.New(color.FgWhite, color.BgCyan).SprintFunc()
 
-	//this is used temporarily to donwload images to, before upload to S3
+	// this is used temporarily to donwload images to, before upload to S3
 	images_store_local_dir_path_str := "."
 
 	fmt.Printf("crawler_page_image_id_str - %s\n", p_crawler_page_image_id_str)
 	fmt.Printf("flows_names               - %s\n", fmt.Sprint(p_flows_names_lst))
 
-	//DB - get gf_crawler_page_image from the DB
+	// DB - get gf_crawler_page_image from the DB
 	gf_page_img, gf_err := image__db_get(p_crawler_page_image_id_str, p_runtime, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
@@ -63,17 +63,17 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	gf_images_s3_bucket__upload_complete__bool := false
 
 	//--------------------------
-	//SPECIAL_CASE
-	//IMPORTANT!! - some crawler_page_images dont have their gf_image_id_str set,
-	//              which means that they dont have their corresponding gf_image.
+	// SPECIAL_CASE
+	// IMPORTANT!! - some crawler_page_images dont have their gf_image_id_str set,
+	//               which means that they dont have their corresponding gf_image.
 	if gf_image_id_str == "" {
 
 		p_runtime_sys.Log_fun("INFO", "")
 		p_runtime_sys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
 		p_runtime_sys.Log_fun("INFO", "")
 
-		//S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
-		//            after it finishes processing it.
+		// S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
+		//             after it finishes processing it.
 		gf_image, gf_image_thumbs, local_image_file_path_str, gf_err := images_pipe__single_simple(gf_page_img,
 			images_store_local_dir_path_str,
 			p_crawled_images_s3_bucket_name_str,
@@ -84,13 +84,14 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		}
 
 		gf_image_id_str = gf_image.Id_str
+
 		//-------------------
-		//S3_UPLOAD_TO_GF_IMAGES_BUCKET
-		//IMPORTANT!! - crawler_page_image and its thumbs are uploaded to the crawled images S3 bucket,
-		//              but gf_images service /images/d endpoint redirects users to the gf_images
-		//              S3 bucket (gf--img).
-		//              so we need to upload the new image to that gf_images S3 bucket as well.
-		//FIX!! - too much uploading, very inefficient, figure out a better way!
+		// S3_UPLOAD_TO_GF_IMAGES_BUCKET
+		// IMPORTANT!! - crawler_page_image and its thumbs are uploaded to the crawled images S3 bucket,
+		//               but gf_images service /images/d endpoint redirects users to the gf_images
+		//               S3 bucket (gf--img).
+		//               so we need to upload the new image to that gf_images S3 bucket as well.
+		// FIX!! - too much uploading, very inefficient, figure out a better way!
 
 		gf_err = gf_images_utils.S3__store_gf_image(local_image_file_path_str,
 			gf_image_thumbs,
@@ -101,10 +102,11 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 			return gf_err
 		}
 
-		//IMPORTANT!! - gf_images service has its own dedicate S3 bucket, which is different from the gf_crawl bucket.
-		//              gf_images_utils.Trans__s3_store_image() uploads the image and its thumbs to S3, 
-		//              to indicate that we dont need to upload it later again.
+		// IMPORTANT!! - gf_images service has its own dedicate S3 bucket, which is different from the gf_crawl bucket.
+		//               gf_images_utils.Trans__s3_store_image() uploads the image and its thumbs to S3, 
+		//               to indicate that we dont need to upload it later again.
 		gf_images_s3_bucket__upload_complete__bool = true
+
 		//-------------------
 		//CLEANUP
 
@@ -114,21 +116,23 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		}
 		//-------------------
 	}
-	//--------------------------
-	//ADD_FLOWS_NAMES_TO_IMAGE_DB_RECORD
 
-	//IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
+	//--------------------------
+	// ADD_FLOWS_NAMES_TO_IMAGE_DB_RECORD
+
+	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
 	for _, flow_name_str := range p_flows_names_lst {
 		gf_err := gf_images_lib.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
 	}
+
 	//--------------------------
-	//S3_COPY_BETWEEN_BUCKETS - gf--discovered--img -> gf--img
-	//                          only for gf_images that have not already been uploaded to the gf--img bucket
-	//                          because they needed to be reprecossed and were downloaded from a URL onto
-	//                          the local FS first.
+	// S3_COPY_BETWEEN_BUCKETS - gf--discovered--img -> gf--img
+	//                           only for gf_images that have not already been uploaded to the gf--img bucket
+	//                           because they needed to be reprecossed and were downloaded from a URL onto
+	//                           the local FS first.
 
 	if !gf_images_s3_bucket__upload_complete__bool {
 

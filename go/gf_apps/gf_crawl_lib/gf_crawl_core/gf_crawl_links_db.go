@@ -22,7 +22,9 @@ package gf_crawl_core
 import (
 	"fmt"
 	"net/url"
+	"context"
 	"github.com/fatih/color"
+	"go.mongodb.org/mongo-driver/bson"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -32,14 +34,14 @@ func Link__db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error 
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")
 
 	indexes_keys_lst := [][]string{
-		[]string{"t", "crawler_name_str"}, //all stat queries first match on "t"
+		[]string{"t", "crawler_name_str"}, // all stat queries first match on "t"
 		[]string{"t", "id_str"},
 		[]string{"t", "hash_str"},
-		[]string{"t", "hash_str", "valid_for_crawl_bool", "fetched_bool", "error_type_str", "error_id_str"}, //Link__get_unresolved()
-		[]string{"t", "hash_str", "valid_for_crawl_bool"}, //Link__mark_as_resolved()
+		[]string{"t", "hash_str", "valid_for_crawl_bool", "fetched_bool", "error_type_str", "error_id_str"}, // Link__get_unresolved()
+		[]string{"t", "hash_str", "valid_for_crawl_bool"}, // Link__mark_as_resolved()
 	}
 
-	gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
+	_, gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
 	return gf_err
 }
 
@@ -57,7 +59,9 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	fmt.Println("INFO", black("GET__UNRESOLVED_LINK")+" - for crawler - "+yellow(p_crawler_name_str))
 	fmt.Println("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+	ctx := context.Background()
+	var unresolved_link Gf_crawler_page_outgoing_link
+	err := p_runtime_sys.Mongo_db.Collection("gf_crawl").FindOne(ctx, bson.M{
 			"t":                    "crawler_page_outgoing_link",
 			"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
 			"valid_for_crawl_bool": true,
@@ -69,17 +73,37 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 			"error_type_str": bson.M{"$exists": false,},
 			"error_id_str":   bson.M{"$exists": false,},
 
-			/*//-------------------
-			// IMPORTANT!! - this gets all unresolved links that come from the domain 
-			//               that the crawler is assigned to
-			//"origin_domain_str"   :p_crawler_domain_str,
-			"$or":domains_query_lst,
-			//-------------------*/
+			// //-------------------
+			// // IMPORTANT!! - this gets all unresolved links that come from the domain 
+			// //               that the crawler is assigned to
+			// //"origin_domain_str"   :p_crawler_domain_str,
+			// "$or":domains_query_lst,
+			// //-------------------
+		}).Decode(&unresolved_link)
+
+	/*query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+			"t":                    "crawler_page_outgoing_link",
+			"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
+			"valid_for_crawl_bool": true,
+			"fetched_bool":         false,
+
+			// IMPORTANT!! - get all unresolved links that also dont have any errors associated
+			//               with them. this way repeated processing of unresolved links that always cause 
+			//               an error is avoided (wasted resources)
+			"error_type_str": bson.M{"$exists": false,},
+			"error_id_str":   bson.M{"$exists": false,},
+
+			// //-------------------
+			// // IMPORTANT!! - this gets all unresolved links that come from the domain 
+			// //               that the crawler is assigned to
+			// //"origin_domain_str"   :p_crawler_domain_str,
+			// "$or":domains_query_lst,
+			// //-------------------
 		})
 
 
 	var unresolved_link Gf_crawler_page_outgoing_link
-	err := query.One(&unresolved_link)
+	err := query.One(&unresolved_link)*/
 
 	// IMPORTANT!! - link not being found in the DB is actually expected state, and should not throw an error.
 	//               instead a nil value is returned for the link without error.
@@ -114,6 +138,7 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 		return nil, gf_err
 	}
 	unresolved_link.A_href_str = unescaped_unresolved_link_url_str
+
 	//-------------------
 
 	fmt.Printf("unresolved_link URL - %s\n", unresolved_link.A_href_str)
@@ -124,11 +149,17 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 func Link__db_get(p_link_id_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_get()")
 
+	ctx := context.Background()
 	var unresolved_link Gf_crawler_page_outgoing_link
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+	err := p_runtime_sys.Mongo_db.Collection("gf_crawl").FindOne(ctx, bson.M{
 			"t":      "crawler_page_outgoing_link",
 			"id_str": p_link_id_str,
-		}).One(&unresolved_link)
+		}).Decode(&unresolved_link)
+		
+	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+			"t":      "crawler_page_outgoing_link",
+			"id_str": p_link_id_str,
+		}).One(&unresolved_link)*/
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_outgoing_link by ID from mongodb",
@@ -160,6 +191,7 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//-------------
 
 	// crawler_page_outgoing_link already exists, from previous crawls, so ignore it
@@ -168,7 +200,22 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 		return nil
 	} else {
 
-		err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_link)
+		ctx           := context.Background()
+		coll_name_str := "gf_crawl"
+		gf_err        := gf_core.Mongo__insert(p_link,
+			coll_name_str,
+			map[string]interface{}{
+				"link_a_href_str":    p_link.A_href_str,
+				"caller_err_msg_str": "failed to insert a crawler_page_outgoing_link in mongodb",
+			},
+			ctx,
+			p_runtime_sys)
+
+		if gf_err != nil {
+			return gf_err
+		}
+		
+		/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(p_link)
 		if err != nil {
 
 			gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_outgoing_link in mongodb",
@@ -178,7 +225,7 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 				},
 				err, "gf_crawl_core", p_runtime_sys)
 			return gf_err
-		}
+		}*/
 	}
 
 	return nil
@@ -187,10 +234,17 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 //--------------------------------------------------
 func link__db_exists(p_link_hash_str string, p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 
-	c, err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+	ctx := context.Background()
+	c, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx,
+		bson.M{
+			"t":        "crawler_page_outgoing_link",
+			"hash_str": p_link_hash_str,
+		})
+
+	/*c, err := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
 		"t":        "crawler_page_outgoing_link",
 		"hash_str": p_link_hash_str,
-		}).Count()
+		}).Count()*/
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to count crawler_page_outgoing_link by its hash",
@@ -226,9 +280,10 @@ func Link__db_mark_import_in_progress(p_status_bool bool,
 	} else {
 		update_map["import__end_time_f"] = p_unix_time_f
 	}
-	//----------------
 
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+	//----------------
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"t":      "crawler_page_outgoing_link",
 			"id_str": p_link.Id_str,
 		},
@@ -253,9 +308,11 @@ func Link__db_mark_as_resolved(p_link *Gf_crawler_page_outgoing_link,
 	p_fetch_creation_time_f float64,
 	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_mark_as_resolved()")
+	
+	ctx := context.Background()
 
 	p_link.Fetched_bool = true
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 				"t":                    "crawler_page_outgoing_link",
 				"id_str":               p_link.Id_str,
 				"valid_for_crawl_bool": true,
@@ -288,7 +345,8 @@ func link__db_mark_as_failed(p_error *Gf_crawler_error,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_db.link__mark_as_failed()")
 
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"t":      "crawler_page_outgoing_link",
 			"id_str": p_link.Id_str,
 		},

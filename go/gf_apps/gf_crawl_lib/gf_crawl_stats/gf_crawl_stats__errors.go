@@ -106,7 +106,7 @@ func stats__errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, 
 	})*/
 
 
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",

@@ -134,8 +134,8 @@ func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_de
 
 	for _, crawler := range p_crawlers_map {
 
-		//IMPORTANT!! - each crawler runs in its own goroutine, and continuously
-		//              crawls the target domains
+		// IMPORTANT!! - each crawler runs in its own goroutine, and continuously
+		//               crawls the target domains
 		go func(p_crawler gf_crawl_core.Gf_crawler_def) {
 			start_crawler(p_crawler,
 				p_images_local_dir_path_str,
@@ -162,11 +162,12 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_runtime_sys.Log_fun("INFO", black("------------------------------------"))
 
 	//-----------------
-	//LINK_ALLOCATOR
+	// LINK_ALLOCATOR
 	gf_crawl_core.Link_alloc__init(p_crawler.Name_str, p_runtime_sys)
+	
 	//-----------------
 
-	//randomize r.Intn() usage, otherwise its determanistic 
+	// randomize r.Intn() usage, otherwise its determanistic 
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 	i := 0
@@ -174,15 +175,16 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	for ;; {
 		gf_crawl_utils.Crawler_sleep(p_crawler.Name_str, i, r, p_runtime_sys)
 		//-----------------
-		//RUN CRAWLER
+		// RUN CRAWLER
 		gf_err := Run_crawler_cycle(p_crawler,
 			p_images_local_dir_path_str,
 			p_images_s3_bucket_name_str,
 			p_runtime,
 			p_runtime_sys)
 		if gf_err != nil {
-			//ADD!! - do something useful with this error, although its persisted to DB since its a gf_err
+			// ADD!! - do something useful with this error, although its persisted to DB since its a gf_err
 		}
+
 		//-----------------
 		i=i+1
 	}

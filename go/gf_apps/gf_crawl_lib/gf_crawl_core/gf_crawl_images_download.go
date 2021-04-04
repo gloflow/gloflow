@@ -41,20 +41,20 @@ func images__stage__download_images(p_crawler_name_str string,
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
 	//------------------
-	//ADD!! - download images in batches. some pages have potentially 100's of images of various sizes. 
-	//        browsers download these images in groups, because they limitations on the number of simultaneously 
-	//        open TCP connections, so they might download 5-6 images at the same time. 
-	//        so in this loop schedule image downlading to happen in separate goroutines, N at a time.
+	// ADD!! - download images in batches. some pages have potentially 100's of images of various sizes. 
+	//         browsers download these images in groups, because they limitations on the number of simultaneously 
+	//         open TCP connections, so they might download 5-6 images at the same time. 
+	//         so in this loop schedule image downlading to happen in separate goroutines, N at a time.
 	//------------------
 
 	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
-		//IMPORTANT!! - skip failed images
+		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
 			continue
 		}
 
-		//IMPORTANT!! - skip images that have already been processed (and is in the DB)
+		// IMPORTANT!! - skip images that have already been processed (and is in the DB)
 		if page_img__pinfo.exists_bool {
 			continue
 		}
@@ -62,31 +62,36 @@ func images__stage__download_images(p_crawler_name_str string,
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 		//------------------
-		//DOWNLOAD
-		//IMPORTANT!! - all images done as fast as possible (without sleeps/pauses)
-		//              since when users view a page in their browser the browser issues all requests
-		//              for all the images in the page immediatelly. 
+		// DOWNLOAD
+		// IMPORTANT!! - all images done as fast as possible (without sleeps/pauses)
+		//               since when users view a page in their browser the browser issues all requests
+		//               for all the images in the page immediatelly. 
 
-		local_image_file_path_str, gf_err := image__download(page_img__pinfo.page_img, p_images_store_local_dir_path_str, p_runtime_sys)
+		local_image_file_path_str, gf_err := image__download(page_img__pinfo.page_img,
+			p_images_store_local_dir_path_str,
+			p_runtime_sys)
 		
 		if gf_err != nil {
 			t := "image_download__failed"
 			m := "failed downloading of image with URL - "+page_img__pinfo.page_img.Url_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
+			Create_error_and_event(t, m,
+				map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, 
+				page_img__pinfo.page_img.Url_str,
+				p_crawler_name_str,
 				gf_err, p_runtime, p_runtime_sys)
 
 			page_img__pinfo.gf_error = gf_err
-			continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
-		//------------------
 
+		//------------------
 
 		end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 		page_img__pinfo.local_file_path_str = local_image_file_path_str
 
 		//------------------
-		//SEND_EVENT
+		// SEND_EVENT
 		if p_runtime.Events_ctx != nil {
 			events_id_str  := "crawler_events"
 			event_type_str := "image_download__http_request__done"
@@ -98,8 +103,8 @@ func images__stage__download_images(p_crawler_name_str string,
 			}
 
 			gf_core.Events__send_event(events_id_str,
-				event_type_str, //p_type_str
-				msg_str,        //p_msg_str
+				event_type_str, // p_type_str
+				msg_str,        // p_msg_str
 				data_map,
 				p_runtime.Events_ctx,
 				p_runtime_sys)
@@ -122,21 +127,22 @@ func image__download(p_image *Gf_crawler_page_image,
 	p_runtime_sys.Log_fun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("DOWNLOAD_IMAGE"))
 
 	//-------------------
-	//DOWNLOAD
-	//IMPORTANT!! - this creates a new gf_images ID, from the image URL
+	// DOWNLOAD
+	// IMPORTANT!! - this creates a new gf_images ID, from the image URL
 	local_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
 		p_images_store_local_dir_path_str,
 
-		//IMPORTANT!! - dont add any time delay, instead download images as fast as possible
-		//              since they're all in the same page, and are expected to be downloaded 
-		//              by the users browser in rapid succession, so no need to simulate user delay
-		false, //p_random_time_delay_bool
+		// IMPORTANT!! - dont add any time delay, instead download images as fast as possible
+		//               since they're all in the same page, and are expected to be downloaded 
+		//               by the users browser in rapid succession, so no need to simulate user delay
+		false, // p_random_time_delay_bool
 		p_runtime_sys)
 	if gf_err != nil {
 		return "",gf_err
 	}
+
 	//-------------------
-	//DB_UPDATE
+	// DB_UPDATE
 	gf_err = image__db_mark_as_downloaded(p_image, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
@@ -146,6 +152,7 @@ func image__download(p_image *Gf_crawler_page_image,
 	if gf_err != nil {
 		return "", gf_err
 	}
+	
 	//-------------------
 
 	p_image.Downloaded_bool = true

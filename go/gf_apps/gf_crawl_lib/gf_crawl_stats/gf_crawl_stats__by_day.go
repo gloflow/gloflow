@@ -116,7 +116,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",

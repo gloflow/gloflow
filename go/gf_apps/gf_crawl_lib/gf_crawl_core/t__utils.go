@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"context"
 	"github.com/globalsign/mgo/bson"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -66,19 +67,25 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	//-------------
 
-	log_fun      := gf_core.Init_log_fun()
-	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
-	
+	log_fun := gf_core.Init_log_fun()
+
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_crawl_tests",
 		Log_fun:          log_fun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
 	}
 
+	mongo_db, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
+		test__mongodb_db_name_str,
+		runtime_sys)
+	if gf_err != nil {
+		panic("failed to get Mongodb client in test initialization")
+		return nil, nil
+	}
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+	
 	//-------------
-	//ELASTICSEARCH
+	// ELASTICSEARCH
 	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtime_sys)
 	if gf_err != nil {
 		panic("failed to get ElasticSearch client in test initialization")
@@ -86,7 +93,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	}
 
 	//-------------
-	//S3
+	// S3
 	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
 
 	//-------------
@@ -196,7 +203,8 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
 
-	_,err := p_runtime_sys.Mongodb_db.C("gf_crawl").RemoveAll(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").DeleteMany(ctx, bson.M{
 			"t":                bson.M{"$in": []string{"crawler_page_img", "crawler_page_img_ref",},},
 			"crawler_name_str": p_test__crawler_name_str,
 		})

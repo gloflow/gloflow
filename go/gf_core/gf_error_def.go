@@ -232,6 +232,9 @@ func error__get_defs() map[string]Error_def {
 		"mongodb_cursor_decode": Error_def{
 			Descr_str:"failed to decode value from the mongodb results Cursor",
 		},
+		"mongodb_cursor_all": Error_def{
+			Descr_str:"failed to get all values from the mongodb results Cursor",
+		},
 
 		//---------------
 		// ELASTICSEARCH

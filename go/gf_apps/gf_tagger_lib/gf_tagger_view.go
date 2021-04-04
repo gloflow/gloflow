@@ -36,12 +36,12 @@ func render_objects_with_tag(p_tag_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
 
 	//-----------------------------
-	//FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
-	//                        operation, and should be done in some more efficient way,
-	//                        as in with a mongodb aggregation pipeline
+	// FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
+	//                         operation, and should be done in some more efficient way,
+	//                         as in with a mongodb aggregation pipeline
 
 	objects_infos_lst, gf_err := get_objects_with_tag(p_tag_str,
-		"post", //p_object_type_str
+		"post", // p_object_type_str
 		p_page_index_int,
 		p_page_size_int,
 		p_runtime_sys)
@@ -58,8 +58,8 @@ func render_objects_with_tag(p_tag_str string,
 
 		if thumb_small_str == "" {
 			
-			//FIX!! - use some user-configurable value that is configured at startup
-			//IMPORTANT!! - some "thumbnail_small_url_str" are blank strings (""),
+			// FIX!! - use some user-configurable value that is configured at startup
+			// IMPORTANT!! - some "thumbnail_small_url_str" are blank strings (""),
 			error_img_url_str     := "http://gloflow.com/images/d/gf_landing_page_logo.png"
 			post_thumbnail_url_str = error_img_url_str
 		} else {
@@ -80,10 +80,10 @@ func render_objects_with_tag(p_tag_str string,
 
 	type tmpl_data struct {
 		Tag_str                string
-		Posts_with_tag_num_int int
-		Images_with_tag_int    int
+		Posts_with_tag_num_int int64
+		Images_with_tag_int    int64
 		Posts_with_tag_lst     []map[string]interface{}
-		Is_subtmpl_def         func(string) bool //used inside the main_template to check if the subtemplate is defined
+		Is_subtmpl_def         func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	object_type_str                  := "post"
@@ -96,10 +96,10 @@ func render_objects_with_tag(p_tag_str string,
 		tmpl_data{
 			Tag_str:                p_tag_str,
 			Posts_with_tag_num_int: posts_with_tag_count_int,
-			Images_with_tag_int:    0, //FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
+			Images_with_tag_int:    0, // FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
 			Posts_with_tag_lst:     posts_with_tag_lst,
 			//-------------------------------------------------
-			//IS_SUBTEMPLATE_DEFINED
+			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
 				for _, n := range p_subtemplates_names_lst {
 					if n == p_subtemplate_name_str {
@@ -108,6 +108,7 @@ func render_objects_with_tag(p_tag_str string,
 				}
 				return false
 			},
+
 			//-------------------------------------------------
 		})
 

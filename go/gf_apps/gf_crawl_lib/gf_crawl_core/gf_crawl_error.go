@@ -22,6 +22,7 @@ package gf_crawl_core
 import (
 	"fmt"
 	"time"
+	"context"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -57,9 +58,9 @@ func Create_error_and_event(p_error_type_str string,
 		event_type_str := "error"
 
 		gf_core.Events__send_event(events_id_str,
-			event_type_str,   //p_type_str
-			p_error_msg_str,  //p_msg_str
-			p_error_data_map, //p_data_map
+			event_type_str,   // p_type_str
+			p_error_msg_str,  // p_msg_str
+			p_error_data_map, // p_data_map
 			p_runtime.Events_ctx,
 			p_runtime_sys)
 	}
@@ -105,7 +106,22 @@ func create_error(p_type_str string,
 	}
 
 	if p_runtime.Cluster_node_type_str == "master" {
-		err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(crawl_err)
+
+		ctx           := context.Background()
+		coll_name_str := "gf_crawl"
+		gf_err        := gf_core.Mongo__insert(crawl_err,
+			coll_name_str,
+			map[string]interface{}{
+				"type_str":           p_type_str,
+				"crawler_name_str":   p_crawler_name_str,
+				"caller_err_msg_str": "failed to persist a crawler_error",
+			},
+			ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+		/*err := p_runtime_sys.Mongo_db.C("gf_crawl").Insert(crawl_err)
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to persist a crawler_error",
 				"mongodb_insert_error",
@@ -115,7 +131,7 @@ func create_error(p_type_str string,
 				},
 				err, "gf_crawl_core", p_runtime_sys)
 			return nil, gf_err
-		}
+		}*/
 	}
 	return crawl_err, nil
 }

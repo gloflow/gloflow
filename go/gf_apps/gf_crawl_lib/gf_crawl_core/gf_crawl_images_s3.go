@@ -21,7 +21,9 @@ package gf_crawl_core
 
 import (
 	"fmt"
+	"context"
 	"github.com/fatih/color"
+	"go.mongodb.org/mongo-driver/bson"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
@@ -43,25 +45,25 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 
 	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
-		//IMPORTANT!! - skip failed images
+		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
 			continue
 		}
 
-		//IMPORTANT!! - skip images that have already been processed (and is in the DB)
+		// IMPORTANT!! - skip images that have already been processed (and is in the DB)
 		if page_img__pinfo.exists_bool {
 			continue
 		}
 
-		//IMPORTANT!! - check image is not flagged as a NSFV image
+		// IMPORTANT!! - check image is not flagged as a NSFV image
 		if page_img__pinfo.nsfv_bool {
 			continue
 		}
 
 		//------------------
-		//IMPORTANT!! - only store/persist if they are valid (of the right dimensions) or
-		//              if they're a GIF (all GIF's are stored/persisted,
-		//              even if they determined to be NSFV for some reason).
+		// IMPORTANT!! - only store/persist if they are valid (of the right dimensions) or
+		//               if they're a GIF (all GIF's are stored/persisted,
+		//               even if they determined to be NSFV for some reason).
 
 		if page_img__pinfo.page_img.Img_ext_str == "gif" || page_img__pinfo.page_img.Valid_for_usage_bool {
 
@@ -81,6 +83,7 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
+
 		//------------------
 	}
 
@@ -96,7 +99,7 @@ func image_s3__upload(p_image *Gf_crawler_page_image,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
 	
-	cyan := color.New(color.FgCyan, color.BgWhite).SprintFunc()
+	cyan   := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow := color.New(color.FgYellow, color.BgBlack).SprintFunc()
 	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"), yellow(p_image.Id_str), yellow(p_local_image_file_path_str))
 
@@ -115,18 +118,21 @@ func image_s3__upload(p_image *Gf_crawler_page_image,
 }
 
 //--------------------------------------------------
-//UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
+// UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
 func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
 
+	ctx := context.Background()
+
 	p_image.S3_stored_bool = true
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"t":        "crawler_page_img",
 			"hash_str": p_image.Hash_str,
 		},
 		bson.M{
 			"$set": bson.M{"s3_stored_bool": true},
 		})
+		
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
 			"mongodb_update_error",

@@ -38,7 +38,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
 
 	//---------------------
-	//TEMPLATES
+	// TEMPLATES
 	
 	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
 	if gf_err != nil {

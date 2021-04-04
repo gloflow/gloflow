@@ -108,7 +108,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//------------------
-	//DOMAINS
+	// DOMAINS
 
 	img_src_domain_str, origin_page_url_domain_str, gf_err := gf_crawl_utils.Get_domain(p_img_src_url_str, p_origin_page_url_str, p_runtime_sys)
 	if gf_err != nil {
@@ -118,8 +118,9 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 			gf_err, p_runtime, p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------
-	//COMPLETE_A_HREF
+	// COMPLETE_A_HREF
 	
 	complete_img_src_url_str, gf_err := gf_crawl_utils.Complete_url(p_img_src_url_str, img_src_domain_str, p_runtime_sys)
 	if gf_err != nil {
@@ -129,8 +130,9 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 			gf_err, p_runtime, p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------
-	//GET_IMG_EXT_FROM_URL
+	// GET_IMG_EXT_FROM_URL
 
 	img_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(p_img_src_url_str,p_runtime_sys)
 	if gf_err != nil {
@@ -140,6 +142,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 			gf_err, p_runtime, p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------
 	p_runtime_sys.Log_fun("INFO",">>>>> "+cyan("img")+" -- "+yellow(img_src_domain_str)+" ------ "+yellow(fmt.Sprint(complete_img_src_url_str)))
 
@@ -173,8 +176,8 @@ func images_adt__create(p_crawler_name_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__create()")
 
 	
-	//HASH
-	to_hash_str := p_img_src_url_str //one Crawler_page_img for a given page url, no matter on how many pages it is referenced by
+	// HASH
+	to_hash_str := p_img_src_url_str // one Crawler_page_img for a given page url, no matter on how many pages it is referenced by
 	hash        := md5.New()
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
@@ -193,7 +196,7 @@ func images_adt__create(p_crawler_name_str string,
 		Origin_page_url_domain_str: p_origin_page_url_domain_str,
 		Hash_str:                   hash_str,
 		Downloaded_bool:            false,
-		Valid_for_usage_bool:       false, //all images are initially set as invalid for usage
+		Valid_for_usage_bool:       false, // all images are initially set as invalid for usage
 		S3_stored_bool:             false, 
 	}
 	return img
@@ -212,9 +215,9 @@ func images_adt__ref_create(p_crawler_name_str string,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	ref_id_str           := fmt.Sprintf("img_ref:%f", creation_unix_time_f)
 
-	//HASH
-	//IMPORTANT!! - one Crawler_page_img_ref per page img reference, so if the same image is linked on several pages
-	//              each of those references will have a different hash_str and will created a new Crawler_page_img_ref
+	// HASH
+	// IMPORTANT!! - one Crawler_page_img_ref per page img reference, so if the same image is linked on several pages
+	//               each of those references will have a different hash_str and will created a new Crawler_page_img_ref
 	to_hash_str := p_image_url_str+p_origin_page_url_str
 	hash        := md5.New()
 	hash.Write([]byte(to_hash_str))
@@ -226,8 +229,8 @@ func images_adt__ref_create(p_crawler_name_str string,
 		Creation_unix_time_f:       creation_unix_time_f,
 		Crawler_name_str:           p_crawler_name_str,
 		Cycle_run_id_str:           p_cycle_run_id_str,
-		Url_str:                    p_image_url_str,        //complete_img_src_str,
-		Domain_str:                 p_image_url_domain_str, //img_src_domain_str,
+		Url_str:                    p_image_url_str,        // complete_img_src_str,
+		Domain_str:                 p_image_url_domain_str, // img_src_domain_str,
 		Origin_page_url_str:        p_origin_page_url_str,
 		Origin_page_url_domain_str: p_origin_page_url_domain_str,
 		Hash_str:                   hash_str,

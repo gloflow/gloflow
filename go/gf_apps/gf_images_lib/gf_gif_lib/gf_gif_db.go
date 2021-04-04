@@ -92,9 +92,13 @@ func gif_db__create(p_image_source_url_str string,
 		map[string]interface{}{
 			"image_source_url_str":      p_image_source_url_str,
 			"image_origin_page_url_str": p_image_origin_page_url_str,
+			"caller_err_msg_str":        "failed to insert a GIF in mongodb",
 		},
 		ctx,
 		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
 
 	/*err = p_runtime_sys.Mongo_coll.Insert(gif)
 	if err != nil {
@@ -146,7 +150,7 @@ func gif_db__delete(p_id_str string,
 //--------------------------------------------------
 func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_gif,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif_db.gif_db__get_by_img_id()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_img_id()")
 
 
 	ctx := context.Background()

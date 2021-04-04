@@ -104,15 +104,18 @@ func Run_service(p_port_str string,
                  |##########\
                  |############\`
     p_log_fun("INFO",logo_str)
-    
-	mongo_db   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongo_coll := mongo_db.Collection("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_publisher",
 		Log_fun:          p_log_fun,
-		Mongo_coll:       mongo_coll,
 	}
+
+	mongo_db, gf_err   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, runtime_sys)
+	if gf_err != nil {
+		panic(-1)
+	}
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
 
 	//------------------------
 	// INIT

@@ -22,6 +22,9 @@ package gf_crawl_core
 import (
 	"fmt"
 	"time"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -29,9 +32,9 @@ import (
 
 //--------------------------------------------------
 type Gf_crawl_link_alloc struct {
-	Id                   primitive.ObjectID  `bson:"_id,omitempty"`
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string         `bson:"id_str"`
-	T_str                string         `bson:"t"`                         //"crawler_link_alloc"
+	T_str                string         `bson:"t"`                         // "crawler_link_alloc"
 	Creation_unix_time_f float64        `bson:"creation_unix_time_f"`
 	Crawler_name_str     string         `bson:"crawler_name_str"`
 	Block_size_int       int            `bson:"block_size_int"`
@@ -45,7 +48,7 @@ type Gf_crawl_link_alloc_block struct {
 	Id                       primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                   string        `bson:"id_str"`
 	Creation_unix_time_f     float64       `bson:"creation_unix_time_f"`
-	T_str                    string        `bson:"t"`                     //"crawler_link_alloc_block"
+	T_str                    string        `bson:"t"`                     // "crawler_link_alloc_block"
 	Allocator_id_str         string        `bson:"allocator_id_str"`
 	Unresolved_links_ids_lst []string      `bson:"unresolved_links_ids_lst"`
 }
@@ -98,7 +101,21 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 	}
 
 	// DB
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(allocator)
+	ctx           := context.Background()
+	coll_name_str := "gf_crawl"
+	gf_err        := gf_core.Mongo__insert(allocator,
+		coll_name_str,
+		map[string]interface{}{
+			"crawler_name_str":   p_crawler_name_str,
+			"caller_err_msg_str": "failed to insert a crawl_link_alloc in mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(allocator)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc in mongodb",
 			"mongodb_insert_error",
@@ -107,7 +124,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 	
 	return allocator, nil
 }
@@ -137,20 +154,67 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
 
 
-	query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+	ctx := context.Background()
+
+	find_opts := options.Find()
+	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": 1})
+    find_opts.SetLimit(int64(p_block_size_int))
+	find_opts.SetProjection(bson.M{"id_str": 1})
+
+	cursor, gf_err := gf_core.Mongo__find(bson.M{
+			"t":                    "crawler_page_outgoing_link",
+			"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
+			"valid_for_crawl_bool": true,
+			"fetched_bool":         false,
+
+			// IMPORTANT!! - get all unresolved links that also dont have any errors associated
+			//               with them. this way rep`eated processing of unresolved links that always cause 
+			//               an error is avoided (wasted resources)
+			"error_type_str": bson.M{"$exists": false,},
+			"error_id_str":   bson.M{"$exists": false,},
+		},
+		find_opts,
+		map[string]interface{}{
+			"crawler_name_str":   p_crawler_name_str,
+			"block_size_int":     p_block_size_int,
+			"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
+		},
+		p_runtime_sys.Mongo_db.Collection("gf_crawl"),
+		ctx,
+		p_runtime_sys)
+	
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
+	var unresolved_links_ids_lst []string
+	err := cursor.All(ctx, &unresolved_links_ids_lst)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get Images",
+			"mongodb_cursor_all",
+			map[string]interface{}{
+				"crawler_name_str":   p_crawler_name_str,
+				"block_size_int":     p_block_size_int,
+				"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
+			},
+			err, "gf_crawl_core", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	/*query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
 		"t":                    "crawler_page_outgoing_link",
 		"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
 		"valid_for_crawl_bool": true,
 		"fetched_bool":         false,
 
-		//IMPORTANT!! - get all unresolved links that also dont have any errors associated
-		//              with them. this way rep`eated processing of unresolved links that always cause 
-		//              an error is avoided (wasted resources)
+		// IMPORTANT!! - get all unresolved links that also dont have any errors associated
+		//               with them. this way rep`eated processing of unresolved links that always cause 
+		//               an error is avoided (wasted resources)
 		"error_type_str": bson.M{"$exists": false,},
 		"error_id_str":   bson.M{"$exists": false,},
 	}).
-	//IMPORTANT!! - sort by date of link creation/discovery, and get the links that were discovered first,
-	//              ascending order of unix timestamps.
+	// IMPORTANT!! - sort by date of link creation/discovery, and get the links that were discovered first,
+	//               ascending order of unix timestamps.
 	Sort("$creation_unix_time_f: 1").
 	Limit(p_block_size_int).
 	Select(bson.M{"id_str": 1})
@@ -168,7 +232,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 
 	//-------------------
 	// CREATE_LINK_ALLOCATOR_BLOCK
@@ -185,7 +249,20 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	}
 
 	// DB
-	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(block)
+	coll_name_str := "gf_crawl"
+	gf_err         = gf_core.Mongo__insert(block,
+		coll_name_str,
+		map[string]interface{}{
+			"allocator_id_str":   p_alloc_id_str,
+			"caller_err_msg_str": "failed to insert a crawl_link_alloc_block in mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(block)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc_block in mongodb",
 			"mongodb_insert_error",
@@ -194,7 +271,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 	
 	//-------------------
 

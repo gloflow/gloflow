@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"crypto/md5"
 	"encoding/hex"
+	"context"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -110,14 +111,27 @@ func user_event__create(p_input *Gf_user_event_input,
 		Req_ctx:              *p_gf_req_ctx,
 	}
 
-	err := p_runtime_sys.Mongodb_coll.Insert(gf_user_event)
+	ctx           := context.Background()
+	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	gf_err        := gf_core.Mongo__insert(gf_user_event,
+		coll_name_str,
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to insert a user_event in mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*err := p_runtime_sys.Mongodb_coll.Insert(gf_user_event)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a user_event in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{},
 			err, "gf_analytics", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 		
 	return nil
 }

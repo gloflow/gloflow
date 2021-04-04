@@ -21,7 +21,10 @@ package gf_tagger_lib
 
 import (
 	"fmt"
+	"context"
 	// "gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 )
@@ -29,15 +32,22 @@ import (
 //---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,
 	p_object_type_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) (int, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) (int64, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_objects_with_tag_count()")
 
 	switch p_object_type_str {
 		case "post":
-			count_int,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+
+			ctx := context.Background()
+			count_int, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{
+				"t":        "post",
+				"tags_lst": bson.M{"$in": []string{p_tag_str,}},
+			})
+			
+			/*count_int, err := p_runtime_sys.Mongodb_coll.Find(bson.M{
 					"t":        "post",
 					"tags_lst": bson.M{"$in": []string{p_tag_str,}},
-				}).Count()
+				}).Count()*/
 
 			if err != nil {
 				gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to count of posts with tag - %s", p_tag_str),
@@ -55,7 +65,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 }
 
 //---------------------------------------------------
-//POSTS
+// POSTS
 //---------------------------------------------------
 func db__get_post_notes(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
@@ -95,9 +105,11 @@ func db__add_post_note(p_note *Gf_note,
 		Body_str:              p_note.Body_str,
 		Creation_datetime_str: p_note.Creation_datetime_str,
 	}
+
 	//--------------------
 	
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
 			"title_str": p_post_title_str,
 		}, 
@@ -123,26 +135,48 @@ func db__get_posts_with_tag(p_tag_str string,
 	p_page_size_int  int,
 	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
-	p_runtime_sys.Log_fun("INFO"     , "p_tag_str - "+p_tag_str)
+	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_tag_str - %s", p_tag_str))
 
-	//FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
-	//        with a tag, toList() will accumulate a large collection in memory. 
-	//        instead use a Stream-oriented way where results are streamed lazily
-	//        in some fashion
+	// FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
+	//         with a tag, toList() will accumulate a large collection in memory. 
+	//         instead use a Stream-oriented way where results are streamed lazily
+	//         in some fashion
 		
-	var posts_lst []*gf_publisher_lib.Gf_post
-	err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	
+
+
+
+	ctx := context.Background()
+
+	find_opts := options.Find()
+	find_opts.SetSort(map[string]interface{}{"creation_datetime": -1})
+	find_opts.SetSkip(int64(p_page_index_int))
+    find_opts.SetLimit(int64(p_page_size_int))
+
+	cursor, gf_err := gf_core.Mongo__find(bson.M{
 			"t":        "post",
 			"tags_lst": bson.M{"$in": []string{p_tag_str,}},
-		}).
-		Sort("-creation_datetime"). //descending:true
-		Skip(p_page_index_int).
-		Limit(p_page_size_int).
-		All(&posts_lst)
+		},
+		find_opts,
+		map[string]interface{}{
+			"tag_str":            p_tag_str,
+			"page_index_int":     p_page_index_int,
+			"page_size_int":      p_page_size_int,
+			"caller_err_msg_str": fmt.Sprintf("failed to get posts with specified tag"),
+		},
+		p_runtime_sys.Mongo_coll,
+		ctx,
+		p_runtime_sys)
 
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	var posts_lst []*gf_publisher_lib.Gf_post
+	err := cursor.All(ctx, &posts_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to get posts with tag - %s", p_tag_str),
-			"mongodb_find_error",
+		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag",
+			"mongodb_cursor_decode",
 			map[string]interface{}{
 				"tag_str":        p_tag_str,
 				"page_index_int": p_page_index_int,
@@ -151,6 +185,28 @@ func db__get_posts_with_tag(p_tag_str string,
 			err, "gf_tagger", p_runtime_sys)
 		return nil, gf_err
 	}
+
+	/*err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+			"t":        "post",
+			"tags_lst": bson.M{"$in": []string{p_tag_str,}},
+		}).
+		Sort("-creation_datetime"). // descending:true
+		Skip(p_page_index_int).
+		Limit(p_page_size_int).
+		All(&posts_lst)
+
+	if gf_err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"tag_str":        p_tag_str,
+				"page_index_int": p_page_index_int,
+				"page_size_int":  p_page_size_int,
+			},
+			err, "gf_tagger", p_runtime_sys)
+		return nil, gf_err
+	}*/
+
 	return posts_lst, nil
 }
 
@@ -160,7 +216,8 @@ func db__add_tags_to_post(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_post()")
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
 			"title_str": p_post_title_str,
 		},
@@ -187,7 +244,8 @@ func db__add_tags_to_image(p_image_id_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_image()")
 
-	err := p_runtime_sys.Mongodb_coll.Update(bson.M{
+	ctx := context.Background()
+	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img",
 			"id_str": p_image_id_str,
 		},

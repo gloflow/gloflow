@@ -81,7 +81,7 @@ func post__render_template(p_post *Gf_post,
 		Post_elements_lst:              template_post_elements_lst,
 		Image_post_elements_og_info_lst:image_post_elements_og_info_lst,
 		//-------------------------------------------------
-		//IS_SUBTEMPLATE_DEFINED
+		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
 			for _, n := range p_subtemplates_names_lst {
 				if n == p_subtemplate_name_str {
@@ -90,6 +90,7 @@ func post__render_template(p_post *Gf_post,
 			}
 			return false
 		},
+
 		//-------------------------------------------------
 	})
 
@@ -172,7 +173,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf
 	var top_image_post_elements_lst []*Gf_post_element
 	if len(image_post_elements_lst) > 5 {
 
-		//getRange() - returns an Iterable<String>
+		// getRange() - returns an Iterable<String>
 		top_image_post_elements_lst = image_post_elements_lst[:5] //new List.from(image_post_elements_lst.getRange(0,5))
 	} else { 
 		top_image_post_elements_lst = image_post_elements_lst
@@ -186,6 +187,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf
 		}
 		og_info_lst = append(og_info_lst, d)
 	}
+	
 	//---------------------
 
 	return og_info_lst,nil

@@ -167,17 +167,20 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 	// RUNTIME_SYS
-	mongodb_db := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
-		p_service_info.Mongodb_db_name_str,
-		p_log_fun)
-	mongodb_coll := mongo_db.Collection("data_symphony")
 	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_images",
 		Log_fun:          p_log_fun,
-		Mongo_db:         mongo_db,
-		Mongo_coll:       mongo_coll,
 	}
+
+	mongo_db, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
+		p_service_info.Mongodb_db_name_str,
+		runtime_sys)
+	if gf_err != nil {
+		return
+	}
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
 
 	//-------------
 	// CONFIG

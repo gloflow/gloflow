@@ -55,14 +55,18 @@ func Run_service(p_port_str string,
 	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
 	p_log_fun("INFO", "")
 
-	mongo_db   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, p_log_fun)
-	mongo_coll := mongo_db.C("data_symphony")
-	
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_landing_page",
 		Log_fun:          p_log_fun,
-		Mongo_coll:       mongodb_coll,
 	}
+
+	mongo_db, gf_err := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, runtime_sys)
+	if gf_err != nil {
+		panic(-1)
+	}
+
+	runtime_sys.Mongo_db   = mongo_db 
+	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
 	
 	//------------------------
 	// INIT

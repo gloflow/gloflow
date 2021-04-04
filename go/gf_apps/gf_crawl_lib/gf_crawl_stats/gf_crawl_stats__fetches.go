@@ -111,7 +111,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.Runtime_sys) (map[stri
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",

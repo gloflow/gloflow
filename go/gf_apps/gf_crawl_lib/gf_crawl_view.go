@@ -42,7 +42,7 @@ func dashboard__render_template(p_tmpl *template.Template,
 	err := p_tmpl.Execute(p_resp,tmpl_data{
 		Sys_release_info: sys_release_info,
 		//-------------------------------------------------
-		//IS_SUBTEMPLATE_DEFINED
+		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
 			for _, n := range p_subtemplates_names_lst {
 				if n == p_subtemplate_name_str {
@@ -51,6 +51,7 @@ func dashboard__render_template(p_tmpl *template.Template,
 			}
 			return false
 		},
+		
 		//-------------------------------------------------
 	})
 

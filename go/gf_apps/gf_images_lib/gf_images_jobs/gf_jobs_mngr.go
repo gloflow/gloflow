@@ -69,7 +69,7 @@ type Job_msg struct {
 	
 	job_init_ch                    chan *Gf_running_job // used by clients for receiving outputs of job initialization by jobs_mngr
 	job_updates_ch                 chan Job_update_msg  // used by jobs_mngr to send job_updates to
-	msg_response_ch                chan interface{} // DEPRECATED!! use a specific struct as a message format, interface{} too general.
+	msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
 
 	images_extern_to_process_lst   []Gf_image_extern_to_process
 	images_uploaded_to_process_lst []Gf_image_uploaded_to_process

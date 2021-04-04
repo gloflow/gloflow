@@ -64,13 +64,13 @@ func Index__query(p_term_str string,
 	ctx := context.Background()
 
 	query_result,err := p_runtime.Esearch_client.Search().
-	    Index(index_name_str).                                   //search in index "twitter"
-	    Query(term_query).                                       //specify the query
-	    Highlight(elastic.NewHighlight().Field(field_name_str)). //result HIGHLIGHTING
-	    Sort("user", true).                                      //sort by "user" field, ascending
-	    From(0).Size(10).                                        //take documents 0-9
-	    Pretty(true).                                            //pretty print request and response JSON
-	    Do(ctx)                                                  //execute
+	    Index(index_name_str).                                   // search in index "twitter"
+	    Query(term_query).                                       // specify the query
+	    Highlight(elastic.NewHighlight().Field(field_name_str)). // result HIGHLIGHTING
+	    Sort("user", true).                                      // sort by "user" field, ascending
+	    From(0).Size(10).                                        // take documents 0-9
+	    Pretty(true).                                            // pretty print request and response JSON
+	    Do(ctx)                                                  // execute
 
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to issue a elasticsearch index query - "+p_term_str,
@@ -141,7 +141,21 @@ func Index__query(p_term_str string,
 		Hits_urls_lst:        hits_urls_lst,
 	}
 
-	err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(query_run)
+	coll_name_str := "gf_crawl"
+	gf_err        := gf_core.Mongo__insert(query_run,
+		coll_name_str,
+		map[string]interface{}{
+			"term_str":           p_term_str,
+			"total_hits_int":     total_hits_int,
+			"caller_err_msg_str": "failed to insert a index__query_run into mongodb for a elasticsearch index query",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(query_run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a index__query_run into mongodb for a elasticsearch index query",
 			"mongodb_insert_error",
@@ -151,7 +165,7 @@ func Index__query(p_term_str string,
 			},
 			err, "gf_crawl_core", p_runtime_sys)
 		return gf_err
-	}
+	}*/
 
 	return nil
 }
@@ -170,7 +184,7 @@ func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 		Index(index_name_str).
 		Type(es_record_type_str).
 		BodyJson(p_url_fetch).
-		//Refresh(true). //refresh this index after completing this Index() operation
+		// Refresh(true). //refresh this index after completing this Index() operation
 		Do(ctx)
 	if err != nil {
 		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", es_record_type_str, index_name_str)

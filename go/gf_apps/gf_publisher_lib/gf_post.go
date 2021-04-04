@@ -67,69 +67,71 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
 	p_runtime_sys.Log_fun("INFO",     "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
-	//IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
-	//assert(p_post_info_map.containsKey("tags_lst"));
-	//assert(p_post_info_map["tags_lst"] is List);
+	// IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
+	// assert(p_post_info_map.containsKey("tags_lst"));
+	// assert(p_post_info_map["tags_lst"] is List);
 
 	post_title_str := p_post_info_map["title_str"].(string)
 	//--------------------
-	//POST ELEMENTS
+	// POST ELEMENTS
 
 	post_elements_infos_lst := p_post_info_map["post_elements_lst"].([]interface{})
 	post_elements_lst       := create_post_elements(post_elements_infos_lst, post_title_str, p_runtime_sys)
 	p_runtime_sys.Log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
 	//--------------------
-	//CREATION DATETIME
+	// CREATION DATETIME
 
-	//strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
+	// strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 	creation_datetime_str := time.Now().String()
 	//--------------------
-	//FIX!! - id_str should be a hash, just as events/images have their ID"s generated as hashes
+	// FIX!! - id_str should be a hash, just as events/images have their ID"s generated as hashes
 	
 	id_str := fmt.Sprintf("%s:%s", post_title_str, creation_datetime_str)
 	//--------------------
-	//OPTIONAL VALUES
+	// OPTIONAL VALUES
 
-	//THUMBNAIL_URL
+	// THUMBNAIL_URL
 	var thumbnail_url_str string
-	if _,ok := p_post_info_map["thumbnail_url_str"]; !ok {
+	if _, ok := p_post_info_map["thumbnail_url_str"]; !ok {
 		thumbnail_url_str = ""
 	} else {
 		thumbnail_url_str = p_post_info_map["thumbnail_url_str"].(string)
 	}
 
-	//IMAGES_IDS
+	// IMAGES_IDS
 	var images_ids_lst []gf_images_utils.Gf_image_id
-	if _,ok := p_post_info_map["images_ids_lst"]; !ok {
+	if _, ok := p_post_info_map["images_ids_lst"]; !ok {
 
-		//"images_ids_lst" key was not present
+		// "images_ids_lst" key was not present
 		images_ids_lst = []gf_images_utils.Gf_image_id{}
 	} else if ids_lst,ok := p_post_info_map["images_ids_lst"].([]gf_images_utils.Gf_image_id); !ok {
-		//if p_post_info_map is coming from mongodb, its of []interface{} type, so a "type conversion" is done)
+		// if p_post_info_map is coming from mongodb, its of []interface{} type, so a "type conversion" is done)
 		images_ids_lst = []gf_images_utils.Gf_image_id(ids_lst)
 	} else {
 		images_ids_lst = ids_lst
 	}
+
 	//-------------------------
-	//TAGS
+	// TAGS
 	var tags_lst []string
 
 	if _,ok := p_post_info_map["tags_lst"]; !ok {
-		//if "tags_lst" key is missing, assign an empty string
+		// if "tags_lst" key is missing, assign an empty string
 		tags_lst = []string{}
 	} else if input_tags_lst,ok := p_post_info_map["tags_lst"].([]string); ok {
-		//"tags_lst" is present in p_post_info_map and is of type []string
+		// "tags_lst" is present in p_post_info_map and is of type []string
 		tags_lst = input_tags_lst
 
-		////CAITION!! - if p_post_info_map is coming from mongodb, its of []interface{} type, so a "type conversion" is done.
-		////            is this ever coming from mongodb? posts are deserialized by the mgo lib, not in this function ever. 
-		//tags_lst = []string(tags_lst)
+		// //CAITION!! - if p_post_info_map is coming from mongodb, its of []interface{} type, so a "type conversion" is done.
+		// //            is this ever coming from mongodb? posts are deserialized by the mgo lib, not in this function ever. 
+		// tags_lst = []string(tags_lst)
 	} else {
-		//"tags_lst" is not of type []string
+		// "tags_lst" is not of type []string
 		tags_lst = p_post_info_map["tags_lst"].([]string)
 	}
+
 	//-------------------------
-	//NOTES
+	// NOTES
 	var notes_lst []*Gf_post_note
 	if _,ok := p_post_info_map["notes_lst"]; !ok {
 		notes_lst = []*Gf_post_note{}
@@ -137,8 +139,9 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 		notes_infos_lst := p_post_info_map["notes_lst"].([]map[string]interface{})
 		notes_lst        = create_post_notes(notes_infos_lst, p_runtime_sys)
 	}
+
 	//-------------------------
-	//COLORS
+	// COLORS
 	var colors_lst []string
 	if _,ok := p_post_info_map["colors_lst"]; !ok {
 		colors_lst = []string{}
@@ -148,6 +151,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 	} else {
 		colors_lst = p_post_info_map["colors_lst"].([]string)
 	}
+
 	//--------------------
 	post := &Gf_post{
 		Id_str:                id_str,
@@ -169,7 +173,7 @@ func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 }
 
 //------------------------------------------------	
-//a post has to first be created, and only then can it be published
+// a post has to first be created, and only then can it be published
 
 func publish(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
@@ -180,7 +184,7 @@ func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
 
 	notes_lst := []*Gf_post_note{}
-	for _,note_map := range p_raw_notes_lst {
+	for _, note_map := range p_raw_notes_lst {
 		
 		snippet := &Gf_post_note{
 			User_id_str: "anonymous",

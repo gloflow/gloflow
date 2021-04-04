@@ -22,6 +22,7 @@ package gf_crawl_lib
 import (
 	"time"
 	"fmt"
+	"context"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
@@ -86,6 +87,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 		if gf_err != nil {
 			return gf_err
 		}
+
 		//----------------------
 	} else {
 
@@ -98,6 +100,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	// CYCLE_RUN
 	cycle_run__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	cycle_run__id_str               := "crawler_cycle_run:"+fmt.Sprint(cycle_run__creation_unix_time_f)
+
 	//-------------------------
 	
 	//-------------------
@@ -111,6 +114,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//-------------------
 	// STAGE - PARSE THE FETCHED PAGE
 	gf_err = gf_crawl_core.Fetch__parse_result(url_fetch,
@@ -123,6 +127,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//-------------------
 	// STAGE - END
 	
@@ -139,7 +144,23 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 		End_time_f:           end_time_f,
 	}
 
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(cycle_run)
+	ctx           := context.Background()
+	coll_name_str := "gf_crawl"
+	gf_err         = gf_core.Mongo__insert(cycle_run,
+		coll_name_str,
+		map[string]interface{}{
+			"cycle_run__id_str":  cycle_run__id_str,
+			"crawler_name_str":   p_crawler.Name_str,
+			"domain_str":         domain_str,
+			"caller_err_msg_str": "failed to insert a Crawler_cycle_run in mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(cycle_run)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a Crawler_cycle_run in mongodb",
 			"mongodb_insert_error",
@@ -150,7 +171,8 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 			},
 			err, "gf_crawl_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
+
 	//-------------------
 	// LINK MARK AS RESOLVED
 
@@ -165,6 +187,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 			return gf_err
 		}
 	}
+
 	//-------------------
 	// unresolved_link - is nil if p_crawler.Start_url_str is used
 	if unresolved_link != nil {
@@ -179,6 +202,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 			return gf_err
 		}
 	}
+	
 	//-------------------
 	return nil
 }

@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
+	"context"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -80,7 +81,22 @@ func cluster__register_worker(p_ext_worker_name_str string,
 
 	//------------
 	// DB
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(worker)
+
+	ctx           := context.Background()
+	coll_name_str := "gf_crawl"
+	gf_err        := gf_core.Mongo__insert(worker,
+		coll_name_str,
+		map[string]interface{}{
+			"ext_worker_name_str": p_ext_worker_name_str,
+			"caller_err_msg_str":  "failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
+		},
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(worker)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
 			"mongodb_insert_error",
@@ -89,7 +105,7 @@ func cluster__register_worker(p_ext_worker_name_str string,
 			},
 			err, "gf_crawl_lib", p_runtime_sys)
 		return nil, gf_err
-	}
+	}*/
 
 	//------------
 

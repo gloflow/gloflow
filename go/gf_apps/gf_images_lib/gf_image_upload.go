@@ -22,6 +22,7 @@ package gf_images_lib
 import (
 	"fmt"
 	"time"
+	"context"
 	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -175,14 +176,30 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 
 	p_runtime_sys.Log_fun("INFO", "DB INSERT - img_upload_info")
 	
-	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Insert(p_upload_info)
+	ctx           := context.Background()
+	coll_name_str := "gf_images_upload_info"
+	gf_err        := gf_core.Mongo__insert(p_upload_info,
+		coll_name_str,
+		map[string]interface{}{
+			"upload_gf_image_id_str": p_upload_info.Upload_gf_image_id_str,
+			"caller_err_msg_str":     "failed to update/upsert gf_image in a mongodb",
+		},
+		ctx,
+		p_runtime_sys)
+	
+	if gf_err != nil {
+		return gf_err
+	}
+
+	/*err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Insert(p_upload_info)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{"upload_gf_image_id_str": p_upload_info.Upload_gf_image_id_str,},
 			err, "gf_images_lib", p_runtime_sys)
 		return gf_err
-	}
+	}*/
+
 	return nil
 }
 
@@ -190,11 +207,18 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.Gf_error) {
 
+	ctx := context.Background()
+
 	var upload_info Gf_image_upload_info
-	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Find(bson.M{
+	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+			"t":                      "img_upload_info",
+			"upload_gf_image_id_str": p_upload_gf_image_id_str,
+		}).Decode(&upload_info)
+
+	/*err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Find(bson.M{
 		"t":                      "img_upload_info",
 		"upload_gf_image_id_str": p_upload_gf_image_id_str,
-	}).One(&upload_info)
+	}).One(&upload_info)*/
 
 	if fmt.Sprint(err) == "not found" {
 		gf_err := gf_core.Mongo__handle_error("image_upload_info does not exist in mongodb",
@@ -213,5 +237,4 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	}
 
 	return &upload_info, nil
-	
 }
