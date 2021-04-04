@@ -49,16 +49,18 @@ func main() {
 	//-----------------
 	// MONGODB
 
-	mongo_db   := gf_core.Mongo__connect_new(mongodb_host_str, mongodb_db_name_str, log_fun)
-	mongo_coll := mongo_db.Collection("data_symphony")
-
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_analytics",
 		Log_fun:          log_fun,
-		Mongo_db:         mongo_db,
-		Mongo_coll:       mongo_coll,
 	}
-	
+
+	mongo_db, gf_err := gf_core.Mongo__connect_new(mongodb_host_str, mongodb_db_name_str, runtime_sys)
+	if gf_err != nil {
+		panic(-1)
+	}
+	runtime_sys.mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+
 	//-----------------
  	
 	switch run_str {
