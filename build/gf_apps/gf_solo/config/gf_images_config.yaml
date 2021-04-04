@@ -1,0 +1,24 @@
+
+
+
+
+#----------------------------
+# LOCAL_DIRS
+store_local_dir_path:            /home/gf/images
+thumbnails_store_local_dir_path: /home/gf/images/thumbnails
+
+#----------------------------
+main_s3_bucket_name: gf--img
+
+#----------------------------
+# UPLOADS
+uploaded_images_s3_bucket: gf--uploaded--img
+
+#----------------------------
+# FLOWS
+# flows that dont have a dedicated S3 bucket use this default one
+images_flow_to_s3_bucket_default: gf--img
+
+images_flow_to_s3_bucket:
+  general: gf--img
+  discovered: gf--discovered--img

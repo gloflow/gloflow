@@ -11,37 +11,48 @@ mongodb_host:    "127.0.0.1:27017"
 mongodb_db_name: "gf"
 
 # SENTRY_ENDPOINT
-sentry_endpoint: ""
+sentry_endpoint: "" # or ENV var
 
 
 
 
-
-templates_dir_paths: 
+# TEMPLATES_DIR_PATHS
+templates_dir_paths:
+  gf_analytics_dashboard:  "./templates/gf_analytics_dashboard"
+  gf_crawl_dashboard:      "./templates/gf_crawl_dashboard"
+  gf_domains_browser:      "./templates/gf_domains_browser"
+  gf_images_dashboard:     "./templates/gf_images_dashboard"
+  gf_images_flows_browser: "./templates/gf_images_flows_browser"
+  gf_landing_page:         "./templates/gf_landing_page"
+  gf_post:                 "./templates/gf_post"
+  gf_posts_browser:        "./templates/gf_posts_browser"
 
 #--------------------
 # GF_IMAGES
-images__store_local_dir_path:            ""
-images__thumbnails_store_local_dir_path: ""
-images__main_s3_bucket_name:             ""
-
-images__uploaded_s3_bucket:        ""
-images__flow_to_s3_bucket_default: ""
-images__flow_to_s3_bucket:         ""
+images__config_file_path: "./config/gf_images_config.yaml"
+# images__store_local_dir_path:            ""
+# images__thumbnails_store_local_dir_path: ""
+# images__main_s3_bucket_name:             ""
+# 
+# images__uploaded_s3_bucket:        gf--uploaded--img
+# images__flow_to_s3_bucket_default: gf--img
+# images__flow_to_s3_bucket:
+#   - general:    gf--img
+#   - discovered: gf--discovered--img
 
 #--------------------
 # GF_ANALYTICS
-analytics__py_stats_dirs:     ""
-analytics__run_indexer:      ""
+analytics__py_stats_dirs: "./gf_analytics/py/stats"
+analytics__run_indexer:   false
 
 #--------------------
 # GF_CRAWL
-crawl__config_file_path:      ""
+crawl__config_file_path:      "./config/gf_crawl_config.yaml"
 crawl__cluster_node_type:     ""
 crawl__images_local_dir_path: ""
 
 #--------------------
 # AWS
-aws_access_key_id:     ""
-aws_secret_access_key: ""
-aws_token:             ""
+aws_access_key_id:     "" # or ENV var
+aws_secret_access_key: "" # or ENV var
+aws_token:             "" # or ENV var

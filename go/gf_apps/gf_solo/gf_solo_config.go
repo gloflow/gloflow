@@ -46,13 +46,14 @@ type GF_config struct {
 
 	//--------------------
 	// GF_IMAGES
-	Images__store_local_dir_path_str            string `mapstructure:"images__store_local_dir_path"`
+	Images__config_file_path_str string `mapstructure:"images__config_file_path"`
+	/*Images__store_local_dir_path_str            string `mapstructure:"images__store_local_dir_path"`
 	Images__thumbnails_store_local_dir_path_str string `mapstructure:"images__thumbnails_store_local_dir_path"`
 	Images__main_s3_bucket_name_str             string `mapstructure:"images__main_s3_bucket_name"`
 
 	Images__uploaded_s3_bucket_str        string            `mapstructure:"images__uploaded_s3_bucket"`
 	Images__flow_to_s3_bucket_default_str string            `mapstructure:"images__flow_to_s3_bucket_default"`
-	Images__flow_to_s3_bucket_map         map[string]string `mapstructure:"images__flow_to_s3_bucket"`
+	Images__flow_to_s3_bucket_map         map[string]string `mapstructure:"images__flow_to_s3_bucket"`*/
 
 	//--------------------
 	// GF_ANALYTICS

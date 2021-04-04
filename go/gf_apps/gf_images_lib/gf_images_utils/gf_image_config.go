@@ -28,6 +28,11 @@ import (
 //-------------------------------------------------
 type GF_config struct {
 
+
+	Store_local_dir_path_str            string `yaml:"store_local_dir_path"`
+	Thumbnails_store_local_dir_path_str string `yaml:"thumbnails_store_local_dir_path"`
+	Main_s3_bucket_name_str             string `yaml:"main_s3_bucket_name"`
+
 	// UPLOADED_IMAGES - this is a special dedicated bucket, separate from buckets for all other flows.
 	//                   Mainly because users are pushing data to it directly and so we want to possibly handle
 	//                   it in a separate way from other buckets that only have internal GF systems
@@ -36,7 +41,6 @@ type GF_config struct {
 	Images_flow_to_s3_bucket_default_str string            `yaml:"images_flow_to_s3_bucket_default"`
 	Images_flow_to_s3_bucket_map         map[string]string `yaml:"images_flow_to_s3_bucket"`
 }
-
 
 //-------------------------------------------------
 func Config__get_s3_bucket_for_flow(p_flow_name_str string,

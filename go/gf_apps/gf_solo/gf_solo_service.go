@@ -44,13 +44,20 @@ func service__run(p_config *GF_config,
 
 	//-------------
 	// GF_IMAGES
+
+	// CONFIG
+	gf_images__config, gf_err := gf_images_utils.Config__get(p_config.Images__config_file_path_str, p_runtime_sys)
+	if gf_err != nil {
+		return
+	}
+	
 	gf_images__service_info := &gf_images_lib.GF_service_info{
 		Mongodb_host_str:                           p_config.Mongodb_host_str,
 		Mongodb_db_name_str:                        p_config.Mongodb_db_name_str,
 
-		Images_store_local_dir_path_str:            p_config.Images__store_local_dir_path_str,
-		Images_thumbnails_store_local_dir_path_str: p_config.Images__thumbnails_store_local_dir_path_str,
-		Images_main_s3_bucket_name_str:             p_config.Images__main_s3_bucket_name_str,
+		Images_store_local_dir_path_str:            gf_images__config.Store_local_dir_path_str,
+		Images_thumbnails_store_local_dir_path_str: gf_images__config.Thumbnails_store_local_dir_path_str,
+		Images_main_s3_bucket_name_str:             gf_images__config.Main_s3_bucket_name_str,
 
 		AWS_access_key_id_str:                      p_config.AWS_access_key_id_str,
 		AWS_secret_access_key_str:                  p_config.AWS_secret_access_key_str,
@@ -58,11 +65,7 @@ func service__run(p_config *GF_config,
 
 		Templates_dir_paths_map:                    p_config.Templates_dir_paths_map,
 	}
-	gf_images__config := &gf_images_utils.GF_config{
-		Uploaded_images_s3_bucket_str:        p_config.Images__uploaded_s3_bucket_str,
-		Images_flow_to_s3_bucket_default_str: p_config.Images__flow_to_s3_bucket_default_str ,
-		Images_flow_to_s3_bucket_map:         p_config.Images__flow_to_s3_bucket_map,
-	}
+
 	gf_images_lib.Init_service(gf_images__service_info,
 		gf_images__config,
 		p_runtime_sys)
@@ -111,11 +114,10 @@ func service__run(p_config *GF_config,
 
 	//-------------
 	// GF_TAGGER
-
 	gf_tagger_lib.Init_service(p_runtime_sys)
 
 	//-------------
-	
+	// GF_ML
 	gf_ml_lib.Init_service(p_runtime_sys)
 
 	//-------------

@@ -40,8 +40,10 @@ ADD ./gf_analytics gf_analytics
 ADD ./gf_ml_worker gf_ml_worker
 
 # MAIN
-ADD ./gf_solo             gf_solo
-ADD ./config/gf_solo.yaml config/gf_solo.yaml
+ADD ./gf_solo                      gf_solo
+ADD ./config/gf_crawl_config.yaml  config/gf_crawl_config.yaml
+ADD ./config/gf_images_config.yaml config/gf_images_config.yaml
+ADD ./config/gf_solo.yaml          config/gf_solo.yaml
 
 # ENTRYPOINT ["gf_solo"]
 
