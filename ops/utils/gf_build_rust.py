@@ -37,9 +37,10 @@ def run_in_cont():
 
     repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
     cmd_lst = [
-        "sudo", "docker", "run", 
+        "sudo", "docker", "run",
+        "--rm", # remove after exit 
         "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
-        "glofloworg/gf_builder:latest",
+        "glofloworg/gf_builder_rust_ubuntu:latest",
         "python3", "-u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_rust"
     ]
     p = gf_core_cli.run__view_realtime(cmd_lst, {},
@@ -56,7 +57,8 @@ def run(p_cargo_crate_dir_path_str,
     assert os.path.isdir(p_cargo_crate_dir_path_str)
     
     print(f"{fg('yellow')}BUILD{attr(0)}")
-    
+    print(f"crate dir - {fg('yellow')}{p_cargo_crate_dir_path_str}{attr(0)}")
+
     cwd_str = os.getcwd()
     os.chdir(os.path.abspath(p_cargo_crate_dir_path_str)) # change into the target main package dir
 
@@ -66,11 +68,33 @@ def run(p_cargo_crate_dir_path_str,
 
     #-------------
 
-    c_lst = [
+
+
+    print(p_cargo_crate_dir_path_str)
+
+    c_lst = []
+
+
+
+    if p_static_bool:
+
+        # DOCUMENT!! - without this the py extension wont compile. 
+        #              complaining that target for musl from gf_images_job lib cant be used, since this py extension
+        #              package is marked as a dynamic lib (which it has to be to be importable by the Py VM).
+        if os.path.basename(p_cargo_crate_dir_path_str) == "gf_images_jobs_py":
+            c_lst.append("RUSTFLAGS='-C target-feature=-crt-static'")
+
+        
+
+    c_lst.extend([
         # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings
         # "RUSTFLAGS='-L %s'"%(os.path.abspath("%s/../../rust/gf_images_jobs/test"%(modd_str))),
+
+        # if compiling on Ubuntu for Alpine for example, this ENV var should be set
+        # "PKG_CONFIG_ALLOW_CROSS=1",
+        
         "cargo build",
-    ]
+    ])
 
     if p_verbose_bool:
         c_lst.append("--verbose")
@@ -100,8 +124,10 @@ def run(p_cargo_crate_dir_path_str,
     else:
         c_lst.append("--release")
 
-    # _, _, exit_code_int = gf_cli_utils.run_cmd(" ".join(c_lst))
-    _, _, exit_code_int = gf_core_cli.run(" ".join(c_lst))
+
+    cmd_str = " ".join(c_lst)
+    print(cmd_str)
+    _, _, exit_code_int = gf_core_cli.run(cmd_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
     #               want to fail with a non-zero exit code as well - this way other CI 

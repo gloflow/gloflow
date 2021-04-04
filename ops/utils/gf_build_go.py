@@ -36,10 +36,13 @@ def run_in_cont(p_name_str,
 
     repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
     cmd_lst = [
-        "sudo", "docker", "run", 
-        f"-v {repo_local_path_str}:/home/gf", # mount repo into the container
-        "glofloworg/gf_builder:latest",
-        "python3 -u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_go"
+        "sudo", "docker", "run",
+        "--rm", # remove after exit 
+        "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
+        "glofloworg/gf_builder_go_ubuntu:latest",
+        
+        # "python3 -u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_go"
+        "python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_go", "-build_outof_cont", f"-app={p_name_str}"
     ]
     p = gf_core_cli.run__view_realtime(cmd_lst, {
 
@@ -55,7 +58,8 @@ def run(p_name_str,
     p_go_output_path_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = True,
-    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))):
+    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str)),
+    p_go_get_bool = True):
     assert isinstance(p_static_bool, bool)
     assert os.path.isdir(p_go_dir_path_str)
 
@@ -82,9 +86,10 @@ def run(p_name_str,
 
     
     # GO_GET
-    _, _, exit_code_int = gf_cli_utils.run_cmd(f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go get -u")
-    print("")
-    print("")
+    if p_go_get_bool:
+        _, _, exit_code_int = gf_cli_utils.run_cmd(f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go get -u")
+        print("")
+        print("")
 
     
 
@@ -94,30 +99,51 @@ def run(p_name_str,
     #                  linked lib.
     #                  build time a few times larger then regular, so slow for dev.
     # "-ldflags '-s'" - omit the symbol table and debug information.
-    # "-a" - forces all packages to be rebuilt
+
     if p_static_bool:
         
+        print(f"{fg('yellow')}STATIC LINKING{attr(0)} --")
         
         # https://golang.org/cmd/link/
         # IMPORTANT!! - "CGO_ENABLED=0" and "-installsuffix cgo" no longer necessary since golang 1.10.
         #               "CGO_ENABLED=0" we also dont want to disable since Rust libs are used in Go via CGO.
-        # "-extldflags flags" - Set space-separated flags to pass to the external linker
+        
+        # IMPORTANT!! - debug .a files:
+        #   "ar -t libgf_images_jobs.a" - get a list of Archived object files in static .a libs.
+        #                                 static library is an archive (ar) of object files.
+        #                                 The object files are usually in the ELF format
+
+        gf_cli_utils.run_cmd(f"ldconfig -v")
+        # gf_cli_utils.run_cmd(f"cp {dynamic_libs_dir_path_str}/libgf_images_jobs.a /usr/lib")
+
         args_lst = [
             
             f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str}",
+            # f"LD_LIBRARY_PATH=/usr/lib",
 
             # "CGO_ENABLED=0",
             "GOOS=linux",
             "go build",
+
+            # force rebuilding of packages that are already up-to-date.
             "-a",
+
             # "-installsuffix cgo",
 
             # LINKER_FLAGS
-            # "-ldl" - "-l" provides lib path. links in  /usr/lib/libdl.so/.a
-            #          this is needed to prevent Rust .a lib errors relating
-            #          to undefined references to "dlsym","dladdr"
+            # "-ldflags"    - arguments to pass on each go tool link invocation
+            # "-s"          - Omit the symbol table and debug information
+            # "-extldflags" - Set space-separated flags to pass to the external linker.
+            #                 on Alpine builds the GCC toolchain linker "ld" is used.
+            # "-static"     - On systems that support dynamic linking, this 
+            #                 overrides -pie and prevents linking with the shared libraries.
+            # "-ldl"        - "-l" provides lib path. links in  /usr/lib/libdl.so/.a
+            #                 this is needed to prevent Rust .a lib errors relating
+            #                 to undefined references to "dlsym","dladdr"
+            #
+            # (f'''-ldflags '-s -extldflags "-t -static -lgf_images_jobs -ldl -lglib"' ''').strip(),
+            # (f'''-ldflags '-s -extldflags "-lm"' ''').strip(),
             ('''-ldflags '-s -extldflags "-static -ldl"' ''').strip(),
-            
             
             "-o %s"%(p_go_output_path_str),
         ]
@@ -126,7 +152,8 @@ def run(p_name_str,
     #-----------------------------
     # DYNAMIC_LINKING - fast build for dev.
     else:
-        
+        print(f"{fg('yellow')}DYNAMIC LINKING{attr(0)} --")
+
         c_str = f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go build -o {p_go_output_path_str}"
 
     #-----------------------------
