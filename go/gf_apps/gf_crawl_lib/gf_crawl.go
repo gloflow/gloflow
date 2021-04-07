@@ -55,7 +55,7 @@ type Gf_crawler_cycle_run struct {
 func Init(p_images_local_dir_path_str string,
 	p_cluster_node_type_str      string,
 	p_crawl_config_file_path_str string,
-	p_templates_dir_path_str     string,
+	p_templates_paths_map        map[string]string,
 	p_aws_access_key_id_str      string,
 	p_aws_secret_access_key_str  string,
 	p_aws_token_str              string,
@@ -102,7 +102,7 @@ func Init(p_images_local_dir_path_str string,
 	// HTTP_HANDLERS
 	gf_err = init_handlers(crawled_images_s3_bucket_name_str,
 		gf_images_s3_bucket_name_str,
-		p_templates_dir_path_str,
+		p_templates_paths_map,
 		runtime,
 		p_runtime_sys)
 	if gf_err != nil {

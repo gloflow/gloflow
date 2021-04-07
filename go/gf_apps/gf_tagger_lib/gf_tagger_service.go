@@ -84,7 +84,8 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 }
 
 //-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
+func Init_service(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	
 	//------------------------
 	// STATIC FILES SERVING
@@ -92,8 +93,7 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
 	gf_core.HTTP__init_static_serving(dashboard__url_base_str, p_runtime_sys)
 
 	//------------------------
-
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -132,7 +132,11 @@ func Run_service__in_process(p_port_str string,
 
 	//------------------------
 
-	gf_err = init_handlers(runtime_sys)
+	templates_dir_paths_map := map[string]string{
+		"gf_tag_objects": "./templates/gf_tag_objects/gf_tag_objects.html",
+	}
+
+	gf_err = init_handlers(templates_dir_paths_map, runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

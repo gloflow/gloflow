@@ -27,16 +27,16 @@ import (
 func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	indexes_keys_lst := [][]string{
-		[]string{"t", }, //all stat queries first match on "t"
+		[]string{"t", }, // all stat queries first match on "t"
 
-		//QUERIES - flows_db__images_exist() issues these queries
-		//DEPRECATED!! - flow_name_str field is deprecated in favor of flows_names_lst, 
-		//               but some of the old img records still use it and havent been migrated yet. 
-		//               so we're creating this index until migration is complete, and then 
-		//               it should be removed.
+		// QUERIES - flows_db__images_exist() issues these queries
+		// DEPRECATED!! - flow_name_str field is deprecated in favor of flows_names_lst, 
+		//                but some of the old img records still use it and havent been migrated yet. 
+		//                so we're creating this index until migration is complete, and then 
+		//                it should be removed.
 		[]string{"t", "flow_names_lst", "origin_url_str"},
 
-		//QUERIES - flows_db__images_exist() issues these queries
+		// QUERIES - flows_db__images_exist() issues these queries
 		[]string{"t", "flows_names_lst", "origin_url_str"},
 	}
 	

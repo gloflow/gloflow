@@ -26,7 +26,8 @@ import (
 )
 
 //-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
+func Init_service(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -35,7 +36,7 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -70,7 +71,12 @@ func Run_service(p_port_str string,
 	
 	//------------------------
 	// INIT
-	Init_service(runtime_sys)
+
+	templates_dir_paths_map := map[string]string{
+		"gf_landing_page": "./templates/gf_landing_page",
+	}
+
+	Init_service(templates_dir_paths_map, runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

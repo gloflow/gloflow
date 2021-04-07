@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_analytics_lib
 
 import (
-	"os"
+	// "os"
 	"fmt"
 	"net/http"
 	"github.com/olivere/elastic"
@@ -46,6 +46,8 @@ type GF_service_info struct {
 	AWS_access_key_id_str     string
 	AWS_secret_access_key_str string
 	AWS_token_str             string
+	
+	Templates_paths_map map[string]string
 }
 
 //-------------------------------------------------
@@ -65,20 +67,20 @@ func Init_service(p_service_info *GF_service_info,
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
 
 	//-----------------
-
 	// TEMPLATES_DIR
-	templates_dir_path_str := "./templates"
+	/*templates_dir_path_str := "./templates"
 	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
 		p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
 		panic(1)
-	}
+	}*/
 
-	init_handlers(templates_dir_path_str, p_runtime_sys)
+	init_handlers(p_service_info.Templates_paths_map, p_runtime_sys)
+
 	//------------------------
 	// GF_DOMAINS
 	gf_domains_lib.DB_index__init(p_runtime_sys)
 	gf_domains_lib.Init_domains_aggregation(p_runtime_sys)
-	gf_err = gf_domains_lib.Init_handlers(templates_dir_path_str, p_runtime_sys)
+	gf_err = gf_domains_lib.Init_handlers(p_service_info.Templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -89,7 +91,7 @@ func Init_service(p_service_info *GF_service_info,
 	gf_crawl_lib.Init(p_service_info.Crawl__images_local_dir_path_str,
 		p_service_info.Crawl__cluster_node_type_str,
 		p_service_info.Crawl__config_file_path_str,
-		templates_dir_path_str,
+		p_service_info.Templates_paths_map,
 		p_service_info.AWS_access_key_id_str,
 		p_service_info.AWS_secret_access_key_str,
 		p_service_info.AWS_token_str,

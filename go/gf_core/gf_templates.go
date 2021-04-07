@@ -23,19 +23,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"path/filepath"
 	"io/ioutil"
 	"text/template"
 )
 
 //-------------------------------------------------
-func Templates__load(p_main_template_filename_str string,
-	p_templates_dir_path_str string,
+func Templates__load(p_main_template_filepath_str string,
+	// p_templates_dir_path_str string,
 	p_runtime_sys *Runtime_sys) (*template.Template, []string, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.Templates__load()")
 
+	template_filename_str := filepath.Base(p_main_template_filepath_str)
+	template_dir_path_str := filepath.Dir(p_main_template_filepath_str)
+
 	//---------------------
 	// SUB_TEMPLATES - templates that are imported into the main template
-	subtemplates_dir_path_str   := fmt.Sprintf("%s/subtemplates", p_templates_dir_path_str)
+	subtemplates_dir_path_str   := fmt.Sprintf("%s/subtemplates", template_dir_path_str)
 	subtemplates_names_lst      := []string{}
 	subtemplates_file_paths_lst := []string{}
 
@@ -62,15 +66,15 @@ func Templates__load(p_main_template_filename_str string,
 
 	//---------------------
 	// TEMPLATES
-	main_template_path_str := fmt.Sprintf("%s/%s", p_templates_dir_path_str, p_main_template_filename_str)
-	templates_paths_lst    := append([]string{main_template_path_str,}, subtemplates_file_paths_lst...)
+	// main_template_path_str := fmt.Sprintf("%s/%s", p_templates_dir_path_str, p_main_template_filename_str)
+	templates_paths_lst := append([]string{p_main_template_filepath_str,}, subtemplates_file_paths_lst...)
 
 	// IMPORTANT!! - load several template files into a single template name
-	main__tmpl, err := template.New(p_main_template_filename_str).ParseFiles(templates_paths_lst...)
+	main__tmpl, err := template.New(template_filename_str).ParseFiles(templates_paths_lst...)
 	if err != nil {
 		gf_err := Error__create("failed to parse a template",
 			"template_create_error",
-			map[string]interface{}{"main_template_path_str": main_template_path_str,},
+			map[string]interface{}{"main_template_filepath_str": p_main_template_filepath_str,},
 			err, "gf_core", p_runtime_sys)
 		return nil, nil, gf_err
 	}

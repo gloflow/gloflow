@@ -29,7 +29,7 @@ import (
 )
 
 //-------------------------------------------------
-func Flows__init_handlers(p_templates_dir_path_str string,
+func Flows__init_handlers(p_templates_paths_map map[string]string,
 	p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
@@ -37,7 +37,7 @@ func Flows__init_handlers(p_templates_dir_path_str string,
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

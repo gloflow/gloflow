@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_publisher_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -34,20 +34,25 @@ type gf_templates struct {
 }
 
 //-------------------------------------------------
-func tmpl__load(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+func tmpl__load(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
-	post__main_template_filename_str          := "gf_post.html"
-	post__templates_dir_path_str              := fmt.Sprintf("%s/gf_post", p_templates_dir_path_str)
-	posts_browser__main_template_filename_str := "gf_posts_browser.html"
-	posts_browser__templates_dir_path_str     := fmt.Sprintf("%s/gf_posts_browser", p_templates_dir_path_str)
+	post__main_template_filepath_str          := p_templates_paths_map["gf_post"]
+	posts_browser__main_template_filepath_str := p_templates_paths_map["gf_posts_browser"]
+	// post__templates_dir_path_str          := fmt.Sprintf("%s/gf_post", p_templates_dir_path_str)
+	// posts_browser__templates_dir_path_str := fmt.Sprintf("%s/gf_posts_browser", p_templates_dir_path_str)
 
-	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filename_str, post__templates_dir_path_str, p_runtime_sys)
+	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filepath_str,
+		// post__templates_dir_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 	
-	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.Templates__load(posts_browser__main_template_filename_str, posts_browser__templates_dir_path_str, p_runtime_sys)
+	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.Templates__load(posts_browser__main_template_filepath_str,
+		// posts_browser__templates_dir_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

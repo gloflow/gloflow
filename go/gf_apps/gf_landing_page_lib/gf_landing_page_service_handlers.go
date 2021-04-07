@@ -26,13 +26,14 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func init_handlers(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_landing_page_service_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -57,7 +58,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	
 	//---------------------
 	http.HandleFunc("/landing/main/", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /landing/main/ ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /landing/main/ ----------")
 
 		if p_req.Method == "GET" {
 			gf_err := Pipeline__get_landing_page(2000, //p_max_random_cursor_position_int

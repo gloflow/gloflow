@@ -26,18 +26,19 @@ import (
 
 //-------------------------------------------------
 type gf_templates struct {
-	tag_objects__tmpl                            *template.Template
-	tag_objects__subtemplates_names_lst          []string
+	tag_objects__tmpl                   *template.Template
+	tag_objects__subtemplates_names_lst []string
 }
 
 //-------------------------------------------------
-func tmpl__load(p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+func tmpl__load(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
-	main_template_filename_str := "gf_tag_objects.html"
-	templates_dir_path_str     := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
+	main_template_filepath_str := p_templates_paths_map["gf_tag_objects"]
+	// templates_dir_path_str := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
 
-	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

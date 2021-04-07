@@ -31,6 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -63,7 +64,7 @@ func service__run(p_config *GF_config,
 		AWS_secret_access_key_str:                  p_config.AWS_secret_access_key_str,
 		AWS_token_str:                              p_config.AWS_token_str,
 
-		Templates_dir_paths_map:                    p_config.Templates_dir_paths_map,
+		Templates_paths_map: p_config.Templates_paths_map,
 	}
 
 	gf_images_lib.Init_service(gf_images__service_info,
@@ -73,7 +74,7 @@ func service__run(p_config *GF_config,
 	//-------------
 	// GF_LANDING_PAGE
 
-	gf_landing_page_lib.Init_service(p_runtime_sys)
+	gf_landing_page_lib.Init_service(p_config.Templates_paths_map, p_runtime_sys)
 
 	//-------------
 	// GF_ANALYTICS
@@ -91,6 +92,8 @@ func service__run(p_config *GF_config,
 		AWS_access_key_id_str:     p_config.AWS_access_key_id_str,
 		AWS_secret_access_key_str: p_config.AWS_secret_access_key_str,
 		AWS_token_str:             p_config.AWS_token_str,
+
+		Templates_paths_map: p_config.Templates_paths_map,
 	}
 	gf_analytics_lib.Init_service(gf_analytics__service_info,
 		p_runtime_sys)
@@ -114,7 +117,7 @@ func service__run(p_config *GF_config,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.Init_service(p_runtime_sys)
+	gf_tagger_lib.Init_service(p_config.Templates_paths_map, p_runtime_sys)
 
 	//-------------
 	// GF_ML

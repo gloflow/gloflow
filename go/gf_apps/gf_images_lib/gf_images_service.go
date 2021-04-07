@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -40,7 +41,7 @@ type GF_service_info struct {
 	AWS_access_key_id_str                      string
 	AWS_secret_access_key_str                  string
 	AWS_token_str                              string
-	Templates_dir_paths_map                    map[string]string
+	Templates_paths_map                        map[string]string
 	Config_file_path_str                       string
 }
 
@@ -48,8 +49,6 @@ type GF_service_info struct {
 func Init_service(p_service_info *GF_service_info,
 	p_config      *gf_images_utils.GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) {
-
-	
 
 	//-------------
 	// DB_INDEXES
@@ -77,8 +76,11 @@ func Init_service(p_service_info *GF_service_info,
 
 	//-------------
 	// IMAGE_FLOWS
-	flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
-	gf_err = Flows__init_handlers(flows__templates_dir_path_str, jobs_mngr_ch, p_runtime_sys)
+
+	// flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
+	gf_err = Flows__init_handlers(p_service_info.Templates_paths_map,
+		jobs_mngr_ch,
+		p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

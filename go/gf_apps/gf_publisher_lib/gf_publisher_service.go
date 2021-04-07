@@ -21,7 +21,7 @@ package gf_publisher_lib
 
 import (
 	"fmt"
-	"os"
+	// "os"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
@@ -29,8 +29,9 @@ import (
 
 //-------------------------------------------------
 type GF_images_extern_runtime_info struct {
-	Jobs_mngr             gf_images_jobs.Jobs_mngr
-	Service_host_port_str string // "http://127.0.0.1:2060"
+	Jobs_mngr               gf_images_jobs.Jobs_mngr
+	Service_host_port_str   string // "http://127.0.0.1:2060"
+	Templates_dir_paths_map map[string]string
 }
 
 //-------------------------------------------------
@@ -44,14 +45,16 @@ func Init_service(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	
 	//------------------------
 
-	// TEMPLATES_DIR
+	/*// TEMPLATES_DIR
 	templates_dir_path_str := "./templates"
 	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
 		p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
 		panic(1)
-	}
+	}*/
 
-	err := init_handlers(p_gf_images_runtime_info, templates_dir_path_str, p_runtime_sys)
+	err := init_handlers(p_gf_images_runtime_info,
+		p_gf_images_runtime_info.Templates_dir_paths_map,
+		p_runtime_sys)
 	if err != nil {
 		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
 		panic(msg_str)

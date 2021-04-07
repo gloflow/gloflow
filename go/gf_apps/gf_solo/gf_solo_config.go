@@ -42,7 +42,7 @@ type GF_config struct {
 	Sentry_endpoint_str string `mapstructure:"sentry_endpoint"`
 
 	// TEMPLATES
-	Templates_dir_paths_map map[string]string `mapstructure:"templates_dir_paths"`
+	Templates_paths_map map[string]string `mapstructure:"templates_paths"`
 
 	//--------------------
 	// GF_IMAGES

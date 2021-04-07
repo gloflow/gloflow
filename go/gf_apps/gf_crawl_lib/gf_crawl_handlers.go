@@ -30,7 +30,7 @@ import (
 //-------------------------------------------------
 func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
-	p_templates_dir_path_str       string,
+	p_templates_paths_map          map[string]string,
 	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_handlers.init_handlers()")
@@ -38,7 +38,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -122,6 +122,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			}()
 		}
 	})
+
 	//----------------
 	http.HandleFunc("/a/crawl/search", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/search ----------")
@@ -144,6 +145,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 
 		//------------------
 	})
+
 	//----------------
 	http.HandleFunc("/a/crawl/crawl_dashboard_ff2___1112_29", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/crawl_dashboard_ff2___1112_29 ----------")

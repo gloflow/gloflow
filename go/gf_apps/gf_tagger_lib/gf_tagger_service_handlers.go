@@ -27,14 +27,15 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func init_handlers(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
 
 	//---------------------
 	// TEMPLATES
 	
-	gf_templates, gf_err := tmpl__load(p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

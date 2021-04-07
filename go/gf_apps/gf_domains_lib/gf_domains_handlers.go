@@ -28,13 +28,14 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func Init_handlers(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_handlers.Init_handlers()")
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_dir_path_str, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

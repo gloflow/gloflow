@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -32,13 +32,15 @@ type gf_templates struct {
 }
 
 //-------------------------------------------------
-func tmpl__load(p_templates_dir_path_str string, p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+func tmpl__load(p_templates_paths_map map[string]string,
+	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
-	main_template_filename_str := "gf_crawl_dashboard.html"
-	templates_dir_path_str     := fmt.Sprintf("%s/gf_crawl_dashboard", p_templates_dir_path_str)
+	main_template_filepath_str := p_templates_paths_map["gf_crawl_dashboard.html"]
+	// templates_dir_path_str := fmt.Sprintf("%s/gf_crawl_dashboard", p_templates_dir_path_str)
 
-	dashboard__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
+	dashboard__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
