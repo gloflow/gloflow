@@ -80,12 +80,8 @@ func runtime__get(p_config_path_str string,
 		return nil, nil, gf_err.Error
 	}
 
-
-	fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd")
-	fmt.Println(mongodb_db)
-
-
 	runtime_sys.Mongo_db = mongodb_db
+	runtime_sys.Mongo_coll = mongodb_db.Collection("data_symphony")
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
@@ -173,6 +169,38 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	// ENV
 	err = viper.BindEnv("sentry_endpoint", "GF_SENTRY_ENDPOINT")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - AWS_ACCESS_KEY_ID
+	cmd__base.PersistentFlags().StringP("aws_access_key_id", "", "AWS ACCESS_KEY_ID", "AWS access_key_id")
+	err = viper.BindPFlag("aws_access_key_id", cmd__base.PersistentFlags().Lookup("aws_access_key_id"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("aws_access_key_id", "AWS_ACCESS_KEY_ID")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - AWS_SECRET_ACCESS_KEY
+	cmd__base.PersistentFlags().StringP("aws_secret_access_key", "", "AWS SECRET_ACCESS_KEY", "AWS secret_access_key")
+	err = viper.BindPFlag("aws_secret_access_key", cmd__base.PersistentFlags().Lookup("aws_secret_access_key"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

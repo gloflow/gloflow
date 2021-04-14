@@ -252,14 +252,15 @@ def prepare_web_files(p_pages_map,
 
 		#------------------
 		# CREATE_TARGET_DIR
-		target_dir_str = os.path.abspath("%s/static"%(p_service_base_dir_str))
-		gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
+		target_dir_str = os.path.abspath(f"{p_service_base_dir_str}/static")
+		gf_cli_utils.run_cmd(f"mkdir -p {target_dir_str}")
 
 		#------------------
 		# COPY_PAGE_WEB_CODE
-		gf_cli_utils.run_cmd("cp -r %s/* %s"%(build_dir_str, target_dir_str))
+		gf_cli_utils.run_cmd(f"cp -r {build_dir_str}/* {target_dir_str}")
 
 		#------------------
+		print("-----")
 
 	#------------------
 	# MOVE_TEMPLATES_OUT_OF_STATIC

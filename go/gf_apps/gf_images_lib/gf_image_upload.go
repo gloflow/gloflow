@@ -141,7 +141,9 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 		return nil, gf_err
 	}
 
+	spew.Dump(upload_info)
 
+	
 	image_to_process_lst := []gf_images_jobs.Gf_image_uploaded_to_process{
 		gf_images_jobs.Gf_image_uploaded_to_process{
 			Gf_image_id_str:  p_upload_gf_image_id_str,
@@ -149,6 +151,7 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 		},
 	}
 
+	// JOB
 	running_job, gf_err := gf_images_jobs.Client__run_uploaded_imgs(upload_info.Client_type_str,
 		image_to_process_lst,
 		upload_info.Flows_names_lst,
@@ -158,10 +161,11 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	if gf_err != nil {
 		return nil, gf_err
 	}
+	
 
 
 
-	spew.Dump(running_job)
+	// spew.Dump(running_job)
 	
 
 
@@ -210,7 +214,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	ctx := context.Background()
 
 	var upload_info Gf_image_upload_info
-	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").FindOne(ctx, bson.M{
 			"t":                      "img_upload_info",
 			"upload_gf_image_id_str": p_upload_gf_image_id_str,
 		}).Decode(&upload_info)

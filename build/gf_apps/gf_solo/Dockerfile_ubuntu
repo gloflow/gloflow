@@ -7,6 +7,11 @@ RUN mkdir -p /home/gf/logs
 RUN mkdir -p /home/gf/config
 RUN mkdir -p /home/gf/data
 RUN mkdir -p /home/gf/libs
+RUN mkdir -p /home/gf/static
+
+# used for fetched images, and intermediate processing results
+RUN mkdir -p /home/gf/images
+RUN mkdir -p /home/gf/images/thumbnails
 
 WORKDIR /home/gf
 

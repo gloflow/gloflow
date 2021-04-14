@@ -31,7 +31,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	// "github.com/globalsign/mgo"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -63,7 +63,7 @@ func Mongo__upsert(p_query bson.M,
 	p_runtime_sys *Runtime_sys) *Gf_error {
 
 
-	_, err := p_coll.UpdateOne(p_ctx, p_query, p_record,
+	_, err := p_coll.UpdateOne(p_ctx, p_query, bson.M{"$set": p_record,},
 		options.Update().SetUpsert(true))
 	if err != nil {
 		gf_err := Mongo__handle_error("failed to update/upsert document in the DB",
@@ -144,29 +144,31 @@ func Mongo__ensure_index(p_indexes_keys_lst [][]string,
 	p_coll_name_str string,
 	p_runtime_sys   *Runtime_sys) ([]string, *Gf_error) {
 
-	var indexView *mongo.IndexView
-
 	models := []mongo.IndexModel{}
 	for _, index_keys_lst := range p_indexes_keys_lst {
 		
 		keys_bson := bson.D{}
-		for j, k := range index_keys_lst {
-			keys_bson[j] = bson.E{k, 1}
+		for _, k := range index_keys_lst {
+			keys_bson = append(keys_bson, bson.E{k, 1})
 		}
+
 		model := mongo.IndexModel{
 		
-			Keys: keys_bson, // bson.D{{"name", 1}, {"email", 1}},
-			
-			// Keys:    bson.D{{"name", 1}, {"age", 1}},
-			// Options: options.Index().SetName("nameAge"),
+			Keys:    keys_bson, // bson.D{{"name", 1}, {"email", 1}},
+			Options: options.Index().
+				SetUnique(false).    // index must necessarily contain only a single document per Key
+				SetBackground(true). // other connections will be allowed to proceed using the collection without the index while it's being built
+				SetSparse(true),     // only documents containing the provided Key fields will be included in the index
 		}
 
 		models = append(models, model)
 	}
 
 	// CREATE_INDEX
-	opts               := options.CreateIndexes().SetMaxTime(2 * time.Second)
-	indexes_names, err := indexView.CreateMany(context.TODO(), models, opts)
+	ctx := context.Background()
+	opts := options.CreateIndexes().SetMaxTime(600 * time.Second)
+
+	indexes_names_lst, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).Indexes().CreateMany(ctx, models, opts)
 	if err != nil {
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			return []string{}, nil
@@ -179,9 +181,7 @@ func Mongo__ensure_index(p_indexes_keys_lst [][]string,
 		}
 	}
 
-
-
-	return indexes_names, nil
+	return indexes_names_lst, nil
 
 	/*gf_errs_lst := []*Gf_error{}
 	for _, index_keys_lst := range p_indexes_keys_lst {

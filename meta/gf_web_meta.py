@@ -31,8 +31,8 @@ def get():
 
 	gf_images__pages_map = {
 		#-------------
-		#IMAGES_FLOWS_BROWSER
-		"gf_images_flows_browser":{
+		# IMAGES_FLOWS_BROWSER
+		"gf_images_flows_browser": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_images"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html"%(modd_str),
 			"url_base_str":       "/images/static",
@@ -40,7 +40,7 @@ def get():
 
 		#-------------
 		# IMAGES_DASHBOARD
-		"gf_images_dashboard":{
+		"gf_images_dashboard": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_images"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_images/templates/gf_images_dashboard/gf_images_dashboard.html"%(modd_str),
 			"url_base_str":       "/images/static",
@@ -51,7 +51,7 @@ def get():
 	gf_publisher__pages_map = {
 		#-------------
 		# GF_POST
-		"gf_post":{
+		"gf_post": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_post/gf_post.html"%(modd_str),
 			"url_base_str":       "/posts/static",
@@ -59,7 +59,7 @@ def get():
 
 		#-------------
 		# GF_POSTS_BROWSER
-		"gf_posts_browser":{
+		"gf_posts_browser": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_publisher"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_publisher/templates/gf_posts_browser/gf_posts_browser.html"%(modd_str),
 			"url_base_str":       "/posts/static",
@@ -82,7 +82,7 @@ def get():
 
 		#-------------
 		# CRAWL_DASHBOARD
-		"gf_crawl_dashboard":{
+		"gf_crawl_dashboard": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_crawl_lib/templates/gf_crawl_dashboard/gf_crawl_dashboard.html"%(modd_str),
 			"url_base_str":       "/a/static",
@@ -93,7 +93,7 @@ def get():
 
 		# IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
 		#               belong to neither gf_images nor gf_publisher. maybe it should be its own app?
-		"gf_domains_browser":{
+		"gf_domains_browser": {
 			"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser/gf_domains_browser.html"%(modd_str),
 			"url_base_str":       "/a/static",
@@ -102,28 +102,28 @@ def get():
 		#-------------
 	}
 
-	#-----------------------------
-	# GF_SOLO - contains pages of all apps
+	gf_tagger__pages_map = {
+		#-------------
+		"gf_tag_objects": {
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_tagger",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_tagger/templates/gf_tag_objects/gf_tag_objects.html",
+			"url_base_str":       "/tags/static",
+		},
 
-	import copy # IMPORTANT!! - do a deepcopy of pages_map, because for gf_solo we modify them
-
-	gf_solo__pages_map = {}
-	
-	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
-	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
-
-	for _, page_info_map in gf_solo__pages_map.items():
-		page_info_map["build_dir_str"] = f"{modd_str}/../web/build/gf_apps/gf_solo"
-
-	#-----------------------------
+		#-------------
+		##IMPORTANT!! - not a page itself, instead its code being used by other pages, but its included here
+		##              so that its code gets built when pages for this app are built
+		#"gf_tagger_client":{
+		#	"code_root_dir_str":"%s/../src/apps/gf_tagger/client/gf_tagger_client"%(modd_str),
+		#	"target_deploy_dir":"%s/../bin/apps/gf_tagger/static"%(modd_str),
+		#}
+	}
 
 	apps_map = {
 		#-----------------------------
 		# GF_SOLO
-		"gf_solo":{
-			"pages_map": gf_solo__pages_map
+		"gf_solo": {
+			
 		},
 
 		#-----------------------------
@@ -134,19 +134,19 @@ def get():
 
 		#-----------------------------
 		# GF_IMAGES
-		"gf_images":{
+		"gf_images": {
 			"pages_map": gf_images__pages_map
 		},
 
 		#-----------------------------
 		# GF_PUBLISHER
-		"gf_publisher":{
+		"gf_publisher": {
 			"pages_map": gf_publisher__pages_map
 		},
 
 		#-----------------------------
 		# GF_ANALYTICS
-		"gf_analytics":{
+		"gf_analytics": {
 			"pages_map": gf_analytics__pages_map
 		},
 
@@ -181,22 +181,30 @@ def get():
 		# 		}
 		# 	}
 		# },
-		#-----------------------------
-		# "gf_tagger":{
-		# 	"pages_map":{
-		# 		"gf_tag_objects":{
-		# 			"type_str":          "dart",
-		# 			"code_root_dir_str": "%s/../web/src/gf_apps/gf_tagger/gf_tag_objects"%(modd_str),
-		# 			"target_deploy_dir": "%s/../web/build/gf_apps/gf_tagger/static"%(modd_str),
-		# 		},
-		# 		##IMPORTANT!! - not a page itself, instead its code being used by other pages, but its included here
-		# 		##              so that its code gets built when pages for this app are built
-		# 		#"gf_tagger_client":{
-		# 		#	"code_root_dir_str":"%s/../src/apps/gf_tagger/client/gf_tagger_client"%(modd_str),
-		# 		#	"target_deploy_dir":"%s/../bin/apps/gf_tagger/static"%(modd_str),
-		# 		#}
-		# 	}
-		# }
+		#
 		#-----------------------------
 	}
+
+
+	#-----------------------------
+	# GF_SOLO - contains pages of all apps
+
+	import copy # IMPORTANT!! - do a deepcopy of pages_map, because for gf_solo we modify them
+
+	gf_solo__pages_map = {}
+	
+	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
+
+	for _, page_info_map in gf_solo__pages_map.items():
+		page_info_map["build_copy_dir_str"] = f"{modd_str}/../web/build/gf_apps/gf_solo"
+
+	apps_map["gf_solo"] = {"pages_map": gf_solo__pages_map}
+
+	#-----------------------------
+
+
 	return apps_map

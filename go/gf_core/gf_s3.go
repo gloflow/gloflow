@@ -58,7 +58,12 @@ func S3__get_file(p_target_file__s3_path_str string,
 	file, err := os.Create(p_target_file__local_path_str)
 	if err != nil {
 		gf_err := Error__create("failed to create local file on host FS, to save a downloaded S3 file to.",
-			"file_create_error", nil, err, "gf_core", p_runtime_sys)
+			"file_create_error", 
+			map[string]interface{}{
+				"target_file__s3_path_str":    p_target_file__s3_path_str,
+				"target_file__local_path_str": p_target_file__local_path_str,
+				"s3_bucket_name_str":          p_s3_bucket_name_str,
+			}, err, "gf_core", p_runtime_sys)
 		return gf_err
 	}
 

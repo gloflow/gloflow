@@ -5,7 +5,7 @@
 {{/*METADATA*/}}
 <meta property="og:title" content="gloflow.com:tag:{{ .Tag_str }}"/>
 {{/*--------------------------------------------------------------*/}}
-<link rel="stylesheet" type="text/css" href="./../../css/gf_tag_objects.css">
+<!-- <link rel="stylesheet" type="text/css" href="./../../css/gf_tag_objects/gf_tag_objects.css"> -->
 <link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css">
 </head>
 {{/*--------------------------------------------------------------*/}}
@@ -52,8 +52,8 @@
 	{{end}}
 </div>
 {{/*--------------------------------------------------------------*/}}
-<script type="text/javascript" src="./../../../../../libs/js/jquery-2.2.1.min.js"></script>
-<script type="text/javascript" src="./../../../../../libs/js/jquery.masonry.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="./../../../../../libs/js/masonry.pkgd.min.js"></script>
 {{/*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>

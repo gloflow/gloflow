@@ -85,10 +85,13 @@ def main():
 			print("not a main package")
 			exit()
 			
+		fetch_deps_bool = args_map["fetch_deps"]
+
 		gf_build_go.run(app_name_str,
 			app_meta_map["go_path_str"],
 			app_meta_map["go_output_path_str"],
-			p_static_bool = p_static_bool)
+			p_static_bool = p_static_bool,
+			p_go_get_bool = fetch_deps_bool)
 
 	#--------------------------------------------------
 	def rust_build_apps_in_cont():
@@ -187,13 +190,13 @@ def main():
 		assert app_name_str in build_meta_map.keys()
 		app_build_meta_map = build_meta_map[app_name_str]
 
-		if app_build_meta_map["type_str"] == "main_go":
-			
-			# STATIC_LINKING
-			# build using static linking, containers are based on Alpine linux, 
-			# which has a minimal stdlib and other libraries, so we want to compile 
-			# everything needed by this Go package into a single binary.
-			go_build_app_in_cont(True)
+		# if app_build_meta_map["type_str"] == "main_go":
+		#
+		# 	# STATIC_LINKING
+		# 	# build using static linking, containers are based on Alpine linux, 
+		# 	# which has a minimal stdlib and other libraries, so we want to compile 
+		# 	# everything needed by this Go package into a single binary.
+		# 	go_build_app_in_cont(True)
 		
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
@@ -201,7 +204,8 @@ def main():
 
 
 		
-
+		# DEPRECATED!! - gf_builder should be removed, no custom CLI tools should be used
+		#                for build ops in containers. instead standard cli__build.py should be used.
 		if app_name_str == "gf_builder":
 
 			gf_builder_ops.cont__build(dockerhub_user_str,
@@ -349,12 +353,17 @@ def parse_args():
 	arg_parser.add_argument("-build_outof_cont", action = "store_true", default=False,
 		help = "build outside of a gf_builder container")
 
+	#-------------
+	# FETCH_DEPENDENCIES
+	arg_parser.add_argument("-fetch_deps", action = "store_true", default=False,
+		help = "explicit fetch of dependencies for Go/Py/Rust/JS if its configurable")
+
 	#----------------------------
 	# RUN_WITH_SUDO - boolean flag
 	# in the default Docker setup the daemon is run as root and so docker client commands have to be run with "sudo".
 	# newer versions of Docker allow for non-root users to run Docker daemons. 
 	# also CI systems might run this command in containers as root-level users in which case "sudo" must not be specified.
-	arg_parser.add_argument('-docker_sudo', action = "store_true",
+	arg_parser.add_argument('-docker_sudo', action = "store_true", default=False,
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
 	#-------------
@@ -369,6 +378,7 @@ def parse_args():
 		"dockerhub_user": args_namespace.dockerhub_user,
 		"docker_sudo":    args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
+		"fetch_deps":       args_namespace.fetch_deps
 	}
 	return args_map
 

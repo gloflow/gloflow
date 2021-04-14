@@ -17,15 +17,16 @@ sentry_endpoint: "" # or ENV var
 
 
 # TEMPLATES_DIR_PATHS
-templates_dir_paths:
-  gf_analytics_dashboard:  "./templates/gf_analytics_dashboard"
-  gf_crawl_dashboard:      "./templates/gf_crawl_dashboard"
-  gf_domains_browser:      "./templates/gf_domains_browser"
-  gf_images_dashboard:     "./templates/gf_images_dashboard"
-  gf_images_flows_browser: "./templates/gf_images_flows_browser"
-  gf_landing_page:         "./templates/gf_landing_page"
-  gf_post:                 "./templates/gf_post"
-  gf_posts_browser:        "./templates/gf_posts_browser"
+templates_paths:
+  gf_analytics_dashboard:  "./templates/gf_analytics_dashboard/gf_analytics_dashboard.html"
+  gf_crawl_dashboard:      "./templates/gf_crawl_dashboard/gf_crawl_dashboard.html"
+  gf_domains_browser:      "./templates/gf_domains_browser/gf_domains_browser.html"
+  gf_images_dashboard:     "./templates/gf_images_dashboard/gf_images_dashboard.html"
+  gf_images_flows_browser: "./templates/gf_images_flows_browser/gf_images_flows_browser.html"
+  gf_landing_page:         "./templates/gf_landing_page/gf_landing_page.html"
+  gf_post:                 "./templates/gf_post/gf_post.html"
+  gf_posts_browser:        "./templates/gf_posts_browser/gf_posts_browser.html"
+  gf_tag_objects:          "./templates/gf_tag_objects/gf_tag_objects.html"
 
 #--------------------
 # GF_IMAGES

@@ -52,11 +52,11 @@ def get():
                 "gf_images_lib",
                 "gf_publisher_lib"
             ],
-            # "gf_tagger": [
-            #     "gf_images_lib",
-            #     "gf_publisher_lib",
-            #     "gf_tagger"
-            # ],
+            "gf_tagger": [
+                "gf_images_lib",
+                "gf_publisher_lib",
+                "gf_tagger"
+            ],
         },
 
         "system_packages_lst": [

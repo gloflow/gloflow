@@ -71,7 +71,6 @@ func Client__run_uploaded_imgs(p_client_type_str string,
 	spew.Dump(running_job)
 
 	return running_job, nil
-
 }
 
 //-------------------------------------------------

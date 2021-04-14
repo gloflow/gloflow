@@ -55,21 +55,8 @@ steps:
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_go
-      - python3 -u /home/gf/ops/cli__build.py -run=build_go -build_outof_cont -app=gf_solo
+      - python3 -u /home/gf/ops/cli__build.py -run=build_go -fetch_deps -app=gf_solo
       
-    when:
-      event:
-        - push
-      branch:
-        - master
-
-  #-------------------------------
-  # BUILD_WEB
-  - name: build_web
-    image: glofloworg/gf_builder:latest
-    commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
     when:
       event:
         - push
@@ -114,6 +101,19 @@ steps:
         - master
 
   #-------------------------------
+  # BUILD_WEB
+  - name: build_web
+    image: glofloworg/gf_builder:latest
+    commands:
+      # "-u" - run unbuffered to see all stdout/stderr as it happens
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
   # BUILD_CONTAINERS
   - name: build_containers
     image: glofloworg/gf_builder:latest
@@ -130,7 +130,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers -app=gf_solo
     when:
       event:
         - push
@@ -155,7 +155,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers
+      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers -app=gf_solo
     when:
       event:
         - push

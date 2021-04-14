@@ -108,8 +108,9 @@ func service__run(p_config *GF_config,
 	//         gf_publisher and gf_images run as separate processes.
 	gf_images_service_host_port_str := "127.0.0.1"
 	gf_images_runtime_info := &gf_publisher_lib.GF_images_extern_runtime_info{
-		Jobs_mngr:             nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
-		Service_host_port_str: gf_images_service_host_port_str,
+		Jobs_mngr:               nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
+		Service_host_port_str:   gf_images_service_host_port_str,
+		Templates_dir_paths_map: p_config.Templates_paths_map,
 	}
 	
 	gf_publisher_lib.Init_service(gf_images_runtime_info,
