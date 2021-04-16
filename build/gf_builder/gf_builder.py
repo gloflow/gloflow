@@ -57,7 +57,7 @@ def main():
 	def log_fun(m, g): print("%s: %s"%(m, g))
 	args_map = parse_args()
 
-	#GET_CHANGED_APPS
+	# GET_CHANGED_APPS
 	changed_apps_files_map = get_changed_apps()
 
 	#------------------------

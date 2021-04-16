@@ -26,23 +26,28 @@ sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 
 #---------------------------------------------------
-def cont__publish(p_dockerhub_user_name_str,
+def cont__publish(p_app_name_str,
+	p_app_build_meta_map,
+	p_gf_dockerhub_user_str,
+	p_gf_dockerhub_pass_str,
 	p_log_fun,
-	p_docker_sudo_bool = False):
-	assert isinstance(p_dockerhub_user_name_str, str)
+	p_git_commit_hash_str = None,
+	p_docker_sudo_bool    = False):
+	assert isinstance(p_gf_dockerhub_user_str, str)
 
 	# PUBLISH
-	app_name_str = "gf_builder"
-	gf_containers.publish(app_name_str,
-		app_build_meta_map,
+	# app_name_str = "gf_builder"
+	gf_containers.publish(p_app_name_str,
+		p_app_build_meta_map,
 		p_gf_dockerhub_user_str,
 		p_gf_dockerhub_pass_str,
-		gf_log.log_fun,
+		p_log_fun,
 		p_git_commit_hash_str = p_git_commit_hash_str, 
 		p_exit_on_fail_bool   = True,
 		p_docker_sudo_bool    = p_docker_sudo_bool)
 
 #---------------------------------------------------
+# DEPRECATED?? - is this still being used?
 def cont__build(p_dockerhub_user_name_str,
 	p_log_fun,
 	p_docker_sudo_bool = False):

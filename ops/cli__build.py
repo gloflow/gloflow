@@ -232,13 +232,37 @@ def main():
 	elif run_str == "publish_containers":
 
 		dockerhub_user_str = args_map["dockerhub_user"]
+		dockerhub_pass_str = args_map["dockerhub_pass"]
 		docker_sudo_bool   = args_map["docker_sudo"]
+
+		assert app_name_str in build_meta_map.keys()
+		app_build_meta_map = build_meta_map[app_name_str]
+
+		# GIT_COMMIT_HASH
+		git_commit_hash_str = None
+		if "DRONE_COMMIT" in os.environ.keys():
+			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
 		if app_name_str == "gf_builder":
 
-			gf_builder_ops.cont__publish(dockerhub_user_str,
+			app_name_str = "gf_builder"
+			gf_builder_ops.cont__publish(app_name_str,
+				app_build_meta_map,
+				dockerhub_user_str,
+				dockerhub_pass_str,
 				gf_log.log_fun,
 				p_docker_sudo_bool = docker_sudo_bool)
+
+
+		else:
+			
+			gf_builder_ops.cont__publish(app_name_str,
+				app_build_meta_map,
+				dockerhub_user_str,
+				dockerhub_pass_str,
+				gf_log.log_fun,
+				p_git_commit_hash_str = git_commit_hash_str,
+				p_docker_sudo_bool    = docker_sudo_bool)
 		
 	#-------------
 	# TEST
@@ -311,6 +335,7 @@ def parse_args():
 	# APP
 	arg_parser.add_argument('-app', action = "store", default = 'gf_images',
 		help = '''
+- '''+fg('yellow')+'gf_solo'+attr(0)+'''
 - '''+fg('yellow')+'gf_images'+attr(0)+'''
 - '''+fg('yellow')+'gf_images_lib'+attr(0)+'''
 - '''+fg('yellow')+'gf_publisher'+attr(0)+'''
@@ -342,7 +367,7 @@ def parse_args():
 		help =    '''path to the file containing AWS S3 credentials to be used''')
 
 	#-------------
-	# DOCKERHUB_USER
+	# DOCKERHUB_USER/PASS
 	arg_parser.add_argument('-dockerhub_user',
 		action =  "store",
 		default = "glofloworg",
@@ -370,13 +395,23 @@ def parse_args():
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 
+
+	if not args_namespace.dockerhub_user == None:
+		gf_dockerhub_user_str = args_namespace.dockerhub_user
+	else:
+		gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER", None)
+
+	gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
+
+
 	args_map = {
-		"run":            args_namespace.run,
-		"app":            args_namespace.app,
-		"test_name":      args_namespace.test_name,
-		"aws_creds":      args_namespace.aws_creds,
-		"dockerhub_user": args_namespace.dockerhub_user,
-		"docker_sudo":    args_namespace.docker_sudo,
+		"run":              args_namespace.run,
+		"app":              args_namespace.app,
+		"test_name":        args_namespace.test_name,
+		"aws_creds":        args_namespace.aws_creds,
+		"dockerhub_user":   gf_dockerhub_user_str, # ,
+		"dockerhub_pass":   gf_dockerhub_pass_str,
+		"docker_sudo":      args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
 		"fetch_deps":       args_namespace.fetch_deps
 	}
