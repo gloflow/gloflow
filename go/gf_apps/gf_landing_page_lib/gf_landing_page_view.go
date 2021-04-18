@@ -57,6 +57,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 			}
 			return false
 		},
+		
 		//-------------------------------------------------
 	})
 

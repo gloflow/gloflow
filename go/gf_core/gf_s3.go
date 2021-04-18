@@ -92,30 +92,39 @@ func S3__init(p_aws_access_key_id_str string,
 	p_runtime_sys               *Runtime_sys) (*Gf_s3_info, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__init()")
 
-	//--------------
-	creds  := credentials.NewStaticCredentials(p_aws_access_key_id_str, p_aws_secret_access_key_str, p_token_str)
-	_, err := creds.Get()
-
-	// usr, _   := user.Current()
-	// home_dir := usr.HomeDir
-	// creds    := credentials.NewSharedCredentials(fmt.Sprintf("%s/.aws/credentials",home_dir),"default")
-	// _, err := creds.Get()
-
-	if err != nil {
-		gf_err := Error__create("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
-			"s3_credentials_error", nil, err, "gf_core", p_runtime_sys)
-		return nil, gf_err
-	}
-
-	//--------------
 	
 	config := &aws.Config{
 		Region:           aws.String("us-east-1"),
 		Endpoint:         aws.String("s3.amazonaws.com"),
 		S3ForcePathStyle: aws.Bool(true),      // <-- without these lines. All will fail! fork you aws!
-		Credentials:      creds,
-		// LogLevel        :0, // <-- feel free to crank it up 
+		// Credentials:      creds,
+		// LogLevel:         0, // <-- feel free to crank it up 
 	}
+
+	//--------------
+	// STATIC_CREDENTIALS - they're non-empty and should be constructed. otherwise AWS creds are acquired
+	//                      by the AWS client from the environment.
+	if p_aws_access_key_id_str != "" {
+
+		creds  := credentials.NewStaticCredentials(p_aws_access_key_id_str, p_aws_secret_access_key_str, p_token_str)
+		_, err := creds.Get()
+
+		// usr, _   := user.Current()
+		// home_dir := usr.HomeDir
+		// creds    := credentials.NewSharedCredentials(fmt.Sprintf("%s/.aws/credentials",home_dir),"default")
+		// _, err := creds.Get()
+
+		if err != nil {
+			gf_err := Error__create("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
+				"s3_credentials_error", nil, err, "gf_core", p_runtime_sys)
+			return nil, gf_err
+		}
+
+		config.Credentials = creds
+	}
+
+	//--------------
+
 	sess := session.New(config)
 
 	s3_uploader := s3manager.NewUploader(sess)

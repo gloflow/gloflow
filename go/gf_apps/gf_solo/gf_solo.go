@@ -71,7 +71,8 @@ func runtime__get(p_config_path_str string,
 	// MONGODB
 	mongodb_host_str := config.Mongodb_host_str
 	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
-	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
+	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
+	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
 
 	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
 		config.Mongodb_db_name_str,
@@ -80,7 +81,7 @@ func runtime__get(p_config_path_str string,
 		return nil, nil, gf_err.Error
 	}
 
-	runtime_sys.Mongo_db = mongodb_db
+	runtime_sys.Mongo_db   = mongodb_db
 	runtime_sys.Mongo_coll = mongodb_db.Collection("data_symphony")
 	fmt.Printf("mongodb connected...\n")
 
@@ -153,6 +154,22 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 	// ENV
 	err = viper.BindEnv("mongodb_host", "GF_MONGODB_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - MONGODB_DB_NAME
+	cmd__base.PersistentFlags().StringP("mongodb_db_name", "", "MONGODB HOST", "mongodb db name to which to connect") // Cobra CLI argument
+	err = viper.BindPFlag("mongodb_db_name", cmd__base.PersistentFlags().Lookup("mongodb_db_name"))                 // Bind Cobra CLI argument to a Viper configuration (for default value)
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("mongodb_db_name", "GF_MONGODB_DB_NAME")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

@@ -46,16 +46,16 @@ type Gf_featured_img struct {
 }
 
 //------------------------------------------
-//IMAGES
+// IMAGES
 //------------------------------------------
-func get_featured_imgs(p_max_random_cursor_position_int int, //500
-	p_elements_num_to_get_int int, //5
+func get_featured_imgs(p_max_random_cursor_position_int int, // 500
+	p_elements_num_to_get_int int, // 5
 	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_img, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_imgs()")
 
-	imgs_lst,err := gf_images_lib.DB__get_random_imgs_range(p_elements_num_to_get_int,
+	imgs_lst, err := gf_images_lib.DB__get_random_imgs_range(p_elements_num_to_get_int,
 		p_max_random_cursor_position_int,
-		"general", //p_flow_name_str
+		"general", // p_flow_name_str
 		p_runtime_sys)
 
 	if err != nil {
@@ -85,10 +85,10 @@ func get_featured_imgs(p_max_random_cursor_position_int int, //500
 }
 
 //------------------------------------------
-//POSTS
+// POSTS
 //------------------------------------------
-func get_featured_posts(p_max_random_cursor_position_int int, //500
-	p_elements_num_to_get_int int, //5
+func get_featured_posts(p_max_random_cursor_position_int int, // 500
+	p_elements_num_to_get_int int, // 5
 	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_posts()")
 
@@ -110,14 +110,14 @@ func posts_to_featured(p_posts_lst []*gf_publisher_lib.Gf_post, p_runtime_sys *g
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
 
 	featured_posts_lst := []*Gf_featured_post{}
-	for _,post := range p_posts_lst {
+	for _, post := range p_posts_lst {
 		featured          := post_to_featured(post, p_runtime_sys)
 		featured_posts_lst = append(featured_posts_lst, featured)
 	}
 
-	//CAUTION!! - in some cases image_src is null or "error", in which case it should not 
-	//            be included in the final output. This is due to past issues/bugs in the gf_image and 
-	//			  gf_publisher.
+	// CAUTION!! - in some cases image_src is null or "error", in which case it should not 
+	//             be included in the final output. This is due to past issues/bugs in the gf_image and 
+	//             gf_publisher.
 	featured_elements_with_no_errors_lst := []*Gf_featured_post{}
 	for _, featured := range featured_posts_lst {
 		p_runtime_sys.Log_fun("INFO", "featured.Image_url_str - "+featured.Image_url_str)

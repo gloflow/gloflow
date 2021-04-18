@@ -25,8 +25,8 @@ def create_or_update_batch(p_secrets_map,
     assert isinstance(p_aws_creds_map, dict)
 
     aws_client = boot3.client("secretsmanager",
-        aws_access_key_id     = p_aws_creds_map["GF_AWS_ACCESS_KEY_ID"],
-        aws_secret_access_key = p_aws_creds_map["GF_AWS_SECRET_ACCESS_KEY"],
+        aws_access_key_id     = p_aws_creds_map["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key = p_aws_creds_map["AWS_SECRET_ACCESS_KEY"],
         region_name           = p_region_str)
 
     r = aws_client.list_secrets()

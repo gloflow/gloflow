@@ -33,10 +33,10 @@ class Gf_s3_info:
 def parse_creds(p_aws_creds_file_path_str):
     aws_s3_creds_map = gf_aws_creds.get_from_file(p_aws_creds_file_path_str)
     
-    assert "GF_AWS_ACCESS_KEY_ID" in aws_s3_creds_map.keys()
-    assert "GF_AWS_SECRET_ACCESS_KEY" in aws_s3_creds_map.keys()
-    assert(len(aws_s3_creds_map["GF_AWS_ACCESS_KEY_ID"]) == 20)
-    assert(len(aws_s3_creds_map["GF_AWS_SECRET_ACCESS_KEY"]) == 40)
+    assert "AWS_ACCESS_KEY_ID" in aws_s3_creds_map.keys()
+    assert "AWS_SECRET_ACCESS_KEY" in aws_s3_creds_map.keys()
+    assert(len(aws_s3_creds_map["AWS_ACCESS_KEY_ID"]) == 20)
+    assert(len(aws_s3_creds_map["AWS_SECRET_ACCESS_KEY"]) == 40)
     
     return aws_s3_creds_map
 
