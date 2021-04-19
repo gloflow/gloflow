@@ -158,7 +158,9 @@ def prepare_libs(p_name_str,
 
     target_lib_file_path_lst = []
     if p_type_str == "lib_rust":
-        
+
+        release_dir_str = f"{p_cargo_crate_dir_path_str}/target/release"
+        gf_core_cli.run(f"ls -al {release_dir_str}")    
 
         #-------------
         # FIX!! - dont hardcode the app_name here like this, but parse Cargo.toml to detect if 
@@ -172,6 +174,7 @@ def prepare_libs(p_name_str,
 
             #-------------
             
+            
             # RUST_PY - CPYTHON_EXTENSION - this lib is Python extension written in Rust.
             #                               at the moment in GF the convention is for these Rust libs to have a postfix "_py".
             if p_cargo_crate_dir_path_str.endswith("_py"):
@@ -179,8 +182,8 @@ def prepare_libs(p_name_str,
                 # DYNAMIC_LIB
                 # IMPORTANT!! - Rust compiles this dynamic lib with the "lib" prefix, but the Python VM
                 #               requires extension libs to not have the "lib" prefix.
-                source__py_lib_file_path_str = "%s/target/release/lib%s_py.so"%(p_cargo_crate_dir_path_str, p_name_str)
-                target__py_lib_file_path_str = "%s/%s_py.so"%(target_build_dir_path_str, p_name_str)
+                source__py_lib_file_path_str = f"{release_dir_str}/lib{p_name_str}_py.so"
+                target__py_lib_file_path_str = f"{target_build_dir_path_str}/{p_name_str}_py.so"
 
                 assert os.path.isfile(source__py_lib_file_path_str)
                 target_lib_file_path_lst.append((source__py_lib_file_path_str, target__py_lib_file_path_str))
@@ -188,19 +191,19 @@ def prepare_libs(p_name_str,
             else:
 
                 # STATIC_LIB
-                source__static_lib_file_path_str = "%s/target/release/lib%s.a"%(p_cargo_crate_dir_path_str, p_name_str)
+                source__static_lib_file_path_str = f"{release_dir_str}/lib{p_name_str}.a"
                 assert os.path.isfile(source__static_lib_file_path_str)
                 target_lib_file_path_lst.append((source__static_lib_file_path_str, target_build_dir_path_str))
 
                 # DYNAMIC_LIB
-                source__dynamic_lib_file_path_str = "%s/target/release/lib%s.so"%(p_cargo_crate_dir_path_str, p_name_str)
+                source__dynamic_lib_file_path_str = f"{release_dir_str}/lib{p_name_str}.so"
                 assert os.path.isfile(source__dynamic_lib_file_path_str)
                 target_lib_file_path_lst.append((source__dynamic_lib_file_path_str, target_build_dir_path_str))
 
         #-------------
         # ALL
         else:
-            target_lib_file_path_lst.append(("%s/target/release/lib%s.so"%(p_cargo_crate_dir_path_str, p_name_str), target_build_dir_path_str))
+            target_lib_file_path_lst.append((f"{release_dir_str}/lib{p_name_str}.so"), target_build_dir_path_str)
 
         #-------------
 
