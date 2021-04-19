@@ -86,7 +86,6 @@ def build(p_app_name_str,
 	#------------------
 	# META
 
-	
 	assert "service_name_str" in p_app_build_meta_map
 	assert "service_base_dir_str" in p_app_build_meta_map
 
@@ -159,8 +158,11 @@ def publish(p_app_name_str,
 	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
 	assert isinstance(p_app_build_meta_map, dict)
 
-	service_name_str = p_app_build_meta_map["service_name_str"]
-	image_name_str   = service_name_str
+	if "service_name_str" in p_app_build_meta_map.keys():
+		service_name_str = p_app_build_meta_map["service_name_str"]
+		image_name_str   = service_name_str
+	else:
+		image_name_str = p_app_name_str
 
 	# service_version_str = p_app_build_meta_map["version_str"]
 	#

@@ -48,15 +48,16 @@ def cont__publish(p_app_name_str,
 
 #---------------------------------------------------
 # DEPRECATED?? - is this still being used?
-def cont__build(p_dockerhub_user_name_str,
+def cont__build(p_app_name_str,
+	p_dockerhub_user_name_str,
 	p_log_fun,
 	p_docker_sudo_bool = False):
 	assert isinstance(p_dockerhub_user_name_str, str)
 
 	build_meta_map = gf_meta.get()["build_info_map"]
-	assert "gf_builder" in build_meta_map.keys()
+	assert p_app_name_str in build_meta_map.keys()
 
-	gf_builder_meta_map            = build_meta_map["gf_builder"]
+	gf_builder_meta_map            = build_meta_map[p_app_name_str]
 	cont_image_name_str            = gf_builder_meta_map["cont_image_name_str"]
 	cont_image_version_str         = gf_builder_meta_map["version_str"]
 	cont_image_dockerfile_path_str = os.path.abspath(gf_builder_meta_map["dockerfile_path_str"])

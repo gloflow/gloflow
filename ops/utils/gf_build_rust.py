@@ -97,7 +97,9 @@ def run(p_cargo_crate_dir_path_str,
     ])
 
     if p_verbose_bool:
-        c_lst.append("--verbose")
+        # c_lst.append("--verbose")
+        c_lst.append("-vv") # very verbose
+
 
     # STATIC_LINKING - some outputed libs (imported by Go for example) should contain their
 	#                  own versions of libs statically linked into them.

@@ -9,3 +9,4 @@
 python3 cli__build.py -run=build_go -app=gf_solo
 python3 cli__build.py -run=build_containers -app=gf_solo -docker_sudo
 GF_DOCKERHUB_USER="..." GF_DOCKERHUB_P="..." python3 cli__build.py -run=publish_containers -app=gf_solo -docker_sudo
+GF_DOCKERHUB_P="..." python3 cli__build.py -run=publish_containers -app=gf_builder_rust_ubuntu -docker_sudo

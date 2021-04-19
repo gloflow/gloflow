@@ -203,12 +203,11 @@ def main():
 
 
 
-		
-		# DEPRECATED!! - gf_builder should be removed, no custom CLI tools should be used
-		#                for build ops in containers. instead standard cli__build.py should be used.
-		if app_name_str == "gf_builder":
+		# GF_BUILDER
+		if app_name_str.startswith("gf_builder"):
 
-			gf_builder_ops.cont__build(dockerhub_user_str,
+			gf_builder_ops.cont__build(app_name_str,
+				dockerhub_user_str,
 				gf_log.log_fun,
 				p_docker_sudo_bool = docker_sudo_bool)
 
@@ -243,26 +242,24 @@ def main():
 		if "DRONE_COMMIT" in os.environ.keys():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
-		if app_name_str == "gf_builder":
-
-			app_name_str = "gf_builder"
-			gf_builder_ops.cont__publish(app_name_str,
-				app_build_meta_map,
-				dockerhub_user_str,
-				dockerhub_pass_str,
-				gf_log.log_fun,
-				p_docker_sudo_bool = docker_sudo_bool)
-
-
-		else:
+		# # GF_BUILDER
+		# if app_name_str.startswith("gf_builder"):
+		#
+		# 	gf_builder_ops.cont__publish(app_name_str,
+		# 		app_build_meta_map,
+		# 		dockerhub_user_str,
+		# 		dockerhub_pass_str,
+		# 		gf_log.log_fun,
+		# 		p_docker_sudo_bool = docker_sudo_bool)
+		# else:
 			
-			gf_builder_ops.cont__publish(app_name_str,
-				app_build_meta_map,
-				dockerhub_user_str,
-				dockerhub_pass_str,
-				gf_log.log_fun,
-				p_git_commit_hash_str = git_commit_hash_str,
-				p_docker_sudo_bool    = docker_sudo_bool)
+		gf_builder_ops.cont__publish(app_name_str,
+			app_build_meta_map,
+			dockerhub_user_str,
+			dockerhub_pass_str,
+			gf_log.log_fun,
+			p_git_commit_hash_str = git_commit_hash_str,
+			p_docker_sudo_bool    = docker_sudo_bool)
 		
 	#-------------
 	# TEST
@@ -349,6 +346,8 @@ def parse_args():
 - '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
 
 - '''+fg('yellow')+'gf_builder'+attr(0)+'''
+- '''+fg('yellow')+'gf_builder_go_ubuntu'+attr(0)+'''
+- '''+fg('yellow')+'gf_builder_rust_ubuntu'+attr(0)+'''
 
 		''')
 

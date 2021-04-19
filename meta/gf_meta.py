@@ -278,6 +278,32 @@ def get():
             },
 
             #-------------
+            # GF_BUILDER_GO_UBUNTU
+            "gf_builder_go_ubuntu": {
+                "type_str":            "custom",
+                "version_str":         "latest",
+                "cont_image_name_str": "gf_builder_go_ubuntu",
+                "image_tag_str":       "latest",
+
+                # gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
+                # build procedures that files/modules from many different directories. 
+                "dockerfile_path_str": "%s/../Dockerfile__gf_builder_go__ubuntu"%(modd_str)
+            },
+
+            #-------------
+            # GF_BUILDER_RUST_UBUNTU
+            "gf_builder_rust_ubuntu": {
+                "type_str":            "custom",
+                "version_str":         "latest",
+                "cont_image_name_str": "gf_builder_rust_ubuntu",
+                "image_tag_str":       "latest",
+
+                # gf_builder has its Dockerfile in the root of the whole repo because it orchestrates potentially complex
+                # build procedures that files/modules from many different directories. 
+                "dockerfile_path_str": "%s/../Dockerfile__gf_builder_rust__ubuntu"%(modd_str)
+            },
+
+            #-------------
         }
     }
 

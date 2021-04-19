@@ -28,6 +28,7 @@ tensorflow = "0.15.0"
 # tensorflow = {git = "https://github.com/tensorflow/rust"}
 
 #-------------------------------
+# dependencies of the build.rs pre-process stage
 [build-dependencies]
 
 # TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
