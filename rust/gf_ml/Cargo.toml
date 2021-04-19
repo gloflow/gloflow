@@ -16,7 +16,7 @@ crate-type = ["dylib", "rlib"]
 
 #-------------------------------
 [dependencies]
-rand     = {}                 # random number generator
+rand     = "0.8.3" # random number generator
 image    = "0.21.3"
 png      = "0.14.0"           # PNG image support
 cairo-rs = {features=["png"]} # 2D drawing

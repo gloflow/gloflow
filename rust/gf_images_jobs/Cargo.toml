@@ -27,7 +27,7 @@ crate-type = ["staticlib", "rlib"] # "dylib", "cdylib"]
 [dependencies]
 # libc  = "0.2.2"
 image = "0.21.3"
-rand  = ""
+rand  = "0.8.3"
 num   = "0.2.1"
 
 # GF

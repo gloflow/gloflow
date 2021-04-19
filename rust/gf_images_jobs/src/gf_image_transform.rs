@@ -116,7 +116,7 @@ pub fn noise(p_gf_img: &mut gf_image::GFimage) {
     for x in 0..p_gf_img.width_int {
         for y in 0..p_gf_img.height_int {
 
-            let random_px_increment_int = rng.gen_range(0, 127);
+            let random_px_increment_int = rng.gen_range(0..127);
             let px                      = p_gf_img.raw_img.get_pixel(x, y);
 
             // img.get_pixel(x, y) - returns a 3 element array (r,g,b)
