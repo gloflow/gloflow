@@ -23,19 +23,23 @@ volumes:
 
   # RUST_BUILD_CACHE
   - name: rust_build_cache__gf_core
-    host: /home/gf/rust_build_cache/gf_core
+    host:
+      path: /home/gf/rust_build_cache/gf_core
 
   # RUST_BUILD_CACHE
   - name: rust_build_cache__gf_images_jobs
-    host: /home/gf/rust_build_cache/gf_images_jobs
+    host: 
+      path: /home/gf/rust_build_cache/gf_images_jobs
 
   # RUST_BUILD_CACHE
   - name: rust_build_cache__gf_images_jobs_py
-    host: /home/gf/rust_build_cache/gf_images_jobs_py
+    host: 
+      path: /home/gf/rust_build_cache/gf_images_jobs_py
 
   # RUST_BUILD_CACHE
   - name: rust_build_cache__gf_ml
-    host: /home/gf/rust_build_cache/gf_ml
+    host:
+      path: /home/gf/rust_build_cache/gf_ml
 
 steps:
 
