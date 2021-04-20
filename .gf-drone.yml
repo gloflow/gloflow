@@ -21,6 +21,22 @@ volumes:
     host:
       path: /var/run/docker.sock
 
+  # RUST_BUILD_CACHE
+  - name: rust_build_cache__gf_core
+    host: /home/gf/rust_build_cache/gf_core
+
+  # RUST_BUILD_CACHE
+  - name: rust_build_cache__gf_images_jobs
+    host: /home/gf/rust_build_cache/gf_images_jobs
+
+  # RUST_BUILD_CACHE
+  - name: rust_build_cache__gf_images_jobs_py
+    host: /home/gf/rust_build_cache/gf_images_jobs_py
+
+  # RUST_BUILD_CACHE
+  - name: rust_build_cache__gf_ml
+    host: /home/gf/rust_build_cache/gf_ml
+
 steps:
 
   #-------------------------------
@@ -39,6 +55,17 @@ steps:
   #              to work and be able to properly load Rust compiled GF libs.
   - name: build_rust
     image: glofloworg/gf_builder_rust_ubuntu:latest # glofloworg/gf_builder:latest
+
+    volumes:
+      - name: rust_build_cache__gf_core
+        path: /home/gf/rust/gf_core/target
+      - name: rust_build_cache__gf_images_jobs
+        path: /home/gf/rust/gf_images_jobs/target
+      - name: rust_build_cache__gf_images_jobs_py
+        path: /home/gf/rust/gf_images_jobs_py/target
+      - name: rust_build_cache__gf_ml
+        path: /home/gf/rust/gf_ml/target
+
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
