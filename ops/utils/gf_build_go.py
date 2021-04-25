@@ -61,11 +61,7 @@ def run(p_name_str,
     p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str)),
     p_go_get_bool = True):
     assert isinstance(p_static_bool, bool)
-    assert os.path.isdir(p_go_dir_path_str)
-
-    print(p_go_output_path_str)
-    assert os.path.isdir(os.path.dirname(p_go_output_path_str))
-
+    
     print("")
     if p_static_bool:
         print(" -- %sSTATIC BINARY BUILD%s"%(fg("yellow"), attr(0)))
@@ -74,6 +70,12 @@ def run(p_name_str,
     print(" -- go_dir_path    - %s%s%s"%(fg("green"), p_go_dir_path_str, attr(0)))  
     print(" -- go_output_path - %s%s%s"%(fg("green"), p_go_output_path_str, attr(0)))  
 
+    assert os.path.isdir(p_go_dir_path_str)
+    assert os.path.isdir(os.path.dirname(p_go_output_path_str))
+
+    print("Go cache dir:")
+    gf_cli_utils.run_cmd(f"go env GOCACHE")
+
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) # change into the target main package dir
 
@@ -81,7 +83,7 @@ def run(p_name_str,
 
     # RUST_DYNAMIC_LIBS
     dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build")
-
+    print(f"dynamic libs dir - {fg("green")}{dynamic_libs_dir_path_str}{attr(0)}")
 
 
     
