@@ -84,6 +84,8 @@ def run(p_name_str,
     # RUST_DYNAMIC_LIBS
     dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build")
     print(f"dynamic libs dir - {fg('green')}{dynamic_libs_dir_path_str}{attr(0)}")
+    gf_cli_utils.run_cmd(f"ls -al {dynamic_libs_dir_path_str}")
+
 
 
     
