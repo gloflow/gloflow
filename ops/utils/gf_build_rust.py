@@ -68,13 +68,7 @@ def run(p_cargo_crate_dir_path_str,
 
     #-------------
 
-
-
-    print(p_cargo_crate_dir_path_str)
-
     c_lst = []
-
-
 
     if p_static_bool:
 
@@ -83,8 +77,6 @@ def run(p_cargo_crate_dir_path_str,
         #              package is marked as a dynamic lib (which it has to be to be importable by the Py VM).
         if os.path.basename(p_cargo_crate_dir_path_str) == "gf_images_jobs_py":
             c_lst.append("RUSTFLAGS='-C target-feature=-crt-static'")
-
-        
 
     c_lst.extend([
         # 'RUSTFLAGS="$RUSTFLAGS -A warnings"', # turning off rustc warnings
@@ -169,7 +161,10 @@ def prepare_libs(p_name_str,
 
             #-------------
             # EXTERN_LIB
-            prepare_libs__extern(p_tf_libs_bool=True,
+            target_lib_dir_str = f"{modd_str}/../../rust/build" # f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
+
+            prepare_libs__extern(target_lib_dir_str,
+                p_tf_libs_bool=True,
                 p_exit_on_fail_bool=p_exit_on_fail_bool)
 
             #-------------
@@ -224,8 +219,9 @@ def prepare_libs(p_name_str,
     
 
 #--------------------------------------------------
-def prepare_libs__extern(p_tf_libs_bool=False,
-    p_exit_on_fail_bool=True):
+def prepare_libs__extern(p_target_lib_dir_str,
+    p_tf_libs_bool      = False,
+    p_exit_on_fail_bool = True):
 
     #-------------
     # TENSORFLOW
@@ -236,12 +232,11 @@ def prepare_libs__extern(p_tf_libs_bool=False,
         print(f"{fg('green')}prepare TensorFlow lib{attr(0)}")
 
         lib_file_name_str  = "tflib.tar.gz"
-        target_lib_dir_str = f"{modd_str}/../../build/gf_apps/gf_images/tf_lib"
         tf__version_str    = "1.15.0"
         tf__filename_str   = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
         tf__url_str        = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
 
-        gf_core_cli.run(f"mkdir -p {target_lib_dir_str}")
+        gf_core_cli.run(f"mkdir -p {p_target_lib_dir_str}")
 
         # DOWNLOAD
         _, _, exit_code_int = gf_core_cli.run(f"curl {tf__url_str} --output {lib_file_name_str}")
@@ -250,7 +245,7 @@ def prepare_libs__extern(p_tf_libs_bool=False,
                 exit(exit_code_int)
 
         # UNPACK
-        gf_core_cli.run(f"mv {lib_file_name_str} {target_lib_dir_str}/{lib_file_name_str}")
-        gf_core_cli.run(f"tar -xvzf {target_lib_dir_str}/{lib_file_name_str} -C {target_lib_dir_str}")
+        gf_core_cli.run(f"mv {lib_file_name_str} {p_target_lib_dir_str}/{lib_file_name_str}")
+        gf_core_cli.run(f"tar -xvzf {p_target_lib_dir_str}/{lib_file_name_str} -C {p_target_lib_dir_str}")
 
     #-------------

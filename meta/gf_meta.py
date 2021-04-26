@@ -94,8 +94,8 @@ def get():
                     
                     #------------------------
                     # TENSORFLOW C_LIBS
-                    ("%s/../rust/build/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
-                    ("%s/../rust/build/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+                    ("%s/../rust/build/tf_lib/lib/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+                    ("%s/../rust/build/tf_lib/lib/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
 
                     #------------------------
                     # GF_IMAGES_JOBS

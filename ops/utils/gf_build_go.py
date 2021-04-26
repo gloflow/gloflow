@@ -82,16 +82,21 @@ def run(p_name_str,
 
 
     # RUST_DYNAMIC_LIBS
-    dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build")
+    dynamic_libs_dir_path_str    = os.path.abspath(f"{modd_str}/../../rust/build")
+    tf_dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build/tf_lib/lib")
+
     print(f"dynamic libs dir - {fg('green')}{dynamic_libs_dir_path_str}{attr(0)}")
     gf_cli_utils.run_cmd(f"ls -al {dynamic_libs_dir_path_str}")
 
 
-
+    LD_paths_lst = [
+        f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str}",
+        f"LD_LIBRARY_PATH={tf_dynamic_libs_dir_path_str}"
+    ]
     
     # GO_GET
     if p_go_get_bool:
-        _, _, exit_code_int = gf_cli_utils.run_cmd(f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go get -u")
+        _, _, exit_code_int = gf_cli_utils.run_cmd(f"{' '.join(LD_paths_lst)} go get -u")
         print("")
         print("")
 
@@ -122,7 +127,8 @@ def run(p_name_str,
 
         args_lst = [
             
-            f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str}",
+            ' '.join(LD_paths_lst),
+            # f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str}",
             # f"LD_LIBRARY_PATH=/usr/lib",
 
             # "CGO_ENABLED=0",
@@ -158,7 +164,7 @@ def run(p_name_str,
     else:
         print(f"{fg('yellow')}DYNAMIC LINKING{attr(0)} --")
 
-        c_str = f"LD_LIBRARY_PATH={dynamic_libs_dir_path_str} go build -o {p_go_output_path_str}"
+        c_str = f"{' '.join(LD_paths_lst)} go build -o {p_go_output_path_str}"
 
     #-----------------------------
     
