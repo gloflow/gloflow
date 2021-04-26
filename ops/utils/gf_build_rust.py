@@ -236,7 +236,7 @@ def prepare_libs__extern(p_target_lib_dir_str,
         tf__filename_str   = f"libtensorflow-cpu-linux-x86_64-{tf__version_str}.tar.gz"
         tf__url_str        = f"https://storage.googleapis.com/tensorflow/libtensorflow/{tf__filename_str}"
 
-        gf_core_cli.run(f"mkdir -p {p_target_lib_dir_str}")
+        gf_core_cli.run(f"mkdir -p {p_target_lib_dir_str}/tf_lib")
 
         # DOWNLOAD
         _, _, exit_code_int = gf_core_cli.run(f"curl {tf__url_str} --output {lib_file_name_str}")
@@ -246,6 +246,6 @@ def prepare_libs__extern(p_target_lib_dir_str,
 
         # UNPACK
         gf_core_cli.run(f"mv {lib_file_name_str} {p_target_lib_dir_str}/{lib_file_name_str}")
-        gf_core_cli.run(f"tar -xvzf {p_target_lib_dir_str}/{lib_file_name_str} -C {p_target_lib_dir_str}")
+        gf_core_cli.run(f"tar -xvzf {p_target_lib_dir_str}/{lib_file_name_str} -C {p_target_lib_dir_str}/tf_lib")
 
     #-------------
