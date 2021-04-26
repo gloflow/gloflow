@@ -97,41 +97,41 @@ steps:
         - master
   
   #-------------------------------
-  # TEST
-  - name: test
-    image: glofloworg/gf_builder:latest
-
-    # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
-    #               and those containers are run with host networking.
-    #               starting this stage container with host networking as well, so that the tests can connect
-    #               to testing services and share address space.
-    network_mode: host
-    environment:
-    
-      # TESTING_SERVICES
-      GF_MONGODB_HOST: localhost # mongo
-      GF_ELASTICSEARCH_HOST: localhost:9200 # elasticsearch:9200
-
-      GF_AWS_ACCESS_KEY_ID:
-        from_secret: gf_testing__aws_access_key_id
-      GF_AWS_SECRET_ACCESS_KEY:
-        from_secret: gf_testing__aws_secret_access_key
-
-    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
-    #               connect to the Docker daemon running on the host machine. this connection
-    #               is whats used for running test_service containers.
-    volumes:
-      - name: docker-sock
-        path: /var/run/docker.sock
-
-    commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
-    when:
-      event:
-        - push
-      branch:
-        - master
+  # # TEST
+  # - name: test
+  #   image: glofloworg/gf_builder:latest
+  #
+  #   # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
+  #   #               and those containers are run with host networking.
+  #   #               starting this stage container with host networking as well, so that the tests can connect
+  #   #               to testing services and share address space.
+  #   network_mode: host
+  #   environment:
+  #
+  #     # TESTING_SERVICES
+  #     GF_MONGODB_HOST: localhost # mongo
+  #     GF_ELASTICSEARCH_HOST: localhost:9200 # elasticsearch:9200
+  #
+  #     GF_AWS_ACCESS_KEY_ID:
+  #       from_secret: gf_testing__aws_access_key_id
+  #     GF_AWS_SECRET_ACCESS_KEY:
+  #       from_secret: gf_testing__aws_secret_access_key
+  #
+  #   # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+  #   #               connect to the Docker daemon running on the host machine. this connection
+  #   #               is whats used for running test_service containers.
+  #   volumes:
+  #     - name: docker-sock
+  #       path: /var/run/docker.sock
+  #
+  #   commands:
+  #     # "-u" - run unbuffered to see all stdout/stderr as it happens
+  #     - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=test -test_services
+  #   when:
+  #     event:
+  #       - push
+  #     branch:
+  #       - master
 
   #-------------------------------
   # BUILD_WEB
