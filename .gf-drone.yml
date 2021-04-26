@@ -139,7 +139,8 @@ steps:
     image: glofloworg/gf_builder:latest
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_web
+      - python3 -u /home/gf/ops/cli__build.py -run=build_web -app=gf_solo
     when:
       event:
         - push
