@@ -82,9 +82,3 @@ RUN rm protoc-3.11.4-linux-x86_64.zip
 RUN cp bin/protoc /usr/bin
 
 #-----------------------------
-# ENTRYPOINT ["python3", "/home/gf/build/gf_builder/gf_builder.py"]
-
-
-
-
-# RUN apt-get install -y libc6

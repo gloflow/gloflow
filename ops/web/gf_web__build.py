@@ -16,14 +16,37 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__))
 
 import os
 from colored import fg, bg, attr
 from bs4 import BeautifulSoup
 
-sys.path.append('%s/../utils'%(cwd_str))
+sys.path.append('%s/../utils'%(modd_str))
 import gf_cli_utils
+
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
+
+#--------------------------------------------------
+# RUN_IN_CONTAINER
+def run_in_cont(p_app_str):
+
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+    cmd_lst = [
+        "sudo", "docker", "run",
+        "--rm", # remove after exit 
+        "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
+        "glofloworg/gf_builder_web:latest",
+        "python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_web", "-build_outof_cont", f"-app={p_app_str}"
+    ]
+	
+    p = gf_core_cli.run__view_realtime(cmd_lst, {
+
+		},
+        "gf_build_web", "green")
+
+    p.wait()
 
 #---------------------------------------------------
 def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
@@ -46,6 +69,11 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 
 		# BUILD PAGES - build each page of the app
 		for page_name_str, page_info_map in app_map["pages_map"].items():
+			
+			print(">>>>>>>>>>>>>>>>>>>>>>>>>")
+			print(page_name_str)
+			print(page_info_map)
+
 
 			build_dir_str      = os.path.abspath(page_info_map["build_dir_str"])
 			build_copy_dir_str = os.path.abspath(page_info_map.get("build_copy_dir_str", None))

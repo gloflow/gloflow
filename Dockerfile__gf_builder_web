@@ -1,0 +1,26 @@
+FROM ubuntu:20.04
+
+RUN mkdir /home/gf
+
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    python3-pip
+
+
+# PY_DEPENDENCIES
+RUN pip3 install \
+    delegator.py \
+    colored \
+    beautifulsoup4 \
+    requests \
+    boto3
+
+#-----------------------------
+# NODEJS_TOOLS
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
+    nodejs \
+    npm
+
+RUN npm install -g typescript
+RUN npm install -g uglify-js

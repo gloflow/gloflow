@@ -34,13 +34,14 @@ import gf_core_cli
 # RUN_IN_CONTAINER
 def run_in_cont():
 
-
     repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
     cmd_lst = [
         "sudo", "docker", "run",
         "--rm", # remove after exit 
         "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
         "glofloworg/gf_builder_rust_ubuntu:latest",
+
+        # FIX!! - stop using gf_builder.py!! use "/home/gf/ops/cli__build.py" instead!
         "python3", "-u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_rust"
     ]
     p = gf_core_cli.run__view_realtime(cmd_lst, {},
