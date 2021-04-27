@@ -164,7 +164,9 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers -app=gf_solo
+      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers -app=gf_solo
+      - python3 -u /home/gf/ops/cli__build.py -run=build_containers -app=gf_solo
+
     when:
       event:
         - push
@@ -189,7 +191,9 @@ steps:
         path: /var/run/docker.sock
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
-      - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers -app=gf_solo
+      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers -app=gf_solo
+      - python3 -u /home/gf/ops/cli__build.py -run=publish_containers -app=gf_solo
+
     when:
       event:
         - push

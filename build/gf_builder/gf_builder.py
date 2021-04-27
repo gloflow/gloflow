@@ -89,37 +89,37 @@ def main():
 			p_static_bool=True)
 
 	#------------------------
-	# BUILD_GO
-	elif args_map["run"] == "build_go":
-
-		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-		if not args_map["drone_commit_sha"] == None:
-			git_commit_hash_str = args_map["drone_commit_sha"]
-			paste_git_commit_hash(git_commit_hash_str)
-
-		build_apps(changed_apps_files_map,
-			p_build_web_bool = False,
-			p_build_go_bool  = True,
-			p_static_bool    = True)
-
-	#------------------------
-	# BUILD_RUST
-	elif args_map["run"] == "build_rust":
-
-		build_rust()
+	# # BUILD_GO
+	# elif args_map["run"] == "build_go":
+	#
+	# 	# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+	# 	if not args_map["drone_commit_sha"] == None:
+	# 		git_commit_hash_str = args_map["drone_commit_sha"]
+	# 		paste_git_commit_hash(git_commit_hash_str)
+	#
+	# 	build_apps(changed_apps_files_map,
+	# 		p_build_web_bool = False,
+	# 		p_build_go_bool  = True,
+	# 		p_static_bool    = True)
 
 	#------------------------
-	# BUILD_WEB
-	elif args_map["run"] == "build_web":
+	# # BUILD_RUST
+	# elif args_map["run"] == "build_rust":
+	#
+	# 	build_rust()
 
-		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-		if not args_map["drone_commit_sha"] == None:
-			git_commit_hash_str = args_map["drone_commit_sha"]
-			paste_git_commit_hash(git_commit_hash_str)
-
-		build_apps(changed_apps_files_map,
-			p_build_web_bool = True,
-			p_build_go_bool  = False)
+	#------------------------
+	# # BUILD_WEB
+	# elif args_map["run"] == "build_web":
+	#
+	# 	# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
+	# 	if not args_map["drone_commit_sha"] == None:
+	# 		git_commit_hash_str = args_map["drone_commit_sha"]
+	# 		paste_git_commit_hash(git_commit_hash_str)
+	#
+	# 	build_apps(changed_apps_files_map,
+	# 		p_build_web_bool = True,
+	# 		p_build_go_bool  = False)
 
 	#------------------------
 	# BUILD_CONTAINERS
