@@ -100,6 +100,9 @@ def main():
 
 	#--------------------------------------------------
 	def rust_build_apps():
+
+
+		print(app_name_str)
 		assert app_name_str == "gf_data_viz" or \
 			app_name_str == "gf_images_jobs"
 

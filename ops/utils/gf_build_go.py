@@ -73,8 +73,10 @@ def run(p_name_str,
     assert os.path.isdir(p_go_dir_path_str)
     assert os.path.isdir(os.path.dirname(p_go_output_path_str))
 
-    print("Go cache dir:")
+    print("--------------------")
+    print(f"Go {fg('yellow')}cache dir{attr(0)}:")
     gf_cli_utils.run_cmd(f"go env GOCACHE")
+    print("--------------------")
 
     cwd_str = os.getcwd()
     os.chdir(p_go_dir_path_str) # change into the target main package dir

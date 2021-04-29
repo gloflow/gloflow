@@ -41,8 +41,8 @@ def run_in_cont():
         "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
         "glofloworg/gf_builder_rust_ubuntu:latest",
 
-        # FIX!! - stop using gf_builder.py!! use "/home/gf/ops/cli__build.py" instead!
-        "python3", "-u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_rust"
+        # "python3", "-u", "/home/gf/build/gf_builder/gf_builder.py", "-run=build_rust"
+        "python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_rust", "-build_outof_cont", "-app=gf_images_jobs"
     ]
     p = gf_core_cli.run__view_realtime(cmd_lst, {},
         "gf_build_rust", "green")
