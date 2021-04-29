@@ -73,7 +73,7 @@ steps:
     commands:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_rust
-      - python3 -u /home/gf/ops/cli__build.py -run=build_rust -app=gf_solo -build_outof_cont
+      - python3 -u /home/gf/ops/cli__build.py -run=build_rust -app=gf_images_jobs -build_outof_cont
     when:
       event:
         - push

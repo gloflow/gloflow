@@ -101,10 +101,8 @@ def main():
 	#--------------------------------------------------
 	def rust_build_apps():
 
-
 		print(app_name_str)
-		assert app_name_str == "gf_data_viz" or \
-			app_name_str == "gf_images_jobs"
+		assert app_name_str == "gf_images_jobs"
 
 		# APP_META
 		app_meta_map = build_meta_map[app_name_str]
