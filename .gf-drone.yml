@@ -151,7 +151,7 @@ steps:
   #-------------------------------
   # BUILD_CONTAINERS
   - name: build_containers
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest # glofloworg/gf_builder:latest
 
     environment:
       GF_DOCKERHUB_USER:
@@ -177,7 +177,7 @@ steps:
   #-------------------------------
   # PUBLISH_CONTAINERS
   - name: publish_containers
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest # glofloworg/gf_builder:latest
     environment:
       GF_DOCKERHUB_USER:
         from_secret: gf_os__dockerhub_user
