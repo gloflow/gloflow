@@ -144,6 +144,11 @@ func Error__create(p_user_msg_str string,
 		p_error,
 		p_subsystem_name_str,
 		error_defs_map,
+
+		// IMPORTANT!! - Error__create_with_defs() is 2 stack levels away from the caller
+		//               of Error__create() so its important to account for that to get 
+		//               the proper caller information.
+		2, // p_skip_stack_frames_num_int
 		p_runtime_sys)
 
 	return gf_err
@@ -156,7 +161,13 @@ func Error__create_with_defs(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_err_defs_map       map[string]Error_def,
-	p_runtime_sys        *Runtime_sys) *Gf_error {
+
+	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
+	//               we would get info on this function, not its caller which is where
+	//               the error occured.
+	p_skip_stack_frames_num_int int,
+
+	p_runtime_sys *Runtime_sys) *Gf_error {
 
 	
 
@@ -164,13 +175,13 @@ func Error__create_with_defs(p_user_msg_str string,
 	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
 	stack_trace_str      := string(debug.Stack())
 
-	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
-	//               we would get info on this function, not its caller which is where
-	//               the error occured.
-	skip_stack_frames_num_int := 1
+	// // IMPORTANT!! - number of stack frames to skip before recording. without skipping 
+	// //               we would get info on this function, not its caller which is where
+	// //               the error occured.
+	// skip_stack_frames_num_int := 1
 
 	// https://golang.org/pkg/runtime/#Caller
-	program_counter, file_str, line_num_int,_ := runtime.Caller(skip_stack_frames_num_int)
+	program_counter, file_str, line_num_int,_ := runtime.Caller(p_skip_stack_frames_num_int)
 
 	// FuncForPC - returns a *Func describing the function that contains the given program counter address
 	function          := runtime.FuncForPC(program_counter)

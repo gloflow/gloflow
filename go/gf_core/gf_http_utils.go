@@ -330,10 +330,10 @@ func HTTP__get_streaming_response(p_url_str string,
     	return nil,gf_err
     }
 
-	//resp, err := http.Get(p_url_str)
-	//if err != nil {
+	// resp, err := http.Get(p_url_str)
+	// if err != nil {
 	//	return nil,err
-	//}
+	// }
 
 	data_lst := []map[string]interface{}{}
 	reader   := bufio.NewReader(resp.Body)

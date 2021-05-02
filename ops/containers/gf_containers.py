@@ -180,6 +180,7 @@ def publish(p_app_name_str,
 	assert isinstance(image_full_names_lst, list)
 	
 	for image_full_name_str in image_full_names_lst:
+		
 		# DOCKER_PUSH
 		gf_os_docker.push(image_full_name_str,
 			p_docker_user_str,
