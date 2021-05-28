@@ -32,6 +32,32 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//-------------------------------------------------
+func Get_http_input_to_struct(p_input_struct interface{},
+	p_resp        http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) (interface{}, *gf_core.Gf_error) {
+
+	handler_url_path_str := p_req.URL.Path
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	err               := json.Unmarshal(body_bytes_lst, p_input_struct)
+		
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to parse json http input",
+			"json_decode_error",
+			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
+			err, "gf_rpc_lib", p_runtime_sys)
+
+		Error__in_handler(handler_url_path_str,
+			fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str),
+			gf_err,
+			p_resp,
+			p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return p_input_struct, nil
+}
 
 //-------------------------------------------------
 func Get_http_input(p_handler_url_path_str string,

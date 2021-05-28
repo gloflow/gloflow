@@ -32,12 +32,198 @@ import (
 	"encoding/json"
 	"os/exec"
 	"context"
+	"crypto/tls"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
 	// "github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------
+// TRANSACTIONS
+//-------------------------------------------------
+// RUN - CamelCase name, for use by external projects.
+
+func MongoTXrun(p_tx_fun func() *Gf_error,
+	p_meta_map     map[string]interface{}, // data describing the DB write op
+	p_mongo_client *mongo.Client,
+	p_ctx          context.Context,
+	p_runtime_sys  *Runtime_sys) (mongo.Session, *Gf_error) {
+	
+	return Mongo__tx_run(p_tx_fun,
+		p_meta_map,
+		p_mongo_client,
+		p_ctx,
+		p_runtime_sys)
+}
+
+//-------------------------------------------------
+// RUN
+func Mongo__tx_run(p_tx_fun func() *Gf_error,
+	p_meta_map     map[string]interface{}, // data describing the DB write op
+	p_mongo_client *mongo.Client,
+	p_ctx          context.Context,
+	p_runtime_sys  *Runtime_sys) (mongo.Session, *Gf_error) {
+
+	
+	// TX_INIT
+	txSession, txOptions, gf_err := Mongo__tx_init(p_mongo_client,
+		p_meta_map,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// TX_RUN
+	err := mongo.WithSession(p_ctx, txSession, func(pDBsessionCtx mongo.SessionContext) error {
+
+		// TX_START
+		if err := txSession.StartTransaction(txOptions); err != nil {
+            return err
+        }
+
+		// DB_TX_FUN
+		gf_err := p_tx_fun()
+		if gf_err != nil {
+			return gf_err.Error
+		}
+
+		// TX_COMMIT
+		if err := txSession.CommitTransaction(pDBsessionCtx); err != nil {
+            return err
+        }
+
+		return nil
+
+	})
+
+	if err != nil {
+
+		if err_abort := txSession.AbortTransaction(p_ctx); err_abort != nil {
+            gf_err := Mongo__handle_error("failed to execute Mongodb session",
+				"mongodb_session_abort_error",
+				p_meta_map,
+				err, "gf_core", p_runtime_sys)
+			return nil, gf_err
+        }
+
+		gf_err := Mongo__handle_error("failed to execute Mongodb session",
+			"mongodb_session_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err		
+	}
+
+	return txSession, nil
+}
+
+//-------------------------------------------------
+// INIT
+func Mongo__tx_init(p_mongo_client *mongo.Client,
+	p_meta_map    map[string]interface{}, // data describing the DB write op
+	p_runtime_sys *Runtime_sys) (mongo.Session, *options.TransactionOptions, *Gf_error) {
+
+
+
+	wc := writeconcern.New(writeconcern.WMajority())
+    rc := readconcern.Snapshot()
+
+    tx_options := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+
+
+
+    session, err := p_mongo_client.StartSession()
+    if err != nil {
+		gf_err := Mongo__handle_error("failed to start a Mongo session",
+			"mongodb_start_session_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return nil, nil, gf_err		
+    }
+
+	return session, tx_options, nil
+}
+
+//-------------------------------------------------
+// OPS
+//-------------------------------------------------
+// MONGO_FIND_LATEST
+func MongoFindLatest(p_query bson.M,
+	p_time_field_name_str string,
+	p_meta_map            map[string]interface{}, // data describing the DB write op
+	p_coll                *mongo.Collection,
+	p_ctx                 context.Context,
+	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *Gf_error) {
+
+	return Mongo__find_latest(p_query,
+		p_time_field_name_str,
+		p_meta_map,
+		p_coll,
+		p_ctx,
+		p_runtime_sys)
+}
+
+//-------------------------------------------------
+// MONGO_FIND_LATEST
+func Mongo__find_latest(p_query bson.M,
+	p_time_field_name_str string,
+	p_meta_map            map[string]interface{}, // data describing the DB write op
+	p_coll                *mongo.Collection,
+	p_ctx                 context.Context,
+	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *Gf_error) {
+	
+
+	find_opts := options.Find()
+	find_opts.SetSort(map[string]interface{}{p_time_field_name_str: -1})
+	find_opts.SetLimit(1)
+	
+	cursor, gf_err := Mongo__find(p_query,
+		find_opts,
+		p_meta_map,
+		p_coll,
+		p_ctx,
+		p_runtime_sys)
+
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	var records_lst []map[string]interface{}
+	err := cursor.All(p_ctx, &records_lst)
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to load DB results from DB cursor",
+			"mongodb_cursor_all",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return nil, gf_err
+	}
+	
+	// get latest key
+	record := records_lst[0]
+
+	return record, nil
+}
+
+//-------------------------------------------------
+// FIND
+
+func MongoFind(p_query bson.M,
+	p_opts        *options.FindOptions,
+	p_meta_map    map[string]interface{}, // data describing the DB write op
+	p_coll        *mongo.Collection,
+	p_ctx         context.Context,
+	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *Gf_error) {
+
+	return Mongo__find(p_query,
+		p_opts,
+		p_meta_map,
+		p_coll,
+		p_ctx,
+		p_runtime_sys)
+}
 
 //-------------------------------------------------
 func Mongo__find(p_query bson.M,
@@ -49,17 +235,26 @@ func Mongo__find(p_query bson.M,
 
 	cur, err := p_coll.Find(p_ctx, p_query, p_opts)
 	if err != nil {
+		
+		// NO_DOCUMENTS
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+
 		gf_err := Mongo__handle_error("failed to find records in DB",
 			"mongodb_find_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
 		return nil, gf_err
 	}
+
+
 	// defer cur.Close(p_ctx)
 	return cur, nil
 }
 
 //-------------------------------------------------
+// UPSERT
 func Mongo__upsert(p_query bson.M,
 	p_record      interface{},
 	p_meta_map    map[string]interface{}, // data describing the DB write op
@@ -71,6 +266,12 @@ func Mongo__upsert(p_query bson.M,
 	_, err := p_coll.UpdateOne(p_ctx, p_query, bson.M{"$set": p_record,},
 		options.Update().SetUpsert(true))
 	if err != nil {
+
+		// NO_DOCUMENTS
+		if err == mongo.ErrNoDocuments {
+			return nil
+		}
+
 		gf_err := Mongo__handle_error("failed to update/upsert document in the DB",
 			"mongodb_update_error",
 			p_meta_map,
@@ -82,6 +283,7 @@ func Mongo__upsert(p_query bson.M,
 }
 
 //-------------------------------------------------
+// INSERT_BULK
 func Mongo__insert_bulk(p_ids_lst []string,
 	p_record_lst    []interface{},
 	p_coll_name_str string,
@@ -125,6 +327,7 @@ func Mongo__insert_bulk(p_ids_lst []string,
 }
 
 //-------------------------------------------------
+// INSERT
 func Mongo__insert(p_record interface{},
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op 
@@ -145,6 +348,7 @@ func Mongo__insert(p_record interface{},
 }
 
 //-------------------------------------------------
+// ENSURE_INDEX
 func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
 	p_coll_name_str string,
 	p_runtime_sys   *Runtime_sys) ([]string, *Gf_error) {
@@ -216,24 +420,34 @@ func Mongo__ensure_index(p_indexes_keys_lst [][]string,
 	}*/
 }
 
-//-------------------------------------------------
+//--------------------------------------------------------------------
+// UTILS
+//--------------------------------------------------------------------
+// CONNECT_NEW
 func Mongo__connect_new(p_mongo_server_url_str string,
-	p_db_name_str string,
-	p_runtime_sys *Runtime_sys) (*mongo.Database, *Gf_error) {
+	p_db_name_str       string,
+	p_tls_custom_config *tls.Config,
+	p_runtime_sys       *Runtime_sys) (*mongo.Database, *mongo.Client, *Gf_error) {
 
 	connect_timeout_in_sec_int := 3
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
 
 	mongo_options := options.Client().ApplyURI(p_mongo_server_url_str)
+
+	// TLS
+	if p_tls_custom_config != nil {
+		mongo_options.SetTLSConfig(p_tls_custom_config)
+	}
+
 	mongo_client, err := mongo.Connect(ctx, mongo_options)
 	if err != nil {
 
 		gf_err := Error__create("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
 			map[string]interface{}{
-				"mongo_server_url_str": p_mongo_server_url_str,
+				// "mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, nil, gf_err
 	}
 
 	// test new connection
@@ -243,17 +457,17 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 		gf_err := Error__create("failed to ping a MongoDB server at target url",
 			"mongodb_ping_error",
 			map[string]interface{}{
-				"mongo_server_url_str": p_mongo_server_url_str,
+				// "mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, nil, gf_err
 	}
 
 	mongo_db := mongo_client.Database(p_db_name_str)
 
-	return mongo_db, nil
+	return mongo_db, mongo_client, nil
 }
 
-//-------------------------------------------------
+//--------------------------------------------------------------------
 /*func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
 	p_log_fun             func(string, string)) *mgo.Database {
@@ -283,13 +497,14 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 }*/
 
 //--------------------------------------------------------------------
+// HANDLE_ERROR
 func Mongo__handle_error(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_mongodb.Mongo__handle_error()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_mongodb.Mongo__handle_error()")
 
 	gf_error := Error__create_with_hook(p_user_msg_str,
 		p_error_type_str,
@@ -325,6 +540,7 @@ func Mongo__handle_error(p_user_msg_str string,
 }
 
 //--------------------------------------------------------------------
+// START
 func Mongo__start(p_mongodb_bin_path_str string,
 	p_mongodb_port_str          int,
 	p_mongodb_data_dir_path_str string,
@@ -376,7 +592,7 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	return nil
 }
 
-//-------------------------------------------------
+//--------------------------------------------------------------------
 func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 	p_log_fun func(string, string)) ([]map[string]interface{}, error) {
 	// p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__get_rs_members_info()")
