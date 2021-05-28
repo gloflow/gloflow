@@ -24,6 +24,7 @@ import (
 	"time"
 	"net/url"
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	// "github.com/globalsign/mgo/bson"
@@ -177,7 +178,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
-	if fmt.Sprint(err) == "not found" {
+	if err == mongo.ErrNoDocuments {
 		gf_err := gf_core.Mongo__handle_error("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
@@ -227,7 +228,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
-	if fmt.Sprint(err) == "not found" {
+	if err == mongo.ErrNoDocuments {
 		gf_err := gf_core.Mongo__handle_error("GIF with origin_url_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"origin_url_str": p_origin_url_str,},

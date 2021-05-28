@@ -1,20 +1,25 @@
 /*
-GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+MIT License
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+Copyright (c) 2019 Ivan Trajkovic
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 package gf_core
@@ -22,7 +27,7 @@ package gf_core
 import (
 	"fmt"
 	"time"
-	// "strings"
+	"strings"
 	"errors"
 	"context"
 	"runtime"
@@ -113,7 +118,7 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_subsystem_name_str string,
 	p_hook_fun           func(*Gf_error) map[string]interface{},
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create_with_hook()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create_with_hook()")
 
 	gf_error := Error__create(p_user_msg_str,
 		p_error_type_str,
@@ -240,21 +245,30 @@ func Error__create_with_defs(p_user_msg_str string,
 	fmt.Printf("error          - %s\n", red(p_error))
 	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
 	
-	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
+	/*p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
 		p_error_type_str,
 		p_runtime_sys.Service_name_str,
 		p_subsystem_name_str,
 		function_name_str,
-		p_user_msg_str))
+		p_user_msg_str))*/
 
 	fmt.Printf("\n\n")
+
+	var names_prefix_str string
+	if p_runtime_sys.Names_prefix_str != "" {
+		names_prefix_str = p_runtime_sys.Names_prefix_str
+	} else {
+		names_prefix_str = "gf"
+	}
 
 	//--------------------
 	// DB_PERSIST
 	if p_runtime_sys.Errors_send_to_mongodb_bool {
 		
 		ctx := context.Background()
-		_, err := p_runtime_sys.Mongo_coll.InsertOne(ctx, gf_error)
+		errs_db_coll_name_str := fmt.Sprintf("%s_errors", names_prefix_str)
+
+		_, err := p_runtime_sys.Mongo_db.Collection(errs_db_coll_name_str).InsertOne(ctx, gf_error)
 		if err != nil {
 
 		}
@@ -273,12 +287,12 @@ func Error__create_with_defs(p_user_msg_str string,
 		sentry.WithScope(func(scope *sentry.Scope) {
 
 
-			scope.SetTag("gf_error.service_name",   gf_error.Service_name_str)
-			scope.SetTag("gf_error.subsystem_name", gf_error.Subsystem_name_str)
-			scope.SetTag("gf_error.type",           gf_error.Type_str)
+			scope.SetTag(fmt.Sprintf("%s_error.service_name",   names_prefix_str), gf_error.Service_name_str)
+			scope.SetTag(fmt.Sprintf("%s_error.subsystem_name", names_prefix_str), gf_error.Subsystem_name_str)
+			scope.SetTag(fmt.Sprintf("%s_error.type",           names_prefix_str), gf_error.Type_str)
 
 			for k, v := range gf_error.Data_map {
-				scope.SetTag(fmt.Sprintf("gf_error.%s", k),
+				scope.SetTag(fmt.Sprintf("%s_error.%s", names_prefix_str, k),
 					fmt.Sprint(v))
 			}
 
@@ -291,7 +305,7 @@ func Error__create_with_defs(p_user_msg_str string,
 				// IMPORTANT!! - in case the GF_error doesnt have a correspoting
 				//               golang error. this is for GF error conditions that are 
 				//               not caused by a golang error.
-				err := errors.New(fmt.Sprintf("GF error - %s", gf_error.Type_str))
+				err := errors.New(fmt.Sprintf("%s error - %s", strings.ToUpper(names_prefix_str), gf_error.Type_str))
 				sentry.CaptureException(err)
 			}
 		})

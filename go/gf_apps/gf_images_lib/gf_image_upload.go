@@ -24,6 +24,7 @@ import (
 	"time"
 	"context"
 	// "github.com/globalsign/mgo/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -224,7 +225,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 		"upload_gf_image_id_str": p_upload_gf_image_id_str,
 	}).One(&upload_info)*/
 
-	if fmt.Sprint(err) == "not found" {
+	if err == mongo.ErrNoDocuments {
 		gf_err := gf_core.Mongo__handle_error("image_upload_info does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"upload_gf_image_id_str": p_upload_gf_image_id_str,},

@@ -1,20 +1,25 @@
 /*
-GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+MIT License
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+Copyright (c) 2019 Ivan Trajkovic
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 package gf_core
@@ -85,6 +90,12 @@ func error__get_defs() map[string]Error_def {
 		},
 		"verify__invalid_image_nsfv_error": Error_def{
 			Descr_str: "image NSFV verification failed",
+		},
+
+		// VALIDATOR - used primarily when validating using validator lib,
+		//             where struct tags contain directives on how to validate individual fields.
+		"verify__invalid_input_struct_error": Error_def{
+			Descr_str: "input struct is invalid",
 		},
 
 		//---------------
@@ -212,16 +223,16 @@ func error__get_defs() map[string]Error_def {
 			Descr_str:"target document not found in mongodb",
 		},
 		"mongodb_insert_error": Error_def{
-			Descr_str:"c.Insert() failed to insert/create new mongodb document",
+			Descr_str:"failed to insert/create new mongodb document",
 		},
 		"mongodb_write_bulk_error": Error_def{
-			Descr_str:"c.BulkWrite() failed to write new mongodb documents",
+			Descr_str:"failed to bulk write new mongodb documents",
 		},
 		"mongodb_update_error": Error_def{
-			Descr_str:"c.Update() failed to update a mongodb document",
+			Descr_str:"failed to update a mongodb document",
 		},
 		"mongodb_delete_error": Error_def{
-			Descr_str:"c.Update() failed to update a mongodb document",
+			Descr_str:"failed to update a mongodb document",
 		},
 		"mongodb_aggregation_error": Error_def{
 			Descr_str:"failed to run a aggregation pipeline in mongodb",
@@ -235,7 +246,16 @@ func error__get_defs() map[string]Error_def {
 		"mongodb_cursor_all": Error_def{
 			Descr_str:"failed to get all values from the mongodb results Cursor",
 		},
-
+		"mongodb_session_error": Error_def{
+			Descr_str:"failed to execute mongodb session",
+		},
+		"mongodb_start_session_error": Error_def{
+			Descr_str:"failed to start a new mongodb session",
+		},
+		"mongodb_session_abort_error": Error_def{
+			Descr_str:"failed to abort a mongodb session",
+		},
+		
 		//---------------
 		// ELASTICSEARCH
 		"elasticsearch_get_client": Error_def{
@@ -271,6 +291,9 @@ func error__get_defs() map[string]Error_def {
 		"aws_ecs_service_update_error": Error_def{
 			Descr_str: "failed to update an AWS ECS service",
 		},
+		"aws_secretsmngr_get_secret_value_error": Error_def{
+			Descr_str: "failed to get secret value from AWS SECRETS_MANAGER service",
+		},
 
 		//---------------
 		// S3
@@ -300,6 +323,25 @@ func error__get_defs() map[string]Error_def {
 		// LIBRARY_ERROR
 		"library_error": Error_def{
 			Descr_str: "third-party library has failed",
+		},
+
+		//---------------
+		// CRYPTO
+		"crypto_jwt_sign_token_error": Error_def{
+			Descr_str: "failed to crypto-sign JWT token",
+		},
+		"crypto_jwt_verify_token_error": Error_def{
+			Descr_str: "failed to crypto-verify JWT token",
+		},
+		"crypto_ec_recover_pubkey": Error_def{
+			Descr_str: "failed to recovery Pubkey fro signature",
+		},
+		"crypto_hex_decode": Error_def{
+			Descr_str: "failed to decodes a hex string with 0x prefix",
+		},
+
+		"crypto_cert_ca_parse": Error_def{
+			Descr_str: "failed to parse cert CA",
 		},
 
 		//---------------

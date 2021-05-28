@@ -39,7 +39,7 @@ import (
 
 //--------------------------------------------------
 type Gf_gif struct {
-	Id                         primitive.ObjectID `json:"-"                          bson:"_id,omitempty"`
+	Id                         primitive.ObjectID `json:"-"                     bson:"_id,omitempty"`
 	Id_str                     string        `json:"id_str"                     bson:"id_str"` 
 	T_str                      string        `json:"-"                          bson:"t"` //"gif"
 	Creation_unix_time_f       float64       `json:"creation_unix_time_f"       bson:"creation_unix_time_f"`
@@ -145,6 +145,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	if f_gf_err != nil {
 		return nil, "", f_gf_err
 	}
+
 	//-----------------------
 	// IMPORTANT!! - save first N frames of the GIF, to be uploaded to S3, and 
 	//               served in UI's as GIF preview animations. this is an 
@@ -177,6 +178,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
+
 	//-----------------------
 	// GIF_OBJ_CREATE
 	gif, gf_err := gif_db__create(p_image_source_url_str,
@@ -189,6 +191,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
+
 	//-----------------------
 	// IMAGE_CREATE
 
@@ -222,15 +225,18 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 			"id_str":                         string(gf_image_id_str),
 			"title_str":                      image_title_str,
 			"image_client_type_str":          p_image_client_type_str,
+
 			//--------------
 			"flows_names_lst":                p_flows_names_lst,
 			"origin_url_str":                 p_image_source_url_str, //*p_image_origin_url_str,
 			"origin_page_url_str":            p_image_origin_page_url_str,
 			"original_file_internal_uri_str": local_image_file_path_str,
+
 			//--------------
 			"format_str":                     "gif",
 			"width_int":                      img_width_int,
 			"height_int":                     img_height_int,
+
 			//--------------
 			"thumbnail_small_url_str":        gif_first_frame_str, //image_thumbs.Small_relative_url_str,
 			"thumbnail_medium_url_str":       gif_first_frame_str, //image_thumbs.Medium_relative_url_str,
@@ -317,6 +323,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 
 		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst,image_s3_url_str)
 	}
+
 	//-----------------------
 
 	return preview_frames_num_int,preview_frames_s3_urls_lst,nil,gf_errors_lst

@@ -411,8 +411,8 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 
 			// IMPORTANT!! - a "gif" object was not found in the DB for an "img"
 			//               with "gif" format. so a new gif is created
-			if fmt.Sprint(err) == "not found" {
-
+			if err == mongo.ErrNoDocuments {
+				
 				fmt.Println("=================================")
 				fmt.Println("")
 				fmt.Println("    MIGRATING DB IMG->GIF - "+img.Origin_url_str)

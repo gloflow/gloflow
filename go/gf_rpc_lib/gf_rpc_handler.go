@@ -121,11 +121,11 @@ func Http_respond(p_data interface{},
 	p_status_str  string,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_respond()")
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_respond()")
 
 	r_byte_lst, _ := json.Marshal(map[string]interface{}{
-		"status_str": p_status_str,
-		"data":       p_data,
+		"status": p_status_str,
+		"data":   p_data,
 	})
 	
 	p_resp.Header().Set("Content-Type", "application/json")
@@ -187,7 +187,7 @@ func Error__in_handler(p_handler_url_path_str string,
 	}
 
 	if p_gf_err != nil {
-		data_map["gf_error_type_str"] =     p_gf_err.Type_str
+		data_map["gf_error_type_str"]     = p_gf_err.Type_str
 		data_map["gf_error_user_msg_str"] = p_gf_err.User_msg_str
 	}
 

@@ -22,6 +22,7 @@ package gf_images_utils
 import (
 	"fmt"
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -76,7 +77,7 @@ func DB__get_image(p_image_id_str Gf_image_id,
 
 		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 		//         if this should not return an error but instead just a "nil" value for the record.
-		if fmt.Sprint(err) == "not found" {
+		if err == mongo.ErrNoDocuments {
 			gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 				"mongodb_not_found_error",
 				map[string]interface{}{"image_id_str": p_image_id_str,},

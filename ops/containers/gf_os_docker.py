@@ -266,6 +266,7 @@ def push(p_image_full_name_str,
 
 	#------------------
 	# LOGIN
+
 	login(p_docker_user_str,
 		p_docker_pass_str,
 		p_host_str          = p_host_str,
@@ -433,7 +434,7 @@ def login(p_docker_user_str,
 		cmd_lst.append("sudo")
 		
 	cmd_lst.extend([
-		"docker login",
+		"docker", "login",
 		"-u", p_docker_user_str,
 		"--password-stdin"
 	])
@@ -443,7 +444,9 @@ def login(p_docker_user_str,
 		cmd_lst.append(p_host_str)
 
 	print(" ".join(cmd_lst))
-	process = subprocess.Popen(cmd_lst, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	process = subprocess.Popen(cmd_lst,
+		# shell=True,
+		stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	
 	# STDIN_WRITE
 	process.stdin.write(bytes(p_docker_pass_str.encode())) # write password on stdin of "docker login" command

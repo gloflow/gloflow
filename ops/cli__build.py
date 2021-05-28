@@ -207,8 +207,6 @@ def main():
 		dockerhub_user_str = args_map["dockerhub_user"]
 		docker_sudo_bool   = args_map["docker_sudo"]
 
-
-
 		# GF_BUILDER
 		if app_name_str.startswith("gf_builder"):
 
@@ -216,7 +214,6 @@ def main():
 				dockerhub_user_str,
 				gf_log.log_fun,
 				p_docker_sudo_bool = docker_sudo_bool)
-
 
 		else:
 			

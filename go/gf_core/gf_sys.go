@@ -40,7 +40,6 @@ type Runtime_sys struct {
 	// ERRORS
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
 	Errors_send_to_sentry_bool  bool // if errors should be sent to Sentry service
-	
-	// Mongodb_db   *mgo.Database   // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
-	// Mongodb_coll *mgo.Collection // DEPRECATED!! - remove - use Mongo_db/Mongo_coll
+
+	Names_prefix_str string
 }

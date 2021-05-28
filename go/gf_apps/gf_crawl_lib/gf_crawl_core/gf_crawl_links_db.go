@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"context"
 	"github.com/fatih/color"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -105,14 +106,11 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	var unresolved_link Gf_crawler_page_outgoing_link
 	err := query.One(&unresolved_link)*/
 
+
+	// NO_DOCUMENTS
 	// IMPORTANT!! - link not being found in the DB is actually expected state, and should not throw an error.
 	//               instead a nil value is returned for the link without error.
-	if fmt.Sprint(err) == "not found" {
-		// gf_err := gf_core.Mongo__handle_error("unresolved links for gf_crawler were not found in mongodb",
-		// 	"mongodb_not_found_error",
-		// 	map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
-		// 	err, "gf_crawl_core", p_runtime_sys)
-		// return nil, gf_err
+	if err == mongo.ErrNoDocuments {
 		return nil, nil
 	}
 

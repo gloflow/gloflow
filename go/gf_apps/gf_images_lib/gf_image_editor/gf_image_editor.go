@@ -127,7 +127,7 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image()")
 	
 	//--------------------------
-	//BASE64_DECODE
+	// BASE64_DECODE
 
 	image_byte_lst, err := base64.StdEncoding.DecodeString(p_image_base64_data_str)
 	if err != nil {
@@ -140,8 +140,9 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//--------------------------
-	//PNG
+	// PNG
 
 	image_reader   := bytes.NewReader(image_byte_lst)
 	png_image, err := png.Decode(image_reader)
@@ -155,13 +156,14 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//--------------------------
-	//FILE
+	// FILE
 
 	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
 	tmp_local_filepath_str := fmt.Sprintf("/%f.png",creation_unix_time_f)
 
-	//FILE_CREATE
+	// FILE_CREATE
 	file, err := os.Create(tmp_local_filepath_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to create a file to save edited_image to FS",
@@ -175,7 +177,7 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 	}
 	defer file.Close()
 
-	//FILE_WRITE_IMAGE
+	// FILE_WRITE_IMAGE
 	err = png.Encode(file,png_image)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
@@ -197,7 +199,7 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 		return nil,gf_err
 	}*/
 
-	//FILE_SYNC
+	// FILE_SYNC
 	if err := file.Sync(); err != nil {
 		gf_err := gf_core.Error__create("failed to decode jpen image_byte array while saving edited_image",
 			"file_sync_error",
@@ -208,8 +210,9 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//--------------------------
-	//IMAGE_DIMENSIONS
+	// IMAGE_DIMENSIONS
 
 	image_width_int, image_height_int := gf_images_utils.Get_image_dimensions__from_image(png_image, p_runtime_sys)
 	//--------------------------

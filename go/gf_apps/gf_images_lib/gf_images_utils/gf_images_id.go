@@ -68,6 +68,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 	}
 	//-------------
 	gf_image_id_str := Image_ID__create(image_path_str, normalized_ext_str, p_runtime_sys)
+	
 	//-------------
 	return gf_image_id_str, nil
 }
