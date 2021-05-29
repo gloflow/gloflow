@@ -74,8 +74,9 @@ func runtime__get(p_config_path_str string,
 	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
 	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
 
-	mongodb_db, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
 		config.Mongodb_db_name_str,
+		nil,
 		runtime_sys)
 	if gf_err != nil {
 		return nil, nil, gf_err.Error

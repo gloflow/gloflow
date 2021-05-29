@@ -63,8 +63,9 @@ func Run_service(p_service_info *GF_service_info,
 		Log_fun:          p_log_fun,
 	}
 
-	mongo_db, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
+	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
 		p_service_info.Mongodb_db_name_str,
+		nil,
 		runtime_sys)
 	if gf_err != nil {
 		os.Exit(-1)

@@ -113,7 +113,7 @@ func Run_service(p_port_str string,
 		Log_fun:          p_log_fun,
 	}
 
-	mongo_db, gf_err   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, runtime_sys)
+	mongo_db, _, gf_err   := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)
 	if gf_err != nil {
 		panic(-1)
 	}

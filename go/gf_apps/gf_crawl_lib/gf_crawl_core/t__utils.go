@@ -74,8 +74,9 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 		Log_fun:          log_fun,
 	}
 
-	mongo_db, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
+	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
 		test__mongodb_db_name_str,
+		nil,
 		runtime_sys)
 	if gf_err != nil {
 		panic("failed to get Mongodb client in test initialization")
