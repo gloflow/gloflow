@@ -443,9 +443,11 @@ def login(p_docker_user_str,
 	if not p_host_str == None:
 		cmd_lst.append(p_host_str)
 
-	print(" ".join(cmd_lst))
-	process = subprocess.Popen(cmd_lst,
-		# shell=True,
+	cmd_str = " ".join(cmd_lst)
+	print(cmd_str)
+	
+	process = subprocess.Popen(cmd_str,
+		shell=True,
 		stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	
 	# STDIN_WRITE
