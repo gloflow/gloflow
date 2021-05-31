@@ -150,6 +150,37 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
 //-------------------------------------------------
 // OPS
 //-------------------------------------------------
+// MONGO_COUNT
+func MongoCount(p_query bson.M,
+	p_meta_map            map[string]interface{},
+	p_coll                *mongo.Collection,
+	p_ctx                 context.Context,
+	p_runtime_sys         *Runtime_sys) (int64, *Gf_error) {
+
+	return Mongo__count(p_query, p_meta_map, p_coll, p_ctx, p_runtime_sys)
+}
+
+func Mongo__count(p_query bson.M,
+	p_meta_map            map[string]interface{}, // data describing the DB write op
+	p_coll                *mongo.Collection,
+	p_ctx                 context.Context,
+	p_runtime_sys         *Runtime_sys) (int64, *Gf_error) {
+
+	// FIX!! - externalize this max_time value to some config.
+	opts := options.Count().SetMaxTime(5 * time.Second)
+
+	count_int, err := p_coll.CountDocuments(p_ctx, p_query, opts)
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to count number of particular docs in DB",
+			"mongodb_count_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return 0, gf_err
+	}
+	return count_int, nil
+}
+
+//-------------------------------------------------
 // MONGO_FIND_LATEST
 func MongoFindLatest(p_query bson.M,
 	p_time_field_name_str string,
@@ -189,6 +220,11 @@ func Mongo__find_latest(p_query bson.M,
 
 	if gf_err != nil {
 		return nil, gf_err
+	}
+
+	// no result
+	if cursor == nil {
+		return nil, nil
 	}
 
 	var records_lst []map[string]interface{}

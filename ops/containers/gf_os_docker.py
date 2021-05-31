@@ -21,7 +21,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 import json
 import subprocess
 import base64
-
+from colored import fg, bg, attr
 import delegator
 
 sys.path.append("%s/../utils"%(cwd_str))
@@ -60,7 +60,7 @@ def cont_is_running_remote(p_cont_name_str,
 	p_exit_on_fail_bool = True,
 	p_docker_sudo_bool  = True):
 
-	print("CHECK IF CONTAINER IS RUNNING - %s"%(p_cont_name_str))
+	print(f"{fg('yellow')}CHECK IF CONTAINER IS RUNNING{attr(0)} - {fg('green')}%s{attr(0)}"%(p_cont_name_str))
 	sudo_str = ""
 	if p_docker_sudo_bool:
 		sudo_str = "sudo"
@@ -87,10 +87,10 @@ def cont_is_running_remote(p_cont_name_str,
 	# 		exit(r.return_code)
 
 	if r.stdout == "":
-		print("CONTAINER NOT RUNNING")
+		print(f"{fg('yellow')}CONTAINER NOT RUNNING{attr(0)}")
 		return False
 	else:
-		print("CONTAINER RUNNING")
+		print(f"{fg('green')}CONTAINER RUNNING{attr(0)}")
 		return True
 
 #-------------------------------------------------------------
