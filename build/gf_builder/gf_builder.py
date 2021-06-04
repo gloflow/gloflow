@@ -178,7 +178,8 @@ def main():
 #--------------------------------------------------
 # NOTIFY_COMPLETION
 def notify_completion(p_gf_notify_completion_url_str,
-	p_git_commit_hash_str = None):
+	p_git_commit_hash_str = None,
+	p_app_name_str        = None):
 	
 	url_str = None
 
@@ -206,7 +207,12 @@ def notify_completion(p_gf_notify_completion_url_str,
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
 
 	# HTTP_POST
-	r = requests.post(url_str)
+
+	data_map = {}
+	if not p_app_name_str == None:
+		data_map["app_name"] = p_app_name_str
+
+	r = requests.post(url_str, json=data_map)
 	print(r.text)
 
 	if not r.status_code == 200:
@@ -612,4 +618,6 @@ def parse_args():
 	}
 
 #--------------------------------------------------
-main()
+
+if __name__ == "__main__":
+	main()
