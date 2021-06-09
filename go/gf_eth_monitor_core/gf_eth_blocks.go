@@ -39,8 +39,8 @@ import (
 // BLOCK__INTERNAL - internal representation of the block, with fields
 //                   that are not visible to the external public users.
 type GF_eth__block__int struct {
-	DB_id                 string `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
-	Creation_time__unix_f float64            `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
+	DB_id                 string  `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	Creation_time__unix_f float64 `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
 
 	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
 	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
@@ -82,6 +82,8 @@ func Eth_blocks__init_continuous_metrics(p_metrics *GF_metrics,
 }
 
 //-------------------------------------------------
+// BLOCKS__GET_AND_PERSIST_BULK
+
 func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
@@ -175,6 +177,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 }
 
 //-------------------------------------------------
+// BLOCKS__DB__GET_COUNT
 func Eth_blocks__db__get_count(p_metrics *GF_metrics,
 	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
 
@@ -200,6 +203,7 @@ func Eth_blocks__db__get_count(p_metrics *GF_metrics,
 }
 
 //-------------------------------------------------
+// BLOCKS__DB__WRITE_BULK
 func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
@@ -446,7 +450,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_uint,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 	fmt.Println(header)
@@ -501,7 +505,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_uint,},
-			err, "gf_eth_monitor_lib", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 

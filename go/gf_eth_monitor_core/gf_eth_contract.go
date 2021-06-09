@@ -99,7 +99,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 
@@ -157,7 +157,7 @@ func Eth_contract__get_abi(p_gf_abi *GF_eth__abi,
 				"abi_type_str": p_gf_abi.Type_str,
 				"abi_def_str":  abi_def_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 
@@ -180,7 +180,7 @@ func Eth_contract__db__get_abi(p_abi_type_str string,
 		gf_err := gf_core.Error__create_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
 			"eth_contract__not_supported_type",
 			map[string]interface{}{"type_str": p_abi_type_str,},
-			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			nil, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 
@@ -281,7 +281,7 @@ func Eth_contract__get_code(p_contract_addr_str string,
 		gf_err := gf_core.Error__create_with_defs("failed to get code at particular account address in target block",
 			"eth_rpc__get_contract_code",
 			map[string]interface{}{"contract_addr_str": p_contract_addr_str, "block_num_int": p_block_num_int,},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 

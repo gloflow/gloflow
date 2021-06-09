@@ -131,6 +131,8 @@ def main():
 			font_size=8)
 		op_svg.add(op_txt)
 
+		
+		# MSTORE
 		if op_str == "MSTORE":
 			y__local = 0.8
 			op_svg.add(dwg.rect(insert=((x_ops_base-1.5)*mm, y__local*mm), size=(1*mm, 1*mm),
@@ -142,6 +144,8 @@ def main():
 			y__global = y+y__local
 			memory_ops_lst.append(y__global)
 
+
+		# CALLDATASIZE/CALLVALUE/CALLER
 		ops_call_lst = ["CALLDATASIZE", "CALLVALUE", "CALLER"]
 		if op_str in ops_call_lst:
 			
@@ -155,6 +159,7 @@ def main():
 			y__global = y+y__local
 			call_ops_lst.append(y__global)
 
+		# LOG
 		if op_str.startswith("LOG"):
 			
 			x_log_rect__global = x_ops_base-2

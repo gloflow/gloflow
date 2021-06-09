@@ -131,8 +131,6 @@ func eth_tx__db__get(p_tx_hash_str string,
 	if err != nil {
 
 
-
-
 		// METRICS
 		if p_metrics != nil {
 			p_metrics.Errs_num__counter.Inc()
@@ -166,7 +164,6 @@ func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
 	}
 
-
 	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
 		coll_name_str,
 		map[string]interface{}{
@@ -177,10 +174,6 @@ func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 	if gf_err != nil {
 		return gf_err
 	}
-
-
-
-
 
 	return nil
 }
@@ -279,7 +272,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 	span__get_tx_receipt.Finish()
@@ -336,7 +329,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -365,7 +358,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_core", error_defs_map, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -559,7 +552,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 					"address_str":  l.Address_str,
 					"data_hex_str": l.Data_hex_str,
 				},
-				err, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+				err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
 			return nil, gf_err
 		}
 		
