@@ -21,7 +21,7 @@ steps:
   #-------------------------------
   # BUILD_GO
   - name: build_go
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
     commands:
       # "-u"      - run unbuffered for stdout/stderr
       # "-static" - compile Go binary with static linking, needed to run in Alpine containers
@@ -37,7 +37,7 @@ steps:
   # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
   #               to be tested by integration Py tests.
   - name: test_go
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
     
     #-------------------------------
     # ENV
@@ -77,7 +77,7 @@ steps:
   # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
   #               to be tested by integration Py tests.
   - name: test_py
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
     
     #-------------------------------
     # ENV
@@ -121,7 +121,7 @@ steps:
   #-------------------------------
   # BUILD_CONTAINERS
   - name: build_containers
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
 
     environment:
       GF_DOCKERHUB_USER:
@@ -145,7 +145,7 @@ steps:
   #-------------------------------
   # PUBLISH_CONTAINERS
   - name: publish_containers
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
     environment:
       GF_DOCKER_USER:
         from_secret: gf_os__dockerhub_user
@@ -170,7 +170,7 @@ steps:
   #-------------------------------
   # NOTIFY_COMPLETION
   - name: notify_completion
-    image: glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
     environment:
       GF_NOTIFY_COMPLETION_URL:
         from_secret: gf_os__notify_completion_url
