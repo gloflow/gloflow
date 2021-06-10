@@ -134,6 +134,11 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     commands:
+
+      # FIX!! - install docker properly in gf_builder_go_ubuntu
+      - apt-get update
+      - apt-get install -y docker.io
+
       # "-u" - run unbuffered for stdout/stderr
       - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build_containers
     when:
@@ -159,6 +164,10 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     commands:
+      # FIX!! - install docker properly in gf_builder_go_ubuntu
+      - apt-get update
+      - apt-get install -y docker.io
+      
       # "-u" - run unbuffered for stdout/stderr
       - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=publish_containers
     when:
