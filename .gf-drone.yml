@@ -36,7 +36,7 @@ steps:
     environment:
 
       # cache for the "go" tool
-      GO_CACHE: /home/gf/go_cache
+      GOCACHE: /home/gf/go_cache
       
     commands:
       # "-u"      - run unbuffered for stdout/stderr
