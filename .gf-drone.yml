@@ -12,9 +12,15 @@ volumes:
     host:
       path: /var/run/docker.sock
   
+  # caching build artifacts
   - name: go_cache
     host:
       path: /home/gf/go_cache
+
+  # caching downloaded modules
+  - name: go_mod_cache
+    host:
+      path: /home/gf/go_mod_cache
 
 services:
   - name:  mongo
@@ -30,6 +36,9 @@ steps:
     volumes:
       - name: go_cache
         path: /home/gf/go_cache 
+      
+      - name: go_mod_cache
+        path: /home/gf/go_mod_cache 
 
 
     # ENV
@@ -37,6 +46,8 @@ steps:
 
       # cache for the "go" tool
       GOCACHE: /home/gf/go_cache
+
+      GOMODCACHE: /home/gf/go_mod_cache
       
     commands:
       # "-u"      - run unbuffered for stdout/stderr
