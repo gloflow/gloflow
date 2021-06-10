@@ -172,7 +172,7 @@ def notify_completion(p_gf_notify_completion_url_str,
 
 	r_map = json.loads(r.text)
 
-	if r_map["status_str"] == "ERROR":
+	if r_map["status"] == "ERROR":
 		print("notify_completion failed")
 		exit(1)
 

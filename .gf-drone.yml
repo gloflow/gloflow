@@ -11,6 +11,10 @@ volumes:
   - name: docker-sock
     host:
       path: /var/run/docker.sock
+  
+  - name: go_cache
+    host:
+      path: /home/gf/go_cache
 
 services:
   - name:  mongo
@@ -22,6 +26,18 @@ steps:
   # BUILD_GO
   - name: build_go
     image: glofloworg/gf_builder_go_ubuntu:latest
+
+    volumes:
+      - name: go_cache
+        path: /home/gf/go_cache 
+
+
+    # ENV
+    environment:
+
+      # cache for the "go" tool
+      GO_CACHE: /home/gf/go_cache
+      
     commands:
       # "-u"      - run unbuffered for stdout/stderr
       # "-static" - compile Go binary with static linking, needed to run in Alpine containers
@@ -167,7 +183,7 @@ steps:
       # FIX!! - install docker properly in gf_builder_go_ubuntu
       - apt-get update
       - apt-get install -y docker.io
-      
+
       # "-u" - run unbuffered for stdout/stderr
       - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=publish_containers
     when:
