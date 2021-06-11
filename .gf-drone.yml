@@ -63,10 +63,13 @@ steps:
     volumes:
       - name: rust_build_cache__gf_core
         path: /home/gf/rust/gf_core/target
+
       - name: rust_build_cache__gf_images_jobs
         path: /home/gf/rust/gf_images_jobs/target
+
       - name: rust_build_cache__gf_images_jobs_py
         path: /home/gf/rust/gf_images_jobs_py/target
+        
       - name: rust_build_cache__gf_ml
         path: /home/gf/rust/gf_ml/target
 

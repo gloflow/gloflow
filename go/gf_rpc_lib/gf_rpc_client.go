@@ -74,7 +74,7 @@ func Client__request(p_url_str string,
 
 	//-----------------------
 
-	r_status_str := resp_map["status_str"].(string)
+	r_status_str := resp_map["status"].(string)
 
 	if r_status_str == "OK" {
 		data_map := resp_map["data"].(map[string]interface{})
