@@ -19,6 +19,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_eth_monitor_core
 
+import (
+	"strings"
+	"encoding/hex"
+	"github.com/gloflow/gloflow/go/gf_core"
+	eth_asm "github.com/ethereum/go-ethereum/core/asm"
+)
+
 /*
 0x - Stop and Arithmetic Operations
 
@@ -90,8 +97,65 @@ package gf_eth_monitor_core
 */
 
 //-------------------------------------------------
+type GF_eth__opcode struct {
+	Op_and_args_str string
+	Addr_hex_str    string
+}
+
+// FIX!! - give this struct a better name, too similar to GF_eth__opcode
 type gf_eth_opcode struct {
 	Important_bool bool // if the opcode is important for GF analysis
+}
+
+//-------------------------------------------------
+func Eth_contract__get_opcodes(p_bytecode_hex_str string,
+	p_runtime *GF_runtime) ([]*GF_eth__opcode, *gf_core.Gf_error) {
+
+	// HEX_DECODE
+	code_bytes_lst, err := hex.DecodeString(p_bytecode_hex_str)
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to decode contract bytecode hex string into byte list",
+			"decode_hex",
+			map[string]interface{}{
+				"bytecode_hex_str": p_bytecode_hex_str,
+			},
+			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+		return nil, gf_err
+	}
+
+	// eth_asm.PrintDisassembled(code_str)
+
+	// DISASSEMBLE
+	output_lst, err := eth_asm.Disassemble(code_bytes_lst)
+	if err != nil {
+		error_defs_map := Error__get_defs()
+		gf_err := gf_core.Error__create_with_defs("failed to disassemble contract hex bytecode",
+			"eth_contract__disassemble",
+			map[string]interface{}{
+				"bytecode_hex_str": p_bytecode_hex_str,
+			},
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
+		return nil, gf_err
+	}
+
+	opcodes_lst := []*GF_eth__opcode{}
+	for _, opcode_str := range output_lst {
+
+		s_lst := strings.Split(strings.TrimSpace(opcode_str), ": ")
+		opcode_addr_hex_str := s_lst[0]
+		opcode_and_args_str := s_lst[1]
+
+		// fmt.Printf("%s - %s\n", opcode_addr_hex_str, opcode_and_args_str)
+
+		// GF_OPCODE
+		gf_opcode := &GF_eth__opcode{
+			Op_and_args_str: opcode_and_args_str,
+			Addr_hex_str:    opcode_addr_hex_str,
+		}
+		opcodes_lst = append(opcodes_lst, gf_opcode)
+	}
+
+	return opcodes_lst, nil
 }
 
 //-------------------------------------------------

@@ -180,10 +180,10 @@ func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 
 //-------------------------------------------------
 func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
-	p_abis_map map[string]*GF_eth__abi,
-	p_ctx      context.Context,
-	p_metrics  *GF_metrics,
-	p_runtime  *GF_runtime) *gf_core.Gf_error {
+	p_abis_defs_map map[string]*GF_eth__abi,
+	p_ctx           context.Context,
+	p_metrics       *GF_metrics,
+	p_runtime       *GF_runtime) *gf_core.Gf_error {
 	
 
 
@@ -204,7 +204,7 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 
 			// TEMPORARY!! - we just assume the new contract has a erc20 ABI, for testing purposes.
 			//               generalize a way to specify an ABI to use to decode new contracts.
-			gf_abi := p_abis_map["erc20"]
+			gf_abi := p_abis_defs_map["erc20"]
 			gf_err := Eth_contract__enrich(gf_abi, p_ctx, p_metrics, p_runtime)
 			if gf_err != nil {
 				return gf_err

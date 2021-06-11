@@ -18,9 +18,43 @@ ENV vars for the container are:
 
 
 WORKER_INSPECTOR
-This is an agent usually running on the same host as an Ethereum node (geth).
-- mainly using eth-rpc API to communicate with Eth node. 
+Agent usually running on the same host as an Ethereum node (geth).
+- mainly using eth-rpc API to communicate with Eth node.
+- uses some Geth specific API's.
 - joins several datastructures on blocks and tx's.
 - provides REST API.
 - in the future will contain functions as well that will assume that they're running on the same host as the Eth node.
-- ideally it will run and query a full archive geth node to get all of the expected data.
+- ideally it will run and query a full archive geth node to get all of the expected data (tx traces, acc balances, etc.)
+
+
+
+
+
+GO TESTS:
+```bash
+
+# working dir - ./py/ops/
+# ENV VARS:
+# - GF_GETH_HOST=127.0.0.1
+# - GF_SENTRY_ENDPOINT=...
+$ python3 gf_builder_cli.py -run=test_go
+
+
+# working dir - ./go/gf_eth_monitor_core/
+# ENV VARS:
+# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:2000
+$ go test -v
+
+```
+
+
+PY TESTS:
+```bash
+
+# working dir - ./py/ops/
+# ENV VARS:
+# - GF_GETH_HOST=...
+# - GF_SENTRY_ENDPOINT=...
+$ python3 gf_builder_cli.py -run=test_py
+
+```

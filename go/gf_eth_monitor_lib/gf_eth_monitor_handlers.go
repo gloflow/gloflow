@@ -44,25 +44,32 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__block_persist_bulk", sentry.ContinueFromRequest(p_req))
+			ctx := span__root.Context()
 			defer span__root.Finish()
-
 
 			//------------------
 			// INPUT
 
 			block_start_uint, block_end_uint, gf_err := Http__get_arg__block_range(p_resp, p_req, p_runtime.Runtime_sys)
-
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
 			//------------------
+			
+			
+			// ABI_DEFS
+			abis_defs_map, gf_err := gf_eth_monitor_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			if gf_err != nil {
+				return nil, gf_err
+			}
 
-			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_persist_bulk")
+			span__pipeline := sentry.StartSpan(ctx, "blocks_persist_bulk")
 
 			gf_errs_lst := gf_eth_monitor_core.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
 				block_end_uint,
 				p_get_hosts_fn,
+				abis_defs_map,
 				span__pipeline.Context(),
 				p_metrics,
 				p_runtime)
@@ -184,12 +191,13 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__get_block")
+			ctx        := span__root.Context()
 			defer span__root.Finish()
 
 			//------------------
 			// INPUT
 
-			span__input := sentry.StartSpan(span__root.Context(), "get_input")
+			span__input := sentry.StartSpan(ctx, "get_input")
 
 			block_num_int, gf_err := Http__get_arg__block_num(p_resp,
 				p_req,
@@ -203,10 +211,17 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			//------------------
 			// PIPELINE
 
-			span__pipeline := sentry.StartSpan(span__root.Context(), "blocks_get_from_workers")
+			// ABI_DEFS
+			abis_defs_map, gf_err := gf_eth_monitor_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			span__pipeline := sentry.StartSpan(ctx, "blocks_get_from_workers")
 
 			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_from_workers__pipeline(block_num_int,
 				p_get_hosts_fn,
+				abis_defs_map,
 				span__pipeline.Context(),
 				p_metrics,
 				p_runtime)

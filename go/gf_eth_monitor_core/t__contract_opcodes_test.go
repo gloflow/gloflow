@@ -21,6 +21,7 @@ package gf_eth_monitor_core
 
 import (
 	"os"
+	"fmt"
 	"testing"
 	"context"
 	"github.com/davecgh/go-spew/spew"
@@ -28,6 +29,8 @@ import (
 
 //---------------------------------------------------
 func Test__contract_opcodes(p_test *testing.T) {
+
+	fmt.Println("TEST__CONTRACT_OPCODES ==============================================")
 
 	ctx := context.Background()
 

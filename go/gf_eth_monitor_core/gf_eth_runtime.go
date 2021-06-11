@@ -22,16 +22,16 @@ package gf_eth_monitor_core
 import (
 	"fmt"
 	// "go.mongodb.org/mongo-driver/mongo"
-	"github.com/influxdata/influxdb-client-go/v2"
+	// "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------------------
 type GF_runtime struct {
-	Config          *GF_config
-	Influxdb_client *influxdb2.Client
-	Py_plugins      *GF_py_plugins
-	Runtime_sys     *gf_core.Runtime_sys
+	Config      *GF_config
+	Py_plugins  *GF_py_plugins
+	Runtime_sys *gf_core.Runtime_sys
+	// Influxdb_client *influxdb2.Client
 }
 
 //-------------------------------------------------------------
@@ -45,9 +45,9 @@ type GF_config struct {
 	Mongodb_host_str    string `mapstructure:"mongodb_host"`
 	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
 
-	// INFLUXDB
-	Influxdb_host_str    string `mapstructure:"influxdb_host"`
-	Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
+	// // INFLUXDB
+	// Influxdb_host_str    string `mapstructure:"influxdb_host"`
+	// Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
 
 	// AWS_SQS
 	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
@@ -75,9 +75,6 @@ type GF_config struct {
 func Runtime__get(p_config *GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_runtime, error) {
 
-
-
-
 	//--------------------
 	// MONGODB
 	mongodb_host_str := p_config.Mongodb_host_str
@@ -96,13 +93,10 @@ func Runtime__get(p_config *GF_config,
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
-	// INFLUXDB
-	influxdb_host_str := p_config.Influxdb_host_str
-	influxdb_client   := influxdb__init(influxdb_host_str)
-
-	fmt.Printf("influxdb connected...\n")
-
-
+	// // INFLUXDB
+	// influxdb_host_str := p_config.Influxdb_host_str
+	// influxdb_client   := influxdb__init(influxdb_host_str)
+	// fmt.Printf("influxdb connected...\n")
 
 	// PY_PLUGINS
 	plugins_info := &GF_py_plugins{
@@ -113,7 +107,7 @@ func Runtime__get(p_config *GF_config,
 	// RUNTIME
 	runtime := &GF_runtime{
 		Config:          p_config,
-		Influxdb_client: influxdb_client,
+		// Influxdb_client: influxdb_client,
 		Py_plugins:      plugins_info,
 		Runtime_sys:     p_runtime_sys,
 	}
@@ -123,10 +117,10 @@ func Runtime__get(p_config *GF_config,
 }
 
 //-------------------------------------------------
-// INFLUXDB
+/*// INFLUXDB
 func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
 
 	fmt.Println("influxdb get client...")
 	client := influxdb2.NewClient(p_influxdb_host_str, "my-token")
 	return &client
-}
+}*/

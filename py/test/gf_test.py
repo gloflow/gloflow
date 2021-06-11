@@ -42,12 +42,14 @@ def run_go(p_test_ci_bool):
 	def run__tests():
 
 		cmd_lst = [
-			"go test", "-v"
+			"go", "test", "-v"
 		]
 		p = gf_core_cli.run__view_realtime(cmd_lst, {
-				"GF_GETH_HOST":                os.environ["GF_GETH_HOST"],
-				"GF_SENTRY_ENDPOINT":          os.environ["GF_SENTRY_ENDPOINT"],
-				"GF_PY_PLUGINS_BASE_DIR_PATH": p_py_plugins_base_dir_path_str,
+				"GF_GETH_HOST":       os.environ["GF_GETH_HOST"],
+				"GF_SENTRY_ENDPOINT": os.environ["GF_SENTRY_ENDPOINT"],
+
+				# p_py_plugins_base_dir_path_str
+				"GF_PY_PLUGINS_BASE_DIR_PATH": os.environ["GF_PY_PLUGINS_BASE_DIR"]
 			},
 			"gf_eth_monitor__worker_inspector", "cyan")
 	
@@ -57,8 +59,9 @@ def run_go(p_test_ci_bool):
 #--------------------------------------------------
 def run_py(p_test_ci_bool):
 	
-	assert "AWS_ACCESS_KEY_ID" in os.environ.keys()
-	assert "AWS_SECRET_ACCESS_KEY" in os.environ.keys()
+	# assert "AWS_ACCESS_KEY_ID" in os.environ.keys()
+	# assert "AWS_SECRET_ACCESS_KEY" in os.environ.keys()
+	
 	assert "GF_AWS_SQS_QUEUE" in os.environ.keys()
 	assert "GF_SENTRY_ENDPOINT" in os.environ.keys()
 

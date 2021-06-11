@@ -87,6 +87,7 @@ func Eth_blocks__init_continuous_metrics(p_metrics *GF_metrics,
 func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
+	p_abis_defs_map       map[string]*GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
 	p_runtime             *GF_runtime) []*gf_core.Gf_error {
@@ -101,6 +102,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 		//             are key-ed by worker_host.
 		block_from_workers_map, miners_map, gf_err := Eth_blocks__get_from_workers__pipeline(block_uint,
 			p_get_worker_hosts_fn,
+			p_abis_defs_map,
 			p_ctx,
 			p_metrics,
 			p_runtime)
@@ -237,6 +239,7 @@ func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 //-------------------------------------------------
 func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
+	p_abis_defs_map       map[string]*GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
 	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
@@ -290,7 +293,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 
 
 		
-		//---------------------
+		/*//---------------------
 		// TEMPORARY!! - move getting of abis_map out of this function.
 		// DB_GET
 		abi_type_str := "erc20"
@@ -303,11 +306,11 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 			"erc20": abis_lst[0],
 		}
 
-		//---------------------
+		//---------------------*/
 
 		
 		gf_err = eth_tx__enrich_from_block(gf_block,
-			abis_map,
+			p_abis_defs_map,
 			ctx,
 			p_metrics,
 			p_runtime)

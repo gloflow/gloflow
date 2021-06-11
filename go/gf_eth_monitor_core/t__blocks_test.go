@@ -33,7 +33,7 @@ import (
 //---------------------------------------------------
 func Test__blocks__get_and_persist_bulk__pipeline(p_test *testing.T) {
 
-	fmt.Println("TEST__MAIN ==============================================")
+	fmt.Println("TEST__BLOCKS ==============================================")
 	
 
 

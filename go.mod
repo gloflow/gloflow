@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.38.58
+	github.com/aws/aws-sdk-go v1.38.59
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect
 	github.com/davecgh/go-spew v1.1.1
@@ -35,7 +35,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.2 // indirect
 	github.com/prometheus/client_golang v1.11.0
-	github.com/prometheus/common v0.28.0 // indirect
+	github.com/prometheus/common v0.29.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/shirou/gopsutil v3.21.5+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
@@ -49,7 +49,7 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.5.3
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
+	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20210608053332-aa57babbf139 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
