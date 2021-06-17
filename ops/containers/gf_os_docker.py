@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import json
 import subprocess
@@ -24,8 +24,8 @@ import base64
 from colored import fg, bg, attr
 import delegator
 
-sys.path.append("%s/../utils"%(cwd_str))
-import gf_cli_utils
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
 
 #---------------------------------------------------
 def cont_is_running(p_cont_name_str,
@@ -37,7 +37,7 @@ def cont_is_running(p_cont_name_str,
 	if p_docker_sudo_bool:
 		sudo_str = "sudo"
 
-	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd("%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str))
+	stdout_str, stderr_str, exit_code_int = gf_core_cli.run("%s docker ps -a | grep %s"%(sudo_str, p_cont_name_str))
 
 	if not stderr_str == "":
 		print(stderr_str)
@@ -156,7 +156,7 @@ def run(p_full_image_name_str,
 	c_str = " ".join(cmd_lst)
 	p_log_fun("INFO", " - %s"%(c_str))
 
-	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
+	stdout_str, stderr_str, exit_code_int = gf_core_cli.run(c_str)
 
 	if not stderr_str == "":
 		print(stderr_str)
@@ -191,7 +191,7 @@ def remove_by_name(p_container_name_str,
 		sudo_str = "sudo"
 
 	cmd_str = "%s docker rm -f `%s docker ps -a | grep %s | awk '{print $1}'`"%(sudo_str, sudo_str, p_container_name_str)
-	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(cmd_str)
+	stdout_str, stderr_str, exit_code_int = gf_core_cli.run(cmd_str)
 
 	if not stderr_str == "":
 		print(stderr_str)
@@ -286,7 +286,7 @@ def push(p_image_full_name_str,
 	c_str = " ".join(cmd_lst)
 	p_log_fun("INFO", " - %s"%(c_str))
 
-	stdout_str, stderr_str, exit_code_int = gf_cli_utils.run_cmd(c_str)
+	stdout_str, stderr_str, exit_code_int = gf_core_cli.run(c_str)
 
 	if not stderr_str == "":
 		print(stderr_str)
@@ -309,7 +309,7 @@ def push(p_image_full_name_str,
 	if p_docker_sudo_bool:
 		cmd_lst.append("sudo")
 	cmd_lst.append("docker logout")
-	stdout_str, _, _ = gf_cli_utils.run_cmd(" ".join(cmd_lst))
+	stdout_str, _, _ = gf_core_cli.run(" ".join(cmd_lst))
 	print(stdout_str)
 
 	#------------------

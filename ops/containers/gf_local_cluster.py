@@ -16,15 +16,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import subprocess
 
-sys.path.append("%s/../../meta"%(cwd_str))
+sys.path.append("%s/../../meta"%(modd_str))
 import gf_meta
 
-sys.path.append("%s/../utils"%(cwd_str))
-import gf_cli_utils
+sys.path.append("%s/../utils"%(modd_str))
+import gf_core_cli
 
 #--------------------------------------------------
 def start(p_aws_creds_map,
@@ -48,7 +48,7 @@ def start(p_aws_creds_map,
 	sudo_str = ""
 	if p_docker_sudo_bool:
 		sudo_str = "sudo"
-	_, stderr_str, return_code_int = gf_cli_utils.run_cmd("%s sysctl -w vm.max_map_count=262144"%(sudo_str))
+	_, stderr_str, return_code_int = gf_core_cli.run("%s sysctl -w vm.max_map_count=262144"%(sudo_str))
 	if not return_code_int == 0:
 		print("GF - failed to increase kernel memory setting for Elasticsearch")
 		print(stderr_str)
@@ -96,7 +96,7 @@ def start(p_aws_creds_map,
 	for l in r.stdout:
 		print(l.strip())
 
-	# _, _, return_code_int = gf_cli_utils.run_cmd(" ".join(cmd_lst),
+	# _, _, return_code_int = gf_core_cli.run(" ".join(cmd_lst),
 	# 	p_env_map = env_map)
 
 	os.chdir(cwd)

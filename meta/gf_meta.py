@@ -104,7 +104,7 @@ def get():
 
                     #------------------------
                     # GF_ML_WORKER
-                    ("%s/../py/gf_apps/gf_ml_worker/gf_data.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+                    ("%s/../py/gf_apps/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
@@ -112,14 +112,14 @@ def get():
                     # C_LIBS
                     # gf_images_jobs_py.so - gf_images_jobs Rust Python extension
                     # libtensorflow.so     - TensorFlow C lib
-                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str),       "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
+                    ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     
 
                     #------------------------
                     # GF_ANALYTICS
                     
                     ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),                                                     "%s/../build/gf_apps/gf_solo/gf_analytics/py"%(modd_str)),
-                    ("%s/../go/gf_core/py/stats/gf_errors__counts_by_day.py"%(modd_str),                                 "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
+                    ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str),                                         "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_analytics/py/stats"%(modd_str)),
@@ -138,7 +138,7 @@ def get():
                 "service_name_str":     "gf_ml_worker",
                 "service_base_dir_str": "%s/../build/gf_apps/gf_ml_worker"%(modd_str),
                 "copy_to_dir_lst": [
-                    ("%s/../py/gf_apps/gf_ml_worker/gf_data.py"%(modd_str),         "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
+                    ("%s/../py/gf_apps/gf_ml_worker/gf_ml_data.py"%(modd_str),      "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/gf_plot.py"%(modd_str),         "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/gf_simple_model.py"%(modd_str), "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
                     ("%s/../py/gf_apps/gf_ml_worker/requirements.txt"%(modd_str),   "%s/../build/gf_apps/gf_ml_worker/py"%(modd_str)),
@@ -195,7 +195,7 @@ def get():
                 "service_base_dir_str": "%s/../build/gf_apps/gf_analytics"%(modd_str),
                 "copy_to_dir_lst": [
                     ("%s/../go/gf_stats/py/cli_stats.py"%(modd_str),                                                     "%s/../build/gf_apps/gf_analytics/py"%(modd_str)),
-                    ("%s/../go/gf_core/py/stats/gf_errors__counts_by_day.py"%(modd_str),                                 "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
+                    ("%s/../py/gf_stats/gf_errors__counts_by_day.py"%(modd_str),                                         "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_imgs__counts_by_day.py"%(modd_str),            "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__counts_by_day.py"%(modd_str),  "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
                     ("%s/../go/gf_apps/gf_crawl_lib/py/stats/crawler_page_outgoing_links__null_breakdown.py"%(modd_str), "%s/../build/gf_apps/gf_analytics/py/stats"%(modd_str)),
@@ -306,6 +306,5 @@ def get():
             #-------------
         }
     }
-
 
     return meta_map

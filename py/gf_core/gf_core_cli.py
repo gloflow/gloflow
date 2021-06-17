@@ -66,7 +66,8 @@ def read_process_stdout(p_out,
 #---------------------------------------------------
 # RUN
 def run(p_cmd_str,
-	p_env_map = {}):
+	p_env_map = {},
+	p_exit_on_fail_bool = True):
 
 	# env map has to contains all the parents ENV vars as well
 	p_env_map.update(os.environ)
@@ -88,6 +89,12 @@ def run(p_cmd_str,
 
 	p.communicate()
 	
+	if p_exit_on_fail_bool:
+		if not p.returncode == 0:
+
+			print(f"ERROR!! - shell CMD ({p_cmd_str}) failed!")
+			exit()
+
 	return "", "", p.returncode
 
 #---------------------------------------------------

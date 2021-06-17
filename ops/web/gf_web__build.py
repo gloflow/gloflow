@@ -22,9 +22,6 @@ import os
 from colored import fg, bg, attr
 from bs4 import BeautifulSoup
 
-sys.path.append('%s/../utils'%(modd_str))
-import gf_cli_utils
-
 sys.path.append("%s/../../py/gf_core"%(modd_str))
 import gf_core_cli
 
@@ -105,7 +102,7 @@ def build_page(p_page_name_str,
 
 	# make build dir if it doesnt exist
 	if not os.path.isdir(p_build_dir_str):
-		gf_cli_utils.run_cmd(f"mkdir -p {p_build_dir_str}")
+		gf_core_cli.run(f"mkdir -p {p_build_dir_str}")
 
 	if "main_html_path_str" in p_page_info_map.keys():
 		main_html_path_str = os.path.abspath(p_page_info_map["main_html_path_str"])
@@ -133,7 +130,7 @@ def build_page(p_page_name_str,
 		# if there are scripts detected in the page
 		if len(scripts_dom_nodes_lst) > 0:
 			js_libs_build_dir_str = f"{p_build_dir_str}/js/lib"
-			gf_cli_utils.run_cmd(f"mkdir -p {js_libs_build_dir_str}") # create dir and all parent dirs
+			gf_core_cli.run(f"mkdir -p {js_libs_build_dir_str}") # create dir and all parent dirs
 
 
 		for script_dom_node in scripts_dom_nodes_lst:
@@ -172,7 +169,7 @@ def build_page(p_page_name_str,
 						f"--out {p_out_file_str}",
 						main_ts_file_str
 					]
-					_, _, return_code_int = gf_cli_utils.run_cmd(" ".join(cmd_lst))
+					_, _, return_code_int = gf_core_cli.run(" ".join(cmd_lst))
 
 					if return_code_int > 0:
 						print("ERROR!! - TypeScript Compilation failed!")
@@ -198,7 +195,7 @@ def build_page(p_page_name_str,
 				p_log_fun("INFO", "%s------------ JAVASCRIPT --------------------------------%s"%(fg("yellow"), attr(0)))
 
 				# IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
-				gf_cli_utils.run_cmd(f"cp {local_path_str} {js_libs_build_dir_str}")
+				gf_core_cli.run(f"cp {local_path_str} {js_libs_build_dir_str}")
 
 				# HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
 				script_dom_node["src"] = f"{url_base_str}/js/lib/{os.path.basename(local_path_str)}"
@@ -212,7 +209,7 @@ def build_page(p_page_name_str,
 		css_links_lst = soup.findAll("link", {"type": "text/css"})
 		
 		target_dir_str = f'{p_build_dir_str}/css/{p_page_name_str}'
-		gf_cli_utils.run_cmd(f'mkdir -p {target_dir_str}') #create dir and all parent dirs
+		gf_core_cli.run(f'mkdir -p {target_dir_str}') #create dir and all parent dirs
 
 		for css in css_links_lst:
 			src_str = css["href"]
@@ -232,7 +229,7 @@ def build_page(p_page_name_str,
 			if src_str.endswith('.scss'):
 				css_file_name_str = os.path.basename(src_str).replace('.scss', '.css')
 				final_src_str     = f'{target_dir_str}/{css_file_name_str}'
-				gf_cli_utils.run_cmd(f'sass {full_path_str} {final_src_str}')
+				gf_core_cli.run(f'sass {full_path_str} {final_src_str}')
 
 				# HTML_MODIFY - change the src in the html tag, to include the url_base
 				#               (dont leave relative path)
@@ -241,7 +238,7 @@ def build_page(p_page_name_str,
 			# CSS
 			else:
 				
-				gf_cli_utils.run_cmd(f'cp {full_path_str} {target_dir_str}')
+				gf_core_cli.run(f'cp {full_path_str} {target_dir_str}')
 
 				# HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
 				css["href"] = f'{url_base_str}/css/{p_page_name_str}/{os.path.basename(full_path_str)}'
@@ -256,7 +253,7 @@ def build_page(p_page_name_str,
 		# CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
 		#                              the modified urls for JS/CSS
 		target_html_file_path_str = f'{p_build_dir_str}/templates/{p_page_name_str}/{p_page_name_str}.html'
-		gf_cli_utils.run_cmd(f'mkdir -p {os.path.dirname(target_html_file_path_str)}')
+		gf_core_cli.run(f'mkdir -p {os.path.dirname(target_html_file_path_str)}')
 
 		f = open(target_html_file_path_str, 'w+')
 		f.write(soup.prettify())
@@ -281,8 +278,8 @@ def build_page(p_page_name_str,
 	if not p_build_copy_dir_str == None:
 		print(f"copying {fg('green')}build{attr(0)} dir to {fg('yellow')}{p_build_copy_dir_str}{attr(0)}")
 		
-		gf_cli_utils.run_cmd(f'mkdir -p {p_build_copy_dir_str}')
-		gf_cli_utils.run_cmd(f'cp -r {p_build_dir_str} {p_build_copy_dir_str}')
+		gf_core_cli.run(f'mkdir -p {p_build_copy_dir_str}')
+		gf_core_cli.run(f'cp -r {p_build_dir_str} {p_build_copy_dir_str}')
 
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):
@@ -305,7 +302,7 @@ def process_files_to_copy(p_page_info_map, p_log_fun):
 		assert os.path.isfile(src_file_str)
 		assert os.path.isdir(target_dir_str)
 
-		gf_cli_utils.run_cmd(f"cp {src_file_str} {target_dir_str}")
+		gf_core_cli.run(f"cp {src_file_str} {target_dir_str}")
 		assert os.path.isfile(f"{target_dir_str}/{os.path.basename(src_file_str)}")
 
 #---------------------------------------------------
@@ -328,7 +325,7 @@ def process_subtemplates(p_page_name_str,
 	# SUBTEMPLATES__BUILD_DIR
 	target_subtemplates_build_dir_str = f"{p_build_dir_str}/templates/{p_page_name_str}/subtemplates"
 	if not os.path.isdir(target_subtemplates_build_dir_str):
-		gf_cli_utils.run_cmd(f"mkdir -p {target_subtemplates_build_dir_str}")
+		gf_core_cli.run(f"mkdir -p {target_subtemplates_build_dir_str}")
 
 	for s_path_str in subtemplates_lst:
 		print(s_path_str)
@@ -337,7 +334,7 @@ def process_subtemplates(p_page_name_str,
 		assert s_path_str.endswith(".html")
 
 		# SUBTEMPLATE__COPY
-		gf_cli_utils.run_cmd(f"cp {s_path_str} {target_subtemplates_build_dir_str}")
+		gf_core_cli.run(f"cp {s_path_str} {target_subtemplates_build_dir_str}")
 
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
@@ -350,7 +347,7 @@ def minify_js(p_js_target_file_str,
 		f"--output {p_js_target_file_str}",
 		" ".join(p_js_files_lst),
 	]
-	gf_cli_utils.run_cmd(" ".join(cmd_lst))
+	gf_core_cli.run(" ".join(cmd_lst))
 
 #---------------------------------------------------
 # def build_page(p_page_name_str,
@@ -378,7 +375,7 @@ def minify_js(p_js_target_file_str,
 # 			'--out %s'%(p_out_file_str),
 # 			' '.join(p_ts_files_lst)
 # 		]
-# 		gf_cli_utils.run_cmd(' '.join(cmd_lst))
+# 		gf_core_cli.run(' '.join(cmd_lst))
 #
 # 		#minify into the same file name as the Typescript compiler output
 # 		minify_js(p_minified_file_str, [p_out_file_str], p_log_fun)
@@ -399,10 +396,10 @@ def minify_js(p_js_target_file_str,
 # 		if p_page_info_map['ts'].has_key('libs_files_lst'):
 # 			p_log_fun('INFO', '%s------------ TS_LIBS -----------------------------%s'%(fg('yellow'), attr(0)))
 #
-# 			if not os.path.isdir(p_build_dir_str): gf_cli_utils.run_cmd('mkdir -p %s/js/lib'%(p_build_dir_str))
+# 			if not os.path.isdir(p_build_dir_str): gf_core_cli.run('mkdir -p %s/js/lib'%(p_build_dir_str))
 #			
 # 			for lib_file_str in p_page_info_map['ts']['libs_files_lst']:
-# 				gf_cli_utils.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
+# 				gf_core_cli.run('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
 # 		#-----------------
 # 	#-----------------
 # 	#if p_page_info_map['type_str'] == 'js':
@@ -422,7 +419,7 @@ def minify_js(p_js_target_file_str,
 # 	#		p_log_fun('INFO','------------ JS_LIBS -----------------------------')
 # 	#
 # 	#		for lib_file_str in p_page_info_map['js']['libs_files_lst']:
-# 	#			gf_cli_utils.run_cmd('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
+# 	#			gf_core_cli.run('cp %s %s/js/lib'%(lib_file_str, p_build_dir_str))
 # 	#-----------------
 # 	#CSS
 #
@@ -435,8 +432,8 @@ def minify_js(p_js_target_file_str,
 #
 # 			src_file_str, dest_dir_src = f_tpl
 #
-# 			if not os.path.isdir(dest_dir_src): gf_cli_utils.run_cmd('mkdir -p %s'%(dest_dir_src))
-# 			gf_cli_utils.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
+# 			if not os.path.isdir(dest_dir_src): gf_core_cli.run('mkdir -p %s'%(dest_dir_src))
+# 			gf_core_cli.run('cp %s %s'%(src_file_str, dest_dir_src))
 # 	#-----------------
 # 	#TEMPLATES
 # 	if p_page_info_map.has_key('templates'):
@@ -454,9 +451,9 @@ def minify_js(p_js_target_file_str,
 # 			assert os.path.isfile(tmpl_file_str)
 #
 # 			#if target template dir doesnt exist, create it
-# 			if not os.path.isdir(tmpl_target_dir_str): gf_cli_utils.run_cmd('mkdir -p %s'%(tmpl_target_dir_str))
+# 			if not os.path.isdir(tmpl_target_dir_str): gf_core_cli.run('mkdir -p %s'%(tmpl_target_dir_str))
 #
-# 			gf_cli_utils.run_cmd('cp %s %s'%(tmpl_file_str, tmpl_target_dir_str))
+# 			gf_core_cli.run('cp %s %s'%(tmpl_file_str, tmpl_target_dir_str))
 # 	#-----------------
 # 	#FILES_TO_COPY
 #
@@ -467,5 +464,5 @@ def minify_js(p_js_target_file_str,
 # 		for f_tpl in files_to_copy_lst:
 # 			src_file_str, dest_dir_src = f_tpl
 #
-# 			gf_cli_utils.run_cmd('cp %s %s'%(src_file_str, dest_dir_src))
+# 			gf_core_cli.run('cp %s %s'%(src_file_str, dest_dir_src))
 # 	#-----------------

@@ -21,8 +21,6 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 from colored import fg, bg, attr
 import delegator
 
-import gf_cli_utils
-
 sys.path.append("%s/../../py/gf_core"%(modd_str))
 import gf_core_cli
 
@@ -75,7 +73,7 @@ def run(p_name_str,
 
     print("--------------------")
     print(f"Go {fg('yellow')}cache dir{attr(0)}:")
-    gf_cli_utils.run_cmd(f"go env GOCACHE")
+    gf_core_cli.run(f"go env GOCACHE")
     print("--------------------")
 
     cwd_str = os.getcwd()
@@ -88,7 +86,7 @@ def run(p_name_str,
     tf_dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build/tf_lib/lib")
 
     print(f"dynamic libs dir - {fg('green')}{dynamic_libs_dir_path_str}{attr(0)}")
-    gf_cli_utils.run_cmd(f"ls -al {dynamic_libs_dir_path_str}")
+    gf_core_cli.run(f"ls -al {dynamic_libs_dir_path_str}")
 
 
     LD_paths_lst = [
@@ -99,7 +97,7 @@ def run(p_name_str,
     
     # GO_GET
     if p_go_get_bool:
-        _, _, exit_code_int = gf_cli_utils.run_cmd(f"{LD_Paths_str} go get -u")
+        _, _, exit_code_int = gf_core_cli.run(f"{LD_Paths_str} go get -u")
         print("")
         print("")
 
@@ -125,8 +123,8 @@ def run(p_name_str,
         #                                 static library is an archive (ar) of object files.
         #                                 The object files are usually in the ELF format
 
-        gf_cli_utils.run_cmd(f"ldconfig -v")
-        # gf_cli_utils.run_cmd(f"cp {dynamic_libs_dir_path_str}/libgf_images_jobs.a /usr/lib")
+        gf_core_cli.run(f"ldconfig -v")
+        # gf_core_cli.run(f"cp {dynamic_libs_dir_path_str}/libgf_images_jobs.a /usr/lib")
 
         args_lst = [
             
@@ -172,7 +170,7 @@ def run(p_name_str,
     #-----------------------------
     
     print(c_str)
-    _, _, exit_code_int = gf_cli_utils.run_cmd(c_str)
+    _, _, exit_code_int = gf_core_cli.run(c_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we
     #               want to fail with a non-zero exit code as well - this way other CI 

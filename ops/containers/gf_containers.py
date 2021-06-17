@@ -16,13 +16,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os, sys
-cwd_str = os.path.abspath(os.path.dirname(__file__))
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import subprocess
 from colored import fg, bg, attr
 
-sys.path.append('%s/../utils'%(cwd_str))
-import gf_cli_utils
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
 
 import gf_os_docker
 
@@ -232,8 +232,8 @@ def copy_files(p_copy_to_dir_lst):
 	print("             COPY FILES")
 	for src_f_str, target_dir_str in p_copy_to_dir_lst:
 		if not os.path.isdir(target_dir_str):
-			gf_cli_utils.run_cmd("mkdir -p %s"%(target_dir_str))
-		gf_cli_utils.run_cmd("cp %s %s"%(src_f_str, target_dir_str))
+			gf_core_cli.run("mkdir -p %s"%(target_dir_str))
+		gf_core_cli.run("cp %s %s"%(src_f_str, target_dir_str))
 
 #-------------------------------------------------------------
 # PREPARE_WEB_FILES
@@ -256,11 +256,11 @@ def prepare_web_files(p_pages_map,
 		#------------------
 		# CREATE_TARGET_DIR
 		target_dir_str = os.path.abspath(f"{p_service_base_dir_str}/static")
-		gf_cli_utils.run_cmd(f"mkdir -p {target_dir_str}")
+		gf_core_cli.run(f"mkdir -p {target_dir_str}")
 
 		#------------------
 		# COPY_PAGE_WEB_CODE
-		gf_cli_utils.run_cmd(f"cp -r {build_dir_str}/* {target_dir_str}")
+		gf_core_cli.run(f"cp -r {build_dir_str}/* {target_dir_str}")
 
 		#------------------
 		print("-----")
@@ -274,8 +274,8 @@ def prepare_web_files(p_pages_map,
 	#               templates are originally in the static/ dir because durring the build process they were
 	#               handled together with other static content (html/css/js files) and as output moved
 	#               into that static/ dir from other locations while in development.
-	gf_cli_utils.run_cmd("rm -rf %s/../templates"%(target_dir_str)) # remove existing templates build dir
-	gf_cli_utils.run_cmd("mv %s/templates %s/.."%(target_dir_str, target_dir_str))
+	gf_core_cli.run("rm -rf %s/../templates"%(target_dir_str)) # remove existing templates build dir
+	gf_core_cli.run("mv %s/templates %s/.."%(target_dir_str, target_dir_str))
 	
 	#------------------
 

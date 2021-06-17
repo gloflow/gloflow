@@ -15,11 +15,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
+import os, sys
+modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
+
 from colored import fg, bg, attr
 import delegator
 
-import gf_cli_utils
+sys.path.append("%s/../../py/gf_core"%(modd_str))
+import gf_core_cli
 
 #--------------------------------------------------
 # p_mark_all_bool - mark all apps as changed. used mainly for debugging.
@@ -54,9 +57,10 @@ def list_changed_apps(p_apps_changes_deps_map,
             changed_apps_files_map["go"][a]  = ["all"]
             changed_apps_files_map["web"][a] = ["all"]
         return changed_apps_files_map
+
     #------------------------
 
-    # latest_commit_hash_str, _ = gf_cli_utils.run_cmd('git rev-parse HEAD')
+    # latest_commit_hash_str, _ = gf_core_cli.run('git rev-parse HEAD')
     # assert len(latest_commit_hash_str) == 32
 
     #------------------------
@@ -66,9 +70,10 @@ def list_changed_apps(p_apps_changes_deps_map,
     #         instead some mechanism for getting the number of commits that some deployment environment is behind HEAD,
     #         and then use that number for this "p_commits_lookback_int" argument (that would be >1).
     past_commit_str = "HEAD~%s"%(p_commits_lookback_int)
+
     #------------------------
 
-    list_str, _, _ = gf_cli_utils.run_cmd("git diff --name-only HEAD %s"%(past_commit_str), p_print_output_bool=False)
+    list_str, _, _ = gf_core_cli.run("git diff --name-only HEAD %s"%(past_commit_str), p_print_output_bool=False)
 
     #--------------------------------------------------
     # IMPORTANT!! - the file that changed affects all apps, so they all need to be marked as changed
@@ -127,6 +132,7 @@ def list_changed_apps(p_apps_changes_deps_map,
                     #              that all apps have changed.
                     if l.startswith('go/%s'%(sys_package_str)):
                         add_change_to_all_apps(l, "go")
+
         #------------------------
         # WEB
         elif l.startswith('web'):
@@ -144,6 +150,7 @@ def list_changed_apps(p_apps_changes_deps_map,
                 package_name_str = l.split('/')[2]
                 if package_name_str in system_packages_lst:
                     add_change_to_all_apps(l, web)
+
         #------------------------
 
     return changed_apps_files_map
