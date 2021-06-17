@@ -33,6 +33,8 @@ func images__stage__process_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
+
+	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
 	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
@@ -65,6 +67,8 @@ func images__stage__process_images(p_crawler_name_str string,
 			page_img__pinfo.gf_image_id_str, //p_gf_image_id_str
 			page_img__pinfo.local_file_path_str,
 			p_images_store_local_dir_path_str,
+
+			p_media_domain_str,
 			p_s3_bucket_name_str,
 			p_runtime,
 			p_runtime_sys)
@@ -91,6 +95,8 @@ func image__process(p_page_img *Gf_crawler_page_image,
 	p_gf_image_id_str                 gf_images_utils.Gf_image_id,
 	p_local_image_file_path_str       string,
 	p_images_store_local_dir_path_str string,
+
+	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
 	p_runtime_sys                     *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, *gf_core.Gf_error) {
@@ -116,6 +122,8 @@ func image__process(p_page_img *Gf_crawler_page_image,
 			image_client_type_str,
 			image_flows_names_lst,
 			true, // p_create_new_db_img_bool
+
+			p_media_domain_str,
 			p_s3_bucket_name_str,
 			p_runtime.S3_info,
 			p_runtime_sys)

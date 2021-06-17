@@ -28,7 +28,8 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_crawled_images_s3_bucket_name_str string,
+func init_handlers(p_media_domain_str string,
+	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
 	p_templates_paths_map          map[string]string,
 	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
@@ -83,7 +84,7 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 
 			//--------------------------
 			// INPUT
-			i, gf_err := gf_rpc_lib.Get_http_input("/a/crawl/image/add_to_flow", p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to get input for adding a crawled image to a flow", gf_err, p_resp, p_runtime_sys)
 				return
@@ -99,6 +100,8 @@ func init_handlers(p_crawled_images_s3_bucket_name_str string,
 			//--------------------------
 			gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 				flows_names_lst,
+
+				p_media_domain_str,
 				p_crawled_images_s3_bucket_name_str,
 				p_gf_images_s3_bucket_name_str,
 				p_runtime,

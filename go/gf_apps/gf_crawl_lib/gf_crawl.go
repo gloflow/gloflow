@@ -33,6 +33,14 @@ import (
 )
 
 //--------------------------------------------------
+type GF_crawler_config struct {
+	Crawled_images_s3_bucket_name_str string
+	Images_s3_bucket_name_str         string
+	Images_local_dir_path_str         string
+	Cluster_node_type_str             string
+	Crawl_config_file_path_str        string
+}
+
 type Gf_crawler struct {
 	Name_str      string
 	Start_url_str string
@@ -52,9 +60,11 @@ type Gf_crawler_cycle_run struct {
 }
 
 //--------------------------------------------------
-func Init(p_images_local_dir_path_str string,
-	p_cluster_node_type_str      string,
-	p_crawl_config_file_path_str string,
+func Init(p_config *GF_crawler_config,
+	// p_images_local_dir_path_str  string,
+	// p_cluster_node_type_str      string,
+	// p_crawl_config_file_path_str string,
+	p_media_domain_str           string,
 	p_templates_paths_map        map[string]string,
 	p_aws_access_key_id_str      string,
 	p_aws_secret_access_key_str  string,
@@ -66,9 +76,10 @@ func Init(p_images_local_dir_path_str string,
 	//--------------
 	events_ctx := gf_core.Events__init("/a/crawl/events", p_runtime_sys)
 
-	crawled_images_s3_bucket_name_str := "gf--discovered--img"
-	gf_images_s3_bucket_name_str      := "gf--img"
-	gf_s3_info, gf_err                := gf_core.S3__init(p_aws_access_key_id_str,
+	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
+	// gf_images_s3_bucket_name_str      := "gf--img"
+
+	gf_s3_info, gf_err := gf_core.S3__init(p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
 		p_aws_token_str,
 		p_runtime_sys)
@@ -80,28 +91,30 @@ func Init(p_images_local_dir_path_str string,
 		Events_ctx:            events_ctx,
 		Esearch_client:        p_esearch_client,
 		S3_info:               gf_s3_info,
-		Cluster_node_type_str: p_cluster_node_type_str,
+		Cluster_node_type_str: p_config.Cluster_node_type_str,
 	}
 
 	//--------------
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	db_index__init(runtime, p_runtime_sys)
 	
-	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, p_runtime_sys)
+	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_config.Crawl_config_file_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}*/
 
 	/*start_crawlers_cycles(crawlers_map,
-		p_images_local_dir_path_str,
+		p_config.Images_local_dir_path_str,
 		crawled_images_s3_bucket_name_str,
 		runtime,
 		p_runtime_sys)*/
 
 	//--------------
 	// HTTP_HANDLERS
-	gf_err = init_handlers(crawled_images_s3_bucket_name_str,
-		gf_images_s3_bucket_name_str,
+	gf_err = init_handlers(p_media_domain_str,
+		p_config.Crawled_images_s3_bucket_name_str,
+		p_config.Images_s3_bucket_name_str,
 		p_templates_paths_map,
 		runtime,
 		p_runtime_sys)
@@ -110,7 +123,9 @@ func Init(p_images_local_dir_path_str string,
 	}
 		
 	// HTTP_HANDLERS__CLUSTER
-	gf_err = cluster__init_handlers(p_crawl_config_file_path_str, runtime, p_runtime_sys)
+	gf_err = cluster__init_handlers(p_config.Crawl_config_file_path_str,
+		runtime,
+		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -123,6 +138,7 @@ func Init(p_images_local_dir_path_str string,
 //--------------------------------------------------
 func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
+	p_media_domain_str          string,
 	p_images_s3_bucket_name_str string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
@@ -139,9 +155,12 @@ func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_de
 		go func(p_crawler gf_crawl_core.Gf_crawler_def) {
 			start_crawler(p_crawler,
 				p_images_local_dir_path_str,
+
+				p_media_domain_str,
 				p_images_s3_bucket_name_str,
 				p_runtime,
 				p_runtime_sys)
+
 		}(crawler)
 	}
 }
@@ -149,6 +168,7 @@ func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_de
 //--------------------------------------------------
 func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
+	p_media_domain_str          string,
 	p_images_s3_bucket_name_str string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
@@ -178,6 +198,8 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 		// RUN CRAWLER
 		gf_err := Run_crawler_cycle(p_crawler,
 			p_images_local_dir_path_str,
+
+			p_media_domain_str,
 			p_images_s3_bucket_name_str,
 			p_runtime,
 			p_runtime_sys)

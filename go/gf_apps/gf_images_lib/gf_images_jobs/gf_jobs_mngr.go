@@ -126,7 +126,7 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 // INIT
 func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
-	// p_s3_bucket_name_str                         string,
+	p_media_domain_str                           string,
 	p_config                                     *gf_images_utils.GF_config,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
@@ -247,6 +247,8 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						job_msg.job_updates_ch,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
+
+						p_media_domain_str,
 						s3_bucket_name_str,
 						p_s3_info,
 						p_runtime_sys)

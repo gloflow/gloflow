@@ -67,7 +67,6 @@ func Mongo__tx_run(p_tx_fun func() *Gf_error,
 	p_mongo_client *mongo.Client,
 	p_ctx          context.Context,
 	p_runtime_sys  *Runtime_sys) (mongo.Session, *Gf_error) {
-
 	
 	// TX_INIT
 	txSession, txOptions, gf_err := Mongo__tx_init(p_mongo_client,
@@ -132,8 +131,6 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
     rc := readconcern.Snapshot()
 
     tx_options := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
-
-
 
     session, err := p_mongo_client.StartSession()
     if err != nil {

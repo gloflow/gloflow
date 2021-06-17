@@ -37,6 +37,7 @@ type GF_service_info struct {
 	Mongodb_db_name_str                        string
 	Images_store_local_dir_path_str            string
 	Images_thumbnails_store_local_dir_path_str string
+	Media_domain_str                           string
 	Images_main_s3_bucket_name_str             string
 	AWS_access_key_id_str                      string
 	AWS_secret_access_key_str                  string
@@ -70,6 +71,7 @@ func Init_service(p_service_info *GF_service_info,
 	jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
 		p_service_info.Images_thumbnails_store_local_dir_path_str,
 		// p_service_info.Images_main_s3_bucket_name_str,
+		p_service_info.Media_domain_str,
 		p_config,
 		s3_info,
 		p_runtime_sys)
@@ -112,6 +114,7 @@ func Init_service(p_service_info *GF_service_info,
 	// HANDLERS
 	gf_err = init_handlers(jobs_mngr_ch,
 		p_config,
+		p_service_info.Media_domain_str,
 		s3_info,
 		p_runtime_sys)
 	if gf_err != nil {

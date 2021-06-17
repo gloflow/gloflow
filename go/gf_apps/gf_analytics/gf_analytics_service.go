@@ -141,7 +141,8 @@ func main() {
 			crawl_cluster_node_type_str     := cli_args_map["cluster_node_type_str"].(string)
 			crawl_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 			
-			py_stats_dirs_lst               := cli_args_map["py_stats_dirs_lst"].([]string)
+			media_domain_str  := cli_args_map["media_domain_str"].(string)
+			py_stats_dirs_lst := cli_args_map["py_stats_dirs_lst"].([]string)
 
 			// AWS
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
@@ -155,6 +156,7 @@ func main() {
 				Crawl__cluster_node_type_str:     crawl_cluster_node_type_str,
 				Crawl__images_local_dir_path_str: crawl_images_local_dir_path_str,
 
+				Media_domain_str:       media_domain_str,
 				Py_stats_dirs_lst:      py_stats_dirs_lst,
 				Run_indexer_bool:       run_indexer_bool,
 				Elasticsearch_host_str: elasticsearch_host_str,

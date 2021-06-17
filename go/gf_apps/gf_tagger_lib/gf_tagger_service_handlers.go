@@ -71,7 +71,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			//------------
 			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/tags/add_note", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -133,7 +133,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			//------------
 			//INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/tags/add_tags", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

@@ -48,7 +48,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 			//--------------------------
 			// INPUT
-			input_map,gf_err := gf_rpc_lib.Get_http_input("/images/jobs/start", p_resp, p_req, p_runtime_sys)
+			input_map,gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

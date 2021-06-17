@@ -35,7 +35,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/globalsign/mgo/bson"
 	"github.com/getsentry/sentry-go"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -57,7 +57,6 @@ type Gf_error struct {
 	Line_num_int         int                    `bson:"line_num_int"`
 }
 
-
 //-------------------------------------------------
 func Panic__check_and_handle(p_user_msg_str string,
 	p_panic_data_map     map[string]interface{},
@@ -71,6 +70,10 @@ func Panic__check_and_handle(p_user_msg_str string,
 
 		err := errors.New(fmt.Sprint(panic_info))
 
+		fmt.Println("PANIC >>>>>")
+		spew.Dump(panic_info)
+		fmt.Println(err)
+
 		//--------------------
 		// SENTRY
 		if p_runtime_sys.Errors_send_to_sentry_bool {
@@ -83,13 +86,12 @@ func Panic__check_and_handle(p_user_msg_str string,
 
 			sentry.WithScope(func(scope *sentry.Scope) {
 
-
-				scope.SetTag("gf_panic.service_name",   p_runtime_sys.Service_name_str)
-				scope.SetTag("gf_panic.subsystem_name", p_subsystem_name_str)
-				scope.SetTag("gf_panic.type",           "panic_error")
+				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   p_runtime_sys.Names_prefix_str), p_runtime_sys.Service_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", p_runtime_sys.Names_prefix_str), p_subsystem_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.type",           p_runtime_sys.Names_prefix_str), "panic_error")
 
 				for k, v := range p_panic_data_map {
-					scope.SetTag(fmt.Sprintf("gf_panic.%s", k),
+					scope.SetTag(fmt.Sprintf("%s_panic.%s", p_runtime_sys.Names_prefix_str, k),
 						fmt.Sprint(v))
 				}
 
@@ -130,7 +132,6 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_hook_fun(gf_error)
 	return gf_error
 }
-
 
 //-------------------------------------------------
 func Error__create(p_user_msg_str string,

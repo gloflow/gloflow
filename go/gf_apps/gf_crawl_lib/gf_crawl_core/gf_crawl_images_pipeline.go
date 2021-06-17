@@ -53,6 +53,8 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
 	p_crawler_name_str          string,
 	p_images_local_dir_path_str string,
+
+	p_media_domain_str          string,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) {
@@ -111,6 +113,8 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 		page_imgs__pinfos_with_local_file_paths_lst,
 		p_images_local_dir_path_str,
 		origin_page_url_str,
+
+		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
@@ -137,6 +141,8 @@ func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
 
 func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str   string,
+
+	p_media_domain_str                  string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_runtime                           *Gf_crawler_runtime,
 	p_runtime_sys                       *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, string, *gf_core.Gf_error) {
@@ -151,9 +157,11 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 
 	//------------------------
 	image, image_thumbs, gf_err := image__process(p_image,
-		"", //p_gf_image_id_str
+		"", // p_gf_image_id_str
 		local_image_file_path_str,
 		p_images_store_local_dir_path_str,
+
+		p_media_domain_str,
 		p_crawled_images_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
@@ -324,6 +332,8 @@ func images__stages__process_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
+
+	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
 	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
@@ -346,9 +356,12 @@ func images__stages__process_images(p_crawler_name_str string,
 		p_page_imgs__pipeline_infos_lst, // page_imgs__pinfos_with_nsfv_lst,
 		p_images_store_local_dir_path_str,
 		p_origin_page_url_str,
+
+		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
+
 	//------------------
 	return page_imgs__pinfos_with_thumbs_lst
 }

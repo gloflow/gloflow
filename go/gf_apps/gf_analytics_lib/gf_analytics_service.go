@@ -39,6 +39,7 @@ type GF_service_info struct {
 	Crawl__cluster_node_type_str     string
 	Crawl__images_local_dir_path_str string
 
+	Media_domain_str       string 
 	Py_stats_dirs_lst      []string
 	Run_indexer_bool       bool
 	Elasticsearch_host_str string
@@ -88,9 +89,17 @@ func Init_service(p_service_info *GF_service_info,
 	//------------------------
 	// GF_CRAWL
 
-	gf_crawl_lib.Init(p_service_info.Crawl__images_local_dir_path_str,
-		p_service_info.Crawl__cluster_node_type_str,
-		p_service_info.Crawl__config_file_path_str,
+	crawl_config := &gf_crawl_lib.GF_crawler_config{
+		Crawled_images_s3_bucket_name_str: "gf--discovered--img",
+		Images_s3_bucket_name_str:         "gf--img",
+		Images_local_dir_path_str:         p_service_info.Crawl__images_local_dir_path_str,
+		Cluster_node_type_str:             p_service_info.Crawl__cluster_node_type_str,
+		Crawl_config_file_path_str:        p_service_info.Crawl__config_file_path_str,
+	}
+	gf_crawl_lib.Init(crawl_config, // p_service_info.Crawl__images_local_dir_path_str,
+		// p_service_info.Crawl__cluster_node_type_str,
+		// p_service_info.Crawl__config_file_path_str,
+		p_service_info.Media_domain_str,
 		p_service_info.Templates_paths_map,
 		p_service_info.AWS_access_key_id_str,
 		p_service_info.AWS_secret_access_key_str,

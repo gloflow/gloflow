@@ -183,12 +183,12 @@ func Error__in_handler(p_handler_url_path_str string,
 
 	status_str := "ERROR"
 	data_map   := map[string]interface{}{
-		"handler_error_user_msg_str": p_user_msg_str,
+		"handler_error_user_msg": p_user_msg_str,
 	}
 
 	if p_gf_err != nil {
-		data_map["gf_error_type_str"]     = p_gf_err.Type_str
-		data_map["gf_error_user_msg_str"] = p_gf_err.User_msg_str
+		data_map["gf_error_type"]     = p_gf_err.Type_str
+		data_map["gf_error_user_msg"] = p_gf_err.User_msg_str
 	}
 
 	// DEBUG

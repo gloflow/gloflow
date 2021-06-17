@@ -38,6 +38,7 @@ import (
 
 func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_id,
 	p_flows_names_lst                   []string,
+	p_media_domain_str                  string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str      string,
 	p_runtime                           *Gf_crawler_runtime,
@@ -76,6 +77,8 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		//             after it finishes processing it.
 		gf_image, gf_image_thumbs, local_image_file_path_str, gf_err := images_pipe__single_simple(gf_page_img,
 			images_store_local_dir_path_str,
+
+			p_media_domain_str,
 			p_crawled_images_s3_bucket_name_str,
 			p_runtime,
 			p_runtime_sys)

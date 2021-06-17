@@ -37,6 +37,7 @@ func main() {
 	mongodb_db_name_str     := cli_args_map["mongodb_db_name_str"].(string)
 	images_store_local_dir_path_str            := cli_args_map["images_store_local_dir_path_str"].(string)
 	images_thumbnails_store_local_dir_path_str := cli_args_map["images_thumbnails_store_local_dir_path_str"].(string)
+	media_domain_str                           := cli_args_map["media_domain_str"].(string)
 	images_main_s3_bucket_name_str             := cli_args_map["images_s3_bucket_name_str"].(string)
 	aws_access_key_id_str                      := cli_args_map["aws_access_key_id_str"].(string)
 	aws_secret_access_key_str                  := cli_args_map["aws_secret_access_key_str"].(string)
@@ -63,6 +64,7 @@ func main() {
 			Mongodb_db_name_str:                        mongodb_db_name_str,
 			Images_store_local_dir_path_str:            images_store_local_dir_path_str,
 			Images_thumbnails_store_local_dir_path_str: images_thumbnails_store_local_dir_path_str,
+			Media_domain_str:                           media_domain_str,
 			Images_main_s3_bucket_name_str:             images_main_s3_bucket_name_str,
 			AWS_access_key_id_str:                      aws_access_key_id_str,
 			AWS_secret_access_key_str:                  aws_secret_access_key_str,

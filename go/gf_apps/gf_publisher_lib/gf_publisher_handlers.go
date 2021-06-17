@@ -144,7 +144,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 			//------------
 			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/posts/create", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -190,7 +190,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 			//------------
 			//INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/posts/delete", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

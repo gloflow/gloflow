@@ -68,7 +68,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 
 			//--------------------------
 			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/add_img", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
@@ -128,7 +128,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 
 			//--------------------------
 			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/flows/imgs_exist", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

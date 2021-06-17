@@ -28,7 +28,7 @@ import (
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_landing_page_service_handlers.init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES

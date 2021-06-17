@@ -78,8 +78,8 @@ func run_job__extern_imgs(p_job_id_str string,
 	p_job_updates_ch                             chan Job_update_msg,
 	p_images_store_local_dir_path_str            string,
 	p_images_thumbnails_store_local_dir_path_str string,
+	p_media_domain_str                           string,
 	p_s3_bucket_name_str                         string,
-	// p_config                                     *gf_images_utils.Gf_config,
 	p_s3_info                                    *gf_core.Gf_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__extern_imgs()")
@@ -148,8 +148,9 @@ func run_job__extern_imgs(p_job_id_str string,
 				p_job_client_type_str,
 				flows_names_lst,
 				true, // p_create_new_db_img_bool
+
+				p_media_domain_str,
 				p_s3_bucket_name_str,
-				// p_config,
 				p_s3_info,
 				p_runtime_sys)
 
@@ -175,7 +176,6 @@ func run_job__extern_imgs(p_job_id_str string,
 				p_job_client_type_str,
 				p_job_updates_ch,
 				p_s3_bucket_name_str,
-				// p_config,
 				p_s3_info,
 				job_error__send,
 				p_runtime_sys)

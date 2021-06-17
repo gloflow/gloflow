@@ -139,6 +139,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 
 func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 	p_gf_domain_str      string,
+	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.Gf_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) {
@@ -245,6 +246,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 				rg__gf_err := migrate__rebuild_gif(&old_gif,
 					p_images_store_local_dir_path_str,
+					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
 					p_runtime_sys)
@@ -265,6 +267,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				// REBUILD_GIF
 				rg__gf_err := migrate__rebuild_gif(&old_gif,
 					p_images_store_local_dir_path_str,
+					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
 					p_runtime_sys)
@@ -291,6 +294,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 				rg__gf_err := migrate__rebuild_gif(&old_gif,
 					p_images_store_local_dir_path_str,
+					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
 					p_runtime_sys)
@@ -313,6 +317,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 //--------------------------------------------------
 func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
+	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.Gf_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) {
@@ -436,6 +441,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 					image_client_type_str,
 					flows_names_lst,
 					false, // p_create_new_db_img_bool
+					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
 					p_runtime_sys)
@@ -456,6 +462,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 //--------------------------------------------------
 func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	p_images_store_local_dir_path_str string,
+	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.Gf_s3_info,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -479,6 +486,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 		image_client_type_str,
 		flows_names_lst,
 		false, // p_create_new_db_img_bool
+		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_s3_info,
 		p_runtime_sys)

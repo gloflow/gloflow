@@ -47,7 +47,8 @@ func service__run(p_config *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	gf_images__config, gf_err := gf_images_utils.Config__get(p_config.Images__config_file_path_str, p_runtime_sys)
+	gf_images__config, gf_err := gf_images_utils.Config__get(p_config.Images__config_file_path_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return
 	}
@@ -58,6 +59,7 @@ func service__run(p_config *GF_config,
 
 		Images_store_local_dir_path_str:            gf_images__config.Store_local_dir_path_str,
 		Images_thumbnails_store_local_dir_path_str: gf_images__config.Thumbnails_store_local_dir_path_str,
+		Media_domain_str:                           gf_images__config.Media_domain_str,
 		Images_main_s3_bucket_name_str:             gf_images__config.Main_s3_bucket_name_str,
 
 		AWS_access_key_id_str:                      p_config.AWS_access_key_id_str,
@@ -85,6 +87,7 @@ func service__run(p_config *GF_config,
 		Crawl__cluster_node_type_str:     p_config.Crawl__cluster_node_type_str,
 		Crawl__images_local_dir_path_str: p_config.Crawl__images_local_dir_path_str,
 
+		Media_domain_str:       gf_images__config.Media_domain_str,
 		Py_stats_dirs_lst:      p_config.Analytics__py_stats_dirs_lst,
 		Run_indexer_bool:       p_config.Analytics__run_indexer_bool,
 		Elasticsearch_host_str: p_config.Elasticsearch_host_str,

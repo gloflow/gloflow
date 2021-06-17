@@ -32,9 +32,10 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
-	p_img_config  *gf_images_utils.GF_config,
-	p_s3_info     *gf_core.Gf_s3_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_img_config       *gf_images_utils.GF_config,
+	p_media_domain_str string,
+	p_s3_info          *gf_core.Gf_s3_info,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 
 	//---------------------
@@ -67,10 +68,13 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 					nil, p_resp, p_runtime_sys)
 				return
 			}
-			s3_bucket_name_str := p_img_config.Images_flow_to_s3_bucket_map[flow_name_str]
+
+
+
+			// s3_bucket_name_str := p_img_config.Images_flow_to_s3_bucket_map[flow_name_str]
 
 			image_s3_url_str := gf_images_utils.S3__get_image_url(image_path_name_str,
-				s3_bucket_name_str,
+				p_media_domain_str, // s3_bucket_name_str,
 				p_runtime_sys)
 
 			// redirect user to S3 image url
@@ -238,7 +242,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 
 			//--------------------------
 			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input("/images/c", p_resp, p_req, p_runtime_sys)
+			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

@@ -31,6 +31,7 @@ type GF_config struct {
 
 	Store_local_dir_path_str            string `yaml:"store_local_dir_path"`
 	Thumbnails_store_local_dir_path_str string `yaml:"thumbnails_store_local_dir_path"`
+	Media_domain_str                    string `yaml:"media_domain"`
 	Main_s3_bucket_name_str             string `yaml:"main_s3_bucket_name"`
 
 	// UPLOADED_IMAGES - this is a special dedicated bucket, separate from buckets for all other flows.

@@ -118,6 +118,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 			return gf_err
 		}
 		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+
 		//--------------------
 		// MEDIUM THUMB
 		medium_t_path_str         := p_image_thumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
@@ -128,6 +129,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 			return gf_err
 		}
 		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+
 		//--------------------
 		// LARGE THUMB
 		large_t_path_str         := p_image_thumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
@@ -137,6 +139,7 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 			return gf_err
 		}
 		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+
 		//--------------------
 	}
 
@@ -148,13 +151,20 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 // This URL is where the image can be fetched from directly
 // (if S3 bucket has HTTP file serving enabled on it).
 func S3__get_image_url(p_image_s3_file_path_str string,
-	p_s3_bucket_name_str string,
-	p_runtime_sys        *gf_core.Runtime_sys) string {
+	p_media_domain_str string,
+	p_runtime_sys      *gf_core.Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_url()")
 
-	// IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
-	//               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
-	url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
+	// // IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
+	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
+	// url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
+
+
+
+
+	url_str := fmt.Sprintf("https://%s/%s", p_media_domain_str, p_image_s3_file_path_str)
+
+
 	return url_str
 }
 

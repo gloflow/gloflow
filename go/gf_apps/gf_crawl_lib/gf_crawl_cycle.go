@@ -31,6 +31,7 @@ import (
 //--------------------------------------------------
 func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 	p_images_local_dir_path_str string,
+	p_media_domain_str          string,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -122,6 +123,8 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 		cycle_run__id_str,
 		p_crawler.Name_str,
 		p_images_local_dir_path_str,
+
+		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)

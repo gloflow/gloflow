@@ -227,6 +227,8 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_cycle_run_id_str          string,
 	p_crawler_name_str          string,
 	p_images_local_dir_path_str string,
+
+	p_media_domain_str          string,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -246,6 +248,8 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 		p_cycle_run_id_str,
 		p_crawler_name_str,
 		p_images_local_dir_path_str,
+
+		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_runtime,
 		p_runtime_sys)
