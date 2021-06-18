@@ -72,8 +72,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
 
 
 			// s3_bucket_name_str := p_img_config.Images_flow_to_s3_bucket_map[flow_name_str]
-
-			image_s3_url_str := gf_images_utils.S3__get_image_url(image_path_name_str,
+			image_s3_url_str := gf_images_utils.Image__get_public_url(image_path_name_str,
 				p_media_domain_str, // s3_bucket_name_str,
 				p_runtime_sys)
 

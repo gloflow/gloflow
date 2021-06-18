@@ -29,7 +29,7 @@ import (
 //---------------------------------------------------
 type Gf_image struct {
 
-	Id                  primitive.ObjectID `json:"-"                    bson:"_id,omitempty"`
+	Id                  primitive.ObjectID `json:"-"                bson:"_id,omitempty"`
 	Id_str               Gf_image_id   `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`

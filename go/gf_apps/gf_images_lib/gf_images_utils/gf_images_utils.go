@@ -33,6 +33,28 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//------------------------------------------------
+// S3__get_image_url returns the S3 URL of a particular image S3 path.
+// This URL is where the image can be fetched from directly
+// (if S3 bucket has HTTP file serving enabled on it).
+func Image__get_public_url(p_image_s3_file_path_str string,
+	p_media_domain_str string,
+	p_runtime_sys      *gf_core.Runtime_sys) string {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__get_public_url()")
+
+	// // IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
+	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
+	// url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
+
+
+
+
+	url_str := fmt.Sprintf("https://%s/%s", p_media_domain_str, p_image_s3_file_path_str)
+
+
+	return url_str
+}
+
 //---------------------------------------------------
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
@@ -140,7 +162,7 @@ func Get_image_title_from_url(p_image_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_title_from_url()")
 	
-	url,err := url.Parse(p_image_url_str)
+	url, err := url.Parse(p_image_url_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to get image title",
 			"url_parse_error",
@@ -175,21 +197,24 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
 	if fs_err != nil {
 		gf_err := gf_core.Error__create("failed to open a local image file to get its dimensions",
 			"file_open_error",
-			map[string]interface{}{"image_local_file_path_str":p_image_local_file_path_str,},
+			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
 			fs_err, "gf_images_utils", p_runtime_sys)
 		return 0, 0, gf_err
 	}
 	defer file.Close()
+
 	//-------------------
-	format,gf_err := Get_image_ext_from_url(p_image_local_file_path_str,p_runtime_sys)
+	format, gf_err := Get_image_ext_from_url(p_image_local_file_path_str,p_runtime_sys)
 	if gf_err != nil {
 		return 0, 0, gf_err
 	}
+
 	//-------------------
-	image_width_int,image_height_int,gf_err := Get_image_dimensions__from_file(file,format,p_runtime_sys)
+	image_width_int, image_height_int, gf_err := Get_image_dimensions__from_file(file,format,p_runtime_sys)
 	if gf_err != nil {
 		return 0, 0, gf_err
 	}
+
 	//-------------------
 	return image_width_int, image_height_int, nil
 }
@@ -214,6 +239,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 				config_err, "gf_images_utils", p_runtime_sys)
 			return 0, 0, gf_err
 		}
+
 	//-------------------
 	// PNG
 	} else if p_img_extension_str == "png" {
@@ -225,6 +251,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 				config_err, "gf_images_utils", p_runtime_sys)
 			return 0, 0, gf_err
 		}
+
 	//-------------------
 	// GENERAL
 	} else {
@@ -237,6 +264,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 			return 0, 0, gf_err
 		}
 	}
+
 	//-------------------
 
 	image_width_int  := image_config.Width
@@ -248,13 +276,13 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 //---------------------------------------------------
 func Get_image_ext_from_url(p_image_url_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	//p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
+	// p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
 	
 	fmt.Println("p_image_url_str - "+p_image_url_str)
 
-	//urlparse() - used so that any possible url query parameters are not used in the 
-	//             os.path.basename() result
-	url,err := url.Parse(p_image_url_str)
+	// urlparse() - used so that any possible url query parameters are not used in the 
+	//              os.path.basename() result
+	url, err := url.Parse(p_image_url_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to get image extension",
 			"url_parse_error",
@@ -268,7 +296,7 @@ func Get_image_ext_from_url(p_image_url_str string,
 	ext_str             := filepath.Ext(image_file_name_str)
 	clean_ext_str       := strings.TrimPrefix(strings.ToLower(ext_str),".")
 
-	normalized_ext_str,ok := Image__check_image_format(clean_ext_str,p_runtime_sys)
+	normalized_ext_str, ok := Image__check_image_format(clean_ext_str,p_runtime_sys)
 
 	if !ok {
 		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image url - %s", ext_str, p_image_url_str),
@@ -281,7 +309,7 @@ func Get_image_ext_from_url(p_image_url_str string,
 		return "", gf_err
 	}
 
-	return normalized_ext_str,nil
+	return normalized_ext_str, nil
 }
 
 //---------------------------------------------------	

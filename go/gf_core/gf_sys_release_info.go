@@ -64,9 +64,9 @@ func Get_sys_relese_info(p_runtime_sys *Runtime_sys) Sys_release_info {
                    first introduction of a Chrome browser extension, for creating posts only (by adding images to them), no image flows.
                    (~2010)`,
                     
-        //IMPORTANT!! - in CI systems (Drone at the moment) this line is searched for
-        //              and the git commit hash is pasted in.
-        Git_commit_str: "",
+        // IMPORTANT!! - in CI systems (Drone at the moment) this line is searched for
+        //               and the git commit hash is pasted in.
+        Git_commit_str: "GF_COMMIT_SHA",
 	}
 
 	return r

@@ -146,28 +146,6 @@ func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 	return nil
 }
 
-//------------------------------------------------
-// S3__get_image_url returns the S3 URL of a particular image S3 path.
-// This URL is where the image can be fetched from directly
-// (if S3 bucket has HTTP file serving enabled on it).
-func S3__get_image_url(p_image_s3_file_path_str string,
-	p_media_domain_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_url()")
-
-	// // IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
-	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
-	// url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
-
-
-
-
-	url_str := fmt.Sprintf("https://%s/%s", p_media_domain_str, p_image_s3_file_path_str)
-
-
-	return url_str
-}
-
 //---------------------------------------------------
 // S3__get_image_original_file_s3_filepath returns the S3 filepath of a gf_image's original image.
 // Original image is the full-size file that was initially acquired, whether fetched from an external source

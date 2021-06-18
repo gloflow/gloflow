@@ -332,11 +332,11 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 
 		//-----------------------
 
-		image_s3_url_str := gf_images_utils.S3__get_image_url(s3_target_file_path_str,
+		image_s3_url_str := gf_images_utils.Image__get_public_url(s3_target_file_path_str,
 			p_media_domain_str, // p_s3_bucket_name_str,
 			p_runtime_sys)
 
-		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst,image_s3_url_str)
+		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst, image_s3_url_str)
 	}
 
 	//-----------------------
