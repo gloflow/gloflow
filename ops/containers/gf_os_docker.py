@@ -321,7 +321,8 @@ def build_image(p_image_names_lst,
 	p_log_fun,
 	p_build_args_map    = None,
 	p_exit_on_fail_bool = False,
-	p_docker_sudo_bool  = False):
+	p_docker_sudo_bool  = False,
+	p_pull_base_bool    = False):
 	p_log_fun("FUN_ENTER", "gf_os_docker.build_image()")
 	assert isinstance(p_image_names_lst, list)
 	print(p_dockerfile_path_str)
@@ -349,6 +350,10 @@ def build_image(p_image_names_lst,
 		"docker build",
 		"-f %s"%(p_dockerfile_path_str),
 	])
+
+	# pull base image
+	if p_pull_base_bool:
+		cmd_lst.append("--pull")
 
 	# TAGS - there can be multiple tags for the same image
 	for n in p_image_names_lst:
