@@ -93,7 +93,7 @@ def run(p_cmd_str,
 		if not p.returncode == 0:
 
 			print(f"ERROR!! - shell CMD ({p_cmd_str}) failed!")
-			exit()
+			exit(p.returncode)
 
 	return "", "", p.returncode
 
