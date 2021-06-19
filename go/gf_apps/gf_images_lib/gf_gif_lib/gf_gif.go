@@ -81,7 +81,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_create_new_db_img_bool                      bool,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
-	p_s3_info                                     *gf_core.Gf_s3_info,
+	p_s3_info                                     *gf_core.GF_s3_info,
 	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
@@ -135,7 +135,7 @@ func Process(p_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_create_new_db_img_bool                      bool,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
-	p_s3_info                                     *gf_core.Gf_s3_info,
+	p_s3_info                                     *gf_core.GF_s3_info,
 	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
@@ -291,7 +291,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
-	p_s3_info                    *gf_core.Gf_s3_info,
+	p_s3_info                    *gf_core.GF_s3_info,
 	p_runtime_sys                *gf_core.Runtime_sys) (int, []string, *gf_core.Gf_error, []*gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.gif__s3_upload_preview_frames()")
 

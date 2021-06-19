@@ -36,7 +36,7 @@ func run_job__uploaded_imgs(p_job_id_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_source_s3_bucket_name_str                  string, // S3_bucket to which the image was uploaded to
 	p_target_s3_bucket_name_str                  string, // S3 bucket to which processed images are stored in after this pipeline processing
-	p_s3_info                                    *gf_core.Gf_s3_info,
+	p_s3_info                                    *gf_core.GF_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__uploaded_imgs()")
 
@@ -80,7 +80,7 @@ func run_job__extern_imgs(p_job_id_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_s3_bucket_name_str                         string,
-	p_s3_info                                    *gf_core.Gf_s3_info,
+	p_s3_info                                    *gf_core.GF_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__extern_imgs()")
 

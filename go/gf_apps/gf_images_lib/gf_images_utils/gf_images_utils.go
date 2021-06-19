@@ -56,6 +56,7 @@ func Image__get_public_url(p_image_s3_file_path_str string,
 }
 
 //---------------------------------------------------
+// LOAD_FILE
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
 	p_runtime_sys        *gf_core.Runtime_sys) (image.Image, *gf_core.Gf_error) {
@@ -77,7 +78,7 @@ func Image__load_file(p_image_local_file_path_str string,
 	var img_err error
 	
 	if p_normalized_ext_str == "png" {
-		//PNG
+		// PNG
 		img, img_err = png.Decode(file)
 		if img_err != nil {
 			gf_err := gf_core.Error__create("failed to decode PNG file while transforming image",
@@ -89,8 +90,8 @@ func Image__load_file(p_image_local_file_path_str string,
 			return nil, gf_err
 		}
 	} else {
-		//JPEG,etc.
-		img,_,img_err = image.Decode(file)
+		// JPEG,etc.
+		img, _, img_err = image.Decode(file)
 		if img_err != nil {
 			gf_err := gf_core.Error__create("failed to decode image file while transforming image",
 				"image_decoding_error",

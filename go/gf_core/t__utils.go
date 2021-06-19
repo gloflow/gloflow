@@ -25,7 +25,7 @@ import (
 
 //---------------------------------------------------
 type Gf_s3_test_info struct {
-	Gf_s3_info                *Gf_s3_info
+	Gf_s3_info                *GF_s3_info
 	Aws_access_key_id_str     string
 	Aws_secret_access_key_str string
 	Aws_token_str             string

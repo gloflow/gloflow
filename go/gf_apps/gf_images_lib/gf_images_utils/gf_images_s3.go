@@ -30,7 +30,7 @@ import (
 func S3__get_gf_image(p_image_s3_file_path_str string,
 	p_target_file__local_path_str string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.Gf_s3_info,
+	p_s3_info            *gf_core.GF_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	gf_err := gf_core.S3__get_file(p_image_s3_file_path_str,
@@ -49,7 +49,7 @@ func S3__get_gf_image(p_image_s3_file_path_str string,
 func S3__store_gf_image(p_image_local_file_path_str string,
 	p_image_thumbs       *Gf_image_thumbs,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.Gf_s3_info,
+	p_s3_info            *gf_core.GF_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image()")
 
@@ -88,6 +88,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	}
 
 	p_runtime_sys.Log_fun("INFO", "s3_response_str - "+s3_response_str)
+	
 	//--------------------
 	// UPLOAD THUMBS
 
@@ -95,6 +96,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//--------------------
 	return nil
 }
@@ -102,7 +104,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 //---------------------------------------------------
 func S3__store_gf_image_thumbs(p_image_thumbs *Gf_image_thumbs,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.Gf_s3_info,
+	p_s3_info            *gf_core.GF_s3_info,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image_thumbs()")
 

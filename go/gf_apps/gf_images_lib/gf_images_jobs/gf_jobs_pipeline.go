@@ -39,7 +39,7 @@ func pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id
 	p_job_updates_ch            chan Job_update_msg,
 	p_source_s3_bucket_name_str string, // S3_bucket to which the image was uploaded to
 	p_target_s3_bucket_name_str string, // S3 bucket to which processed images are stored in after this pipeline processing
-	p_s3_info                   *gf_core.Gf_s3_info,
+	p_s3_info                   *gf_core.GF_s3_info,
 	p_send_error_fun            func(string, *gf_core.Gf_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.pipeline__process_image_uploaded()")
@@ -120,7 +120,7 @@ func pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id
 		}
 	}
 
-
+	// STORE__IMAGE_THUMBS
 	gf_err = gf_images_utils.S3__store_gf_image_thumbs(gf_image_thumbs,
 		p_target_s3_bucket_name_str,
 		p_s3_info,
@@ -169,8 +169,7 @@ func pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image_id,
 	p_job_client_type_str                        string,
 	p_job_updates_ch                  chan Job_update_msg,
 	p_s3_bucket_name_str              string,
-	// p_config                          *gf_images_utils.Gf_config,
-	p_s3_info                         *gf_core.Gf_s3_info,
+	p_s3_info                         *gf_core.GF_s3_info,
 	p_send_error_fun                  func(string, *gf_core.Gf_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.pipeline__process_image_extern()")

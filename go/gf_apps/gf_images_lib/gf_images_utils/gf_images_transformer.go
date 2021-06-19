@@ -85,6 +85,7 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
+	
 	//--------------------------
 	// CREATE THUMBNAILS
 
@@ -109,6 +110,7 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 	/* //DOMINANT COLOR DETERMINATION
 	//it"s computed only for non-gif"s
 	dominant_color_hex_str := gf_images_utils_graphic.get_dominant_image_color(p_image_local_file_path_str,p_log_fun)*/
+
 	//--------------------------
 	image_width_int, image_height_int := Get_image_dimensions__from_image(img, p_runtime_sys)
 

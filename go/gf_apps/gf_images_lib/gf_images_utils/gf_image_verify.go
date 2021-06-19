@@ -55,8 +55,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	//           else within the system
 	
 	id_str := p_image_info_map["id_str"].(string)
+
 	//-------------------
-	//TITLE
+	// TITLE
 	
 	if _,ok := p_image_info_map["title_str"]; !ok {
 		gf_err := gf_core.Error__create("image title_str not supplied",
@@ -80,8 +81,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 			nil, "gf_images_utils", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------------
-	//IMAGE_CLIENT_TYPE
+	// IMAGE_CLIENT_TYPE
 	
 	if _,ok := p_image_info_map["image_client_type_str"]; !ok {
 		gf_err := gf_core.Error__create("image image_client_type_str not supplied",
@@ -92,8 +94,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	}
 	
 	image_client_type_str := p_image_info_map["image_client_type_str"].(string)
+
 	//-------------------
-	//FORMAT
+	// FORMAT
 	
 	if _,ok := p_image_info_map["format_str"]; !ok {
 		gf_err := gf_core.Error__create("image format_str not supplied",
@@ -105,8 +108,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	
 	lower_case_format_str := strings.ToLower(p_image_info_map["format_str"].(string))
 	
-	normalized_format_str,ok := Image__check_image_format(lower_case_format_str,
-		                                           		p_runtime_sys)
+	normalized_format_str, ok := Image__check_image_format(lower_case_format_str, p_runtime_sys)
 	if !ok {
 		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image_info - %s", lower_case_format_str, title_str),
 			"verify__invalid_image_extension_error",
@@ -117,8 +119,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 			nil, "gf_images_utils", p_runtime_sys)
 		return nil, gf_err
 	}
+
 	//-------------------
-	//WIDTH/HEIGHT
+	// WIDTH/HEIGHT
 	
 	if _,ok := p_image_info_map["width_int"]; !ok {
 		gf_err := gf_core.Error__create("image width_int not supplied",
@@ -145,8 +148,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	if _, err := strconv.Atoi(height_int); err != nil {
 		return nil,errors.New("image height_int is not a digit")
 	}*/
+
 	//-------------------
-	//IMAGE FLOWS NAMES
+	// IMAGE FLOWS NAMES
 	if _, ok := p_image_info_map["flows_names_lst"]; !ok {
 		gf_err := gf_core.Error__create("image flows_names_lst not supplied",
 			"verify__missing_key_error",
@@ -156,8 +160,9 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	}
 
 	flows_names_lst := p_image_info_map["flows_names_lst"].([]string)
+
 	//-------------------
-	//ORIGIN URL
+	// ORIGIN URL
 	
 	if _, ok := p_image_info_map["origin_url_str"]; !ok {
 		gf_err := gf_core.Error__create("image origin_url_str not supplied",
@@ -168,6 +173,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	}
 
 	origin_url_str := p_image_info_map["origin_url_str"].(string)
+
 	//-------------------
 	if _, ok := p_image_info_map["origin_page_url_str"]; !ok {
 		gf_err := gf_core.Error__create("image origin_page_url_str not supplied",
@@ -178,11 +184,13 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	}
 
 	origin_page_url_str := p_image_info_map["origin_page_url_str"].(string)
+
 	//-------------------
 	original_file_internal_uri_str := p_image_info_map["original_file_internal_uri_str"].(string)
 	thumbnail_small_url_str        := p_image_info_map["thumbnail_small_url_str"].(string)
 	thumbnail_medium_url_str       := p_image_info_map["thumbnail_medium_url_str"].(string)
 	thumbnail_large_url_str        := p_image_info_map["thumbnail_large_url_str"].(string)
+	
 	//-------------------
 	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("image (id - %s) verified",id_str))
 	

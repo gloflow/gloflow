@@ -74,6 +74,7 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 	if images_s3_bucket_name_env_str != "" {
 		*images_s3_bucket_name_str = images_s3_bucket_name_env_str
 	}
+	
 	//-------------------
 
 	flag.Parse()

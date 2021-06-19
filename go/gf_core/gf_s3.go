@@ -35,7 +35,7 @@ import (
 )
 
 //---------------------------------------------------
-type Gf_s3_info struct {
+type GF_s3_info struct {
 	Client   *s3.S3
 	Uploader *s3manager.Uploader
 	Session  *session.Session
@@ -45,7 +45,7 @@ type Gf_s3_info struct {
 func S3__get_file(p_target_file__s3_path_str string,
 	p_target_file__local_path_str string,
 	p_s3_bucket_name_str          string,
-	p_s3_info                     *Gf_s3_info,
+	p_s3_info                     *GF_s3_info,
 	p_runtime_sys                 *Runtime_sys) *Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__get_file()")
 	
@@ -89,7 +89,7 @@ func S3__get_file(p_target_file__s3_path_str string,
 func S3__init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
 	p_token_str                 string,
-	p_runtime_sys               *Runtime_sys) (*Gf_s3_info, *Gf_error) {
+	p_runtime_sys               *Runtime_sys) (*GF_s3_info, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__init()")
 
 	
@@ -130,7 +130,7 @@ func S3__init(p_aws_access_key_id_str string,
 	s3_uploader := s3manager.NewUploader(sess)
 	s3_client   := s3.New(sess)
 
-	s3_info := &Gf_s3_info{
+	s3_info := &GF_s3_info{
 		Client:   s3_client,
 		Uploader: s3_uploader,
 		Session:  sess,
@@ -143,7 +143,7 @@ func S3__init(p_aws_access_key_id_str string,
 // S3__GENERATE_PRESIGNED_URL
 func S3__generate_presigned_url(p_target_file__s3_path_str string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *Gf_s3_info,
+	p_s3_info            *GF_s3_info,
 	p_runtime_sys        *Runtime_sys) (string, *Gf_error) {
 
 	// INPUT
@@ -175,7 +175,7 @@ func S3__generate_presigned_url(p_target_file__s3_path_str string,
 func S3__upload_file(p_target_file__local_path_str string,
 	p_target_file__s3_path_str string,
 	p_s3_bucket_name_str       string,
-	p_s3_info                  *Gf_s3_info,
+	p_s3_info                  *GF_s3_info,
 	p_runtime_sys              *Runtime_sys) (string,*Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__upload_file()")
 	p_runtime_sys.Log_fun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
@@ -241,7 +241,7 @@ func S3__copy_file(p_source_bucket_str string,
 	p_source_file__s3_path_str string,
 	p_target_bucket_name_str   string,
 	p_target_file__s3_path_str string,
-	p_s3_info                  *Gf_s3_info,
+	p_s3_info                  *GF_s3_info,
 	p_runtime_sys              *Runtime_sys) *Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__copy_file()")
 
