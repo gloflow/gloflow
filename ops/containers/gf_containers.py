@@ -79,7 +79,7 @@ def build(p_app_name_str,
 	p_exit_on_fail_bool   = False,
 	p_docker_sudo_bool    = False):
 	p_log_fun("FUN_ENTER", "gf_containers.build()")
-	p_log_fun("INFO",      "p_app_name_str - %s"%(p_app_name_str))
+	p_log_fun("INFO",      f"p_app_name_str - {p_app_name_str}")
 	assert isinstance(p_app_name_str,       str)
 	assert isinstance(p_app_build_meta_map, dict)
 
@@ -246,7 +246,7 @@ def prepare_web_files(p_pages_map,
 	assert os.path.dirname(p_service_base_dir_str)
 
 	for pg_name_str, pg_info_map in p_pages_map.items():
-		print(f"\n======== {fg('green')}{'%s'%(pg_name_str)}{attr(0)} --------------------------------")
+		print(f"======== {fg('green')}{'%s'%(pg_name_str)}{attr(0)}")
 		assert isinstance(pg_info_map, dict)
 		assert "build_dir_str" in pg_info_map.keys()
 		assert os.path.isdir(pg_info_map["build_dir_str"])
@@ -263,8 +263,7 @@ def prepare_web_files(p_pages_map,
 		gf_core_cli.run(f"cp -r {build_dir_str}/* {target_dir_str}")
 
 		#------------------
-		print("-----")
-
+		
 	#------------------
 	# MOVE_TEMPLATES_OUT_OF_STATIC
 

@@ -217,6 +217,11 @@ def main():
 
 		else:
 			
+			# GIT_COMMIT_HASH
+			git_commit_hash_str = None
+			if "DRONE_COMMIT" in os.environ.keys():
+				git_commit_hash_str = os.environ["DRONE_COMMIT"]
+				
 			app_web_meta_map = None
 			web_meta_map     = gf_web_meta.get()
 			if app_name_str in web_meta_map.keys():
@@ -225,9 +230,10 @@ def main():
 			gf_containers.build(app_name_str, 
 				app_build_meta_map,
 				gf_log.log_fun,
-				p_app_web_meta_map = app_web_meta_map,
-				p_user_name_str    = dockerhub_user_str,
-				p_docker_sudo_bool = docker_sudo_bool)
+				p_app_web_meta_map    = app_web_meta_map,
+				p_user_name_str       = dockerhub_user_str,
+				p_git_commit_hash_str = git_commit_hash_str,
+				p_docker_sudo_bool    = docker_sudo_bool)
 
 	#-------------
 	# PUBLISH_CONTAINERS
