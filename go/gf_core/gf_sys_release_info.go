@@ -26,14 +26,15 @@ type Sys_release_info struct {
     Description_str string
     Git_commit_str  string //indicates this is usually pasted in by CI systems
 }
+
 //-------------------------------------------------
 func Get_sys_relese_info(p_runtime_sys *Runtime_sys) Sys_release_info {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_sys_release_info.Get_sys_relese_info()")
 
 	r := Sys_release_info{
-		Name_str       :"precious",
-		Version_str    :"0.8.0.0", //currently deployed version
-        Description_str:`
+		Name_str:        "precious",
+		Version_str:     "0.8.0.0", // currently deployed version
+        Description_str: `
 0.8.0 (precious) - OPEN_SOURCING!! GF has been open sourced. gf_publisher, gf_landing_page, gf_tagger have also been refactored to use the new error handling structure,
                    thats in place for gf_images and gf_analytics (gf_crawl_lib).
 0.7.4            - first prototype of the most basic image_editor (image filters/cropping) added. Still needs polish and integration of the UI into the

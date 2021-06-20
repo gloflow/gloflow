@@ -89,7 +89,7 @@ steps:
     image: glofloworg/gf_builder_go_ubuntu:latest # glofloworg/gf_builder:latest
     commands:
 
-      - sed 's/GF_COMMIT_SHA/${DRONE_COMMIT_SHA}/g' /home/gf/go/gf_core/gf_sys_release_info.go 
+      - sed 's/GF_COMMIT_SHA/${DRONE_COMMIT}/g' /home/gf/go/gf_core/gf_sys_release_info.go > /home/gf/go/gf_core/gf_sys_release_info.go 
 
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       # "-build_outof_cont" - dont build in a container, since this build stage already runs in a container.
