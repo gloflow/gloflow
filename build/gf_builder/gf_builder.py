@@ -170,6 +170,7 @@ def main():
 		if "DRONE_COMMIT" in os.environ.keys():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
+		notify_completion(gf_notify_completion_url_str,
 			p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
