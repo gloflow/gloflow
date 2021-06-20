@@ -81,8 +81,8 @@ def main():
 	elif args_map["run"] == "build":
 
 		# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-		if not args_map["drone_commit_sha"] == None:
-			git_commit_hash_str = args_map["drone_commit_sha"]
+		if not args_map["drone_commit"] == None:
+			git_commit_hash_str = args_map["drone_commit"]
 			paste_git_commit_hash(git_commit_hash_str)
 			
 		build_apps(changed_apps_files_map,
@@ -93,8 +93,8 @@ def main():
 	# elif args_map["run"] == "build_go":
 	#
 	# 	# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-	# 	if not args_map["drone_commit_sha"] == None:
-	# 		git_commit_hash_str = args_map["drone_commit_sha"]
+	# 	if not args_map["drone_commit"] == None:
+	# 		git_commit_hash_str = args_map["drone_commit"]
 	# 		paste_git_commit_hash(git_commit_hash_str)
 	#
 	# 	build_apps(changed_apps_files_map,
@@ -113,8 +113,8 @@ def main():
 	# elif args_map["run"] == "build_web":
 	#
 	# 	# IMPORTANT!! - only insert Git commit hash if gf_builder.py is run in CI
-	# 	if not args_map["drone_commit_sha"] == None:
-	# 		git_commit_hash_str = args_map["drone_commit_sha"]
+	# 	if not args_map["drone_commit"] == None:
+	# 		git_commit_hash_str = args_map["drone_commit"]
 	# 		paste_git_commit_hash(git_commit_hash_str)
 	#
 	# 	build_apps(changed_apps_files_map,
@@ -170,7 +170,6 @@ def main():
 		if "DRONE_COMMIT" in os.environ.keys():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
 
-		notify_completion(gf_notify_completion_url_str,
 			p_git_commit_hash_str = git_commit_hash_str)
 
 	#------------------------
@@ -226,8 +225,8 @@ def publish_apps_containers(p_changed_apps_files_map,
 	p_gf_dockerhub_pass_str,
 	p_git_commit_hash_str = None,
 	p_docker_sudo_bool    = True):
-	assert isinstance(p_gf_dockerhub_user_str, basestring)
-	assert isinstance(p_gf_dockerhub_pass_str, basestring)
+	assert isinstance(p_gf_dockerhub_user_str, str)
+	assert isinstance(p_gf_dockerhub_pass_str, str)
 	
 	build_meta_map = gf_meta.get()["build_info_map"]
 	
@@ -595,7 +594,7 @@ def parse_args():
 
 	#-------------
 	# ENV_VARS
-	drone_commit_sha_str         = os.environ.get("DRONE_COMMIT_SHA", None) # Drone defined ENV var
+	drone_commit_str             = os.environ.get("DRONE_COMMIT", None) # Drone defined ENV var
 	gf_dockerhub_user_str        = os.environ.get("GF_DOCKERHUB_USER", None)
 	gf_dockerhub_pass_str        = os.environ.get("GF_DOCKERHUB_P", None)
 	gf_notify_completion_url_str = os.environ.get("GF_NOTIFY_COMPLETION_URL", None)
@@ -608,7 +607,7 @@ def parse_args():
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 	return {
 		"run":                      args_namespace.run,
-		"drone_commit_sha":         drone_commit_sha_str,
+		"drone_commit":             drone_commit_str,
 		"gf_dockerhub_user":        gf_dockerhub_user_str,
 		"gf_dockerhub_pass":        gf_dockerhub_pass_str,
 		"gf_notify_completion_url": gf_notify_completion_url_str,
