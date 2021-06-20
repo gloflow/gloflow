@@ -90,7 +90,7 @@ steps:
     commands:
 
       - sed 's/GF_COMMIT_SHA/${DRONE_COMMIT}/g' /home/gf/go/gf_core/gf_sys_release_info.go
-      - sed 's/GF_COMMIT_SHA/${DRONE_COMMIT}/g' /home/gf/go/gf_core/gf_sys_release_info.go > /home/gf/go/gf_core/gf_sys_release_info.go
+      - sed -i 's/GF_COMMIT_SHA/${DRONE_COMMIT}/g' /home/gf/go/gf_core/gf_sys_release_info.go
       - cat /home/gf/go/gf_core/gf_sys_release_info.go 
 
       # "-u" - run unbuffered to see all stdout/stderr as it happens
