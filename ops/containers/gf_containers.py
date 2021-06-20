@@ -279,28 +279,6 @@ def prepare_web_files(p_pages_map,
 	#------------------
 
 #-------------------------------------------------------------
-# # PUBLISH_DOCKER_IMAGE
-# def publish_docker_image(p_image_full_name_str,
-# 	p_image_tag_str,
-# 	p_docker_user_str,
-# 	p_docker_pass_str,
-# 	p_log_fun,
-# 	p_exit_on_fail_bool = False,
-# 	p_docker_sudo_bool  = False):	
-#
-# 	#------------------
-#	
-# 	full_image_name_str = "%s/%s:%s"%(p_docker_user_str, p_image_name_str, p_image_tag_str)
-# 	# DOCKER_PUSH
-# 	gf_os_docker.push(full_image_name_str,
-# 		p_docker_user_str,
-# 		p_docker_pass_str,
-# 		p_log_fun,
-# 		p_exit_on_fail_bool = p_exit_on_fail_bool,
-# 		p_docker_sudo_bool  = p_docker_sudo_bool)
-# 	#------------------
-
-#-------------------------------------------------------------
 def get_service_dockerfile(p_app_build_meta_map):
 	service_base_dir_str = p_app_build_meta_map["service_base_dir_str"]
 	assert os.path.isdir(service_base_dir_str)

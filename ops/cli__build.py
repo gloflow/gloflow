@@ -44,7 +44,6 @@ import gf_web__build
 
 sys.path.append("%s/containers"%(modd_str))
 import gf_containers
-import gf_local_cluster
 
 sys.path.append("%s/gf_builder"%(modd_str))
 import gf_builder_ops
@@ -291,18 +290,6 @@ def main():
 		gf_build_changes.view_changed_apps(changed_apps_map, "web")
 	
 	#-------------
-	# START_CLUSTER_LOCAL
-
-	elif run_str == "start_cluster_local":
-		
-		docker_sudo_bool = args_map["docker_sudo"]
-		aws_creds_map    = aws_creds_get()
-
-
-		gf_local_cluster.start(aws_creds_map,
-			p_docker_sudo_bool = docker_sudo_bool)
-
-	#-------------
 	# # GF_BUILDER__CONTAINER_BUILD
 	# elif run_str == "gf_builder__cont_build":
 	# 	dockerhub_user_str = args_map["dockerhub_user"]
@@ -333,7 +320,6 @@ def parse_args():
 - '''+fg('yellow')+'publish_containers'+attr(0)+'''  - publish app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''                - run app code tests
 - '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
-- '''+fg('yellow')+'start_cluster_local'+attr(0)+''' - start a local GF cluster using docker-compose
 
 		''')
 		
