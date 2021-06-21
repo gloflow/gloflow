@@ -9,7 +9,7 @@ thumbnails_store_local_dir_path: "/home/gf/images/thumbnails"
 
 #----------------------------
 media_domain:        "media.gloflow.com"
-main_s3_bucket_name: "gf-apps--img"
+main_s3_bucket_name: "media.gloflow.com" # "gf-apps--img"
 
 #----------------------------
 # UPLOADS
@@ -18,8 +18,8 @@ uploaded_images_s3_bucket: "gf-apps--uploaded--img"
 #----------------------------
 # FLOWS
 # flows that dont have a dedicated S3 bucket use this default one
-images_flow_to_s3_bucket_default: "gf-apps--img"
+images_flow_to_s3_bucket_default: "media.gloflow.com" # "gf-apps--img"
 
 images_flow_to_s3_bucket:
-  general:    "gf-apps--img"
+  general:    "media.gloflow.com" # "gf-apps--img"
   discovered: "gf-apps--discovered--img"
