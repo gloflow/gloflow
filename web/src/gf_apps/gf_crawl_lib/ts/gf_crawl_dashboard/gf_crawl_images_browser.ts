@@ -183,7 +183,7 @@ function http__get_recent_images(p_on_complete_fun, p_on_error_fun, p_log_fun) {
 			console.log('response received');
 			//const data_map = JSON.parse(p_data);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 				const recent_images_lst = p_data_map['data']['recent_images_lst'];
 				p_on_complete_fun(recent_images_lst);
 			}
@@ -214,7 +214,7 @@ function http__check_imgs_exist_in_flow(p_images_extern_urls_lst,
 		JSON.stringify(data_map),
 		(p_data_map) => {
 			//const data_map = JSON.parse(p_data);
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 
 				var existing_images_lst = p_data_map['data']['existing_images_lst'];
 

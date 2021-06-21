@@ -318,9 +318,9 @@ function http__load_new_page(p_flow_name_str :string,
 			console.log('response received');
 			//const data_map = JSON.parse(p_data);
 
-			console.log('data_map["status_str"] - '+p_data_map["status_str"]);
+			console.log('data_map["status"] - '+p_data_map["status"]);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 
 				const pages_lst = p_data_map['data']['pages_lst'];
 				p_on_complete_fun(pages_lst);

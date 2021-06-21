@@ -41,7 +41,7 @@ export function get_page(p_page_index_int :number,
         'success':     (p_response_str)=>{
 
             const response_map = JSON.parse(p_response_str);
-            const status_str   = response_map['status_str'];
+            const status_str   = response_map['status'];
             const page_lst :Object[] = response_map['data'];
 
             p_on_complete_fun(page_lst);

@@ -50,7 +50,7 @@ export function get_notes(p_object_id_str :string,
                 p_onComplete_fun('success', notes_lst);
             }
         },
-        'error':(jqXHR,p_text_status_str)=>{
+        'error':(jqXHR, p_text_status_str)=>{
             p_onError_fun(p_text_status_str);
         }
     });
@@ -144,7 +144,7 @@ export function get_objs_with_tag(p_tag_str :string,
 
             p_onComplete_fun('success', objects_with_tags_map);
         },
-        'error': (jqXHR,p_text_status_str)=>{
+        'error': (jqXHR, p_text_status_str)=>{
             p_onError_fun(p_text_status_str);
         }
     });

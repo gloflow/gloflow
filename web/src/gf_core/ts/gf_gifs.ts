@@ -37,7 +37,7 @@ export function http__gif_get_info(p_gf_img_id_str,
 			console.log('response received');
 			//const data_map = JSON.parse(p_data);
 
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 				const gif_map = p_data_map['data']['gif_map'];
 				p_on_complete_fun(gif_map);
 			}

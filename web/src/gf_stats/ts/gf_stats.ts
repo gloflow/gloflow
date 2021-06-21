@@ -70,7 +70,7 @@ function http__batch_plots_list(p_on_complete_fun, p_on_error_fun, p_log_fun) {
 		console.log('response received');
 		//const data_map = JSON.parse(p_data);
 
-		if (p_data_map["status_str"] == 'OK') {
+		if (p_data_map["status"] == 'OK') {
 			const stats_list_lst = p_data_map["data"]['stats_list_lst'];
 			p_on_complete_fun(stats_list_lst);
 		}
@@ -103,7 +103,7 @@ export function http__stats_query(p_stat_name_str :string,
 			console.log('response received');
 			//const data_map = JSON.parse(p_data);
 			
-			if (p_data_map["status_str"] == 'OK') {
+			if (p_data_map["status"] == 'OK') {
 
 				const result_data_map = p_data_map["data"]['result_data_map'];
 				p_on_complete_fun(result_data_map);

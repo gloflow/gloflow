@@ -118,7 +118,7 @@ export function http__get_stat_data(p_stat_name_str,
 			//console.log(p_response_str);
 
 			const response_map = JSON.parse(p_response_str);
-			const status_str   = response_map['status_str'];
+			const status_str   = response_map['status'];
 			const data_map     = response_map['data'];
 
 			//console.log(data_map);
