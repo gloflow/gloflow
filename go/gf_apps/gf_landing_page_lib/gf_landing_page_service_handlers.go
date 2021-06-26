@@ -21,6 +21,7 @@ package gf_landing_page_lib
 
 import (
 	"net/http"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
@@ -37,48 +38,42 @@ func init_handlers(p_templates_paths_map map[string]string,
 	if gf_err != nil {
 		return gf_err
 	}
-
-	/*main_template_filename_str := "gf_landing_page.html"
-	templates_dir_path_str     := "./web/gf_apps/gf_landing_page/templates"
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}*/
-
-	/*main_template_filename_str := "gf_landing_page.html"
-	template_path_str := "./templates/gf_landing_page.html"
-	tmpl, err         := template.New("gf_landing_page.html").ParseFiles(template_path_str)
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a template",
-			"template_create_error",
-			&map[string]interface{}{"template_path_str":template_path_str,},
-			err, "gf_landing_page", p_runtime_sys)
-		return gf_err
-	}*/
 	
 	//---------------------
-	http.HandleFunc("/landing/main/", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /landing/main/ ----------")
+	// MAIN
+	gf_rpc_lib.Create_handler__http("/landing/main",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		if p_req.Method == "GET" {
-			gf_err := Pipeline__get_landing_page(2000, //p_max_random_cursor_position_int
-				5,  //p_featured_posts_to_get_int
-				10, //p_featured_imgs_to_get_int
-				gf_templates.tmpl,
-				gf_templates.subtemplates_names_lst,
-				p_resp,
-				p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/landing/main", "get landing_page failed", gf_err, p_resp, p_runtime_sys)
-				return
+			if p_req.Method == "GET" {
+				gf_err := Pipeline__get_landing_page(2000, // p_max_random_cursor_position_int
+					5,  // p_featured_posts_to_get_int
+					10, // p_featured_imgs_to_get_int
+					gf_templates.tmpl,
+					gf_templates.subtemplates_names_lst,
+					p_resp,
+					p_runtime_sys)
+
+				if gf_err != nil {
+					return nil, gf_err
+				}
 			}
-		}
-	})
+			
+			data_map := map[string]interface{}{}
+			return data_map, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
-	http.HandleFunc("/landing/register_invite_email", func(p_resp http.ResponseWriter, p_req *http.Request) {
+	// REGISTER_INVITE_EMAIL
+	gf_rpc_lib.Create_handler__http("/landing/register_invite_email",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-	})
+			
+			
+			data_map := map[string]interface{}{}
+			return data_map, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
 	return nil

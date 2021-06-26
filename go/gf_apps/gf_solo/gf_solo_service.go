@@ -21,8 +21,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"strconv"
 	"github.com/fatih/color"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
@@ -30,7 +32,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
-	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -133,10 +134,16 @@ func service__run(p_config *GF_config,
 	p_runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_config.Port_str)
 	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	
-	err := http.ListenAndServe(":"+p_config.Port_str, nil)
+	// err := http.ListenAndServe(":"+p_config.Port_str, nil)
+	// if err != nil {
+	// 	msg_str := "cant start listening on port - "+p_config.Port_str
+	// 	p_runtime_sys.Log_fun("ERROR", msg_str)
+	// 	panic(err)
+	// }
+
+	port_int, err := strconv.Atoi(p_config.Port_str)
 	if err != nil {
-		msg_str := "cant start listening on port - "+p_config.Port_str
-		p_runtime_sys.Log_fun("ERROR", msg_str)
 		panic(err)
 	}
+	gf_rpc_lib.Server__init(port_int)
 }

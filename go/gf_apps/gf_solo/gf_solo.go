@@ -22,10 +22,12 @@ package main
 import (
 	"os"
 	"fmt"
+	"time"
 	"path"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "github.com/sirupsen/logrus"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -55,6 +57,27 @@ func runtime__get(p_config_path_str string,
 		fmt.Println(err)
 		fmt.Println("failed to load config")
 		return nil, nil, err
+	}
+
+
+
+	//--------------------
+	// SENTRY - ERROR_REPORTING
+	if config.Sentry_endpoint_str != "" {
+
+		sentry_endpoint_str := config.Sentry_endpoint_str
+		sentry_samplerate_f := 1.0
+		sentry_trace_handlers_map := map[string]bool{
+			
+		}
+		err := gf_core.Error__init_sentry(sentry_endpoint_str,
+			sentry_trace_handlers_map,
+			sentry_samplerate_f)
+		if err != nil {
+			panic(err)
+		}
+
+		defer sentry.Flush(2 * time.Second)
 	}
 
 	//--------------------
@@ -240,6 +263,11 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		Short: "start the gf_solo service",
 		Long:  "start the gf_solo service",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
+
+			
+
+
+
 
 			runtime_sys, config, err := runtime__get(cli_config_path_str, p_log_fun)
 			if err != nil {
