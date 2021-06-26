@@ -97,7 +97,7 @@ body {
     padding-top: 5px;
     padding-bottom: 4px;
 }
-/*----------------------------------------------------------*/
+/*-------------------------------------------*/
 /*humble beginnings...*/
 #sys_release_info {
 	position        : fixed;
@@ -109,13 +109,14 @@ body {
 	padding-right   : 5px;
 	padding-bottom  : 3px;
 	z-index         : 5000;
-	width:100px;
-	height: 20px;
+	width:   262px;
+	height:  34px;
 	opacity: 0.5;
 }
 #sys_release_info #version {
 	text-align: right;
 	font-size: 10px}
+
 #sys_release_info #name {
 	text-align: right;
 	font-size: 10px;
@@ -123,4 +124,15 @@ body {
 
 #sys_release_info #description {
 	visibility: hidden;
+}
+
+#sys_release_info #git_commit {
+	position:  fixed;
+	bottom:    0px;
+	width:     334px;
+	font-size: 10px;
+}
+
+#sys_release_info #git_commit a {
+	text-decoration: none;
 }
