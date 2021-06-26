@@ -56,22 +56,27 @@ function init_image_viewer(p_image_element, p_log_fun) {
 
 		// position the background vertically where the user has scrolled to
 		$(bg).css('top', $(window).scrollTop()+'px');
+
 		//----------------------
 		// IMPORTANT!! - turn off vertical scrolling while viewing the image
 		$("body").css("overflow-y", "hidden");
+
 		//----------------------
 		const image_detail = $(image_view).find('#image_detail');
 		$(image_detail).css("position", "absolute");
 	    $(image_detail).css("top",  Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop())  + "px");
 	    $(image_detail).css("left", Math.max(0, (($(window).width()  - $(image_detail).outerWidth()) / 2)  + $(window).scrollLeft()) + "px");
-	    //----------------------
+	    
+		//----------------------
 	    $(bg).click(()=>{
 	    	$(image_view).remove();
 	    	$("body").css("overflow-y", "auto"); // turn vertical scrolling back on when done viewing the image
 	    });
+
 	    //----------------------
 	});
 }
+
 //-------------------------------------------------
 function init_image_date(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images.init_image_date()');

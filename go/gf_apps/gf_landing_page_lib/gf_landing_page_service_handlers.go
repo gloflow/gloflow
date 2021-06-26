@@ -41,7 +41,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	
 	//---------------------
 	// MAIN
-	gf_rpc_lib.Create_handler__http("/landing/main",
+	gf_rpc_lib.Create_handler__http("/landing/main/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
