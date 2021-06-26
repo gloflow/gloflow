@@ -205,7 +205,9 @@ def notify_completion(p_gf_notify_completion_url_str,
 		url_str = p_gf_notify_completion_url_str
 
 	print("NOTIFY_COMPLETION - HTTP REQUEST - %s"%(url_str))
+	print(f"GIT commit_hash - {p_git_commit_hash_str}")
 
+	#--------------------------
 	# HTTP_POST
 
 	data_map = {}
@@ -218,7 +220,10 @@ def notify_completion(p_gf_notify_completion_url_str,
 	if not r.status_code == 200:
 		print("notify_completion http request failed")
 		exit(1)
-		
+	
+	#--------------------------
+
+	
 #--------------------------------------------------
 # PUBLISH_APPS_CONTAINERS
 def publish_apps_containers(p_changed_apps_files_map,
