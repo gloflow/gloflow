@@ -266,8 +266,7 @@ def build_page(p_page_name_str,
 
 	#-----------------
 
-	if "files_to_copy_lst" in p_page_info_map.keys():
-		process_files_to_copy(p_page_info_map, p_log_fun)
+	
 		
 
 	if not p_build_copy_dir_str == None:
@@ -275,6 +274,10 @@ def build_page(p_page_name_str,
 		
 		gf_core_cli.run(f'mkdir -p {p_build_copy_dir_str}')
 		gf_core_cli.run(f'cp -r {p_build_dir_str} {p_build_copy_dir_str}')
+
+	# IMPORTANT!! - do after build_copy_dir is created
+	if "files_to_copy_lst" in p_page_info_map.keys():
+		process_files_to_copy(p_page_info_map, p_log_fun)
 
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):

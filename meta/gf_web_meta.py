@@ -202,9 +202,9 @@ def get():
 		#         figure out some general solution for build_dir (not gf_images), since its not just images that
 		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
 		"gf_bookmarklet": {
-			"build_dir_str": "%s/../web/build/gf_apps/gf_images"%(modd_str),
+			"build_dir_str": "%s/../web/build/gf_apps/gf_solo"%(modd_str),
 			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_solo/gf_images/js")
+				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_solo/js")
 			]
 		}
 
