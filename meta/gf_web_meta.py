@@ -204,7 +204,7 @@ def get():
 		"gf_bookmarklet": {
 			"build_dir_str": "%s/../web/build/gf_apps/gf_images"%(modd_str),
 			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_images/js")
+				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_solo/gf_images/js")
 			]
 		}
 
