@@ -67,12 +67,18 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 		# BUILD PAGES - build each page of the app
 		for page_name_str, page_info_map in app_map["pages_map"].items():
 			
-			build_dir_str      = os.path.abspath(page_info_map["build_dir_str"])
-			build_copy_dir_str = os.path.abspath(page_info_map.get("build_copy_dir_str", None))
+			print(f"page name {fg('yellow')}{page_name_str}{attr(0)}")
+
+			build_dir_str = os.path.abspath(page_info_map["build_dir_str"])
+
+			build_copy_dir_str     = page_info_map.get("build_copy_dir_str", None)
+			build_copy_bas_dir_str = None
+			if not build_copy_dir_str == None:
+				build_copy_bas_dir_str = os.path.abspath(build_copy_dir_str)
 
 			build_page(page_name_str,
 				build_dir_str,
-				build_copy_dir_str,
+				build_copy_bas_dir_str,
 				page_info_map,
 				p_log_fun)
 
@@ -85,11 +91,9 @@ def build_page(p_page_name_str,
 	# p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 	
 	print("")
-	print("")
 	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s"%(fg("orange_red_1"), attr(0)))
 	p_log_fun("INFO", "             %sBUILD PAGE%s - %s%s%s"%(fg("cyan"), attr(0), fg("orange_red_1"), p_page_name_str, attr(0)))
 	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s"%(fg("orange_red_1"), attr(0)))
-	print("")
 	print("")
 
 	p_log_fun("INFO", f"build_dir_str - {p_build_dir_str}")
@@ -278,6 +282,11 @@ def build_page(p_page_name_str,
 	# IMPORTANT!! - do after build_copy_dir is created
 	if "files_to_copy_lst" in p_page_info_map.keys():
 		process_files_to_copy(p_page_info_map, p_log_fun)
+
+
+	print("")
+	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s END"%(fg("orange_red_1"), attr(0)))
+	print("")
 
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):
