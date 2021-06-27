@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //-------------------------------------------------
 var gf_upload__init = gf_upload__init;
 function gf_upload__init(p_target_full_host_str) {
-	console.log("UPLOAD INITIALIZED")
+
+	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
 
 		const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;

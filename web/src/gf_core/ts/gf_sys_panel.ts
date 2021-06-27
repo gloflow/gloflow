@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-----------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_sys_panel.init()');
+	// p_log_fun('FUN_ENTER', 'gf_sys_panel.init()');
 
 	const sys_panel_element = $(
 		`<div id="sys_panel">
@@ -39,7 +39,7 @@ export function init(p_log_fun) {
 
 	$(sys_panel_element).find('#view_handle').on('mouseover', (p_e)=>{
 		$(sys_panel_element).animate({
-			top:0 //move it
+			top: 0 // move it
 		},
 		200,
 		()=>{

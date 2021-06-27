@@ -30,9 +30,7 @@ declare var gf_upload__init;
 $(document).ready(()=>{
 	//-------------------------------------------------
 	function log_fun(p_g,p_m) {
-		var msg_str = p_g+':'+p_m
-		//chrome.extension.getBackgroundPage().console.log(msg_str);
-
+		var msg_str = p_g+':'+p_m;
 		switch (p_g) {
 			case "INFO":
 				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
@@ -58,14 +56,14 @@ $(document).ready(()=>{
 
 //--------------------------------------------------------
 export function init_remote(p_log_fun) {
-	p_log_fun("FUN_ENTER", "gf_landing_page.init_remote()");
+	// p_log_fun("FUN_ENTER", "gf_landing_page.init_remote()");
 
 	init(remote_register_user_email, p_log_fun);
 	//--------------------------------------------------------
 	function remote_register_user_email(p_inputed_email_str :string,
 		p_on_complete_fun,
 		p_log_fun) {
-		p_log_fun("FUN_ENTER", "gf_landing_page.init_remote().remote_register_user_email()");
+		// p_log_fun("FUN_ENTER", "gf_landing_page.init_remote().remote_register_user_email()");
 		
 		const url_str       = "/landing/register_invite_email";
 		const data_args_map = {
@@ -89,7 +87,7 @@ export function init_remote(p_log_fun) {
 // INIT
 function init(p_register_user_email_fun,
 	p_log_fun) {
-	p_log_fun("FUN_ENTER", "gf_landing_page.init()");
+	// p_log_fun("FUN_ENTER", "gf_landing_page.init()");
 
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
@@ -102,7 +100,7 @@ function init(p_register_user_email_fun,
 	// draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
 	$(window).resize(()=>{
 
-		//small screen widths dont display procedural_art
+		// small screen widths dont display procedural_art
 		if ($(window).innerWidth() > 660) {
 			gf_procedural_art.init(p_log_fun);
 		}
@@ -115,14 +113,14 @@ function init(p_register_user_email_fun,
 
 	//--------------------------------------------------------
 	function init_posts_img_num() {
-		p_log_fun("FUN_ENTER", "gf_landing_page.init().init_posts_img_num()");
+		// p_log_fun("FUN_ENTER", "gf_landing_page.init().init_posts_img_num()");
 
 		$("#featured_posts .post_info").each((p_i, p_post)=>{
 
 			const post_images_number = $(p_post).find(".post_images_number")[0];
 			const label_element      = $(post_images_number).find(".label");
 
-			//HACK!! - "-1" was visually inferred
+			// HACK!! - "-1" was visually inferred
 			$(post_images_number).css("right", "-"+($(post_images_number).outerWidth()-1)+"px");
 			$(label_element).css("left", $(post_images_number).outerWidth()+"px");
 
@@ -140,7 +138,7 @@ function init(p_register_user_email_fun,
 
 //--------------------------------------------------------
 function load_static_data(p_log_fun) :Object[] {
-	p_log_fun("FUN_ENTER", "gf_landing_page.load_static_data()");
+	// p_log_fun("FUN_ENTER", "gf_landing_page.load_static_data()");
 	
 	const featured_elements_infos_lst :Object[] = []; 
 

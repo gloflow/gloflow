@@ -26,9 +26,9 @@ export function init(p_image_element,
 	p_img_id_str    :string,
 	p_flow_name_str :string,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_gifs_viewer.init()');
+	p_log_fun('FUN_ENTER', 'gf_gifs_viewer.init()');
 
-	//const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
+	// const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 
 	//----------------------
 	// GIF_INDICATOR
@@ -38,13 +38,13 @@ export function init(p_image_element,
 
 	const img_element = $(p_image_element).find('img')[0];
 
-	//coordinates of <img> relative to its parent <div>, so that gif_indicator_e 
-	//can take those coords into account for its own positioning.
+	// coordinates of <img> relative to its parent <div>, so that gif_indicator_e 
+	// can take those coords into account for its own positioning.
 	const img_x_int = img_element.offsetLeft;
 	const img_y_int = img_element.offsetTop;
 
-	//position in the middle of the image
-	//offsetWidth/Height - The width and height of the entire element, including borders and padding, excluding margins.
+	// position in the middle of the image
+	// offsetWidth/Height - The width and height of the entire element, including borders and padding, excluding margins.
 	const gif_indicator_x_int = img_x_int + (img_element.offsetWidth - $(gif_indicator_e)[0].offsetWidth)/2;
 	const gif_indicator_y_int = img_y_int + (img_element.offsetHeight - $(gif_indicator_e)[0].offsetHeight)/2;
 	$(gif_indicator_e).css('left', gif_indicator_x_int+'px');
@@ -53,14 +53,15 @@ export function init(p_image_element,
 
 	$(gif_indicator_e).on('click', ()=>{
 
-		//IMPORTANT!! - when gif_indicator is clicked activate the click event handler
-		//              on the <img> tag of the GIF.
+		// IMPORTANT!! - when gif_indicator is clicked activate the click event handler
+		//               on the <img> tag of the GIF.
 		$(p_image_element).find('img').trigger('click');
 	});
+
 	//----------------------
 
 
-	$(p_image_element).find('img').on('click',()=>{
+	$(p_image_element).find('img').on('click', ()=>{
 
 		console.log('click');
 
@@ -96,7 +97,7 @@ export function init(p_image_element,
 		$(p_image_element).append(image_view);
 
 		//----------------------
-		//BAKCGROUND
+		// BAKCGROUND
 		const bg = $(image_view).find('#background');
 
 		//----------------------
@@ -106,12 +107,14 @@ export function init(p_image_element,
 		});
 
 		//----------------------
-		//CLOSE_VIEWER - when GIF thats playing is clicked again
-		//               the image_view is removed.
+		// CLOSE_VIEWER - when GIF thats playing is clicked again
+		//                the image_view is removed.
 	    $(bg).on('click', ()=>{
 	    	$(image_view).remove();
 	    });
+		
 	    //----------------------
 	}
+
 	//-------------------------------------------------
 }
