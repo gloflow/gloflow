@@ -154,7 +154,7 @@ func Image__create(p_image_info_map map[string]interface{},
 	
 	new_image_info_map, gf_err := Image__verify_image_info(p_image_info_map, p_runtime_sys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
 
 	title_str       := new_image_info_map["title_str"].(string)

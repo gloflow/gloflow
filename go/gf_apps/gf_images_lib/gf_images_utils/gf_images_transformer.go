@@ -168,7 +168,7 @@ func resize_image(p_img image.Image,
 	// resize to width 1000 using Lanczos resampling
 	// and preserve aspect ratio
 	
-	m := resize.Resize(uint(p_size_px_int), 0, p_img, resize.Lanczos3)
+	m := resize.Resize(uint(p_size_px_int), 0, p_img, resize.Bilinear) // resize.Lanczos3)
 
 	out, err := os.Create(p_image_output_path_str)
 	if err != nil {
