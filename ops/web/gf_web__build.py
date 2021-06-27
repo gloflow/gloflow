@@ -270,7 +270,7 @@ def build_page(p_page_name_str,
 		
 
 	if not p_build_copy_dir_str == None:
-		print(f"copying {fg('green')}build{attr(0)} dir to {fg('yellow')}{p_build_copy_dir_str}{attr(0)}")
+		print(f"copying {fg('green')}build{attr(0)} dir ({p_build_dir_str}) to {fg('yellow')}{p_build_copy_dir_str}{attr(0)}")
 		
 		gf_core_cli.run(f'mkdir -p {p_build_copy_dir_str}')
 		gf_core_cli.run(f'cp -r {p_build_dir_str} {p_build_copy_dir_str}')

@@ -41,10 +41,23 @@ def get():
 		#-------------
 		# IMAGES_DASHBOARD
 		"gf_images_dashboard": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_images"%(modd_str),
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_images"),
 			"main_html_path_str": "%s/../web/src/gf_apps/gf_images/templates/gf_images_dashboard/gf_images_dashboard.html"%(modd_str),
 			"url_base_str":       "/images/static",
 		},
+
+		#-------------
+
+		#-------------
+		# BOOKMARKLET
+		# FIX!! - figure out some general solution for build_dir (not gf_images), since its not just images that
+		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
+		"gf_bookmarklet": {
+			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
+			"files_to_copy_lst": [
+				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_images/js")
+			]
+		}
 
 		#-------------
 	}
@@ -195,20 +208,7 @@ def get():
 
 	gf_solo__pages_map = {
 
-		#-------------
-		# BOOKMARKLET
-		# FIX!! - build this as a page outside of gf_solo, because if gf_solo (monolith service)
-		#         is not how GF is deployed, then gf_bookmarklet wont get built.
-		#         figure out some general solution for build_dir (not gf_images), since its not just images that
-		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
-		"gf_bookmarklet": {
-			"build_dir_str": "%s/../web/build/gf_apps/gf_solo"%(modd_str),
-			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_bookmarklet/gf_bookmarklet.js", f"{modd_str}/../web/build/gf_apps/gf_solo/js")
-			]
-		}
-
-		#-------------
+		
 	}
 	
 	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
@@ -218,6 +218,9 @@ def get():
 	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
 
 	for _, page_info_map in gf_solo__pages_map.items():
+
+		# only for gf_solo pages is this dir defined. so that the build_dir_str of other 
+		# apps/pages still gets coppied into the build dir of gf_solo.
 		page_info_map["build_copy_dir_str"] = f"{modd_str}/../web/build/gf_apps/gf_solo"
 
 	apps_map["gf_solo"] = {"pages_map": gf_solo__pages_map}
