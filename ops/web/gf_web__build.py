@@ -67,11 +67,6 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 		# BUILD PAGES - build each page of the app
 		for page_name_str, page_info_map in app_map["pages_map"].items():
 			
-			print(">>>>>>>>>>>>>>>>>>>>>>>>>")
-			print(page_name_str)
-			print(page_info_map)
-
-
 			build_dir_str      = os.path.abspath(page_info_map["build_dir_str"])
 			build_copy_dir_str = os.path.abspath(page_info_map.get("build_copy_dir_str", None))
 
@@ -87,7 +82,7 @@ def build_page(p_page_name_str,
 	p_build_copy_dir_str,
     p_page_info_map,
     p_log_fun):
-	p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
+	# p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 	
 	print("")
 	print("")
