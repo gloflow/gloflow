@@ -130,20 +130,11 @@ func service__run(p_config *GF_config,
 
 	//-------------
 
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_config.Port_str)
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	
-	// err := http.ListenAndServe(":"+p_config.Port_str, nil)
-	// if err != nil {
-	// 	msg_str := "cant start listening on port - "+p_config.Port_str
-	// 	p_runtime_sys.Log_fun("ERROR", msg_str)
-	// 	panic(err)
-	// }
-
 	port_int, err := strconv.Atoi(p_config.Port_str)
 	if err != nil {
 		panic(err)
 	}
+
+	// SERVER_INIT
 	gf_rpc_lib.Server__init(port_int)
 }

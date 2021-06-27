@@ -27,7 +27,6 @@ package gf_rpc_lib
 import (
 	"fmt"
 	"net/http"
-	// "time"
 	"context"
 	"encoding/json"
 	"github.com/getsentry/sentry-go"
@@ -110,7 +109,9 @@ func Create_handler__http(p_path_str string,
 		
 		//------------------
 		// OUTPUT
-		Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+		if data_map != nil {
+			Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+		}
 
 		//------------------
 	})

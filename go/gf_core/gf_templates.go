@@ -30,7 +30,6 @@ import (
 
 //-------------------------------------------------
 func Templates__load(p_main_template_filepath_str string,
-	// p_templates_dir_path_str string,
 	p_runtime_sys *Runtime_sys) (*template.Template, []string, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.Templates__load()")
 
@@ -66,7 +65,6 @@ func Templates__load(p_main_template_filepath_str string,
 
 	//---------------------
 	// TEMPLATES
-	// main_template_path_str := fmt.Sprintf("%s/%s", p_templates_dir_path_str, p_main_template_filename_str)
 	templates_paths_lst := append([]string{p_main_template_filepath_str,}, subtemplates_file_paths_lst...)
 
 	// IMPORTANT!! - load several template files into a single template name

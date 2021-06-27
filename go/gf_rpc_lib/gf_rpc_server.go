@@ -34,7 +34,7 @@ import (
 //-------------------------------------------------
 func Server__init(p_port_int int) {
 
-	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER")
+	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
 	err            := http.ListenAndServe(fmt.Sprintf(":%d", p_port_int), sentry_handler)

@@ -43,7 +43,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 		Is_subtmpl_def     func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp,tmpl_data{
+	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Featured_posts_lst: p_featured_posts_lst,
 		Featured_imgs_lst:  p_featured_imgs_lst,
 		Sys_release_info:   sys_release_info,

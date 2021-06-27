@@ -45,7 +45,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
-				gf_err := Pipeline__get_landing_page(2000, // p_max_random_cursor_position_int
+				gf_err := Pipeline__render_landing_page(2000, // p_max_random_cursor_position_int
 					5,  // p_featured_posts_to_get_int
 					10, // p_featured_imgs_to_get_int
 					gf_templates.tmpl,
@@ -58,8 +58,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 				}
 			}
 			
-			data_map := map[string]interface{}{}
-			return data_map, nil
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
 		},
 		p_runtime_sys)
 
