@@ -26,7 +26,8 @@ import (
 )
 
 //------------------------------------------------
-func Pipeline__render_landing_page(p_max_random_cursor_position_int int, // 500
+func Pipeline__render_landing_page(p_imgs__max_random_cursor_position_int int, // 500
+	p_posts__max_random_cursor_position_int int,
 	p_featured_posts_to_get_int int, // 5
 	p_featured_imgs_to_get_int  int, // 10
 	p_tmpl                      *template.Template,
@@ -35,15 +36,17 @@ func Pipeline__render_landing_page(p_max_random_cursor_position_int int, // 500
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_pipelines.Pipeline__get_landing_page()")
 
-	featured_posts_lst, gf_err := get_featured_posts(p_max_random_cursor_position_int,
-		p_featured_posts_to_get_int,
+	
+
+	featured_imgs_lst, gf_err := get_featured_imgs(p_imgs__max_random_cursor_position_int,
+		p_featured_imgs_to_get_int,
 		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	featured_imgs_lst, gf_err := get_featured_imgs(p_max_random_cursor_position_int,
-		p_featured_imgs_to_get_int,
+	featured_posts_lst, gf_err := get_featured_posts(p_posts__max_random_cursor_position_int,
+		p_featured_posts_to_get_int,
 		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
