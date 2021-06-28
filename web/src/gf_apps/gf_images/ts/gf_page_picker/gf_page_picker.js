@@ -1,19 +1,32 @@
 
+gf_picker__main();
 
-
+//---------------------------------------------------
 function gf_picker__main() {
 
     console.log("gf_page_picker");
 
     // import jquery if its not defined
-    if (typeof $ === 'undefined') {
-        $("body").append(`<script
-            crossorigin="anonymous"
-            integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-            src="https://code.jquery.com/jquery-3.1.0.min.js"
-            type="text/javascript">`);
-    }
+    if (!window.jQuery) {
+        console.log("GF - jquery not defined - inserting");
 
+        let s = document.createElement("script");
+        s.setAttribute('crossorigin', 'anonymous');
+        s.setAttribute('integrity',   'sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=');
+        s.setAttribute('src',         'https://code.jquery.com/jquery-3.1.0.min.js');
+        s.setAttribute('type',        'text/javascript');
+        document.body.appendChild(s);
+        
+        s.onload = () => {
+            gf_picker__create_ui();
+        }
+    } else {
+        gf_picker__create_ui();
+    }
+}
+
+//---------------------------------------------------
+function gf_picker__create_ui() {
     $("body").append(`
     <style>
     
@@ -115,7 +128,4 @@ function gf_picker__main() {
     })
 }
 
-
-
-
-gf_picker__main();
+//---------------------------------------------------

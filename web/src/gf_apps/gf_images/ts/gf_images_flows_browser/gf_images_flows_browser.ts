@@ -27,6 +27,7 @@ import * as gf_sys_panel    from "./../../../../gf_core/ts/gf_sys_panel";
 
 //-------------------------------------------------
 declare var URLSearchParams;
+
 //-------------------------------------------------
 $(document).ready(()=>{
     //-------------------------------------------------
@@ -43,6 +44,7 @@ $(document).ready(()=>{
                 break;
         }
     }
+
     //-------------------------------------------------
     init(log_fun);
 });
@@ -52,23 +54,24 @@ export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init()');
 
 	//-----------------
-	//GET FLOW_NAME
+	// GET FLOW_NAME
 	const url_params       = new URLSearchParams(window.location.search);
-	const qs_flow_name_str = url_params.get('fname'); //'general';
+	const qs_flow_name_str = url_params.get('fname'); // 'general';
 	var   flow_name_str;
 	if (qs_flow_name_str == null) {
-		flow_name_str = 'general'; //default value
+		flow_name_str = 'general'; // default value
 	} else {
 		flow_name_str = qs_flow_name_str;
 	}
 	
 	//-----------------
 	gf_sys_panel.init(p_log_fun);
+
 	//-----------------
-	//IMPORTANT!! - as each image loads call masonry to reconfigure the view.
-	//              this is necessary so that initial images in the page, before
-	//              load_new_page() starts getting called, are properly laid out
-	//              by masonry
+	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.
+	//               this is necessary so that initial images in the page, before
+	//               load_new_page() starts getting called, are properly laid out
+	//               by masonry
 	$('.gf_image img').on('load', ()=>{
 		$('#gf_images_flow_container').masonry();
 	});
@@ -88,34 +91,36 @@ export function init(p_log_fun) {
 		const img_format_str           = $(image_element).attr('data-img_format');
 
 		//----------------
-		//GIFS
+		// GIFS
 		if (img_format_str == 'gif') {
 
 			const img_id_str = $(image_element).attr('data-img_id');
 			gf_gifs_viewer.init(image_element, img_id_str, flow_name_str, p_log_fun);
 		}
+
 		//----------------
 		else {
 			gf_image_viewer.init(image_element, img_thumb_medium_url_str, flow_name_str, p_log_fun);
 		}
+
 		//----------------
 	});
 
 	const current_pages_display = init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);
 	//------------------
-	//LOAD_PAGES_ON_SCROLL
+	// LOAD_PAGES_ON_SCROLL
 
-	var current_page_int     = 6; //the few initial pages are already statically embedded in the document
+	var current_page_int     = 6; // the few initial pages are already statically embedded in the document
 	var page_is_loading_bool = false;
 
 	window.onscroll = ()=>{
 
-		//$(document).height() - height of the HTML document
-		//window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
+		// $(document).height() - height of the HTML document
+		// window.innerHeight   - Height (in pixels) of the browser window viewport including, if rendered, the horizontal scrollbar
 		if (window.scrollY >= $(document).height() - (window.innerHeight+50)) {
 			
-			//IMPORTANT!! - only load 1 page at a time
+			// IMPORTANT!! - only load 1 page at a time
 			if (!page_is_loading_bool) {
 				
 				page_is_loading_bool = true;
@@ -134,8 +139,10 @@ export function init(p_log_fun) {
 			}
 		}
 	};
+
 	//------------------
 }
+
 //---------------------------------------------------
 function init__current_pages_display(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init__current_pages_display()');
@@ -150,6 +157,7 @@ function init__current_pages_display(p_log_fun) {
 
 	return container;
 }
+
 //---------------------------------------------------
 function load_new_page(p_flow_name_str :string,
 	p_current_page_int,
@@ -183,8 +191,8 @@ function load_new_page(p_flow_name_str :string,
 			const img__tags_lst                 = p_e['tags_lst'];
 			const img__origin_page_url_str      = p_e['origin_page_url_str'];
 
-			//IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
-			//              and its positioned appropriatelly in the Masonry grid
+			// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
+			//               and its positioned appropriatelly in the Masonry grid
 			const image = $(`
 				<div class="gf_image item" data-img_id="`+img__id_str+`" data-img_format="`+img__format_str+`" style='visibility:hidden;'>
 					<img src="`+img__thumbnail_small_url_str+`" data-img_thumb_medium_url="`+img__thumbnail_medium_url_str+`"></img>
@@ -194,20 +202,21 @@ function load_new_page(p_flow_name_str :string,
 					</div>
 					<div class="creation_time">`+img__creation_unix_time_f+`</div>
 				</div>`);
+
 			//------------------
 			
-			//FIX!! - this needs to happen after the image <div> is added to the DOM, 
-			//        here reloading masonry layout doesnt have the intended effect, since 
-			//        the image hasnt been added yet.
-			//        move it to be after $("#gf_images_flow_container").append(image);
+			// FIX!! - this needs to happen after the image <div> is added to the DOM, 
+			//         here reloading masonry layout doesnt have the intended effect, since 
+			//         the image hasnt been added yet.
+			//         move it to be after $("#gf_images_flow_container").append(image);
 
 			$(image).find('img').on('load', function() {
 
-				//IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded
+				// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded
 				$("#gf_images_flow_container").append(image);
 				
 				//------------------
-				//MASONRY_RELOAD
+				// MASONRY_RELOAD
 				var masonry = $('#gf_images_flow_container').data('masonry');
 
 				masonry.once('layoutComplete',(p_event, p_laid_out_items)=>{
@@ -216,28 +225,30 @@ function load_new_page(p_flow_name_str :string,
 
 				$('#gf_images_flow_container').masonry(<any>"reloadItems");
 				$('#gf_images_flow_container').masonry();
+
 				//------------------
 
 				//------------------
-				//VIEWER_INIT
+				// VIEWER_INIT
 
 				if (img__format_str == 'gif') {
 					gf_gifs_viewer.init(image, img__id_str, p_flow_name_str, p_log_fun);
 				} else {
 					gf_image_viewer.init(image, img__thumbnail_medium_url_str, p_flow_name_str, p_log_fun);
 				}
+
 				//------------------
 
 				img_i_int++;
 
-				//IMPORTANT!! - only declare load_new_page() as complete after all its
-				//              images complete loading
+				// IMPORTANT!! - only declare load_new_page() as complete after all its
+				//               images complete loading
 				if (p_page_lst.length-1 == img_i_int) {
 					p_on_complete_fun();
 				}
 			});
 
-			//IMAGE_FAILED_TO_LOAD
+			// IMAGE_FAILED_TO_LOAD
 			$(image).find('img').on('error', function() {
 
 				p_log_fun("ERROR","IMAGE_FAILED_TO_LOAD ----------");
@@ -249,11 +260,12 @@ function load_new_page(p_flow_name_str :string,
 					p_on_complete_fun();
 				}
 			});
+
 			//------------------
-			init_image_date(image,
-						p_log_fun);
+			init_image_date(image, p_log_fun);
+
 			//------------------
-			//TAGS
+			// TAGS
 			if (img__tags_lst != null && img__tags_lst.length > 0) {
 				$.each(img__tags_lst, function(p_i, p_tag_str) {
 					const tag = $(
@@ -264,14 +276,16 @@ function load_new_page(p_flow_name_str :string,
 					$(image).find('.tags_container').append(tag);
 				});
 			}
+
 			//------------------
 		});
 	}
+
 	//---------------------------------------------------
 }
 //-------------------------------------------------
 function init_image_date(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images_flows_browser.init_image_date()');
+	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init_image_date()');
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());
@@ -286,7 +300,7 @@ function init_image_date(p_image_element, p_log_fun) {
 	$(creation_time_element).mouseover((p_e)=>{
 		$(creation_time_element).append(creation_date__readble);
 
-		//IMPORTANT!! - image size changed, so recalculate the Masonry layout
+		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
 		$('#gf_images_flow_container').masonry(<any>'reloadItems');
 		$('#gf_images_flow_container').masonry();
 	});
@@ -294,29 +308,30 @@ function init_image_date(p_image_element, p_log_fun) {
 	$(creation_time_element).mouseout((p_e)=>{
 		$(creation_date__readble).remove();
 
-		//IMPORTANT!! - image size changed, so recalculate the Masonry layout
+		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
 		$('#gf_images_flow_container').masonry(<any>'reloadItems');
 		$('#gf_images_flow_container').masonry();
 	});
 }
+
 //---------------------------------------------------
 function http__load_new_page(p_flow_name_str :string,
 	p_current_page_int,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_images_flows_browser.http__load_new_page()');
+	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.http__load_new_page()');
 
 	const page_size_int = 10;
 	const url_str       = '/images/flows/browser_page?fname='+p_flow_name_str+'&pg_index='+p_current_page_int+'&pg_size='+page_size_int;
-	p_log_fun('INFO','url_str - '+url_str);
+	p_log_fun('INFO', 'url_str - '+url_str);
 
 	//-------------------------
-	//HTTP AJAX
+	// HTTP AJAX
 	$.get(url_str,
 		function(p_data_map) {
 			console.log('response received');
-			//const data_map = JSON.parse(p_data);
+			// const data_map = JSON.parse(p_data);
 
 			console.log('data_map["status"] - '+p_data_map["status"]);
 			
@@ -329,5 +344,6 @@ function http__load_new_page(p_flow_name_str :string,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
+
 	//-------------------------	
 }
