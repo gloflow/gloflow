@@ -1,25 +1,18 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 function gf_picker__main() {
 
+    console.log("gf_page_picker");
 
-
-
-    console.log("gf works");
-
+    // import jquery if its not defined
+    if (typeof $ !== 'undefined') {
+        $("body").append(`<script
+            crossorigin="anonymous"
+            integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+            src="https://code.jquery.com/jquery-3.1.0.min.js"
+            type="text/javascript">`);
+    }
 
     $("body").append(`
     <style>
