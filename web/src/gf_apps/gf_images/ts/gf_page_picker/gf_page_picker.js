@@ -6,8 +6,10 @@ function gf_picker__main() {
 
     console.log("gf_page_picker");
 
-    // import jquery if its not defined
-    if (!window.jQuery) {
+    // import jquery if its not defined.
+    // testing both condition, because on some sites window.jQuery is defined 
+    // but $ is not defined and vice-versa.
+    if (!window.jQuery || typeof $ === 'undefined') {
         console.log("GF - jquery not defined - inserting");
 
         let s = document.createElement("script");
