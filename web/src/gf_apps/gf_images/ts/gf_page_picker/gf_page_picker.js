@@ -6,7 +6,7 @@ function gf_picker__main() {
     console.log("gf_page_picker");
 
     // import jquery if its not defined
-    if (typeof $ !== 'undefined') {
+    if (typeof $ === 'undefined') {
         $("body").append(`<script
             crossorigin="anonymous"
             integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
