@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_calc               from "./gf_calc";
 import * as gf_email_registration from "./gf_email_registration";
 import * as gf_images             from "./gf_images";
-import * as gf_procedural_art     from "./gf_procedural_art";
+import * as gf_procedural_art     from "./procedural_art/gf_procedural_art";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (its a JS file)
 declare var gf_upload__init;

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
+///<reference path="../../../../d/jquery.d.ts" />
 
 //--------------------------------------------------------
 export function init(p_log_fun) :HTMLCanvasElement {
@@ -29,12 +29,103 @@ export function init(p_log_fun) :HTMLCanvasElement {
 	canvas.width  = $('#randomized_art').width();
 	canvas.height = $('#randomized_art').height();
 
-	draw_randomized_squares(canvas,
-		canvas.width,
-		canvas.height,
-		p_log_fun);
+	if (Math.random() > 0.5) {
+		draw_genetic_squares(canvas,
+			canvas.width,
+			canvas.height,
+			p_log_fun);
+	} else {
+		draw_randomized_squares(canvas,
+			canvas.width,
+			canvas.height,
+			p_log_fun);
+	}
 
 	return canvas;
+}
+
+//-------------------------------------------------
+function draw_genetic_squares(p_canvas :HTMLCanvasElement,
+	p_width_int  :number,
+	p_height_int :number,
+	p_log_fun) {
+
+
+	const dots_num_int :number = Math.floor(Math.random()*60);
+
+	const ctx = p_canvas.getContext('2d');
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	// BACKGROUND
+	const random_background_color_str = get_random_color();
+	ctx.fillStyle = random_background_color_str;
+	
+	ctx.fillRect(0, // i+20, 
+		0, // i+30, 
+		p_width_int,
+		p_height_int);
+
+	const x1_int :number = Math.floor(Math.random()*p_width_int);
+	const y1_int :number = Math.floor(Math.random()*p_height_int);
+
+	for (var i=0; i < dots_num_int; i++) {
+		draw_central_square();
+
+		
+
+	}
+
+	
+
+	//-------------------------------------------------
+	function draw_central_square() {
+		const x_int :number = Math.floor(Math.random()*(p_width_int+100));
+		const y_int :number = Math.floor(Math.random()*(p_height_int+100));
+			
+		ctx.fillStyle = get_random_color();
+
+		const random_square_scale :number = Math.floor(Math.random()*40);
+		
+
+
+		const [x2_int, y2_int] = draw_connections(x_int+random_square_scale/2, y_int+random_square_scale/2, random_square_scale, 1.0);
+		const [x3_int, y3_int] = draw_connections(x2_int, y2_int, random_square_scale, 0.8);
+		const [x4_int, y4_int] = draw_connections(x3_int, y3_int, random_square_scale, 0.6);
+		const [x5_int, y5_int] = draw_connections(x4_int, y4_int, random_square_scale, 0.4);
+		const [x6_int, y6_int] = draw_connections(x5_int, y5_int, random_square_scale, 0.3);
+		const [x7_int, y7_int] = draw_connections(x6_int, y6_int, random_square_scale, 0.2);
+
+
+		ctx.fillRect(x_int, // i+20, 
+			y_int, // i+30, 
+			random_square_scale,
+			random_square_scale);
+	}
+
+
+	function draw_connections(p_x_int :number, p_y_int :number, p_square_scale_int :number, p_opacity_f :number) :[number, number] {
+
+		var x_delta_int;
+		if (Math.random() > 0.5) {
+			x_delta_int = Math.floor(Math.random()*30);
+		} else {
+			x_delta_int = -Math.floor(Math.random()*10);
+		}
+
+		const x_end_int = p_x_int+x_delta_int;
+		const y_end_int = p_y_int + 20 + Math.floor(Math.random()*50);
+
+		ctx.beginPath();
+		ctx.moveTo(p_x_int, p_y_int);
+		ctx.lineTo(x_end_int, y_end_int);
+		ctx.strokeStyle = `rgba(0,0,0,${p_opacity_f})`;
+		ctx.stroke();
+
+
+
+		return [x_end_int, y_end_int];
+	}
+	
 }
 
 //-------------------------------------------------
@@ -58,7 +149,7 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 		p_width_int,
 		p_height_int);
 	
-	for (var i=0;i < dots_num_int;i++) {
+	for (var i=0; i < dots_num_int; i++) {
 		draw_simple_square();
 		draw_complex_square();
 	}
@@ -149,13 +240,13 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 	}
 	
 	//-------------------------------------------------
-	function get_random_color() :string {
-		const random_r_int    :number = Math.floor(Math.random()*255);
-		const random_g_int    :number = Math.floor(Math.random()*255);
-		const random_b_int    :number = Math.floor(Math.random()*255);
-		const random_rgba_str :string = "rgba("+random_r_int+","+random_g_int+","+random_b_int+",255)";
-		return random_rgba_str;
-	}
+}
 
-	//-------------------------------------------------
+//-------------------------------------------------
+function get_random_color() :string {
+	const random_r_int    :number = Math.floor(Math.random()*255);
+	const random_g_int    :number = Math.floor(Math.random()*255);
+	const random_b_int    :number = Math.floor(Math.random()*255);
+	const random_rgba_str :string = `rgba(${random_r_int},${random_g_int},${random_b_int},${Math.floor(Math.random()*255)}`;
+	return random_rgba_str;
 }
