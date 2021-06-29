@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 //-------------------------------------------------
 func Test__main(p_test *testing.T) {
 
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
+	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 
 	log_fun      := gf_core.Init_log_fun()
@@ -58,7 +58,7 @@ func Test__main(p_test *testing.T) {
 
 //-------------------------------------------------
 func test_posts_tagging(p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER","t__main_test.test_posts_tagging()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_posts_tagging()")
 
 
 }

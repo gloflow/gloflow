@@ -30,6 +30,26 @@ import (
 )
 
 //---------------------------------------------------
+// BOOKMARKS
+//---------------------------------------------------
+func db__bookmark__create(p_bookmark *GF_bookmark,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+
+
+	return nil
+}
+
+//---------------------------------------------------
+func db__bookmark__get(p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark, *gf_core.Gf_error) {
+
+
+
+	return nil, nil
+}
+
+//---------------------------------------------------
+// VAR
+//---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,
 	p_object_type_str string,
 	p_runtime_sys     *gf_core.Runtime_sys) (int64, *gf_core.Gf_error) {
@@ -237,7 +257,7 @@ func db__add_tags_to_post(p_post_title_str string,
 }
 
 //---------------------------------------------------
-//IMAGES
+// IMAGES
 //---------------------------------------------------
 func db__add_tags_to_image(p_image_id_str string,
 	p_tags_lst    []string,

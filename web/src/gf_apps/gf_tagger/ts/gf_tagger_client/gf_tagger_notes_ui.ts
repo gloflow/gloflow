@@ -26,7 +26,6 @@ export function init(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_obj_element,
 	p_log_fun) {
-	//p_log_fun('FUN_ENTER','gf_tagger_notes_ui.init()');
 
 	const notes_panel_btn = $(`
 		<div id='notes_panel_btn'>
@@ -95,12 +94,13 @@ export function init(p_obj_id_str :string,
 			//p_onComplete_fun,
 			()=>{
 				//----------------------
-				//GROW BACKGROUND
+				// GROW BACKGROUND
 				const background_padding_size_int :number = 30;
 				const notes_height_int            :number = $(notes_panel).find('#notes').height();
 				const notes_y_int                 :number = $(notes_panel).find('#notes').offset().top;
 				const new_height_int              :number = notes_y_int + notes_height_int + 2*background_padding_size_int;
 				$(background).css('height', new_height_int+'px');
+				
 				//----------------------
 			},
 			p_log_fun);

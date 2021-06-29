@@ -42,7 +42,7 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.pipeline__add_note()")
 
 	//----------------
-	//INPUT
+	// INPUT
 	if _, ok := p_input_data_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("note 'otype' not supplied",
 			"verify__missing_key_error",
@@ -70,9 +70,10 @@ func pipeline__add_note(p_input_data_map map[string]interface{},
 	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
 	object_extern_id_str := strings.TrimSpace(p_input_data_map["o_id"].(string))
 	body_str             := strings.TrimSpace(p_input_data_map["body"].(string))
+
 	//----------------
 
-	if  object_type_str == "post" {
+	if object_type_str == "post" {
 
 		post_title_str        := object_extern_id_str
 		creation_datetime_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
@@ -99,7 +100,7 @@ func pipeline__get_notes(p_req *http.Request,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.pipeline__get_notes()")
 
 	//-----------------
-	//INPUT
+	// INPUT
 	qs_map := p_req.URL.Query()
 
 	if _,ok := qs_map["otype"]; !ok {
@@ -120,6 +121,7 @@ func pipeline__get_notes(p_req *http.Request,
 
 	object_type_str      := strings.TrimSpace(qs_map["otype"][0])
 	object_extern_id_str := strings.TrimSpace(qs_map["o_id"][0])
+
 	//-----------------
 
 	tagger_notes_lst := []*Gf_note{}
@@ -131,7 +133,7 @@ func pipeline__get_notes(p_req *http.Request,
 			return nil, gf_err
 		}
 		
-		for _,s := range notes_lst {
+		for _, s := range notes_lst {
 			note := &Gf_note{
 				User_id_str:         s.User_id_str,
 				Body_str:            s.Body_str,

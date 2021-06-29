@@ -30,7 +30,6 @@ export function init_tag_input(p_obj_id_str :string,
 	p_on_tag_ui_add_fun,
 	p_on_tag_ui_remove_fun,
 	p_log_fun) {
-	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tag_input()');
 	
 	const tagging_input_ui_element = init_tagging_input_ui_element(p_obj_id_str,
 		p_obj_type_str,
@@ -42,18 +41,18 @@ export function init_tag_input(p_obj_id_str :string,
 			<div class="add_tags_button">add tags</div>
 		</div>`);
 
-	//OPEN TAG INPUT UI
+	// OPEN TAG INPUT UI
 	$(tagging_ui_element).find('.add_tags_button').on('click', (p_event)=>{
 
-		//remove the tagging_input_container if its already displayed
-		//for tagging another post_element
+		// remove the tagging_input_container if its already displayed
+		// for tagging another post_element
 		if ($('#tagging_input_container') != null) {
 			$('#tagging_input_container').remove();
 		}
 
-		//post_element_element - as in part of a post. post_element_element because its a 
-		//                       html element of the post_element
-		//final DivElement post_element_element = p_event.target.parent.parent;
+		// post_element_element - as in part of a post. post_element_element because its a 
+		//                        html element of the post_element
+		// final DivElement post_element_element = p_event.target.parent.parent;
 		place_tagging_input_ui_element(tagging_input_ui_element,
 			p_obj_element, //post_element_element,
 			p_log_fun);
@@ -83,9 +82,10 @@ export function init_tag_input(p_obj_id_str :string,
 			//subscription.pause();
 		}
 	});*/
+
 	//------------------------
-	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
-	//              but unline mouseon/mouseout it will not fire if its children are entered/left.
+	// IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
+	//               but unline mouseon/mouseout it will not fire if its children are entered/left.
 	
 	$(p_obj_element).on('mouseenter', (p_event)=>{
 		$(p_obj_element).append(tagging_ui_element);
@@ -94,26 +94,26 @@ export function init_tag_input(p_obj_id_str :string,
 	$(p_obj_element).on('mouseleave', (p_event)=>{
 		$(tagging_ui_element).remove();
 
-		////relatedTarget - The relatedTargert property can be used with the mouseover 
-		////                event to indicate the element the cursor just exited, 
-		////                or with the mouseout event to indicate the element the 
-		////                cursor just entered.
-		//if (p_event.relatedTarget != null && 
-		//	!p_event.relatedTarget.classes.contains('add_tags_button')) {
+		// // relatedTarget - The relatedTargert property can be used with the mouseover 
+		// //                 event to indicate the element the cursor just exited, 
+		// //                 or with the mouseout event to indicate the element the 
+		// //                 cursor just entered.
+		// if (p_event.relatedTarget != null && 
+		// 	!p_event.relatedTarget.classes.contains('add_tags_button')) {
 		//	tagging_ui_element.remove();
-		//}
+		// }
 	});
 	//------------------------
 }
+
 //-----------------------------------------------------
-//TAGS UI UTILS
+// TAGS UI UTILS
 //-----------------------------------------------------
 function init_tagging_input_ui_element(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_on_tags_created_fun,
 	p_on_tag_ui_remove_fun,
 	p_log_fun) {
-	//p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_tagging_input_ui_element()');
 	
 	const tagging_input_ui_element = $(`
 		<div id="tagging_input_container">
@@ -125,7 +125,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 	
 	const tags_input_element = $(tagging_input_ui_element).find('#tags_input');
 
-	//'ESCAPE' key
+	// 'ESCAPE' key
 	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
 			//remove any previously present tagging_input_container's
@@ -136,8 +136,8 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 		}
 	});
 
-	//to handlers for the same thing, one for the user clicking on the button,
-	//the other for the user pressing 'enter'  
+	// to handlers for the same thing, one for the user clicking on the button,
+	// the other for the user pressing 'enter'  
 	$(tags_input_element).on('keyup', (p_event)=>{
 
 			//'ENTER' key
@@ -172,7 +172,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 				p_log_fun);
 		});
 	
-	//TAG INPUT CLOSE BUTTON
+	// TAG INPUT CLOSE BUTTON
 	$(tagging_input_ui_element).find('#close_tagging_input_container_button').on('click',(p_event)=>{
 
 		const tagging_input_container_element = $(p_event.target).parent();

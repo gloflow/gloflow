@@ -20,21 +20,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 
 //-----------------------------------------------------
-//SNIPPETS
+// NOTES
 //-----------------------------------------------------
 export function get_notes(p_object_id_str :string,
     p_object_type_str :string,
     p_onComplete_fun,
     p_onError_fun,
     p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_tagger_client.get_notes()');
+    p_log_fun('FUN_ENTER', 'gf_tagger_client.get_notes()');
 
     const data_map = {
         'otype': p_object_type_str,
         'o_id':  p_object_id_str
     };
-    const url_str = '/v1/tags/get_notes';
 
+    const url_str = '/v1/tags/notes/get';
     $.ajax({
         'url':         url_str,
         'type':        'GET',
@@ -55,6 +55,7 @@ export function get_notes(p_object_id_str :string,
         }
     });
 }
+
 //-----------------------------------------------------
 export function add_note_to_obj(p_body_str :string,
     p_object_id_str   :string,
@@ -62,15 +63,15 @@ export function add_note_to_obj(p_body_str :string,
     p_onComplete_fun,
     p_onError_fun,
     p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_tagger_client.add_note_to_obj()');
+    p_log_fun('FUN_ENTER', 'gf_tagger_client.add_note_to_obj()');
 
     const data_map = {
         'otype': p_object_type_str,
         'o_id':  p_object_id_str,
         'body':  p_body_str,
     };
-    const url_str = '/v1/tags/add_note';
 
+    const url_str = '/v1/tags/notes/create';
     $.ajax({
         'url':         url_str,
         'type':        'POST',
@@ -86,8 +87,9 @@ export function add_note_to_obj(p_body_str :string,
         }
     });
 }
+
 //-----------------------------------------------------
-//TAGS
+// TAGS
 //-----------------------------------------------------
 export function add_tags_to_obj(p_tags_lst :string[],  
     p_object_id_str   :string,
@@ -104,8 +106,8 @@ export function add_tags_to_obj(p_tags_lst :string[],
         'o_id':  p_object_id_str,
         'tags':  tags_str,
     };
-    const url_str = '/v1/tags/add_tags';
 
+    const url_str = '/v1/tags/create';
     $.ajax({
         'url':         url_str,
         'type':        'POST',
@@ -121,6 +123,7 @@ export function add_tags_to_obj(p_tags_lst :string[],
         }
     });
 }
+
 //-----------------------------------------------------
 export function get_objs_with_tag(p_tag_str :string, 
     p_object_type_str :string,
@@ -132,7 +135,7 @@ export function get_objs_with_tag(p_tag_str :string,
     //this REST api supports supplying multiple tags to the backend, and it will return all of them
     //but Im doing loading from server per tag click, to make initial 
     //load times fast due to minimum network transfers
-    const url_str = '/v1/tags/get_objects_with_tags?tags='+p_tag_str+'&otype='+p_object_type_str;
+    const url_str = '/v1/tags/objects?tags='+p_tag_str+'&otype='+p_object_type_str;
 
     $.ajax({
         'url':         url_str,

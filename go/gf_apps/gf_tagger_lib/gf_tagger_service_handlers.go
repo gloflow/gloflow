@@ -33,38 +33,34 @@ func init_handlers(p_templates_paths_map map[string]string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
 
-	//---------------------
 	// TEMPLATES
-	
 	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	/*main_template_filename_str := "gf_tag_objects.html"
-	templates_dir_path_str     := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
+	//---------------------
+	// BOOKMARKS
+	//---------------------
+	// CREATE
+	gf_rpc_lib.Create_handler__http("/v1/tags/bookmark/create",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, templates_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
+			if p_req.Method == "POST" {
 
-	/*template_path_str      := "./templates/gf_tag_objects.html"
-	tag_objects__tmpl, err := template.New("gf_tag_objects.html").ParseFiles(template_path_str)
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a template",
-			"template_create_error",
-			&map[string]interface{}{"template_path_str":template_path_str,},
-			err, "gf_images_lib", p_runtime_sys)
-		return gf_err
-	}*/
+
+
+			}
+
+			return nil, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
 	// NOTES
 	//---------------------
-	// ADD_NOTE
-	
-	gf_rpc_lib.Create_handler__http("/v1/tags/add_note",
+	// CREATE
+	gf_rpc_lib.Create_handler__http("/v1/tags/notes/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 			if p_req.Method == "POST" {
 				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -75,11 +71,11 @@ func init_handlers(p_templates_paths_map map[string]string,
 				if gf_err != nil {
 					return nil, gf_err
 				}
+
 				//------------
 	
 				gf_err = pipeline__add_note(i_map, p_runtime_sys)
 				if gf_err != nil {
-					gf_rpc_lib.Error__in_handler("/v1/tags/add_note", "add_note pipeline failed", gf_err, p_resp, p_runtime_sys)
 					return nil, gf_err
 				}
 	
@@ -100,7 +96,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// GET_NOTES
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/get_notes",
+	gf_rpc_lib.Create_handler__http("/v1/tags/notes/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
@@ -108,7 +104,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				notes_lst, gf_err := pipeline__get_notes(p_req, p_runtime_sys)
 				if gf_err != nil {
-					gf_rpc_lib.Error__in_handler("/v1/tags/get_notes", "get_notes pipeline failed", gf_err, p_resp, p_runtime_sys)
 					return nil, gf_err 
 				}
 
@@ -131,7 +126,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADD_TAGS
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/add_tags",
+	gf_rpc_lib.Create_handler__http("/v1/tags/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 		
 
@@ -149,7 +144,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				gf_err = pipeline__add_tags(i_map, p_runtime_sys)
 				if gf_err != nil {
-					gf_rpc_lib.Error__in_handler("/v1/tags/add_tags", "add_tags pipeline failed", gf_err, p_resp, p_runtime_sys)
 					return nil, gf_err
 				}
 
@@ -170,7 +164,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/add_tags",
+	gf_rpc_lib.Create_handler__http("/v1/tags/objects",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
@@ -181,7 +175,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 					gf_templates.tag_objects__subtemplates_names_lst,
 					p_runtime_sys)
 				if gf_err != nil {
-					gf_rpc_lib.Error__in_handler("/v1/tags/objects", "failed to get html/json objects with tag", gf_err, p_resp, p_runtime_sys)
 					return nil, gf_err
 				}
 
