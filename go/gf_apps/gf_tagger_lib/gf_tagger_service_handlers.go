@@ -21,6 +21,7 @@ package gf_tagger_lib
 
 import (
 	"time"
+	"context"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -62,133 +63,148 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// NOTES
 	//---------------------
 	// ADD_NOTE
-
-	http.HandleFunc("/tags/add_note", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/add_note ----------")
-
-		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			//------------
-			// INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-			if gf_err != nil {
-				return
+	
+	gf_rpc_lib.Create_handler__http("/v1/tags/add_note",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+			if p_req.Method == "POST" {
+				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+	
+				//------------
+				// INPUT
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+				//------------
+	
+				gf_err = pipeline__add_note(i_map, p_runtime_sys)
+				if gf_err != nil {
+					gf_rpc_lib.Error__in_handler("/v1/tags/add_note", "add_note pipeline failed", gf_err, p_resp, p_runtime_sys)
+					return nil, gf_err
+				}
+	
+				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+	
+				go func() {
+					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/add_note", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				}()
+				
+				data_map := map[string]interface{}{}
+				return data_map, nil
 			}
-			//------------
 
-			gf_err = pipeline__add_note(i_map, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_note", "add_note pipeline failed", gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/add_note", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
 	// GET_NOTES
 
-	http.HandleFunc("/tags/get_notes", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/get_notes ----------")
+	gf_rpc_lib.Create_handler__http("/v1/tags/get_notes",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "GET" {
+				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			notes_lst, gf_err := pipeline__get_notes(p_req, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/get_notes", "get_notes pipeline failed", gf_err, p_resp, p_runtime_sys)
-				return 
+				notes_lst, gf_err := pipeline__get_notes(p_req, p_runtime_sys)
+				if gf_err != nil {
+					gf_rpc_lib.Error__in_handler("/v1/tags/get_notes", "get_notes pipeline failed", gf_err, p_resp, p_runtime_sys)
+					return nil, gf_err 
+				}
+
+				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+				go func() {
+					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/get_notes", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				}()
+
+				data_map := map[string]interface{}{"notes_lst": notes_lst,}
+				return data_map, nil
 			}
 
-			data_map := map[string][]*Gf_note{"notes_lst":notes_lst,}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/get_notes", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
 	// TAGS
 	//---------------------
 	// ADD_TAGS
 
-	http.HandleFunc("/tags/add_tags", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /tags/add_tags ----------")
+	gf_rpc_lib.Create_handler__http("/v1/tags/add_tags",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		
 
-		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "POST" {
+				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			//------------
-			//INPUT
-			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-			if gf_err != nil {
-				return
+				//------------
+				// INPUT
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//------------
+
+				gf_err = pipeline__add_tags(i_map, p_runtime_sys)
+				if gf_err != nil {
+					gf_rpc_lib.Error__in_handler("/v1/tags/add_tags", "add_tags pipeline failed", gf_err, p_resp, p_runtime_sys)
+					return nil, gf_err
+				}
+
+				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+				go func() {
+					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/add_tags", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				}()
+
+				data_map := map[string]interface{}{}
+				return data_map, nil
 			}
-			//------------
 
-			gf_err = pipeline__add_tags(i_map, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/add_tags", "add_tags pipeline failed", gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/add_tags", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_runtime_sys)
 	
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
-	http.HandleFunc("/tags/objects", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /tags/objects ----------")
+	gf_rpc_lib.Create_handler__http("/v1/tags/add_tags",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "GET" {
+				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-			objects_with_tag_lst, gf_err := pipeline__get_objects_with_tag(p_req, p_resp, 
-				gf_templates.tag_objects__tmpl,
-				gf_templates.tag_objects__subtemplates_names_lst,
-				p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/tags/objects", "failed to get html/json objects with tag", gf_err, p_resp, p_runtime_sys)
-				return
+				objects_with_tag_lst, gf_err := pipeline__get_objects_with_tag(p_req, p_resp, 
+					gf_templates.tag_objects__tmpl,
+					gf_templates.tag_objects__subtemplates_names_lst,
+					p_runtime_sys)
+				if gf_err != nil {
+					gf_rpc_lib.Error__in_handler("/v1/tags/objects", "failed to get html/json objects with tag", gf_err, p_resp, p_runtime_sys)
+					return nil, gf_err
+				}
+
+				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+				go func() {
+					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/objects", start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				}()
+
+				// if the response_format was HTML then objects_with_tag_lst is nil,
+				// in which case there is no json to send back
+				if objects_with_tag_lst != nil {
+
+					data_map := map[string]interface{}{"objects_with_tag_lst": objects_with_tag_lst,}
+					return data_map, nil
+				} else {
+					return nil, nil
+				}
 			}
 
-			//if the response_format was HTML then objects_with_tag_lst is nil,
-			//in which case there is no json to send back
-			if objects_with_tag_lst != nil {
-
-				data_map := map[string]interface{}{"objects_with_tag_lst":objects_with_tag_lst,}
-				gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-			}
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/tags/objects", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_runtime_sys)
 
 	//---------------------
 
