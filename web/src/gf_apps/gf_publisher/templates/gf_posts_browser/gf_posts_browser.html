@@ -74,7 +74,7 @@
 				{{- if .post_has_tags_bool}}
 				<div class='tags_container'>
 				{{- range .post_tags_lst}}
-					<a class='gf_post_tag' href ='/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
+					<a class='gf_post_tag' href ='/v1/tags/objects?tag={{ . }}&otype=post'>#{{ . }}</a>
 				{{- end}}
 				</div>
 				{{- end}}

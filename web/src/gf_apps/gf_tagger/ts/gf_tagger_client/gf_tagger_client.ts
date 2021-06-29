@@ -33,7 +33,7 @@ export function get_notes(p_object_id_str :string,
         'otype': p_object_type_str,
         'o_id':  p_object_id_str
     };
-    const url_str = '/tags/get_notes';
+    const url_str = '/v1/tags/get_notes';
 
     $.ajax({
         'url':         url_str,
@@ -69,7 +69,7 @@ export function add_note_to_obj(p_body_str :string,
         'o_id':  p_object_id_str,
         'body':  p_body_str,
     };
-    const url_str = '/tags/add_note';
+    const url_str = '/v1/tags/add_note';
 
     $.ajax({
         'url':         url_str,
@@ -104,7 +104,7 @@ export function add_tags_to_obj(p_tags_lst :string[],
         'o_id':  p_object_id_str,
         'tags':  tags_str,
     };
-    const url_str = '/tags/add_tags';
+    const url_str = '/v1/tags/add_tags';
 
     $.ajax({
         'url':         url_str,
@@ -132,7 +132,7 @@ export function get_objs_with_tag(p_tag_str :string,
     //this REST api supports supplying multiple tags to the backend, and it will return all of them
     //but Im doing loading from server per tag click, to make initial 
     //load times fast due to minimum network transfers
-    const url_str = '/tags/get_objects_with_tags?tags='+p_tag_str+'&otype='+p_object_type_str;
+    const url_str = '/v1/tags/get_objects_with_tags?tags='+p_tag_str+'&otype='+p_object_type_str;
 
     $.ajax({
         'url':         url_str,

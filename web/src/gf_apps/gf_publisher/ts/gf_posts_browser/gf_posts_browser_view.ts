@@ -171,11 +171,12 @@ function create_posts_from_page(p_page_lst :Object[],
 
         for (var tag_str of tags_lst) {
 
-            const a :HTMLAnchorElement = <HTMLAnchorElement> $('<a class="gf_post_tag" href="/tags/objects?tag='+tag_str+'&otype=post">#'+tag_str+'</a>')[0];
+            const a :HTMLAnchorElement = <HTMLAnchorElement> $('<a class="gf_post_tag" href="/v1/tags/objects?tag='+tag_str+'&otype=post">#'+tag_str+'</a>')[0];
             $(tags_container).append(a);
         }
         return post;
     }
+
     //--------------------------------------------------------
     const posts_infos_lst :Object[] = [];
 
@@ -200,6 +201,7 @@ function create_posts_from_page(p_page_lst :Object[],
 
     return posts_infos_lst;
 }
+
 //--------------------------------------------------------
 function init_posts_images(p_posts_infos_lst :Object[],
     p_on_complete_fun,
@@ -321,7 +323,7 @@ function init_post(p_post :HTMLDivElement,
             //        data structures, but on the client there is no duplication detection)
 
             for (var tag_str of p_added_tags_lst) {
-                const tag_url_str        :string            = '/tags/view_objects?tag='+tag_str+'&otype=post';
+                const tag_url_str        :string            = '/v1/tags/view_objects?tag='+tag_str+'&otype=post';
                 const new_tag_ui_element :HTMLAnchorElement = <HTMLAnchorElement> $('<a class="gf_post_tag">#'+tag_str+'</a>')[0];
 
                 $(new_tag_ui_element).attr('href',tag_url_str);

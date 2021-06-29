@@ -58,7 +58,7 @@
 					<div class='post_tags_container'>
 
 					{{- range .Post_tags_lst}}
-						<div class='post_tag'><a href="/tags/objects?tag={{.}}&otype=post">#{{.}}</a></div>
+						<div class='post_tag'><a href="/v1/tags/objects?tag={{.}}&otype=post">#{{.}}</a></div>
 					{{- end}}
 					</div>
 				</div>
@@ -88,7 +88,7 @@
 						<div class='tags_container'>
 							<span>tags:</span>
 							{{- range .tags_lst}}
-							<a class='gf_post_element_tag' href='/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
+							<a class='gf_post_element_tag' href='/v1/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
 							{{- end}}
 						</div>
 					</div>
@@ -109,7 +109,7 @@
 							<div class='tags_container'>
 								<span>tags:</span>
 								{{- range .tags_lst}}
-								<a class='gf_post_element_tag' href='/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
+								<a class='gf_post_element_tag' href='/v1/tags/objects?tag={{.}}&otype=image'>{{.}}</a>
 								{{- end}}
 							</div>
 						</div>

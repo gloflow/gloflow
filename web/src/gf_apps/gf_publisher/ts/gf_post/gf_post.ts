@@ -107,7 +107,7 @@ export function init(p_log_fun) {
 
     $('.post_element_video').each((p_i, p_post_element)=>{
 
-        //ADD!! - extract video ID properly
+        // ADD!! - extract video ID properly
         gf_tagger_input_ui.init_tag_input('fix',
             'video',
             p_post_element,
@@ -116,16 +116,17 @@ export function init(p_log_fun) {
             (p_added_tags_lst :string[])=>{
                 view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
             },
-            ()=>{}, //p_onTagUIAdd_fun
-            ()=>{}, //p_onTagUIRemove_fun
+            ()=>{}, // p_onTagUIAdd_fun
+            ()=>{}, // p_onTagUIRemove_fun
             p_log_fun);
     });
+
     //------------------------------
 
-    //final List<String> tags_lst = queryAll('.post_tag').map((p_element) => p_element.text);
-    //gf_post_tag_mini_view.init_tags_mini_view(tags_lst,
-    //                                          p_log_fun);
+    // final List<String> tags_lst = queryAll('.post_tag').map((p_element) => p_element.text);
+    // gf_post_tag_mini_view.init_tags_mini_view(tags_lst, p_log_fun);
 }
+
 //-----------------------------------------------------
 function view_added_tags(p_post_element,
     p_added_tags_lst :string[],
@@ -135,14 +136,15 @@ function view_added_tags(p_post_element,
     const tags_container_element = $(p_post_element).find('.tags_container');
 
     for (var tag_str of p_added_tags_lst) {
-        const tag_url_str :string = '/tags/view_objects?tag='+tag_str+'&otype=image';
+        const tag_url_str :string = '/v1/tags/view_objects?tag='+tag_str+'&otype=image';
         const new_tag_ui_element  = $('<a class="gf_post_element_tag">'+tag_str+'</a>');
-        $(new_tag_ui_element).attr('href',tag_url_str);
+        $(new_tag_ui_element).attr('href', tag_url_str);
 
-        //IMPORTANT!! - add the new tag link to the DOM
+        // IMPORTANT!! - add the new tag link to the DOM
         $(tags_container_element).append(new_tag_ui_element);
     }
 }
+
 //-----------------------------------------------------
 function get_post_element_tags_num(p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_post.get_post_element_tags_num()');

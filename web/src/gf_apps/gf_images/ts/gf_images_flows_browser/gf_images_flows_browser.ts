@@ -269,7 +269,7 @@ function load_new_page(p_flow_name_str :string,
 			if (img__tags_lst != null && img__tags_lst.length > 0) {
 				$.each(img__tags_lst, function(p_i, p_tag_str) {
 					const tag = $(
-						"<a class='gf_image_tag' href ='/tags/objects?tag="+p_tag_str+"&otype=image'>"+
+						"<a class='gf_image_tag' href ='/v1/tags/objects?tag="+p_tag_str+"&otype=image'>"+
 							p_tag_str+
 						"</a>");
 
