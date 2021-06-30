@@ -26,7 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //---------------------------------------------------
@@ -91,7 +91,7 @@ func db__get_post_notes(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
 
-	post, gf_err := gf_publisher_lib.DB__get_post(p_post_title_str, p_runtime_sys)
+	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -120,7 +120,7 @@ func db__add_post_note(p_note *Gf_note,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_post_note()")
 
 	//--------------------
-	post_note := &gf_publisher_lib.Gf_post_note{
+	post_note := &gf_publisher_core.Gf_post_note{
 		User_id_str:           p_note.User_id_str,
 		Body_str:              p_note.Body_str,
 		Creation_datetime_str: p_note.Creation_datetime_str,
@@ -153,7 +153,7 @@ func db__add_post_note(p_note *Gf_note,
 func db__get_posts_with_tag(p_tag_str string,
 	p_page_index_int int,
 	p_page_size_int  int,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_lib.Gf_post, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_core.Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_tag_str - %s", p_tag_str))
 
@@ -192,7 +192,7 @@ func db__get_posts_with_tag(p_tag_str string,
 		return nil, gf_err
 	}
 
-	var posts_lst []*gf_publisher_lib.Gf_post
+	var posts_lst []*gf_publisher_core.Gf_post
 	err := cursor.All(ctx, &posts_lst)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag",

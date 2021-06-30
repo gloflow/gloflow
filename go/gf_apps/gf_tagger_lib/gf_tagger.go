@@ -24,7 +24,7 @@ import (
 	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //---------------------------------------------------
@@ -70,7 +70,7 @@ func add_tags_to_object(p_tags_str string,
 		// POST
 		case "post":
 			post_title_str      := p_object_extern_id_str
-			exists_bool, gf_err := gf_publisher_lib.DB__check_post_exists(post_title_str, p_runtime_sys)
+			exists_bool, gf_err := gf_publisher_core.DB__check_post_exists(post_title_str, p_runtime_sys)
 			if gf_err != nil {
 				return gf_err
 			}
@@ -197,7 +197,7 @@ func parse_tags(p_tags_str string,
 				"tags_lst":               tags_lst,
 				"max_tags_bulk_size_int": p_max_tags_bulk_size_int,
 			},
-			nil, "gf_publisher_lib", p_runtime_sys)
+			nil, "gf_tagger_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -210,7 +210,7 @@ func parse_tags(p_tags_str string,
 					"tag_str":                       tag_str,
 					"max_tag_characters_number_int": p_max_tag_characters_number_int,
 				},
-				nil, "gf_publisher_lib", p_runtime_sys)
+				nil, "gf_tagger_lib", p_runtime_sys)
 			return nil, gf_err
 		}
 	}

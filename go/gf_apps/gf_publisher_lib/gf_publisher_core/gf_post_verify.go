@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_publisher_lib
+package gf_publisher_core
 
 import (
 	"fmt"
@@ -29,12 +29,12 @@ import (
 // external post_info is the one that comes from outside the system
 // (it does not have an id assigned to it)
 
-func verify_external_post_info(p_post_info_map map[string]interface{},
+func Verify_external_post_info(p_post_info_map map[string]interface{},
 	p_max_title_chars_int       int, // 100
 	p_max_description_chars_int int, // 1000
 	p_post_element_tag_max_int  int, // 20
 	p_runtime_sys               *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_verify.verify_external_post_info()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_verify.Verify_external_post_info()")
 
 	//-------------------
 	// CLIENT_TYPE
@@ -207,7 +207,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 	// POST_ELEMENT_TYPE
 	post_element_type_str := p_post_element_info_map["type_str"].(string)
 
-	gf_err := verify_post_element_type(post_element_type_str, p_runtime_sys)
+	gf_err := Verify_post_element_type(post_element_type_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -252,7 +252,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 	return nil
 }
 //---------------------------------------------------
-func verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func Verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	if !(p_type_str == "link"  ||
 		p_type_str == "image"  ||

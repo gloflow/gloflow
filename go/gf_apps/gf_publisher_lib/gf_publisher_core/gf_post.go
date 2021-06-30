@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_publisher_lib
+package gf_publisher_core
 
 import (
 	"fmt"
@@ -63,30 +63,34 @@ type Gf_post_note struct {
 }
 
 //------------------------------------------------
-func create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post.create_new_post()")
-	p_runtime_sys.Log_fun("INFO",     "p_post_info_map - "+fmt.Sprint(p_post_info_map))
+func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.Create_new_post()")
+	p_runtime_sys.Log_fun("INFO",      "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
 	// IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
 	// assert(p_post_info_map.containsKey("tags_lst"));
 	// assert(p_post_info_map["tags_lst"] is List);
 
 	post_title_str := p_post_info_map["title_str"].(string)
+	
 	//--------------------
 	// POST ELEMENTS
 
 	post_elements_infos_lst := p_post_info_map["post_elements_lst"].([]interface{})
 	post_elements_lst       := create_post_elements(post_elements_infos_lst, post_title_str, p_runtime_sys)
 	p_runtime_sys.Log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
+
 	//--------------------
 	// CREATION DATETIME
 
 	// strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 	creation_datetime_str := time.Now().String()
+
 	//--------------------
 	// FIX!! - id_str should be a hash, just as events/images have their ID"s generated as hashes
 	
 	id_str := fmt.Sprintf("%s:%s", post_title_str, creation_datetime_str)
+
 	//--------------------
 	// OPTIONAL VALUES
 

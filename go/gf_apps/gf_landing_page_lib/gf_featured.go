@@ -24,8 +24,8 @@ import (
 	"strconv"
 	"net/url"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //------------------------------------------------
@@ -94,7 +94,7 @@ func get_featured_posts(p_max_random_cursor_position_int int, // 500
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point
-	posts_lst, gf_err := gf_publisher_lib.DB__get_random_posts_range(p_elements_num_to_get_int,
+	posts_lst, gf_err := gf_publisher_core.DB__get_random_posts_range(p_elements_num_to_get_int,
 		p_max_random_cursor_position_int,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -106,7 +106,7 @@ func get_featured_posts(p_max_random_cursor_position_int int, // 500
 }
 
 //------------------------------------------
-func posts_to_featured(p_posts_lst []*gf_publisher_lib.Gf_post, p_runtime_sys *gf_core.Runtime_sys) []*Gf_featured_post {
+func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *gf_core.Runtime_sys) []*Gf_featured_post {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
 
 	featured_posts_lst := []*Gf_featured_post{}
@@ -135,7 +135,7 @@ func posts_to_featured(p_posts_lst []*gf_publisher_lib.Gf_post, p_runtime_sys *g
 }
 
 //------------------------------------------
-func post_to_featured(p_post *gf_publisher_lib.Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_featured_post {
+func post_to_featured(p_post *gf_publisher_core.Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_featured_post {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)

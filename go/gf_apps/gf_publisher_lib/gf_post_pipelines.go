@@ -25,13 +25,14 @@ import (
 	"encoding/json"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //------------------------------------------------
 // CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) (*Gf_post, string, *gf_core.Gf_error) {
+	p_runtime_sys            *gf_core.Runtime_sys) (*gf_publisher_core.Gf_post, string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
@@ -41,7 +42,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	post_element_tag_max_int  := 20
 
 	p_runtime_sys.Log_fun("INFO","p_post_info_map - "+fmt.Sprint(p_post_info_map))
-	verified_post_info_map, gf_err := verify_external_post_info(p_post_info_map,
+	verified_post_info_map, gf_err := gf_publisher_core.Verify_external_post_info(p_post_info_map,
 		max_title_chars_int,
 		max_description_chars_int,
 		post_element_tag_max_int,
@@ -52,7 +53,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 
 	//----------------------
 	// CREATE POST
-	post, gf_err := create_new_post(verified_post_info_map, p_runtime_sys)
+	post, gf_err := gf_publisher_core.Create_new_post(verified_post_info_map, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
@@ -61,7 +62,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 
 	//----------------------
 	// PERSIST POST
-	gf_err = DB__create_post(post, p_runtime_sys)
+	gf_err = gf_publisher_core.DB__create_post(post, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
@@ -88,7 +89,7 @@ func Pipeline__get_post(p_post_title_str string,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
-	post, gf_err := DB__get_post(p_post_title_str, p_runtime_sys)
+	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

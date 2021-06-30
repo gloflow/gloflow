@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_publisher_lib
+package gf_publisher_core
 
 import (
 	"time"
@@ -33,7 +33,7 @@ import (
 //---------------------------------------------------
 func DB__get_post(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__get_post()")
 
 	ctx := context.Background()
 
@@ -46,7 +46,7 @@ func DB__get_post(p_post_title_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to get a post from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -57,7 +57,7 @@ func DB__get_post(p_post_title_str string,
 // CREATE
 func DB__create_post(p_post *Gf_post,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__create_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__create_post()")
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
@@ -78,7 +78,7 @@ func DB__create_post(p_post *Gf_post,
 		gf_err := gf_core.Mongo__handle_error("failed to create a post in the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return gf_err
 	}*/
 
@@ -89,7 +89,7 @@ func DB__create_post(p_post *Gf_post,
 // UPDATE
 func DB__update_post(p_post *Gf_post, 
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__update_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__update_post()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -101,7 +101,7 @@ func DB__update_post(p_post *Gf_post,
 		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"post_title_str":p_post.Title_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -112,7 +112,7 @@ func DB__update_post(p_post *Gf_post,
 // DELETE
 func DB__mark_as_deleted_post(p_post_title_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__mark_as_deleted_post()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__mark_as_deleted_post()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -125,7 +125,7 @@ func DB__mark_as_deleted_post(p_post_title_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to mark as deleted a gf_post in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -143,7 +143,7 @@ func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sy
 		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
 			"mongodb_delete_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return gf_err
 	}
 	return nil
@@ -195,7 +195,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 				"cursor_start_position_int": p_cursor_start_position_int,
 				"elements_num_int":          p_elements_num_int,
 			},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -254,7 +254,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 				"cursor_start_position_int": p_cursor_position_int,
 				"posts_num_to_get_int":      p_posts_num_to_get_int,
 			},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -301,7 +301,7 @@ func DB__check_post_exists(p_post_title_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to check if the post exists in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_lib", p_runtime_sys)
+			err, "gf_publisher_core", p_runtime_sys)
 		return false, gf_err
 	}
 	if count_int > 0 {

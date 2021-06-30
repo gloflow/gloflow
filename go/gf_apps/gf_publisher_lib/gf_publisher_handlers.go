@@ -29,6 +29,7 @@ import (
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //-------------------------------------------------
@@ -173,16 +174,15 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	http.HandleFunc("/posts/status", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/status ----------")
 	})
+	
 	//---------------------
-	/*http.HandleFunc("/posts/create_with_updates",func(p_resp http.ResponseWriter,
-													p_req *http.Request) {
-			p_log_fun("INFO","INCOMING HTTP REQUEST - /posts/create_with_updates ----------")
-		})*/
-
 	http.HandleFunc("/posts/update", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/update ----------")
+
+
 	})
 
+	//---------------------
 	http.HandleFunc("/posts/delete", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/delete ----------")
 		if p_req.Method == "POST" {
@@ -197,7 +197,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 			post_title_str := i_map["title_str"].(string)
 			//------------
 
-			gf_err = DB__mark_as_deleted_post(post_title_str, p_runtime_sys)
+			gf_err = gf_publisher_core.DB__mark_as_deleted_post(post_title_str, p_runtime_sys)
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/posts/delete", "delete_post pipeline failed", gf_err, p_resp, p_runtime_sys)
 				return 

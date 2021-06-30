@@ -23,10 +23,11 @@ import (
 	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //---------------------------------------------------
-func posts_browser__render_template(p_posts_pages_lst [][]*Gf_post, // list-of-lists
+func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_post, // list-of-lists
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_posts_page_size_int    int, // 5

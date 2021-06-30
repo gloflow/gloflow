@@ -22,6 +22,7 @@ package gf_publisher_lib
 import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
@@ -35,7 +36,7 @@ type Gf_images_client_result struct {
 }
 
 //---------------------------------------------------
-func process_external_images(p_post *Gf_post,
+func process_external_images(p_post *gf_publisher_core.Gf_post,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
@@ -45,7 +46,7 @@ func process_external_images(p_post *Gf_post,
 
 	post_elements_images_urls_lst              := []string{}
 	post_elements_images_origin_pages_urls_str := []string{}
-	post_elements_map                          := map[string]*Gf_post_element{}
+	post_elements_map                          := map[string]*gf_publisher_core.Gf_post_element{}
 
 	for _, post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == "image" {
@@ -148,7 +149,7 @@ func process_external_images(p_post *Gf_post,
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
 	// in the initiation of image post_elements)
-	gf_err = DB__update_post(p_post, p_runtime_sys)
+	gf_err = gf_publisher_core.DB__update_post(p_post, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
 	}
@@ -159,7 +160,7 @@ func process_external_images(p_post *Gf_post,
 }
 
 //---------------------------------------------------
-func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_element,
+func process_external_images__via_http(p_post_elements_map map[string]*gf_publisher_core.Gf_post_element,
 	p_post_elements_images_urls_lst              []string,
 	p_post_elements_images_origin_pages_urls_str []string,
 	p_image_job_client_type_str                  string,
@@ -223,7 +224,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*Gf_post_e
 }
 
 //---------------------------------------------------
-func process_external_images__in_process(p_post_elements_map map[string]*Gf_post_element,
+func process_external_images__in_process(p_post_elements_map map[string]*gf_publisher_core.Gf_post_element,
 	p_post_elements_images_urls_lst              []string,
 	p_post_elements_images_origin_pages_urls_str []string,
 	p_image_job_client_type_str                  string,

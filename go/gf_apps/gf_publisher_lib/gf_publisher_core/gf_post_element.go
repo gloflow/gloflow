@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_publisher_lib
+package gf_publisher_core
 
 import (
 	"fmt"
@@ -145,12 +145,12 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 }
 
 //---------------------------------------------------
-func get_post_elements_of_type(p_post *Gf_post,
+func Get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_post_element, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_post_elements_of_type()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.Get_post_elements_of_type()")
 	
-	gf_err := verify_post_element_type(p_type_str, p_runtime_sys)
+	gf_err := Verify_post_element_type(p_type_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

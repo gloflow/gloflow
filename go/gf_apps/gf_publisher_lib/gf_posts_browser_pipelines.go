@@ -24,6 +24,7 @@ import (
 	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //------------------------------------------------
@@ -33,7 +34,7 @@ func Get_posts_page(p_page_index_int int,
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_pipelines.Get_posts_page()")
 
 	cursor_start_position_int := p_page_index_int*p_page_elements_num_int
-	page_lst, gf_err          := DB__get_posts_page(cursor_start_position_int, p_page_elements_num_int, p_runtime_sys)
+	page_lst, gf_err          := gf_publisher_core.DB__get_posts_page(cursor_start_position_int, p_page_elements_num_int, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -66,7 +67,7 @@ func Render_initial_pages(p_response_format_str string,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_posts_browser_pipelines.Render_initial_pages()")
 	
-	posts_pages_lst := [][]*Gf_post{}
+	posts_pages_lst := [][]*gf_publisher_core.Gf_post{}
 
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
@@ -77,7 +78,7 @@ func Render_initial_pages(p_response_format_str string,
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		page_lst, gf_err := DB__get_posts_page(start_position_int, p_page_size_int, p_runtime_sys)
+		page_lst, gf_err := gf_publisher_core.DB__get_posts_page(start_position_int, p_page_size_int, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}

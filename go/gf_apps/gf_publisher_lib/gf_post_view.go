@@ -23,15 +23,16 @@ import (
 	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
 //--------------------------------------------------
-func post__render_template(p_post *Gf_post,
+func post__render_template(p_post *gf_publisher_core.Gf_post,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.post__render_template()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_view.post__render_template()")
 	
 	template_post_elements_lst, gf_err := package_post_elements_infos(p_post, p_runtime_sys)
 	if gf_err != nil {
@@ -44,7 +45,7 @@ func post__render_template(p_post *Gf_post,
 	}
 
 	post_tags_lst := []string{}
-	for _,tag_str := range p_post.Tags_lst {
+	for _, tag_str := range p_post.Tags_lst {
 		post_tags_lst = append(post_tags_lst,tag_str)
 	}
 
@@ -73,13 +74,13 @@ func post__render_template(p_post *Gf_post,
 	return template_str;*/
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Post_title_str:                 p_post.Title_str,
-		Post_tags_lst:                  post_tags_lst,
-		Post_description_str:           p_post.Description_str,
-		Post_poster_user_name_str:      p_post.Poster_user_name_str,
-		Post_thumbnail_url_str:         p_post.Thumbnail_url_str,
-		Post_elements_lst:              template_post_elements_lst,
-		Image_post_elements_og_info_lst:image_post_elements_og_info_lst,
+		Post_title_str:                  p_post.Title_str,
+		Post_tags_lst:                   post_tags_lst,
+		Post_description_str:            p_post.Description_str,
+		Post_poster_user_name_str:       p_post.Poster_user_name_str,
+		Post_thumbnail_url_str:          p_post.Thumbnail_url_str,
+		Post_elements_lst:               template_post_elements_lst,
+		Image_post_elements_og_info_lst: image_post_elements_og_info_lst,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
@@ -106,21 +107,22 @@ func post__render_template(p_post *Gf_post,
 }
 
 //--------------------------------------------------
-func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.package_post_elements_infos()")
+func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
 
-	for _,post_element := range p_post.Post_elements_lst {
+	for _, post_element := range p_post.Post_elements_lst {
 
 		p_runtime_sys.Log_fun("INFO","post_element.Type_str - "+post_element.Type_str)
-		gf_err := verify_post_element_type(post_element.Type_str, p_runtime_sys)
+		gf_err := gf_publisher_core.Verify_post_element_type(post_element.Type_str, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
 
 		post_element_tags_lst := []string{}
-		for _,tag_str := range post_element.Tags_lst {
+		for _, tag_str := range post_element.Tags_lst {
 			post_element_tags_lst = append(post_element_tags_lst,tag_str)
 		}
 
@@ -162,15 +164,16 @@ func package_post_elements_infos(p_post *Gf_post, p_runtime_sys *gf_core.Runtime
 }
 
 //--------------------------------------------------
-func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_view.get_image_post_elements_FBOpenGraph_info()")
+func get_image_post_elements_FBOpenGraph_info(p_post *gf_publisher_core.Gf_post,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]string, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
-	image_post_elements_lst, gf_err := get_post_elements_of_type(p_post, "image", p_runtime_sys)
+	image_post_elements_lst, gf_err := gf_publisher_core.Get_post_elements_of_type(p_post, "image", p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	var top_image_post_elements_lst []*Gf_post_element
+	var top_image_post_elements_lst []*gf_publisher_core.Gf_post_element
 	if len(image_post_elements_lst) > 5 {
 
 		// getRange() - returns an Iterable<String>
@@ -181,7 +184,7 @@ func get_image_post_elements_FBOpenGraph_info(p_post *Gf_post, p_runtime_sys *gf
 
 	//---------------------
 	og_info_lst := []map[string]string{}
-	for _,post_element := range top_image_post_elements_lst {
+	for _, post_element := range top_image_post_elements_lst {
 		d := map[string]string{
 			"img_thumbnail_medium_absolute_url_str": post_element.Img_thumbnail_medium_url_str,
 		}
