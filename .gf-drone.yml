@@ -7,9 +7,9 @@ workspace:
   #               container is placing all its code.
   base: /home/gf
 
-# services:
-#   - name: mongo
-#     image: mongo
+services:
+  - name: mongo
+    image: mongo
 #
 #   - name: elasticsearch
 #     image: elasticsearch:5-alpine
@@ -106,9 +106,15 @@ steps:
         - master
   
   #-------------------------------
-  # # TEST
-  # - name: test
-  #   image: glofloworg/gf_builder:latest
+  # TEST
+  - name: test
+    image: glofloworg/gf_builder_go_ubuntu:latest
+    commands:
+
+      # GF_TAGGER
+      - cd /home/gf/go/gf_apps/gf_tagger_lib
+      - go test
+      
   #
   #   # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
   #   #               and those containers are run with host networking.
@@ -172,7 +178,6 @@ steps:
       - name: docker-sock
         path: /var/run/docker.sock
     commands:
-
 
       # HACK!! - using gf_builder_go_ubuntu which doesnt have docker installed,
       #          so doing it manually here. use a proper container image with docker.

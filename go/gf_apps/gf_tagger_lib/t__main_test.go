@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -42,16 +43,28 @@ func Test__main(p_test *testing.T) {
 
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
+	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
 	log_fun      := gf_core.Init_log_fun()
-	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
-	
+
+
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_tagger_tests",
 		Log_fun:          log_fun,
-		Mongodb_coll:     mongodb_coll,
 	}
+
+
+
+
+	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
+	if gf_err != nil {
+		panic(-1)
+	}
+
+
+	mongodb_coll := mongo_db.Collection("data_symphony")
+	runtime_sys.Mongo_coll = mongodb_coll
+
 
 	test_posts_tagging(runtime_sys)
 }
