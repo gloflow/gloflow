@@ -134,11 +134,28 @@ steps:
   # TEST_GO
   - name: test_go
     image: glofloworg/gf_builder_go_ubuntu:latest
+
+    volumes:
+      - name: go_cache
+        path: /home/gf/go_cache 
+      
+      - name: go_mod_cache
+        path: /home/gf/go_mod_cache 
+    
+    # ENV
+    environment:
+
+      # cache for the "go" tool
+      GOCACHE: /home/gf/go_cache
+      GOMODCACHE: /home/gf/go_mod_cache
+      
     commands:
 
       # GF_TAGGER
       - cd /home/gf/go/gf_apps/gf_tagger_lib
-      - go test
+
+      # "mongo" - drone.io mongo service is given the same hostname as the name of the container
+      - go test -mongodb_host=mongo
 
   #
   #   # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
