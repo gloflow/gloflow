@@ -204,7 +204,7 @@ func link__db_create(p_link *Gf_crawler_page_outgoing_link, p_runtime_sys *gf_co
 			coll_name_str,
 			map[string]interface{}{
 				"link_a_href_str":    p_link.A_href_str,
-				"caller_err_msg_str": "failed to insert a crawler_page_outgoing_link in mongodb",
+				"caller_err_msg_str": "failed to insert a crawler_page_outgoing_link into the DB",
 			},
 			ctx,
 			p_runtime_sys)

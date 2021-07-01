@@ -143,7 +143,7 @@ func Download_file(p_image_url_str string,
 			map[string]interface{}{
 				"image_url_str":             p_image_url_str,
 				"local_image_file_path_str": p_local_image_file_path_str,
-				"caller_err_msg_str":        "failed to insert a Image_fetch__error into mongodb",
+				"caller_err_msg_str":        "failed to insert a Image_fetch__error into the DB",
 			},
 			ctx,
 			p_runtime_sys)

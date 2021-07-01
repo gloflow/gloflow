@@ -187,7 +187,7 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 		coll_name_str,
 		map[string]interface{}{
 			"upload_gf_image_id_str": p_upload_info.Upload_gf_image_id_str,
-			"caller_err_msg_str":     "failed to update/upsert gf_image in a mongodb",
+			"caller_err_msg_str":     "failed to update/upsert gf_image into the DB",
 		},
 		ctx,
 		p_runtime_sys)
@@ -254,7 +254,7 @@ func Upload_db__put_image_upload_info(p_image_upload_info *Gf_image_upload_info,
 		coll_name_str,
 		map[string]interface{}{
 			"upload_gf_image_id_str": p_image_upload_info.Upload_gf_image_id_str,
-			"caller_err_msg_str":     "failed to update/upsert gf_image in a mongodb",
+			"caller_err_msg_str":     "failed to update/upsert gf_image into the DB",
 		},
 		ctx,
 		p_runtime_sys)

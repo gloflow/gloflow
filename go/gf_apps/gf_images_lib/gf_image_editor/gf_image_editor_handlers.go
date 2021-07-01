@@ -45,10 +45,12 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 				gf_rpc_lib.Error__in_handler("/images/editor/save", "failed to save modified image", gf_err, p_resp, p_runtime_sys)
 				return
 			}
+			
  			//------------------
-			//OUTPUT
+			// OUTPUT
 			data_map := map[string]interface{}{}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

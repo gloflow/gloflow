@@ -156,7 +156,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.Gf_crawler_def,
 			"cycle_run__id_str":  cycle_run__id_str,
 			"crawler_name_str":   p_crawler.Name_str,
 			"domain_str":         domain_str,
-			"caller_err_msg_str": "failed to insert a Crawler_cycle_run in mongodb",
+			"caller_err_msg_str": "failed to insert a Crawler_cycle_run into the DB",
 		},
 		ctx,
 		p_runtime_sys)

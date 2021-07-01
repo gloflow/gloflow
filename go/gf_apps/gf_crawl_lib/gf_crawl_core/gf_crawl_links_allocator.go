@@ -107,7 +107,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 		coll_name_str,
 		map[string]interface{}{
 			"crawler_name_str":   p_crawler_name_str,
-			"caller_err_msg_str": "failed to insert a crawl_link_alloc in mongodb",
+			"caller_err_msg_str": "failed to insert a crawl_link_alloc into the DB",
 		},
 		ctx,
 		p_runtime_sys)
@@ -254,7 +254,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		coll_name_str,
 		map[string]interface{}{
 			"allocator_id_str":   p_alloc_id_str,
-			"caller_err_msg_str": "failed to insert a crawl_link_alloc_block in mongodb",
+			"caller_err_msg_str": "failed to insert a crawl_link_alloc_block into the DB",
 		},
 		ctx,
 		p_runtime_sys)

@@ -88,7 +88,7 @@ func cluster__register_worker(p_ext_worker_name_str string,
 		coll_name_str,
 		map[string]interface{}{
 			"ext_worker_name_str": p_ext_worker_name_str,
-			"caller_err_msg_str":  "failed to insert a Gf_crawler_cluster_worker in mongodb in order to register it",
+			"caller_err_msg_str":  "failed to insert a Gf_crawler_cluster_worker into the DB in order to register it",
 		},
 		ctx,
 		p_runtime_sys)

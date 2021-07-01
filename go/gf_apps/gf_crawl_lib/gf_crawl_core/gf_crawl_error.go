@@ -114,7 +114,7 @@ func create_error(p_type_str string,
 			map[string]interface{}{
 				"type_str":           p_type_str,
 				"crawler_name_str":   p_crawler_name_str,
-				"caller_err_msg_str": "failed to persist a crawler_error",
+				"caller_err_msg_str": "failed to insert the crawler_error into the DB",
 			},
 			ctx,
 			p_runtime_sys)

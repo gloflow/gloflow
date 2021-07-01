@@ -93,7 +93,7 @@ func gif_db__create(p_image_source_url_str string,
 		map[string]interface{}{
 			"image_source_url_str":      p_image_source_url_str,
 			"image_origin_page_url_str": p_image_origin_page_url_str,
-			"caller_err_msg_str":        "failed to insert a GIF in mongodb",
+			"caller_err_msg_str":        "failed to insert a GIF into the DB",
 		},
 		ctx,
 		p_runtime_sys)

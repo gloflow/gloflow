@@ -116,7 +116,7 @@ func user_event__create(p_input *Gf_user_event_input,
 	gf_err        := gf_core.Mongo__insert(gf_user_event,
 		coll_name_str,
 		map[string]interface{}{
-			"caller_err_msg_str": "failed to insert a user_event in mongodb",
+			"caller_err_msg_str": "failed to insert a user_event into the DB",
 		},
 		ctx,
 		p_runtime_sys)

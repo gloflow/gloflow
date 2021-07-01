@@ -33,7 +33,7 @@ func Gif__init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	// GIF_GET_INFO
 	http.HandleFunc("/images/gif/get_info", func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST -- /images/gif/get_info ----------")
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- /images/gif/get_info ----------")
 		if p_req.Method == "GET" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

@@ -165,7 +165,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 				"images_extern_urls_lst": p_images_extern_urls_lst,
 				"flow_name_str":          p_flow_name_str,
 				"client_type_str":        p_client_type_str,
-				"caller_err_msg_str":     "failed to insert a img_exists_check in mongodb",
+				"caller_err_msg_str":     "failed to insert a img_exists_check into the DB",
 			},
 			ctx,
 			p_runtime_sys)
@@ -248,7 +248,7 @@ func flows__create(p_images_flow_name_str string,
 		coll_name_str,
 		map[string]interface{}{
 			"images_flow_name_str": p_images_flow_name_str,
-			"caller_err_msg_str":   "failed to insert a image Flow in mongodb",
+			"caller_err_msg_str":   "failed to insert a image Flow into the DB",
 		},
 		ctx,
 		p_runtime_sys)

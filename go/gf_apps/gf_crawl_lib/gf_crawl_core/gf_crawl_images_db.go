@@ -54,7 +54,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 			}).Count()*/
 
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img's in mongodb",
+			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img's in the DB",
 				"mongodb_find_error",
 				map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
@@ -81,7 +81,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 				map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
 					"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
-					"caller_err_msg_str":          "failed to insert a crawler_page_img in mongodb",
+					"caller_err_msg_str":          "failed to insert a crawler_page_img into the DB",
 				},
 				ctx,
 				p_runtime_sys)
@@ -160,7 +160,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 				map[string]interface{}{
 					"img_ref_url_str":             p_img_ref.Url_str,
 					"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
-					"caller_err_msg_str":          "failed to insert a crawler_page_img_ref in mongodb",
+					"caller_err_msg_str":          "failed to insert a crawler_page_img_ref into the DB",
 				},
 				ctx,
 				p_runtime_sys)

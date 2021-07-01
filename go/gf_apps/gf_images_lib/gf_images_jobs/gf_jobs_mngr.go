@@ -301,7 +301,7 @@ func db__jobs_mngr__create_running_job(p_running_job *Gf_running_job,
 		map[string]interface{}{
 			"running_job_id_str": p_running_job.Id_str,
 			"client_type_str":    p_running_job.Client_type_str,
-			"caller_err_msg_str": "failed to create a Running_job record in the DB",
+			"caller_err_msg_str": "failed to create a Running_job record into the DB",
 		},
 		ctx,
 		p_runtime_sys)

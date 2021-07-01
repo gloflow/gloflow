@@ -147,7 +147,7 @@ func Index__query(p_term_str string,
 		map[string]interface{}{
 			"term_str":           p_term_str,
 			"total_hits_int":     total_hits_int,
-			"caller_err_msg_str": "failed to insert a index__query_run into mongodb for a elasticsearch index query",
+			"caller_err_msg_str": "failed to insert a index__query_run into the DB for a elasticsearch index query",
 		},
 		ctx,
 		p_runtime_sys)

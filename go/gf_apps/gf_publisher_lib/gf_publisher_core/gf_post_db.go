@@ -64,7 +64,7 @@ func DB__create_post(p_post *Gf_post,
 	gf_err        := gf_core.Mongo__insert(p_post,
 		coll_name_str,
 		map[string]interface{}{
-			"caller_err_msg_str": "failed to create a post in the DB",
+			"caller_err_msg_str": "failed to create a post into the DB",
 		},
 		ctx,
 		p_runtime_sys)
