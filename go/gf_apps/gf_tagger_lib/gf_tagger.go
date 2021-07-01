@@ -202,7 +202,7 @@ func parse_tags(p_tags_str string,
 	}
 
 	//---------------------
-	for _,tag_str := range tags_lst {
+	for _, tag_str := range tags_lst {
 		if len(tag_str) > p_max_tag_characters_number_int {
 			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%d)", tag_str, p_max_tag_characters_number_int),
 				"verify__string_too_long_error",

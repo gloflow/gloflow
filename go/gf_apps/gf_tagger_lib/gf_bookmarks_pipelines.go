@@ -19,12 +19,133 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_tagger_lib
 
+import (
+	"time"
+	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/go-playground/validator"
+	"github.com/gloflow/gloflow/go/gf_core"
+)
+
 //---------------------------------------------------
 type GF_bookmark struct {
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
+	Id_str               gf_core.GF_ID      `bson:"id_str"`
+	Deleted_bool         bool               `bson:"deleted_bool"`
+	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+	User_id_str          gf_core.GF_ID      `bson:"user_id_str"` // creator user of the bookmark
 
+	Url_str         string   `bson:"url_str"`
+	Description_str string   `bson:"descr_str"`
+	Tags_lst        []string `bson:"tags_lst"`
+}
 
+type GF_bookmark_small struct {
+	Id_str               gf_core.GF_ID `json:"id_str"`
+	Creation_unix_time_f float64       `json:"creation_unix_time_f"`
+	Url_str              string        `json:"url_str"`
+	Description_str      string        `json:"descr_str"`
+	Tags_lst             []string      `json:"tags_lst"`
+}
 
+// INPUT
+type GF_bookmark__input_create struct {
+	User_id_str     gf_core.GF_ID
+	Url_str         string   `mapstructure:"url"   validate:"required,min=5,max=300"`
+	Description_str string   `mapstructure:"descr" validate:"min=1,max=600"`
+	Tags_lst        []string `mapstructure:"tags"  validate:""`
+}
 
+// INPUT
+type GF_bookmark__input_get_all struct {
+	User_id_str gf_core.GF_ID
+}
+
+// OUTPUT
+type GF_bookmark__output_get_all struct {
+	Bookmarks_lst []*GF_bookmark_small `json:"bookmarks"`
 }
 
 //---------------------------------------------------
+// GET_ALL
+func pipeline__bookmark_get_all(p_input *GF_bookmark__input_get_all,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark__output_get_all, *gf_core.Gf_error) {
+
+
+
+
+	bookmarks_lst, gf_err := db__bookmark__get_all(p_input.User_id_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+	bookmarks_small_lst := []*GF_bookmark_small{}
+	for _, b := range bookmarks_lst {
+		bookmark_small := &GF_bookmark_small{
+			Id_str:               b.Id_str,
+			Creation_unix_time_f: b.Creation_unix_time_f,
+			Url_str:              b.Url_str,
+			Description_str:      b.Description_str,
+			Tags_lst:             b.Tags_lst,
+		}
+		bookmarks_small_lst = append(bookmarks_small_lst, bookmark_small)
+	}
+
+	output := &GF_bookmark__output_get_all{
+		Bookmarks_lst: bookmarks_small_lst,
+	}
+	return output, nil
+}
+
+//---------------------------------------------------
+// CREATE
+func pipeline__bookmark_create(p_input *GF_bookmark__input_create,
+	p_validator   *validator.Validate,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+
+
+
+	//------------------------
+	// VALIDATE
+	gf_err := gf_core.Validate(p_input, p_validator, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	//------------------------
+
+	user_id_str          := gf_core.GF_ID(p_input.User_id_str)
+	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+
+	fields_for_id_lst := []string{
+		p_input.Url_str,
+		string(user_id_str),
+	}
+	gf_id_str := gf_core.Image_ID__md5_create(fields_for_id_lst,
+		creation_unix_time_f)
+	
+	bookmark := &GF_bookmark{
+		Id_str:               gf_id_str,
+		Deleted_bool:         false,
+		Creation_unix_time_f: creation_unix_time_f,
+		User_id_str:          user_id_str,
+
+		Url_str:         p_input.Url_str,
+		Description_str: p_input.Description_str,
+		Tags_lst:        p_input.Tags_lst,
+	}
+	gf_err = db__bookmark__create(bookmark, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+
+
+	return nil
+}
+

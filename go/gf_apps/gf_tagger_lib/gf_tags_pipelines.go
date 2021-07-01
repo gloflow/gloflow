@@ -38,7 +38,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 
 	//----------------
 	// INPUT
-	if _,ok := p_input_data_map["otype"]; !ok {
+	if _, ok := p_input_data_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map":p_input_data_map,},
@@ -46,7 +46,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 		return gf_err
 	}
 
-	if _,ok := p_input_data_map["o_id"]; !ok {
+	if _, ok := p_input_data_map["o_id"]; !ok {
 		gf_err := gf_core.Error__create("input 'o_id' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map":p_input_data_map,},
@@ -54,7 +54,7 @@ func pipeline__add_tags(p_input_data_map map[string]interface{},
 		return gf_err
 	}
 
-	if _,ok := p_input_data_map["tags"]; !ok {
+	if _, ok := p_input_data_map["tags"]; !ok {
 		gf_err := gf_core.Error__create("input 'tags' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map":p_input_data_map,},

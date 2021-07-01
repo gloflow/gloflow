@@ -38,7 +38,9 @@ func main() {
 
 	// START_SERVICE
 	if run__start_service_bool {
+
 		// init_done_ch := make(chan bool)
+
 		Run_service__in_process(port_str,
 			mongodb_host_str,
 			mongodb_db_name_str,
@@ -106,7 +108,7 @@ func Run_service__in_process(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
-	p_log_fun             func(string,string)) {
+	p_log_fun             func(string, string)) {
 	p_log_fun("FUN_ENTER", "gf_tagger_service.Run_service__in_process()")
 
 	p_log_fun("INFO", "")

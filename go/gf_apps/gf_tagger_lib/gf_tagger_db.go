@@ -33,18 +33,67 @@ import (
 // BOOKMARKS
 //---------------------------------------------------
 func db__bookmark__create(p_bookmark *GF_bookmark,
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
-
+	coll_name_str := "gf_bookmarks"
+	gf_err := gf_core.Mongo__insert(p_bookmark,
+		coll_name_str,
+		map[string]interface{}{
+			"url_str":            p_bookmark.Url_str,
+			"caller_err_msg_str": "failed to insert GF_bookmark into the DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
 	return nil
 }
 
 //---------------------------------------------------
-func db__bookmark__get(p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark, *gf_core.Gf_error) {
+func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_bookmark, *gf_core.Gf_error) {
 
 
 
-	return nil, nil
+	find_opts := options.Find()
+	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": 1})
+	
+	db_cursor, gf_err := gf_core.Mongo__find(bson.M{
+			"user_id_str":  p_user_id_str,
+			"deleted_bool": false,
+		},
+		find_opts,
+		map[string]interface{}{
+			"user_id_str":        p_user_id_str,
+			"caller_err_msg_str": "failed to get bookmarks for a user",
+		},
+		p_runtime_sys.Mongo_db.Collection("gf_bookmarks"),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+
+	var bookmarks_lst []*GF_bookmark
+	err := db_cursor.All(p_ctx, &bookmarks_lst)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get all Bookmarks",
+			"mongodb_cursor_all",
+			map[string]interface{}{
+				"user_id_str": p_user_id_str,
+			},
+			err, "gf_tagger_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+
+	return bookmarks_lst, nil
 }
 
 //---------------------------------------------------
@@ -88,7 +137,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 // POSTS
 //---------------------------------------------------
 func db__get_post_notes(p_post_title_str string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_note, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_note, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
 
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
@@ -97,10 +146,10 @@ func db__get_post_notes(p_post_title_str string,
 	}
 
 	post_notes_lst := post.Notes_lst
-	notes_lst      := []*Gf_note{}
+	notes_lst      := []*GF_note{}
 	for _,s := range post_notes_lst {
 
-		note := &Gf_note{
+		note := &GF_note{
 			User_id_str:           s.User_id_str,
 			Body_str:              s.Body_str,
 			Target_obj_id_str:     post.Title_str,
@@ -114,7 +163,7 @@ func db__get_post_notes(p_post_title_str string,
 }
 
 //---------------------------------------------------
-func db__add_post_note(p_note *Gf_note,
+func db__add_post_note(p_note *GF_note,
 	p_post_title_str string,
 	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_post_note()")
