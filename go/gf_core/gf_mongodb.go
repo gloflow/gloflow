@@ -539,14 +539,14 @@ func Mongo__handle_error(p_user_msg_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_mongodb.Mongo__handle_error()")
 
-	gf_error := Error__create_with_hook(p_user_msg_str,
+	gf_err := Error__create_with_hook(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
-		func(p_gf_error *Gf_error) map[string]interface{} {
+		func(p_gf_err *Gf_error) map[string]interface{} {
 
-			gf_error_str := fmt.Sprint(p_gf_error)
+			gf_error_str := fmt.Sprint(p_gf_err)
 
 			// IMPORTANT!! - "mgo" had behavior where after the connection was reset by mongod server,
 			//               it (mgo) wouldnt reconnect to that server. so this hack is applied where the entire service
@@ -569,7 +569,7 @@ func Mongo__handle_error(p_user_msg_str string,
 			return nil
 		},
 		p_runtime_sys)
-	return gf_error
+	return gf_err
 }
 
 //--------------------------------------------------------------------

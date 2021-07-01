@@ -1,0 +1,51 @@
+/*
+MIT License
+
+Copyright (c) 2021 Ivan Trajkovic
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+package gf_core
+
+import (
+	"github.com/go-playground/validator"
+)
+
+//-------------------------------------------------
+func Validate__init() *validator.Validate {
+	validator := validator.New()
+	return validator
+}
+
+//-------------------------------------------------
+func Validate(p_target interface{},
+	p_validator   *validator.Validate,
+	p_runtime_sys *Runtime_sys) *Gf_error {
+
+	err := p_validator.Struct(p_target)
+	if err != nil {
+		gf_err := Error__create("failed to validate target struct", 
+			"verify__invalid_input_struct_error",
+			map[string]interface{}{"target": p_target,},
+			err, "gf_core", p_runtime_sys)
+		return gf_err
+	}
+	return nil
+}
