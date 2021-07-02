@@ -22,8 +22,10 @@ package gf_tagger_lib
 import (
 	"fmt"
 	"os"
+	"context"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -45,7 +47,7 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
-	log_fun      := gf_core.Init_log_fun()
+	log_fun := gf_core.Init_log_fun()
 
 
 	runtime_sys := &gf_core.Runtime_sys{
@@ -62,16 +64,60 @@ func Test__main(p_test *testing.T) {
 	}
 
 
-	mongodb_coll := mongo_db.Collection("data_symphony")
-	runtime_sys.Mongo_coll = mongodb_coll
+	mongo_coll := mongo_db.Collection("data_symphony")
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_coll
 
 
-	test_posts_tagging(runtime_sys)
+	test_bookmarking(p_test, runtime_sys)
 }
 
 //-------------------------------------------------
-func test_posts_tagging(p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_posts_tagging()")
+func test_bookmarking(p_test *testing.T,
+	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
+	ctx := context.Background()
+	validator := gf_core.Validate__init()
+
+	test_user_id_str := gf_core.GF_ID("test_user")
+	//------------------
+	// CREATE
+	input__create := &GF_bookmark__input_create{
+		User_id_str: test_user_id_str,
+		Url_str:     "https://gloflow.com",
+		Description_str: "test bookmark",
+		Tags_lst: []string{
+			"test", "code", "art",
+		},
+	}
+	gf_err := pipeline__bookmark_create(input__create,
+		validator,
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+	//------------------
+
+
+	// GET_ALL
+
+	input__get_all := &GF_bookmark__input_get_all{
+		User_id_str: test_user_id_str,
+	}
+	output, gf_err := pipeline__bookmark_get_all(input__get_all,
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+
+
+	spew.Dump(output.Bookmarks_lst)
+
+	//------------------
 
 }

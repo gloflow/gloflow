@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -37,6 +38,7 @@ func db__bookmark__create(p_bookmark *GF_bookmark,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	coll_name_str := "gf_bookmarks"
+
 	gf_err := gf_core.Mongo__insert(p_bookmark,
 		coll_name_str,
 		map[string]interface{}{
