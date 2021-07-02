@@ -54,7 +54,10 @@ RUN cp libs/libtensorflow_framework.so libs/libtensorflow_framework.so.1
 ENV LD_LIBRARY_PATH=libs
 
 #------------
+# CHROMIUM - used by bookmarking logic to take screenshots of bookmarked sites
+RUN apt-get install -y chromium-browser
 
+#------------
 # FILES_FOR_PARTICULAR_SERVICES
 ADD ./gf_analytics gf_analytics
 ADD ./gf_ml_worker gf_ml_worker

@@ -131,3 +131,43 @@ function gf_picker__create_ui() {
 }
 
 //---------------------------------------------------
+/*function gf_picker__create_screenshot() {
+    const capture = async () => {
+        const canvas  = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        const video   = document.createElement("video");
+
+        try {
+            const captureStream = await navigator.mediaDevices.getDisplayMedia();
+            video.srcObject     = captureStream;
+
+
+            context.drawImage(video, 0, 0, window.screen.width, window.screen.height);
+
+            console.log("drawn")
+            console.log(window.screen.width)
+            console.log(window.screen.height)
+            const frame = canvas.toDataURL("image/png");
+            captureStream.getTracks().forEach(track => track.stop());
+            
+
+
+            // const canvas_viewer = document.createElement("canvas");
+            const canvas_viewer = $(`<canvas id='mycanvas' width='${window.screen.width}' height='${window.screen.height}'></canvas>`);
+            $("#gf_page_picker").append(canvas_viewer);
+            var myImage = new Image();
+
+            console.log(frame)
+            myImage.src = frame;
+            
+            console.log(canvas_viewer.get())
+            canvas_viewer.get()[0].getContext("2d").drawImage(myImage, 0, 0, 400, 400);
+
+            window.location.href = frame;
+        } catch (err) {
+            console.error("Error: " + err);
+        }
+    };
+
+    capture();
+}*/

@@ -68,7 +68,7 @@ type GF_bookmark__output_get_all struct {
 
 //---------------------------------------------------
 // GET_ALL
-func pipeline__bookmark_get_all(p_input *GF_bookmark__input_get_all,
+func bookmarks__pipeline__get_all(p_input *GF_bookmark__input_get_all,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark__output_get_all, *gf_core.Gf_error) {
 
@@ -103,7 +103,7 @@ func pipeline__bookmark_get_all(p_input *GF_bookmark__input_get_all,
 
 //---------------------------------------------------
 // CREATE
-func pipeline__bookmark_create(p_input *GF_bookmark__input_create,
+func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	p_validator   *validator.Validate,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -149,3 +149,38 @@ func pipeline__bookmark_create(p_input *GF_bookmark__input_create,
 	return nil
 }
 
+//---------------------------------------------------
+// SCREENSHOTS
+//---------------------------------------------------
+func bookmarks__screenshot_create(p_url_str string,
+	p_target_local_file_path_str string,
+	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.Gf_error {
+
+	//------------------------
+	// SCREENSHOT
+	cmd_lst := []string{
+		"chromium",
+		"--headless",
+		"--disable-gpu",
+		"--window-size=1920,1080",
+		"--screenshot",
+		"--hide-scrollbars", // Hide scrollbars from screenshots
+		p_url_str,
+	}
+	_, _, gf_err := gf_core.CLI__run_standard(cmd_lst, nil, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	//------------------------
+	// RENAME_SCREENSHOT_FILE
+	_, _, gf_err = gf_core.CLI__run_standard([]string{"mv", "screenshot.png", p_target_local_file_path_str},
+		nil, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	//------------------------
+
+	return nil
+}

@@ -91,7 +91,7 @@ func test_bookmarking(p_test *testing.T,
 			"test", "code", "art",
 		},
 	}
-	gf_err := pipeline__bookmark_create(input__create,
+	gf_err := bookmarks__pipeline__create(input__create,
 		validator,
 		ctx,
 		p_runtime_sys)
@@ -107,7 +107,7 @@ func test_bookmarking(p_test *testing.T,
 	input__get_all := &GF_bookmark__input_get_all{
 		User_id_str: test_user_id_str,
 	}
-	output, gf_err := pipeline__bookmark_get_all(input__get_all,
+	output, gf_err := bookmarks__pipeline__get_all(input__get_all,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {

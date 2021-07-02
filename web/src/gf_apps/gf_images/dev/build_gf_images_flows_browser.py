@@ -14,8 +14,7 @@ files_lst = [
 print 'files_lst - %s'%(files_lst)
 
 print 'RUNNING COMPILE...'
-c = 'tsc --out %s %s'%(output_file_str,
-					' '.join(files_lst))
+c = 'tsc --out %s %s'%(output_file_str, ' '.join(files_lst))
 print c
 
 r = envoy.run(c)

@@ -71,7 +71,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//------------------
 
-				gf_err = pipeline__bookmark_create(&input,
+				gf_err = bookmarks__pipeline__create(&input,
 					validator,
 					p_ctx,
 					p_runtime_sys)
@@ -97,7 +97,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//------------------
 
 
-			output, gf_err := pipeline__bookmark_get_all(input, p_ctx, p_runtime_sys)
+			output, gf_err := bookmarks__pipeline__get_all(input, p_ctx, p_runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -128,7 +128,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//------------
 	
-				gf_err = pipeline__add_note(i_map, p_runtime_sys)
+				gf_err = notes__pipeline__add(i_map, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -156,7 +156,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			if p_req.Method == "GET" {
 				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-				notes_lst, gf_err := pipeline__get_notes(p_req, p_runtime_sys)
+				notes_lst, gf_err := notes__pipeline__get(p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err 
 				}
@@ -196,7 +196,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//------------
 
-				gf_err = pipeline__add_tags(i_map, p_runtime_sys)
+				gf_err = tags__pipeline__add(i_map, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -224,7 +224,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			if p_req.Method == "GET" {
 				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-				objects_with_tag_lst, gf_err := pipeline__get_objects_with_tag(p_req, p_resp, 
+				objects_with_tag_lst, gf_err := tags__pipeline__get_objects(p_req, p_resp, 
 					gf_templates.tag_objects__tmpl,
 					gf_templates.tag_objects__subtemplates_names_lst,
 					p_runtime_sys)
