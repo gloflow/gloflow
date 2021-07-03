@@ -25,38 +25,22 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 func Flows__init_handlers(p_templates_paths_map map[string]string,
-	p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
+	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
 
 	//---------------------
 	// TEMPLATES
-
 	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	/*main_template_filename_str := "gf_images_flows_browser.html"
-	templates_dir_path_str     := "./web/gf_apps/gf_images/gf_flows_browser/templates"
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filename_str, p_templates_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}*/
-
-	/*flows_browser__tmpl, err := template.New(template_name_str).ParseFiles(template_path_str)
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a template",
-			"template_create_error",
-			&map[string]interface{}{"template_path_str":template_path_str,},
-			err, "gf_images_lib", p_runtime_sys)
-		return gf_err
-	}*/
 	//---------------------
 	
 	//-------------------------------------------------
@@ -94,7 +78,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 
 			if n_gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/flows/add_img",
-					"failed to add image to flow", //p_user_msg_str
+					"failed to add image to flow", // p_user_msg_str
 					n_gf_err, p_resp, p_runtime_sys)
 				return
 			}
@@ -107,6 +91,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 				"image_id_str":                     image_id_str,
 			}
 			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+			
 			//------------------
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 

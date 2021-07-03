@@ -27,11 +27,11 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
-func init_handlers(p_jobs_mngr_ch chan gf_images_jobs.Job_msg,
+func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	p_img_config       *gf_images_utils.GF_config,
 	p_media_domain_str string,
 	p_s3_info          *gf_core.GF_s3_info,

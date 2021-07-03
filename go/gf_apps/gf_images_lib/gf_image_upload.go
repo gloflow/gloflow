@@ -29,7 +29,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -130,9 +130,9 @@ func Upload__init(p_image_name_str string,
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
 func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
-	p_jobs_mngr_ch    chan gf_images_jobs.Job_msg,
+	p_jobs_mngr_ch    chan gf_images_jobs_core.Job_msg,
 	p_s3_info         *gf_core.GF_s3_info,
-	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs.Gf_running_job, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_running_job, *gf_core.Gf_error) {
 	
 
 
@@ -145,15 +145,15 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	spew.Dump(upload_info)
 
 	
-	image_to_process_lst := []gf_images_jobs.Gf_image_uploaded_to_process{
-		gf_images_jobs.Gf_image_uploaded_to_process{
+	image_to_process_lst := []gf_images_jobs_core.Gf_image_uploaded_to_process{
+		gf_images_jobs_core.Gf_image_uploaded_to_process{
 			Gf_image_id_str:  p_upload_gf_image_id_str,
 			S3_file_path_str: upload_info.S3_file_path_str,
 		},
 	}
 
 	// JOB
-	running_job, gf_err := gf_images_jobs.Client__run_uploaded_imgs(upload_info.Client_type_str,
+	running_job, gf_err := gf_images_jobs_core.Client__run_uploaded_imgs(upload_info.Client_type_str,
 		image_to_process_lst,
 		upload_info.Flows_names_lst,
 		p_jobs_mngr_ch,
@@ -163,13 +163,6 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 		return nil, gf_err
 	}
 	
-
-
-
-	// spew.Dump(running_job)
-	
-
-
 	return running_job, nil
 }
 
@@ -219,11 +212,6 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 			"t":                      "img_upload_info",
 			"upload_gf_image_id_str": p_upload_gf_image_id_str,
 		}).Decode(&upload_info)
-
-	/*err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").Find(bson.M{
-		"t":                      "img_upload_info",
-		"upload_gf_image_id_str": p_upload_gf_image_id_str,
-	}).One(&upload_info)*/
 
 	if err == mongo.ErrNoDocuments {
 		gf_err := gf_core.Mongo__handle_error("image_upload_info does not exist in mongodb",

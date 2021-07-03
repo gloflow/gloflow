@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2020 Ivan Trajkovic

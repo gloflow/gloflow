@@ -25,7 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //---------------------------------------------------
@@ -202,6 +202,7 @@ func process_external_images__via_http(p_post_elements_map map[string]*gf_publis
 		post_element.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
 		post_element.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
 		image_ids_lst = append(image_ids_lst, output.Image_id_str)
+
 		//--------------------
 	}
 
@@ -228,17 +229,17 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 	p_post_elements_images_urls_lst              []string,
 	p_post_elements_images_origin_pages_urls_str []string,
 	p_image_job_client_type_str                  string,
-	p_gf_images_jobs_mngr                        gf_images_jobs.Jobs_mngr,
+	p_gf_images_jobs_mngr                        gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.Gf_error) {
 
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 	flows_names_lst := []string{"general",}
 
-	images_to_process_lst := []gf_images_jobs.Gf_image_extern_to_process{}
+	images_to_process_lst := []gf_images_jobs_core.Gf_image_extern_to_process{}
 	for i, image_url_str := range p_post_elements_images_urls_lst {
 		
 		origin_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
-		img_to_process      := gf_images_jobs.Gf_image_extern_to_process{
+		img_to_process      := gf_images_jobs_core.Gf_image_extern_to_process{
 			Source_url_str:      image_url_str,
 			Origin_page_url_str: origin_page_url_str,
 		}
@@ -247,7 +248,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 
 	//--------------------
 	// IN_PROCESS
-	running_job, outputs_lst, gf_err := gf_images_jobs.Client__run_extern_imgs(p_image_job_client_type_str,
+	running_job, outputs_lst, gf_err := gf_images_jobs_core.Client__run_extern_imgs(p_image_job_client_type_str,
 		images_to_process_lst,
 		flows_names_lst,
 		p_gf_images_jobs_mngr,

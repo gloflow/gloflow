@@ -29,7 +29,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
@@ -98,7 +98,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 	}
 
 	page_size_int := 10 // default
-	if a_lst,ok := qs_map["pg_size"]; ok {
+	if a_lst, ok := qs_map["pg_size"]; ok {
 		pg_size          := a_lst[0]
 		page_size_int,err = strconv.Atoi(pg_size) // user supplied value
 		if err != nil {
@@ -113,6 +113,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
 	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
 	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
+
 	//--------------------
 
 	//--------------------
@@ -195,20 +196,20 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 	p_image_origin_page_url_str string,
 	p_flows_names_lst           []string,
 	p_client_type_str           string,
-	p_jobs_mngr_ch              chan gf_images_jobs.Job_msg,
+	p_jobs_mngr_ch              chan gf_images_jobs_core.Job_msg,
 	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, gf_images_utils.Gf_image_id, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.Flows__add_extern_image()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s",p_flows_names_lst))
 
 	//------------------
-	images_urls_to_process_lst := []gf_images_jobs.Gf_image_extern_to_process{
-			gf_images_jobs.Gf_image_extern_to_process{
+	images_urls_to_process_lst := []gf_images_jobs_core.Gf_image_extern_to_process{
+			gf_images_jobs_core.Gf_image_extern_to_process{
 				Source_url_str:      p_image_extern_url_str,
 				Origin_page_url_str: p_image_origin_page_url_str,
 			},
 		}
 		
-	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs.Client__run_extern_imgs(p_client_type_str,
+	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_core.Client__run_extern_imgs(p_client_type_str,
 		images_urls_to_process_lst,
 		p_flows_names_lst,
 		p_jobs_mngr_ch,
@@ -232,7 +233,7 @@ func flows__create(p_images_flow_name_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (*Images_flow, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__create()")
 
-	id_str               := fmt.Sprintf("img_flow:%f",float64(time.Now().UnixNano())/1000000000.0)
+	id_str               := fmt.Sprintf("img_flow:%f", float64(time.Now().UnixNano())/1000000000.0)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	flow := &Images_flow{
@@ -244,7 +245,7 @@ func flows__create(p_images_flow_name_str string,
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	_              = gf_core.Mongo__insert(flow,
+	_ = gf_core.Mongo__insert(flow,
 		coll_name_str,
 		map[string]interface{}{
 			"images_flow_name_str": p_images_flow_name_str,

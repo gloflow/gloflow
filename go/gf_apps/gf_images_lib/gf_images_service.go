@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -49,7 +50,7 @@ type GF_service_info struct {
 //-------------------------------------------------
 func Init_service(p_service_info *GF_service_info,
 	p_config      *gf_images_utils.GF_config,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
 
 	//-------------
 	// DB_INDEXES
@@ -68,13 +69,21 @@ func Init_service(p_service_info *GF_service_info,
 
 	//-------------
 	// JOBS_MANAGER
-	jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
+
+	jobs_mngr_ch := gf_images_jobs.Init(p_service_info.Images_store_local_dir_path_str,
+		p_service_info.Images_thumbnails_store_local_dir_path_str,
+		p_service_info.Media_domain_str,
+		p_config,
+		s3_info,
+		p_runtime_sys)
+
+	/*jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
 		p_service_info.Images_thumbnails_store_local_dir_path_str,
 		// p_service_info.Images_main_s3_bucket_name_str,
 		p_service_info.Media_domain_str,
 		p_config,
 		s3_info,
-		p_runtime_sys)
+		p_runtime_sys)*/
 
 	//-------------
 	// IMAGE_FLOWS
@@ -108,7 +117,7 @@ func Init_service(p_service_info *GF_service_info,
 	
 	//-------------
 	// JOBS_MANAGER
-	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch, p_runtime_sys)
+	gf_images_jobs_core.Jobs_mngr__init_handlers(jobs_mngr_ch, p_runtime_sys)
 
 	//-------------
 	// HANDLERS
@@ -127,6 +136,8 @@ func Init_service(p_service_info *GF_service_info,
 	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
 
 	//------------------------
+
+	return jobs_mngr_ch
 }
 
 //-------------------------------------------------

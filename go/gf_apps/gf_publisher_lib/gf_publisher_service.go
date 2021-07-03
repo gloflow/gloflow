@@ -24,12 +24,12 @@ import (
 	// "os"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 type GF_images_extern_runtime_info struct {
-	Jobs_mngr               gf_images_jobs.Jobs_mngr
+	Jobs_mngr               gf_images_jobs_core.Jobs_mngr
 	Service_host_port_str   string // "http://127.0.0.1:2060"
 	Templates_dir_paths_map map[string]string
 }

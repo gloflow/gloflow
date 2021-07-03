@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2019 Ivan Trajkovic
@@ -17,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs
+package gf_images_jobs_core
 
 import (
 	"fmt"
@@ -48,7 +49,7 @@ func run_job__uploaded_imgs(p_job_id_str string,
 		gf_image_id_str  := image_to_process.Gf_image_id_str
 		s3_file_path_str := image_to_process.S3_file_path_str
 
-		gf_err := pipeline__process_image_uploaded(gf_image_id_str,
+		gf_err := job__pipeline__process_image_uploaded(gf_image_id_str,
 			s3_file_path_str,
 			p_images_store_local_dir_path_str,
 			p_images_thumbnails_store_local_dir_path_str,
@@ -100,6 +101,7 @@ func run_job__extern_imgs(p_job_id_str string,
 			gf_errors_lst = append(gf_errors_lst, i_gf_err)
 			continue
 		}
+		
 		//--------------
 
 		p_runtime_sys.Log_fun("INFO", "PROCESSING IMAGE - "+image_source_url_str)
@@ -114,6 +116,7 @@ func run_job__extern_imgs(p_job_id_str string,
 			gf_errors_lst = append(gf_errors_lst, ext_gf_err)
 			continue
 		}
+
 		//--------------
 		// GIF - gifs have their own processing pipeline
 
@@ -166,7 +169,7 @@ func run_job__extern_imgs(p_job_id_str string,
 		//-----------------------
 		// STANDARD
 		} else {
-			gf_err := pipeline__process_image_extern(image_id_str,
+			gf_err := job__pipeline__process_image_extern(image_id_str,
 				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
@@ -187,6 +190,7 @@ func run_job__extern_imgs(p_job_id_str string,
 				continue
 			}
 		}
+
 		//-----------------------
 	}
 	return gf_errors_lst

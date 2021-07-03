@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2019 Ivan Trajkovic
@@ -17,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs
+package gf_images_jobs_core
 
 import (
 	"fmt"
@@ -45,11 +46,11 @@ func Client__run_uploaded_imgs(p_client_type_str string,
 	p_images_to_process_lst []Gf_image_uploaded_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_running_job, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*GF_running_job, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_uploaded_imgs()")
 
 	job_cmd_str    := "start_job_uploaded_imgs"
-	job_init_ch    := make(chan *Gf_running_job)
+	job_init_ch    := make(chan *GF_running_job)
 	job_updates_ch := make(chan Job_update_msg, 10)
 	
 
@@ -79,7 +80,7 @@ func Client__run_extern_imgs(p_client_type_str string,
 	p_images_extern_to_process_lst []Gf_image_extern_to_process,
 	p_flows_names_lst              []string,
 	p_jobs_mngr_ch                 Jobs_mngr,
-	p_runtime_sys                  *gf_core.Runtime_sys) (*Gf_running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
+	p_runtime_sys                  *gf_core.Runtime_sys) (*GF_running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_extern_imgs()")
 	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
@@ -88,7 +89,7 @@ func Client__run_extern_imgs(p_client_type_str string,
 	job_cmd_str      := "start_job"
 	// job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	// job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
-	job_init_ch      := make(chan *Gf_running_job)
+	job_init_ch      := make(chan *GF_running_job)
 	job_updates_ch   := make(chan Job_update_msg, 10) //ADD!! channel buffer size should be larger for large jobs (with a lot of images)
 
 	job_msg := Job_msg{
@@ -109,7 +110,7 @@ func Client__run_extern_imgs(p_client_type_str string,
 
 	/*//-----------------
 	// CREATE RUNNING_JOB
-	running_job := &Gf_running_job{
+	running_job := &GF_running_job{
 		Id_str:                       job_id_str,
 		T_str:                        "img_running_job",
 		Client_type_str:              p_client_type_str,

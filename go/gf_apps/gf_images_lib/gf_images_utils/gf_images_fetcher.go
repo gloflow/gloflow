@@ -147,18 +147,9 @@ func Download_file(p_image_url_str string,
 			},
 			ctx,
 			p_runtime_sys)
-			
-		/*err := p_runtime_sys.Mongo_coll.Insert(fetch_error)
-		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to insert a Image_fetch__error into mongodb",
-				"mongodb_insert_error",
-				map[string]interface{}{
-					"image_url_str":             p_image_url_str,
-					"local_image_file_path_str": p_local_image_file_path_str,
-				},
-				err,"gf_images_utils",p_runtime_sys)
+		if gf_err != nil {
 			return gf_err
-		}*/
+		}
 
 		gf_err = gf_core.Error__create("image fetching failed with HTTP status error",
 			"http_client_req_status_error",

@@ -25,17 +25,17 @@ import (
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //---------------------------------------------------
 func T__test_image_job__updates(p_job_id_str string,
-	p_jobs_mngr   gf_images_jobs.Jobs_mngr,
+	p_jobs_mngr   gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 	//-------------
 	// TEST_JOB_UPDATES
-	job_updates_ch := gf_images_jobs.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
+	job_updates_ch := gf_images_jobs_core.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
 
 	for ;; {
 
@@ -45,16 +45,16 @@ func T__test_image_job__updates(p_job_id_str string,
 		spew.Dump(job_update)
 
 		job_update_type_str := job_update.Type_str
-		if job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__ERROR {
+		if job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR {
 			panic("job encountered an error while processing")
 		}
 
-		if !(job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__OK || job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__COMPLETED) {
+		if !(job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__OK || job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED) {
 			panic(fmt.Sprintf("job_update is expected to be of type 'ok' but instead is - %s", job_update_type_str))
 		}
 		
 		// test complete
-		if job_update_type_str == gf_images_jobs.JOB_UPDATE_TYPE__COMPLETED {
+		if job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
 			break
 		}
 	}

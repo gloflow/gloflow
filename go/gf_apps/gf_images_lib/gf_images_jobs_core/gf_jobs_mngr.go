@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2019 Ivan Trajkovic
@@ -18,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 /*BosaC.Jan30.2020. <3 volim te zauvek*/
 
-package gf_images_jobs
+package gf_images_jobs_core
 
 import (
 	"fmt"
@@ -35,7 +36,7 @@ import (
 //-------------------------------------------------
 type Jobs_mngr chan Job_msg
 
-type Gf_running_job struct {
+type GF_running_job struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str          string        `bson:"id_str"`
 	T_str           string        `bson:"t"`
@@ -67,7 +68,7 @@ type Job_msg struct {
 	client_type_str                string 
 	cmd_str                        string // "start_job" | "get_running_job_ids"
 	
-	job_init_ch                    chan *Gf_running_job // used by clients for receiving outputs of job initialization by jobs_mngr
+	job_init_ch                    chan *GF_running_job // used by clients for receiving outputs of job initialization by jobs_mngr
 	job_updates_ch                 chan Job_update_msg  // used by jobs_mngr to send job_updates to
 	msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
 
@@ -85,6 +86,11 @@ type Job_update_msg struct {
 	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
 }
 
+type GF_jobs_lifecycle_callbacks struct {
+	Job_type__transform_imgs__fun func() *gf_core.Gf_error
+	Job_type__uploaded_imgs__fun  func() *gf_core.Gf_error
+}
+
 type job_status_val string
 const JOB_STATUS__FAILED    job_status_val = "failed"
 const JOB_STATUS__COMPLETED job_status_val = "completed"
@@ -98,12 +104,12 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 // CREATE_RUNNING_JOB
 func Jobs_mngr__create_running_job(p_client_type_str string,
 	p_job_updates_ch chan Job_update_msg,
-	p_runtime_sys    *gf_core.Runtime_sys) (*Gf_running_job, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_running_job, *gf_core.Gf_error) {
 
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 
-	running_job := &Gf_running_job{
+	running_job := &GF_running_job{
 		Id_str:          job_id_str,
 		T_str:           "img_running_job",
 		Client_type_str: p_client_type_str,
@@ -127,6 +133,7 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
+	p_lifecycle_callbacks                        *GF_jobs_lifecycle_callbacks,
 	p_config                                     *gf_images_utils.GF_config,
 	p_s3_info                                    *gf_core.GF_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
@@ -153,11 +160,16 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
 				case "start_job_transform_imgs":
 
-					// RUST
+					/*// RUST
 					// FIX!! - this just runs Rust job code for testing.
 					//         pass in proper job_cmd argument.
-					run_job_rust()
-				
+					run_job_rust()*/
+
+					gf_err := p_lifecycle_callbacks.Job_type__transform_imgs__fun()
+					if gf_err != nil {
+						continue
+					}
+
 				//------------------------
 				// START_JOB_UPLOADED_IMAGES
 				case "start_job_uploaded_imgs":
@@ -211,10 +223,15 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					// FIX!! - this just runs Rust job code for testing.
 					//         pass in proper job_cmd argument.
 					// run_job_rust()
+
+					/*gf_err := p_lifecycle_callbacks.Job_type__uploaded_imgs__fun()
+					if gf_err != nil {
+						continue
+					}*/
 				
 				//------------------------
 				// START_JOB_EXTERN_IMAGES
-				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
+				// FIX!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
 				case "start_job":
 
 					// RUNNING_JOB
@@ -290,7 +307,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 //-------------------------------------------------
 // DB
 //-------------------------------------------------
-func db__jobs_mngr__create_running_job(p_running_job *Gf_running_job,
+func db__jobs_mngr__create_running_job(p_running_job *GF_running_job,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 

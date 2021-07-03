@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2019 Ivan Trajkovic
@@ -17,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs
+package gf_images_jobs_core
 
 import (
 	"fmt"

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2019 Ivan Trajkovic
@@ -18,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 /*BosaC.Jan30.2020. <3 volim te zauvek*/
 
-package gf_images_jobs
+package gf_images_jobs_core
 
 import (
 	"fmt"
@@ -27,9 +28,20 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 )
 
+
+//-------------------------------------------------
+// PIPELINE__PROCESS_IMAGE_LOCAL
+func job__pipeline__process_image_local() {
+
+
+
+
+	
+}
+
 //-------------------------------------------------
 // PIPELINE__PROCESS_IMAGE_UPLOADED
-func pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id,
+func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id,
 	p_s3_file_path_str                           string,
 	p_images_store_local_dir_path_str            string,
 	p_images_thumbnails_store_local_dir_path_str string,
@@ -42,7 +54,7 @@ func pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id
 	p_s3_info                   *gf_core.GF_s3_info,
 	p_send_error_fun            func(string, *gf_core.Gf_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.pipeline__process_image_uploaded()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_uploaded()")
 
 	//-----------------------
 	// S3_DOWNLOAD - of the uploaded user image
@@ -158,8 +170,8 @@ func pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id
 }
 
 //-------------------------------------------------
-// PIPELINE__PROCESS_IMAGE
-func pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image_id,
+// PIPELINE__PROCESS_IMAGE_EXTERN
+func job__pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image_id,
 	p_image_source_url_str                       string,
 	p_image_origin_page_url_str                  string,
 	p_images_store_local_dir_path_str            string,
@@ -172,7 +184,7 @@ func pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image_id,
 	p_s3_info                         *gf_core.GF_s3_info,
 	p_send_error_fun                  func(string, *gf_core.Gf_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.Gf_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.pipeline__process_image_extern()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_extern()")
 
 	//-----------------------
 	// FETCH_IMAGE
