@@ -21,4 +21,5 @@ images_flow_to_s3_bucket_default: "media.gloflow.com" # "gf--img"
 
 images_flow_to_s3_bucket:
   general:    "media.gloflow.com" # "gf--img"
-  discovered: "gf--discovered--img"
+  discovered: "gf-apps--discovered--img"
+  bookmarks:  "gf-apps--bookmarks--img"
