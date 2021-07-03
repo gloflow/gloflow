@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"time"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -36,7 +35,7 @@ import (
 //-------------------------------------------------
 type Jobs_mngr chan Job_msg
 
-type GF_running_job struct {
+type GF_job_running struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str          string        `bson:"id_str"`
 	T_str           string        `bson:"t"`
@@ -46,34 +45,45 @@ type GF_running_job struct {
 	End_time_f      float64       `bson:"end_time_f"`
 
 	// LEGACY!! - update "images_to_process_lst" to "images_extern_to_process_lst" in the DB (bson)
-	Images_extern_to_process_lst   []Gf_image_extern_to_process   `bson:"images_to_process_lst"`
-	Images_uploaded_to_process_lst []Gf_image_uploaded_to_process `bson:"images_uploaded_to_process_lst"`
+	Images_extern_to_process_lst   []GF_image_extern_to_process   `bson:"images_to_process_lst"`
+	Images_uploaded_to_process_lst []GF_image_uploaded_to_process `bson:"images_uploaded_to_process_lst"`
 	
 	Errors_lst     []Job_Error         `bson:"errors_lst"`
 	job_updates_ch chan Job_update_msg `bson:"-"`
 }
 
-type Gf_image_extern_to_process struct {
+//------------------------
+// IMAGES_TO_PROCESS
+type GF_image_extern_to_process struct {
 	Source_url_str      string `bson:"source_url_str"` // FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
 	Origin_page_url_str string `bson:"origin_page_url_str"`
 }
 
-type Gf_image_uploaded_to_process struct {
+type GF_image_uploaded_to_process struct {
 	Gf_image_id_str  gf_images_utils.Gf_image_id
 	S3_file_path_str string // path to image in S3 in a bucket that it was originally uploaded to by client
 }
+
+type GF_image_local_to_process struct {
+	Local_file_path_str string
+}
+
+//------------------------
+// JOB_MSGS
 
 type Job_msg struct {
 	job_id_str                     string // if its an existing job. for new jobs the mngr creates a new job ID
 	client_type_str                string 
 	cmd_str                        string // "start_job" | "get_running_job_ids"
 	
-	job_init_ch                    chan *GF_running_job // used by clients for receiving outputs of job initialization by jobs_mngr
+	job_init_ch                    chan *GF_job_running // used by clients for receiving outputs of job initialization by jobs_mngr
 	job_updates_ch                 chan Job_update_msg  // used by jobs_mngr to send job_updates to
 	msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
 
-	images_extern_to_process_lst   []Gf_image_extern_to_process
-	images_uploaded_to_process_lst []Gf_image_uploaded_to_process
+	images_extern_to_process_lst   []GF_image_extern_to_process
+	images_uploaded_to_process_lst []GF_image_uploaded_to_process
+	images_local_to_process_lst    []GF_image_local_to_process
+
 	flows_names_lst                []string
 }
 
@@ -86,14 +96,18 @@ type Job_update_msg struct {
 	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
 }
 
+//------------------------
+// JOBS_LIFECYCLE
 type GF_jobs_lifecycle_callbacks struct {
 	Job_type__transform_imgs__fun func() *gf_core.Gf_error
 	Job_type__uploaded_imgs__fun  func() *gf_core.Gf_error
 }
 
+//------------------------
 type job_status_val string
-const JOB_STATUS__FAILED    job_status_val = "failed"
-const JOB_STATUS__COMPLETED job_status_val = "completed"
+const JOB_STATUS__FAILED         job_status_val = "failed"
+const JOB_STATUS__FAILED_PARTIAL job_status_val = "failed_partial"
+const JOB_STATUS__COMPLETED      job_status_val = "completed"
 
 type job_update_type_val string
 const JOB_UPDATE_TYPE__OK        job_update_type_val = "ok"
@@ -104,12 +118,12 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 // CREATE_RUNNING_JOB
 func Jobs_mngr__create_running_job(p_client_type_str string,
 	p_job_updates_ch chan Job_update_msg,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_running_job, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
 
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 
-	running_job := &GF_running_job{
+	running_job := &GF_job_running{
 		Id_str:          job_id_str,
 		T_str:           "img_running_job",
 		Client_type_str: p_client_type_str,
@@ -155,9 +169,69 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
 			switch job_msg.cmd_str {
 
+
 				//------------------------
-				// START_JOB_EXTERN_IMAGES
-				// UPDATE!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
+				// START_JOB_LOCAL_IMAGES
+				case "start_job_local_imgs":
+
+					
+					// RUNNING_JOB
+					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.client_type_str,
+						job_msg.job_updates_ch,
+						p_runtime_sys)
+					if gf_err != nil {
+						continue
+					}
+
+					//------------------------
+					// S3_BUCKETS
+
+					var target_s3_bucket_name_str string
+					if len(job_msg.flows_names_lst) > 0 {
+						main_flow_str := job_msg.flows_names_lst[0]
+
+						// check if the specified flow has an associated s3 bucket
+						var ok bool
+						target_s3_bucket_name_str, ok = p_config.Images_flow_to_s3_bucket_map[main_flow_str]
+						if !ok {
+							target_s3_bucket_name_str = p_config.Images_flow_to_s3_bucket_default_str
+						}
+					} else {
+						target_s3_bucket_name_str = p_config.Images_flow_to_s3_bucket_default_str
+					}
+
+					//------------------------
+
+					job_run__runtime := &GF_job_run__runtime{
+						job_id_str:          running_job.Id_str,
+						job_client_type_str: job_msg.client_type_str,
+						job_updates_ch:      job_msg.job_updates_ch,
+						s3_info:             p_s3_info,
+					}
+
+					run_job_gf_errs_lst := run_job__local_imgs(job_msg.images_local_to_process_lst,
+						p_images_store_local_dir_path_str,
+						p_images_thumbnails_store_local_dir_path_str,
+						target_s3_bucket_name_str,
+						job_run__runtime,
+						p_runtime_sys)
+					
+					//------------------------
+					// JOB_STATUS
+					var job_status_str job_status_val
+					if len(run_job_gf_errs_lst) == len(job_msg.images_uploaded_to_process_lst) {
+						job_status_str = JOB_STATUS__FAILED
+					} else if len(run_job_gf_errs_lst) > 0 {
+						job_status_str = JOB_STATUS__FAILED_PARTIAL
+					} else {
+						job_status_str = JOB_STATUS__COMPLETED
+					}
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
+
+					//------------------------
+
+				//------------------------
+				// START_JOB_TRANSFORM_IMAGES
 				case "start_job_transform_imgs":
 
 					/*// RUST
@@ -165,10 +239,14 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					//         pass in proper job_cmd argument.
 					run_job_rust()*/
 
+					//------------------------
+					// LIFECYCLE_CALLBACK
 					gf_err := p_lifecycle_callbacks.Job_type__transform_imgs__fun()
 					if gf_err != nil {
 						continue
 					}
+
+					//------------------------
 
 				//------------------------
 				// START_JOB_UPLOADED_IMAGES
@@ -200,34 +278,40 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					run_job_gf_err := run_job__uploaded_imgs(running_job.Id_str,
-						job_msg.client_type_str,
-						job_msg.images_uploaded_to_process_lst,
+					job_run__runtime := &GF_job_run__runtime{
+						job_id_str:          running_job.Id_str,
+						job_client_type_str: job_msg.client_type_str,
+						job_updates_ch:      job_msg.job_updates_ch,
+						s3_info:             p_s3_info,
+					}
+
+					run_job_gf_errs_lst := run_job__uploaded_imgs(job_msg.images_uploaded_to_process_lst,
 						job_msg.flows_names_lst,
-						job_msg.job_updates_ch,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 						source_s3_bucket_name_str,
 						target_s3_bucket_name_str,
-						p_s3_info,
+						job_run__runtime,
 						p_runtime_sys)
-
-					if run_job_gf_err != nil {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__FAILED, running_job.Id_str, p_runtime_sys)
+					
+					//------------------------
+					// JOB_STATUS
+					var job_status_str job_status_val
+					if len(run_job_gf_errs_lst) == len(job_msg.images_uploaded_to_process_lst) {
+						job_status_str = JOB_STATUS__FAILED
+					} else if len(run_job_gf_errs_lst) > 0 {
+						job_status_str = JOB_STATUS__FAILED_PARTIAL
 					} else {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
+						job_status_str = JOB_STATUS__COMPLETED
 					}
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
 
-
-					// RUST
-					// FIX!! - this just runs Rust job code for testing.
-					//         pass in proper job_cmd argument.
-					// run_job_rust()
-
-					/*gf_err := p_lifecycle_callbacks.Job_type__uploaded_imgs__fun()
+					//------------------------
+					// LIFECYCLE_CALLBACK
+					gf_err = p_lifecycle_callbacks.Job_type__uploaded_imgs__fun()
 					if gf_err != nil {
 						continue
-					}*/
+					}
 				
 				//------------------------
 				// START_JOB_EXTERN_IMAGES
@@ -257,24 +341,36 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					run_job_gf_err := run_job__extern_imgs(running_job.Id_str,
-						job_msg.client_type_str,
-						job_msg.images_extern_to_process_lst,
+					job_run__runtime := &GF_job_run__runtime{
+						job_id_str:          running_job.Id_str,
+						job_client_type_str: job_msg.client_type_str,
+						job_updates_ch:      job_msg.job_updates_ch,
+						s3_info:             p_s3_info,
+					}
+
+					run_job_gf_errs_lst := run_job__extern_imgs(job_msg.images_extern_to_process_lst,
 						job_msg.flows_names_lst,
-						job_msg.job_updates_ch,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 
 						p_media_domain_str,
 						s3_bucket_name_str,
-						p_s3_info,
+						job_run__runtime,
 						p_runtime_sys)
-
-					if run_job_gf_err != nil {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__FAILED, running_job.Id_str, p_runtime_sys)
+					
+					//------------------------
+					// JOB_STATUS
+					var job_status_str job_status_val
+					if len(run_job_gf_errs_lst) == len(job_msg.images_extern_to_process_lst) {
+						job_status_str = JOB_STATUS__FAILED
+					} else if len(run_job_gf_errs_lst) > 0 {
+						job_status_str = JOB_STATUS__FAILED_PARTIAL
 					} else {
-						_ = db__jobs_mngr__update_job_status(JOB_STATUS__COMPLETED, running_job.Id_str, p_runtime_sys)
+						job_status_str = JOB_STATUS__COMPLETED
 					}
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
+
+					//------------------------
 
 				//------------------------
 				// GET_JOB_UPDATE_CH
@@ -307,12 +403,12 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 //-------------------------------------------------
 // DB
 //-------------------------------------------------
-func db__jobs_mngr__create_running_job(p_running_job *GF_running_job,
+func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := "gf_images__jobs_running" // p_runtime_sys.Mongo_coll.Name()
 	gf_err        := gf_core.Mongo__insert(p_running_job,
 		coll_name_str,
 		map[string]interface{}{
@@ -326,18 +422,6 @@ func db__jobs_mngr__create_running_job(p_running_job *GF_running_job,
 	if gf_err != nil {
 		return gf_err
 	}
-
-	/*db_err := p_runtime_sys.Mongo_coll.Insert(p_running_job)
-	if db_err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"running_job_id_str": p_running_job.Id_str,
-				"client_type_str":    p_running_job.Client_type_str,
-			},
-			db_err, "gf_images_jobs", p_runtime_sys)
-		return gf_err
-	}*/
 
 	return nil
 }
@@ -357,7 +441,8 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	ctx := context.Background()
 
 	job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-	_, err         := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	coll           := p_runtime_sys.Mongo_db.Collection("gf_images__jobs_running")
+	_, err         := coll.UpdateMany(ctx, bson.M{
 			"t":      "img_running_job",
 			"id_str": p_job_id_str,
 		},
@@ -375,7 +460,7 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 				"job_id_str":     p_job_id_str,
 				"job_end_time_f": job_end_time_f,
 			},
-			err, "gf_images_jobs", p_runtime_sys)
+			err, "gf_jobs_mngr", p_runtime_sys)
 		return gf_err
 	}
 

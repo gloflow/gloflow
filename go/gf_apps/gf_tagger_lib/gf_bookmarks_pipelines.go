@@ -72,7 +72,7 @@ type GF_bookmark__output_get_all struct {
 // GET_ALL
 func bookmarks__pipeline__get_all(p_input *GF_bookmark__input_get_all,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark__output_get_all, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark__output_get_all, *gf_core.GF_error) {
 
 
 
@@ -109,7 +109,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
 	p_validator        *validator.Validate,
 	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
 
@@ -176,9 +176,10 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 	p_bookmark_id_str  gf_core.GF_ID,
 	p_ctx              context.Context,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
-
+	//-----------------
+	// SCREENSHOT_CREATE
 	bookmark_local_image_name_str := fmt.Sprintf("%s.png", p_bookmark_id_str)
 
 	gf_err := bookmarks__screenshot_create(p_url_str,
@@ -189,10 +190,24 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 	}
 
 
-
+	//-----------------
+	// GF_IMAGES_JOBS
+	images_to_process_lst := []gf_images_jobs_core.GF_image_local_to_process{
+		{
+			Local_file_path_str: bookmark_local_image_name_str,
+		},
+	}
+	client_type_str := "gf_tagger_bookmarks"
 	
+	_, gf_err = gf_images_jobs_core.Client__run_local_imgs(client_type_str,
+		images_to_process_lst,
+		p_images_jobs_mngr,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
-
+	//-----------------
 	
 
 	return nil
@@ -201,7 +216,7 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 //---------------------------------------------------
 func bookmarks__screenshot_create(p_url_str string,
 	p_target_local_file_path_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// SCREENSHOT

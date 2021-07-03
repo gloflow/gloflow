@@ -42,15 +42,32 @@ type Job_Expected_Output struct {
 //-------------------------------------------------
 // CLIENT
 //-------------------------------------------------
+
+
+
+func Client__run_local_imgs(p_client_type_str string,
+	p_images_to_process_lst []GF_image_local_to_process,
+	p_jobs_mngr_ch          Jobs_mngr,
+	p_runtime_sys           *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
+
+
+
+
+		
+	return nil, nil
+}
+
+
+//-------------------------------------------------
 func Client__run_uploaded_imgs(p_client_type_str string,
-	p_images_to_process_lst []Gf_image_uploaded_to_process,
+	p_images_to_process_lst []GF_image_uploaded_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*GF_running_job, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_uploaded_imgs()")
 
 	job_cmd_str    := "start_job_uploaded_imgs"
-	job_init_ch    := make(chan *GF_running_job)
+	job_init_ch    := make(chan *GF_job_running)
 	job_updates_ch := make(chan Job_update_msg, 10)
 	
 
@@ -77,10 +94,10 @@ func Client__run_uploaded_imgs(p_client_type_str string,
 //-------------------------------------------------
 // START
 func Client__run_extern_imgs(p_client_type_str string,
-	p_images_extern_to_process_lst []Gf_image_extern_to_process,
+	p_images_extern_to_process_lst []GF_image_extern_to_process,
 	p_flows_names_lst              []string,
 	p_jobs_mngr_ch                 Jobs_mngr,
-	p_runtime_sys                  *gf_core.Runtime_sys) (*GF_running_job, []*Job_Expected_Output, *gf_core.Gf_error) {
+	p_runtime_sys                  *gf_core.Runtime_sys) (*GF_job_running, []*Job_Expected_Output, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_extern_imgs()")
 	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
@@ -89,7 +106,7 @@ func Client__run_extern_imgs(p_client_type_str string,
 	job_cmd_str      := "start_job"
 	// job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	// job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
-	job_init_ch      := make(chan *GF_running_job)
+	job_init_ch      := make(chan *GF_job_running)
 	job_updates_ch   := make(chan Job_update_msg, 10) //ADD!! channel buffer size should be larger for large jobs (with a lot of images)
 
 	job_msg := Job_msg{
@@ -110,7 +127,7 @@ func Client__run_extern_imgs(p_client_type_str string,
 
 	/*//-----------------
 	// CREATE RUNNING_JOB
-	running_job := &GF_running_job{
+	running_job := &GF_job_running{
 		Id_str:                       job_id_str,
 		T_str:                        "img_running_job",
 		Client_type_str:              p_client_type_str,
@@ -188,14 +205,6 @@ func Job__get_update_ch(p_job_id_str string,
 
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)
-
-
-
-	// fmt.Println("AAAAAAAAAAAAAAAAAAAAA")
-	// fmt.Println(p_job_id_str)
-
-
-
 
 	job_cmd_str := "get_job_update_ch"
 	job_msg     := Job_msg{

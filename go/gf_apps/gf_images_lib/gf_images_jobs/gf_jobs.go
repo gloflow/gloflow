@@ -46,7 +46,7 @@ func Init(p_images_store_local_dir_path_str string,
 			// RUST
 			// FIX!! - this just runs Rust job code for testing.
 			//         pass in proper job_cmd argument.
-			run_job_rust()
+			// run_job_rust()
 
 			return nil
 		},
