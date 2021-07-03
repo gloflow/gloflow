@@ -92,6 +92,7 @@ func test_bookmarking(p_test *testing.T,
 		},
 	}
 	gf_err := bookmarks__pipeline__create(input__create,
+		nil,
 		validator,
 		ctx,
 		p_runtime_sys)

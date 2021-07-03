@@ -148,22 +148,23 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	}
 
 
+	// IMPORTANT!! - only run bookmark screenshoting if a images_jobs_mngr was
+	//               supplied to run image processing.
+	if p_images_jobs_mngr != nil {
 
+		go func() {
 
-	go func() {
-
-		ctx := context.Background()
-		gf_err := bookmarks__pipeline__screenshot(p_input.Url_str,
-			gf_id_str,
-			ctx,
-			p_images_jobs_mngr,
-			p_runtime_sys)
-		if gf_err != nil {
-			return
-		}
-
-
-	}()
+			ctx := context.Background()
+			gf_err := bookmarks__pipeline__screenshot(p_input.Url_str,
+				gf_id_str,
+				ctx,
+				p_images_jobs_mngr,
+				p_runtime_sys)
+			if gf_err != nil {
+				return
+			}
+		}()
+	}
 
 	return nil
 }
@@ -189,6 +190,7 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 
 
 
+	
 
 
 	
