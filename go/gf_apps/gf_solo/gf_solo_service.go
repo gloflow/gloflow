@@ -70,7 +70,7 @@ func service__run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 	}
 
-	gf_images_lib.Init_service(gf_images__service_info,
+	jobs_mngr_ch := gf_images_lib.Init_service(gf_images__service_info,
 		gf_images__config,
 		p_runtime_sys)
 
@@ -122,7 +122,9 @@ func service__run(p_config *GF_config,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.Init_service(p_config.Templates_paths_map, p_runtime_sys)
+	gf_tagger_lib.Init_service(p_config.Templates_paths_map,
+		jobs_mngr_ch,
+		p_runtime_sys)
 
 	//-------------
 	// GF_ML

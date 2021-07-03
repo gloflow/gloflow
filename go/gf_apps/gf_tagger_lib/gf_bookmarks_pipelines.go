@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
+	"fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //---------------------------------------------------
@@ -104,9 +106,10 @@ func bookmarks__pipeline__get_all(p_input *GF_bookmark__input_get_all,
 //---------------------------------------------------
 // CREATE
 func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
-	p_validator   *validator.Validate,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_validator        *validator.Validate,
+	p_ctx              context.Context,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 
 
@@ -146,11 +149,53 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 
 
 
+
+	go func() {
+
+		ctx := context.Background()
+		gf_err := bookmarks__pipeline__screenshot(p_input.Url_str,
+			gf_id_str,
+			ctx,
+			p_images_jobs_mngr,
+			p_runtime_sys)
+		if gf_err != nil {
+			return
+		}
+
+
+	}()
+
 	return nil
 }
 
 //---------------------------------------------------
 // SCREENSHOTS
+//---------------------------------------------------
+func bookmarks__pipeline__screenshot(p_url_str string,
+	p_bookmark_id_str  gf_core.GF_ID,
+	p_ctx              context.Context,
+	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
+
+
+	bookmark_local_image_name_str := fmt.Sprintf("%s.png", p_bookmark_id_str)
+
+	gf_err := bookmarks__screenshot_create(p_url_str,
+		bookmark_local_image_name_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+
+
+
+
+	
+
+	return nil
+}
+
 //---------------------------------------------------
 func bookmarks__screenshot_create(p_url_str string,
 	p_target_local_file_path_str string,

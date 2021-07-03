@@ -12,8 +12,9 @@ media_domain:        "media.gloflow.com"
 main_s3_bucket_name: "media.gloflow.com" # "gf-apps--img"
 
 #----------------------------
-# UPLOADS
+# UPLOADS/BOOKMARKS
 uploaded_images_s3_bucket: "gf-apps--uploaded--img"
+bookmark_images_s3_bucket: "gf-apps--bookmarks--img"
 
 #----------------------------
 # FLOWS
@@ -23,3 +24,4 @@ images_flow_to_s3_bucket_default: "media.gloflow.com" # "gf-apps--img"
 images_flow_to_s3_bucket:
   general:    "media.gloflow.com" # "gf-apps--img"
   discovered: "gf-apps--discovered--img"
+  bookmarks:  "gf-apps--bookmarks--img"

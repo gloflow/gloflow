@@ -26,13 +26,16 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
+	// FIX!! - using a single validator across multiple goroutines/threads, is it safe?
 	validator := gf_core.Validate__init()
 
 	// TEMPLATES
@@ -72,6 +75,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				//------------------
 
 				gf_err = bookmarks__pipeline__create(&input,
+					p_images_jobs_mngr,
 					validator,
 					p_ctx,
 					p_runtime_sys)
