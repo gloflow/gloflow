@@ -33,7 +33,7 @@ import (
 // AUTHORIZED
 
 func tags__pipeline__add(p_input_data_map map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_pipelines.tags__pipeline__add()")
 
 	//----------------
@@ -84,7 +84,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	p_resp                   io.Writer,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys            *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_pipelines.tags__pipeline__get_objects()")
 
 	//----------------

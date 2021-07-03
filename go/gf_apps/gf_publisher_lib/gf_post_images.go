@@ -235,11 +235,11 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 	flows_names_lst := []string{"general",}
 
-	images_to_process_lst := []gf_images_jobs_core.Gf_image_extern_to_process{}
+	images_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{}
 	for i, image_url_str := range p_post_elements_images_urls_lst {
 		
 		origin_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
-		img_to_process      := gf_images_jobs_core.Gf_image_extern_to_process{
+		img_to_process      := gf_images_jobs_core.GF_image_extern_to_process{
 			Source_url_str:      image_url_str,
 			Origin_page_url_str: origin_page_url_str,
 		}

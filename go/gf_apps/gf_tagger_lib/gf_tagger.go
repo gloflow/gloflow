@@ -36,7 +36,7 @@ import (
 func add_tags_to_object(p_tags_str string,
 	p_object_type_str      string,
 	p_object_extern_id_str string,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.add_tags_to_object()")
 
 	if p_object_type_str != "post" &&
@@ -116,7 +116,7 @@ func get_objects_with_tags(p_tags_lst []string,
 	p_object_type_str string,
 	p_page_index_int  int,
 	p_page_size_int   int,
-	p_runtime_sys     *gf_core.Runtime_sys) (map[string][]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) (map[string][]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
 		
 	objects_with_tags_map := map[string][]map[string]interface{}{}
@@ -140,7 +140,7 @@ func get_objects_with_tag(p_tag_str string,
 	p_object_type_str string,
 	p_page_index_int  int,
 	p_page_size_int   int,
-	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
 
@@ -185,7 +185,7 @@ func get_objects_with_tag(p_tag_str string,
 func parse_tags(p_tags_str string,
 	p_max_tags_bulk_size_int        int, // 500
 	p_max_tag_characters_number_int int, // 20
-	p_runtime_sys                   *gf_core.Runtime_sys) ([]string, *gf_core.Gf_error) {
+	p_runtime_sys                   *gf_core.Runtime_sys) ([]string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.parse_tags()")
 	
 	tags_lst := strings.Split(p_tags_str," ")

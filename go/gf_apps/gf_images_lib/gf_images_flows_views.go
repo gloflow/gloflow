@@ -35,7 +35,7 @@ func flows__render_initial_page(p_flow_name_str string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
@@ -82,7 +82,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_flows_views.flows__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)

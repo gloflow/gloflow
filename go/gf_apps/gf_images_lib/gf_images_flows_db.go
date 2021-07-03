@@ -32,7 +32,7 @@ import (
 //---------------------------------------------------
 func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 	p_image_gf_id_str gf_images_utils.Gf_image_id,
-	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 	
 	ctx := context.Background()
@@ -67,7 +67,7 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 func flows_db__get_page(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
-	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image, *gf_core.Gf_error) {
+	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
 
 	ctx := context.Background()
@@ -155,7 +155,7 @@ func flows_db__get_page(p_flow_name_str string,
 func flows_db__images_exist(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__images_exist()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flow_name_str          - %s", p_flow_name_str))
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_images_extern_urls_lst - %s", p_images_extern_urls_lst))

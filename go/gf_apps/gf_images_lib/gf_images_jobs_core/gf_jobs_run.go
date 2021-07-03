@@ -30,7 +30,7 @@ import (
 //-------------------------------------------------
 func run_job__uploaded_imgs(p_job_id_str string,
 	p_job_client_type_str                        string,
-	p_images_to_process_lst                      []Gf_image_uploaded_to_process,
+	p_images_to_process_lst                      []GF_image_uploaded_to_process,
 	p_flows_names_lst                            []string,
 	p_job_updates_ch                             chan Job_update_msg,
 	p_images_store_local_dir_path_str            string,
@@ -74,7 +74,7 @@ func run_job__uploaded_imgs(p_job_id_str string,
 // RUN_JOB__EXTERN_IMAGES
 func run_job__extern_imgs(p_job_id_str string,
 	p_job_client_type_str                        string,
-	p_images_to_process_lst                      []Gf_image_extern_to_process,
+	p_images_to_process_lst                      []GF_image_extern_to_process,
 	p_flows_names_lst                            []string,
 	p_job_updates_ch                             chan Job_update_msg,
 	p_images_store_local_dir_path_str            string,

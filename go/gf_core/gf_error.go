@@ -39,10 +39,11 @@ import (
 )
 
 //-------------------------------------------------
+type GF_error = Gf_error
 type Gf_error struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"`
 	Id_str               string                 `bson:"id_str"` 
-	T_str                string                 `bson:"t"`                    //"gf_error"
+	T_str                string                 `bson:"t"`                    // "gf_error"
 	Creation_unix_time_f float64                `bson:"creation_unix_time_f"`
 	Type_str             string                 `bson:"type_str"`
 	User_msg_str         string                 `bson:"user_msg_str"`

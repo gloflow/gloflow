@@ -80,11 +80,11 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
 			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
 
-			images_to_process_lst := []Gf_image_extern_to_process{}
+			images_to_process_lst := []GF_image_extern_to_process{}
 			for i, image_url_str := range images_urls_lst {
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
-				img_to_process            := Gf_image_extern_to_process{
+				img_to_process            := GF_image_extern_to_process{
 					Source_url_str:      image_url_str,
 					Origin_page_url_str: image_origin_page_url_str,
 				}

@@ -31,7 +31,7 @@ import (
 //-------------------------------------------------
 func Flows__init_handlers(p_templates_paths_map map[string]string,
 	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
 
 	//---------------------

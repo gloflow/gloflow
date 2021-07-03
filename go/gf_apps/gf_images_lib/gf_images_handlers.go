@@ -35,7 +35,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	p_img_config       *gf_images_utils.GF_config,
 	p_media_domain_str string,
 	p_s3_info          *gf_core.GF_s3_info,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 
 	//---------------------

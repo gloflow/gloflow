@@ -32,7 +32,7 @@ func render_objects_with_tag(p_tag_str string,
 	p_page_index_int         int,
 	p_page_size_int          int,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
 
 	//-----------------------------

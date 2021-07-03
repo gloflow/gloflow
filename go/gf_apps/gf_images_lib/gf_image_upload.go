@@ -60,7 +60,7 @@ func Upload__init(p_image_name_str string,
 	p_client_type_str  string,
 	p_s3_info          *gf_core.GF_s3_info,
 	p_config           *gf_images_utils.GF_config,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
 	
 	//------------------
 	// CHECK_IMAGE_FORMAT
@@ -132,7 +132,7 @@ func Upload__init(p_image_name_str string,
 func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	p_jobs_mngr_ch    chan gf_images_jobs_core.Job_msg,
 	p_s3_info         *gf_core.GF_s3_info,
-	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_running_job, *gf_core.Gf_error) {
+	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
 	
 
 
@@ -145,8 +145,8 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	spew.Dump(upload_info)
 
 	
-	image_to_process_lst := []gf_images_jobs_core.Gf_image_uploaded_to_process{
-		gf_images_jobs_core.Gf_image_uploaded_to_process{
+	image_to_process_lst := []gf_images_jobs_core.GF_image_uploaded_to_process{
+		{
 			Gf_image_id_str:  p_upload_gf_image_id_str,
 			S3_file_path_str: upload_info.S3_file_path_str,
 		},
@@ -170,7 +170,7 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 // DB
 //---------------------------------------------------
 func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	p_runtime_sys.Log_fun("INFO", "DB INSERT - img_upload_info")
 	
@@ -203,7 +203,7 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 
 //---------------------------------------------------
 func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
 
 	ctx := context.Background()
 
@@ -234,7 +234,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 
 //---------------------------------------------------
 func Upload_db__put_image_upload_info(p_image_upload_info *Gf_image_upload_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
