@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs_core
+package gf_images_jobs_client
 
 import (
 	"fmt"
@@ -26,6 +26,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
@@ -42,13 +43,11 @@ type Job_Expected_Output struct {
 //-------------------------------------------------
 // CLIENT
 //-------------------------------------------------
-
-
-
-func Client__run_local_imgs(p_client_type_str string,
-	p_images_to_process_lst []GF_image_local_to_process,
-	p_jobs_mngr_ch          Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
+func Run_local_imgs(p_client_type_str string,
+	p_images_to_process_lst []gf_images_jobs_core.GF_image_local_to_process,
+	p_flows_names_lst       []string,
+	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.Gf_error) {
 
 
 
@@ -57,27 +56,26 @@ func Client__run_local_imgs(p_client_type_str string,
 	return nil, nil
 }
 
-
 //-------------------------------------------------
-func Client__run_uploaded_imgs(p_client_type_str string,
-	p_images_to_process_lst []GF_image_uploaded_to_process,
+func Run_uploaded_imgs(p_client_type_str string,
+	p_images_to_process_lst []gf_images_jobs_core.GF_image_uploaded_to_process,
 	p_flows_names_lst       []string,
-	p_jobs_mngr_ch          Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_uploaded_imgs()")
+	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_uploaded_imgs()")
 
 	job_cmd_str    := "start_job_uploaded_imgs"
-	job_init_ch    := make(chan *GF_job_running)
-	job_updates_ch := make(chan Job_update_msg, 10)
+	job_init_ch    := make(chan *gf_images_jobs_core.GF_job_running)
+	job_updates_ch := make(chan gf_images_jobs_core.Job_update_msg, 10)
 	
 
-	job_msg := Job_msg{
-		client_type_str:                p_client_type_str,
-		cmd_str:                        job_cmd_str,
-		job_init_ch:                    job_init_ch,
-		job_updates_ch:                 job_updates_ch,
-		images_uploaded_to_process_lst: p_images_to_process_lst,
-		flows_names_lst:                p_flows_names_lst,
+	job_msg := gf_images_jobs_core.Job_msg{
+		Client_type_str:                p_client_type_str,
+		Cmd_str:                        job_cmd_str,
+		Job_init_ch:                    job_init_ch,
+		Job_updates_ch:                 job_updates_ch,
+		Images_uploaded_to_process_lst: p_images_to_process_lst,
+		Flows_names_lst:                p_flows_names_lst,
 	}
 
 	// SEND_MSG
@@ -93,30 +91,27 @@ func Client__run_uploaded_imgs(p_client_type_str string,
 
 //-------------------------------------------------
 // START
-func Client__run_extern_imgs(p_client_type_str string,
-	p_images_extern_to_process_lst []GF_image_extern_to_process,
+func Run_extern_imgs(p_client_type_str string,
+	p_images_extern_to_process_lst []gf_images_jobs_core.GF_image_extern_to_process,
 	p_flows_names_lst              []string,
-	p_jobs_mngr_ch                 Jobs_mngr,
-	p_runtime_sys                  *gf_core.Runtime_sys) (*GF_job_running, []*Job_Expected_Output, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Client__run_extern_imgs()")
+	p_jobs_mngr_ch                 gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*Job_Expected_Output, *gf_core.Gf_error) {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_extern_imgs()")
 	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR
-	job_cmd_str      := "start_job"
-	// job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	// job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
-	job_init_ch      := make(chan *GF_job_running)
-	job_updates_ch   := make(chan Job_update_msg, 10) //ADD!! channel buffer size should be larger for large jobs (with a lot of images)
+	job_cmd_str    := "start_job"
+	job_init_ch    := make(chan *gf_images_jobs_core.GF_job_running)
+	job_updates_ch := make(chan gf_images_jobs_core.Job_update_msg, 10) // ADD!! - channel buffer size should be larger for large jobs (with a lot of images)
 
-	job_msg := Job_msg{
-		// job_id_str:                   job_id_str,
-		client_type_str:              p_client_type_str,
-		cmd_str:                      job_cmd_str,
-		job_init_ch:                  job_init_ch,
-		job_updates_ch:               job_updates_ch,
-		images_extern_to_process_lst: p_images_extern_to_process_lst,
-		flows_names_lst:              p_flows_names_lst,
+	job_msg := gf_images_jobs_core.Job_msg{
+		Client_type_str:              p_client_type_str,
+		Cmd_str:                      job_cmd_str,
+		Job_init_ch:                  job_init_ch,
+		Job_updates_ch:               job_updates_ch,
+		Images_extern_to_process_lst: p_images_extern_to_process_lst,
+		Flows_names_lst:              p_flows_names_lst,
 	}
 
 	// SEND_MSG
@@ -199,38 +194,38 @@ func Client__run_extern_imgs(p_client_type_str string,
 
 //-------------------------------------------------
 func Job__get_update_ch(p_job_id_str string,
-	p_jobs_mngr_ch Jobs_mngr,
-	p_runtime_sys  *gf_core.Runtime_sys) chan Job_update_msg {
+	p_jobs_mngr_ch gf_images_jobs_core.Jobs_mngr,
+	p_runtime_sys  *gf_core.Runtime_sys) chan gf_images_jobs_core.Job_update_msg {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Job__get_update_ch()")
 
 	msg_response_ch := make(chan interface{})
 	defer close(msg_response_ch)
 
 	job_cmd_str := "get_job_update_ch"
-	job_msg     := Job_msg{
-		job_id_str:      p_job_id_str,
-		cmd_str:         job_cmd_str,
-		msg_response_ch: msg_response_ch,
+	job_msg     := gf_images_jobs_core.Job_msg{
+		Job_id_str:      p_job_id_str,
+		Cmd_str:         job_cmd_str,
+		Msg_response_ch: msg_response_ch,
 	}
 
 	p_jobs_mngr_ch <- job_msg
 
 	response          := <-msg_response_ch
-	job_updates_ch, _ := response.(chan Job_update_msg)
+	job_updates_ch, _ := response.(chan gf_images_jobs_core.Job_update_msg)
 
 	return job_updates_ch
 }
 
 //-------------------------------------------------
 func Job__cleanup(p_job_id_str string,
-	p_jobs_mngr_ch Jobs_mngr,
+	p_jobs_mngr_ch gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys  *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Job__cleanup()")
 
 	job_cmd_str := "cleanup_job"
-	job_msg     := Job_msg{
-		job_id_str: p_job_id_str,
-		cmd_str:    job_cmd_str,
+	job_msg     := gf_images_jobs_core.Job_msg{
+		Job_id_str: p_job_id_str,
+		Cmd_str:    job_cmd_str,
 	}
 
 	p_jobs_mngr_ch <- job_msg

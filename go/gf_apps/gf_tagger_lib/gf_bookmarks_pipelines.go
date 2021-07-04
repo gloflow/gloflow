@@ -27,6 +27,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
 
 //---------------------------------------------------
@@ -198,9 +199,11 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 		},
 	}
 	client_type_str := "gf_tagger_bookmarks"
+	flows_names_lst := []string{"bookmarks", }
 	
-	_, gf_err = gf_images_jobs_core.Client__run_local_imgs(client_type_str,
+	_, gf_err = gf_images_jobs_client.Run_local_imgs(client_type_str,
 		images_to_process_lst,
+		flows_names_lst,
 		p_images_jobs_mngr,
 		p_runtime_sys)
 	if gf_err != nil {

@@ -25,11 +25,11 @@ import (
 	"strconv"
 	"net/http"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
 
 //-------------------------------------------------
@@ -209,7 +209,7 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 			},
 		}
 		
-	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_core.Client__run_extern_imgs(p_client_type_str,
+	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_extern_imgs(p_client_type_str,
 		images_urls_to_process_lst,
 		p_flows_names_lst,
 		p_jobs_mngr_ch,

@@ -30,6 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -153,7 +154,7 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
 	}
 
 	// JOB
-	running_job, gf_err := gf_images_jobs_core.Client__run_uploaded_imgs(upload_info.Client_type_str,
+	running_job, gf_err := gf_images_jobs_client.Run_uploaded_imgs(upload_info.Client_type_str,
 		image_to_process_lst,
 		upload_info.Flows_names_lst,
 		p_jobs_mngr_ch,

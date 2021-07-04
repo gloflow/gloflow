@@ -117,7 +117,7 @@ func Init_service(p_service_info *GF_service_info,
 	
 	//-------------
 	// JOBS_MANAGER
-	gf_images_jobs_core.Jobs_mngr__init_handlers(jobs_mngr_ch, p_runtime_sys)
+	gf_images_jobs.Jobs_mngr__init_handlers(jobs_mngr_ch, p_runtime_sys)
 
 	//-------------
 	// HANDLERS

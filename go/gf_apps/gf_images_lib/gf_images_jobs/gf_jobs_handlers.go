@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs_core
+package gf_images_jobs
 
 import (
 	"fmt"
@@ -30,10 +30,12 @@ import (
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
 
 //-------------------------------------------------
-func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
+func Jobs_mngr__init_handlers(p_jobs_mngr_ch gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
@@ -80,11 +82,12 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
 			p_runtime_sys.Log_fun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
 
-			images_to_process_lst := []GF_image_extern_to_process{}
+			images_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{}
 			for i, image_url_str := range images_urls_lst {
 
 				image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
-				img_to_process            := GF_image_extern_to_process{
+
+				img_to_process := gf_images_jobs_core.GF_image_extern_to_process{
 					Source_url_str:      image_url_str,
 					Origin_page_url_str: image_origin_page_url_str,
 				}
@@ -93,7 +96,7 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 			//-------------------
 
-			running_job, job_expected_outputs_lst, gf_err := Client__run_extern_imgs(client_type_str,
+			running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_extern_imgs(client_type_str,
 				images_to_process_lst,
 				flows_names_lst,
 				p_jobs_mngr_ch,
@@ -145,7 +148,8 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 
 			running_job := running_jobs_map[images_job_id_str]*/
 
-			job_updates_ch := Job__get_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
+			job_updates_ch := gf_images_jobs_client.Job__get_update_ch(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
+
 			//-------------------------
 
 			// don't close the connection, sending messages and flushing the response each time there is a new message to send along.
@@ -196,8 +200,9 @@ func Jobs_mngr__init_handlers(p_jobs_mngr_ch Jobs_mngr,
 				flusher.Flush()
 
 				// IMPORTANT!! - this is the last update message, so exit the loop
-				if job_update.Type_str == JOB_UPDATE_TYPE__ERROR || job_update.Type_str == JOB_UPDATE_TYPE__COMPLETED {
-					Job__cleanup(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
+				if job_update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR || job_update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
+
+					gf_images_jobs_client.Job__cleanup(images_job_id_str, p_jobs_mngr_ch, p_runtime_sys)
 					break
 				}
 			}

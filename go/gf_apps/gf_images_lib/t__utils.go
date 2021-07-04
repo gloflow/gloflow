@@ -26,6 +26,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
 
 //---------------------------------------------------
@@ -35,7 +36,7 @@ func T__test_image_job__updates(p_job_id_str string,
 
 	//-------------
 	// TEST_JOB_UPDATES
-	job_updates_ch := gf_images_jobs_core.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
+	job_updates_ch := gf_images_jobs_client.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
 
 	for ;; {
 
@@ -58,5 +59,6 @@ func T__test_image_job__updates(p_job_id_str string,
 			break
 		}
 	}
+
 	//-------------
 }
