@@ -7,9 +7,12 @@
 
 <script src="./../../../../libs/js/system.min.js" type="text/javascript"></script>
 <script src="./../../../../libs/js/system_named_register_ext.js" type="text/javascript"></script>
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="./../../../../libs/js/jquery.timeago.js"></script>
 <script type="text/javascript" src="./../../../../libs/js/color-thief.min.js"></script>
+
+<script type="text/javascript" src="./../../../gf_core/ts/gf_image_upload.js"></script>
 <script type="text/javascript" src="./bin/gf_landing_page.js"></script>
 
 <link rel="stylesheet" type="text/css" href='./../css/gf_landing_page.css'>
@@ -61,7 +64,10 @@
 				<div class="image_info">
 					<div class="image_title">image_1</div>
 					<div class="image">
-						<img src="https://media.gloflow.com/thumbnails/fa9deb120738773b5bb2c823e4a6f89c_thumb_small.png" data-img_thumb_medium_url="https://media.gloflow.com/thumbnails/fa9deb120738773b5bb2c823e4a6f89c_thumb_small.png"></img>
+						<!-- using local images in assets so that when image is processed via canvas, and canvas data is read (for dominant color, etc.)
+						the canvas is not tainted by CORS issue.
+						these files are .gitignored, so before using this dev html file make sure these files exist in ./assets dir -->
+						<img src="./assets/fa9deb120738773b5bb2c823e4a6f89c_thumb_small.jpeg" data-img_thumb_medium_url="./assets/fa9deb120738773b5bb2c823e4a6f89c_thumb_small.jpeg"></img>
 					</div>
 					<div class="origin_page_url">
 						<a href="" target="_blank">
@@ -73,7 +79,10 @@
 				<div class="image_info">
 					<div class="image_title">image_2</div>
 					<div class="image">
-						<img src="https://media.gloflow.com/thumbnails/260d391a18632f3b73d2a71fbbf9fd8e_thumb_small.png" data-img_thumb_medium_url="https://media.gloflow.com/thumbnails/260d391a18632f3b73d2a71fbbf9fd8e_thumb_small.png"></img>
+						<!-- using local images in assets so that when image is processed via canvas, and canvas data is read (for dominant color, etc.)
+						the canvas is not tainted by CORS issue.
+						these files are .gitignored, so before using this dev html file make sure these files exist in ./assets dir -->
+						<img src="./assets/260d391a18632f3b73d2a71fbbf9fd8e_thumb_small.jpeg" data-img_thumb_medium_url="./assets/260d391a18632f3b73d2a71fbbf9fd8e_thumb_small.jpeg"></img>
 					</div>
 					<div class="origin_page_url">
 						<a href="" target="_blank">
@@ -85,7 +94,10 @@
 				<div class="image_info">
 					<div class="image_title">image_3</div>
 					<div class="image">
-						<img src="https://media.gloflow.com/thumbnails/b38e105c9cfe4b0b78946a07c3941183_thumb_small.png" data-img_thumb_medium_url="https://media.gloflow.com/thumbnails/b38e105c9cfe4b0b78946a07c3941183_thumb_small.png"></img>
+						<!-- using local images in assets so that when image is processed via canvas, and canvas data is read (for dominant color, etc.)
+						the canvas is not tainted by CORS issue.
+						these files are .gitignored, so before using this dev html file make sure these files exist in ./assets dir -->
+						<img src="./assets/b38e105c9cfe4b0b78946a07c3941183_thumb_small.jpeg" data-img_thumb_medium_url="./assets/b38e105c9cfe4b0b78946a07c3941183_thumb_small.jpeg"></img>
 					</div>
 					<div class="origin_page_url">
 						<a href="" target="_blank">
@@ -179,7 +191,8 @@
 		<!-- ---------------------------------------------------------- -->
 	</div>
 	<script>
-		System.import('gf_landing_page').then(function(m){});
+		// System.import('gf_landing_page').then(function(m){});
+		System.import("gf_apps/gf_landing_page/ts/gf_landing_page").then(function(m){});
 	</script>
 </body>
 </html>

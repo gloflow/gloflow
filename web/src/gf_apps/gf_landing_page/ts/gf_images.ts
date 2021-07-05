@@ -17,31 +17,105 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
+
+import * as gf_image_process from "./../../../gf_core/ts/gf_image_process";
 
 //-------------------------------------------------
 export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images.init()');
 
-	$('#featured_images').find('.image_info').each((p_i, p_e)=>{
-		init_image_viewer(p_e, p_log_fun);
-		init_image_date(p_e, p_log_fun);
+	$('#featured_images').find('.image_info').each((p_i, p_image_info_element)=>{
+
+		// FIX!! - this function has been moved to gf_core/gf_images_viewer.ts, as a general viewer,
+		//         to use universaly gf_images/gf_landing_page.
+		//         gf_images flows_browser already uses the version from gf_core.
+		init_image_viewer(p_image_info_element, p_log_fun);
+
+		init_image_date(p_image_info_element, p_log_fun);
+
+
+
+		//-------------
+		// NEW - move into its own function
+		var image_colors_shown_bool = false;
+		$(p_image_info_element).find("img").on("mouseover", (p_event)=>{
+
+
+
+			if (!image_colors_shown_bool) {
+				
+				const image        = p_event.target;
+				const image_colors = gf_image_process.get_colors(image);
+
+
+				const color_info_element = $(`<div class="colors_info">
+					<div class="color_dominant"></div>
+					<div class="color_pallete"></div>
+				</div>`);
+				
+				color_info_element.insertAfter(image);
+
+				//-------------
+				// COLOR_DOMINANT
+				const color_dominant_element = $(color_info_element).find(".color_dominant");
+				$(color_dominant_element).css("background-color", image_colors.color_hex_str);
+
+				//-------------
+				// COLOR_PALLETE
+				const color_pallete_element = $(p_image_info_element).find(".colors_info .color_pallete");
+				// const color_pallete_sub_lst = image_colors.color_palette_lst.slice(1, 6);
+				image_colors.color_palette_lst.forEach((p_color_hex_str)=>{
+
+					console.log("-------------")
+					console.log(p_color_hex_str);
+
+					$(color_pallete_element).append(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`)
+				})
+
+				//-------------
+
+				var color_dominant_label_element = $(`<div class="color_dominant_label">color dominant</div>`);
+				$(color_dominant_element).on("mouseover", ()=>{
+					color_info_element.append(color_dominant_label_element);
+				});
+				$(color_dominant_element).on("mouseout", ()=>{
+					$(color_dominant_label_element).remove();
+				});
+
+
+				var color_pallete_label_element = $(`<div class="color_pallete_label">color pallete</div>`);
+				$(color_pallete_element).on("mouseover", ()=>{
+					color_info_element.append(color_pallete_label_element);
+				});
+				$(color_pallete_element).on("mouseout", ()=>{
+					$(color_pallete_label_element).remove();
+				});
+				
+
+
+				image_colors_shown_bool = true;
+			}
+		});
+
+
+		//-------------
+
 	});
 }
 
 //-------------------------------------------------
-// REMOVE!! - this function has been moved to flows_browser/gf_images_viewer.ts, as a general viewer,
-//            to use universaly gf_images/gf_landing_page
-
+// DEPRECATED!!
 function init_image_viewer(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_images.init_image_viewer()');
+	p_log_fun('FUN_ENTER', 'gf_landing_page.init_image_viewer()');
 
 	const img_thumb_medium_url = $(p_image_element).find('img').data('img_thumb_medium_url');
 	const image_view           = $(`
 		<div id="image_view">
 			<div id="background"></div>
 			<div id="image_detail">
-				<img src="`+img_thumb_medium_url+`"></img>
+				<img src="${img_thumb_medium_url}"></img>
 			</div>
 		</div>`);
 
