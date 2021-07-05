@@ -49,18 +49,14 @@ export function init(p_log_fun) {
 				const image        = p_event.target;
 				const image_colors = gf_image_process.get_colors(image);
 
+				console.log("dominant color - ", image_colors.color_hex_str);
 
 				const color_info_element = $(`<div class="colors_info">
-					<div class="color_dominant"></div>
+					<div class="color_dominant" style="background-color:#${image_colors.color_hex_str};"></div>
 					<div class="color_pallete"></div>
 				</div>`);
 				
 				color_info_element.insertAfter(image);
-
-				//-------------
-				// COLOR_DOMINANT
-				const color_dominant_element = $(color_info_element).find(".color_dominant");
-				$(color_dominant_element).css("background-color", image_colors.color_hex_str);
 
 				//-------------
 				// COLOR_PALLETE
@@ -68,13 +64,36 @@ export function init(p_log_fun) {
 				// const color_pallete_sub_lst = image_colors.color_palette_lst.slice(1, 6);
 				image_colors.color_palette_lst.forEach((p_color_hex_str)=>{
 
-					console.log("-------------")
-					console.log(p_color_hex_str);
+					// console.log("-------------")
+					// console.log(p_color_hex_str);
 
-					$(color_pallete_element).append(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`)
+
+					const color_element = $(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`);
+					$(color_pallete_element).append(color_element);
+
+
+
+
+
+					//-------------
+					// COLOR_INSPECTOR
+					var color_inspect_element = $(`<div class="color_inspect">
+						<div class='color_hex'>#${p_color_hex_str}</div>
+						<div class='color_large' style="background-color:#${p_color_hex_str};"></div>
+
+					</div>`);
+					$(color_element).on("mouseover", ()=>{
+						color_pallete_element.append(color_inspect_element);
+					});
+					$(color_element).on("mouseout", ()=>{
+						$(color_inspect_element).remove();
+					});
+					
+					//-------------
 				})
 
 				//-------------
+				const color_dominant_element = $(color_info_element).find(".color_dominant");
 
 				var color_dominant_label_element = $(`<div class="color_dominant_label">color dominant</div>`);
 				$(color_dominant_element).on("mouseover", ()=>{

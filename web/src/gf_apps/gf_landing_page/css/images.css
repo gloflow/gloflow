@@ -89,6 +89,7 @@
 /*IMAGE_COLORS_INFO*/
 
 #images .image_info .colors_info {
+	top: -3px;
 	left: 10px;
     position: relative;
 	height: 50px;
@@ -108,7 +109,46 @@
 .colors_info .color_pallete .color {
 	height: 25px;
 	width:  25px;
+	cursor: pointer;
 }
+
+
+/*COLOR_INSPECTOR*/
+.colors_info .color_pallete .color_inspect {
+	position: absolute;
+    top: -87px;
+	left: 65px;
+    width: 63px;
+	height: 78px;
+	width: 63px;
+    text-align: center;
+	border-style: solid;
+    border-width: 1px;
+}
+
+
+.colors_info .color_pallete .color_inspect .color_hex {
+	position: absolute;
+    font-size: 13px;
+	background-color: white;
+    width: 63px;
+    text-align: center;
+}
+
+.colors_info .color_pallete .color_inspect .color_large {
+	width: 63px;
+    height: 63px;
+    top: 15px;
+    position: absolute;
+}
+
+
+
+
+
+
+
+
 
 .colors_info .color_dominant_label {
 	position: absolute;
