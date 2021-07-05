@@ -89,7 +89,7 @@
 /*IMAGE_COLORS_INFO*/
 
 #images .image_info .colors_info {
-	top: -3px;
+	top: -6px;
 	left: 10px;
     position: relative;
 	height: 50px;
@@ -133,6 +133,7 @@
 	background-color: white;
     width: 63px;
     text-align: center;
+	padding-top: 1px;
 }
 
 .colors_info .color_pallete .color_inspect .color_large {
@@ -158,7 +159,7 @@
     padding-left: 7px;
     padding-right: 6px;
     padding-top: 4px;
-    padding-bottom: 3px;
+    padding-bottom: 2px;
     color: #8c8c3c;
 	opacity: 0.8;
 }
@@ -171,7 +172,7 @@
     padding-left: 7px;
     padding-right: 6px;
     padding-top: 4px;
-    padding-bottom: 3px;
+    padding-bottom: 2px;
     color: #8c8c3c;
 	opacity: 0.8;
 }
