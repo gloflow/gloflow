@@ -19,14 +19,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_calc               from "./gf_calc";
+// import * as gf_calc from "./gf_calc";
 import * as gf_email_registration from "./gf_email_registration";
 import * as gf_images             from "./gf_images";
 import * as gf_procedural_art     from "./procedural_art/gf_procedural_art";
 
-// GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (its a JS file)
+// GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
 
+//--------------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
 	function log_fun(p_g,p_m) {
@@ -51,12 +52,12 @@ $(document).ready(()=>{
 	// $(window).on("load", ()=>{
 	// 	gf_calc.run(log_fun);
 	// });
+
 	//----------------------
 });
 
 //--------------------------------------------------------
 export function init_remote(p_log_fun) {
-	// p_log_fun("FUN_ENTER", "gf_landing_page.init_remote()");
 
 	init(remote_register_user_email, p_log_fun);
 	//--------------------------------------------------------
@@ -87,7 +88,6 @@ export function init_remote(p_log_fun) {
 // INIT
 function init(p_register_user_email_fun,
 	p_log_fun) {
-	// p_log_fun("FUN_ENTER", "gf_landing_page.init()");
 
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
@@ -107,13 +107,13 @@ function init(p_register_user_email_fun,
 	});
 
 	// UPLOAD__INIT
-	// use "" so that no host is set in URL's for issued requests (forces usage of origin host that the page came from)
+	// use "" so that no host is set in URL's for issued requests
+	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
 	gf_upload__init(target_full_host_str);
 
 	//--------------------------------------------------------
 	function init_posts_img_num() {
-		// p_log_fun("FUN_ENTER", "gf_landing_page.init().init_posts_img_num()");
 
 		$("#featured_posts .post_info").each((p_i, p_post)=>{
 
@@ -138,7 +138,6 @@ function init(p_register_user_email_fun,
 
 //--------------------------------------------------------
 function load_static_data(p_log_fun) :Object[] {
-	// p_log_fun("FUN_ENTER", "gf_landing_page.load_static_data()");
 	
 	const featured_elements_infos_lst :Object[] = []; 
 
@@ -193,7 +192,7 @@ function load_static_data(p_log_fun) :Object[] {
 }
 //--------------------------------------------------------
 function layout_featured_columns(Function p_log_fun,
-					{int p_columns_distance_int:8}) {
+	{int p_columns_distance_int:8}) {
 	//p_log_fun('FUN_ENTER','gf_landing_page.layout_featured_columns()');
 
 	//--------------------------------------------------------

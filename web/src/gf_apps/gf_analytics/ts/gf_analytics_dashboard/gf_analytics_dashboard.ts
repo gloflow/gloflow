@@ -26,7 +26,7 @@ $(document).ready(()=>{
     //-------------------------------------------------
     function log_fun(p_g,p_m) {
         var msg_str = p_g+':'+p_m
-        //chrome.extension.getBackgroundPage().console.log(msg_str);
+        // chrome.extension.getBackgroundPage().console.log(msg_str);
 
         switch (p_g) {
             case "INFO":
@@ -41,6 +41,7 @@ $(document).ready(()=>{
 
     init(log_fun);
 });
+
 //-------------------------------------------------
 export function init(p_log_fun) {
 

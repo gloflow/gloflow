@@ -6,7 +6,7 @@ import delegator
 
 output_file_str = './bin/gf_landing_page.js'
 files_lst = [
-	'./../ts/gf_calc.ts',
+	# './../ts/gf_calc.ts',
 	'./../ts/gf_email_registration.ts',
 	'./../ts/gf_landing_page.ts',
 	'./../ts/gf_images.ts',

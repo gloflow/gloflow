@@ -28,7 +28,7 @@ export function http__gif_get_info(p_gf_img_id_str,
 	// p_log_fun('FUN_ENTER', 'gf_gifs.http__gif_get_info()');
 
 	const url_str = 'http://'+p_host_str+'/images/gif/get_info?gfimg_id='+p_gf_img_id_str;
-	p_log_fun('INFO','url_str - '+url_str);
+	p_log_fun('INFO', 'url_str - '+url_str);
 
 	//-------------------------
 	// HTTP AJAX
@@ -45,5 +45,6 @@ export function http__gif_get_info(p_gf_img_id_str,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
+
 	//-------------------------	
 }

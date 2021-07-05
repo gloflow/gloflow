@@ -43,7 +43,7 @@ export function init(p_register_user_email_fun, p_log_fun) {
 
 	const submit_register_email_form_button = $(register_email_form).find("#submit_register_email_form_button");
 	
-	//this button reveals the email registration form
+	// this button reveals the email registration form
 	var email_form_visible_bool :boolean = false;
 	$("#register #register_email_button").click((p_event)=>{
 		
