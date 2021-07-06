@@ -174,7 +174,7 @@ function gf_picker__create_bookmark__http(p_url_str,
     };
 
 	$.post(url_str,
-		data_map,
+		JSON.stringify(data_map),
 		()=>{
             p_on_complete_fun();
         },
