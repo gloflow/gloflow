@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"context"
+	"text/template"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -43,7 +44,7 @@ type GF_bookmark struct {
 	Tags_lst        []string `bson:"tags_lst"`
 }
 
-type GF_bookmark_small struct {
+type GF_bookmark_extern struct {
 	Id_str               gf_core.GF_ID `json:"id_str"`
 	Creation_unix_time_f float64       `json:"creation_unix_time_f"`
 	Url_str              string        `json:"url_str"`
@@ -60,24 +61,28 @@ type GF_bookmark__input_create struct {
 }
 
 // INPUT
-type GF_bookmark__input_get_all struct {
-	User_id_str gf_core.GF_ID
+type GF_bookmark__input_get struct {
+	Response_format_str string
+	User_id_str         gf_core.GF_ID
 }
 
 // OUTPUT
-type GF_bookmark__output_get_all struct {
-	Bookmarks_lst []*GF_bookmark_small `json:"bookmarks"`
+type GF_bookmark__output_get struct {
+	Bookmarks_lst         []*GF_bookmark_extern
+	Template_rendered_str string
 }
 
 //---------------------------------------------------
 // GET_ALL
-func bookmarks__pipeline__get_all(p_input *GF_bookmark__input_get_all,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_bookmark__output_get_all, *gf_core.GF_error) {
+func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_ctx                    context.Context,
+	p_runtime_sys            *gf_core.Runtime_sys) (*GF_bookmark__output_get, *gf_core.GF_error) {
 
 
 
-
+	// DB
 	bookmarks_lst, gf_err := db__bookmark__get_all(p_input.User_id_str,
 		p_ctx,
 		p_runtime_sys)
@@ -86,21 +91,49 @@ func bookmarks__pipeline__get_all(p_input *GF_bookmark__input_get_all,
 	}
 
 
-	bookmarks_small_lst := []*GF_bookmark_small{}
-	for _, b := range bookmarks_lst {
-		bookmark_small := &GF_bookmark_small{
-			Id_str:               b.Id_str,
-			Creation_unix_time_f: b.Creation_unix_time_f,
-			Url_str:              b.Url_str,
-			Description_str:      b.Description_str,
-			Tags_lst:             b.Tags_lst,
+	var output *GF_bookmark__output_get
+
+	//------------------------
+	// HTML
+	if p_input.Response_format_str == "html" {
+		
+		// RENDER_TEMPLATE
+		template_rendered_str, gf_err := render_bookmarks(bookmarks_lst,
+			p_tmpl,
+			p_subtemplates_names_lst,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
 		}
-		bookmarks_small_lst = append(bookmarks_small_lst, bookmark_small)
+
+
+		output = &GF_bookmark__output_get{
+			Template_rendered_str: template_rendered_str,
+		}
+
+	//------------------------
+	// JSON
+	} else if p_input.Response_format_str == "json" {
+		bookmarks_small_lst := []*GF_bookmark_extern{}
+		for _, b := range bookmarks_lst {
+
+			bookmark_small := &GF_bookmark_extern{
+				Id_str:               b.Id_str,
+				Creation_unix_time_f: b.Creation_unix_time_f,
+				Url_str:              b.Url_str,
+				Description_str:      b.Description_str,
+				Tags_lst:             b.Tags_lst,
+			}
+			bookmarks_small_lst = append(bookmarks_small_lst, bookmark_small)
+		}
+
+		output = &GF_bookmark__output_get{
+			Bookmarks_lst: bookmarks_small_lst,
+		}
 	}
 
-	output := &GF_bookmark__output_get_all{
-		Bookmarks_lst: bookmarks_small_lst,
-	}
+	//------------------------
+	
 	return output, nil
 }
 

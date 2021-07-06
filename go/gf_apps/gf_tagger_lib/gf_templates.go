@@ -28,6 +28,9 @@ import (
 type gf_templates struct {
 	tag_objects__tmpl                   *template.Template
 	tag_objects__subtemplates_names_lst []string
+
+	bookmarks__tmpl                   *template.Template
+	bookmarks__subtemplates_names_lst []string
 }
 
 //-------------------------------------------------
@@ -36,9 +39,15 @@ func tmpl__load(p_templates_paths_map map[string]string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	main_template_filepath_str := p_templates_paths_map["gf_tag_objects"]
-	// templates_dir_path_str := "./web/gf_apps/gf_tagger/gf_tag_objects/templates"
-
 	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+
+	bookmarks_template_filepath_str := p_templates_paths_map["gf_bookmarks"]
+	bookmarks__tmpl, bookmarks_subtemplates_names_lst, gf_err := gf_core.Templates__load(bookmarks_template_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -46,6 +55,9 @@ func tmpl__load(p_templates_paths_map map[string]string,
 	gf_templates := &gf_templates{
 		tag_objects__tmpl:                   tag_objects__tmpl,
 		tag_objects__subtemplates_names_lst: subtemplates_names_lst,
+
+		bookmarks__tmpl:                   bookmarks__tmpl,
+		bookmarks__subtemplates_names_lst: bookmarks_subtemplates_names_lst,
 	}
 	return gf_templates, nil
 }

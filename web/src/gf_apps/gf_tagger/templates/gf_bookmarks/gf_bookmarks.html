@@ -1,0 +1,32 @@
+
+
+
+<head>
+
+
+
+
+</head>
+<body>
+    <div class="bookmarks">
+        {{ range .Bookmarks_lst -}}
+        <div class="bookmark">
+            <div class='creation_unix_time'>
+                {{ printf "%f" .Creation_unix_time_f }}
+            </div>
+            <div class='url'>
+                {{ .Url_str }}
+            </div>
+            <div class='description'>
+                {{ .Description_str }}
+            </div>
+
+            <div class="tags">
+                {{ range .Tags_lst -}}
+                <div class="tag">{{ . -}}</div>
+                {{ end -}}
+            </div>
+        </div>
+        {{end -}}
+    </div>
+</body>

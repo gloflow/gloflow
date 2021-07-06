@@ -21,9 +21,56 @@ package gf_tagger_lib
 
 import (
 	"io"
+	"bytes"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//--------------------------------------------------
+func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
+	p_tmpl                   *template.Template,
+	p_subtemplates_names_lst []string,
+	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+
+
+
+	type tmpl_data struct {
+		Bookmarks_lst  []*GF_bookmark
+		Is_subtmpl_def func(string) bool // used inside the main_template to check if the subtemplate is defined
+	}
+	
+
+	buff := new(bytes.Buffer)
+	err := p_tmpl.Execute(buff,
+		tmpl_data{
+			Bookmarks_lst: p_bookmarks_lst,
+			//-------------------------------------------------
+			// IS_SUBTEMPLATE_DEFINED
+			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+				for _, n := range p_subtemplates_names_lst {
+					if n == p_subtemplate_name_str {
+						return true
+					}
+				}
+				return false
+			},
+
+			//-------------------------------------------------
+		})
+
+	if err != nil {
+
+		gf_err := gf_core.Error__create("failed to render the gf_bookmarks template",
+			"template_render_error",
+			map[string]interface{}{},
+			err, "gf_tagger", p_runtime_sys)
+		return "", gf_err
+	}
+
+
+	template_rendered_str := buff.String()
+	return template_rendered_str, nil	
+}
 
 //--------------------------------------------------
 func render_objects_with_tag(p_tag_str string,
@@ -50,7 +97,7 @@ func render_objects_with_tag(p_tag_str string,
 	}
 
 	posts_with_tag_lst := []map[string]interface{}{}
-	for _,p_object_info_map := range objects_infos_lst {
+	for _, p_object_info_map := range objects_infos_lst {
 
 		//----------------
 		var post_thumbnail_url_str string
@@ -65,6 +112,7 @@ func render_objects_with_tag(p_tag_str string,
 		} else {
 			post_thumbnail_url_str = thumb_small_str
 		}
+
 		//----------------
 		post_info_map := map[string]interface{}{
 			"post_title_str":         p_object_info_map["title_str"].(string),

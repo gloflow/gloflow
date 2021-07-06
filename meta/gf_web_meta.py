@@ -107,8 +107,8 @@ def get():
 		# IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
 		#               belong to neither gf_images nor gf_publisher. maybe it should be its own app?
 		"gf_domains_browser": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser/gf_domains_browser.html"%(modd_str),
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_analytics",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser/gf_domains_browser.html",
 			"url_base_str":       "/a/static",
 		}
 
@@ -120,6 +120,13 @@ def get():
 		"gf_tag_objects": {
 			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_tagger",
 			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_tagger/templates/gf_tag_objects/gf_tag_objects.html",
+			"url_base_str":       "/tags/static",
+		},
+
+		#-------------
+		"gf_bookmarks": {
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_tagger",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_tagger/templates/gf_bookmarks/gf_bookmarks.html",
 			"url_base_str":       "/tags/static",
 		},
 

@@ -24,6 +24,7 @@ import (
 	"os"
 	"context"
 	"testing"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -84,8 +85,8 @@ func test_bookmarking(p_test *testing.T,
 	//------------------
 	// CREATE
 	input__create := &GF_bookmark__input_create{
-		User_id_str: test_user_id_str,
-		Url_str:     "https://gloflow.com",
+		User_id_str:     test_user_id_str,
+		Url_str:         "https://gloflow.com",
 		Description_str: "test bookmark",
 		Tags_lst: []string{
 			"test", "code", "art",
@@ -101,24 +102,58 @@ func test_bookmarking(p_test *testing.T,
 	}
 
 	//------------------
+	// GET_ALL__JSON
 
-
-	// GET_ALL
-
-	input__get_all := &GF_bookmark__input_get_all{
-		User_id_str: test_user_id_str,
+	input__get := &GF_bookmark__input_get{
+		Response_format_str: "json",
+		User_id_str:         test_user_id_str,
 	}
-	output, gf_err := bookmarks__pipeline__get_all(input__get_all,
+	output, gf_err := bookmarks__pipeline__get(input__get,
+		nil,
+		nil,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
-
-
 	spew.Dump(output.Bookmarks_lst)
+	assert.True(p_test, len(output.Bookmarks_lst) > 0, "no bookmarks were returned")
+	assert.True(p_test, output.Template_rendered_str == "", "bookmarks were rendered as a template, when it should be data-only")
 
 	//------------------
 
+
+
+	templates_paths_map := map[string]string{
+		"gf_tag_objects": "./../../../web/src/gf_apps/gf_tagger/templates/gf_tag_objects/gf_tag_objects.html",
+		"gf_bookmarks":   "./../../../web/src/gf_apps/gf_tagger/templates/gf_bookmarks/gf_bookmarks.html",
+	}
+	// TEMPLATES
+	gf_templates, gf_err := tmpl__load(templates_paths_map, p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+
+
+
+	input__get_html := &GF_bookmark__input_get{
+		Response_format_str: "html",
+		User_id_str:         test_user_id_str,
+	}
+	output_html, gf_err := bookmarks__pipeline__get(input__get_html,
+		gf_templates.bookmarks__tmpl,
+		gf_templates.bookmarks__subtemplates_names_lst,
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+	fmt.Println(output_html.Template_rendered_str)
+	assert.True(p_test, len(output_html.Bookmarks_lst) == 0, "bookmarks were returned when it should only be html template string")
+	assert.True(p_test, output_html.Template_rendered_str != "", "bookmarks were not rendered as a html template,")
+
+	//------------------
 }

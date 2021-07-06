@@ -45,7 +45,7 @@ func main() {
 		Run_service__in_process(port_str,
 			mongodb_host_str,
 			mongodb_db_name_str,
-			nil, //init_done_ch,
+			nil, // init_done_ch,
 			log_fun)
 		// <-init_done_ch
 	}

@@ -30,8 +30,8 @@ import (
 
 //-------------------------------------------------
 func flows__render_initial_page(p_flow_name_str string,
-	p_initial_pages_num_int  int, //6
-	p_page_size_int          int, //5
+	p_initial_pages_num_int  int, // 6
+	p_page_size_int          int, // 5
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
@@ -46,7 +46,7 @@ func flows__render_initial_page(p_flow_name_str string,
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
 		start_position_int := i*p_page_size_int
-		// int end_position_int   = start_position_int+p_page_size_int;
+		// int end_position_int = start_position_int+p_page_size_int;
 
 		p_runtime_sys.Log_fun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
 		//------------
@@ -94,7 +94,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //
 		for _, image := range images_page_lst {
 
 			image_info_map := map[string]interface{}{
-				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f,'f',6,64),
+				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 				"id_str":                    image.Id_str,
 				"title_str":                 image.Title_str,
 				"format_str":                image.Format_str,

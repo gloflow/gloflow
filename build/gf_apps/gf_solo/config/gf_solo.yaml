@@ -13,10 +13,9 @@ mongodb_db_name: "gf"
 # SENTRY_ENDPOINT
 sentry_endpoint: "" # or ENV var
 
-
-
-
+#--------------------
 # TEMPLATES_DIR_PATHS
+
 templates_paths:
   gf_analytics_dashboard:  "./templates/gf_analytics_dashboard/gf_analytics_dashboard.html"
   gf_crawl_dashboard:      "./templates/gf_crawl_dashboard/gf_crawl_dashboard.html"
@@ -27,6 +26,7 @@ templates_paths:
   gf_post:                 "./templates/gf_post/gf_post.html"
   gf_posts_browser:        "./templates/gf_posts_browser/gf_posts_browser.html"
   gf_tag_objects:          "./templates/gf_tag_objects/gf_tag_objects.html"
+  gf_bookmarks:            "./templates/gf_bookmarks/gf_bookmarks.html"
 
 #--------------------
 # GF_IMAGES

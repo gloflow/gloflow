@@ -34,7 +34,7 @@ import (
 
 func tags__pipeline__add(p_input_data_map map[string]interface{},
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_tagger_pipelines.tags__pipeline__add()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__add()")
 
 	//----------------
 	// INPUT
@@ -85,17 +85,17 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_pipelines.tags__pipeline__get_objects()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
 
 	//----------------
 	// INPUT
 	qs_map := p_req.URL.Query()
 	var err error
 
-	// response_format_str - "j"(for json)|"h"(for html)
+	// response_format_str - "json" | "html"
 	response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 
-	if _,ok := qs_map["otype"]; !ok {
+	if _, ok := qs_map["otype"]; !ok {
 		gf_err := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},

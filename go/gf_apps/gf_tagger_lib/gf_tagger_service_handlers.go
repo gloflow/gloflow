@@ -48,7 +48,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// BOOKMARKS
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/tags/bookmark/create",
+	gf_rpc_lib.Create_handler__http("/v1/tags/bookmarks/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
@@ -90,26 +90,56 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/tags/bookmark/get_all",
+	gf_rpc_lib.Create_handler__http("/v1/tags/bookmarks/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
 			// INPUT
-			input := &GF_bookmark__input_get_all{}
-			input.User_id_str = "anonymous"
+			
+			qs_map := p_req.URL.Query()
+
+			// response_format_str - "j"(for json) | "h"(for html)
+			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+
+			
+			input := &GF_bookmark__input_get{
+				Response_format_str: response_format_str,
+				User_id_str:         "anonymous",
+			}
 
 			//------------------
 
 
-			output, gf_err := bookmarks__pipeline__get_all(input, p_ctx, p_runtime_sys)
+
+
+			
+
+
+			output, gf_err := bookmarks__pipeline__get(input,
+				gf_templates.bookmarks__tmpl,
+				gf_templates.bookmarks__subtemplates_names_lst,
+				p_ctx,
+				p_runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
-			data_map := map[string]interface{}{
-				"bookmarks_lst": output.Bookmarks_lst,
+
+			switch response_format_str { 
+			case "json":
+				data_map := map[string]interface{}{
+					"bookmarks_lst": output.Bookmarks_lst,
+				}
+				return data_map, nil
+		
+			case "html":
+
+				p_resp.Write([]byte(output.Template_rendered_str))
+				return nil, nil
 			}
-			return data_map, nil
+
+
+			return nil, nil
 
 		},
 		p_runtime_sys)

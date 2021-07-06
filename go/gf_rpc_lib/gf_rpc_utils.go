@@ -94,9 +94,9 @@ func Get_response_format(p_qs_map map[string][]string,
 	p_runtime_sys *gf_core.Runtime_sys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Get_response_format()")
 
-	response_format_str := "html" //default - "h" - HTML
+	response_format_str := "html" // default - "h" - HTML
 	if f_lst, ok := p_qs_map["f"]; ok {
-		response_format_str = f_lst[0] //user supplied value
+		response_format_str = f_lst[0] // user supplied value
 	}
 
 	return response_format_str
