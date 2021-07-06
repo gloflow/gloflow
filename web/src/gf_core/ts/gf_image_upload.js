@@ -235,8 +235,8 @@ function gf_upload__send_init(p_image_name_str,
 	// UPLOAD_INIT
 	const url_str = `${p_target_full_host_str}/images/v1/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=browser`;
 	$.ajax({
-		method:    "GET",
-		"url":     url_str,
+		method: "GET",
+		"url":  url_str,
 		//-------------------------------------------------
 		"success": (p_data_map) => {
 

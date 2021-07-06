@@ -55,7 +55,14 @@ export function init(p_log_fun) {
 					<div class="color_dominant" style="background-color:#${image_colors.color_hex_str};"></div>
 					<div class="color_pallete"></div>
 				</div>`);
+
+
+				// // IMPORTANT!! - change to color of the whole image_info control to match the dominant color of the
+				// //               image its displaying.
+				// $(p_image_info_element).css("background-color", `#${image_colors.color_hex_str}`);				
 				
+
+
 				color_info_element.insertAfter(image);
 
 				//-------------

@@ -72,7 +72,7 @@ body {
 /*----------------------------------------------------------*/
 #current_pages_display {
 	position: fixed;
-    background-color: #e4e4e4;
+    background-color: #f3f3f3;
     right: 0px;
     top: 200px;
     font-size: 12px;
@@ -84,7 +84,7 @@ body {
 
 #current_pages_display #start_page {
 	font-size: 20px;
-    background-color: #c3c3c3;
+    background-color: #90ff4a;
     padding-left: 7px;
     padding-top: 5px;
     padding-bottom: 4px;
@@ -92,11 +92,18 @@ body {
 
 #current_pages_display #end_page {
 	font-size: 20px;
-    background-color: #e4e4a8;
+    background-color: #ffff2d;
     padding-left: 7px;
     padding-top: 5px;
     padding-bottom: 4px;
 }
+
+#current_pages_display #to {
+	left: 5px;
+    text-align: right;
+    padding-right: 5px;
+}
+
 /*-------------------------------------------*/
 /*humble beginnings...*/
 #sys_release_info {
