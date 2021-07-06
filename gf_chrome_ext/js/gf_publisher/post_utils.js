@@ -26,7 +26,7 @@ function http__create_post(p_selected__post_elements_lst,
 	p_log_fun('FUN_ENTER','post_utils.http__create_post()');
 
 	//---------------------------------------------------
-	//->:Map
+	// ->:Map
 	function extract_post_form_info() {
 		p_log_fun('FUN_ENTER','post_utils.http__create_post().extract_post_form_info()');
 		
@@ -39,32 +39,32 @@ function http__create_post(p_selected__post_elements_lst,
 		p_log_fun('INFO','description_str     :'+description_str);
 		p_log_fun('INFO','poster_user_name_str:'+poster_user_name_str);
 		//------------------------
-		//POST ELEMENTS
+		// POST ELEMENTS
 		
-		//post elements examples:
-		//{'type_str':'image','url_str'    :'http://gloflow.com/i.png'},
-		//{'type_str':'text' ,'content_str':'this is a block of text'},
-		//{'type_str':'link' ,'url_str'    :'http://www.yahoo.com'},
+		// post elements examples:
+		// {'type_str':'image', 'url_str':     'http://gloflow.com/i.png'},
+		// {'type_str':'text' , 'content_str': 'this is a block of text'},
+		// {'type_str':'link' , 'url_str':     'http://www.yahoo.com'},
 		const post_elements_lst = [];
 		
-		//a link goes first
+		// a link goes first
 		post_elements_lst.push({
-			'type_str':      'link',
-			'extern_url_str':p_post_origin_page_url_str
+			'type_str':       'link',
+			'extern_url_str': p_post_origin_page_url_str
 		});
 
-		//add selected elements to post_elements_lst
+		// add selected elements to post_elements_lst
 		Array.prototype.push.apply(post_elements_lst, p_selected__post_elements_lst);
 		//------------------------
 		
 		const post_info_map = {
-			'title_str':               title_str,
-			'client_type_str':         'gchrome_ext',
-			'tags_str':                tags_str, //comma "," separated tags
-			'description_str':         description_str,
-			'poster_user_name_str':    poster_user_name_str,
-			'post_elements_lst':       post_elements_lst,
-			'post_origin_page_url_str':p_post_origin_page_url_str
+			'title_str':                title_str,
+			'client_type_str':          'gchrome_ext',
+			'tags_str':                 tags_str, // comma "," separated tags
+			'description_str':          description_str,
+			'poster_user_name_str':     poster_user_name_str,
+			'post_elements_lst':        post_elements_lst,
+			'post_origin_page_url_str': p_post_origin_page_url_str
 		}
 		
 		return post_info_map
@@ -80,7 +80,7 @@ function http__create_post(p_selected__post_elements_lst,
 	p_log_fun('INFO','post_info_str:'+JSON.stringify(post_info_str));
 	
 	//-------------------------
-	//HTTP AJAX
+	// HTTP AJAX
 	$.post(url_str,
 		post_info_str,
 		(p_data_map) => {
@@ -96,6 +96,7 @@ function http__create_post(p_selected__post_elements_lst,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
+
 	//-------------------------
 }
 //---------------------------------------------------
@@ -103,17 +104,17 @@ function publish_post(p_post_title_str,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','post_utils.publish_post()');
+	p_log_fun('FUN_ENTER', 'post_utils.publish_post()');
 	
 	const target_post_info_map = {
-		'post_title_str':post_title_str
+		'post_title_str': post_title_str
 	};
 	
 	const data_str = JSON.stringify(target_post_info_map);
 	const url_str  = p_host_str+'/posts/publish';
 	
 	$.post(url_str,
-		{'data_str':data_str},
+		{'data_str': data_str},
 		(p_data_str) => {
 			p_log_fun('INFO','p_data_str:'+p_data_str);
 			
