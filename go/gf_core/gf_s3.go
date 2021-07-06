@@ -109,11 +109,6 @@ func S3__init(p_aws_access_key_id_str string,
 		creds  := credentials.NewStaticCredentials(p_aws_access_key_id_str, p_aws_secret_access_key_str, p_token_str)
 		_, err := creds.Get()
 
-		// usr, _   := user.Current()
-		// home_dir := usr.HomeDir
-		// creds    := credentials.NewSharedCredentials(fmt.Sprintf("%s/.aws/credentials",home_dir),"default")
-		// _, err := creds.Get()
-
 		if err != nil {
 			gf_err := Error__create("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
 				"s3_credentials_error", nil, err, "gf_core", p_runtime_sys)

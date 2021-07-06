@@ -73,7 +73,7 @@ type GF_bookmark__output_get struct {
 }
 
 //---------------------------------------------------
-// GET_ALL
+// GET
 func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,

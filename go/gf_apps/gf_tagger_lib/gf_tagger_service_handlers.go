@@ -48,7 +48,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// BOOKMARKS
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/tags/bookmarks/create",
+	gf_rpc_lib.Create_handler__http("/v1/bookmarks/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
@@ -90,7 +90,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/tags/bookmarks/get",
+	gf_rpc_lib.Create_handler__http("/v1/bookmarks/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
