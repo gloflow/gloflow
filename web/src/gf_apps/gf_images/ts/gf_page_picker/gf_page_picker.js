@@ -22,7 +22,7 @@ function gf_picker__main() {
         document.body.appendChild(s);
         
         s.onload = () => {
-            gf_picker__create_ui(api_host_str;
+            gf_picker__create_ui(api_host_str);
         }
     } else {
         gf_picker__create_ui(api_host_str);
