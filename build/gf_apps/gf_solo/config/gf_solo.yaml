@@ -31,15 +31,6 @@ templates_paths:
 #--------------------
 # GF_IMAGES
 images__config_file_path: "./config/gf_images_config.yaml"
-# images__store_local_dir_path:            ""
-# images__thumbnails_store_local_dir_path: ""
-# images__main_s3_bucket_name:             ""
-# 
-# images__uploaded_s3_bucket:        gf--uploaded--img
-# images__flow_to_s3_bucket_default: gf--img
-# images__flow_to_s3_bucket:
-#   - general:    gf--img
-#   - discovered: gf--discovered--img
 
 #--------------------
 # GF_ANALYTICS

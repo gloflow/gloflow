@@ -57,7 +57,9 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_uploaded()")
 
 	//-----------------------
-	// S3_DOWNLOAD - of the uploaded user image
+	// S3_DOWNLOAD - of the uploaded user image.
+	//               the client uploads images to s3 directly for efficiency reasons, to avoid having
+	//               all external image upload traffic going through GF servers.
 
 	// normalized_format_str  := "png"
 	// image_s3_file_path_str := gf_images_utils.S3__get_image_s3_filepath(p_image_id_str,

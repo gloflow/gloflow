@@ -158,6 +158,7 @@ function gf_picker__create_ui(p_api_host_str) {
         $("body").find("#gf_page_picker").remove();
     })
 }
+
 //---------------------------------------------------
 function gf_picker__create_bookmark__http(p_url_str,
     p_description_str,

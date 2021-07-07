@@ -130,7 +130,6 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 		Status_str:      "running",
 		Start_time_f:    job_start_time_f,
 		job_updates_ch:  p_job_updates_ch,
-		// Images_extern_to_process_lst: p_images_extern_to_process_lst,
 	}
 
 	// DB

@@ -22,11 +22,10 @@ package gf_images_jobs_client
 
 import (
 	"fmt"
-	// "time"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -47,13 +46,29 @@ func Run_local_imgs(p_client_type_str string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_local_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
 
+	job_cmd_str    := "start_job_uploaded_imgs"
+	job_init_ch    := make(chan *gf_images_jobs_core.GF_job_running)
+	job_updates_ch := make(chan gf_images_jobs_core.Job_update_msg, 10)
+	
+	job_msg := gf_images_jobs_core.Job_msg{
+		Client_type_str:             p_client_type_str,
+		Cmd_str:                     job_cmd_str,
+		Job_init_ch:                 job_init_ch,
+		Job_updates_ch:              job_updates_ch,
+		Images_local_to_process_lst: p_images_to_process_lst,
+		Flows_names_lst:             p_flows_names_lst,
+	}
 
+	// SEND_MSG
+	p_jobs_mngr_ch <- job_msg
 
+	// RECEIVE_MSG - get running_job info back from jobs_mngr
+	running_job := <- job_init_ch
 
 		
-	return nil, nil
+	return running_job, nil
 }
 
 //-------------------------------------------------
@@ -61,7 +76,7 @@ func Run_uploaded_imgs(p_client_type_str string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_uploaded_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_uploaded_imgs()")
 
 	job_cmd_str    := "start_job_uploaded_imgs"
@@ -84,7 +99,7 @@ func Run_uploaded_imgs(p_client_type_str string,
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
 	running_job := <- job_init_ch
 	
-	spew.Dump(running_job)
+	// spew.Dump(running_job)
 
 	return running_job, nil
 }
@@ -95,7 +110,7 @@ func Run_extern_imgs(p_client_type_str string,
 	p_images_extern_to_process_lst []gf_images_jobs_core.GF_image_extern_to_process,
 	p_flows_names_lst              []string,
 	p_jobs_mngr_ch                 gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*Job_Expected_Output, *gf_core.Gf_error) {
+	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*Job_Expected_Output, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_extern_imgs()")
 	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
@@ -120,75 +135,26 @@ func Run_extern_imgs(p_client_type_str string,
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
 	running_job := <- job_init_ch
 
-	/*//-----------------
-	// CREATE RUNNING_JOB
-	running_job := &GF_job_running{
-		Id_str:                       job_id_str,
-		T_str:                        "img_running_job",
-		Client_type_str:              p_client_type_str,
-		Status_str:                   "running",
-		Start_time_f:                 job_start_time_f,
-		Images_extern_to_process_lst: p_images_extern_to_process_lst,
-		job_updates_ch:               job_updates_ch,
-	}
+	
 
-	db_err := p_runtime_sys.Mongodb_coll.Insert(running_job)
-	if db_err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to create a Running_job record in the DB",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"client_type_str":       p_client_type_str,
-				"images_to_process_lst": p_images_extern_to_process_lst,
-				"flows_names_lst":       p_flows_names_lst,
-			},
-			db_err, "gf_images_jobs", p_runtime_sys)
-		return nil, nil, gf_err
-	}*/
 
 	//-----------------
-	// CREATE JOB_EXPECTED_OUTPUT - its "expected" because results are not available yet (and might not
-	//                              be available for some time), and yet we still want to have some of the expected
-	//                              values so that other parts of the system can initialize in parallel with the job 
-	//                              completing.
+	// JOB_EXPECTED_OUTPUT - its "expected" because results are not available yet (and might not
+	//                       be available for some time), and yet we still want to have some of the expected
+	//                       values so that other parts of the system can initialize in parallel with the job 
+	//                       completing.
 
-	job_expected_outputs_lst := []*Job_Expected_Output{}
-
+	imgs_source_urls_lst := []string{}
 	for _, image_to_process := range p_images_extern_to_process_lst {
+		imgs_source_urls_lst = append(imgs_source_urls_lst, image_to_process.Source_url_str)
+	}
 
-		img_source_url_str := image_to_process.Source_url_str
-		p_runtime_sys.Log_fun("INFO", "img_source_url_str - "+fmt.Sprint(img_source_url_str))
-
-		//--------------
-		// IMAGE_ID
-		image_id_str, i_gf_err := gf_images_utils.Image_ID__create_from_url(img_source_url_str, p_runtime_sys)
-		if i_gf_err != nil {
-			return nil, nil, i_gf_err
-		}
-
-		//--------------
-		// GET FILE_FORMAT
-		normalized_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(img_source_url_str, p_runtime_sys)
-		
-		// FIX!! - it should not fail the whole job if one image is invalid,
-		//         it should continue and just mark that image with an error.
-		if gf_err != nil {
-			return nil, nil, gf_err
-		}
-
-		//--------------
-
-		output := &Job_Expected_Output{
-			Image_id_str:                      image_id_str,
-			Image_source_url_str:              img_source_url_str,
-			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  image_id_str, normalized_ext_str),
-			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalized_ext_str),
-			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s",  image_id_str, normalized_ext_str),
-		}
-		job_expected_outputs_lst = append(job_expected_outputs_lst, output)
+	job_expected_outputs_lst, gf_err := job__get_expected_output(imgs_source_urls_lst, p_runtime_sys)
+	if gf_err != nil {
+		return nil, nil, gf_err
 	}
 
 	//-----------------
-
 	return running_job, job_expected_outputs_lst, nil
 }
 
@@ -229,4 +195,50 @@ func Job__cleanup(p_job_id_str string,
 	}
 
 	p_jobs_mngr_ch <- job_msg
+}
+
+//-------------------------------------------------
+// VAR
+//-------------------------------------------------
+func job__get_expected_output(p_images_source_urls_lst []string,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*Job_Expected_Output, *gf_core.GF_error) {
+
+	
+
+	job_expected_outputs_lst := []*Job_Expected_Output{}
+
+	for _, img_source_url_str := range p_images_source_urls_lst {
+
+		//--------------
+		// IMAGE_ID
+		image_id_str, i_gf_err := gf_images_utils.Image_ID__create_from_url(img_source_url_str, p_runtime_sys)
+		if i_gf_err != nil {
+			return nil, i_gf_err
+		}
+
+		//--------------
+		// GET FILE_FORMAT
+		normalized_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(img_source_url_str, p_runtime_sys)
+		
+		// FIX!! - it should not fail the whole job if one image is invalid,
+		//         it should continue and just mark that image with an error.
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		//--------------
+
+		output := &Job_Expected_Output{
+			Image_id_str:                      image_id_str,
+			Image_source_url_str:              img_source_url_str,
+			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  image_id_str, normalized_ext_str),
+			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalized_ext_str),
+			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s",  image_id_str, normalized_ext_str),
+		}
+		job_expected_outputs_lst = append(job_expected_outputs_lst, output)
+	}
+
+	//-----------------
+
+	return job_expected_outputs_lst, nil
 }

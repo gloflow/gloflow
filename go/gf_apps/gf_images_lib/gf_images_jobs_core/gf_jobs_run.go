@@ -113,7 +113,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 	gf_errors_lst := []*gf_core.GF_error{}
 	for _, image_to_process := range p_images_to_process_lst {
 
-		image_source_url_str      := image_to_process.Source_url_str //FIX!! rename source_url_str to origin_url_str
+		image_source_url_str      := image_to_process.Source_url_str // FIX!! rename source_url_str to origin_url_str
 		image_origin_page_url_str := image_to_process.Origin_page_url_str
 
 		//--------------

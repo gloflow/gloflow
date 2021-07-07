@@ -176,11 +176,15 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 		Description_str: p_input.Description_str,
 		Tags_lst:        p_input.Tags_lst,
 	}
+
+	// DB
 	gf_err = db__bookmark__create(bookmark, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
+	//------------------------
+	// SCREENSHOT
 
 	// IMPORTANT!! - only run bookmark screenshoting if a images_jobs_mngr was
 	//               supplied to run image processing.
@@ -200,6 +204,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 		}()
 	}
 
+	//------------------------
 	return nil
 }
 
