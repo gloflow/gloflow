@@ -30,7 +30,7 @@ declare var gf_upload__init;
 //--------------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
-	function log_fun(p_g,p_m) {
+	function log_fun(p_g, p_m) {
 		var msg_str = p_g+':'+p_m;
 		switch (p_g) {
 			case "INFO":

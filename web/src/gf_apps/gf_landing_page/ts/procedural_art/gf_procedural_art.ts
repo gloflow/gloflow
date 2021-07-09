@@ -19,41 +19,57 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
+import * as gf_evolved_squares from "./gf_evolved_squares";
+
 //--------------------------------------------------------
-export function init(p_log_fun) :HTMLCanvasElement {
+export function init(p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_procedural_art.init()');
 
-	const canvas = <HTMLCanvasElement> $('#randomized_art #randomized_canvas')[0];
-	$(canvas).addClass('randomized_canvas'); //FIX!! - needed?
 
-	canvas.width  = $('#randomized_art').width();
-	canvas.height = $('#randomized_art').height();
+	const canvas_width_int  = $('#randomized_art').width();
+	const canvas_height_int = $('#randomized_art').height();
 
-	if (Math.random() > 0.5) {
-		draw_genetic_squares(canvas,
-			canvas.width,
-			canvas.height,
-			p_log_fun);
-	} else {
-		draw_randomized_squares(canvas,
-			canvas.width,
-			canvas.height,
-			p_log_fun);
-	}
+	
 
-	return canvas;
+
+	const sketches_lst = [
+		()=>{
+			gf_evolved_squares.run(canvas_width_int, canvas_height_int);
+		},
+		()=>{
+			draw_genetic_squares(canvas_width_int,
+				canvas_height_int,
+				p_log_fun);
+		},
+		()=>{
+			draw_randomized_squares(canvas_width_int,
+				canvas_height_int,
+				p_log_fun);
+		}
+	]
+	
+	sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
 }
 
 //-------------------------------------------------
-function draw_genetic_squares(p_canvas :HTMLCanvasElement,
-	p_width_int  :number,
+function draw_genetic_squares(p_width_int :number,
 	p_height_int :number,
-	p_log_fun) {
+	p_log_fun) :HTMLCanvasElement {
+	
+	//-------------
+	$("#randomized_art").append("<canvas id='randomized_canvas'></canvas>");
+	const canvas = <HTMLCanvasElement> $('#randomized_art #randomized_canvas')[0];
+	$(canvas).addClass('randomized_canvas'); // FIX!! - needed?
 
+	canvas.width  = p_width_int;
+	canvas.height = p_height_int;
 
+	//-------------
+
+	
 	const dots_num_int :number = Math.floor(Math.random()*60);
 
-	const ctx = p_canvas.getContext('2d');
+	const ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
 	// BACKGROUND
@@ -125,17 +141,27 @@ function draw_genetic_squares(p_canvas :HTMLCanvasElement,
 
 		return [x_end_int, y_end_int];
 	}
-	
+
+	return canvas;
 }
 
 //-------------------------------------------------
-function draw_randomized_squares(p_canvas :HTMLCanvasElement,
-	p_width_int  :number,
+function draw_randomized_squares(p_width_int :number,
 	p_height_int :number,
-	p_log_fun) {
-	// p_log_fun('FUN_ENTER', 'gf_procedural_art.draw_randomized_squares()');
+	p_log_fun) :HTMLCanvasElement {
 	
-	const ctx = p_canvas.getContext('2d');
+	//-------------
+	$("#randomized_art").append("<canvas id='randomized_canvas'></canvas>");
+	const canvas = <HTMLCanvasElement> $('#randomized_art #randomized_canvas')[0];
+	$(canvas).addClass('randomized_canvas'); // FIX!! - needed?
+
+	canvas.width  = p_width_int;
+	canvas.height = p_height_int;
+
+	//-------------
+
+
+	const ctx = canvas.getContext('2d');
 	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	// flip context horizontally
 
@@ -240,6 +266,8 @@ function draw_randomized_squares(p_canvas :HTMLCanvasElement,
 	}
 	
 	//-------------------------------------------------
+
+	return canvas;
 }
 
 //-------------------------------------------------

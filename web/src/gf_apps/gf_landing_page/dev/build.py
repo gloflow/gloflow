@@ -11,6 +11,7 @@ files_lst = [
 	'./../ts/gf_landing_page.ts',
 	'./../ts/gf_images.ts',
 	'./../ts/procedural_art/gf_procedural_art.ts',
+	'./../ts/procedural_art/gf_evolved_squares.ts',
 ]
 
 print('files_lst - %s'%(files_lst))
