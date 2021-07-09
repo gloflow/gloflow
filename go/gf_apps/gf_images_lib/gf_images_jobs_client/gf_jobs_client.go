@@ -31,7 +31,7 @@ import (
 //-------------------------------------------------
 // called "expected" because jobs are long-running processes, and they might fail at various stages
 // of their processing. in that case some of these result values will be satisfied, others will not.
-type Job_Expected_Output struct {
+type GF_job_expected_output struct {
 	Image_id_str                      gf_images_utils.Gf_image_id `json:"image_id_str"`
 	Image_source_url_str              string                      `json:"image_source_url_str"`
 	Thumbnail_small_relative_url_str  string                      `json:"thumbnail_small_relative_url_str"`
@@ -46,7 +46,7 @@ func Run_local_imgs(p_client_type_str string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_local_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*GF_job_expected_output, *gf_core.GF_error) {
 
 	job_cmd_str    := "start_job_uploaded_imgs"
 	job_init_ch    := make(chan *gf_images_jobs_core.GF_job_running)
@@ -67,8 +67,28 @@ func Run_local_imgs(p_client_type_str string,
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
 	running_job := <- job_init_ch
 
-		
-	return running_job, nil
+	
+
+
+	//-----------------
+	// JOB_EXPECTED_OUTPUT - its "expected" because results are not available yet (and might not
+	//                       be available for some time), and yet we still want to have some of the expected
+	//                       values so that other parts of the system can initialize in parallel with the job 
+	//                       completing.
+
+	imgs_local_paths_lst := []string{}
+	for _, image_to_process := range p_images_to_process_lst {
+		imgs_local_paths_lst = append(imgs_local_paths_lst, image_to_process.Local_file_path_str)
+	}
+
+	job_expected_outputs_lst, gf_err := job__get_expected_output(imgs_local_paths_lst, p_runtime_sys)
+	if gf_err != nil {
+		return nil, nil, gf_err
+	}
+
+	//-----------------
+
+	return running_job, job_expected_outputs_lst, nil
 }
 
 //-------------------------------------------------
@@ -110,7 +130,7 @@ func Run_extern_imgs(p_client_type_str string,
 	p_images_extern_to_process_lst []gf_images_jobs_core.GF_image_extern_to_process,
 	p_flows_names_lst              []string,
 	p_jobs_mngr_ch                 gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*Job_Expected_Output, *gf_core.GF_error) {
+	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*GF_job_expected_output, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_extern_imgs()")
 	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
@@ -200,14 +220,14 @@ func Job__cleanup(p_job_id_str string,
 //-------------------------------------------------
 // VAR
 //-------------------------------------------------
-func job__get_expected_output(p_images_source_urls_lst []string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Job_Expected_Output, *gf_core.GF_error) {
+func job__get_expected_output(p_images_source_URIs_lst []string,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_job_expected_output, *gf_core.GF_error) {
 
 	
 
-	job_expected_outputs_lst := []*Job_Expected_Output{}
+	job_expected_outputs_lst := []*GF_job_expected_output{}
 
-	for _, img_source_url_str := range p_images_source_urls_lst {
+	for _, img_source_url_str := range p_images_source_URIs_lst {
 
 		//--------------
 		// IMAGE_ID
@@ -228,7 +248,7 @@ func job__get_expected_output(p_images_source_urls_lst []string,
 
 		//--------------
 
-		output := &Job_Expected_Output{
+		output := &GF_job_expected_output{
 			Image_id_str:                      image_id_str,
 			Image_source_url_str:              img_source_url_str,
 			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  image_id_str, normalized_ext_str),

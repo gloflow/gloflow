@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
@@ -40,24 +41,28 @@ type GF_bookmark struct {
 	User_id_str          gf_core.GF_ID      `bson:"user_id_str"` // creator user of the bookmark
 
 	Url_str         string   `bson:"url_str"`
-	Description_str string   `bson:"descr_str"`
+	Description_str string   `bson:"description_str"`
 	Tags_lst        []string `bson:"tags_lst"`
+
+	// SCREENSHOT
+	Screenshot_image_id_str            gf_images_utils.GF_image_id `bson:"screenshot_image_id_str"`
+	Screenshot_image_thumbnail_url_str string                      `bson:"screenshot_image_thumbnail_url_str"`
 }
 
 type GF_bookmark_extern struct {
 	Id_str               gf_core.GF_ID `json:"id_str"`
 	Creation_unix_time_f float64       `json:"creation_unix_time_f"`
 	Url_str              string        `json:"url_str"`
-	Description_str      string        `json:"descr_str"`
+	Description_str      string        `json:"description_str"`
 	Tags_lst             []string      `json:"tags_lst"`
 }
 
 // INPUT
 type GF_bookmark__input_create struct {
 	User_id_str     gf_core.GF_ID
-	Url_str         string   `mapstructure:"url"   validate:"required,min=5,max=300"`
-	Description_str string   `mapstructure:"descr" validate:"min=1,max=600"`
-	Tags_lst        []string `mapstructure:"tags"  validate:""`
+	Url_str         string   `mapstructure:"url_str"         validate:"required,min=5,max=400"`
+	Description_str string   `mapstructure:"description_str" validate:"min=1,max=600"`
+	Tags_lst        []string `mapstructure:"tags_lst"        validate:""`
 }
 
 // INPUT
@@ -230,7 +235,7 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 
 
 	//-----------------
-	// GF_IMAGES_JOBS
+	// GF_IMAGES_JOBS__RUN
 	images_to_process_lst := []gf_images_jobs_core.GF_image_local_to_process{
 		{
 			Local_file_path_str: bookmark_local_image_name_str,
@@ -239,7 +244,7 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 	client_type_str := "gf_tagger_bookmarks"
 	flows_names_lst := []string{"bookmarks", }
 	
-	_, gf_err = gf_images_jobs_client.Run_local_imgs(client_type_str,
+	_, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_local_imgs(client_type_str,
 		images_to_process_lst,
 		flows_names_lst,
 		p_images_jobs_mngr,
@@ -248,9 +253,22 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 		return gf_err
 	}
 
-	//-----------------
-	
 
+	screenshot_image_id_str                  := job_expected_outputs_lst[0].Image_id_str
+	screenshot_image_thumbnail_small_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
+
+	//-----------------
+	// DB_UPDATE - updated bookmark with screenshot image information
+	gf_err = db__bookmark__update_screenshot(p_bookmark_id_str,
+		screenshot_image_id_str,
+		screenshot_image_thumbnail_small_url_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	//-----------------
 	return nil
 }
 

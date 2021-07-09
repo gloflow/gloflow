@@ -537,7 +537,6 @@ func Mongo__handle_error(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *Gf_error {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_mongodb.Mongo__handle_error()")
 
 	gf_err := Error__create_with_hook(p_user_msg_str,
 		p_error_type_str,

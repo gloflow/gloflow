@@ -26,6 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -55,6 +56,41 @@ func db__bookmark__create(p_bookmark *GF_bookmark,
 }
 
 //---------------------------------------------------
+func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
+	p_screenshot_image_id_str            gf_images_utils.GF_image_id,
+	p_screenshot_image_thumbnail_url_str string,
+	p_ctx                                context.Context,
+	p_runtime_sys                        *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	
+
+	coll := p_runtime_sys.Mongo_db.Collection("gf_bookmarks")
+	_, err := coll.UpdateMany(p_ctx, bson.M{
+		"id_str": p_bookmark_id_str,
+	},
+	bson.M{
+		"$set": bson.M{
+			"screenshot_image_id_str":            p_screenshot_image_id_str,
+			"Screenshot_image_thumbnail_url_str": p_screenshot_image_thumbnail_url_str,
+		},
+	},)
+	
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to update DB ",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"bookmark_id_str":                    p_bookmark_id_str,
+				"screenshot_image_id_str":            p_screenshot_image_id_str,
+				"screenshot_image_thumbnail_url_str": p_screenshot_image_thumbnail_url_str,
+			},
+			err, "gf_tagger_lib", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
 func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_bookmark, *gf_core.GF_error) {
@@ -71,7 +107,7 @@ func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 		find_opts,
 		map[string]interface{}{
 			"user_id_str":        p_user_id_str,
-			"caller_err_msg_str": "failed to get bookmarks for a user",
+			"caller_err_msg_str": "failed to get bookmarks for a user from DB",
 		},
 		p_runtime_sys.Mongo_db.Collection("gf_bookmarks"),
 		p_ctx,
@@ -85,7 +121,7 @@ func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 	var bookmarks_lst []*GF_bookmark
 	err := db_cursor.All(p_ctx, &bookmarks_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get all Bookmarks",
+		gf_err := gf_core.Mongo__handle_error("failed to get DB results of query to get all Bookmarks",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"user_id_str": p_user_id_str,
@@ -114,20 +150,15 @@ func db__get_objects_with_tag_count(p_tag_str string,
 				"t":        "post",
 				"tags_lst": bson.M{"$in": []string{p_tag_str,}},
 			})
-			
-			/*count_int, err := p_runtime_sys.Mongodb_coll.Find(bson.M{
-					"t":        "post",
-					"tags_lst": bson.M{"$in": []string{p_tag_str,}},
-				}).Count()*/
 
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to count of posts with tag - %s", p_tag_str),
+				gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to count of posts with tag - %s in DB", p_tag_str),
 					"mongodb_find_error",
 					map[string]interface{}{
 						"tag_str":         p_tag_str,
 						"object_type_str": p_object_type_str,
 					},
-					err, "gf_tagger", p_runtime_sys)
+					err, "gf_tagger_lib", p_runtime_sys)
 				return 0, gf_err
 			}
 			return count_int, nil
@@ -188,13 +219,13 @@ func db__add_post_note(p_note *GF_note,
 	})
 	
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb with a new note",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb with a new note in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"post_title_str":p_post_title_str,
-				"note":          p_note,
+				"post_title_str": p_post_title_str,
+				"note":           p_note,
 			},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil
@@ -233,7 +264,7 @@ func db__get_posts_with_tag(p_tag_str string,
 			"tag_str":            p_tag_str,
 			"page_index_int":     p_page_index_int,
 			"page_size_int":      p_page_size_int,
-			"caller_err_msg_str": fmt.Sprintf("failed to get posts with specified tag"),
+			"caller_err_msg_str": fmt.Sprintf("failed to get posts with specified tag in DB"),
 		},
 		p_runtime_sys.Mongo_coll,
 		ctx,
@@ -246,14 +277,14 @@ func db__get_posts_with_tag(p_tag_str string,
 	var posts_lst []*gf_publisher_core.Gf_post
 	err := cursor.All(ctx, &posts_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag",
+		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag in DB",
 			"mongodb_cursor_decode",
 			map[string]interface{}{
 				"tag_str":        p_tag_str,
 				"page_index_int": p_page_index_int,
 				"page_size_int":  p_page_size_int,
 			},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger_lib", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -295,13 +326,13 @@ func db__add_tags_to_post(p_post_title_str string,
 		bson.M{"$push": bson.M{"tags_lst": p_tags_lst},
 	})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in mongodb with new tags",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"post_title_str":p_post_title_str,
-				"tags_lst":      p_tags_lst,
+				"post_title_str": p_post_title_str,
+				"tags_lst":       p_tags_lst,
 			},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil
@@ -323,13 +354,13 @@ func db__add_tags_to_image(p_image_id_str string,
 		bson.M{"$push": bson.M{"tags_lst": p_tags_lst},
 	})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_image in mongodb with new tags",
+		gf_err := gf_core.Mongo__handle_error("failed to update a gf_image with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"image_id_str": p_image_id_str,
 				"tags_lst":     p_tags_lst,
 			},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger_lib", p_runtime_sys)
 		return gf_err
 	}
 	return nil

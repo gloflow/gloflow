@@ -287,8 +287,8 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 	//--------------------
 	// POST THUMBNAIL
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
-	first_image_url_str := outputs_lst[0].Image_source_url_str
-	first_post_element  := p_post_elements_map[first_image_url_str]
+	first_image_uri_str := outputs_lst[0].Image_source_url_str
+	first_post_element  := p_post_elements_map[first_image_uri_str]
 	post_thumbnail_str  := first_post_element.Img_thumbnail_small_url_str
 	
 	//--------------------
