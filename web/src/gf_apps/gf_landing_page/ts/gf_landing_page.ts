@@ -127,8 +127,8 @@ function init(p_register_user_email_fun,
 			const label_element      = $(post_images_number).find(".label");
 
 			// HACK!! - "-1" was visually inferred
-			$(post_images_number).css("right", "-"+($(post_images_number).outerWidth()-1)+"px");
-			$(label_element).css("left", $(post_images_number).outerWidth()+"px");
+			$(post_images_number).css("right", `-${$(post_images_number).outerWidth()-1}px`);
+			$(label_element).css("left", `${$(post_images_number).outerWidth()}px`);
 
 			$(p_post).mouseover((p_e)=>{
 				$(post_images_number).css("visibility", "visible");

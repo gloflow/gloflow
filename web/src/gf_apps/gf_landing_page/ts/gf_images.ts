@@ -26,6 +26,16 @@ import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 export function init(p_log_fun) {
 
 	$('#featured_images').find('.image_info').each((p_i, p_image_info_element)=>{
+		
+
+		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
+		//           this origin_page_url is set to empty string. check for that and remove it.
+		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
+		//         at all for images that dont have an origin_page_url.
+		if ($(p_image_info_element).find(".origin_page_url a").text().trim() == "") {
+			$(p_image_info_element).find(".origin_page_url").remove();
+		}
+
 
 		// FIX!! - this function has been moved to gf_core/gf_images_viewer.ts, as a general viewer,
 		//         to use universaly gf_images/gf_landing_page.
@@ -59,7 +69,7 @@ function init_image_viewer(p_image_element, p_log_fun) {
 		</div>`);
 
 	$(p_image_element).find('img').click(()=>{
-
+		
 		console.log(img_thumb_medium_url)
 		$('body').append(image_view);
 

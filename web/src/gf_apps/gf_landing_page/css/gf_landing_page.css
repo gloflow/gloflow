@@ -60,12 +60,13 @@ body {
 /* @media all and (max-width: 1000px) and (min-width: 520px) {} */
 
 #register {
-	position: absolute;
+	position: fixed;
 	top     : 0px;
 	left    : 569px;
 }
 
 #register #register_email_button {
+	position: fixed;
 	background-color: gray;
 	width           : 216px;
 	height          : 37px;
@@ -112,7 +113,7 @@ body {
 
 #register #submit_register_email_form_button {
 	background-color: gray;
-	width           : 300px;
+	width           : 305px;
 	height          : 37px;
 	padding-top     : 18px;
 	text-align      : center;
@@ -148,6 +149,7 @@ body {
 .randomized_canvas {
 	position: fixed;
 }
+
 /*-------------------------------------------*/
 /*humble beginnings...*/
 #sys_release_info {

@@ -50,8 +50,6 @@ export function init(p_register_user_email_fun, p_log_fun) {
 		if (email_form_visible_bool == false) {
 			$(register_email_form).css("opacity", "1.0");
 			email_form_visible_bool = true;
-
-			//layout_email_form(p_log_fun);
 		}
 		else {
 			$(register_email_form).css("opacity", "0.0");
@@ -70,7 +68,7 @@ export function init(p_register_user_email_fun, p_log_fun) {
 
 		p_register_user_email_fun(p_inputed_email_str,
 
-			//p_onComplete_fun
+			// p_on_complete_fun
 			(p_status_str :string,
 			p_msg_str     :string)=>{
 				console.assert(p_status_str == "success" || p_status_str == "error");
@@ -96,8 +94,10 @@ export function init(p_register_user_email_fun, p_log_fun) {
 			},
 			p_log_fun);
 	}
+
 	//--------------------------------------------------------
 }
+
 /*//--------------------------------------------------------
 function layout_email_button(p_log_fun) {
 	p_log_fun("FUN_ENTER",'gf_email_registration.layout_email_button()');
