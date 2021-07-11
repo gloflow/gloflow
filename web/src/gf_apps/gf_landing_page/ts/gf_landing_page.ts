@@ -64,7 +64,6 @@ export function init_remote(p_log_fun) {
 	function remote_register_user_email(p_inputed_email_str :string,
 		p_on_complete_fun,
 		p_log_fun) {
-		// p_log_fun("FUN_ENTER", "gf_landing_page.init_remote().remote_register_user_email()");
 		
 		const url_str       = "/landing/register_invite_email";
 		const data_args_map = {
@@ -81,6 +80,7 @@ export function init_remote(p_log_fun) {
 			}
 		});
 	}
+
 	//--------------------------------------------------------
 }
 
@@ -102,6 +102,12 @@ function init(p_register_user_email_fun,
 
 		// small screen widths dont display procedural_art
 		if ($(window).innerWidth() > 660) {
+
+			// ABOUT_SECTION - when screen is small (for mobile) dont display it all.
+			//                 has to removed here directly because its included in the template.
+			$("#about_section").remove();
+
+			gf_procedural_art.remove();
 			gf_procedural_art.init(p_log_fun);
 		}
 	});
@@ -159,64 +165,3 @@ function load_static_data(p_log_fun) :Object[] {
 
 	return featured_elements_infos_lst;
 }
-
-//--------------------------------------------------------
-/*layout(Function p_log_fun) {
-	//p_log_fun('FUN_ENTER','gf_landing_page.layout()');
-
-	
-	layout_featured_columns(p_log_fun);
-
-	//--------------------------------------------------------
-	setup_re_layout_on_resize() {
-		//draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
-		window.onResize.listen((Event p_event) {
-
-				//small screen widths dont display procedural_art
-				if (window.innerWidth > 660) {
-					gf_procedural_art.init(p_log_fun);
-				}
-
-				layout_featured_columns(p_log_fun);
-
-
-				gf_email_registration.layout_email_button(p_log_fun);
-
-				//in case the email registration form is open, this 
-				//will reposition it to properly fit the new layout
-				gf_email_registration.layout_email_form(p_log_fun);
-			});
-	}
-	//--------------------------------------------------------
-	setup_re_layout_on_resize();
-}
-//--------------------------------------------------------
-function layout_featured_columns(Function p_log_fun,
-	{int p_columns_distance_int:8}) {
-	//p_log_fun('FUN_ENTER','gf_landing_page.layout_featured_columns()');
-
-	//--------------------------------------------------------
-	layout_featured_posts_display() {
-		//p_log_fun('FUN_ENTER','gf_landing_page.layout_featured_columns().layout_featured_posts_display()');
-
-		queryAll('.featured_posts .post_info').forEach((DivElement p_element) {
-
-				final DivElement post_images_number = p_element.query('.post_images_number');
-				final DivElement num_element        = post_images_number.query('.num');
-				final DivElement label_element      = post_images_number.query('.label');
-
-				//HACK!! - "-1" was visually inferred
-				post_images_number.style.right = '-${post_images_number.offsetWidth-1}px';
-				label_element.style.left       = '${post_images_number.offsetWidth}px';
-
-				p_element.onMouseOver.listen((p_e) {
-					post_images_number.style.visibility = 'visible';
-				});
-				p_element.onMouseOut.listen((p_e) {
-					post_images_number.style.visibility = 'hidden';
-				});
-			});
-	}
-	//--------------------------------------------------------
-	layout_featured_posts_display();
-}*/

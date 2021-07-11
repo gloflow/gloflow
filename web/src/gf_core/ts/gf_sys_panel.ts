@@ -25,9 +25,11 @@ export function init(p_log_fun) {
 
 	const sys_panel_element = $(
 		`<div id="sys_panel">
-			<div id="view_handle"></div>
+			<div id="view_handle">
+				<img src="/images/d/gf_sys_panel_view_handle.png"></img>
+			</div>
 			<div id="home_btn">
-				'<img src="/images/d/gf_header_logo.png"></img>
+				<img src="/images/d/gf_logo_icon.png"></img>
 			</div>
 			<div id="images_app_btn"><a href="/images/flows/browser">Images</a></div>
 			<div id="publisher_app_btn"><a href="/posts/browser">Posts</a></div>
@@ -45,5 +47,10 @@ export function init(p_log_fun) {
 		()=>{
 			$(sys_panel_element).find('#view_handle').css('visibility', 'hidden');
 		});
+	});
+
+	// HOME_BTN
+	$(sys_panel_element).find("#home_btn").on("click", ()=>{
+		window.location.href = "/"
 	});
 }

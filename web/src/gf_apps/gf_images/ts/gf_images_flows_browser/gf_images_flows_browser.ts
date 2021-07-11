@@ -90,6 +90,15 @@ export function init(p_log_fun) {
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
 		const img_format_str           = $(image_element).attr('data-img_format');
 
+
+		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
+		//           this origin_page_url is set to empty string. check for that and remove it.
+		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
+		//         at all for images that dont have an origin_page_url.
+		if ($(image_element).find(".origin_page_url a").text().trim() == "") {
+			$(image_element).find(".origin_page_url").remove();
+		}
+
 		//----------------
 		// GIFS
 		if (img_format_str == 'gif') {

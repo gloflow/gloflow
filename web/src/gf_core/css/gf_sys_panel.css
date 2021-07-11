@@ -48,8 +48,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	top        : 0px;
 	left       : 218px;
 	width      : 150px;
-	padding-top: 6px;
-	height          : 37px;
+	padding-top: 8px;
+	height          : 36px;
 	text-align      : center;
 	background-color: rgb(57, 158, 208);
 	color           : white;
@@ -72,8 +72,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	top        : 0px;
 	left       : 376px;
 	width      : 150px;
-	padding-top     : 6px;
-	height          : 37px;
+	padding-top     : 9px;
+	height          : 35px;
 	text-align      : center;
 	background-color: rgb(233, 122, 60);
 	color           : white;
@@ -94,12 +94,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	position   : absolute;
 	top        : 0px;
 	right      : 93px;
-	padding-top: 11px;
+	padding-top: 12px;
 	width      : 120px;
 	height     : 32px;
 	text-align      : center;
 	background-color: rgb(235, 235, 235);
 	cursor          : pointer;
+	color: gray;
 }
 #sys_panel #login_btn {
 	position: absolute;
@@ -107,8 +108,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	right   : 0px;
 	width   : 83px;
 	height  : 32px;
-	padding-top     : 11px;
+	padding-top     : 12px;
 	text-align      : center;
 	background-color: rgb(245, 245, 119);
 	cursor          : pointer;
+	color: gray;
 }

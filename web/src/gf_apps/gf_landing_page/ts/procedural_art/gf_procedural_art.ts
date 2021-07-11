@@ -22,15 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_evolved_squares from "./gf_evolved_squares";
 
 //--------------------------------------------------------
+// INIT
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_procedural_art.init()');
-
 
 	const canvas_width_int  = $('#randomized_art').width();
 	const canvas_height_int = $('#randomized_art').height();
-
-	
-
 
 	const sketches_lst = [
 		()=>{
@@ -49,6 +45,13 @@ export function init(p_log_fun) {
 	]
 	
 	sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
+}
+
+//-------------------------------------------------
+// REMOVE - cleanup canvasas (canvas or svg) if they're present
+export function remove() {
+	$('#randomized_art svg').remove();
+	$('#randomized_art canvas').remove();
 }
 
 //-------------------------------------------------
@@ -86,12 +89,7 @@ function draw_genetic_squares(p_width_int :number,
 
 	for (var i=0; i < dots_num_int; i++) {
 		draw_central_square();
-
-		
-
 	}
-
-	
 
 	//-------------------------------------------------
 	function draw_central_square() {
@@ -118,7 +116,7 @@ function draw_genetic_squares(p_width_int :number,
 			random_square_scale);
 	}
 
-
+	//-------------------------------------------------
 	function draw_connections(p_x_int :number, p_y_int :number, p_square_scale_int :number, p_opacity_f :number) :[number, number] {
 
 		var x_delta_int;
@@ -142,6 +140,7 @@ function draw_genetic_squares(p_width_int :number,
 		return [x_end_int, y_end_int];
 	}
 
+	//-------------------------------------------------
 	return canvas;
 }
 
