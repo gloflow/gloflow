@@ -203,13 +203,13 @@ function load_new_page(p_flow_name_str :string,
 			// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 			//               and its positioned appropriatelly in the Masonry grid
 			const image = $(`
-				<div class="gf_image item" data-img_id="`+img__id_str+`" data-img_format="`+img__format_str+`" style='visibility:hidden;'>
-					<img src="`+img__thumbnail_small_url_str+`" data-img_thumb_medium_url="`+img__thumbnail_medium_url_str+`"></img>
+				<div class="gf_image item" data-img_id="${img__id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
+					<img src="${img__thumbnail_small_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
 					<div class="tags_container"></div>
 					<div class="origin_page_url">
-						<a href="`+img__origin_page_url_str+`" target="_blank">`+img__origin_page_url_str+`</a>
+						<a href="${img__origin_page_url_str}" target="_blank">${img__origin_page_url_str}</a>
 					</div>
-					<div class="creation_time">`+img__creation_unix_time_f+`</div>
+					<div class="creation_time">${img__creation_unix_time_f}</div>
 				</div>`);
 
 			//------------------
@@ -228,7 +228,7 @@ function load_new_page(p_flow_name_str :string,
 				// MASONRY_RELOAD
 				var masonry = $('#gf_images_flow_container').data('masonry');
 
-				masonry.once('layoutComplete',(p_event, p_laid_out_items)=>{
+				masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
 					$(image).css('visibility', 'visible');
 				});
 
@@ -237,6 +237,14 @@ function load_new_page(p_flow_name_str :string,
 
 				//------------------
 
+				// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
+				//           this origin_page_url is set to empty string. check for that and remove it.
+				// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
+				//         at all for images that dont have an origin_page_url.
+				if ($(image).find(".origin_page_url a").text().trim() == "") {
+					$(image).find(".origin_page_url").remove();
+				}
+				
 				//------------------
 				// VIEWER_INIT
 
@@ -260,7 +268,7 @@ function load_new_page(p_flow_name_str :string,
 			// IMAGE_FAILED_TO_LOAD
 			$(image).find('img').on('error', function() {
 
-				p_log_fun("ERROR","IMAGE_FAILED_TO_LOAD ----------");
+				p_log_fun("ERROR", "IMAGE_FAILED_TO_LOAD ----------");
 
 				//if image failed to load it still needs to be counted so that when all images
 				//are done (either failed or succeeded) call p_on_complete_fun()
@@ -278,9 +286,9 @@ function load_new_page(p_flow_name_str :string,
 			if (img__tags_lst != null && img__tags_lst.length > 0) {
 				$.each(img__tags_lst, function(p_i, p_tag_str) {
 					const tag = $(
-						"<a class='gf_image_tag' href ='/v1/tags/objects?tag="+p_tag_str+"&otype=image'>"+
-							p_tag_str+
-						"</a>");
+						`<a class='gf_image_tag' href='/v1/tags/objects?tag=${p_tag_str}&otype=image'>
+							${p_tag_str}
+						</a>`);
 
 					$(image).find('.tags_container').append(tag);
 				});
@@ -292,9 +300,10 @@ function load_new_page(p_flow_name_str :string,
 
 	//---------------------------------------------------
 }
+
 //-------------------------------------------------
 function init_image_date(p_image_element, p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init_image_date()');
+	// p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init_image_date()');
 
 	const creation_time_element = $(p_image_element).find('.creation_time');
 	const creation_time_f       = parseFloat($(creation_time_element).text());
@@ -304,7 +313,7 @@ function init_image_date(p_image_element, p_log_fun) {
 	$(creation_time_element).text(date_msg_str);
 
 	const creation_date__readable_str = creation_date.toDateString();
-	const creation_date__readble      = $('<div class="full_creation_date">'+creation_date__readable_str+'</div>');
+	const creation_date__readble      = $(`<div class="full_creation_date">${creation_date__readable_str}</div>`);
 
 	$(creation_time_element).mouseover((p_e)=>{
 		$(creation_time_element).append(creation_date__readble);
@@ -332,7 +341,7 @@ function http__load_new_page(p_flow_name_str :string,
 	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.http__load_new_page()');
 
 	const page_size_int = 10;
-	const url_str       = '/images/flows/browser_page?fname='+p_flow_name_str+'&pg_index='+p_current_page_int+'&pg_size='+page_size_int;
+	const url_str       = `/images/flows/browser_page?fname=${p_flow_name_str}&pg_index=${p_current_page_int}&pg_size=${page_size_int}`;
 	p_log_fun('INFO', 'url_str - '+url_str);
 
 	//-------------------------

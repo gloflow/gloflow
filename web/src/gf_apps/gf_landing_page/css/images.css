@@ -63,6 +63,7 @@
 /*IMAGE_INFO*/
 
 #images .image_info {
+	width: 216px;
 	background-color: rgb(59, 124, 156);
 	padding-bottom  : 6px;
 	margin-bottom   : 10px;

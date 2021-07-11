@@ -60,7 +60,7 @@ body {
 /* @media all and (max-width: 1000px) and (min-width: 520px) {} */
 
 #register {
-	position: fixed;
+	position: absolute;
 	top     : 0px;
 	left    : 569px;
 }
