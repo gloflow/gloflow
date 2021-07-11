@@ -20,11 +20,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
-import * as gf_image_process from "./../../../gf_core/ts/gf_image_process";
+import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
 
 //-------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_images.init()');
 
 	$('#featured_images').find('.image_info').each((p_i, p_image_info_element)=>{
 
@@ -35,104 +34,18 @@ export function init(p_log_fun) {
 
 		init_image_date(p_image_info_element, p_log_fun);
 
+		//----------------------
+		// IMAGE_PALLETE
+		const img = $(p_image_info_element).find("img")[0];
+		gf_image_colors.init_pallete(img);
 
-
-		//-------------
-		// NEW - move into its own function
-		var image_colors_shown_bool = false;
-		$(p_image_info_element).find("img").on("mouseover", (p_event)=>{
-
-
-
-			if (!image_colors_shown_bool) {
-				
-				const image        = p_event.target;
-				const image_colors = gf_image_process.get_colors(image);
-
-				console.log("dominant color - ", image_colors.color_hex_str);
-
-				const color_info_element = $(`<div class="colors_info">
-					<div class="color_dominant" style="background-color:#${image_colors.color_hex_str};"></div>
-					<div class="color_pallete"></div>
-				</div>`);
-
-
-				// // IMPORTANT!! - change to color of the whole image_info control to match the dominant color of the
-				// //               image its displaying.
-				// $(p_image_info_element).css("background-color", `#${image_colors.color_hex_str}`);				
-				
-
-
-				color_info_element.insertAfter(image);
-
-				//-------------
-				// COLOR_PALLETE
-				const color_pallete_element = $(p_image_info_element).find(".colors_info .color_pallete");
-				// const color_pallete_sub_lst = image_colors.color_palette_lst.slice(1, 6);
-				image_colors.color_palette_lst.forEach((p_color_hex_str)=>{
-
-					// console.log("-------------")
-					// console.log(p_color_hex_str);
-
-
-					const color_element = $(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`);
-					$(color_pallete_element).append(color_element);
-
-
-
-
-
-					//-------------
-					// COLOR_INSPECTOR
-					var color_inspect_element = $(`<div class="color_inspect">
-						<div class='color_hex'>#${p_color_hex_str}</div>
-						<div class='color_large' style="background-color:#${p_color_hex_str};"></div>
-
-					</div>`);
-					$(color_element).on("mouseover", ()=>{
-						color_pallete_element.append(color_inspect_element);
-					});
-					$(color_element).on("mouseout", ()=>{
-						$(color_inspect_element).remove();
-					});
-					
-					//-------------
-				})
-
-				//-------------
-				const color_dominant_element = $(color_info_element).find(".color_dominant");
-
-				var color_dominant_label_element = $(`<div class="color_dominant_label">color dominant</div>`);
-				$(color_dominant_element).on("mouseover", ()=>{
-					color_info_element.append(color_dominant_label_element);
-				});
-				$(color_dominant_element).on("mouseout", ()=>{
-					$(color_dominant_label_element).remove();
-				});
-
-
-				var color_pallete_label_element = $(`<div class="color_pallete_label">color pallete</div>`);
-				$(color_pallete_element).on("mouseover", ()=>{
-					color_info_element.append(color_pallete_label_element);
-				});
-				$(color_pallete_element).on("mouseout", ()=>{
-					$(color_pallete_label_element).remove();
-				});
-				
-
-
-				image_colors_shown_bool = true;
-			}
-		});
-
-
-		//-------------
-
+		//----------------------
 	});
 }
 
 //-------------------------------------------------
 // DEPRECATED!!
+// REMOVE!!
 function init_image_viewer(p_image_element, p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_landing_page.init_image_viewer()');
 
