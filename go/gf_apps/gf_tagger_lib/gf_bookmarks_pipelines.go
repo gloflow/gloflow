@@ -280,7 +280,7 @@ func bookmarks__screenshot_create(p_url_str string,
 	//------------------------
 	// SCREENSHOT
 	cmd_lst := []string{
-		"chromium",
+		"google-chrome", // "chromium",
 		"--headless",
 		"--disable-gpu",
 		"--window-size=1920,1080",

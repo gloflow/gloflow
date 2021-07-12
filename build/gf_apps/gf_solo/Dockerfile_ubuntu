@@ -36,6 +36,17 @@ ADD ./requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 #------------
+# CHROMIUM - used by bookmarking logic to take screenshots of bookmarked sites
+# RUN snap install chromium
+# RUN apt-get install -y chromium-browser
+
+RUN apt-get install -y wget
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list
+RUN apt-get update 
+RUN apt-get install -y google-chrome-stable
+
+#------------
 ADD templates templates
 ADD ./static  static
 
@@ -52,10 +63,6 @@ RUN cp libs/libtensorflow_framework.so libs/libtensorflow_framework.so.1
 
 # C_LIBS - so that the libs can be loaded by linker/gf_solo
 ENV LD_LIBRARY_PATH=libs
-
-#------------
-# CHROMIUM - used by bookmarking logic to take screenshots of bookmarked sites
-RUN apt-get install -y chromium-browser
 
 #------------
 # FILES_FOR_PARTICULAR_SERVICES
