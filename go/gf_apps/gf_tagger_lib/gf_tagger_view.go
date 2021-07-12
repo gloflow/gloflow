@@ -32,18 +32,20 @@ func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
-
+	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 
 	type tmpl_data struct {
-		Bookmarks_lst  []*GF_bookmark
-		Is_subtmpl_def func(string) bool // used inside the main_template to check if the subtemplate is defined
+		Bookmarks_lst    []*GF_bookmark
+		Sys_release_info gf_core.Sys_release_info
+		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 	
 
 	buff := new(bytes.Buffer)
 	err := p_tmpl.Execute(buff,
 		tmpl_data{
-			Bookmarks_lst: p_bookmarks_lst,
+			Bookmarks_lst:    p_bookmarks_lst,
+			Sys_release_info: sys_release_info,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
