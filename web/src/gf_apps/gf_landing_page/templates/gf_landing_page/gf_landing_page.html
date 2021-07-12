@@ -28,6 +28,7 @@
 	<link rel="stylesheet" type="text/css" href="./../../css/images.css">
 	<link rel="stylesheet" type="text/css" href="./../../css/posts.css">
 	<link rel="stylesheet" type="text/css" href="./../../css/domains.css">
+	<link rel="stylesheet" type="text/css" href="./../../css/bookmarks.css">
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_upload.css">
 	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_image_colors.css">
 	{{- /*-----------------------------------------------------*/}}
@@ -152,6 +153,17 @@
 			</a>
 		</div>
 		{{- /*-----------------------------------------------------*/}}
+		{{- /*BOOKMARKS*/}}
+		<div id="bookmarks">
+			{{- /*BUTTON*/}}
+			<a id     = 'bookmarks_browser_button' 
+			   class  = 'button'
+			   target = '_blank' 
+			   href   = '/v1/bookmarks/get'>
+				B
+			</a>
+		</div>
+		{{- /*-----------------------------------------------------*/}}
 	</div>
 	{{- /*------------------------------------------------------*/}}
 	<div id='sys_release_info'>
@@ -160,6 +172,7 @@
 		<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
 		<div id='git_commit'>Git commit <a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .Sys_release_info.Git_commit_str }}'>{{- .Sys_release_info.Git_commit_str }}</a></div>
 	</div>
+
 	{{- /*-----------------------------------------------------*/}}
 	<script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
 	<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
@@ -171,13 +184,10 @@
 	<script type="text/javascript" src="./../../../../gf_core/ts/gf_image_upload.js"></script>
 	<script type="text/javascript" src="./../../ts/gf_landing_page.ts"></script>
 	
-
 	<script>
-		// System.import('gf_landing_page').then(function(m){});
-		
 		System.import('gf_apps/gf_landing_page/ts/gf_landing_page').then(function(m){});
-		
 	</script>
+	
 	{{- /*-----------------------------------------------------*/}}
 	{{- /*SUBTEMPLATE*/}}
 	{{ if (call .Is_subtmpl_def "gf_footer")}}

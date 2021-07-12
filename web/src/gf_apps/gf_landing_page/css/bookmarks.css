@@ -3,7 +3,7 @@
 
 
 
-#domains {
+#bookmarks {
 	position: absolute;
     top:      0px;
     left:     451px;
@@ -12,28 +12,28 @@
 /*------------------------------------------------------------*/
 /*IMAGES BUTTON*/
 
-#domains #domains_browser_button {
+#bookmarks #bookmarks_browser_button {
 	position: fixed;
     top: 0px;
-    width: 110px;
+    width: 37px;
     height: 37px;
     padding-top: 18px;
     text-align: center;
     font-size: 16px;
     color: white;
-    background-color: rgb(171, 60, 60);
+    background-color: rgb(37, 172, 48);
     z-index: 2;
     display: block;
     text-decoration: none;
     transition: background-color 0.2s ease;
     cursor: pointer;
 }
-#domains #domains_browser_button:hover {
+#bookmarks #bookmarks_browser_button:hover {
 	cursor          : pointer;
 	background-color: lightgray;
 	color           : black;
 }
-#domains #domains_browser_button:active {
+#bookmarks #bookmarks_browser_button:active {
 	cursor          : pointer;
 	opacity         : 1.0;  
 	background-color: white;
