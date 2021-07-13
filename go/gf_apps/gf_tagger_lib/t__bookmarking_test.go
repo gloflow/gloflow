@@ -44,6 +44,8 @@ func TestMain(m *testing.M) {
 //-------------------------------------------------
 func Test__main(p_test *testing.T) {
 
+	fmt.Println(" TEST__BOOKMARKS_MAIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
