@@ -133,6 +133,7 @@ func render_objects_with_tag(p_tag_str string,
 		Posts_with_tag_num_int int64
 		Images_with_tag_int    int64
 		Posts_with_tag_lst     []map[string]interface{}
+		Sys_release_info       gf_core.Sys_release_info
 		Is_subtmpl_def         func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
@@ -142,12 +143,15 @@ func render_objects_with_tag(p_tag_str string,
 		return gf_err
 	}
 	
+	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+
 	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
 			Tag_str:                p_tag_str,
 			Posts_with_tag_num_int: posts_with_tag_count_int,
 			Images_with_tag_int:    0, // FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
 			Posts_with_tag_lst:     posts_with_tag_lst,
+			Sys_release_info:       sys_release_info,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {

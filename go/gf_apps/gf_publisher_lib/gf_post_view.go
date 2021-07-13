@@ -57,6 +57,7 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 		Post_thumbnail_url_str          string
 		Post_elements_lst               []map[string]interface{}
 		Image_post_elements_og_info_lst []map[string]string
+		Sys_release_info                gf_core.Sys_release_info
 		Is_subtmpl_def                  func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 	
@@ -73,6 +74,8 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 	final String template_str = p_template.renderString(template_info_map)
 	return template_str;*/
 
+	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+
 	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Post_title_str:                  p_post.Title_str,
 		Post_tags_lst:                   post_tags_lst,
@@ -81,6 +84,8 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 		Post_thumbnail_url_str:          p_post.Thumbnail_url_str,
 		Post_elements_lst:               template_post_elements_lst,
 		Image_post_elements_og_info_lst: image_post_elements_og_info_lst,
+		Sys_release_info:                sys_release_info,
+
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {

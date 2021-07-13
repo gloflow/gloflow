@@ -9,7 +9,7 @@ screenshots:
 <img align="left" width="500" height="300" src="https://gloflow.com/images/d/thumbnails/4ae445a94deea001d04d2b4068391c1f_thumb_medium.png">
 
 
-(note: this is alpha software, not feature complete, and still missing more code that needs to be migrated to this repo)
+(note: this is alpha software, not feature complete)
 
 Its purpose is to help manage media (for now mainly images) libraries, to **edit** media, **publish** it, **share** it with other people, to **analyse** it. 
 Its goal is to provide free and private exchange of media between people and groups of people. It currently runs as a centralized service, but my aim is for it to also be fully decentralized and run in a P2P network. 
