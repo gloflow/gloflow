@@ -6,3 +6,23 @@ body {
 	max-width:  100%;
     overflow-x: hidden;
 }
+
+
+
+
+
+
+
+.bookmark {
+	background-color: #a9eaa9;
+    margin-bottom: 5px;
+}
+
+.bookmark .url {
+	padding-left: 5px;
+    font-weight: bold;
+}
+
+.bookmark .description {
+	font-size: 13px;
+}
