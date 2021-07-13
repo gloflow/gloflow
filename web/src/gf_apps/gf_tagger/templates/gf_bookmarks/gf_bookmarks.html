@@ -6,16 +6,16 @@
     {{/*--------------------------------------------------------------*/}}
     <link rel="stylesheet" type="text/css" href="./../../css/gf_bookmarks.css">
     <link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_panel.css">
-    
+    <link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_release_info.css">
+
     {{/*--------------------------------------------------------------*/}}
 
 </head>
 <body>
+    {{/*------------------------------------------------------*/}}
     <div class="bookmarks">
         {{ range .Bookmarks_lst -}}
         <div class="bookmark">
-            
-            
             
             <div class='url'>
                 <a href='{{ .Url_str }}'>{{ .Url_str }}</a>
@@ -61,7 +61,7 @@
     <script type="text/javascript" src="./../../ts/gf_bookmarks/gf_bookmarks.ts"></script>
 
     <script>
-        System.import('gf_bookmarks').then(function(m){});
+        System.import('gf_apps/gf_tagger/ts/gf_bookmarks/gf_bookmarks').then(function(m){});
     </script>
 
     {{/*------------------------------------------------------*/}}

@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
+import * as gf_sys_panel from "./../../../../gf_core/ts/gf_sys_panel";
+
 //--------------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
@@ -41,4 +43,7 @@ $(document).ready(()=>{
 //-------------------------------------------------
 function init(p_log_fun) {
     console.log("start")
+
+
+	gf_sys_panel.init(p_log_fun);
 }
