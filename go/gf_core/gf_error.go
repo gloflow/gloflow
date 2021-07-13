@@ -119,8 +119,8 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_hook_fun           func(*Gf_error) map[string]interface{},
-	p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_hook_fun           func(*GF_error) map[string]interface{},
+	p_runtime_sys        *Runtime_sys) *GF_error {
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create_with_hook()")
 
 	gf_error := Error__create(p_user_msg_str,
@@ -140,7 +140,7 @@ func Error__create(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_runtime_sys        *Runtime_sys) *GF_error {
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
 
 	error_defs_map := error__get_defs()
@@ -174,7 +174,7 @@ func Error__create_with_defs(p_user_msg_str string,
 	//               the error occured.
 	p_skip_stack_frames_num_int int,
 
-	p_runtime_sys *Runtime_sys) *Gf_error {
+	p_runtime_sys *Runtime_sys) *GF_error {
 
 	
 
@@ -204,7 +204,7 @@ func Error__create_with_defs(p_user_msg_str string,
 
 	//--------------------
 
-	gf_error := Gf_error{
+	gf_error := GF_error{
 		Id_str:               id_str,
 		T_str:                "gf_error",
 		Creation_unix_time_f: creation_unix_time_f,

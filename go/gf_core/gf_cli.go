@@ -64,33 +64,7 @@ func CLI__run(p_cmd_info *GF_CLI_cmd_info,
 		return nil, nil, gf_err
 	}
 
-	//-------------------------------------------------
-	consume_fn := func() ([]string, []string) {
-		stdout_lst := []string{}
-		stderr_lst := []string{}
-		for {
-			select {
-			case stdout_l_str := <- stdout_ch:
-
-				if stdout_l_str == "EOF" {
-					return stdout_lst, stderr_lst
-				} else {
-					stdout_lst = append(stdout_lst, stdout_l_str)
-				}
-				
-			case stderr_l_str := <- stderr_ch:
-				stderr_lst = append(stdout_lst, stderr_l_str)
-
-			// case _ = <- done_ch:
-			// 	return stdout_lst, stderr_lst
-			
-			}
-		}
-		return nil, nil
-	}
-
-	//-------------------------------------------------
-	stdout_lst, stderr_lst := consume_fn()
+	stdout_lst, stderr_lst := consume_outputs(stdout_ch, stderr_ch)
 
 	return stdout_lst, stderr_lst, nil
 }
@@ -208,9 +182,14 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	if p_wait_for_completion_bool {
 		err = p.Wait()
 		if err != nil {
+			stdout_lst, stderr_lst := consume_outputs(stdout_ch, stderr_ch)
 			gf_err := Error__create("failed to Wait for a CLI command to complete",
 				"cli_run_error",
-				map[string]interface{}{"cmd": cmd_str,},
+				map[string]interface{}{
+					"cmd":        cmd_str,
+					"stdout_lst": stdout_lst,
+					"stderr_lst": stderr_lst,
+				},
 				err, "gf_core", p_runtime_sys)
 			return nil, nil, gf_err
 		}
@@ -219,6 +198,31 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	//----------------------
 
 	return stdout_ch, stderr_ch, nil // done_ch, nil
+}
+
+//-------------------------------------------------
+func consume_outputs(p_stdout_ch chan string, p_stderr_ch chan string) ([]string, []string) {
+	stdout_lst := []string{}
+	stderr_lst := []string{}
+	for {
+		select {
+		case stdout_l_str := <- p_stdout_ch:
+
+			if stdout_l_str == "EOF" {
+				return stdout_lst, stderr_lst
+			} else {
+				stdout_lst = append(stdout_lst, stdout_l_str)
+			}
+			
+		case stderr_l_str := <- p_stderr_ch:
+			stderr_lst = append(stdout_lst, stderr_l_str)
+
+		// case _ = <- done_ch:
+		// 	return stdout_lst, stderr_lst
+		
+		}
+	}
+	return nil, nil
 }
 
 //-------------------------------------------------
