@@ -33,6 +33,8 @@ export function init(p_log_fun) {
 			</div>
 			<div id="images_app_btn"><a href="/images/flows/browser">Images</a></div>
 			<div id="publisher_app_btn"><a href="/posts/browser">Posts</a></div>
+			<div id="domains_app_btn"><a href="/a/domains/browser">Domains</a></div>
+			<div id="bookmarks_app_btn"><a href="/v1/bookmarks/get">B</a></div>
 			<div id="get_invited_btn">get invited</div>
 			<div id="login_btn">login</div>
 		</div>`);

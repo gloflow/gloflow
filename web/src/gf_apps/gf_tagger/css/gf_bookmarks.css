@@ -9,13 +9,18 @@ body {
 
 
 
-
+#bookmarks {
+	position: absolute;
+	top: 55px;
+}
 
 
 
 .bookmark {
 	background-color: #a9eaa9;
     margin-bottom: 5px;
+
+	
 }
 
 .bookmark .url {

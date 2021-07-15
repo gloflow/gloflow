@@ -100,6 +100,57 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	color          : inherit; /*anchor tags have to explicitly inherit the color*/
 	text-decoration: none;
 }
+
+/*------------------------------------------------------------------*/
+/*DOMAINS_APP_BTN*/
+#sys_panel #domains_app_btn {
+	position   : absolute;
+	top        : 0px;
+	left       : 350px;
+	width      : 110px;
+	padding-top     : 8px;
+	height          : 36px;
+	text-align      : center;
+	background-color: rgb(171, 60, 60);
+	color           : white;
+	cursor          : pointer;
+	font-size       : 25px;
+}
+#sys_panel #domains_app_btn:hover {
+	background-color: white;
+	color           : black;
+}
+
+#sys_panel #domains_app_btn a {
+	color          : inherit; /*anchor tags have to explicitly inherit the color*/
+	text-decoration: none;
+}
+
+/*------------------------------------------------------------------*/
+/*BOOKMARKS_APP_BTN*/
+#sys_panel #bookmarks_app_btn {
+	position   : absolute;
+	top        : 0px;
+	left       : 450px;
+	width      : 37px;
+	padding-top     : 8px;
+	height          : 36px;
+	text-align      : center;
+	background-color: rgb(37, 172, 48);
+	color           : white;
+	cursor          : pointer;
+	font-size       : 25px;
+}
+#sys_panel #bookmarks_app_btn:hover {
+	background-color: white;
+	color           : black;
+}
+
+#sys_panel #bookmarks_app_btn a {
+	color          : inherit; /*anchor tags have to explicitly inherit the color*/
+	text-decoration: none;
+}
+
 /*------------------------------------------------------------------*/
 #sys_panel #get_invited_btn {
 	position   : absolute;
