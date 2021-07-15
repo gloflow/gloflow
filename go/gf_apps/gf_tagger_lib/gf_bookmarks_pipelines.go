@@ -282,8 +282,26 @@ func bookmarks__screenshot_create(p_url_str string,
 	cmd_lst := []string{
 		"google-chrome", // "chromium",
 		"--headless",
+		
+		//-----------------
+		// FIX!! - figure out a way to eliminate usage of "no-sandbox"
+		//         (possibly with Docker seccomps: "docker run --security-opt seccomp=chrome.json", while still
+		//         keeping it simple for endusers to run their own GF container instances).
+		//         
+		// needed to run headless Chrome in containers, even when container doesnt run as root user.
+		// otherwise error is reported:
+		// "Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Operation not permitted"
+		"--no-sadnbox",
+		//-----------------
+
 		"--disable-gpu",
+
+		//-----------------
+		// RESOLUTION
+		// ADD!! - screenshot mobile resolutions as well, along with the desktop resolution.
 		"--window-size=1920,1080",
+
+		//-----------------
 		"--screenshot",
 		"--hide-scrollbars", // Hide scrollbars from screenshots
 		p_url_str,
