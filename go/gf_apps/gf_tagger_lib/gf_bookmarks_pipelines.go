@@ -291,7 +291,8 @@ func bookmarks__screenshot_create(p_url_str string,
 		// needed to run headless Chrome in containers, even when container doesnt run as root user.
 		// otherwise error is reported:
 		// "Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Operation not permitted"
-		"--no-sadnbox",
+		"--no-sandbox",
+		
 		//-----------------
 
 		"--disable-gpu",
