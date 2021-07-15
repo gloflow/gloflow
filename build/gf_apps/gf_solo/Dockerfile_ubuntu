@@ -1,25 +1,22 @@
 FROM ubuntu:20.04
 
 #------------
-# DIRS
-RUN mkdir /home/gf
-RUN mkdir -p /home/gf/logs
-RUN mkdir -p /home/gf/config
-RUN mkdir -p /home/gf/data
-RUN mkdir -p /home/gf/libs
-RUN mkdir -p /home/gf/static
+# GROUP/USER
+RUN groupadd -r gf
+RUN useradd --create-home --no-log-init -r -g gf gf
 
-# used for fetched images, and intermediate processing results
-RUN mkdir -p /home/gf/images
-RUN mkdir -p /home/gf/images/thumbnails
 
-WORKDIR /home/gf
+
+
+
+
 
 #------------
 RUN apt-get update && \
     apt-get install -y \
     python3 \
-    python3-pip
+    python3-pip \
+    wget
 
 #------------
 # GF_IMAGES_JOBS__C_DEPENDENCIES
@@ -31,20 +28,47 @@ RUN apt-get install -y \
     libcairo2-dev
 
 #------------
-# PY_DEPENDENCIES
-ADD ./requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+
+
+
+
+
+
+
 
 #------------
 # CHROMIUM - used by bookmarking logic to take screenshots of bookmarked sites
 # RUN snap install chromium
 # RUN apt-get install -y chromium-browser
 
-RUN apt-get install -y wget
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list
 RUN apt-get update 
 RUN apt-get install -y google-chrome-stable
+
+
+
+
+WORKDIR /home/gf
+USER gf
+
+#------------
+# DIRS
+# RUN mkdir /home/gf
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/config
+RUN mkdir -p /home/gf/data
+RUN mkdir -p /home/gf/libs
+RUN mkdir -p /home/gf/static
+
+# used for fetched images, and intermediate processing results
+RUN mkdir -p /home/gf/images
+RUN mkdir -p /home/gf/images/thumbnails
+
+
+# PY_DEPENDENCIES
+ADD ./requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
 #------------
 ADD templates templates
@@ -75,6 +99,15 @@ ADD ./config/gf_crawl_config.yaml  config/gf_crawl_config.yaml
 ADD ./config/gf_images_config.yaml config/gf_images_config.yaml
 ADD ./config/gf_solo.yaml          config/gf_solo.yaml
 
-# ENTRYPOINT ["gf_solo"]
+#------------
 
+# IMPORTANT!! - no matter which user ran the container build command, set the ownership of all files in /home/gf
+#               to user "gf" so that gf_solo access them.
+USER root
+RUN chown -R gf .
+
+#------------
+USER gf
+
+# ENTRYPOINT ["gf_solo"]
 CMD ["/home/gf/gf_solo", "start", "service"]

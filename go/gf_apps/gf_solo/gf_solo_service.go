@@ -21,6 +21,7 @@ package main
 
 import (
 	"fmt"
+	"os/user"
 	"strconv"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -43,6 +44,15 @@ func service__run(p_config *GF_config,
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
 	fmt.Printf("%s%s\n", yellow("GF_SOLO"), green("==============="))
+
+
+	//-------------
+	user, err := user.Current()
+	if err != nil {
+        panic(err)
+    }
+
+	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
 	//-------------
 	// GF_IMAGES
