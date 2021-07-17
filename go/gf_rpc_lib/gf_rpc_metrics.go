@@ -26,9 +26,8 @@ package gf_rpc_lib
 
 import (
 	"fmt"
-	
+	"strings"
 	"github.com/prometheus/client_golang/prometheus"
-	
 )
 
 //-------------------------------------------------
@@ -43,7 +42,9 @@ func Metrics__create_for_handlers(p_handlers_endpoints_lst []string) *GF_metrics
 
 	handlers_counters_map := map[string]prometheus.Counter{}
 	for _, handler_endpoint_str := range p_handlers_endpoints_lst {
-		name_str                   := fmt.Sprintf("gf_rpc__handler_reqs_num__%s", handler_endpoint_str)
+
+		handler_endpoint_clean_str := strings.ReplaceAll(handler_endpoint_str, "/", "_")
+		name_str                   := fmt.Sprintf("gf_rpc__handler_reqs_num__%s", handler_endpoint_clean_str)
 		handler__reqs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
 			Name: name_str,
 			Help: "handler number of requests",
