@@ -106,15 +106,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #sys_panel #domains_app_btn {
 	position   : absolute;
 	top        : 0px;
-	left       : 350px;
-	width      : 110px;
-	padding-top     : 8px;
-	height          : 36px;
+	left       : 393px;
+	width      : 92px;
+	padding-top     : 13px;
+	height          : 31px;
 	text-align      : center;
 	background-color: rgb(171, 60, 60);
 	color           : white;
 	cursor          : pointer;
-	font-size       : 25px;
+	font-size       : 16px;
 }
 #sys_panel #domains_app_btn:hover {
 	background-color: white;
@@ -131,15 +131,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #sys_panel #bookmarks_app_btn {
 	position   : absolute;
 	top        : 0px;
-	left       : 450px;
+	left       : 492px;
 	width      : 37px;
-	padding-top     : 8px;
-	height          : 36px;
+	padding-top     : 13px;
+	height          : 31px;
 	text-align      : center;
 	background-color: rgb(37, 172, 48);
 	color           : white;
 	cursor          : pointer;
-	font-size       : 25px;
+	font-size       : 18px;
 }
 #sys_panel #bookmarks_app_btn:hover {
 	background-color: white;
