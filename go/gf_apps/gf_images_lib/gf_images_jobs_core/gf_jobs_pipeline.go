@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 
@@ -41,7 +41,7 @@ func job__pipeline__process_image_local() {
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_IMAGE_UPLOADED
-func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_image_id,
+func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.Gf_image_id,
 	p_s3_file_path_str                           string,
 	p_images_store_local_dir_path_str            string,
 	p_images_thumbnails_store_local_dir_path_str string,
@@ -52,7 +52,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 	p_source_s3_bucket_name_str string, // S3_bucket to which the image was uploaded to
 	p_target_s3_bucket_name_str string, // S3 bucket to which processed images are stored in after this pipeline processing
 	p_s3_info                   *gf_core.GF_s3_info,
-	p_send_error_fun            func(string, *gf_core.GF_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.GF_error,
+	p_send_error_fun            func(string, *gf_core.GF_error, string, gf_images_core.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.GF_error,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_uploaded()")
 
@@ -62,13 +62,13 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 	//               all external image upload traffic going through GF servers.
 
 	// normalized_format_str  := "png"
-	// image_s3_file_path_str := gf_images_utils.S3__get_image_s3_filepath(p_image_id_str,
+	// image_s3_file_path_str := gf_images_core.S3__get_image_s3_filepath(p_image_id_str,
 	// 	normalized_format_str,
 	// 	p_runtime_sys)
 
 	image_local_file_path_str := fmt.Sprintf("%s/%s", p_images_store_local_dir_path_str, filepath.Base(p_s3_file_path_str))
 
-	gf_err := gf_images_utils.S3__get_gf_image(p_s3_file_path_str,
+	gf_err := gf_images_core.S3__get_gf_image(p_s3_file_path_str,
 		image_local_file_path_str,
 		p_source_s3_bucket_name_str,
 		p_s3_info,
@@ -86,7 +86,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 	
 	image_client_type_str := p_job_client_type_str
 
-	_, gf_image_thumbs, gf_t_err := gf_images_utils.Transform_image(p_image_id_str,
+	_, gf_image_thumbs, gf_t_err := gf_images_core.Transform_image(p_image_id_str,
 		image_client_type_str,
 		p_flows_names_lst,
 		"", // p_image_source_url_str,
@@ -135,7 +135,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 	}
 
 	// STORE__IMAGE_THUMBS
-	gf_err = gf_images_utils.S3__store_gf_image_thumbs(gf_image_thumbs,
+	gf_err = gf_images_core.S3__store_gf_image_thumbs(gf_image_thumbs,
 		p_target_s3_bucket_name_str,
 		p_s3_info,
 		p_runtime_sys)
@@ -173,7 +173,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_utils.Gf_ima
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_IMAGE_EXTERN
-func job__pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image_id,
+func job__pipeline__process_image_extern(p_image_id_str gf_images_core.Gf_image_id,
 	p_image_source_url_str                       string,
 	p_image_origin_page_url_str                  string,
 	p_images_store_local_dir_path_str            string,
@@ -184,13 +184,13 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image
 	p_job_updates_ch                  chan Job_update_msg,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.GF_s3_info,
-	p_send_error_fun                  func(string, *gf_core.GF_error, string, gf_images_utils.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.GF_error,
+	p_send_error_fun                  func(string, *gf_core.GF_error, string, gf_images_core.Gf_image_id, string, chan Job_update_msg, *gf_core.Runtime_sys) *gf_core.GF_error,
 	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_extern()")
 
 	//-----------------------
 	// FETCH_IMAGE
-	local_image_file_path_str, _, gf_f_err := gf_images_utils.Fetcher__get_extern_image(p_image_source_url_str,
+	local_image_file_path_str, _, gf_f_err := gf_images_core.Fetcher__get_extern_image(p_image_source_url_str,
 		p_images_store_local_dir_path_str,
 		false, // p_random_time_delay_bool
 		p_runtime_sys)
@@ -213,7 +213,7 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image
 	// TRANSFORM_IMAGE
 	
 	image_client_type_str        := p_job_client_type_str
-	_, gf_image_thumbs, gf_t_err := gf_images_utils.Transform_image(p_image_id_str,
+	_, gf_image_thumbs, gf_t_err := gf_images_core.Transform_image(p_image_id_str,
 		image_client_type_str,
 		p_flows_names_lst,
 		p_image_source_url_str,
@@ -239,7 +239,7 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_utils.Gf_image
 	//-----------------------
 	// SAVE_IMAGE TO FS (S3)
 
-	gf_s3_err := gf_images_utils.S3__store_gf_image(local_image_file_path_str,
+	gf_s3_err := gf_images_core.S3__store_gf_image(local_image_file_path_str,
 		gf_image_thumbs,
 		p_s3_bucket_name_str,
 		p_s3_info,

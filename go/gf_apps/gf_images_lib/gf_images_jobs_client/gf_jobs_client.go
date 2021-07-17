@@ -23,7 +23,7 @@ package gf_images_jobs_client
 import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -32,7 +32,7 @@ import (
 // called "expected" because jobs are long-running processes, and they might fail at various stages
 // of their processing. in that case some of these result values will be satisfied, others will not.
 type GF_job_expected_output struct {
-	Image_id_str                      gf_images_utils.Gf_image_id `json:"image_id_str"`
+	Image_id_str                      gf_images_core.Gf_image_id `json:"image_id_str"`
 	Image_source_url_str              string                      `json:"image_source_url_str"`
 	Thumbnail_small_relative_url_str  string                      `json:"thumbnail_small_relative_url_str"`
 	Thumbnail_medium_relative_url_str string                      `json:"thumbnail_medium_relative_url_str"`
@@ -231,14 +231,14 @@ func job__get_expected_output(p_images_source_URIs_lst []string,
 
 		//--------------
 		// IMAGE_ID
-		image_id_str, i_gf_err := gf_images_utils.Image_ID__create_from_url(img_source_url_str, p_runtime_sys)
+		image_id_str, i_gf_err := gf_images_core.Image_ID__create_from_url(img_source_url_str, p_runtime_sys)
 		if i_gf_err != nil {
 			return nil, i_gf_err
 		}
 
 		//--------------
 		// GET FILE_FORMAT
-		normalized_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(img_source_url_str, p_runtime_sys)
+		normalized_ext_str, gf_err := gf_images_core.Get_image_ext_from_url(img_source_url_str, p_runtime_sys)
 		
 		// FIX!! - it should not fail the whole job if one image is invalid,
 		//         it should continue and just mark that image with an error.

@@ -22,16 +22,15 @@ package gf_images_lib
 import (
 	"fmt"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
 func Flows_db__add_flow_name_to_image(p_flow_name_str string,
-	p_image_gf_id_str gf_images_utils.Gf_image_id,
+	p_image_gf_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 	
@@ -67,7 +66,7 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 func flows_db__get_page(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
-	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_utils.Gf_image, *gf_core.GF_error) {
+	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_core.Gf_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
 
 	ctx := context.Background()
@@ -108,7 +107,7 @@ func flows_db__get_page(p_flow_name_str string,
 		return nil, gf_err
 	}
 	
-	images_lst := []*gf_images_utils.Gf_image{}
+	images_lst := []*gf_images_core.Gf_image{}
 	err        := cursor.All(ctx, &images_lst)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get a page of images from a flow",

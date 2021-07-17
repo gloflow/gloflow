@@ -21,11 +21,11 @@ package gf_images_lib
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
-func Add_tags_to_image(p_image *gf_images_utils.Gf_image,
+func Add_tags_to_image(p_image *gf_images_core.Gf_image,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.Add_tags_to_image()")

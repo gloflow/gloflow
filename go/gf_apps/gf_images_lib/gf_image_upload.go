@@ -28,7 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 	"github.com/davecgh/go-spew/spew"
@@ -44,7 +44,7 @@ type Gf_image_upload_info struct {
 	T_str                  string                      `json:"-"                      bson:"t"` // "img_upload_info"
 	Creation_unix_time_f   float64                     `json:"creation_unix_time_f"   bson:"creation_unix_time_f"`
 	Name_str               string                      `json:"name_str"               bson:"name_str"`
-	Upload_gf_image_id_str gf_images_utils.Gf_image_id `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
+	Upload_gf_image_id_str gf_images_core.Gf_image_id `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
 	S3_file_path_str       string                      `json:"-"                      bson:"s3_file_path_str"` // internal data, dont send to clients
 	Flows_names_lst        []string                    `json:"flows_names_lst"        bson:"flows_names_lst"`
 	Client_type_str        string                      `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
@@ -60,12 +60,12 @@ func Upload__init(p_image_name_str string,
 	p_flows_names_lst  []string,
 	p_client_type_str  string,
 	p_s3_info          *gf_core.GF_s3_info,
-	p_config           *gf_images_utils.GF_config,
+	p_config           *gf_images_core.GF_config,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
 	
 	//------------------
 	// CHECK_IMAGE_FORMAT
-	normalized_format_str, ok := gf_images_utils.Image__check_image_format(p_image_format_str, p_runtime_sys)
+	normalized_format_str, ok := gf_images_core.Image__check_image_format(p_image_format_str, p_runtime_sys)
 	if !ok {
 		gf_err := gf_core.Error__create("image format is invalid that specified for image thats being prepared for uploading via upload__init",
 			"verify__invalid_value_error",
@@ -78,9 +78,9 @@ func Upload__init(p_image_name_str string,
 	// GF_IMAGE_ID
 	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
 	image_path_str         := p_image_name_str
-	upload_gf_image_id_str := gf_images_utils.Image_ID__create(image_path_str, normalized_format_str, p_runtime_sys)
+	upload_gf_image_id_str := gf_images_core.Image_ID__create(image_path_str, normalized_format_str, p_runtime_sys)
 
-	s3_file_path_str := gf_images_utils.S3__get_image_s3_filepath(upload_gf_image_id_str,
+	s3_file_path_str := gf_images_core.S3__get_image_s3_filepath(upload_gf_image_id_str,
 		normalized_format_str,
 		p_runtime_sys)
 
@@ -130,7 +130,7 @@ func Upload__init(p_image_name_str string,
 // Upload__complete completes the image file upload sequence.
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
-func Upload__complete(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
+func Upload__complete(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 	p_jobs_mngr_ch    chan gf_images_jobs_core.Job_msg,
 	p_s3_info         *gf_core.GF_s3_info,
 	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
@@ -203,7 +203,7 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 }
 
 //---------------------------------------------------
-func Upload_db__get_info(p_upload_gf_image_id_str gf_images_utils.Gf_image_id,
+func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
 
 	ctx := context.Background()

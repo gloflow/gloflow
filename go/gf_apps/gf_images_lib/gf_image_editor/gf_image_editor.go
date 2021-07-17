@@ -33,7 +33,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //-------------------------------------------------
@@ -42,12 +42,12 @@ type Gf_edited_image struct {
 	Id_str               string                      `bson:"id_str"` 
 	T_str                string                      `bson:"t"` //"img_edited"
 	Creation_unix_time_f float64                     `bson:"creation_unix_time_f"`
-	Source_image_id_str  gf_images_utils.Gf_image_id `bson:"source_image_id_str"`
+	Source_image_id_str  gf_images_core.Gf_image_id `bson:"source_image_id_str"`
 }
 
 type Gf_edited_image__save__http_input struct {
 	Title_str             string                      `json:"new_title_str"`         //title of the new edited_image
-	Source_image_id_str   gf_images_utils.Gf_image_id `json:"source_image_id_str"`   //id of the gf_image that has modification applied to it
+	Source_image_id_str   gf_images_core.Gf_image_id `json:"source_image_id_str"`   //id of the gf_image that has modification applied to it
 	Source_flow_name_str  string                      `json:"source_flow_name_str"`  //which flow was the original image from
 	Target_flow_name_str  string                      `json:"target_flow_name_str"`  //which flow the modified_image should be placed into
 	Image_base64_data_str string                      `json:"image_base64_data_str"` //base64 encoded pixel data of the image
@@ -98,7 +98,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	//--------------------------
 
 
-	source_gf_image, gf_err := gf_images_utils.DB__get_image(source_image_id_str, p_runtime_sys)
+	source_gf_image, gf_err := gf_images_core.DB__get_image(source_image_id_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -121,7 +121,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 }
 
 //-------------------------------------------------
-func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
+func save_edited_image(p_source_image_id_str gf_images_core.Gf_image_id,
 	p_image_base64_data_str string,
 	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image()")
@@ -214,7 +214,7 @@ func save_edited_image(p_source_image_id_str gf_images_utils.Gf_image_id,
 	//--------------------------
 	// IMAGE_DIMENSIONS
 
-	image_width_int, image_height_int := gf_images_utils.Get_image_dimensions__from_image(png_image, p_runtime_sys)
+	image_width_int, image_height_int := gf_images_core.Get_image_dimensions__from_image(png_image, p_runtime_sys)
 	//--------------------------
 
 	processing_info := Gf_edited_image__processing_info{
@@ -244,10 +244,10 @@ func create_gf_image(p_new_title_str string,
 
 	//--------------------------
 	//GF_IMAGE_ID
-	image_id_str := gf_images_utils.Image_ID__create(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
+	image_id_str := gf_images_core.Image_ID__create(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
 	//--------------------------
 	//THUMBNAILS
-	image_thumbs, gf_err := gf_images_utils.Create_thumbnails(image_id_str,
+	image_thumbs, gf_err := gf_images_core.Create_thumbnails(image_id_str,
 		image_format_str, //p_normalized_ext_str,
 		p_processing_info.tmp_local_filepath_str,
 		local_thumbnails_target_dir_path_str,
@@ -262,7 +262,7 @@ func create_gf_image(p_new_title_str string,
 	}
 	//--------------------------
 
-	gf_image_info := &gf_images_utils.Gf_image_new_info{
+	gf_image_info := &gf_images_core.Gf_image_new_info{
 		Id_str:                         image_id_str,
 		Title_str:                      p_new_title_str,
 		Flows_names_lst:                p_images_flows_names_lst,
@@ -281,7 +281,7 @@ func create_gf_image(p_new_title_str string,
 	//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 	//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 	//              these two structs are related by origin_url
-	_, c_gf_err := gf_images_utils.Image__create_new(gf_image_info, p_runtime_sys)
+	_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_runtime_sys)
 	if c_gf_err != nil {
 		return c_gf_err
 	}

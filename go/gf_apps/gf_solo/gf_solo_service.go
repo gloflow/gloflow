@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
@@ -58,7 +58,7 @@ func service__run(p_config *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	gf_images__config, gf_err := gf_images_utils.Config__get(p_config.Images__config_file_path_str,
+	gf_images__config, gf_err := gf_images_core.Config__get(p_config.Images__config_file_path_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return

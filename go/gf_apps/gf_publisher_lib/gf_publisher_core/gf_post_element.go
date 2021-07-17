@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -66,7 +66,7 @@ type Gf_post_element struct {
 	//----------------------
 	// IMAGE - if type_str == "image"
 
-	Image_id_str gf_images_utils.Gf_image_id
+	Image_id_str gf_images_core.Gf_image_id
 
 	// only thumbnail urls are tracked here in the Post_ADT, not the full-size (which is tracked
 	// in Image_ADT), since the fullsize internal url is never used (that would be copyright infringement).

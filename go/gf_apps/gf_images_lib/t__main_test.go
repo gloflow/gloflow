@@ -25,7 +25,7 @@ import (
 	"testing"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
@@ -47,7 +47,7 @@ var cli_args_map map[string]interface{}
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 	log_fun = gf_core.Init_log_fun()
-	cli_args_map = gf_images_utils.CLI__parse_args(log_fun)
+	cli_args_map = gf_images_core.CLI__parse_args(log_fun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -120,18 +120,18 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 	for _, image_local_file_path_str := range p_test_image_data.images_local_filepaths_lst {
 
 		//---------------
-		format_str, gf_err := gf_images_utils.Get_image_ext_from_url(image_local_file_path_str,p_runtime_sys)
+		format_str, gf_err := gf_images_core.Get_image_ext_from_url(image_local_file_path_str,p_runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
 
 		//---------------
-		test__image_id_str := gf_images_utils.Image_ID__create(image_local_file_path_str,format_str,p_runtime_sys)
+		test__image_id_str := gf_images_core.Image_ID__create(image_local_file_path_str,format_str,p_runtime_sys)
 		fmt.Println("test__image_id_str - "+test__image_id_str)
 
 		//---------------
 
-		image_thumbs, gf_image, gf_err := gf_images_utils.Trans__process_image(test__image_id_str,
+		image_thumbs, gf_image, gf_err := gf_images_core.Trans__process_image(test__image_id_str,
 			p_test_image_data.image_client_type_str,
 			p_test_image_data.image_flows_names_lst,
 			p_test_image_data.origin_url_str,
@@ -163,7 +163,7 @@ func test__images_ops(p_test_image_data *Gf_test_image_data,
 
 	for _, test__image_local_filepath_str := range p_test_image_data.images_local_filepaths_lst {
 
-		format_str,gf_err := gf_images_utils.Get_image_ext_from_url(test__image_local_filepath_str, p_runtime_sys)
+		format_str,gf_err := gf_images_core.Get_image_ext_from_url(test__image_local_filepath_str, p_runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -182,44 +182,44 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	p_runtime_sys                    *gf_core.Runtime_sys) {
 
 	//---------------
-	test__image_id_str := gf_images_utils.Image_ID__create(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
+	test__image_id_str := gf_images_core.Image_ID__create(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	fmt.Println("test__image_id_str - "+test__image_id_str)
 
 	//---------------
-	test__image_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_test__image_local_filepath_str, p_runtime_sys)
+	test__image_title_str, gf_err := gf_images_core.Get_image_title_from_url(p_test__image_local_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	fmt.Println("test__image_title_str - "+test__image_title_str)
 
 	//---------------
-	img_width_int, img_height_int, gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_test__image_local_filepath_str, p_runtime_sys)
+	img_width_int, img_height_int, gf_err := gf_images_core.Get_image_dimensions__from_filepath(p_test__image_local_filepath_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 	fmt.Println(fmt.Sprintf("test__image dimensions - %d/%d",img_width_int,img_height_int))
 
 	//---------------
-	img, gf_err := gf_images_utils.Image__load_file(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
+	img, gf_err := gf_images_core.Image__load_file(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
 	//---------------
-	second_img_width_int, second_img_height_int := gf_images_utils.Get_image_dimensions__from_image(img, p_runtime_sys)
+	second_img_width_int, second_img_height_int := gf_images_core.Get_image_dimensions__from_image(img, p_runtime_sys)
 
 	if img_width_int != second_img_width_int {
-		err_msg_str := "gf_images_utils.Get_image_dimensions__from_filepath() and gf_images_utils.Get_image_dimensions__from_image() dont return the same width"
+		err_msg_str := "gf_images_core.Get_image_dimensions__from_filepath() and gf_images_core.Get_image_dimensions__from_image() dont return the same width"
 		panic(err_msg_str)
 	}
 
 	if img_height_int != second_img_height_int {
-		err_msg_str := "gf_images_utils.Get_image_dimensions__from_filepath() and gf_images_utils.Get_image_dimensions__from_image() dont return the same width"
+		err_msg_str := "gf_images_core.Get_image_dimensions__from_filepath() and gf_images_core.Get_image_dimensions__from_image() dont return the same width"
 		panic(err_msg_str)
 	}
 
 	//---------------
-	image_thumbs, gf_err := gf_images_utils.Create_thumbnails(test__image_id_str,
+	image_thumbs, gf_err := gf_images_core.Create_thumbnails(test__image_id_str,
 		p_test__image_format_str,
 		p_test__image_local_filepath_str,
 		p_test_image_data.local_thumbs_target_dir_path_str,
@@ -244,7 +244,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 
 	//---------------
 
-	image_new_info := &gf_images_utils.Gf_image_new_info{
+	image_new_info := &gf_images_core.Gf_image_new_info{
 		Id_str:                         test__image_id_str,
 		Title_str:                      test__image_title_str,
 		Flows_names_lst:                p_test_image_data.image_flows_names_lst,
@@ -261,7 +261,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	}
 
 
-	gf_image, gf_err := gf_images_utils.Image__create_new(image_new_info, p_runtime_sys)
+	gf_image, gf_err := gf_images_core.Image__create_new(image_new_info, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}

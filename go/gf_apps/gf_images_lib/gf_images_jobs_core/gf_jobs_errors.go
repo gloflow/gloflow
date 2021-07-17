@@ -24,9 +24,8 @@ import (
 	"fmt"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
-	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //-------------------------------------------------
@@ -40,7 +39,7 @@ type Job_Error struct {
 func job_error__send(p_job_error_type_str string,
 	p_gf_err               *gf_core.Gf_error,
 	p_image_source_url_str string,
-	p_image_id_str         gf_images_utils.Gf_image_id,
+	p_image_id_str         gf_images_core.Gf_image_id,
 	p_job_id_str           string,
 	p_job_updates_ch       chan Job_update_msg,
 	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {

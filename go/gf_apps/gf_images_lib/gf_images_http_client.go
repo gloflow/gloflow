@@ -27,12 +27,12 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //-------------------------------------------------
 type Client_job_image_output struct {
-	Image_id_str                      gf_images_utils.Gf_image_id
+	Image_id_str                      gf_images_core.Gf_image_id
 	Image_source_url_str              string
 	Thumbnail_small_relative_url_str  string
 	Thumbnail_medium_relative_url_str string
@@ -178,7 +178,7 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	for _, o := range job_expected_outputs_untyped_lst {
 		image_output := &Client_job_image_output{
-			Image_id_str:                      gf_images_utils.Gf_image_id(o.(map[string]interface{})["image_id_str"].(string)),
+			Image_id_str:                      gf_images_core.Gf_image_id(o.(map[string]interface{})["image_id_str"].(string)),
 			Image_source_url_str:              o.(map[string]interface{})["image_source_url_str"].(string),
 			Thumbnail_small_relative_url_str:  o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
 			Thumbnail_medium_relative_url_str: o.(map[string]interface{})["thumbnail_medium_relative_url_str"].(string),

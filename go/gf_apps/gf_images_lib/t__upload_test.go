@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
@@ -65,7 +65,7 @@ func Test__upload(p_test *testing.T) {
 	}
 
 	// CONFIG
-	img_config, gf_err := gf_images_utils.Config__get(test__config_file_path_str, runtime_sys)
+	img_config, gf_err := gf_images_core.Config__get(test__config_file_path_str, runtime_sys)
 	if gf_err != nil {
 		return
 	}

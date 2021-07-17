@@ -26,8 +26,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	// "github.com/globalsign/mgo/bson"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -98,7 +97,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 		for {
 
 			//get all images that dont have flows_names_lst
-			var imgs_lst []gf_images_utils.GF_Image
+			var imgs_lst []gf_images_core.GF_Image
 			err := p_mongodb_coll.Find(bson.M{
 					"t":              "img",
 					"format_str":     "gif",
@@ -374,7 +373,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			}
 			defer cursor.Close(ctx)
 
-			/*var img gf_images_utils.Gf_image
+			/*var img gf_images_core.Gf_image
 			err := pipe.One(&img)
 			if err != nil {
 				_ = gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
@@ -384,7 +383,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 
 			cursor.Next(ctx)
 
-			var img gf_images_utils.Gf_image
+			var img gf_images_core.Gf_image
 			err = cursor.Decode(&img)
 			if err != nil {
 				_ = gf_core.Mongo__handle_error("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
@@ -536,7 +535,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 }
 
 //--------------------------------------------------
-func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_utils.Gf_image_id,
+func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
 	var flows_names_lst []string
 
@@ -544,7 +543,7 @@ func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_utils.Gf_image_id
 	if p_gif__gf_image_id_str != "" {
 
 		ctx := context.Background()
-		var gf_img gf_images_utils.Gf_image
+		var gf_img gf_images_core.Gf_image
 		err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).Decode(&gf_img)
 
 		// err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)

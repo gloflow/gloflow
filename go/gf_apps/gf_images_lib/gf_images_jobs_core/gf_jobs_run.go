@@ -23,7 +23,7 @@ package gf_images_jobs_core
 import (
 	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 )
 
@@ -118,7 +118,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 
 		//--------------
 		// IMAGE_ID
-		image_id_str, i_gf_err := gf_images_utils.Image_ID__create_from_url(image_source_url_str, p_runtime_sys)
+		image_id_str, i_gf_err := gf_images_core.Image_ID__create_from_url(image_source_url_str, p_runtime_sys)
 
 		if i_gf_err != nil {
 			job_error_type_str := "create_image_id_error"
@@ -137,7 +137,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 
 		// IMPORTANT!! - 'ok' is '_' because Im already calling Get_image_ext_from_url()
 		//               in Image__create_id_from_url()
-		ext_str, ext_gf_err := gf_images_utils.Get_image_ext_from_url(image_source_url_str, p_runtime_sys)
+		ext_str, ext_gf_err := gf_images_core.Get_image_ext_from_url(image_source_url_str, p_runtime_sys)
 		
 		if ext_gf_err != nil {
 			job_error_type_str := "get_image_ext_error"

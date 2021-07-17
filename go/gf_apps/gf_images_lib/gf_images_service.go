@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -49,7 +49,7 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func Init_service(p_service_info *GF_service_info,
-	p_config      *gf_images_utils.GF_config,
+	p_config      *gf_images_core.GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
 
 	//-------------
@@ -202,7 +202,7 @@ func Run_service(p_service_info *GF_service_info,
 	//-------------
 	// CONFIG
 
-	gf_config, gf_err := gf_images_utils.Config__get(p_service_info.Config_file_path_str, runtime_sys)
+	gf_config, gf_err := gf_images_core.Config__get(p_service_info.Config_file_path_str, runtime_sys)
 	if gf_err != nil {
 		return
 	}

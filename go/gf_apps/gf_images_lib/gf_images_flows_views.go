@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //-------------------------------------------------
@@ -41,7 +41,7 @@ func flows__render_initial_page(p_flow_name_str string,
 	//---------------------
 	// GET_TEMPLATE_DATA
 
-	pages_lst := [][]*gf_images_utils.Gf_image{}
+	pages_lst := [][]*gf_images_core.Gf_image{}
 
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
@@ -78,7 +78,7 @@ func flows__render_initial_page(p_flow_name_str string,
 }
 
 //-------------------------------------------------
-func flows__render_template(p_images_pages_lst [][]*gf_images_utils.Gf_image, //list-of-lists
+func flows__render_template(p_images_pages_lst [][]*gf_images_core.Gf_image, //list-of-lists
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,

@@ -30,7 +30,7 @@ import (
 	// "github.com/globalsign/mgo/bson"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
@@ -43,7 +43,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
-	img_title_str, gf_err := gf_images_utils.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
+	img_title_str, gf_err := gf_images_core.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -327,7 +327,7 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 
 //--------------------------------------------------
 func gif_db__update_image_id(p_gif_id_str string,
-	p_image_id_str gf_images_utils.Gf_image_id,
+	p_image_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	ctx := context.Background()

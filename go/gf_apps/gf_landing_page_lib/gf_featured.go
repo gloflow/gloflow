@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"net/url"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 )
 
@@ -53,7 +53,7 @@ func get_featured_imgs(p_max_random_cursor_position_int int, // 500
 	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_img, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_imgs()")
 
-	imgs_lst, err := gf_images_utils.DB__get_random_imgs_range(p_elements_num_to_get_int,
+	imgs_lst, err := gf_images_core.DB__get_random_imgs_range(p_elements_num_to_get_int,
 		p_max_random_cursor_position_int,
 		"general", // p_flow_name_str
 		p_runtime_sys)

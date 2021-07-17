@@ -26,13 +26,13 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
-	p_img_config       *gf_images_utils.GF_config,
+	p_img_config       *gf_images_core.GF_config,
 	p_media_domain_str string,
 	p_s3_info          *gf_core.GF_s3_info,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -84,7 +84,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 					return nil, gf_err
 				}
 
-				image_s3_url_str := gf_images_utils.Image__get_public_url(image_path_name_str,
+				image_s3_url_str := gf_images_core.Image__get_public_url(image_path_name_str,
 					p_media_domain_str,
 					p_runtime_sys)
 
@@ -196,9 +196,9 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
 				//                      to know which ID to use for the new gf_image thats going to be constructed,
 				//                      and to know by which ID to query the DB for Gf_image_upload_info.
-				var upload_gf_image_id_str gf_images_utils.Gf_image_id
+				var upload_gf_image_id_str gf_images_core.Gf_image_id
 				if a_lst, ok := qs_map["imgid"]; ok {
-					upload_gf_image_id_str = gf_images_utils.Gf_image_id(a_lst[0])
+					upload_gf_image_id_str = gf_images_core.Gf_image_id(a_lst[0])
 				}
 				
 				//------------------

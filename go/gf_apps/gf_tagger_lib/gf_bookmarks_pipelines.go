@@ -27,7 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
 )
@@ -45,7 +45,7 @@ type GF_bookmark struct {
 	Tags_lst        []string `bson:"tags_lst"`
 
 	// SCREENSHOT
-	Screenshot_image_id_str            gf_images_utils.GF_image_id `bson:"screenshot_image_id_str"`
+	Screenshot_image_id_str            gf_images_core.GF_image_id `bson:"screenshot_image_id_str"`
 	Screenshot_image_thumbnail_url_str string                      `bson:"screenshot_image_thumbnail_url_str"`
 }
 

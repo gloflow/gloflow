@@ -26,7 +26,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -57,7 +57,7 @@ func db__bookmark__create(p_bookmark *GF_bookmark,
 
 //---------------------------------------------------
 func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
-	p_screenshot_image_id_str            gf_images_utils.GF_image_id,
+	p_screenshot_image_id_str            gf_images_core.GF_image_id,
 	p_screenshot_image_thumbnail_url_str string,
 	p_ctx                                context.Context,
 	p_runtime_sys                        *gf_core.Runtime_sys) *gf_core.GF_error {

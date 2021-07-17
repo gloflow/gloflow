@@ -22,7 +22,7 @@ package gf_images_jobs
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
@@ -30,7 +30,7 @@ import (
 func Init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
-	p_config                                     *gf_images_utils.GF_config,
+	p_config                                     *gf_images_core.GF_config,
 	p_s3_info                                    *gf_core.GF_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
 

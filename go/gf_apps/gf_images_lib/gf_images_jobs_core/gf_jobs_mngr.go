@@ -28,7 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -60,7 +60,7 @@ type GF_image_extern_to_process struct {
 }
 
 type GF_image_uploaded_to_process struct {
-	Gf_image_id_str  gf_images_utils.Gf_image_id
+	Gf_image_id_str  gf_images_core.Gf_image_id
 	S3_file_path_str string // path to image in S3 in a bucket that it was originally uploaded to by client
 }
 
@@ -90,10 +90,10 @@ type Job_msg struct {
 type Job_update_msg struct {
 	Name_str             string                      `json:"name_str"`
 	Type_str             job_update_type_val         `json:"type_str"`             // "ok" | "error" | "complete"
-	Image_id_str         gf_images_utils.Gf_image_id `json:"image_id_str"`
+	Image_id_str         gf_images_core.Gf_image_id `json:"image_id_str"`
 	Image_source_url_str string                      `json:"image_source_url_str"`
 	Err_str              string                      `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
-	Image_thumbs         *gf_images_utils.Gf_image_thumbs `json:"-"`
+	Image_thumbs         *gf_images_core.Gf_image_thumbs `json:"-"`
 }
 
 //------------------------
@@ -147,7 +147,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_lifecycle_callbacks                        *GF_jobs_lifecycle_callbacks,
-	p_config                                     *gf_images_utils.GF_config,
+	p_config                                     *gf_images_core.GF_config,
 	p_s3_info                                    *gf_core.GF_s3_info,
 	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
