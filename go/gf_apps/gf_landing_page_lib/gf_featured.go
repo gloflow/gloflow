@@ -139,7 +139,7 @@ func post_to_featured(p_post *gf_publisher_core.Gf_post, p_runtime_sys *gf_core.
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)
-	p_runtime_sys.Log_fun("INFO","p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
+	p_runtime_sys.Log_fun("INFO", "p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
 
 	featured := &Gf_featured_post{
 		Title_str:         p_post.Title_str,

@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang/snappy v0.0.3 // indirect
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c
 	github.com/klauspost/compress v1.11.13 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
@@ -26,6 +27,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pelletier/go-toml v1.9.0 // indirect
+	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -40,7 +42,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
