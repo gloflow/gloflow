@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"net/http"
 	"context"
+	"time"
 	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -49,7 +50,21 @@ func Create_handler__http(p_path_str string,
 	p_handler_fun  handler_http,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
+	Create_handler__http_with_metrics(p_path_str,
+		p_handler_fun,
+		nil,
+		p_runtime_sys)
+}
+
+//-------------------------------------------------
+func Create_handler__http_with_metrics(p_path_str string,
+	p_handler_fun  handler_http,
+	p_metrics      *GF_metrics,
+	p_runtime_sys  *gf_core.Runtime_sys) {
+
 	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 		path_str := p_req.URL.Path
 
@@ -77,6 +92,18 @@ func Create_handler__http(p_path_str string,
 			"gf_rpc_lib", p_runtime_sys)
 
 		//------------------
+		// METRICS
+
+		if p_metrics != nil {
+
+			if counter, ok := p_metrics.Handlers_counters_map[p_path_str]; ok {
+				counter.Inc()
+			}
+		}
+
+		//------------------
+
+		
 		ctx := p_req.Context()
 
 		hub := sentry.GetHubFromContext(ctx)
@@ -114,6 +141,12 @@ func Create_handler__http(p_path_str string,
 		}
 
 		//------------------
+
+		end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+		go func() {
+			Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+		}()
 	})
 }
 
