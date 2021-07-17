@@ -23,7 +23,6 @@ package gf_crawl_lib
 import (
 	"time"
 	"math/rand"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/olivere/elastic"
 	"github.com/fatih/color"

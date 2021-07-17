@@ -24,11 +24,10 @@ import (
 	"time"
 	"crypto/md5"
 	"encoding/hex"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
 
@@ -62,7 +61,7 @@ type Gf_crawler_page_image struct {
 	Valid_for_usage_bool       bool                        `bson:"valid_for_usage_bool"`
 	S3_stored_bool             bool                        `bson:"s3_stored_bool"` //if persisting to s3 succeeded
 	Nsfv_bool                  bool                        `bson:"nsfv_bool"`      //NSFV (not safe for viewing/nudity) flag for the image 
-	Gf_image_id_str            gf_images_utils.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
+	Gf_image_id_str            gf_images_core.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
 }
 	
 // IMPORTANT!! - reference to an image, on a particular page. 
@@ -134,7 +133,7 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	//-------------
 	// GET_IMG_EXT_FROM_URL
 
-	img_ext_str, gf_err := gf_images_utils.Get_image_ext_from_url(p_img_src_url_str,p_runtime_sys)
+	img_ext_str, gf_err := gf_images_core.Get_image_ext_from_url(p_img_src_url_str,p_runtime_sys)
 	if gf_err != nil {
 		t:="images_in_page__get_img_extension__failed"
 		m:="failed to get file extension of image with img_src - "+p_img_src_url_str

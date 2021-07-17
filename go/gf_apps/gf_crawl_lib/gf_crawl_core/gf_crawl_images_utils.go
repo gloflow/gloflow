@@ -22,12 +22,12 @@ package gf_crawl_core
 import (
 	"os"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
 func image__cleanup(p_img_local_file_path_str string,
-	p_img_thumbs  *gf_images_utils.Gf_image_thumbs,
+	p_img_thumbs  *gf_images_core.Gf_image_thumbs,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__cleanup()")
 

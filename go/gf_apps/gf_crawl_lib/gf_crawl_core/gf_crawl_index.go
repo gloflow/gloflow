@@ -23,7 +23,6 @@ import (
 	"time"
 	"fmt"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/olivere/elastic"
 	"github.com/gloflow/gloflow/go/gf_core"

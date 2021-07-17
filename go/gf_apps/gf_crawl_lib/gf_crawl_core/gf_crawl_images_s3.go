@@ -24,9 +24,8 @@ import (
 	"context"
 	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson"
-	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
@@ -93,7 +92,7 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 //--------------------------------------------------
 func image_s3__upload(p_image *Gf_crawler_page_image,
 	p_local_image_file_path_str string,
-	p_image_thumbs              *gf_images_utils.Gf_image_thumbs,
+	p_image_thumbs              *gf_images_core.Gf_image_thumbs,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -103,7 +102,7 @@ func image_s3__upload(p_image *Gf_crawler_page_image,
 	yellow := color.New(color.FgYellow, color.BgBlack).SprintFunc()
 	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"), yellow(p_image.Id_str), yellow(p_local_image_file_path_str))
 
-	gf_err := gf_images_utils.S3__store_gf_image(p_local_image_file_path_str,
+	gf_err := gf_images_core.S3__store_gf_image(p_local_image_file_path_str,
 		p_image_thumbs,
 		p_s3_bucket_name_str,
 		p_runtime.S3_info,

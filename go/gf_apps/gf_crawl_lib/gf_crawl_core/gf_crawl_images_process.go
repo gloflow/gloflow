@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -92,14 +92,14 @@ func images__stage__process_images(p_crawler_name_str string,
 
 //--------------------------------------------------
 func image__process(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str                 gf_images_utils.Gf_image_id,
+	p_gf_image_id_str                 gf_images_core.Gf_image_id,
 	p_local_image_file_path_str       string,
 	p_images_store_local_dir_path_str string,
 
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_runtime                         *Gf_crawler_runtime,
-	p_runtime_sys                     *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, *gf_core.Gf_error) {
+	p_runtime_sys                     *gf_core.Runtime_sys) (*gf_images_core.Gf_image, *gf_images_core.Gf_image_thumbs, *gf_core.Gf_error) {
 	//p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_process.image__process()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -179,10 +179,10 @@ func image__process(p_page_img *Gf_crawler_page_image,
 
 //--------------------------------------------------
 func image__process_bitmap(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str               gf_images_utils.Gf_image_id,
+	p_gf_image_id_str               gf_images_core.Gf_image_id,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
-	p_runtime_sys                   *gf_core.Runtime_sys) (*gf_images_utils.Gf_image, *gf_images_utils.Gf_image_thumbs, *gf_core.Gf_error) {
+	p_runtime_sys                   *gf_core.Runtime_sys) (*gf_images_core.Gf_image, *gf_images_core.Gf_image_thumbs, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
@@ -195,7 +195,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//-------------------
-	img_width_int, img_height_int, gf_err := gf_images_utils.Get_image_dimensions__from_filepath(p_local_image_file_path_str, p_runtime_sys)
+	img_width_int, img_height_int, gf_err := gf_images_core.Get_image_dimensions__from_filepath(p_local_image_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
@@ -212,9 +212,9 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 		// TRANSFORM DOWNLOADED IMAGE - CREATE THUMBS, SAVE TO DB, AND UPLOAD TO AWS_S3
 
 		// IMPORTANT!! - a new gf_image ID is created if an external ID is not supplied
-		var gf_image_id_str gf_images_utils.Gf_image_id
+		var gf_image_id_str gf_images_core.Gf_image_id
 		if p_gf_image_id_str == "" {
-			new_gf_image_id_str, gf_err := gf_images_utils.Image_ID__create_from_url(p_page_img.Url_str, p_runtime_sys)
+			new_gf_image_id_str, gf_err := gf_images_core.Image_ID__create_from_url(p_page_img.Url_str, p_runtime_sys)
 			if gf_err != nil {
 				return nil, nil, gf_err
 			}
@@ -228,7 +228,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 		
 		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
 		//               also creates gf_image thumbnails as local files.
-		gf_image, gf_image_thumbs, gf_err := gf_images_utils.Transform_image(gf_image_id_str,
+		gf_image, gf_image_thumbs, gf_err := gf_images_core.Transform_image(gf_image_id_str,
 			image_client_type_str,
 			image_flows_names_lst,
 			image_origin_url_str,

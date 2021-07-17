@@ -24,7 +24,7 @@ import (
 	"time"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
@@ -129,7 +129,7 @@ func image__download(p_image *Gf_crawler_page_image,
 	//-------------------
 	// DOWNLOAD
 	// IMPORTANT!! - this creates a new gf_images ID, from the image URL
-	local_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Fetcher__get_extern_image(p_image.Url_str,
+	local_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.Fetcher__get_extern_image(p_image.Url_str,
 		p_images_store_local_dir_path_str,
 
 		// IMPORTANT!! - dont add any time delay, instead download images as fast as possible

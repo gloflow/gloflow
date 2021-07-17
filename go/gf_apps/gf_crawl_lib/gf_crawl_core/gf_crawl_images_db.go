@@ -24,9 +24,8 @@ import (
 	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	// "github.com/globalsign/mgo/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
@@ -331,7 +330,7 @@ func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, p_runtime_sys 
 }
 
 //--------------------------------------------------
-func image__db_set_gf_image_id(p_gf_image_id_str gf_images_utils.Gf_image_id,
+func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_image       *Gf_crawler_page_image,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
@@ -363,7 +362,7 @@ func image__db_set_gf_image_id(p_gf_image_id_str gf_images_utils.Gf_image_id,
 
 //--------------------------------------------------
 func image__db_update_after_process(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str gf_images_utils.Gf_image_id,
+	p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_update_after_process()")
 

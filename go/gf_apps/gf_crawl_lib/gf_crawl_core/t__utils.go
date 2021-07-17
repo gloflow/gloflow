@@ -29,7 +29,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //-------------------------------------------------
@@ -173,13 +173,13 @@ func t__create_test_image_ADTs(p_test *testing.T,
 func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
 	p_test__local_image_file_path_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, gf_images_utils.Gf_image_id) {
+	p_runtime_sys                     *gf_core.Runtime_sys) (string, gf_images_core.Gf_image_id) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
 
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
 	// IMPORTANT!! - creates a new gf_image ID from the image URL
-	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_utils.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
+	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
 		test__local_image_dir_path_str,
 		p_runtime_sys)
 	if gf_err != nil {

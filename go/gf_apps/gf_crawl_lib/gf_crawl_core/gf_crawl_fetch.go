@@ -24,7 +24,6 @@ import (
 	"time"
 	"net/url"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/PuerkitoBio/goquery"

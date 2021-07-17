@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
@@ -83,7 +83,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	t__cleanup__test_page_imgs(test_config.test__crawler_name_str, runtime_sys)
 
-	//IMPORTANT!! - this function creates, by calling gf_images_utils library from gf_images app, creates
+	//IMPORTANT!! - this function creates, by calling gf_images_core library from gf_images app, creates
 	//              a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 
 	test__local_gf_image_file_path_str, test__gf_image_id_str := t__create_test_gf_image_named_image_file(p_test,
 		test_config.test__img_src_url_str,
@@ -169,7 +169,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 //---------------------------------------------------
 func t__images__stage__process_images(p_test *testing.T,
-	p_test__gf_image_id_str              gf_images_utils.Gf_image_id,
+	p_test__gf_image_id_str              gf_images_core.Gf_image_id,
 	p_test__crawled_image                *Gf_crawler_page_image,
 	p_test__crawled_image_ref            *Gf_crawler_page_image_ref,
 	p_test__local_gf_image_file_path_str string,
@@ -235,7 +235,7 @@ func t__images__stage__process_images(p_test *testing.T,
 		assert.Equal(p_test, page_img__pinfo.page_img.S3_stored_bool, false)
 
 		if page_img__pinfo.thumbs == nil {
-			p_test.Errorf("page_img.thumbs has not been set to a gf_images_utils.Gf_image_thumbs instance pointer")
+			p_test.Errorf("page_img.thumbs has not been set to a gf_images_core.Gf_image_thumbs instance pointer")
 			panic(1)
 			return nil
 		}

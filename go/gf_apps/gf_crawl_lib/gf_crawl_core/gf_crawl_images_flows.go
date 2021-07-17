@@ -27,7 +27,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_utils"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //--------------------------------------------------
@@ -96,7 +96,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		//               so we need to upload the new image to that gf_images S3 bucket as well.
 		// FIX!! - too much uploading, very inefficient, figure out a better way!
 
-		gf_err = gf_images_utils.S3__store_gf_image(local_image_file_path_str,
+		gf_err = gf_images_core.S3__store_gf_image(local_image_file_path_str,
 			gf_image_thumbs,
 			p_gf_images_s3_bucket_name_str,
 			p_runtime.S3_info,
@@ -106,7 +106,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		}
 
 		// IMPORTANT!! - gf_images service has its own dedicate S3 bucket, which is different from the gf_crawl bucket.
-		//               gf_images_utils.Trans__s3_store_image() uploads the image and its thumbs to S3, 
+		//               gf_images_core.Trans__s3_store_image() uploads the image and its thumbs to S3, 
 		//               to indicate that we dont need to upload it later again.
 		gf_images_s3_bucket__upload_complete__bool = true
 
@@ -143,7 +143,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(source_gf_crawl_s3_bucket_str), cyan(p_gf_images_s3_bucket_name_str))
 
-		gf_image, gf_err := gf_images_utils.DB__get_image(gf_image_id_str, p_runtime_sys)
+		gf_image, gf_err := gf_images_core.DB__get_image(gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -155,8 +155,8 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		original_file_s3_path_str                                      := gf_images_utils.S3__get_image_original_file_s3_filepath(gf_image, p_runtime_sys)
-		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_utils.S3__get_image_thumbs_s3_filepaths(gf_image, p_runtime_sys)
+		original_file_s3_path_str                                      := gf_images_core.S3__get_image_original_file_s3_filepath(gf_image, p_runtime_sys)
+		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_core.S3__get_image_thumbs_s3_filepaths(gf_image, p_runtime_sys)
 
 		fmt.Printf("original_file_s3_path_str - %s\n", original_file_s3_path_str)
 		fmt.Printf("t_small_s3_path_str       - %s\n", t_small_s3_path_str)
