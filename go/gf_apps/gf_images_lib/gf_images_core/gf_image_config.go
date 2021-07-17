@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"io/ioutil"
@@ -75,7 +75,7 @@ func Config__get(p_config_path_str string,
 		gf_err := gf_core.Error__create("failed to read YAML config for gf_images",
 			"file_read_error",
 			map[string]interface{}{"config_path": p_config_path_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -87,7 +87,7 @@ func Config__get(p_config_path_str string,
 		gf_err := gf_core.Error__create("failed to parse YAML config for gf_images",
 			"yaml_decode_error",
 			map[string]interface{}{"config_path": p_config_path_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 

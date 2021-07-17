@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -55,7 +55,7 @@ func DB__put_image(p_image *Gf_image,
 		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"image_id_str": p_image.Id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return gf_err
 	}*/
 
@@ -83,14 +83,14 @@ func DB__get_image(p_image_id_str Gf_image_id,
 			gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 				"mongodb_not_found_error",
 				map[string]interface{}{"image_id_str": p_image_id_str,},
-				err, "gf_images_utils", p_runtime_sys)
+				err, "gf_images_core", p_runtime_sys)
 			return nil, gf_err
 		}
 		
 		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -104,7 +104,7 @@ func DB__get_image(p_image_id_str Gf_image_id,
 		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -112,7 +112,7 @@ func DB__get_image(p_image_id_str Gf_image_id,
 		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}*/
 	
@@ -130,7 +130,7 @@ func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys)
 		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return false, gf_err
 	}
 
@@ -139,7 +139,7 @@ func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys)
 		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return false, gf_err
 	}*/
 
@@ -207,11 +207,11 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 				"max_random_cursor_position_int": p_max_random_cursor_position_int,
 				"flow_name_str":                  p_flow_name_str,
 			},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
-	/*var imgs_lst []*gf_images_utils.Gf_image
+	/*var imgs_lst []*gf_images_core.Gf_image
 	err := p_runtime_sys.Mongo_coll.Find(bson.M{
 			"t":                    "img",
 			"creation_unix_time_f": bson.M{"$exists": true,},
@@ -236,7 +236,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 				"max_random_cursor_position_int": p_max_random_cursor_position_int,
 				"flow_name_str":                  p_flow_name_str,
 			},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}*/
 

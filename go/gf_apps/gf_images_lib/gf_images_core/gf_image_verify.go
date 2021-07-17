@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -63,7 +63,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image title_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil,gf_err
 	}
 
@@ -78,7 +78,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 				"image_info_map":           p_image_info_map,
 				"max_title_characters_int": max_title_characters_int,
 			},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -89,7 +89,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image image_client_type_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 	
@@ -102,7 +102,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image format_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil,gf_err
 	}
 	
@@ -116,7 +116,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 				"title_str":             title_str,
 				"lower_case_format_str": lower_case_format_str,
 			},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -127,7 +127,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image width_int not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -135,7 +135,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image height_int not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -155,7 +155,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image flows_names_lst not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -168,7 +168,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image origin_url_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -179,7 +179,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		gf_err := gf_core.Error__create("image origin_page_url_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"image_info_map":p_image_info_map,},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 

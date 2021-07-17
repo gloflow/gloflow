@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -87,7 +87,7 @@ func Fetcher__get_extern_image(p_image_url_str string,
 		gf_err := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
 			"file_missing_error",
 			map[string]interface{}{"new_image_local_file_path_str": new_image_local_file_path_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", "", gf_err
 	}
 
@@ -158,7 +158,7 @@ func Download_file(p_image_url_str string,
 				"local_image_file_path_str": p_local_image_file_path_str,
 				"status_code_int":           gf_http_fetch.Status_code_int,
 			},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -178,7 +178,7 @@ func Download_file(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to create local file for fetched image",
 			"file_create_error",
 			map[string]interface{}{"local_image_file_path_str": p_local_image_file_path_str,},
-			c_err, "gf_images_utils", p_runtime_sys)
+			c_err, "gf_images_core", p_runtime_sys)
 		return gf_err
 	}
 
@@ -190,7 +190,7 @@ func Download_file(p_image_url_str string,
 				"local_image_file_path_str": p_local_image_file_path_str,
 				"image_url_str":             p_image_url_str,
 			},
-			cp_err, "gf_images_utils", p_runtime_sys)
+			cp_err, "gf_images_core", p_runtime_sys)
 		return gf_err
 	}
 	

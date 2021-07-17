@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -69,7 +69,7 @@ func Image__load_file(p_image_local_file_path_str string,
 			map[string]interface{}{
 				"local_image_file_path_str": p_image_local_file_path_str,
 			},
-			fs_err, "gf_images_utils", p_runtime_sys)
+			fs_err, "gf_images_core", p_runtime_sys)
 		return nil, gf_err
 	}
 	defer file.Close()
@@ -86,7 +86,7 @@ func Image__load_file(p_image_local_file_path_str string,
 				map[string]interface{}{
 					"local_image_file_path_str": p_image_local_file_path_str,
 				},
-				img_err, "gf_images_utils", p_runtime_sys)
+				img_err, "gf_images_core", p_runtime_sys)
 			return nil, gf_err
 		}
 	} else {
@@ -98,7 +98,7 @@ func Image__load_file(p_image_local_file_path_str string,
 				map[string]interface{}{
 					"local_image_file_path_str": p_image_local_file_path_str,
 				},
-				img_err, "gf_images_utils", p_runtime_sys)
+				img_err, "gf_images_core", p_runtime_sys)
 			return nil, gf_err
 		}
 	}
@@ -118,7 +118,7 @@ func Get_image_original_filename_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to parse image_url to get image filename",
 			"url_parse_error",
 			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 
@@ -168,7 +168,7 @@ func Get_image_title_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to parse image_url to get image title",
 			"url_parse_error",
 			map[string]interface{}{"image_url_str":p_image_url_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 	image_path_str      := url.Path
@@ -199,7 +199,7 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
 		gf_err := gf_core.Error__create("failed to open a local image file to get its dimensions",
 			"file_open_error",
 			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
-			fs_err, "gf_images_utils", p_runtime_sys)
+			fs_err, "gf_images_core", p_runtime_sys)
 		return 0, 0, gf_err
 	}
 	defer file.Close()
@@ -237,7 +237,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 			gf_err := gf_core.Error__create("failed to decode config for JPEG image file to get image dimensions",
 				"image_decoding_config_error",
 				map[string]interface{}{"img_extension_str": p_img_extension_str,},
-				config_err, "gf_images_utils", p_runtime_sys)
+				config_err, "gf_images_core", p_runtime_sys)
 			return 0, 0, gf_err
 		}
 
@@ -249,7 +249,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 			gf_err := gf_core.Error__create("failed to decode config for PNG image file to get image dimensions",
 				"image_decoding_config_error",
 				map[string]interface{}{"img_extension_str": p_img_extension_str,},
-				config_err, "gf_images_utils", p_runtime_sys)
+				config_err, "gf_images_core", p_runtime_sys)
 			return 0, 0, gf_err
 		}
 
@@ -261,7 +261,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 			gf_err := gf_core.Error__create("failed to decode config for image file to get image dimensions",
 				"image_decoding_config_error",
 				map[string]interface{}{"img_extension_str":p_img_extension_str,},
-				config_err, "gf_images_utils", p_runtime_sys)
+				config_err, "gf_images_core", p_runtime_sys)
 			return 0, 0, gf_err
 		}
 	}
@@ -288,7 +288,7 @@ func Get_image_ext_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to parse image_url to get image extension",
 			"url_parse_error",
 			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 
@@ -306,7 +306,7 @@ func Get_image_ext_from_url(p_image_url_str string,
 				"image_url_str": p_image_url_str,
 				"ext_str":       ext_str,
 			},
-			nil, "gf_images_utils", p_runtime_sys)
+			nil, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 

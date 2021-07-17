@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create("failed to parse image_url to create image ID",
 			"url_parse_error",
 			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 	
@@ -64,7 +64,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 		gf_err := gf_core.Error__create(usr_msg_str,
 			"verify__invalid_image_extension_error",
 			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
 	//-------------

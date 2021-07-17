@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_utils
+package gf_images_core
 
 import (
 	"fmt"
@@ -109,7 +109,7 @@ func Trans__process_image(p_image_id_str Gf_image_id,
 	//--------------------------
 	/* //DOMINANT COLOR DETERMINATION
 	//it"s computed only for non-gif"s
-	dominant_color_hex_str := gf_images_utils_graphic.get_dominant_image_color(p_image_local_file_path_str,p_log_fun)*/
+	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(p_image_local_file_path_str,p_log_fun)*/
 
 	//--------------------------
 	image_width_int, image_height_int := Get_image_dimensions__from_image(img, p_runtime_sys)
@@ -175,7 +175,7 @@ func resize_image(p_img image.Image,
 		gf_err := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
 			map[string]interface{}{"image_output_path_str": p_image_output_path_str,},
-			err, "gf_images_utils", p_runtime_sys)
+			err, "gf_images_core", p_runtime_sys)
 		return gf_err
 	}
 	defer out.Close()
