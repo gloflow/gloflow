@@ -28,7 +28,7 @@ import (
 
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
 
 	//---------------------
@@ -39,10 +39,19 @@ func init_handlers(p_templates_paths_map map[string]string,
 		return gf_err
 	}
 	
+
+	//---------------------
+	// METRICS
+	handlers_endpoints_lst := []string{
+		"/landing/main",
+		"/landing/register_invite_email",
+	}
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+
 	//---------------------
 	// MAIN
-	gf_rpc_lib.Create_handler__http("/landing/main/",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+	gf_rpc_lib.Create_handler__http_with_metrics("/landing/main/",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
 
@@ -68,18 +77,20 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------
 	// REGISTER_INVITE_EMAIL
-	gf_rpc_lib.Create_handler__http("/landing/register_invite_email",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+	gf_rpc_lib.Create_handler__http_with_metrics("/landing/register_invite_email",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			
 			
 			data_map := map[string]interface{}{}
 			return data_map, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------

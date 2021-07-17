@@ -45,10 +45,22 @@ func init_handlers(p_templates_paths_map map[string]string,
 	}
 
 	//---------------------
+	// METRICS
+	handlers_endpoints_lst := []string{
+		"/v1/bookmarks/create",
+		"/v1/bookmarks/get",
+		"/v1/tags/notes/create",
+		"/v1/tags/notes/get",
+		"/v1/tags/create",
+		"/v1/tags/objects",
+	}
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	
+	//---------------------
 	// BOOKMARKS
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/bookmarks/create",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/bookmarks/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
@@ -86,11 +98,12 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/bookmarks/get",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/bookmarks/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
@@ -142,13 +155,14 @@ func init_handlers(p_templates_paths_map map[string]string,
 			return nil, nil
 
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------
 	// NOTES
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http("/v1/tags/notes/create",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/notes/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 			if p_req.Method == "POST" {
 				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -179,12 +193,13 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------
 	// GET_NOTES
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/notes/get",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/notes/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
@@ -207,6 +222,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------
@@ -214,7 +230,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADD_TAGS
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/create",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 		
 
@@ -247,12 +263,13 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 	
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
-	gf_rpc_lib.Create_handler__http("/v1/tags/objects",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/objects",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
@@ -285,6 +302,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		metrics,
 		p_runtime_sys)
 
 	//---------------------
