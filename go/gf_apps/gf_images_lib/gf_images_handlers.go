@@ -41,7 +41,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
-		"/images/d",
+		"/images/d/",
 		"/images/v1/upload_init",
 		"/images/v1/upload_complete",
 		"/images/c",
