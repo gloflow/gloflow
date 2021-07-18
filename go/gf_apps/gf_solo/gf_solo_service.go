@@ -147,12 +147,14 @@ func service__run(p_config *GF_config,
 		panic(err)
 	}
 
-	// SERVER_INIT
-	gf_rpc_lib.Server__init(port_int)
-
-
 	// METRICS
 	port_metrics_int := 9110
 	gf_core.Metrics__init("/metrics", port_metrics_int)
+
+	// SERVER_INIT - blocking
+	gf_rpc_lib.Server__init(port_int)
+
+
+	
 	
 }
