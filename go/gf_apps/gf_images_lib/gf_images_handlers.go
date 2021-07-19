@@ -264,6 +264,14 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 		p_runtime_sys)
 
 	//---------------------
-
+	// HEALTH
+	gf_rpc_lib.Create_handler__http_with_metrics("/images/v1/healthz",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			return nil, nil
+		},
+		nil, // no metrics for health endpoint
+		p_runtime_sys)
+	
+	//---------------------
 	return nil
 }
