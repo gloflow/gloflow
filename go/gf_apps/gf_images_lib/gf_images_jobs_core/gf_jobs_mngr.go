@@ -52,6 +52,12 @@ type GF_job_running struct {
 	job_updates_ch chan Job_update_msg `bson:"-"`
 }
 
+type GF_job_runtime struct {
+	job_id_str          string
+	job_client_type_str string
+	job_updates_ch      chan Job_update_msg
+}
+
 //------------------------
 // IMAGES_TO_PROCESS
 type GF_image_extern_to_process struct {
@@ -158,6 +164,9 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 	//               service initialization time
 	go func() {
 		
+		// METRICS
+		metrics := Metrics__create()
+
 		running_jobs_map := map[string]chan Job_update_msg{}
 
 		// listen to messages
@@ -174,6 +183,9 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				case "start_job_local_imgs":
 
 					
+					// METRICS
+					metrics.Cmd__start_job_local_imgs__count.Inc()
+
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
@@ -181,6 +193,12 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					if gf_err != nil {
 						continue
 					}
+
+					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
+					running_jobs_map[running_job.Id_str] = job_msg.Job_updates_ch
+
+					// SEND_MSG
+					job_msg.Job_init_ch <- running_job
 
 					//------------------------
 					// S3_BUCKETS
@@ -201,18 +219,19 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					job_run__runtime := &GF_job_run__runtime{
+					job_runtime := &GF_job_runtime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
-						s3_info:             p_s3_info,
 					}
 
 					run_job_gf_errs_lst := run_job__local_imgs(job_msg.Images_local_to_process_lst,
+						job_msg.Flows_names_lst,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 						target_s3_bucket_name_str,
-						job_run__runtime,
+						p_s3_info,
+						job_runtime,
 						p_runtime_sys)
 					
 					//------------------------
@@ -233,6 +252,9 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				// START_JOB_TRANSFORM_IMAGES
 				case "start_job_transform_imgs":
 
+					// METRICS
+					metrics.Cmd__start_job_transform_imgs__count.Inc()
+
 					/*// RUST
 					// FIX!! - this just runs Rust job code for testing.
 					//         pass in proper job_cmd argument.
@@ -251,6 +273,9 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				// START_JOB_UPLOADED_IMAGES
 				case "start_job_uploaded_imgs":
 					
+					// METRICS
+					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
+
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
@@ -277,11 +302,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					job_run__runtime := &GF_job_run__runtime{
+					job_runtime := &GF_job_runtime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
-						s3_info:             p_s3_info,
 					}
 
 					run_job_gf_errs_lst := run_job__uploaded_imgs(job_msg.Images_uploaded_to_process_lst,
@@ -290,7 +314,8 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						p_images_thumbnails_store_local_dir_path_str,
 						source_s3_bucket_name_str,
 						target_s3_bucket_name_str,
-						job_run__runtime,
+						p_s3_info,
+						job_runtime,
 						p_runtime_sys)
 					
 					//------------------------
@@ -317,6 +342,9 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 				// FIX!! - "start_job" needs to be "start_job_extern_imgs", update in all clients.
 				case "start_job":
 
+					// METRICS
+					metrics.Cmd__start_job_extern_imgs__count.Inc()
+
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
@@ -340,11 +368,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					job_run__runtime := &GF_job_run__runtime{
+					job_runtime := &GF_job_runtime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
-						s3_info:             p_s3_info,
 					}
 
 					run_job_gf_errs_lst := run_job__extern_imgs(job_msg.Images_extern_to_process_lst,
@@ -354,7 +381,8 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 						p_media_domain_str,
 						s3_bucket_name_str,
-						job_run__runtime,
+						p_s3_info,
+						job_runtime,
 						p_runtime_sys)
 					
 					//------------------------

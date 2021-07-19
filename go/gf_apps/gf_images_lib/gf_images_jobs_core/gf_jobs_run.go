@@ -28,21 +28,22 @@ import (
 )
 
 //-------------------------------------------------
-type GF_job_run__runtime struct {
+/*type GF_job_run__runtime struct {
 	job_id_str          string
 	job_client_type_str string
 	job_updates_ch      chan Job_update_msg
 	s3_info             *gf_core.GF_s3_info
-}
+}*/
 
 //-------------------------------------------------
 func run_job__local_imgs(p_images_to_process_lst []GF_image_local_to_process,
-
+	p_flows_names_lst                            []string,
 	p_images_store_local_dir_path_str            string,
 	p_images_thumbnails_store_local_dir_path_str string,
 
 	p_target_s3_bucket_name_str string, // S3 bucket to which processed images are stored in after this pipeline processing
-	p_job_run_runtime           *GF_job_run__runtime,
+	p_s3_info                   *gf_core.GF_s3_info,
+	p_job_runtime               *GF_job_runtime,
 	p_runtime_sys               *gf_core.Runtime_sys) []*gf_core.GF_error {
 	
 
@@ -53,6 +54,15 @@ func run_job__local_imgs(p_images_to_process_lst []GF_image_local_to_process,
 		
 
 		fmt.Println(image_to_process)
+
+
+
+		gf_err := job__pipeline__process_image_local(p_flows_names_lst,
+			p_s3_info,
+			p_runtime_sys)
+		if gf_err != nil {
+			gf_errors_lst = append(gf_errors_lst, gf_err)
+		}
 	}
 
 	return gf_errors_lst
@@ -65,7 +75,8 @@ func run_job__uploaded_imgs(p_images_to_process_lst []GF_image_uploaded_to_proce
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_source_s3_bucket_name_str                  string, // S3_bucket to which the image was uploaded to
 	p_target_s3_bucket_name_str                  string, // S3 bucket to which processed images are stored in after this pipeline processing
-	p_job_run_runtime                            *GF_job_run__runtime,
+	p_s3_info                                    *gf_core.GF_s3_info,
+	p_job_runtime                                *GF_job_runtime,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__uploaded_imgs()")
 
@@ -82,13 +93,14 @@ func run_job__uploaded_imgs(p_images_to_process_lst []GF_image_uploaded_to_proce
 			p_images_store_local_dir_path_str,
 			p_images_thumbnails_store_local_dir_path_str,
 			p_flows_names_lst,
-			p_job_run_runtime.job_id_str,
-			p_job_run_runtime.job_client_type_str,
-			p_job_run_runtime.job_updates_ch,
+			// p_job_run_runtime.job_id_str,
+			// p_job_run_runtime.job_client_type_str,
+			// p_job_run_runtime.job_updates_ch,
 			p_source_s3_bucket_name_str,
 			p_target_s3_bucket_name_str,
-			p_job_run_runtime.s3_info,
-			job_error__send,
+			p_s3_info,
+			// job_error__send,
+			p_job_runtime,
 			p_runtime_sys)
 		if gf_err != nil {
 			gf_errors_lst = append(gf_errors_lst, gf_err)
@@ -106,7 +118,8 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_s3_bucket_name_str                         string,
-	p_job_run_runtime                            *GF_job_run__runtime,
+	p_s3_info                                    *gf_core.GF_s3_info,
+	p_job_runtime                                *GF_job_runtime,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__extern_imgs()")
 
@@ -124,8 +137,8 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 			job_error_type_str := "create_image_id_error"
 			_ = job_error__send(job_error_type_str, i_gf_err, image_source_url_str,
 				image_id_str,
-				p_job_run_runtime.job_id_str,
-				p_job_run_runtime.job_updates_ch,
+				p_job_runtime.job_id_str,
+				p_job_runtime.job_updates_ch,
 				p_runtime_sys)
 			gf_errors_lst = append(gf_errors_lst, i_gf_err)
 			continue
@@ -142,8 +155,8 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 		if ext_gf_err != nil {
 			job_error_type_str := "get_image_ext_error"
 			_ = job_error__send(job_error_type_str, ext_gf_err, image_source_url_str, image_id_str,
-				p_job_run_runtime.job_id_str,
-				p_job_run_runtime.job_updates_ch,
+				p_job_runtime.job_id_str,
+				p_job_runtime.job_updates_ch,
 				p_runtime_sys)
 			gf_errors_lst = append(gf_errors_lst, ext_gf_err)
 			continue
@@ -180,20 +193,20 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
-				p_job_run_runtime.job_client_type_str,
+				p_job_runtime.job_client_type_str,
 				flows_names_lst,
 				true, // p_create_new_db_img_bool
 
 				p_media_domain_str,
 				p_s3_bucket_name_str,
-				p_job_run_runtime.s3_info,
+				p_s3_info,
 				p_runtime_sys)
 
 			if gf_err != nil {
 				job_error_type_str := "gif_process_and_upload_error"
 				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str,
-					p_job_run_runtime.job_id_str,
-					p_job_run_runtime.job_updates_ch,
+					p_job_runtime.job_id_str,
+					p_job_runtime.job_updates_ch,
 					p_runtime_sys)
 				gf_errors_lst = append(gf_errors_lst, gf_err)
 				continue
@@ -210,19 +223,20 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				p_images_store_local_dir_path_str,
 				p_images_thumbnails_store_local_dir_path_str,
 				p_flows_names_lst,
-				p_job_run_runtime.job_id_str,
-				p_job_run_runtime.job_client_type_str,
-				p_job_run_runtime.job_updates_ch,
+				// p_job_run_runtime.job_id_str,
+				// p_job_run_runtime.job_client_type_str,
+				// p_job_run_runtime.job_updates_ch,
 				p_s3_bucket_name_str,
-				p_job_run_runtime.s3_info,
-				job_error__send,
+				p_s3_info,
+				// job_error__send,
+				p_job_runtime,
 				p_runtime_sys)
 
 			if gf_err != nil {
 				job_error_type_str := "image_process_error"
 				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str,
-					p_job_run_runtime.job_id_str,
-					p_job_run_runtime.job_updates_ch,
+					p_job_runtime.job_id_str,
+					p_job_runtime.job_updates_ch,
 					p_runtime_sys)
 				gf_errors_lst = append(gf_errors_lst, gf_err)
 				continue

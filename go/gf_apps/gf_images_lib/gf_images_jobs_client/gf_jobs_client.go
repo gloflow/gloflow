@@ -48,7 +48,7 @@ func Run_local_imgs(p_client_type_str string,
 	p_jobs_mngr_ch          gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*GF_job_expected_output, *gf_core.GF_error) {
 
-	job_cmd_str    := "start_job_uploaded_imgs"
+	job_cmd_str    := "start_job_local_imgs"
 	job_init_ch    := make(chan *gf_images_jobs_core.GF_job_running)
 	job_updates_ch := make(chan gf_images_jobs_core.Job_update_msg, 10)
 	
