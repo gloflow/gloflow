@@ -98,7 +98,7 @@ func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 
 
 	find_opts := options.Find()
-	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": 1})
+	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
 	
 	db_cursor, gf_err := gf_core.Mongo__find(bson.M{
 			"user_id_str":  p_user_id_str,
