@@ -6,3 +6,5 @@ boto3
 bs4
 colored
 delegator-py
+Pillow
+numpy
