@@ -38,7 +38,8 @@ def verify_image_info(p_image_info_map,
 	#           ID is determined if image_info_dict comes from the DB or someplace
 	#           else within the system
 	
-	id_str = p_image_info_map.get('id_str',None)
+	id_str = p_image_info_map.get('id_str', None)
+
 	#-------------------
 	#TITLE
 	

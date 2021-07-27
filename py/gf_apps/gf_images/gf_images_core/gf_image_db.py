@@ -29,15 +29,16 @@ def image_exists(p_image_id_str,
 	p_log_fun('FUN_ENTER','gf_image_db.image_exists()')
 
 	#-----------
-	#ADD!! - use redis as a cache for mongo data
+	# ADD!! - use redis as a cache for mongo data
 	if p_db_type_str == 'redis':
 		key_str = 'img:%s'%(p_image_id_str)
 		if p_db_context_map['redis_client'].exists(key_str):
 			return True
 		else:
 			return False
+
 	#-----------
-	#MONGO
+	# MONGO
 	elif p_db_type_str == 'mongo':
 		mongo_client = p_db_context_map['mongodb_client']
 		data_coll    = mongo_client[p_mongo_db_name_str][p_mongo_coll_name_str] #db/collection name
@@ -46,6 +47,7 @@ def image_exists(p_image_id_str,
 		#{"_id":1}      - only return the "_id" field
 		if data_coll.find({"id_str":p_image_id_str},{"_id":1}).limit(1).count() == 0: return False
 		else                                                                        : return True
+	
 	#-----------
 
 #---------------------------------------------------
@@ -59,7 +61,7 @@ def db_get(p_image_id_str,
 	p_log_fun('FUN_ENTER', 'gf_image_db.db_get()')
 	
 	#---------------
-	#MONGO
+	# DB
 	if p_db_type_str == 'mongo':
 		
 		#SCALING!! - image_exists() does a full query to mongo
@@ -75,6 +77,7 @@ def db_get(p_image_id_str,
 			image_info_dict     = gf_image.deserialize(raw_image_info_dict, p_log_fun)
 		else:
 			return None
+
 	#---------------
 
 	#create() - does verification and adt construction
@@ -96,7 +99,7 @@ def db_put(p_image_adt,
 	image_info_dict = gf_image.serialize(p_image_adt,
 									p_log_fun)
 	#---------------
-	#MONGO
+	# DB
 	if p_db_type_str == 'mongo':
 		mongo_client = p_db_context_map['mongodb_client']
 		data_coll    = mongo_client[p_mongo_db_name_str][p_mongo_coll_name_str]
@@ -109,8 +112,6 @@ def db_put(p_image_adt,
 	#---------------
 	
 #---------------------------------------------------	
-#CAUTION!! - this is a very expensive operation for large image DB's
-
 #->:List<:Image_ADT>
 def db_get_all(p_db_context_map,
 	p_log_fun,
