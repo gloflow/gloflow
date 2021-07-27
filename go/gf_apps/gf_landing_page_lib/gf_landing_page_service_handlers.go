@@ -78,6 +78,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			return nil, nil
 		},
 		metrics,
+		true, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------
@@ -91,6 +92,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			return data_map, nil
 		},
 		metrics,
+		true, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------

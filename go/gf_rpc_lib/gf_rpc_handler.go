@@ -53,14 +53,17 @@ func Create_handler__http(p_path_str string,
 	Create_handler__http_with_metrics(p_path_str,
 		p_handler_fun,
 		nil,
+		false,
 		p_runtime_sys)
 }
 
 //-------------------------------------------------
 func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun  handler_http,
-	p_metrics      *GF_metrics,
-	p_runtime_sys  *gf_core.Runtime_sys) {
+
+	p_metrics        *GF_metrics,
+	p_store_run_bool bool,
+	p_runtime_sys    *gf_core.Runtime_sys) {
 
 	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
@@ -144,9 +147,11 @@ func Create_handler__http_with_metrics(p_path_str string,
 
 		end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-		go func() {
-			Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
-		}()
+		if p_store_run_bool {
+			go func() {
+				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
 	})
 }
 
@@ -181,7 +186,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	}
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := "gf_rpc_handler_run" // p_runtime_sys.Mongo_coll.Name()
 
 	gf_err := gf_core.Mongo__insert(run,
 		coll_name_str,

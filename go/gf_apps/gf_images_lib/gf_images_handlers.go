@@ -98,6 +98,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 			return nil, nil
 		},
 		metrics,
+		true, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------
@@ -171,6 +172,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 			return nil, nil
 		},
 		metrics,
+		true, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------
@@ -226,6 +228,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 			return nil, nil
 		},
 		metrics,
+		true, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------
@@ -261,6 +264,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 			return nil, nil
 		},
 		metrics,
+		false, // p_store_run_bool
 		p_runtime_sys)
 
 	//---------------------
@@ -269,7 +273,8 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
-		nil, // no metrics for health endpoint
+		nil,   // no metrics for health endpoint
+		false, // p_store_run_bool
 		p_runtime_sys)
 	
 	//---------------------
