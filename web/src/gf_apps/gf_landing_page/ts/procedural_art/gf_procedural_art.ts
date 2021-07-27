@@ -29,9 +29,9 @@ export function init(p_log_fun) {
 	const canvas_height_int = $('#randomized_art').height();
 
 	const sketches_lst = [
-		()=>{
+		/*()=>{
 			gf_evolved_squares.run(canvas_width_int, canvas_height_int);
-		},
+		},*/
 		()=>{
 			draw_genetic_squares(canvas_width_int,
 				canvas_height_int,
@@ -44,7 +44,13 @@ export function init(p_log_fun) {
 		}
 	]
 	
-	sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
+
+	// call random visualization
+	// sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
+
+
+	// gf_evolved_squares.run(canvas_width_int, canvas_height_int);
+	
 }
 
 //-------------------------------------------------
