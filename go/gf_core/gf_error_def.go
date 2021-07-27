@@ -255,6 +255,9 @@ func error__get_defs() map[string]Error_def {
 		"mongodb_session_abort_error": Error_def{
 			Descr_str:"failed to abort a mongodb session",
 		},
+		"mongodb_get_collection_names_error": Error_def{
+			Descr_str:"failed to get all mongodb collection names",
+		},
 		
 		//---------------
 		// ELASTICSEARCH

@@ -29,7 +29,7 @@ import (
 	"os" 
 	"time"
 	"strings"
-	"encoding/json"
+	// "encoding/json"
 	"os/exec"
 	"context"
 	"crypto/tls"
@@ -47,11 +47,11 @@ import (
 //-------------------------------------------------
 // RUN - CamelCase name, for use by external projects.
 
-func MongoTXrun(p_tx_fun func() *Gf_error,
+func MongoTXrun(p_tx_fun func() *GF_error,
 	p_meta_map     map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
 	p_ctx          context.Context,
-	p_runtime_sys  *Runtime_sys) (mongo.Session, *Gf_error) {
+	p_runtime_sys  *Runtime_sys) (mongo.Session, *GF_error) {
 	
 	return Mongo__tx_run(p_tx_fun,
 		p_meta_map,
@@ -62,11 +62,11 @@ func MongoTXrun(p_tx_fun func() *Gf_error,
 
 //-------------------------------------------------
 // RUN
-func Mongo__tx_run(p_tx_fun func() *Gf_error,
+func Mongo__tx_run(p_tx_fun func() *GF_error,
 	p_meta_map     map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
 	p_ctx          context.Context,
-	p_runtime_sys  *Runtime_sys) (mongo.Session, *Gf_error) {
+	p_runtime_sys  *Runtime_sys) (mongo.Session, *GF_error) {
 	
 	// TX_INIT
 	txSession, txOptions, gf_err := Mongo__tx_init(p_mongo_client,
@@ -123,7 +123,7 @@ func Mongo__tx_run(p_tx_fun func() *Gf_error,
 // INIT
 func Mongo__tx_init(p_mongo_client *mongo.Client,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_runtime_sys *Runtime_sys) (mongo.Session, *options.TransactionOptions, *Gf_error) {
+	p_runtime_sys *Runtime_sys) (mongo.Session, *options.TransactionOptions, *GF_error) {
 
 
 
@@ -152,7 +152,7 @@ func MongoCount(p_query bson.M,
 	p_meta_map            map[string]interface{},
 	p_coll                *mongo.Collection,
 	p_ctx                 context.Context,
-	p_runtime_sys         *Runtime_sys) (int64, *Gf_error) {
+	p_runtime_sys         *Runtime_sys) (int64, *GF_error) {
 
 	return Mongo__count(p_query, p_meta_map, p_coll, p_ctx, p_runtime_sys)
 }
@@ -161,7 +161,7 @@ func Mongo__count(p_query bson.M,
 	p_meta_map            map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
 	p_ctx                 context.Context,
-	p_runtime_sys         *Runtime_sys) (int64, *Gf_error) {
+	p_runtime_sys         *Runtime_sys) (int64, *GF_error) {
 
 	// FIX!! - externalize this max_time value to some config.
 	opts := options.Count().SetMaxTime(5 * time.Second)
@@ -184,7 +184,7 @@ func MongoFindLatest(p_query bson.M,
 	p_meta_map            map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
 	p_ctx                 context.Context,
-	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *Gf_error) {
+	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *GF_error) {
 
 	return Mongo__find_latest(p_query,
 		p_time_field_name_str,
@@ -201,7 +201,7 @@ func Mongo__find_latest(p_query bson.M,
 	p_meta_map            map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
 	p_ctx                 context.Context,
-	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *Gf_error) {
+	p_runtime_sys         *Runtime_sys) (map[string]interface{}, *GF_error) {
 	
 
 	find_opts := options.Find()
@@ -248,7 +248,7 @@ func MongoFind(p_query bson.M,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
 	p_coll        *mongo.Collection,
 	p_ctx         context.Context,
-	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *Gf_error) {
+	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *GF_error) {
 
 	return Mongo__find(p_query,
 		p_opts,
@@ -264,7 +264,7 @@ func Mongo__find(p_query bson.M,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
 	p_coll        *mongo.Collection,
 	p_ctx         context.Context,
-	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *Gf_error) {
+	p_runtime_sys *Runtime_sys) (*mongo.Cursor, *GF_error) {
 
 	cur, err := p_coll.Find(p_ctx, p_query, p_opts)
 	if err != nil {
@@ -293,7 +293,7 @@ func Mongo__upsert(p_query bson.M,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
 	p_coll        *mongo.Collection,
 	p_ctx         context.Context,
-	p_runtime_sys *Runtime_sys) *Gf_error {
+	p_runtime_sys *Runtime_sys) *GF_error {
 
 
 	_, err := p_coll.UpdateOne(p_ctx, p_query, bson.M{"$set": p_record,},
@@ -322,7 +322,7 @@ func Mongo__insert_bulk(p_ids_lst []string,
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op 
 	p_ctx           context.Context,
-	p_runtime_sys   *Runtime_sys) *Gf_error {
+	p_runtime_sys   *Runtime_sys) *GF_error {
 
 	models := []mongo.WriteModel{}
 	for i, id_str := range p_ids_lst {
@@ -365,7 +365,7 @@ func Mongo__insert(p_record interface{},
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op 
 	p_ctx           context.Context,
-	p_runtime_sys   *Runtime_sys) *Gf_error {
+	p_runtime_sys   *Runtime_sys) *GF_error {
 
 	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(p_ctx, p_record)
 	if err != nil {
@@ -384,7 +384,7 @@ func Mongo__insert(p_record interface{},
 // ENSURE_INDEX
 func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
 	p_coll_name_str string,
-	p_runtime_sys   *Runtime_sys) ([]string, *Gf_error) {
+	p_runtime_sys   *Runtime_sys) ([]string, *GF_error) {
 
 	models := []mongo.IndexModel{}
 	for _, index_keys_lst := range p_indexes_keys_lst {
@@ -454,13 +454,38 @@ func Mongo__ensure_index(p_indexes_keys_lst [][]string,
 }
 
 //--------------------------------------------------------------------
+// COLLECTIONS
+//--------------------------------------------------------------------
+func Mongo__coll_exists(p_coll_name_str string,
+	p_ctx         context.Context,
+	p_runtime_sys *Runtime_sys) (bool, *GF_error) {
+
+	coll_names_lst, err := p_runtime_sys.Mongo_db.ListCollectionNames(p_ctx, bson.D{})
+	if err != nil {
+		gf_err := Error__create("failed to get a list of all collection names to check if the given collection exists",
+			"mongodb_get_collection_names_error",
+			map[string]interface{}{
+				"coll_name_str": p_coll_name_str,
+			}, err, "gf_core", p_runtime_sys)
+		return false, gf_err
+	}
+
+	for _, name_str := range coll_names_lst {
+		if name_str == p_coll_name_str {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+//--------------------------------------------------------------------
 // UTILS
 //--------------------------------------------------------------------
 // CONNECT_NEW
 func Mongo__connect_new(p_mongo_server_url_str string,
 	p_db_name_str       string,
 	p_tls_custom_config *tls.Config,
-	p_runtime_sys       *Runtime_sys) (*mongo.Database, *mongo.Client, *Gf_error) {
+	p_runtime_sys       *Runtime_sys) (*mongo.Database, *mongo.Client, *GF_error) {
 
 	connect_timeout_in_sec_int := 3
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
@@ -536,14 +561,14 @@ func Mongo__handle_error(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_runtime_sys        *Runtime_sys) *Gf_error {
+	p_runtime_sys        *Runtime_sys) *GF_error {
 
 	gf_err := Error__create_with_hook(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
-		func(p_gf_err *Gf_error) map[string]interface{} {
+		func(p_gf_err *GF_error) map[string]interface{} {
 
 			gf_error_str := fmt.Sprint(p_gf_err)
 
@@ -624,7 +649,7 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	return nil
 }
 
-//--------------------------------------------------------------------
+/*//--------------------------------------------------------------------
 func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 	p_log_fun func(string, string)) ([]map[string]interface{}, error) {
 	// p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__get_rs_members_info()")
@@ -659,4 +684,4 @@ func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
 	}
 
 	return rs_members_info_lst, nil
-}
+}*/

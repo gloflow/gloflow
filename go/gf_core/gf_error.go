@@ -326,7 +326,7 @@ func Error__init_sentry(p_sentry_endpoint_str string,
 	p_transactions__to_trace_map map[string]bool,
 	p_sample_rate_f              float64) error {
 
-
+	fmt.Println("INIT SENTRY")
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn: p_sentry_endpoint_str,
