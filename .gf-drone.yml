@@ -40,13 +40,11 @@ steps:
       - name: go_mod_cache
         path: /home/gf/go_mod_cache 
 
-
     # ENV
     environment:
 
       # cache for the "go" tool
       GOCACHE: /home/gf/go_cache
-
       GOMODCACHE: /home/gf/go_mod_cache
       
     commands:

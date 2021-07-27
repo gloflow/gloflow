@@ -58,14 +58,14 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	p_worker_inspector_host_port_str string,
 	p_ctx                            context.Context,
 	p_metrics                        *GF_metrics,
-	p_runtime                        *GF_runtime) (*gf_core.Gf_error, []*gf_core.Gf_error) {
+	p_runtime                        *GF_runtime) (*gf_core.GF_error, []*gf_core.GF_error) {
 
 
 	// IMPORTANT!! - these are "secondary" errors, that are not the primary one that causes the
 	//               function to fail and return. these secondary errors are from getting
 	//               traces from worker_inspector, and are considered recoverable and the iteration
 	//               over all TX's continues.
-	gf_errs__get_tx_trace_lst := []*gf_core.Gf_error{}
+	gf_errs__get_tx_trace_lst := []*gf_core.GF_error{}
 
 	txs_traces_lst := []*GF_eth__tx_trace{}
 	for _, tx_hash_str := range p_tx_hashes_lst {
@@ -106,7 +106,7 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.Gf_error {
+	p_runtime *GF_runtime) *gf_core.GF_error {
 
 	coll_name_str := "gf_eth_txs_traces"
 
@@ -139,7 +139,7 @@ func Eth_tx_trace__plot(p_tx_id_hex_str string,
 	p_ctx          context.Context,
 	p_py_plugins   *GF_py_plugins,
 	p_metrics      *GF_metrics,
-	p_runtime      *GF_runtime) (string, *gf_core.Gf_error) {
+	p_runtime      *GF_runtime) (string, *gf_core.GF_error) {
 
 
 
@@ -196,7 +196,7 @@ func Eth_tx_trace__plot(p_tx_id_hex_str string,
 func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.Gf_error) {
+	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.GF_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
 	p_host_port_str,
@@ -298,7 +298,7 @@ func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 //-------------------------------------------------
 func Eth_tx_trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 
 	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
 	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 
@@ -328,12 +328,31 @@ func Eth_tx_trace__get(p_tx_hash_str string,
 // metrics that are continuously calculated
 
 func Eth_tx_trace__init_continuous_metrics(p_metrics *GF_metrics,
+	p_runtime *GF_runtime) *gf_core.GF_error {
 	
-	p_runtime *GF_runtime) {
+	ctx := context.Background()
+	coll_name_str := "gf_eth_txs_traces"
+	
+	//---------------------
+	// COLL_EXISTS_CHECK - if collection doesnt exist (yet) in the DB then dont
+	//                     begin collection metrics on it (it will cause errors).
+	coll_exists_bool, gf_err := gf_core.Mongo__coll_exists(coll_name_str, ctx, p_runtime.Runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	if coll_exists_bool {
+		// FIX!! - this shouldnt just exit for users that dont have the needed collection yet.
+		//         with enough usage they will trigger a code-path that will create a collection.
+		//         so the system should detect that somehow, and yet not do this collection
+		//         Mongo__coll_exists() for every iteration.
+		return nil
+	}
+	
+	//---------------------
+
 	go func() {
 		
-		ctx := context.Background()
-		for {
+		for {	
 			//---------------------
 			// GET_BLOCKS_COUNTS
 			// blocks_count_int, gf_err := Eth_tx_trace__db__get_count(p_metrics, p_runtime)
@@ -348,14 +367,17 @@ func Eth_tx_trace__init_continuous_metrics(p_metrics *GF_metrics,
 			p_metrics.Block__db_count__gauge.Set(float64(blocks_count_int))
 
 			//---------------------
+
 			time.Sleep(60 * time.Second) // SLEEP
 		}
 	}()
+
+	return nil
 }
 
 /*//-------------------------------------------------
 func Eth_tx_trace__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs_traces"
 	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)

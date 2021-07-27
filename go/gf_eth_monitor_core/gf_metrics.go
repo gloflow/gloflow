@@ -57,7 +57,7 @@ type GF_metrics struct {
 }
 
 //-------------------------------------------------
-func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
+func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 
 
 	//---------------------------
@@ -75,12 +75,13 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 		Name: "gf_eth_monitor__http_req_num__get_peers",
 		Help: "number of HTTP requests received to get peers",
 	})
-
+	
+	// PEERS_UNIQUE_NAMES_NUM
 	gauge__peers_unique_names_num := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			// Namespace: "gf",
-			Name:      "gf_eth_monitor__peers_unique_names_num",
-			Help:      "number of unique peer names",
+			Name: "gf_eth_monitor__peers_unique_names_num",
+			Help: "number of unique peer names",
 		})
 	
 	//---------------------------
@@ -88,8 +89,8 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 	block__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			// Namespace: "gf",
-			Name:      "block__db_count__gauge",
-			Help:      "how many block records are in the DB",
+			Name: "block__db_count__gauge",
+			Help: "how many block records are in the DB",
 		})
 
 	//---------------------------
@@ -97,8 +98,8 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
 	tx__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			// Namespace: "gf",
-			Name:      "tx__db_count__gauge",
-			Help:      "how many tx records are in the DB",
+			Name: "tx__db_count__gauge",
+			Help: "how many tx records are in the DB",
 		})
 
 	//---------------------------

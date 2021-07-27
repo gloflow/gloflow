@@ -70,7 +70,7 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	
 	gf_eth_monitor_core.Eth_blocks__init_continuous_metrics(metrics, p_runtime)
 	gf_eth_monitor_core.Eth_tx__init_continuous_metrics(metrics, p_runtime)
-	gf_eth_monitor_core.Eth_tx_trace__init_continuous_metrics(metrics, p_runtime)
+	// gf_eth_monitor_core.Eth_tx_trace__init_continuous_metrics(metrics, p_runtime)
 	gf_eth_monitor_core.Eth_peers__init_continuous_metrics(metrics, p_runtime)
 
 	//-------------
