@@ -27,7 +27,7 @@ function main() {
 
 
 
-    $("body").append("<div>gf_eth_monitor</div>");
+    $("body").append("<div class='.app_label'>gf_eth_monitor</div>");
     $("body").append(`<div class='monitor'>
         <div>block #</div>
         <input id="search" value="2000000"></input>
@@ -37,10 +37,10 @@ function main() {
 
 
 
-    $("input#block_num").on('keypress',(e)=>{
+    $("input#search").on('keypress',(e)=>{
         // "enter" pressed
         if(e.which == 13) {
-            const block_int = $("input#block_num").val();
+            const block_int = $("input#search").val();
 
             
 
