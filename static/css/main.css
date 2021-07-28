@@ -7,16 +7,57 @@ body {
     overflow-x: hidden;
 }
 
+
+/*------------------------------------------------------------*/
+.monitor {
+	left: 20%;
+    width: 60%;
+    position: absolute;
+    top: 8px;
+}
+
+.monitor .search {
+	width: 530px;
+    height: 40px;
+	border-radius: 0px;
+	border-width: 1px;
+}
+
+/*------------------------------------------------------------*/
+/*MINERS*/
+
+.miners {
+	width: 220px;
+    font-size: 12px;
+    position: absolute;
+    top: 21px;
+}
+
+.miners .miner_name {
+	font-size: 14px;
+    font-weight: bold;
+}
+
 /*------------------------------------------------------------*/
 /*BLOCK*/
 
 .block {
-    
+    position: absolute;
+    left: 10%;
+    width: 80%;
+}
+
+.block .block_metadata {
+	position: absolute;
+    top: 39px;
 }
 
 .block .block_from_worker {
-	margin-top: 20px;
+	position: absolute;
+    top: 77px;
 	background-color: #e3e3e3;
+	width: 100%;
+	font-size: 12px;
 }
 
 .block .block_from_worker .block_num {
@@ -25,12 +66,62 @@ body {
 
 
 .block .block_from_worker .block_hash {
+	position: absolute;
+	right: 0px;
+
+	font-size: 12px;
 	background-color: yellow;
 	padding-left: 5px;
 	padding-top: 2px;
 }
 
+.block .block_from_worker .block_parent_hash {
+	position: absolute;
+    font-size: 12px;
+    right: 0px;
+}
 
+.block .block_from_worker .block_timeago {
+	top: 36px;
+	left: 163px;
+    position: absolute;
+    font-size: 12px;
+    background-color: yellow;
+    padding: 2px;
+}
+
+.block .block_from_worker .block_time {
+	font-size: 12px;
+    right: 0px;
+    position: absolute;
+
+}
+
+.block .block_from_worker .gas_used {
+	position: absolute;
+    left: 163px;
+    background-color: #63e263;
+    font-weight: bold;
+    padding: 2px;
+	font-size: 14px;
+}
+
+.block .block_from_worker .gas_limit {
+	position: absolute;
+    left: 163px;
+	top: 73px;
+    font-size: 12px;
+}
+
+.block .block_from_worker .worker_host {
+	position: absolute;
+    right: 0px;
+}
+
+.block .block_from_worker .coinbase_addr span {
+	position: absolute;
+    right: 0px;
+}
 
 .block .txs {
 	font-size: 10px;
@@ -38,6 +129,7 @@ body {
 }
 
 .block .txs .tx {
+	position: relative;
 	margin-left: 11px;
 	background-color: #8f8fc8;
 	padding-left: 6px;
@@ -59,23 +151,47 @@ body {
 	background-color: #abee67;
 }
 
+.block .txs .tx .source_destination .to_addr {
+	position: absolute;
+    right: 0px;
+    top: 15px;
+}
+
 .block .txs .tx .tx_value span {
 	font-size: 20px;
 	font-weight: bold;
+	background-color: #63e263;
 }
 
-
+.block .txs .tx .tx_gas_used span {
+	background-color: yellow;
+}
 .block .txs .tx .tx_gas_used span.not_just_value_transfer {
 	background-color: #93cc83;
 	padding-left: 4px;
 	padding-right: 4px;
 	padding-top: 2px;
 	padding-bottom: 1px;
-
-
+}
+.tx .tx_gas_price {
+	position: absolute;
+    left: 169px;
+    top: 59px;
 }
 
-
+.tx .tx_nonce {
+	position: absolute;
+    right: 0px;
+	top: 49px;
+}
+.tx .tx_size {
+	position: absolute;
+    right: 0px;
+    top: 62px;
+}
+.tx .tx_size span {
+	background-color: yellow;
+}
 
 /*------------------------------------------------------------*/
 /*TX_TRACE*/

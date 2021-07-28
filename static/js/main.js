@@ -28,9 +28,9 @@ function main() {
 
 
     $("body").append("<div>gf_eth_monitor</div>");
-    $("body").append(`<div>
+    $("body").append(`<div class='monitor'>
         <div>block #</div>
-        <input id="block_num" value="2000000"></input>
+        <input id="search" value="2000000"></input>
     </div>`);
 
 
@@ -121,13 +121,13 @@ function render__block_from_workers(p_block_uint,
 
         const block_from_worker__element = $(`<div class="block_from_worker">
             <div>block #        <span class="block_num">${p_block_uint} </span><a href="https://etherscan.io/block/${p_block_uint}" target="_blank">etherscan.io</a></div>
-            <div>hash:          <span class="block_hash">${hash_str}</span></div>
+            <div>h:             <span class="block_hash">${hash_str}</span></div>
             <div>parent hash:   <span class="block_parent_hash">${parent_hash_str}</span></div>
             <div>time:          <span class="block_time">${creation_date} </span><span class="block_timeago">(${timeago_str})</span></div>
-            <div>gas used:      <span>${gas_used_uint}</span></div>
-            <div>gas limit:     <span>${gas_limit_uint}</span></div>
-            <div>worker host:   <span>${p_worker_host_str}</span></div>
-            <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str} </span>(<a href="https://etherscan.io/address/${coinbase_addr_str}" target="_blank">etherscan.io</a>)</div>
+            <div>gas used:      <span class="gas_used">${gas_used_uint}</span></div>
+            <div>gas limit:     <span class="gas_limit">${gas_limit_uint}</span></div>
+            <div>worker host:   <span class="worker_host">${p_worker_host_str}</span></div>
+            <div class="coinbase_addr">coinbase addr: <span>${coinbase_addr_str} (<a href="https://etherscan.io/address/${coinbase_addr_str}" target="_blank">etherscan.io</a>)</span></div>
             
         </div>`);
 
