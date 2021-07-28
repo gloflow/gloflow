@@ -46,7 +46,7 @@ export function init(p_log_fun) {
 	
 
 	// call random visualization
-	// sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
+	sketches_lst[Math.floor(Math.random()*sketches_lst.length)]();
 
 
 	// gf_evolved_squares.run(canvas_width_int, canvas_height_int);

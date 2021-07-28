@@ -40,6 +40,7 @@ export function init__batch(p_log_fun) {
 		},
 		()=>{},
 		p_log_fun);
+
 	//----------------
 
 	$(select_e).change(()=>{
@@ -80,28 +81,28 @@ function http__batch_plots_list(p_on_complete_fun, p_on_error_fun, p_log_fun) {
 	});
 }
 //---------------------------------------------------
-//IMPORTANT!! - its called run_stats_fun because its actually running a data query function on the server,
-//              its not pulling pre-computed stats results from a DB, or pulling a plotted stat image 
-//              for display on the client.
+// IMPORTANT!! - its called run_stats_fun because its actually running a data query function on the server,
+//               its not pulling pre-computed stats results from a DB, or pulling a plotted stat image 
+//               for display on the client.
 
 export function http__stats_query(p_stat_name_str :string,
 	p_on_complete_fun,
 	p_on_error_fun,
 	p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_stats.http__stats_query()");
+	p_log_fun("FUN_ENTER", "gf_stats.http__stats_query()");
 
 	const url_str = '/a/stats/query';
-	p_log_fun('INFO','url_str - '+url_str);
+	p_log_fun('INFO', 'url_str - '+url_str);
 
 	//-------------------------
-	//HTTP AJAX
+	// HTTP AJAX
 	$.post(url_str,
 		JSON.stringify({
 			"stat_name_str": p_stat_name_str
 		}),
 		function(p_data_map) {
 			console.log('response received');
-			//const data_map = JSON.parse(p_data);
+			// const data_map = JSON.parse(p_data);
 			
 			if (p_data_map["status"] == 'OK') {
 
@@ -112,5 +113,6 @@ export function http__stats_query(p_stat_name_str :string,
 				p_on_error_fun(p_data_map["data"]);
 			}
 		});
+	
 	//------------------------- 
 }
