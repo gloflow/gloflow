@@ -37,7 +37,7 @@ type GF_eth__miner__int struct {
 func Eth_miners__db__get_info(p_miner_address_str string,
 	p_metrics *GF_metrics,
 	p_ctx     context.Context,
-	p_runtime *GF_runtime) (map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (map[string]*GF_eth__miner__int, *gf_core.GF_error) {
 
 
 

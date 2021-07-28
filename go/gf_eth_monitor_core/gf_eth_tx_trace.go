@@ -70,7 +70,8 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	txs_traces_lst := []*GF_eth__tx_trace{}
 	for _, tx_hash_str := range p_tx_hashes_lst {
 
-
+		
+		
 
 
 		// GET_TRACE - WORKER_INSPECTOR

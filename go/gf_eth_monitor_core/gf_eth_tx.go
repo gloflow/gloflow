@@ -91,7 +91,7 @@ func Eth_tx__init_continuous_metrics(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 func Eth_tx__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs"
 	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
@@ -119,7 +119,7 @@ func Eth_tx__db__get_count(p_metrics *GF_metrics,
 func eth_tx__db__get(p_tx_hash_str string,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (*GF_eth__tx, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (*GF_eth__tx, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs"
 
@@ -151,7 +151,7 @@ func eth_tx__db__get(p_tx_hash_str string,
 func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.Gf_error {
+	p_runtime *GF_runtime) *gf_core.GF_error {
 
 	coll_name_str := "gf_eth_txs"
 
@@ -183,7 +183,7 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 	p_abis_defs_map map[string]*GF_eth__abi,
 	p_ctx           context.Context,
 	p_metrics       *GF_metrics,
-	p_runtime       *GF_runtime) *gf_core.Gf_error {
+	p_runtime       *GF_runtime) *gf_core.GF_error {
 	
 
 
@@ -231,7 +231,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_py_plugins     *GF_py_plugins,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.GF_error) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
@@ -506,7 +506,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 	p_abis_map map[string]*GF_eth__abi,
 	p_ctx      context.Context,
 	p_metrics  *GF_metrics,
-	p_runtime  *GF_runtime) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime  *GF_runtime) ([]map[string]interface{}, *gf_core.GF_error) {
 	
 
 
@@ -577,7 +577,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 func Eth_tx__get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.GF_error) {
 
 
 	

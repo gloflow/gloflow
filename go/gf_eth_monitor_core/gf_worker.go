@@ -36,7 +36,7 @@ import (
 type worker_inspector__get_hosts_ch chan chan []string
 
 //-------------------------------------------------
-func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_runtime) []string, chan *gf_core.Gf_error) {
+func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_runtime) []string, chan *gf_core.GF_error) {
 
 	// CONFIG
 	update_period_sec         := 2*60 * time.Second // 2min
@@ -47,7 +47,7 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 
 	get_hosts_ch        := make(worker_inspector__get_hosts_ch, 100) // client requests for hosts are received on this channel
 	new_instances_ch    := make(chan []*ec2.Instance, 10)            // new instances discovered are sent to this channel
-	discovery_errors_ch := make(chan *gf_core.Gf_error, 100)         // errors durring instance discovery are sent to this channel
+	discovery_errors_ch := make(chan *gf_core.GF_error, 100)         // errors durring instance discovery are sent to this channel
 
 	//-------------------------------------------------
 	// MAIN

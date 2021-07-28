@@ -90,9 +90,9 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_abis_defs_map       map[string]*GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
-	p_runtime             *GF_runtime) []*gf_core.Gf_error {
+	p_runtime             *GF_runtime) []*gf_core.GF_error {
 
-	gf_errs_lst := []*gf_core.Gf_error{}
+	gf_errs_lst := []*gf_core.GF_error{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
 
 		block_uint := b
@@ -181,7 +181,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 //-------------------------------------------------
 // BLOCKS__DB__GET_COUNT
 func Eth_blocks__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.Gf_error) {
+	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_blocks"
 	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
@@ -209,7 +209,7 @@ func Eth_blocks__db__get_count(p_metrics *GF_metrics,
 func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.Gf_error {
+	p_runtime *GF_runtime) *gf_core.GF_error {
 
 	ids_lst         := []string{}
 	records_lst     := []interface{}{}
@@ -242,7 +242,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 	p_abis_defs_map       map[string]*GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *GF_metrics,
-	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.Gf_error) {
+	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.GF_error) {
 
 
 	//---------------------
@@ -268,7 +268,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 	defer span.Finish()
 
 	block_from_workers_map   := map[string]*GF_eth__block__int{}
-	gf_errs_from_workers_map := map[string]*gf_core.Gf_error{}
+	gf_errs_from_workers_map := map[string]*gf_core.GF_error{}
 
 	for _, host_port_str := range workers_inspectors_hosts_lst {
 
@@ -365,7 +365,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
+	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 
 
@@ -419,7 +419,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
 	p_py_plugins     *GF_py_plugins,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 	//------------------
 	/*

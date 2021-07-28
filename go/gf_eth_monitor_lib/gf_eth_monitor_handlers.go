@@ -32,7 +32,7 @@ import (
 //-------------------------------------------------
 func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_runtime) []string,
 	p_metrics *gf_eth_monitor_core.GF_metrics,
-	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.Gf_error {
+	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.GF_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 
@@ -41,7 +41,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	// GET_BLOCK_PERSIST_BULK
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/persist_bulk",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__block_persist_bulk", sentry.ContinueFromRequest(p_req))
 			ctx := span__root.Context()
@@ -98,7 +98,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	// GET_FAVORITES_TX_ADD
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__favorites_tx_add", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()
@@ -139,13 +139,13 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 	//---------------------
 	// GET_TX_TRACE_PLOT
-
+	
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()
-			
+
 			//------------------
 			// INPUT
 
@@ -164,9 +164,9 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 				p_runtime.Py_plugins,
 				p_metrics,
 				p_runtime)
-
+			
 			span__pipeline.Finish()
-
+			
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -188,7 +188,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	// GET_BLOCK
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__get_block")
 			ctx        := span__root.Context()
@@ -249,7 +249,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	//---------------------
 	// GET_MINER
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			// INPUT
 			miner_addr_str, gf_err := Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
@@ -271,7 +271,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 	//---------------------
 	// GET_PEERS
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/peers",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			// METRICS
 			if p_metrics != nil {

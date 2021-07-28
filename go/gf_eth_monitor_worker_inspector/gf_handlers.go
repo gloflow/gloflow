@@ -42,7 +42,7 @@ func init_handlers(p_metrics *GF_metrics,
 	// GET_TX_TRACE
 
 	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/tx/trace",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_tx_trace", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()
@@ -90,7 +90,7 @@ func init_handlers(p_metrics *GF_metrics,
 	// GET_BLOCKS
 
 	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/blocks",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_block", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()

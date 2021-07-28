@@ -36,7 +36,7 @@ type GF_py_plugins struct {
 func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 	p_tx_trace     *GF_eth__tx_trace,
 	p_plugins_info *GF_py_plugins,
-	p_runtime_sys  *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys  *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 
 	py_path_str := fmt.Sprintf("%s/gf_plugin__plot_tx_trace.py", p_plugins_info.Base_dir_path_str)
@@ -77,7 +77,7 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 //-------------------------------------------------
 func py__run_plugin__get_contract_info(p_new_contract_addr_str string,
 	p_plugins_info *GF_py_plugins,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
 	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)

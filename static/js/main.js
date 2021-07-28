@@ -114,9 +114,9 @@ function render__block_from_workers(p_block_uint,
         
 
 
-        const creation_time_f      = parseFloat(time_int);
-		const creation_date        = new Date(creation_time_f*1000);
-        const timeago_str          = $.timeago(creation_date);
+        const creation_time_f = parseFloat(time_int);
+		const creation_date   = new Date(creation_time_f*1000);
+        const timeago_str     = $.timeago(creation_date);
             
 
         const block_from_worker__element = $(`<div class="block_from_worker">
@@ -210,7 +210,7 @@ function render__block_from_workers(p_block_uint,
             //----------------------------
             // for all transactions include the etherscan.io validation link
             else {
-                $(tx_element).find(".to_addr").append(`<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>`)
+                $(tx_element).find(".to_addr").append(`<a href="https://etherscan.io/address/${tx_to_addr_str}" target="_blank">etherscan.io</a>`);
             }
 
 
@@ -232,7 +232,7 @@ function render__block_from_workers(p_block_uint,
                         function() {
                             $(tx_element).find(".trace_btn").css("background-color", "red");
                         });
-                })
+                });
             }
         });
 
@@ -298,26 +298,27 @@ function http__get_trace(p_tx_id_str,
     p_on_complete_fun,
 	p_on_error_fun) {
 
-    const url_str = "/gfethm/v1/tx/trace/plot?tx="+p_tx_id_str;
+    const url_str = `/gfethm/v1/tx/trace/plot?tx=${p_tx_id_str}`;
 
     //-------------------------
 	// HTTP AJAX
 	$.get(url_str,
 		function(p_data_map) {
+
             console.log('response received');
-            
-			console.log('data_map["status_str"] - '+p_data_map["status_str"]);
+			console.log(`data_map["status"] - ${p_data_map["status"]}`);
 			
-			if (p_data_map["status_str"] == "OK") {
+			if (p_data_map["status"] == "OK") {
 
 				const tx_trace_svg_str = p_data_map["data"]["plot_svg_str"];
                 p_on_complete_fun(tx_trace_svg_str);
+
 			}
 			else {
 				p_on_error_fun(p_data_map["data"]);
 			}
         });
-        
+    
 	//-------------------------	
 }
 
@@ -326,17 +327,16 @@ function http__get_block(p_block_num_int,
 	p_on_complete_fun,
 	p_on_error_fun) {
 
-	const url_str = "/gfethm/v1/block?b="+p_block_num_int;
+	const url_str = `/gfethm/v1/block?b=${p_block_num_int}`;
 
 	//-------------------------
 	// HTTP AJAX
 	$.get(url_str,
 		function(p_data_map) {
             console.log('response received');
-            
-			console.log('data_map["status_str"] - '+p_data_map["status_str"]);
+			console.log(`data_map["status"] - ${p_data_map["status"]}`);
 			
-			if (p_data_map["status_str"] == "OK") {
+			if (p_data_map["status"] == "OK") {
 
 				const block_from_workers_map = p_data_map["data"]["block_from_workers_map"];
                 const miners_map             = p_data_map["data"]["miners_map"];
@@ -346,6 +346,6 @@ function http__get_block(p_block_num_int,
 				p_on_error_fun(p_data_map["data"]);
 			}
         });
-        
+    
 	//-------------------------	
 }

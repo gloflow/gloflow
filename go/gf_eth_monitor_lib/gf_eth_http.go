@@ -24,14 +24,14 @@ import (
 	"strconv"
 	"net/http"
 	"encoding/hex"
-	// "github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
 func Http__get_arg__block_range(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (uint64, uint64, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (uint64, uint64, *gf_core.GF_error) {
 
 	qs_map := p_req.URL.Query()
 
@@ -79,7 +79,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	qs_map := p_req.URL.Query()
 
@@ -125,23 +125,22 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__block_num(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (uint64, *gf_core.Gf_error) {
-
+	p_runtime_sys *gf_core.Runtime_sys) (uint64, *gf_core.GF_error) {
+	
 	qs_map := p_req.URL.Query()
-
+	
 	var block_num_int uint64
 	if b_lst, ok := qs_map["b"]; ok {
+
 		block_num_str := b_lst[0]
 
 		i, err := strconv.Atoi(block_num_str)
 		if err != nil {
-		
 			gf_err := gf_core.Error__create("failed to parse input querystring arg as a an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"block_num": block_num_str,},
 				err, "gf_eth_monitor_lib", p_runtime_sys)
-
-			return 0, gf_err 
+			return 0, gf_err
 		}
 		block_num_int = uint64(i)
 	}
@@ -152,15 +151,9 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__miner_addr(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-
-
-
-
-
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	
 	miner_addr_str := ""
+	
 	return miner_addr_str, nil
-
-
-
 }

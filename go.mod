@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v1.2.0 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.40.8
+	github.com/aws/aws-sdk-go v1.40.9
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect
 	github.com/davecgh/go-spew v1.1.1
@@ -18,7 +18,7 @@ require (
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.11.0
-	github.com/gloflow/gloflow v0.0.0-20210727010440-e40cdcc07823
+	github.com/gloflow/gloflow v0.0.0-20210727033043-ec3f2a62dc3f
 	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
@@ -32,13 +32,13 @@ require (
 	github.com/magefile/mage v1.11.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
-	github.com/olivere/elastic v6.2.36+incompatible // indirect
+	github.com/olivere/elastic v6.2.37+incompatible // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.1 // indirect
 	github.com/shirou/gopsutil v3.21.6+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cast v1.3.1 // indirect
+	github.com/spf13/cast v1.4.0 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.8.1
