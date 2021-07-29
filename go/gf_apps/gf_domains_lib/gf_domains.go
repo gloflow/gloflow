@@ -26,19 +26,21 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	// "github.com/globalsign/mgo/bson"
 	// "github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 //--------------------------------------------------
+// ADD!! - creation_time
 type Gf_domain struct {
 	Id            primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str        string           `bson:"id_str"`
-	T_str         string           `bson:"t"` // "domain"
-	Name_str      string           `bson:"name_str"`
-	Count_int     int              `bson:"count_int"`
-	Domain_posts  Gf_domain_posts  `bson:"posts_domain"`
-	Domain_images Gf_domain_images `bson:"images_domain"`
+	Id_str        string             `bson:"id_str"`
+	T_str         string             `bson:"t"` // "domain"
+	Name_str      string             `bson:"name_str"`
+	Count_int     int                `bson:"count_int"`
+	Domain_posts  Gf_domain_posts    `bson:"posts_domain"`
+	Domain_images Gf_domain_images   `bson:"images_domain"`
 }
 
 //--------------------------------------------------
@@ -219,11 +221,31 @@ func db__get_domains(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain, *gf_core.
 
 	q := bson.M{
 		"t":         "domain",
-		"count_int": bson.M{"$exists":true}, // "count_int" is a new required field, and we want those records, not the old ones
+		"count_int": bson.M{"$exists": true}, // "count_int" is a new required field, and we want those records, not the old ones
 	}
 
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	cur, err      := p_runtime_sys.Mongo_db.Collection(coll_name_str).Find(ctx, q)
+	find_opts := options.Find()
+	find_opts.SetSort(map[string]interface{}{"count_int": -1}) // descending - true - sort the highest count first
+
+	cursor, gf_err := gf_core.Mongo__find(q,
+		find_opts,
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to DB fetch all domains",
+		},
+		p_runtime_sys.Mongo_coll,
+		ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	defer cursor.Close(ctx)
+
+
+
+
+
+	/*coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	cursor, err      := p_runtime_sys.Mongo_db.Collection(coll_name_str).Find(ctx, q)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get all domains",
 			"mongodb_find_error",
@@ -231,13 +253,13 @@ func db__get_domains(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain, *gf_core.
 			err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err
 	}
-	defer cur.Close(ctx)
+	defer cursor.Close(ctx)*/
 
 
 	results_lst := []Gf_domain{}
-	for cur.Next(ctx) {
+	for cursor.Next(ctx) {
 		var domain Gf_domain
-		err := cur.Decode(&domain)
+		err := cursor.Decode(&domain)
 		if err != nil {
 			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get domains",
 				"mongodb_cursor_decode",

@@ -42,8 +42,8 @@ func domains_browser__render_template(p_domains_lst []Gf_domain,
 	}
 
 	err := p_tmpl.Execute(p_resp,tmpl_data{
-		Domains_lst:     p_domains_lst,
-		Sys_release_info:sys_release_info,
+		Domains_lst:      p_domains_lst,
+		Sys_release_info: sys_release_info,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
