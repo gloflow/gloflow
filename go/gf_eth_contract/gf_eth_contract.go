@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_contract
 
 import (
 	"fmt"
@@ -27,6 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
@@ -39,13 +40,13 @@ type GF_eth__contract_new struct {
 }
 
 //-------------------------------------------------
-func Eth_contract__enrich(p_gf_abi *GF_eth__abi,
+func Enrich(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
 	// abi_type_str := "erc20"
-	abi, gf_err := Eth_contract__get_abi(p_gf_abi, p_ctx, p_metrics, p_runtime)
+	abi, gf_err := Get_abi(p_gf_abi, p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -56,13 +57,13 @@ func Eth_contract__enrich(p_gf_abi *GF_eth__abi,
 }
 
 //-------------------------------------------------
-func Eth_contract__get_via_rpc(p_contract_addr_str string,
+func Get_via_rpc(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__contract_new, *gf_core.GF_error) {
 
-	code_bytes_lst, gf_err := Eth_contract__get_code(p_contract_addr_str,
+	code_bytes_lst, gf_err := Get_code(p_contract_addr_str,
 		p_block_num_int,
 		p_ctx,
 		p_eth_rpc_client,
@@ -90,7 +91,7 @@ func Eth_contract__get_via_rpc(p_contract_addr_str string,
 }
 
 //-------------------------------------------------
-func Eth_contract__get_code(p_contract_addr_str string,
+func Get_code(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
@@ -104,7 +105,7 @@ func Eth_contract__get_code(p_contract_addr_str string,
 		big.NewInt(0).SetUint64(p_block_num_int))
 		
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get code at particular account address in target block",
 			"eth_rpc__get_contract_code",
 			map[string]interface{}{"contract_addr_str": p_contract_addr_str, "block_num_int": p_block_num_int,},

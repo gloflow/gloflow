@@ -28,7 +28,7 @@ import (
 	"github.com/spf13/viper"
 	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
 )
 
@@ -47,7 +47,7 @@ func main() {
 
 //-------------------------------------------------
 func runtime__get(p_config_path_str string,
-	p_log_fun func(string, string)) (*gf_eth_monitor_core.GF_runtime, error) {
+	p_log_fun func(string, string)) (*gf_eth_core.GF_runtime, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
@@ -69,7 +69,7 @@ func runtime__get(p_config_path_str string,
 		Errors_send_to_sentry_bool: true,	
 	}
 
-	runtime, err := gf_eth_monitor_core.Runtime__get(config, runtime_sys)
+	runtime, err := gf_eth_core.Runtime__get(config, runtime_sys)
 	if err != nil {
 		return nil, err
 	}

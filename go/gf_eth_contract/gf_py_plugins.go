@@ -17,46 +17,45 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_contract
 
 import (
-	// "os"
 	"fmt"
-	"testing"
-	// "github.com/stretchr/testify/assert"
+	// "encoding/json"
+	// log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
-//---------------------------------------------------
-func Test__plugins(p_test *testing.T) {
+//-------------------------------------------------
+func Py__run_plugin__get_contract_info(p_new_contract_addr_str string,
+	p_plugins_info *gf_eth_core.GF_py_plugins,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	fmt.Println("TEST__PLUGINS ==============================================")
-	
 
-
-	//--------------------
-	// RUNTIME_SYS
-	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
-		Log_fun:          log_fun,
-		
-		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
+	args_lst := []string{
+		fmt.Sprintf("-contract_addr=%s", p_new_contract_addr_str),
 	}
+	stdout_prefix_str := "GF_OUT:"
 
-	//--------------------
-
-	new_contract_addr_str := "0xTestContractAddr"
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
-	}
-	gf_err := py__run_plugin__get_contract_info(new_contract_addr_str,
-		plugins_info,
-		runtime_sys)
+	// PY_RUN
+	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str,
+		args_lst,
+		nil,
+		stdout_prefix_str,
+		p_runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		return gf_err
 	}
 
 
+	for _, o := range outputs_lst {
+
+		fmt.Println(o)
+
+	}
+
+	return nil
 }

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_core
 
 import (
 	"fmt"
@@ -57,6 +57,7 @@ type GF_metrics struct {
 }
 
 //-------------------------------------------------
+// INIT
 func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 
 
@@ -155,19 +156,7 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 
 
 
-	metrics_router := mux.NewRouter()
-	metrics_router.Handle("/metrics", promhttp.Handler())
-
-	metrics_server := http.Server{
-		Handler: metrics_router,
-		Addr:    fmt.Sprintf(":%d", p_port_int),
-	}
-
-	go func() {
-		// ADD!! - check for returned error here,
-		//         and report this in some way to the user.
-		metrics_server.ListenAndServe()
-	}()
+	
 
 
 
@@ -188,4 +177,22 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 	}
 
 	return metrics, nil
+}
+
+//-------------------------------------------------
+// INIT_SERVER
+func Metrics__init_server(p_port_int int) {
+	metrics_router := mux.NewRouter()
+	metrics_router.Handle("/metrics", promhttp.Handler())
+
+	metrics_server := http.Server{
+		Handler: metrics_router,
+		Addr:    fmt.Sprintf(":%d", p_port_int),
+	}
+
+	go func() {
+		// ADD!! - check for returned error here,
+		//         and report this in some way to the user.
+		metrics_server.ListenAndServe()
+	}()
 }

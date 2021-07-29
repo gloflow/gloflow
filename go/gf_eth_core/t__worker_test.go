@@ -17,26 +17,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_core
 
 import (
-	// "os"
+	"os"
 	"fmt"
 	"testing"
 	"context"
-	"math/big"
-	// "encoding/json"
-	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
-func Test__get_tx_logs(p_test *testing.T) {
+func Test__worker(p_test *testing.T) {
 
-	fmt.Println("TEST__TX_LOGS ==============================================")
+	fmt.Println("TEST__WORKER ==============================================")
 	
-
 	ctx := context.Background()
+
+	block_int     := 4634748
+	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
+
 
 	//--------------------
 	// RUNTIME_SYS
@@ -59,37 +60,36 @@ func Test__get_tx_logs(p_test *testing.T) {
 	}
 
 	//--------------------
-	// DB_INSERT
-	abis_map       := t__get_abis()
-	coll_name_str := "gf_eth_meta__contracts_abi"
-	for _, gf_abi := range abis_map {
-		gf_err := gf_core.Mongo__insert(gf_abi, coll_name_str,
-			map[string]interface{}{
-				"caller_err_msg_str": "failed to insert contract ABI record into DB in gf_eth_monitor test t__tx_logs_test",
-			},
-			ctx, runtime_sys)
-		if gf_err != nil {
-			p_test.Fail()
-		}
+	// GET_BLOCK__FROM_WORKER_INSPECTOR
+	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
+		host_port_str,
+		ctx,
+		runtime_sys)
+
+	if gf_err != nil {
+		p_test.Fail()
 	}
 
-	//--------------------
 
-	// TETHER_ERC20_TX_LOG
-	// https://etherscan.io/tx/0x0cc8148371a953793498823ecff6754d0a5f2ee648a1bdb696100a9dd8538d05
-	tx_logs := []*GF_eth__log{
-		{
-			Address_str: "0xdac17f958d2ee523a2206206994597c13d831ec7", // Tether contract
-			Topics_lst: []string{
-				"0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
-				"0x0000000000000000000000001235f58b63cbf96171f4454e0c9eb7dfba5597bd",
-				"0x000000000000000000000000fe17e587923c8678fb2a93c167f121dce1a027ce",
-			},
-			Data_hex_str: "0x000000000000000000000000000000000000000000000000000000001a8e8db0",	
-		},
+
+
+	spew.Dump(gf_block)
+
+
+	abi_type_str := "erc20"
+	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, nil, runtime)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+	abis_map := map[string]*GF_eth__abi{
+		"erc20": abis_lst[0],
 	}
 
-	decoded_logs_lst, gf_err := Eth_tx__enrich_logs(tx_logs,
+
+	
+	// abis_map := t__get_abis()
+
+	gf_err = eth_tx__enrich_from_block(gf_block,
 		abis_map,
 		ctx,
 		nil,
@@ -98,11 +98,6 @@ func Test__get_tx_logs(p_test *testing.T) {
 		p_test.Fail()
 	}
 
-
-
-	value_int := decoded_logs_lst[0]["value"].(*big.Int).Uint64()
-	assert.EqualValues(p_test, value_int, 445550000, "the decoded event Eth log value should be equal to 445550000")
-	
 
 
 

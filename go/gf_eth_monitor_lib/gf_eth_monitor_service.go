@@ -28,11 +28,14 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_indexer"
 )
 
 //-------------------------------------------------
-func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
+func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
 	//-------------
@@ -62,19 +65,19 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	// METRICS
 	port_metrics_int := 9110
 
-	metrics, gf_err := gf_eth_monitor_core.Metrics__init(port_metrics_int)
+	metrics, gf_err := gf_eth_core.Metrics__init(port_metrics_int)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
 	
-	gf_eth_monitor_core.Eth_blocks__init_continuous_metrics(metrics, p_runtime)
-	gf_eth_monitor_core.Eth_tx__init_continuous_metrics(metrics, p_runtime)
+	gf_eth_blocks.Init_continuous_metrics(metrics, p_runtime)
+	gf_eth_tx.Init_continuous_metrics(metrics, p_runtime)
 
 	// causing errors
-	// gf_eth_monitor_core.Eth_tx_trace__init_continuous_metrics(metrics, p_runtime)
+	// gf_eth_core.Eth_tx_trace__init_continuous_metrics(metrics, p_runtime)
 	
-	gf_eth_monitor_core.Eth_peers__init_continuous_metrics(metrics, p_runtime)
+	gf_eth_core.Eth_peers__init_continuous_metrics(metrics, p_runtime)
 
 	//-------------
 	// QUEUE
@@ -94,11 +97,20 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 
 	//-------------
 	// WORKER_DISCOVERY
-	get_hosts_fn, _ := gf_eth_monitor_core.Worker__discovery__init(p_runtime)
+	get_hosts_fn, _ := gf_eth_core.Worker__discovery__init(p_runtime)
 	
+	//-------------
+	// INDEXER
+
+	indexer_cmds_ch, gf_err := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
+	if gf_err != nil {
+		panic(gf_err.Error)
+	}
+
 	//-------------
 	// HANDLERS
 	gf_err = init_handlers(get_hosts_fn,
+		indexer_cmds_ch,
 		metrics,
 		p_runtime)
 	if gf_err != nil {
@@ -106,7 +118,10 @@ func Run_service(p_runtime *gf_eth_monitor_core.GF_runtime) {
 	}
 
 	//-------------
+	// METRICS_SERVER
+	gf_eth_core.Metrics__init_server(port_metrics_int)
 
+	//-------------
 	port_str := p_runtime.Config.Port_str
 
 	// p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))

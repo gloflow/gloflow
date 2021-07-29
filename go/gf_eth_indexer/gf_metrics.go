@@ -17,24 +17,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_indexer
 
 import (
-	"context"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-func Eth_favorites__tx_add(p_tx_id_hex_str string,
-	p_ctx     context.Context,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+type GF_metrics struct {
+	SQS__msgs_num__counter prometheus.Counter
+}
 
-	
-	
-	
-	
-	
+//-------------------------------------------------
+// INIT
+func Metrics__init() (*GF_metrics, *gf_core.GF_error) {
 
 
-	return nil
+	//---------------------------
+	// SQS_MSGS_NUM
+	counter__sqs_msgs_num := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_eth_monitor__sqs_msgs_num",
+		Help: "number of AWS SQS messages received",
+	})
+
+
+
+	prometheus.MustRegister(counter__sqs_msgs_num)
+	return nil, nil
 }

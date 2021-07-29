@@ -22,12 +22,12 @@ package main
 import (
 	"strings"
 	"github.com/spf13/viper"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------------------
 func config__init(p_config_dir_path_str string,
-	p_config_file_name_str string) (*gf_eth_monitor_core.GF_config, error) {
+	p_config_file_name_str string) (*gf_eth_core.GF_config, error) {
 
 
 	config_name_str := strings.Split(p_config_file_name_str, ".")[0] // viper expects just the file name, without extension
@@ -56,7 +56,7 @@ func config__init(p_config_dir_path_str string,
 	}
 
 	// CONFIG
-	config := &gf_eth_monitor_core.GF_config{}
+	config := &gf_eth_core.GF_config{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, err

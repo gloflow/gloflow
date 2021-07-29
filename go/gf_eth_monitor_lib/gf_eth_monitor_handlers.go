@@ -26,13 +26,18 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_indexer"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
 )
 
 //-------------------------------------------------
-func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_runtime) []string,
-	p_metrics *gf_eth_monitor_core.GF_metrics,
-	p_runtime *gf_eth_monitor_core.GF_runtime) *gf_core.GF_error {
+func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
+	p_indexer_cmds_ch gf_eth_indexer.GF_indexer,
+	p_metrics         *gf_eth_core.GF_metrics,
+	p_runtime         *gf_eth_core.GF_runtime) *gf_core.GF_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 
@@ -44,7 +49,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__block_persist_bulk", sentry.ContinueFromRequest(p_req))
-			ctx := span__root.Context()
+			// ctx := span__root.Context()
 			defer span__root.Finish()
 
 			//------------------
@@ -57,20 +62,23 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			//------------------
 			
+			gf_eth_indexer.Client__index_block_range(block_start_uint,
+				block_end_uint,
+				p_indexer_cmds_ch)
 			
-			// ABI_DEFS
-			abis_defs_map, gf_err := gf_eth_monitor_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			/*// ABI_DEFS
+			abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
 			span__pipeline := sentry.StartSpan(ctx, "blocks_persist_bulk")
 
-			gf_errs_lst := gf_eth_monitor_core.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
+			gf_errs_lst := gf_eth_blocks.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
 				block_end_uint,
-				p_get_hosts_fn,
-				abis_defs_map,
-				span__pipeline.Context(),
+				// p_get_hosts_fn,
+				// abis_defs_map,
+				// span__pipeline.Context(),
 				p_metrics,
 				p_runtime)
 			
@@ -81,7 +89,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 				// FIX!! - see if all errors should be returned maybe.
 				gf_err__first := gf_errs_lst[0]
 				return nil, gf_err__first
-			}
+			}*/
 
 			//------------------
 			// OUTPUT
@@ -116,7 +124,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 
 			span__pipeline := sentry.StartSpan(span__root.Context(), "favorites_tx_add")
 
-			gf_err = gf_eth_monitor_core.Eth_favorites__tx_add(tx_hex_str,
+			gf_err = gf_eth_core.Eth_favorites__tx_add(tx_hex_str,
 				span__pipeline.Context(),
 				p_runtime)
 
@@ -158,7 +166,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			//------------------
 			span__pipeline := sentry.StartSpan(span__root.Context(), "tx_trace_plot")
 
-			plot_svg_str, gf_err := gf_eth_monitor_core.Eth_tx_trace__plot(tx_hex_str,
+			plot_svg_str, gf_err := gf_eth_tx.Trace__plot(tx_hex_str,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				p_runtime.Py_plugins,
@@ -212,14 +220,14 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			// PIPELINE
 
 			// ABI_DEFS
-			abis_defs_map, gf_err := gf_eth_monitor_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
 			span__pipeline := sentry.StartSpan(ctx, "blocks_get_from_workers")
 
-			block_from_workers_map, miners_map, gf_err := gf_eth_monitor_core.Eth_blocks__get_from_workers__pipeline(block_num_int,
+			block_from_workers_map, miners_map, gf_err := gf_eth_blocks.Get_from_workers__pipeline(block_num_int,
 				p_get_hosts_fn,
 				abis_defs_map,
 				span__pipeline.Context(),
@@ -279,7 +287,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_monitor_core.GF_
 			}
 
 			// PEERS__GET
-			peer_names_groups_lst, gf_err := gf_eth_monitor_core.Eth_peers__db__get_pipeline(p_metrics, p_runtime)
+			peer_names_groups_lst, gf_err := gf_eth_core.Eth_peers__db__get_pipeline(p_metrics, p_runtime)
 			if gf_err != nil {
 				return nil, gf_err
 			}

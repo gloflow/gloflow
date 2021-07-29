@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_blocks
 
 import (
 	"fmt"
@@ -28,19 +28,21 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/mitchellh/mapstructure"
 	"go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 // BLOCK__INTERNAL - internal representation of the block, with fields
 //                   that are not visible to the external public users.
 type GF_eth__block__int struct {
-	DB_id                 string  `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
-	Creation_time__unix_f float64 `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
+	DB_id                 string    `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	Creation_time__unix_f float64   `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
 
 	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
 	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
@@ -51,8 +53,8 @@ type GF_eth__block__int struct {
 
 	// txs_lst       - not stored in DB. blocks are stored in their own table/collection, separate from TX's themselves (which are in their own).
 	// tx_hashes_lst - these are stored in the DB, and used to lookup TX's that are in their own collection.
-	Txs_lst        []*GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"            bson:"-"`
-	Txs_hashes_lst []string      `mapstructure:"txs_hashes_lst"    json:"txs_hashes_lst"     bson:"txs_hashes_lst"`
+	Txs_lst        []*gf_eth_tx.GF_eth__tx `mapstructure:"txs_lst"           json:"txs_lst"            bson:"-"`
+	Txs_hashes_lst []string                `mapstructure:"txs_hashes_lst"    json:"txs_hashes_lst"     bson:"txs_hashes_lst"`
 
 	Time_uint uint64 `mapstructure:"time_int" json:"time_uint"`
 	
@@ -62,13 +64,13 @@ type GF_eth__block__int struct {
 //-------------------------------------------------
 // metrics that are continuously calculated
 
-func Eth_blocks__init_continuous_metrics(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) {
+func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) {
 	go func() {
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			blocks_count_int, gf_err := Eth_blocks__db__get_count(p_metrics, p_runtime)
+			blocks_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
 			if gf_err != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
@@ -82,106 +84,27 @@ func Eth_blocks__init_continuous_metrics(p_metrics *GF_metrics,
 }
 
 //-------------------------------------------------
-// BLOCKS__GET_AND_PERSIST_BULK
+/*// BLOCKS__GET_AND_PERSIST_BULK
 
 func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
-	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
-	p_abis_defs_map       map[string]*GF_eth__abi,
-	p_ctx                 context.Context,
-	p_metrics             *GF_metrics,
-	p_runtime             *GF_runtime) []*gf_core.GF_error {
+	// p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
+	// p_abis_defs_map       map[string]*GF_eth__abi,
+	// p_ctx                 context.Context,
+	p_metrics             *gf_eth_core.GF_metrics,
+	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GF_error {
 
-	gf_errs_lst := []*gf_core.GF_error{}
-	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
-
-		block_uint := b
-
-		//---------------------
-		// GET_BLOCK - gets the same block from all the workers that it gets, and the resulting maps
-		//             are key-ed by worker_host.
-		block_from_workers_map, miners_map, gf_err := Eth_blocks__get_from_workers__pipeline(block_uint,
-			p_get_worker_hosts_fn,
-			p_abis_defs_map,
-			p_ctx,
-			p_metrics,
-			p_runtime)
-
-		if gf_err != nil {
-			gf_errs_lst = append(gf_errs_lst, gf_err)
-			continue // continue processing subsequent blocks
-		}
-
-		spew.Dump(miners_map)
-
-		// IMPORTANT!! - for now just get the block from the first worker_host,
-		//               regardless of how many workers are registered.
-		var gf_block *GF_eth__block__int
-		for worker_host_str := range block_from_workers_map {
-			gf_block = block_from_workers_map[worker_host_str]
-			break
-		}
-
-		//---------------------
-		// DB_WRITE__BLOCK
-
-		gf_err = Eth_blocks__db_write_bulk([]*GF_eth__block__int{gf_block,},
-			p_ctx,
-			p_metrics,
-			p_runtime)
-		if gf_err != nil {
-			gf_errs_lst = append(gf_errs_lst, gf_err)
-			continue // continue processing subsequent blocks
-		}
-
-		//---------------------
-		
-		// some blocks (especially early ones) dont have any transactions in them
-		if len(gf_block.Txs_lst) > 0 {
-
-			//---------------------
-			// DB_WRITE__TXS
-
-			gf_err = eth_tx__db__write_bulk(gf_block.Txs_lst,
-				p_ctx,
-				p_metrics,
-				p_runtime)
-			if gf_err != nil {
-				gf_errs_lst = append(gf_errs_lst, gf_err)
-				continue // continue processing subsequent blocks
-			}
-
-			//---------------------
-			// TRACES
-			tx_hashes_lst := []string{}
-			for _, tx := range gf_block.Txs_lst {
-				tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
-			}
-
-			worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
-
-			gf_err, _ = Eth_tx_trace__get_and_persist_bulk(tx_hashes_lst,
-				worker_inspector_host_port_str,
-				p_ctx,
-				p_metrics,
-				p_runtime)
-			if gf_err != nil {
-				gf_errs_lst = append(gf_errs_lst, gf_err)
-				continue
-			}
-
-			//---------------------
-		}
-
-	}
+	gf_eth_indexer.Client__index_block_range(p_block_start_uint,
+		p_block_end_uint,
+		p_runtime.Indexer_cmds_ch)
 
 	return gf_errs_lst
-}
+}*/
 
 //-------------------------------------------------
 // BLOCKS__DB__GET_COUNT
-func Eth_blocks__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
+func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_blocks"
 	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
@@ -206,10 +129,10 @@ func Eth_blocks__db__get_count(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 // BLOCKS__DB__WRITE_BULK
-func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
+func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
 	ids_lst         := []string{}
 	records_lst     := []interface{}{}
@@ -237,12 +160,12 @@ func Eth_blocks__db_write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 }
 
 //-------------------------------------------------
-func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
-	p_get_worker_hosts_fn func(context.Context, *GF_runtime) []string,
-	p_abis_defs_map       map[string]*GF_eth__abi,
+func Get_from_workers__pipeline(p_block_uint uint64,
+	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
+	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
-	p_metrics             *GF_metrics,
-	p_runtime             *GF_runtime) (map[string]*GF_eth__block__int, map[string]*GF_eth__miner__int, *gf_core.GF_error) {
+	p_metrics             *gf_eth_core.GF_metrics,
+	p_runtime             *gf_eth_core.GF_runtime) (map[string]*GF_eth__block__int, map[string]*gf_eth_core.GF_eth__miner__int, *gf_core.GF_error) {
 
 
 	//---------------------
@@ -309,7 +232,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 		//---------------------*/
 
 		
-		gf_err = eth_tx__enrich_from_block(gf_block,
+		gf_err = gf_eth_tx.Enrich_from_block(gf_block.Txs_lst,
 			p_abis_defs_map,
 			ctx,
 			p_metrics,
@@ -347,7 +270,7 @@ func Eth_blocks__get_from_workers__pipeline(p_block_uint uint64,
 		}
 	}
 
-	miners_map, gf_err := Eth_miners__db__get_info(block_miner_addr_hex_str,
+	miners_map, gf_err := gf_eth_core.Eth_miners__db__get_info(block_miner_addr_hex_str,
 		p_metrics,
 		p_ctx,
 		p_runtime)
@@ -415,10 +338,10 @@ func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__PIPELINE
-func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
+func Get__pipeline(p_block_num_uint uint64,
 	p_eth_rpc_client *ethclient.Client,
 	p_ctx            context.Context,
-	p_py_plugins     *GF_py_plugins,
+	p_py_plugins     *gf_eth_core.GF_py_plugins,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 	//------------------
@@ -449,7 +372,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 
 	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_uint,},
@@ -504,7 +427,7 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_uint,},
@@ -519,11 +442,11 @@ func Eth_blocks__get_block__pipeline(p_block_num_uint uint64,
 	span__get_txs := sentry.StartSpan(p_ctx, "eth_rpc__get_txs")
 	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
 
-	txs_lst := []*GF_eth__tx{}
+	txs_lst := []*gf_eth_tx.GF_eth__tx{}
 	for i, tx := range block.Transactions() {
 
 		tx_index_int := uint(i)
-		gf_tx, gf_err := Eth_tx__load(tx,
+		gf_tx, gf_err := gf_eth_tx.Load(tx,
 			tx_index_int,
 			block.Hash(),
 			p_block_num_uint,

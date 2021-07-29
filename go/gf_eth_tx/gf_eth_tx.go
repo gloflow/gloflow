@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_tx
 
 import (
 	"fmt"
@@ -35,6 +35,8 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -56,8 +58,8 @@ type GF_eth__tx struct {
 	Nonce_int      uint64                `mapstructure:"nonce_int"        json:"nonce_int"        bson:"nonce_int"`
 	Size_f         float64               `mapstructure:"size_f"           json:"size_f"           bson:"size_f"`
 	Cost_gwei_f    float64                `mapstructure:"cost_gwei_f"    json:"cost_gwei_f"    bson:"cost_gwei_f"`
-	Contract_new   *GF_eth__contract_new `mapstructure:"contract_new_map" json:"contract_new_map" bson:"contract_new_map"`
-	Logs_lst       []*GF_eth__log        `mapstructure:"logs_lst"         json:"logs_lst"         bson:"logs_lst"`
+	Contract_new   *gf_eth_contract.GF_eth__contract_new `mapstructure:"contract_new_map" json:"contract_new_map" bson:"contract_new_map"`
+	Logs_lst       []*GF_eth__log                        `mapstructure:"logs_lst"         json:"logs_lst"         bson:"logs_lst"`
 }
 
 // eth_types.Log
@@ -70,8 +72,8 @@ type GF_eth__log struct {
 //-------------------------------------------------
 // metrics that are continuously calculated
 
-func Eth_tx__init_continuous_metrics(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) {
+func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) {
 	go func() {
 		for {
 			//---------------------
@@ -90,8 +92,8 @@ func Eth_tx__init_continuous_metrics(p_metrics *GF_metrics,
 }
 
 //-------------------------------------------------
-func Eth_tx__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
+func Eth_tx__db__get_count(p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs"
 	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
@@ -118,8 +120,8 @@ func Eth_tx__db__get_count(p_metrics *GF_metrics,
 // DB__GET
 func eth_tx__db__get(p_tx_hash_str string,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (*GF_eth__tx, *gf_core.GF_error) {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) (*GF_eth__tx, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs"
 
@@ -148,10 +150,10 @@ func eth_tx__db__get(p_tx_hash_str string,
 
 //-------------------------------------------------
 // DB__WRITE_BULK
-func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
+func DB__write_bulk(p_txs_lst []*GF_eth__tx,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
 	coll_name_str := "gf_eth_txs"
 
@@ -179,15 +181,15 @@ func eth_tx__db__write_bulk(p_txs_lst []*GF_eth__tx,
 }
 
 //-------------------------------------------------
-func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
-	p_abis_defs_map map[string]*GF_eth__abi,
+func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
+	p_abis_defs_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx           context.Context,
-	p_metrics       *GF_metrics,
-	p_runtime       *GF_runtime) *gf_core.GF_error {
+	p_metrics       *gf_eth_core.GF_metrics,
+	p_runtime       *gf_eth_core.GF_runtime) *gf_core.GF_error {
 	
 
 
-	for _, tx := range p_gf_block.Txs_lst {
+	for _, tx := range p_blocks_txs_lst {
 
 
 		// IMPORTANT!! - if worker_inspector encounters an error while loading
@@ -205,7 +207,7 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 			// TEMPORARY!! - we just assume the new contract has a erc20 ABI, for testing purposes.
 			//               generalize a way to specify an ABI to use to decode new contracts.
 			gf_abi := p_abis_defs_map["erc20"]
-			gf_err := Eth_contract__enrich(gf_abi, p_ctx, p_metrics, p_runtime)
+			gf_err := gf_eth_contract.Enrich(gf_abi, p_ctx, p_metrics, p_runtime)
 			if gf_err != nil {
 				return gf_err
 			}
@@ -224,13 +226,13 @@ func eth_tx__enrich_from_block(p_gf_block *GF_eth__block__int,
 }
 
 //-------------------------------------------------
-func Eth_tx__load(p_tx *eth_types.Transaction,
+func Load(p_tx *eth_types.Transaction,
 	p_tx_index_int   uint,
 	p_block_hash     eth_common.Hash,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_py_plugins     *GF_py_plugins,
+	p_py_plugins     *gf_eth_core.GF_py_plugins,
 	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.GF_error) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
@@ -268,7 +270,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
 	if err != nil {
 
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -325,7 +327,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 	tx, _, err := p_eth_rpc_client.TransactionByHash(span__get_tx.Context(), tx_hash)
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -354,7 +356,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 	sender_addr, err := p_eth_rpc_client.TransactionSender(p_ctx, tx, p_block_hash, p_tx_index_int)
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
@@ -367,7 +369,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 	//------------------
 	// TX_TO
 	var to_str        string
-	var contract__new *GF_eth__contract_new
+	var contract__new *gf_eth_contract.GF_eth__contract_new
 
 	// NEW CONTRACT - if To() is nil and the ContractAddress is set,
 	//                then its a new contract creation transaction.
@@ -384,7 +386,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 		// NEW_CONTRACT_CODE
 
 		block_num_int := tx_receipt.BlockNumber.Uint64()
-		contract, gf_err := Eth_contract__get_via_rpc(new_contract_addr_str,
+		contract, gf_err := gf_eth_contract.Get_via_rpc(new_contract_addr_str,
 			block_num_int,
 			p_ctx,
 			p_eth_rpc_client,
@@ -401,7 +403,7 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 		// PY_PLUGIN - get info on a new contract
 
-		gf_err = py__run_plugin__get_contract_info(new_contract_addr_str,
+		gf_err = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
 			p_py_plugins,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -503,15 +505,15 @@ func Eth_tx__load(p_tx *eth_types.Transaction,
 
 //-------------------------------------------------
 func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
-	p_abis_map map[string]*GF_eth__abi,
+	p_abis_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx      context.Context,
-	p_metrics  *GF_metrics,
-	p_runtime  *GF_runtime) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_metrics  *gf_eth_core.GF_metrics,
+	p_runtime  *gf_eth_core.GF_runtime) ([]map[string]interface{}, *gf_core.GF_error) {
 	
 
 
 	gf_abi := p_abis_map["erc20"]
-	abi, gf_err := Eth_contract__get_abi(gf_abi,
+	abi, gf_err := gf_eth_contract.Get_abi(gf_abi,
 		p_ctx,
 		p_metrics,
 		p_runtime)
@@ -545,7 +547,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 		// UnpackIntoMap - unpacks a log into the provided map[string]interface{}.
 		err := abi.UnpackIntoMap(event_map, "Transfer", log_bytes_lst)
 		if err != nil {
-			error_defs_map := Error__get_defs()
+			error_defs_map := gf_eth_core.Error__get_defs()
 			gf_err := gf_core.Error__create_with_defs("failed to decode a Tx Log",
 				"eth_tx_log__decode",
 				map[string]interface{}{

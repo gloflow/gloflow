@@ -17,15 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_contract
 
 import (
 	"strings"
 	"encoding/hex"
-	"github.com/gloflow/gloflow/go/gf_core"
 	eth_asm "github.com/ethereum/go-ethereum/core/asm"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
+//-------------------------------------------------
 /*
 0x - Stop and Arithmetic Operations
 
@@ -109,7 +111,7 @@ type gf_eth_opcode struct {
 
 //-------------------------------------------------
 func Eth_contract__get_opcodes(p_bytecode_hex_str string,
-	p_runtime *GF_runtime) ([]*GF_eth__opcode, *gf_core.Gf_error) {
+	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__opcode, *gf_core.GF_error) {
 
 	// HEX_DECODE
 	code_bytes_lst, err := hex.DecodeString(p_bytecode_hex_str)
@@ -128,7 +130,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	// DISASSEMBLE
 	output_lst, err := eth_asm.Disassemble(code_bytes_lst)
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to disassemble contract hex bytecode",
 			"eth_contract__disassemble",
 			map[string]interface{}{

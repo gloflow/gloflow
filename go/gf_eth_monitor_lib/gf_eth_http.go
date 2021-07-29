@@ -24,9 +24,30 @@ import (
 	"strconv"
 	"net/http"
 	"encoding/hex"
+	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
+//-------------------------------------------------
+func Http__get_arg__acc_address_hex(p_req *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+
+	qs_map := p_req.URL.Query()
+
+	var account_address_str string
+	if acc_addr_lst, ok := qs_map["acc_addr"]; ok {
+		account_address_hex__unverified_str := acc_addr_lst[0]
+
+
+		// VALIDATE - parse hex address to validate it
+		_ = eth_common.HexToAddress(account_address_hex__unverified_str)
+
+		account_address_str = account_address_hex__unverified_str
+	}
+
+	return account_address_str, nil
+}
 
 //-------------------------------------------------
 func Http__get_arg__block_range(p_resp http.ResponseWriter,
@@ -37,9 +58,9 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 
 	var block_start_uint uint64
 	var block_end_uint   uint64
-	if block_range__lst, ok := qs_map["br"]; ok {
+	if block_range_lst, ok := qs_map["br"]; ok {
 
-		block_range_str := block_range__lst[0]
+		block_range_str := block_range_lst[0]
 
 		range_lst := strings.Split(block_range_str, "-")
 

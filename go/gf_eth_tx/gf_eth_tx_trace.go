@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_tx
 
 import (
 	"fmt"
@@ -30,11 +30,12 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
 type GF_eth__tx_trace struct {
-	DB_id                 string         `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
+	DB_id                 string                     `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
 	Creation_time__unix_f float64                    `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
 	Tx_hash_str           string                     `mapstructure:"tx_hash_str"           json:"tx_hash_str"        bson:"tx_hash_str"`
 	Gas_used_uint         uint64                     `mapstructure:"gas_used_uint"         json:"gas_used_uint"      bson:"gas_used_uint"`
@@ -54,11 +55,11 @@ type GF_eth__tx_trace_opcode struct {
 }
 
 //-------------------------------------------------
-func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
+func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	p_worker_inspector_host_port_str string,
 	p_ctx                            context.Context,
-	p_metrics                        *GF_metrics,
-	p_runtime                        *GF_runtime) (*gf_core.GF_error, []*gf_core.GF_error) {
+	p_metrics                        *gf_eth_core.GF_metrics,
+	p_runtime                        *gf_eth_core.GF_runtime) (*gf_core.GF_error, []*gf_core.GF_error) {
 
 
 	// IMPORTANT!! - these are "secondary" errors, that are not the primary one that causes the
@@ -75,7 +76,7 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 
 
 		// GET_TRACE - WORKER_INSPECTOR
-		gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(tx_hash_str,
+		gf_tx_trace, gf_err := Trace__get_from_worker_inspector(tx_hash_str,
 			p_worker_inspector_host_port_str,
 			p_ctx,
 			p_runtime.Runtime_sys)
@@ -92,7 +93,7 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	}
 
 	// DB_WRITE_BULK
-	gf_err := Eth_tx_trace__db__write_bulk(txs_traces_lst,
+	gf_err := Trace__db__write_bulk(txs_traces_lst,
 		p_ctx,
 		p_metrics,
 		p_runtime)
@@ -104,10 +105,10 @@ func Eth_tx_trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 }
 
 //-------------------------------------------------
-func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
+func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
 	coll_name_str := "gf_eth_txs_traces"
 
@@ -135,12 +136,12 @@ func Eth_tx_trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 }
 
 //-------------------------------------------------
-func Eth_tx_trace__plot(p_tx_id_hex_str string,
-	p_get_hosts_fn func(context.Context, *GF_runtime) []string,
+func Trace__plot(p_tx_id_hex_str string,
+	p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	p_ctx          context.Context,
-	p_py_plugins   *GF_py_plugins,
-	p_metrics      *GF_metrics,
-	p_runtime      *GF_runtime) (string, *gf_core.GF_error) {
+	p_py_plugins   *gf_eth_core.GF_py_plugins,
+	p_metrics      *gf_eth_core.GF_metrics,
+	p_runtime      *gf_eth_core.GF_runtime) (string, *gf_core.GF_error) {
 
 
 
@@ -150,7 +151,7 @@ func Eth_tx_trace__plot(p_tx_id_hex_str string,
 	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 	// GET_TRACE
-	gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(p_tx_id_hex_str,
+	gf_tx_trace, gf_err := Trace__get_from_worker_inspector(p_tx_id_hex_str,
 		host_port_str,
 		p_ctx,
 		p_runtime.Runtime_sys)
@@ -194,7 +195,7 @@ func Eth_tx_trace__plot(p_tx_id_hex_str string,
 
 //-------------------------------------------------
 // GET_FROM_WORKER_INSPECTOR
-func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
+func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	p_ctx           context.Context,
 	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.GF_error) {
@@ -297,7 +298,7 @@ func Eth_tx_trace__get_from_worker_inspector(p_tx_hash_str string,
 }
 
 //-------------------------------------------------
-func Eth_tx_trace__get(p_tx_hash_str string,
+func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -315,7 +316,7 @@ func Eth_tx_trace__get(p_tx_hash_str string,
 	}`, p_tx_hash_str)
 
 	
-	output_map, gf_err := Eth_rpc__call(input_str,
+	output_map, gf_err := gf_eth_core.Eth_rpc__call(input_str,
 		p_eth_rpc_host_str,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -328,8 +329,8 @@ func Eth_tx_trace__get(p_tx_hash_str string,
 //-------------------------------------------------
 // metrics that are continuously calculated
 
-func Eth_tx_trace__init_continuous_metrics(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 	
 	ctx := context.Background()
 	coll_name_str := "gf_eth_txs_traces"

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_core
+package gf_eth_contract
 
 import (
 	"context"
@@ -26,8 +26,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
+//-------------------------------------------------
 type GF_eth__abi struct {
 	Type_str string                   `bson:"type_str"`
 	Def_lst  []map[string]interface{} `bson:"def_lst"`
@@ -35,8 +37,8 @@ type GF_eth__abi struct {
 
 //-------------------------------------------------
 func Eth_abi__get_defs(p_ctx context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (map[string]*GF_eth__abi, *gf_core.GF_error) {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) (map[string]*GF_eth__abi, *gf_core.GF_error) {
 
 
 
@@ -55,10 +57,10 @@ func Eth_abi__get_defs(p_ctx context.Context,
 }
 
 //-------------------------------------------------
-func Eth_contract__get_abi(p_gf_abi *GF_eth__abi,
+func Get_abi(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (*abi.ABI, *gf_core.GF_error) {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) (*abi.ABI, *gf_core.GF_error) {
 
 	//---------------------
 	/*// VALIDATE
@@ -81,7 +83,7 @@ func Eth_contract__get_abi(p_gf_abi *GF_eth__abi,
 
 	abi, err := abi.JSON(strings.NewReader(string(abi_def_str)))
 	if err != nil {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("cant load ABI JSON whos definition was loaded from DB",
 			"eth_contract__abi_not_loadable",
 			map[string]interface{}{
@@ -100,14 +102,14 @@ func Eth_contract__get_abi(p_gf_abi *GF_eth__abi,
 //-------------------------------------------------
 func Eth_contract__db__get_abi(p_abi_type_str string,
 	p_ctx     context.Context,
-	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) ([]*GF_eth__abi, *gf_core.GF_error) {
+	p_metrics *gf_eth_core.GF_metrics,
+	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__abi, *gf_core.GF_error) {
 
 
 
 
 	if !Eth_contract__is_type_valid(p_abi_type_str) {
-		error_defs_map := Error__get_defs()
+		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
 			"eth_contract__not_supported_type",
 			map[string]interface{}{"type_str": p_abi_type_str,},

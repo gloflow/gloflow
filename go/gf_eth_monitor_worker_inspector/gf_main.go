@@ -29,15 +29,14 @@ import (
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
 type GF_runtime struct {
 	eth_rpc_host_str string
 	eth_rpc_client   *ethclient.Client
-	py_plugins       *gf_eth_monitor_core.GF_py_plugins
+	py_plugins       *gf_eth_core.GF_py_plugins
 	runtime_sys      *gf_core.Runtime_sys
 }
 
@@ -87,7 +86,7 @@ func main() {
 
 	//-------------
 	// ETH_CLIENT
-	eth_client, gf_err := gf_eth_monitor_core.Eth_rpc__init(geth__host_str,
+	eth_client, gf_err := gf_eth_core.Eth_rpc__init(geth__host_str,
 		geth__port_int,
 		runtime.runtime_sys)
 	if gf_err != nil {
@@ -129,7 +128,7 @@ func runtime__get(p_eth_rpc_host_str string,
 
 	//--------------------
 	// PY_PLUGINS
-	py_plugins := &gf_eth_monitor_core.GF_py_plugins {
+	py_plugins := &gf_eth_core.GF_py_plugins {
 		Base_dir_path_str: p_py_plugins_base_dir_path_str,
 	}
 

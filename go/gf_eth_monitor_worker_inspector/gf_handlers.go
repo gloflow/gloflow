@@ -20,14 +20,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_core"
+	// "github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -37,6 +39,31 @@ func init_handlers(p_metrics *GF_metrics,
 
 
 
+	//---------------------
+	// GET_ACCOUNT_INFO
+
+	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/account/info",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+
+			//------------------
+			// INPUT
+
+			account_address_hex_str, gf_err := gf_eth_monitor_lib.Http__get_arg__acc_address_hex(p_req, p_runtime.runtime_sys)
+
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------
+
+
+			fmt.Println(account_address_hex_str)
+
+			return nil, nil
+
+		},
+		p_runtime.runtime_sys)
 
 	//---------------------
 	// GET_TX_TRACE
@@ -63,7 +90,7 @@ func init_handlers(p_metrics *GF_metrics,
 
 
 			// GET_TRACE
-			trace_map, gf_err := gf_eth_monitor_core.Eth_tx_trace__get(tx_hex_str,
+			trace_map, gf_err := gf_eth_tx.Trace__get(tx_hex_str,
 				p_runtime.eth_rpc_host_str,
 				p_runtime.runtime_sys)
 			if gf_err != nil {
@@ -115,7 +142,7 @@ func init_handlers(p_metrics *GF_metrics,
 			span__pipeline := sentry.StartSpan(span__root.Context(), "eth_rpc__get_block__pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
-			gf_block, gf_err := gf_eth_monitor_core.Eth_blocks__get_block__pipeline(block_num_int,
+			gf_block, gf_err := gf_eth_blocks.Get__pipeline(block_num_int,
 				p_runtime.eth_rpc_client,
 				span__pipeline.Context(),
 				p_runtime.py_plugins,

@@ -27,7 +27,7 @@ function main() {
 
 
 
-    $("body").append("<div class='.app_label'>gf_eth_monitor</div>");
+    $("body").append("<div class='app_label'>gf_eth_monitor</div>");
     $("body").append(`<div class='monitor'>
         <div>block #</div>
         <input id="search" value="2000000"></input>
