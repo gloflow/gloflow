@@ -64,6 +64,9 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 	go func() {
 
 		select {
+
+		//----------------------------
+		// INDEXER_COMMANDS
 		case cmd := <- indexer_cmds_ch:
 
 			ctx := context.Background()
@@ -81,6 +84,8 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 
 			}
 		}
+
+		//----------------------------
 
 	}()
 	

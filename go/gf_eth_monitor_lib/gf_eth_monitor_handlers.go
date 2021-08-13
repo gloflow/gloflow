@@ -43,7 +43,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 
 
 	//---------------------
-	// GET_BLOCK_PERSIST_BULK
+	// GET__BLOCK_PERSIST_BULK
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/persist_bulk",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -103,7 +103,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 
 	//---------------------
-	// GET_FAVORITES_TX_ADD
+	// GET__FAVORITES_TX_ADD
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -146,7 +146,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 
 	//---------------------
-	// GET_TX_TRACE_PLOT
+	// GET__TX_TRACE_PLOT
 	
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -193,7 +193,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 		
 	//---------------------
-	// GET_BLOCK
+	// GET__BLOCK
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -255,7 +255,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 
 	//---------------------
-	// GET_MINER
+	// GET__MINER
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -277,7 +277,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 
 	//---------------------
-	// GET_PEERS
+	// GET__PEERS
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/peers",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -304,7 +304,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		p_runtime.Runtime_sys)
 
 	//---------------------
-	// HEALTH
+	// GET__HEALTH
 	http.HandleFunc("/gfethm/v1/health", func(p_resp http.ResponseWriter, p_req *http.Request) {
 		p_resp.Write([]byte("ok"))
 	})

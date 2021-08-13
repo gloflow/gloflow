@@ -35,14 +35,22 @@ func Metrics__init() (*GF_metrics, *gf_core.GF_error) {
 
 
 	//---------------------------
-	// SQS_MSGS_NUM
-	counter__sqs_msgs_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__sqs_msgs_num",
-		Help: "number of AWS SQS messages received",
+	// INDEXED_BLOCKS
+	counter__indexed_blocks_num := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_eth_monitor__indexed_blocks_num",
+		Help: "number of blocks that were indexed",
 	})
 
 
+	// INDEXED_TXS
+	counter__indexed_txs_num := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_eth_monitor__indexed_txs_num",
+		Help: "number of tx's that were indexed",
+	})
 
-	prometheus.MustRegister(counter__sqs_msgs_num)
+
+	//---------------------------
+	prometheus.MustRegister(counter__indexed_blocks_num)
+	prometheus.MustRegister(counter__indexed_txs_num)
 	return nil, nil
 }
