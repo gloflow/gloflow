@@ -78,7 +78,7 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			blocks_count_int, gf_err := Eth_tx__db__get_count(p_metrics, p_runtime)
+			blocks_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
 			if gf_err != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
@@ -92,7 +92,9 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 }
 
 //-------------------------------------------------
-func Eth_tx__db__get_count(p_metrics *gf_eth_core.GF_metrics,
+// DB
+//-------------------------------------------------
+func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_eth_txs"
@@ -118,7 +120,7 @@ func Eth_tx__db__get_count(p_metrics *gf_eth_core.GF_metrics,
 
 //-------------------------------------------------
 // DB__GET
-func eth_tx__db__get(p_tx_hash_str string,
+func DB__get(p_tx_hash_str string,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (*GF_eth__tx, *gf_core.GF_error) {
@@ -180,6 +182,8 @@ func DB__write_bulk(p_txs_lst []*GF_eth__tx,
 	return nil
 }
 
+//-------------------------------------------------
+// VAR
 //-------------------------------------------------
 func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 	p_abis_defs_map map[string]*gf_eth_contract.GF_eth__abi,

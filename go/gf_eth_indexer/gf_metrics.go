@@ -26,7 +26,8 @@ import (
 
 //-------------------------------------------------
 type GF_metrics struct {
-	SQS__msgs_num__counter prometheus.Counter
+	Blocks__indexed_num__counter prometheus.Counter
+	Tx__indexed_num__counter     prometheus.Counter
 }
 
 //-------------------------------------------------
@@ -37,14 +38,14 @@ func Metrics__init() (*GF_metrics, *gf_core.GF_error) {
 	//---------------------------
 	// INDEXED_BLOCKS
 	counter__indexed_blocks_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__indexed_blocks_num",
+		Name: "gf_eth_monitor__indexed__blocks_num",
 		Help: "number of blocks that were indexed",
 	})
 
 
 	// INDEXED_TXS
 	counter__indexed_txs_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__indexed_txs_num",
+		Name: "gf_eth_monitor__indexed__txs_num",
 		Help: "number of tx's that were indexed",
 	})
 
@@ -52,5 +53,11 @@ func Metrics__init() (*GF_metrics, *gf_core.GF_error) {
 	//---------------------------
 	prometheus.MustRegister(counter__indexed_blocks_num)
 	prometheus.MustRegister(counter__indexed_txs_num)
-	return nil, nil
+
+
+	metrics := &GF_metrics{
+		Blocks__indexed_num__counter: counter__indexed_blocks_num,
+		Tx__indexed_num__counter:     counter__indexed_txs_num,
+	}
+	return metrics, nil
 }

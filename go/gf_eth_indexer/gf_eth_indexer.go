@@ -45,11 +45,11 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 	ctx := context.Background()
 
 	// METRICS
-	metrics, gf_err := Metrics__init()
+	metrics__indexer, gf_err := Metrics__init()
 	if gf_err != nil {
 		return nil, gf_err
 	}
-	fmt.Println(metrics)
+	fmt.Println(metrics__indexer)
 	
 
 	// ABI_DEFS
@@ -72,12 +72,13 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 			ctx := context.Background()
 
 			// PERSIST_RANGE
-			gf_errs_lst := persist__range(cmd.Block_start_uint,
+			gf_errs_lst := index__range(cmd.Block_start_uint,
 				cmd.Block_end_uint,
 				p_get_worker_hosts_fn,
 				abis_defs_map,
 				ctx,
 				p_metrics,
+				metrics__indexer,
 				p_runtime)
 			
 			if len(gf_errs_lst) > 0 {
@@ -93,12 +94,13 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 }
 
 //-------------------------------------------------
-func persist__range(p_block_start_uint uint64,
+func index__range(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
+	p_metrics_indexer     *GF_metrics,
 	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GF_error {
 
 	gf_errs_lst := []*gf_core.GF_error{}
@@ -107,8 +109,9 @@ func persist__range(p_block_start_uint uint64,
 		block_uint := b
 
 		//---------------------
-		// GET_BLOCK - gets the same block from all the workers that it gets, and the resulting maps
-		//             are key-ed by worker_host.
+		// GET_BLOCK_FROM_WORKER
+		// gets the same block from all the workers that it gets, and the resulting maps
+		// are key-ed by worker_host.
 		block_from_workers_map, miners_map, gf_err := gf_eth_blocks.Get_from_workers__pipeline(block_uint,
 			p_get_worker_hosts_fn,
 			p_abis_defs_map,
@@ -132,7 +135,7 @@ func persist__range(p_block_start_uint uint64,
 		}
 
 		//---------------------
-		// DB_WRITE__BLOCK
+		// DB_WRITE_BULK__BLOCK
 
 		gf_err = gf_eth_blocks.DB__write_bulk([]*gf_eth_blocks.GF_eth__block__int{gf_block,},
 			p_ctx,
@@ -143,13 +146,19 @@ func persist__range(p_block_start_uint uint64,
 			continue // continue processing subsequent blocks
 		}
 
+		// METRICS
+		if p_metrics != nil {
+			p_metrics_indexer.Blocks__indexed_num__counter.Inc()
+		}
+
+
 		//---------------------
 		
 		// some blocks (especially early ones) dont have any transactions in them
 		if len(gf_block.Txs_lst) > 0 {
 
 			//---------------------
-			// DB_WRITE__TXS
+			// DB_WRITE_BULK__TXS
 
 			gf_err = gf_eth_tx.DB__write_bulk(gf_block.Txs_lst,
 				p_ctx,
@@ -160,6 +169,13 @@ func persist__range(p_block_start_uint uint64,
 				continue // continue processing subsequent blocks
 			}
 
+			// METRICS
+			if p_metrics != nil {
+				for _, _ = range gf_block.Txs_lst {
+					p_metrics_indexer.Tx__indexed_num__counter.Inc()
+				}
+			}
+			
 			//---------------------
 			// TRACES
 			tx_hashes_lst := []string{}
@@ -169,6 +185,7 @@ func persist__range(p_block_start_uint uint64,
 
 			worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
 
+			// DB_WRITE
 			gf_err, _ = gf_eth_tx.Trace__get_and_persist_bulk(tx_hashes_lst,
 				worker_inspector_host_port_str,
 				p_ctx,

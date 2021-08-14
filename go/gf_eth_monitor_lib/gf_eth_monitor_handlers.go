@@ -43,12 +43,12 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 
 
 	//---------------------
-	// GET__BLOCK_PERSIST_BULK
+	// GET__BLOCK_INDEX
 
-	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/persist_bulk",
+	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/index",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			span__root := sentry.StartSpan(p_ctx, "http__master__block_persist_bulk", sentry.ContinueFromRequest(p_req))
+			span__root := sentry.StartSpan(p_ctx, "http__master__block_index", sentry.ContinueFromRequest(p_req))
 			// ctx := span__root.Context()
 			defer span__root.Finish()
 
