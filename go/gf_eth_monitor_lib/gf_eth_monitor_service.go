@@ -43,12 +43,12 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
 	sentry_samplerate_f := 1.0
 	sentry_trace_handlers_map := map[string]bool{
+		"GET /gfethm/v1/block/index": true,
+		"GET /gfethm/v1/block":       true,
 		// "/gfethm/v1/miner": true,
 		// "/gfethm/v1/block": true,
 		// "/gfethm/v1/peers": true,
 		// "http__master__get_block": true,
-		"GET /gfethm/v1/block": true,
-		"GET /test": true,
 		// "http__master__get_block": true,
 	}
 	err := gf_core.Error__init_sentry(sentry_endpoint_str,
