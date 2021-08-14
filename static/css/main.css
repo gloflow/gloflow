@@ -28,6 +28,8 @@ body {
 	border-width: 1px;
 }
 
+/*------------------------------------------------------------*/
+/*INDEX_BLOCK*/
 .monitor #index_block {
 	position: absolute;
 	top: 30px;

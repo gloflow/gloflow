@@ -74,7 +74,7 @@ function main() {
 
 
 
-    $(".submit_btn").on('click', (e)=>{
+    $("#index_block #submit_btn").on('click', (e)=>{
 
         const block_range__start_int = $("input#block_range__start").val();
         const block_range__end_int   = $("input#block_range__end").val();
