@@ -28,6 +28,27 @@ body {
 	border-width: 1px;
 }
 
+.monitor #index_block {
+	position: absolute;
+	top: 30px;
+	right: 0px;
+	width: 234px;
+	background-color: yellow;
+}
+
+.monitor #index_block input {
+	width: 80px;
+}
+
+.monitor #index_block #submit_btn {
+	position: absolute;
+	top: -8px;
+	width: 40px;
+	height: 40px;
+	background-color: orange;
+	right: 0px;
+}
+
 /*------------------------------------------------------------*/
 /*MINERS*/
 

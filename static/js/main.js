@@ -28,10 +28,20 @@ function main() {
 
 
     $("body").append("<div class='app_label'>gf_eth_monitor</div>");
-    $("body").append(`<div class='monitor'>
+    
+    
+    const monitor_element = $(`<div class='monitor'>
         <div>block #</div>
         <input id="search" value="2000000"></input>
+
+        <div id="index_block">
+            <input id="block_range__start" value="2000000">
+            <input id="block_range__end"   value="2000001">
+            <div id="submit_btn"></div>
+        </div>
     </div>`);
+    
+    $("body").append(monitor_element);
 
 
 
@@ -62,6 +72,25 @@ function main() {
     });
 
 
+
+
+    $(".submit_btn").on('click', (e)=>{
+
+        const block_range__start_int = $("input#block_range__start").val();
+        const block_range__end_int   = $("input#block_range__end").val();
+
+
+        http__index_block(block_range__start_int,
+            block_range__end_int,
+            function() {
+
+
+                $(monitor_element).find("#index_block #submit_btn").css("background-color", "green");
+            },
+            function(){
+                $(monitor_element).find("#index_block #submit_btn").css("background-color", "red");
+            });
+    });
     
 }
 
@@ -163,15 +192,15 @@ function render__block_from_workers(p_block_uint,
                 return
             }
             
-            const tx_hash_str       = tx_map["hash_str"];
-            const tx_from_addr_str  = tx_map["from_addr_str"];
-            const tx_to_addr_str    = tx_map["to_addr_str"];
-            const tx_value_eth_f    = tx_map["value_eth_f"];
-            const tx_gas_used_uint  = tx_map["gas_used_uint"];
-            const tx_gas_price_uint = tx_map["gas_price_uint"];
-            const tx_nonce_int      = tx_map["nonce_int"];
-            const tx_size_f         = tx_map["size_f"];
-            const tx_cost_gwei_f    = tx_map["cost_gwei_f"];
+            const tx_hash_str      = tx_map["hash_str"];
+            const tx_from_addr_str = tx_map["from_addr_str"];
+            const tx_to_addr_str   = tx_map["to_addr_str"];
+            const tx_value_eth_f   = tx_map["value_eth_f"];
+            const tx_gas_used_int  = tx_map["gas_used_int"];
+            const tx_gas_price_int = tx_map["gas_price_int"];
+            const tx_nonce_int     = tx_map["nonce_int"];
+            const tx_size_f        = tx_map["size_f"];
+            const tx_cost_gwei_f   = tx_map["cost_gwei_f"];
 
             // TRANSACTION
             const tx_element = $(`<div class="tx">
@@ -182,11 +211,11 @@ function render__block_from_workers(p_block_uint,
                 </div>
                 
                 <div class="tx_value">value         - <span>${tx_value_eth_f}</span>eth</div>
-                <div class="tx_gas_used">gas used   - <span>${tx_gas_used_uint}</span></div>
-                <div class="tx_gas_price">gas price - <span>${tx_gas_price_uint}</span></div>
+                <div class="tx_gas_used">gas used   - <span>${tx_gas_used_int}</span></div>
+                <div class="tx_gas_price">gas price - <span>${tx_gas_price_int}</span></div>
                 <div class="tx_nonce">nonce         - <span>${tx_nonce_int}</span></div>
                 <div class="tx_size">size           - <span>${tx_size_f}</span></div>
-                <div class="tx_cost">cost           - <span>${tx_cost_gwei_f}</span></div>
+                <div class="tx_cost">cost           - <span>${tx_cost_gwei_f}</span> gwei</div>
             </div>`);
 
             
@@ -291,6 +320,37 @@ function view_trace(p_tx_id_str, p_on_error_fun) {
         function(){
             p_on_error_fun();
         })
+}
+
+//---------------------------------------------------
+function http__index_block(p_range_start_int,
+    p_range_end_int,
+    p_on_complete_fun,
+	p_on_error_fun) {
+
+
+    const url_str = `/gfethm/v1/block/index?br=${p_range_start_int}-${p_range_end_int}`;
+
+    //-------------------------
+	// HTTP AJAX
+	$.get(url_str,
+		function(p_data_map) {
+
+            console.log('response received');
+			console.log(`data_map["status"] - ${p_data_map["status"]}`);
+			
+			if (p_data_map["status"] == "OK") {
+
+
+                p_on_complete_fun();
+
+			}
+			else {
+				p_on_error_fun(p_data_map["data"]);
+			}
+        });
+    
+	//-------------------------	
 }
 
 //---------------------------------------------------
