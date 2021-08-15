@@ -61,14 +61,18 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 			select {
 			//-----------------------------
 			// MSG__NEW_INSTANCES
+			// when new instances are discovered and sent on the new_instances_ch
+			// they're processed and added to the hosts_lst, for sending back to clients
+			// requesting this info on get_hosts_ch
+
 			case new_instances_lst := <- new_instances_ch:
 
 				hosts_lst = []string{} // reset
-				for _, inst := range new_instances_lst {
+				for _, ec2_inst := range new_instances_lst {
 
 
 
-					inst__dns_name_str  := *inst.PublicDnsName
+					inst__dns_name_str  := *ec2_inst.PublicDnsName
 					inst__host_port_str := fmt.Sprintf("%s:%d", inst__dns_name_str, port_int)
 
 					// IMPORTANT!! - only register instances that have a public DNS name.
@@ -105,7 +109,8 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 					discovery_errors_ch <- gf_err
 
 					// SLEEP - sleep after error as well
-					time.Sleep(update_period_sec)
+					// time.Sleep(update_period_sec)
+
 					continue
 				}
 
@@ -126,11 +131,18 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 	// GET_WORKER_HOSTS__DYNAMIC_FN
 	get_worker_hosts__dynamic_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
 
-	
+
+		fmt.Println("=============")
+		fmt.Println(p_ctx)
+
+		
 		span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
 		span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 
 		var workers_inspectors_hosts_lst []string
+
+		//---------------------
+		// FROM_DISCOVERY
 		if p_runtime.Config.Workers_aws_discovery_bool {
 
 			reply_ch := make(chan []string)
@@ -139,11 +151,17 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 
 			workers_inspectors_hosts_lst = hosts_ports_lst
 
+		//---------------------
+		// FROM_CONFIG
+		// REMOVE!? - is this used? 
+		//            seems that get_worker_hosts__static_fn() gets used if p_runtime.Config.Workers_aws_discovery_bool == true
+		//            so this "else" branch will never be used.
 		} else {
 			workers_inspectors_hosts_str := p_runtime.Config.Workers_hosts_str
 			workers_inspectors_hosts_lst = strings.Split(workers_inspectors_hosts_str, ",")
 		}
 
+		//---------------------
 		span__get_worker_hosts.Finish()
 
 		return workers_inspectors_hosts_lst
