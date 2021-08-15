@@ -35,6 +35,7 @@ type GF_indexer chan(GF_indexer_cmd)
 type GF_indexer_cmd struct {
 	Block_start_uint uint64
 	Block_end_uint   uint64
+	Ctx              context.Context
 }
 
 //-------------------------------------------------
@@ -69,14 +70,12 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 		// INDEXER_COMMANDS
 		case cmd := <- indexer_cmds_ch:
 
-			ctx := context.Background()
-
 			// PERSIST_RANGE
 			gf_errs_lst := index__range(cmd.Block_start_uint,
 				cmd.Block_end_uint,
 				p_get_worker_hosts_fn,
 				abis_defs_map,
-				ctx,
+				cmd.Ctx,
 				p_metrics,
 				metrics__indexer,
 				p_runtime)
@@ -87,7 +86,6 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 		}
 
 		//----------------------------
-
 	}()
 	
 	return indexer_cmds_ch, nil
@@ -150,7 +148,6 @@ func index__range(p_block_start_uint uint64,
 		if p_metrics != nil {
 			p_metrics_indexer.Blocks__indexed_num__counter.Inc()
 		}
-
 
 		//---------------------
 		

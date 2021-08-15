@@ -44,8 +44,8 @@ type GF_eth__block__int struct {
 	DB_id                 string    `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
 	Creation_time__unix_f float64   `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
 
-	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"`
-	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"`
+	Hash_str          string        `mapstructure:"hash_str"          json:"hash_str"          bson:"hash_str"`
+	Parent_hash_str   string        `mapstructure:"parent_hash_str"   json:"parent_hash_str"   bson:"parent_hash_str"`
 	Block_num_uint    uint64        `mapstructure:"block_num_int"     json:"block_num_int"     bson:"block_num_uint"`
 	Gas_used_uint     uint64        `mapstructure:"gas_used_uint"     json:"gas_used_uint"     bson:"gas_used_uint"`
 	Gas_limit_uint    uint64        `mapstructure:"gas_limit_uint"    json:"gas_limit_uint"    bson:"gas_limit_uint"`

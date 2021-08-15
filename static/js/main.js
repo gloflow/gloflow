@@ -245,7 +245,7 @@ function render__block_from_workers(p_block_uint,
 
             $(txs_element).find(".txs_list").append(tx_element);
 
-            if (tx_gas_used_uint > 21000) {
+            if (tx_gas_used_int > 21000) {
                 $(tx_element).find(".tx_gas_used span").addClass("not_just_value_transfer");
 
 

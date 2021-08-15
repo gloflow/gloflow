@@ -64,6 +64,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 			
 			gf_eth_indexer.Client__index_block_range(block_start_uint,
 				block_end_uint,
+				p_ctx,
 				p_indexer_cmds_ch)
 			
 			/*// ABI_DEFS
