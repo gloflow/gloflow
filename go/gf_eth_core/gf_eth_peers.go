@@ -106,7 +106,7 @@ func Eth_peers__db__get_count(p_metrics *GF_metrics,
 		gf_err := gf_core.Mongo__handle_error("failed to DB get count Eth peers grouped by peer_name",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_core", p_runtime.Runtime_sys)
 		return nil, gf_err
 
 	}
@@ -123,7 +123,7 @@ func Eth_peers__db__get_count(p_metrics *GF_metrics,
 			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of peers-by-name counts aggregation",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+				err, "gf_eth_core", p_runtime.Runtime_sys)
 			return nil, gf_err
 		}
 	
@@ -174,7 +174,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 		gf_err := gf_core.Mongo__handle_error("failed to DB get all Eth peers grouped by peer_name",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_core", p_runtime.Runtime_sys)
 		return nil, gf_err
 
 	}
@@ -193,7 +193,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of peers-by-name aggregation",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+				err, "gf_eth_core", p_runtime.Runtime_sys)
 			return nil, gf_err
 		}
 	
@@ -263,7 +263,7 @@ func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 		/*gf_err := gf_core.Mongo__handle_error("failed to insert a new Peer lifecycle into the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{"peer_name_str": p_peer_new_lifecycle.Peer_name_str,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)*/
+			err, "gf_eth_core", p_runtime.Runtime_sys)*/
 
 		// METRICS
 		if p_metrics != nil {

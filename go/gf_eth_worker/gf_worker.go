@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_core
+package gf_eth_worker
 
 import (
 	"fmt"
@@ -28,6 +28,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_aws"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
@@ -36,7 +37,7 @@ import (
 type worker_inspector__get_hosts_ch chan chan []string
 
 //-------------------------------------------------
-func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_runtime) []string, chan *gf_core.GF_error) {
+func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *gf_eth_core.GF_runtime) []string, chan *gf_core.GF_error) {
 
 	// CONFIG
 	update_period_sec         := 2*60 * time.Second // 2min
@@ -129,7 +130,7 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 	
 	//-------------------------------------------------
 	// GET_WORKER_HOSTS__DYNAMIC_FN
-	get_worker_hosts__dynamic_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
+	get_worker_hosts__dynamic_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
 
 
 		fmt.Println("=============")
@@ -169,14 +170,14 @@ func Worker__discovery__init(p_runtime *GF_runtime) (func(context.Context, *GF_r
 
 	//-------------------------------------------------
 	// GET_WORKER_HOSTS__STATIC_FN
-	get_worker_hosts__static_fn := func(p_ctx context.Context, p_runtime *GF_runtime) []string {
+	get_worker_hosts__static_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
 		worker_hosts_lst := strings.Split(p_runtime.Config.Workers_hosts_str, ",")
 		return worker_hosts_lst
 	}
 	
 	//-------------------------------------------------
 
-	var get_worker_hosts_fn func(context.Context, *GF_runtime) []string
+	var get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string
 	if p_runtime.Config.Workers_aws_discovery_bool {
 		get_worker_hosts_fn = get_worker_hosts__dynamic_fn
 	} else {

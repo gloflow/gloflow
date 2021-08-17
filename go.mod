@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.40.22
+	github.com/aws/aws-sdk-go v1.40.24
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect
 	github.com/davecgh/go-spew v1.1.1
@@ -36,7 +36,7 @@ require (
 	github.com/olivere/elastic v6.2.37+incompatible // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0 // indirect
-	github.com/prometheus/procfs v0.7.2 // indirect
+	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/shirou/gopsutil v3.21.7+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cast v1.4.1 // indirect
@@ -44,13 +44,14 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
-	github.com/tklauser/go-sysconf v0.3.7 // indirect
+	github.com/tklauser/go-sysconf v0.3.8 // indirect
+	github.com/tklauser/numcpus v0.3.0 // indirect
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.7.1
-	golang.org/x/crypto v0.0.0-20210813211128-0a44fdfbc16e // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
+	golang.org/x/sys v0.0.0-20210817190340-bfb29a6856f2 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

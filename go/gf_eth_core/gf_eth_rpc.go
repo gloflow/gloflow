@@ -60,7 +60,7 @@ func Eth_rpc__call(p_input_json_str string,
 				"url_str":        url_str,
 				"input_json_str": p_input_json_str,
 			},
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -71,7 +71,7 @@ func Eth_rpc__call(p_input_json_str string,
 		gf_err := gf_core.Error__create("failed to execute HTTP POST request to eth_rpc API",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": url_str,},
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}
 
@@ -87,7 +87,7 @@ func Eth_rpc__call(p_input_json_str string,
 		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
 			map[string]interface{}{"url_str": url_str,},
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}
 	
@@ -121,7 +121,7 @@ func Eth_rpc__init(p_host_str string,
 		gf_err := gf_core.Error__create_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
+			err, "gf_eth_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
     }
 

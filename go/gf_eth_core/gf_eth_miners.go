@@ -34,20 +34,13 @@ type GF_eth__miner__int struct {
 }
 
 //-------------------------------------------------
+// DB__GET_INFO
 func Eth_miners__db__get_info(p_miner_address_str string,
 	p_metrics *GF_metrics,
 	p_ctx     context.Context,
 	p_runtime *GF_runtime) (map[string]*GF_eth__miner__int, *gf_core.GF_error) {
 
-
-
-
-
-
-
 	coll_name_str := "gf_eth_meta__miners"
-
-
 
 	miner_address_lower_str := strings.ToLower(p_miner_address_str)
 	q := bson.M{"addr_str": miner_address_lower_str, }
@@ -61,7 +54,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to find Miner with gives address in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"miner_addr_str": miner_address_lower_str,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_core", p_runtime.Runtime_sys)
 		return nil, gf_err
 	}
 	defer cur.Close(p_ctx)
@@ -76,7 +69,7 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get Miners",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+				err, "gf_eth_core", p_runtime.Runtime_sys)
 				
 			return nil, gf_err
 		}

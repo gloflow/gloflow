@@ -32,6 +32,7 @@ import (
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_indexer"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_worker"
 )
 
 //-------------------------------------------------
@@ -97,7 +98,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 
 	//-------------
 	// WORKER_DISCOVERY
-	get_hosts_fn, _ := gf_eth_core.Worker__discovery__init(p_runtime)
+	get_hosts_fn, _ := gf_eth_worker.Discovery__init(p_runtime)
 	
 	//-------------
 	// INDEXER
