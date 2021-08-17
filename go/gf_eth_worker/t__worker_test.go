@@ -17,55 +17,84 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_core
+package gf_eth_worker
 
 import (
 	"os"
 	"fmt"
 	"testing"
 	"context"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
-func Test__contract_opcodes(p_test *testing.T) {
+func Test__worker(p_test *testing.T) {
 
-	fmt.Println("TEST__CONTRACT_OPCODES ==============================================")
-
+	fmt.Println("TEST__WORKER ==============================================")
+	
 	ctx := context.Background()
 
+	block_int     := 4634748
 	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
-	runtime, _ := t__get_runtime(p_test)
 
 	//--------------------
-	tx_id_hex_str := "0x62974c8152c87e14880c54007260e0d5fe9d182c2cd22c58797735a9ae88370a"
+	// RUNTIME_SYS
+	log_fun     := gf_core.Init_log_fun()
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_eth_monitor_core__tests",
+		Log_fun:          log_fun,
+		
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,
+	}
 
-	// GET_TRACE
-	gf_tx_trace, gf_err := Eth_tx_trace__get_from_worker_inspector(tx_id_hex_str,
+	config := &GF_config{
+		Mongodb_host_str:    "localhost:27017",
+		Mongodb_db_name_str: "gf_eth_monitor",
+	}
+	runtime, err := Runtime__get(config, runtime_sys)
+	if err != nil {
+		p_test.Fail()
+	}
+
+	//--------------------
+	// GET_BLOCK__FROM_WORKER_INSPECTOR
+	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
 		host_port_str,
 		ctx,
-		runtime.Runtime_sys)
+		runtime_sys)
+
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
-	spew.Dump(gf_tx_trace)
 
-	//--------------------
-	// PLOT
 
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
+
+	spew.Dump(gf_block)
+
+
+	abi_type_str := "erc20"
+	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, nil, runtime)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+	abis_map := map[string]*GF_eth__abi{
+		"erc20": abis_lst[0],
 	}
 
-	_, gf_err = py__run_plugin__plot_tx_trace(tx_id_hex_str,
-		gf_tx_trace,
-		plugins_info,
-		runtime.Runtime_sys)
+	gf_err = eth_tx__enrich_from_block(gf_block,
+		abis_map,
+		ctx,
+		nil,
+		runtime)
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
-	//--------------------
+
+
+
 }

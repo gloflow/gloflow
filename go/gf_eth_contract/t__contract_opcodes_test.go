@@ -17,46 +17,55 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_core
+package gf_eth_contract
 
 import (
-	// "os"
+	"os"
 	"fmt"
 	"testing"
-	// "github.com/stretchr/testify/assert"
-	"github.com/gloflow/gloflow/go/gf_core"
+	"context"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
-func Test__plugins(p_test *testing.T) {
+func Test__contract_opcodes(p_test *testing.T) {
 
-	fmt.Println("TEST__PLUGINS ==============================================")
-	
+	fmt.Println("TEST__CONTRACT_OPCODES ==============================================")
 
+	ctx := context.Background()
 
-	//--------------------
-	// RUNTIME_SYS
-	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
-		Log_fun:          log_fun,
-		
-		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
-	}
+	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
+
+	runtime, _ := t__get_runtime(p_test)
 
 	//--------------------
+	tx_id_hex_str := "0x62974c8152c87e14880c54007260e0d5fe9d182c2cd22c58797735a9ae88370a"
 
-	new_contract_addr_str := "0xTestContractAddr"
-	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: "./../../py/plugins",
-	}
-	gf_err := py__run_plugin__get_contract_info(new_contract_addr_str,
-		plugins_info,
-		runtime_sys)
+	// GET_TRACE
+	gf_tx_trace, gf_err := gf_eth_tx.Trace__get_from_worker_inspector(tx_id_hex_str,
+		host_port_str,
+		ctx,
+		runtime.Runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
+	spew.Dump(gf_tx_trace)
 
+	//--------------------
+	// PLOT
+
+	plugins_info := &GF_py_plugins{
+		Base_dir_path_str: "./../../py/plugins",
+	}
+
+	_, gf_err = py__run_plugin__plot_tx_trace(tx_id_hex_str,
+		gf_tx_trace,
+		plugins_info,
+		runtime.Runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+	//--------------------
 }
