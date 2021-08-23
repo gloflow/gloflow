@@ -42,6 +42,9 @@ func Eth_abi__get_defs(p_ctx context.Context,
 
 
 
+	abis_defs_map := map[string]*GF_eth__abi{}
+
+
 	// DB_GET
 	abi_type_str := "erc20"
 	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
@@ -49,8 +52,8 @@ func Eth_abi__get_defs(p_ctx context.Context,
 		return nil, gf_err
 	}
 
-	abis_defs_map := map[string]*GF_eth__abi{
-		"erc20": abis_lst[0],
+	if len(abis_lst) > 0 {
+		abis_defs_map["erc20"] = abis_lst[0]
 	}
 
 	return abis_defs_map, nil

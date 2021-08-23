@@ -47,7 +47,7 @@ func main() {
 	log.SetOutput(os.Stdout)
 	// log.SetLevel(log.WarnLevel)
 
-	port_int         := 2000
+	port_int         := 9000
 	port_metrics_int := 9120
 	geth__port_int   := 8545
 	geth__host_str               := os.Getenv("GF_GETH_HOST") // "127.0.0.1"

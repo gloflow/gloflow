@@ -39,7 +39,7 @@ func Test__contract(p_test *testing.T) {
 
 	// block_int := 4634748
 	// host_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST")
-	// worker_inspector__port_int := 2000
+	// worker_inspector__port_int := 9000
 
 
 

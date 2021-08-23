@@ -20,12 +20,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_core
 
 import (
-	"os"
 	"testing"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-func TestMain(m *testing.M) {
-	v := m.Run()
-	os.Exit(v)
+func T__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
+
+	// RUNTIME_SYS
+	log_fun     := gf_core.Init_log_fun()
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_eth_monitor_core__tests",
+		Log_fun:          log_fun,
+		
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,
+	}
+
+	config := &GF_config{
+		Mongodb_host_str:    "localhost:27017",
+		Mongodb_db_name_str: "gf_eth_monitor",
+	}
+
+	// RUNTIME
+	runtime, err := Runtime__get(config, runtime_sys)
+	if err != nil {
+		p_test.Fail()
+	}
+	
+	return runtime, nil
 }

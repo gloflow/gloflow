@@ -39,6 +39,9 @@ type worker_inspector__get_hosts_ch chan chan []string
 //-------------------------------------------------
 func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *gf_eth_core.GF_runtime) []string, chan *gf_core.GF_error) {
 
+	// FIX!! - move this out of this function, into an ENV var or some kind of config
+	worker_inspector_port_int := uint(9000)
+
 	// CONFIG
 	update_period_sec         := 2*60 * time.Second // 2min
 	target_instances_tags_lst := [][]map[string]string{
@@ -53,9 +56,6 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 	//-------------------------------------------------
 	// MAIN
 	go func() {
-
-		// PORT
-		port_int := uint(2000)
 
 		var hosts_lst []string
 		for {
@@ -74,7 +74,7 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 
 
 					inst__dns_name_str  := *ec2_inst.PublicDnsName
-					inst__host_port_str := fmt.Sprintf("%s:%d", inst__dns_name_str, port_int)
+					inst__host_port_str := fmt.Sprintf("%s:%d", inst__dns_name_str, worker_inspector_port_int)
 
 					// IMPORTANT!! - only register instances that have a public DNS name.
 					//               they might not have that DNS name assigned, if they're 

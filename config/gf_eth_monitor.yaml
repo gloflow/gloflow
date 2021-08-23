@@ -18,7 +18,7 @@ aws_sqs_queue: "gf_eth_monitor"
 
 # WORKERS
 workers_aws_discovery: true 
-workers_hosts:         "127.0.0.1:2000"
+workers_hosts:         "127.0.0.1:9000"
 
 # SENTRY_ENDPOINT
 sentry_endpoint: ""
