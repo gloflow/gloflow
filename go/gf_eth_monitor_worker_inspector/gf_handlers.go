@@ -84,11 +84,8 @@ func init_handlers(p_metrics *GF_metrics,
 			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_tx_trace", sentry.ContinueFromRequest(p_req))
 			defer span__root.Finish()
 
-
-			
 			//------------------
 			// INPUT
-
 			tx_hex_str, gf_err := gf_eth_monitor_lib.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.runtime_sys)
 
 			if gf_err != nil {
@@ -96,9 +93,6 @@ func init_handlers(p_metrics *GF_metrics,
 			}
 
 			//------------------
-
-
-
 			// GET_TRACE
 			trace_map, gf_err := gf_eth_tx.Trace__get(tx_hex_str,
 				p_runtime.eth_rpc_host_str,
@@ -107,8 +101,6 @@ func init_handlers(p_metrics *GF_metrics,
 				return nil, gf_err
 			}
 			
-			
-
 			//------------------
 			// OUTPUT
 			data_map := map[string]interface{}{
@@ -118,8 +110,6 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 
 			return data_map, nil
-
-
 		},
 		metrics,
 		false, // true, // p_store_run_bool
