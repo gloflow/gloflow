@@ -38,11 +38,19 @@ func init_handlers(p_metrics *GF_metrics,
 	p_runtime *GF_runtime) {
 
 
+	//---------------------
+	// METRICS
+	handlers_endpoints_lst := []string{
+		"/gfethm_worker_inspect/v1/account/info",
+		"/gfethm_worker_inspect/v1/tx/trace",
+		"/gfethm_worker_inspect/v1/blocks",
+	}
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
 
 	//---------------------
 	// GET_ACCOUNT_INFO
 
-	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/account/info",
+	gf_rpc_lib.Create_handler__http_with_metrics("/gfethm_worker_inspect/v1/account/info",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 
@@ -63,12 +71,14 @@ func init_handlers(p_metrics *GF_metrics,
 			return nil, nil
 
 		},
+		metrics,
+		true, // p_store_run_bool
 		p_runtime.runtime_sys)
 
 	//---------------------
 	// GET_TX_TRACE
 
-	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/tx/trace",
+	gf_rpc_lib.Create_handler__http_with_metrics("/gfethm_worker_inspect/v1/tx/trace",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_tx_trace", sentry.ContinueFromRequest(p_req))
@@ -111,12 +121,14 @@ func init_handlers(p_metrics *GF_metrics,
 
 
 		},
+		metrics,
+		true, // p_store_run_bool
 		p_runtime.runtime_sys)
 
 	//---------------------
 	// GET_BLOCKS
 
-	gf_rpc_lib.Create_handler__http("/gfethm_worker_inspect/v1/blocks",
+	gf_rpc_lib.Create_handler__http_with_metrics("/gfethm_worker_inspect/v1/blocks",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__worker_inspector__get_block", sentry.ContinueFromRequest(p_req))
@@ -164,6 +176,8 @@ func init_handlers(p_metrics *GF_metrics,
 
 			return data_map, nil
 		},
+		metrics,
+		true, // p_store_run_bool
 		p_runtime.runtime_sys)
 
 	//---------------------

@@ -12,7 +12,15 @@ pre-built container is available in a Dockerhub repo - glofloworg/gf_eth_monitor
 `docker run glofloworg/gf_eth_monitor`  
 ENV vars for the container are:  
 - `GF_PORT`
+- `GF_PORT_METRICS`
 - `GF_MONGODB_HOST`
+- `GF_INFLUXDB_HOST`
+- `GF_AWS_SQS_QUEUE`
+- `GF_WORKERS_AWS_DISCOVERY`
+- `GF_WORKERS_HOSTS`
+- `GF_SENTRY_ENDPOINT`
+- `GF_EVENTS_CONSUME`
+- `GF_PY_PLUGINS_BASE_DIR_PATH`
 
 
 
@@ -42,10 +50,21 @@ $ python3 gf_builder_cli.py -run=test_go
 
 # working dir - ./go/gf_eth_monitor_core/
 # ENV VARS:
-# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:2000
+# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
 $ go test -v
 
+# working dir - ./go/gf_eth_indexer
+# ENV VARS:
+# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
+$ go test -v -run Test__indexer
+
+# working dir - ./go/gf_eth_blocks
+# ENV VARS:
+# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
+$ go test -v -run Test__blocks
+
 ```
+
 
 
 PY TESTS:
@@ -58,3 +77,4 @@ PY TESTS:
 $ python3 gf_builder_cli.py -run=test_py
 
 ```
+

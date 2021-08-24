@@ -39,10 +39,12 @@ type GF_metrics struct {
 	Peers__unique_names_num__gauge          prometheus.Gauge
 
 	// BLOCK
-	Block__db_count__gauge prometheus.Gauge
+	Block__db_count__gauge       prometheus.Gauge
+	Block__indexed_num__counter prometheus.Counter
 
 	// TX
-	Tx__db_count__gauge prometheus.Gauge
+	Tx__db_count__gauge      prometheus.Gauge
+	Tx__indexed_num__counter prometheus.Counter
 
 	// TX_TRACE
 	Tx_trace__worker_inspector_durration__gauge prometheus.Gauge
@@ -63,8 +65,9 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 
 	//---------------------------
 	// SQS_MSGS_NUM
-	counter__sqs_msgs_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__sqs_msgs_num",
+	sqs_msgs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "sqs_msgs_num__count",
 		Help: "number of AWS SQS messages received",
 	})
 
@@ -72,16 +75,17 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 	// PEERS
 
 	// HTTP_REQ_NUM__GET_PEERS
-	counter__http_req_num__get_peers := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__http_req_num__get_peers",
+	http_req_num__get_peers__counter := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "http_req_num__get_peers",
 		Help: "number of HTTP requests received to get peers",
 	})
 	
 	// PEERS_UNIQUE_NAMES_NUM
-	gauge__peers_unique_names_num := prometheus.NewGauge(
+	peers_unique_names_num__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
-			Name: "gf_eth_monitor__peers_unique_names_num",
+			Namespace: "gf_eth_mon",
+			Name: "peers__unique_names_num__count",
 			Help: "number of unique peer names",
 		})
 	
@@ -89,91 +93,112 @@ func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
 	// BLOCK
 	block__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
+			Namespace: "gf_eth_mon",
 			Name: "block__db_count__gauge",
 			Help: "how many block records are in the DB",
 		})
+
+	
+	// INDEXED_BLOCKS
+	block__indexed_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "block__indexed__num__count",
+		Help: "number of blocks that were indexed",
+	})
 
 	//---------------------------
 	// TX
 	tx__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
+			Namespace: "gf_eth_mon",
 			Name: "tx__db_count__gauge",
 			Help: "how many tx records are in the DB",
 		})
+	
+	// INDEXED_TXS
+	tx__indexed_num__count := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "tx__indexed_num__count",
+		Help: "number of tx's that were indexed",
+	})
 
 	//---------------------------
 	// TX_TRACE
 	
 	tx_trace__worker_inspector_durration__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
-			Name:      "gf_eth_monitor__tx_trace__worker_inspector_durration__gauge",
+			Namespace: "gf_eth_mon",
+			Name:      "tx_trace__worker_inspector_durration__gauge",
 			Help:      "how long the tx_trace request takes to the worker_inspector",
 		})
 
 	tx_trace__py_plugin__plot_durration__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
+			Namespace: "gf_eth_mon",
 			Name:      "tx_trace__py_plugin__plot_durration__gauge",
 			Help:      "how long the tx_trace py_plugin plot execution takes",
 		})
 
 	tx_trace__db_count__gauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
-			// Namespace: "gf",
+			Namespace: "gf_eth_mon",
 			Name:      "tx_trace__db_count__gauge",
 			Help:      "how many tx_trace records are in the DB",
 		})
 	
 	//---------------------------
 	// DB_WRITES_NUM__NEW_PEER_LIFECYCLE
-	counter__db_writes_num__new_peer_lifecycle := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__db_writes_num__new_peer_lifecycle",
+	db_writes_num__new_peer_lifecycle__counter := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "db_writes_num__new_peer_lifecycle__count",
 		Help: "number of DB write operations for the new_peer_lifecycle",
 	})
 
 	//---------------------------
 	// ERRS_NUM
-	counter__errs_num := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_eth_monitor__errs_num",
+	errs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: "gf_eth_mon",
+		Name: "errs_num__count",
 		Help: "number of errors",
 	})
 
 	//---------------------------
-	prometheus.MustRegister(counter__sqs_msgs_num)
-	prometheus.MustRegister(counter__http_req_num__get_peers)
-	prometheus.MustRegister(gauge__peers_unique_names_num)
+	prometheus.MustRegister(sqs_msgs_num__counter)
+	prometheus.MustRegister(http_req_num__get_peers__counter)
+	prometheus.MustRegister(peers_unique_names_num__gauge)
 	prometheus.MustRegister(block__db_count__gauge)
+	prometheus.MustRegister(block__indexed_num__counter)
 	prometheus.MustRegister(tx__db_count__gauge)
+	prometheus.MustRegister(tx__indexed_num__count)
 	prometheus.MustRegister(tx_trace__worker_inspector_durration__gauge)
 	prometheus.MustRegister(tx_trace__py_plugin__plot_durration__gauge)
 	prometheus.MustRegister(tx_trace__db_count__gauge)
-	prometheus.MustRegister(counter__db_writes_num__new_peer_lifecycle)
-	prometheus.MustRegister(counter__errs_num)
-
-
-
-
-	
-
-
-
-
+	prometheus.MustRegister(db_writes_num__new_peer_lifecycle__counter)
+	prometheus.MustRegister(errs_num__counter)
 
 
 	metrics := &GF_metrics{
-		SQS__msgs_num__counter:                      counter__sqs_msgs_num,
-		Peers__http_req_num__get_peers__counter:     counter__http_req_num__get_peers,
-		Peers__unique_names_num__gauge:              gauge__peers_unique_names_num,
+		SQS__msgs_num__counter:                      sqs_msgs_num__counter,
+
+		// PEERS
+		Peers__http_req_num__get_peers__counter:     http_req_num__get_peers__counter,
+		Peers__unique_names_num__gauge:              peers_unique_names_num__gauge,
+
+		// BLOCK
 		Block__db_count__gauge:                      block__db_count__gauge,
+		Block__indexed_num__counter:                 block__indexed_num__counter,
+
+		// TX
 		Tx__db_count__gauge:                         tx__db_count__gauge,
+		Tx__indexed_num__counter:                    tx__indexed_num__count,
+
+		// TX_TRACE
 		Tx_trace__worker_inspector_durration__gauge: tx_trace__worker_inspector_durration__gauge,
 		Tx_trace__py_plugin__plot_durration__gauge:  tx_trace__py_plugin__plot_durration__gauge,
 		Tx_trace__db_count__gauge:                   tx_trace__db_count__gauge,
-		DB__writes_num__new_peer_lifecycle__counter: counter__db_writes_num__new_peer_lifecycle,
-		Errs_num__counter:                           counter__errs_num,
+
+		DB__writes_num__new_peer_lifecycle__counter: db_writes_num__new_peer_lifecycle__counter,
+		Errs_num__counter:                           errs_num__counter,
 	}
 
 	return metrics, nil

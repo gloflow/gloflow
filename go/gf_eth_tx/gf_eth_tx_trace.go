@@ -31,6 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -229,24 +230,30 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 
 	gf_opcodes_lst := []*GF_eth__tx_trace_opcode{}
 	for _, op := range result_map["structLogs"].([]interface{}) {
-
+		
 		op_map := op.(map[string]interface{})
-
+		
 		stack_lst := []string{}
 		for _, s := range op_map["stack"].([]interface{}) {
 			stack_lst = append(stack_lst, s.(string))
 		}
-
+		
 		memory_lst := []string{}
 		for _, s := range op_map["memory"].([]interface{}) {
 			memory_lst = append(memory_lst, s.(string))
 		}
+		
+
+		// fmt.Println("------------------")
+		// spew.Dump(op_map)
 
 		storage_map := map[string]string{}
-		for k, v := range op_map["storage"].(map[string]interface{}) {
-			storage_map[k] = v.(string)
+		if _, ok := op_map["storage"]; ok {
+			for k, v := range op_map["storage"].(map[string]interface{}) {
+				storage_map[k] = v.(string)
+			}
 		}
-
+		
 		gf_opcode := &GF_eth__tx_trace_opcode{
 			Op_str:             strings.TrimSpace(op_map["op"].(string)),
 			Pc_int:             uint(op_map["pc"].(float64)),
@@ -256,7 +263,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 			Memory_lst:         memory_lst,
 			Storage_map:        storage_map,
 		}
-
+		
 		gf_opcodes_lst = append(gf_opcodes_lst, gf_opcode)
 	}
 

@@ -27,7 +27,7 @@ import (
 	"math/big"
 	"github.com/getsentry/sentry-go"
 	"github.com/mitchellh/mapstructure"
-	"go.mongodb.org/mongo-driver/bson"
+	// "go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -102,60 +102,99 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 }*/
 
 //-------------------------------------------------
-// BLOCKS__DB__GET_COUNT
-func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
+func Index__pipeline(p_block_uint uint64,
+	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
+	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
+	p_ctx                 context.Context,
+	p_metrics             *gf_eth_core.GF_metrics,
+	p_runtime             *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
-	coll_name_str := "gf_eth_blocks"
-	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
 
-	ctx := context.Background()
-	
-	count_int, err := coll.CountDocuments(ctx, bson.M{})
-	if err != nil {
-
-		// METRICS
-		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
-
-		gf_err := gf_core.Mongo__handle_error("failed to DB count Blocks",
-			"mongodb_count_error",
-			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-		return 0, gf_err
-	}
-
-	return count_int, nil
-}
-
-//-------------------------------------------------
-// BLOCKS__DB__WRITE_BULK
-func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
-
-	ids_lst         := []string{}
-	records_lst     := []interface{}{}
-	blocks_nums_lst := []uint64{}
-	for _, b := range p_gf_blocks_lst {
-		ids_lst         = append(ids_lst, b.DB_id)
-		records_lst     = append(records_lst, interface{}(b))
-		blocks_nums_lst = append(blocks_nums_lst, b.Block_num_uint)
-	}
-
-	coll_name_str := "gf_eth_blocks"
-	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
-		coll_name_str,
-		map[string]interface{}{
-			"blocks_nums_lst":    blocks_nums_lst,
-			"caller_err_msg_str": "failed to bulk insert Eth blocks (GF_eth__block__int) into DB",
-		},
+	//---------------------
+	// GET_BLOCK_FROM_WORKER
+	// gets the same block from all the workers that it gets, and the resulting maps
+	// are key-ed by worker_host.
+	block_from_workers_map, _, gf_err := Get_from_workers__pipeline(p_block_uint,
+		p_get_worker_hosts_fn,
+		p_abis_defs_map,
 		p_ctx,
-		p_runtime.Runtime_sys)
+		p_metrics,
+		p_runtime)
+
 	if gf_err != nil {
 		return gf_err
 	}
 
+	// spew.Dump(miners_map)
+
+	// IMPORTANT!! - for now just get the block from the first worker_host,
+	//               regardless of how many workers are registered.
+	var gf_block *GF_eth__block__int
+	for worker_host_str := range block_from_workers_map {
+		gf_block = block_from_workers_map[worker_host_str]
+		break
+	}
+
+	//---------------------
+	// DB_WRITE_BULK__BLOCK
+
+	gf_err = DB__write_bulk([]*GF_eth__block__int{gf_block,},
+		p_ctx,
+		p_metrics,
+		p_runtime)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	// METRICS
+	if p_metrics != nil {
+		p_metrics.Block__indexed_num__counter.Inc()
+	}
+
+	//---------------------
+	
+	// some blocks (especially early ones) dont have any transactions in them
+	if len(gf_block.Txs_lst) > 0 {
+
+		//---------------------
+		// DB_WRITE_BULK__TXS
+
+		gf_err = gf_eth_tx.DB__write_bulk(gf_block.Txs_lst,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			return gf_err
+		}
+
+		// METRICS
+		if p_metrics != nil {
+			for _, _ = range gf_block.Txs_lst {
+				p_metrics.Tx__indexed_num__counter.Inc()
+			}
+		}
+		
+		//---------------------
+		// TRACES
+		tx_hashes_lst := []string{}
+		for _, tx := range gf_block.Txs_lst {
+			tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
+		}
+
+		worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
+
+		// DB_WRITE
+		gf_err, _ = gf_eth_tx.Trace__get_and_persist_bulk(tx_hashes_lst,
+			worker_inspector_host_port_str,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		if gf_err != nil {
+			return gf_err
+		}
+
+		//---------------------
+	}
 	return nil
 }
 
