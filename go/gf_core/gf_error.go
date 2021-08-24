@@ -348,20 +348,19 @@ func Error__init_sentry(p_sentry_endpoint_str string,
 
 
 
-			fmt.Printf("SENTRY TX - %s\n", transaction_name_str)
+			// fmt.Printf("SENTRY TX - %s\n", transaction_name_str)
 
 
 
 			// exclude traces of all transactions that are not for expected handlers
 			if _, ok := p_transactions__to_trace_map[transaction_name_str]; !ok {
 				
-				// exclude
-
-				fmt.Println("SENTRY TX EXCLUDE")
+				// EXCLUDE
+				// fmt.Println("SENTRY TX EXCLUDE")
 				return sentry.SampledFalse
 			}
 
-			fmt.Println("INCLUDE")
+			// INCLUDE
 			return sentry.SampledTrue // sentry.UniformTracesSampler(p_sample_rate_f).Sample(p_ctx)
 
 			// // Sample all other transactions for testing. On

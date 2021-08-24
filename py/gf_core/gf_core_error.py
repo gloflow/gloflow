@@ -18,7 +18,7 @@
 import traceback
 
 #--------------------------------------------------------
-#p_surrounding_context_attribs_tpl - order matters
+# p_surrounding_context_attribs_tpl - order matters
 
 def handle_exception(p_exception,
 	p_formated_msg_str,

@@ -48,6 +48,9 @@ main application, responsible for working with images. this application contains
 - gf_publisher
 publishing posts that are compositions of images and text.
 
+- gf_landing_page
+main landing page of the GF system, meant to hold links to all sub-apps and provide a single initial place for users to access GF. 
+
 - gf_analytics
 used for analytics by admins of a particular GF installation. Analytics of end-user interaction with the GF system.
 
@@ -63,8 +66,10 @@ used for tagging/annotating all of the main resource types in the GF system - im
 allows for both adding of simple **tags**, as well as **notes** which are longer form text bits.
 bookmarking of web-pages has also been added, to allow for saving web url's independent of the media that they might contain.
 
-- gf_landing_page
-main landing page of the GF system, meant to hold links to all sub-apps and provide a single initial place for users to access GF. 
+- gf_bookmarks  
+functinality for storing/managing web **bookmarks**.  
+
+
 
 **DB abstraction**  
 MongoDB - <4.0 - not using new mongodb transactions yet  

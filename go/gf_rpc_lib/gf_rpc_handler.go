@@ -59,8 +59,7 @@ func Create_handler__http(p_path_str string,
 
 //-------------------------------------------------
 func Create_handler__http_with_metrics(p_path_str string,
-	p_handler_fun  handler_http,
-
+	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
 	p_runtime_sys    *gf_core.Runtime_sys) {
@@ -176,7 +175,11 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
 	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_handler.Store_rpc_handler_run()")
+
+	// dont store a run if there is no DB initialized
+	if p_runtime_sys.Mongo_db == nil {
+		return nil
+	}
 
 	run := &GF_rpc_handler_run{
 		Class_str:          "rpc_handler_run", // FIX!! - thi should be "rpc_handler_run"

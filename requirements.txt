@@ -8,3 +8,4 @@ colored
 delegator-py
 Pillow
 numpy
+matplotlib
