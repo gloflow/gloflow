@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.40.29
+	github.com/aws/aws-sdk-go v1.40.30
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect
@@ -18,7 +18,7 @@ require (
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/getsentry/sentry-go v0.11.0
-	github.com/gloflow/gloflow v0.0.0-20210729045008-dbbfc9c60874
+	github.com/gloflow/gloflow v0.0.0-20210824214756-3f79b3bc8afc
 	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect

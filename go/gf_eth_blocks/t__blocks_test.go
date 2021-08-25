@@ -45,7 +45,7 @@ func Test__blocks(p_test *testing.T) {
 	//---------------------
 	// INDEX_MULTIPLE_BLOCKS
 
-	block_start_uint := uint64(2_000_000)
+	block_start_uint := uint64(2_000_030)
 	block_end_uint   := uint64(2_001_000)
 
 	get_worker_hosts_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {

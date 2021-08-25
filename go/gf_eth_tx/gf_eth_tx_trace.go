@@ -307,6 +307,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 //-------------------------------------------------
 func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
+	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 
 	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
@@ -325,6 +326,10 @@ func Trace__get(p_tx_hash_str string,
 	
 	output_map, gf_err := gf_eth_core.Eth_rpc__call(input_str,
 		p_eth_rpc_host_str,
+		map[string]interface{}{
+			"tx_hash_str": p_tx_hash_str,
+		},
+		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

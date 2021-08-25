@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"strings"
+	"context"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -38,6 +39,8 @@ import (
 //-------------------------------------------------
 func Eth_rpc__call(p_input_json_str string,
 	p_eth_node_host_str string,
+	p_error_data_map    map[string]interface{},
+	p_ctx               context.Context,
 	p_runtime_sys       *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 	
 
@@ -52,30 +55,37 @@ func Eth_rpc__call(p_input_json_str string,
 	client      := &http.Client{Timeout: timeout_sec,}
 
 	url_str  := fmt.Sprintf("http://%s:%d", p_eth_node_host_str, eth_http_port_int)
-	req, err := http.NewRequest("POST", url_str, strings.NewReader(p_input_json_str))
+	req, err := http.NewRequestWithContext(p_ctx, "POST", url_str, strings.NewReader(p_input_json_str))
 	if err != nil {
+
+		error_data_map := map[string]interface{}{
+			"url_str":        url_str,
+			"input_json_str": p_input_json_str,
+		}
+		for k, v := range p_error_data_map {
+			error_data_map[k] = v
+		}
 		gf_err := gf_core.Error__create("failed to construct HTTP POST request using JSON input",
 			"http_client_req_error",
-			map[string]interface{}{
-				"url_str":        url_str,
-				"input_json_str": p_input_json_str,
-			},
+			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	
-
+	// EXECUTE
 	resp, err := client.Do(req)
 	if err != nil {
+		error_data_map := map[string]interface{}{"url_str": url_str,}
+		for k, v := range p_error_data_map {
+			error_data_map[k] = v
+		}
 		gf_err := gf_core.Error__create("failed to execute HTTP POST request to eth_rpc API",
 			"http_client_req_error",
-			map[string]interface{}{"url_str": url_str,},
+			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}
-
-	
 
 	//-----------------------
 	// JSON_DECODE
@@ -84,9 +94,13 @@ func Eth_rpc__call(p_input_json_str string,
 	var output_map map[string]interface{}
 	err = json.Unmarshal(body_bytes_lst, &output_map)
 	if err != nil {
+		error_data_map := map[string]interface{}{"url_str": url_str,}
+		for k, v := range p_error_data_map {
+			error_data_map[k] = v
+		}
 		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
-			map[string]interface{}{"url_str": url_str,},
+			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
 		return nil, gf_err
 	}

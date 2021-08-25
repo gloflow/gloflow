@@ -96,6 +96,7 @@ func init_handlers(p_metrics *GF_metrics,
 			// GET_TRACE
 			trace_map, gf_err := gf_eth_tx.Trace__get(tx_hex_str,
 				p_runtime.eth_rpc_host_str,
+				span__root.Context(),
 				p_runtime.runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
