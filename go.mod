@@ -8,7 +8,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.40.30
+	github.com/aws/aws-sdk-go v1.40.31
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect

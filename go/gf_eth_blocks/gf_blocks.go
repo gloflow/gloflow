@@ -175,7 +175,7 @@ func Index__pipeline(p_block_uint uint64,
 		}
 		
 		//---------------------
-		// TRACES
+		/*// TRACES
 		tx_hashes_lst := []string{}
 		for _, tx := range gf_block.Txs_lst {
 			tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
@@ -191,7 +191,7 @@ func Index__pipeline(p_block_uint uint64,
 			p_runtime)
 		if gf_err != nil {
 			return gf_err
-		}
+		}*/
 
 		//---------------------
 	}
