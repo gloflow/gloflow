@@ -33,7 +33,7 @@ type GF_indexer chan(GF_indexer_cmd)
 type GF_indexer_cmd struct {
 	Block_start_uint uint64
 	Block_end_uint   uint64
-	Ctx              context.Context
+	// Ctx context.Context
 }
 
 //-------------------------------------------------
@@ -52,27 +52,35 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 	indexer_cmds_ch := make(chan GF_indexer_cmd, 10)
 	go func() {
 
-		select {
+		// IMPORTANT!! - using a background context, and not a client supplied context
+		//               (via cmd.Ctx) because clients just submit an index operation,
+		//               and continue their work (or get response to their request). 
+		//               the index op should complete independently of the client, in the future.
+		ctx := context.Background()
 
-		//----------------------------
-		// INDEXER_COMMANDS
-		case cmd := <- indexer_cmds_ch:
+		for {
+			select {
 
-			// PERSIST_RANGE
-			gf_errs_lst := index__range(cmd.Block_start_uint,
-				cmd.Block_end_uint,
-				p_get_worker_hosts_fn,
-				abis_defs_map,
-				cmd.Ctx,
-				p_metrics,
-				p_runtime)
-			
-			if len(gf_errs_lst) > 0 {
+			//----------------------------
+			// INDEXER_COMMANDS
+			case cmd := <- indexer_cmds_ch:
 
+				// PERSIST_RANGE
+				gf_errs_lst := index__range(cmd.Block_start_uint,
+					cmd.Block_end_uint,
+					p_get_worker_hosts_fn,
+					abis_defs_map,
+					ctx, // cmd.Ctx,
+					p_metrics,
+					p_runtime)
+				
+				if len(gf_errs_lst) > 0 {
+
+				}
 			}
-		}
 
-		//----------------------------
+			//----------------------------
+		}
 	}()
 	
 	return indexer_cmds_ch, nil

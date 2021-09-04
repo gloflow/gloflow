@@ -38,7 +38,7 @@ func Client__index_block_range(p_block_start_uint uint64,
 	cmd := GF_indexer_cmd{
 		Block_start_uint: p_block_start_uint,
 		Block_end_uint:   p_block_end_uint,
-		Ctx:              p_ctx,
+		// Ctx: p_ctx,
 	}
 
 	p_indexer_cmds_ch <- cmd
