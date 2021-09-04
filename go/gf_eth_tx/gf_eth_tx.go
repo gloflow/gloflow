@@ -29,7 +29,6 @@ import (
 	"encoding/base64"
 	// "encoding/json"
 	"github.com/getsentry/sentry-go"
-	"go.mongodb.org/mongo-driver/bson"
 	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
@@ -92,97 +91,6 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 }
 
 //-------------------------------------------------
-// DB
-//-------------------------------------------------
-func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
-
-	coll_name_str := "gf_eth_txs"
-	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
-
-	ctx := context.Background()
-	
-	count_int, err := coll.CountDocuments(ctx, bson.M{})
-	if err != nil {
-
-		// METRICS
-		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
-
-		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
-			"mongodb_count_error",
-			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-		return 0, gf_err
-	}
-
-	return count_int, nil
-}
-
-//-------------------------------------------------
-// DB__GET
-func DB__get(p_tx_hash_str string,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (*GF_eth__tx, *gf_core.GF_error) {
-
-	coll_name_str := "gf_eth_txs"
-
-
-	q := bson.M{"hash_str": p_tx_hash_str, }
-
-	var gf_tx GF_eth__tx
-	err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx, q).Decode(&gf_tx)
-	if err != nil {
-
-
-		// METRICS
-		if p_metrics != nil {
-			p_metrics.Errs_num__counter.Inc()
-		}
-
-		gf_err := gf_core.Mongo__handle_error("failed to find Transaction with gives hash in DB",
-			"mongodb_find_error",
-			map[string]interface{}{"tx_hash_str": p_tx_hash_str,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-		return nil, gf_err
-	}
-
-	return &gf_tx, nil
-}
-
-//-------------------------------------------------
-// DB__WRITE_BULK
-func DB__write_bulk(p_txs_lst []*GF_eth__tx,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
-
-	coll_name_str := "gf_eth_txs"
-
-	ids_lst        := []string{}
-	records_lst    := []interface{}{}
-	txs_hashes_lst := []string{}
-	for _, tx := range p_txs_lst {
-		ids_lst        = append(ids_lst, tx.DB_id)
-		records_lst    = append(records_lst, interface{}(tx))
-		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
-	}
-
-	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
-		coll_name_str,
-		map[string]interface{}{
-			"txs_hashes_lst":     txs_hashes_lst,
-			"caller_err_msg_str": "failed to bulk insert Eth txs (GF_eth__tx) into DB",
-		},
-		p_ctx, p_runtime.Runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	return nil
-}
-
-//-------------------------------------------------
 // VAR
 //-------------------------------------------------
 func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
@@ -211,6 +119,11 @@ func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 			// TEMPORARY!! - we just assume the new contract has a erc20 ABI, for testing purposes.
 			//               generalize a way to specify an ABI to use to decode new contracts.
 			gf_abi := p_abis_defs_map["erc20"]
+
+
+
+
+
 			gf_err := gf_eth_contract.Enrich(gf_abi, p_ctx, p_metrics, p_runtime)
 			if gf_err != nil {
 				return gf_err
@@ -271,13 +184,20 @@ func Load(p_tx *eth_types.Transaction,
 	span__get_tx_receipt := sentry.StartSpan(p_ctx, "eth_rpc__get_tx_receipt")
 	defer span__get_tx_receipt.Finish() // in case a panic happens before the main .Finish() for this span
 
-	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(span__get_tx_receipt.Context(), tx_hash)
+
+	receipt__ctx, cancel_fn := context.WithTimeout(span__get_tx_receipt.Context(), time.Duration(time.Second*30))
+	tx_receipt, err := p_eth_rpc_client.TransactionReceipt(receipt__ctx, tx_hash)
+	defer cancel_fn()
+
 	if err != nil {
 
 		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
-			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
+			map[string]interface{}{
+				"block_num":   p_block_num_int,
+				"tx_hash_hex": tx_hash_hex_str,
+			},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
 		return nil, gf_err
 	}
@@ -346,7 +266,7 @@ func Load(p_tx *eth_types.Transaction,
 	span__parse_tx_logs := sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
 	defer span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
 
-	logs, gf_err := Eth_tx__get_logs(tx_receipt,
+	logs, gf_err := Get_logs(tx_receipt,
 		span__parse_tx_logs.Context(),
 		p_eth_rpc_client,
 		p_runtime_sys)
@@ -508,7 +428,7 @@ func Load(p_tx *eth_types.Transaction,
 }
 
 //-------------------------------------------------
-func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
+func Enrich_logs(p_tx_logs []*GF_eth__log,
 	p_abis_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx      context.Context,
 	p_metrics  *gf_eth_core.GF_metrics,
@@ -517,7 +437,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 
 
 	gf_abi := p_abis_map["erc20"]
-	abi, gf_err := gf_eth_contract.Get_abi(gf_abi,
+	abi, gf_err := gf_eth_contract.Eth_abi__get(gf_abi,
 		p_ctx,
 		p_metrics,
 		p_runtime)
@@ -580,7 +500,7 @@ func Eth_tx__enrich_logs(p_tx_logs []*GF_eth__log,
 }
 
 //-------------------------------------------------
-func Eth_tx__get_logs(p_tx_receipt *eth_types.Receipt,
+func Get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.GF_error) {

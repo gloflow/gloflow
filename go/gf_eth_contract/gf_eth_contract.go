@@ -45,13 +45,17 @@ func Enrich(p_gf_abi *GF_eth__abi,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
-	// abi_type_str := "erc20"
-	abi, gf_err := Get_abi(p_gf_abi, p_ctx, p_metrics, p_runtime)
-	if gf_err != nil {
-		return gf_err
-	}
+	// sometimes no ABI's are fetched from the DB
+	if p_gf_abi != nil {
 
-	fmt.Println(abi)
+		// abi_type_str := "erc20"
+		abi, gf_err := Eth_abi__get(p_gf_abi, p_ctx, p_metrics, p_runtime)
+		if gf_err != nil {
+			return gf_err
+		}
+
+		fmt.Println(abi)
+	}
 
 	return nil
 }
@@ -117,7 +121,7 @@ func Get_code(p_contract_addr_str string,
 }
 
 //-------------------------------------------------
-func Eth_contract__is_type_valid(p_type_str string) bool {
+func Is_type_valid(p_type_str string) bool {
 	types_map := map[string]bool{
 		"erc20": true,
 	}

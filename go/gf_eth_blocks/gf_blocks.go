@@ -25,10 +25,12 @@ import (
 	"context"
 	"time"
 	"math/big"
+	"sync"
 	"github.com/getsentry/sentry-go"
 	"github.com/mitchellh/mapstructure"
 	// "go.mongodb.org/mongo-driver/bson"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
@@ -237,7 +239,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 		ctx := span.Context()
 
 		// GET_BLOCK__FROM_WORKER
-		gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(p_block_uint,
+		gf_block, gf_err := Get_block__from_worker_inspector(p_block_uint,
 			host_port_str,
 			ctx,
 			p_runtime.Runtime_sys)
@@ -324,7 +326,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__FROM_WORKER_INSPECTOR
-func eth_blocks__get_block__from_worker_inspector(p_block_uint uint64,
+func Get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
 	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
@@ -478,33 +480,18 @@ func Get__pipeline(p_block_num_uint uint64,
 
 	//------------------
 	// GET_TRANSACTIONS
+	
 	span__get_txs := sentry.StartSpan(p_ctx, "eth_rpc__get_txs")
 	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
-
-	txs_lst := []*gf_eth_tx.GF_eth__tx{}
-	for i, tx := range block.Transactions() {
-
-		tx_index_int := uint(i)
-		gf_tx, gf_err := gf_eth_tx.Load(tx,
-			tx_index_int,
-			block.Hash(),
-			p_block_num_uint,
-			span__get_txs.Context(),
-			p_eth_rpc_client,
-			p_py_plugins,
-			p_runtime_sys)
-		if gf_err != nil {
-
-			// if its an error continue processing the next transaction,
-			// and store nil for this one.
-			// return nil, gf_err
-		}
-
-		txs_lst = append(txs_lst, gf_tx)
-	}
+	
+	txs_lst, _ := Get__txs_pipeline(block,
+		p_eth_rpc_client,
+		span__get_txs.Context(),
+		p_py_plugins,
+		p_runtime_sys)
 
 	span__get_txs.Finish()
-
+	
 	//------------------
 
 
@@ -551,4 +538,64 @@ func Get__pipeline(p_block_num_uint uint64,
 	//------------------
 
 	return gf_block, nil
+}
+
+//-------------------------------------------------
+func Get__txs_pipeline(p_block *types.Block,
+	p_eth_rpc_client *ethclient.Client,
+	p_ctx            context.Context,
+	p_py_plugins     *gf_eth_core.GF_py_plugins,
+	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
+
+
+
+	
+
+
+
+	var wg sync.WaitGroup
+
+
+	txs_lst     := make([]*gf_eth_tx.GF_eth__tx, len(p_block.Transactions()))
+	gf_errs_lst := make([]*gf_core.GF_error,     len(p_block.Transactions()))
+	for i, tx := range p_block.Transactions() {
+		tx_index_int := uint(i)
+
+		wg.Add(1)
+
+		// IMPORTANT!! - load each transaction in parallel in its own goroutine.
+		//               for blocks with lots of transactions it may timeout
+		//               while processing all transactions (it might take >60s) sequentially.
+		go func(p_tx_index_int uint, p_tx *types.Transaction) {
+			
+			defer wg.Done()
+
+			gf_tx, gf_err := gf_eth_tx.Load(p_tx,
+				p_tx_index_int,
+				p_block.Hash(),
+				p_block.NumberU64(), // p_block_num_uint,
+				p_ctx,
+				p_eth_rpc_client,
+				p_py_plugins,
+				p_runtime_sys)
+
+			if gf_err != nil {
+
+				// if its an error continue processing the next transaction,
+				// and store nil for the current transaction.
+				// important that txs_lst has a length of the true number of txs.
+				gf_errs_lst[p_tx_index_int] = gf_err
+			}
+
+			txs_lst[p_tx_index_int] = gf_tx
+		}(tx_index_int, tx)
+	}
+
+	
+	wg.Wait()
+
+	return txs_lst, gf_errs_lst
+
+
+
 }

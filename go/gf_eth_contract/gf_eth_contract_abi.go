@@ -47,7 +47,7 @@ func Eth_abi__get_defs(p_ctx context.Context,
 
 	// DB_GET
 	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
+	abis_lst, gf_err := Eth_abi__db__get(abi_type_str, p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -60,7 +60,7 @@ func Eth_abi__get_defs(p_ctx context.Context,
 }
 
 //-------------------------------------------------
-func Get_abi(p_gf_abi *GF_eth__abi,
+func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (*abi.ABI, *gf_core.GF_error) {
@@ -103,7 +103,7 @@ func Get_abi(p_gf_abi *GF_eth__abi,
 }
 
 //-------------------------------------------------
-func Eth_contract__db__get_abi(p_abi_type_str string,
+func Eth_abi__db__get(p_abi_type_str string,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__abi, *gf_core.GF_error) {
@@ -111,7 +111,7 @@ func Eth_contract__db__get_abi(p_abi_type_str string,
 
 
 
-	if !Eth_contract__is_type_valid(p_abi_type_str) {
+	if !Is_type_valid(p_abi_type_str) {
 		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
 			"eth_contract__not_supported_type",
