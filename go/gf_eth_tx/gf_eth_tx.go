@@ -304,7 +304,8 @@ func Load(p_tx *eth_types.Transaction,
 		new_contract_addr_str := strings.ToLower(tx_receipt.ContractAddress.Hex())
 
 
-
+		span__get_new_contract := sentry.StartSpan(p_ctx, "eth_rpc__get_new_contract")
+		defer span__get_new_contract.Finish() // in case a panic happens before the main .Finish() for this span
 
 		//------------------
 		// NEW_CONTRACT_CODE
@@ -312,7 +313,7 @@ func Load(p_tx *eth_types.Transaction,
 		block_num_int := tx_receipt.BlockNumber.Uint64()
 		contract, gf_err := gf_eth_contract.Get_via_rpc(new_contract_addr_str,
 			block_num_int,
-			p_ctx,
+			span__get_new_contract.Context(),
 			p_eth_rpc_client,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -325,15 +326,17 @@ func Load(p_tx *eth_types.Transaction,
 
 
 
-		// PY_PLUGIN - get info on a new contract
+		/*// PY_PLUGIN - get info on a new contract
 
 		gf_err = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
 			p_py_plugins,
 			p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
-		}
+		}*/
 
+
+		span__get_new_contract.Finish()
 
 		//------------------
 
