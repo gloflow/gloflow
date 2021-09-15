@@ -65,7 +65,7 @@ func Event__init_queue(p_queue_name_str string,
 			panic(fmt.Sprintf("Unable to find queue - %s", p_queue_name_str))
 			return nil, err
 		}
-
+		
 		// METRICS
 		if p_metrics != nil {
 			p_metrics.Errs_num__counter.Inc()
@@ -134,13 +134,6 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 			p_metrics.Errs_num__counter.Inc()
 		}
 	}
-	
-	// fmt.Printf("Received %d messages.\n", len(result.Messages))
-	// if len(result.Messages) > 0 {
-	// 	fmt.Println(result.Messages)
-	// }
-
-
 
 	for _, m := range result.Messages {
 		
@@ -178,6 +171,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 }
 
 //-------------------------------------------------
+// GF_ETH_WORKER_EVENT
 func event__process(p_event_map map[string]interface{},
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,

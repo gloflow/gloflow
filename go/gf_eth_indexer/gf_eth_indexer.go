@@ -20,43 +20,48 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_indexer
 
 import (
+	"fmt"
+	"time"
 	"context"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_aws"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_worker"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
-type GF_indexer chan(GF_indexer_cmd)
+type GF_indexer_job_id string
+
+type GF_indexer_ch chan(GF_indexer_cmd)
 type GF_indexer_cmd struct {
 	Block_start_uint uint64
 	Block_end_uint   uint64
-	// Ctx context.Context
+	Response_ch      chan(GF_indexer_job_id)
 }
 
 //-------------------------------------------------
-func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
+func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (chan(GF_indexer_cmd), *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (chan(GF_indexer_cmd), chan(GF_job_update_new_consumer), *gf_core.GF_error) {
 
-	ctx := context.Background()
 	
-	// ABI_DEFS
-	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+	// AWS_CLIENT
+	sqs_client, gf_err := gf_aws.SQS_init(p_runtime.Runtime_sys)
 	if gf_err != nil {
-		return nil, gf_err
+		return nil, nil, gf_err
 	}
 
-	indexer_cmds_ch := make(chan GF_indexer_cmd, 10)
-	go func() {
 
-		// IMPORTANT!! - using a background context, and not a client supplied context
-		//               (via cmd.Ctx) because clients just submit an index operation,
-		//               and continue their work (or get response to their request). 
-		//               the index op should complete independently of the client, in the future.
-		ctx := context.Background()
+	// incoming commands to begin indexing jobs
+	indexer_cmds_ch                  := make(GF_indexer_ch, 100)
+	indexer_job_updates_new_consumer := make(chan GF_job_update_new_consumer, 10)
+
+
+	go func() {
 
 		for {
 			select {
@@ -65,25 +70,148 @@ func Init(p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) [
 			// INDEXER_COMMANDS
 			case cmd := <- indexer_cmds_ch:
 
-				// PERSIST_RANGE
-				gf_errs_lst := index__range(cmd.Block_start_uint,
-					cmd.Block_end_uint,
-					p_get_worker_hosts_fn,
-					abis_defs_map,
-					ctx, // cmd.Ctx,
-					p_metrics,
-					p_runtime)
-				
-				if len(gf_errs_lst) > 0 {
+				// run job in a new go-routine to be able to handle other messages
+				// before completion of this job.
+				go func() {
 
+					// IMPORTANT!! - using a background context, and not a client supplied context
+					//               (via cmd.Ctx) because clients just submit an index operation,
+					//               and continue their work (or get response to their request). 
+					//               the index op should complete independently of the client, in the future.
+					ctx := context.Background()
+
+					job_id_str, gf_err := job_run(cmd,
+						p_get_worker_hosts_fn,
+						ctx,
+						sqs_client,
+						p_metrics,
+						p_runtime)
+					if gf_err != nil {
+
+					}
+
+
+					cmd.Response_ch <- job_id_str
+				}()
+			
+			//----------------------------
+
+			case new_consumer_msg := <- indexer_job_updates_new_consumer:
+
+				fmt.Println(new_consumer_msg)
+
+
+
+				job_id_str   := new_consumer_msg.Job_id_str
+				ctx_consumer := new_consumer_msg.ctx
+				consumer__job_updates_ch, consumer__job_complete_ch := Updates__consume_stream(job_id_str,
+					ctx_consumer,
+					sqs_client,
+					p_runtime)
+
+				response := GF_job_update_new_consumer_response{
+					Job_updates_ch:  consumer__job_updates_ch,
+					Job_complete_ch: consumer__job_complete_ch,
 				}
-			}
+				new_consumer_msg.Response_ch <- response
+				
 
 			//----------------------------
+			}
 		}
 	}()
 	
-	return indexer_cmds_ch, nil
+	return indexer_cmds_ch, indexer_job_updates_new_consumer, nil
+}
+
+//-------------------------------------------------
+func job_run(p_cmd GF_indexer_cmd,
+	p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
+	p_ctx                 context.Context,
+	p_sqs_client          *sqs.Client,
+	p_metrics             *gf_eth_core.GF_metrics,
+	p_runtime             *gf_eth_core.GF_runtime) (GF_indexer_job_id, *gf_core.GF_error) {
+
+	job_updates_ch  := make(GF_job_updates_ch, 10)
+	job_complete_ch := make(GF_job_complete_ch)
+
+
+	
+
+	//----------------------------
+	// ABI_DEFS
+	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(p_ctx, p_metrics, p_runtime)
+	if gf_err != nil {
+		return GF_indexer_job_id(""), gf_err
+	}
+
+	//----------------------------
+
+
+
+	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
+	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid-%f", job_start_time_f))
+	gf_sqs_queue, gf_err := Updates__init_stream(job_id_str,
+		p_ctx,
+		p_sqs_client,
+		p_runtime)
+	if gf_err != nil {
+		return GF_indexer_job_id(""), gf_err
+	}
+
+	// process indexing job in separate go-routine so that updates/completion
+	// messages can be processed in parallel.
+	go func() {
+		// PERSIST_RANGE
+		gf_errs_lst := index__range(p_cmd.Block_start_uint,
+			p_cmd.Block_end_uint,
+			p_get_worker_hosts_fn,
+			abis_defs_map,
+
+			job_updates_ch,
+			job_complete_ch,
+			p_ctx,
+			p_metrics,
+			p_runtime)
+		
+		if len(gf_errs_lst) > 0 {
+
+		}
+	}()
+
+
+	//----------------------------
+	// UPDATES - push to SQS queue
+	for {
+		select {
+		case update_msg := <- job_updates_ch:
+			
+
+			gf_err := gf_aws.SQS_msg_push(interface{}(update_msg),
+				gf_sqs_queue,
+				p_sqs_client,
+				p_ctx,
+				p_runtime.Runtime_sys)
+			if gf_err != nil {
+
+			}
+
+		case complete_bool := <- job_complete_ch:
+
+			if complete_bool {
+				gf_err := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
+					p_sqs_client,
+					p_ctx,
+					p_runtime.Runtime_sys)
+				if gf_err != nil {
+					break
+				}
+			}
+		}
+	}
+
+	//----------------------------
+	return job_id_str, nil
 }
 
 //-------------------------------------------------
@@ -91,6 +219,9 @@ func index__range(p_block_start_uint uint64,
 	p_block_end_uint      uint64,
 	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
+
+	p_job_updates_ch      GF_job_updates_ch,
+	p_job_complete_ch     GF_job_complete_ch,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
 	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GF_error {
@@ -114,6 +245,15 @@ func index__range(p_block_start_uint uint64,
 			continue // continue processing subsequent blocks
 		}
 
+
+		// JOB_UPDATE
+		p_job_updates_ch <- GF_job_update{
+			Block_num_indexed: block_uint,
+		}
+
 	}
+
+	// JOB_COMPLETE
+	p_job_complete_ch <- true
 	return gf_errs_lst
 }

@@ -35,6 +35,7 @@ import (
 // channel that receives channels that receive list of strings. 
 // client sends a channel on which it is expecting to receive a response that is a list of strings.
 type worker_inspector__get_hosts_ch chan chan []string
+type Get_worker_hosts_fn            func(context.Context, *gf_eth_core.GF_runtime) []string
 
 //-------------------------------------------------
 func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *gf_eth_core.GF_runtime) []string, chan *gf_core.GF_error) {

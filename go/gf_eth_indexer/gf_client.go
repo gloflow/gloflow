@@ -27,19 +27,37 @@ import (
 // INDEX_BLOCK_RANGE
 func Client__index_block_range(p_block_start_uint uint64,
 	p_block_end_uint  uint64,
-	p_ctx             context.Context,
-	p_indexer_cmds_ch chan(GF_indexer_cmd)) {
+	p_indexer_cmds_ch chan(GF_indexer_cmd)) GF_indexer_job_id {
 
-
-
-
-
-
+	response_ch := make(chan GF_indexer_job_id) 
 	cmd := GF_indexer_cmd{
 		Block_start_uint: p_block_start_uint,
 		Block_end_uint:   p_block_end_uint,
-		// Ctx: p_ctx,
+		Response_ch:      response_ch,
 	}
 
 	p_indexer_cmds_ch <- cmd
+	job_id_str := <- response_ch
+	
+	return job_id_str
+}
+
+//-------------------------------------------------
+func Client__new_consumer(p_job_id_str GF_indexer_job_id,
+	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
+	p_ctx                                 context.Context,) (GF_job_updates_ch, GF_job_complete_ch) {
+
+
+
+	response_ch := make(chan GF_job_update_new_consumer_response)
+	new_consumer := GF_job_update_new_consumer{
+		Job_id_str:  p_job_id_str,
+		Response_ch: response_ch,
+		ctx:         p_ctx,
+	}
+
+	p_indexer_job_updates_new_consumer_ch <- new_consumer
+	response := <- response_ch
+
+	return response.Job_updates_ch, response.Job_complete_ch
 }

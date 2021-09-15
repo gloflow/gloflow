@@ -104,7 +104,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	//-------------
 	// INDEXER
 
-	indexer_cmds_ch, gf_err := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
+	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gf_err := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -113,6 +113,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	// HANDLERS
 	gf_err = init_handlers(get_hosts_fn,
 		indexer_cmds_ch,
+		indexer_job_updates_new_consumer_ch,
 		metrics,
 		p_runtime)
 	if gf_err != nil {

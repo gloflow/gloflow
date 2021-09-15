@@ -35,12 +35,62 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
-	p_indexer_cmds_ch gf_eth_indexer.GF_indexer,
-	p_metrics         *gf_eth_core.GF_metrics,
-	p_runtime         *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_indexer_cmds_ch                     gf_eth_indexer.GF_indexer_ch,
+	p_indexer_job_updates_new_consumer_ch gf_eth_indexer.GF_job_update_new_consumer_ch,
+	p_metrics                             *gf_eth_core.GF_metrics,
+	p_runtime                             *gf_eth_core.GF_runtime) *gf_core.GF_error {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 
+	//---------------------
+	// GET__BLOCK_INDEX__JOB_UPDATES
+
+	gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GF_error) {
+
+
+			span__root := sentry.StartSpan(p_ctx, "http__master__block_index_job_updates", sentry.ContinueFromRequest(p_req))
+			// ctx := span__root.Context()
+			defer span__root.Finish()
+
+
+
+
+			job_id_str := p_req.URL.Query().Get("job_id")
+
+
+			job_updates_ch, job_complete_ch := gf_eth_indexer.Client__new_consumer(gf_eth_indexer.GF_indexer_job_id(job_id_str),
+				p_indexer_job_updates_new_consumer_ch,
+				p_ctx)
+
+
+
+			//---------------------
+			// IMPORTANT!! - casting message from the indexer update format
+			//               to the general SSE update format (interface{}).
+			//               not very efficient because it adds an extra message
+			//               relaying stage.
+			data_updates_ch  := make(chan interface{}, 10)
+			data_complete_ch := make(chan bool)
+			go func() {
+				for {
+					select {
+					case update_msg := <- job_updates_ch:
+						data_updates_ch <- interface{}(update_msg)
+					case complete_bool := <- job_complete_ch:
+						data_complete_ch <- complete_bool
+					}
+				}
+			}()
+
+			//---------------------
+
+			span__root.Finish()
+
+			return data_updates_ch, data_complete_ch, nil
+		},
+		true, // p_store_run_bool
+		p_runtime.Runtime_sys)
 
 	//---------------------
 	// GET__BLOCK_INDEX
@@ -62,39 +112,40 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 
 			//------------------
 			
-			gf_eth_indexer.Client__index_block_range(block_start_uint,
+			job_id_str := gf_eth_indexer.Client__index_block_range(block_start_uint,
 				block_end_uint,
-				p_ctx,
 				p_indexer_cmds_ch)
 			
-			/*// ABI_DEFS
-			abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
-			if gf_err != nil {
-				return nil, gf_err
-			}
-
-			span__pipeline := sentry.StartSpan(ctx, "blocks_persist_bulk")
-
-			gf_errs_lst := gf_eth_blocks.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
-				block_end_uint,
-				// p_get_hosts_fn,
-				// abis_defs_map,
-				// span__pipeline.Context(),
-				p_metrics,
-				p_runtime)
-			
-			span__pipeline.Finish()
-
-			if len(gf_errs_lst) > 0 {
-
-				// FIX!! - see if all errors should be returned maybe.
-				gf_err__first := gf_errs_lst[0]
-				return nil, gf_err__first
-			}*/
+			// // ABI_DEFS
+			// abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			// if gf_err != nil {
+			// 	return nil, gf_err
+			// }
+			//
+			// span__pipeline := sentry.StartSpan(ctx, "blocks_persist_bulk")
+			//
+			// gf_errs_lst := gf_eth_blocks.Eth_blocks__get_and_persist_bulk__pipeline(block_start_uint,
+			// 	block_end_uint,
+			// 	// p_get_hosts_fn,
+			// 	// abis_defs_map,
+			// 	// span__pipeline.Context(),
+			// 	p_metrics,
+			// 	p_runtime)
+			//
+			// span__pipeline.Finish()
+			//
+			// if len(gf_errs_lst) > 0 {
+			//
+			// 	// FIX!! - see if all errors should be returned maybe.
+			// 	gf_err__first := gf_errs_lst[0]
+			// 	return nil, gf_err__first
+			// }
 
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{}
+			data_map := map[string]interface{}{
+				"job_id_str": job_id_str,
+			}
 
 			//------------------
 			span__root.Finish()
