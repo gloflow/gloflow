@@ -229,7 +229,9 @@ func client__get_status(p_running_job_id_str string,
 }
 
 //-------------------------------------------------
-func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+// SSE
+func client__parse_sse_response(p_body_str string,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_http_client.client__parse_sse_response()")
 
 	data_items_lst := []map[string]interface{}{}
@@ -239,7 +241,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 		p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
 		p_runtime_sys.Log_fun("INFO", line_str)
 
-		//filter out keep-alive new lines
+		// filter out keep-alive new lines
 		if line_str != "" && strings.HasPrefix(line_str, "data: ") {
 
 
@@ -258,7 +260,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 			}
 
 			//-------------------
-			//STATUS
+			// STATUS
 			if _,ok := msg_map["status_str"]; !ok {
 				err_usr_msg := "sse message json doesnt container key status_str"
 				gf_err      := gf_core.Error__create(err_usr_msg,
@@ -281,8 +283,9 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 					nil, "gf_images_lib", p_runtime_sys)
 				return nil, gf_err
 			}
+
 			//-------------------
-			//DATA
+			// DATA
 			if _,ok := msg_map["data_map"]; !ok {
 				err_usr_msg := "sse message json doesnt container key data_map"
 				gf_err      := gf_core.Error__create(err_usr_msg,
@@ -293,6 +296,7 @@ func client__parse_sse_response(p_body_str string, p_runtime_sys *gf_core.Runtim
 			}
 			
 			data_map := msg_map["data_map"].(map[string]interface{})
+			
 			//-------------------
 			data_items_lst = append(data_items_lst, data_map)
 		}

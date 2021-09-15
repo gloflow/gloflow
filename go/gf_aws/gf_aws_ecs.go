@@ -32,7 +32,7 @@ import (
 func AWS_ECR__update_service(p_service_name_str string,
 	p_cluster_name_str         string,
 	p_healthy_percent__min_int int,
-	p_runtime_sys              *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys              *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	fmt.Printf("AWS ECS UPDATE_SERVICE - %s\n", p_service_name_str)
 

@@ -288,6 +288,12 @@ func error__get_defs() map[string]Error_def {
 		"aws_general_error": Error_def{
 			Descr_str: "AWS general error",
 		},
+		"aws_session_create": Error_def{
+			Descr_str: "AWS failed to create new API session",
+		},
+		"aws_client_v2_create": Error_def{
+			Descr_str: "AWS failed to create new API V2 client",
+		},
 		"aws_ec2_instances_describe_error": Error_def{
 			Descr_str: "failed to describe EC2 instances",
 		},
@@ -296,6 +302,22 @@ func error__get_defs() map[string]Error_def {
 		},
 		"aws_secretsmngr_get_secret_value_error": Error_def{
 			Descr_str: "failed to get secret value from AWS SECRETS_MANAGER service",
+		},
+		"aws_sqs_queue_create_error": Error_def{
+			Descr_str: "failed to create SQS queue",
+		},
+		"aws_sqs_queue_get_url_error": Error_def{
+			Descr_str: "failed to get a URL of a SQS queue",
+		},
+
+		"aws_sqs_queue_send_msg_error": Error_def{
+			Descr_str: "failed to send a message to a SQS queue",
+		},
+		"aws_sqs_queue_receive_msg_error": Error_def{
+			Descr_str: "failed to receive a message from a SQS queue",
+		},
+		"aws_sqs_queue_delete_msg_error": Error_def{
+			Descr_str: "failed to delete a message from a SQS queue",
 		},
 
 		//---------------

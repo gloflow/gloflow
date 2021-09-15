@@ -6,6 +6,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.13
+	github.com/aws/aws-sdk-go-v2 v1.9.0 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.8.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.9.0 // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fatih/color v1.10.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
