@@ -8,6 +8,11 @@ body {
 }
 
 
+#gf_page_picker {
+
+	/*important so that the GF UI is above all other page content*/
+	z-index: 10000;
+}
 
 #bookmarks {
 	position: absolute;

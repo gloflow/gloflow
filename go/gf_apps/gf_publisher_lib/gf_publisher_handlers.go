@@ -45,15 +45,6 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	if gf_err != nil {
 		return gf_err
 	}
-	
-	//---------------------
-	// HIDDEN DASHBOARD
-
-	http.HandleFunc("/posts/dash/18956180__42115/", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/dash ----------")
-
-
-	})
 
 	//---------------------
 	// GET_POST
