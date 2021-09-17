@@ -26,8 +26,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	// "github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_monitor_lib"
+	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
 	// "github.com/davecgh/go-spew/spew"
@@ -57,7 +56,7 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// INPUT
 
-			account_address_hex_str, gf_err := gf_eth_monitor_lib.Http__get_arg__acc_address_hex(p_req, p_runtime.runtime_sys)
+			account_address_hex_str, gf_err := gf_eth_core.Http__get_arg__acc_address_hex(p_req, p_runtime.runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -86,7 +85,7 @@ func init_handlers(p_metrics *GF_metrics,
 
 			//------------------
 			// INPUT
-			tx_hex_str, gf_err := gf_eth_monitor_lib.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.runtime_sys)
+			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -133,7 +132,7 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// INPUT
 
-			block_num_int, gf_err := gf_eth_monitor_lib.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
+			block_num_int, gf_err := gf_eth_core.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err

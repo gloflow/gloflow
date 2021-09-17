@@ -39,13 +39,17 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 	p_indexer_job_updates_new_consumer_ch gf_eth_indexer.GF_job_update_new_consumer_ch,
 	p_metrics                             *gf_eth_core.GF_metrics,
 	p_runtime                             *gf_eth_core.GF_runtime) *gf_core.GF_error {
-	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
-
+	// p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 	//---------------------
-	// GET__BLOCK_INDEX__JOB_UPDATES
+	// INDEXER
 
-	gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
+	gf_eth_indexer.Init_handlers(p_indexer_cmds_ch,
+		p_indexer_job_updates_new_consumer_ch,
+		p_metrics,
+		p_runtime)
+
+	/*gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GF_error) {
 
 
@@ -152,7 +156,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 
 			return data_map, nil
 		},
-		p_runtime.Runtime_sys)
+		p_runtime.Runtime_sys)*/
 
 	//---------------------
 	// GET__FAVORITES_TX_ADD
@@ -166,7 +170,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 			//------------------
 			// INPUT
 
-			tx_hex_str, gf_err := Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -209,7 +213,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 			//------------------
 			// INPUT
 
-			tx_hex_str, gf_err := Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -259,7 +263,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 
 			span__input := sentry.StartSpan(ctx, "get_input")
 
-			block_num_int, gf_err := Http__get_arg__block_num(p_resp,
+			block_num_int, gf_err := gf_eth_core.Http__get_arg__block_num(p_resp,
 				p_req,
 				p_runtime.Runtime_sys)
 			if gf_err != nil {
@@ -312,7 +316,7 @@ func init_handlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime)
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			// INPUT
-			miner_addr_str, gf_err := Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
+			miner_addr_str, gf_err := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}

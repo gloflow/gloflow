@@ -24,7 +24,7 @@ import (
 )
 
 //-------------------------------------------------
-// INDEX_BLOCK_RANGE
+// CLIENT__INDEX_BLOCK_RANGE
 func Client__index_block_range(p_block_start_uint uint64,
 	p_block_end_uint  uint64,
 	p_indexer_cmds_ch chan(GF_indexer_cmd)) GF_indexer_job_id {
@@ -43,6 +43,7 @@ func Client__index_block_range(p_block_start_uint uint64,
 }
 
 //-------------------------------------------------
+// CLIENT__NEW_CONSUMER
 func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
 	p_ctx                                 context.Context,) (GF_job_updates_ch, GF_job_complete_ch) {
