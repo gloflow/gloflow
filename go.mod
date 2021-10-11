@@ -2,7 +2,7 @@ module github.com/gloflow/gloflow-ethmonitor
 
 go 1.15
 
-replace github.com/gloflow/gloflow => ./../gloflow
+// replace github.com/gloflow/gloflow => ./../gloflow
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
