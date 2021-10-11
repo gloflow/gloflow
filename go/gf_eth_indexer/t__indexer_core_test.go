@@ -30,9 +30,9 @@ import (
 )
 
 //---------------------------------------------------
-func Test__indexer(p_test *testing.T) {
+func Test__indexer_core(p_test *testing.T) {
 
-	fmt.Println("TEST__INDEXER ==============================================")
+	fmt.Println("TEST__INDEXER_CORE ==============================================")
 
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
@@ -47,14 +47,19 @@ func Test__indexer(p_test *testing.T) {
 	}
 
 
+	job_updates_ch  := make(GF_job_updates_ch, 100)
+	job_complete_ch := make(GF_job_complete_ch, 1)
 
-	gf_errs_lst := index__range(2_000_000, 2_000_001,
+	gf_errs_lst := index__range(uint64(2_000_000), uint64(2_000_020),
 		func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
 			return []string{worker__host_port_str,}
 		},
 		abis_defs_map,
+		job_updates_ch,
+		job_complete_ch,
+
+		
 		ctx,
-		nil,
 		nil,
 		runtime)
 

@@ -53,11 +53,20 @@ $ python3 gf_builder_cli.py -run=test_go
 # - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
 $ go test -v
 
+#--------------
 # working dir - ./go/gf_eth_indexer
 # ENV VARS:
 # - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
-$ go test -v -run Test__indexer
+$ go test -v -run Test__indexer_core
 
+# ENV VARS:
+# - AWS_REGION=us-east-1
+# - AWS_ACCESS_KEY_ID=...
+# - AWS_SECRET_ACCESS_KEY=...
+# - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
+$ go test -v -run Test__indexer_http
+
+#--------------
 # working dir - ./go/gf_eth_blocks
 # ENV VARS:
 # - GF_TEST_WORKER_INSPECTOR_HOST_PORT=127.0.0.1:9000
