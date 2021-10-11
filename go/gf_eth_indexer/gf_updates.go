@@ -59,7 +59,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 	
 
 	consumer__job_updates_ch  := make(chan GF_job_update, 10)
-	consumer__job_complete_ch := make(chan bool)
+	consumer__job_complete_ch := make(chan bool, 1)
 	
 	
 
@@ -140,6 +140,6 @@ func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 
 //-------------------------------------------------
 func updates__get_queue_name(p_job_id_str GF_indexer_job_id) string {
-	queue_name_str := fmt.Sprintf(fmt.Sprintf("gf_eth_indexer:job_updates:%s", p_job_id_str))
+	queue_name_str := fmt.Sprintf(fmt.Sprintf("gf_eth_indexer__job_updates__%s", p_job_id_str))
 	return queue_name_str
 }

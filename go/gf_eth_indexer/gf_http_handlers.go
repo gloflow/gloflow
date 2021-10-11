@@ -32,7 +32,7 @@ import (
 func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
 	p_metrics                             *gf_eth_core.GF_metrics,
-	p_runtime                             *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime                             *gf_eth_core.GF_runtime) {
 	// p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
 
 
@@ -106,9 +106,13 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 
 			//------------------
 			
-			job_id_str := Client__index_block_range(block_start_uint,
+			job_id_str, gf_err := Client__index_block_range(block_start_uint,
 				block_end_uint,
 				p_indexer_cmds_ch)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+			
 			
 			// // ABI_DEFS
 			// abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
@@ -149,6 +153,4 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 		p_runtime.Runtime_sys)
 
 	//---------------------
-
-	return nil
 }

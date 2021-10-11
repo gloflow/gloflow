@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"context"
+	"strings"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_aws"
@@ -41,12 +42,13 @@ type GF_indexer_cmd struct {
 	Block_start_uint uint64
 	Block_end_uint   uint64
 	Response_ch      chan(GF_indexer_job_id)
+	Response_err_ch  chan(gf_core.GF_error)
 }
 
 //-------------------------------------------------
 func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (chan(GF_indexer_cmd), chan(GF_job_update_new_consumer), *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (GF_indexer_ch, GF_job_update_new_consumer_ch, *gf_core.GF_error) {
 
 	
 	// AWS_CLIENT
@@ -57,8 +59,8 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 
 
 	// incoming commands to begin indexing jobs
-	indexer_cmds_ch                  := make(GF_indexer_ch, 100)
-	indexer_job_updates_new_consumer := make(chan GF_job_update_new_consumer, 10)
+	indexer_cmds_ch                     := make(GF_indexer_ch, 100)
+	indexer_job_updates_new_consumer_ch := make(chan GF_job_update_new_consumer, 10)
 
 
 	go func() {
@@ -71,7 +73,7 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 			case cmd := <- indexer_cmds_ch:
 
 				// run job in a new go-routine to be able to handle other messages
-				// before completion of this job.
+				// while completion of this job.
 				go func() {
 
 					// IMPORTANT!! - using a background context, and not a client supplied context
@@ -87,16 +89,16 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 						p_metrics,
 						p_runtime)
 					if gf_err != nil {
-
+						cmd.Response_err_ch <- *gf_err
+						return
 					}
-
 
 					cmd.Response_ch <- job_id_str
 				}()
 			
 			//----------------------------
 
-			case new_consumer_msg := <- indexer_job_updates_new_consumer:
+			case new_consumer_msg := <- indexer_job_updates_new_consumer_ch:
 
 				fmt.Println(new_consumer_msg)
 
@@ -121,7 +123,7 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 		}
 	}()
 	
-	return indexer_cmds_ch, indexer_job_updates_new_consumer, nil
+	return indexer_cmds_ch, indexer_job_updates_new_consumer_ch, nil
 }
 
 //-------------------------------------------------
@@ -133,7 +135,7 @@ func job_run(p_cmd GF_indexer_cmd,
 	p_runtime             *gf_eth_core.GF_runtime) (GF_indexer_job_id, *gf_core.GF_error) {
 
 	job_updates_ch  := make(GF_job_updates_ch, 10)
-	job_complete_ch := make(GF_job_complete_ch)
+	job_complete_ch := make(GF_job_complete_ch, 1)
 
 
 	
@@ -150,7 +152,7 @@ func job_run(p_cmd GF_indexer_cmd,
 
 
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid-%f", job_start_time_f))
+	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid_%s", strings.ReplaceAll(fmt.Sprintf("%f",job_start_time_f), ".", "_")))
 	gf_sqs_queue, gf_err := Updates__init_stream(job_id_str,
 		p_ctx,
 		p_sqs_client,
@@ -179,36 +181,38 @@ func job_run(p_cmd GF_indexer_cmd,
 		}
 	}()
 
-
+	
 	//----------------------------
 	// UPDATES - push to SQS queue
-	for {
-		select {
-		case update_msg := <- job_updates_ch:
-			
+	go func() {
+		for {
+			select {
+			case update_msg := <- job_updates_ch:
+				
 
-			gf_err := gf_aws.SQS_msg_push(interface{}(update_msg),
-				gf_sqs_queue,
-				p_sqs_client,
-				p_ctx,
-				p_runtime.Runtime_sys)
-			if gf_err != nil {
-
-			}
-
-		case complete_bool := <- job_complete_ch:
-
-			if complete_bool {
-				gf_err := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
+				gf_err := gf_aws.SQS_msg_push(interface{}(update_msg),
+					gf_sqs_queue,
 					p_sqs_client,
 					p_ctx,
 					p_runtime.Runtime_sys)
 				if gf_err != nil {
-					break
+
+				}
+
+			case complete_bool := <- job_complete_ch:
+
+				if complete_bool {
+					gf_err := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
+						p_sqs_client,
+						p_ctx,
+						p_runtime.Runtime_sys)
+					if gf_err != nil {
+						break
+					}
 				}
 			}
 		}
-	}
+	}()
 
 	//----------------------------
 	return job_id_str, nil
@@ -231,9 +235,6 @@ func index__range(p_block_start_uint uint64,
 
 		block_uint := b
 
-		
-
-
 		gf_err := gf_eth_blocks.Index__pipeline(block_uint,
 			p_get_worker_hosts_fn,
 			p_abis_defs_map,
@@ -245,15 +246,18 @@ func index__range(p_block_start_uint uint64,
 			continue // continue processing subsequent blocks
 		}
 
-
 		// JOB_UPDATE
-		p_job_updates_ch <- GF_job_update{
-			Block_num_indexed: block_uint,
+		if p_job_updates_ch != nil {
+			p_job_updates_ch <- GF_job_update{
+				Block_num_indexed: block_uint,
+			}
 		}
-
 	}
 
 	// JOB_COMPLETE
-	p_job_complete_ch <- true
+	if p_job_complete_ch != nil {
+		p_job_complete_ch <- true
+	}
+	
 	return gf_errs_lst
 }

@@ -20,33 +20,45 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_indexer
 
 import (
+	"fmt"
 	"context"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
 // CLIENT__INDEX_BLOCK_RANGE
 func Client__index_block_range(p_block_start_uint uint64,
 	p_block_end_uint  uint64,
-	p_indexer_cmds_ch chan(GF_indexer_cmd)) GF_indexer_job_id {
+	p_indexer_cmds_ch chan(GF_indexer_cmd)) (GF_indexer_job_id, *gf_core.GF_error) {
 
-	response_ch := make(chan GF_indexer_job_id) 
+	response_ch     := make(chan GF_indexer_job_id, 1)
+	response_err_ch := make(chan gf_core.GF_error, 1)
+	
 	cmd := GF_indexer_cmd{
 		Block_start_uint: p_block_start_uint,
 		Block_end_uint:   p_block_end_uint,
 		Response_ch:      response_ch,
+		Response_err_ch:  response_err_ch,
 	}
 
 	p_indexer_cmds_ch <- cmd
-	job_id_str := <- response_ch
-	
-	return job_id_str
+
+	select {
+	case job_id_str := <- response_ch:
+		return job_id_str, nil
+	case gf_err := <- response_err_ch:
+		return GF_indexer_job_id(""), &gf_err
+	}
+
+	return GF_indexer_job_id(""), nil
 }
 
 //-------------------------------------------------
 // CLIENT__NEW_CONSUMER
 func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
-	p_ctx                                 context.Context,) (GF_job_updates_ch, GF_job_complete_ch) {
+	p_ctx                                 context.Context) (GF_job_updates_ch, GF_job_complete_ch) {
 
 
 
@@ -61,4 +73,60 @@ func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	response := <- response_ch
 
 	return response.Job_updates_ch, response.Job_complete_ch
+}
+
+//-------------------------------------------------
+// HTTP
+//-------------------------------------------------
+func Client_http__index_block_range(p_block_start_uint uint64,
+	p_block_end_uint uint64,
+	p_host_port_str  string,
+	p_ctx            context.Context,
+	p_runtime_sys    *gf_core.Runtime_sys) (GF_indexer_job_id, *gf_core.GF_error) {
+
+	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index?br=%d-%d",
+		p_host_port_str,
+		p_block_start_uint,
+		p_block_end_uint)
+
+
+	headers_map := map[string]string{}
+
+	// GF_RPC_CLIENT
+	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return GF_indexer_job_id(""), gf_err
+	}
+
+	job_id_str := GF_indexer_job_id(data_map["job_id_str"].(string))
+	return job_id_str, nil
+}
+
+//-------------------------------------------------
+func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
+	p_job_updates_ch chan(map[string]interface{}),
+	p_host_port_str  string,
+	p_ctx            context.Context,
+	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index/job_updates?job_id=%s",
+		p_host_port_str,
+		p_job_id_str)
+
+
+	fmt.Println("SSSEEEEEEEEEEEEEE")
+
+
+	
+	headers_map := map[string]string{}
+	gf_err := gf_rpc_lib.Client__request_sse(url_str,
+		p_job_updates_ch,
+		headers_map,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	return nil
 }
