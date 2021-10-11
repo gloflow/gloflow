@@ -35,6 +35,10 @@ func Test__indexer_http(p_test *testing.T) {
 
 	fmt.Println("TEST__INDEXER_HTTP ==============================================")
 	
+
+
+	start_block_int := uint64(2_000_000)
+	end_block_int   := uint64(2_000_010)
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
 	ctx        := context.Background()
@@ -73,7 +77,7 @@ func Test__indexer_http(p_test *testing.T) {
 
 	//---------------------
 	// CLIENT_HTTP
-	job_id_str, gf_err := Client_http__index_block_range(2_000_000, 2_000_001,
+	job_id_str, gf_err := Client_http__index_block_range(start_block_int, end_block_int,
 		host_port_str,
 		ctx,
 		runtime.Runtime_sys)

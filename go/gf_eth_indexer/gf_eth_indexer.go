@@ -249,7 +249,7 @@ func index__range(p_block_start_uint uint64,
 		// JOB_UPDATE
 		if p_job_updates_ch != nil {
 			p_job_updates_ch <- GF_job_update{
-				Block_num_indexed: block_uint,
+				Block_num_indexed_int: block_uint,
 			}
 		}
 	}

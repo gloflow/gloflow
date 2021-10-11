@@ -31,8 +31,8 @@ import (
 
 //-------------------------------------------------
 type GF_job_update struct {
-	Block_num_indexed uint64
-	Error             *gf_core.GF_error
+	Block_num_indexed_int uint64            `json:"block_num_indexed_int"`
+	Error                 *gf_core.GF_error `json:"error"`
 }
 type GF_job_updates_ch  chan(GF_job_update)
 type GF_job_complete_ch chan(bool)
@@ -94,7 +94,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 		for {
 
 			// SQS_MSG_PULL
-			gf_err := gf_aws.SQS_msg_pull(queue_info,
+			msg_map, gf_err := gf_aws.SQS_msg_pull(queue_info,
 				p_aws_client,
 				p_ctx,
 				p_runtime.Runtime_sys)
@@ -109,6 +109,15 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 				}
 				errs_num_int += 1
 				continue
+			}
+
+			// IMPORTANT!! - if a msg_map is nil it means that SQS_msg_pull() timed with no 
+			//               message in the queue and returned nil.
+			if msg_map != nil {
+				job_update_msg := GF_job_update{
+					Block_num_indexed_int: uint64(msg_map["block_num_indexed_int"].(float64)),
+				}
+				consumer__job_updates_ch <- job_update_msg
 			}
 		}
 	}()
