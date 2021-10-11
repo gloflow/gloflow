@@ -119,9 +119,6 @@ def basic_conv_model(p_input_img_batch):
         fig  = plt.figure(constrained_layout=False, figsize=(10, 5))
         spec = fig.add_gridspec(ncols=3, nrows=2)
 
-        print('zzzzzzzzzzzzzz')
-        print(spec[1, 1])
-
 
         ax0 = fig.add_subplot(spec[:, 0]) # across all rows and first column
         ax1 = fig.add_subplot(spec[:, 1]) # across all rows and second column

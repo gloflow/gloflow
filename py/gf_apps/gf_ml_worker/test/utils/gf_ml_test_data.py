@@ -25,6 +25,7 @@ import requests
 
 #----------------------------------------------
 def download_test_img():
+
     target_test_img_str = "%s/../data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg"%(modd_str)
     url_str             = "http://gf--img.s3-website-us-east-1.amazonaws.com/thumbnails/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg"
     
@@ -85,4 +86,5 @@ def img_crop(p_img_np, p_width_int, p_height_int):
     crop_origin_y = h//2 - p_height_int//2
     img_crop = p_img_np[crop_origin_x:crop_origin_x+p_width_int, 
         crop_origin_y:crop_origin_y+p_height_int]
+        
     return img_crop
