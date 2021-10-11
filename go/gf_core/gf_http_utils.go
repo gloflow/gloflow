@@ -35,6 +35,7 @@ import (
 )
 
 //---------------------------------------------------
+type GF_http_fetch = Gf_http_fetch
 type Gf_http_fetch struct {
 	Url_str          string            `bson:"url_str"`
 	Status_code_int  int               `bson:"status_code_int"`
@@ -49,7 +50,7 @@ func HTTP__fetch_url(p_url_str string,
 	p_headers_map    map[string]string,
 	p_user_agent_str string,
 	p_ctx            context.Context,
-	p_runtime_sys    *Runtime_sys) (*Gf_http_fetch, *Gf_error) {
+	p_runtime_sys    *Runtime_sys) (*GF_http_fetch, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
 
@@ -132,7 +133,7 @@ func HTTP__fetch_url(p_url_str string,
 		resp_headers_map[k] = v[0]
 	}
 
-	gf_http_fetch := &Gf_http_fetch{
+	gf_http_fetch := &GF_http_fetch{
 		Url_str:          p_url_str, 
 		Status_code_int:  status_code_int,
 		Resp_headers_map: resp_headers_map,
@@ -141,8 +142,6 @@ func HTTP__fetch_url(p_url_str string,
 		Resp:             resp,
 	}
 
-
-	
 	return gf_http_fetch, nil
 }
 

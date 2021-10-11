@@ -32,7 +32,7 @@ import (
 // CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) (*gf_publisher_core.Gf_post, string, *gf_core.Gf_error) {
+	p_runtime_sys            *gf_core.Runtime_sys) (*gf_publisher_core.Gf_post, string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
@@ -41,7 +41,7 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	max_description_chars_int := 1000
 	post_element_tag_max_int  := 20
 
-	p_runtime_sys.Log_fun("INFO","p_post_info_map - "+fmt.Sprint(p_post_info_map))
+	p_runtime_sys.Log_fun("INFO", "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 	verified_post_info_map, gf_err := gf_publisher_core.Verify_external_post_info(p_post_info_map,
 		max_title_chars_int,
 		max_description_chars_int,
@@ -86,7 +86,7 @@ func Pipeline__get_post(p_post_title_str string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
@@ -102,12 +102,13 @@ func Pipeline__get_post(p_post_title_str string,
 	// this will over time correct/remove empty string tags, but the source cause of this
 	// (on post tagging/creation) is still there, so find that and fix it.
 	whole_tags_lst := []string{}
-	for _,tag_str := range post.Tags_lst {
+	for _, tag_str := range post.Tags_lst {
 		if tag_str != "" {
-			whole_tags_lst = append(whole_tags_lst,tag_str)
+			whole_tags_lst = append(whole_tags_lst, tag_str)
 		}
 	}
 	post.Tags_lst = whole_tags_lst
+	
 	//------------------
 
 	switch p_response_format_str {

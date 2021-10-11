@@ -128,8 +128,8 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// POST_CREATE
-	http.HandleFunc("/posts/create",func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO","INCOMING HTTP REQUEST - /posts/create ----------")
+	http.HandleFunc("/posts/create", func(p_resp http.ResponseWriter, p_req *http.Request) {
+		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /posts/create ----------")
 
 		if p_req.Method == "POST" {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -141,6 +141,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 				return
 			}
 			post_info_map := i_map
+			
 			//------------
 
 			_, images_job_id_str, gf_err := Pipeline__create_post(post_info_map, p_gf_images_runtime_info, p_runtime_sys)
@@ -180,12 +181,13 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//------------
-			//INPUT
+			// INPUT
 			i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}
 			post_title_str := i_map["title_str"].(string)
+
 			//------------
 
 			gf_err = gf_publisher_core.DB__mark_as_deleted_post(post_title_str, p_runtime_sys)
@@ -216,6 +218,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 			// response_format_str - "j"(for json)|"h"(for html)
 			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+			
 			//--------------------
 
 			gf_err := Render_initial_pages(response_format_str,
@@ -254,12 +257,12 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 			qs_map := p_req.URL.Query()
 
-			page_index_int := 0 //default - "h" - HTML
+			page_index_int := 0 // default - "h" - HTML
 			var err error
 
-			if a_lst,ok := qs_map["pg_index"]; ok {
+			if a_lst, ok := qs_map["pg_index"]; ok {
 				input_val          := a_lst[0]
-				page_index_int, err = strconv.Atoi(input_val) //user supplied value
+				page_index_int, err = strconv.Atoi(input_val) // user supplied value
 				if err != nil {
 				
 					usr_msg_str := "pg_index (page_index) is not an integer"
@@ -274,7 +277,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 			}
 
 			page_size_int := 10 //default - "h" - HTML
-			if a_lst,ok := qs_map["pg_size"]; ok {
+			if a_lst, ok := qs_map["pg_size"]; ok {
 				input_val         := a_lst[0]
 				page_size_int, err = strconv.Atoi(input_val) //user supplied value
 				if err != nil {
@@ -289,6 +292,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 					return
 				}
 			}
+
 			//--------------------
 			
 			serialized_pages_lst, gf_err := Get_posts_page(page_index_int, page_size_int, p_runtime_sys)
@@ -303,6 +307,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 			r_lst,_ := json.Marshal(serialized_pages_lst)
 			r_str   := string(r_lst)
 			fmt.Fprintf(p_resp,r_str)
+
 			//------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
