@@ -166,8 +166,8 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
     p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
-
-    timeout_sec_int := 60*10 // 10min
+    // Must be >= 0 and <= 20, if provided
+    timeout_sec_int := 20
 
 	// SQS_RECEIVE_MESSAGE
 	result, err := p_aws_client.ReceiveMessage(p_ctx, &sqs.ReceiveMessageInput{
