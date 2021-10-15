@@ -2,15 +2,15 @@ module github.com/gloflow/gloflow-ethmonitor
 
 go 1.15
 
-// replace github.com/gloflow/gloflow => ./../gloflow
+replace github.com/gloflow/gloflow => ./../gloflow
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20210226215200-83c2ba283955 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.40.59
-	github.com/aws/aws-sdk-go-v2/config v1.8.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sqs v1.9.1
+	github.com/aws/aws-sdk-go v1.41.3
+	github.com/aws/aws-sdk-go-v2/config v1.8.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.9.2
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/consensys/gurvy v0.3.8 // indirect
@@ -20,7 +20,7 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/getsentry/sentry-go v0.11.0
-	github.com/gloflow/gloflow v0.0.0-20210915234518-f734a71c0d82
+	github.com/gloflow/gloflow v0.0.0-20211011040449-e02b19c71433
 	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
@@ -56,7 +56,7 @@ require (
 	go.mongodb.org/mongo-driver v1.7.3
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
+	golang.org/x/sys v0.0.0-20211013075003-97ac67df715c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect

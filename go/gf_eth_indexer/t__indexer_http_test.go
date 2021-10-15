@@ -27,7 +27,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -37,8 +37,9 @@ func Test__indexer_http(p_test *testing.T) {
 	
 
 
-	start_block_int := uint64(2_000_000)
-	end_block_int   := uint64(2_000_010)
+	start_block_int     := uint64(2_000_000)
+	end_block_int       := uint64(2_000_010)
+	test_blocks_num_int := end_block_int - start_block_int
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 
 	ctx        := context.Background()
@@ -76,7 +77,9 @@ func Test__indexer_http(p_test *testing.T) {
 	time.Sleep(1 * time.Second) // give server time to startup
 
 	//---------------------
-	// CLIENT_HTTP
+	// CLIENT_HTTP - START_INDEXING
+	fmt.Println("TEST - START INDEXING...")
+
 	job_id_str, gf_err := Client_http__index_block_range(start_block_int, end_block_int,
 		host_port_str,
 		ctx,
@@ -86,20 +89,7 @@ func Test__indexer_http(p_test *testing.T) {
 	}
 
 	//---------------------
-
-
-
-
-
-	fmt.Println(job_id_str)
-
-
-
-
-
-
-
-	fmt.Println("11111111111111111111111")
+	fmt.Println("TEST - START LISTENING FOR INDEXING UPDATES...")
 
 	job_updates_ch := make(chan map[string]interface{}, 10)
 	gf_err = Client_http__index_job_updates(job_id_str,
@@ -107,22 +97,27 @@ func Test__indexer_http(p_test *testing.T) {
 		host_port_str,
 		ctx,
 		runtime.Runtime_sys)
+
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
-
-
-
-	fmt.Println("2222222222222222222")
-
-
+	received_job_updates_num_int := uint64(0)
 	for {
+
 		select {
 		case update_map := <-job_updates_ch:
-			fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd")
-			spew.Dump(update_map)
+			// spew.Dump(update_map)
+
+			received_job_updates_num_int += 1
+			if received_job_updates_num_int == test_blocks_num_int {
+
+				// end test
+				return
+
+			} 
 		}
 	}
 
+	//---------------------
 }

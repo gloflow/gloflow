@@ -49,14 +49,13 @@ type GF_indexer_cmd struct {
 func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_metrics *gf_eth_core.GF_metrics,
 	p_runtime *gf_eth_core.GF_runtime) (GF_indexer_ch, GF_job_update_new_consumer_ch, *gf_core.GF_error) {
-
 	
+		
 	// AWS_CLIENT
 	sqs_client, gf_err := gf_aws.SQS_init(p_runtime.Runtime_sys)
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
-
 
 	// incoming commands to begin indexing jobs
 	indexer_cmds_ch                     := make(GF_indexer_ch, 100)
@@ -106,13 +105,14 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 
 				job_id_str   := new_consumer_msg.Job_id_str
 				ctx_consumer := new_consumer_msg.ctx
-				consumer__job_updates_ch, consumer__job_complete_ch := Updates__consume_stream(job_id_str,
+				consumer__job_updates_ch, consumer__job_err_ch, consumer__job_complete_ch := Updates__consume_stream(job_id_str,
 					ctx_consumer,
 					sqs_client,
 					p_runtime)
 
 				response := GF_job_update_new_consumer_response{
 					Job_updates_ch:  consumer__job_updates_ch,
+					Job_err_ch:      consumer__job_err_ch,
 					Job_complete_ch: consumer__job_complete_ch,
 				}
 				new_consumer_msg.Response_ch <- response
@@ -181,7 +181,6 @@ func job_run(p_cmd GF_indexer_cmd,
 		}
 	}()
 
-	
 	//----------------------------
 	// UPDATES - push to SQS queue
 	go func() {
@@ -189,7 +188,6 @@ func job_run(p_cmd GF_indexer_cmd,
 			select {
 			case update_msg := <- job_updates_ch:
 				
-
 				gf_err := gf_aws.SQS_msg_push(interface{}(update_msg),
 					gf_sqs_queue,
 					p_sqs_client,

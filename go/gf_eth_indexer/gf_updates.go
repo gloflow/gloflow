@@ -31,10 +31,10 @@ import (
 
 //-------------------------------------------------
 type GF_job_update struct {
-	Block_num_indexed_int uint64            `json:"block_num_indexed_int"`
-	Error                 *gf_core.GF_error `json:"error"`
+	Block_num_indexed_int uint64 `json:"block_num_indexed_int"`
 }
 type GF_job_updates_ch  chan(GF_job_update)
+type GF_job_err_ch      chan(gf_core.GF_error)
 type GF_job_complete_ch chan(bool)
 
 
@@ -47,6 +47,7 @@ type GF_job_update_new_consumer struct {
 
 type GF_job_update_new_consumer_response struct {
 	Job_updates_ch  GF_job_updates_ch
+	Job_err_ch      GF_job_err_ch
 	Job_complete_ch GF_job_complete_ch
 }
 
@@ -54,27 +55,20 @@ type GF_job_update_new_consumer_response struct {
 func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 	p_ctx        context.Context,
 	p_aws_client *sqs.Client,
-	p_runtime    *gf_eth_core.GF_runtime) (GF_job_updates_ch, GF_job_complete_ch) {
+	p_runtime    *gf_eth_core.GF_runtime) (GF_job_updates_ch, GF_job_err_ch, GF_job_complete_ch) {
 
 	
-
-	consumer__job_updates_ch  := make(chan GF_job_update, 10)
-	consumer__job_complete_ch := make(chan bool, 1)
-	
+	// CONSUMER_CHANNELS - channels returned to the consumer to consume job_update messages from.
+	consumer__job_updates_ch  := make(GF_job_updates_ch, 100)
+	consumer__job_err_ch      := make(GF_job_err_ch, 1)
+	consumer__job_complete_ch := make(GF_job_complete_ch, 1)
 	
 
 	go func() {
 
 		//-------------------------------------------------
 		complete_job_with_error_fn := func(p_gf_err *gf_core.GF_error) {
-			err_msg := GF_job_update{
-				Error: p_gf_err,
-			}
-			consumer__job_updates_ch <- err_msg
-			
-			// IMPORTANT!! - notify consumer that the job is complete.
-			//               if a queue cant be acquired there is no point in continuing.
-			consumer__job_complete_ch <- true
+			consumer__job_err_ch <- *p_gf_err
 		}
 
 		//-------------------------------------------------
@@ -98,6 +92,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 				p_aws_client,
 				p_ctx,
 				p_runtime.Runtime_sys)
+
 			if gf_err != nil {
 
 				// IMPORTANT!! - fail job if a certain number of errors
@@ -107,10 +102,14 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 					complete_job_with_error_fn(gf_err)
 					return
 				}
+
+				// continue processing messages and increase the error count
 				errs_num_int += 1
 				continue
 			}
 
+			// send the job_update message to the job_update consumer
+			//
 			// IMPORTANT!! - if a msg_map is nil it means that SQS_msg_pull() timed with no 
 			//               message in the queue and returned nil.
 			if msg_map != nil {
@@ -122,7 +121,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 		}
 	}()
 	
-	return consumer__job_updates_ch, consumer__job_complete_ch
+	return consumer__job_updates_ch, consumer__job_err_ch, consumer__job_complete_ch
 }
 
 //-------------------------------------------------

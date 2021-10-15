@@ -33,14 +33,12 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
 	p_metrics                             *gf_eth_core.GF_metrics,
 	p_runtime                             *gf_eth_core.GF_runtime) {
-	// p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
-
 
 	//---------------------
 	// GET__BLOCK_INDEX__JOB_UPDATES
 
 	gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_err_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GF_error) {
 
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__block_index_job_updates", sentry.ContinueFromRequest(p_req))
@@ -48,16 +46,11 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 			defer span__root.Finish()
 
 
-
-
 			job_id_str := p_req.URL.Query().Get("job_id")
 
-
-			job_updates_ch, job_complete_ch := Client__new_consumer(GF_indexer_job_id(job_id_str),
+			job_updates_ch, job_err_ch, job_complete_ch := Client__new_consumer(GF_indexer_job_id(job_id_str),
 				p_indexer_job_updates_new_consumer_ch,
 				p_ctx)
-
-
 
 			//---------------------
 			// IMPORTANT!! - casting message from the indexer update format
@@ -65,12 +58,18 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 			//               not very efficient because it adds an extra message
 			//               relaying stage.
 			data_updates_ch  := make(chan interface{}, 10)
+			data_err_ch      := make(gf_rpc_lib.SSE_data_err_ch)
 			data_complete_ch := make(chan bool)
+			
 			go func() {
 				for {
 					select {
 					case update_msg := <- job_updates_ch:
 						data_updates_ch <- interface{}(update_msg)
+					
+					case gf_err := <- job_err_ch:
+						data_err_ch <- gf_err
+
 					case complete_bool := <- job_complete_ch:
 						data_complete_ch <- complete_bool
 					}
@@ -81,7 +80,7 @@ func Init_handlers(p_indexer_cmds_ch      GF_indexer_ch,
 
 			span__root.Finish()
 
-			return data_updates_ch, data_complete_ch, nil
+			return data_updates_ch, data_err_ch, data_complete_ch, nil
 		},
 		true, // p_store_run_bool
 		p_runtime.Runtime_sys)

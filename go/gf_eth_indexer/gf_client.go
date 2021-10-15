@@ -58,9 +58,7 @@ func Client__index_block_range(p_block_start_uint uint64,
 // CLIENT__NEW_CONSUMER
 func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
-	p_ctx                                 context.Context) (GF_job_updates_ch, GF_job_complete_ch) {
-
-
+	p_ctx                                 context.Context) (GF_job_updates_ch, GF_job_err_ch, GF_job_complete_ch) {
 
 	response_ch := make(chan GF_job_update_new_consumer_response)
 	new_consumer := GF_job_update_new_consumer{
@@ -72,7 +70,7 @@ func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	p_indexer_job_updates_new_consumer_ch <- new_consumer
 	response := <- response_ch
 
-	return response.Job_updates_ch, response.Job_complete_ch
+	return response.Job_updates_ch, response.Job_err_ch, response.Job_complete_ch
 }
 
 //-------------------------------------------------
@@ -112,21 +110,29 @@ func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index/job_updates?job_id=%s",
 		p_host_port_str,
 		p_job_id_str)
-
-
-	fmt.Println("SSSEEEEEEEEEEEEEE")
-
-
 	
 	headers_map := map[string]string{}
-	gf_err := gf_rpc_lib.Client__request_sse(url_str,
-		p_job_updates_ch,
-		headers_map,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
+
+	// call SSE client that will block and process SSE events
+	// going forward, but return this function right away so that 
+	// the caller can consume messages from p_job_updates_ch.
+	go func() {
+		
+		// p_job_updates_ch - channel to which to send SSE events as 
+		//                    they're received over HTTP.
+		gf_err := gf_rpc_lib.Client__request_sse(url_str,
+			p_job_updates_ch,
+			headers_map,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+
+			// FIX!! - notify the caller of Client_http__index_job_updates() 
+			//         via another error channel that SSE client failed.
+			return
+		}
+
+	}()
 
 	return nil
 }
