@@ -37,8 +37,9 @@ import (
 
 //-------------------------------------------------
 type SSE_data_update_ch   chan interface{}
+type SSE_data_err_ch      chan gf_core.GF_error
 type SSE_data_complete_ch chan bool
-type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Request) (SSE_data_update_ch, SSE_data_complete_ch, *gf_core.GF_error)
+type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Request) (SSE_data_update_ch, SSE_data_err_ch, SSE_data_complete_ch, *gf_core.GF_error)
 
 //-------------------------------------------------
 func SSE_create_handler__http(p_path_str string,
@@ -53,7 +54,7 @@ func SSE_create_handler__http(p_path_str string,
 
 				//-----------------------
 				// HANDLER
-				data_updates_ch, data_complete_ch, gf_err := p_handler_fun(p_ctx, p_resp, p_req)
+				data_updates_ch, data_err_ch, data_complete_ch, gf_err := p_handler_fun(p_ctx, p_resp, p_req)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -89,6 +90,15 @@ func SSE_create_handler__http(p_path_str string,
 				p_resp.Header().Set("Connection",                  "keep-alive")
 				p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
+				//-------------------------------------------------
+				complete_fun := func() {
+					data_complete_lst, _ := json.Marshal(map[string]interface{}{"status_str": "complete"})
+					fmt.Fprintf(p_resp, "data: %s\n\n", data_complete_lst)
+					flusher.Flush()
+				}
+
+				//-------------------------------------------------
+
 				for {
 					select {
 
@@ -102,23 +112,50 @@ func SSE_create_handler__http(p_path_str string,
 					//               to avoid this a channel is not closed, and instead the last update message is waited for here, or an error,
 					//               and cleanup only done after that.
 					case data_update := <- data_updates_ch:
-						
+
 						sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 						sse_event_id_str         := sse_event__unix_time_str
-						sse_data_update_lst, _   := json.Marshal(data_update)
+
+						event_map := map[string]interface{}{
+							"data_map":   data_update,
+							"status_str": "ok",
+						}
+						sse_event_lst, _ := json.Marshal(event_map)
 
 						// SSE_WRITE
 						fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
-						fmt.Fprintf(p_resp, "data: %s\n\n", sse_data_update_lst)
+						fmt.Fprintf(p_resp, "data: %s\n\n", sse_event_lst)
 						flusher.Flush()
 					
+					//-----------------------
+					// ERROR_UPDATE
+					case gf_err := <- data_err_ch:
+
+						sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
+						sse_event_id_str         := sse_event__unix_time_str
+						
+						event_map := map[string]interface{}{
+							"data_map":   gf_err,
+							"status_str": "error",
+						}
+						sse_event_lst, _ := json.Marshal(event_map)
+
+						// SSE_WRITE
+						fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
+						fmt.Fprintf(p_resp, "data: %s\n\n", sse_event_lst)
+						flusher.Flush()
+
+						// an error occured, so complete SSE stream and exit
+						complete_fun()
+						break
+
 					//-----------------------
 					// COMPLETE
 					case complete_bool := <- data_complete_ch:
 
 						if complete_bool {
-							data_complete_lst, _ := json.Marshal(map[string]interface{}{"status_str": "complete"})
-							fmt.Fprintf(p_resp, "data: complete\n\n", data_complete_lst)
+
+							complete_fun()
 							break
 						}
 

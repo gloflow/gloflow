@@ -20,14 +20,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_aws
 
 import (
-	"fmt"
+	// "fmt"
     "context"
     "encoding/json"
+    log "github.com/sirupsen/logrus"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/gloflow/gloflow/go/gf_core"
+    // "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------------------
@@ -116,6 +118,9 @@ func SQS_queue_create(p_sqs_queue_name_str string,
     p_ctx         context.Context,
     p_runtime_sys *gf_core.Runtime_sys) (*GF_SQS_queue, *gf_core.GF_error) {
 
+    
+
+    log.WithFields(log.Fields{"name": p_sqs_queue_name_str,}).Info("AWS_SQS - creating new queue")
 
     // CREATE
     _, err := p_sqs_client.CreateQueue(p_ctx, &sqs.CreateQueueInput{
@@ -163,8 +168,9 @@ func SQS_queue_delete(p_sqs_queue_name_str string,
 func SQS_msg_pull(p_queue_info *GF_SQS_queue,
     p_aws_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+    p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 
+    log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - pull message from queue")
 
     // Must be >= 0 and <= 20, if provided
     timeout_sec_int := 20
@@ -194,36 +200,62 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
                 "sqs_queue_url_str":  p_queue_info.AWS_url_str,
             },
 			err, "gf_aws", p_runtime_sys)
-		return gf_err
+		return nil, gf_err
 	}
+    
+    // fmt.Println("*******************************************")
+    // spew.Dump(result.Messages)
 
+    if result.Messages != nil {
 
+        msg          := result.Messages[0]
+        msg_body_str := *msg.Body
 
+        log.WithFields(log.Fields{"name": p_queue_info.Name_str, "msg_id": *msg.MessageId, "msg_body": msg_body_str}).Info("AWS_SQS - pull message from queue - OK")
 
-    msg_receipt_handle := result.Messages[0].ReceiptHandle
+        //--------------------------
+        // DECODE_MESSAGE
+        msg_map      := map[string]interface{}{}
+        if err := json.Unmarshal([]byte(msg_body_str), &msg_map); err != nil {
+            gf_err := gf_core.Error__create("failed to JSON decode a message body pulled from SQS",
+                "json_decode_error",
+                map[string]interface{}{
+                    "sqs_queue_name_str": p_queue_info.Name_str,
+                    "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                },
+                err, "gf_aws", p_runtime_sys)
+            return nil, gf_err
+        }
 
+        //--------------------------
+        // DELETE_MESSAGE
 
+        log.WithFields(log.Fields{"name": p_queue_info.Name_str, "msg_id": *msg.MessageId}).Info("AWS_SQS - delete message from queue")
 
+        msg_receipt_handle := msg.ReceiptHandle
 
-	// DELETE_MESSAGE
-    // https://docs.aws.amazon.com/sdk-for-go/api/service/sqs/#SQS.DeleteMessage
-    _, err = p_aws_client.DeleteMessage(p_ctx, &sqs.DeleteMessageInput{
-        QueueUrl:      aws.String(p_queue_info.AWS_url_str),
-        ReceiptHandle: msg_receipt_handle,
-    })
-    if err != nil {
-        gf_err := gf_core.Error__create("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
-			"aws_sqs_queue_delete_msg_error",
-			map[string]interface{}{
-                "sqs_queue_name_str": p_queue_info.Name_str,
-                "sqs_queue_url_str":  p_queue_info.AWS_url_str,
-            },
-			err, "gf_aws", p_runtime_sys)
-		return gf_err
+        // https://docs.aws.amazon.com/sdk-for-go/api/service/sqs/#SQS.DeleteMessage
+        _, err = p_aws_client.DeleteMessage(p_ctx, &sqs.DeleteMessageInput{
+            QueueUrl:      aws.String(p_queue_info.AWS_url_str),
+            ReceiptHandle: msg_receipt_handle,
+        })
+        if err != nil {
+            gf_err := gf_core.Error__create("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
+                "aws_sqs_queue_delete_msg_error",
+                map[string]interface{}{
+                    "sqs_queue_name_str": p_queue_info.Name_str,
+                    "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                },
+                err, "gf_aws", p_runtime_sys)
+            return nil, gf_err
+        }
+
+        //--------------------------
+
+        return msg_map, nil
     }
 
-
-	return nil
+	return nil, nil
 }
 
 //-------------------------------------------------------------
@@ -234,6 +266,8 @@ func SQS_msg_push(p_msg interface{},
     p_ctx         context.Context,
     p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
+    
+    log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - push message to queue")
 
     msg_data_JSON_encoded, err := json.Marshal(p_msg)
     if err != nil {
@@ -247,10 +281,9 @@ func SQS_msg_push(p_msg interface{},
         return gf_err
     }
 
-    fmt.Println("SENDING AWS SQS msg----")
-	result, err := p_aws_client.SendMessage(p_ctx, &sqs.SendMessageInput{
+	_, err = p_aws_client.SendMessage(p_ctx, &sqs.SendMessageInput{
         MessageBody: aws.String(string(msg_data_JSON_encoded)),
-        QueueUrl:    &p_queue_info.AWS_url_str,
+        QueueUrl:    aws.String(p_queue_info.AWS_url_str),
 
         // DelaySeconds: 10,
         /*MessageAttributes: map[string]types.MessageAttributeValue{
@@ -285,7 +318,8 @@ func SQS_msg_push(p_msg interface{},
         return gf_err
     }
 
-    fmt.Println("Success", *result.MessageId)
+    // msg_id_str := *result.MessageId
+    // fmt.Printf("Success - msg ID - %s\n", msg_id_str)
 
 	return nil
 }

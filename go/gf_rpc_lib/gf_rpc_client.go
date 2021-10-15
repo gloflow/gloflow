@@ -31,9 +31,10 @@ import (
 	"context"
 	"strings"
 	"bufio"
+	log "github.com/sirupsen/logrus"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -46,9 +47,6 @@ func Client__request_sse(p_url_str string,
 	//-----------------------
 	// FETCH_URL
 
-
-	fmt.Println("7777777777777777777777777")
-	
 	user_agent_str := "gf_rpc_client"
 	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
 		p_headers_map,
@@ -58,10 +56,6 @@ func Client__request_sse(p_url_str string,
 	if gf_err != nil {
 		return gf_err
 	}
-
-	fmt.Println("888888888888888888888888888888")
-
-
 
 	//-----------------------
 
@@ -87,9 +81,11 @@ func Client__request_sse(p_url_str string,
 
 
 			msg_str := strings.Replace(line_str, "data: ", "", 1)
+
+			log.WithFields(log.Fields{"event": msg_str,}).Info("GF_RPC_CLIENT - SSE event")
+
 			msg_map := map[string]interface{}{}
 			err     := json.Unmarshal([]byte(msg_str), &msg_map)
-
 			if err != nil {
 				gf_err := gf_core.Error__create("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
@@ -115,8 +111,8 @@ func Client__request_sse(p_url_str string,
 			}
 			status_str := msg_map["status_str"].(string)
 
-			if !(status_str == "ok" || status_str == "error") {
-				gf_err := gf_core.Error__create("sse message json status_str key is not of value ok|error",
+			if !(status_str == "ok" || status_str == "error" || status_str == "complete") {
+				gf_err := gf_core.Error__create("sse message json status_str key is not of value ok|complete|error",
 					"verify__invalid_key_value_error",
 					map[string]interface{}{
 						"status_str": status_str,
@@ -141,6 +137,11 @@ func Client__request_sse(p_url_str string,
 			
 			//-------------------
 			
+
+
+			fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+			spew.Dump(data_map)
+
 			p_resp_data_ch <- data_map
 		}
 	}
