@@ -38,6 +38,7 @@ function main() {
             <input id="block_range__start" value="2000000">
             <input id="block_range__end"   value="2000001">
             <div id="submit_btn"></div>
+            <div id="updates"></div>
         </div>
     </div>`);
     
@@ -73,7 +74,7 @@ function main() {
 
 
 
-
+    // INDEX_BLOCKS
     $("#index_block #submit_btn").on('click', (e)=>{
 
         const block_range__start_int = $("input#block_range__start").val();
@@ -86,6 +87,37 @@ function main() {
 
 
                 $(monitor_element).find("#index_block #submit_btn").css("background-color", "green");
+
+
+                //---------------------------------------------------
+                function consume_job_updates() {
+                    const event_source = new EventSource(`/gfethm/v1/block/index/job_updates?job_id=${}`);
+                    event_source.onmessage = function(p_event) {
+                    
+                        const event_data_str = p_event.data;
+                        const event_data_map = JSON.parse(event_data_str);
+
+                        console.log(event_data_map);
+
+                        $(monitor_element).find("#index_block #updates").append(event_data_map);
+
+                    }
+
+                    event_source.onerror = function(p_err) {
+                        console.error("EventSource failed:", p_err);
+                    };
+
+
+                    // FIX!! - detect when an update from the last block has been received,
+                    //         and then manually close the stream.
+                    //         the server itself has no way to close the event stream because
+                    //         the client/browser will try to reestablish it.
+                    // evtSource.close();
+                }
+
+                //---------------------------------------------------
+                consume_job_updates();
+
             },
             function(){
                 $(monitor_element).find("#index_block #submit_btn").css("background-color", "red");

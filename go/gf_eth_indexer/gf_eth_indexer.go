@@ -25,6 +25,7 @@ import (
 	"context"
 	"strings"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_aws"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
@@ -80,10 +81,17 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 					//               and continue their work (or get response to their request). 
 					//               the index op should complete independently of the client, in the future.
 					ctx := context.Background()
+					
+					// TRACE
+					// span has to be started and its context passed to job_run
+					// so that all the subsequent nested sentry calls dont 
+					// fail with nil exception.
+					span__root := sentry.StartSpan(ctx, "indexer_job")
+					defer span__root.Finish()
 
 					job_id_str, gf_err := job_run(cmd,
 						p_get_worker_hosts_fn,
-						ctx,
+						span__root.Context(),
 						sqs_client,
 						p_metrics,
 						p_runtime)
@@ -91,6 +99,8 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 						cmd.Response_err_ch <- *gf_err
 						return
 					}
+
+					span__root.Finish()
 
 					cmd.Response_ch <- job_id_str
 				}()
