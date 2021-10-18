@@ -83,7 +83,7 @@ function main() {
 
         http__index_block(block_range__start_int,
             block_range__end_int,
-            function() {
+            function(p_job_id_str) {
 
 
                 $(monitor_element).find("#index_block #submit_btn").css("background-color", "green");
@@ -91,7 +91,7 @@ function main() {
 
                 //---------------------------------------------------
                 function consume_job_updates() {
-                    const event_source = new EventSource(`/gfethm/v1/block/index/job_updates?job_id=${}`);
+                    const event_source = new EventSource(`/gfethm/v1/block/index/job_updates?job_id=${p_job_id_str}`);
                     event_source.onmessage = function(p_event) {
                     
                         const event_data_str = p_event.data;
@@ -317,6 +317,7 @@ function render__block_from_workers(p_block_uint,
 }
 
 //---------------------------------------------------
+// VIEW_TRACE
 function view_trace(p_tx_id_str, p_on_error_fun) {
 
     http__get_trace(p_tx_id_str,
@@ -373,8 +374,8 @@ function http__index_block(p_range_start_int,
 			
 			if (p_data_map["status"] == "OK") {
 
-
-                p_on_complete_fun();
+                const job_id_str = p_data_map["job_id_str"];
+                p_on_complete_fun(job_id_str);
 
 			}
 			else {
