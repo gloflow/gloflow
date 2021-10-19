@@ -76,12 +76,19 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 				// while completion of this job.
 				go func() {
 
+					job_id_str := job_get_id()
+
 					// IMPORTANT!! - using a background context, and not a client supplied context
 					//               (via cmd.Ctx) because clients just submit an index operation,
 					//               and continue their work (or get response to their request). 
 					//               the index op should complete independently of the client, in the future.
 					ctx := context.Background()
 					
+
+					hub := sentry.GetHubFromContext(ctx)
+					hub.Scope().SetTag("job_id", string(job_id_str))
+
+
 					// TRACE
 					// span has to be started and its context passed to job_run
 					// so that all the subsequent nested sentry calls dont 
@@ -89,7 +96,8 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 					span__root := sentry.StartSpan(ctx, "indexer_job")
 					defer span__root.Finish()
 
-					job_id_str, gf_err := job_run(cmd,
+					gf_err := job_run(job_id_str,
+						cmd,
 						p_get_worker_hosts_fn,
 						span__root.Context(),
 						sqs_client,
@@ -137,12 +145,20 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 }
 
 //-------------------------------------------------
-func job_run(p_cmd GF_indexer_cmd,
+func job_get_id() GF_indexer_job_id {
+	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
+	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid_%s", strings.ReplaceAll(fmt.Sprintf("%f", job_start_time_f), ".", "_")))
+	return job_id_str
+}
+
+//-------------------------------------------------
+func job_run(p_job_id_str GF_indexer_job_id,
+	p_cmd                 GF_indexer_cmd,
 	p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_ctx                 context.Context,
 	p_sqs_client          *sqs.Client,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) (GF_indexer_job_id, *gf_core.GF_error) {
+	p_runtime             *gf_eth_core.GF_runtime) *gf_core.GF_error {
 
 	job_updates_ch  := make(GF_job_updates_ch, 10)
 	job_complete_ch := make(GF_job_complete_ch, 1)
@@ -154,21 +170,20 @@ func job_run(p_cmd GF_indexer_cmd,
 	// ABI_DEFS
 	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(p_ctx, p_metrics, p_runtime)
 	if gf_err != nil {
-		return GF_indexer_job_id(""), gf_err
+		return gf_err
 	}
 
 	//----------------------------
 
 
 
-	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	job_id_str       := GF_indexer_job_id(fmt.Sprintf("jid_%s", strings.ReplaceAll(fmt.Sprintf("%f",job_start_time_f), ".", "_")))
-	gf_sqs_queue, gf_err := Updates__init_stream(job_id_str,
+	
+	gf_sqs_queue, gf_err := Updates__init_stream(p_job_id_str,
 		p_ctx,
 		p_sqs_client,
 		p_runtime)
 	if gf_err != nil {
-		return GF_indexer_job_id(""), gf_err
+		return gf_err
 	}
 
 	// process indexing job in separate go-routine so that updates/completion
@@ -223,7 +238,7 @@ func job_run(p_cmd GF_indexer_cmd,
 	}()
 
 	//----------------------------
-	return job_id_str, nil
+	return nil
 }
 
 //-------------------------------------------------
