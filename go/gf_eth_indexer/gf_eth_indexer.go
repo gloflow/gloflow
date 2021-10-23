@@ -65,6 +65,11 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 
 	go func() {
 
+		// IMPORTANT!! - sentry needs a new hub per go-routine, so cloning the toplevel hub
+		hub := sentry.CurrentHub().Clone()
+		
+		
+		
 		for {
 			select {
 
@@ -78,16 +83,17 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 
 					job_id_str := job_get_id()
 
+					
 					// IMPORTANT!! - using a background context, and not a client supplied context
 					//               (via cmd.Ctx) because clients just submit an index operation,
 					//               and continue their work (or get response to their request). 
 					//               the index op should complete independently of the client, in the future.
-					ctx := context.Background()
+					ctx_bg := context.Background()
+
+					// IMPORTANT!! - associate context for this job with the hub for this job processing goroutine
+					ctx := sentry.SetHubOnContext(ctx_bg, hub)
 					
-
-					hub := sentry.GetHubFromContext(ctx)
 					hub.Scope().SetTag("job_id", string(job_id_str))
-
 
 					// TRACE
 					// span has to be started and its context passed to job_run

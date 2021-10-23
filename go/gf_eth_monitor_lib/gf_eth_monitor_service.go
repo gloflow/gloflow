@@ -21,13 +21,13 @@ package gf_eth_monitor_lib
 
 import (
 	"fmt"
-	"time"
+	// "time"
 	"context"
 	"net/http"
 	log "github.com/sirupsen/logrus"
-	"github.com/getsentry/sentry-go"
+	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
-	"github.com/gloflow/gloflow/go/gf_core"
+	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
@@ -40,7 +40,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
 	//-------------
-	// SENTRY
+	/*// SENTRY
 	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
 	sentry_samplerate_f := 1.0
 	sentry_trace_handlers_map := map[string]bool{
@@ -60,8 +60,10 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 		panic(err)
 	}
 
-	defer sentry.Flush(2 * time.Second)
+	defer sentry.Flush(2 * time.Second)*/
 
+	sentry_endpoint_uri_str := p_runtime.Config.Sentry_endpoint_str
+	gf_eth_core.Sentry__init(sentry_endpoint_uri_str)
 
 	//-------------
 	// METRICS

@@ -21,7 +21,8 @@ package gf_eth_core
 
 import (
 	"fmt"
-	// "go.mongodb.org/mongo-driver/mongo"
+	"time"
+	"github.com/getsentry/sentry-go"
 	// "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -32,6 +33,33 @@ type GF_runtime struct {
 	Py_plugins  *GF_py_plugins
 	Runtime_sys *gf_core.Runtime_sys
 	// Influxdb_client *influxdb2.Client
+}
+
+//-------------------------------------------------
+func Sentry__init(p_sentry_endpoint_uri_str string) {
+
+	//-------------
+	// SENTRY
+	// sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
+	sentry_samplerate_f := 1.0
+	sentry_trace_handlers_map := map[string]bool{
+		"GET /gfethm/v1/block/index":   true,
+		"GET /gfethm/v1/tx/trace/plot": true,
+		"GET /gfethm/v1/block":         true,
+		"GET /gfethm/v1/miner": true,
+		// "/gfethm/v1/block": true,
+		"GET /gfethm/v1/peers": true,
+		// "http__master__get_block": true,
+		// "http__master__get_block": true,
+	}
+	err := gf_core.Error__init_sentry(p_sentry_endpoint_uri_str,
+		sentry_trace_handlers_map,
+		sentry_samplerate_f)
+	if err != nil {
+		panic(err)
+	}
+
+	defer sentry.Flush(2 * time.Second)
 }
 
 //-------------------------------------------------------------

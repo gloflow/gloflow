@@ -27,7 +27,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -107,7 +107,7 @@ func Test__indexer_http(p_test *testing.T) {
 
 		select {
 		case update_map := <-job_updates_ch:
-			// spew.Dump(update_map)
+			spew.Dump(update_map)
 
 			received_job_updates_num_int += 1
 			if received_job_updates_num_int == test_blocks_num_int {
