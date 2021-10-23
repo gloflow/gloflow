@@ -44,6 +44,11 @@ function gf_picker__create_ui(p_api_host_str) {
         top: 0px;
         left: 0px;
         
+        /*important so that the GF UI is above all other page content*/
+        z-index: 100000;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	    margin:      0;
     }
 
     div#background {
@@ -66,21 +71,34 @@ function gf_picker__create_ui(p_api_host_str) {
         padding-bottom:   7px;
     }
 
+    div#gf_bookmark div#description {
+        width: 100%;
+    }
     div#gf_bookmark div#description input {
         height:       60px;
-        width:        99%;
+        width:        100%%;
         border-width: 2px;
         border-color: #808080;
         border-style: solid;
         font-size:    16px;
     }
 
+
+    div#gf_bookmark div#tags {
+        width: 100%;
+    }
+    div#gf_bookmark div#tags input {
+        width: 100%;
+    }
+
+
+
     div#gf_bookmark div#close_btn {
         position:         absolute;
         top:              0px;
         right:            -49px;
         width:            50px;
-        height:           34px;
+        height:           55px;
         background-color: #fcfd30;
         text-align:       center;
         padding-top:      18px;
