@@ -36,6 +36,8 @@ body {
 	right: 0px;
 	width: 234px;
 	background-color: yellow;
+
+	z-index: 10;
 }
 
 .monitor #index_block input {

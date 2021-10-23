@@ -103,7 +103,7 @@ function main() {
 
                         const block_num_indexed_int = event_data_map["data_map"]["block_num_indexed_int"];
                         console.log(block_num_indexed_int);
-                        $(monitor_element).find("#index_block #updates").append(`<div id="update">${block_num_indexed_int}</div>`);
+                        $(monitor_element).find("#index_block #updates").prepend(`<div id="update">${block_num_indexed_int}</div>`);
 
                     }
 
