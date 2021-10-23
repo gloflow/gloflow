@@ -98,8 +98,12 @@ function main() {
                         const event_data_map = JSON.parse(event_data_str);
 
                         console.log(event_data_map);
+                        
 
-                        $(monitor_element).find("#index_block #updates").append(event_data_map);
+
+                        const block_num_indexed_int = event_data_map["data_map"]["block_num_indexed_int"];
+                        console.log(block_num_indexed_int);
+                        $(monitor_element).find("#index_block #updates").append(`<div id="update">${block_num_indexed_int}</div>`);
 
                     }
 
@@ -112,7 +116,7 @@ function main() {
                     //         and then manually close the stream.
                     //         the server itself has no way to close the event stream because
                     //         the client/browser will try to reestablish it.
-                    // evtSource.close();
+                    // event_source.close();
                 }
 
                 //---------------------------------------------------
