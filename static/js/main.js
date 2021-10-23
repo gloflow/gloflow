@@ -367,14 +367,14 @@ function http__index_block(p_range_start_int,
     //-------------------------
 	// HTTP AJAX
 	$.get(url_str,
-		function(p_data_map) {
+		function(p_reply_map) {
 
             console.log('response received');
-			console.log(`data_map["status"] - ${p_data_map["status"]}`);
+			console.log(`status - ${p_reply_map["status"]}`);
 			
-			if (p_data_map["status"] == "OK") {
+			if (p_reply_map["status"] == "OK") {
 
-                const job_id_str = p_data_map["job_id_str"];
+                const job_id_str = p_reply_map["data"]["job_id_str"];
                 p_on_complete_fun(job_id_str);
 
 			}
@@ -396,19 +396,19 @@ function http__get_trace(p_tx_id_str,
     //-------------------------
 	// HTTP AJAX
 	$.get(url_str,
-		function(p_data_map) {
+		function(p_reply_map) {
 
             console.log('response received');
-			console.log(`data_map["status"] - ${p_data_map["status"]}`);
+			console.log(`status - ${p_reply_map["status"]}`);
 			
-			if (p_data_map["status"] == "OK") {
+			if (p_reply_map["status"] == "OK") {
 
-				const tx_trace_svg_str = p_data_map["data"]["plot_svg_str"];
+				const tx_trace_svg_str = p_reply_map["data"]["plot_svg_str"];
                 p_on_complete_fun(tx_trace_svg_str);
 
 			}
 			else {
-				p_on_error_fun(p_data_map["data"]);
+				p_on_error_fun(p_reply_map["data"]);
 			}
         });
     
@@ -425,18 +425,18 @@ function http__get_block(p_block_num_int,
 	//-------------------------
 	// HTTP AJAX
 	$.get(url_str,
-		function(p_data_map) {
+		function(p_reply_map) {
             console.log('response received');
-			console.log(`data_map["status"] - ${p_data_map["status"]}`);
+			console.log(`status - ${p_reply_map["status"]}`);
 			
-			if (p_data_map["status"] == "OK") {
+			if (p_reply_map["status"] == "OK") {
 
-				const block_from_workers_map = p_data_map["data"]["block_from_workers_map"];
-                const miners_map             = p_data_map["data"]["miners_map"];
+				const block_from_workers_map = p_reply_map["data"]["block_from_workers_map"];
+                const miners_map             = p_reply_map["data"]["miners_map"];
                 p_on_complete_fun(block_from_workers_map, miners_map);
 			}
 			else {
-				p_on_error_fun(p_data_map["data"]);
+				p_on_error_fun(p_reply_map["data"]);
 			}
         });
     
