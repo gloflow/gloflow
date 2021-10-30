@@ -82,7 +82,7 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
 			}
-			p_metrics.Block__db_count__gauge.Set(float64(blocks_count_int))
+			p_metrics.Tx__db_count__gauge.Set(float64(blocks_count_int))
 
 			//---------------------
 			time.Sleep(60 * time.Second) // SLEEP

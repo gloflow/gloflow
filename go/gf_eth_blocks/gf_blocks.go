@@ -127,8 +127,6 @@ func Index__pipeline(p_block_uint uint64,
 		return gf_err
 	}
 
-	// spew.Dump(miners_map)
-
 	// IMPORTANT!! - for now just get the block from the first worker_host,
 	//               regardless of how many workers are registered.
 	var gf_block *GF_eth__block__int
