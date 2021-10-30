@@ -102,8 +102,14 @@ function main() {
 
 
                         const block_num_indexed_int = event_data_map["data_map"]["block_num_indexed_int"];
-                        console.log(block_num_indexed_int);
-                        $(monitor_element).find("#index_block #updates").prepend(`<div id="update">${block_num_indexed_int}</div>`);
+                        const txs_num_indexed_int   = event_data_map["data_map"]["txs_num_indexed_int"];
+
+                        console.log(block_num_indexed_int, txs_num_indexed_int);
+                        $(monitor_element).find("#index_block #updates").prepend(`
+                            <div id="update">
+                                <span id='block'>${block_num_indexed_int}</span>
+                                <span id='txs_num'>txs # - ${txs_num_indexed_int}</span>
+                            </div>`);
 
                     }
 

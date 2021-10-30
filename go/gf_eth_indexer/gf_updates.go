@@ -32,6 +32,7 @@ import (
 //-------------------------------------------------
 type GF_job_update struct {
 	Block_num_indexed_int uint64 `json:"block_num_indexed_int"`
+	Txs_num_indexed_int   uint64 `json:"txs_num_indexed_int"`
 }
 type GF_job_updates_ch  chan(GF_job_update)
 type GF_job_err_ch      chan(gf_core.GF_error)

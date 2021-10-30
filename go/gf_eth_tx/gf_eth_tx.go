@@ -77,12 +77,13 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			blocks_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
+			txs_count_int, txs_traces_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
 			if gf_err != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
 			}
-			p_metrics.Tx__db_count__gauge.Set(float64(blocks_count_int))
+			p_metrics.Tx__db_count__gauge.Set(float64(txs_count_int))
+			p_metrics.Tx_trace__db_count__gauge.Set(float64(txs_traces_count_int))
 
 			//---------------------
 			time.Sleep(60 * time.Second) // SLEEP

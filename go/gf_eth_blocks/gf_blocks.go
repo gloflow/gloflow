@@ -109,7 +109,7 @@ func Index__pipeline(p_block_uint uint64,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime             *gf_eth_core.GF_runtime) (uint64, *gf_core.GF_error) {
 
 
 	//---------------------
@@ -124,7 +124,7 @@ func Index__pipeline(p_block_uint uint64,
 		p_runtime)
 
 	if gf_err != nil {
-		return gf_err
+		return 0, gf_err
 	}
 
 	// IMPORTANT!! - for now just get the block from the first worker_host,
@@ -143,7 +143,7 @@ func Index__pipeline(p_block_uint uint64,
 		p_metrics,
 		p_runtime)
 	if gf_err != nil {
-		return gf_err
+		return 0, gf_err
 	}
 
 	// METRICS
@@ -153,8 +153,10 @@ func Index__pipeline(p_block_uint uint64,
 
 	//---------------------
 	
+	txs_num_int := uint64(len(gf_block.Txs_lst))
+
 	// some blocks (especially early ones) dont have any transactions in them
-	if len(gf_block.Txs_lst) > 0 {
+	if txs_num_int > 0 {
 
 		//---------------------
 		// DB_WRITE_BULK__TXS
@@ -164,7 +166,7 @@ func Index__pipeline(p_block_uint uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			return gf_err
+			return 0, gf_err
 		}
 
 		// METRICS
@@ -175,7 +177,7 @@ func Index__pipeline(p_block_uint uint64,
 		}
 		
 		//---------------------
-		/*// TRACES
+		// TRACES
 		tx_hashes_lst := []string{}
 		for _, tx := range gf_block.Txs_lst {
 			tx_hashes_lst = append(tx_hashes_lst, tx.Hash_str)
@@ -190,12 +192,12 @@ func Index__pipeline(p_block_uint uint64,
 			p_metrics,
 			p_runtime)
 		if gf_err != nil {
-			return gf_err
-		}*/
+			return 0, gf_err
+		}
 
 		//---------------------
 	}
-	return nil
+	return txs_num_int, nil
 }
 
 //-------------------------------------------------

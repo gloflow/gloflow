@@ -29,27 +29,40 @@ import (
 //-------------------------------------------------
 // DB__GET_COUNT
 func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (uint64, uint64, *gf_core.GF_error) {
 
-	coll_name_str := "gf_eth_txs"
-	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+	//-------------------------------------------------
+	count_fn := func(p_coll_name_str string) (uint64, *gf_core.GF_error) {
+		coll := p_runtime.Runtime_sys.Mongo_db.Collection(p_coll_name_str)
 
-	ctx := context.Background()
-	
-	count_int, err := coll.CountDocuments(ctx, bson.M{})
-	if err != nil {
+		ctx := context.Background()
+		
+		count_int, err := coll.CountDocuments(ctx, bson.M{})
+		if err != nil {
 
-		// METRICS
-		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+			// METRICS
+			if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
 
-		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
-			"mongodb_count_error",
-			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-		return 0, gf_err
+			gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
+				"mongodb_count_error",
+				map[string]interface{}{},
+				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			return 0, gf_err
+		}
+		return uint64(count_int), nil
 	}
 
-	return count_int, nil
+	//-------------------------------------------------
+	txs_count_int, gf_err := count_fn("gf_eth_txs")
+	if gf_err != nil {
+		return 0, 0, gf_err
+	}
+	txs_traces_count_int, gf_err := count_fn("gf_eth_txs_traces")
+	if gf_err != nil {
+		return 0, 0, gf_err
+	}
+
+	return txs_count_int, txs_traces_count_int, nil
 }
 
 //-------------------------------------------------

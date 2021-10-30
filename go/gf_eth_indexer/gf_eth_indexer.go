@@ -264,7 +264,7 @@ func index__range(p_block_start_uint uint64,
 
 		block_uint := b
 
-		gf_err := gf_eth_blocks.Index__pipeline(block_uint,
+		txs_num_int, gf_err := gf_eth_blocks.Index__pipeline(block_uint,
 			p_get_worker_hosts_fn,
 			p_abis_defs_map,
 			p_ctx,
@@ -279,6 +279,7 @@ func index__range(p_block_start_uint uint64,
 		if p_job_updates_ch != nil {
 			p_job_updates_ch <- GF_job_update{
 				Block_num_indexed_int: block_uint,
+				Txs_num_indexed_int:   txs_num_int,
 			}
 		}
 	}
