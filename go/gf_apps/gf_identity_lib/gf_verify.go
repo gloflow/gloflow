@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2021 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,32 +20,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-type GF_service_info struct {
-	Port_str                string
-	Mongodb_host_str        string
-	Mongodb_db_name_str     string
-	Templates_dir_paths_map map[string]interface{}
-	Config_file_path_str    string
-}
-
-//-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+//---------------------------------------------------
+func verify__auth_proof_signature(p_signature_str string,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
 
-	//------------------------
-	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	//------------------------
 
 
-	return nil
+	return false, nil
+
+
 }

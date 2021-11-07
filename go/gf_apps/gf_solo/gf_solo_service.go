@@ -26,6 +26,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
@@ -54,6 +55,15 @@ func service__run(p_config *GF_config,
 
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
+
+	//-------------
+	// GF_IDENTITY
+
+	gf_err := gf_identity_lib.Init_service(p_runtime_sys)
+	if gf_err != nil {
+		return
+	}
+	
 	//-------------
 	// GF_IMAGES
 
