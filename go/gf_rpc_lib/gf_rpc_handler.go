@@ -97,15 +97,12 @@ func Create_handler__http_with_metrics(p_path_str string,
 		// METRICS
 
 		if p_metrics != nil {
-
 			if counter, ok := p_metrics.Handlers_counters_map[p_path_str]; ok {
 				counter.Inc()
 			}
 		}
 
 		//------------------
-
-		
 		ctx := p_req.Context()
 
 		hub := sentry.GetHubFromContext(ctx)
@@ -182,7 +179,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	}
 
 	run := &GF_rpc_handler_run{
-		Class_str:          "rpc_handler_run", // FIX!! - thi should be "rpc_handler_run"
+		Class_str:          "rpc_handler_run",
 		Handler_url_str:    p_handler_url_str,
 		Start_time__unix_f: p_start_time__unix_f,
 		End_time__unix_f:   p_end_time__unix_f,
@@ -202,15 +199,6 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	if gf_err != nil {
 		return gf_err
 	}
-	
-	/*err := p_runtime_sys.Mongo_coll.Insert(run)
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert rpc_handler_run",
-            "mongodb_insert_error",
-            map[string]interface{}{"handler_url_str": p_handler_url_str,},
-            err, "gf_rpc_lib", p_runtime_sys)
-		return gf_err
-	}*/
 
 	return nil
 }
@@ -221,7 +209,6 @@ func Error__in_handler(p_handler_url_path_str string,
 	p_gf_err       *gf_core.Gf_error,
 	p_resp         http.ResponseWriter,
 	p_runtime_sys  *gf_core.Runtime_sys) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_handler.Error__in_handler()")
 
 	status_str := "ERROR"
 	data_map   := map[string]interface{}{
@@ -239,8 +226,4 @@ func Error__in_handler(p_handler_url_path_str string,
 	}
 
 	Http_respond(data_map, status_str, p_resp, p_runtime_sys)
-
-	/*http.Error(p_resp,
-	p_usr_msg_str,
-	http.StatusInternalServerError)*/
 }

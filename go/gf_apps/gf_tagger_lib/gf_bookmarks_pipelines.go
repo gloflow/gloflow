@@ -34,6 +34,7 @@ import (
 
 //---------------------------------------------------
 type GF_bookmark struct {
+	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               gf_core.GF_ID      `bson:"id_str"`
 	Deleted_bool         bool               `bson:"deleted_bool"`
@@ -150,8 +151,6 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
-
-
 	//------------------------
 	// VALIDATE
 	gf_err := gf_core.Validate(p_input, p_validator, p_runtime_sys)
@@ -172,6 +171,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 		creation_unix_time_f)
 	
 	bookmark := &GF_bookmark{
+		V_str:                "0",
 		Id_str:               gf_id_str,
 		Deleted_bool:         false,
 		Creation_unix_time_f: creation_unix_time_f,

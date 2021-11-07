@@ -22,7 +22,6 @@ package gf_tagger_lib
 import (
 	"fmt"
 	"context"
-	// "gopkg.in/mgo.v2/bson"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"

@@ -221,14 +221,11 @@ func Error__create_with_defs(p_user_msg_str string,
 		Line_num_int:         line_num_int,
 	}
 
-
 	red      := color.New(color.FgRed).SprintFunc()
 	cyan     := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow   := color.New(color.FgYellow).SprintFunc()
 	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
 	green    := color.New(color.FgBlack, color.BgGreen).SprintFunc()
-
-
 
 	//--------------------
 	// VIEW
@@ -246,13 +243,6 @@ func Error__create_with_defs(p_user_msg_str string,
 	fmt.Printf("data           - %s\n", yellow(gf_error.Data_map))
 	fmt.Printf("error          - %s\n", red(p_error))
 	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
-	
-	/*p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("gf_error created - type:%s - service:%s - subsystem:%s - func:%s - usr_msg:%s",
-		p_error_type_str,
-		p_runtime_sys.Service_name_str,
-		p_subsystem_name_str,
-		function_name_str,
-		p_user_msg_str))*/
 
 	fmt.Printf("\n\n")
 
@@ -340,17 +330,11 @@ func Error__init_sentry(p_sentry_endpoint_str string,
 
 		TracesSampler: sentry.TracesSamplerFunc(func(p_ctx sentry.SamplingContext) sentry.Sampled {
 
-
 			
 			hub                  := sentry.GetHubFromContext(p_ctx.Span.Context())
 			transaction_name_str := hub.Scope().Transaction()
-			// handler_path_str     := strings.Split(transaction_name_str, " ")[1]
-
-
 
 			// fmt.Printf("SENTRY TX - %s\n", transaction_name_str)
-
-
 
 			// exclude traces of all transactions that are not for expected handlers
 			if _, ok := p_transactions__to_trace_map[transaction_name_str]; !ok {
