@@ -51,6 +51,18 @@ type GF_user__output_create struct {
 	JWT_token_val             GF_jtw_val `json:"jwt_token_val_str"`
 }
 
+
+
+type GF_user__input_update struct {
+}
+type GF_user__output_update struct {
+}
+
+type GF_user__update struct {
+	Username_str    string
+	Description_str string
+}
+
 //---------------------------------------------------
 // PIPELINE__CREATE
 func users__pipeline__create(p_input *GF_user__input_create,
@@ -107,6 +119,16 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	output.JWT_token_val = jwt_token_val
 
 	//------------------------
+
+	return output, nil
+}
+
+//---------------------------------------------------
+func users__pipeline__update(p_input *GF_user__input_update,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
+
+	output := &GF_user__output_update{}
 
 	return output, nil
 }

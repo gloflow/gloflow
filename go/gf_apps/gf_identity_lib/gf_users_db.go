@@ -21,10 +21,12 @@ package gf_identity_lib
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
+// CREATE
 func db__user__create(p_user *GF_user,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -46,5 +48,49 @@ func db__user__create(p_user *GF_user,
 		return gf_err
 	}
 	
+	return nil
+}
+
+//---------------------------------------------------
+// UPDATE
+func db__user__update(p_user_address_eth GF_user_address_eth,
+	p_update      *GF_user__update,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+	//------------------------
+	// FIELDS
+	fields_targets := bson.M{}
+
+	if p_update.Username_str != "" {
+		fields_targets["username_str"] = p_update.Username_str
+	}
+
+	if p_update.Description_str != "" {
+		fields_targets["description_str"] = p_update.Description_str
+	}
+	
+	//------------------------
+	
+
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth, }},
+			"deleted_bool":      false,
+		},
+		bson.M{"$set": fields_targets})
+		
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to to update user info",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"username_str":    p_update.Username_str,
+				"description_str": p_update.Description_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return gf_err
+	}
+
+
 	return nil
 }
