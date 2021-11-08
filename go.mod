@@ -10,13 +10,14 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.8.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.9.0 // indirect
 	github.com/davecgh/go-spew v1.1.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	
 	github.com/fatih/color v1.10.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.10.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c

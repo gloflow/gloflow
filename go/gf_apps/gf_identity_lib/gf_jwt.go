@@ -23,7 +23,8 @@ import (
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"github.com/dgrijalva/jwt-go"
+	// "github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
