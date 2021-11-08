@@ -53,7 +53,7 @@ type GF_user__input_create struct {
 }
 type GF_user__output_create struct {
 	Auth_proof_sig_valid_bool bool       `json:"auth_proof_sig_valid_bool"`
-	JWT_token_val             GF_jtw_val `json:"jwt_token_val_str"`
+	JWT_token_val             GF_jwt_val `json:"jwt_token_val_str"`
 }
 
 

@@ -101,8 +101,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				}
 
 				//---------------------
-				// JWT_VERIFY
-				gf_err = jwt__verify_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
+				// JWT_VALIDATE
+				gf_err = jwt__validate_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -138,8 +138,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				}
 
 				//---------------------
-				// JWT_VERIFY
-				gf_err = jwt__verify_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
+				// JWT_VALIDATE
+				gf_err = jwt__validate_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

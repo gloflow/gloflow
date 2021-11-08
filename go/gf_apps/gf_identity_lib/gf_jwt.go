@@ -30,7 +30,7 @@ import (
 )
 
 //---------------------------------------------------
-type GF_jtw_val string
+type GF_jwt_val string
 type GF_jwt_token struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
@@ -38,7 +38,7 @@ type GF_jwt_token struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	Val_str          GF_jtw_val          `bson:"val_str"`
+	Val_str          GF_jwt_val          `bson:"val_str"`
 	User_address_eth GF_user_address_eth `bson:"user_address_eth"`
 }
 
@@ -51,7 +51,7 @@ type GF_jwt_claims struct {
 // PIPELINE__GENERATE
 func jwt__pipeline__generate(p_user_address_eth GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_jtw_val, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (GF_jwt_val, *gf_core.GF_error) {
 
 	
 
@@ -98,16 +98,16 @@ func jwt__pipeline__generate(p_user_address_eth GF_user_address_eth,
 //---------------------------------------------------
 // GENERATE
 func jwt__generate(p_user_address_eth GF_user_address_eth,
-	p_signing_key_str      string,
-	p_creation_unix_time_f float64,
-	p_runtime_sys          *gf_core.Runtime_sys) (GF_jtw_val, *gf_core.GF_error) {
+	p_signing_secret_key_str string,
+	p_creation_unix_time_f   float64,
+	p_runtime_sys            *gf_core.Runtime_sys) (GF_jwt_val, *gf_core.GF_error) {
 
 
 	issuer_str := "gf"
 	jwt_token_ttl_sec_int    := int64(60*60*24*7) // 7 days
-	creation_unix_time_int   := time.Now().UnixNano()/1000000000
-	expiration_unix_time_int := creation_unix_time_int + jwt_token_ttl_sec_int
+	expiration_unix_time_int := int64(p_creation_unix_time_f) + jwt_token_ttl_sec_int
 
+	// CLAIMS
 	claims := GF_jwt_claims{
 		p_user_address_eth,
 		jwt.StandardClaims{
@@ -116,14 +116,23 @@ func jwt__generate(p_user_address_eth GF_user_address_eth,
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// NEW_TOKEN
+	jwt_token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	token_val_str, err := token.SignedString([]byte(p_signing_key_str))
+	// SIGNING - to be able to verify using the same secret_key that in the future
+	//           a received token is valid and unchanged.
+	jwt_token_val_str, err := jwt_token.SignedString([]byte(p_signing_secret_key_str))
 	if err != nil {
-
+		gf_err := gf_core.Mongo__handle_error("failed to to update user info",
+			"crypto_jwt_sign_token_error",
+			map[string]interface{}{
+				"user_address_eth": p_user_address_eth,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return GF_jwt_val(""), gf_err
 	}
 
-	return GF_jtw_val(token_val_str), nil
+	return GF_jwt_val(jwt_token_val_str), nil
 }
 
 //---------------------------------------------------
@@ -138,7 +147,7 @@ func jwt__generate_id(p_user_address_eth GF_user_address_eth,
 }
 
 //---------------------------------------------------
-func jwt__verify_from_req(p_user_eth_address GF_user_address_eth,
+func jwt__validate_from_req(p_user_eth_address GF_user_address_eth,
 	p_req         *http.Request,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -146,7 +155,7 @@ func jwt__verify_from_req(p_user_eth_address GF_user_address_eth,
 
 
 
-
+	
 
 
 
@@ -155,6 +164,32 @@ func jwt__verify_from_req(p_user_eth_address GF_user_address_eth,
 
 
 
+}
+
+//---------------------------------------------------
+func jwt__validate(p_jwt_val GF_jwt_val,
+	p_signing_secret_key_str string,
+	p_runtime_sys            *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+	claims := &jwt.MapClaims{}
+	jwt_token, err := jwt.ParseWithClaims(string(p_jwt_val),
+		claims,
+		func(p_jwt_token *jwt.Token) (interface{}, error) {
+			return []byte(p_signing_secret_key_str), nil
+		})
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to verify a JWT token",
+			"crypto_jwt_verify_token_error",
+			map[string]interface{}{
+				"jwt_val_str": p_jwt_val,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return false, gf_err
+	}
+
+	valid_bool := jwt_token.Valid
+
+	return valid_bool, nil
 }
 
 //---------------------------------------------------

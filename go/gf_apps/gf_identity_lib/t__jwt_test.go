@@ -22,9 +22,10 @@ package gf_identity_lib
 import (
 	"fmt"
 	"os"
+	"time"
 	// "context"
 	"testing"
-	// "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -79,4 +80,31 @@ func Test__main(p_test *testing.T) {
 func test_jwt(p_test *testing.T,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
+
+
+	test_user_address_eth := GF_user_address_eth("")
+	test_signing_key_str  := "fdsfsdf"
+	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
+
+	// JWT_GENERATE
+	jwt_val, gf_err := jwt__generate(test_user_address_eth,
+		test_signing_key_str,
+		creation_unix_time_f,
+		p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+	
+	// JWT_VALIDATE
+	valid_bool, gf_err := jwt__validate(jwt_val,
+		test_signing_key_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+
+
+	assert.True(p_test, valid_bool == true, "test JWT token is not valid, when it should be")
+	
 }
