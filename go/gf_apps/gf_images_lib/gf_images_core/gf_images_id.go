@@ -31,13 +31,13 @@ import (
 )
 
 //---------------------------------------------------
-type Gf_image_id string
+type Gf_image_id string // DEPRECATED!! - switch to using GF_image_id fully
 type GF_image_id = Gf_image_id
 
 //---------------------------------------------------
 // CREATES_ID
 func Image_ID__create_from_url(p_image_url_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (Gf_image_id, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (GF_image_id, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create_from_url()")
 	
 	// urlparse() - used so that any possible url query parameters are not used in the 
@@ -67,6 +67,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 			err, "gf_images_core", p_runtime_sys)
 		return "", gf_err
 	}
+	
 	//-------------
 	gf_image_id_str := Image_ID__create(image_path_str, normalized_ext_str, p_runtime_sys)
 	
@@ -80,7 +81,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 
 func Image_ID__create(p_image_path_str string,
 	p_image_format_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) Gf_image_id {
+	p_runtime_sys      *gf_core.Runtime_sys) GF_image_id {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()
@@ -93,6 +94,6 @@ func Image_ID__create(p_image_path_str string,
 	sum     := h.Sum(nil)
 	hex_str := hex.EncodeToString(sum)
 	
-	gf_image_id_str := Gf_image_id(hex_str)
+	gf_image_id_str := GF_image_id(hex_str)
 	return gf_image_id_str
 }

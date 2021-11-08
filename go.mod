@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.8.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.9.0 // indirect
 	github.com/davecgh/go-spew v1.1.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.10.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/getsentry/sentry-go v0.10.0
@@ -17,7 +18,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang/snappy v0.0.3 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/mux v1.8.0
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c
 	github.com/klauspost/compress v1.11.13 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
@@ -30,7 +31,7 @@ require (
 	github.com/olivere/elastic v6.2.35+incompatible
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pelletier/go-toml v1.9.0 // indirect
-	github.com/prometheus/client_golang v1.11.0 // indirect
+	github.com/prometheus/client_golang v1.11.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

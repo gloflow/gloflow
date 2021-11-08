@@ -42,12 +42,13 @@ type GF_user struct {
 
 
 type GF_user__input_create struct {
-	Auth_proof_sig_str string                    `json:"auth_proof_sig_str"`
-	Nonce_str                string              `json:"nonce_str"`
-	Address_eth_str          GF_user_address_eth `json:"address_eth_str"`
+	Auth_proof_sig_str string              `json:"auth_proof_sig_str"`
+	Nonce_str          string              `json:"nonce_str"`
+	Address_eth_str    GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_create struct {
-	Auth_proof_sig_valid_bool bool
+	Auth_proof_sig_valid_bool bool       `json:"auth_proof_sig_valid_bool"`
+	JWT_token_val             GF_jtw_val `json:"jwt_token_val_str"`
 }
 
 //---------------------------------------------------
@@ -56,8 +57,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_create, *gf_core.GF_error) {
 
-
-	output := &GF_user__output_create{}	
+	output := &GF_user__output_create{}
 
 	//------------------------
 	// VERIFY
@@ -77,21 +77,36 @@ func users__pipeline__create(p_input *GF_user__input_create,
 
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	addresses_eth_lst    := []GF_user_address_eth{p_input.Address_eth_str, }
+	address_eth_str      := p_input.Address_eth_str
+	addresses_eth_lst    := []GF_user_address_eth{address_eth_str, }
+
+	user_id := users__create_id(address_eth_str, creation_unix_time_f)
+
 	user := &GF_user{
+		V_str:                "0",
+		Id_str:               user_id,
 		Creation_unix_time_f: creation_unix_time_f,
 		Addresses_eth_lst:    addresses_eth_lst, 
 	}
 
 
-
+	//------------------------
 	// DB
 	gf_err = db__user__create(user, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
+	//------------------------
+	// JWT
+	jwt_token_val, gf_err := jwt__pipeline__generate(address_eth_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
 
-	
+	output.JWT_token_val = jwt_token_val
+
+	//------------------------
+
 	return output, nil
 }

@@ -21,8 +21,18 @@ package gf_core
 
 import (
 	"fmt"
+	"time"
 	"crypto/sha256"
+	"math/rand"
 )
+
+//-------------------------------------------------------------
+func Str_random() string {
+	rand_with_seed := rand.New(rand.NewSource(time.Now().UnixNano()))
+	rand_int := rand_with_seed.Int()
+	rand_str := fmt.Sprintf("%d", rand_int)
+	return rand_str
+}
 
 //-------------------------------------------------------------
 func Hash_val(p_val interface{}) string {
