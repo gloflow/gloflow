@@ -364,7 +364,6 @@ func error__get_defs() map[string]Error_def {
 		"crypto_hex_decode": Error_def{
 			Descr_str: "failed to decodes a hex string with 0x prefix",
 		},
-
 		"crypto_cert_ca_parse": Error_def{
 			Descr_str: "failed to parse cert CA",
 		},

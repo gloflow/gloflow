@@ -21,8 +21,29 @@ package gf_identity_lib
 
 import (
 	"context"
+	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//---------------------------------------------------
+func http__get_user_address_eth(p_req *http.Request,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (GF_user_address_eth, *gf_core.GF_error) {
+
+	query_args_map := p_req.URL.Query()
+	if values_lst, ok := query_args_map["addr_eth"]; ok {
+		return GF_user_address_eth(values_lst[0]), nil
+	} else {
+
+
+		gf_err := gf_core.Mongo__handle_error("incoming http request is missing the addr_eth query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return GF_user_address_eth(""), gf_err
+	}
+	return GF_user_address_eth(""), nil
+}
 
 //---------------------------------------------------
 func verify__auth_proof_signature(p_signature_str string,
@@ -34,6 +55,4 @@ func verify__auth_proof_signature(p_signature_str string,
 
 
 	return false, nil
-
-
 }

@@ -22,6 +22,7 @@ package gf_identity_lib
 import (
 	"time"
 	"context"
+	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	// "github.com/dgrijalva/jwt-go"
 	"github.com/golang-jwt/jwt"
@@ -134,6 +135,26 @@ func jwt__generate_id(p_user_address_eth GF_user_address_eth,
 	gf_id_str := gf_core.Image_ID__md5_create(fields_for_id_lst,
 		p_creation_unix_time_f)
 	return gf_id_str
+}
+
+//---------------------------------------------------
+func jwt__verify_from_req(p_user_eth_address GF_user_address_eth,
+	p_req         *http.Request,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+
+
+
+
+
+
+	return nil
+
+
+
+
 }
 
 //---------------------------------------------------

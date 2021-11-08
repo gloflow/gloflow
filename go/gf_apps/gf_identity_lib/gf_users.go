@@ -41,6 +41,11 @@ type GF_user struct {
 }
 
 
+type GF_user__input_login struct {
+}
+type GF_user__output_login struct {
+}
+
 type GF_user__input_create struct {
 	Auth_proof_sig_str string              `json:"auth_proof_sig_str"`
 	Nonce_str          string              `json:"nonce_str"`
@@ -61,6 +66,24 @@ type GF_user__output_update struct {
 type GF_user__update struct {
 	Username_str    string
 	Description_str string
+}
+
+
+type GF_user__input_get struct {
+}
+type GF_user__output_get struct {
+}
+
+//---------------------------------------------------
+// PIPELINE__CREATE
+func users__pipeline__login(p_input *GF_user__input_login,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_login, *gf_core.GF_error) {
+
+
+
+
+	return nil, nil
 }
 
 //---------------------------------------------------
@@ -129,6 +152,16 @@ func users__pipeline__update(p_input *GF_user__input_update,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
 
 	output := &GF_user__output_update{}
+
+	return output, nil
+}
+
+//---------------------------------------------------
+func users__pipeline__get(p_input *GF_user__input_get,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
+
+	output := &GF_user__output_get{}
 
 	return output, nil
 }

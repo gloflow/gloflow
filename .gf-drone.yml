@@ -114,10 +114,14 @@ steps:
       
     commands:
 
+      # "mongo" - drone.io mongo service is given the same hostname as the name of the container
+
+      # GF_IDENTITY
+      - cd /home/gf/go/gf_apps/gf_identity_lib
+      - go test -mongodb_host=mongo
+
       # GF_TAGGER
       - cd /home/gf/go/gf_apps/gf_tagger_lib
-
-      # "mongo" - drone.io mongo service is given the same hostname as the name of the container
       - go test -mongodb_host=mongo
 
   #
