@@ -52,8 +52,8 @@ type GF_user__input_create struct {
 	Address_eth_str    GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_create struct {
-	Auth_proof_sig_valid_bool bool       `json:"auth_proof_sig_valid_bool"`
-	JWT_token_val             GF_jwt_val `json:"jwt_token_val_str"`
+	Auth_proof_sig_valid_bool bool             `json:"auth_proof_sig_valid_bool"`
+	JWT_token_val             GF_jwt_token_val `json:"jwt_token_val_str"`
 }
 
 

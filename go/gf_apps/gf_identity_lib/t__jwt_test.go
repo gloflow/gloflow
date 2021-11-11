@@ -83,7 +83,7 @@ func test_jwt(p_test *testing.T,
 
 
 	test_user_address_eth := GF_user_address_eth("")
-	test_signing_key_str  := "fdsfsdf"
+	test_signing_key_str  := GF_jwt_secret_key_val("fdsfsdf")
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 
 	// JWT_GENERATE

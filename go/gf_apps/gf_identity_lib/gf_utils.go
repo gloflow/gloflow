@@ -36,7 +36,7 @@ func http__get_user_address_eth(p_req *http.Request,
 	} else {
 
 
-		gf_err := gf_core.Mongo__handle_error("incoming http request is missing the addr_eth query-string arg",
+		gf_err := gf_core.Error__create("incoming http request is missing the addr_eth query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_identity_lib", p_runtime_sys)
