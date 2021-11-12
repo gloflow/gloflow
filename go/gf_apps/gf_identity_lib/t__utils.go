@@ -20,27 +20,38 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"context"
-	"net/http"
+	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//---------------------------------------------------
-func http__get_user_address_eth(p_req *http.Request,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_user_address_eth, *gf_core.GF_error) {
+//-------------------------------------------------
+func T__init() *gf_core.Runtime_sys {
 
-	query_args_map := p_req.URL.Query()
-	if values_lst, ok := query_args_map["addr_eth"]; ok {
-		return GF_user_address_eth(values_lst[0]), nil
-	} else {
+	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_db_name_str := "gf_tests"
+	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
 
-		gf_err := gf_core.Error__create("incoming http request is missing the addr_eth query-string arg",
-			"verify__missing_key_error",
-			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return GF_user_address_eth(""), gf_err
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_identity_tests",
+		Log_fun:          log_fun,
 	}
-	return GF_user_address_eth(""), nil
+
+
+
+
+	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
+	if gf_err != nil {
+		panic(-1)
+	}
+
+
+	mongo_coll := mongo_db.Collection("data_symphony")
+	runtime_sys.Mongo_db   = mongo_db
+	runtime_sys.Mongo_coll = mongo_coll
+
+
+
+
+	return runtime_sys
 }

@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-	// "context"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -31,53 +30,31 @@ import (
 )
 
 //---------------------------------------------------
-var log_fun func(string,string)
+var log_fun func(p_g string, p_m string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	log_fun = gf_core.Init_log_fun()
+
+	log_fun      = gf_core.Init_log_fun()
 	cli_args_map = CLI__parse_args(log_fun)
+
 	v := m.Run()
 	os.Exit(v)
 }
 
 //-------------------------------------------------
-func Test__main(p_test *testing.T) {
+func Test__jwt(p_test *testing.T) {
 
-	fmt.Println(" TEST__IDENTITY_MAIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
-	test__mongodb_db_name_str := "gf_tests"
-	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
+	runtime_sys := T__init()
 
-	log_fun := gf_core.Init_log_fun()
-
-
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_tagger_tests",
-		Log_fun:          log_fun,
-	}
-
-
-
-
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
-	if gf_err != nil {
-		panic(-1)
-	}
-
-
-	mongo_coll := mongo_db.Collection("data_symphony")
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_coll
-
-
-	test_jwt(p_test, runtime_sys)
+	test_jwt_main(p_test, runtime_sys)
 }
 
 //-------------------------------------------------
-func test_jwt(p_test *testing.T,
+func test_jwt_main(p_test *testing.T,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 

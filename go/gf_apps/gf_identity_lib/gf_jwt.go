@@ -87,7 +87,7 @@ func jwt__pipeline__generate(p_user_address_eth GF_user_address_eth,
 
 
 
-	// DB
+	// DB_CREATE__SECRET_KEY
 	gf_err = db__jwt_secret_key__create(jwt_secret_key, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
