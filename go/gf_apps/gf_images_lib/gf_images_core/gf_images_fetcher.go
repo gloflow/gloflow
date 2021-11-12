@@ -53,7 +53,8 @@ func Fetcher__get_extern_image(p_image_url_str string,
 		//         thats processed comes from a different domain
 		//         (store these time counters per domain in redis)
 
-		rand.Seed(42)
+		creation_unix_time := time.Now().UnixNano()
+		rand.Seed(creation_unix_time)
 		max_time_to_sleep_sec_int := 3
 		sleep_sec_int             := rand.Intn(max_time_to_sleep_sec_int)
 		time.Sleep(time.Second * time.Duration(sleep_sec_int))

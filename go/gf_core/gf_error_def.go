@@ -370,7 +370,9 @@ func error__get_defs() map[string]Error_def {
 		"crypto_cert_ca_parse": Error_def{
 			Descr_str: "failed to parse cert CA",
 		},
-
+		"crypto_signature_eth_last_byte_invalid_value": Error_def{
+			Descr_str: "last byte of an ethereum signature does not have the proper V value",
+		}, 
 		//---------------
 	}
 	return error_defs_map

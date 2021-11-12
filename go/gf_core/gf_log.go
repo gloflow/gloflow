@@ -32,7 +32,7 @@ func Init_log_fun() func(string,string) {
 	yellow := color.New(color.FgYellow).SprintFunc()
 	red    := color.New(color.FgRed).SprintFunc()
 
-	log_fun := func(p_g string,p_m string) {
+	log_fun := func(p_g string, p_m string) {
 		t_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
 
 		if p_g == "FUN_ENTER" {
