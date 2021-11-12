@@ -1,0 +1,54 @@
+
+
+
+
+
+<head>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
+    <script type="text/javascript">
+
+        // wait until entire page is loaded
+        window.addEventListener('load', function() {
+
+            console.log("window.ethereum", window.ethereum);
+            console.log("window.Web3",     window.Web3);
+
+            // connect to web3 wallet
+            window.ethereum.enable();
+
+            // check if web3 lib has been properly injected into the page context
+            if (typeof window.Web3 != "undefined") {
+                web3 = new Web3(Web3.givenProvider);
+            } else {
+                // fallback - if there is no web3 lib injected with its own provider,
+                //            than try to reach out to a local eth node as the provider.
+                web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+            }
+
+            console.log("web3", web3.eth);
+
+            // get eth block
+            web3.eth.getBlock().then((r)=>{
+                console.log(r);
+            });
+
+
+
+
+
+
+            const test_msg_str              = "gf_test_message_to_sign";
+            const test_user_address_eth_str = "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97";
+            const s = web3.eth.personal.sign(test_msg_str, test_user_address_eth_str).then((r)=>{
+                console.log(r);
+            });
+
+        });
+
+
+    </script>
+</head>
+<body>
+
+
+</body>
