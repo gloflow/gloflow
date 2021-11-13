@@ -193,7 +193,7 @@ def build_page(p_page_name_str,
 			elif local_path_str.endswith(".js"):
 				p_log_fun("INFO", "%s------------ JAVASCRIPT --------------------------------%s"%(fg("yellow"), attr(0)))
 
-				# IMPORTANT!! - JS files are currently used for libraries only, so just copy the JS file to the final build dir
+				# IMPORTANT!! - just copy the JS file to the final build dir
 				gf_core_cli.run(f"cp {local_path_str} {js_libs_build_dir_str}")
 
 				# HTML_MODIFY - change the src in the html tag, to include the url_base (dont leave relative path)
@@ -269,28 +269,30 @@ def build_page(p_page_name_str,
 			p_log_fun)
 
 	#-----------------
+	# IMPORTANT!! - do after build_copy_dir is created
+	if "files_to_copy_lst" in p_page_info_map.keys():
+		process_files_to_copy(p_page_info_map, p_log_fun)
 
-	
-		
-
+	#-----------------
+	# BUILD_COPY - this propety allows for the build dir of a page to be copied to some other dir after the build is complete.
+	#              this has to run after all other build steps complete, so that it includes all the build artifacts.
+	#
+	# IMPORTANT!! - only some pages in some apps define this. gf_solo is one of these apps, it adds this property
+	#               to the page defs of all other apps (since gf_solo includes all apps).
 	if not p_build_copy_dir_str == None:
 		print(f"copying {fg('green')}build{attr(0)} dir ({p_build_dir_str}) to {fg('yellow')}{p_build_copy_dir_str}{attr(0)}")
 		
 		gf_core_cli.run(f'mkdir -p {p_build_copy_dir_str}')
 		gf_core_cli.run(f'cp -r {p_build_dir_str} {p_build_copy_dir_str}')
 
-	# IMPORTANT!! - do after build_copy_dir is created
-	if "files_to_copy_lst" in p_page_info_map.keys():
-		process_files_to_copy(p_page_info_map, p_log_fun)
-
-
+	#-----------------
 	print("")
 	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s END"%(fg("orange_red_1"), attr(0)))
 	print("")
 
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):
-	p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
+	# p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
 	assert isinstance(p_page_info_map, dict)
 
 	print("")
@@ -307,17 +309,22 @@ def process_files_to_copy(p_page_info_map, p_log_fun):
 		src_file_str, target_dir_str = file_to_copy_tpl
 
 		assert os.path.isfile(src_file_str)
-		assert os.path.isdir(target_dir_str)
+		
+		if not os.path.isdir(target_dir_str):
+			gf_core_cli.run(f'mkdir -p {target_dir_str}')
+
 
 		gf_core_cli.run(f"cp {src_file_str} {target_dir_str}")
-		assert os.path.isfile(f"{target_dir_str}/{os.path.basename(src_file_str)}")
+
+		final_path_str = f"{target_dir_str}/{os.path.basename(src_file_str)}"
+		assert os.path.isfile(final_path_str)
 
 #---------------------------------------------------
 def process_subtemplates(p_page_name_str,
 	p_build_dir_str,
 	p_page_info_map,
 	p_log_fun):
-	p_log_fun("FUN_ENTER", "gf_web__build.process_subtemplates()")
+	# p_log_fun("FUN_ENTER", "gf_web__build.process_subtemplates()")
 	assert isinstance(p_page_name_str, str)
 	assert os.path.isdir(p_build_dir_str)
 	assert "subtemplates_lst" in p_page_info_map.keys()
