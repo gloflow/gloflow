@@ -65,25 +65,25 @@
 #images .image_info {
 	width: 216px;
 	background-color: rgb(59, 124, 156);
-	padding-bottom  : 6px;
-	margin-bottom   : 10px;
+	padding-bottom:   6px;
+	margin-bottom:    10px;
+	position:         relative;
 
-	/*border      : solid;
+	/*border: solid;
 	border-color: white;
 	border-width: 1px;*/
-	position    : relative;
 }
 
 #images .image_info .image {
-	width   : 195px;
+	width:    195px;
 	position: relative;
-	padding-bottom: 8px;
+	/*padding-bottom: 8px;*/
 }
 
 #images .image_info .image img {
-	width       : 100%;
+	width:        100%;
 	padding-left: 10px;
-	cursor      : pointer;
+	cursor:       pointer;
 }
 
 /*---------------------------*/
@@ -176,10 +176,10 @@
 #images .image_info .image_title {
 	background-color: rgb(59, 124, 156);
 
-	padding-left    : 5px;
-	padding-top     : 6px;
-	padding-bottom  : 6px;
-	padding-right   : 4px;
+	padding-left:   5px;
+	padding-top:    6px;
+	padding-bottom: 6px;
+	padding-right:  4px;
 
 	font-size : 11px;
 	/*width     : 206px;*/
@@ -189,10 +189,11 @@
 }
 
 #images .image_info .creation_time {
-	text-align : center;
-    padding-top: 6px;
-    font-size  : 12px;
-    color      : white;
+	text-align: center;
+    font-size:  12px;
+    color:      white;
+
+	/*padding-top: 6px;*/
 }
 
 #images .image_info .origin_page_url {
