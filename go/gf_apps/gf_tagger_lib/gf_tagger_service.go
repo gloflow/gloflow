@@ -93,8 +93,8 @@ func Init_service(p_templates_paths_map map[string]string,
 	
 	//------------------------
 	// STATIC FILES SERVING
-	dashboard__url_base_str := "/tags"
-	gf_core.HTTP__init_static_serving(dashboard__url_base_str,
+	url_base_str := "/tags"
+	gf_core.HTTP__init_static_serving(url_base_str,
 		p_runtime_sys)
 
 	//------------------------

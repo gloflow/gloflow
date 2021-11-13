@@ -150,7 +150,7 @@ func HTTP__fetch_url(p_url_str string,
 func HTTP__put_file(p_target_url_str string,
 	p_file_path_str string,
 	p_headers_map   map[string]string,
-	p_runtime_sys   *Runtime_sys) (*http.Response, *Gf_error) {
+	p_runtime_sys   *Runtime_sys) (*http.Response, *GF_error) {
 
 
 
@@ -239,9 +239,8 @@ func HTTP__init_static_serving(p_url_base_str string,
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
 	//               if the spec here ends with "/"
-	url_str := p_url_base_str+"/static/"
+	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
-		// fmt.Println("FILE SERVE >>>>>>>>")
 
 		if p_req.Method == "GET" {
 			path_str := p_req.URL.Path
@@ -250,12 +249,12 @@ func HTTP__init_static_serving(p_url_base_str string,
 			file_path_str      := strings.Replace(path_str, url_str, "", 1) // "1" - just replace one occurance
 			file_ext_str       := filepath.Ext(file_path_str)
 			file_mime_type_str := mime.TypeByExtension(file_ext_str)
-			local_path_str     := "./static/"+file_path_str
+			local_path_str     := fmt.Sprintf("./static/%s", file_path_str)
 
 			p_resp.Header().Set("Content-Type", file_mime_type_str)
 
-			p_runtime_sys.Log_fun("INFO","file_path_str  - "+file_path_str)
-			p_runtime_sys.Log_fun("INFO","local_path_str - "+local_path_str)
+			p_runtime_sys.Log_fun("INFO", "file_path_str  - "+file_path_str)
+			p_runtime_sys.Log_fun("INFO", "local_path_str - "+local_path_str)
 
 		    http.ServeFile(p_resp, p_req, local_path_str)
 		}
@@ -278,13 +277,13 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
-	p_runtime_sys *Runtime_sys) (http.Flusher, *Gf_error) {
+	p_runtime_sys *Runtime_sys) (http.Flusher, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
 
-	flusher,ok := p_resp.(http.Flusher)
+	flusher, ok := p_resp.(http.Flusher)
 	if !ok {
 		err_msg_str := "GF - SSE streaming not supported by this server"
-		http.Error(p_resp,err_msg_str,http.StatusInternalServerError)
+		http.Error(p_resp, err_msg_str, http.StatusInternalServerError)
 
 		gf_err := Error__create(err_msg_str,
 			"http_server_flusher_not_supported_error",
@@ -312,7 +311,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 
 //-------------------------------------------------
 func HTTP__get_streaming_response(p_url_str string,
-	p_runtime_sys *Runtime_sys) (*[]map[string]interface{}, *Gf_error) {
+	p_runtime_sys *Runtime_sys) (*[]map[string]interface{}, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
 
 
@@ -337,7 +336,7 @@ func HTTP__get_streaming_response(p_url_str string,
 	data_lst := []map[string]interface{}{}
 	reader   := bufio.NewReader(resp.Body)
 	for {
-	    line_lst,err := reader.ReadBytes('\n')
+	    line_lst, err := reader.ReadBytes('\n')
 	    if err != nil {
 	    	gf_err := Error__create("failed to read a line of SSE streaming response from a server url",
 				"io_reader_error",
@@ -349,7 +348,7 @@ func HTTP__get_streaming_response(p_url_str string,
 	    line_str := string(line_lst)
 
 	    if strings.HasPrefix(line_str,"data: ") {
-	    	clean_line_str := strings.Replace(line_str,"data: ","",1)
+	    	clean_line_str := strings.Replace(line_str, "data: ", "", 1)
 
 	    	data_map := map[string]interface{}{}
 	    	err      := json.Unmarshal([]byte(clean_line_str), &data_map)
