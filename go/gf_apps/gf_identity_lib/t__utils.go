@@ -25,6 +25,10 @@ import (
 )
 
 //-------------------------------------------------
+var log_fun func(p_g string, p_m string)
+var cli_args_map map[string]interface{}
+
+//-------------------------------------------------
 func T__init() *gf_core.Runtime_sys {
 
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"

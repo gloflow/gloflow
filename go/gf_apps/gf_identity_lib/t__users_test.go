@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"context"
+	"github.com/stretchr/testify/assert"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -52,10 +53,11 @@ func Test__users(p_test *testing.T) {
 	ctx := context.Background()
 
 	input := &GF_user__input_create{
-		Auth_proof_sig_str: "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c",
-		Nonce_str:          "gf_test_message_to_sign",
-		Address_eth_str:    GF_user_address_eth(test_user_address_eth_str),
+		Signature_str:   "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c",
+		Nonce_str:       "gf_test_message_to_sign",
+		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 	}
+
 
 	output, gf_err := users__pipeline__create(input, ctx, runtime_sys)
 	if gf_err != nil {
@@ -66,8 +68,7 @@ func Test__users(p_test *testing.T) {
 	spew.Dump(output)
 
 
+	assert.True(p_test, output.Signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
 
-	if !output.Auth_proof_sig_valid_bool {
-		p_test.Fail()
-	}
+
 }

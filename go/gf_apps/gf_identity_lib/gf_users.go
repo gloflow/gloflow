@@ -48,13 +48,13 @@ type GF_user__output_login struct {
 }
 
 type GF_user__input_create struct {
-	Auth_proof_sig_str GF_auth_signature   `json:"auth_proof_sig_str"`
-	Nonce_str          string              `json:"nonce_str"`
-	Address_eth_str    GF_user_address_eth `json:"address_eth_str"`
+	Signature_str   GF_auth_signature   `json:"signature_str"`
+	Nonce_str       string              `json:"nonce_str"`
+	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_create struct {
-	Auth_proof_sig_valid_bool bool             `json:"auth_proof_sig_valid_bool"`
-	JWT_token_val             GF_jwt_token_val `json:"jwt_token_val_str"`
+	Signature_valid_bool bool             `json:"signature_valid_bool"`
+	JWT_token_val        GF_jwt_token_val `json:"jwt_token_val_str"`
 }
 
 
@@ -97,7 +97,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 
 	//------------------------
 	// VERIFY
-	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_proof_sig_str,
+	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Signature_str,
 		p_input.Nonce_str,
 		p_input.Address_eth_str,
 		p_ctx,
@@ -107,8 +107,10 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	}
 	
 	if !valid_bool {
-		output.Auth_proof_sig_valid_bool = false
+		output.Signature_valid_bool = false
 		return output, nil
+	} else {
+		output.Signature_valid_bool = true
 	}
 
 	//------------------------

@@ -30,10 +30,6 @@ import (
 )
 
 //---------------------------------------------------
-var log_fun func(p_g string, p_m string)
-var cli_args_map map[string]interface{}
-
-//---------------------------------------------------
 func TestMain(m *testing.M) {
 
 	log_fun      = gf_core.Init_log_fun()

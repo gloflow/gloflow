@@ -79,8 +79,6 @@ func verify__auth_signature(p_signature_str GF_auth_signature,
 	p_validate_data_header_bool bool,
 	p_ctx                       context.Context,
 	p_runtime_sys               *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
-
-
 	
 	var final_data_str string
 	if p_validate_data_header_bool {
@@ -184,13 +182,11 @@ func verify__auth_signature(p_signature_str GF_auth_signature,
 		return false, nil
 	}
 
-
-
 	// VALIDITY_CHECK_3
 	valid_bool := crypto.VerifySignature(public_key_bytes_lst,
 		data_hash.Bytes(),
 		sig_no_recovery_id_bytes_lst)
-	
+
 	//------------------------
 
 	return valid_bool, nil
