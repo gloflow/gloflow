@@ -52,10 +52,12 @@ def get():
 		# PAGE_PICKER
 		# FIX!! - figure out some general solution for build_dir (not gf_images), since its not just images that
 		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
+		#         this should possibly go into the tagger
 		"gf_page_picker": {
 			"build_dir_str": f"{modd_str}/../web/build/gf_apps/gf_images",
 			"files_to_copy_lst": [
-				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_page_picker/gf_page_picker.js", f"{modd_str}/../web/build/gf_apps/gf_images/js")
+				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_page_picker/gf_page_picker.js", f"{modd_str}/../web/build/gf_apps/gf_images/js"),
+				(f"{modd_str}/../web/assets/gf_close_btn_small.svg", f"{modd_str}/../web/build/gf_apps/gf_images/assets")
 			]
 		}
 
@@ -213,10 +215,7 @@ def get():
 
 	import copy # IMPORTANT!! - do a deepcopy of pages_map, because for gf_solo we modify them
 
-	gf_solo__pages_map = {
-
-		
-	}
+	gf_solo__pages_map = {}
 	
 	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))

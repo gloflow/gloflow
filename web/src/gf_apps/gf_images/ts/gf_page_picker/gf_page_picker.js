@@ -49,6 +49,9 @@ function gf_picker__create_ui(p_api_host_str) {
 
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	    margin:      0;
+
+        color: black;
+        font-size: 12px;
     }
 
     div#background {
@@ -71,13 +74,17 @@ function gf_picker__create_ui(p_api_host_str) {
         padding-bottom:   7px;
     }
 
+    div#gf_bookmark input {
+        border-width: 0px;
+    }
+
     div#gf_bookmark div#description {
         width: 100%;
     }
     div#gf_bookmark div#description input {
         height:       60px;
-        width:        100%%;
-        border-width: 2px;
+        width:        100%;
+        /*border-width: 2px;*/
         border-color: #808080;
         border-style: solid;
         font-size:    16px;
@@ -89,6 +96,7 @@ function gf_picker__create_ui(p_api_host_str) {
     }
     div#gf_bookmark div#tags input {
         width: 100%;
+        padding: 0px;
     }
 
 
@@ -124,11 +132,15 @@ function gf_picker__create_ui(p_api_host_str) {
 
     </style>`);
 
+
+
+    const page_picker_element = $(`
+        <div id="gf_page_picker">
+            <div id="background"></div>
+        </div>`);
+
     // PAGE_PICKER
-    $("body").append(`
-    <div id="gf_page_picker">
-        <div id="background"></div>
-    </div>`);
+    $("body").append(page_picker_element);
 
     
 
@@ -144,7 +156,9 @@ function gf_picker__create_ui(p_api_host_str) {
             <div id="tags">
                 <input value="tags"></input>
             </div>
-            <div id='close_btn'>x</div>
+            <div id='close_btn'>
+                <img src='/images/static/assets/gf_close_btn_small.svg'></img>
+            </div>
             <div id='submit_btn'>ok</div> 
         </div>`);
 
@@ -171,10 +185,18 @@ function gf_picker__create_ui(p_api_host_str) {
             });
     })
 
-    // CLOSE_BTN
+    //-------------------------------
+    // CLOSE - via close_btn
     $("div#gf_bookmark div#close_btn").on('click', function() {
-        $("body").find("#gf_page_picker").remove();
+        $(page_picker_element).remove();
     })
+
+    // CLOSE - via background click
+    $(page_picker_element).find("#background").on('click', function() {
+        $(page_picker_element).remove();
+    });
+
+    //-------------------------------
 }
 
 //---------------------------------------------------
