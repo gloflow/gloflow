@@ -22,8 +22,71 @@ package gf_identity_lib
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+
+//---------------------------------------------------
+func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+
+
+	find_opts := options.FindOne()
+	find_opts.Projection = map[string]interface{}{
+		"id_str": 1,
+	}
+	
+	user_basic_info_map := map[string]interface{}{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
+			"deleted_bool":      false,
+		},
+		find_opts).Decode(&user_basic_info_map)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_address_eth_str": p_user_address_eth_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return gf_core.GF_ID(""), gf_err
+	}
+
+
+	user_id_str := gf_core.GF_ID(user_basic_info_map["id_str"].(string))
+
+	return user_id_str, nil
+}
+
+//---------------------------------------------------
+// EXISTS
+func db__user__exists(p_user_address_eth_str GF_user_address_eth,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+	count_int, gf_err := gf_core.Mongo__count(bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
+			"deleted_bool":      false,
+		},
+		map[string]interface{}{
+			"user_address_eth_str": p_user_address_eth_str,
+			"caller_err_msg":       "failed to check if there is a user in the DB with a given address",
+		},
+		p_runtime_sys.Mongo_db.Collection("gf_users"),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
+	}
+
+	if count_int > 0 {
+		return true, nil
+	}
+	return false, nil
+}
 
 //---------------------------------------------------
 // CREATE
@@ -36,10 +99,10 @@ func db__user__create(p_user *GF_user,
 	gf_err := gf_core.Mongo__insert(p_user,
 		coll_name_str,
 		map[string]interface{}{
-			"user_id_str":       p_user.Id_str,
-			"username_str":      p_user.Username_str,
-			"description_str":   p_user.Description_str,
-			"addresses_eth_lst": p_user.Addresses_eth_lst, 
+			"user_id_str":        p_user.Id_str,
+			"username_str":       p_user.Username_str,
+			"description_str":    p_user.Description_str,
+			"addresses_eth_lst":  p_user.Addresses_eth_lst, 
 			"caller_err_msg_str": "failed to insert GF_user into the DB",
 		},
 		p_ctx,
@@ -53,7 +116,7 @@ func db__user__create(p_user *GF_user,
 
 //---------------------------------------------------
 // UPDATE
-func db__user__update(p_user_address_eth GF_user_address_eth,
+func db__user__update(p_user_address_eth_str GF_user_address_eth,
 	p_update      *GF_user__update,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -75,7 +138,7 @@ func db__user__update(p_user_address_eth GF_user_address_eth,
 	
 
 	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{
-			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth, }},
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
 			"deleted_bool":      false,
 		},
 		bson.M{"$set": fields_targets})
@@ -93,4 +156,33 @@ func db__user__update(p_user_address_eth GF_user_address_eth,
 
 
 	return nil
+}
+
+//---------------------------------------------------
+func db__user__nonce_get(p_user_address_eth_str GF_user_address_eth,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (GF_user_nonce_val, *gf_core.GF_error) {
+
+	user_nonce := &GF_user_nonce{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").FindOne(p_ctx, bson.M{
+			"address_eth_str": p_user_address_eth_str,
+			"deleted_bool":    false,
+		}).Decode(&user_nonce)
+		
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_address_eth_str": p_user_address_eth_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return GF_user_nonce_val(""), gf_err
+	}
+
+
+
+
+	user_nonce_val_str := user_nonce.Val_str
+	
+	return user_nonce_val_str, nil
 }

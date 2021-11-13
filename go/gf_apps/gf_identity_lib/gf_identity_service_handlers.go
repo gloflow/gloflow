@@ -50,7 +50,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 			if p_req.Method == "POST" {
 
 
-				input :=&GF_user__input_login{}
+				input :=&GF_user__input_login{
+
+				}
 
 				_, gf_err := users__pipeline__login(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
@@ -72,13 +74,26 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-
-				input :=&GF_user__input_create{}
-
-				_, gf_err := users__pipeline__create(input, p_ctx, p_runtime_sys)
+				// USER_ADDRESS_ETH
+				user_address_eth, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
+
+				input :=&GF_user__input_create{
+					Address_eth_str: user_address_eth,
+				}
+
+				output, gf_err := users__pipeline__create(input, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				output_map := map[string]interface{}{
+					"signature_valid_bool": output.Signature_valid_bool,
+					"jwt_token_val_str":    output.JWT_token_val,
+				}
+				return output_map, nil
 			}
 
 			return nil, nil
@@ -109,7 +124,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 
-				input :=&GF_user__input_update{}
+				input := &GF_user__input_update{}
 
 				_, gf_err = users__pipeline__update(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {

@@ -29,6 +29,8 @@ import (
 //---------------------------------------------------
 type GF_auth_signature   string
 type GF_user_address_eth string
+type GF_user_nonce_val   string
+
 type GF_user struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
@@ -40,16 +42,31 @@ type GF_user struct {
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
 }
+type GF_user_nonce struct {
+	V_str                string             `bson:"v_str"` // schema_version
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
+	Id_str               gf_core.GF_ID      `bson:"id_str"`
+	Deleted_bool         bool               `bson:"deleted_bool"`
+	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
+	User_id_str     gf_core.GF_ID       `bson:"user_id_str"`
+	Address_eth_str GF_user_address_eth `bson:"address_eth_str"`
+	Val_str         GF_user_nonce_val   `bson:"val_str"`
+}
 
 type GF_user__input_login struct {
+	Signature_str   GF_auth_signature   `json:"signature_str"`
+	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_login struct {
+	Signature_valid_bool bool             `json:"signature_valid_bool"`
+	JWT_token_val        GF_jwt_token_val `json:"jwt_token_val_str"`
+	User_id_str          gf_core.GF_ID    `json:"user_id_str"`
 }
 
 type GF_user__input_create struct {
 	Signature_str   GF_auth_signature   `json:"signature_str"`
-	Nonce_str       string              `json:"nonce_str"`
+	Nonce_str       GF_user_nonce_val   `json:"nonce_str"`
 	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_create struct {
@@ -76,11 +93,52 @@ type GF_user__output_get struct {
 }
 
 //---------------------------------------------------
-// PIPELINE__CREATE
+// PIPELINE__LOGIN
 func users__pipeline__login(p_input *GF_user__input_login,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_login, *gf_core.GF_error) {
 
+	output := &GF_user__output_login{}
+
+
+
+
+
+	user_nonce_val, gf_err := db__user__nonce_get(p_input.Address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+	// VERIFY
+	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Signature_str,
+		user_nonce_val,
+		p_input.Address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
+	if !valid_bool {
+		output.Signature_valid_bool = false
+		return output, nil
+	} else {
+		output.Signature_valid_bool = true
+	}
+
+	//------------------------
+	// JWT
+	jwt_token_val, gf_err := jwt__pipeline__generate(p_input.Address_eth_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	output.JWT_token_val = jwt_token_val
+
+	//------------------------
 
 
 
@@ -152,6 +210,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 }
 
 //---------------------------------------------------
+// PIPELINE__UPDATE
 func users__pipeline__update(p_input *GF_user__input_update,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
@@ -162,6 +221,7 @@ func users__pipeline__update(p_input *GF_user__input_update,
 }
 
 //---------------------------------------------------
+// PIPELINE__GET
 func users__pipeline__get(p_input *GF_user__input_get,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {

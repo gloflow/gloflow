@@ -29,7 +29,7 @@ import (
 
 //---------------------------------------------------
 func verify__auth_signature__all_methods(p_signature_str GF_auth_signature,
-	p_data_str         string,
+	p_nonce_str        GF_user_nonce_val,
 	p_user_address_eth GF_user_address_eth,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
@@ -37,7 +37,7 @@ func verify__auth_signature__all_methods(p_signature_str GF_auth_signature,
 	
 	// first attempt - try to verify using the data_header
 	valid_bool, gf_err := verify__auth_signature(p_signature_str,
-		p_data_str,
+		string(p_nonce_str),
 		p_user_address_eth,
 		true,
 		p_ctx,
@@ -52,7 +52,7 @@ func verify__auth_signature__all_methods(p_signature_str GF_auth_signature,
 
 		// second attempt - dont validate using the data header
 		valid_bool, gf_err = verify__auth_signature(p_signature_str,
-			p_data_str,
+			string(p_nonce_str),
 			p_user_address_eth,
 			false,
 			p_ctx,
