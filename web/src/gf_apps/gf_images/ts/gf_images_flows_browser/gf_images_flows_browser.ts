@@ -118,6 +118,9 @@ export function init(p_log_fun) {
 	const current_pages_display = init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);
 
+
+	init__view_type_picker();
+
 	//------------------
 	// LOAD_PAGES_ON_SCROLL
 
