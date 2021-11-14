@@ -5,6 +5,8 @@ body {
 	/*turn off horizontal scroll*/
 	max-width: 100%;
     overflow-x: hidden;
+
+	background-color: #d7d7d7;
 }
 /*----------------------------------------------------------*/
 #gf_images_flow_container {
@@ -23,10 +25,12 @@ body {
 	
 	/*to better show the outline, due to shadows. also in case css shadows
 	  are not supported this is the only way to show the outline of the post box*/
-	border      : 2px;
+	/*border      : 2px;
 	border-style: solid;
-	border-color: #F5F5F5;
+	border-color: #F5F5F5;*/
 
+	box-shadow: 1px 1px 10px grey;
+	
 	padding: 10px;
 
 	/*elements are not initially visible, but instead become visible

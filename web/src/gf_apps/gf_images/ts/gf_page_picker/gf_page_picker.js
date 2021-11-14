@@ -84,6 +84,7 @@ function gf_picker__create_ui(p_api_host_str) {
     div#gf_bookmark div#description input {
         height:       60px;
         width:        100%;
+        padding:      0px;
         /*border-width: 2px;*/
         border-color: #808080;
         border-style: solid;
@@ -106,17 +107,23 @@ function gf_picker__create_ui(p_api_host_str) {
         top:              0px;
         right:            -49px;
         width:            50px;
-        height:           55px;
+        height:           50px;
         background-color: #fcfd30;
         text-align:       center;
-        padding-top:      18px;
         color:            #7d5d20;
 
         cursor: pointer;
     }
 
     div#gf_bookmark div#close_btn:hover {
-        background-color: white;
+        opacity: 0.9;
+    }
+
+    div#gf_bookmark div#close_btn img {
+        width: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
     }
 
     div#gf_bookmark div#submit_btn {

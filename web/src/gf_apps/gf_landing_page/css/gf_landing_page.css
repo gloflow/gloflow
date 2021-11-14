@@ -5,6 +5,8 @@ body {
 	/*turn off horizontal scroll*/
 	max-width:  100%;
     overflow-x: hidden;
+
+	background-color: #d7d7d7;
 }
 
 /*------------------------------------------------------------*/
@@ -54,6 +56,11 @@ body {
 		visibility: hidden;
 	}
 }
+
+#about_section #label:hover {
+	opacity: 0.8;
+}
+
 /*------------------------------------------------------------*/
 /* REGISTER EMAIL BUTTON */
 
@@ -87,6 +94,7 @@ body {
 	background-color: white;
 	color           : black;
 }
+
 /*------------------------------------------------------------*/
 /*REGISTER EMAIL FORM*/
 
@@ -132,6 +140,7 @@ body {
 	background-color: white;
 	color           : black;
 }
+
 /*------------------------------------------------------------*/
 .preview_3d_button {
 	position        : fixed;

@@ -46,14 +46,6 @@ $(document).ready(()=>{
 	$("time.timeago").timeago();
 
 	init_remote(log_fun);
-
-	//----------------------
-	// //IMPORTANT!! - wait for all images in the page to load first
-	// $(window).on("load", ()=>{
-	// 	gf_calc.run(log_fun);
-	// });
-
-	//----------------------
 });
 
 //--------------------------------------------------------
@@ -140,6 +132,10 @@ function init(p_register_user_email_fun,
 	}
 	
 	//--------------------------------------------------------
+
+	$("#about_section #label").on('click', function() {
+		$("#about_section #desc").css("visibility", "visible")
+	});
 }
 
 //--------------------------------------------------------
