@@ -31,14 +31,14 @@ type GF_ID string
 //---------------------------------------------------
 // CREATES_ID
 
-func Image_ID__md5_create(p_unique_vals_lst []string,
+func ID__create(p_unique_vals_for_id_lst []string,
 	p_unix_time_f float64) GF_ID {
 	
 	h := md5.New()
 
 	h.Write([]byte(fmt.Sprint(p_unix_time_f)))
 
-	for _, v := range p_unique_vals_lst {
+	for _, v := range p_unique_vals_for_id_lst {
 		h.Write([]byte(v))
 	}
 

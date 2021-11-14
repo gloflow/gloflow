@@ -163,11 +163,11 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	user_id_str          := gf_core.GF_ID(p_input.User_id_str)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	fields_for_id_lst := []string{
+	unique_vals_for_id_lst := []string{
 		p_input.Url_str,
 		string(user_id_str),
 	}
-	gf_id_str := gf_core.Image_ID__md5_create(fields_for_id_lst,
+	gf_id_str := gf_core.ID__create(unique_vals_for_id_lst,
 		creation_unix_time_f)
 	
 	bookmark := &GF_bookmark{
