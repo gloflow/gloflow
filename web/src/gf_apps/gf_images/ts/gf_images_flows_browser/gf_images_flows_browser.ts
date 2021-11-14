@@ -28,6 +28,9 @@ import * as gf_sys_panel    from "./../../../../gf_core/ts/gf_sys_panel";
 //-------------------------------------------------
 declare var URLSearchParams;
 
+// FIX!! - remove this from global scope!!
+var image_view_type_str = "small_view";
+
 //-------------------------------------------------
 $(document).ready(()=>{
     //-------------------------------------------------
@@ -133,8 +136,10 @@ export function init(p_log_fun) {
 				page_is_loading_bool = true;
 				p_log_fun("INFO", "current_page_int - "+current_page_int);
 
+				var current_image_view_type_str = image_view_type_str;
 				load_new_page(flow_name_str,
 					current_page_int,
+					current_image_view_type_str,
 					()=>{
 
 						current_page_int    += 1;
@@ -186,6 +191,9 @@ function init__view_type_picker() {
 			$(p_e).addClass("medium_view");
 
 		});
+
+		// FIX!! - global var. handle this differently;
+		image_view_type_str = "medium_view";
 	});
 
 }
@@ -208,6 +216,7 @@ function init__current_pages_display(p_log_fun) {
 //---------------------------------------------------
 function load_new_page(p_flow_name_str :string,
 	p_current_page_int,
+	p_current_image_view_type_str,
 	p_on_complete_fun,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.load_new_page()');
@@ -241,7 +250,7 @@ function load_new_page(p_flow_name_str :string,
 			// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 			//               and its positioned appropriatelly in the Masonry grid
 			const image = $(`
-				<div class="gf_image item" data-img_id="${img__id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
+				<div class="gf_image item ${p_current_image_view_type_str}" data-img_id="${img__id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
 					<img src="${img__thumbnail_small_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
 					<div class="tags_container"></div>
 					<div class="origin_page_url">
