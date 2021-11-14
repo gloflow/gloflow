@@ -103,18 +103,28 @@ body {
 
 #view_type_picker {
 	position: fixed;
-	right:    0px;
-	top:      200px;
+	right:    -16px;
+	top:      329px;
 	width:    50px;
 	height:   50px;
 }
 
-#view_type_picker #masonry_2_column {
-	width: 20px;
-	height: 20px;
-	background-color: red;
+#view_type_picker #masonry_small_images {
+	position: absolute;
+	top: 0px;
+	width:            20px;
+	height:           20px;
+	background-color: rgb(225, 35, 35);
+	cursor:           pointer;
+}
 
-	cursor: pointer;
+#view_type_picker #masonry_medium_images {
+	position: absolute;
+	top: 30px;
+	width:            20px;
+	height:           20px;
+	background-color: rgb(158, 73, 73);
+	cursor:           pointer;
 }
 
 /*----------------------------------------------------------*/

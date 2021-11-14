@@ -79,8 +79,11 @@ export function init(p_log_fun) {
 		$('#gf_images_flow_container').masonry();
 	});
 
-	const columns_num_default_int = 6;
-	init_masonry(columns_num_default_int);
+	$('#gf_images_flow_container').masonry({
+		// options...
+		itemSelector: '.item',
+		columnWidth:  6
+	});
 
 	$('.gf_image').each((p_i, p_e)=>{
 
@@ -165,38 +168,47 @@ function init__view_type_picker() {
 
 	const container = $(`
 		<div id='view_type_picker'>
-			<div id='masonry_2_column'>
+			<div id='masonry_small_images'>
+			</div>
+			<div id='masonry_medium_images'>
 			</div>
 		</div>`);
 	$('body').append(container);
 
-	// MASONRY_2_COLUMN
-	$(container).find('#masonry_2_column').on('click', function() {
+	// MASONRY_SMALL_IMAGES
+	$(container).find('#masonry_small_images').on('click', function() {
 
-		const columns_num_int = 2;
-		init_masonry(columns_num_int);
-
-
-
+		// FIX!! - global var. handle this differently;
+		image_view_type_str = "small_view";
 
 		$(".gf_image").each(function(p_i, p_e) {
 
-			const img_e = $(p_e).find('img');
+			const img_e                   = $(p_e).find('img');
+			const img_thumb_small_url_str = $(img_e).data('img_thumb_small_url');
+			$(img_e).attr("src", img_thumb_small_url_str);
+
+			// switch gf_image class to "small_view"
+			$(p_e).removeClass("medium_view");
+			$(p_e).addClass("small_view");
+		});
+	});
+
+	// MASONRY_MEDIUM_IMAGES
+	$(container).find('#masonry_medium_images').on('click', function() {
+
+		// FIX!! - global var. handle this differently;
+		image_view_type_str = "medium_view";
+
+		$(".gf_image").each(function(p_i, p_e) {
+
+			const img_e                    = $(p_e).find('img');
 			const img_thumb_medium_url_str = $(img_e).data('img_thumb_medium_url');
-
-			// change all images to thumb_medium, so that the images
-			// are larger in this 2 column view.
 			$(img_e).attr("src", img_thumb_medium_url_str);
-
 
 			// switch gf_image class to "medium_view"
 			$(p_e).removeClass("small_view");
 			$(p_e).addClass("medium_view");
-
 		});
-
-		// FIX!! - global var. handle this differently;
-		image_view_type_str = "medium_view";
 	});
 
 }
@@ -250,11 +262,22 @@ function load_new_page(p_flow_name_str :string,
 			const img__tags_lst                 = p_e['tags_lst'];
 			const img__origin_page_url_str      = p_e['origin_page_url_str'];
 
+
+			var img_url_str;
+			switch (p_current_image_view_type_str) {
+				case "small_view":
+					img_url_str = img__thumbnail_small_url_str;
+					break;
+				case "medium_view":
+					img_url_str = img__thumbnail_medium_url_str;
+					break;
+			}
+
 			// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 			//               and its positioned appropriatelly in the Masonry grid
 			const image = $(`
 				<div class="gf_image item ${p_current_image_view_type_str}" data-img_id="${img__id_str}" data-img_format="${img__format_str}" style='visibility:hidden;'>
-					<img src="${img__thumbnail_small_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
+					<img src="${img_url_str}" data-img_thumb_medium_url="${img__thumbnail_medium_url_str}"></img>
 					<div class="tags_container"></div>
 					<div class="origin_page_url">
 						<a href="${img__origin_page_url_str}" target="_blank">${img__origin_page_url_str}</a>
@@ -414,13 +437,4 @@ function http__load_new_page(p_flow_name_str :string,
 		});
 
 	//-------------------------	
-}
-
-//---------------------------------------------------
-function init_masonry(p_columns_num_int) {
-	$('#gf_images_flow_container').masonry({
-		// options...
-		itemSelector: '.item',
-		columnWidth:  p_columns_num_int
-	});
 }
