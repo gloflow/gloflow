@@ -29,7 +29,6 @@ import (
 //---------------------------------------------------
 type GF_auth_signature   string
 type GF_user_address_eth string
-type GF_user_nonce_val   string
 
 type GF_user struct {
 	V_str                string             `bson:"v_str"` // schema_version
@@ -42,18 +41,17 @@ type GF_user struct {
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
 }
-type GF_user_nonce struct {
-	V_str                string             `bson:"v_str"` // schema_version
-	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               gf_core.GF_ID      `bson:"id_str"`
-	Deleted_bool         bool               `bson:"deleted_bool"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_id_str     gf_core.GF_ID       `bson:"user_id_str"`
-	Address_eth_str GF_user_address_eth `bson:"address_eth_str"`
-	Val_str         GF_user_nonce_val   `bson:"val_str"`
+// io_preflight
+type GF_user__input_preflight struct {
+	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
+}
+type GF_user__output_preflight struct {
+	User_exists_bool bool              `json:"user_exists_bool"`
+	Nonce_val_str    GF_user_nonce_val `json:"nonce_val_str"`
 }
 
+// io_login
 type GF_user__input_login struct {
 	Signature_str   GF_auth_signature   `json:"signature_str"`
 	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
@@ -64,9 +62,10 @@ type GF_user__output_login struct {
 	User_id_str          gf_core.GF_ID    `json:"user_id_str"`
 }
 
+// io_create
 type GF_user__input_create struct {
 	Signature_str   GF_auth_signature   `json:"signature_str"`
-	Nonce_str       GF_user_nonce_val   `json:"nonce_str"`
+	Nonce_val_str   GF_user_nonce_val   `json:"nonce_val_str"`
 	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
 }
 type GF_user__output_create struct {
@@ -74,8 +73,7 @@ type GF_user__output_create struct {
 	JWT_token_val        GF_jwt_token_val `json:"jwt_token_val_str"`
 }
 
-
-
+// io_update
 type GF_user__input_update struct {
 }
 type GF_user__output_update struct {
@@ -86,10 +84,63 @@ type GF_user__update struct {
 	Description_str string
 }
 
-
+// io_get
 type GF_user__input_get struct {
 }
 type GF_user__output_get struct {
+}
+
+//---------------------------------------------------
+func users__pipeline__preflight(p_input *GF_user__input_preflight,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_preflight, *gf_core.GF_error) {
+
+	output := &GF_user__output_preflight{}
+
+
+
+
+
+	exists_bool, gf_err := db__user__exists(p_input.Address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// no user exists so create a new nonce
+	if !exists_bool {
+
+		// user doesnt exist yet so no user_id
+		user_id_str := gf_core.GF_ID("")
+		nonce, gf_err := nonce__create_and_persist(user_id_str,
+			p_input.Address_eth_str,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		output.User_exists_bool = false
+		output.Nonce_val_str    = nonce.Val_str
+
+	} else {
+
+
+
+		nonce_val_str, gf_err := db__nonce__get(p_input.Address_eth_str, p_ctx, p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		output.User_exists_bool = true
+		output.Nonce_val_str    = nonce_val_str
+	}
+
+	
+
+
+	return output, nil
 }
 
 //---------------------------------------------------
@@ -104,7 +155,7 @@ func users__pipeline__login(p_input *GF_user__input_login,
 
 
 
-	user_nonce_val, gf_err := db__user__nonce_get(p_input.Address_eth_str,
+	user_nonce_val, gf_err := db__nonce__get(p_input.Address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -156,7 +207,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	//------------------------
 	// VERIFY
 	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Signature_str,
-		p_input.Nonce_str,
+		p_input.Nonce_val_str,
 		p_input.Address_eth_str,
 		p_ctx,
 		p_runtime_sys)

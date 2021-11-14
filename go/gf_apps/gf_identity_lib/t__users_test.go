@@ -24,9 +24,9 @@ import (
 	"testing"
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 )
-
 
 //-------------------------------------------------
 func Test__signing(p_test *testing.T) {
@@ -48,27 +48,62 @@ func Test__users(p_test *testing.T) {
 	runtime_sys := T__init()
 
 	test_user_address_eth_str := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
-
-
+	test_user_signature_str   := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
+	test_user_nonce_str       := "gf_test_message_to_sign"
 	ctx := context.Background()
 
-	input := &GF_user__input_create{
-		Signature_str:   "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c",
-		Nonce_str:       "gf_test_message_to_sign",
+
+
+
+	//------------------
+	// NONCE_CREATE
+
+	unexisting_user_id_str := gf_core.GF_ID("")
+	nonce, gf_err := nonce__create(GF_user_nonce_val(test_user_nonce_str),
+		unexisting_user_id_str,
+		GF_user_address_eth(test_user_address_eth_str),
+		ctx,
+		runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+	//------------------
+	// USER_CREATE
+	
+	input__create := &GF_user__input_create{
+		Signature_str:   GF_auth_signature(test_user_signature_str),
+		Nonce_val_str:   nonce.Val_str,
 		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 	}
 
 
-	output, gf_err := users__pipeline__create(input, ctx, runtime_sys)
+	output__create, gf_err := users__pipeline__create(input__create, ctx, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
 
-	spew.Dump(output)
+	spew.Dump(output__create)
 
 
-	assert.True(p_test, output.Signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
+	assert.True(p_test, output__create.Signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
 
+
+	//------------------
+
+
+	input__login := &GF_user__input_login{
+		Signature_str:   GF_auth_signature(test_user_signature_str),
+		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+	}
+	output__login, gf_err := users__pipeline__login(input__login, ctx, runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+	spew.Dump(output__login)
+	
+	//------------------
 
 }

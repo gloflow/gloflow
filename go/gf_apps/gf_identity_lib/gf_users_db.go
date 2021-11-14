@@ -26,8 +26,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-
 //---------------------------------------------------
+// GET_BASIC_INFO
 func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
@@ -121,7 +121,6 @@ func db__user__update(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-
 	//------------------------
 	// FIELDS
 	fields_targets := bson.M{}
@@ -136,7 +135,6 @@ func db__user__update(p_user_address_eth_str GF_user_address_eth,
 	
 	//------------------------
 	
-
 	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
 			"deleted_bool":      false,
@@ -154,35 +152,5 @@ func db__user__update(p_user_address_eth_str GF_user_address_eth,
 		return gf_err
 	}
 
-
 	return nil
-}
-
-//---------------------------------------------------
-func db__user__nonce_get(p_user_address_eth_str GF_user_address_eth,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_user_nonce_val, *gf_core.GF_error) {
-
-	user_nonce := &GF_user_nonce{}
-	err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").FindOne(p_ctx, bson.M{
-			"address_eth_str": p_user_address_eth_str,
-			"deleted_bool":    false,
-		}).Decode(&user_nonce)
-		
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"user_address_eth_str": p_user_address_eth_str,
-			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return GF_user_nonce_val(""), gf_err
-	}
-
-
-
-
-	user_nonce_val_str := user_nonce.Val_str
-	
-	return user_nonce_val_str, nil
 }

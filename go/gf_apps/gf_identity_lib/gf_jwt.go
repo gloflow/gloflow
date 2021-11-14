@@ -57,14 +57,9 @@ func jwt__pipeline__generate(p_user_address_eth GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (GF_jwt_token_val, *gf_core.GF_error) {
 
-	
-
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-
-
 	// JWT_GENERATE
-
 	jwt_secret_key_val_str := GF_jwt_secret_key_val(gf_core.Str_random())
 	jwt_token_val, gf_err := jwt__generate(p_user_address_eth,
 		jwt_secret_key_val_str,
@@ -92,8 +87,6 @@ func jwt__pipeline__generate(p_user_address_eth GF_user_address_eth,
 	if gf_err != nil {
 		return "", gf_err
 	}
-
-
 
 
 	return jwt_token_val, nil
@@ -145,7 +138,7 @@ func jwt__generate_id(p_user_address_eth GF_user_address_eth,
 	fields_for_id_lst := []string{
 		string(p_user_address_eth),
 	}
-	gf_id_str := gf_core.Image_ID__md5_create(fields_for_id_lst,
+	gf_id_str := gf_core.ID__create(fields_for_id_lst,
 		p_creation_unix_time_f)
 	return gf_id_str
 }

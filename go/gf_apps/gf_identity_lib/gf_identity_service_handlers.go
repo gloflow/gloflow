@@ -35,12 +35,38 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/identity/users/preflight",
 		"/v1/identity/users/login",
 		"/v1/identity/users/create",
 		"/v1/identity/users/update",
 		"/v1/identity/users/get",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+
+	//---------------------
+	// USERS_LOGIN
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/preflight",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "POST" {
+
+
+				input :=&GF_user__input_preflight{
+
+				}
+
+				_, gf_err := users__pipeline__preflight(input, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+			}
+
+
+			return nil, nil
+		},
+		metrics,
+		true, // p_store_run_bool
+		p_runtime_sys)
 
 	//---------------------
 	// USERS_LOGIN

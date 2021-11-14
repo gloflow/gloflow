@@ -33,7 +33,7 @@ func users__create_id(p_user_address_eth GF_user_address_eth,
 	fields_for_id_lst := []string{
 		string(p_user_address_eth),
 	}
-	gf_id_str := gf_core.Image_ID__md5_create(fields_for_id_lst,
+	gf_id_str := gf_core.ID__create(fields_for_id_lst,
 		p_creation_unix_time_f)
 
 	return gf_id_str
