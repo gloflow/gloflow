@@ -51,12 +51,12 @@ $(document).ready(()=>{
 
 //-------------------------------------------------
 export function init(p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init()');
+	// p_log_fun('FUN_ENTER', 'gf_images_flows_browser.init()');
 
 	//-----------------
 	// GET FLOW_NAME
 	const url_params       = new URLSearchParams(window.location.search);
-	const qs_flow_name_str = url_params.get('fname'); // 'general';
+	const qs_flow_name_str = url_params.get('fname');
 	var   flow_name_str;
 	if (qs_flow_name_str == null) {
 		flow_name_str = 'general'; // default value
@@ -76,11 +76,8 @@ export function init(p_log_fun) {
 		$('#gf_images_flow_container').masonry();
 	});
 
-	$('#gf_images_flow_container').masonry({
-		// options...
-		itemSelector: '.item',
-		columnWidth:  6
-	});
+	const columns_num_default_int = 6;
+	init_masonry(columns_num_default_int);
 
 	$('.gf_image').each((p_i, p_e)=>{
 
@@ -117,6 +114,7 @@ export function init(p_log_fun) {
 
 	const current_pages_display = init__current_pages_display(p_log_fun);
 	$('body').append(current_pages_display);
+
 	//------------------
 	// LOAD_PAGES_ON_SCROLL
 
@@ -133,7 +131,7 @@ export function init(p_log_fun) {
 			if (!page_is_loading_bool) {
 				
 				page_is_loading_bool = true;
-				p_log_fun("INFO","current_page_int - "+current_page_int);
+				p_log_fun("INFO", "current_page_int - "+current_page_int);
 
 				load_new_page(flow_name_str,
 					current_page_int,
@@ -150,6 +148,46 @@ export function init(p_log_fun) {
 	};
 
 	//------------------
+}
+
+//---------------------------------------------------
+// view_type_picker - picks the type of view that is used to display images in a flow.
+//                    default is masonry with 6 columns.
+function init__view_type_picker() {
+
+	const container = $(`
+		<div id='view_type_picker'>
+			<div id='masonry_2_column'>
+			</div>
+		</div>`);
+	$('body').append(container);
+
+	// MASONRY_2_COLUMN
+	$(container).find('#masonry_2_column').on('click', function() {
+
+		const columns_num_int = 2;
+		init_masonry(columns_num_int);
+
+
+
+
+		$(".gf_image").each(function(p_i, p_e) {
+
+			const img_e = $(p_e).find('img');
+			const img_thumb_medium_url_str = $(img_e).data('img_thumb_medium_url');
+
+			// change all images to thumb_medium, so that the images
+			// are larger in this 2 column view.
+			$(img_e).attr("src", img_thumb_medium_url_str);
+
+
+			// switch gf_image class to "medium_view"
+			$(p_e).removeClass("small_view");
+			$(p_e).addClass("medium_view");
+
+		});
+	});
+
 }
 
 //---------------------------------------------------
@@ -364,4 +402,13 @@ function http__load_new_page(p_flow_name_str :string,
 		});
 
 	//-------------------------	
+}
+
+//---------------------------------------------------
+function init_masonry(p_columns_num_int) {
+	$('#gf_images_flow_container').masonry({
+		// options...
+		itemSelector: '.item',
+		columnWidth:  p_columns_num_int
+	});
 }

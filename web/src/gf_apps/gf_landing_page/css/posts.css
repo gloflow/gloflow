@@ -44,9 +44,7 @@
 	padding-bottom  : 10px;
 	margin-bottom   : 10px;
 
-	/*border      : solid;
-	border-color: white;
-	border-width: 1px;*/
+	box-shadow: 1px 1px 10px grey;
 }
 
 #posts .post_info:hover {

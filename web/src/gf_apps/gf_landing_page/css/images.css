@@ -69,9 +69,7 @@
 	margin-bottom:    10px;
 	position:         relative;
 
-	/*border: solid;
-	border-color: white;
-	border-width: 1px;*/
+	box-shadow: 1px 1px 10px grey;
 }
 
 #images .image_info .image {

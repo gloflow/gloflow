@@ -133,8 +133,8 @@ function init(p_register_user_email_fun,
 	
 	//--------------------------------------------------------
 
-	$("#about_section #label").on('click', function() {
-		$("#about_section #desc").css("visibility", "visible")
+	$("#about_section").on('click', function() {
+		$("#about_section #desc").css("visibility", "visible");
 	});
 }
 
