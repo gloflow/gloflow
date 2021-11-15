@@ -191,6 +191,9 @@ function init__view_type_picker() {
 			$(p_e).removeClass("medium_view");
 			$(p_e).addClass("small_view");
 		});
+
+		// dimensions of items changed, re-layout masonry
+		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 	// MASONRY_MEDIUM_IMAGES
@@ -209,6 +212,9 @@ function init__view_type_picker() {
 			$(p_e).removeClass("small_view");
 			$(p_e).addClass("medium_view");
 		});
+
+		// dimensions of items changed, re-layout masonry
+		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 }

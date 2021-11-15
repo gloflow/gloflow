@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //-----------------------------------------------------
 export function get_notes(p_object_id_str :string,
     p_object_type_str :string,
-    p_onComplete_fun,
-    p_onError_fun,
+    p_on_complete_fun,
+    p_on_error_fun,
     p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_tagger_client.get_notes()');
 
@@ -45,13 +45,13 @@ export function get_notes(p_object_id_str :string,
             const notes_lst :Object[] = data_map['notes_lst'];
 
             if (notes_lst == null) {
-                p_onComplete_fun('success', []);
+                p_on_complete_fun('success', []);
             } else {
-                p_onComplete_fun('success', notes_lst);
+                p_on_complete_fun('success', notes_lst);
             }
         },
         'error':(jqXHR, p_text_status_str)=>{
-            p_onError_fun(p_text_status_str);
+            p_on_error_fun(p_text_status_str);
         }
     });
 }
@@ -60,8 +60,8 @@ export function get_notes(p_object_id_str :string,
 export function add_note_to_obj(p_body_str :string,
     p_object_id_str   :string,
     p_object_type_str :string,
-    p_onComplete_fun,
-    p_onError_fun,
+    p_on_complete_fun,
+    p_on_error_fun,
     p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_tagger_client.add_note_to_obj()');
 
@@ -80,10 +80,10 @@ export function add_note_to_obj(p_body_str :string,
         'success':     (p_response_str)=>{
 
             const data_map :Object = JSON.parse(p_response_str);
-            p_onComplete_fun('success', data_map);
+            p_on_complete_fun('success', data_map);
         },
         'error':(jqXHR,p_text_status_str)=>{
-            p_onError_fun(p_text_status_str);
+            p_on_error_fun(p_text_status_str);
         }
     });
 }
@@ -94,8 +94,8 @@ export function add_note_to_obj(p_body_str :string,
 export function add_tags_to_obj(p_tags_lst :string[],  
     p_object_id_str   :string,
     p_object_type_str :string,
-    p_onComplete_fun,
-    p_onError_fun,
+    p_on_complete_fun,
+    p_on_error_fun,
     p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_tagger_client.add_tags_to_obj()');
     p_log_fun('INFO', 'p_tags_lst:$p_tags_lst');
@@ -116,10 +116,10 @@ export function add_tags_to_obj(p_tags_lst :string[],
         'success':     (p_response_str)=>{
 
             const data_map :Object = JSON.parse(p_response_str);
-            p_onComplete_fun('success', data_map);
+            p_on_complete_fun('success', data_map);
         },
         'error':(jqXHR,p_text_status_str)=>{
-            p_onError_fun(p_text_status_str);
+            p_on_error_fun(p_text_status_str);
         }
     });
 }
@@ -127,8 +127,8 @@ export function add_tags_to_obj(p_tags_lst :string[],
 //-----------------------------------------------------
 export function get_objs_with_tag(p_tag_str :string, 
     p_object_type_str :string,
-    p_onComplete_fun, 
-    p_onError_fun,
+    p_on_complete_fun, 
+    p_on_error_fun,
     p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_tagger_client.get_objs_with_tag()');
   
@@ -145,10 +145,10 @@ export function get_objs_with_tag(p_tag_str :string,
             const data_map              :Object   = JSON.parse(p_response_str);
             const objects_with_tags_map :Object[] = data_map['objects_with_tags_dict'];
 
-            p_onComplete_fun('success', objects_with_tags_map);
+            p_on_complete_fun('success', objects_with_tags_map);
         },
         'error': (jqXHR, p_text_status_str)=>{
-            p_onError_fun(p_text_status_str);
+            p_on_error_fun(p_text_status_str);
         }
     });
 }
