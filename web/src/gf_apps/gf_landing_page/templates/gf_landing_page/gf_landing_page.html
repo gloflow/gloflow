@@ -26,6 +26,7 @@
 	
 	{{- /*-----------------------------------------------------*/}}
 	<link rel="stylesheet" type="text/css" href="./../../css/gf_landing_page.css">
+	<link rel="stylesheet" type="text/css" href="./../../../gf_identity/css/gf_identity.css">
 	<link rel="stylesheet" type="text/css" href="./../../css/images.css">
 	<link rel="stylesheet" type="text/css" href="./../../css/posts.css">
 	<link rel="stylesheet" type="text/css" href="./../../css/domains.css">
@@ -37,6 +38,10 @@
 	{{- /*-----------------------------------------------------*/}}
 </head>
 <body>
+	<div id="identity">
+		<div id="login"></div>
+	</div>
+
 	{{- /*-----------------------------------------------------*/}}
 	<div id='left_section'>
 		<div id='gf_logo'>
@@ -183,6 +188,7 @@
 	<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
 	<script type="text/javascript" src="./../../../../../libs/js/jquery.timeago.js"></script>
 	<script type="text/javascript" src="./../../../../../libs/js/color-thief.min.js"></script>
 	<script type="text/javascript" src="./../../../../../libs/js/svg.min.js"></script>

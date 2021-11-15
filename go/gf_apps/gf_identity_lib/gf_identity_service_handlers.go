@@ -30,8 +30,6 @@ import (
 func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_identity_lib.init_handlers()")
 
-
-
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
@@ -44,7 +42,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
 
 	//---------------------
-	// USERS_LOGIN
+	// USERS_PREFLIGHT
+	// NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/preflight",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -70,6 +69,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_LOGIN
+	// NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -95,6 +95,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_CREATE
+	// NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -130,6 +131,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_UPDATE
+	// AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -167,6 +169,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_GET
+	// AUTH/NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 

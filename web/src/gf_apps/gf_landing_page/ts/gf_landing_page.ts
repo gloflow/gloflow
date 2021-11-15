@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 // import * as gf_calc from "./gf_calc";
+import * as gf_identity           from "./../../gf_identity/ts/gf_identity";
 import * as gf_email_registration from "./gf_email_registration";
 import * as gf_images             from "./gf_images";
 import * as gf_procedural_art     from "./procedural_art/gf_procedural_art";
@@ -34,10 +35,10 @@ $(document).ready(()=>{
 		var msg_str = p_g+':'+p_m;
 		switch (p_g) {
 			case "INFO":
-				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;","background-color:#ACCFAC;");
+				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
 				break;
 			case "FUN_ENTER":
-				console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray","background-color:lightgray");
+				console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
 				break;
 		}
 	}
@@ -80,7 +81,13 @@ export function init_remote(p_log_fun) {
 // INIT
 function init(p_register_user_email_fun,
 	p_log_fun) {
-
+	
+	//---------------------
+	// IDENTITY
+	gf_identity.init();
+	
+	//---------------------
+	
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
 	gf_procedural_art.init(p_log_fun);

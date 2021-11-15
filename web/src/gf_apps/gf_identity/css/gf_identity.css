@@ -1,0 +1,16 @@
+
+
+
+#identity {
+    position: fixed;
+    right: 8px;
+    bottom: 64px;
+}
+#identity #login {
+    position: absolute;
+    right: 0px;
+    background-color: red;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
