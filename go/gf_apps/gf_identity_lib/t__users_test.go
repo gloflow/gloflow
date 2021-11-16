@@ -73,8 +73,8 @@ func Test__users(p_test *testing.T) {
 	
 	input__create := &GF_user__input_create{
 		Signature_str:   GF_auth_signature(test_user_signature_str),
-		Nonce_val_str:   nonce.Val_str,
 		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+		// Nonce_val_str:   nonce.Val_str,
 	}
 
 

@@ -44,33 +44,34 @@ type GF_user struct {
 
 // io_preflight
 type GF_user__input_preflight struct {
-	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
+	User_address_eth_str GF_user_address_eth
 }
 type GF_user__output_preflight struct {
-	User_exists_bool bool              `json:"user_exists_bool"`
-	Nonce_val_str    GF_user_nonce_val `json:"nonce_val_str"`
+	User_exists_bool bool             
+	Nonce_val_str    GF_user_nonce_val
 }
 
 // io_login
 type GF_user__input_login struct {
-	Signature_str   GF_auth_signature   `json:"signature_str"`
-	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
+	User_address_eth_str GF_user_address_eth
+	Auth_signature_str   GF_auth_signature
 }
 type GF_user__output_login struct {
-	Signature_valid_bool bool             `json:"signature_valid_bool"`
-	JWT_token_val        GF_jwt_token_val `json:"jwt_token_val_str"`
-	User_id_str          gf_core.GF_ID    `json:"user_id_str"`
+	Auth_signature_valid_bool bool
+	JWT_token_val             GF_jwt_token_val
+	User_id_str               gf_core.GF_ID
 }
 
 // io_create
 type GF_user__input_create struct {
-	Signature_str   GF_auth_signature   `json:"signature_str"`
-	Nonce_val_str   GF_user_nonce_val   `json:"nonce_val_str"`
-	Address_eth_str GF_user_address_eth `json:"address_eth_str"`
+	User_address_eth_str GF_user_address_eth
+	Auth_signature_str   GF_auth_signature
+
+	// Nonce_val_str GF_user_nonce_val
 }
 type GF_user__output_create struct {
-	Signature_valid_bool bool             `json:"signature_valid_bool"`
-	JWT_token_val        GF_jwt_token_val `json:"jwt_token_val_str"`
+	Auth_signature_valid_bool bool
+	JWT_token_val             GF_jwt_token_val
 }
 
 // io_update
@@ -101,7 +102,7 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 
 
 
-	exists_bool, gf_err := db__user__exists(p_input.Address_eth_str,
+	exists_bool, gf_err := db__user__exists(p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -114,7 +115,7 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 		// user doesnt exist yet so no user_id
 		user_id_str := gf_core.GF_ID("")
 		nonce, gf_err := nonce__create_and_persist(user_id_str,
-			p_input.Address_eth_str,
+			p_input.User_address_eth_str,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -128,7 +129,7 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 
 
 
-		nonce_val_str, gf_err := db__nonce__get(p_input.Address_eth_str, p_ctx, p_runtime_sys)
+		nonce_val_str, gf_err := db__nonce__get(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -155,7 +156,7 @@ func users__pipeline__login(p_input *GF_user__input_login,
 
 
 
-	user_nonce_val, gf_err := db__nonce__get(p_input.Address_eth_str,
+	user_nonce_val, gf_err := db__nonce__get(p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -164,9 +165,9 @@ func users__pipeline__login(p_input *GF_user__input_login,
 
 	//------------------------
 	// VERIFY
-	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Signature_str,
+	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
 		user_nonce_val,
-		p_input.Address_eth_str,
+		p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -174,15 +175,15 @@ func users__pipeline__login(p_input *GF_user__input_login,
 	}
 	
 	if !valid_bool {
-		output.Signature_valid_bool = false
+		output.Auth_signature_valid_bool = false
 		return output, nil
 	} else {
-		output.Signature_valid_bool = true
+		output.Auth_signature_valid_bool = true
 	}
 
 	//------------------------
 	// JWT
-	jwt_token_val, gf_err := jwt__pipeline__generate(p_input.Address_eth_str, p_ctx, p_runtime_sys)
+	jwt_token_val, gf_err := jwt__pipeline__generate(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -203,12 +204,24 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_create, *gf_core.GF_error) {
 
 	output := &GF_user__output_create{}
+	
+
 
 	//------------------------
-	// VERIFY
-	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Signature_str,
-		p_input.Nonce_val_str,
-		p_input.Address_eth_str,
+	// DB_NONCE_GET - get a nonce already generated in preflight for this user address,
+	//                for validating the recevied auth_signature
+	user_nonce_val_str, gf_err := db__nonce__get(p_input.User_address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+	// VALIDATE
+	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
+		user_nonce_val_str,
+		p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -216,26 +229,26 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	}
 	
 	if !valid_bool {
-		output.Signature_valid_bool = false
+		output.Auth_signature_valid_bool = false
 		return output, nil
 	} else {
-		output.Signature_valid_bool = true
+		output.Auth_signature_valid_bool = true
 	}
 
 	//------------------------
 
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	address_eth_str      := p_input.Address_eth_str
-	addresses_eth_lst    := []GF_user_address_eth{address_eth_str, }
+	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
+	user_address_eth_str  := p_input.User_address_eth_str
+	user_ddresses_eth_lst := []GF_user_address_eth{user_address_eth_str, }
 
-	user_id := users__create_id(address_eth_str, creation_unix_time_f)
+	user_id := users__create_id(user_address_eth_str, creation_unix_time_f)
 
 	user := &GF_user{
 		V_str:                "0",
 		Id_str:               user_id,
 		Creation_unix_time_f: creation_unix_time_f,
-		Addresses_eth_lst:    addresses_eth_lst, 
+		Addresses_eth_lst:    user_ddresses_eth_lst, 
 	}
 
 
@@ -248,7 +261,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 
 	//------------------------
 	// JWT
-	jwt_token_val, gf_err := jwt__pipeline__generate(address_eth_str, p_ctx, p_runtime_sys)
+	jwt_token_val, gf_err := jwt__pipeline__generate(user_address_eth_str, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

@@ -49,17 +49,29 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-
-				input :=&GF_user__input_preflight{
-
-				}
-
-				_, gf_err := users__pipeline__preflight(input, p_ctx, p_runtime_sys)
+				//---------------------
+				// INPUT
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
-			}
+				input :=&GF_user__input_preflight{
+					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)), 
+				}
 
+				//---------------------
+
+				output, gf_err := users__pipeline__preflight(input, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				output_map := map[string]interface{}{
+					"user_exists_bool": output.User_exists_bool,
+					"nonce_val_str":    output.Nonce_val_str,
+				}
+				return output_map, nil
+			}
 
 			return nil, nil
 		},
@@ -101,24 +113,27 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-				// USER_ADDRESS_ETH
-				user_address_eth, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
+				//---------------------
+				// INPUT
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				input :=&GF_user__input_create{
-					Address_eth_str: user_address_eth,
+					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
+					Auth_signature_str:   GF_auth_signature(input_map["auth_signature_str"].(string)),
 				}
 
+				//---------------------
 				output, gf_err := users__pipeline__create(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				output_map := map[string]interface{}{
-					"signature_valid_bool": output.Signature_valid_bool,
-					"jwt_token_val_str":    output.JWT_token_val,
+					"auth_signature_valid_bool": output.Auth_signature_valid_bool,
+					"jwt_token_val_str":         output.JWT_token_val,
 				}
 				return output_map, nil
 			}
@@ -138,14 +153,14 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 			if p_req.Method == "POST" {
 
 				// USER_ADDRESS_ETH
-				user_address_eth, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
+				user_address_eth_str, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				//---------------------
 				// JWT_VALIDATE
-				gf_err = jwt__validate_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
+				gf_err = jwt__validate_from_req(user_address_eth_str, p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -176,14 +191,14 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 			if p_req.Method == "POST" {
 
 				// USER_ADDRESS_ETH
-				user_address_eth, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
+				user_address_eth_str, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				//---------------------
 				// JWT_VALIDATE
-				gf_err = jwt__validate_from_req(user_address_eth, p_req, p_ctx, p_runtime_sys)
+				gf_err = jwt__validate_from_req(user_address_eth_str, p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

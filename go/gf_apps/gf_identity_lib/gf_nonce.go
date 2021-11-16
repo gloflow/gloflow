@@ -170,9 +170,6 @@ func db__nonce__get(p_user_address_eth_str GF_user_address_eth,
 		return GF_user_nonce_val(""), gf_err
 	}
 
-
-
-
 	user_nonce_val_str := user_nonce.Val_str
 	
 	return user_nonce_val_str, nil
