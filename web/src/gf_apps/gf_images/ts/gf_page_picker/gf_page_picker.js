@@ -88,7 +88,9 @@ function gf_picker__create_ui(p_api_host_str) {
         /*border-width: 2px;*/
         border-color: #808080;
         border-style: solid;
-        font-size:    16px;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size:   16px;
     }
 
 
@@ -98,6 +100,9 @@ function gf_picker__create_ui(p_api_host_str) {
     div#gf_bookmark div#tags input {
         width: 100%;
         padding: 0px;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size:   14px;
     }
 
 
@@ -164,7 +169,7 @@ function gf_picker__create_ui(p_api_host_str) {
                 <input value="tags"></input>
             </div>
             <div id='close_btn'>
-                <img src='/images/static/assets/gf_close_btn_small.svg'></img>
+                <img src='https://gloflow.com/images/static/assets/gf_close_btn_small.svg'></img>
             </div>
             <div id='submit_btn'>ok</div> 
         </div>`);
