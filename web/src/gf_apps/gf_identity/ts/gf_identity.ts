@@ -28,12 +28,30 @@ export function init() {
     $("#identity #login").on('click', function(p_e) {
 
 
-        login(()=>{
 
-            },
-            ()=>{
-                
-            });
+        const wallet_pick_dialog = $(`
+            <div id="wallet_pick_dialog">
+                <div id="metamask">
+                    <div id="icon">
+                        <img src="/images/static/assets/gf_metamask_icon.svg"></img>
+                    </div>
+                    <div id="descr">metamask browser wallet</div>
+                </div>
+            </div>`);
+
+        $("#identity").append(wallet_pick_dialog);
+
+        $(wallet_pick_dialog).find("#metamask").on('click', ()=>{
+
+            login(()=>{
+
+                },
+                ()=>{
+                    
+                });
+        })
+
+        
     });
 }
 
@@ -69,6 +87,7 @@ function login(p_on_complete_fun,
     }
 
     //-------------------------------------------------
+    
 
     eth_is_enabled((p_enabled_bool, p_user_address_eth_str)=>{
 
@@ -76,72 +95,134 @@ function login(p_on_complete_fun,
 
         if (!p_enabled_bool) {
             $("#identity").append(`<div id="wallet_connect_failed">failed to connect to wallet</div>`);
+        } else {
+
+
+            console.log("user address", p_user_address_eth_str);
+
+            user_auth_pipeline(p_user_address_eth_str,
+                ()=>{},
+                ()=>{});
         }
-
-        console.log("user address", p_user_address_eth_str);
-    })
-
-    
-    /*//------------------------------------
-    // connect to web3 wallet
-    window.ethereum.enable();
-
-
-    // check if web3 lib has been properly injected into the page context
-    var web3;
-    if (typeof window.Web3 != "undefined") {
-        web3 = new Web3(Web3.givenProvider);
-    } else {
-        // fallback - if there is no web3 lib injected with its own provider,
-        //            than try to reach out to a local eth node as the provider.
-        web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
-    }
-
-    // check if web3 lib is connected to wallet
-    if(!web3.isConnected()) {
-        $("#identity").append(`<div id="wallet_connect_failed">failed to connect to wallet</div>`);
-    }
-
-    const user_address_eth_str = web3.eth.accounts[0];
-
-    //------------------------------------
-
-    user_preflight__http(user_address_eth_str,
-        (p_data_map)=>{
-            
-            const user_exists_bool = p_data_map["user_exists_bool"];
-
-            if (user_exists_bool) {
-                const user_nonce_val_str = p_data_map["nonce_val_str"];
-            } else {
-
-            }
-        },
-        ()=>{
-            p_on_error_fun();
-        });
-    */
+    });
 }
 
 //-------------------------------------------------
+function user_auth_pipeline(p_user_address_eth_str,
+    p_on_complete_fun,
+    p_on_error_fun) {
+
+    // HTTP_REQUEST
+    user_preflight__http(p_user_address_eth_str,
+        (p_data_map)=>{
+            
+            const user_exists_bool = p_data_map["user_exists_bool"];
+            const nonce_val_str    = p_data_map["nonce_val_str"];
+            
+
+            // user exists, log them in
+            if (user_exists_bool) {
+                
+            }
+            // no-user in the system, offer to create new
+            else {
+                
+                console.log("NO USER");
+
+                create_new_user(p_user_address_eth_str,
+                    nonce_val_str,
+                    (p_data_map)=>{
+
+                        // user is created, allow them to update basic profile information
+
+
+
+                    },
+                    (p_error_data_map)=>{
+                        p_on_error_fun(p_error_data_map);
+                    });
+            }
+        },
+        (p_error_data_map)=>{
+            p_on_error_fun(p_error_data_map);
+        });
+}
+
+//-------------------------------------------------
+function create_new_user(p_user_address_eth_str,
+    p_nonce_val_str,
+    p_on_complete_fun,
+    p_on_error_fun) {
+
+
+
+    
+
+
+
+    const create_user_dialog = $(`
+        <div id='create_user_dialog'>
+            <div id='descr'>create new user?</div>
+            <div id='confirm'>ok</div>
+        </div>`);
+
+
+    $("#identity").append(create_user_dialog);
+
+    $(create_user_dialog).find("#confirm").on('click', ()=>{
+
+
+        const s = window.ethereum.personal.sign(p_nonce_val_str, p_user_address_eth_str).then((p_auth_signature_str)=>{
+            
+
+            user_create__http(p_user_address_eth_str,
+                p_auth_signature_str,
+                (p_data_map)=>{
+                    
+                    // user was created successfuly, remove the create_user_dialog and return
+                    $(create_user_dialog).remove();
+                    p_on_complete_fun();
+                },
+                (p_error_data_map)=>{
+                    
+                    $(create_user_dialog).css("background-color", "red");
+                });
+            
+
+
+        });
+
+
+        
+
+    });
+}
+
+//-------------------------------------------------
+// USER_PREFLIGHT__HTTP
 function user_preflight__http(p_user_address_eth_str,
     p_on_complete_fun,
     p_on_error_fun) {
 
     const data_map = {
-        "address_eth_str": p_user_address_eth_str,
+        "user_address_eth_str": p_user_address_eth_str,
     };
 
     const url_str = '/v1/identity/users/preflight';
     $.ajax({
         'url':         url_str,
         'type':        'POST',
-        'data':        data_map,
+        'data':        JSON.stringify(data_map),
         'contentType': 'application/json',
-        'success':     (p_response_str)=>{
-            const data_map :Object = JSON.parse(p_response_str);
+        'success':     (p_response_map)=>{
+            const status_str = p_response_map["status"];
+            const data_map   = p_response_map["data"];
 
-            p_on_complete_fun(data_map);
+            if (status_str == "OK") {
+                p_on_complete_fun(data_map);
+            } else {
+                p_on_error_fun(data_map);
+            }
         },
         'error': (jqXHR, p_text_status_str)=>{
             p_on_error_fun(p_text_status_str);
@@ -150,6 +231,7 @@ function user_preflight__http(p_user_address_eth_str,
 }
 
 //-------------------------------------------------
+// USER_LOGIN__HTTP
 function user_login__http(p_on_complete_fun,
     p_on_error_fun) {
 
@@ -161,10 +243,9 @@ function user_login__http(p_on_complete_fun,
     $.ajax({
         'url':         url_str,
         'type':        'POST',
-        'data':        data_map,
+        'data':        JSON.stringify(data_map),
         'contentType': 'application/json',
-        'success':     (p_response_str)=>{
-            const data_map :Object = JSON.parse(p_response_str);
+        'success':     (p_response_map)=>{
             
             p_on_complete_fun(data_map);
         },
@@ -175,21 +256,24 @@ function user_login__http(p_on_complete_fun,
 }
 
 //-------------------------------------------------
-function user_create__http(p_on_complete_fun,
+// USER_CREATE__HTTP
+function user_create__http(p_user_address_eth_str,
+    p_auth_signature_str,
+    p_on_complete_fun,
     p_on_error_fun) {
 
     const data_map = {
-
+        "user_address_eth_str": p_user_address_eth_str,
+        "auth_signature_str":   p_auth_signature_str,
     };
 
     const url_str = '/v1/identity/users/create';
     $.ajax({
         'url':         url_str,
         'type':        'POST',
-        'data':        data_map,
+        'data':        JSON.stringify(data_map),
         'contentType': 'application/json',
-        'success':     (p_response_str)=>{
-            const data_map :Object = JSON.parse(p_response_str);
+        'success':     (p_response_map)=>{
             
             p_on_complete_fun(data_map);
         },

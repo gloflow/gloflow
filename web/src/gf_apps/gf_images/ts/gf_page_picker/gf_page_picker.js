@@ -158,7 +158,10 @@ function gf_picker__create_ui(p_api_host_str) {
 
 
     // BOOKMARK
-    const current_url_str  = window.location.href;
+    const current_url_str = window.location.href;
+
+    // IMPORTANT!! - close_btn img src has to be a full URL (with gloflow.com)
+    //               because page_picker is loaded in third-party pages.
     const bookmark_element = $(`
         <div id="gf_bookmark">
             <div id="url">${current_url_str}</div>

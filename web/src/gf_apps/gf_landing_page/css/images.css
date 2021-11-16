@@ -75,6 +75,7 @@
 #images .image_info .image {
 	width:    195px;
 	position: relative;
+	padding-bottom: 4px;
 	/*padding-bottom: 8px;*/
 }
 
@@ -195,7 +196,7 @@
 }
 
 #images .image_info .origin_page_url {
-	padding-top     : 6px;
+	padding-top     : 1px;
 	padding-bottom  : 6px;
 	text-align      : center;
     background-color: #669ab3;
@@ -213,6 +214,7 @@
 
 #images .image_info .creation_time {
 	cursor:pointer;
+	padding-top: 2px;
 }
 #images .image_info .creation_time:hover {
 	font-weight: bold;

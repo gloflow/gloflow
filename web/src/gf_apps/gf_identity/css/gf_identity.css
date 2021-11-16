@@ -9,8 +9,34 @@
 #identity #login {
     position: absolute;
     right: 0px;
-    background-color: red;
+    background-color: white;
     width: 15px;
     height: 15px;
     cursor: pointer;
+}
+
+#identity #wallet_pick_dialog {
+    position: absolute;
+    top: -53px;
+    right: 0px;
+    background-color: white;
+    width: 198px;
+}
+
+#identity #wallet_pick_dialog #metamask {
+    cursor: pointer;
+}
+#identity #wallet_pick_dialog #metamask:hover {
+    background-color: rgb(141, 141, 141);
+}
+#identity #wallet_pick_dialog #metamask #icon {
+    width: 50px;
+    height: 48px;
+}
+
+#identity #wallet_pick_dialog #metamask #descr {
+    position: absolute;
+    top: 18px;
+    left: 54px;
+    font-size: 12px;
 }
