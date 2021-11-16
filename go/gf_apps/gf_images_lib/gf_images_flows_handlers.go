@@ -181,7 +181,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 				//------------------
 				// RENDER_TEMPLATE
 				gf_err := flows__render_initial_page(flow_name_str,
-					3,  // p_initial_pages_num_int int,
+					6,  // p_initial_pages_num_int int,
 					10, // p_page_size_int int,
 					gf_templates.flows_browser__tmpl,
 					gf_templates.flows_browser__subtemplates_names_lst,
