@@ -59,7 +59,7 @@ func Test__users(p_test *testing.T) {
 	// NONCE_CREATE
 
 	unexisting_user_id_str := gf_core.GF_ID("")
-	nonce, gf_err := nonce__create(GF_user_nonce_val(test_user_nonce_str),
+	_, gf_err := nonce__create(GF_user_nonce_val(test_user_nonce_str),
 		unexisting_user_id_str,
 		GF_user_address_eth(test_user_address_eth_str),
 		ctx,
@@ -72,8 +72,8 @@ func Test__users(p_test *testing.T) {
 	// USER_CREATE
 	
 	input__create := &GF_user__input_create{
-		Signature_str:   GF_auth_signature(test_user_signature_str),
-		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
+		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 		// Nonce_val_str:   nonce.Val_str,
 	}
 
@@ -87,15 +87,15 @@ func Test__users(p_test *testing.T) {
 	spew.Dump(output__create)
 
 
-	assert.True(p_test, output__create.Signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
+	assert.True(p_test, output__create.Auth_signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
 
 
 	//------------------
 
 
 	input__login := &GF_user__input_login{
-		Signature_str:   GF_auth_signature(test_user_signature_str),
-		Address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
+		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 	}
 	output__login, gf_err := users__pipeline__login(input__login, ctx, runtime_sys)
 	if gf_err != nil {
