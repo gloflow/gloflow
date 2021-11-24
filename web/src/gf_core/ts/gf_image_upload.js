@@ -68,14 +68,8 @@ function gf_upload__init(p_target_full_host_str) {
 								p_flows_names_str,
 								p_target_full_host_str,
 								()=>{
-
-
 									p_on_upload_complete_fun();
-
-									
 								});
-
-
 						});
 				};
 
@@ -106,7 +100,7 @@ function gf_upload__view_img(p_img_data_str,
 							<div class="upload_image_panel">
 								<img id="1" class="target_upload_image" src='${p_img_data_str}'></img>
 								<div id="upload_image_name_input">
-									<input></input>
+									<input placeholder="image name"></input>
 								</div>
 							</div>
 							<!-- ----------- -->
@@ -141,9 +135,9 @@ function gf_upload__view_img(p_img_data_str,
 	//-------------------------------------------------
 	const img_dialog = get_image_dialog();
 	
-	const this_image = $(img_dialog).find(".upload_image_panel").last();
-	$(this_image).find("img").on("load", ()=>{
 
+
+	function position_image_view() {
 		// REPOSITION IMAGES_DETAIL
 		const images_detail = $(img_dialog).find("#upload_images_detail");
 
@@ -152,9 +146,31 @@ function gf_upload__view_img(p_img_data_str,
 
 		$(images_detail).css("left", image_x+"px");
 		$(images_detail).css("top",  image_y+"px");
+	}
+
+	const this_image = $(img_dialog).find(".upload_image_panel").last();
+	$(this_image).find("img").on("load", ()=>{
+		position_image_view();
 	});
 
+	// reposition image_view on resize
+	$(window).resize(function () {
+		position_image_view();
+	});
 
+	//-------------------------------------------------
+	function upload() {
+		const image_name_str  = $(this_image).find("input").val();
+		const flows_names_str = "general";
+		
+		p_upload_activate_fun(image_name_str, flows_names_str, ()=>{
+
+			// REMOVE_UPLOAD_DIALOG - when upload_activate function completes, remove the dialog
+			$(img_dialog).remove();
+		});
+	}
+
+	//-------------------------------------------------
 
 	$("body").keyup((p_event)=>{
 
@@ -166,19 +182,7 @@ function gf_upload__view_img(p_img_data_str,
 			//               and we dont want the user to keep pressing the enter button.
 			$(this).unbind(p_event);
 
-			const image_name_str  = $(this_image).find("input").val();
-			const flows_names_str = "general";
-			
-			p_upload_activate_fun(image_name_str, flows_names_str, ()=>{
-
-
-
-				// REMOVE_UPLOAD_DIALOG - when upload_activate function completes, remove the dialog
-				$(img_dialog).remove();
-
-
-
-			});
+			upload();			
 		}
 		
 		// ESC_KEY
@@ -189,6 +193,15 @@ function gf_upload__view_img(p_img_data_str,
 			$("#upload_image_dialog").remove();
 		}
 	});
+
+	$("#upload_image_dialog #upload_btn").on('click', ()=>{
+		upload();
+	});
+
+	$("#upload_image_dialog #background").on('click', ()=>{
+		// REMOVE_UPLOAD_DIALOG - remove dialog on click on background
+		$(img_dialog).remove();
+	})
 }
 
 //-------------------------------------------------
@@ -199,7 +212,6 @@ function gf_upload__run(p_image_name_str,
 	p_target_full_host_str,
 	p_on_complete_fun) {
 	console.log(`UPLOAD_IMAGE - ${p_image_name_str} - ${p_image_format_str}`);
-
 
 	// UPLOAD__SEND_INIT
 	gf_upload__send_init(p_image_name_str,
@@ -253,6 +265,7 @@ function gf_upload__send_init(p_image_name_str,
 			p_on_complete_fun(upload_gf_image_id_str,
 				presigned_url_str);
 		}
+
 		//-------------------------------------------------
 	});
 }
@@ -305,6 +318,7 @@ function gf_upload__send_complete(p_upload_gf_image_id_str,
 			console.log(p_data_map);
 			p_on_complete_fun();
 		}
+
 		//-------------------------------------------------
 	})
 }
