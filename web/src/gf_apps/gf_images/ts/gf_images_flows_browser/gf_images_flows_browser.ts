@@ -76,10 +76,7 @@ export function init(p_log_fun) {
 	//               load_new_page() starts getting called, are properly laid out
 	//               by masonry.
 	$('.gf_image img').on('load', ()=>{
-		
-		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container').masonry();
-		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 	$('#gf_images_flow_container').masonry({
