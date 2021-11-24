@@ -160,15 +160,20 @@ def build_page(p_page_name_str,
 				def build_typescript(p_out_file_str):
 					
 					cmd_lst = [
+						
 						"tsc",
 						"--module system", # needed with the "--out" option
+						"--target es6",
 
 						# Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
 						# '--esModuleInterop',
 						f"--out {p_out_file_str}",
 						main_ts_file_str
 					]
-					_, _, return_code_int = gf_core_cli.run(" ".join(cmd_lst))
+					cmd_str = " ".join(cmd_lst)
+					print(cmd_str)
+					
+					_, _, return_code_int = gf_core_cli.run(cmd_str)
 
 					if return_code_int > 0:
 						print("ERROR!! - TypeScript Compilation failed!")

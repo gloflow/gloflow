@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,7 +57,7 @@ func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
 	}
 
 	//------------------------
-	nonce_val_str := gf_core.Str_random()
+	nonce_val_str := fmt.Sprintf("gloflow:%s", gf_core.Str_random())
 
 	// CREATE
 	nonce, gf_err := nonce__create(GF_user_nonce_val(nonce_val_str),
