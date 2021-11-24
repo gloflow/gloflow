@@ -23,12 +23,24 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export function init() {
+export async function init() {
 
-    $("#identity #login").on('click', function(p_e) {
+    $("#identity #login").on('click', async function(p_e) {
 
 
+        await wallet_pick();
+        
+        const user_address_eth_str = await wallet_connect();
 
+        await user_auth_pipeline(user_address_eth_str);
+        
+    });
+}
+
+//-------------------------------------------------
+async function wallet_pick() {
+
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const wallet_pick_dialog = $(`
             <div id="wallet_pick_dialog">
                 <div id="metamask">
@@ -43,27 +55,20 @@ export function init() {
 
         $(wallet_pick_dialog).find("#metamask").on('click', ()=>{
 
-            login(()=>{
-
-                },
-                ()=>{
-                    
-                });
+            p_resolve_fun(null);
         })
 
-        
     });
+    return p;
 }
 
 //-------------------------------------------------
-function login(p_on_complete_fun,
-    p_on_error_fun) {
+function wallet_connect() {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
-    //-------------------------------------------------
-    /* providers like MetaMask and Status must continue to inject window.ethereum,
-    but now the window.ethereum object itself is a provider type that supports the 
-    methods defined in EIP-1102 and EIP-1193*/
-    function eth_is_enabled(p_on_complete_fun) {
+        // providers like MetaMask and Status must continue to inject window.ethereum,
+        // but now the window.ethereum object itself is a provider type that supports the 
+        // methods defined in EIP-1102 and EIP-1193
         if (window.ethereum) {
 
             // IMPORTANT!! - if the users wallet is not connected to this page
@@ -72,213 +77,186 @@ function login(p_on_complete_fun,
             const p = window.ethereum.send('eth_requestAccounts');
             p.then((p_r)=>{
 
-
                 // get the first user address? or give the user choice 
                 // over which address to use if multiple are returned?
                 const user_address_eth_str = p_r["result"][0];
 
-
                 window.web3 = new Web3(window.ethereum);
-                p_on_complete_fun(true, user_address_eth_str);
+
+                // wallet is connected, so remove the wallet_pick_dialog
+                $("#wallet_pick_dialog").remove();
+
+                p_resolve_fun(user_address_eth_str);
             });
         } else {
-            p_on_complete_fun(false, null);
-        }
-    }
-
-    //-------------------------------------------------
-    
-
-    eth_is_enabled((p_enabled_bool, p_user_address_eth_str)=>{
-
-        console.log(p_enabled_bool);
-
-        if (!p_enabled_bool) {
             $("#identity").append(`<div id="wallet_connect_failed">failed to connect to wallet</div>`);
-        } else {
-
-
-            console.log("user address", p_user_address_eth_str);
-
-            user_auth_pipeline(p_user_address_eth_str,
-                ()=>{},
-                ()=>{});
+            p_reject_fun();
         }
     });
+    return p;
 }
 
 //-------------------------------------------------
-function user_auth_pipeline(p_user_address_eth_str,
-    p_on_complete_fun,
-    p_on_error_fun) {
+async function user_auth_pipeline(p_user_address_eth_str) {
 
     // HTTP_REQUEST
-    user_preflight__http(p_user_address_eth_str,
-        (p_data_map)=>{
-            
-            const user_exists_bool = p_data_map["user_exists_bool"];
-            const nonce_val_str    = p_data_map["nonce_val_str"];
-            
+    const data_map = await user_preflight__http(p_user_address_eth_str);
 
-            // user exists, log them in
-            if (user_exists_bool) {
-                
-            }
-            // no-user in the system, offer to create new
-            else {
-                
-                console.log("NO USER");
+    const user_exists_bool = data_map["user_exists_bool"];
+    const nonce_val_str    = data_map["nonce_val_str"];
+    
 
-                create_new_user(p_user_address_eth_str,
-                    nonce_val_str,
-                    (p_data_map)=>{
+    // user exists, log them in
+    if (user_exists_bool) {
+        
+    }
+    // no-user in the system, offer to create new
+    else {
+        
+        console.log("NO USER");
 
-                        // user is created, allow them to update basic profile information
+        // user is created
+        await user_create(p_user_address_eth_str, nonce_val_str);
 
 
-
-                    },
-                    (p_error_data_map)=>{
-                        p_on_error_fun(p_error_data_map);
-                    });
-            }
-        },
-        (p_error_data_map)=>{
-            p_on_error_fun(p_error_data_map);
-        });
+        await user_update();
+    }   
 }
 
 //-------------------------------------------------
-function create_new_user(p_user_address_eth_str,
-    p_nonce_val_str,
-    p_on_complete_fun,
-    p_on_error_fun) {
+async function user_create(p_user_address_eth_str,
+    p_nonce_val_str) {
 
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
+        const create_user_dialog = $(`
+            <div id='create_user_dialog'>
+                <div id='descr'>create new user?</div>
+                <div id='confirm_btn'>ok</div>
+            </div>`);
 
-    
+        $("#identity").append(create_user_dialog);
 
+        $(create_user_dialog).find("#confirm_btn").on('click', async ()=>{
 
-
-    const create_user_dialog = $(`
-        <div id='create_user_dialog'>
-            <div id='descr'>create new user?</div>
-            <div id='confirm'>ok</div>
-        </div>`);
-
-
-    $("#identity").append(create_user_dialog);
-
-    $(create_user_dialog).find("#confirm").on('click', ()=>{
-
-
-        const s = window.ethereum.personal.sign(p_nonce_val_str, p_user_address_eth_str).then((p_auth_signature_str)=>{
+            const auth_signature_str = await window.web3.eth.personal.sign(p_nonce_val_str, p_user_address_eth_str);
             
+            try {
+                // user was created successfuly, remove the create_user_dialog and return
+                const user_create_data_map = await user_create__http(p_user_address_eth_str, auth_signature_str);
+                $(create_user_dialog).remove();
+                p_resolve_fun(null);
 
-            user_create__http(p_user_address_eth_str,
-                p_auth_signature_str,
-                (p_data_map)=>{
-                    
-                    // user was created successfuly, remove the create_user_dialog and return
-                    $(create_user_dialog).remove();
-                    p_on_complete_fun();
-                },
-                (p_error_data_map)=>{
-                    
-                    $(create_user_dialog).css("background-color", "red");
-                });
-            
-
-
+            } catch (p_err) {            
+                $(create_user_dialog).css("background-color", "red");
+                p_reject_fun();
+            }
         });
+    });
+    return p;
+}
+
+//-------------------------------------------------
+function user_update() {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
 
-        
+        const update_user_dialog = $(`
+            <div id='update_user_dialog'>
+                <div id='descr'>set your user details</div>
+                <input id='username'></input>
+                <input id='email'></input>
+                <input id='description'></input>
+            </div>`);
+        $("#identity").append(update_user_dialog);
 
     });
+    return p;
 }
 
 //-------------------------------------------------
 // USER_PREFLIGHT__HTTP
-function user_preflight__http(p_user_address_eth_str,
-    p_on_complete_fun,
-    p_on_error_fun) {
+function user_preflight__http(p_user_address_eth_str) {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "user_address_eth_str": p_user_address_eth_str,
+        };
 
-    const data_map = {
-        "user_address_eth_str": p_user_address_eth_str,
-    };
+        const url_str = '/v1/identity/users/preflight';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
 
-    const url_str = '/v1/identity/users/preflight';
-    $.ajax({
-        'url':         url_str,
-        'type':        'POST',
-        'data':        JSON.stringify(data_map),
-        'contentType': 'application/json',
-        'success':     (p_response_map)=>{
-            const status_str = p_response_map["status"];
-            const data_map   = p_response_map["data"];
-
-            if (status_str == "OK") {
-                p_on_complete_fun(data_map);
-            } else {
-                p_on_error_fun(data_map);
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
             }
-        },
-        'error': (jqXHR, p_text_status_str)=>{
-            p_on_error_fun(p_text_status_str);
-        }
+        });
     });
+    return p;
 }
 
 //-------------------------------------------------
 // USER_LOGIN__HTTP
-function user_login__http(p_on_complete_fun,
-    p_on_error_fun) {
+function user_login__http() {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
 
-    const data_map = {
+        };
 
-    };
-
-    const url_str = '/v1/identity/users/login';
-    $.ajax({
-        'url':         url_str,
-        'type':        'POST',
-        'data':        JSON.stringify(data_map),
-        'contentType': 'application/json',
-        'success':     (p_response_map)=>{
-            
-            p_on_complete_fun(data_map);
-        },
-        'error':(jqXHR, p_text_status_str)=>{
-            p_on_error_fun(p_text_status_str);
-        }
+        const url_str = '/v1/identity/users/login';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                p_resolve_fun(data_map);
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
     });
+    return p;
 }
 
 //-------------------------------------------------
 // USER_CREATE__HTTP
 function user_create__http(p_user_address_eth_str,
-    p_auth_signature_str,
-    p_on_complete_fun,
-    p_on_error_fun) {
+    p_auth_signature_str) {
 
-    const data_map = {
-        "user_address_eth_str": p_user_address_eth_str,
-        "auth_signature_str":   p_auth_signature_str,
-    };
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "user_address_eth_str": p_user_address_eth_str,
+            "auth_signature_str":   p_auth_signature_str,
+        };
 
-    const url_str = '/v1/identity/users/create';
-    $.ajax({
-        'url':         url_str,
-        'type':        'POST',
-        'data':        JSON.stringify(data_map),
-        'contentType': 'application/json',
-        'success':     (p_response_map)=>{
-            
-            p_on_complete_fun(data_map);
-        },
-        'error':(jqXHR, p_text_status_str)=>{
-            p_on_error_fun(p_text_status_str);
-        }
+        const url_str = '/v1/identity/users/create';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                p_resolve_fun(data_map);
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
     });
+    return p;
 }

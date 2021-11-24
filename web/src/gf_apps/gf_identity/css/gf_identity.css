@@ -15,6 +15,8 @@
     cursor: pointer;
 }
 
+/*------------------------------------------------------------*/
+/*WALLET_PICK_DIALOG*/
 #identity #wallet_pick_dialog {
     position: absolute;
     top: -53px;
@@ -39,4 +41,32 @@
     top: 18px;
     left: 54px;
     font-size: 12px;
+}
+
+/*------------------------------------------------------------*/
+/*CREATE_USER_DIALOG*/
+
+#identity #create_user_dialog {
+    position: absolute;
+    top:      -56.3px;
+    left:     -162px;
+    width:    162px;
+    background-color: white;
+}
+
+#identity #create_user_dialog #descr {
+    text-align:  center;
+    padding-top: 3px;
+    font-size:   13px;
+}
+
+#identity #create_user_dialog #confirm_btn {
+    text-align:       center;
+    background-color: #bfbfbf;
+    padding-top:      8px;
+    padding-bottom:   5px;
+    cursor:           pointer;
+}
+#identity #create_user_dialog #confirm_btn:hover {
+    background-color: #cecece;
 }
