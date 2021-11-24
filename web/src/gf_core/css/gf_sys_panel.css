@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 	width           : 100%;
 	height          : 44px;
 	background-color: #d7d7d7;
-	/*opacity         : 0.5;*/
 }
 
 #sys_panel #view_handle {
@@ -40,6 +39,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
+#sys_panel #background {
+    width: 100%;
+}
+
+#sys_panel #controls {
+    position: relative;
+
+    /*IMPORTANT!! - centers the div horizontaly on the sys_panel*/
+    margin: auto;
+
+    width: 643px;
+    height: 44px;
+}
+
+/*------------------------------------------------------------------*/
 /*HOME_BTN*/
 #sys_panel #controls #home_btn {
 	position: fixed;
@@ -50,12 +64,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #sys_panel #controls #home_btn img {
 	height: 100%;
-}
-
-/*------------------------------------------------------------------*/
-#sys_panel #controls {
-	position: fixed;
-    left: 20%;
 }
 
 /*------------------------------------------------------------------*/
@@ -158,22 +166,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 }
 
 /*------------------------------------------------------------------*/
-#sys_panel #get_invited_btn {
-	position   : absolute;
-	top        : 0px;
-	left       : 560px;
-	padding-top: 12px;
-	width      : 120px;
-	height     : 32px;
-	text-align      : center;
-	background-color: rgb(235, 235, 235);
-	cursor          : pointer;
-	color: gray;
-}
-#sys_panel #login_btn {
+#sys_panel #auth {
 	position: absolute;
 	top     : 0px;
-	left    : 687px;
+	left    : 560px;
 	width   : 83px;
 	height  : 32px;
 	padding-top     : 12px;
