@@ -74,9 +74,12 @@ export function init(p_log_fun) {
 	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.
 	//               this is necessary so that initial images in the page, before
 	//               load_new_page() starts getting called, are properly laid out
-	//               by masonry
+	//               by masonry.
 	$('.gf_image img').on('load', ()=>{
+		
+		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container').masonry();
+		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 	$('#gf_images_flow_container').masonry({
@@ -192,8 +195,10 @@ function init__view_type_picker() {
 			$(p_e).addClass("small_view");
 		});
 
-		// dimensions of items changed, re-layout masonry
+		// dimensions of items changed, re-layout masonry.
+		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container').masonry();
+		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 	// MASONRY_MEDIUM_IMAGES
@@ -213,8 +218,10 @@ function init__view_type_picker() {
 			$(p_e).addClass("medium_view");
 		});
 
-		// dimensions of items changed, re-layout masonry
+		// dimensions of items changed, re-layout masonry.
+		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
 		$('#gf_images_flow_container').masonry();
+		$('#gf_images_flow_container').masonry(<any>"reloadItems");
 	});
 
 }
@@ -310,9 +317,11 @@ function load_new_page(p_flow_name_str :string,
 				masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
 					$(image).css('visibility', 'visible');
 				});
-
+				
+				
+				// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
+				$('#gf_images_flow_container').masonry();
 				$('#gf_images_flow_container').masonry(<any>"reloadItems");
-				// $('#gf_images_flow_container').masonry();
 
 				//------------------
 
@@ -349,8 +358,8 @@ function load_new_page(p_flow_name_str :string,
 
 				p_log_fun("ERROR", "IMAGE_FAILED_TO_LOAD ----------");
 
-				//if image failed to load it still needs to be counted so that when all images
-				//are done (either failed or succeeded) call p_on_complete_fun()
+				// if image failed to load it still needs to be counted so that when all images
+				// are done (either failed or succeeded) call p_on_complete_fun()
 				img_i_int++;
 				if (p_page_lst.length-1 == img_i_int) {
 					p_on_complete_fun();
@@ -397,17 +406,20 @@ function init_image_date(p_image_element, p_log_fun) {
 	$(creation_time_element).mouseover((p_e)=>{
 		$(creation_time_element).append(creation_date__readble);
 
-		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
+		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
+		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
+		$('#gf_images_flow_container').masonry();
 		$('#gf_images_flow_container').masonry(<any>'reloadItems');
-		// $('#gf_images_flow_container').masonry();
 	});
 
 	$(creation_time_element).mouseout((p_e)=>{
 		$(creation_date__readble).remove();
 
-		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
+		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
+		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
+		$('#gf_images_flow_container').masonry();
 		$('#gf_images_flow_container').masonry(<any>'reloadItems');
-		// $('#gf_images_flow_container').masonry();
+		
 	});
 }
 
