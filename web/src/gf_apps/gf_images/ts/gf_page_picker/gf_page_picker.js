@@ -166,10 +166,10 @@ function gf_picker__create_ui(p_api_host_str) {
         <div id="gf_bookmark">
             <div id="url">${current_url_str}</div>
             <div id="description">
-                <input value="url description"></input>
+                <input placeholder="url description"></input>
             </div>
             <div id="tags">
-                <input value="tags"></input>
+                <input placeholder="tags"></input>
             </div>
             <div id='close_btn'>
                 <img src='https://gloflow.com/images/static/assets/gf_close_btn_small.svg'></img>
