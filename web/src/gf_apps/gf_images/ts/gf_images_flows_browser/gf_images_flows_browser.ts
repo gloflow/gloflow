@@ -311,8 +311,8 @@ function load_new_page(p_flow_name_str :string,
 					$(image).css('visibility', 'visible');
 				});
 
-				// $('#gf_images_flow_container').masonry(<any>"reloadItems");
-				$('#gf_images_flow_container').masonry();
+				$('#gf_images_flow_container').masonry(<any>"reloadItems");
+				// $('#gf_images_flow_container').masonry();
 
 				//------------------
 
@@ -398,16 +398,16 @@ function init_image_date(p_image_element, p_log_fun) {
 		$(creation_time_element).append(creation_date__readble);
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
-		// $('#gf_images_flow_container').masonry(<any>'reloadItems');
-		$('#gf_images_flow_container').masonry();
+		$('#gf_images_flow_container').masonry(<any>'reloadItems');
+		// $('#gf_images_flow_container').masonry();
 	});
 
 	$(creation_time_element).mouseout((p_e)=>{
 		$(creation_date__readble).remove();
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout
-		// $('#gf_images_flow_container').masonry(<any>'reloadItems');
-		$('#gf_images_flow_container').masonry();
+		$('#gf_images_flow_container').masonry(<any>'reloadItems');
+		// $('#gf_images_flow_container').masonry();
 	});
 }
 
