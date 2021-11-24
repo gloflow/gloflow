@@ -66,7 +66,7 @@ body {
 
 /* @media all and (max-width: 1000px) and (min-width: 520px) {} */
 
-#register {
+/*#register {
 	position: absolute;
 	top     : 0px;
 	left    : 614px;
@@ -93,12 +93,12 @@ body {
 	opacity         : 1.0;  
 	background-color: white;
 	color           : black;
-}
+}*/
 
 /*------------------------------------------------------------*/
 /*REGISTER EMAIL FORM*/
 
-#register #register_email_form {
+/*#register #register_email_form {
 	position: fixed;
 	top     : 65px;
 	height  : 77px;
@@ -139,22 +139,9 @@ body {
 	opacity         : 1.0;  
 	background-color: white;
 	color           : black;
-}
+}*/
 
 /*------------------------------------------------------------*/
-.preview_3d_button {
-	position        : fixed;
-	top             : 404px;
-	left            : 42px;
-	color           : white;
-	background-color: rgb(202, 202, 202);
-	padding-left    : 17px;
-	padding-bottom  : 15px;
-	padding-top     : 15px;
-	padding-right   : 17px;
-
-	cursor: pointer;
-}
 .randomized_canvas {
 	position: fixed;
 }

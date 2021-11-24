@@ -19,11 +19,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_identity       from "./../../gf_identity/ts/gf_identity";
+import * as gf_images         from "./gf_images";
+import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
+
 // import * as gf_calc from "./gf_calc";
-import * as gf_identity           from "./../../gf_identity/ts/gf_identity";
-import * as gf_email_registration from "./gf_email_registration";
-import * as gf_images             from "./gf_images";
-import * as gf_procedural_art     from "./procedural_art/gf_procedural_art";
+// import * as gf_email_registration from "./gf_email_registration";
 
 // GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
 declare var gf_upload__init;
@@ -46,11 +47,12 @@ $(document).ready(()=>{
 	//-------------------------------------------------
 	$("time.timeago").timeago();
 
-	init_remote(log_fun);
+	init(log_fun);
+	// init_remote(log_fun);
 });
 
 //--------------------------------------------------------
-export function init_remote(p_log_fun) {
+/*export function init_remote(p_log_fun) {
 
 	init(remote_register_user_email, p_log_fun);
 	//--------------------------------------------------------
@@ -75,12 +77,11 @@ export function init_remote(p_log_fun) {
 	}
 
 	//--------------------------------------------------------
-}
+}*/
 
 //--------------------------------------------------------
 // INIT
-function init(p_register_user_email_fun,
-	p_log_fun) {
+function init(p_log_fun) {
 	
 	//---------------------
 	// IDENTITY
@@ -91,7 +92,7 @@ function init(p_register_user_email_fun,
 	const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
 	gf_procedural_art.init(p_log_fun);
-	gf_email_registration.init(p_register_user_email_fun, p_log_fun);
+	// gf_email_registration.init(p_register_user_email_fun, p_log_fun);
 
 	init_posts_img_num();
 	gf_images.init(p_log_fun);
