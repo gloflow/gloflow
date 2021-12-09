@@ -30,8 +30,8 @@ function gf_upload__init(p_target_full_host_str) {
 
 
 		console.log("paste");
-		console.log(p_paste_event.clipboardData);
-		console.log(p_paste_event.originalEvent.clipboardData);
+		// console.log(p_paste_event.clipboardData);
+		// console.log(p_paste_event.originalEvent.clipboardData);
 		console.log(JSON.stringify(items)); // will give you the mime types
 
 		for (index in items) {
