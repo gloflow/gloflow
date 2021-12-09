@@ -24,10 +24,14 @@ function gf_upload__init(p_target_full_host_str) {
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
 
+
+
 		const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;
 
 
 		console.log("paste");
+		console.log(p_paste_event.clipboardData);
+		console.log(p_paste_event.originalEvent.clipboardData);
 		console.log(JSON.stringify(items)); // will give you the mime types
 
 		for (index in items) {
