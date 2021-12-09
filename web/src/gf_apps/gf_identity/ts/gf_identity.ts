@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_3d  from "./../../../gf_core/ts/gf_3d";
+
 declare const window: any;
 declare var Web3;
 
@@ -108,7 +110,7 @@ async function user_auth_pipeline(p_user_address_eth_str) {
 
     // user exists, log them in
     if (user_exists_bool) {
-        
+        console.log("USER_EXISTS");
     }
     // no-user in the system, offer to create new
     else {
@@ -116,10 +118,14 @@ async function user_auth_pipeline(p_user_address_eth_str) {
         console.log("NO USER");
 
         // user is created
-        await user_create(p_user_address_eth_str, nonce_val_str);
+        const user_create_data_map = await user_create(p_user_address_eth_str, nonce_val_str);
 
+        // login this newly created user
+        await user_login__http();
 
-        await user_update();
+        // only after that offer to the user to upload their details.
+        // for update to succeed the user has to be logedin
+        const user_data_map = await user_update(p_user_address_eth_str);
     }   
 }
 
@@ -145,7 +151,7 @@ async function user_create(p_user_address_eth_str,
                 // user was created successfuly, remove the create_user_dialog and return
                 const user_create_data_map = await user_create__http(p_user_address_eth_str, auth_signature_str);
                 $(create_user_dialog).remove();
-                p_resolve_fun(null);
+                p_resolve_fun(user_create_data_map);
 
             } catch (p_err) {            
                 $(create_user_dialog).css("background-color", "red");
@@ -157,19 +163,51 @@ async function user_create(p_user_address_eth_str,
 }
 
 //-------------------------------------------------
-function user_update() {
+function user_update(p_user_address_eth_str) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-
 
         const update_user_dialog = $(`
             <div id='update_user_dialog'>
-                <div id='descr'>set your user details</div>
-                <input id='username'></input>
-                <input id='email'></input>
-                <input id='description'></input>
+                <div id='dialog_label'>set your user details</div>
+                <div id='username'>
+                    <div class='label'>username</div>
+                    <input id='username_input'></input>
+                </div>
+                <div id='email'>
+                    <div class='label'>email</div>
+                    <input id='email_input'></input>
+                </div>
+                <div id='description'>
+                    <div class='label'>description</div>
+                    <textarea id='description_input' rows="4" cols="50"></textarea>
+                </div>
+                <div id='confirm_btn'>ok</div>
             </div>`);
+
         $("#identity").append(update_user_dialog);
 
+        gf_3d.div_follow_mouse($(update_user_dialog)[0], document, 30);
+
+
+
+        $(update_user_dialog).find("#confirm_btn").on('click', async ()=>{
+
+            const username_str    = $(update_user_dialog).find("#username_input").val();
+            const email_str       = $(update_user_dialog).find("#email_input").val();
+            const description_str = $(update_user_dialog).find("#description_input").val();
+
+            const data_map = {
+                "username_str":    username_str,
+                "email_str":       email_str,
+                "description_str": description_str,
+            };
+
+            await user_update__http(p_user_address_eth_str, data_map);
+
+            $(update_user_dialog).remove();
+
+            p_resolve_fun(data_map);
+        });
     });
     return p;
 }
@@ -253,7 +291,38 @@ function user_create__http(p_user_address_eth_str,
                 
                 p_resolve_fun(data_map);
             },
-            'error':(jqXHR, p_text_status_str)=>{
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
+//-------------------------------------------------
+// USER_UPDATE__HTTP
+function user_update__http(p_user_address_eth_str,
+    p_user_data_map) {
+
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "user_address_eth_str": p_user_address_eth_str,
+            "user_username_str":    p_user_data_map["username_str"],
+            "user_email_str":       p_user_data_map["email_str"],
+            "user_description_str": p_user_data_map["description_str"],
+        };
+
+        const url_str = '/v1/identity/users/update';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                p_resolve_fun(data_map);
+            },
+            'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
             }
         });

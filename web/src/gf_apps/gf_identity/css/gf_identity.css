@@ -70,3 +70,62 @@
 #identity #create_user_dialog #confirm_btn:hover {
     background-color: #cecece;
 }
+
+/*------------------------------------------------------------*/
+/*UPDATE_USER_DIALOG*/
+
+#identity #update_user_dialog {
+    position: absolute;
+    top: -211px;
+    right: 0px;
+
+    background-color: white;
+    height: 190px;
+    width: 230px;
+
+    padding-top: 5px;
+    
+    text-align: center;
+    /*border-radius: 10px;*/
+}
+
+#identity #update_user_dialog #dialog_label {
+    font-size: 10px;
+    color: gray;
+}
+
+#identity #update_user_dialog .label {
+    font-size: 12px;
+}
+
+#identity #update_user_dialog div#username {
+    margin-top: 4px;
+    margin-bottom: 1px;
+}
+
+#identity #update_user_dialog #email {
+    margin-bottom: 2px;
+}
+
+#identity #update_user_dialog #description {
+    margin-bottom: 8px;
+}
+#identity #update_user_dialog #description textarea#description_input {
+    height: 40px;
+    width: 200px;
+}
+
+#identity #update_user_dialog #confirm_btn {
+    background-color: gray;
+    height: 20px;
+    padding-top: 10px;
+
+    /*border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;*/
+
+    cursor: pointer;
+}
+
+#identity #update_user_dialog #confirm_btn:hover {
+    background-color: lightgray;
+}
