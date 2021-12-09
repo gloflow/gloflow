@@ -31,6 +31,7 @@ export function init(p_id_str: string,
     p_initial_page_int: number,
     p_element_create_fun,
     p_elements_page_get_fun,
+    p_assets_uris_map,
     p_create_initial_elements_bool: boolean=true) {
 
 
@@ -122,7 +123,8 @@ export function init(p_id_str: string,
         seeker_bar_width_px:        50, 
         seeker_range_bar_width:     30,
         seeker_range_bar_height:    500,
-        seeker_range_bar_color_str: "red"
+        seeker_range_bar_color_str: "red",
+        assets_uris_map: p_assets_uris_map,
     }
 
     const start_page_int = 0;

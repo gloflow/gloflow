@@ -340,10 +340,16 @@ function init__viz_group_view(p_flow_name_str :string,
 	// this is empty because gf_viz_group wont append to parent itself,
 	// the container div is already present in the DOM
     const parent_id_str = "";
-    gf_viz_group_paged.init(id_str,
+    
+	const assets_uris_map = {
+        "gf_bar_handle_btn": "https://gloflow.com/images/static/assets/gf_bar_handle_btn.svg",
+    };
+
+	gf_viz_group_paged.init(id_str,
         parent_id_str,
         initial_elements_lst,
 		p_initial_page_int,
+		assets_uris_map,
         element_create_fun,
         elements_page_get_fun,
 

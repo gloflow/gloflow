@@ -138,10 +138,15 @@ $(document).ready(()=>{
     // before it has to initiate its own page fetching logic.
     const initial_pages_num_int = 2;
     
+    const assets_uris_map = {
+        "gf_bar_handle_btn": "./../../../../assets/gf_bar_handle_btn.svg",
+    };
+
     gf_viz_group_paged.init(id_str,
         parent_id_str,
         test_elements_lst,
         initial_pages_num_int,
+        assets_uris_map,
         element_create_fun,
         elements_page_get_fun);
 });

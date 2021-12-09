@@ -27,6 +27,7 @@ export interface GF_random_access_viz_props {
     readonly seeker_range_bar_height    :number;
     
     readonly seeker_range_bar_color_str :string;
+    readonly assets_uris_map;
 }
 
 //-------------------------------------------------
@@ -52,6 +53,7 @@ function init_seeker_bar(p_first_page_int :number,
     p_viz_props     :GF_random_access_viz_props,
     p_viz_group_reset_fun) {
 
+    const asset_uri__gf_bar_handle_btn_str = p_viz_group_reset_fun.assets_uris_map["gf_bar_handle_btn"];
     const container_element = $(`
 		<div id='seeker_container'>
 
@@ -66,7 +68,7 @@ function init_seeker_bar(p_first_page_int :number,
 					
 					<div id='button'>
 						<div id='button_symbol'>
-                            <img style="width:100%;" src="./../../../../assets/gf_bar_handle_btn.svg"></img>
+                            <img style="width:100%;" src="${asset_uri__gf_bar_handle_btn_str}"></img>
                         </div>
 					</div>
 
