@@ -152,29 +152,34 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-				// USER_ADDRESS_ETH
-				user_address_eth_str, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
+				//---------------------
+				// INPUT
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
+				}
+
+				input := &GF_user__input_update{
+					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
+					Username_str:         input_map["user_username_str"].(string),
+					Email_str:            input_map["user_email_str"].(string),
+					Description_str:      input_map["user_description_str"].(string),
 				}
 
 				//---------------------
 				// JWT_VALIDATE
-				gf_err = jwt__validate_from_req(user_address_eth_str, p_req, p_ctx, p_runtime_sys)
+				gf_err = jwt__validate_from_req(input.User_address_eth_str, p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				//---------------------
-
-				input := &GF_user__input_update{}
 
 				_, gf_err = users__pipeline__update(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 			}
-
 
 			return nil, nil
 		},

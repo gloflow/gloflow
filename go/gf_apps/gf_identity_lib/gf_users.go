@@ -38,6 +38,7 @@ type GF_user struct {
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
 	Username_str      string                `bson:"username_str"`
+	Email_str         string                `bson:"email_str"`
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
 }
@@ -76,6 +77,10 @@ type GF_user__output_create struct {
 
 // io_update
 type GF_user__input_update struct {
+	User_address_eth_str GF_user_address_eth
+	Username_str         string
+	Email_str            string
+	Description_str      string
 }
 type GF_user__output_update struct {
 }
@@ -155,7 +160,7 @@ func users__pipeline__login(p_input *GF_user__input_login,
 
 
 
-
+	//------------------------
 	user_nonce_val, gf_err := db__nonce__get(p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
