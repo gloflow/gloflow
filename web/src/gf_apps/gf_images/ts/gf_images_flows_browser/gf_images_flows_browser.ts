@@ -143,7 +143,7 @@ export function init(p_log_fun) {
 			if (!page_is_loading_bool) {
 				
 				page_is_loading_bool = true;
-				p_log_fun("INFO", "current_page_int - "+current_page_int);
+				p_log_fun("INFO", `current_page_int - ${current_page_int}`);
 
 				var current_image_view_type_str = image_view_type_str;
 				load_new_page(flow_name_str,
@@ -534,8 +534,8 @@ function init_image_date(p_image_element, p_log_fun) {
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		$('#gf_images_flow_container').masonry();
-		$('#gf_images_flow_container').masonry(<any>'reloadItems');
+		$('#gf_images_flow_container #items').masonry();
+		$('#gf_images_flow_container #items').masonry(<any>'reloadItems');
 	});
 
 	$(creation_time_element).mouseout((p_e)=>{
@@ -543,8 +543,8 @@ function init_image_date(p_image_element, p_log_fun) {
 
 		// IMPORTANT!! - image size changed, so recalculate the Masonry layout.
 		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		$('#gf_images_flow_container').masonry();
-		$('#gf_images_flow_container').masonry(<any>'reloadItems');
+		$('#gf_images_flow_container #items').masonry();
+		$('#gf_images_flow_container #items').masonry(<any>'reloadItems');
 		
 	});
 }

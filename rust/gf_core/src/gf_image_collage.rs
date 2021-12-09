@@ -64,6 +64,7 @@ pub fn create(p_input_imgs_files_paths_lst: Vec<String>,
         
         row_int    = new_row_int;
         column_int = new_column_int;
+
         //---------------------
     }
 
@@ -124,6 +125,7 @@ pub fn add_img_from_buffer(p_img_buff: &image::ImageBuffer<image::Rgba<u8>, Vec<
         cell_height_int);
 
     // DynamicImage - resize_to_fill() - was used previously before doing resizing/croping directly
+    
     //---------------------
     // COPY_PIXELS
 
