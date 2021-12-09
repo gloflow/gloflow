@@ -33,41 +33,43 @@
 	{{- /*------------------------------------------------------*/}}
 	<div id='gf_images_flow_container'>
 
-	{{- range .Images_pages_lst}}
-		{{- range .}}
-			{{- /*"item" class is used by Masonry*/}}
-			<div class ='gf_image item small_view' data-img_id="{{- .id_str}}" data-img_format="{{- .format_str}}">
-				{{- /*------------------------------------------------------*/}}
-				{{- /*IMAGE THUMBNAIL DATA*/}}
-				{{- /*REMOVE!! - IS THIS USED????*/}}
-				<div style='display:none'>
-					{{- /*this div is a data carrier, so it should not be visible*/}}
-					<div class='thumb_small_url'>
-						{{- .thumbnail_small_url_str }}
+		<div id="items">
+		{{- range .Images_pages_lst}}
+			{{- range .}}
+				{{- /*"item" class is used by Masonry*/}}
+				<div class ='gf_image item small_view' data-img_id="{{- .id_str}}" data-img_format="{{- .format_str}}">
+					{{- /*------------------------------------------------------*/}}
+					{{- /*IMAGE THUMBNAIL DATA*/}}
+					{{- /*REMOVE!! - IS THIS USED????*/}}
+					<div style='display:none'>
+						{{- /*this div is a data carrier, so it should not be visible*/}}
+						<div class='thumb_small_url'>
+							{{- .thumbnail_small_url_str }}
+						</div>
 					</div>
+					<img src="{{.thumbnail_small_url_str}}" data-img_thumb_medium_url="{{.thumbnail_medium_url_str}}"></img>
+					{{- /*------------------------------------------------------*/}}
+					{{- /*TAGS*/}}
+					{{- if .image_has_tags_bool}}
+					<div class='tags_container'>
+					
+					{{- range .tags_lst}}
+						<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
+					{{- end}}
+					
+					</div>
+					{{- end}}
+					{{- /*------------------------------------------------------*/}}
+					<div class="origin_page_url">
+						<a href="{{.image_origin_page_url_str}}" target="_blank">{{.image_origin_page_url_str}}</a>
+					</div>
+					{{- /*------------------------------------------------------*/}}
+					<div class="creation_time">{{.creation_unix_time_str}}</div>
+					{{- /*------------------------------------------------------*/}}
 				</div>
-				<img src="{{.thumbnail_small_url_str}}" data-img_thumb_medium_url="{{.thumbnail_medium_url_str}}"></img>
-				{{- /*------------------------------------------------------*/}}
-				{{- /*TAGS*/}}
-				{{- if .image_has_tags_bool}}
-				<div class='tags_container'>
-				
-				{{- range .tags_lst}}
-					<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
-				{{- end}}
-				
-				</div>
-				{{- end}}
-				{{- /*------------------------------------------------------*/}}
-				<div class="origin_page_url">
-					<a href="{{.image_origin_page_url_str}}" target="_blank">{{.image_origin_page_url_str}}</a>
-				</div>
-				{{- /*------------------------------------------------------*/}}
-				<div class="creation_time">{{.creation_unix_time_str}}</div>
-				{{- /*------------------------------------------------------*/}}
-			</div>
+			{{- end}}
 		{{- end}}
-	{{- end}}
+		</div>
 
 	</div>
 	{{- /*------------------------------------------------------*/}}
