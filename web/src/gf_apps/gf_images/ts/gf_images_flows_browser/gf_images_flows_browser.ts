@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
-import * as gf_viz_group_paged from "./../../../../gf_controls/gf_viz_group_paged/ts/gf_viz_group_paged";
+import * as gf_viz_group_paged         from "./../../../../gf_controls/gf_viz_group_paged/ts/gf_viz_group_paged";
+import * as gf_viz_group_random_access from "./../../../../gf_controls/gf_viz_group_paged/ts/gf_viz_group_random_access";
 import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel    from "./../../../../gf_core/ts/gf_sys_panel";
@@ -345,11 +346,29 @@ function init__viz_group_view(p_flow_name_str :string,
         "gf_bar_handle_btn": "https://gloflow.com/images/static/assets/gf_bar_handle_btn.svg",
     };
 
+	const random_access_viz_props :gf_viz_group_random_access.GF_random_access_viz_props = {
+        seeker_container_height_px: 500,
+        seeker_container_width_px:  100,
+        seeker_bar_width_px:        50, 
+        seeker_range_bar_width:     30,
+        seeker_range_bar_height:    500,
+        seeker_range_bar_color_str: "red",
+        assets_uris_map:            assets_uris_map,
+    }
+
+
+    const props :gf_viz_group_paged.GF_props = {
+        start_page_int:   0,
+        end_page_int:     20,
+        initial_page_int: 0,
+        assets_uris_map:  assets_uris_map,
+        random_access_viz_props: random_access_viz_props,
+    };
+
 	gf_viz_group_paged.init(id_str,
         parent_id_str,
         initial_elements_lst,
-		p_initial_page_int,
-		assets_uris_map,
+		props,
         element_create_fun,
         elements_page_get_fun,
 

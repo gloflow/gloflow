@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+//-------------------------------------------------
 export interface GF_random_access_viz_props {
     readonly seeker_container_height_px :number;
     readonly seeker_container_width_px  :number;

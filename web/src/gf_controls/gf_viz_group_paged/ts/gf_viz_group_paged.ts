@@ -25,20 +25,22 @@ import {GF_random_access_viz_props} from "./gf_viz_group_random_access";
 declare var Draggabilly;
 
 //-------------------------------------------------
+export interface GF_props {
+    readonly start_page_int   :number
+    readonly end_page_int     :number
+    readonly initial_page_int :number
+    readonly assets_uris_map
+    readonly random_access_viz_props :GF_random_access_viz_props
+}
+
+//-------------------------------------------------
 export function init(p_id_str: string,
     p_parent_id_str: string,
     p_elements_lst,
-    p_initial_page_int: number,
+    p_props :GF_props,
     p_element_create_fun,
     p_elements_page_get_fun,
-    p_assets_uris_map,
     p_create_initial_elements_bool: boolean=true) {
-
-
-
-    
-
-
 
     //------------------------
     var container;
@@ -117,21 +119,10 @@ export function init(p_id_str: string,
 
     //------------------------
     // INIT_RANDOM_ACCESS
-    const viz_props :GF_random_access_viz_props = {
-        seeker_container_height_px: 500,
-        seeker_container_width_px:  100,
-        seeker_bar_width_px:        50, 
-        seeker_range_bar_width:     30,
-        seeker_range_bar_height:    500,
-        seeker_range_bar_color_str: "red",
-        assets_uris_map: p_assets_uris_map,
-    }
-
-    const start_page_int = 0;
-    const end_page_int   = 20;
-    const random_access__container_element = gf_viz_group_random_access.init(start_page_int,
-        end_page_int,
-        viz_props,
+    
+    const random_access__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
+        p_props.end_page_int,
+        p_props.random_access_viz_props,
 
         //-------------------------------------------------
         // p_viz_group_reset_fun
@@ -156,7 +147,7 @@ export function init(p_id_str: string,
     //------------------------
 	// LOAD_PAGES_ON_SCROLL
 
-	var current_page_int     = p_initial_page_int; // the few initial pages are already statically embedded in the document
+	var current_page_int     = p_props.initial_page_int; // the few initial pages are already statically embedded in the document
 	var page_is_loading_bool = false;
     const pages_container = $(container).find("#items");
 
