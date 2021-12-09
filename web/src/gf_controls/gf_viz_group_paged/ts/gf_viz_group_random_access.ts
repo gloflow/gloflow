@@ -54,7 +54,7 @@ function init_seeker_bar(p_first_page_int :number,
     p_viz_props     :GF_random_access_viz_props,
     p_viz_group_reset_fun) {
 
-    const asset_uri__gf_bar_handle_btn_str = p_viz_group_reset_fun.assets_uris_map["gf_bar_handle_btn"];
+    const asset_uri__gf_bar_handle_btn_str = p_viz_props.assets_uris_map["gf_bar_handle_btn"];
     const container_element = $(`
 		<div id='seeker_container'>
 
