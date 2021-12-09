@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/jquery.d.ts" />
 
 declare var Caman;
+
 //-------------------------------------------------
 export function init(p_target_image_div_element, p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_image_editor.init()");
@@ -116,6 +117,7 @@ export function init(p_target_image_div_element, p_log_fun) {
 				this.render(()=>console.log('filter applied'));
 			});
 		}
+
 		//-------------------------------------------------
 			
 		const canvas = $(editor_pane).find("canvas")[0];
@@ -127,14 +129,16 @@ export function init(p_target_image_div_element, p_log_fun) {
 		});
 
 		//-------------
-		//SAVE_MODIFIED_IMAGE
+		// SAVE_MODIFIED_IMAGE
 		$(editor_pane).find(".save_btn").on("click", ()=>{
 			save_modified_image(editor_pane);
 		});
+
 		//-------------
 
 		return editor_pane;
 	}
+	
 	//-------------------------------------------------
 	function save_modified_image(p_editor_pane) {
 		p_log_fun("FUN_ENTER", "gf_image_editor.init().save_modified_image()");
