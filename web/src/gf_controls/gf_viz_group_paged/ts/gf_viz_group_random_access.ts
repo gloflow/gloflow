@@ -73,8 +73,19 @@ function init_seeker_bar(p_first_page_int :number,
                         </div>
 					</div>
 
-					<div id='button_seek_info'>
-						<div id='seek_page_index'>${p_first_page_int}</div>
+					<div id='button_seek_info'
+                        style='
+                            position:   absolute;
+                            text-align: center;
+                            font-size:  32px;
+                            background-color: orange;'>
+
+						<div id='seek_page_index'
+                            style='
+                                position: relative;
+                                top:      12px;'>
+                            ${p_first_page_int}
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -87,10 +98,10 @@ function init_seeker_bar(p_first_page_int :number,
 
 
     $(seeker_bar_element).on('mouseenter', (p_event)=>{
-        $(seeker_range_bar_button_element).css('visibility', 'visible');
+        // $(seeker_range_bar_button_element).css('visibility', 'visible');
     });
     $(seeker_bar_element).on('mouseleave', (p_event)=>{
-        $(seeker_range_bar_button_element).css('visibility', 'hidden');
+        // $(seeker_range_bar_button_element).css('visibility', 'hidden');
     });
 
 
@@ -100,7 +111,7 @@ function init_seeker_bar(p_first_page_int :number,
 
     // SEEKER CONTAINER
     $(container_element).css('position', 'absolute');         
-    $(container_element).css('overflow', 'hidden');
+    // $(container_element).css('overflow', 'hidden');
     $(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
     $(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);
     $(container_element).css('top',      '0px');
@@ -189,14 +200,10 @@ function init_seeking(p_seeker_bar_button_element,
 
         $(button_symbol).css("position", 'absolute');
 		$(button_symbol).css("width",    '37px');
-		$(button_symbol).css("height",   '37px');
-		$(button_symbol).css("top",      '54px');
-		$(button_symbol).css("left",     '14px');
-		// $(button_symbol).css("background-image", `url('${p_button_atlas_url_str}')`);
-		// $(button_symbol).css("background-position", "38px 59px"); 
-        
-        $(button_symbol).find("img").css("width", )
-        
+		$(button_symbol).css("height",   '18');
+		$(button_symbol).css("top",      `${($(button).height()-$(button_symbol).height())/2}px`);
+		$(button_symbol).css("left",     '12px');
+    
 
         // the 'button' is on the left side of the 'conn'
 	  	// (positioned relative to the right edge)
@@ -206,12 +213,9 @@ function init_seeking(p_seeker_bar_button_element,
 
         
 
-        $(button_seek_info).css("position",         'absolute');
-        $(button_seek_info).css("width",            `${button_info_width_px}px`);
-	  	$(button_seek_info).css("height",           `${button_info_height_px}px`);
-	  	
-	  	$(button_seek_info).css("background-color", "orange");
-	  	$(button_seek_info).css("top",              `${button_seek_info_y_offset_int}px`);
+        $(button_seek_info).css("width",  `${button_info_width_px}px`);
+	  	$(button_seek_info).css("height", `${button_info_height_px}px`);
+	  	$(button_seek_info).css("top",    `${($(button).height()-$(button_seek_info).height())/2}px`); // `${button_seek_info_y_offset_int}px`);
 	  	
 	  	// the 'button' is on the left side of the 'conn'
 	  	const button_seek_info_right_px = button_width_px_int + button_right_px;
@@ -303,8 +307,6 @@ function init_seeking(p_seeker_bar_button_element,
 			//--------------
         });
         $(button).on("mouseleave", (p_event)=>{
-
-
             $(button).off("mousemove", button__mousemove_handler_fun);
         });
     }
@@ -312,7 +314,6 @@ function init_seeking(p_seeker_bar_button_element,
     //------------------------------------------------------------
 	function init_button_conn() {
 		
-        
 		//------------
 		// CSS
 		
