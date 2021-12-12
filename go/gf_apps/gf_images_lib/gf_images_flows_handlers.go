@@ -186,6 +186,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 					gf_templates.flows_browser__tmpl,
 					gf_templates.flows_browser__subtemplates_names_lst,
 					p_resp,
+					p_ctx,
 					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
@@ -207,7 +208,7 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 
 			if p_req.Method == "GET" {
 
-				pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_runtime_sys)
+				pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

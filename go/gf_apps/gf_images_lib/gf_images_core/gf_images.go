@@ -26,6 +26,7 @@ import (
 )
 
 //---------------------------------------------------
+type GF_image = Gf_image
 type Gf_image struct {
 
 	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
@@ -110,11 +111,11 @@ type Gf_image_new_info struct {
 
 //---------------------------------------------------
 func Image__create_new(p_image_info *Gf_image_new_info,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create_new()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	image := &Gf_image{
+	image := &GF_image{
 		Id_str:                         p_image_info.Id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           creation_unix_time_f,
@@ -148,7 +149,7 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 // DEPRECATED!! - use Image__create_new and its structured input
 
 func Image__create(p_image_info_map map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create()")
 	
 	new_image_info_map, gf_err := Image__verify_image_info(p_image_info_map, p_runtime_sys)
@@ -160,7 +161,7 @@ func Image__create(p_image_info_map map[string]interface{},
 	flows_names_lst := new_image_info_map["flows_names_lst"].([]string)
 	gf_image_id_str := Gf_image_id(new_image_info_map["id_str"].(string))
 
-	gf_image := &Gf_image{
+	gf_image := &GF_image{
 		Id_str:                         gf_image_id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           float64(time.Now().UnixNano())/1000000000.0,

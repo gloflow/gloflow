@@ -69,6 +69,7 @@ type Image_exists__check struct {
 // GET_PAGE__PIPELINE
 func flows__get_page__pipeline(p_req *http.Request,
 	p_resp        http.ResponseWriter,
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_core.Gf_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__get_page__pipeline()")
 
@@ -122,6 +123,7 @@ func flows__get_page__pipeline(p_req *http.Request,
 	pages_lst, gf_err := flows_db__get_page(flow_name_str,  // "general", //p_flow_name_str
 		cursor_start_position_int, // p_cursor_start_position_int
 		page_size_int,             // p_elements_num_int
+		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

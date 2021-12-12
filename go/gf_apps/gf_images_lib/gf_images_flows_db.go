@@ -22,6 +22,7 @@ package gf_images_lib
 import (
 	"fmt"
 	"context"
+	"math"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -63,16 +64,40 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 }
 
 //---------------------------------------------------
+func flows_db__get_pages_total_num(p_flow_name_str string,
+	p_page_size_int int,
+	p_ctx           context.Context,
+	p_runtime_sys   *gf_core.Runtime_sys) (int64, *gf_core.GF_error) {
+
+
+
+	imgs_in_flow__count_int, gf_err := gf_core.Mongo__count(bson.M{
+			"t":             "img",
+			"flow_name_str": p_flow_name_str,
+		},
+		map[string]interface{}{
+			"flow_name_str":      p_flow_name_str,
+			"caller_err_msg_str": "failed to count the number of images in a flow",
+		},
+		p_runtime_sys.Mongo_coll,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return 0, gf_err
+	}
+
+
+	flow_pages_num_int := int64(math.Ceil(float64(imgs_in_flow__count_int) / float64(p_page_size_int)))
+	return flow_pages_num_int, nil;
+}
+
+//---------------------------------------------------
 func flows_db__get_page(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
-	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_core.Gf_image, *gf_core.GF_error) {
+	p_ctx                       context.Context,
+	p_runtime_sys               *gf_core.Runtime_sys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
-
-	ctx := context.Background()
-
-	
-
 
 	find_opts := options.Find()
     find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
@@ -100,15 +125,15 @@ func flows_db__get_page(p_flow_name_str string,
 			"caller_err_msg_str":        "failed to get a page of images from a flow",
 		},
 		p_runtime_sys.Mongo_coll,
-		ctx,
+		p_ctx,
 		p_runtime_sys)
 	
 	if gf_err != nil {
 		return nil, gf_err
 	}
 	
-	images_lst := []*gf_images_core.Gf_image{}
-	err        := cursor.All(ctx, &images_lst)
+	images_lst := []*gf_images_core.GF_image{}
+	err        := cursor.All(p_ctx, &images_lst)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get a page of images from a flow",
 			"mongodb_cursor_decode",
