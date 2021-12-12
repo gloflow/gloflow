@@ -74,6 +74,10 @@ function gf_picker__create_ui(p_api_host_str) {
         padding-bottom:   7px;
     }
 
+    div#gf_bookmark #url {
+        padding-bottom: 3px;
+    }
+    
     div#gf_bookmark input {
         border-width: 0px;
     }
@@ -85,9 +89,10 @@ function gf_picker__create_ui(p_api_host_str) {
         height:       60px;
         width:        100%;
         padding:      0px;
-        /*border-width: 2px;*/
-        border-color: #808080;
-        border-style: solid;
+        padding-left: 6px;
+        background-color: white;
+        border-color:     #808080;
+        border-style:     solid;
 
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size:   16px;
@@ -98,14 +103,13 @@ function gf_picker__create_ui(p_api_host_str) {
         width: 100%;
     }
     div#gf_bookmark div#tags input {
-        width: 100%;
+        width:   100%;
         padding: 0px;
-
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size:   14px;
+        padding-left: 6px;
+        background-color: white;
+        font-family:      "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size:        14px;
     }
-
-
 
     div#gf_bookmark div#close_btn {
         position:         absolute;
