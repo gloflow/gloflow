@@ -147,7 +147,7 @@ $(document).ready(()=>{
 
 
     const random_access_viz_props :gf_viz_group_random_access.GF_random_access_viz_props = {
-        seeker_container_height_px: 500,
+        seeker_container_height_px: $(window).height(), // 500,
         seeker_container_width_px:  100,
         seeker_bar_width_px:        50, 
         seeker_range_bar_width:     30,
@@ -166,10 +166,12 @@ $(document).ready(()=>{
     };
 
 
-    gf_viz_group_paged.init(id_str,
+    const seeker__container_element = gf_viz_group_paged.init(id_str,
         parent_id_str,
         test_elements_lst,
         props,
         element_create_fun,
         elements_page_get_fun);
+
+    $(seeker__container_element).css("position", "fixed");
 });

@@ -254,8 +254,10 @@ function init__view_type_picker(p_flow_name_str :string,
 
 		//------------------
 		// VIZ_GROUP
-		const current_page_int = $("#gf_images_flow_container").data("current_page");
+		const flow_pages_num_int = $("#gf_images_flow_container").data("flow_pages_num");
+		const current_page_int   = $("#gf_images_flow_container").data("current_page");
 		init__viz_group_view(p_flow_name_str,
+			flow_pages_num_int,
 			current_page_int,
 			p_log_fun);
 
@@ -265,7 +267,8 @@ function init__view_type_picker(p_flow_name_str :string,
 
 //---------------------------------------------------
 function init__viz_group_view(p_flow_name_str :string,
-	p_initial_page_int :number,
+	p_flow_pages_num_int :number,
+	p_initial_page_int   :number,
 	p_log_fun) {
 
 	const current_image_view_type_str = "viz_group_medium_view";
@@ -347,7 +350,7 @@ function init__viz_group_view(p_flow_name_str :string,
     };
 
 	const random_access_viz_props :gf_viz_group_random_access.GF_random_access_viz_props = {
-        seeker_container_height_px: 500,
+        seeker_container_height_px: $(window).height(), // 500,
         seeker_container_width_px:  100,
         seeker_bar_width_px:        50, 
         seeker_range_bar_width:     30,
@@ -359,13 +362,13 @@ function init__viz_group_view(p_flow_name_str :string,
 
     const props :gf_viz_group_paged.GF_props = {
         start_page_int:   0,
-        end_page_int:     20,
-        initial_page_int: 0,
+        end_page_int:     p_flow_pages_num_int,
+        initial_page_int: p_initial_page_int,
         assets_uris_map:  assets_uris_map,
         random_access_viz_props: random_access_viz_props,
     };
 
-	gf_viz_group_paged.init(id_str,
+	const seeker__container_element = gf_viz_group_paged.init(id_str,
         parent_id_str,
         initial_elements_lst,
 		props,
@@ -375,6 +378,9 @@ function init__viz_group_view(p_flow_name_str :string,
 		// the container already contains elements that are created and attached
 		// to the container, so we dont want to create any initially (only if paging is done).
 		false); // p_create_initial_elements_bool
+
+	// seeker should be in fixed position, as the user scrolls the images themselves
+	$(seeker__container_element).css("position", "fixed");
 }
 
 //---------------------------------------------------

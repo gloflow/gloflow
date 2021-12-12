@@ -55,8 +55,15 @@ function init_seeker_bar(p_first_page_int :number,
     p_viz_group_reset_fun) {
 
     const asset_uri__gf_bar_handle_btn_str = p_viz_props.assets_uris_map["gf_bar_handle_btn"];
+
+    // #seeker_container user-select: none;
+    // IMPORTANT!! - so that the user doesnt accidently select the entire random_access ui element
+    //               as if its contents was text to be selected/highlighted
     const container_element = $(`
-		<div id='seeker_container'>
+		<div id='seeker_container' style='
+            position: absolute;
+            top: 0px;
+            user-select: none;'>
 
             <div id='seeker_bar'>
 
@@ -67,9 +74,12 @@ function init_seeker_bar(p_first_page_int :number,
 				<div id='seek_range_bar_button'>
 					<div id='conn'></div>
 					
-					<div id='button'>
+					<div id='button' style='user-select: none;'>
 						<div id='button_symbol'>
-                            <img style="width:100%;" src="${asset_uri__gf_bar_handle_btn_str}"></img>
+                            <img style='
+                                width:100%;
+                                user-select: none;'
+                                src="${asset_uri__gf_bar_handle_btn_str}"></img>
                         </div>
 					</div>
 
@@ -110,15 +120,14 @@ function init_seeker_bar(p_first_page_int :number,
     
 
     // SEEKER CONTAINER
-    $(container_element).css('position', 'absolute');         
+    // $(container_element).css('position', 'absolute');         
     // $(container_element).css('overflow', 'hidden');
     $(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
     $(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);
-    $(container_element).css('top',      '0px');
+    // $(container_element).css('top',      '0px');
 
-    // IMPORTANT!! - so that the user doesnt accidently select the entire random_access ui element
-    //               as if its contents was text to be selected/highlighted
-    $(container_element).css('user-select', 'none'); 
+    
+    // $(container_element).css('user-select', 'none'); 
     
     // SEEKER BAR
     $(seeker_bar_element).css("position", 'absolute');

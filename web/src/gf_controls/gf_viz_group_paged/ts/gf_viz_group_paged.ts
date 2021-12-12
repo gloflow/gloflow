@@ -120,7 +120,7 @@ export function init(p_id_str: string,
     //------------------------
     // INIT_RANDOM_ACCESS
     
-    const random_access__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
+    const seeker__container_element = gf_viz_group_random_access.init(p_props.start_page_int,
         p_props.end_page_int,
         p_props.random_access_viz_props,
 
@@ -140,9 +140,9 @@ export function init(p_id_str: string,
         //-------------------------------------------------
 
     // position seeker on the far right
-    $(random_access__container_element).css("position", "absolute");
-    $(random_access__container_element).css("right", "0px");
-    $(container).append(random_access__container_element);
+    $(seeker__container_element).css("position", "absolute");
+    $(seeker__container_element).css("right", "0px");
+    $(container).append(seeker__container_element);
 
     //------------------------
 	// LOAD_PAGES_ON_SCROLL
@@ -176,6 +176,7 @@ export function init(p_id_str: string,
     }
 
     //------------------------
+    return seeker__container_element;
 }
 
 //-------------------------------------------------
