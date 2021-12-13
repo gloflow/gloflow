@@ -192,7 +192,7 @@ function init_seeking(p_seeker_bar_button_element,
 
 
         $(p_seeker_bar_button_element).css("position", 'absolute');
-        $(p_seeker_bar_button_element).css("top",      '10px');
+        $(p_seeker_bar_button_element).css("top",      '0px');
         $(p_seeker_bar_button_element).css("right",    '0px');
         $(p_seeker_bar_button_element).css("width",    `${button_width_px_int}px`);
         $(p_seeker_bar_button_element).css("height",   `${button_height_px_int}px`);
@@ -295,8 +295,7 @@ function init_seeking(p_seeker_bar_button_element,
         // MOUSEUP
         $(button).on("mouseup", (p_event)=>{
 
-
-            $(button).off("mousemove", button__mousemove_handler_fun);
+            $(button).off("mousemove");
 
             //--------------
 			// IMPORTANT!! - since random seeking is potentially an expensive operation,
@@ -316,7 +315,7 @@ function init_seeking(p_seeker_bar_button_element,
 			//--------------
         });
         $(button).on("mouseleave", (p_event)=>{
-            $(button).off("mousemove", button__mousemove_handler_fun);
+            $(button).off("mousemove");
         });
     }
 

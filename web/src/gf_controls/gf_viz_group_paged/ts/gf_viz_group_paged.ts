@@ -126,6 +126,7 @@ export function init(p_id_str: string,
     // position seeker on the far right
     $(seeker__container_element).css("position", "absolute");
     $(seeker__container_element).css("right",    "0px");
+    $(seeker__container_element).css("z-index",  "10");
     $(container).append(seeker__container_element);
 
     //------------------------
