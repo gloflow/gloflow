@@ -60,20 +60,17 @@ export function init(p_id_str: string,
         $(`#${p_parent_id_str}`).append(container);
     }
     
-
-
-
+    const items_container = $(container).find("#items");
 
     //------------------------
     // add elements
     if (p_create_initial_elements_bool) {
         for (let element_map of p_elements_lst) {
 
-
             const element = p_element_create_fun(element_map);
             $(element).addClass("item");
 
-            $(container).find("#items").append(element);
+            $(items_container).append(element);
         }
     }
 
@@ -97,25 +94,10 @@ export function init(p_id_str: string,
 
     //------------------------*/
 
-
-    $(container).find('img').on('load', ()=>{
-		$(container).packery();
-	});
-
-    const packery_grid = $(container).packery({
-        itemSelector: '.item',
-        gutter: 10,
-        // columnWidth: 60
-    });
-
-    // trigger initial layout
-    packery_grid.packery();
-
+    const packery_grid = init_packery(items_container);
 
     // enable draggability
-    enable_draggability(container, packery_grid);
-
-
+    init_draggability(container, packery_grid);
 
     //------------------------
     // INIT_RANDOM_ACCESS
@@ -126,11 +108,13 @@ export function init(p_id_str: string,
 
         //-------------------------------------------------
         // p_viz_group_reset_fun
-        (p_start_page_int :number,
+        (p_page_index_to_seek_to_int :number,
         p_on_complete_fun)=>{
             
+            const start_page_int = p_page_index_to_seek_to_int;
+
             reset_with_new_start_pages(container,
-                p_start_page_int,
+                start_page_int,
                 p_element_create_fun,
                 p_elements_page_get_fun);
 
@@ -141,7 +125,7 @@ export function init(p_id_str: string,
 
     // position seeker on the far right
     $(seeker__container_element).css("position", "absolute");
-    $(seeker__container_element).css("right", "0px");
+    $(seeker__container_element).css("right",    "0px");
     $(container).append(seeker__container_element);
 
     //------------------------
@@ -189,6 +173,10 @@ async function reset_with_new_start_pages(p_container,
     // starting from the page where to user seeked to.
     p_pages_to_get_num_int :number=6) {
 
+    
+
+    console.log("RESET")
+
 
     // remove all items currently displayed by viz_group, 
     // since new ones have to be shown
@@ -196,32 +184,11 @@ async function reset_with_new_start_pages(p_container,
 
     const pages_container = $(p_container).find("#items");
 
-
     await load_new_pages(p_start_page_int,
         pages_container,
         p_element_create_fun,
         p_elements_page_get_fun,
-        p_pages_to_get_num_int);
-
-}
-
-//-------------------------------------------------
-function enable_draggability(p_container,
-    p_packery_grid) {
-    const draggable_items_lst = $(p_container).find(".item");
-    $(draggable_items_lst).each((p_i, p_e)=>{
-
-        const element = p_e; // $(this)[0];
-
-        console.log(element);
-
-
-        var draggie = new Draggabilly(element, {
-            // options...
-        });
-
-        p_packery_grid.packery('bindDraggabillyEvents', draggie);
-    });
+        p_pages_to_get_num_int);    
 }
 
 //-------------------------------------------------
@@ -232,10 +199,10 @@ async function load_new_pages(p_page_index_int :number,
     p_pages_to_get_num_int :number=1) {
 
 
-
     // fetch page
     const elements_lst = await p_elements_page_get_fun(p_page_index_int, p_pages_to_get_num_int);
     
+
     // create elements
     for (let element_map of elements_lst) {
 
@@ -244,14 +211,13 @@ async function load_new_pages(p_page_index_int :number,
         $(element).addClass("item");
         $(element).css("visibility", "hidden"); // initially elements are not visible until they load
 
+        $(p_pages_container).append(element)
 
-        $(p_pages_container).find("#items").append(element);
 
+        $(element).find('img').on('load', ()=>{
 
-        console.log(element)
-        $(element).find('img').on('load', function() {
-
-            $(p_pages_container).packery();
+            $(element).css('visibility', 'visible');
+            $(p_pages_container).packery("appended", element);
 
             /*// MASONRY
             $(p_pages_container).masonry();
@@ -263,8 +229,39 @@ async function load_new_pages(p_page_index_int :number,
             });*/
         });
     }
+}
 
+//-------------------------------------------------
+function init_packery(p_container) {
 
+    // re-layout all items after each of the images loads
+    $(p_container).find('img').on('load', ()=>{
+        $(p_container).packery();
+    });
 
+    const packery_grid = $(p_container).packery({
+        itemSelector: '.item',
+        gutter: 10,
+        // columnWidth: 60
+    });
 
+    // trigger initial layout
+    packery_grid.packery();
+    return packery_grid;
+}
+
+//-------------------------------------------------
+function init_draggability(p_container,
+    p_packery_grid) {
+    const draggable_items_lst = $(p_container).find(".item");
+    $(draggable_items_lst).each((p_i, p_e)=>{
+
+        const element = p_e; // $(this)[0];
+
+        var draggie = new Draggabilly(element, {
+            // options...
+        });
+
+        p_packery_grid.packery('bindDraggabillyEvents', draggie);
+    });
 }
