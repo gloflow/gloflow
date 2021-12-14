@@ -70,7 +70,7 @@ type Image_exists__check struct {
 func flows__get_page__pipeline(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_core.Gf_image, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__get_page__pipeline()")
 
 	//--------------------

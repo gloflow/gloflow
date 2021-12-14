@@ -142,36 +142,6 @@ func flows_db__get_page(p_flow_name_str string,
 		return nil, gf_err
 	}
 
-	/*err := p_runtime_sys.Mongo_coll.Find(bson.M{
-			"t":   "img",
-			"$or": []bson.M{
-
-				// DEPRECATED!! - if a img has a flow_name_str (most due, but migrating to flows_names_lst),
-				//                then match it with supplied flow_name_str.
-				bson.M{"flow_name_str": p_flow_name_str,},
-
-				// IMPORTANT!! - new approach, images can belong to multiple flows.
-				//               check if the suplied flow_name_str in in the flows_names_lst list
-				bson.M{"flows_names_lst": bson.M{"$in":[]string{p_flow_name_str,}}},
-			},
-		}).
-		Sort("-creation_unix_time_f"). // descending:true
-		Skip(p_cursor_start_position_int).
-		Limit(p_elements_num_int).
-		All(&images_lst)*/
-
-	/*if err != nil {
-		gf_err := gf_core.Error__create("failed to get a page of images from a flow",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"flow_name_str":             p_flow_name_str,
-				"cursor_start_position_int": p_cursor_start_position_int,
-				"elements_num_int":          p_elements_num_int,
-			},
-			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
-	}*/
-
 	return images_lst, nil
 }
 

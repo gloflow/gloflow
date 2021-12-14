@@ -115,6 +115,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 				"format_str":                image.Format_str,
 				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
+				"thumbnail_large_url_str":   image.Thumbnail_large_url_str,
 				"image_origin_page_url_str": image.Origin_page_url_str,
 			}
 
