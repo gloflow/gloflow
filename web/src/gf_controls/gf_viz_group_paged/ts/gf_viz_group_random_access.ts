@@ -72,7 +72,7 @@ function init_seeker_bar(p_first_page_int :number,
 				</div>
 				
 				<div id='seek_range_bar_button'>
-					<div id='conn'></div>
+					
 					
 					<div id='button' style='user-select: none;'>
 						<div id='button_symbol'>
@@ -99,6 +99,7 @@ function init_seeker_bar(p_first_page_int :number,
 					</div>
 				</div>
 			</div>
+            <div id='conn'></div>
 		</div>`);
 
     const seeker_bar_element              = $(container_element).find('#seeker_bar');
@@ -118,27 +119,20 @@ function init_seeker_bar(p_first_page_int :number,
     //------------
     // CSS
     
-
     // SEEKER CONTAINER
-    // $(container_element).css('position', 'absolute');         
-    // $(container_element).css('overflow', 'hidden');
     $(container_element).css('height',   `${p_viz_props.seeker_container_height_px}px`);
     $(container_element).css('width',    `${p_viz_props.seeker_container_width_px}px`);
-    // $(container_element).css('top',      '0px');
-
-    
-    // $(container_element).css('user-select', 'none'); 
     
     // SEEKER BAR
     $(seeker_bar_element).css("position", 'absolute');
     $(seeker_bar_element).css("right",    '0px');
     $(seeker_bar_element).css("top",      '0px');
-    $(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     $(seeker_bar_element).css("width",    `${p_viz_props.seeker_bar_width_px}px`);
+    $(seeker_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     
     // SEEKER RANGER BAR
-    $(seeker_range_bar_element).css("height",   `${p_viz_props.seeker_container_height_px}px`);
     $(seeker_range_bar_element).css("width",    `${p_viz_props.seeker_range_bar_width}px`);
+    $(seeker_range_bar_element).css("height",   `${p_viz_props.seeker_range_bar_height}px`);
     $(seeker_range_bar_element).css("position", 'absolute');
     $(seeker_range_bar_element).css("right",    '0px');
     $(seeker_range_bar_element).css("background-color", "green"); // p_viz_props.seeker_range_bar_color_str);
@@ -153,9 +147,9 @@ function init_seeker_bar(p_first_page_int :number,
         p_last_page_int,
         seeker_bar_container_element);
 
-
     const seeker_bar_button_element = $(container_element).find("#seek_range_bar_button");
     init_seeking(seeker_bar_button_element,
+        container_element,
         p_first_page_int,
         p_last_page_int,
         p_viz_group_reset_fun,
@@ -163,16 +157,16 @@ function init_seeker_bar(p_first_page_int :number,
 
     //------------
 
-
     return container_element;
 }
 
 //-------------------------------------------------
 function init_seeking(p_seeker_bar_button_element,
+    p_container_root,
     p_seek_start_page_int :number,
     p_seek_end_page_int   :number,
     p_viz_group_reset_fun,
-    p_viz_props :GF_random_access_viz_props,) {
+    p_viz_props           :GF_random_access_viz_props) {
 
     const button_width_px_int      = 60;
     const button_height_px_int     = 149;
@@ -180,12 +174,12 @@ function init_seeking(p_seeker_bar_button_element,
     const button_info_width_px     = 60;
     const button_info_height_px    = 60;
     const button_conn_right_px_int = 0;
-    const button_seek_info_y_offset_int = 15;
+    // const button_seek_info_y_offset_int = 15;
 
     const button           = $(p_seeker_bar_button_element).find("#button");
     const button_symbol    = $(button).find('#button_symbol'); 
     const button_seek_info = $(p_seeker_bar_button_element).find('#button_seek_info');
-    const conn             = $(p_seeker_bar_button_element).find("#conn");
+    const conn             = $(p_container_root).find("#conn");
 
     //------------------------------------------------------------
     function init_button() {
@@ -245,7 +239,6 @@ function init_seeking(p_seeker_bar_button_element,
 
         const button_element           = $(p_seeker_bar_button_element).find("#button");
         const button_seek_info_element = $(p_seeker_bar_button_element).find('#button_seek_info');
-        const conn_element             = $(p_seeker_bar_button_element).find("#conn");
         const seek_page_index_element  = $(p_seeker_bar_button_element).find("#seek_page_index");
         
         //-------------------------------------------------
@@ -269,7 +262,7 @@ function init_seeking(p_seeker_bar_button_element,
                 p_seeker_bar_button_element,
                 button_element,
                 button_seek_info_element,
-                conn_element,
+                conn,
                 seek_page_index_element,
 
                 p_viz_props,
@@ -281,7 +274,7 @@ function init_seeking(p_seeker_bar_button_element,
         $(button).on("mousedown", (p_event)=>{
 	  			
             // initial button relative coordinate where the user clicked
-            const initial_click_coord  = p_event.pageY;
+            const initial_click_coord = p_event.pageY;
 
             // when user clicks and holds on the scroll button, a mouse move event handler is added 
             // to react to movement
@@ -324,7 +317,6 @@ function init_seeking(p_seeker_bar_button_element,
 		
 		//------------
 		// CSS
-		
 		$(conn).css('position',        'absolute');
 		$(conn).css('height',          '1px');
 		$(conn).css('width',           `${button_conn_width_px_int}px`);
@@ -368,7 +360,7 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 
 		const seek_percentage_int = get_seek_percentage(p_button_element,
 			seeker_range_bar_height_px_int,
-            p_move_event.pageY);
+            p_button_new_y_int);
 
 		//-----------
 		// CONN POSITIONING
@@ -510,7 +502,7 @@ function get_seek_page_index(p_seek_percentage_int :number,
 	// 1. 100 : total_range = p_seek_percentage_int : x
 	// 2. 100 * x           = total_range * p_seek_percentage_int
 	
-	const page_index_delta_int      = (total_range * p_seek_percentage_int) / 100;  
+	const page_index_delta_int = (total_range * p_seek_percentage_int) / 100;
 	const page_index_to_seek_to_int = Math.floor(p_seek_start_page_int + page_index_delta_int);
     
 	return page_index_to_seek_to_int;
@@ -519,13 +511,13 @@ function get_seek_page_index(p_seek_percentage_int :number,
 //------------------------------------------------------------
 function get_seek_percentage(p_button_element,
 	p_seeker_range_bar_height_px :number,
-    p_global_page_y_int          :number) :number {
+    p_btn_global_page_y_int          :number) :number {
 	
 	// MATH EXPLANATION:
-	// 1. (p_seeker_range_bar_height_px - p_button_element.height) : 100 = p_global_page_y_int : x
-	// 2. x = (100 * p_global_page_y_int) / (p_seeker_range_bar_height_px - p_button_element.height)
+	// 1. (p_seeker_range_bar_height_px - p_button_element.height) : 100 = p_btn_global_page_y_int : x
+	// 2. x = (100 * p_btn_global_page_y_int) / (p_seeker_range_bar_height_px - p_button_element.height)
 	
-	const seek_percentage_int = (100 * p_global_page_y_int) / 
+	const seek_percentage_int = (100 * p_btn_global_page_y_int) / 
 	    (p_seeker_range_bar_height_px - $(p_button_element).height());
 
 	return seek_percentage_int;
