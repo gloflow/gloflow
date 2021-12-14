@@ -75,10 +75,11 @@ function init_seeker_bar(p_first_page_int :number,
 					
 					
 					<div id='button' style='user-select: none;'>
-						<div id='button_symbol'>
+						<div id='button_symbol' style='user-select: none; user-drag: none;'>
                             <img style='
                                 width:100%;
-                                user-select: none;'
+                                user-select: none;
+                                user-drag: none;'
                                 src="${asset_uri__gf_bar_handle_btn_str}"></img>
                         </div>
 					</div>
@@ -242,7 +243,7 @@ function init_seeking(p_seeker_bar_button_element,
         const seek_page_index_element  = $(p_seeker_bar_button_element).find("#seek_page_index");
         
         //-------------------------------------------------
-        function button__mousemove_handler_fun(p_initial_click_coord,
+        function button__mousemove_handler_fun(p_initial_click_coord_int,
             p_move_event) {
 
 
@@ -250,9 +251,9 @@ function init_seeking(p_seeker_bar_button_element,
             // IMPORTANT!! - using pageY property of event instead of $(...).offset().top because pageY
             //               seems to have a much higher update frequency by the browser than the offset().top property
             //               and we need that frequency to be high for smooth animation of the button.
-            const movement_delta = p_move_event.pageY - p_initial_click_coord;
+            const movement_delta = p_move_event.pageY - p_initial_click_coord_int;
 
-            // const old_button_y = $(button).offset().top; 
+            // const old_button_y     = $(button).offset().top; 
             const button_new_y_int = movement_delta; // old_button_y + movement_delta;
 
             seek_percentage_int = handle_user_seek_event(p_seek_start_page_int,
@@ -274,13 +275,13 @@ function init_seeking(p_seeker_bar_button_element,
         $(button).on("mousedown", (p_event)=>{
 	  			
             // initial button relative coordinate where the user clicked
-            const initial_click_coord = p_event.pageY;
+            const initial_click_coord_int = p_event.pageY;
 
             // when user clicks and holds on the scroll button, a mouse move event handler is added 
             // to react to movement
             $(button).on("mousemove", (p_move_event)=>{
                 
-                button__mousemove_handler_fun(initial_click_coord,
+                button__mousemove_handler_fun(initial_click_coord_int,
                     p_move_event);
             });
         });
@@ -386,7 +387,6 @@ function handle_user_seek_event(p_seek_start_page_int :number,
 				seek_page_index_int,
 				p_button_new_y_int,
 				button_seek_info_y_offset_int);
-				// p_button_seek_info_draw_fun);
 		}
 		
 		return seek_percentage_int;
@@ -435,20 +435,10 @@ function init_range_bar_background_canvas(p_first_page_int :number,
     const pages_num_int  = Math.abs(p_last_page_int - p_first_page_int);
     const page_single_height_px_int = Math.floor(bar_height_int/pages_num_int)
 
-
-
     const canvas = <HTMLCanvasElement> $(p_container).find('#seek_range_bar_background')[0];
     canvas.width  = bar_width_int;
 	canvas.height = bar_height_int;
     const ctx = canvas.getContext('2d');
-
-    /*// background
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	ctx.fillStyle = "blue";
-	ctx.fillRect(0,
-		0,
-		bar_width_int,
-		bar_height_int);*/
 
     ctx.fillStyle   = "yellow";
     ctx.strokeStyle = "black";
@@ -479,17 +469,6 @@ function display_button_seek_info(p_button_seek_info_element,
 	$(p_seek_page_index_element).text(`${p_seek_page_index_int}`);
 	$(p_seek_page_index_element).css("left",
         `${(p_button_seek_info_element.offsetWidth - p_seek_page_index_element.offsetWidth)/2}px`);
-	
-	// $(p_button_seek_info_element).css("top", `${p_button_new_y_int+p_button_seek_info_y_offset_int}px`);
-	
-	/*//--------------
-	// IMPORTANT!! - user-passed callback execution
-	
-	if (p_button_seek_info_draw_fun != null){
-		p_button_seek_info_draw_fun();
-	}
-
-	//--------------*/
 }
 
 //------------------------------------------------
@@ -498,7 +477,8 @@ function get_seek_page_index(p_seek_percentage_int :number,
 	p_seek_end_page_int   :number) :number {
 	
 	const total_range = p_seek_end_page_int - p_seek_start_page_int;
-	
+    
+    // MATH EXPLANATION:
 	// 1. 100 : total_range = p_seek_percentage_int : x
 	// 2. 100 * x           = total_range * p_seek_percentage_int
 	
@@ -511,7 +491,7 @@ function get_seek_page_index(p_seek_percentage_int :number,
 //------------------------------------------------------------
 function get_seek_percentage(p_button_element,
 	p_seeker_range_bar_height_px :number,
-    p_btn_global_page_y_int          :number) :number {
+    p_btn_global_page_y_int      :number) :number {
 	
 	// MATH EXPLANATION:
 	// 1. (p_seeker_range_bar_height_px - p_button_element.height) : 100 = p_btn_global_page_y_int : x
