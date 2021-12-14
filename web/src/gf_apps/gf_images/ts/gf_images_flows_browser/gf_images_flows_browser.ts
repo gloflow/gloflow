@@ -93,6 +93,7 @@ export function init(p_log_fun) {
 		gf_utils.init_image_date(image_element, p_log_fun);
 
 		const img_thumb_medium_url_str = $(image_element).find('img').data('img_thumb_medium_url');
+		const img_thumb_large_url_str  = $(image_element).find('img').data('img_thumb_large_url');
 		const img_format_str           = $(image_element).attr('data-img_format');
 
 
@@ -114,7 +115,11 @@ export function init(p_log_fun) {
 
 		//----------------
 		else {
-			gf_image_viewer.init(image_element, img_thumb_medium_url_str, flow_name_str, p_log_fun);
+			gf_image_viewer.init(image_element,
+				img_thumb_medium_url_str,
+				img_thumb_large_url_str,
+				flow_name_str,
+				p_log_fun);
 		}
 
 		//----------------

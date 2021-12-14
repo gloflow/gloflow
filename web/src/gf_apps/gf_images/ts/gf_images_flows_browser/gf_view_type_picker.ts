@@ -142,6 +142,7 @@ function init__viz_group_view(p_flow_name_str :string,
 		const img__format_str               = p_element_map['format_str'];
 		const img__creation_unix_time_f     = p_element_map['creation_unix_time_f'];
 		const img__thumbnail_medium_url_str = p_element_map['thumbnail_medium_url_str'];
+		const img__thumbnail_large_url_str  = p_element_map['thumbnail_large_url_str'];
 		const img__origin_page_url_str      = p_element_map['origin_page_url_str'];
 
 		const img_url_str = img__thumbnail_medium_url_str;
@@ -164,7 +165,11 @@ function init__viz_group_view(p_flow_name_str :string,
 		if (img__format_str == 'gif') {
 			gf_gifs_viewer.init(image_container, img__id_str, p_flow_name_str, p_log_fun);
 		} else {
-			gf_image_viewer.init(image_container, img__thumbnail_medium_url_str, p_flow_name_str, p_log_fun);
+			gf_image_viewer.init(image_container,
+				img__thumbnail_medium_url_str,
+				img__thumbnail_large_url_str,
+				p_flow_name_str,
+				p_log_fun);
 		}
 
 		//------------------

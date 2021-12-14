@@ -54,6 +54,7 @@ export function load_new_page(p_flow_name_str :string,
 			const img__origin_url_str           = p_e['origin_url_str'];
 			const img__thumbnail_small_url_str  = p_e['thumbnail_small_url_str'];
 			const img__thumbnail_medium_url_str = p_e['thumbnail_medium_url_str'];
+			const img__thumbnail_large_url_str  = p_e['thumbnail_large_url_str'];
 			const img__tags_lst                 = p_e['tags_lst'];
 			const img__origin_page_url_str      = p_e['origin_page_url_str'];
 
@@ -121,7 +122,11 @@ export function load_new_page(p_flow_name_str :string,
 				if (img__format_str == 'gif') {
 					gf_gifs_viewer.init(image_container, img__id_str, p_flow_name_str, p_log_fun);
 				} else {
-					gf_image_viewer.init(image_container, img__thumbnail_medium_url_str, p_flow_name_str, p_log_fun);
+					gf_image_viewer.init(image_container,
+						img__thumbnail_medium_url_str,
+						img__thumbnail_large_url_str,
+						p_flow_name_str,
+						p_log_fun);
 				}
 
 				//------------------

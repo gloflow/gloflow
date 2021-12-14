@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //-------------------------------------------------
 export function init(p_image_element,
 	p_img_thumb_medium_url_str :string,
+	p_img_thumb_large_url_str  :string,
 	p_flow_name_str            :string,
 	p_log_fun) {
 	p_log_fun("FUN_ENTER", "gf_image_viewer.init()");
@@ -36,13 +37,11 @@ export function init(p_image_element,
 			<div id="image_viewer">
 				<div id="background"></div>
 				<div id="image_detail">
-					<img src="`+p_img_thumb_medium_url_str+`"></img>
+					<img src="${p_img_thumb_large_url_str}"></img>
 				</div>
 			</div>`);
 
-		console.log(p_img_thumb_medium_url_str)
 		$('body').append(image_view);
-
 
 		//----------------------
 		// BAKCGROUND
