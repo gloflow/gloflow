@@ -182,7 +182,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	gf_rpc_lib.Create_handler__http_with_metrics("/images/v1/upload_complete",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+			if p_req.Method == "POST" {
 
 				//------------------
 				// CORS - in "simple" requests a CORS PREFLIGHT request is not necessary, 
@@ -195,17 +195,29 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 				// INPUT
 				qs_map := p_req.URL.Query()
 
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
 				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
 				//                      to know which ID to use for the new gf_image thats going to be constructed,
 				//                      and to know by which ID to query the DB for Gf_image_upload_info.
-				var upload_gf_image_id_str gf_images_core.Gf_image_id
+				var upload_gf_image_id_str gf_images_core.GF_image_id
 				if a_lst, ok := qs_map["imgid"]; ok {
-					upload_gf_image_id_str = gf_images_core.Gf_image_id(a_lst[0])
+					upload_gf_image_id_str = gf_images_core.GF_image_id(a_lst[0])
 				}
 				
+				// image metadata (optional)
+				var meta_map map[string]interface{}
+				if meta_map, ok := i_map["meta_map"]; ok {
+					meta_map = meta_map
+				}
+
 				//------------------
 				// COMPLETE
 				running_job, gf_err := Upload__complete(upload_gf_image_id_str,
+					meta_map,
 					p_jobs_mngr_ch,
 					p_s3_info,
 					p_runtime_sys)

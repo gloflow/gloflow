@@ -35,20 +35,20 @@ import (
 )
 
 //---------------------------------------------------
-// Gf_image_upload_info struct represents a single image upload sequence.
+// GF_image_upload_info struct represents a single image upload sequence.
 // It is both stored in the DB and returned to the initiating client in JSON form.
 // It contains the ID of the future gf_image that will be created in the system to represent
 // the image that the client is wanting to upload.
-type Gf_image_upload_info struct {
-	Id                     primitive.ObjectID          `json:"-"                      bson:"_id,omitempty"`
-	T_str                  string                      `json:"-"                      bson:"t"` // "img_upload_info"
-	Creation_unix_time_f   float64                     `json:"creation_unix_time_f"   bson:"creation_unix_time_f"`
-	Name_str               string                      `json:"name_str"               bson:"name_str"`
-	Upload_gf_image_id_str gf_images_core.Gf_image_id `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
-	S3_file_path_str       string                      `json:"-"                      bson:"s3_file_path_str"` // internal data, dont send to clients
-	Flows_names_lst        []string                    `json:"flows_names_lst"        bson:"flows_names_lst"`
-	Client_type_str        string                      `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
-	Presigned_url_str      string                      `json:"presigned_url_str"      bson:"presigned_url_str"`
+type GF_image_upload_info struct {
+	Id                     primitive.ObjectID         `json:"-"                      bson:"_id,omitempty"`
+	T_str                  string                     `json:"-"                      bson:"t"` // "img_upload_info"
+	Creation_unix_time_f   float64                    `json:"creation_unix_time_f"   bson:"creation_unix_time_f"`
+	Name_str               string                     `json:"name_str"               bson:"name_str"`
+	Upload_gf_image_id_str gf_images_core.GF_image_id `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
+	S3_file_path_str       string                     `json:"-"                      bson:"s3_file_path_str"` // internal data, dont send to clients
+	Flows_names_lst        []string                   `json:"flows_names_lst"        bson:"flows_names_lst"`
+	Client_type_str        string                     `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
+	Presigned_url_str      string                     `json:"presigned_url_str"      bson:"presigned_url_str"`
 }
 
 //---------------------------------------------------
@@ -61,7 +61,7 @@ func Upload__init(p_image_name_str string,
 	p_client_type_str  string,
 	p_s3_info          *gf_core.GF_s3_info,
 	p_config           *gf_images_core.GF_config,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) (*GF_image_upload_info, *gf_core.GF_error) {
 	
 	//------------------
 	// CHECK_IMAGE_FORMAT
@@ -104,7 +104,7 @@ func Upload__init(p_image_name_str string,
 
 	//------------------
 	
-	upload_info := &Gf_image_upload_info{
+	upload_info := &GF_image_upload_info{
 		T_str:                  "img_upload_info",
 		Creation_unix_time_f:   creation_unix_time_f,
 		Name_str:               p_image_name_str,
@@ -130,10 +130,11 @@ func Upload__init(p_image_name_str string,
 // Upload__complete completes the image file upload sequence.
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
-func Upload__complete(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
-	p_jobs_mngr_ch    chan gf_images_jobs_core.Job_msg,
-	p_s3_info         *gf_core.GF_s3_info,
-	p_runtime_sys     *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
+func Upload__complete(p_upload_gf_image_id_str gf_images_core.GF_image_id,
+	p_meta_map     map[string]interface{},
+	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
+	p_s3_info      *gf_core.GF_s3_info,
+	p_runtime_sys  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
 	
 
 
@@ -148,8 +149,9 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 	
 	image_to_process_lst := []gf_images_jobs_core.GF_image_uploaded_to_process{
 		{
-			Gf_image_id_str:  p_upload_gf_image_id_str,
+			GF_image_id_str:  p_upload_gf_image_id_str,
 			S3_file_path_str: upload_info.S3_file_path_str,
+			Meta_map:         p_meta_map,
 		},
 	}
 
@@ -170,7 +172,7 @@ func Upload__complete(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 //---------------------------------------------------
 // DB
 //---------------------------------------------------
-func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
+func Upload_db__put_info(p_upload_info *GF_image_upload_info,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	p_runtime_sys.Log_fun("INFO", "DB INSERT - img_upload_info")
@@ -204,11 +206,11 @@ func Upload_db__put_info(p_upload_info *Gf_image_upload_info,
 
 //---------------------------------------------------
 func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image_upload_info, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image_upload_info, *gf_core.GF_error) {
 
 	ctx := context.Background()
 
-	var upload_info Gf_image_upload_info
+	var upload_info GF_image_upload_info
 	err := p_runtime_sys.Mongo_db.Collection("gf_images_upload_info").FindOne(ctx, bson.M{
 			"t":                      "img_upload_info",
 			"upload_gf_image_id_str": p_upload_gf_image_id_str,
@@ -234,7 +236,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 }
 
 //---------------------------------------------------
-func Upload_db__put_image_upload_info(p_image_upload_info *Gf_image_upload_info,
+func Upload_db__put_image_upload_info(p_image_upload_info *GF_image_upload_info,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	ctx           := context.Background()

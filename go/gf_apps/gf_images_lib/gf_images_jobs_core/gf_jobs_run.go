@@ -85,11 +85,13 @@ func run_job__uploaded_imgs(p_images_to_process_lst []GF_image_uploaded_to_proce
 
 		fmt.Println(image_to_process)
 
-		gf_image_id_str  := image_to_process.Gf_image_id_str
+		gf_image_id_str  := image_to_process.GF_image_id_str
 		s3_file_path_str := image_to_process.S3_file_path_str
+		meta_map         := image_to_process.Meta_map
 
 		gf_err := job__pipeline__process_image_uploaded(gf_image_id_str,
 			s3_file_path_str,
+			meta_map,
 			p_images_store_local_dir_path_str,
 			p_images_thumbnails_store_local_dir_path_str,
 			p_flows_names_lst,

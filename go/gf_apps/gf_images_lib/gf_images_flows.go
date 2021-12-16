@@ -141,7 +141,10 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__images_exist_check()")
 
-	existing_images_lst, gf_err := flows_db__images_exist(p_images_extern_urls_lst, p_flow_name_str, p_client_type_str, p_runtime_sys)
+	existing_images_lst, gf_err := flows_db__images_exist(p_images_extern_urls_lst,
+		p_flow_name_str,
+		p_client_type_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -199,9 +202,9 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 	p_flows_names_lst           []string,
 	p_client_type_str           string,
 	p_jobs_mngr_ch              chan gf_images_jobs_core.Job_msg,
-	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, gf_images_core.Gf_image_id, *gf_core.GF_error) {
+	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.Flows__add_extern_image()")
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s",p_flows_names_lst))
+	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s", p_flows_names_lst))
 
 	//------------------
 	images_urls_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{
@@ -218,12 +221,12 @@ func Flows__add_extern_image(p_image_extern_url_str string,
 		p_runtime_sys)
 
 	if gf_err != nil {
-		return nil, nil, gf_images_core.Gf_image_id(""), gf_err
+		return nil, nil, gf_images_core.GF_image_id(""), gf_err
 	}
 
 	//------------------
 
-	image_id_str                     := gf_images_core.Gf_image_id(job_expected_outputs_lst[0].Image_id_str)
+	image_id_str                     := gf_images_core.GF_image_id(job_expected_outputs_lst[0].Image_id_str)
 	thumbnail_small_relative_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
 
 	return &running_job.Id_str, &thumbnail_small_relative_url_str, image_id_str, nil

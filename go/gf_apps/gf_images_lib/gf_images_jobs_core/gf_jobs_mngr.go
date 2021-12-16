@@ -66,8 +66,9 @@ type GF_image_extern_to_process struct {
 }
 
 type GF_image_uploaded_to_process struct {
-	Gf_image_id_str  gf_images_core.Gf_image_id
-	S3_file_path_str string // path to image in S3 in a bucket that it was originally uploaded to by client
+	GF_image_id_str  gf_images_core.GF_image_id
+	S3_file_path_str string                 // path to image in S3 in a bucket that it was originally uploaded to by client
+	Meta_map         map[string]interface{} // metadata user might include for this image
 }
 
 type GF_image_local_to_process struct {
@@ -94,19 +95,19 @@ type Job_msg struct {
 }
 
 type Job_update_msg struct {
-	Name_str             string                      `json:"name_str"`
-	Type_str             job_update_type_val         `json:"type_str"`             // "ok" | "error" | "complete"
-	Image_id_str         gf_images_core.Gf_image_id `json:"image_id_str"`
-	Image_source_url_str string                      `json:"image_source_url_str"`
-	Err_str              string                      `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
-	Image_thumbs         *gf_images_core.Gf_image_thumbs `json:"-"`
+	Name_str             string                     `json:"name_str"`
+	Type_str             job_update_type_val        `json:"type_str"`             // "ok" | "error" | "complete"
+	Image_id_str         gf_images_core.GF_image_id `json:"image_id_str"`
+	Image_source_url_str string                     `json:"image_source_url_str"`
+	Err_str              string                     `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
+	Image_thumbs         *gf_images_core.GF_image_thumbs `json:"-"`
 }
 
 //------------------------
 // JOBS_LIFECYCLE
 type GF_jobs_lifecycle_callbacks struct {
-	Job_type__transform_imgs__fun func() *gf_core.Gf_error
-	Job_type__uploaded_imgs__fun  func() *gf_core.Gf_error
+	Job_type__transform_imgs__fun func() *gf_core.GF_error
+	Job_type__uploaded_imgs__fun  func() *gf_core.GF_error
 }
 
 //------------------------
@@ -124,7 +125,7 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 // CREATE_RUNNING_JOB
 func Jobs_mngr__create_running_job(p_client_type_str string,
 	p_job_updates_ch chan Job_update_msg,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_job_running, *gf_core.Gf_error) {
+	p_runtime_sys    *gf_core.Runtime_sys) (*GF_job_running, *gf_core.GF_error) {
 
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
@@ -431,7 +432,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 // DB
 //-------------------------------------------------
 func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
 	ctx           := context.Background()
@@ -456,7 +457,7 @@ func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
 //-------------------------------------------------
 func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	p_job_id_str  string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
 
 	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {

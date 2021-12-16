@@ -32,11 +32,11 @@ import (
 // called "expected" because jobs are long-running processes, and they might fail at various stages
 // of their processing. in that case some of these result values will be satisfied, others will not.
 type GF_job_expected_output struct {
-	Image_id_str                      gf_images_core.Gf_image_id `json:"image_id_str"`
-	Image_source_url_str              string                      `json:"image_source_url_str"`
-	Thumbnail_small_relative_url_str  string                      `json:"thumbnail_small_relative_url_str"`
-	Thumbnail_medium_relative_url_str string                      `json:"thumbnail_medium_relative_url_str"`
-	Thumbnail_large_relative_url_str  string                      `json:"thumbnail_large_relative_url_str"`
+	Image_id_str                      gf_images_core.GF_image_id `json:"image_id_str"`
+	Image_source_url_str              string                     `json:"image_source_url_str"`
+	Thumbnail_small_relative_url_str  string                     `json:"thumbnail_small_relative_url_str"`
+	Thumbnail_medium_relative_url_str string                     `json:"thumbnail_medium_relative_url_str"`
+	Thumbnail_large_relative_url_str  string                     `json:"thumbnail_large_relative_url_str"`
 }
 
 //-------------------------------------------------

@@ -26,7 +26,7 @@ import (
 )
 
 //---------------------------------------------------
-func Create_thumbnails(p_image_id_str Gf_image_id,
+func Create_thumbnails(p_image_id_str GF_image_id,
 	p_image_format_str                     string,
 	p_image_file_path_str                  string,
 	p_local_target_thumbnails_dir_path_str string,
@@ -34,7 +34,7 @@ func Create_thumbnails(p_image_id_str Gf_image_id,
 	p_medium_thumb_max_size_px_int         int,
 	p_large_thumb_max_size_px_int          int,
 	p_image                                image.Image,
-	p_runtime_sys                          *gf_core.Runtime_sys) (*Gf_image_thumbs, *gf_core.Gf_error) {
+	p_runtime_sys                          *gf_core.Runtime_sys) (*GF_image_thumbs, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_thumbs.Create_thumbnails()")
 
 	//-----------------
@@ -85,7 +85,7 @@ func Create_thumbnails(p_image_id_str Gf_image_id,
 	thumb_medium_relative_url_str := "/images/d/thumbnails/"+new_thumb_medium_file_name_str
 	thumb_large_relative_url_str  := "/images/d/thumbnails/"+new_thumb_large_file_name_str
 
-	image_thumbs := &Gf_image_thumbs{
+	image_thumbs := &GF_image_thumbs{
 		Small_relative_url_str:     thumb_small_relative_url_str,
 		Medium_relative_url_str:    thumb_medium_relative_url_str,
 		Large_relative_url_str:     thumb_large_relative_url_str,

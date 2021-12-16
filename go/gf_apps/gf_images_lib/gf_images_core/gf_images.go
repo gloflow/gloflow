@@ -73,8 +73,9 @@ type Gf_image struct {
 	Pallete_str            string `json:"pallete_str"`
 
 	//---------------
-	// TAGS
-	Tags_lst []string `json:"tags_lst" bson:"tags_lst"`
+	// META
+	Meta_map map[string]interface{} `json:"meta_map" bson:"meta_map"` // metadata external users might assign to an image
+	Tags_lst []string               `json:"tags_lst" bson:"tags_lst"` // human facing tags assigned to an image
 
 	//---------------
 
@@ -83,7 +84,7 @@ type Gf_image struct {
 	// Flow_name_str   string   `json:"flow_name_str"   bson:"flow_name_str"`
 }
 
-type Gf_image_thumbs struct {
+type GF_image_thumbs struct {
 	Small_relative_url_str     string `json:"small_relative_url_str"`
 	Medium_relative_url_str    string `json:"medium_relative_url_str"`
 	Large_relative_url_str     string `json:"large_relative_url_str"`
@@ -93,7 +94,7 @@ type Gf_image_thumbs struct {
 	Large_local_file_path_str  string
 }
 
-type Gf_image_new_info struct {
+type GF_image_new_info struct {
 	Id_str                         Gf_image_id
 	Title_str                      string
 	Flows_names_lst                []string
@@ -107,11 +108,13 @@ type Gf_image_new_info struct {
 	Format_str                     string
 	Width_int                      int
 	Height_int                     int
+
+	Meta_map map[string]interface{}
 }
 
 //---------------------------------------------------
-func Image__create_new(p_image_info *Gf_image_new_info,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.Gf_error) {
+func Image__create_new(p_image_info *GF_image_new_info,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create_new()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -131,6 +134,8 @@ func Image__create_new(p_image_info *Gf_image_new_info,
 		Format_str:                     p_image_info.Format_str,
 		Width_int:                      p_image_info.Width_int,
 		Height_int:                     p_image_info.Height_int,
+
+		Meta_map: p_image_info.Meta_map,
 	}
 
 	//----------------------------------

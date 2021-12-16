@@ -215,6 +215,7 @@ func save_edited_image(p_source_image_id_str gf_images_core.Gf_image_id,
 	// IMAGE_DIMENSIONS
 
 	image_width_int, image_height_int := gf_images_core.Get_image_dimensions__from_image(png_image, p_runtime_sys)
+	
 	//--------------------------
 
 	processing_info := Gf_edited_image__processing_info{
@@ -243,10 +244,11 @@ func create_gf_image(p_new_title_str string,
 	large_thumb_max_size_px_int          := 600
 
 	//--------------------------
-	//GF_IMAGE_ID
+	// GF_IMAGE_ID
 	image_id_str := gf_images_core.Image_ID__create(p_processing_info.tmp_local_filepath_str, image_format_str, p_runtime_sys)
+
 	//--------------------------
-	//THUMBNAILS
+	// THUMBNAILS
 	image_thumbs, gf_err := gf_images_core.Create_thumbnails(image_id_str,
 		image_format_str, //p_normalized_ext_str,
 		p_processing_info.tmp_local_filepath_str,
@@ -260,9 +262,10 @@ func create_gf_image(p_new_title_str string,
 	if gf_err != nil {
 		return gf_err
 	}
+
 	//--------------------------
 
-	gf_image_info := &gf_images_core.Gf_image_new_info{
+	gf_image_info := &gf_images_core.GF_image_new_info{
 		Id_str:                         image_id_str,
 		Title_str:                      p_new_title_str,
 		Flows_names_lst:                p_images_flows_names_lst,
@@ -278,9 +281,9 @@ func create_gf_image(p_new_title_str string,
 		Height_int:                     p_processing_info.image_height_int,
 	}
 
-	//IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
-	//              every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
-	//              these two structs are related by origin_url
+	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
+	//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
+	//               these two structs are related by origin_url
 	_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_runtime_sys)
 	if c_gf_err != nil {
 		return c_gf_err

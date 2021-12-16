@@ -58,20 +58,20 @@ type Gf_gif struct {
 	//------------------
 	Title_str                  string        `json:"title_str"                  bson:"title_str"`
 	Gf_url_str                 string        `json:"gf_url_str"                 bson:"gf_url_str"`
-	Origin_url_str             string        `json:"origin_url_str"             bson:"origin_url_str"`         //external url from which the GIF came
-	Origin_page_url_str        string        `json:"origin_page_url_str"        bson:"origin_page_url_str"`    //external url of the page from which the GIF came
-	Origin_page_domain_str     string        `json:"origin_page_domain_str"     bson:"origin_page_domain_str"` //external domain of the page from which the GIF came
+	Origin_url_str             string        `json:"origin_url_str"             bson:"origin_url_str"`         // external url from which the GIF came
+	Origin_page_url_str        string        `json:"origin_page_url_str"        bson:"origin_page_url_str"`    // external url of the page from which the GIF came
+	Origin_page_domain_str     string        `json:"origin_page_domain_str"     bson:"origin_page_domain_str"` // external domain of the page from which the GIF came
 	Width_int                  int           `json:"width_int"                  bson:"width_int"`
 	Height_int                 int           `json:"height_int"                 bson:"height_int"`
 	Preview_frames_num_int     int           `json:"preview_frames_num_int"     bson:"preview_frames_num_int"`
 	Preview_frames_s3_urls_lst []string      `json:"preview_frames_s3_urls_lst" bson:"preview_frames_s3_urls_lst"`
 	Tags_lst                   []string      `json:"tags_lst"                   bson:"tags_lst"`
 	Hash_str                   string        `json:"hash_str"                   bson:"hash_str"`
-	Gf_image_id_str            gf_images_core.Gf_image_id `json:"gf_image_id_str" bson:"gf_image_id_str"`
+	Gf_image_id_str            gf_images_core.GF_image_id `json:"gf_image_id_str" bson:"gf_image_id_str"`
 }
 
 //--------------------------------------------------
-func Process_and_upload(p_gf_image_id_str gf_images_core.Gf_image_id,
+func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_image_source_url_str                        string,
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
@@ -81,7 +81,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.GF_s3_info,
-	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.Gf_error) {
+	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
 	gif, local_image_file_path_str, gf_err := Process(p_gf_image_id_str,
@@ -135,7 +135,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.GF_s3_info,
-	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.Gf_error) {
+	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
@@ -254,7 +254,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		}
 		//-----------------------
 		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
-		gf_image_info := &gf_images_core.Gf_image_new_info{
+		gf_image_info := &gf_images_core.GF_image_new_info{
 			Id_str:                         verified_gf_image_id_str,                                           //image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
 			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
@@ -280,6 +280,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		// link the new gf_image DB record to the gf_gif DB record
 		gif_db__update_image_id(gif.Id_str, verified_gf_image_id_str, p_runtime_sys)
 	}
+
 	//-----------------------
 
 	return gif, local_image_file_path_str, nil
@@ -291,7 +292,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
 	p_s3_info                    *gf_core.GF_s3_info,
-	p_runtime_sys                *gf_core.Runtime_sys) (int, []string, *gf_core.Gf_error, []*gf_core.Gf_error) {
+	p_runtime_sys                *gf_core.Runtime_sys) (int, []string, *gf_core.GF_error, []*gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.gif__s3_upload_preview_frames()")
 
 	max_num__of_preview_frames_int      := 10
@@ -347,7 +348,7 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
-	p_runtime_sys                *gf_core.Runtime_sys) ([]string, *gf_core.Gf_error) {
+	p_runtime_sys                *gf_core.Runtime_sys) ([]string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
@@ -401,7 +402,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 	overpaint_image := image.NewRGBA(image.Rect(0,0,img_width_int,img_height_int))
 
-	//draw first frame of the GIF to the canvas
+	// draw first frame of the GIF to the canvas
 	draw.Draw(overpaint_image,
 		overpaint_image.Bounds(),
 		gif_image.Image[0],
@@ -467,7 +468,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 //--------------------------------------------------
 func gif__get_dimensions(p_local_file_path_src string,
-	p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (int,int,*gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.gif__get_dimensions()")
 
 	file,err := os.Open(p_local_file_path_src)
@@ -528,17 +529,17 @@ func gif__get_dimensions(p_local_file_path_src string,
 
 //--------------------------------------------------
 func gif__get_hash(p_image_local_file_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.gif__get_hash()")
 
 	hash := sha256.New()
 
-	f,err := os.Open(p_image_local_file_path_str)
+	f, err := os.Open(p_image_local_file_path_str)
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a GIF file to get its hash",
 			"file_open_error",
-			map[string]interface{}{"image_local_file_path_str":p_image_local_file_path_str,},
-			err,"gf_gif_lib",p_runtime_sys)
+			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
+			err, "gf_gif_lib", p_runtime_sys)
 		return "",gf_err
 	}
 	defer f.Close()
@@ -546,5 +547,5 @@ func gif__get_hash(p_image_local_file_path_str string,
 	io.Copy(hash,f)
 
 	hash_str := hex.EncodeToString(hash.Sum(nil))
-	return hash_str,nil
+	return hash_str, nil
 }

@@ -68,10 +68,10 @@ func Flows__init_handlers(p_templates_paths_map map[string]string,
 				}
 
 				image_extern_url_str      := i_map["image_extern_url_str"].(string)
-				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) //if image is from a page, the url of the page
+				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
 				client_type_str           := i_map["client_type_str"].(string)
 
-				// flow_name_str := "general" //i["flow_name_str"].(string) //DEPRECATED
+				// flow_name_str := "general" //i["flow_name_str"].(string) // DEPRECATED
 				flows_names_lst := []string{}
 				for _, s := range i_map["flows_names_lst"].([]interface{}) {
 					flows_names_lst = append(flows_names_lst, s.(string))
