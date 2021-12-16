@@ -92,10 +92,10 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 //--------------------------------------------------
 func image_s3__upload(p_image *Gf_crawler_page_image,
 	p_local_image_file_path_str string,
-	p_image_thumbs              *gf_images_core.Gf_image_thumbs,
+	p_image_thumbs              *gf_images_core.GF_image_thumbs,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
 	
 	cyan   := color.New(color.FgCyan, color.BgWhite).SprintFunc()
@@ -118,7 +118,7 @@ func image_s3__upload(p_image *Gf_crawler_page_image,
 
 //--------------------------------------------------
 // UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
-func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
 
 	ctx := context.Background()

@@ -33,14 +33,15 @@ type gf_page_img__pipeline_info struct {
 	page_img            *Gf_crawler_page_image
 	page_img_ref        *Gf_crawler_page_image_ref
 	local_file_path_str string
-	thumbs              *gf_images_core.Gf_image_thumbs
-	exists_bool         bool                   //has the page_img already been discovered in the past
+	thumbs              *gf_images_core.GF_image_thumbs
+	exists_bool         bool                   // has the page_img already been discovered in the past
 	nsfv_bool           bool
-	gf_error            *gf_core.Gf_error      //if page_img processing failed at some stage
+	gf_error            *gf_core.GF_error      // if page_img processing failed at some stage
 
-	//in some situations (or in tests) we wish to manually assign a gf_image_id, instead of letting the gf_image processing/transformation
-	//operations create those ID's themselves
-	gf_image_id_str     gf_images_core.Gf_image_id
+	// in some situations (or in tests) we wish to manually assign a gf_image_id,
+	// instead of letting the gf_image processing/transformation
+	// operations create those ID's themselves
+	gf_image_id_str gf_images_core.GF_image_id
 }
 
 type gf_page_img_link struct {
@@ -145,7 +146,7 @@ func images_pipe__single_simple(p_image *Gf_crawler_page_image,
 	p_media_domain_str                  string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_runtime                           *Gf_crawler_runtime,
-	p_runtime_sys                       *gf_core.Runtime_sys) (*gf_images_core.Gf_image, *gf_images_core.Gf_image_thumbs, string, *gf_core.Gf_error) {
+	p_runtime_sys                       *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GF_image_thumbs, string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 

@@ -27,8 +27,8 @@ import (
 
 //--------------------------------------------------
 func image__cleanup(p_img_local_file_path_str string,
-	p_img_thumbs  *gf_images_core.Gf_image_thumbs,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_img_thumbs  *gf_images_core.GF_image_thumbs,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__cleanup()")
 
 	files_to_remove_lst := []string{
@@ -41,7 +41,7 @@ func image__cleanup(p_img_local_file_path_str string,
 		files_to_remove_lst = append(files_to_remove_lst, p_img_thumbs.Large_local_file_path_str)
 	}
 	
-	for _,f_str := range files_to_remove_lst {
+	for _, f_str := range files_to_remove_lst {
 		err := os.Remove(f_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to cleanup a crawled image files",
