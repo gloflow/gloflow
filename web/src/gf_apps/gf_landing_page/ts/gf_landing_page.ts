@@ -98,7 +98,7 @@ function init(p_log_fun) {
 	gf_images.init(p_log_fun);
 
 	// draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
-	$(window).resize(()=>{
+	$(window).on("resize", ()=>{
 
 		// small screen widths dont display procedural_art
 		if ($(window).innerWidth() > 660) {

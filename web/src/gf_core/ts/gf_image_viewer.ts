@@ -43,6 +43,9 @@ export function init(p_image_element,
 
 		$('body').append(image_view);
 
+		const image_detail = $(image_view).find("#image_detail");
+		$(image_detail).css("position", "absolute");
+
 		//----------------------
 		// BAKCGROUND
 		const bg = $(image_view).find("#background");
@@ -57,28 +60,39 @@ export function init(p_image_element,
 		//----------------------
 		// IMG_ONLOAD
 		$(image_view).find("img").on("load", ()=>{
-
-			const image_detail = $(image_view).find("#image_detail");
-			$(image_detail).css("position", "absolute");
-
-			// Math.max() - returns the largest of zero or more numbers.
-			// Math.max(10, 20);   //20
-			// Math.max(-10, -20); //-10
-			const image_x = Math.max(0, (($(window).width() - $(image_detail).outerWidth()) / 2) + $(window).scrollLeft());
-			const image_y = Math.max(0, (($(window).height() - $(image_detail).outerHeight()) / 2) + $(window).scrollTop());
-
-			$(image_detail).css("left", image_x+"px");
-		    $(image_detail).css("top",  image_y+"px");
+			image_position(image_detail);
 		});
+
+		function resize_handler() {
+			image_position(image_detail);
+		}
+		// reposition image detail if the window resizes
+		$(window).on("resize", resize_handler);
 
 	    //----------------------
 	    $(bg).click(()=>{
 	    	$(image_view).remove();
+			$(window).off("resize", resize_handler); // stop positioning on resize
 
 	    	// turn vertical scrolling back on when done viewing the image
 	    	$("body").css("overflow", "auto");
 	    });
 
 	    //----------------------
+
+		
 	});
+}
+
+//-------------------------------------------------
+function image_position(p_image_detail) {
+
+	// Math.max() - returns the largest of zero or more numbers.
+	// Math.max(10, 20);   //20
+	// Math.max(-10, -20); //-10
+	const image_x = Math.max(0, (($(window).width() - $(p_image_detail).outerWidth()) / 2) + $(window).scrollLeft());
+	const image_y = Math.max(0, (($(window).height() - $(p_image_detail).outerHeight()) / 2) + $(window).scrollTop());
+
+	$(p_image_detail).css("left", image_x+"px");
+	$(p_image_detail).css("top",  image_y+"px");
 }
