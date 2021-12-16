@@ -36,14 +36,13 @@
 		<div id="items">
 		{{- range .Images_pages_lst}}
 			{{- range .}}
-				{{- /*"item" class is used by Masonry*/}}
 				<div class ='gf_image item small_view'
 					data-img_id="{{- .id_str}}"
 					data-img_format="{{- .format_str}}"
 
-					{{- range $key, $value := .meta_map }}
-					data-img_meta__{{- $key }}="{{- $value }}"
-					{{- end }}>
+					{{ range $key, $value := .meta_map }}
+					data-img_meta__{{.key }}="{{.value }}"
+					{{ end }}>
 
 					{{- /*------------------------------------------------------*/}}
 					{{- /*IMAGE THUMBNAIL DATA*/}}
