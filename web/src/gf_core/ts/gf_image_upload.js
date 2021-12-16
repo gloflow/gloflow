@@ -313,7 +313,7 @@ function gf_upload__send_complete(p_upload_gf_image_id_str,
 	const url_str = `${p_target_full_host_str}/images/v1/upload_complete?imgid=${p_upload_gf_image_id_str}`;
 
 	$.ajax({
-		method: "GET",
+		method: "POST",
 		"url":  url_str,
 		//-------------------------------------------------
 		"success": (p_data_map) => {
