@@ -23,8 +23,8 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     
 #-----------------------------
 # GO
-RUN wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.16.2.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.17.5.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.5.linux-amd64.tar.gz
 
 # has to be added this way to PATH, to work in a Dockerfile
 ENV PATH=$PATH:/usr/local/go/bin
