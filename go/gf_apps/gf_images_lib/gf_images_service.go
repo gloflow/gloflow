@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -89,7 +90,7 @@ func Init_service(p_service_info *GF_service_info,
 	// IMAGE_FLOWS
 
 	// flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
-	gf_err = Flows__init_handlers(p_service_info.Templates_paths_map,
+	gf_err = gf_images_flows.Init_handlers(p_service_info.Templates_paths_map,
 		jobs_mngr_ch,
 		p_runtime_sys)
 	if gf_err != nil {

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_lib
+package gf_images_flows
 
 import (
 	// "fmt"
@@ -29,10 +29,10 @@ import (
 )
 
 //-------------------------------------------------
-func Flows__init_handlers(p_templates_paths_map map[string]string,
+func Init_handlers(p_templates_paths_map map[string]string,
 	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Flows__init_handlers()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
 
 	//---------------------
 	// TEMPLATES

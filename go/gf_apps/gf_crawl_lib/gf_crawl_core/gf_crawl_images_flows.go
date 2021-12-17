@@ -26,8 +26,8 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 )
 
 //--------------------------------------------------
@@ -125,7 +125,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
 	for _, flow_name_str := range p_flows_names_lst {
-		gf_err := gf_images_lib.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, p_runtime_sys)
+		gf_err := gf_images_flows.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, p_runtime_sys)
 		if gf_err != nil {
 			return gf_err
 		}
