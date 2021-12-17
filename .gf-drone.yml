@@ -118,7 +118,7 @@ steps:
 
       # GF_IMAGES_FLOWS
       - cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
-      - go test -mongodb_host=mongo
+      - go test
 
       # GF_IDENTITY
       - cd /home/gf/go/gf_apps/gf_identity_lib
