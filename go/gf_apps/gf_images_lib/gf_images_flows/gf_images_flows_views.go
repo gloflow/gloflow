@@ -22,8 +22,8 @@ package gf_images_flows
 import (
 	"fmt"
 	"context"
-	"io"
 	"strconv"
+	"bytes"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -35,9 +35,8 @@ func flows__render_initial_page(p_flow_name_str string,
 	p_page_size_int          int, // 5
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_resp                   io.Writer,
 	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
@@ -63,7 +62,7 @@ func flows__render_initial_page(p_flow_name_str string,
 			p_runtime_sys)
 
 		if gf_err != nil {
-			return gf_err
+			return "", gf_err
 		}
 
 		//------------
@@ -77,18 +76,20 @@ func flows__render_initial_page(p_flow_name_str string,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		return gf_err
+		return "", gf_err
 	}
 
 	//---------------------
-	gf_err = flows__render_template(pages_lst,
+	template_rendered_str, gf_err := flows__render_template(pages_lst,
 		flow_pages_num_int,
-		p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
+		p_tmpl,
+		p_subtemplates_names_lst,
+		p_runtime_sys)
 	if gf_err != nil {
-		return gf_err
+		return "", gf_err
 	}
 
-	return nil
+	return template_rendered_str, nil
 }
 
 //-------------------------------------------------
@@ -96,8 +97,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 	p_flow_pages_num_int     int64,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
@@ -141,7 +141,8 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 		Is_subtmpl_def     func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp, tmpl_data{
+	buff := new(bytes.Buffer)
+	err := p_tmpl.Execute(buff, tmpl_data{
 		Images_pages_lst:   images_pages_lst,
 		Flow_pages_num_int: p_flow_pages_num_int,
 		Sys_release_info:   sys_release_info,
@@ -165,8 +166,9 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_images_lib", p_runtime_sys)
-		return gf_err
+		return "", gf_err
 	}
 
-	return nil
+	template_rendered_str := buff.String()
+	return template_rendered_str, nil
 }

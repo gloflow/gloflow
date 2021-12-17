@@ -180,18 +180,19 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 				//------------------
 				// RENDER_TEMPLATE
-				gf_err := flows__render_initial_page(flow_name_str,
+				template_rendered_str, gf_err := flows__render_initial_page(flow_name_str,
 					6,  // p_initial_pages_num_int int,
 					10, // p_page_size_int int,
 					gf_templates.flows_browser__tmpl,
 					gf_templates.flows_browser__subtemplates_names_lst,
-					p_resp,
 					p_ctx,
 					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 				//------------------
+
+				p_resp.Write([]byte(template_rendered_str))
 			}
 
 			return nil, nil

@@ -29,12 +29,12 @@ import (
 )
 
 var log_fun func(string,string)
-var cli_args_map map[string]interface{}
+// var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 	log_fun = gf_core.Init_log_fun()
-	cli_args_map = gf_images_core.CLI__parse_args(log_fun)
+	// cli_args_map = gf_images_core.CLI__parse_args(log_fun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -42,4 +42,55 @@ func TestMain(m *testing.M) {
 //---------------------------------------------------
 func Test__templates(p_test *testing.T) {
 
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_images_flows_tests",
+		Log_fun:          log_fun,
+	}
+
+
+	// TEMPLATES
+	templates_paths_map := map[string]string{
+		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
+	}
+	
+	gf_templates, gf_err := tmpl__load(templates_paths_map, runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
+
+
+
+
+
+
+	images_pages_lst := [][]*gf_images_core.GF_image{
+		{
+			&gf_images_core.GF_image{
+				Id_str:     "some_test_id",
+				Title_str:  "some_test_img",
+				Meta_map:   map[string]interface{}{"t_k": "val"},
+				Format_str: "jpg",
+				Thumbnail_small_url_str:  "url1",
+				Thumbnail_medium_url_str: "url2",
+				Thumbnail_large_url_str:  "url3",
+				Origin_page_url_str:      "url4",
+			},
+		},
+	}
+
+	flow_pages_num_int := int64(6)
+	template_rendered_str, gf_err := flows__render_template(images_pages_lst,
+
+		flow_pages_num_int,
+		gf_templates.flows_browser__tmpl,
+		gf_templates.flows_browser__subtemplates_names_lst,
+		runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+
+	}
+
+
+
+	fmt.Println(template_rendered_str)
 }
