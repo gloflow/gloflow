@@ -34,13 +34,13 @@
 	<div id='gf_images_flow_container' data-flow_pages_num="{{- .Flow_pages_num_int}}">
 
 		<div id="items">
-		{{- range .Images_pages_lst}}
-			{{- range .}}
+		{{- range .Images_pages_lst }}
+			{{- range . }}
 				<div class='gf_image item small_view'
-					data-img_id="{{- .id_str}}"
-					data-img_format="{{- .format_str}}"
+					data-img_id="{{- .id_str }}"
+					data-img_format="{{- .format_str }}"
 					{{- range $key, $value := .meta_map }}
-					data-img_meta__{{$key}}="{{$value}}"
+					data-img_meta__{{ $key }}="{{ $value }}"
 					{{- end }}>
 					
 					{{- /*------------------------------------------------------*/}}
@@ -53,29 +53,33 @@
 						</div>
 					</div>
 					<img src="{{.thumbnail_small_url_str}}"
-						data-img_thumb_medium_url="{{.thumbnail_medium_url_str}}"
-						data-img_thumb_large_url="{{.thumbnail_large_url_str}}"></img>
+						data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}"
+						data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
+						
 					{{- /*------------------------------------------------------*/}}
 					{{- /*TAGS*/}}
 					{{- if .image_has_tags_bool}}
 					<div class='tags_container'>
 					
-					{{- range .tags_lst}}
+						{{- range .tags_lst }}
 						<a class='gf_image_tag' href='/v1/tags/objects?tag={{ . }}&otype=image'>#{{ . }}</a>
-					{{- end}}
+						{{- end }}
 					
 					</div>
-					{{- end}}
+					{{- end }}
+
 					{{- /*------------------------------------------------------*/}}
 					<div class="origin_page_url">
-						<a href="{{.image_origin_page_url_str}}" target="_blank">{{.image_origin_page_url_str}}</a>
+						<a href="{{ .image_origin_page_url_str }}" target="_blank">{{ .image_origin_page_url_str }}</a>
 					</div>
+
 					{{- /*------------------------------------------------------*/}}
-					<div class="creation_time">{{.creation_unix_time_str}}</div>
+					<div class="creation_time">{{ .creation_unix_time_str }}</div>
+
 					{{- /*------------------------------------------------------*/}}
 				</div>
-			{{- end}}
-		{{- end}}
+			{{- end }}
+		{{- end }}
 		</div>
 
 	</div>
