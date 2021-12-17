@@ -38,11 +38,7 @@
 			{{- range .}}
 				<div class='gf_image item small_view'
 					data-img_id="{{- .id_str}}"
-					data-img_format="{{- .format_str}}"
-
-					{{ range $key, $value := .meta_map }}
-					data-img_meta__{{$key}}="{{$value}}"
-					{{ end }}>
+					data-img_format="{{- .format_str}}">
 
 					{{- /*------------------------------------------------------*/}}
 					{{- /*IMAGE THUMBNAIL DATA*/}}
