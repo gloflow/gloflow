@@ -181,7 +181,7 @@ function gf_upload__view_img(p_img_data_str,
 	const this_image = $(img_dialog).find(".upload_image_panel").last();
 	$(this_image).find("img").on("load", ()=>{
 
-		$("body").css("overflow", "hidden"); // turn-off scroll
+		$("body").css("overflow-y", "hidden"); // turn-off scroll
 		position_image_view();
 	});
 
@@ -198,13 +198,16 @@ function gf_upload__view_img(p_img_data_str,
 		// if no image flow name was supplied then use the default flow ("general")
 		if (image_flow_name_str.length == 0) {
 			image_flow_name_str = "general";
+		} 
+		else {
+			localStorage.setItem("gf:upload_flow_name_str", image_flow_name_str);
 		}
 		
 		p_upload_activate_fun(image_name_str, image_flow_name_str, ()=>{
 
 			// REMOVE_UPLOAD_DIALOG - when upload_activate function completes, remove the dialog
 			$(img_dialog).remove();
-			$("body").css("overflow", "visible"); // turn-on scroll
+			$("body").css("overflow-y", "visible"); // turn-on scroll
 		});
 	}
 
@@ -229,7 +232,7 @@ function gf_upload__view_img(p_img_data_str,
 
 			// REMOVE_DIALOG
 			$("#upload_image_dialog").remove();
-			$("body").css("overflow", "visible"); // turn-on scroll
+			$("body").css("overflow-y", "visible"); // turn-on scroll
 		}
 	});
 
@@ -240,7 +243,7 @@ function gf_upload__view_img(p_img_data_str,
 	$("#upload_image_dialog #background").on('click', ()=>{
 		// REMOVE_UPLOAD_DIALOG - remove dialog on click on background
 		$(img_dialog).remove();
-		$("body").css("overflow", "visible"); // turn-on scroll
+		$("body").css("overflow-y", "visible"); // turn-on scroll
 	})
 }
 
