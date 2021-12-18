@@ -88,9 +88,21 @@ function gf_upload__init(p_target_full_host_str) {
 function gf_upload__view_img(p_img_data_str,
 	p_upload_activate_fun) {
 	
+	//-----------------
+	// FLOW_NAME
+	// get old value from localStorage if it exists, if it doesnt use the default
+	const previous_flow_name_str = localStorage.getItem("gf:upload_flow_name_str");
+	var default_flow_name_str    = "general";
+	if (previous_flow_name_str != null) {
+		default_flow_name_str = previous_flow_name_str;
+	}
+
+	//-----------------
+
 	//-------------------------------------------------
 	function get_image_dialog() {
 
+		// first image
 		if ($("#upload_image_dialog").length == 0) {
 
 			const img_dialog = $(`
@@ -106,6 +118,9 @@ function gf_upload__view_img(p_img_data_str,
 								<div id="upload_image_name_input">
 									<input placeholder="image name"></input>
 								</div>
+								<div id="upload_image_flow_name_input">
+									<input placeholder="flow name" value="${default_flow_name_str}"></input>
+								</div>
 							</div>
 							<!-- ----------- -->
 
@@ -117,6 +132,8 @@ function gf_upload__view_img(p_img_data_str,
 			$("body").append(img_dialog);
 			return img_dialog;
 		}
+
+		// additional images (multi-image upload)
 		else {
 			const img_dialog     = $("#upload_image_dialog");
 			const new_img_id_int = parseInt($(img_dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
@@ -126,7 +143,10 @@ function gf_upload__view_img(p_img_data_str,
 				<div class="upload_image_panel">
 					<img id="${new_img_id_int}" class="target_upload_image" src="${p_img_data_str}"></img>
 					<div id="upload_image_name_input">
-						<input></input>
+						<input placeholder="image name"></input>
+					</div>
+					<div id="upload_image_flow_name_input">
+						<input placeholder="flow name"></input>
 					</div>
 				</div>
 				<!-- ----------- -->`);
@@ -164,10 +184,15 @@ function gf_upload__view_img(p_img_data_str,
 
 	//-------------------------------------------------
 	function upload() {
-		const image_name_str  = $(this_image).find("input").val();
-		const flows_names_str = "general";
+		const image_name_str    = $(this_image).find("#upload_image_name_input input").val();
+		var image_flow_name_str = $(this_image).find("#upload_image_flow_name_input input").val();
+
+		// if no image flow name was supplied then use the default flow ("general")
+		if (image_flow_name_str.length == 0) {
+			image_flow_name_str = "general";
+		}
 		
-		p_upload_activate_fun(image_name_str, flows_names_str, ()=>{
+		p_upload_activate_fun(image_name_str, image_flow_name_str, ()=>{
 
 			// REMOVE_UPLOAD_DIALOG - when upload_activate function completes, remove the dialog
 			$(img_dialog).remove();
