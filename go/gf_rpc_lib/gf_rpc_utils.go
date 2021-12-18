@@ -70,20 +70,24 @@ func Get_http_input(p_resp http.ResponseWriter,
 
 	var i map[string]interface{}
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
-	err               := json.Unmarshal(body_bytes_lst, &i)
 
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse json http input",
-			"json_decode_error",
-			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-			err, "gf_rpc_lib", p_runtime_sys)
+	// parse body bytes only if they're larger than 0
+	if len(body_bytes_lst) > 0 {
+		err := json.Unmarshal(body_bytes_lst, &i)
 
-		Error__in_handler(handler_url_path_str,
-			fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str), // p_user_msg_str
-			gf_err,
-			p_resp,
-			p_runtime_sys)
-		return nil, gf_err
+		if err != nil {
+			gf_err := gf_core.Error__create("failed to parse json http input",
+				"json_decode_error",
+				map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
+				err, "gf_rpc_lib", p_runtime_sys)
+
+			Error__in_handler(handler_url_path_str,
+				fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str), // p_user_msg_str
+				gf_err,
+				p_resp,
+				p_runtime_sys)
+			return nil, gf_err
+		}
 	}
 
 	return i, nil
