@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"bytes"
 	"text/template"
+	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
@@ -108,11 +109,14 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 		page_images_lst := []map[string]interface{}{}
 		for _, image := range images_page_lst {
 
+			meta_json_bytes_lst, _ := json.Marshal(image.Meta_map)
+			meta_json_str          := string(meta_json_bytes_lst)
+
 			image_info_map := map[string]interface{}{
 				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 				"id_str":                    image.Id_str,
 				"title_str":                 image.Title_str,
-				"meta_map":                  image.Meta_map,
+				"meta_json_str":             meta_json_str,
 				"format_str":                image.Format_str,
 				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,

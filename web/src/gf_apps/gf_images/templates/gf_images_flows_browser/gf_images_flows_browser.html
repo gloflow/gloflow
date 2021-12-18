@@ -36,7 +36,10 @@
 		<div id="items">
 		{{- range .Images_pages_lst }}
 			{{- range . }}
-				<div class='gf_image item small_view' data-img_id='{{- .id_str }}' data-img_format='{{- .format_str }}' data-img_meta='{{ .meta_map }}'>
+				<div class='gf_image item small_view'
+					data-img_id='{{- .id_str }}'
+					data-img_format='{{- .format_str }}'
+					data-img_meta_json='{{- .meta_json_str }}'>
 					
 					{{- /*------------------------------------------------------*/}}
 					{{- /*IMAGE THUMBNAIL DATA*/}}

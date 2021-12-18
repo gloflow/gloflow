@@ -297,7 +297,6 @@ def build_page(p_page_name_str,
 
 #---------------------------------------------------
 def process_files_to_copy(p_page_info_map, p_log_fun):
-	# p_log_fun("FUN_ENTER", "gf_web__build.process_files_to_copy()")
 	assert isinstance(p_page_info_map, dict)
 
 	print("")
@@ -329,7 +328,6 @@ def process_subtemplates(p_page_name_str,
 	p_build_dir_str,
 	p_page_info_map,
 	p_log_fun):
-	# p_log_fun("FUN_ENTER", "gf_web__build.process_subtemplates()")
 	assert isinstance(p_page_name_str, str)
 	assert os.path.isdir(p_build_dir_str)
 	assert "subtemplates_lst" in p_page_info_map.keys()
