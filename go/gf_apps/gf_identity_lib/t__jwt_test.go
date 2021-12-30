@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"context"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -54,13 +55,15 @@ func test_jwt_main(p_test *testing.T,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 
+	ctx := context.Background()
 
 	test_user_address_eth := GF_user_address_eth("")
 	test_signing_key_str  := GF_jwt_secret_key_val("fdsfsdf")
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 
 	// JWT_GENERATE
-	jwt_val, gf_err := jwt__generate(test_user_address_eth,
+	user_identifier_str := string(test_user_address_eth)
+	jwt_val, gf_err := jwt__generate(user_identifier_str,
 		test_signing_key_str,
 		creation_unix_time_f,
 		p_runtime_sys)
@@ -70,7 +73,7 @@ func test_jwt_main(p_test *testing.T,
 	
 	// JWT_VALIDATE
 	valid_bool, gf_err := jwt__validate(jwt_val,
-		test_signing_key_str,
+		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()

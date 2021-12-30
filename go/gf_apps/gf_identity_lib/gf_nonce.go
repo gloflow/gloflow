@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"time"
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -153,8 +154,8 @@ func db__nonce__create(p_nonce *GF_user_nonce,
 //---------------------------------------------------
 func db__nonce__get(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_user_nonce_val, *gf_core.GF_error) {
-
+	p_runtime_sys *gf_core.Runtime_sys) (GF_user_nonce_val, bool, *gf_core.GF_error) {
+	
 	user_nonce := &GF_user_nonce{}
 	err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").FindOne(p_ctx, bson.M{
 			"address_eth_str": p_user_address_eth_str,
@@ -162,16 +163,20 @@ func db__nonce__get(p_user_address_eth_str GF_user_address_eth,
 		}).Decode(&user_nonce)
 		
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return GF_user_nonce_val(""), false, nil
+		}
+
 		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": p_user_address_eth_str,
 			},
 			err, "gf_identity_lib", p_runtime_sys)
-		return GF_user_nonce_val(""), gf_err
+		return GF_user_nonce_val(""), false, gf_err
 	}
 
 	user_nonce_val_str := user_nonce.Val_str
 	
-	return user_nonce_val_str, nil
+	return user_nonce_val_str, true, nil
 }

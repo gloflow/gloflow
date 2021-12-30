@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -56,7 +57,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 					return nil, gf_err
 				}
 				input :=&GF_user__input_preflight{
-					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)), 
+					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
 				}
 
 				//---------------------
@@ -87,15 +88,39 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-
-				input :=&GF_user__input_login{
-
-				}
-
-				_, gf_err := users__pipeline__login(input, p_ctx, p_runtime_sys)
+				//---------------------
+				// INPUT
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
+
+				input :=&GF_user__input_login{
+					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
+					Auth_signature_str:   GF_auth_signature(input_map["auth_signature_str"].(string)),
+				}
+
+				//---------------------
+				// LOGIN
+				output, gf_err := users__pipeline__login(input, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//---------------------
+				// SET_SESSION_ID - sets gf_sid cookie on all future requests
+				session_data_str      := string(output.JWT_token_val)
+				session_ttl_hours_int := 24 // 1 day
+				session__set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+
+				//---------------------
+
+				output_map := map[string]interface{}{
+					"auth_signature_valid_bool": output.Auth_signature_valid_bool,
+					"nonce_exists_bool":         output.Nonce_exists_bool,
+					"user_id_str":               output.User_id_str,
+				}
+				return output_map, nil
 			}
 
 
@@ -133,7 +158,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				output_map := map[string]interface{}{
 					"auth_signature_valid_bool": output.Auth_signature_valid_bool,
-					"jwt_token_val_str":         output.JWT_token_val,
+					"nonce_exists_bool":         output.Nonce_exists_bool,
 				}
 				return output_map, nil
 			}
@@ -166,12 +191,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 					Description_str:      input_map["user_description_str"].(string),
 				}
 
-				//---------------------
-				// JWT_VALIDATE
-				gf_err = jwt__validate_from_req(input.User_address_eth_str, p_req, p_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
+				
 
 				//---------------------
 
@@ -195,15 +215,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 			if p_req.Method == "POST" {
 
-				// USER_ADDRESS_ETH
-				user_address_eth_str, gf_err := http__get_user_address_eth(p_req, p_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
 				//---------------------
-				// JWT_VALIDATE
-				gf_err = jwt__validate_from_req(user_address_eth_str, p_req, p_ctx, p_runtime_sys)
+				// SESSION_VALIDATE
+				gf_err := session__validate(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

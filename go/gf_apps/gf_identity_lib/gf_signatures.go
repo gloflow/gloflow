@@ -22,6 +22,7 @@ package gf_identity_lib
 import (
 	"fmt"
 	"context"
+	"strings"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -150,7 +151,7 @@ func verify__auth_signature(p_signature_str GF_auth_signature,
 
 
 	data_hash := crypto.Keccak256Hash([]byte(final_data_str))
-	sig_public_key_ECDSA, err := crypto.SigToPub(data_hash.Bytes(), sig_decoded_bytes_lst)
+	public_key_ECDSA, err := crypto.SigToPub(data_hash.Bytes(), sig_decoded_bytes_lst)
 	if err != nil {
 		gf_err := gf_core.Error__create("signature validation failed because the last byte (V value) of the signature is invalid",
 			"crypto_ec_recover_pubkey",
@@ -162,23 +163,31 @@ func verify__auth_signature(p_signature_str GF_auth_signature,
 	}
 
 
-	// CompressPubkey() - CompressPubkey encodes a public key to the 33-byte compressed format. 
-	public_key_bytes_lst := crypto.CompressPubkey(sig_public_key_ECDSA)
-
-
-
-
-
+	// CompressPubkey() - CompressPubkey encodes a public key to the 33-byte compressed format.
+	// compressed pub-key - uncompressed public key as a concatenation of Eliptic Curve x and y2 (as oppose to y1).
+	// 						this format was used earlier by wallets, but as the blockchain started to grow there was 
+	//                      a need to compress a public key. That's why it was decided to create a compressed format
+	//                      for a public key that would use two times less space in memory by removing the y coordinate.
+	//                      (because it can be calculated from the x coordinate by passing it to the y^2 = x^3 + 3 equation).
+	//                      now there is only x coordinate as a public key plus a prefix that defines whether
+	//                      the y should be negative or positive.
+	// they start with the:
+	//		- prefix 03 (for negative y compressed public key)
+	//		- 04 (for uncompressed public key)
+	public_key_bytes_lst := crypto.CompressPubkey(public_key_ECDSA)
 
 	// generate an Ethereum address that corresponds to a given Public Key.
-	user_address_eth_derived_str := crypto.PubkeyToAddress(*sig_public_key_ECDSA).Hex()
-
+	// secp256k1.CompressPubkey(pubkey.X, pubkey.Y)
+	user_address_eth_derived_str := crypto.PubkeyToAddress(*public_key_ECDSA).Hex()
 
 	//------------------------
 	// VALIDITY_CHECK_2
 	// compare addresses, suplied and derived (from pubkey), and if not the same
 	// return right away and declare signature as invalid.
-	if user_address_eth_derived_str != string(p_user_address_eth) {
+	if strings.ToLower(user_address_eth_derived_str) != strings.ToLower(string(p_user_address_eth)) {
+		fmt.Println("eth derived address and supplied eth address are not the same",
+			user_address_eth_derived_str,
+			string(p_user_address_eth))
 		return false, nil
 	}
 

@@ -39,6 +39,7 @@ func T__init() *gf_core.Runtime_sys {
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_identity_tests",
 		Log_fun:          log_fun,
+		Validator:        gf_core.Validate__init(),
 	}
 
 

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -45,7 +46,7 @@ type GF_user struct {
 
 // io_preflight
 type GF_user__input_preflight struct {
-	User_address_eth_str GF_user_address_eth
+	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
 }
 type GF_user__output_preflight struct {
 	User_exists_bool bool             
@@ -54,33 +55,32 @@ type GF_user__output_preflight struct {
 
 // io_login
 type GF_user__input_login struct {
-	User_address_eth_str GF_user_address_eth
-	Auth_signature_str   GF_auth_signature
+	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
+	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
 type GF_user__output_login struct {
+	Nonce_exists_bool         bool
 	Auth_signature_valid_bool bool
 	JWT_token_val             GF_jwt_token_val
-	User_id_str               gf_core.GF_ID
+	User_id_str               gf_core.GF_ID 
 }
 
 // io_create
 type GF_user__input_create struct {
-	User_address_eth_str GF_user_address_eth
-	Auth_signature_str   GF_auth_signature
-
-	// Nonce_val_str GF_user_nonce_val
+	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
+	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
 type GF_user__output_create struct {
+	Nonce_exists_bool         bool
 	Auth_signature_valid_bool bool
-	JWT_token_val             GF_jwt_token_val
 }
 
 // io_update
 type GF_user__input_update struct {
-	User_address_eth_str GF_user_address_eth
-	Username_str         string
-	Email_str            string
-	Description_str      string
+	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
+	Username_str         string              `validate:"min=4,max=50"`
+	Email_str            string              `validate:"min=6,max=50"`
+	Description_str      string              `validate:"min=1,max=2000"`
 }
 type GF_user__output_update struct {
 }
@@ -101,11 +101,16 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_preflight, *gf_core.GF_error) {
 
+	//------------------------
+	// VALIDATE
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+
 	output := &GF_user__output_preflight{}
-
-
-
-
 
 	exists_bool, gf_err := db__user__exists(p_input.User_address_eth_str,
 		p_ctx,
@@ -130,21 +135,21 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 		output.User_exists_bool = false
 		output.Nonce_val_str    = nonce.Val_str
 
+	// user exists
 	} else {
 
-
-
-		nonce_val_str, gf_err := db__nonce__get(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
+		nonce_val_str, nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
 
-		output.User_exists_bool = true
-		output.Nonce_val_str    = nonce_val_str
+		if !nonce_exists_bool {
+			// generate new nonce, because the old one has been invalidated?
+		} else {
+			output.User_exists_bool = true
+			output.Nonce_val_str    = nonce_val_str
+		}
 	}
-
-	
-
 
 	return output, nil
 }
@@ -154,23 +159,39 @@ func users__pipeline__preflight(p_input *GF_user__input_preflight,
 func users__pipeline__login(p_input *GF_user__input_login,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_login, *gf_core.GF_error) {
-
-	output := &GF_user__output_login{}
-
-
-
-
+	
 	//------------------------
-	user_nonce_val, gf_err := db__nonce__get(p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
+	// VALIDATE_INPUT
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
 	//------------------------
+
+
+	output := &GF_user__output_login{}
+
+	//------------------------
+	user_nonce_val, user_nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+		
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
+	if !user_nonce_exists_bool {
+		output.Nonce_exists_bool = false
+		return output, nil
+	} else {
+		output.Nonce_exists_bool = true
+	}
+
+	//------------------------
 	// VERIFY
-	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
+
+	signature_valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
 		user_nonce_val,
 		p_input.User_address_eth_str,
 		p_ctx,
@@ -178,8 +199,8 @@ func users__pipeline__login(p_input *GF_user__input_login,
 	if gf_err != nil {
 		return nil, gf_err
 	}
-	
-	if !valid_bool {
+
+	if !signature_valid_bool {
 		output.Auth_signature_valid_bool = false
 		return output, nil
 	} else {
@@ -188,7 +209,8 @@ func users__pipeline__login(p_input *GF_user__input_login,
 
 	//------------------------
 	// JWT
-	jwt_token_val, gf_err := jwt__pipeline__generate(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
+	user_identifier_str := string(p_input.User_address_eth_str)
+	jwt_token_val, gf_err := jwt__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -196,10 +218,11 @@ func users__pipeline__login(p_input *GF_user__input_login,
 	output.JWT_token_val = jwt_token_val
 
 	//------------------------
+	// USER_ID
 
+	//------------------------
 
-
-	return nil, nil
+	return output, nil
 }
 
 //---------------------------------------------------
@@ -208,23 +231,38 @@ func users__pipeline__create(p_input *GF_user__input_create,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_create, *gf_core.GF_error) {
 
+	//------------------------
+	// VALIDATE_INPUT
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+
 	output := &GF_user__output_create{}
 	
-
-
 	//------------------------
 	// DB_NONCE_GET - get a nonce already generated in preflight for this user address,
 	//                for validating the recevied auth_signature
-	user_nonce_val_str, gf_err := db__nonce__get(p_input.User_address_eth_str,
+	user_nonce_val_str, user_nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
+	if !user_nonce_exists_bool {
+		output.Nonce_exists_bool = false
+		return output, nil
+	} else {
+		output.Nonce_exists_bool = true
+	}
+
 	//------------------------
 	// VALIDATE
-	valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
+
+	signature_valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
 		user_nonce_val_str,
 		p_input.User_address_eth_str,
 		p_ctx,
@@ -233,15 +271,14 @@ func users__pipeline__create(p_input *GF_user__input_create,
 		return nil, gf_err
 	}
 	
-	if !valid_bool {
+	if signature_valid_bool {
+		output.Auth_signature_valid_bool = true
+	} else {
 		output.Auth_signature_valid_bool = false
 		return output, nil
-	} else {
-		output.Auth_signature_valid_bool = true
 	}
 
 	//------------------------
-
 
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 	user_address_eth_str  := p_input.User_address_eth_str
@@ -256,22 +293,12 @@ func users__pipeline__create(p_input *GF_user__input_create,
 		Addresses_eth_lst:    user_ddresses_eth_lst, 
 	}
 
-
 	//------------------------
 	// DB
 	gf_err = db__user__create(user, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
-
-	//------------------------
-	// JWT
-	jwt_token_val, gf_err := jwt__pipeline__generate(user_address_eth_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	output.JWT_token_val = jwt_token_val
 
 	//------------------------
 
@@ -283,6 +310,15 @@ func users__pipeline__create(p_input *GF_user__input_create,
 func users__pipeline__update(p_input *GF_user__input_update,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
+	
+	//------------------------
+	// VALIDATE_INPUT
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
 
 	output := &GF_user__output_update{}
 
@@ -295,6 +331,15 @@ func users__pipeline__get(p_input *GF_user__input_get,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
 
+	//------------------------
+	// VALIDATE
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+	
 	output := &GF_user__output_get{}
 
 	return output, nil
