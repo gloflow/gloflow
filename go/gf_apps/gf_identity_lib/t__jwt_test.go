@@ -22,7 +22,6 @@ package gf_identity_lib
 import (
 	"fmt"
 	"os"
-	"time"
 	"context"
 	"testing"
 	"github.com/stretchr/testify/assert"
@@ -57,15 +56,12 @@ func test_jwt_main(p_test *testing.T,
 
 	ctx := context.Background()
 
-	test_user_address_eth := GF_user_address_eth("")
-	test_signing_key_str  := GF_jwt_secret_key_val("fdsfsdf")
-	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
+	test_user_address_eth := GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
 
 	// JWT_GENERATE
 	user_identifier_str := string(test_user_address_eth)
-	jwt_val, gf_err := jwt__generate(user_identifier_str,
-		test_signing_key_str,
-		creation_unix_time_f,
+	jwt_val, gf_err := jwt__pipeline__generate(user_identifier_str,
+		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()

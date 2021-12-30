@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,7 +43,6 @@ type GF_jwt_secret_key struct {
 
 	Val                 GF_jwt_secret_key_val `bson:"val_str"`
 	User_identifier_str string                `bson:"user_identifier_str"`
-	// User_address_eth GF_user_address_eth `bson:"user_address_eth_str"`
 }
 
 type GF_jwt_claims struct {
@@ -75,6 +74,7 @@ func jwt__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 	jwt_secret_key := &GF_jwt_secret_key{
 		V_str:                "0",
 		Id_str:               jwt_id,
+		Deleted_bool:         false,
 		Creation_unix_time_f: creation_unix_time_f,
 		Val:                  jwt_secret_key_val_str,
 		User_identifier_str:  p_user_identifier_str,
@@ -176,12 +176,12 @@ func jwt__validate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
-	claims := &jwt.MapClaims{}
+	claims := &GF_jwt_claims{}
 	jwt_token, err := jwt.ParseWithClaims(string(p_jwt_token_val),
 		claims,
 		func(p_jwt_token *jwt.Token) (interface{}, error) {
 
-			user_identifier_str := p_jwt_token.Claims.(GF_jwt_claims).User_identifier_str
+			user_identifier_str := p_jwt_token.Claims.(*GF_jwt_claims).User_identifier_str
 
 			// DB_GET
 			jwt_secret_key, gf_err := db__jwt_secret_key__get(user_identifier_str, p_ctx, p_runtime_sys)
@@ -213,6 +213,20 @@ func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
+	coll_name_str := "gf_auth_jwt"
+
+	gf_err := gf_core.Mongo__insert(p_jwt_secret_key,
+		coll_name_str,
+		map[string]interface{}{
+			"id_str":              p_jwt_secret_key.Id_str,
+			"user_identifier_str": p_jwt_secret_key.User_identifier_str,
+			"caller_err_msg_str":  "failed to create jwt_secret_key for a user in a DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
 	return nil
 }
@@ -221,9 +235,6 @@ func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
 func db__jwt_secret_key__get(p_user_identifier_str string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_jwt_secret_key, *gf_core.GF_error) {
-
-
-
 
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first

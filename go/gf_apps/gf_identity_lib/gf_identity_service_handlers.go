@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"

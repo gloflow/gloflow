@@ -119,9 +119,13 @@ async function user_auth_pipeline(p_user_address_eth_str) {
 
         // user is created
         const user_create_data_map = await user_create(p_user_address_eth_str, nonce_val_str);
+        const auth_signature_str   = user_create_data_map["auth_signature_str"];
 
         // login this newly created user
-        await user_login__http();
+        const login_data_map = await user_login__http(p_user_address_eth_str, auth_signature_str);
+
+        console.log(" ============== LOGIN_DATA", login_data_map);
+
 
         // only after that offer to the user to upload their details.
         // for update to succeed the user has to be logedin
@@ -149,8 +153,14 @@ async function user_create(p_user_address_eth_str,
             
             try {
                 // user was created successfuly, remove the create_user_dialog and return
-                const user_create_data_map = await user_create__http(p_user_address_eth_str, auth_signature_str);
+                const http_output_map = await user_create__http(p_user_address_eth_str, auth_signature_str);
                 $(create_user_dialog).remove();
+
+
+                const user_create_data_map = {
+                    "http_output_map":    http_output_map,
+                    "auth_signature_str": auth_signature_str,
+                };
                 p_resolve_fun(user_create_data_map);
 
             } catch (p_err) {            
@@ -246,10 +256,13 @@ function user_preflight__http(p_user_address_eth_str) {
 
 //-------------------------------------------------
 // USER_LOGIN__HTTP
-function user_login__http() {
+function user_login__http(p_user_address_eth_str :string,
+    p_auth_signature_str :string) {
+    
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
-
+            "user_address_eth_str": p_user_address_eth_str,
+            "auth_signature_str":   p_auth_signature_str,
         };
 
         const url_str = '/v1/identity/users/login';
@@ -260,7 +273,7 @@ function user_login__http() {
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(data_map);
+                p_resolve_fun(p_response_map);
             },
             'error':(jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
@@ -272,8 +285,8 @@ function user_login__http() {
 
 //-------------------------------------------------
 // USER_CREATE__HTTP
-function user_create__http(p_user_address_eth_str,
-    p_auth_signature_str) {
+function user_create__http(p_user_address_eth_str :string,
+    p_auth_signature_str :string) {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
