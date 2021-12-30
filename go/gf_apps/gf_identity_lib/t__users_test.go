@@ -208,6 +208,43 @@ func Test__users_http(p_test *testing.T) {
 		p_test.Fail()
 	}
 
+
+	//---------------------------------
+	// TEST_USER_GET
+
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/get", test_port_int)
+	data_map = map[string]string{
+		"me_bool": "true",
+	}
+
+
+	//---------------------------------
+	// TEST_USER_UPDATE
+
+	fmt.Println("====================================")
+	fmt.Println("user update inputs:")
+	fmt.Println("address",   address_str, len(address_str))
+	fmt.Println("signature", signature_str, len(signature_str))
+
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/update", test_port_int)
+	data_map = map[string]string{
+		"user_username_str":    "new username",
+		"user_email_str":       "ivan@gloflow.com",
+		"user_description_str": "some new description",
+		
+	}
+	data_bytes_lst, _ = json.Marshal(data_map)
+	_, body_str, errs = request.Post(url_str).
+		Send(string(data_bytes_lst)).
+		End()
+
+	spew.Dump(body_str)
+
+
+
+
+
+
 	//---------------------------------
 }
 

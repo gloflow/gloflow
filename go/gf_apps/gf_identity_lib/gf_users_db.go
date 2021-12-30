@@ -62,6 +62,34 @@ func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
+// GET
+func db__user__get(p_user_address_eth_str GF_user_address_eth,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+
+	find_opts := options.FindOne()
+	
+	user := GF_user{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
+			"deleted_bool":      false,
+		},
+		find_opts).Decode(&user)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_address_eth_str": p_user_address_eth_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return &user, nil
+}
+
+//---------------------------------------------------
 // EXISTS
 func db__user__exists(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,

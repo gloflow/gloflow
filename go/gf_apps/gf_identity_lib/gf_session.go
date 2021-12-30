@@ -58,8 +58,8 @@ func session__set_on_req(p_session_data_str string,
 //---------------------------------------------------
 func session__validate(p_req *http.Request,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-
+	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
+	
 	for _, cookie := range p_req.Cookies() {
 		if (cookie.Name == "gf_sess_data") {
 			session_data_str  := cookie.Value
@@ -67,16 +67,24 @@ func session__validate(p_req *http.Request,
 
 			//---------------------
 			// JWT_VALIDATE
-			gf_err := jwt__pipeline__validate(GF_jwt_token_val(jwt_token_val_str),
+			user_identifier_str, gf_err := jwt__pipeline__validate(GF_jwt_token_val(jwt_token_val_str),
 				p_ctx,
 				p_runtime_sys)
 			if gf_err != nil {
-				return gf_err
+				return false, "", gf_err
 			}
+
+			return true, user_identifier_str, nil
 
 			//---------------------
 		}
 	}
 
-	return nil
+	// if this point is reached then gf_sess_data cookie was never found
+	gf_err := gf_core.Error__create("`gf_sess_data` cookie missing in request",
+		"verify__sess_data_missing_in_req",
+		map[string]interface{}{},
+		nil, "gf_identity_lib", p_runtime_sys)
+
+	return false, "", gf_err
 }

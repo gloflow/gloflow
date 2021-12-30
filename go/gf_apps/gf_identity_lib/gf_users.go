@@ -92,8 +92,13 @@ type GF_user__update struct {
 
 // io_get
 type GF_user__input_get struct {
+	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
 }
+
 type GF_user__output_get struct {
+	Username_str    string
+	Email_str       string
+	Description_str string
 }
 
 //---------------------------------------------------
@@ -340,7 +345,19 @@ func users__pipeline__get(p_input *GF_user__input_get,
 
 	//------------------------
 	
-	output := &GF_user__output_get{}
+	user, gf_err := db__user__get(p_input.User_address_eth_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+
+	output := &GF_user__output_get{
+		Username_str:    user.Username_str,
+		Email_str:       user.Email_str,
+		Description_str: user.Description_str,
+	}
 
 	return output, nil
 }

@@ -132,7 +132,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_CREATE
-	// NO_AUTH
+	// NO_AUTH - unauthenticated users are able to create new users
+
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -171,11 +172,25 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// USERS_UPDATE
-	// AUTH
+	// AUTH - only logged in users can update their own details
+
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
+
+				//---------------------
+				// SESSION_VALIDATE
+				valid_bool, me_user_identifier_str, gf_err := session__validate(p_req, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				if !valid_bool {
+					return nil, nil
+				}
+
+				//---------------------
 
 				//---------------------
 				// INPUT
@@ -184,14 +199,13 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 					return nil, gf_err
 				}
 
+				user_address_eth_str := GF_user_address_eth(me_user_identifier_str)
 				input := &GF_user__input_update{
-					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
+					User_address_eth_str: user_address_eth_str,
 					Username_str:         input_map["user_username_str"].(string),
 					Email_str:            input_map["user_email_str"].(string),
 					Description_str:      input_map["user_description_str"].(string),
 				}
-
-				
 
 				//---------------------
 
@@ -199,6 +213,9 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				if gf_err != nil {
 					return nil, gf_err
 				}
+
+
+				
 			}
 
 			return nil, nil
@@ -217,19 +234,54 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 				// SESSION_VALIDATE
-				gf_err := session__validate(p_req, p_ctx, p_runtime_sys)
+				valid_bool, me_user_identifier_str, gf_err := session__validate(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
+				}
+
+				if !valid_bool {
+					return nil, nil
 				}
 
 				//---------------------
 
-				input :=&GF_user__input_get{}
-
-				_, gf_err = users__pipeline__get(input, p_ctx, p_runtime_sys)
+				//---------------------
+				// INPUT
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
+
+				// when user is requesting info on themselves
+				me_bool := input_map["me_bool"].(bool)
+
+				// when user is requesting info on some other user
+				other_user_identifier_str := input_map["other_user_identifier_str"].(string)
+
+				var user_address_eth_str GF_user_address_eth
+				if (me_bool) {
+					user_address_eth_str = GF_user_address_eth(me_user_identifier_str)
+				} else {
+					user_address_eth_str = GF_user_address_eth(other_user_identifier_str)
+				}
+
+				input :=&GF_user__input_get{
+					User_address_eth_str: user_address_eth_str,
+				}
+
+				//---------------------
+
+				output, gf_err := users__pipeline__get(input, p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				output_map := map[string]interface{}{
+					"username_str":    output.Username_str,
+					"email_str":       output.Email_str,
+					"description_str": output.Description_str,
+				}
+				return output_map, nil
 			}
 
 			return nil, nil

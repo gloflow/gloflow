@@ -98,6 +98,10 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "input struct is invalid",
 		},
 
+		"verify__sess_data_missing_in_req": Error_def{
+			Descr_str: "session data missing in http request",
+		},
+		
 		//---------------
 		// FILESYSTEM
 		"file_open_error": Error_def{
@@ -375,7 +379,8 @@ func error__get_defs() map[string]Error_def {
 		},
 		"crypto_signature_eth_last_byte_invalid_value": Error_def{
 			Descr_str: "last byte of an ethereum signature does not have the proper V value",
-		}, 
+		},
+
 		//---------------
 	}
 	return error_defs_map

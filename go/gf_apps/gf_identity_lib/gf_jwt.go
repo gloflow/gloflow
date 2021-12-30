@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -147,14 +147,14 @@ func jwt__generate_id(p_user_identifier_str string, // p_user_address_eth GF_use
 //---------------------------------------------------
 func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context .Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	// VALIDATE
-	valid_bool, gf_err := jwt__validate(p_jwt_token_val,
+	valid_bool, user_identifier_str, gf_err := jwt__validate(p_jwt_token_val,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		return gf_err
+		return "", gf_err
 	}
 
 	if !valid_bool {
@@ -164,17 +164,17 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 				"jwt_token_val_str": p_jwt_token_val,
 			},
 			nil, "gf_identity_lib", p_runtime_sys)
-		return gf_err
+		return "", gf_err
 	}
 
-	return nil
+	return user_identifier_str, nil
 }
 
 //---------------------------------------------------
 // VALIDATE
 func jwt__validate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 
 	claims := &GF_jwt_claims{}
 	jwt_token, err := jwt.ParseWithClaims(string(p_jwt_token_val),
@@ -199,11 +199,13 @@ func jwt__validate(p_jwt_token_val GF_jwt_token_val,
 				"jwt_token_val_str": p_jwt_token_val,
 			},
 			err, "gf_identity_lib", p_runtime_sys)
-		return false, gf_err
+		return false, "", gf_err
 	}
 
-	valid_bool := jwt_token.Valid
-	return valid_bool, nil
+	valid_bool          := jwt_token.Valid
+	user_identifier_str := jwt_token.Claims.(*GF_jwt_claims).User_identifier_str
+	
+	return valid_bool, user_identifier_str, nil
 }
 
 //---------------------------------------------------

@@ -68,7 +68,7 @@ func test_jwt_main(p_test *testing.T,
 	}
 	
 	// JWT_VALIDATE
-	valid_bool, gf_err := jwt__validate(jwt_val,
+	valid_bool, user_identifier_str, gf_err := jwt__validate(jwt_val,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -78,5 +78,7 @@ func test_jwt_main(p_test *testing.T,
 
 
 	assert.True(p_test, valid_bool == true, "test JWT token is not valid, when it should be")
+	assert.True(p_test, user_identifier_str == string(test_user_address_eth),
+		"test user_identifier extracted from JWT durring validation is the same as the input test eth address")
 	
 }
