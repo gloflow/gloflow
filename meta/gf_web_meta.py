@@ -111,7 +111,7 @@ def get():
 		# DOMAINS_BROWSER
 
 		# IMPORTANT!! - this is in analytics, because domains are sources for images/posts, and so dont 
-		#               belong to neither gf_images nor gf_publisher. maybe it should be its own app?
+		#               belong to neither gf_images nor gf_publisher. maybe it should be its own core app?
 		"gf_domains_browser": {
 			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_analytics",
 			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_domains_lib/templates/gf_domains_browser/gf_domains_browser.html",

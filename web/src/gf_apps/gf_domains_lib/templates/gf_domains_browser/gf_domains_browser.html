@@ -28,11 +28,20 @@
 </div>
 
 {{- /*-----------------------------------------------------*/}}
+
+<script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
+<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="./../../../../../libs/js/jquery.autocomplete.min.js"></script>
 <script type="text/javascript" src="./../../../../../libs/js/pixi.min.js"></script>
 
 <script type="text/javascript" src="./../../ts/gf_domains_browser/gf_domains_browser.ts"></script>
+
+<script>
+	System.import('gf_apps/gf_domains_lib/ts/gf_domains_browser/gf_domains_browser').then(function(m){});
+</script>
+
 {{- /*------------------------------------------------------*/}}
 <div id='sys_release_info'>
 	<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>

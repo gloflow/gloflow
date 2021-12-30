@@ -24,9 +24,9 @@ body {
 #domains .domain {
 	background-color: #e2e2e2;
     font-size: 12px;
-    padding-top: 4px;
+    padding-top: 8px;
     padding-bottom: 4px;
-    padding-left: 4px;
+    padding-left: 5px;
     margin-bottom: 4px;
 	width: 300px;
 }
@@ -36,8 +36,13 @@ body {
     font-size: 14px;
 }
 #domains .domain .domain_name a {
+	padding-left: 7px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-right: 7px;
+
 	text-decoration: none;
-	color: #4c4c4c;
+	color: #ffffff;
 	background-color: #ea5914;
 }
 #domains .domain .title {

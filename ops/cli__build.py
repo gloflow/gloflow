@@ -179,12 +179,17 @@ def main():
 		apps_names_lst = [app_name_str]
 		web_meta_map   = gf_web_meta.get() 
 
+
+		page_name_str = args_map["page_name"]
+
+
 		build_outof_cont_bool = args_map["build_outof_cont"]
 		if build_outof_cont_bool:
 			gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
 			
 		else:
-			gf_web__build.run_in_cont(app_name_str)
+			gf_web__build.run_in_cont(app_name_str,
+				p_page_name_str=p_page_name_str)
 
 	#-------------
 	# BUILD_CONTAINERS
@@ -386,6 +391,13 @@ def parse_args():
 		help = "specify if certain Docker CLI commands are to run with 'sudo'")
 
 	#-------------
+	# PAGE_NAME
+	# if build_web command is run, than this argument can specify which specific page to build
+	# and speed the build up by avoiding the rebuild of all pages
+	arg_parser.add_argument('-page_name', action = "store", default=None,
+		help = "specify which page to build in a web build'")
+
+	#-------------
 	cli_args_lst   = sys.argv[1:]
 	args_namespace = arg_parser.parse_args(cli_args_lst)
 
@@ -407,7 +419,8 @@ def parse_args():
 		"dockerhub_pass":   gf_dockerhub_pass_str,
 		"docker_sudo":      args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
-		"fetch_deps":       args_namespace.fetch_deps
+		"fetch_deps":       args_namespace.fetch_deps,
+		"page_name":        args_namespace.page_name
 	}
 	return args_map
 

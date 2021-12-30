@@ -64,14 +64,16 @@ $(document).ready(()=>{
 
     init(domains_infos_lst, log_fun);
 });
+
 //-----------------------------------------------------
 export function init(p_domains_infos_lst :Object[], p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_domains_browser.init()');
+	p_log_fun('FUN_ENTER', 'gf_domains_browser.init()');
 
-	$('#viz_container').on('click',()=>{
+	$('#viz_container').on('click', ()=>{
 		init_viz(p_domains_infos_lst,p_log_fun);
 	});
 }
+
 //-----------------------------------------------------
 export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 	p_log_fun('FUN_ENTER','gf_domains_browser.init_viz()');
@@ -92,6 +94,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 	</div>`;
 
 	$('body').append(element);
+
 	//---------------------
 
 	const background_color_int :number = 0xFFE598; //gf_color.get_hex('whitesmoke');//0xFFFFE598;
@@ -108,7 +111,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
     const height_int :number = $('#domain_stats_canvas').height();
 
     //-----------------
-	//DOMAIN SEARCH
+	// DOMAIN SEARCH
 	
 	gf_domains_search.init_domain_search(p_domains_infos_lst,
 		(p_domain_info_map :Object)=>{

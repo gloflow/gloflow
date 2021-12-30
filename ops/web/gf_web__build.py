@@ -27,23 +27,30 @@ import gf_core_cli
 
 #--------------------------------------------------
 # RUN_IN_CONTAINER
-def run_in_cont(p_app_str):
+def run_in_cont(p_app_str,
+	p_page_name_str=None):
 
-    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
-    cmd_lst = [
-        "sudo", "docker", "run",
-        "--rm", # remove after exit 
-        "-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
-        "glofloworg/gf_builder_web:latest",
-        "python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_web", "-build_outof_cont", f"-app={p_app_str}"
-    ]
+	repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+
+	py_cmd_lst = [
+		"python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_web", "-build_outof_cont",
+		f"-app={p_app_str}",
+		f"-page_name={p_page_name_str}"
+	]
+	cmd_lst = [
+		"sudo", "docker", "run",
+		"--rm", # remove after exit 
+		"-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
+		"glofloworg/gf_builder_web:latest",
+	]
+	cmd.extend(py_cmd_lst)
 	
-    p = gf_core_cli.run__view_realtime(cmd_lst, {
+	p = gf_core_cli.run__view_realtime(cmd_lst, {
 
 		},
-        "gf_build_web", "green")
+		"gf_build_web", "green")
 
-    p.wait()
+	p.wait()
 
 #---------------------------------------------------
 def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
@@ -84,10 +91,10 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 
 #---------------------------------------------------
 def build_page(p_page_name_str,
-    p_build_dir_str,
+	p_build_dir_str,
 	p_build_copy_dir_str,
-    p_page_info_map,
-    p_log_fun):
+	p_page_info_map,
+	p_log_fun):
 	# p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 	
 	print("")
@@ -355,8 +362,8 @@ def process_subtemplates(p_page_name_str,
 
 #---------------------------------------------------
 def minify_js(p_js_target_file_str,
-    p_js_files_lst,
-    p_log_fun):
+	p_js_files_lst,
+	p_log_fun):
 	p_log_fun("FUN_ENTER", "gf_web__build.minify_js()")
 
 	cmd_lst = [
