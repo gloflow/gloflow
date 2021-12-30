@@ -35,9 +35,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
-	// FIX!! - using a single validator across multiple goroutines/threads, is it safe?
-	validator := gf_core.Validate__init()
-
 	// TEMPLATES
 	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
 	if gf_err != nil {
@@ -88,7 +85,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				gf_err = bookmarks__pipeline__create(&input,
 					p_images_jobs_mngr,
-					validator,
 					p_ctx,
 					p_runtime_sys)
 				if gf_err != nil {

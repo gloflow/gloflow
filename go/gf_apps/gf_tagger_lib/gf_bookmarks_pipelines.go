@@ -25,7 +25,6 @@ import (
 	"context"
 	"text/template"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"github.com/go-playground/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -147,13 +146,12 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 // CREATE
 func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
-	p_validator        *validator.Validate,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// VALIDATE
-	gf_err := gf_core.Validate(p_input, p_validator, p_runtime_sys)
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
