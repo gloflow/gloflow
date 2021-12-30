@@ -26,7 +26,7 @@ package gf_core
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	// "github.com/globalsign/mgo"
+	"github.com/go-playground/validator"
 )
 
 //-------------------------------------------------
@@ -42,4 +42,6 @@ type Runtime_sys struct {
 	Errors_send_to_sentry_bool  bool // if errors should be sent to Sentry service
 
 	Names_prefix_str string
+
+	Validator *validator.Validate
 }

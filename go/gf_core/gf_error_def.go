@@ -361,6 +361,9 @@ func error__get_defs() map[string]Error_def {
 		"crypto_jwt_verify_token_invalid_error": Error_def{
 			Descr_str: "JWT token is invalid",
 		},
+		"crypto_jwt_parse_token_error": Error_def{
+			Descr_str: "JWT token failed to parse",
+		},
 		"crypto_ec_recover_pubkey": Error_def{
 			Descr_str: "failed to recovery Pubkey fro signature",
 		},

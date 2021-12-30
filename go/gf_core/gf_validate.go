@@ -35,11 +35,10 @@ func Validate__init() *validator.Validate {
 }
 
 //-------------------------------------------------
-func Validate(p_target interface{},
-	p_validator   *validator.Validate,
-	p_runtime_sys *Runtime_sys) *Gf_error {
+func Validate_struct(p_target interface{},
+	p_runtime_sys *Runtime_sys) *GF_error {
 
-	err := p_validator.Struct(p_target)
+	err := p_runtime_sys.Validator.Struct(p_target)
 	if err != nil {
 		gf_err := Error__create("failed to validate target struct", 
 			"verify__invalid_input_struct_error",
