@@ -56,6 +56,9 @@ func service__run(p_config *GF_config,
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
 
+	validator := gf_core.Validate__init()
+	p_runtime_sys.Validator = validator
+
 	//-------------
 	// GF_IDENTITY
 
