@@ -46,7 +46,6 @@ type Gf_user_event_req_ctx struct {
 	Browser_ver_str      string `json:"browser_ver_str"  bson:"browser_ver_str"`
 	Os_name_str          string `json:"os_name_str"      bson:"os_name_str"`
 	Os_ver_str           string `json:"os_ver_str"       bson:"os_ver_str"`
-	Cookies_str          string `json:"cookies_str"      bson:"cookies_str"`
 }
 
 type Gf_user_event struct {

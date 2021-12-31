@@ -22,11 +22,14 @@ package gf_analytics_lib
 import (
 	"time"
 	"strings"
+	"context"
 	"net/http"
 	"github.com/ianoshen/uaparser"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 )
+
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
@@ -58,9 +61,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			ip_str       := p_req.RemoteAddr
 			clean_ip_str := strings.Split(ip_str,":")[0]
-
-			cookies_lst := p_req.Cookies()
-			cookies_str := gf_core.HTTP__serialize_cookies(cookies_lst,p_runtime_sys)
+			
 			//-----------------
 			// BROWSER INFORMATION
 			user_agent_str := p_req.UserAgent()
@@ -94,7 +95,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 				Browser_ver_str:  browser_ver_str,
 				Os_name_str:      os_name_str,
 				Os_ver_str:       os_version_str,
-				Cookies_str:      cookies_str,
 			}
 
 			gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
@@ -114,30 +114,41 @@ func init_handlers(p_templates_paths_map map[string]string,
 	})
 
 	//--------------
-	http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/analytics_dashboard__ff0099__ooo ----------")
-
+	// http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
+	//	p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/analytics_dashboard__ff0099__ooo ----------")
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/dashboard",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			
 		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
+			//---------------------
+			// SESSION_VALIDATE
+			valid_bool, _, gf_err := gf_identity_lib.Session__validate(p_req, p_ctx, p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			if !valid_bool {
+				return nil, nil
+			}
+
+			//---------------------
+			
 			//--------------------
 			// RENDER TEMPLATE
-			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
+			gf_err = dashboard__render_template(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
 			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/analytics_dashboard__ff0099__ooo", "failed to render analytics dashboard page", gf_err, p_resp, p_runtime_sys)
-				return
+				return nil, gf_err
 			}
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/analytics_dashboard__ff0099__ooo", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
 		}
-	})
+		return nil, nil
+	},
+	nil,
+	true, // p_store_run_bool
+	p_runtime_sys)
 
 	//--------------
 	return nil
