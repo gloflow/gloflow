@@ -236,8 +236,14 @@ function gf_upload__view_img(p_img_data_str,
 		}
 	});
 
+
+	
+	var uploading_in_progress_bool = false;
 	$("#upload_image_dialog #upload_btn").on('click', ()=>{
-		upload();
+		if (!uploading_in_progress_bool) {
+			uploading_in_progress_bool = true;
+			upload();
+		}
 	});
 
 	$("#upload_image_dialog #background").on('click', ()=>{
