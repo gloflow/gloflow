@@ -59,6 +59,7 @@ func Test__users_http(p_test *testing.T) {
 		
 	}()
 
+	request := gorequest.New()
 
 	//---------------------------------
 	// GENERATE_WALLET
@@ -70,7 +71,7 @@ func Test__users_http(p_test *testing.T) {
 
 	//---------------------------------
 	// TEST_PREFLIGHT_HTTP
-	request := gorequest.New()
+	
 	data_map := map[string]string{
 		"user_address_eth_str": address_str,
 	}
@@ -213,10 +214,9 @@ func Test__users_http(p_test *testing.T) {
 	// TEST_USER_GET
 
 	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/get", test_port_int)
-	data_map = map[string]string{
-		"me_bool": "true",
-	}
-
+	data_bytes_lst, _ = json.Marshal(data_map)
+	_, body_str, errs = request.Get(url_str).
+		End()
 
 	//---------------------------------
 	// TEST_USER_UPDATE

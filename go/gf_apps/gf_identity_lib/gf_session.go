@@ -56,7 +56,7 @@ func session__set_on_req(p_session_data_str string,
 }
 
 //---------------------------------------------------
-func session__validate(p_req *http.Request,
+func Session__validate(p_req *http.Request,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 	
