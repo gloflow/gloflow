@@ -175,8 +175,6 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	// USERS_UPDATE
 	// AUTH - only logged in users can update their own details
 
-	
-
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -223,7 +221,10 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				_, gf_err = users__pipeline__update(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
-				}	
+				}
+
+				output_map := map[string]interface{}{}
+				return output_map, nil
 			}
 			return nil, nil
 		},

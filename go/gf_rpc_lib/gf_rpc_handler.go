@@ -135,9 +135,11 @@ func Create_handler__http_with_metrics(p_path_str string,
 		
 		//------------------
 		// OUTPUT
-		// if data_map != nil {
+		// IMPORTANT!! - currently testing if data_map != nil because routes that render templates
+		//               (render html into body) should not also return a JSON map
+		if data_map != nil {
 			Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-		// }
+		}
 
 		//------------------
 
