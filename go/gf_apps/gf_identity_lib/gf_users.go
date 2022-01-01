@@ -42,6 +42,10 @@ type GF_user struct {
 	Email_str         string                `bson:"email_str"`
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
+
+	// IMAGES
+	Profile_image_url_str string `bson:"profile_image_url_str"`
+	Banner_image_url_str  string `bson:"banner_image_url_str"`
 }
 
 // io_preflight
@@ -78,9 +82,12 @@ type GF_user__output_create struct {
 // io_update
 type GF_user__input_update struct {
 	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
-	Username_str         string              `validate:"min=4,max=50"`
-	Email_str            string              `validate:"min=6,max=50"`
-	Description_str      string              `validate:"min=1,max=2000"`
+	Username_str         *string             `validate:"omitempty,min=3,max=50"`   // optional
+	Email_str            *string             `validate:"omitempty,min=6,max=50"`   // optional
+	Description_str      *string             `validate:"omitempty,min=1,max=2000"` // optional
+
+	Profile_image_url_str *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
+	Banner_image_url_str  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 }
 type GF_user__output_update struct {
 }
@@ -99,6 +106,8 @@ type GF_user__output_get struct {
 	Username_str    string
 	Email_str       string
 	Description_str string
+	Profile_image_url_str string
+	Banner_image_url_str  string
 }
 
 //---------------------------------------------------
@@ -295,7 +304,7 @@ func users__pipeline__create(p_input *GF_user__input_create,
 		V_str:                "0",
 		Id_str:               user_id,
 		Creation_unix_time_f: creation_unix_time_f,
-		Addresses_eth_lst:    user_ddresses_eth_lst, 
+		Addresses_eth_lst:    user_ddresses_eth_lst,
 	}
 
 	//------------------------
@@ -357,6 +366,8 @@ func users__pipeline__get(p_input *GF_user__input_get,
 		Username_str:    user.Username_str,
 		Email_str:       user.Email_str,
 		Description_str: user.Description_str,
+		Profile_image_url_str: user.Profile_image_url_str,
+		Banner_image_url_str:  user.Banner_image_url_str,
 	}
 
 	return output, nil

@@ -135,9 +135,9 @@ func Create_handler__http_with_metrics(p_path_str string,
 		
 		//------------------
 		// OUTPUT
-		if data_map != nil {
+		// if data_map != nil {
 			Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-		}
+		// }
 
 		//------------------
 
@@ -156,7 +156,6 @@ func Http_respond(p_data interface{},
 	p_status_str  string,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Http_respond()")
 
 	r_byte_lst, _ := json.Marshal(map[string]interface{}{
 		"status": p_status_str,

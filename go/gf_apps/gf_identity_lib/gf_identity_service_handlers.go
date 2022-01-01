@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //------------------------------------------------
@@ -174,6 +175,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	// USERS_UPDATE
 	// AUTH - only logged in users can update their own details
 
+	
+
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -194,30 +197,34 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				user_address_eth_str := GF_user_address_eth(me_user_identifier_str)
+				http_input, gf_err := http__get_user_update(p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				user_address_eth_str := GF_user_address_eth(me_user_identifier_str)
 				input := &GF_user__input_update{
-					User_address_eth_str: user_address_eth_str,
-					Username_str:         input_map["user_username_str"].(string),
-					Email_str:            input_map["user_email_str"].(string),
-					Description_str:      input_map["user_description_str"].(string),
+					User_address_eth_str:  user_address_eth_str,
+					Username_str:          http_input.Username_str,
+					Email_str:             http_input.Email_str,
+					Description_str:       http_input.Description_str,
+					Profile_image_url_str: http_input.Profile_image_url_str,
+					Banner_image_url_str:  http_input.Banner_image_url_str,
 				}
-
+				
+				// VALIDATE
+				gf_err = gf_core.Validate_struct(input, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+				
 				//---------------------
 
 				_, gf_err = users__pipeline__update(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
-				}
-
-
-				
+				}	
 			}
-
 			return nil, nil
 		},
 		metrics,
@@ -225,8 +232,8 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 		p_runtime_sys)
 
 	//---------------------
-	// USERS_GET
-	// AUTH/NO_AUTH
+	// USERS_GET_ME
+	// AUTH
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/users/me",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -260,9 +267,11 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				}
 
 				output_map := map[string]interface{}{
-					"username_str":    output.Username_str,
-					"email_str":       output.Email_str,
-					"description_str": output.Description_str,
+					"username_str":          output.Username_str,
+					"email_str":             output.Email_str,
+					"description_str":       output.Description_str,
+					"profile_image_url_str": output.Profile_image_url_str,
+					"banner_image_url_str":  output.Banner_image_url_str,
 				}
 				return output_map, nil
 			}
