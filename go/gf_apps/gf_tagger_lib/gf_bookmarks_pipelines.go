@@ -151,6 +151,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 
 	//------------------------
 	// VALIDATE
+
 	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err

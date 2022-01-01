@@ -56,21 +56,17 @@ func Test__main(p_test *testing.T) {
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_tagger_tests",
 		Log_fun:          log_fun,
+		Validator:        gf_core.Validate__init(),
 	}
-
-
-
 
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
 	if gf_err != nil {
 		panic(-1)
 	}
 
-
 	mongo_coll := mongo_db.Collection("data_symphony")
 	runtime_sys.Mongo_db   = mongo_db
 	runtime_sys.Mongo_coll = mongo_coll
-
 
 	test_bookmarking(p_test, runtime_sys)
 }
@@ -81,7 +77,6 @@ func test_bookmarking(p_test *testing.T,
 	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
 	ctx := context.Background()
-	validator := gf_core.Validate__init()
 
 	test_user_id_str := gf_core.GF_ID("test_user")
 	//------------------
@@ -96,7 +91,6 @@ func test_bookmarking(p_test *testing.T,
 	}
 	gf_err := bookmarks__pipeline__create(input__create,
 		nil, // p_images_jobs_mngr
-		validator,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
