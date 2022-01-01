@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"testing"
 	"context"
+	"time"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
@@ -52,12 +53,10 @@ func Test__users_http(p_test *testing.T) {
 	runtime_sys := T__init()
 	test_port_int := 2000
 	go func() {
-
 		Init_service(runtime_sys)
-
 		gf_rpc_lib.Server__init(test_port_int)
-		
 	}()
+	time.Sleep(2*time.Second) // let server startup
 
 	request := gorequest.New()
 

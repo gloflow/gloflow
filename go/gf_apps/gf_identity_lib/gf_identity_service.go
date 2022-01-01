@@ -37,8 +37,6 @@ type GF_service_info struct {
 //-------------------------------------------------
 func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	
-
 	//------------------------
 	// HANDLERS
 	gf_err := init_handlers(p_runtime_sys)
@@ -47,7 +45,6 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	}
 
 	//------------------------
-
 
 	return nil
 }
