@@ -185,11 +185,13 @@ def main():
 
 		build_outof_cont_bool = args_map["build_outof_cont"]
 		if build_outof_cont_bool:
-			gf_web__build.build(apps_names_lst, web_meta_map, gf_log.log_fun)
+			gf_web__build.build(apps_names_lst, web_meta_map,
+				gf_log.log_fun,
+				p_page_name_str=page_name_str)
 			
 		else:
 			gf_web__build.run_in_cont(app_name_str,
-				p_page_name_str=p_page_name_str)
+				p_page_name_str=page_name_str)
 
 	#-------------
 	# BUILD_CONTAINERS

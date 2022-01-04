@@ -34,31 +34,52 @@ def run_in_cont(p_app_str,
 
 	py_cmd_lst = [
 		"python3", "-u", "/home/gf/ops/cli__build.py", "-run=build_web", "-build_outof_cont",
-		f"-app={p_app_str}",
-		f"-page_name={p_page_name_str}"
+		f"-app={p_app_str}"
 	]
+	if not p_page_name_str == None:
+		py_cmd_lst.append(f"-page_name={p_page_name_str}")
+
 	cmd_lst = [
 		"sudo", "docker", "run",
 		"--rm", # remove after exit 
 		"-v", f"{repo_local_path_str}:/home/gf", # mount repo into the container
 		"glofloworg/gf_builder_web:latest",
 	]
-	cmd.extend(py_cmd_lst)
+	cmd_lst.extend(py_cmd_lst)
 	
-	p = gf_core_cli.run__view_realtime(cmd_lst, {
-
-		},
+	p = gf_core_cli.run__view_realtime(cmd_lst, {},
 		"gf_build_web", "green")
 
 	p.wait()
 
 #---------------------------------------------------
-def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
+def build(p_apps_names_lst,
+	p_apps_meta_map,
+	p_log_fun,
+	p_page_name_str=None):
 	p_log_fun("FUN_ENTER", "gf_web__build.build()")
 	assert isinstance(p_apps_names_lst, list)
 	assert len(p_apps_names_lst) > 0
 	assert isinstance(p_apps_meta_map, dict)
 
+	#---------------------------------------------------
+	def individual_page(p_page_name_str, p_page_info_map):
+		print(f"page name {fg('yellow')}{p_page_name_str}{attr(0)}")
+
+		build_dir_str = os.path.abspath(p_page_info_map["build_dir_str"])
+
+		build_copy_dir_str     = p_page_info_map.get("build_copy_dir_str", None)
+		build_copy_bas_dir_str = None
+		if not build_copy_dir_str == None:
+			build_copy_bas_dir_str = os.path.abspath(build_copy_dir_str)
+
+		build_page(p_page_name_str,
+			build_dir_str,
+			build_copy_bas_dir_str,
+			p_page_info_map,
+			p_log_fun)
+
+	#---------------------------------------------------
 	for app_str in p_apps_names_lst:
 		
 		#-----------------
@@ -70,24 +91,17 @@ def build(p_apps_names_lst, p_apps_meta_map, p_log_fun):
 		app_map = p_apps_meta_map[app_str]
 
 		#-----------------
-
-		# BUILD PAGES - build each page of the app
-		for page_name_str, page_info_map in app_map["pages_map"].items():
+		# BUILD PAGES - build each page of the app.
+		#               no specific page was picked for build
+		if p_page_name_str == None:
 			
-			print(f"page name {fg('yellow')}{page_name_str}{attr(0)}")
+			for page_name_str, page_info_map in app_map["pages_map"].items():
+				individual_page(page_name_str, page_info_map)
+				
+		else:
+			page_info_map = app_map["pages_map"][p_page_name_str]
 
-			build_dir_str = os.path.abspath(page_info_map["build_dir_str"])
-
-			build_copy_dir_str     = page_info_map.get("build_copy_dir_str", None)
-			build_copy_bas_dir_str = None
-			if not build_copy_dir_str == None:
-				build_copy_bas_dir_str = os.path.abspath(build_copy_dir_str)
-
-			build_page(page_name_str,
-				build_dir_str,
-				build_copy_bas_dir_str,
-				page_info_map,
-				p_log_fun)
+			individual_page(p_page_name_str, page_info_map)
 
 #---------------------------------------------------
 def build_page(p_page_name_str,
