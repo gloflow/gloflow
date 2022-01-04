@@ -38,7 +38,8 @@ type GF_user struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	Username_str      string                `bson:"username_str"`
+	Username_str      string                `bson:"username_str"`   // set once at the creation of the user
+	Screenname_str    string                `bson:"screenname_str"` // changable durring the lifetime of the user
 	Email_str         string                `bson:"email_str"`
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
@@ -83,6 +84,7 @@ type GF_user__output_create struct {
 type GF_user__input_update struct {
 	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
 	Username_str         *string             `validate:"omitempty,min=3,max=50"`   // optional
+	Screenname_str       *string             `validate:"omitempty,min=3,max=50"`   // optional
 	Email_str            *string             `validate:"omitempty,min=6,max=50"`   // optional
 	Description_str      *string             `validate:"omitempty,min=1,max=2000"` // optional
 

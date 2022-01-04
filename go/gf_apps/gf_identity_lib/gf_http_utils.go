@@ -30,6 +30,7 @@ import (
 //------------------------------------------------
 type GF_user__http_input_update struct {
 	Username_str         *string  `json:"username_str"    validate:"min=3,max=50"`
+	Screenname_str       *string  `json:"screenname_str"  validate:"min=3,max=50"`
 	Email_str            *string  `json:"email_str"       validate:"min=6,max=50"`
 	Description_str      *string  `json:"description_str" validate:"min=1,max=2000"`
 
