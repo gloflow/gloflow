@@ -112,13 +112,13 @@ body {
 	margin-bottom: 4px;
     padding: 4px;
 }
-#flows_picker #flow_info .flow_imgs_count {
+#flows_picker .flow_imgs_count {
 	color: black;
 }
-#flows_picker #flow_info .flow_name {
+#flows_picker .flow_name {
 	padding-left: 5px;
 }
-#flows_picker #flow_info .flow_name a {
+#flows_picker .flow_name a {
 	text-decoration: none;
     color: black;
 	font-weight: bold;

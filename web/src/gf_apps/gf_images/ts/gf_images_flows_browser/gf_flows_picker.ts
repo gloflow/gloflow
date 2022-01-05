@@ -30,21 +30,36 @@ export async function init(p_log_fun) {
         <div id="flows_picker">
             <div id="flows">
             </div>
+
+            <div id="flows_experimental_label">experimental:</div>
+            <div id="flows_experimental">
+            </div>
         </div>`);
     $('body').append(all_flows_container);
 
+
+    const experimental_flows_lst = [
+        "discovered",
+        "gifs"
+    ];
     for (const flow_map of all_flows_lst ) {
         const flow_name_str       = flow_map["flow_name_str"];
         const flow_imgs_count_int = flow_map["flow_imgs_count_int"];
         const flow_url_str = `/images/flows/browser?fname=${flow_name_str}`;
 
-        $(all_flows_container).find("#flows").append(`
+        var target_container_id_str :string;
+        if (experimental_flows_lst.includes(flow_name_str)) {
+            target_container_id_str = "flows_experimental";
+        } else {
+            target_container_id_str = "flows";
+        }
+
+        $(all_flows_container).find(`#${target_container_id_str}`).append(`
             <div id="flow_info">
                 <div class="flow_imgs_count">${flow_imgs_count_int}</div>
                 <div class="flow_name">
                     <a href="${flow_url_str}">${flow_name_str}</a>
                 </div>
-                
             </div>
         `);
     }
