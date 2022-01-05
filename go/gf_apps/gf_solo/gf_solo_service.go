@@ -27,6 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
@@ -66,7 +67,13 @@ func service__run(p_config *GF_config,
 	if gf_err != nil {
 		return
 	}
-	
+
+	// GF_HOME
+	gf_err = gf_home_lib.Init_service(p_runtime_sys)
+	if gf_err != nil {
+		return
+	}
+
 	//-------------
 	// GF_IMAGES
 
