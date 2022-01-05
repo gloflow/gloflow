@@ -44,6 +44,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/images/flows/all",
 		"/images/flows/add_img",
 		"/images/flows/imgs_exist",
 		"/images/flows/browser",
@@ -52,6 +53,32 @@ func Init_handlers(p_templates_paths_map map[string]string,
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
 
 	//---------------------
+
+	//-------------------------------------------------
+	// GET_ALL_FLOWS
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/images/flows/all",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "GET" {
+				all_flows_names_lst, gf_err := flows__get_all__pipeline(p_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{
+					"all_flows_lst": all_flows_names_lst,
+				}
+				return data_map, nil
+
+				//------------------
+			}
+			return nil, nil
+		},
+		metrics,
+		true, // p_store_run_bool
+		p_runtime_sys)
 
 	//-------------------------------------------------
 	// ADD_IMAGE
@@ -92,16 +119,14 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 				//------------------
 				// OUTPUT
-				
 				data_map := map[string]interface{}{
 					"images_job_id_str":                running_job_id_str,
 					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
 					"image_id_str":                     image_id_str,
 				}
-				
-				//------------------
-
 				return data_map, nil
+
+				//------------------
 			}
 
 			return nil, nil
@@ -144,7 +169,6 @@ func Init_handlers(p_templates_paths_map map[string]string,
 				}
 				//------------------
 				// OUTPUT
-				
 				data_map := map[string]interface{}{
 					"existing_images_lst": existing_images_lst,
 				}
@@ -216,7 +240,6 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 				//--------------------
 				// OUTPUT
-				
 				data_map := map[string]interface{}{
 					"pages_lst": pages_lst,
 				}

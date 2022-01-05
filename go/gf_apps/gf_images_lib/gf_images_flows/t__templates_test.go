@@ -23,18 +23,18 @@ import (
 	"os"
 	"fmt"
 	"testing"
-	// "github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 var log_fun func(string,string)
-// var cli_args_map map[string]interface{}
+var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	log_fun = gf_core.Init_log_fun()
-	// cli_args_map = gf_images_core.CLI__parse_args(log_fun)
+	log_fun      = gf_core.Init_log_fun()
+	cli_args_map = gf_images_core.CLI__parse_args(log_fun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -47,7 +47,6 @@ func Test__templates(p_test *testing.T) {
 		Log_fun:          log_fun,
 	}
 
-
 	// TEMPLATES
 	templates_paths_map := map[string]string{
 		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
@@ -57,11 +56,6 @@ func Test__templates(p_test *testing.T) {
 	if gf_err != nil {
 		p_test.Fail()
 	}
-
-
-
-
-
 
 	images_pages_lst := [][]*gf_images_core.GF_image{
 		{
@@ -87,10 +81,7 @@ func Test__templates(p_test *testing.T) {
 		runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
-
 	}
-
-
 
 	fmt.Println(template_rendered_str)
 }

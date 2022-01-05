@@ -23,11 +23,68 @@ import (
 	"fmt"
 	"context"
 	"math"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
+
+//---------------------------------------------------
+func Flows_db__get_all_flows(p_ctx context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+
+	pipeline := mongo.Pipeline{
+		{
+			{"$match", bson.D{
+				{"t", "img"},
+			}},
+		},
+		{
+			{"$project", bson.D{
+				// IMPORTANT!! - not inlucing the deprecated field "flow_name_str"
+				//               since an increasingly small subset of old images is using it
+				//               and new users and GF instances will never have it in their DB.
+				{"flows_names_lst", true},
+			}},
+		},
+		{
+			{"$unwind", "$flows_names_lst"},
+		},
+		{
+			{"$group", bson.D{
+				{"_id", "$flows_names_lst"},
+				{"count_int", bson.M{"$sum": 1}},
+			}},
+		},
+		{
+			{"$sort", bson.D{
+				{"count_int", -1},
+			}},
+		},
+	}
+	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(p_ctx, pipeline)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to run DB aggregation to get all flows names",
+			"mongodb_aggregation_error",
+			map[string]interface{}{},
+			err, "gf_images_flows", p_runtime_sys)
+		return nil, gf_err
+	}
+	defer cursor.Close(p_ctx)
+	
+	all_flows_lst := []map[string]interface{}{}
+	err = cursor.All(p_ctx, &all_flows_lst)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get all flows names",
+			"mongodb_cursor_all",
+			map[string]interface{}{},
+			err, "gf_images_flows", p_runtime_sys)
+		return nil, gf_err
+	}
+	
+	return all_flows_lst, nil
+}
 
 //---------------------------------------------------
 func Flows_db__add_flow_name_to_image(p_flow_name_str string,

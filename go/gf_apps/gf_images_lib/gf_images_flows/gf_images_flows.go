@@ -66,6 +66,28 @@ type Image_exists__check struct {
 // }
 
 //-------------------------------------------------
+func flows__get_all__pipeline(p_ctx context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+
+	all_flows_db_results_lst, gf_err := Flows_db__get_all_flows(p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	all_flows_lst := []map[string]interface{}{}
+	for _, flow_info_map := range all_flows_db_results_lst {
+		flow_name_str       := flow_info_map["_id"].(string)
+		flow_imgs_count_int := flow_info_map["count_int"].(int32)
+
+		all_flows_lst = append(all_flows_lst, map[string]interface{}{
+			"flow_name_str":       flow_name_str,
+			"flow_imgs_count_int": flow_imgs_count_int,
+		})
+	}
+	return all_flows_lst, nil
+}
+
+//-------------------------------------------------
 // GET_PAGE__PIPELINE
 func flows__get_page__pipeline(p_req *http.Request,
 	p_resp        http.ResponseWriter,
@@ -164,7 +186,7 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		}
 
 		ctx           := context.Background()
-		coll_name_str := p_runtime_sys.Mongo_coll.Name()
+		coll_name_str := "gf_flows_img_exists_check" // p_runtime_sys.Mongo_coll.Name()
 		_              = gf_core.Mongo__insert(check,
 			coll_name_str,
 			map[string]interface{}{
@@ -175,19 +197,6 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 			},
 			ctx,
 			p_runtime_sys)
-			
-		/*db_err := p_runtime_sys.Mongo_coll.Insert(check)
-		if db_err != nil {
-			_ = gf_core.Mongo__handle_error("failed to insert a img_exists_check in mongodb",
-				"mongodb_insert_error",
-				map[string]interface{}{
-					"images_extern_urls_lst": p_images_extern_urls_lst,
-					"flow_name_str":          p_flow_name_str,
-					"client_type_str":        p_client_type_str,
-				},
-				db_err, "gf_images_lib", p_runtime_sys)
-			return
-		}*/
 	}()
 
 	//-------------------------
@@ -258,17 +267,6 @@ func flows__create(p_images_flow_name_str string,
 		},
 		ctx,
 		p_runtime_sys)
-	
-	/*err := p_runtime_sys.Mongo_coll.Insert(*flow)
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert a image Flow in mongodb",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"images_flow_name_str": p_images_flow_name_str,
-			},
-			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
-	}*/
 
 	return flow, nil
 }
