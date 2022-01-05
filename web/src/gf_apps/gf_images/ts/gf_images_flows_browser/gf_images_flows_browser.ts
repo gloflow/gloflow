@@ -24,9 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel        from "./../../../../gf_core/ts/gf_sys_panel";
-import * as gf_paging           from "gf_paging";
-import * as gf_view_type_picker from "gf_view_type_picker";
-import * as gf_utils            from "gf_utils";
+import * as gf_paging           from "./gf_paging";
+import * as gf_view_type_picker from "./gf_view_type_picker";
+import * as gf_utils            from "./gf_utils";
+import * as gf_flows_picker     from "./gf_flows_picker";
 
 //-------------------------------------------------
 declare var URLSearchParams;
@@ -71,6 +72,7 @@ export function init(p_log_fun) {
 	
 	//-----------------
 	gf_sys_panel.init(p_log_fun);
+	gf_flows_picker.init(p_log_fun);
 
 	//-----------------
 	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.

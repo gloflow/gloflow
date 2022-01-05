@@ -23,7 +23,7 @@ import * as gf_viz_group_paged         from "./../../../../gf_controls/gf_viz_gr
 import * as gf_viz_group_random_access from "./../../../../gf_controls/gf_viz_group_paged/ts/gf_viz_group_random_access";
 import * as gf_gifs_viewer             from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer            from "./../../../../gf_core/ts/gf_image_viewer";
-import * as gf_paging                  from "gf_paging";
+import * as gf_paging                  from "./gf_paging";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";

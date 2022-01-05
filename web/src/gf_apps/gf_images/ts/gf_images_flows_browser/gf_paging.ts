@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_utils        from "gf_utils";
+import * as gf_utils        from "./gf_utils";
 
 //---------------------------------------------------
 export function load_new_page(p_flow_name_str :string,
