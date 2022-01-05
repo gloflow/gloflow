@@ -62,10 +62,15 @@ func Test__get_all(p_test *testing.T) {
 	test_img_1 := &gf_images_core.GF_image{
 		Id_str: "test_img_1",
 		T_str:  "img",
-		Flows_names_lst: []string{"flow_0", "flow_1"},
+		Flows_names_lst: []string{"flow_0"},
 	}
 	test_img_2 := &gf_images_core.GF_image{
 		Id_str: "test_img_2",
+		T_str:  "img",
+		Flows_names_lst: []string{"flow_0", "flow_1"},
+	}
+	test_img_3 := &gf_images_core.GF_image{
+		Id_str: "test_img_3",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_1", "flow_2"},
 	}
@@ -81,6 +86,10 @@ func Test__get_all(p_test *testing.T) {
 	if gf_err != nil {
 		p_test.Fail()
 	}
+	gf_err = gf_images_core.DB__put_image(test_img_3, ctx, runtime_sys)
+	if gf_err != nil {
+		p_test.Fail()
+	}
  
 	//------------------
 
@@ -92,13 +101,12 @@ func Test__get_all(p_test *testing.T) {
 
 	spew.Dump(all_flows_names_lst)
 
-
 	assert.True(p_test, len(all_flows_names_lst) == 3, "3 flows in total should have been discovered")
 	assert.True(p_test, all_flows_names_lst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
 	assert.True(p_test, all_flows_names_lst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
 	assert.True(p_test, all_flows_names_lst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
 
-	assert.True(p_test, all_flows_names_lst[0]["flow_imgs_count_int"].(int32) == 2, "first flow should have a count of 2")
+	assert.True(p_test, all_flows_names_lst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
 	assert.True(p_test, all_flows_names_lst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
 	assert.True(p_test, all_flows_names_lst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
 }
