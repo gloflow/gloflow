@@ -205,16 +205,37 @@ function gf_picker__create_ui(p_api_host_str) {
     })
 
     //-------------------------------
-    // CLOSE - via close_btn
-    $("div#gf_bookmark div#close_btn").on('click', function() {
-        $(page_picker_element).remove();
-    })
 
-    // CLOSE - via background click
-    $(page_picker_element).find("#background").on('click', function() {
-        $(page_picker_element).remove();
-    });
+    //---------------------------------------------------
+    function on_close_btn_click_fun() {
 
+        // CLOSE - via close_btn
+        $(page_picker_element).remove();
+    }
+    
+    //---------------------------------------------------
+    function on_background_click_fun() {
+
+        // CLOSE - via background click
+        $(page_picker_element).remove();
+    }
+
+    //---------------------------------------------------
+    
+    // if "on()" method is not defined in jquery, its an old jquery version thats running in the site
+    // and jquery "click()" should be used
+    if ($("body").on == undefined) {
+        
+        $("div#gf_bookmark div#close_btn").click(on_close_btn_click_fun);
+        $(page_picker_element).find("#background").click(on_background_click_fun);
+
+    } 
+    // modern jquery is loaded
+    else {
+        $("div#gf_bookmark div#close_btn").on('click', on_close_btn_click_fun);
+        $(page_picker_element).find("#background").on('click', on_background_click_fun);
+    }
+    
     //-------------------------------
 }
 
