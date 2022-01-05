@@ -38,7 +38,7 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 
 	//-------------------
 	// MONGODB
-	mongodb_host_str    := flag.String("mongodb_host",    "mongodb://127.0.0.1", "host of mongodb to use")
+	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
 	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
 
 	// MONGODB_ENV

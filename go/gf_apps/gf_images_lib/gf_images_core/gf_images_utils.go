@@ -46,11 +46,7 @@ func Image__get_public_url(p_image_s3_file_path_str string,
 	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
 	// url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
 
-
-
-
 	url_str := fmt.Sprintf("https://%s/%s", p_media_domain_str, p_image_s3_file_path_str)
-
 
 	return url_str
 }
@@ -190,7 +186,7 @@ func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.
 
 //---------------------------------------------------
 func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (int, int, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (int, int, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_filepath()")
 
 	//-------------------
@@ -223,7 +219,7 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
 //---------------------------------------------------
 func Get_image_dimensions__from_file(p_file io.Reader,
 	p_img_extension_str string,
-	p_runtime_sys       *gf_core.Runtime_sys) (int, int, *gf_core.Gf_error) {
+	p_runtime_sys       *gf_core.Runtime_sys) (int, int, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_file()")
 
 	var image_config image.Config
@@ -276,7 +272,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 
 //---------------------------------------------------
 func Get_image_ext_from_url(p_image_url_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 	// p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
 	
 	fmt.Println("p_image_url_str - "+p_image_url_str)

@@ -47,15 +47,12 @@ func service__run(p_config *GF_config,
 
 	fmt.Printf("%s%s\n", yellow("GF_SOLO"), green("==============="))
 
-
 	//-------------
 	user, err := user.Current()
 	if err != nil {
         panic(err)
     }
-
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
-
 
 	validator := gf_core.Validate__init()
 	p_runtime_sys.Validator = validator
@@ -173,8 +170,4 @@ func service__run(p_config *GF_config,
 
 	// SERVER_INIT - blocking
 	gf_rpc_lib.Server__init(port_int)
-
-
-	
-	
 }
