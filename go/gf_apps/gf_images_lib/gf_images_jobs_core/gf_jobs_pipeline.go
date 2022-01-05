@@ -23,6 +23,7 @@ package gf_images_jobs_core
 
 import (
 	"fmt"
+	"context"
 	"path/filepath"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -292,6 +293,8 @@ func job__transform(p_image_id_str gf_images_core.GF_image_id,
 	p_runtime_sys                      *gf_core.Runtime_sys) (*gf_images_core.GF_image_thumbs, *gf_core.GF_error) {
 
 	// TRANSFORM
+	ctx := context.Background()
+
 	_, gf_image_thumbs, gf_t_err := gf_images_core.Transform_image(p_image_id_str,
 		p_job_runtime.job_client_type_str,
 		p_flows_names_lst,
@@ -300,6 +303,7 @@ func job__transform(p_image_id_str gf_images_core.GF_image_id,
 		p_meta_map,
 		p_image_local_file_path_str,
 		p_images_thumbs_local_dir_path_str,
+		ctx,
 		p_runtime_sys)
 
 	if gf_t_err != nil {

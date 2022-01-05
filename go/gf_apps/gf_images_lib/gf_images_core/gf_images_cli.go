@@ -38,7 +38,7 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 
 	//-------------------
 	// MONGODB
-	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
+	mongodb_host_str    := flag.String("mongodb_host",    "mongodb://127.0.0.1", "host of mongodb to use")
 	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
 
 	// MONGODB_ENV
@@ -55,17 +55,24 @@ func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
 	
 	//-------------------
 	// AWS_CREDS
-	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
-	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
-	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
-
-	if len(aws_access_key_id_str) != 20 {
-		panic("GF_AWS_ACCESS_KEY_ID ENV var not set/of correct length")
+	// DEPRECATED!! - dont extract these credentials manually like here,
+	//                instead depend on AWS SDK to pull them itself.
+	//                and dont expect them to be prefixed with "GF_"
+	//                since thats not the AWS standardized naming convention.
+	aws_access_key_id_str, ok := os.LookupEnv("GF_AWS_ACCESS_KEY_ID")
+	if ok {
+		if len(aws_access_key_id_str) != 20 {
+			panic("GF_AWS_ACCESS_KEY_ID ENV var not set/of correct length")
+		}
+	}
+	aws_secret_access_key_str, ok := os.LookupEnv("GF_AWS_SECRET_ACCESS_KEY")
+	if ok {
+		if len(aws_secret_access_key_str) != 40 {
+			panic("GF_AWS_SECRET_ACCESS_KEY ENV var not set/of correct length")
+		}
 	}
 
-	if len(aws_secret_access_key_str) != 40 {
-		panic("GF_AWS_SECRET_ACCESS_KEY ENV var not set/of correct length")
-	}
+	aws_token_str := os.Getenv("GF_AWS_TOKEN")
 
 	//-------------------
 	// AWS_S3

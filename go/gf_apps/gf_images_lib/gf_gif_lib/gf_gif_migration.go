@@ -432,6 +432,8 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 					continue
 				}
 
+				ctx := context.Background()
+
 				// IMPORTANT!! - image is re-fetched and GIF is processed in full
 				_, _, gf_err = Process("", // p_gf_image_id_str
 					img.Origin_url_str,    // p_image_source_url_str,
@@ -443,6 +445,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
+					ctx,
 					p_runtime_sys)
 
 				if gf_err != nil {
@@ -464,7 +467,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.GF_s3_info,
-	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys                     *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//----------------
 	// PROCESS_GIF
@@ -478,6 +481,8 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 		return gf_err
 	}
 
+	ctx := context.Background()
+
 	new_gif,gf_err := Process_and_upload("", // p_gf_image_id_str
 		p_old_gif.Origin_url_str,            // p_image_source_url_str
 		p_old_gif.Origin_page_url_str,       // p_image_origin_page_url_str
@@ -488,6 +493,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_s3_info,
+		ctx,
 		p_runtime_sys)
 		
 	if gf_err != nil {
@@ -498,7 +504,6 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 	// UPDATE_GIF_TO_OLD_CREATION_TIME - so that when sorted lists of GIFs from the DB are fetched
 	//                                   these newly created GIFs are returned in proper positon.
 
-	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": new_gif.Id_str,
@@ -522,13 +527,13 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 				"old_gif_id_str":p_old_gif.Id_str,
 				"new_gif_id_str":new_gif.Id_str,
 			},
-			err,"gf_gif_lib",p_runtime_sys)
+			err, "gf_gif_lib", p_runtime_sys)
 		return gf_err
 	}
 
 	//----------------
 	// DELETE_OLD_GIF - the one that was rebuilt
-	gif_db__delete(p_old_gif.Id_str,p_runtime_sys)
+	gif_db__delete(p_old_gif.Id_str, p_runtime_sys)
 	
 	//----------------
 	return nil
@@ -536,7 +541,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 
 //--------------------------------------------------
 func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.Gf_image_id,
-	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.GF_error) {
 	var flows_names_lst []string
 
 	// IMPORTANT!! - GIF is not linked to a particular GF_Image

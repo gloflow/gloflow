@@ -46,7 +46,6 @@ func stats__image_jobs_errors(p_runtime_sys *gf_core.Runtime_sys) (map[string]in
 
 	pipeline := mongo.Pipeline{
 		{
-			// {"$match", bson.D{{"t", "peer_new_lifecycle"}}},
 			{"$match", bson.D{
 				{"t",            "img_running_job"},
 				{"start_time_f", bson.M{"$exists": true}}, // filter for new start_time_f/end_time_f format

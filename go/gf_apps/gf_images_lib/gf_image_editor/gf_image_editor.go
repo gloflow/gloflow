@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"context"
 	"bytes"
 	"net/http"
 	"io/ioutil"
@@ -69,7 +70,8 @@ type Gf_edited_image__processing_info struct {
 func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter, 
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
@@ -87,6 +89,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 
 	new_title_str       := input.Title_str
 	source_image_id_str := input.Source_image_id_str
+
 	//--------------------------
 	// SAVE_BASE64_DATA_TO_FILE
 	// IMPORTANT!! - save first, and then create a G
@@ -97,12 +100,10 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 
 	//--------------------------
 
-
 	source_gf_image, gf_err := gf_images_core.DB__get_image(source_image_id_str, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-
 
 	processing_info.image_origin_url_str      = source_gf_image.Origin_url_str
 	processing_info.image_origin_page_url_str = source_gf_image.Origin_page_url_str
@@ -110,6 +111,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	gf_err = create_gf_image(new_title_str,
 		[]string{input.Target_flow_name_str,},
 		processing_info,
+		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
@@ -121,9 +123,9 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 }
 
 //-------------------------------------------------
-func save_edited_image(p_source_image_id_str gf_images_core.Gf_image_id,
+func save_edited_image(p_source_image_id_str gf_images_core.GF_image_id,
 	p_image_base64_data_str string,
-	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*Gf_edited_image__processing_info, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image()")
 	
 	//--------------------------
@@ -232,7 +234,8 @@ func save_edited_image(p_source_image_id_str gf_images_core.Gf_image_id,
 func create_gf_image(p_new_title_str string,
 	p_images_flows_names_lst []string,
 	p_processing_info        *Gf_edited_image__processing_info,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_ctx                    context.Context,
+	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor.create_gf_image()")
 
 
@@ -284,7 +287,7 @@ func create_gf_image(p_new_title_str string,
 	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 	//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 	//               these two structs are related by origin_url
-	_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_runtime_sys)
+	_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_ctx, p_runtime_sys)
 	if c_gf_err != nil {
 		return c_gf_err
 	}

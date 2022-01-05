@@ -21,6 +21,7 @@ package gf_images_core
 
 import (
 	"time"
+	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -114,6 +115,7 @@ type GF_image_new_info struct {
 
 //---------------------------------------------------
 func Image__create_new(p_image_info *GF_image_new_info,
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create_new()")
 
@@ -140,7 +142,7 @@ func Image__create_new(p_image_info *GF_image_new_info,
 
 	//----------------------------------
 	// DB PERSIST
-	db_gf_err := DB__put_image(image, p_runtime_sys)
+	db_gf_err := DB__put_image(image, p_ctx, p_runtime_sys)
 	if db_gf_err != nil {
 		return nil, db_gf_err
 	}
@@ -154,6 +156,7 @@ func Image__create_new(p_image_info *GF_image_new_info,
 // DEPRECATED!! - use Image__create_new and its structured input
 
 func Image__create(p_image_info_map map[string]interface{},
+	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create()")
 	
@@ -184,7 +187,7 @@ func Image__create(p_image_info_map map[string]interface{},
 	//----------------------------------
 	// DB PERSIST
 
-	db_gf_err := DB__put_image(gf_image, p_runtime_sys)
+	db_gf_err := DB__put_image(gf_image, p_ctx, p_runtime_sys)
 	if db_gf_err != nil {
 		return nil, db_gf_err
 	}

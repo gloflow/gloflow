@@ -39,7 +39,7 @@ func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//-------------------
-			gf_err := save_edited_image__pipeline("/images/editor/save", p_req, p_resp, p_runtime_sys)
+			gf_err := save_edited_image__pipeline("/images/editor/save", p_req, p_resp, p_req.Context(), p_runtime_sys)
 
 			if gf_err != nil {
 				gf_rpc_lib.Error__in_handler("/images/editor/save", "failed to save modified image", gf_err, p_resp, p_runtime_sys)

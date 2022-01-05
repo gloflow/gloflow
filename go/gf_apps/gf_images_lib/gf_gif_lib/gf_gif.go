@@ -22,6 +22,7 @@ package gf_gif_lib
 import (
 	"fmt"
 	"os"
+	"context"
 	"path/filepath"
 	"io"
 	"image"
@@ -81,6 +82,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.GF_s3_info,
+	p_ctx                                         context.Context,
 	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
@@ -94,6 +96,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
 		p_media_domain_str,
 		p_s3_bucket_name_str,
 		p_s3_info,
+		p_ctx,
 		p_runtime_sys)
 
 	if gf_err != nil {
@@ -135,6 +138,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
 	p_s3_info                                     *gf_core.GF_s3_info,
+	p_ctx                                         context.Context,
 	p_runtime_sys                                 *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
@@ -272,7 +276,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 		//               these two structs are related by origin_url
 
-		_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_runtime_sys)
+		_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, p_ctx, p_runtime_sys)
 		if c_gf_err != nil {
 			return nil, "", c_gf_err
 		}

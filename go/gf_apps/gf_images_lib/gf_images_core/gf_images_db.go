@@ -31,46 +31,33 @@ import (
 )
 
 //---------------------------------------------------
-func DB__put_image(p_image *Gf_image,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__put_image()")
+func DB__put_image(p_image *GF_image,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	
-	ctx := context.Background()
-
 	// UPSERT
 	query  := bson.M{"t": "img", "id_str": p_image.Id_str,}
 	gf_err := gf_core.Mongo__upsert(query,
 		p_image,
 		map[string]interface{}{"image_id_str": p_image.Id_str,},
 		p_runtime_sys.Mongo_coll,
-		ctx, p_runtime_sys)
+		p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
-
-	/*// spec          - a dict specifying elements which must be present for a document to be updated
-	// upsert = True - insert doc if it doesnt exist, else just update
-	_, err := p_runtime_sys.Mongo_coll.Upsert(bson.M{"t": "img", "id_str": p_image.Id_str,}, p_image)
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update/upsert gf_image in a mongodb",
-			"mongodb_update_error",
-			map[string]interface{}{"image_id_str": p_image.Id_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return gf_err
-	}*/
 
 	return nil
 }
 
 //---------------------------------------------------
-func DB__get_image(p_image_id_str Gf_image_id,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_image, *gf_core.Gf_error) {
+func DB__get_image(p_image_id_str GF_image_id,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__get_image()")
 	
 
 
 	ctx := context.Background()
-	var image Gf_image
+	var image GF_image
 
 	q             := bson.M{"t": "img", "id_str": p_image_id_str}
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
@@ -123,7 +110,6 @@ func DB__get_image(p_image_id_str Gf_image_id,
 func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__image_exists()")
 
-
 	ctx := context.Background()
 	c, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
 	if err != nil {
@@ -133,15 +119,6 @@ func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys)
 			err, "gf_images_core", p_runtime_sys)
 		return false, gf_err
 	}
-
-	/*c,err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img","id_str": p_image_id_str}).Count()
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
-			"mongodb_find_error",
-			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return false, gf_err
-	}*/
 
 	if c > 0 {
 		return true, nil
@@ -154,7 +131,7 @@ func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys)
 func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 2000
 	p_flow_name_str                  string,
-	p_runtime_sys                    *gf_core.Runtime_sys) ([]*Gf_image, *gf_core.Gf_error) {
+	p_runtime_sys                    *gf_core.Runtime_sys) ([]*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
 
 	rand.Seed(time.Now().Unix())

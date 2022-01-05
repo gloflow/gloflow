@@ -281,7 +281,6 @@ func Mongo__find(p_query bson.M,
 		return nil, gf_err
 	}
 
-
 	// defer cur.Close(p_ctx)
 	return cur, nil
 }

@@ -59,15 +59,15 @@ func TestMain(m *testing.M) {
 //---------------------------------------------------
 func Test__img_add_to_flow(p_test *testing.T) {
 
-	//cyan := color.New(color.FgCyan).SprintFunc()
+	// cyan := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	//IMPORTANT!! - in this test there is no downloading of a file. a gf_page_img__pipeline_info reference is created manually
-	//              with a local image file path set manually. this local path is the path of the test image (test__local_image_file_path_str).
-	//              crawler image ADT's are manually created first 
+	// IMPORTANT!! - in this test there is no downloading of a file. a gf_page_img__pipeline_info reference is created manually
+	//               with a local image file path set manually. this local path is the path of the test image (test__local_image_file_path_str).
+	//               crawler image ADT's are manually created first 
 
 	//-------------------
-	//INIT 
+	// INIT 
 
 	test_config := &gf_test_config{
 		test__crawler_name_str:                  "test-crawler",
@@ -83,8 +83,8 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	t__cleanup__test_page_imgs(test_config.test__crawler_name_str, runtime_sys)
 
-	//IMPORTANT!! - this function creates, by calling gf_images_core library from gf_images app, creates
-	//              a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 
+	// IMPORTANT!! - this function creates, by calling gf_images_core library from gf_images app, creates
+	//               a new gf_image ID and names the newly creates test_image gf_images_named file with that ID. 
 	test__local_gf_image_file_path_str, test__gf_image_id_str := t__create_test_gf_image_named_image_file(p_test,
 		test_config.test__img_src_url_str,
 		test_config.test__local_image_file_path_str,
@@ -110,8 +110,9 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	assert.NotEqual(p_test, test__crawled_image.Gf_image_id_str, "",
 		"gf_image ID of a test image is set even though it has not yet been test processed")
+	
 	//------------------
-	//TEST - PIPELINE_STAGE__PROCESS_IMAGES
+	// TEST - PIPELINE_STAGE__PROCESS_IMAGES
 	page_imgs__pinfos_with_thumbs_lst := t__images__stage__process_images(p_test,
 		test__gf_image_id_str,
 		test__crawled_image,
@@ -127,8 +128,9 @@ func Test__img_add_to_flow(p_test *testing.T) {
 
 	assert.Equal(p_test, test__crawled_image.Gf_image_id_str, test__gf_image_id_str,
 		"gf_image ID (which was created manually) of a test image is not equal to the test Gf_crawler_page_image created with gf_crawl_core function")
+	
 	//------------------
-	//TEST - PIPELINE_STAGE__S3_STORE_IMAGES
+	// TEST - PIPELINE_STAGE__S3_STORE_IMAGES
 
 	t__images__stage__s3_store_images(p_test,
 		page_imgs__pinfos_with_thumbs_lst,
@@ -136,11 +138,9 @@ func Test__img_add_to_flow(p_test *testing.T) {
 		test_config,
 		crawler_runtime,
 		runtime_sys)
-	//-------------------
-	//FLOWS__ADD_EXTERN_IMAGE - copying files from one FS location to another (S3 bucket to another)
 
-	
-	
+	//-------------------
+	// FLOWS__ADD_EXTERN_IMAGE - copying files from one FS location to another (S3 bucket to another)
 
 	fmt.Printf("+++++++++++++++++++++++++++++++++++++\n\n")
 	fmt.Printf("%s\n", yellow("TEST_CRAWLED_IMAGE"))

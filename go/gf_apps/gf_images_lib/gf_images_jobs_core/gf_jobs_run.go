@@ -22,6 +22,7 @@ package gf_images_jobs_core
 
 import (
 	"fmt"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
@@ -125,6 +126,8 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 	p_runtime_sys                                *gf_core.Runtime_sys) []*gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__extern_imgs()")
 
+	ctx := context.Background()
+
 	gf_errors_lst := []*gf_core.GF_error{}
 	for _, image_to_process := range p_images_to_process_lst {
 
@@ -202,6 +205,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				p_media_domain_str,
 				p_s3_bucket_name_str,
 				p_s3_info,
+				ctx,
 				p_runtime_sys)
 
 			if gf_err != nil {

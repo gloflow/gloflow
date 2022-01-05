@@ -21,6 +21,7 @@ package gf_crawl_core
 
 import (
 	"fmt"
+	"context"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -114,6 +115,9 @@ func image__process(p_page_img *Gf_crawler_page_image,
 		image_flows_names_lst := []string{"discovered", "gifs",}
 
 		gif_download_and_frames__local_dir_path_str := p_images_store_local_dir_path_str
+
+		ctx := context.Background()
+
 		gf_gif, _, gf_err := gf_gif_lib.Process(p_gf_image_id_str,
 			p_page_img.Url_str,
 			p_page_img.Origin_page_url_str,
@@ -125,6 +129,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 			p_media_domain_str,
 			p_s3_bucket_name_str,
 			p_runtime.S3_info,
+			ctx,
 			p_runtime_sys)
 
 		if gf_err != nil {
@@ -188,6 +193,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	// CONFIG
 	image_client_type_str := "gf_crawl_images" 
 	image_flows_names_lst := []string{"discovered",}
+
 	//----------------------
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -198,6 +204,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
+
 	//-------------------
 
 	// IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
@@ -226,6 +233,8 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 		image_origin_page_url_str := p_page_img.Origin_page_url_str
 		meta_map := map[string]interface{}{}
 
+		ctx := context.Background()
+
 		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
 		//               also creates gf_image thumbnails as local files.
 		gf_image, gf_image_thumbs, gf_err := gf_images_core.Transform_image(gf_image_id_str,
@@ -236,6 +245,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 			meta_map,
 			p_local_image_file_path_str,
 			p_thumbnails_local_dir_path_str,
+			ctx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return nil, nil, gf_err
