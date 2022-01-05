@@ -118,7 +118,7 @@ steps:
 
       # GF_IMAGES_FLOWS
       - cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
-      - go test
+      - go test -v -mongodb_host=mongo
 
       # GF_IDENTITY
       - cd /home/gf/go/gf_apps/gf_identity_lib
@@ -126,7 +126,7 @@ steps:
 
       # GF_TAGGER
       - cd /home/gf/go/gf_apps/gf_tagger_lib
-      - go test -mongodb_host=mongo
+      - go test -v -mongodb_host=mongo
 
   #
   #   # IMPORTANT!! - gf_builder.py starts up several test service containers (mongo/elasticsearch/etc.),
