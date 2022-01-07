@@ -14,7 +14,7 @@
 #images #images_flows_button {
 	position:         fixed;
 	top:              0px;
-	width:            216px;
+	width:            440px;
 	height:           42px;
 	padding-top:      13px;
 	text-align:       center;
@@ -43,6 +43,7 @@
 #images #featured_images_1 {
 	position: absolute;
 	top:      65px;
+	left:     224px;
 }
 
 /*------------------------------------------------------------*/
