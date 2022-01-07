@@ -115,12 +115,25 @@ function init(p_log_fun) {
 	//---------------------
 	// UPLOAD__INIT
 
-	const default_flow_name_str = "general";
+	var   upload_flow_name_str;
+	const default_flow_name_str  = "general";
+
+
+	// LOCAL_STORAGE
+	const previous_flow_name_str = localStorage.getItem("gf:upload_flow_name_str");
+	
+	// get old value from localStorage if it exists, if it doesnt use the default
+	if (previous_flow_name_str == null) {
+		upload_flow_name_str = default_flow_name_str;
+	} else {
+		upload_flow_name_str = previous_flow_name_str;
+	}
 
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
-	gf_upload__init(default_flow_name_str,
+
+	gf_upload__init(upload_flow_name_str,
 		target_full_host_str);
 
 	//---------------------

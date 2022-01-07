@@ -19,16 +19,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-------------------------------------------------
 var gf_upload__init = gf_upload__init;
-function gf_upload__init(p_default_flow_name_str,
+
+function gf_upload__init(p_flow_name_str,
 	p_target_full_host_str) {
 
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
 
-
-
 		const items = (p_paste_event.clipboardData || p_paste_event.originalEvent.clipboardData).items;
-
 
 		console.log("paste");
 		// console.log(p_paste_event.clipboardData);
@@ -59,13 +57,12 @@ function gf_upload__init(p_default_flow_name_str,
 
 					// VIEW_IMAGE
 					gf_upload__view_img(img_data_str,
-						p_default_flow_name_str,
+						p_flow_name_str,
 
 						// UPLOAD_ACTIVATE_FUN
 						(p_image_name_str,
 						p_flows_names_str,
 						p_on_upload_complete_fun)=>{
-
 
 							// UPLOAD_IMAGE
 							gf_upload__run(p_image_name_str,
@@ -88,20 +85,9 @@ function gf_upload__init(p_default_flow_name_str,
 
 //-------------------------------------------------
 function gf_upload__view_img(p_img_data_str,
-	p_default_flow_name_str,
+	p_flow_name_str,
 	p_upload_activate_fun) {
 	
-	//-----------------
-	// FLOW_NAME
-	// get old value from localStorage if it exists, if it doesnt use the default
-	const previous_flow_name_str  = localStorage.getItem("gf:upload_flow_name_str");
-	var prepoluated_flow_name_str = p_default_flow_name_str; // "general";
-	if (previous_flow_name_str != null) {
-		prepoluated_flow_name_str = previous_flow_name_str;
-	}
-
-	//-----------------
-
 	//-------------------------------------------------
 	function get_image_dialog() {
 
@@ -122,7 +108,7 @@ function gf_upload__view_img(p_img_data_str,
 									<input placeholder="image name"></input>
 								</div>
 								<div id="upload_image_flow_name_input">
-									<input placeholder="flow name" value="${prepoluated_flow_name_str}"></input>
+									<input placeholder="flow name" value="${p_flow_name_str}"></input>
 								</div>
 							</div>
 							<!-- ----------- -->
@@ -136,7 +122,7 @@ function gf_upload__view_img(p_img_data_str,
 			return img_dialog;
 		}
 
-		// additional images (multi-image upload)
+		// MULTI_IMAGE_UPLOAD - additional images upload at a time
 		else {
 			const img_dialog     = $("#upload_image_dialog");
 			const new_img_id_int = parseInt($(img_dialog).find(".target_upload_image").last().attr("id")) + 1 // increment by one from last elements id/index
@@ -200,9 +186,11 @@ function gf_upload__view_img(p_img_data_str,
 
 		// if no image flow name was supplied then use the default flow
 		if (image_flow_name_str.length == 0) {
-			image_flow_name_str = p_default_flow_name_str; // "general";
+			image_flow_name_str = p_flow_name_str;
 		} 
 		else {
+
+			// LOCAL_STORAGE
 			localStorage.setItem("gf:upload_flow_name_str", image_flow_name_str);
 		}
 		
@@ -239,8 +227,6 @@ function gf_upload__view_img(p_img_data_str,
 		}
 	});
 
-
-	
 	var uploading_in_progress_bool = false;
 	$("#upload_image_dialog #upload_btn").on('click', ()=>{
 		if (!uploading_in_progress_bool) {

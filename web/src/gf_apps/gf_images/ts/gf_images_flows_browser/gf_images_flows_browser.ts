@@ -59,31 +59,35 @@ $(document).ready(()=>{
 //-------------------------------------------------
 export function init(p_log_fun) {
 
-	//-----------------
-	// GET FLOW_NAME
-	const url_params       = new URLSearchParams(window.location.search);
-	const qs_flow_name_str = url_params.get('fname');
-	var   flow_name_str;
+	//-------------------------------------------------
+	function get_current_flow() {
+		const url_params       = new URLSearchParams(window.location.search);
+		const qs_flow_name_str = url_params.get('fname');
+		var   flow_name_str;
 
-	if (qs_flow_name_str == null) {
-		flow_name_str = 'general'; // default value
-	} else {
-		flow_name_str = qs_flow_name_str;
+		if (qs_flow_name_str == null) {
+			flow_name_str = 'general'; // default value
+		} else {
+			flow_name_str = qs_flow_name_str;
+		}
+		return flow_name_str;
 	}
 	
+	//-------------------------------------------------
+
 	//-----------------
 	gf_sys_panel.init(p_log_fun);
 	gf_flows_picker.init(p_log_fun);
 	
 	//---------------------
 	// UPLOAD__INIT
-	
-	const default_flow_name_str = flow_name_str;
+
+	const flow_name_str = get_current_flow();
 
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
-	gf_upload__init(default_flow_name_str,
+	gf_upload__init(flow_name_str,
 		target_full_host_str);
 
 	//---------------------
