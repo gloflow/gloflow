@@ -32,7 +32,8 @@ import * as gf_flows_picker     from "./gf_flows_picker";
 //-------------------------------------------------
 declare var URLSearchParams;
 
-
+// GF_GLOBAL_JS_FUNCTION - included in the page from gf_core (.js file)
+declare var gf_upload__init;
 
 //-------------------------------------------------
 $(document).ready(()=>{
@@ -73,6 +74,19 @@ export function init(p_log_fun) {
 	//-----------------
 	gf_sys_panel.init(p_log_fun);
 	gf_flows_picker.init(p_log_fun);
+	
+	//---------------------
+	// UPLOAD__INIT
+	
+	const default_flow_name_str = flow_name_str;
+
+	// use "" so that no host is set in URL's for issued requests
+	// (forces usage of origin host that the page came from)
+	const target_full_host_str = "";
+	gf_upload__init(default_flow_name_str,
+		target_full_host_str);
+
+	//---------------------
 
 	//-----------------
 	// IMPORTANT!! - as each image loads call masonry to reconfigure the view.

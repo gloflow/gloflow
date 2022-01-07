@@ -124,6 +124,10 @@ body {
 	font-weight: bold;
 }
 
+#flows_picker #flows_experimental_label {
+	right: -42px;
+}
+
 /*----------------------------------------------------------*/
 /*VIEW_TYPE_PICKER*/
 
