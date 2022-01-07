@@ -81,7 +81,8 @@ func flows__render_initial_page(p_flow_name_str string,
 	}
 
 	//---------------------
-	template_rendered_str, gf_err := flows__render_template(pages_lst,
+	template_rendered_str, gf_err := flows__render_template(p_flow_name_str,
+		pages_lst,
 		flow_pages_num_int,
 		p_tmpl,
 		p_subtemplates_names_lst,
@@ -94,7 +95,8 @@ func flows__render_initial_page(p_flow_name_str string,
 }
 
 //-------------------------------------------------
-func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 2D list
+func flows__render_template(p_flow_name_str string,
+	p_images_pages_lst       [][]*gf_images_core.GF_image, // 2D list
 	p_flow_pages_num_int     int64,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
@@ -139,6 +141,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 	//-------------------------
 
 	type tmpl_data struct {
+		Flow_name_str      string
 		Images_pages_lst   [][]map[string]interface{}
 		Flow_pages_num_int int64
 		Sys_release_info   gf_core.Sys_release_info
@@ -147,6 +150,7 @@ func flows__render_template(p_images_pages_lst [][]*gf_images_core.GF_image, // 
 
 	buff := new(bytes.Buffer)
 	err := p_tmpl.Execute(buff, tmpl_data{
+		Flow_name_str:      p_flow_name_str,
 		Images_pages_lst:   images_pages_lst,
 		Flow_pages_num_int: p_flow_pages_num_int,
 		Sys_release_info:   sys_release_info,

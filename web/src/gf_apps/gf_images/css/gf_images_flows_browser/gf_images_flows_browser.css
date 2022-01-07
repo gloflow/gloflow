@@ -16,6 +16,19 @@ body {
 	top        : 100px;
 }
 
+#gf_images_flow_container #flow_info {
+	position: fixed;
+    top: 55px;
+    left: 0px;
+    background-color: #f7f7f7;
+    padding-left: 9px;
+    padding-top: 7px;
+    padding-bottom: 6px;
+    padding-right: 11px;
+    font-size: 21px;
+	z-index: 10;
+}
+
 /*small_view*/
 #gf_images_flow_container .gf_image.small_view {
 	position:         relative;
