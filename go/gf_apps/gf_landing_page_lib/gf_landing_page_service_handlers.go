@@ -56,7 +56,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			if p_req.Method == "GET" {
 
 
-				imgs__max_random_cursor_position_int  := 4000
+				imgs__max_random_cursor_position_int  := 10000
 				posts__max_random_cursor_position_int := 2000
 				gf_err := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
 					posts__max_random_cursor_position_int,

@@ -36,7 +36,7 @@ type Gf_featured_post struct {
 	Images_number_int    int	
 }
 
-type Gf_featured_img struct {
+type GF_featured_img struct {
 	Title_str                      string
 	Image_url_str                  string
 	Image_thumbnail_medium_url_str string
@@ -50,7 +50,7 @@ type Gf_featured_img struct {
 //------------------------------------------
 func get_featured_imgs(p_max_random_cursor_position_int int, // 500
 	p_elements_num_to_get_int int, // 5
-	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_img, *gf_core.Gf_error) {
+	p_runtime_sys             *gf_core.Runtime_sys) ([]*GF_featured_img, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_imgs()")
 
 	imgs_lst, err := gf_images_core.DB__get_random_imgs_range(p_elements_num_to_get_int,
@@ -62,7 +62,7 @@ func get_featured_imgs(p_max_random_cursor_position_int int, // 500
 		return nil, err
 	}
 
-	featured_imgs_lst := []*Gf_featured_img{}
+	featured_imgs_lst := []*GF_featured_img{}
 	for _, img := range imgs_lst {
 
 		// FIX!! - create a proper gf_er
@@ -71,7 +71,7 @@ func get_featured_imgs(p_max_random_cursor_position_int int, // 500
 			continue
 		}
 
-		featured := &Gf_featured_img{
+		featured := &GF_featured_img{
 			Title_str:                      img.Title_str,
 			Image_url_str:                  img.Thumbnail_small_url_str,
 			Image_thumbnail_medium_url_str: img.Thumbnail_medium_url_str,

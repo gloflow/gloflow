@@ -27,7 +27,8 @@ import (
 
 //------------------------------------------------
 func render_template(p_featured_posts_lst []*Gf_featured_post,
-	p_featured_imgs_lst      []*Gf_featured_img,
+	p_featured_imgs_0_lst    []*GF_featured_img,
+	p_featured_imgs_1_lst    []*GF_featured_img,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
@@ -37,16 +38,19 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
 	type tmpl_data struct {
-		Featured_posts_lst []*Gf_featured_post
-		Featured_imgs_lst  []*Gf_featured_img
-		Sys_release_info   gf_core.Sys_release_info
-		Is_subtmpl_def     func(string) bool //used inside the main_template to check if the subtemplate is defined
+		Featured_posts_lst  []*Gf_featured_post
+		Featured_imgs_0_lst []*GF_featured_img
+		Featured_imgs_1_lst []*GF_featured_img
+		Sys_release_info    gf_core.Sys_release_info
+		Is_subtmpl_def      func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Featured_posts_lst: p_featured_posts_lst,
-		Featured_imgs_lst:  p_featured_imgs_lst,
-		Sys_release_info:   sys_release_info,
+		Featured_posts_lst:  p_featured_posts_lst,
+		Featured_imgs_0_lst: p_featured_imgs_0_lst,
+		Featured_imgs_1_lst: p_featured_imgs_1_lst,
+		Sys_release_info:    sys_release_info,
+		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
