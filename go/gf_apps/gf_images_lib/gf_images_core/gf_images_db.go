@@ -134,7 +134,9 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	p_runtime_sys                    *gf_core.Runtime_sys) ([]*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
 
-	rand.Seed(time.Now().Unix())
+	// reseed the random number source
+	rand.Seed(time.Now().UnixNano())
+	
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) // new Random().nextInt(p_max_random_cursor_position_int)
 	p_runtime_sys.Log_fun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
 	p_runtime_sys.Log_fun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
