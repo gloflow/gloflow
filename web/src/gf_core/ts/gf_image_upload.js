@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-------------------------------------------------
 var gf_upload__init = gf_upload__init;
-function gf_upload__init(p_target_full_host_str) {
+function gf_upload__init(p_default_flow_name_str,
+	p_target_full_host_str) {
 
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
@@ -58,6 +59,7 @@ function gf_upload__init(p_target_full_host_str) {
 
 					// VIEW_IMAGE
 					gf_upload__view_img(img_data_str,
+						p_default_flow_name_str,
 
 						// UPLOAD_ACTIVATE_FUN
 						(p_image_name_str,
@@ -86,15 +88,16 @@ function gf_upload__init(p_target_full_host_str) {
 
 //-------------------------------------------------
 function gf_upload__view_img(p_img_data_str,
+	p_default_flow_name_str,
 	p_upload_activate_fun) {
 	
 	//-----------------
 	// FLOW_NAME
 	// get old value from localStorage if it exists, if it doesnt use the default
-	const previous_flow_name_str = localStorage.getItem("gf:upload_flow_name_str");
-	var default_flow_name_str    = "general";
+	const previous_flow_name_str  = localStorage.getItem("gf:upload_flow_name_str");
+	var prepoluated_flow_name_str = p_default_flow_name_str; // "general";
 	if (previous_flow_name_str != null) {
-		default_flow_name_str = previous_flow_name_str;
+		prepoluated_flow_name_str = previous_flow_name_str;
 	}
 
 	//-----------------
@@ -119,7 +122,7 @@ function gf_upload__view_img(p_img_data_str,
 									<input placeholder="image name"></input>
 								</div>
 								<div id="upload_image_flow_name_input">
-									<input placeholder="flow name" value="${default_flow_name_str}"></input>
+									<input placeholder="flow name" value="${prepoluated_flow_name_str}"></input>
 								</div>
 							</div>
 							<!-- ----------- -->
@@ -195,9 +198,9 @@ function gf_upload__view_img(p_img_data_str,
 		const image_name_str    = $(this_image).find("#upload_image_name_input input").val();
 		var image_flow_name_str = $(this_image).find("#upload_image_flow_name_input input").val();
 
-		// if no image flow name was supplied then use the default flow ("general")
+		// if no image flow name was supplied then use the default flow
 		if (image_flow_name_str.length == 0) {
-			image_flow_name_str = "general";
+			image_flow_name_str = p_default_flow_name_str; // "general";
 		} 
 		else {
 			localStorage.setItem("gf:upload_flow_name_str", image_flow_name_str);

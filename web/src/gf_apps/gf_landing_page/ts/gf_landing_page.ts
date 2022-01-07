@@ -112,11 +112,18 @@ function init(p_log_fun) {
 		}
 	});
 
+	//---------------------
 	// UPLOAD__INIT
+
+	const default_flow_name_str = "general";
+
 	// use "" so that no host is set in URL's for issued requests
 	// (forces usage of origin host that the page came from)
 	const target_full_host_str = "";
-	gf_upload__init(target_full_host_str);
+	gf_upload__init(default_flow_name_str,
+		target_full_host_str);
+
+	//---------------------
 
 	//--------------------------------------------------------
 	function init_posts_img_num() {
