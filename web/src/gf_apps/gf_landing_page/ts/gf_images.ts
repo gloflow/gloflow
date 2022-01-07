@@ -26,9 +26,17 @@ import * as gf_date         from "./../../../gf_core/ts/gf_date";
 //-------------------------------------------------
 export function init(p_log_fun) {
 
-	$('#featured_images').find('.image_info').each((p_i, p_image_info_element)=>{
+	$('#featured_images_0').find('.image_info').each((p_i, p_image_info_element)=>{
 		
+		init_img(p_image_info_element);
+	});
+	$('#featured_images_1').find('.image_info').each((p_i, p_image_info_element)=>{
+		
+		init_img(p_image_info_element);
+	});
 
+	//-------------------------------------------------
+	function init_img(p_image_info_element) {
 		// CLEANUP - for images that dont come from some origin page (direct uploads, or generated images)
 		//           this origin_page_url is set to empty string. check for that and remove it.
 		// FIX!! - potentially on the server/template-generation side this div node shouldnt get included
@@ -51,7 +59,9 @@ export function init(p_log_fun) {
 		gf_image_colors.init_pallete(img);
 
 		//----------------------
-	});
+	}
+
+	//-------------------------------------------------
 }
 
 //-------------------------------------------------

@@ -102,7 +102,25 @@
 			</a>
 			{{- /*IMAGES*/}}
 			<div id='featured_images'>
-				{{- range .Featured_imgs_lst}}
+				{{- range .Featured_imgs_0_lst}}
+					<div class='image_info'>
+						<div class="image_title">{{.Title_str}}</div>
+						
+						<div class="image">
+							<img src="{{.Image_url_str}}" data-img_thumb_medium_url="{{.Image_thumbnail_medium_url_str}}" crossOrigin="anonymous"></img>
+						</div>
+						<div class="origin_page_url">
+							<a href='{{.Image_origin_page_url_str}}' target="_blank">
+								{{- .Image_origin_page_url_host_str}}
+							</a>
+						</div>
+						<div class="creation_time">{{.Creation_unix_time_str}}</div>
+					</div>
+				{{end}}
+			</div>
+
+			<div id='featured_images_1'>
+				{{- range .Featured_imgs_1_lst}}
 					<div class='image_info'>
 						<div class="image_title">{{.Title_str}}</div>
 						

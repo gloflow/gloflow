@@ -12,32 +12,37 @@
 /*IMAGES BUTTON*/
 
 #images #images_flows_button {
-	position        : fixed;
-	top             : 0px;
-	width           : 216px;
-	height          : 42px;
-	padding-top     : 13px;
-	text-align      : center;
-	font-size       : 25px;
-	color           : white;
+	position:         fixed;
+	top:              0px;
+	width:            216px;
+	height:           42px;
+	padding-top:      13px;
+	text-align:       center;
+	font-size:        25px;
+	color:            white;
 	background-color: rgb(59, 124, 156);
 
-	z-index         : 2;
-	display         : block;
-	text-decoration : none;
-	transition      : background-color 0.2s ease;
-	cursor          : pointer;
+	z-index:         2;
+	display:         block;
+	text-decoration: none;
+	transition:      background-color 0.2s ease;
+	cursor:          pointer;
 }
 #images #images_flows_button:hover {
-	cursor          : pointer;
+	cursor:           pointer;
 	background-color: lightgray;
-	color           : black;
+	color:            black;
 }
 
 /*------------------------------------------------------------*/
-#images #featured_images {
+#images #featured_images_0 {
 	position: absolute;
-	top     : 65px;
+	top:      65px;
+}
+
+#images #featured_images_1 {
+	position: absolute;
+	top:      65px;
 }
 
 /*------------------------------------------------------------*/
