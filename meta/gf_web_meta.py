@@ -87,9 +87,6 @@ def get():
 		#-------------
 	}
 
-
-
-
 	gf_analytics__pages_map = {
 		#-------------
 		# DASHBOARD
@@ -176,38 +173,6 @@ def get():
 			"pages_map": gf_analytics__pages_map
 		},
 
-		#-----------------------------
-		# "gf_user":{
-		# 	"pages_map":{
-		# 		"gf_user_profile":{
-		# 			"type_str":      "ts",
-		# 			"build_dir_str": "%s/../web/build/gf_apps/gf_user"%(modd_str),
-		# 			"ts":{
-		# 				"out_file_str":      "%s/../web/build/gf_apps/gf_user/js/gf_user_profile.js"%(modd_str),
-		# 				"minified_file_str": "%s/../web/build/gf_apps/gf_user/js/gf_user_profile.min.js"%(modd_str),
-		# 				"files_lst":[
-		# 					"%s/../web/src/gf_apps/gf_user/gf_user_profile.ts"%(modd_str),
-		# 					"%s/../web/src/gf_core/gf_sys_panel.ts"%(modd_str),
-		# 				],
-		# 				#-------------
-		# 				#LIBS
-		# 				"libs_files_lst":[]
-		# 				#-------------
-		# 			},
-		# 			"css":{
-		# 				"files_lst":[
-		# 					("%s/../web/src/gf_apps/gf_user/css/gf_user_profile.css"%(modd_str), "%s/../web/build/gf_apps/gf_user/css"%(modd_str))
-		# 				]
-		# 			},
-		#
-		# 			#static files to copy without change
-		# 			"files_to_copy_lst":[
-		# 				("%s/../web/src/gf_apps/gf_user/gf_user_profile.html"%(modd_str), "%s/../web/build/gf_apps/gf_user"%(modd_str),)
-		# 			]
-		# 		}
-		# 	}
-		# },
-		#
 		#-----------------------------
 	}
 
