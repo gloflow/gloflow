@@ -51,7 +51,8 @@ type GF_user struct {
 
 // io_preflight
 type GF_user__input_preflight struct {
-	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
+	User_name_str        string              `validate:"omitempty,min=3,max=50"`
+	User_address_eth_str GF_user_address_eth `validate:"omitempty,eth_addr"`
 }
 type GF_user__output_preflight struct {
 	User_exists_bool bool             
@@ -92,6 +93,7 @@ type GF_user__input_update struct {
 	Banner_image_url_str  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 }
 type GF_user__output_update struct {
+	
 }
 
 type GF_user__update struct {

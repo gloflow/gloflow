@@ -70,6 +70,9 @@ func error__get_defs() map[string]Error_def {
 		"verify__invalid_key_value_error": Error_def{
 			Descr_str: "data failed verification, the key does not have the expected value",
 		},
+		"verify__input_data_missing_in_req_error": Error_def{
+			Descr_str: "data failed verification, input is missing in request",
+		},
 
 		// length
 		"verify__string_too_short_error": Error_def{
