@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 var gf_upload__init = gf_upload__init;
 
 function gf_upload__init(p_flow_name_str,
-	p_target_full_host_str) {
+	p_target_full_host_str,
+	p_on_upload_fun) {
 
 	// console.log("UPLOAD INITIALIZED")
 	document.onpaste = function(p_paste_event) {
@@ -70,8 +71,9 @@ function gf_upload__init(p_flow_name_str,
 								image_format_str,
 								p_flows_names_str,
 								p_target_full_host_str,
-								()=>{
+								(p_upload_gf_image_id_str)=>{
 									p_on_upload_complete_fun();
+									p_on_upload_fun(p_upload_gf_image_id_str);
 								});
 						});
 				};
@@ -268,7 +270,7 @@ function gf_upload__run(p_image_name_str,
 					gf_upload__send_complete(p_upload_gf_image_id_str, 
 						p_target_full_host_str,
 						()=>{
-							p_on_complete_fun();
+							p_on_complete_fun(p_upload_gf_image_id_str);
 						});
 				});
 		});
@@ -283,7 +285,7 @@ function gf_upload__send_init(p_image_name_str,
 	p_on_complete_fun) {
 
 	// UPLOAD_INIT
-	const url_str = `${p_target_full_host_str}/images/v1/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=browser`;
+	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=browser`;
 	$.ajax({
 		method: "GET",
 		"url":  url_str,
@@ -344,7 +346,7 @@ function gf_upload__send_complete(p_upload_gf_image_id_str,
 	p_on_complete_fun) {
 
 	console.log("AWS S3 PUT upload done...")
-	const url_str = `${p_target_full_host_str}/images/v1/upload_complete?imgid=${p_upload_gf_image_id_str}`;
+	const url_str = `${p_target_full_host_str}/v1/images/upload_complete?imgid=${p_upload_gf_image_id_str}`;
 
 	$.ajax({
 		method: "POST",

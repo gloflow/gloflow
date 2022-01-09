@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel        from "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_image_http       from "../gf_images_core/gf_images_http";
 import * as gf_paging           from "./gf_paging";
 import * as gf_view_type_picker from "./gf_view_type_picker";
 import * as gf_utils            from "./gf_utils";
@@ -84,11 +85,7 @@ export function init(p_log_fun) {
 
 	const flow_name_str = get_current_flow();
 
-	// use "" so that no host is set in URL's for issued requests
-	// (forces usage of origin host that the page came from)
-	const target_full_host_str = "";
-	gf_upload__init(flow_name_str,
-		target_full_host_str);
+	init_upload(flow_name_str, p_log_fun);
 
 	//---------------------
 
@@ -190,4 +187,77 @@ export function init(p_log_fun) {
 	};
 
 	//------------------
+}
+
+//---------------------------------------------------
+function init_upload(p_flow_name_str :string,
+	p_log_fun) {
+
+	// use "" so that no host is set in URL's for issued requests
+	// (forces usage of origin host that the page came from)
+	const target_full_host_str = "";
+	gf_upload__init(p_flow_name_str,
+		target_full_host_str,
+		
+		//-------------------------------------------------
+		// p_on_upload_fun
+		async (p_upload_gf_image_id_str)=>{
+
+			// HTTP_GET_IMAGE
+			const image_result_map  = await gf_image_http.get(p_upload_gf_image_id_str, p_log_fun);
+			const image_exists_bool = image_result_map["image_exists_bool"];
+
+
+			// uploaded image is not in the system for some reason 
+			if (!image_exists_bool) {
+
+				$("body").append(`<div id='upload_display_failed'
+					style='position:'fixed';right='20px';top='20px';background-color='red';width='10px';height='10px'>
+					</div>`);
+			}
+
+			else {
+
+				const image_export_map = image_result_map["image_export_map"];
+
+				const img__format_str               = image_export_map["format_str"];
+				const img__creation_unix_time_f     = image_export_map["creation_unix_time_f"];
+				const img__origin_page_url_str      = image_export_map["origin_page_url_str"];
+				const img__thumbnail_small_url_str  = image_export_map["thumbnail_small_url_str"];
+				const img__thumbnail_medium_url_str = image_export_map["thumbnail_medium_url_str"];
+				const img__thumbnail_large_url_str  = image_export_map["thumbnail_large_url_str"];
+				const img__tags_lst                 = image_export_map["tags_lst"];
+
+
+				const current_image_view_type_str = gf_view_type_picker.get_current_view_type();
+
+				gf_utils.init_image_element(p_upload_gf_image_id_str,
+					img__format_str,
+					img__creation_unix_time_f,
+					img__origin_page_url_str,
+					img__thumbnail_small_url_str,
+					img__thumbnail_medium_url_str,
+					img__thumbnail_large_url_str,
+					img__tags_lst,
+					p_flow_name_str,
+					current_image_view_type_str,
+
+					//---------------------------------------------------
+					// on_complete
+					()=>{
+						
+					},
+
+					//---------------------------------------------------
+					// on_error
+					()=>{
+						
+					},
+
+					//---------------------------------------------------
+					p_log_fun);
+			}
+		});
+
+		//-------------------------------------------------
 }

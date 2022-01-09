@@ -40,6 +40,11 @@ export async function init() {
 }
 
 //-------------------------------------------------
+async function auth_method_pick() {
+
+}
+
+//-------------------------------------------------
 async function wallet_pick() {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {

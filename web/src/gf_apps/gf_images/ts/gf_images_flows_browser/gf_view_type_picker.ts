@@ -23,10 +23,16 @@ import * as gf_viz_group_paged         from "./../../../../gf_controls/gf_viz_gr
 import * as gf_viz_group_random_access from "./../../../../gf_controls/gf_viz_group_paged/ts/gf_viz_group_random_access";
 import * as gf_gifs_viewer             from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer            from "./../../../../gf_core/ts/gf_image_viewer";
+import * as gf_images_http             from "./../gf_images_core/gf_images_http";
 import * as gf_paging                  from "./gf_paging";
 
 // FIX!! - remove this from global scope!!
 export var image_view_type_str = "small_view";
+
+//---------------------------------------------------
+export function get_current_view_type() {
+	return image_view_type_str;
+}
 
 //---------------------------------------------------
 // view_type_picker - picks the type of view that is used to display images in a flow.
@@ -180,13 +186,18 @@ function init__viz_group_view(p_flow_name_str :string,
     //-------------------------------------------------
 	// ELEMENTS_PAGE_GET
     function elements_page_get_fun(p_new_page_number_int: number) {
-        const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
             const page_elements_lst = [];
             p_resolve_fun(page_elements_lst);
 
 			// HTTP_LOAD_NEW_PAGE
-			gf_paging.http__load_new_page(p_flow_name_str,
+
+			const pages_lst = await gf_images_http.get_page(p_flow_name_str,
+				p_new_page_number_int,
+				p_log_fun);
+
+			/*gf_images_http.get_page(p_flow_name_str,
 				p_new_page_number_int,
 
 				// p_on_complete_fun
@@ -196,7 +207,7 @@ function init__viz_group_view(p_flow_name_str :string,
 				(p_error)=>{
 					p_reject_fun();
 				},
-				p_log_fun);
+				p_log_fun);*/
         });
         return p;
     }

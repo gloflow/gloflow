@@ -19,27 +19,35 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
-import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
-import * as gf_utils        from "./gf_utils";
+// import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
+// import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
+import * as gf_images_http from "./../gf_images_core/gf_images_http";
+import * as gf_utils       from "./gf_utils";
+
 
 //---------------------------------------------------
-export function load_new_page(p_flow_name_str :string,
+export async function load_new_page(p_flow_name_str :string,
 	p_current_page_int            :number,
 	p_current_image_view_type_str :string,
 	p_on_complete_fun,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_paging.load_new_page()');
 
-	http__load_new_page(p_flow_name_str,
+	const page_lst = await gf_images_http.get_page(p_flow_name_str,
 		p_current_page_int,
-		(p_page_lst)=>{
-			view_page(p_page_lst);
-		},
-		(p_error)=>{
-			p_on_complete_fun();
-		},
 		p_log_fun);
+	
+	view_page(page_lst);
+
+	/*gf_images_http.get_page(p_flow_name_str,
+	p_current_page_int,
+	(p_page_lst)=>{
+		view_page(p_page_lst);
+	},
+	(p_error)=>{
+		p_on_complete_fun();
+	},
+	p_log_fun);*/
 
 	//---------------------------------------------------
 	function view_page(p_page_lst) {
@@ -59,7 +67,45 @@ export function load_new_page(p_flow_name_str :string,
 			const img__origin_page_url_str      = p_e['origin_page_url_str'];
 
 
-			var img_url_str;
+			gf_utils.init_image_element(img__id_str,
+				img__format_str,
+				img__creation_unix_time_f,
+				img__origin_url_str,
+				img__thumbnail_small_url_str,
+				img__thumbnail_medium_url_str,
+				img__thumbnail_large_url_str,
+				img__tags_lst,
+				p_flow_name_str,
+				p_current_image_view_type_str,
+
+				//---------------------------------------------------
+				// on_complete
+				()=>{
+					img_i_int++;
+
+					// IMPORTANT!! - only declare load_new_page() as complete after all its
+					//               images complete loading
+					if (p_page_lst.length-1 == img_i_int) {
+						p_on_complete_fun();
+					}
+				},
+
+				//---------------------------------------------------
+				// on_error
+				()=>{
+					// if image failed to load it still needs to be counted so that when all images
+					// are done (either failed or succeeded) call p_on_complete_fun()
+					img_i_int++;
+
+					if (p_page_lst.length-1 == img_i_int) {
+						p_on_complete_fun();
+					}
+				},
+
+				//---------------------------------------------------
+				p_log_fun);
+
+			/*var img_url_str;
 			switch (p_current_image_view_type_str) {
 				case "small_view":
 					img_url_str = img__thumbnail_small_url_str;
@@ -138,9 +184,9 @@ export function load_new_page(p_flow_name_str :string,
 				if (p_page_lst.length-1 == img_i_int) {
 					p_on_complete_fun();
 				}
-			});
+			});*/
 
-			// IMAGE_FAILED_TO_LOAD
+			/*// IMAGE_FAILED_TO_LOAD
 			$(image_container).find('img').on('error', function() {
 
 				p_log_fun("ERROR", "IMAGE_FAILED_TO_LOAD ----------");
@@ -169,45 +215,11 @@ export function load_new_page(p_flow_name_str :string,
 				});
 			}
 
-			//------------------
+			//------------------*/
 		});
 	}
 
 	//---------------------------------------------------
-}
-
-//---------------------------------------------------
-export function http__load_new_page(p_flow_name_str :string,
-	p_current_page_int :number,
-	p_on_complete_fun,
-	p_on_error_fun,
-	p_log_fun) {
-	p_log_fun('FUN_ENTER', 'gf_paging.http__load_new_page()');
-
-	const page_size_int = 10;
-	const url_str       = `/images/flows/browser_page?fname=${p_flow_name_str}&pg_index=${p_current_page_int}&pg_size=${page_size_int}`;
-	p_log_fun('INFO', 'url_str - '+url_str);
-
-	//-------------------------
-	// HTTP AJAX
-	$.get(url_str,
-		function(p_data_map) {
-			console.log('response received');
-			// const data_map = JSON.parse(p_data);
-
-			console.log('data_map["status"] - '+p_data_map["status"]);
-			
-			if (p_data_map["status"] == 'OK') {
-
-				const pages_lst = p_data_map['data']['pages_lst'];
-				p_on_complete_fun(pages_lst);
-			}
-			else {
-				p_on_error_fun(p_data_map["data"]);
-			}
-		});
-
-	//-------------------------	
 }
 
 //---------------------------------------------------
