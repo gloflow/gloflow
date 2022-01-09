@@ -96,17 +96,33 @@ export function init_pallete(p_image) {
 
                 //-------------
                 // COPY_TO_CLIPBOARD
-                copy_to_clipboard_btn = init_copy_to_clipboard_btn(colors_hexes_lst);
-                $(color_info_element).append(copy_to_clipboard_btn);
+                if (copy_to_clipboard_btn == null) {
+                    copy_to_clipboard_btn = init_copy_to_clipboard_btn(colors_hexes_lst);
+                    $(color_info_element).append(copy_to_clipboard_btn);
+                }
 
                 //-------------
             });
             $(color_pallete_element).on("mouseout", ()=>{
                 $(color_pallete_label_element).remove();
-                $(copy_to_clipboard_btn).remove();
             });
             
             //-------------
+
+            $(color_info_element).on("mouseout", ()=>{
+
+                //-------------
+                // COPY_TO_CLIPBOARD
+                if (copy_to_clipboard_btn != null) {
+                    // has to be here, removed when user goes out of the entire color_info element,
+                    // and not just the pallete, so that the user has a chance to click it
+                    $(copy_to_clipboard_btn).remove();
+                    copy_to_clipboard_btn = null;
+                }
+
+                //-------------
+            });
+
             image_colors_shown_bool = true;
         }
     });
