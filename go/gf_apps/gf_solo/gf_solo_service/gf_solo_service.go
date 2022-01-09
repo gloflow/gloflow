@@ -17,18 +17,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_solo_service
 
 import (
 	"fmt"
 	"os/user"
 	"strconv"
+	"path"
+	"time"
+	"github.com/getsentry/sentry-go"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
@@ -39,7 +43,7 @@ import (
 )
 
 //-------------------------------------------------
-func service__run(p_config *GF_config,
+func Run(p_config *GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
@@ -81,7 +85,7 @@ func service__run(p_config *GF_config,
 		return
 	}
 	
-	gf_images__service_info := &gf_images_lib.GF_service_info{
+	gf_images__service_info := &gf_images_core.GF_service_info{
 		Mongodb_host_str:                           p_config.Mongodb_host_str,
 		Mongodb_db_name_str:                        p_config.Mongodb_db_name_str,
 
@@ -170,4 +174,73 @@ func service__run(p_config *GF_config,
 
 	// SERVER_INIT - blocking
 	gf_rpc_lib.Server__init(port_int)
+}
+
+//-------------------------------------------------
+func Runtime__get(p_config_path_str string,
+	p_log_fun func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
+
+	// CONFIG
+	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
+	config_name_str     := path.Base(p_config_path_str) // "gf_solo"
+	
+	config, err := Config__init(config_dir_path_str, config_name_str)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("failed to load config")
+		return nil, nil, err
+	}
+
+
+
+	//--------------------
+	// SENTRY - ERROR_REPORTING
+	if config.Sentry_endpoint_str != "" {
+
+		sentry_endpoint_str := config.Sentry_endpoint_str
+		sentry_samplerate_f := 1.0
+		sentry_trace_handlers_map := map[string]bool{
+			
+		}
+		err := gf_core.Error__init_sentry(sentry_endpoint_str,
+			sentry_trace_handlers_map,
+			sentry_samplerate_f)
+		if err != nil {
+			panic(err)
+		}
+
+		defer sentry.Flush(2 * time.Second)
+	}
+
+	//--------------------
+	// RUNTIME_SYS
+	runtime_sys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_solo",
+		Log_fun:          p_log_fun,
+
+		// SENTRY - enable it for error reporting
+		Errors_send_to_sentry_bool: true,	
+	}
+
+	//--------------------
+	// MONGODB
+	mongodb_host_str := config.Mongodb_host_str
+	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
+	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
+	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
+
+	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+		config.Mongodb_db_name_str,
+		nil,
+		runtime_sys)
+	if gf_err != nil {
+		return nil, nil, gf_err.Error
+	}
+
+	runtime_sys.Mongo_db   = mongodb_db
+	runtime_sys.Mongo_coll = mongodb_db.Collection("data_symphony")
+	fmt.Printf("mongodb connected...\n")
+
+	//--------------------
+	return runtime_sys, config, nil
 }

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_solo_service
 
 import (
 	"strings"
@@ -75,7 +75,7 @@ type GF_config struct {
 }
 
 //-------------------------------------------------------------
-func config__init(p_config_dir_path_str string,
+func Config__init(p_config_dir_path_str string,
 	p_config_file_name_str string) (*GF_config, error) {
 
 

@@ -22,13 +22,11 @@ package main
 import (
 	"os"
 	"fmt"
-	"time"
-	"path"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	log "github.com/sirupsen/logrus"
-	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_solo/gf_solo_service"
 )
 
 //-------------------------------------------------
@@ -42,75 +40,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-//-------------------------------------------------
-func runtime__get(p_config_path_str string,
-	p_log_fun func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
-
-	// CONFIG
-	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
-	config_name_str     := path.Base(p_config_path_str) // "gf_solo"
-	
-	config, err := config__init(config_dir_path_str, config_name_str)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("failed to load config")
-		return nil, nil, err
-	}
-
-
-
-	//--------------------
-	// SENTRY - ERROR_REPORTING
-	if config.Sentry_endpoint_str != "" {
-
-		sentry_endpoint_str := config.Sentry_endpoint_str
-		sentry_samplerate_f := 1.0
-		sentry_trace_handlers_map := map[string]bool{
-			
-		}
-		err := gf_core.Error__init_sentry(sentry_endpoint_str,
-			sentry_trace_handlers_map,
-			sentry_samplerate_f)
-		if err != nil {
-			panic(err)
-		}
-
-		defer sentry.Flush(2 * time.Second)
-	}
-
-	//--------------------
-	// RUNTIME_SYS
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_solo",
-		Log_fun:          p_log_fun,
-
-		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,	
-	}
-
-	//--------------------
-	// MONGODB
-	mongodb_host_str := config.Mongodb_host_str
-	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
-	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
-	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
-
-	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
-		config.Mongodb_db_name_str,
-		nil,
-		runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err.Error
-	}
-
-	runtime_sys.Mongo_db   = mongodb_db
-	runtime_sys.Mongo_coll = mongodb_db.Collection("data_symphony")
-	fmt.Printf("mongodb connected...\n")
-
-	//--------------------
-	return runtime_sys, config, nil
 }
 
 //-------------------------------------------------
@@ -269,13 +198,13 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 
-			runtime_sys, config, err := runtime__get(cli_config_path_str, p_log_fun)
+			runtime_sys, config, err := gf_solo_service.Runtime__get(cli_config_path_str, p_log_fun)
 			if err != nil {
 				panic(err)
 			}
 
 			// RUN_SERVICE
-			service__run(config, runtime_sys)			
+			gf_solo_service.Run(config, runtime_sys)			
 		},
 	}
 
