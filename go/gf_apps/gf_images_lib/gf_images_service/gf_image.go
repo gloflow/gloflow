@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_lib 
+package gf_images_service 
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -25,7 +25,43 @@ import (
 )
 
 //---------------------------------------------------
-func Add_tags_to_image(p_image *gf_images_core.Gf_image,
+func Get_img(p_image_id_str gf_images_core.GF_image_id,
+	p_runtime_sys *gf_core.Runtime_sys) (*gf_images_core.GF_image_export, bool, *gf_core.GF_error) {
+
+	// DB_EXISTS
+	exists_bool, gf_err := gf_images_core.DB__image_exists(p_image_id_str, p_runtime_sys)
+	if gf_err != nil {
+		return nil, false, gf_err
+	}
+
+	if exists_bool {
+
+		// DB_GET
+		gf_img, gf_err := gf_images_core.DB__get_image(p_image_id_str, p_runtime_sys)
+		if gf_err != nil {
+			return nil, false, gf_err
+		}
+
+		gf_img_export := &gf_images_core.GF_image_export{
+			Creation_unix_time_f:     gf_img.Creation_unix_time_f,
+			Title_str:                gf_img.Title_str,
+			Flows_names_lst:          gf_img.Flows_names_lst,
+			Thumbnail_small_url_str:  gf_img.Thumbnail_small_url_str,
+			Thumbnail_medium_url_str: gf_img.Thumbnail_medium_url_str,
+			Thumbnail_large_url_str:  gf_img.Thumbnail_large_url_str,
+			Format_str:               gf_img.Format_str,
+			Tags_lst:                 gf_img.Tags_lst,
+		}
+		return gf_img_export, true, nil
+	} else {
+		return nil, false, nil
+	}
+
+	return nil, false, nil
+}
+
+//---------------------------------------------------
+func Add_tags_to_image(p_image *gf_images_core.GF_image,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.Add_tags_to_image()")

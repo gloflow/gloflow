@@ -61,6 +61,7 @@ func Test__jobs_updates(p_test *testing.T) {
 	fmt.Println(fmt.Sprintf("test__http_server_host_str       - %s", test__http_server_host_str))
 	fmt.Println(fmt.Sprintf("test__gf_images_service_port_str - %s", test__gf_images_service_port_str))
 	fmt.Println("")
+	
 	//-------------
 	
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)

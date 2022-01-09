@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,23 +17,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_flows
+package gf_images_service
 
 import (
+	"os"
 	"fmt"
 	"testing"
 	"context"
-	"github.com/stretchr/testify/assert"
+	// "github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
+
+var log_fun func(string, string)
+var cli_args_map map[string]interface{}
+
 //---------------------------------------------------
-func Test__get_all(p_test *testing.T) {
+func TestMain(m *testing.M) {
+	log_fun = gf_core.Init_log_fun()
+	cli_args_map = gf_images_core.CLI__parse_args(log_fun)
+	v := m.Run()
+	os.Exit(v)
+}
+
+//-------------------------------------------------
+func Test__basic_image_ops(p_test *testing.T) {
 
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_images_flows_tests",
+		Service_name_str: "gf_images_ops_tests",
 		Log_fun:          log_fun,
 	}
 
@@ -59,54 +72,15 @@ func Test__get_all(p_test *testing.T) {
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_0"},
 	}
-	test_img_1 := &gf_images_core.GF_image{
-		Id_str: "test_img_1",
-		T_str:  "img",
-		Flows_names_lst: []string{"flow_0"},
-	}
-	test_img_2 := &gf_images_core.GF_image{
-		Id_str: "test_img_2",
-		T_str:  "img",
-		Flows_names_lst: []string{"flow_0", "flow_1"},
-	}
-	test_img_3 := &gf_images_core.GF_image{
-		Id_str: "test_img_3",
-		T_str:  "img",
-		Flows_names_lst: []string{"flow_1", "flow_2"},
-	}
 	gf_err = gf_images_core.DB__put_image(test_img_0, ctx, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
-	gf_err = gf_images_core.DB__put_image(test_img_1, ctx, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
-	gf_err = gf_images_core.DB__put_image(test_img_2, ctx, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
-	gf_err = gf_images_core.DB__put_image(test_img_3, ctx, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
- 
+
 	//------------------
 
 
-	all_flows_names_lst, gf_err := flows__get_all__pipeline(ctx, runtime_sys)
-	if gf_err != nil {
-		p_test.Fail()
-	}
 
-	spew.Dump(all_flows_names_lst)
 
-	assert.True(p_test, len(all_flows_names_lst) == 3, "3 flows in total should have been discovered")
-	assert.True(p_test, all_flows_names_lst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
-	assert.True(p_test, all_flows_names_lst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
-	assert.True(p_test, all_flows_names_lst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
 
-	assert.True(p_test, all_flows_names_lst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
-	assert.True(p_test, all_flows_names_lst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
-	assert.True(p_test, all_flows_names_lst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
 }

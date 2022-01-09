@@ -26,6 +26,22 @@ import (
 )
 
 //-------------------------------------------------
+type GF_service_info struct {
+	Port_str                                   string
+	Mongodb_host_str                           string
+	Mongodb_db_name_str                        string
+	Images_store_local_dir_path_str            string
+	Images_thumbnails_store_local_dir_path_str string
+	Media_domain_str                           string
+	Images_main_s3_bucket_name_str             string
+	AWS_access_key_id_str                      string
+	AWS_secret_access_key_str                  string
+	AWS_token_str                              string
+	Templates_paths_map                        map[string]string
+	Config_file_path_str                       string
+}
+
+//-------------------------------------------------
 type GF_config struct {
 
 	Store_local_dir_path_str            string `yaml:"store_local_dir_path"`

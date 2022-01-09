@@ -107,8 +107,9 @@ func DB__get_image(p_image_id_str GF_image_id,
 }
 
 //---------------------------------------------------
-func DB__image_exists(p_image_id_str string, p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__image_exists()")
+func DB__image_exists(p_image_id_str GF_image_id,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__image_exists()")
 
 	ctx := context.Background()
 	c, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})

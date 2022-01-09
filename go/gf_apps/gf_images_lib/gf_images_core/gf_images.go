@@ -85,6 +85,18 @@ type Gf_image struct {
 	// Flow_name_str   string   `json:"flow_name_str"   bson:"flow_name_str"`
 }
 
+type GF_image_export struct {
+	Creation_unix_time_f     float64  `json:"creation_unix_time_f"`
+	Title_str                string   `json:"title_str"`
+	Flows_names_lst          []string `json:"flows_names_lst"`
+	Origin_page_url_str      string   `json:"origin_page_url_str"`
+	Thumbnail_small_url_str  string   `json:"thumbnail_small_url_str"`
+	Thumbnail_medium_url_str string   `json:"thumbnail_medium_url_str"`
+	Thumbnail_large_url_str  string   `json:"thumbnail_large_url_str"`
+	Format_str               string   `json:"format_str"`
+	Tags_lst                 []string `json:"tags_lst"`
+}
+
 type GF_image_thumbs struct {
 	Small_relative_url_str     string `json:"small_relative_url_str"`
 	Medium_relative_url_str    string `json:"medium_relative_url_str"`
@@ -157,7 +169,7 @@ func Image__create_new(p_image_info *GF_image_new_info,
 
 func Image__create(p_image_info_map map[string]interface{},
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create()")
 	
 	new_image_info_map, gf_err := Image__verify_image_info(p_image_info_map, p_runtime_sys)

@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_lib
+package gf_images_service
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
-func db_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func DB_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 
 	indexes_keys_lst := [][]string{
 		[]string{"t", }, // all stat queries first match on "t"

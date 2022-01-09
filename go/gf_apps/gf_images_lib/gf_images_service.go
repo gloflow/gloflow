@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -33,30 +34,14 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
-	Port_str                                   string
-	Mongodb_host_str                           string
-	Mongodb_db_name_str                        string
-	Images_store_local_dir_path_str            string
-	Images_thumbnails_store_local_dir_path_str string
-	Media_domain_str                           string
-	Images_main_s3_bucket_name_str             string
-	AWS_access_key_id_str                      string
-	AWS_secret_access_key_str                  string
-	AWS_token_str                              string
-	Templates_paths_map                        map[string]string
-	Config_file_path_str                       string
-}
-
-//-------------------------------------------------
-func Init_service(p_service_info *GF_service_info,
+func Init_service(p_service_info *gf_images_core.GF_service_info,
 	p_config      *gf_images_core.GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
 
 	//-------------
 	// DB_INDEXES
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	db_index__init(p_runtime_sys)
+	gf_images_service.DB_index__init(p_runtime_sys)
 
 	//-------------
 	// S3
@@ -122,7 +107,7 @@ func Init_service(p_service_info *GF_service_info,
 
 	//-------------
 	// HANDLERS
-	gf_err = init_handlers(jobs_mngr_ch,
+	gf_err = gf_images_service.Init_handlers(jobs_mngr_ch,
 		p_config,
 		p_service_info.Media_domain_str,
 		s3_info,
@@ -146,7 +131,7 @@ func Init_service(p_service_info *GF_service_info,
 // An HTTP servr is started and listens on a supplied port.
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
-func Run_service(p_service_info *GF_service_info,
+func Run_service(p_service_info *gf_images_core.GF_service_info,
 	p_init_done_ch chan bool,
 	p_log_fun      func(string, string)) {
 	p_log_fun("FUN_ENTER", "gf_images_service.Run_service()")

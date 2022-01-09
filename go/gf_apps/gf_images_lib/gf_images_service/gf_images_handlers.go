@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_lib
+package gf_images_service
 
 import (
 	// "fmt"
@@ -31,7 +31,7 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
+func Init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	p_img_config       *gf_images_core.GF_config,
 	p_media_domain_str string,
 	p_s3_info          *gf_core.GF_s3_info,
@@ -42,11 +42,57 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/images/d/",
-		"/images/v1/upload_init",
-		"/images/v1/upload_complete",
+		"/v1/images/get",
+		"/v1/images/upload_init",
+		"/v1/images/upload_complete",
 		"/images/c",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+
+	//---------------------
+	// GET_IMAGE
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/images/get",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "GET" {
+				//-----------------
+				// INPUT
+				qs_map := p_req.URL.Query()
+				
+				var img_id_str string 
+				if a_lst, ok := qs_map["img_id"]; ok {
+					img_id_str = a_lst[0]
+				} else {
+					gf_err := gf_core.Mongo__handle_error("failed to get img_id arg from request query string",
+						"verify__input_data_missing_in_req_error",
+						map[string]interface{}{},
+						nil, "gf_images_lib", p_runtime_sys)
+					return nil, gf_err
+				}
+
+				//-----------------
+
+				img_id := gf_images_core.GF_image_id(img_id_str)
+				gf_image_export, exists_bool, gf_err := Get_img(img_id, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{
+					"image_exists_bool": exists_bool,      
+					"image_export_map":  gf_image_export,
+				}
+				return data_map, nil
+
+				//------------------
+			}
+			return nil, nil
+		},
+		metrics,
+		true, // p_store_run_bool
+		p_runtime_sys)
 
 	//---------------------
 
@@ -57,7 +103,6 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	
 	gf_rpc_lib.Create_handler__http_with_metrics("/images/d/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-
 			if p_req.Method == "GET" {
 
 				//-----------------
@@ -67,7 +112,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 
 				qs_map        := p_req.URL.Query()
 				flow_name_str := "general"
-				if a_lst,ok := qs_map["fname"]; ok {
+				if a_lst, ok := qs_map["fname"]; ok {
 					flow_name_str = a_lst[0]
 				}
 				
@@ -105,7 +150,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	// UPLOAD_INIT - client calls this to get the presigned URL to then upload the image to directly.
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/v1/upload_init",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/images/upload_init",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -179,7 +224,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/v1/upload_complete",
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/images/upload_complete",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -271,6 +316,7 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 				if gf_err != nil {
 					return nil, gf_err
 				}
+				
 				//--------------------------
 			}
 			return nil, nil
@@ -281,6 +327,10 @@ func init_handlers(p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
 
 	//---------------------
 	// HEALTH
+
+	// FIX!! - change to "/v1/images/healthz" but have to also fix infra healthcheck path 
+	//         otherwise service is going to get marked as unhealthy
+	
 	gf_rpc_lib.Create_handler__http_with_metrics("/images/v1/healthz",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil

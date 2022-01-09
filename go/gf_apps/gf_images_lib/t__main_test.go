@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_lib
+package gf_images_service
 
 import (
 	"os"
@@ -41,7 +41,7 @@ type Gf_test_image_data struct {
 	large_thumb_max_size_px_int      int
 }
 
-var log_fun func(string,string)
+var log_fun func(string, string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
@@ -76,20 +76,28 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 	
-	//-----------------
-	// MONGODB	
-	mongodb_db := gf_core.Mongo__connect(test__mongodb_host_str,
-		test__mongodb_db_name_str,
-		log_fun)
-	mongodb_coll := mongodb_db.C("data_symphony")
-	
+
 	// RUNTIME
 	runtime_sys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_images_tests",
 		Log_fun:          log_fun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
 	}
+	
+	//-----------------
+	// MONGODB	
+
+
+	// MONGODB
+	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
+	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
+	if gf_err != nil {
+		fmt.Println(gf_err.Error)
+		p_test.Fail()
+	}
+	mongodb_coll := mongodb_db.Collection("data_symphony")
+	runtime_sys.Mongo_coll = mongodb_coll
+
+
 
 	//-----------------
 
