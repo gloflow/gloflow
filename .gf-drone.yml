@@ -120,6 +120,10 @@ steps:
       - cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
       - go test -v -mongodb_host=mongo
 
+      # GF_IMAGES_SERVICE
+      - cd /home/gf/go/gf_apps/gf_images_lib/gf_images_service
+      - go test -v -mongodb_host=mongo
+
       # GF_IDENTITY
       - cd /home/gf/go/gf_apps/gf_identity_lib
       - go test -v -mongodb_host=mongo
@@ -164,7 +168,7 @@ steps:
   #-------------------------------
   # BUILD_GO
   - name: build_go
-    image: glofloworg/gf_builder_go_ubuntu:latest # glofloworg/gf_builder:latest
+    image: glofloworg/gf_builder_go_ubuntu:latest
 
     volumes:
       - name: go_cache
@@ -189,7 +193,6 @@ steps:
       # "-u" - run unbuffered to see all stdout/stderr as it happens
       # "-build_outof_cont" - dont build in a container, since this build stage already runs in a container.
       #                       by default all builds done with cli__build.py are run in a container.
-      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_go
       - python3 -u /home/gf/ops/cli__build.py -run=build_go -fetch_deps -build_outof_cont -app=gf_solo
       
     when:
@@ -234,8 +237,6 @@ steps:
       - apt-get update
       - apt-get install -y docker.io
 
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=build_containers -app=gf_solo
       - python3 -u /home/gf/ops/cli__build.py -run=build_containers -app=gf_solo
 
     when:
@@ -266,9 +267,7 @@ steps:
       #          so doing it manually here. use a proper container image with docker.
       - apt-get update
       - apt-get install -y docker.io
-      
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
-      # - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=publish_containers -app=gf_solo
+    
       - python3 -u /home/gf/ops/cli__build.py -run=publish_containers -app=gf_solo
 
     when:
@@ -285,7 +284,6 @@ steps:
       GF_NOTIFY_COMPLETION_URL:
         from_secret: gf_os__notify_completion_url
     commands:
-      # "-u" - run unbuffered to see all stdout/stderr as it happens
       - python3 -u /home/gf/build/gf_builder/gf_builder.py -run=notify_completion
     when:
       event:
