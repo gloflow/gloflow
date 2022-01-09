@@ -26,7 +26,7 @@ export async function get(p_image_id_str :string,
 	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const page_size_int = 10;
-		const url_str       = `/images/get?img_id=${p_image_id_str}`;
+		const url_str       = `/v1/images/get?img_id=${p_image_id_str}`;
 		p_log_fun("INFO", `url_str - ${url_str}`);
 
 		//-------------------------
