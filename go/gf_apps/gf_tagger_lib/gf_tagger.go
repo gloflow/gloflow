@@ -94,8 +94,9 @@ func add_tags_to_object(p_tags_str string,
 		//---------------
 		// IMAGE
 		case "image":
-			image_id_str        := p_object_extern_id_str
-			exists_bool, gf_err := gf_images_core.DB__image_exists(image_id_str, p_runtime_sys)
+			image_id_str := p_object_extern_id_str
+			image_id     := gf_images_core.GF_image_id(image_id_str)
+			exists_bool, gf_err := gf_images_core.DB__image_exists(image_id, p_runtime_sys)
 			if gf_err != nil {
 				return gf_err
 			}
