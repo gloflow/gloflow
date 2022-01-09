@@ -107,3 +107,17 @@
     color: #8c8c3c;
 	opacity: 0.8;
 }
+
+.colors_info #copy_to_clipboard_btn {
+    position: absolute;
+    width: 18px;
+    height: 24px;
+    right: -27px;
+    top: 25px;
+    background-color: orange;
+    color: #fff0c5;
+    padding-left: 9px;
+    padding-top: 1px;
+    cursor: pointer;
+    z-index: 1;
+}

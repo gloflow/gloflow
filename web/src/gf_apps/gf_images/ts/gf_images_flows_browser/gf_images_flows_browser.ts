@@ -269,13 +269,13 @@ function init_upload(p_flow_name_str :string,
 					current_image_view_type_str,
 
 					//---------------------------------------------------
-					// on_complete
+					// p_on_img_load_fun
 					()=>{
 						
 					},
 
 					//---------------------------------------------------
-					// on_error
+					// p_on_img_load_error_fun
 					()=>{
 						
 					},

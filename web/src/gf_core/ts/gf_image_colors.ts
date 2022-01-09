@@ -25,7 +25,7 @@ import * as gf_image_process from "./gf_image_process";
 export function init_pallete(p_image) {
 
     var image_colors_shown_bool = false;
-    $(p_image).on("mouseover", (p_event)=>{
+    $(p_image).on("mouseover", async (p_event)=>{
 
 
         if (!image_colors_shown_bool) {
@@ -40,31 +40,22 @@ export function init_pallete(p_image) {
                 <div class="color_pallete"></div>
             </div>`);
 
-
             // // IMPORTANT!! - change to color of the whole image_info control to match the dominant color of the
             // //               image its displaying.
             // $(p_image_info_element).css("background-color", `#${image_colors.color_hex_str}`);				
             
-
-
             color_info_element.insertAfter(image);
 
             //-------------
             // COLOR_PALLETE
             const color_pallete_element = $(color_info_element).find(".color_pallete");
             // const color_pallete_sub_lst = image_colors.color_palette_lst.slice(1, 6);
+
+            const colors_hexes_lst = [];
             image_colors.color_palette_lst.forEach((p_color_hex_str)=>{
-
-                // console.log("-------------")
-                // console.log(p_color_hex_str);
-
 
                 const color_element = $(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`);
                 $(color_pallete_element).append(color_element);
-
-
-
-
 
                 //-------------
                 // COLOR_INSPECTOR
@@ -81,12 +72,14 @@ export function init_pallete(p_image) {
                 });
                 
                 //-------------
+
+                colors_hexes_lst.push(p_color_hex_str);
             })
 
             //-------------
-            const color_dominant_element = $(color_info_element).find(".color_dominant");
-
-            var color_dominant_label_element = $(`<div class="color_dominant_label">color dominant</div>`);
+            // COLOR_DOMINANT_LABEL
+            const color_dominant_element       = $(color_info_element).find(".color_dominant");
+            var   color_dominant_label_element = $(`<div class="color_dominant_label">color dominant</div>`);
             $(color_dominant_element).on("mouseover", ()=>{
                 color_info_element.append(color_dominant_label_element);
             });
@@ -94,21 +87,46 @@ export function init_pallete(p_image) {
                 $(color_dominant_label_element).remove();
             });
 
-
+            //-------------
+            // COLOR_PALLETE_LABEL
             var color_pallete_label_element = $(`<div class="color_pallete_label">color pallete</div>`);
+            var copy_to_clipboard_btn;
             $(color_pallete_element).on("mouseover", ()=>{
                 color_info_element.append(color_pallete_label_element);
+
+                //-------------
+                // COPY_TO_CLIPBOARD
+                copy_to_clipboard_btn = init_copy_to_clipboard_btn(colors_hexes_lst);
+                $(color_info_element).append(copy_to_clipboard_btn);
+
+                //-------------
             });
             $(color_pallete_element).on("mouseout", ()=>{
                 $(color_pallete_label_element).remove();
+                $(copy_to_clipboard_btn).remove();
             });
             
-
-
+            //-------------
             image_colors_shown_bool = true;
         }
     });
 
+    //--------------------------------------------------------
+    function init_copy_to_clipboard_btn(p_colors_hexes_lst) {
+        const element = $(`
+            <div id='copy_to_clipboard_btn'>c</div>`);
+        
+        $(element).on("click", async ()=>{
+            var colors_for_clipboard_str = p_colors_hexes_lst.join(",");
 
+            // COPY_TO_CLIPBOARD
+            await navigator.clipboard.writeText(colors_for_clipboard_str);
 
+            $(element).css("background-color", "green");
+        })
+
+        return element;
+    }
+
+    //--------------------------------------------------------
 }
