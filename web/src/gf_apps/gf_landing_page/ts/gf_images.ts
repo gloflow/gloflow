@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.timeago.d.ts" />
 
 import * as gf_image_colors from "./../../../gf_core/ts/gf_image_colors";
-import * as gf_date         from "./../../../gf_core/ts/gf_date";
+import * as gf_time         from "./../../../gf_core/ts/gf_time";
 
 //-------------------------------------------------
 export function init(p_log_fun) {
@@ -51,7 +51,7 @@ export function init(p_log_fun) {
 		//         gf_images flows_browser already uses the version from gf_core.
 		init_image_viewer(p_image_info_element, p_log_fun);
 
-		gf_date.init_creation_date(p_image_info_element, p_log_fun);
+		gf_time.init_creation_date(p_image_info_element, p_log_fun);
 
 		//----------------------
 		// IMAGE_PALLETE

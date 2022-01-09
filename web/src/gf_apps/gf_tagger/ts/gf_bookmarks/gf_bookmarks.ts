@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_date      from "./../../../../gf_core/ts/gf_date";
+import * as gf_time      from "./../../../../gf_core/ts/gf_time";
 import * as gf_sys_panel from "./../../../../gf_core/ts/gf_sys_panel";
 
 //--------------------------------------------------------
@@ -55,7 +55,7 @@ function init(p_log_fun) {
 
 	$("#bookmarks .bookmark").each((p_i, p_bookmark_element)=>{
 
-		gf_date.init_creation_date(p_bookmark_element, p_log_fun);
+		gf_time.init_creation_date(p_bookmark_element, p_log_fun);
 	});
 }
 

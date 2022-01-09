@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../../d/masonry.layout.d.ts" />
 ///<reference path="../../../../d/jquery.timeago.d.ts" />
 
+import * as gf_time             from "./../../../../gf_core/ts/gf_time";
 import * as gf_gifs_viewer      from "./../../../../gf_core/ts/gf_gifs_viewer";
 import * as gf_image_viewer     from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_sys_panel        from "./../../../../gf_core/ts/gf_sys_panel";
@@ -203,14 +204,24 @@ function init_upload(p_flow_name_str :string,
 		// p_on_upload_fun
 		async (p_upload_gf_image_id_str)=>{
 
+			//------------------
+			// SLEEP - it takes time for the image to get uploaded.
+			//         so dont run gf_image_http.get() until the system had time to add the image,
+			//         otherwise it will return a response that the image doesnt exist yet.
+			// ADD!! - some way to immediatelly display a placeholder for the image that is being uploaded.
+			const wait_time_miliseconds_int = 4000; // 4s
+			await gf_time.sleep(wait_time_miliseconds_int);
+
+			//------------------
 			// HTTP_GET_IMAGE
 			const image_result_map  = await gf_image_http.get(p_upload_gf_image_id_str, p_log_fun);
 			const image_exists_bool = image_result_map["image_exists_bool"];
 
-
+			//------------------
 			// uploaded image is not in the system for some reason 
 			if (!image_exists_bool) {
 
+				// ERROR_DISPLAY
 				$("body").append(`<div id='upload_display_failed'
 					style='position:'fixed';right='20px';top='20px';background-color='red';width='10px';height='10px'>
 					</div>`);

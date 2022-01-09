@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../d/jquery.timeago.d.ts" />
 
 //-------------------------------------------------
+export function sleep(p_miliseconds_int :number) {
+	return new Promise(resolve => setTimeout(resolve, p_miliseconds_int));
+}
+
+//-------------------------------------------------
 export function init_creation_date(p_target_element, p_log_fun) {
 
 	const creation_time_element = $(p_target_element).find('.creation_time');
