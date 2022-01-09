@@ -254,7 +254,6 @@ function init_upload(p_flow_name_str :string,
 				const img__thumbnail_large_url_str  = image_export_map["thumbnail_large_url_str"];
 				const img__tags_lst                 = image_export_map["tags_lst"];
 
-
 				const current_image_view_type_str = gf_view_type_picker.get_current_view_type();
 
 				gf_utils.init_image_element(p_upload_gf_image_id_str,
@@ -270,15 +269,18 @@ function init_upload(p_flow_name_str :string,
 
 					//---------------------------------------------------
 					// p_on_img_load_fun
-					()=>{
-						
+					(p_image_container)=>{
+						// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded.
+						// add it as the first element since its an uploaded image
+						$("#gf_images_flow_container #items").prepend(p_image_container);
+
+						// MASONRY_LAYOUT
+						gf_utils.masonry_layout_after_img_load(p_image_container);
 					},
 
 					//---------------------------------------------------
 					// p_on_img_load_error_fun
-					()=>{
-						
-					},
+					()=>{},
 
 					//---------------------------------------------------
 					p_log_fun);

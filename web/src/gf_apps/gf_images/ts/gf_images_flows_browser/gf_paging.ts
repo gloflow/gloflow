@@ -39,16 +39,6 @@ export async function load_new_page(p_flow_name_str :string,
 	
 	view_page(page_lst);
 
-	/*gf_images_http.get_page(p_flow_name_str,
-	p_current_page_int,
-	(p_page_lst)=>{
-		view_page(p_page_lst);
-	},
-	(p_error)=>{
-		p_on_complete_fun();
-	},
-	p_log_fun);*/
-
 	//---------------------------------------------------
 	function view_page(p_page_lst) {
 		p_log_fun('FUN_ENTER', 'gf_paging.load_new_page().view_page()');
@@ -79,8 +69,15 @@ export async function load_new_page(p_flow_name_str :string,
 				p_current_image_view_type_str,
 
 				//---------------------------------------------------
-				// on_complete
-				()=>{
+				// p_on_img_load_fun
+				(p_image_container)=>{
+					
+					// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded.
+					$("#gf_images_flow_container #items").append(p_image_container);
+
+					// MASONRY_LAYOUT
+					gf_utils.masonry_layout_after_img_load(p_image_container);
+
 					img_i_int++;
 
 					// IMPORTANT!! - only declare load_new_page() as complete after all its
@@ -91,7 +88,7 @@ export async function load_new_page(p_flow_name_str :string,
 				},
 
 				//---------------------------------------------------
-				// on_error
+				// p_on_img_load_error_fun
 				()=>{
 					// if image failed to load it still needs to be counted so that when all images
 					// are done (either failed or succeeded) call p_on_complete_fun()

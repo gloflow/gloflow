@@ -23,6 +23,19 @@ import * as gf_image_viewer from "./../../../../gf_core/ts/gf_image_viewer";
 import * as gf_gifs_viewer  from "./../../../../gf_core/ts/gf_gifs_viewer";
 
 //-------------------------------------------------
+export function masonry_layout_after_img_load(p_image_container) {
+	
+	const masonry = $('#gf_images_flow_container #items').data('masonry');
+	masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
+		$(p_image_container).css('visibility', 'visible');
+	});
+	
+	// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
+	$('#gf_images_flow_container #items').masonry();
+	$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+}
+
+//-------------------------------------------------
 export function init_image_element(p_img__id_str :string,
 	p_img__format_str               :string,
 	p_img__creation_unix_time_f     :string,
@@ -51,7 +64,11 @@ export function init_image_element(p_img__id_str :string,
 	// IMPORTANT!! - '.gf_image' is initially invisible, and is faded into view when its image is fully loaded
 	//               and its positioned appropriatelly in the Masonry grid
 	const image_container = $(`
-		<div class="gf_image item ${p_current_image_view_type_str}" data-img_id="${p_img__id_str}" data-img_format="${p_img__format_str}" style='visibility:hidden;'>
+		<div class="gf_image item ${p_current_image_view_type_str}"
+			data-img_id="${p_img__id_str}"
+			data-img_format="${p_img__format_str}"
+			style='visibility:hidden;'>
+
 			<img src="${img_url_str}" data-img_thumb_medium_url="${p_img__thumbnail_medium_url_str}"></img>
 			<div class="tags_container"></div>
 			<div class="origin_page_url">
@@ -69,21 +86,17 @@ export function init_image_element(p_img__id_str :string,
 
 	$(image_container).find('img').on('load', ()=>{
 
-		// IMPORTANT!! - add ".gf_image" to the DOM after the image is fully loaded
-		$("#gf_images_flow_container #items").append(image_container);
-		
 		//------------------
 		// MASONRY_RELOAD
-		var masonry = $('#gf_images_flow_container #items').data('masonry');
-
-		masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
-			$(image_container).css('visibility', 'visible');
-		});
+		// var masonry = $('#gf_images_flow_container #items').data('masonry');
+		// masonry.once('layoutComplete', (p_event, p_laid_out_items)=>{
+		// 	$(image_container).css('visibility', 'visible');
+		// });
 		
 		
-		// IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
-		$('#gf_images_flow_container #items').masonry();
-		$('#gf_images_flow_container #items').masonry(<any>"reloadItems");
+		// // IMPORTANT!! - for some reason both masonry() and masonry("reloadItems") are needed.
+		// $('#gf_images_flow_container #items').masonry();
+		// $('#gf_images_flow_container #items').masonry(<any>"reloadItems");
 
 		//------------------
 
@@ -110,8 +123,7 @@ export function init_image_element(p_img__id_str :string,
 
 		//------------------
 
-		p_on_img_load_fun();
-
+		p_on_img_load_fun(image_container);
 	});
 
 	// IMAGE_FAILED_TO_LOAD
@@ -138,6 +150,8 @@ export function init_image_element(p_img__id_str :string,
 	}
 
 	//------------------
+
+	return image_container;
 }
 
 //-------------------------------------------------
