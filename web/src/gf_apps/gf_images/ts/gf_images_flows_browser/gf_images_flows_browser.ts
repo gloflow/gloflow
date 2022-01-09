@@ -204,21 +204,36 @@ function init_upload(p_flow_name_str :string,
 		// p_on_upload_fun
 		async (p_upload_gf_image_id_str)=>{
 
-			//------------------
-			// SLEEP - it takes time for the image to get uploaded.
-			//         so dont run gf_image_http.get() until the system had time to add the image,
-			//         otherwise it will return a response that the image doesnt exist yet.
-			// ADD!! - some way to immediatelly display a placeholder for the image that is being uploaded.
-			const wait_time_miliseconds_int = 4000; // 4s
-			await gf_time.sleep(wait_time_miliseconds_int);
+			var image_exists_bool;
+			var image_result_map;
 
-			//------------------
-			// HTTP_GET_IMAGE
-			const image_result_map  = await gf_image_http.get(p_upload_gf_image_id_str, p_log_fun);
-			const image_exists_bool = image_result_map["image_exists_bool"];
+			// start attempting to get uploaded image metadata, until the upload succeeds
+			const attempts_num_int = 6;
+			for (var i=0; i<5; i++) {
+				//------------------
+				// SLEEP - it takes time for the image to get uploaded.
+				//         so dont run gf_image_http.get() until the system had time to add the image,
+				//         otherwise it will return a response that the image doesnt exist yet.
+				// ADD!! - some way to immediatelly display a placeholder for the image that is being uploaded.
+				const wait_time_miliseconds_int = 1500; // 1s
+				await gf_time.sleep(wait_time_miliseconds_int);
 
-			//------------------
-			// uploaded image is not in the system for some reason 
+				//------------------
+				// HTTP_GET_IMAGE
+				image_result_map  = await gf_image_http.get(p_upload_gf_image_id_str, p_log_fun);
+				image_exists_bool = image_result_map["image_exists_bool"];
+
+				//------------------
+
+				if (image_exists_bool) {
+
+					// image now exists and we can stop attempting to fetch its metadata
+					break;
+				}
+			}
+			
+			// uploaded image is not in the system even after all the retries,
+			// so just display the failure and do nothign else
 			if (!image_exists_bool) {
 
 				// ERROR_DISPLAY
