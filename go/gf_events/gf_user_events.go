@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_analytics_lib
+package gf_events
 
 import (
 	"fmt"
@@ -39,7 +39,7 @@ type Gf_user_event_input struct {
 	Data_map map[string]interface{} `json:"d"`
 }
 
-type Gf_user_event_req_ctx struct {
+type GF_user_event_req_ctx struct {
 	User_ip_str          string `json:"user_ip_str"      bson:"user_ip_str"`
 	User_agent_str       string `json:"user_agent_str"   bson:"user_agent_str"`
 	Browser_name_str     string `json:"browser_name_str" bson:"browser_name_str"`
@@ -55,15 +55,14 @@ type Gf_user_event struct {
 	Creation_unix_time_f float64                `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	Event_data_map       map[string]interface{} `json:"event_data_map"       bson:"event_data_map"`
 	Session_id_str       string                 `json:"session_id_str"       bson:"session_id_str"`
-	Req_ctx              Gf_user_event_req_ctx  `json:"req_ctx"              bson:"req_ctx"`
+	Req_ctx              GF_user_event_req_ctx  `json:"req_ctx"              bson:"req_ctx"`
 	time__unix_f         float64                `json:"time__unix_f"         bson:"time__unix_f"`
 }
 
 //-------------------------------------------------
-func user_event__parse_input(p_req *http.Request,
+func User_event__parse_input(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) (*Gf_user_event_input, string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_user_events.user_event__parse_input()")
 
 	//--------------------
 	input             := Gf_user_event_input{}
@@ -85,9 +84,9 @@ func user_event__parse_input(p_req *http.Request,
 }
 
 //-------------------------------------------------
-func user_event__create(p_input *Gf_user_event_input,
+func User_event__create(p_input *Gf_user_event_input,
 	p_session_id_str string,
-	p_gf_req_ctx     *Gf_user_event_req_ctx,
+	p_gf_req_ctx     *GF_user_event_req_ctx,
 	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.Gf_error {
 	
 	creation_time__unix_f := float64(time.Now().UnixNano())/1000000000.0

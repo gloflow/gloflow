@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"github.com/ianoshen/uaparser"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 )
@@ -51,10 +52,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
 
 	//---------------------
-
 	// USER_EVENT
-	// http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
-	//	p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST --- /a/ue")
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/ue",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -88,7 +86,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//-----------------
 				// INPUT
-				input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
+				input, session_id_str, gf_err := gf_events.User_event__parse_input(p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
@@ -97,7 +95,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				
 				//-----------------
 							
-				gf_req_ctx := &Gf_user_event_req_ctx {
+				gf_req_ctx := &gf_events.GF_user_event_req_ctx {
 					User_ip_str:      clean_ip_str,
 					User_agent_str:   user_agent_str,
 					Browser_name_str: browser_name_str,
@@ -106,7 +104,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 					Os_ver_str:       os_version_str,
 				}
 
-				gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
+				gf_err = gf_events.User_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -120,8 +118,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 		p_runtime_sys)
 
 	//--------------
-	// http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
-	//	p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/analytics_dashboard__ff0099__ooo ----------")
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			
