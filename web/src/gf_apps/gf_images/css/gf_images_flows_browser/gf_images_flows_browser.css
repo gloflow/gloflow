@@ -12,8 +12,9 @@ body {
 /*----------------------------------------------------------*/
 #gf_images_flow_container {
 	margin-left: 6px;
-	position   : relative;
-	top        : 100px;
+	position:    relative;
+	top:         100px;
+	left:        18px;
 }
 
 #gf_images_flow_container #flow_info {
