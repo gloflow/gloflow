@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_analytics_lib
 
 import (
-	"time"
 	"strings"
 	"context"
 	"net/http"
@@ -42,76 +41,83 @@ func init_handlers(p_templates_paths_map map[string]string,
 	if gf_err != nil {
 		return gf_err
 	}
-	//--------------
+
+	//---------------------
+	// METRICS
+	handlers_endpoints_lst := []string{
+		"/v1/a/ue",
+		"/v1/a/dashboard",
+	}
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+
+	//---------------------
+
 	// USER_EVENT
-	http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST --- /a/ue")
+	// http.HandleFunc("/a/ue", func(p_resp http.ResponseWriter, p_req *http.Request) {
+	//	p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST --- /a/ue")
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/ue",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		// CORS - preflight request
-		gf_rpc_lib.Http_CORS_preflight_handle(p_req, p_resp)
-		// if p_req.Method == "OPTIONS" {
-		// 	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
-		// 	p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
-		// }
-		
-		
 
-		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
+			// CORS - preflight request
+			gf_rpc_lib.Http_CORS_preflight_handle(p_req, p_resp)
+			// if p_req.Method == "OPTIONS" {
+			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
+			// }
 
-			ip_str       := p_req.RemoteAddr
-			clean_ip_str := strings.Split(ip_str,":")[0]
-			
-			//-----------------
-			// BROWSER INFORMATION
-			user_agent_str := p_req.UserAgent()
-			user_agent     := uaparser.Parse(user_agent_str)
+			if p_req.Method == "POST" {
 
-			var browser_name_str string
-			var browser_ver_str  string
-			if user_agent.Browser != nil {
-				browser_name_str = user_agent.Browser.Name
-				browser_ver_str  = user_agent.Browser.Version
+				ip_str       := p_req.RemoteAddr
+				clean_ip_str := strings.Split(ip_str,":")[0]
+				
+				//-----------------
+				// BROWSER INFORMATION
+				user_agent_str := p_req.UserAgent()
+				user_agent     := uaparser.Parse(user_agent_str)
+
+				var browser_name_str string
+				var browser_ver_str  string
+				if user_agent.Browser != nil {
+					browser_name_str = user_agent.Browser.Name
+					browser_ver_str  = user_agent.Browser.Version
+				}
+
+				os_name_str    := user_agent.OS.Name
+				os_version_str := user_agent.OS.Version
+
+				//-----------------
+				// INPUT
+				input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
+				if gf_err != nil {
+					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
+					//              this handler should be fire-and-forget from the users/clients perspective.
+					return nil, gf_err
+				}
+				
+				//-----------------
+							
+				gf_req_ctx := &Gf_user_event_req_ctx {
+					User_ip_str:      clean_ip_str,
+					User_agent_str:   user_agent_str,
+					Browser_name_str: browser_name_str,
+					Browser_ver_str:  browser_ver_str,
+					Os_name_str:      os_name_str,
+					Os_ver_str:       os_version_str,
+				}
+
+				gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//-----------------
 			}
-
-			os_name_str    := user_agent.OS.Name
-			os_version_str := user_agent.OS.Version
-
-			//-----------------
-			// INPUT
-			input, session_id_str, gf_err := user_event__parse_input(p_req, p_resp, p_runtime_sys)
-			if gf_err != nil {
-				//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
-				//              this handler should be fire-and-forget from the users/clients perspective.
-				return
-			}
-			
-			//-----------------
-						
-			gf_req_ctx := &Gf_user_event_req_ctx {
-				User_ip_str:      clean_ip_str,
-				User_agent_str:   user_agent_str,
-				Browser_name_str: browser_name_str,
-				Browser_ver_str:  browser_ver_str,
-				Os_name_str:      os_name_str,
-				Os_ver_str:       os_version_str,
-			}
-
-			gf_err = user_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
-			if gf_err != nil {
-				// IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
-				//               this handler should be fire-and-forget from the users/clients perspective.
-				return
-			}
-			//-----------------
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-		
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/ue", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		metrics,
+		true, // p_store_run_bool
+		p_runtime_sys)
 
 	//--------------
 	// http.HandleFunc("/a/analytics_dashboard__ff0099__ooo", func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -146,7 +152,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		}
 		return nil, nil
 	},
-	nil,
+	metrics,
 	true, // p_store_run_bool
 	p_runtime_sys)
 
