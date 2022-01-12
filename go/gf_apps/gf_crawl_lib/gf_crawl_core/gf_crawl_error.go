@@ -25,6 +25,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 )
 
 //--------------------------------------------------
@@ -47,16 +48,16 @@ func Create_error_and_event(p_error_type_str string,
 	p_error_data_map   map[string]interface{},
 	p_error_url_str    string,
 	p_crawler_name_str string,
-	p_gf_err           *gf_core.Gf_error,
+	p_gf_err           *gf_core.GF_error,
 	p_runtime          *Gf_crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
 	if p_runtime.Events_ctx != nil {
 		events_id_str  := "crawler_events"
 		event_type_str := "error"
 
-		gf_core.Events__send_event(events_id_str,
+		gf_events.Events__send_event(events_id_str,
 			event_type_str,   // p_type_str
 			p_error_msg_str,  // p_msg_str
 			p_error_data_map, // p_data_map

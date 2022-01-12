@@ -24,6 +24,7 @@ import (
 	"time"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -102,7 +103,7 @@ func images__stage__download_images(p_crawler_name_str string,
 				"end_time_f":   end_time_f,
 			}
 
-			gf_core.Events__send_event(events_id_str,
+			gf_events.Events__send_event(events_id_str,
 				event_type_str, // p_type_str
 				msg_str,        // p_msg_str
 				data_map,

@@ -27,6 +27,7 @@ import (
 	"github.com/olivere/elastic"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
@@ -73,7 +74,7 @@ func Init(p_config *GF_crawler_config,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.Init()")
 
 	//--------------
-	events_ctx := gf_core.Events__init("/a/crawl/events", p_runtime_sys)
+	events_ctx := gf_events.Events__init("/a/crawl/events", p_runtime_sys)
 
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
@@ -145,7 +146,7 @@ func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_de
 
 	events_id_str := "crawler_events"
 	
-	gf_core.Events__register_producer(events_id_str, p_runtime.Events_ctx, p_runtime_sys)
+	gf_events.Events__register_producer(events_id_str, p_runtime.Events_ctx, p_runtime_sys)
 
 	for _, crawler := range p_crawlers_map {
 
