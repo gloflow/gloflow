@@ -27,10 +27,11 @@ package gf_images_jobs
 import "C"
 
 // IMPORTANT!! - LDFLAGS - options for the external (GCC "ld") linker.
-//               "-L"    - linker flag for directory in which to look for libs (.so/.a).
-//               "-l"    - linker flag for name of the library to link.
-//                         this name is a short version of the full lib name:
-//                         "gf_images_jobs" name is a full name "libgf_images_jobs.so"|"libgf_images_jobs.a"
+// 	"-L"    - linker flag for directory in which to look for libs (.so/.a).
+//  "-l"    - linker flag for name of the library to link.
+//            this name is a short version of the full lib name:
+//            "gf_images_jobs" name is a full name "libgf_images_jobs.so"|"libgf_images_jobs.a"
+//
 // "#include" - points to the C header files to use to load C definitions
 //              used in this file in Go.
 
