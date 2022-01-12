@@ -61,6 +61,7 @@ type GF_user__output_preflight struct {
 
 // io_login
 type GF_user__input_login struct {
+	User_name_str        string              `validate:"omitempty,min=3,max=50"`
 	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
 	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
@@ -73,6 +74,7 @@ type GF_user__output_login struct {
 
 // io_create
 type GF_user__input_create struct {
+	User_name_str        string              `validate:"omitempty,min=3,max=50"`
 	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
 	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }

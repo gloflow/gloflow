@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //------------------------------------------------
@@ -36,6 +37,58 @@ type GF_user__http_input_update struct {
 
 	Profile_image_url_str *string `json:"profile_image_url_str" validate:"min=1,max=100"` // FIX!! - validation
 	Banner_image_url_str  *string `json:"banner_image_url_str"  validate:"min=1,max=100"` // FIX!! - validation
+}
+
+//---------------------------------------------------
+func http__get_user_std_input(p_req *http.Request,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, string, GF_user_address_eth, *gf_core.GF_error) {
+
+	input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+	if gf_err != nil {
+		return nil, "", GF_user_address_eth(""), gf_err
+	}
+
+	// user-name is supplied if the traditional auth system is used, and not web3/eth
+	var user_name_str string;
+	if input_user_name_str, ok := input_map["user_name_str"].(string); ok {
+		user_name_str = input_user_name_str
+	}
+
+	// users eth address is used if the user picks that method instead of traditional
+	var user_address_eth_str string;
+	if input_user_address_eth_str, ok := input_map["user_address_eth_str"].(string); ok {
+		user_address_eth_str = input_user_address_eth_str
+	}
+
+	// one of the these values has to be supplied, they cant both be missing
+	if user_name_str == "" && user_address_eth_str == "" {
+		gf_err := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
+			"verify__input_data_missing_in_req_error",
+			map[string]interface{}{},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return nil, "", GF_user_address_eth(""), gf_err
+	}
+
+	return input_map, user_name_str, GF_user_address_eth(user_address_eth_str), nil
+}
+
+//---------------------------------------------------
+func http__get_user_address_eth(p_req *http.Request,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (GF_user_address_eth, *gf_core.GF_error) {
+
+	query_args_map := p_req.URL.Query()
+	if values_lst, ok := query_args_map["addr_eth"]; ok {
+		return GF_user_address_eth(values_lst[0]), nil
+	} else {
+		gf_err := gf_core.Error__create("incoming http request is missing the addr_eth query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return GF_user_address_eth(""), gf_err
+	}
+	return GF_user_address_eth(""), nil
 }
 
 //---------------------------------------------------
@@ -56,22 +109,4 @@ func http__get_user_update(p_req *http.Request,
 	}
 
 	return &input, nil
-}
-
-//---------------------------------------------------
-func http__get_user_address_eth(p_req *http.Request,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_user_address_eth, *gf_core.GF_error) {
-
-	query_args_map := p_req.URL.Query()
-	if values_lst, ok := query_args_map["addr_eth"]; ok {
-		return GF_user_address_eth(values_lst[0]), nil
-	} else {
-		gf_err := gf_core.Error__create("incoming http request is missing the addr_eth query-string arg",
-			"verify__missing_key_error",
-			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return GF_user_address_eth(""), gf_err
-	}
-	return GF_user_address_eth(""), nil
 }

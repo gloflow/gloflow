@@ -53,35 +53,14 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				_, user_name_str, user_address_eth_str, gf_err := http__get_user_std_input(p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
-					return nil, gf_err
-				}
-
-				// user-name is supplied if the traditional auth system is used, and not web3/eth
-				var user_name_str string;
-				if input_user_name_str, ok := input_map["user_name_str"].(string); ok {
-					user_name_str = input_user_name_str
-				}
-
-				// users eth address is used if the user picks that method instead of traditional
-				var user_address_eth_str string;
-				if input_user_address_eth_str, ok := input_map["user_address_eth_str"].(string); ok {
-					user_address_eth_str = input_user_address_eth_str
-				}
-
-				// one of the these values has to be supplied, they cant both be missing
-				if user_name_str == "" && user_address_eth_str == "" {
-					gf_err := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
-						"verify__input_data_missing_in_req_error",
-						map[string]interface{}{},
-						nil, "gf_identity_lib", p_runtime_sys)
 					return nil, gf_err
 				}
 
 				input :=&GF_user__input_preflight{
 					User_name_str:        user_name_str,
-					User_address_eth_str: GF_user_address_eth(user_address_eth_str),
+					User_address_eth_str: user_address_eth_str,
 				}
 
 				//---------------------
@@ -114,14 +93,16 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				input_map, user_name_str, user_address_eth_str, gf_err := http__get_user_std_input(p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
+				auth_signature_str := GF_auth_signature(input_map["auth_signature_str"].(string))
 
 				input :=&GF_user__input_login{
-					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
-					Auth_signature_str:   GF_auth_signature(input_map["auth_signature_str"].(string)),
+					User_name_str:        user_name_str,
+					User_address_eth_str: user_address_eth_str,
+					Auth_signature_str:   auth_signature_str,
 				}
 
 				//---------------------
