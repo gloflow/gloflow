@@ -19,7 +19,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_3d  from "./../../../gf_core/ts/gf_3d";
+
+
+import * as gf_identity_eth      from "./gf_identity_eth";
+import * as gf_identity_userpass from "./gf_identity_userpass";
 
 declare const window: any;
 declare var Web3;
@@ -29,26 +32,35 @@ export async function init() {
 
     $("#identity #login").on('click', async function(p_e) {
 
-
-        await wallet_pick();
+        const method_str = await auth_method_pick();
         
-        const user_address_eth_str = await wallet_connect();
+        switch (method_str) {
+            //--------------------------
+            // ETH_METAMASK
+            case "eth_metamask":
+                const user_address_eth_str = await gf_identity_eth.wallet_connect();
+                
+                await gf_identity_eth.user_auth_pipeline(user_address_eth_str);
+                break;
+            
+            //--------------------------
+            // USER_AND_PASS
+            case "userpass":
+                const user_name_str = "";
+                await gf_identity_userpass.user_auth_pipeline(user_name_str);
+                break;
 
-        await user_auth_pipeline(user_address_eth_str);
-        
+            //--------------------------
+        }
     });
 }
 
 //-------------------------------------------------
 async function auth_method_pick() {
-
-}
-
-//-------------------------------------------------
-async function wallet_pick() {
-
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const wallet_pick_dialog = $(`
+        const auth_pick_dialog = $(`
+        <div id="auth_pick_dialog">
+
             <div id="wallet_pick_dialog">
                 <div id="metamask">
                     <div id="icon">
@@ -56,294 +68,23 @@ async function wallet_pick() {
                     </div>
                     <div id="descr">metamask browser wallet</div>
                 </div>
-            </div>`);
+            </div>
 
-        $("#identity").append(wallet_pick_dialog);
-
-        $(wallet_pick_dialog).find("#metamask").on('click', ()=>{
-
-            p_resolve_fun(null);
-        })
-
-    });
-    return p;
-}
-
-//-------------------------------------------------
-function wallet_connect() {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-
-        // providers like MetaMask and Status must continue to inject window.ethereum,
-        // but now the window.ethereum object itself is a provider type that supports the 
-        // methods defined in EIP-1102 and EIP-1193
-        if (window.ethereum) {
-
-            // IMPORTANT!! - if the users wallet is not connected to this page
-            //               or the wallet is not unlocked, this async method will return only
-            //               once all that is done. 
-            const p = window.ethereum.send('eth_requestAccounts');
-            p.then((p_r)=>{
-
-                // get the first user address? or give the user choice 
-                // over which address to use if multiple are returned?
-                const user_address_eth_str = p_r["result"][0];
-
-                window.web3 = new Web3(window.ethereum);
-
-                // wallet is connected, so remove the wallet_pick_dialog
-                $("#wallet_pick_dialog").remove();
-
-                p_resolve_fun(user_address_eth_str);
-            });
-        } else {
-            $("#identity").append(`<div id="wallet_connect_failed">failed to connect to wallet</div>`);
-            p_reject_fun();
-        }
-    });
-    return p;
-}
-
-//-------------------------------------------------
-async function user_auth_pipeline(p_user_address_eth_str) {
-
-    // HTTP_REQUEST
-    const data_map = await user_preflight__http(p_user_address_eth_str);
-
-    const user_exists_bool = data_map["user_exists_bool"];
-    const nonce_val_str    = data_map["nonce_val_str"];
-    
-
-    // user exists, log them in
-    if (user_exists_bool) {
-        console.log("USER_EXISTS");
-    }
-    // no-user in the system, offer to create new
-    else {
-        
-        console.log("NO USER");
-
-        // user is created
-        const user_create_data_map = await user_create(p_user_address_eth_str, nonce_val_str);
-        const auth_signature_str   = user_create_data_map["auth_signature_str"];
-
-        // login this newly created user
-        const login_data_map = await user_login__http(p_user_address_eth_str, auth_signature_str);
-
-        console.log(" ============== LOGIN_DATA", login_data_map);
-
-
-        // only after that offer to the user to upload their details.
-        // for update to succeed the user has to be logedin
-        const user_data_map = await user_update(p_user_address_eth_str);
-    }   
-}
-
-//-------------------------------------------------
-async function user_create(p_user_address_eth_str,
-    p_nonce_val_str) {
-
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-
-        const create_user_dialog = $(`
-            <div id='create_user_dialog'>
-                <div id='descr'>create new user?</div>
-                <div id='confirm_btn'>ok</div>
-            </div>`);
-
-        $("#identity").append(create_user_dialog);
-
-        $(create_user_dialog).find("#confirm_btn").on('click', async ()=>{
-
-            const auth_signature_str = await window.web3.eth.personal.sign(p_nonce_val_str, p_user_address_eth_str);
-            
-            try {
-                // user was created successfuly, remove the create_user_dialog and return
-                const http_output_map = await user_create__http(p_user_address_eth_str, auth_signature_str);
-                $(create_user_dialog).remove();
-
-
-                const user_create_data_map = {
-                    "http_output_map":    http_output_map,
-                    "auth_signature_str": auth_signature_str,
-                };
-                p_resolve_fun(user_create_data_map);
-
-            } catch (p_err) {            
-                $(create_user_dialog).css("background-color", "red");
-                p_reject_fun();
-            }
-        });
-    });
-    return p;
-}
-
-//-------------------------------------------------
-function user_update(p_user_address_eth_str) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-
-        const update_user_dialog = $(`
-            <div id='update_user_dialog'>
-                <div id='dialog_label'>set your user details</div>
-                <div id='username'>
-                    <div class='label'>username</div>
+            <div id="user_and_pass>
+                <div id="username_input>
                     <input id='username_input'></input>
                 </div>
-                <div id='email'>
-                    <div class='label'>email</div>
-                    <input id='email_input'></input>
+                <div id="pass_input>
+                    <input id='pass_input'></input>
                 </div>
-                <div id='description'>
-                    <div class='label'>description</div>
-                    <textarea id='description_input' rows="4" cols="50"></textarea>
-                </div>
-                <div id='confirm_btn'>ok</div>
-            </div>`);
+            </div>
+        </div>`);
 
-        $("#identity").append(update_user_dialog);
+        $("#identity").append(auth_pick_dialog);
 
-        gf_3d.div_follow_mouse($(update_user_dialog)[0], document, 30);
-
-
-
-        $(update_user_dialog).find("#confirm_btn").on('click', async ()=>{
-
-            const username_str    = $(update_user_dialog).find("#username_input").val();
-            const email_str       = $(update_user_dialog).find("#email_input").val();
-            const description_str = $(update_user_dialog).find("#description_input").val();
-
-            const data_map = {
-                "username_str":    username_str,
-                "email_str":       email_str,
-                "description_str": description_str,
-            };
-
-            await user_update__http(p_user_address_eth_str, data_map);
-
-            $(update_user_dialog).remove();
-
-            p_resolve_fun(data_map);
-        });
-    });
-    return p;
-}
-
-//-------------------------------------------------
-// USER_PREFLIGHT__HTTP
-function user_preflight__http(p_user_address_eth_str) {
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const data_map = {
-            "user_address_eth_str": p_user_address_eth_str,
-        };
-
-        const url_str = '/v1/identity/users/preflight';
-        $.ajax({
-            'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
-            'contentType': 'application/json',
-            'success':     (p_response_map)=>{
-                const status_str = p_response_map["status"];
-                const data_map   = p_response_map["data"];
-
-                if (status_str == "OK") {
-                    p_resolve_fun(data_map);
-                } else {
-                    p_reject_fun(data_map);
-                }
-            },
-            'error': (jqXHR, p_text_status_str)=>{
-                p_reject_fun(p_text_status_str);
-            }
-        });
-    });
-    return p;
-}
-
-//-------------------------------------------------
-// USER_LOGIN__HTTP
-function user_login__http(p_user_address_eth_str :string,
-    p_auth_signature_str :string) {
-    
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const data_map = {
-            "user_address_eth_str": p_user_address_eth_str,
-            "auth_signature_str":   p_auth_signature_str,
-        };
-
-        const url_str = '/v1/identity/users/login';
-        $.ajax({
-            'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
-            'contentType': 'application/json',
-            'success':     (p_response_map)=>{
-                
-                p_resolve_fun(p_response_map);
-            },
-            'error':(jqXHR, p_text_status_str)=>{
-                p_reject_fun(p_text_status_str);
-            }
-        });
-    });
-    return p;
-}
-
-//-------------------------------------------------
-// USER_CREATE__HTTP
-function user_create__http(p_user_address_eth_str :string,
-    p_auth_signature_str :string) {
-
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const data_map = {
-            "user_address_eth_str": p_user_address_eth_str,
-            "auth_signature_str":   p_auth_signature_str,
-        };
-
-        const url_str = '/v1/identity/users/create';
-        $.ajax({
-            'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
-            'contentType': 'application/json',
-            'success':     (p_response_map)=>{
-                
-                p_resolve_fun(data_map);
-            },
-            'error': (jqXHR, p_text_status_str)=>{
-                p_reject_fun(p_text_status_str);
-            }
-        });
-    });
-    return p;
-}
-
-//-------------------------------------------------
-// USER_UPDATE__HTTP
-function user_update__http(p_user_address_eth_str,
-    p_user_data_map) {
-
-    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const data_map = {
-            "user_address_eth_str": p_user_address_eth_str,
-            "user_username_str":    p_user_data_map["username_str"],
-            "user_email_str":       p_user_data_map["email_str"],
-            "user_description_str": p_user_data_map["description_str"],
-        };
-
-        const url_str = '/v1/identity/users/update';
-        $.ajax({
-            'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
-            'contentType': 'application/json',
-            'success':     (p_response_map)=>{
-                
-                p_resolve_fun(data_map);
-            },
-            'error': (jqXHR, p_text_status_str)=>{
-                p_reject_fun(p_text_status_str);
-            }
-        });
+        $(auth_pick_dialog).find("#metamask").on('click', ()=>{
+            p_resolve_fun("eth_metamask");
+        })
     });
     return p;
 }
