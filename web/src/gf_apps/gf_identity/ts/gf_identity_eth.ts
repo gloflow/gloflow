@@ -26,11 +26,13 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_user_address_eth_str) {
+export async function user_auth_pipeline() {
+
+    const user_address_eth_str = await wallet_connect() as string;
 
     //--------------------------
     // PREFLIGHT_HTTP
-    const data_map = await gf_identity_http.user_preflight(null, p_user_address_eth_str);
+    const data_map = await gf_identity_http.user_preflight(null, user_address_eth_str);
 
     const user_exists_bool = data_map["user_exists_bool"];
     const nonce_val_str    = data_map["nonce_val_str"];
@@ -42,12 +44,12 @@ export async function user_auth_pipeline(p_user_address_eth_str) {
         
         //--------------------------
         // WEB3_SIGN
-        const auth_signature_str = await sign(nonce_val_str, p_user_address_eth_str);
+        const auth_signature_str = await sign(nonce_val_str, user_address_eth_str);
         
         //--------------------------
         
         // login this newly created user
-        const login_data_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, auth_signature_str);
+        const login_data_map = await gf_identity_http.user_eth_login(user_address_eth_str, auth_signature_str);
         console.log(" ============== LOGIN_DATA", login_data_map);
     }
     // no-user in the system, offer to create new
@@ -56,11 +58,11 @@ export async function user_auth_pipeline(p_user_address_eth_str) {
         console.log("NO USER");
 
         // user is created
-        const new_user_create_data_map    = await user_create(null, p_user_address_eth_str, nonce_val_str);
+        const new_user_create_data_map    = await user_create(null, user_address_eth_str, nonce_val_str);
         const new_user_auth_signature_str = new_user_create_data_map["auth_signature_str"];
 
         // login this newly created user
-        const login_data_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, new_user_auth_signature_str);
+        const login_data_map = await gf_identity_http.user_eth_login(user_address_eth_str, new_user_auth_signature_str);
         console.log(" ============== LOGIN_DATA", login_data_map);
 
 

@@ -38,16 +38,13 @@ export async function init() {
             //--------------------------
             // ETH_METAMASK
             case "eth_metamask":
-                const user_address_eth_str = await gf_identity_eth.wallet_connect();
-                
-                await gf_identity_eth.user_auth_pipeline(user_address_eth_str);
+                await gf_identity_eth.user_auth_pipeline();
                 break;
             
             //--------------------------
             // USER_AND_PASS
             case "userpass":
-                const user_name_str = "";
-                await gf_identity_userpass.user_auth_pipeline(user_name_str);
+                await gf_identity_userpass.user_auth_pipeline();
                 break;
 
             //--------------------------
@@ -71,12 +68,7 @@ async function auth_method_pick() {
             </div>
 
             <div id="user_and_pass>
-                <div id="username_input>
-                    <input id='username_input'></input>
-                </div>
-                <div id="pass_input>
-                    <input id='pass_input'></input>
-                </div>
+                <div id="label">user and password</div>
             </div>
         </div>`);
 
@@ -85,6 +77,10 @@ async function auth_method_pick() {
         $(auth_pick_dialog).find("#metamask").on('click', ()=>{
             p_resolve_fun("eth_metamask");
         })
+
+        $(auth_pick_dialog).find("#user_and_pass").on('click', ()=>{
+            p_resolve_fun("userpass");
+        });
     });
     return p;
 }

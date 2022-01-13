@@ -184,7 +184,7 @@ def build_page(p_page_name_str,
 						
 						"tsc",
 						"--module system", # needed with the "--out" option
-						"--target es2016", # "--target es6",
+						"--target es2017", # "--target es6",
 
 						# Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
 						# '--esModuleInterop',
