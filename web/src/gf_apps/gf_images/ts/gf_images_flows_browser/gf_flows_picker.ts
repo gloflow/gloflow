@@ -43,7 +43,14 @@ export async function init(p_log_fun) {
         "gifs"
     ];
     for (const flow_map of all_flows_lst ) {
-        const flow_name_str       = flow_map["flow_name_str"];
+        const flow_name_str = flow_map["flow_name_str"];
+
+        // FIX!! - allow access to these flows only to logged in users, ton of content there
+        //         but not filtered yet for NSFW.
+        if (flow_name_str == "discovered" || flow_name_str == "gifs") {
+            continue;
+        }
+
         const flow_imgs_count_int = flow_map["flow_imgs_count_int"];
         const flow_url_str = `/images/flows/browser?fname=${flow_name_str}`;
 
