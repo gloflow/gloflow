@@ -42,8 +42,18 @@ func session__set_on_req(p_session_data_str string,
 		Value:   p_session_data_str,
 		Expires: expire,
 
+		// IMPORTANT!! - session cookie should be set for all paths
+		//               on the same domain, not just the /v1/identity/...
+		//               paths, because session is verified on all of them
+		Path: "/", 
+		
+		// ADD!! - ability to specify multiple domains that the session is
+		//         set for in case the GF services and API endpoints are spread
+		//         across multiple domains.
+		// Domain: "", 
+		
 		// IMPORTANT!! - make cookie http_only, disabling browser js context
-		//               from reading its values
+		//               from being able to read its value
 		HttpOnly: true,
 
 		// SameSite allows a server to define a cookie attribute making it impossible for

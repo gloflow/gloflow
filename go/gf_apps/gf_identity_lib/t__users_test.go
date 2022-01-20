@@ -24,6 +24,7 @@ import (
 	"testing"
 	"context"
 	"time"
+	"strings"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
@@ -32,18 +33,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_crypto"
 	"github.com/davecgh/go-spew/spew"
 )
-
-//-------------------------------------------------
-func Test__signing(p_test *testing.T) {
-	fmt.Println(" TEST__IDENTITY_SIGNING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
-
-
-
-
-}
-
-
 
 //-------------------------------------------------
 func Test__users_http(p_test *testing.T) {
@@ -75,7 +64,7 @@ func Test__users_http(p_test *testing.T) {
 		"user_address_eth_str": address_str,
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/users/preflight", test_port_int)
+	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/eth/preflight", test_port_int)
 	_, body_str, errs := request.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
@@ -125,7 +114,7 @@ func Test__users_http(p_test *testing.T) {
 	fmt.Println("signature", signature_str, len(signature_str))
 	fmt.Println("nonce",     nonce_val_str)
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/create", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/create", test_port_int)
 	data_map = map[string]string{
 		"user_address_eth_str": address_str,
 		"auth_signature_str":   signature_str,
@@ -170,22 +159,35 @@ func Test__users_http(p_test *testing.T) {
 	fmt.Println("address",   address_str, len(address_str))
 	fmt.Println("signature", signature_str, len(signature_str))
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/login", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", test_port_int)
 	data_map = map[string]string{
 		"user_address_eth_str": address_str,
 		"auth_signature_str":   signature_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = request.Post(url_str).
+	resp, body_str, errs := request.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
-
-	spew.Dump(body_str)
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
 		p_test.Fail()
 	}
+
+	// check if the login response sets a cookie for all future auth requests
+	auth_cookie_present_bool := false
+	for k, v := range resp.Header {
+		if (k == "Set-Cookie") {
+			for _, vv := range v {
+				o := strings.Split(vv, "=")[0]
+				if o == "gf_sess_data" {
+					auth_cookie_present_bool = true
+				}
+			}
+		}
+	}
+	assert.True(p_test, auth_cookie_present_bool,
+		"login response does not contain the expected 'gf_sess_data' cookie")
 
 	body_map = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
@@ -197,7 +199,7 @@ func Test__users_http(p_test *testing.T) {
 
 	nonce_exists_bool         = body_map["data"].(map[string]interface{})["nonce_exists_bool"].(bool)
 	auth_signature_valid_bool = body_map["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
-	user_id_str               := body_map["data"].(map[string]interface{})["user_id_str"].(string)
+	user_id_str              := body_map["data"].(map[string]interface{})["user_id_str"].(string)
 
 	fmt.Println("====================================")
 	fmt.Println("user login response:")
@@ -222,12 +224,11 @@ func Test__users_http(p_test *testing.T) {
 	fmt.Println("address",   address_str, len(address_str))
 	fmt.Println("signature", signature_str, len(signature_str))
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/update", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/update", test_port_int)
 	data_map = map[string]string{
-		"username_str":    "new username",
+		"user_name_str":   "new username",
 		"email_str":       "ivan@gloflow.com",
 		"description_str": "some new description",
-		
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
 	_, body_str, errs = request.Post(url_str).
@@ -247,7 +248,7 @@ func Test__users_http(p_test *testing.T) {
 	//---------------------------------
 	// TEST_USER_GET_ME
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/users/me", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/me", test_port_int)
 	data_bytes_lst, _ = json.Marshal(data_map)
 	_, body_str, errs = request.Get(url_str).
 		End()
@@ -258,11 +259,9 @@ func Test__users_http(p_test *testing.T) {
         p_test.Fail()
     }
 
-	
-
 	assert.True(p_test, body_map["status"].(string) != "ERROR", "user get me http request failed")
 
-	username_str          := body_map["data"].(map[string]interface{})["username_str"].(string)
+	user_name_str         := body_map["data"].(map[string]interface{})["user_name_str"].(string)
 	email_str             := body_map["data"].(map[string]interface{})["email_str"].(string)
 	description_str       := body_map["data"].(map[string]interface{})["description_str"].(string)
 	profile_image_url_str := body_map["data"].(map[string]interface{})["profile_image_url_str"].(string)
@@ -270,7 +269,7 @@ func Test__users_http(p_test *testing.T) {
 
 	fmt.Println("====================================")
 	fmt.Println("user login response:")
-	fmt.Println("username_str",          username_str)
+	fmt.Println("user_name_str",         user_name_str)
 	fmt.Println("email_str",             email_str)
 	fmt.Println("description_str",       description_str)
 	fmt.Println("profile_image_url_str", profile_image_url_str)
@@ -307,33 +306,27 @@ func Test__users_unit(p_test *testing.T) {
 	//------------------
 	// USER_CREATE
 	
-	input__create := &GF_user__input_create{
+	input__create := &GF_user_auth_eth__input_create{
 		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
 		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 		// Nonce_val_str:   nonce.Val_str,
 	}
 
-
-	output__create, gf_err := users__pipeline__create(input__create, ctx, runtime_sys)
+	output__create, gf_err := users_auth_eth__pipeline__create(input__create, ctx, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
 
-
 	spew.Dump(output__create)
-
 
 	assert.True(p_test, output__create.Auth_signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
 
-
 	//------------------
-
-
-	input__login := &GF_user__input_login{
+	input__login := &GF_user_auth_eth__input_login{
 		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
 		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
 	}
-	output__login, gf_err := users__pipeline__login(input__login, ctx, runtime_sys)
+	output__login, gf_err := users_auth_eth__pipeline__login(input__login, ctx, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -341,5 +334,4 @@ func Test__users_unit(p_test *testing.T) {
 	spew.Dump(output__login)
 	
 	//------------------
-
 }

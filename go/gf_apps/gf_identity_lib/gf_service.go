@@ -44,6 +44,16 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 		return gf_err
 	}
 
+	gf_err = init_handlers__eth(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	gf_err = init_handlers__userpass(p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
 	//------------------------
 
 	return nil

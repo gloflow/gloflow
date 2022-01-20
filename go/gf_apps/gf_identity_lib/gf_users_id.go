@@ -24,14 +24,11 @@ import (
 )
 
 //---------------------------------------------------
-// type GF_user_id string
-
-//---------------------------------------------------
-func users__create_id(p_user_address_eth GF_user_address_eth,
+func users__create_id(p_user_identifier_str string,
 	p_creation_unix_time_f float64) gf_core.GF_ID {
 
 	fields_for_id_lst := []string{
-		string(p_user_address_eth),
+		p_user_identifier_str,
 	}
 	gf_id_str := gf_core.ID__create(fields_for_id_lst,
 		p_creation_unix_time_f)

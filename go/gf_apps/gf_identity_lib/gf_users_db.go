@@ -28,7 +28,7 @@ import (
 
 //---------------------------------------------------
 // GET_BASIC_INFO
-func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
+func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
 
@@ -46,7 +46,7 @@ func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
 		find_opts).Decode(&user_basic_info_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to find user by Eth address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": p_user_address_eth_str,
@@ -62,8 +62,8 @@ func db__user__get_basic_info(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
-// GET
-func db__user__get(p_user_address_eth_str GF_user_address_eth,
+// GET_BY_ETH_ADDRESS
+func db__user__get_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
 
@@ -77,7 +77,7 @@ func db__user__get(p_user_address_eth_str GF_user_address_eth,
 		find_opts).Decode(&user)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to find user by Eth address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": p_user_address_eth_str,
@@ -90,8 +90,36 @@ func db__user__get(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
+// GET_BY_ID
+func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+
+	find_opts := options.FindOne()
+	
+	user := GF_user{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
+			"id_str":       p_user_id_str,
+			"deleted_bool": false,
+		},
+		find_opts).Decode(&user)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user by ID in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_id_str": p_user_id_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return &user, nil
+}
+
+//---------------------------------------------------
 // EXISTS
-func db__user__exists(p_user_address_eth_str GF_user_address_eth,
+func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -128,7 +156,7 @@ func db__user__create(p_user *GF_user,
 		coll_name_str,
 		map[string]interface{}{
 			"user_id_str":        p_user.Id_str,
-			"username_str":       p_user.Username_str,
+			"user_name_str":      p_user.User_name_str,
 			"description_str":    p_user.Description_str,
 			"addresses_eth_lst":  p_user.Addresses_eth_lst, 
 			"caller_err_msg_str": "failed to insert GF_user into the DB",
