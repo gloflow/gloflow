@@ -26,19 +26,18 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export async function user_auth_pipeline() {
+export async function user_auth_pipeline(p_http_api_map) {
 
     const user_address_eth_str = await wallet_connect() as string;
 
     //--------------------------
     // PREFLIGHT_HTTP
-    const data_map = await gf_identity_http.user_preflight(null, user_address_eth_str);
-
-    const user_exists_bool = data_map["user_exists_bool"];
-    const nonce_val_str    = data_map["nonce_val_str"];
+    const output_map = await p_http_api_map["eth"]["user_preflight_fun"](user_address_eth_str);
+    const user_exists_bool = output_map["user_exists_bool"];
+    const nonce_val_str    = output_map["nonce_val_str"];
     
     //--------------------------
-    // user exists, log them in
+    // USER_EXISTS - log them in
     if (user_exists_bool) {
         console.log("USER_EXISTS");
         
@@ -49,21 +48,23 @@ export async function user_auth_pipeline() {
         //--------------------------
         
         // login this newly created user
-        const login_data_map = await gf_identity_http.user_eth_login(user_address_eth_str, auth_signature_str);
-        console.log(" ============== LOGIN_DATA", login_data_map);
+        const login_output_map = await p_http_api_map["eth"]["user_login_fun"](user_address_eth_str, auth_signature_str);
+        console.log(" ============== LOGIN_DATA", login_output_map);
     }
-    // no-user in the system, offer to create new
+
+    //--------------------------
+    // NO_USER - in the system, offer to create new
     else {
         
         console.log("NO USER");
 
-        // user is created
-        const new_user_create_data_map    = await user_create(null, user_address_eth_str, nonce_val_str);
+        // CREATE - create new user
+        const new_user_create_data_map    = await user_create(null, user_address_eth_str, nonce_val_str, p_http_api_map);
         const new_user_auth_signature_str = new_user_create_data_map["auth_signature_str"];
 
-        // login this newly created user
-        const login_data_map = await gf_identity_http.user_eth_login(user_address_eth_str, new_user_auth_signature_str);
-        console.log(" ============== LOGIN_DATA", login_data_map);
+        // LOGIN - login this newly created user
+        const login_output_map = await p_http_api_map["eth"]["user_login_fun"](user_address_eth_str, new_user_auth_signature_str);
+        console.log(" ============== LOGIN_DATA", login_output_map);
 
 
         // only after that offer to the user to upload their details.
@@ -75,12 +76,13 @@ export async function user_auth_pipeline() {
 //-------------------------------------------------
 async function user_create(p_username_str :string,
     p_user_address_eth_str :string,
-    p_nonce_val_str) {
+    p_nonce_val_str,
+    p_http_api_map) {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const create_user_dialog = $(`
-            <div id='create_user_dialog'>
+            <div id='create_user_prompt_dialog'>
                 <div id='descr'>create new user?</div>
                 <div id='confirm_btn'>ok</div>
             </div>`);
@@ -92,7 +94,7 @@ async function user_create(p_username_str :string,
             //--------------------------
             // WEB3_SIGN
             const auth_signature_str = await sign(p_nonce_val_str, p_user_address_eth_str);
-            
+
             //--------------------------
 
             try {
@@ -100,7 +102,7 @@ async function user_create(p_username_str :string,
                 //--------------------------
                 // USER_CREATE_HTTP
                 // user was created successfuly, remove the create_user_dialog and return
-                const http_output_map = await gf_identity_http.user_create(p_user_address_eth_str, auth_signature_str);
+                const http_output_map = await p_http_api_map["eth"]["user_create_fun"](p_user_address_eth_str, auth_signature_str);
                 
                 //--------------------------
                 $(create_user_dialog).remove();
@@ -125,7 +127,7 @@ async function user_create(p_username_str :string,
 async function sign(p_nonce_val_str :string,
     p_user_address_eth_str :string) {
 
-    const auth_signature_str = await window.web3.eth.personal.sign(p_nonce_val_str, p_user_address_eth_str);
+    const auth_signature_str = await window.web3.eth.personal.sign(p_nonce_val_str, p_user_address_eth_str);    
     return auth_signature_str;
 }
 
@@ -150,9 +152,10 @@ export function wallet_connect() {
 
                 window.web3 = new Web3(window.ethereum);
 
-                // wallet is connected, so remove the auth_pick_dialog
-                $("#auth_pick_dialog").remove();
+                // // wallet is connected, so remove the auth_pick_dialog
+                // $("#auth_pick_dialog").remove();
 
+                console.log("ETH_ADDRESS", user_address_eth_str);
                 p_resolve_fun(user_address_eth_str);
             });
         } else {

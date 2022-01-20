@@ -23,28 +23,68 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import * as gf_identity_eth      from "./gf_identity_eth";
 import * as gf_identity_userpass from "./gf_identity_userpass";
+import * as gf_identity_http     from "./gf_identity_http";
 
 declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export async function init() {
+export async function init_with_http() {
+    const http_api_map = {
 
-    $("#identity #login").on('click', async function(p_e) {
+        // ETH
+        "eth": {
+            "user_preflight_fun": async (p_user_address_eth_str)=>{
+                const output_map = await gf_identity_http.user_preflight(null, p_user_address_eth_str);
+                return output_map;
+            },
+            "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, p_auth_signature_str);
+                return output_map;
+            },
+            "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+                const output_map = await gf_identity_http.user_eth_create(p_user_address_eth_str, p_auth_signature_str);
+                return output_map;
+            }
+        },
+
+        // USERPASS
+        "userpass": {
+            "user_preflight_fun": async (p_username_str)=>{
+                const output_map = {};
+                return output_map;
+            },
+            "user_login_fun": async (p_username_str, p_pass_str)=>{
+                const output_map = {};
+                return output_map;
+            },
+            "user_create_fun": async (p_username_str)=>{
+                const output_map = {};
+                return output_map;
+            }
+        }
+    };
+
+    init(http_api_map);
+}
+
+//-------------------------------------------------
+export async function init(p_http_api_map) {
+
+    $("#identity #login").on("click", async function(p_e) {
 
         const method_str = await auth_method_pick();
-        
         switch (method_str) {
             //--------------------------
             // ETH_METAMASK
             case "eth_metamask":
-                await gf_identity_eth.user_auth_pipeline();
+                await gf_identity_eth.user_auth_pipeline(p_http_api_map);
                 break;
             
             //--------------------------
             // USER_AND_PASS
             case "userpass":
-                await gf_identity_userpass.user_auth_pipeline();
+                await gf_identity_userpass.user_auth_pipeline(p_http_api_map);
                 break;
 
             //--------------------------
@@ -61,13 +101,13 @@ async function auth_method_pick() {
             <div id="wallet_pick_dialog">
                 <div id="metamask">
                     <div id="icon">
-                        <img src="/images/static/assets/gf_metamask_icon.svg"></img>
+                        <img src="https://gloflow.com/images/static/assets/gf_metamask_icon.svg"></img>
                     </div>
                     <div id="descr">metamask browser wallet</div>
                 </div>
             </div>
 
-            <div id="user_and_pass>
+            <div id="user_and_pass_pick_dialog">
                 <div id="label">user and password</div>
             </div>
         </div>`);
@@ -75,10 +115,18 @@ async function auth_method_pick() {
         $("#identity").append(auth_pick_dialog);
 
         $(auth_pick_dialog).find("#metamask").on('click', ()=>{
+           
+            // user picked to auth with wallet so remove initial auth method pick dialog
+            $("#auth_pick_dialog").remove();
+
             p_resolve_fun("eth_metamask");
         })
 
-        $(auth_pick_dialog).find("#user_and_pass").on('click', ()=>{
+        $(auth_pick_dialog).find("#user_and_pass_pick_dialog").on('click', ()=>{
+
+            // user picked to auth with username/pass so remove initial auth method pick dialog
+            $("#auth_pick_dialog").remove();
+
             p_resolve_fun("userpass");
         });
     });

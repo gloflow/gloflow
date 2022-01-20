@@ -16,6 +16,14 @@
 }
 
 /*------------------------------------------------------------*/
+/*AUTH_PICK_DIALOG*/
+#identity #auth_pick_dialog {
+    top: -35px;
+    position: absolute;
+    right: 0px;
+}
+
+/*------------------------------------------------------------*/
 /*WALLET_PICK_DIALOG*/
 #identity #wallet_pick_dialog {
     position: absolute;
@@ -41,12 +49,116 @@
     top: 18px;
     left: 54px;
     font-size: 12px;
+    user-select: none;
 }
 
 /*------------------------------------------------------------*/
-/*CREATE_USER_DIALOG*/
+/*USER_AND_PASS_PICK_DIALOG*/
 
-#identity #create_user_dialog {
+#identity #user_and_pass_pick_dialog {
+    width: 184px;
+    background-color: white;
+    padding: 7px;
+    text-align: center;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+}
+#identity #user_and_pass_pick_dialog:hover {
+    background-color: rgb(141, 141, 141);
+}
+
+/*------------------------------------------------------------*/
+/*USER_AND_PASS_DIALOG*/
+
+#identity #user_and_pass_dialog {
+    position: absolute;
+    top: -126px;
+    height: 118px;
+    right: 0px;
+    background-color: white;
+}
+
+/*USERNAME_INPUT*/
+#user_and_pass_dialog #username_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-top: 6px;
+
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #username_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*PASS_INPUT*/
+#user_and_pass_dialog #pass_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #pass_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*EMAIL_INPUT*/
+#user_and_pass_dialog #email_input {
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+
+    outline-style: none;
+    font-size: 20px;
+    width: 197px;
+}
+#user_and_pass_dialog #email_input input {
+    margin: 0px;
+    border: 0px;
+    font-size: 14px;
+}
+
+/*LOGIN_BTN*/
+#user_and_pass_dialog #login_btn {
+    position: absolute;
+    background-color: rgb(199, 255, 0);
+    width: 50%;
+    text-align: center;
+    padding-top: 9px;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+#user_and_pass_dialog #login_btn:hover {
+    background-color: gray;
+}
+
+/*CREATE_BTN*/
+#user_and_pass_dialog #create_btn {
+    position: absolute;
+    background-color: rgb(255, 228, 30);
+    width: 50%;
+    text-align: center;
+    padding-top: 9px;
+    padding-bottom: 8px;
+    right: 0px;
+    cursor: pointer;
+}
+#user_and_pass_dialog #create_btn:hover {
+    background-color: gray;
+}
+
+/*------------------------------------------------------------*/
+/*CREATE_USER_PROMPT_DIALOG*/
+
+#identity #create_user_prompt_dialog {
     position: absolute;
     top:      -56.3px;
     left:     -162px;
@@ -54,22 +166,23 @@
     background-color: white;
 }
 
-#identity #create_user_dialog #descr {
+#identity #create_user_prompt_dialog #descr {
     text-align:  center;
     padding-top: 3px;
     font-size:   13px;
 }
 
-#identity #create_user_dialog #confirm_btn {
+#identity #create_user_prompt_dialog #confirm_btn {
     text-align:       center;
     background-color: #bfbfbf;
     padding-top:      8px;
     padding-bottom:   5px;
     cursor:           pointer;
 }
-#identity #create_user_dialog #confirm_btn:hover {
+#identity #create_user_prompt_dialog #confirm_btn:hover {
     background-color: #cecece;
 }
+
 
 /*------------------------------------------------------------*/
 /*UPDATE_USER_DIALOG*/
@@ -117,7 +230,7 @@
 
 #identity #update_user_dialog #confirm_btn {
     background-color: gray;
-    height: 20px;
+    height: 27px;
     padding-top: 10px;
 
     /*border-bottom-left-radius: 10px;

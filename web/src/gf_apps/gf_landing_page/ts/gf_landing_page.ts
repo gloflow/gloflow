@@ -85,7 +85,7 @@ function init(p_log_fun) {
 	
 	//---------------------
 	// IDENTITY
-	gf_identity.init();
+	gf_identity.init_with_http();
 	
 	//---------------------
 	

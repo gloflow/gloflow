@@ -23,6 +23,7 @@ import * as gf_3d from "./../../../gf_core/ts/gf_3d";
 import * as gf_identity_http from "./gf_identity_http";
 
 //-------------------------------------------------
+// UPDATE
 export function user_update_dialog() {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -46,9 +47,7 @@ export function user_update_dialog() {
 
         $("#identity").append(update_user_dialog);
 
-        gf_3d.div_follow_mouse($(update_user_dialog)[0], document, 30);
-
-
+        // gf_3d.div_follow_mouse($(update_user_dialog)[0], document, 90);
 
         $(update_user_dialog).find("#confirm_btn").on('click', async ()=>{
 
