@@ -25,13 +25,13 @@ export async function init(p_log_fun) {
     const all_flows_lst = await http__get_all_flows(p_log_fun) as {}[];
 
 
-
+    // <div id="flows_experimental_label">experimental:</div>
     const all_flows_container = $(`
         <div id="flows_picker">
             <div id="flows">
             </div>
 
-            <div id="flows_experimental_label">experimental:</div>
+            
             <div id="flows_experimental">
             </div>
         </div>`);
