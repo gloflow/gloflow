@@ -40,12 +40,13 @@ type GF_user_auth_userpass__output_login struct {
 
 // io_create
 type GF_user_auth_userpass__input_create struct {
-	User_name_str string `validate:"omitempty,min=3,max=50"`
+	User_name_str GF_user_name `validate:"omitempty,min=3,max=50"`
 	Pass_hash_str string
 	Email_str     string
 }
 type GF_user_auth_userpass__output_create struct {
-	User_exists_bool bool
+	User_exists_bool         bool
+	User_in_invite_list_bool bool
 }
 
 //---------------------------------------------------
@@ -110,6 +111,31 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	//------------------------
 	// VALIDATE
 
+	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// user already exists, so abort creation
+	if user_exists_bool {
+		output.User_exists_bool = true
+		return output, nil
+	}
+
+	// check if in invite list
+	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.User_name_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// user is not in the invite list, so abort the creation
+	if !in_invite_list_bool {
+		output.User_in_invite_list_bool = false
+		return output, nil
+	}
+
 	//------------------------
 
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
@@ -117,7 +143,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	pass_hash_str := p_input.Pass_hash_str
 	email_str     := p_input.Email_str
 
-	user_identifier_str := user_name_str
+	user_identifier_str := string(user_name_str)
 	user_id := users__create_id(user_identifier_str, creation_unix_time_f)
 
 	user := &GF_user{

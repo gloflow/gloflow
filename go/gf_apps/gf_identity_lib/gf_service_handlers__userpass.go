@@ -76,9 +76,9 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 				//---------------------
 
 				output_map := map[string]interface{}{
-					"user_exists_bool":     output.User_exists_bool,
-					"pass_hash_valid_bool": output.Pass_hash_valid_bool,
-					"user_id_str":          output.User_id_str,
+					"user_exists_bool": output.User_exists_bool,
+					"pass_valid_bool":  output.Pass_hash_valid_bool,
+					"user_id_str":      output.User_id_str,
 				}
 				return output_map, nil
 			}
@@ -106,7 +106,7 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 				}
 
 				input :=&GF_user_auth_userpass__input_create{
-					User_name_str: input_map["user_name_str"].(string),
+					User_name_str: GF_user_name(input_map["user_name_str"].(string)),
 					Pass_hash_str: input_map["pass_hash_str"].(string),
 					Email_str:     input_map["email_str"].(string),
 				}
@@ -118,7 +118,8 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 				}
 
 				output_map := map[string]interface{}{
-					"user_exists_bool": output.User_exists_bool,
+					"user_exists_bool":           output.User_exists_bool,
+					"user_in_invite_list_bool": output.User_in_invite_list_bool,
 				}
 				return output_map, nil
 			}

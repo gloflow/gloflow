@@ -28,6 +28,7 @@ import (
 //---------------------------------------------------
 type GF_auth_signature   string
 type GF_user_address_eth string
+type GF_user_name        string
 
 type GF_user struct {
 	V_str                string             `bson:"v_str"` // schema_version
@@ -36,7 +37,7 @@ type GF_user struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_name_str     string                `bson:"user_name_str"`  // set once at the creation of the user
+	User_name_str     GF_user_name          `bson:"user_name_str"`  // set once at the creation of the user
 	Pass_hash_str     string                `bson:"pass_hash_str"`  
 	Screenname_str    string                `bson:"screenname_str"` // changable durring the lifetime of the user
 	Email_str         string                `bson:"email_str"`
@@ -63,7 +64,7 @@ type GF_user__output_update struct {
 }
 
 type GF_user__update struct {
-	Username_str    string
+	User_name_str   GF_user_name
 	Description_str string
 }
 
@@ -73,9 +74,9 @@ type GF_user__input_get struct {
 }
 
 type GF_user__output_get struct {
-	User_name_str   string
-	Email_str       string
-	Description_str string
+	User_name_str         GF_user_name
+	Email_str             string
+	Description_str       string
 	Profile_image_url_str string
 	Banner_image_url_str  string
 }
