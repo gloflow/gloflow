@@ -155,6 +155,46 @@
     background-color: gray;
 }
 
+/*ERROR*/
+#user_and_pass_dialog #error_empty_field_dialog {
+    position: absolute;
+    top: -62px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+    width: 189px;
+    text-align: center;
+    padding-top: 11px;
+}
+
+/*ERROR*/
+#user_and_pass_dialog #error_login_no_user_dialog {
+    position: absolute;
+    top: -44px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+    width: 190px;
+    text-align: center;
+}
+
+/*ERROR*/
+#user_and_pass_dialog #error_login_pass_not_valid_dialog {
+    position: absolute;
+    top: -62px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+}
+
+#user_and_pass_dialog #error_create_user_not_allowed_dialog {
+    position: absolute;
+    top: -78px;
+    font-size: 14px;
+    background-color: #ff8181;
+    padding: 10px;
+}
+
 /*------------------------------------------------------------*/
 /*CREATE_USER_PROMPT_DIALOG*/
 

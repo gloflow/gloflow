@@ -49,7 +49,7 @@ export async function user_auth_pipeline(p_http_api_map) {
         
         // login this newly created user
         const login_output_map = await p_http_api_map["eth"]["user_login_fun"](user_address_eth_str, auth_signature_str);
-        console.log(" ============== LOGIN_DATA", login_output_map);
+        console.log(" ============== LOGIN_OUTPUT", login_output_map);
     }
 
     //--------------------------
@@ -64,13 +64,15 @@ export async function user_auth_pipeline(p_http_api_map) {
 
         // LOGIN - login this newly created user
         const login_output_map = await p_http_api_map["eth"]["user_login_fun"](user_address_eth_str, new_user_auth_signature_str);
-        console.log(" ============== LOGIN_DATA", login_output_map);
+        console.log(" ============== LOGIN_OUTPUT", login_output_map);
 
 
         // only after that offer to the user to upload their details.
         // for update to succeed the user has to be logedin
         const user_data_map = await gf_ops.user_update_dialog();
-    }   
+    }
+
+    //--------------------------
 }
 
 //-------------------------------------------------
