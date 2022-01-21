@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -29,19 +30,19 @@ import (
 // io_login
 type GF_user_auth_userpass__input_login struct {
 	User_name_str string `validate:"omitempty,min=3,max=50"`
-	Pass_hash_str string `validate:"required,len=132"` // FIX!! - whats the expected pass hash length?
+	Pass_str      string `validate:"required,min=6,max=50"`
 }
 type GF_user_auth_userpass__output_login struct {
-	User_exists_bool     bool
-	Pass_hash_valid_bool bool
-	JWT_token_val        GF_jwt_token_val
-	User_id_str          gf_core.GF_ID 
+	User_exists_bool bool
+	Pass_valid_bool  bool
+	JWT_token_val    GF_jwt_token_val
+	User_id_str      gf_core.GF_ID 
 }
 
 // io_create
 type GF_user_auth_userpass__input_create struct {
 	User_name_str GF_user_name `validate:"omitempty,min=3,max=50"`
-	Pass_hash_str string
+	Pass_str      string
 	Email_str     string
 }
 type GF_user_auth_userpass__output_create struct {
@@ -140,19 +141,35 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 	user_name_str := p_input.User_name_str
-	pass_hash_str := p_input.Pass_hash_str
+	pass_str      := p_input.Pass_str
 	email_str     := p_input.Email_str
 
 	user_identifier_str := string(user_name_str)
-	user_id := users__create_id(user_identifier_str, creation_unix_time_f)
+	user_id_str := users__create_id(user_identifier_str, creation_unix_time_f)
 
 	user := &GF_user{
 		V_str:                "0",
-		Id_str:               user_id,
+		Id_str:               user_id_str,
 		Creation_unix_time_f: creation_unix_time_f,
 		User_name_str:        user_name_str,
-		Pass_hash_str:        pass_hash_str,
 		Email_str:            email_str,
+	}
+
+	
+	pass_salt_str := users_auth_userpass__get_pass_salt()
+	pass_hash_str := users_auth_userpass__get_pass_hash(pass_str, pass_salt_str)
+
+	creds__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	user_creds_id               := users__create_id(user_identifier_str, creds__creation_unix_time_f)
+
+	user_creds := &GF_user_creds {
+		V_str:                "0",
+		Id_str:               user_creds_id,
+		Creation_unix_time_f: creds__creation_unix_time_f,
+		User_id_str:          user_id_str,
+		User_name_str:        user_name_str,
+		Pass_salt_str:        pass_salt_str,
+		Pass_hash_str:        pass_hash_str,
 	}
 
 	//------------------------
@@ -162,7 +179,27 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 		return nil, gf_err
 	}
 
+	gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
 	//------------------------
 
 	return output, nil
+}
+
+//---------------------------------------------------
+func users_auth_userpass__get_pass_hash(p_pass_str string,
+	p_pass_salt_str string) string {
+
+	salted_pass_str := fmt.Sprintf("%s:%s", p_pass_salt_str, p_pass_str)
+	pass_hash_str   := gf_core.Hash_val_sha256(salted_pass_str)
+	return pass_hash_str
+}
+
+//---------------------------------------------------
+func users_auth_userpass__get_pass_salt() string {
+	rand_str := gf_core.Str_random()
+	return rand_str
 }

@@ -38,7 +38,6 @@ type GF_user struct {
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
 	User_name_str     GF_user_name          `bson:"user_name_str"`  // set once at the creation of the user
-	Pass_hash_str     string                `bson:"pass_hash_str"`  
 	Screenname_str    string                `bson:"screenname_str"` // changable durring the lifetime of the user
 	Email_str         string                `bson:"email_str"`
 	Description_str   string                `bson:"description_str"`
@@ -47,6 +46,21 @@ type GF_user struct {
 	// IMAGES
 	Profile_image_url_str string `bson:"profile_image_url_str"`
 	Banner_image_url_str  string `bson:"banner_image_url_str"`
+}
+
+// ADD!! - provide logic/plugin for storing this record in some alternative store
+//         separate from the main DB
+type GF_user_creds struct {
+	V_str                string             `bson:"v_str"` // schema_version
+	Id                   primitive.ObjectID `bson:"_id,omitempty"`
+	Id_str               gf_core.GF_ID      `bson:"id_str"`
+	Deleted_bool         bool               `bson:"deleted_bool"`
+	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+
+	User_id_str   gf_core.GF_ID `bson:"user_id_str"`
+	User_name_str GF_user_name  `bson:"user_name_str"`
+	Pass_salt_str string        `bson:"pass_salt_str"`
+	Pass_hash_str string        `bson:"pass_hash_str"`
 }
 
 // io_update

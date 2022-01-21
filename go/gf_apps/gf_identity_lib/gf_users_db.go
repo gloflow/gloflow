@@ -170,6 +170,28 @@ func db__user__create(p_user *GF_user,
 	return nil
 }
 
+func db__user_creds__create(p_user_creds *GF_user_creds,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	coll_name_str := "gf_users_creds"
+
+	gf_err := gf_core.Mongo__insert(p_user_creds,
+		coll_name_str,
+		map[string]interface{}{
+			"user_id_str":        p_user_creds.User_id_str,
+			"user_name_str":      p_user_creds.User_name_str,
+			"caller_err_msg_str": "failed to insert GF_user_creds into the DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	return nil
+}
+
 //---------------------------------------------------
 // UPDATE
 func db__user__update(p_user_address_eth_str GF_user_address_eth,

@@ -35,7 +35,7 @@ func Str_random() string {
 }
 
 //-------------------------------------------------------------
-func Hash_val(p_val interface{}) string {
+func Hash_val_sha256(p_val interface{}) string {
 
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%v", p_val)))
