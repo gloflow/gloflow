@@ -74,7 +74,6 @@ async function create_activate(p_container,
     const user_name_str = $(p_container).find("#username_input input").val();
     const pass_str      = $(p_container).find("#pass_input input").val();
     const email_str     = $(p_container).find("#email_input input").val();
-    const pass_hash_str = await hash_pass(pass_str); 
 
     // remove all previous errors that were displayed
     $(p_container).find(".error").remove();
@@ -94,7 +93,7 @@ async function create_activate(p_container,
     }
 
     const create_output_map = await p_http_api_map["userpass"]["user_create_fun"](user_name_str,
-        pass_hash_str as string,
+        pass_str as string,
         email_str as string);
 
 
@@ -139,7 +138,6 @@ async function login_activate(p_container,
 
     const user_name_str = $(p_container).find("#username_input input").val();
     const pass_str      = $(p_container).find("#pass_input input").val();
-    const pass_hash_str = await hash_pass(pass_str); 
 
 
     // remove all previous errors that were displayed
@@ -160,7 +158,7 @@ async function login_activate(p_container,
     }
 
     const login_output_map = await p_http_api_map["userpass"]["user_login_fun"](user_name_str,
-        pass_hash_str as string);
+        pass_str as string);
 
     // ERROR
     // user doesnt exist
@@ -191,21 +189,4 @@ async function login_activate(p_container,
         }, 200, ()=>{});
         return;
     }
-}
-
-//-------------------------------------------------
-async function hash_pass(p_pass_str) {
-    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-        const encoder = new TextEncoder();
-        const data    = encoder.encode(p_pass_str);
-        
-        // CRYPTO_HASH
-        const pass_hash_buff = await crypto.subtle.digest("SHA-256", data);
-
-        const hash_arr     = Array.from(new Uint8Array(pass_hash_buff));
-        const hash_hex_str = hash_arr.map(b => b.toString(16).padStart(2, "0")).join("");
-
-        p_resolve_fun(hash_hex_str);
-    });
-    return p;
 }
