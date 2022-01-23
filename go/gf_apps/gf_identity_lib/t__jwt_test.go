@@ -21,23 +21,12 @@ package gf_identity_lib
 
 import (
 	"fmt"
-	"os"
 	"context"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
-
-//---------------------------------------------------
-func TestMain(m *testing.M) {
-
-	log_fun      = gf_core.Init_log_fun()
-	cli_args_map = CLI__parse_args(log_fun)
-
-	v := m.Run()
-	os.Exit(v)
-}
 
 //-------------------------------------------------
 func Test__jwt(p_test *testing.T) {

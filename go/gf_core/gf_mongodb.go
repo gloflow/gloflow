@@ -194,7 +194,6 @@ func MongoFindLatest(p_query bson.M,
 		p_runtime_sys)
 }
 
-//-------------------------------------------------
 // MONGO_FIND_LATEST
 func Mongo__find_latest(p_query bson.M,
 	p_time_field_name_str string,
@@ -242,7 +241,6 @@ func Mongo__find_latest(p_query bson.M,
 
 //-------------------------------------------------
 // FIND
-
 func MongoFind(p_query bson.M,
 	p_opts        *options.FindOptions,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
@@ -258,7 +256,7 @@ func MongoFind(p_query bson.M,
 		p_runtime_sys)
 }
 
-//-------------------------------------------------
+// FIND
 func Mongo__find(p_query bson.M,
 	p_opts        *options.FindOptions,
 	p_meta_map    map[string]interface{}, // data describing the DB write op
@@ -283,6 +281,24 @@ func Mongo__find(p_query bson.M,
 
 	// defer cur.Close(p_ctx)
 	return cur, nil
+}
+
+//-------------------------------------------------
+func Mongo__delete(p_query bson.M,
+	p_coll_name_str string,
+	p_meta_map      map[string]interface{}, // data describing the DB write op
+	p_ctx           context.Context,
+	p_runtime_sys   *Runtime_sys) *GF_error {
+
+	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).DeleteMany(p_ctx, p_query)
+	if err != nil {
+		gf_err := Mongo__handle_error("failed to delete documents in the DB",
+			"mongodb_delete_error",
+			p_meta_map,
+			err, "gf_core", p_runtime_sys)
+		return gf_err
+	}
+	return nil
 }
 
 //-------------------------------------------------
@@ -525,35 +541,6 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 }
 
 //--------------------------------------------------------------------
-/*func Mongo__connect(p_mongodb_host_str string,
-	p_mongodb_db_name_str string,
-	p_log_fun             func(string, string)) *mgo.Database {
-	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
-	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
-	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
-	
-	session, err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
-	if err != nil {
-		panic(err)
-	}
-
-	//--------------------
-	// IMPORTANT!! - writes are waited for to confirm them.
-	// 	   			 in unsafe mode writes are fire-and-forget with no error checking. 
-	//               this mode is faster, since no confirmation is expected.
-	session.SetSafe(&mgo.Safe{})
-
-	// Monotonic consistency - will read from a slave if possible, for better load distribution.
-	//                         once the first write happens the connection is switched to the master.
-	session.SetMode(mgo.Monotonic, true)
-
-	//--------------------
-
-	db := session.DB(p_mongodb_db_name_str)
-	return db
-}*/
-
-//--------------------------------------------------------------------
 // HANDLE_ERROR
 func Mongo__handle_error(p_user_msg_str string,
 	p_error_type_str     string,
@@ -647,6 +634,35 @@ func Mongo__start(p_mongodb_bin_path_str string,
 
 	return nil
 }
+
+//--------------------------------------------------------------------
+/*func Mongo__connect(p_mongodb_host_str string,
+	p_mongodb_db_name_str string,
+	p_log_fun             func(string, string)) *mgo.Database {
+	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
+	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
+	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
+	
+	session, err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
+	if err != nil {
+		panic(err)
+	}
+
+	//--------------------
+	// IMPORTANT!! - writes are waited for to confirm them.
+	// 	   			 in unsafe mode writes are fire-and-forget with no error checking. 
+	//               this mode is faster, since no confirmation is expected.
+	session.SetSafe(&mgo.Safe{})
+
+	// Monotonic consistency - will read from a slave if possible, for better load distribution.
+	//                         once the first write happens the connection is switched to the master.
+	session.SetMode(mgo.Monotonic, true)
+
+	//--------------------
+
+	db := session.DB(p_mongodb_db_name_str)
+	return db
+}*/
 
 /*//--------------------------------------------------------------------
 func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,

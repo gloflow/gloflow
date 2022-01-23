@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,6 +33,49 @@ func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
 
+	user_id_str, gf_err := db__user__get_basic_info(bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
+			"deleted_bool":      false,
+		},
+		map[string]interface{}{
+			"user_address_eth_str": p_user_address_eth_str,
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_core.GF_ID(""), gf_err
+	}
+
+	return user_id_str, nil
+}
+
+// GET_BASIC_INFO
+func db__user__get_basic_info_by_username(p_user_name_str GF_user_name,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+
+	user_id_str, gf_err := db__user__get_basic_info(bson.M{
+			"user_name_str": p_user_name_str,
+			"deleted_bool":  false,
+		},
+		map[string]interface{}{
+			"user_name_str": p_user_name_str,
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_core.GF_ID(""), gf_err
+	}
+
+	return user_id_str, nil
+}
+
+// GET_BASIC_INFO
+func db__user__get_basic_info(p_query bson.M,
+	p_meta_map    map[string]interface{}, // data describing the DB write op
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+
 
 	find_opts := options.FindOne()
 	find_opts.Projection = map[string]interface{}{
@@ -39,22 +83,17 @@ func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address
 	}
 	
 	user_basic_info_map := map[string]interface{}{}
-	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
-			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
-			"deleted_bool":      false,
-		},
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx,
+		p_query,
 		find_opts).Decode(&user_basic_info_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by Eth address in the DB",
+		gf_err := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
 			"mongodb_find_error",
-			map[string]interface{}{
-				"user_address_eth_str": p_user_address_eth_str,
-			},
+			p_meta_map,
 			err, "gf_identity_lib", p_runtime_sys)
 		return gf_core.GF_ID(""), gf_err
 	}
-
 
 	user_id_str := gf_core.GF_ID(user_basic_info_map["id_str"].(string))
 
@@ -170,6 +209,8 @@ func db__user__create(p_user *GF_user,
 	return nil
 }
 
+//---------------------------------------------------
+// CREATE_CREDS
 func db__user_creds__create(p_user_creds *GF_user_creds,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -190,6 +231,43 @@ func db__user_creds__create(p_user_creds *GF_user_creds,
 	}
 	
 	return nil
+}
+
+//---------------------------------------------------
+func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (string, string, *gf_core.GF_error) {
+
+	coll_name_str := "gf_users_creds"
+	
+	find_opts := options.FindOne()
+	find_opts.Projection = map[string]interface{}{
+		"pass_salt_str": 1,
+		"pass_hash_str": 1,
+	}
+	
+	user_creds_info_map := map[string]interface{}{}
+	err := p_runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx, bson.M{
+			"user_name_str": string(p_user_name_str),
+			"deleted_bool":  false,
+		},
+		find_opts).Decode(&user_creds_info_map)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user creds by user_name in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_name_str": p_user_name_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return "", "", gf_err
+	}
+
+
+	pass_salt_str := user_creds_info_map["pass_salt_str"].(string)
+	pass_hash_str := user_creds_info_map["pass_hash_str"].(string)
+
+	return pass_salt_str, pass_hash_str, nil
 }
 
 //---------------------------------------------------
@@ -234,17 +312,16 @@ func db__user__update(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
-func db__user__check_in_invitelist_by_username(p_user_name_str GF_user_name,
+// INVITE_LIST
+func db__user__check_in_invitelist_by_username(p_user_email_str string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
-
 	count_int, gf_err := gf_core.Mongo__count(bson.M{
-		"user_name_str": p_user_name_str,
-		"deleted_bool":  false,
+		"user_email_str": p_user_email_str,
 	},
 	map[string]interface{}{
-		"user_name_str":  p_user_name_str,
+		"user_email_str": p_user_email_str,
 		"caller_err_msg": "failed to check if the user_name is in the invite list",
 	},
 	p_runtime_sys.Mongo_db.Collection("gf_users_invite_list"),
@@ -285,4 +362,30 @@ func db__user__exists_by_username(p_user_name_str GF_user_name,
 		return true, nil
 	}
 	return false, nil
+}
+
+//---------------------------------------------------
+// ADD_TO_INVITE_LIST
+func db__user__add_to_invite_list(p_user_email_str string,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	coll_name_str := "gf_users_invite_list"
+
+	user_invite_map := map[string]interface{}{
+		"user_email_str": p_user_email_str,
+	}
+	gf_err := gf_core.Mongo__insert(user_invite_map,
+		coll_name_str,
+		map[string]interface{}{
+			"user_email_str":     p_user_email_str,
+			"caller_err_msg_str": "failed to add a user email to the invite_list in the DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	return nil
 }

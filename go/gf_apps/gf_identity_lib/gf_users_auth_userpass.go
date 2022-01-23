@@ -30,7 +30,7 @@ import (
 // io_login
 type GF_user_auth_userpass__input_login struct {
 	User_name_str string `validate:"omitempty,min=3,max=50"`
-	Pass_str      string `validate:"required,min=6,max=50"`
+	Pass_str      string `validate:"required,min=8,max=50"`
 }
 type GF_user_auth_userpass__output_login struct {
 	User_exists_bool bool
@@ -41,9 +41,9 @@ type GF_user_auth_userpass__output_login struct {
 
 // io_create
 type GF_user_auth_userpass__input_create struct {
-	User_name_str GF_user_name `validate:"omitempty,min=3,max=50"`
-	Pass_str      string
-	Email_str     string
+	User_name_str GF_user_name `validate:"required,min=3,max=50"`
+	Pass_str      string       `validate:"required,min=8,max=50"`
+	Email_str     string       `validate:"required,email"`
 }
 type GF_user_auth_userpass__output_create struct {
 	User_exists_bool         bool
@@ -65,27 +65,61 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 
 	//------------------------
 
-
 	output := &GF_user_auth_userpass__output_login{}
-
 
 	//------------------------
 	// VERIFY
 
+	user_exists_bool, gf_err := db__user__exists_by_username(GF_user_name(p_input.User_name_str),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// user doesnt exists, so abort login
+	if !user_exists_bool {
+		output.User_exists_bool = false
+		return output, nil
+	}
+
+	// VERIFY_PASSWORD
+	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
+		p_input.Pass_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
 	
+
+	if !pass_valid_bool {
+		output.Pass_valid_bool = false
+		return output, nil
+	} else {
+		output.Pass_valid_bool = true
+	}
+
+	//------------------------
+	// USER_ID
+	user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	output.User_id_str = user_id_str
 
 	//------------------------
 	// JWT
-	user_identifier_str := string(p_input.User_name_str)
+	user_identifier_str := string(user_id_str)
 	jwt_token_val, gf_err := jwt__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
 	output.JWT_token_val = jwt_token_val
-
-	//------------------------
-	// USER_ID
 
 	//------------------------
 
@@ -124,7 +158,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 
 	// check if in invite list
-	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.User_name_str,
+	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.Email_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -135,6 +169,8 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	if !in_invite_list_bool {
 		output.User_in_invite_list_bool = false
 		return output, nil
+	} else {
+		output.User_in_invite_list_bool = true
 	}
 
 	//------------------------
@@ -187,6 +223,33 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	//------------------------
 
 	return output, nil
+}
+
+
+//---------------------------------------------------
+func users_auth_userpass__verify_pass(p_user_name_str GF_user_name,
+	p_pass_str    string,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+
+	// GET_PASS_AND_SALT_FROM_DB
+	db_pass_salt_str, db_pass_hash_str, gf_err := db__user_creds__get_pass_hash(p_user_name_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
+	}
+
+	// GENERATE_PASS_HASH
+	pass_hash_str := users_auth_userpass__get_pass_hash(p_pass_str, db_pass_salt_str)
+
+
+	if (db_pass_hash_str == pass_hash_str) {
+		return true, nil
+	} else {
+		return false, nil
+	}
+
+	return false, nil
 }
 
 //---------------------------------------------------

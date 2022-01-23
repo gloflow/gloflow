@@ -239,7 +239,7 @@ func error__get_defs() map[string]Error_def {
 			Descr_str:"failed to update a mongodb document",
 		},
 		"mongodb_delete_error": Error_def{
-			Descr_str:"failed to update a mongodb document",
+			Descr_str:"failed to delete a mongodb document",
 		},
 		"mongodb_aggregation_error": Error_def{
 			Descr_str:"failed to run a aggregation pipeline in mongodb",

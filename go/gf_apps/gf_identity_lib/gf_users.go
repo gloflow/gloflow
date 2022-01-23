@@ -67,7 +67,7 @@ type GF_user_creds struct {
 type GF_user__input_update struct {
 	User_address_eth_str GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
 	Screenname_str       *string             `validate:"omitempty,min=3,max=50"`   // optional
-	Email_str            *string             `validate:"omitempty,min=6,max=50"`   // optional
+	Email_str            *string             `validate:"omitempty,email"`          // optional
 	Description_str      *string             `validate:"omitempty,min=1,max=2000"` // optional
 
 	Profile_image_url_str *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
