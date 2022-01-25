@@ -35,8 +35,17 @@ import (
 )
 
 //-------------------------------------------------------------
+func AWS_SECMNGR__create_secret(p_secret_name_str string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+
+	return nil
+}
+
+//-------------------------------------------------------------
 func AWS_SECMNGR__get_secret(p_secret_name_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
 
 	svc   := secretsmanager.New(session.New())
 	input := &secretsmanager.GetSecretValueInput{

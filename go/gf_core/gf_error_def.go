@@ -301,22 +301,29 @@ func error__get_defs() map[string]Error_def {
 		"aws_client_v2_create": Error_def{
 			Descr_str: "AWS failed to create new API V2 client",
 		},
+
+		// EC2
 		"aws_ec2_instances_describe_error": Error_def{
 			Descr_str: "failed to describe EC2 instances",
 		},
+		
+		// ECS
 		"aws_ecs_service_update_error": Error_def{
 			Descr_str: "failed to update an AWS ECS service",
 		},
+
+		// SECRETS_MNGR
 		"aws_secretsmngr_get_secret_value_error": Error_def{
 			Descr_str: "failed to get secret value from AWS SECRETS_MANAGER service",
 		},
+		
+		// SQS
 		"aws_sqs_queue_create_error": Error_def{
 			Descr_str: "failed to create SQS queue",
 		},
 		"aws_sqs_queue_get_url_error": Error_def{
 			Descr_str: "failed to get a URL of a SQS queue",
 		},
-
 		"aws_sqs_queue_send_msg_error": Error_def{
 			Descr_str: "failed to send a message to a SQS queue",
 		},
@@ -325,6 +332,14 @@ func error__get_defs() map[string]Error_def {
 		},
 		"aws_sqs_queue_delete_msg_error": Error_def{
 			Descr_str: "failed to delete a message from a SQS queue",
+		},
+
+		// SES
+		"aws_ses_service_send_message_error": Error_def{
+			Descr_str: "failed to send an email message via SES",
+		},
+		"aws_ses_service_verify_address_error": Error_def{
+			Descr_str: "failed to verify email address via SES",
 		},
 
 		//---------------
