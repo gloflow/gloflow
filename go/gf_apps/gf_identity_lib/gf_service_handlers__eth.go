@@ -29,7 +29,8 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__eth(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers__eth(p_service_info *GF_service_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS

@@ -30,13 +30,17 @@ import (
 
 //------------------------------------------------
 type GF_user__http_input_update struct {
-	Username_str         *string  `json:"username_str"    validate:"min=3,max=50"`
-	Screenname_str       *string  `json:"screenname_str"  validate:"min=3,max=50"`
-	Email_str            *string  `json:"email_str"       validate:"min=6,max=50"`
-	Description_str      *string  `json:"description_str" validate:"min=1,max=2000"`
+	Screen_name_str       *string  `json:"screen_name_str" validate:"min=3,max=50"`
+	Email_str             *string  `json:"email_str"       validate:"min=6,max=50"`
+	Description_str       *string  `json:"description_str" validate:"min=1,max=2000"`
 
 	Profile_image_url_str *string `json:"profile_image_url_str" validate:"min=1,max=100"` // FIX!! - validation
 	Banner_image_url_str  *string `json:"banner_image_url_str"  validate:"min=1,max=100"` // FIX!! - validation
+}
+
+type GF_user__http_input_email_confirm struct {
+	User_name_str    GF_user_name `validate:"required,min=3,max=50"`
+	Confirm_code_str string       `validate:"required,min=10,max=20"`
 }
 
 //---------------------------------------------------
@@ -74,7 +78,7 @@ func http__get_user_std_input(p_req *http.Request,
 }
 
 //---------------------------------------------------
-func http__get_user_address_eth(p_req *http.Request,
+func http__get_user_address_eth_input(p_req *http.Request,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (GF_user_address_eth, *gf_core.GF_error) {
 
@@ -92,7 +96,7 @@ func http__get_user_address_eth(p_req *http.Request,
 }
 
 //---------------------------------------------------
-func http__get_user_update(p_req *http.Request,
+func http__get_user_update_input(p_req *http.Request,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__http_input_update, *gf_core.GF_error) {
 
 	handler_url_path_str := p_req.URL.Path
@@ -109,4 +113,41 @@ func http__get_user_update(p_req *http.Request,
 	}
 
 	return &input, nil
+}
+
+//---------------------------------------------------
+func http__get_email_confirm_input(p_req *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__http_input_email_confirm, *gf_core.GF_error) {
+
+	var user_name_str         string
+	var confirmation_code_str string
+
+	query_args_map := p_req.URL.Query()
+	
+	if values_lst, ok := query_args_map["u"]; ok {
+		user_name_str = values_lst[0]
+	} else {
+		gf_err := gf_core.Error__create("incoming http request is missing the email user_name query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	if values_lst, ok := query_args_map["c"]; ok {
+		confirmation_code_str = values_lst[0]
+	} else {
+		gf_err := gf_core.Error__create("incoming http request is missing the email confirmation_code query-string arg",
+			"verify__missing_key_error",
+			map[string]interface{}{},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	input := &GF_user__http_input_email_confirm{
+		User_name_str:    GF_user_name(user_name_str),
+		Confirm_code_str: confirmation_code_str,
+	}
+
+	return input, nil
 }

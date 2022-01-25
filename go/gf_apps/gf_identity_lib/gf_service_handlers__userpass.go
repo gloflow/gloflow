@@ -29,7 +29,8 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers__userpass(p_service_info *GF_service_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
@@ -62,7 +63,9 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 
 				//---------------------
 				// LOGIN
-				output, gf_err := users_auth_userpass__pipeline__login(input, p_ctx, p_runtime_sys)
+				output, gf_err := users_auth_userpass__pipeline__login(input, 
+					p_service_info,
+					p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -91,7 +94,7 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 
 	//---------------------
 	// USERS_CREATE
-	// NO_AUTH - unauthenticated users are able to create new users
+	// NO_AUTH - unauthenticated users are able to create new users, and do not get logged in automatically on success
 
 	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/userpass/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -112,7 +115,10 @@ func init_handlers__userpass(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_err
 				}
 
 				//---------------------
-				output, gf_err := users_auth_userpass__pipeline__create(input, p_ctx, p_runtime_sys)
+				output, gf_err := users_auth_userpass__pipeline__create(input,
+					p_service_info,
+					p_ctx,
+					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

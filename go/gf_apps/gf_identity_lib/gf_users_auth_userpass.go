@@ -33,10 +33,11 @@ type GF_user_auth_userpass__input_login struct {
 	Pass_str      string `validate:"required,min=8,max=50"`
 }
 type GF_user_auth_userpass__output_login struct {
-	User_exists_bool bool
-	Pass_valid_bool  bool
-	JWT_token_val    GF_jwt_token_val
-	User_id_str      gf_core.GF_ID 
+	User_exists_bool     bool
+	Email_confirmed_bool bool
+	Pass_valid_bool      bool
+	JWT_token_val        GF_jwt_token_val
+	User_id_str          gf_core.GF_ID 
 }
 
 // io_create
@@ -53,8 +54,9 @@ type GF_user_auth_userpass__output_create struct {
 //---------------------------------------------------
 // PIPELINE__LOGIN
 func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_login,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -83,6 +85,25 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 		return output, nil
 	}
 
+	// VERIFY_EMAIL_CONFIRMED
+	// if this check is enabled, users that have not confirmed their email cant login
+	if p_service_info.Enable_email_require_confirm_for_login_bool {
+
+		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(GF_user_name(p_input.User_name_str),
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		if !email_confirmed_bool {
+			output.Email_confirmed_bool = false
+			return output, nil
+		} else {
+			output.Email_confirmed_bool = true
+		}
+	}
+
 	// VERIFY_PASSWORD
 	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
 		p_input.Pass_str,
@@ -91,7 +112,6 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	if gf_err != nil {
 		return nil, gf_err
 	}
-	
 
 	if !pass_valid_bool {
 		output.Pass_valid_bool = false
@@ -129,8 +149,9 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 //---------------------------------------------------
 // PIPELINE__CREATE
 func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input_create,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create, *gf_core.GF_error) {
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -172,6 +193,8 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	} else {
 		output.User_in_invite_list_bool = true
 	}
+
+	
 
 	//------------------------
 
@@ -221,11 +244,25 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 
 	//------------------------
+	// EMAIL
+	if p_service_info.Enable_email_bool {
 
+		gf_err = users_email__verify__pipeline(email_str,
+			user_id_str,
+			p_service_info.Domain_base_str,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+	}
+	
+	//------------------------
 	return output, nil
 }
 
-
+//---------------------------------------------------
+// PASS
 //---------------------------------------------------
 func users_auth_userpass__verify_pass(p_user_name_str GF_user_name,
 	p_pass_str    string,

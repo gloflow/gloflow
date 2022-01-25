@@ -37,11 +37,14 @@ type GF_user struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_name_str     GF_user_name          `bson:"user_name_str"`  // set once at the creation of the user
-	Screenname_str    string                `bson:"screenname_str"` // changable durring the lifetime of the user
-	Email_str         string                `bson:"email_str"`
+	User_name_str     GF_user_name          `bson:"user_name_str"`   // set once at the creation of the user
+	Screen_name_str   string                `bson:"screen_name_str"` // changable durring the lifetime of the user
+	
 	Description_str   string                `bson:"description_str"`
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
+
+	Email_str            string `bson:"email_str"`
+	Email_confirmed_bool bool   `bson:"email_confirmed_bool"`
 
 	// IMAGES
 	Profile_image_url_str string `bson:"profile_image_url_str"`
@@ -65,8 +68,9 @@ type GF_user_creds struct {
 
 // io_update
 type GF_user__input_update struct {
+	User_name_str        GF_user_name        `validate:"required,min=3,max=50"`    // required - not updated, but for lookup
 	User_address_eth_str GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
-	Screenname_str       *string             `validate:"omitempty,min=3,max=50"`   // optional
+	Screen_name_str      *string             `validate:"omitempty,min=3,max=50"`   // optional
 	Email_str            *string             `validate:"omitempty,email"`          // optional
 	Description_str      *string             `validate:"omitempty,min=1,max=2000"` // optional
 
@@ -75,11 +79,6 @@ type GF_user__input_update struct {
 }
 type GF_user__output_update struct {
 	
-}
-
-type GF_user__update struct {
-	User_name_str   GF_user_name
-	Description_str string
 }
 
 // io_get
@@ -98,14 +97,41 @@ type GF_user__output_get struct {
 //---------------------------------------------------
 // PIPELINE__UPDATE
 func users__pipeline__update(p_input *GF_user__input_update,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
 	
 	//------------------------
 	// VALIDATE_INPUT
 	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
+	}
+
+
+
+
+	// EMAIL
+	if p_service_info.Enable_email_bool {
+		if *p_input.Email_str != "" {
+			
+			// DB
+			user_id_str, gf_err := db__user__get_basic_info_by_username(p_input.User_name_str,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			gf_err = users_email__verify__pipeline(*p_input.Email_str,
+				user_id_str,
+				p_service_info.Domain_base_str,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+		}
 	}
 
 	//------------------------

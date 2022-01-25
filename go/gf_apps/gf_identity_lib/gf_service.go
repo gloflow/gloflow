@@ -27,29 +27,34 @@ import (
 
 //-------------------------------------------------
 type GF_service_info struct {
-	Port_str                string
-	Mongodb_host_str        string
-	Mongodb_db_name_str     string
-	Templates_dir_paths_map map[string]interface{}
-	Config_file_path_str    string
+
+	// DOMAIN - where this gf_solo instance is reachable on
+	Domain_base_str string 
+
+	// enable sending of emails for any function that needs it
+	Enable_email_bool bool
+
+	// enable login only for users that have confirmed their email
+	Enable_email_require_confirm_for_login_bool bool
 }
 
 //-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init_service(p_service_info *GF_service_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	gf_err = init_handlers__eth(p_runtime_sys)
+	gf_err = init_handlers__eth(p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	gf_err = init_handlers__userpass(p_runtime_sys)
+	gf_err = init_handlers__userpass(p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -63,10 +68,9 @@ func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 
 	//-------------------
-
 	// MONGODB
-	mongodb_host_str        := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
-	mongodb_db_name_str     := flag.String("mongodb_db_name", "prod_db"  , "DB name to use")
+	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
+	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
 
 	// MONGODB_ENV
 	mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
@@ -84,7 +88,7 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 	flag.Parse()
 
 	return map[string]interface{}{
-		"mongodb_host_str":        *mongodb_host_str,
-		"mongodb_db_name_str":     *mongodb_db_name_str,
+		"mongodb_host_str":    *mongodb_host_str,
+		"mongodb_db_name_str": *mongodb_db_name_str,
 	}
 }

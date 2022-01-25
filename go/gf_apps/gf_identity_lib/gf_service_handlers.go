@@ -29,16 +29,63 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers(p_service_info *GF_service_info,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_identity_lib.init_handlers()")
 
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/identity/email_confirm",
 		"/v1/identity/update",
 		"/v1/identity/me",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+
+	//---------------------
+	// EMAIL_CONFIRM
+	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/email_confirm",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "GET" {
+
+
+				// INPUT
+				http_input, gf_err := http__get_email_confirm_input(p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+
+
+
+				confirmed_bool, gf_err := users_email__confirm__pipeline(http_input,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				if confirmed_bool {
+
+					// redirect user to login page
+					url_redirect_str := "/v1/identity/userpass/login"
+					http.Redirect(p_resp,
+						p_req,
+						url_redirect_str,
+						301)
+				} else {
+
+
+					return nil, nil
+				}
+
+			}
+			return nil, nil
+		},
+		metrics,
+		true, // p_store_run_bool
+		p_runtime_sys)
 
 	//---------------------
 	// USERS_UPDATE
@@ -51,7 +98,7 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 				//---------------------
 				// SESSION_VALIDATE
-				valid_bool, _, gf_err := Session__validate(p_req, p_ctx, p_runtime_sys)
+				valid_bool, user_identifier_str, gf_err := Session__validate(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -60,14 +107,17 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 					return nil, nil
 				}
 
+				user_name_str := user_identifier_str
+
 				//---------------------
 				// INPUT
-				http_input, gf_err := http__get_user_update(p_req, p_runtime_sys)
+				http_input, gf_err := http__get_user_update_input(p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				input := &GF_user__input_update{
+					User_name_str:         GF_user_name(user_name_str),
 					Email_str:             http_input.Email_str,
 					Description_str:       http_input.Description_str,
 					Profile_image_url_str: http_input.Profile_image_url_str,
@@ -82,7 +132,10 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 				
 				//---------------------
 
-				_, gf_err = users__pipeline__update(input, p_ctx, p_runtime_sys)
+				_, gf_err = users__pipeline__update(input,
+					p_service_info,
+					p_ctx,
+					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
