@@ -113,16 +113,13 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                     </div>
                 </div>
             </div>`);
-                // // IMPORTANT!! - change to color of the whole image_info control to match the dominant color of the
-                // //               image its displaying.
-                // $(p_image_info_element).css("background-color", `#${color_dominant_hex_str}`);				
                 color_info_element.insertAfter(image);
                 //-------------
                 // COLOR_DOMINANT
                 const color_dominant_element = $(color_info_element).find(".color_dominant");
                 var color_dominant_label_element = $(`<div class="color_dominant_label">dominant color</div>`);
                 var color_dominant__copy_to_clipboard_btn;
-                $(color_dominant_element).on("mouseover", () => {
+                $(color_dominant_element).on("mouseenter", () => {
                     // COLOR_DOMINANT_LABEL
                     color_info_element.append(color_dominant_label_element);
                     //-------------
@@ -132,12 +129,6 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                     <div class='color_large' style="background-color:#${color_dominant_hex_str};"></div>
                 </div>`);
                     $(color_info_element).append(color_inspect_element);
-                    /*$("body").on("click", ()=>{
-                        $(color_inspect_element).remove();
-                    });*/
-                    /*$(color_dominant_element).on("mouseout", ()=>{
-                        $(color_inspect_element).remove();
-                    });*/
                     //-------------
                     //-------------
                     // COPY_TO_CLIPBOARD
@@ -147,15 +138,25 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                     }
                     //-------------
                 });
-                $(color_dominant_element).on("mouseout", (p_e) => {
+                // IMPORTANT!! - using "mouseleave" so that label and clipboard btn are only removed when the whole
+                //               color_dominant element is left, not just the .color element thats a child of .color_dominant
+                // mouseenter and mouseleave - triggered when you enter and leave a hierarchy of nodes,
+                //                             but not when you navigate that hierarchy's descendance.
+                // mouseover and mouseout    - triggered when the mouse respectively enters and leaves
+                //                             a node's "exclusive" space, so you get a "out" when the
+                //                             mouse gets into a child node.
+                $(color_dominant_element).on("mouseleave", (p_e) => {
+                    // remove label
                     $(color_dominant_label_element).remove();
-                    // $(color_dominant__copy_to_clipboard_btn).remove();
-                    // color_dominant__copy_to_clipboard_btn = null;
+                    // remove color_inspect
+                    $(color_info_element).find(".color_inspect").remove();
+                    // remove copy_to_clipboard button
+                    $(color_dominant__copy_to_clipboard_btn).remove();
+                    color_dominant__copy_to_clipboard_btn = null;
                 });
                 //-------------
                 // COLOR_PALLETE
                 const color_pallete_element = $(color_info_element).find(".color_pallete");
-                // const color_pallete_sub_lst = image_colors.color_palette_lst.slice(1, 6);
                 const colors_hexes_lst = [];
                 color_palette_lst.forEach((p_color_hex_str) => {
                     const color_element = $(`<div class="color" style="background-color:#${p_color_hex_str};"></div>`);
@@ -165,20 +166,15 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                     var color_inspect_element = $(`<div class="color_inspect">
                     <div class='color_hex'>#${p_color_hex_str}</div>
                     <div class='color_large' style="background-color:#${p_color_hex_str};"></div>
-
                 </div>`);
-                    $(color_element).on("mouseover", () => {
+                    $(color_element).on("mouseenter", () => {
                         // remove a previously appended color_inspect element, if its there
-                        $(color_info_element).find("#color_inspect").remove();
-                        // color_pallete_element.append(color_inspect_element);
+                        $(color_info_element).find(".color_inspect").remove();
                         color_info_element.append(color_inspect_element);
                     });
-                    /*$("body").on("click", ()=>{
+                    $(color_element).on("mouseleave", () => {
                         $(color_inspect_element).remove();
-                    });*/
-                    /*$(color_element).on("mouseout", ()=>{
-                        $(color_inspect_element).remove();
-                    });*/
+                    });
                     //-------------
                     colors_hexes_lst.push(p_color_hex_str);
                 });
@@ -186,7 +182,7 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                 // COLOR_PALLETE_LABEL
                 var color_pallete_label_element = $(`<div class="color_pallete_label">color pallete</div>`);
                 var color_pallete__copy_to_clipboard_btn;
-                $(color_pallete_element).on("mouseover", () => {
+                $(color_pallete_element).on("mouseenter", () => {
                     color_info_element.append(color_pallete_label_element);
                     //-------------
                     // COPY_TO_CLIPBOARD
@@ -196,38 +192,12 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
                     }
                     //-------------
                 });
-                $(color_pallete_element).on("mouseout", () => {
+                $(color_pallete_element).on("mouseleave", () => {
                     $(color_pallete_label_element).remove();
+                    $(color_pallete__copy_to_clipboard_btn).remove();
+                    color_pallete__copy_to_clipboard_btn = null;
                 });
                 //-------------
-                /*// leave color picking info on screen even when mouse moves out of the control,
-                // to allow users to interact with it later.
-                $("body").on("click", ()=>{
-    
-                    //-------------
-                    // COPY_TO_CLIPBOARD
-                    if (color_pallete__copy_to_clipboard_btn != null) {
-                        // has to be here, removed when user goes out of the entire color_info element,
-                        // and not just the pallete, so that the user has a chance to click it
-                        $(color_pallete__copy_to_clipboard_btn).remove();
-                        color_pallete__copy_to_clipboard_btn = null;
-                    }
-    
-                    //-------------
-                });*/
-                /*$(color_info_element).on("mouseout", ()=>{
-    
-                    //-------------
-                    // COPY_TO_CLIPBOARD
-                    if (copy_to_clipboard_btn != null) {
-                        // has to be here, removed when user goes out of the entire color_info element,
-                        // and not just the pallete, so that the user has a chance to click it
-                        $(copy_to_clipboard_btn).remove();
-                        copy_to_clipboard_btn = null;
-                    }
-    
-                    //-------------
-                });*/
                 image_colors_shown_bool = true;
                 p_on_color_compute_fun(color_dominant_hex_str, colors_hexes_lst);
             }
@@ -236,7 +206,7 @@ System.register("ts/gf_image_colors", ["ts/gf_image_process"], function (exports
         function init_copy_to_clipboard_btn(p_colors_hexes_lst) {
             const element = $(`
             <div id='copy_to_clipboard_btn'>
-                <img src="${p_assets_paths_map['copy_to_clipboard_btn']}"></img>
+                <img src="${p_assets_paths_map["copy_to_clipboard_btn"]}"></img>
             </div>`);
             $(element).on("click", async () => {
                 var colors_for_clipboard_str = p_colors_hexes_lst.join(",");
