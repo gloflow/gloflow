@@ -56,7 +56,16 @@ export function init(p_log_fun) {
 		//----------------------
 		// IMAGE_PALLETE
 		const img = $(p_image_info_element).find("img")[0];
-		gf_image_colors.init_pallete(img);
+
+		const assets_paths_map = {
+			"copy_to_clipboard_btn": "/images/static/assets/gf_copy_to_clipboard_btn.svg",
+		}
+		gf_image_colors.init_pallete(img,
+			assets_paths_map,
+			(p_color_dominant_hex_str,
+			p_colors_hexes_lst)=>{
+
+			});
 
 		//----------------------
 	}

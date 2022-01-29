@@ -1,0 +1,136 @@
+
+
+<head>
+
+    <script src="./../../../../libs/js/system.min.js" type="text/javascript"></script>
+    <script src="./../../../../libs/js/system_named_register_ext.js" type="text/javascript"></script>
+    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./../../../../libs/js/color-thief.min.js"></script>
+    <script src="./bin/gf_image_colors_test.js"></script>
+    
+    <script>
+        System.import("dev/gf_image_colors/gf_image_colors_test").then(function(m){});
+    </script>
+    
+    
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_image_colors.css"/>
+    <style>
+        body {
+            margin:      0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+            /*turn off horizontal scroll*/
+            max-width:  100%;
+            overflow-x: hidden;
+
+            background-color: #d7d7d7;
+        }
+
+        .image_info {
+            top: 20%;
+            left: 45%;
+        }
+
+        .image_info {
+            width: 216px;
+            background-color: rgb(59, 124, 156);
+            padding-bottom:   6px;
+            margin-bottom:    10px;
+            position:         relative;
+
+            box-shadow: 1px 1px 10px grey;
+        }
+
+        .image_info .image {
+            width:    195px;
+            position: relative;
+            padding-bottom: 4px;
+            /*padding-bottom: 8px;*/
+        }
+
+        .image_info .image img {
+            width:        100%;
+            padding-left: 10px;
+            cursor:       pointer;
+        }
+        .image_info .image_title {
+            background-color: rgb(59, 124, 156);
+
+            padding-left:   5px;
+            padding-top:    6px;
+            padding-bottom: 6px;
+            padding-right:  4px;
+
+            font-size : 11px;
+            /*width     : 206px;*/
+            text-align: center;
+            word-wrap : break-word; /*make all text display even if really long string*/
+            color     : rgb(255,255,255);
+        }
+
+        .image_info .creation_time {
+            text-align: center;
+            font-size:  12px;
+            color:      white;
+
+            /*padding-top: 6px;*/
+        }
+
+        .image_info .origin_page_url {
+            padding-top     : 1px;
+            padding-bottom  : 6px;
+            text-align      : center;
+            background-color: #669ab3;
+            width           : 197px;
+            padding-left    : 9px;
+            padding-right   : 10px;
+        }
+        .image_info .origin_page_url a {
+            font-size      : 12px;
+            font-weight    : bold;
+            color          : white;
+            text-decoration: none;
+            word-wrap      : break-word;
+        }
+
+        .image_info .creation_time {
+            cursor:pointer;
+            padding-top: 2px;
+        }
+        .image_info .creation_time:hover {
+            font-weight: bold;
+        }
+        .image_info .creation_time .full_creation_date {
+            background-color: #3992bd;
+            color: #1d3d4c;
+            padding-top: 3px;
+            padding-bottom: 3px;
+            margin-top: 4px;
+        }
+    </style>
+    
+    
+    </head>
+    
+    
+    <body>
+    
+    
+    
+        <div class="image_info">
+            <div class="image_title">
+                tumblr_ohki40hROA1qkbpm3o1_500
+            </div>
+            <div class="image">
+                <img
+                    data-img_thumb_medium_url="img/img.png"
+                    src="img/img.png">
+                </img>
+            </div>
+            <div class="origin_page_url">
+                <a href="http://rhubarbes.com/" target="_blank">rhubarbes.com</a>
+            </div>
+            <div class="creation_time">5 years ago</div>
+        </div>
+    </body>

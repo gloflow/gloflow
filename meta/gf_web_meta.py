@@ -59,9 +59,10 @@ def get():
 				(f"{modd_str}/../web/src/gf_apps/gf_images/ts/gf_page_picker/gf_page_picker.js", f"{modd_str}/../web/build/gf_apps/gf_images/js"),
 				
 				# FIX!! - these icons are used by all apps. figure a different place to insert them separate of any app.
-				(f"{modd_str}/../web/assets/gf_bar_handle_btn.svg",  f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
-				(f"{modd_str}/../web/assets/gf_close_btn_small.svg", f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
-				(f"{modd_str}/../web/assets/gf_metamask_icon.svg",   f"{modd_str}/../web/build/gf_apps/gf_images/assets")
+				(f"{modd_str}/../web/assets/gf_bar_handle_btn.svg",        f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
+				(f"{modd_str}/../web/assets/gf_close_btn_small.svg",       f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
+				(f"{modd_str}/../web/assets/gf_metamask_icon.svg",         f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
+				(f"{modd_str}/../web/assets/gf_copy_to_clipboard_btn.svg", f"{modd_str}/../web/build/gf_apps/gf_images/assets")
 			]
 		}
 
