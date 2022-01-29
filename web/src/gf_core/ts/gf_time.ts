@@ -36,13 +36,12 @@ export function init_creation_date(p_target_element, p_log_fun) {
 	$(creation_time_element).text(date_msg_str);
 
 	const creation_date__readable_str = creation_date.toDateString();
-	const creation_date__readble      = $('<div class="full_creation_date">'+creation_date__readable_str+'</div>');
 
 	$(creation_time_element).mouseover((p_e)=>{
-		$(creation_time_element).append(creation_date__readble);
+		$(creation_time_element).text(creation_date__readable_str);
 	});
 
 	$(creation_time_element).mouseout((p_e)=>{
-		$(creation_date__readble).remove();
+		$(creation_time_element).text(date_msg_str);
 	});
 }

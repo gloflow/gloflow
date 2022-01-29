@@ -8,7 +8,8 @@
 	left: 10px;
     position: relative;
 	height: 50px;
-    box-shadow: 1px 1px 10px #3c3c3c;
+    box-shadow: 1px 1px 10px #000000;
+    background-color: inherit;
 }
 
 /*---------------------------*/
@@ -22,7 +23,7 @@
 	position: absolute;
     left: -90px;
     top: 0px;
-    background-color: #3b7c9c;
+    background-color: inherit;
     padding-left: 12px;
     padding-right: 12px;
     padding-top: 7px;
@@ -31,7 +32,7 @@
 	/*opacity: 0.6;*/
 
     font-size: 10px;
-    box-shadow: 1px 1px 10px grey;
+    box-shadow: 1px 1px 10px black;
 }
 
 .colors_info .color_dominant #copy_to_clipboard_btn {
@@ -60,7 +61,7 @@
 	position: absolute;
     left: -78px;
     top: 25px;
-    background-color: #3b7c9c;
+    background-color: inherit;
     padding-left: 12px;
     padding-right: 12px;
     padding-top: 7px;
@@ -69,7 +70,7 @@
 	/*opacity: 0.6;*/
 
     font-size: 10px;
-    box-shadow: 1px 1px 10px grey;
+    box-shadow: 1px 1px 10px black;
 }
 
 .colors_info .color_pallete #copy_to_clipboard_btn {
@@ -122,8 +123,8 @@
     cursor: pointer;
     z-index: 1;
 
-    background-color: #3b7c9c;
-    box-shadow: 1px 1px 10px grey;
+    background-color: inherit;
+    box-shadow: 1px 1px 10px black;
 }
 
 .colors_info #copy_to_clipboard_btn img {
@@ -147,6 +148,14 @@
 	/*opacity: 0.6;*/
 
     font-size: 10px;
-    background-color: #3b7c9c;
-    box-shadow: 1px 1px 10px grey;
+    background-color: inherit;
+    box-shadow: 1px 1px 10px black;
+}
+
+/*IMPORTANT!! - default background-color if not set is transparent,
+                so in order for the inherit background-color thats used in several elements
+                of the colors control here to have an actual color, we have to set inherit background-color
+                for all divs*/
+div {
+    background-color: inherit;
 }

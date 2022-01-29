@@ -26,8 +26,9 @@ $(document).ready(()=>{
             
 
 
-            // $(".image_info").css("background-color", p_color_dominant_hex_str)
-
+            $(".image_info").css("background-color", p_color_dominant_hex_str)
+            $(".image_info").find(".image_title").css("background-color", p_color_dominant_hex_str);
+            $(".image_info").find(".origin_page_url").css("background-color", p_color_dominant_hex_str);
 
 
 

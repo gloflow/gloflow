@@ -224,10 +224,10 @@
 #images .image_info .creation_time:hover {
 	font-weight: bold;
 }
-#images .image_info .creation_time .full_creation_date {
+/*#images .image_info .creation_time .full_creation_date {
 	background-color: #3992bd;
     color: #1d3d4c;
     padding-top: 3px;
     padding-bottom: 3px;
     margin-top: 4px;
-}
+}*/

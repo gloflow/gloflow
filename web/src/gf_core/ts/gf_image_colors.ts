@@ -27,7 +27,7 @@ export function init_pallete(p_image,
     p_on_color_compute_fun) {
 
     var image_colors_shown_bool = false;
-    $(p_image).on("mouseover", async (p_event)=>{
+    $(p_image).on("mouseenter", async (p_event)=>{
 
 
         if (!image_colors_shown_bool) {
