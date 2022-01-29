@@ -81,8 +81,7 @@
 #images .image_info .image {
 	width:    195px;
 	position: relative;
-	padding-bottom: 4px;
-	/*padding-bottom: 8px;*/
+	/*padding-bottom: 4px;*/
 }
 
 #images .image_info .image img {
@@ -220,7 +219,7 @@
 
 #images .image_info .creation_time {
 	cursor:pointer;
-	padding-top: 2px;
+	padding-top: 5px;
 }
 #images .image_info .creation_time:hover {
 	font-weight: bold;
