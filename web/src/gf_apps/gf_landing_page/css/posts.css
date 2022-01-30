@@ -3,9 +3,10 @@
 
 #posts {
 	position: absolute;
-	left:     449px;
+	left:     399px;
 	top:      0px;
 }
+
 /*------------------------------------------------------------*/
 /*POSTS BUTTON*/
 
@@ -31,6 +32,7 @@
 	background-color: lightgray;
 	color           : black;
 }
+
 /*------------------------------------------------------------*/
 /*POSTS ELEMENTS*/
 
@@ -55,6 +57,7 @@
 
 	z-index: 5;
 }
+
 /*---------------------------*/
 #posts .post_info .post_image {
 	width:195px;
@@ -65,6 +68,7 @@
 	width       : 100%;
 	padding-left: 10px;
 }
+
 /*---------------------------*/
 /*IMAGE DOMINANT COLOR*/
 #posts .post_info .post_image .img_dominant_color {
@@ -78,19 +82,22 @@
 	width : 30px;
     height: 30px;
 }
+
 /*---------------------------*/
 #posts .post_info .post_title {
 	background-color: rgb(223, 104, 48);
 
-	padding-left    : 9px;
-	padding-top     : 6px;
-	padding-bottom  : 6px;
-	padding-right   : 9px;
+	padding-left:   9px;
+	padding-top:    6px;
+	padding-bottom: 6px;
+	padding-right:  9px;
 
-	width     : 198px;
+	width:      198px;
 	text-align: center;
-	color     : rgb(255,255,255);
+	font-size:  14px;
+	color:     rgb(255,255,255);
 }
+
 /*------------------------------------------------------------*/
 /*POST IMAGES NUMBER*/
 #posts .post_info .post_images_number {

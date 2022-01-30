@@ -14,7 +14,7 @@
 #images #images_flows_button {
 	position:         fixed;
 	top:              0px;
-	width:            440px;
+	width:            390px;
 	height:           38px;
 	padding-top:      17px;
 	text-align:       center;
@@ -43,7 +43,7 @@
 #images #featured_images_1 {
 	position: absolute;
 	top:      65px;
-	left:     224px;
+	left:     200px;
 }
 
 /*------------------------------------------------------------*/
@@ -69,7 +69,7 @@
 /*IMAGE_INFO*/
 
 #images .image_info {
-	width: 216px;
+	width: 190px;
 	background-color: rgb(59, 124, 156);
 	padding-bottom:   6px;
 	margin-bottom:    10px;
@@ -79,7 +79,7 @@
 }
 
 #images .image_info .image {
-	width:    195px;
+	width:    170px;
 	position: relative;
 	/*padding-bottom: 4px;*/
 }
@@ -205,7 +205,7 @@
 	padding-bottom  : 6px;
 	text-align      : center;
     background-color: #669ab3;
-    width           : 197px;
+    width           : 171px;
     padding-left    : 9px;
     padding-right   : 10px;
 }
