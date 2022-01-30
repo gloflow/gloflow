@@ -55,7 +55,7 @@ export function init_pallete(p_image,
 
             // apply shadow only when the cursor enters the color_info element
             $(color_info_element).on("mouseenter", ()=>{
-                $(color_info_element).css("box-shadow", "1px 1px 10px #0000007a;")
+                $(color_info_element).css("box-shadow", "1px 1px 10px #0000007a")
             })
             $(color_info_element).on("mouseleave", ()=>{
                 $(color_info_element).css("box-shadow", "")
@@ -107,8 +107,8 @@ export function init_pallete(p_image,
                 $(color_info_element).find(".color_inspect").remove();
 
                 // remove copy_to_clipboard button
-                $(color_dominant__copy_to_clipboard_btn).remove();
-                color_dominant__copy_to_clipboard_btn = null;
+                // $(color_dominant__copy_to_clipboard_btn).remove();
+                // color_dominant__copy_to_clipboard_btn = null;
 
             });
 
@@ -184,7 +184,10 @@ export function init_pallete(p_image,
                 <img src="${p_assets_paths_map["copy_to_clipboard_btn"]}"></img>
             </div>`);
         
-        $(element).on("click", async ()=>{
+        $(element).on("click", async (p_e)=>{
+
+            p_e.stopPropagation();
+            
             var colors_for_clipboard_str = p_colors_hexes_lst.join(",");
 
             // COPY_TO_CLIPBOARD

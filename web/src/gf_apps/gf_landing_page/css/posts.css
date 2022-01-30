@@ -3,7 +3,7 @@
 
 #posts {
 	position: absolute;
-	left:     399px;
+	left:     418px;
 	top:      0px;
 }
 
@@ -38,7 +38,7 @@
 }
 
 /*------------------------------------------------------------*/
-/*POSTS ELEMENTS*/
+/*POSTS*/
 
 #posts #featured_posts {
 	position: absolute;
@@ -66,9 +66,14 @@
 #posts .post_info .post_image {
 	width:195px;
 	position: relative;
+	background-color: inherit;
 }
 
-#posts .post_info .post_image img {
+#posts .post_info .post_image a {
+	background-color: inherit;
+}
+
+#posts .post_info .post_image .image_resource {
 	width       : 100%;
 	padding-left: 10px;
 }
@@ -122,18 +127,21 @@
 }
 
 #posts .post_info .post_images_number .num {
-	font-size    : 21px;
+	font-size:     21px;
 	padding-right: 6px;
+	padding-top:   3px;
+	height:        22px;
 }
 #posts .post_info .post_images_number .label {
 	font-size       : 13px;
 	position        : absolute;
 	top             : 0px;
 	width           : 54px;
+	height:           14px;
 	background-color: inherit;
 	padding-left    : 7px;
 	padding-right   : 8px;
-	padding-top     : 6px;
+	padding-top     : 8px;
 	padding-bottom  : 7px;
 	opacity         : 0.8;
 }

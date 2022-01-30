@@ -62,6 +62,11 @@ body {
 }
 
 /*------------------------------------------------------------*/
+.randomized_canvas {
+	position: fixed;
+}
+
+/*------------------------------------------------------------*/
 /* REGISTER EMAIL BUTTON */
 
 /* @media all and (max-width: 1000px) and (min-width: 520px) {} */
@@ -140,8 +145,3 @@ body {
 	background-color: white;
 	color           : black;
 }*/
-
-/*------------------------------------------------------------*/
-.randomized_canvas {
-	position: fixed;
-}

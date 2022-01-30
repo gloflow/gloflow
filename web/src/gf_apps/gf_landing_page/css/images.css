@@ -82,7 +82,7 @@
 #images .image_info {
 	width: 190px;
 	background-color: rgb(59, 124, 156);
-	padding-bottom:   6px;
+	padding-bottom:   5px;
 	margin-bottom:    10px;
 	position:         relative;
 
@@ -96,7 +96,7 @@
 	/*padding-bottom: 4px;*/
 }
 
-#images .image_info .image img {
+#images .image_info .image .image_resource {
 	width:        100%;
 	padding-left: 10px;
 	cursor:       pointer;
