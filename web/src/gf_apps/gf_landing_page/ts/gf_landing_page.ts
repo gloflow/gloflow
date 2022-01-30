@@ -163,13 +163,7 @@ function posts_init() {
 			(p_color_dominant_hex_str,
 			p_colors_hexes_lst)=>{
 
-
-
-				console.log("image colors pallete", p_color_dominant_hex_str, p_colors_hexes_lst, p_post_info_element)
-
 				$(p_post_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
-				$(p_post_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
-				$(p_post_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
 
 			});
 

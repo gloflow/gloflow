@@ -52,6 +52,15 @@ export function init_pallete(p_image,
             
             color_info_element.insertAfter(image);
 
+
+            // apply shadow only when the cursor enters the color_info element
+            $(color_info_element).on("mouseenter", ()=>{
+                $(color_info_element).css("box-shadow", "1px 1px 10px #0000007a;")
+            })
+            $(color_info_element).on("mouseleave", ()=>{
+                $(color_info_element).css("box-shadow", "")
+            })
+
             //-------------
             // COLOR_DOMINANT
             const color_dominant_element       = $(color_info_element).find(".color_dominant");

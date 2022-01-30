@@ -65,10 +65,7 @@ export function init(p_log_fun) {
 			(p_color_dominant_hex_str,
 			p_colors_hexes_lst)=>{
 
-
-
-				console.log("image colors pallete", p_color_dominant_hex_str, p_colors_hexes_lst, p_image_info_element)
-
+				// set a few of the other needed elements to the same dominant color
 				$(p_image_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
 				$(p_image_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
 				$(p_image_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);

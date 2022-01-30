@@ -7,8 +7,8 @@
     top: 0px;
     left: 0px;
 
-	width: 390px;
-    height: 3000px;
+	width:  409px;/*390px;*/
+    height: 10000px;
     background-color: #3b7c9c63;
 }
 
@@ -16,9 +16,10 @@
 /*IMAGES BUTTON*/
 
 #images #images_flows_button {
-	position:         fixed;
+	position:         absolute; /*fixed;*/
 	top:              0px;
-	width:            390px;
+	left:             0px;
+	width:            409px; /*390px;*/
 	height:           38px;
 	padding-top:      17px;
 	text-align:       center;
@@ -47,12 +48,13 @@
 #images #featured_images_0 {
 	position: absolute;
 	top:      65px;
+	left: 9px;
 }
 
 #images #featured_images_1 {
 	position: absolute;
 	top:      65px;
-	left:     200px;
+	left:     209px; /*200px;*/
 }
 
 /*------------------------------------------------------------*/
@@ -90,6 +92,7 @@
 #images .image_info .image {
 	width:    170px;
 	position: relative;
+	background-color: inherit;
 	/*padding-bottom: 4px;*/
 }
 
