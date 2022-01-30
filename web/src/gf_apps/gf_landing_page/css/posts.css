@@ -80,7 +80,7 @@
 
 /*---------------------------*/
 /*IMAGE DOMINANT COLOR*/
-#posts .post_info .post_image .img_dominant_color {
+/*#posts .post_info .post_image .img_dominant_color {
 	background-color: rgb(219, 112, 28);
     position        : absolute;
     bottom          : 0px;
@@ -90,7 +90,7 @@
 	margin: 5px;
 	width : 30px;
     height: 30px;
-}
+}*/
 
 /*---------------------------*/
 #posts .post_info .post_title {
@@ -129,19 +129,19 @@
 #posts .post_info .post_images_number .num {
 	font-size:     21px;
 	padding-right: 6px;
-	padding-top:   3px;
-	height:        22px;
+	padding-top:   1px;
+	height:        24px;
 }
 #posts .post_info .post_images_number .label {
 	font-size       : 13px;
 	position        : absolute;
 	top             : 0px;
 	width           : 54px;
-	height:           14px;
+	height:           16px;
 	background-color: inherit;
 	padding-left    : 7px;
 	padding-right   : 8px;
-	padding-top     : 8px;
+	padding-top     : 6px;
 	padding-bottom  : 7px;
 	opacity         : 0.8;
 }

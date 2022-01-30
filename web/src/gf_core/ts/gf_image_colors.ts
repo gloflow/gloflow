@@ -107,8 +107,8 @@ export function init_pallete(p_image,
                 $(color_info_element).find(".color_inspect").remove();
 
                 // remove copy_to_clipboard button
-                // $(color_dominant__copy_to_clipboard_btn).remove();
-                // color_dominant__copy_to_clipboard_btn = null;
+                $(color_dominant__copy_to_clipboard_btn).remove();
+                color_dominant__copy_to_clipboard_btn = null;
 
             });
 
