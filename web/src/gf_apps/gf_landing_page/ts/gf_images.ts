@@ -67,11 +67,11 @@ export function init(p_log_fun) {
 
 
 
-				console.log("image colors pallete", p_color_dominant_hex_str, p_colors_hexes_lst)
+				console.log("image colors pallete", p_color_dominant_hex_str, p_colors_hexes_lst, p_image_info_element)
 
-				$(p_image_info_element).css("background-color", p_color_dominant_hex_str);
-				$(p_image_info_element).find(".image_title").css("background-color", p_color_dominant_hex_str);
-				$(p_image_info_element).find(".origin_page_url").css("background-color", p_color_dominant_hex_str);
+				$(p_image_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_image_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_image_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
 
 			});
 
