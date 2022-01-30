@@ -29,8 +29,12 @@
 }
 #posts #posts_browser_button:hover {
 	cursor          : pointer;
-	background-color: lightgray;
+	background-color: gray;
 	color           : black;
+}
+#posts #posts_browser_button:active {
+	background-color: white;
+	color:            black;
 }
 
 /*------------------------------------------------------------*/

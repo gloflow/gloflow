@@ -30,7 +30,7 @@
 }
 #domains #domains_browser_button:hover {
 	cursor          : pointer;
-	background-color: lightgray;
+	background-color: gray;
 	color           : black;
 }
 #domains #domains_browser_button:active {

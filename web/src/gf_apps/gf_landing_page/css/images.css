@@ -30,11 +30,16 @@
 }
 #images #images_flows_button:hover {
 	cursor:           pointer;
-	background-color: lightgray;
+	background-color: gray;
+	color:            black;
+}
+#images #images_flows_button:active {
+	background-color: white;
 	color:            black;
 }
 
 /*------------------------------------------------------------*/
+/*FEATURED_IMAGES*/
 #images #featured_images_0 {
 	position: absolute;
 	top:      65px;
@@ -90,93 +95,6 @@
 	cursor:       pointer;
 }
 
-/*---------------------------*/
-/*IMAGE_COLORS_INFO*/
-
-/*#images .image_info .colors_info {
-	top: -6px;
-	left: 10px;
-    position: relative;
-	height: 50px;
-}
-
-.colors_info .color_dominant {
-	height: 25px;
-}
-.colors_info .color_pallete {
-	display: flex;
-	height: 25px;
-	width: 195px;
-
-	top: 25px;
-    position: absolute;
-}
-.colors_info .color_pallete .color {
-	height: 25px;
-	width:  25px;
-	cursor: pointer;
-}*/
-
-/*COLOR_INSPECTOR*/
-/*.colors_info .color_pallete .color_inspect {
-	position: absolute;
-    top: -87px;
-	left: 65px;
-    width: 63px;
-	height: 78px;
-	width: 63px;
-    text-align: center;
-	border-style: solid;
-    border-width: 1px;
-}
-
-
-.colors_info .color_pallete .color_inspect .color_hex {
-	position: absolute;
-    font-size: 13px;
-	background-color: white;
-    width: 63px;
-    text-align: center;
-	padding-top: 1px;
-}
-
-.colors_info .color_pallete .color_inspect .color_large {
-	width: 63px;
-    height: 63px;
-    top: 15px;
-    position: absolute;
-}
-
-
-
-
-.colors_info .color_dominant_label {
-	position: absolute;
-    left: -118px;
-    top: 0px;
-    background-color: yellow;
-    padding-left: 7px;
-    padding-right: 6px;
-    padding-top: 4px;
-    padding-bottom: 2px;
-    color: #8c8c3c;
-	opacity: 0.8;
-}
-
-.colors_info .color_pallete_label {
-	position: absolute;
-    left: -99px;
-    top: 25px;
-    background-color: yellow;
-    padding-left: 7px;
-    padding-right: 6px;
-    padding-top: 4px;
-    padding-bottom: 2px;
-    color: #8c8c3c;
-	opacity: 0.8;
-}*/
-
-/*---------------------------*/
 #images .image_info .image_title {
 	background-color: rgb(59, 124, 156);
 
@@ -185,19 +103,16 @@
 	padding-bottom: 6px;
 	padding-right:  4px;
 
-	font-size : 11px;
-	/*width     : 206px;*/
+	font-size:  10px;
 	text-align: center;
-	word-wrap : break-word; /*make all text display even if really long string*/
-	color     : rgb(255,255,255);
+	word-wrap:  break-word; /*make all text display even if really long string*/
+	color:      rgb(255,255,255);
 }
 
 #images .image_info .creation_time {
 	text-align: center;
     font-size:  12px;
     color:      white;
-
-	/*padding-top: 6px;*/
 }
 
 #images .image_info .origin_page_url {
@@ -224,10 +139,3 @@
 #images .image_info .creation_time:hover {
 	font-weight: bold;
 }
-/*#images .image_info .creation_time .full_creation_date {
-	background-color: #3992bd;
-    color: #1d3d4c;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    margin-top: 4px;
-}*/
