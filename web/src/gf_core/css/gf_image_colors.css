@@ -8,7 +8,15 @@
 	left: 10px;
     position: relative;
 	height: 50px;
-    box-shadow: 1px 1px 10px #000000;
+    box-shadow: 1px 1px 10px #0000007a;
+    background-color: inherit;
+}
+
+/*IMPORTANT!! - default background-color if not set is transparent,
+                so in order for the inherit background-color thats used in several elements
+                of the colors control here to have an actual color, we have to set inherit background-color
+                for all divs*/
+.colors_info div {
     background-color: inherit;
 }
 
@@ -21,12 +29,12 @@
 
 .colors_info .color_dominant_label {
 	position: absolute;
-    left: -90px;
+    left: -89px;
     top: 0px;
     background-color: inherit;
     padding-left: 12px;
     padding-right: 12px;
-    padding-top: 7px;
+    padding-top: 6px;
     padding-bottom: 7px;
     color: white;
     font-size: 10px;
@@ -45,7 +53,7 @@
 .colors_info .color_pallete .colors {
 	display: flex;
 	height: 25px;
-	width: 195px;
+	width: 170px;
 
 	top: 25px;
     position: absolute;
@@ -141,13 +149,5 @@
     padding-bottom: 7px;
     color: white;
     font-size: 10px;
-    background-color: inherit;
-}
-
-/*IMPORTANT!! - default background-color if not set is transparent,
-                so in order for the inherit background-color thats used in several elements
-                of the colors control here to have an actual color, we have to set inherit background-color
-                for all divs*/
-div {
     background-color: inherit;
 }

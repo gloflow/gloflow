@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity       from "./../../gf_identity/ts/gf_identity";
 import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
+import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 
 // import * as gf_calc from "./gf_calc";
 // import * as gf_email_registration from "./gf_email_registration";
@@ -89,12 +90,12 @@ function init(p_log_fun) {
 	
 	//---------------------
 	
-	const featured_elements_infos_lst = load_static_data(p_log_fun);
+	// const featured_elements_infos_lst = load_static_data(p_log_fun);
 	
 	gf_procedural_art.init(p_log_fun);
 	// gf_email_registration.init(p_register_user_email_fun, p_log_fun);
 
-	init_posts_img_num();
+	posts_init();
 	gf_images.init(p_log_fun);
 
 	// draw a new canvas when the view is resized, and delete the old one (with the old dimensions)
@@ -138,6 +139,43 @@ function init(p_log_fun) {
 
 	//---------------------
 
+	$("#about_section").on('click', function() {
+		$("#about_section #desc").css("visibility", "visible");
+	});
+}
+
+//--------------------------------------------------------
+function posts_init() {
+
+	init_posts_img_num();
+
+	$('#featured_posts').find('.post_info').each((p_i, p_post_info_element)=>{
+		
+		//----------------------
+		// IMAGE_PALLETE
+		const img = $(p_post_info_element).find("img")[0];
+
+		const assets_paths_map = {
+			"copy_to_clipboard_btn": "/images/static/assets/gf_copy_to_clipboard_btn.svg",
+		}
+		gf_image_colors.init_pallete(img,
+			assets_paths_map,
+			(p_color_dominant_hex_str,
+			p_colors_hexes_lst)=>{
+
+
+
+				console.log("image colors pallete", p_color_dominant_hex_str, p_colors_hexes_lst, p_post_info_element)
+
+				$(p_post_info_element).css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_post_info_element).find(".image_title").css("background-color", `#${p_color_dominant_hex_str}`);
+				$(p_post_info_element).find(".origin_page_url").css("background-color", `#${p_color_dominant_hex_str}`);
+
+			});
+
+		//----------------------
+	});
+
 	//--------------------------------------------------------
 	function init_posts_img_num() {
 
@@ -158,12 +196,8 @@ function init(p_log_fun) {
 			});
 		});
 	}
-	
-	//--------------------------------------------------------
 
-	$("#about_section").on('click', function() {
-		$("#about_section #desc").css("visibility", "visible");
-	});
+	//--------------------------------------------------------
 }
 
 //--------------------------------------------------------
