@@ -11,9 +11,9 @@ body {
 
 /*------------------------------------------------------------*/
 #left_section {
-	position: absolute;
-	top     : 100px;
-	width   : 30%;
+	position: fixed;
+	top:      100px;
+	width:    30%;
 }
 #left_section #gf_logo {
 	position      : relative;
