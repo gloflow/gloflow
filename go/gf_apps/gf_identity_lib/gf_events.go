@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,30 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_identity_lib
 
-import (
-	"os"
-	log "github.com/sirupsen/logrus"
-	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_solo/gf_solo_service"
+
+const (
+	GF_EVENT_APP__USER_LOGIN  = "GF_EVENT_APP__USER_LOGIN"
+	GF_EVENT_APP__USER_CREATE = "GF_EVENT_APP__USER_CREATE"
 )
-
-//-------------------------------------------------
-func main() {
-
-	log_fun := gf_core.Init_log_fun()
-	log.SetOutput(os.Stdout)
-
-
-	external_plugins := &gf_core.External_plugins{
-
-	}
-
-
-	cmd__base := gf_solo_service.Cmds_init(external_plugins, log_fun)
-	err := cmd__base.Execute()
-	if err != nil {
-		panic(err)
-	}
-}

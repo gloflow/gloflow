@@ -23,10 +23,12 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-func Cmds_init(p_log_fun func(string, string)) *cobra.Command {
+func Cmds_init(p_external_plugins *gf_core.External_plugins,
+	p_log_fun func(string, string)) *cobra.Command {
 
 	// BASE
 	cmd__base := &cobra.Command{
@@ -181,7 +183,7 @@ func Cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 
-			runtime_sys, config, err := Runtime__get(cli_config_path_str, p_log_fun)
+			runtime_sys, config, err := Runtime__get(cli_config_path_str, p_external_plugins, p_log_fun)
 			if err != nil {
 				panic(err)
 			}

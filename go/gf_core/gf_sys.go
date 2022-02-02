@@ -30,12 +30,13 @@ import (
 )
 
 //-------------------------------------------------
+// RUNTIME_SYS
 type Runtime_sys struct {
 	Service_name_str string
-	Log_fun      func(string, string)
-	Mongo_db     *mongo.Database
-	Mongo_coll   *mongo.Collection // main mongodb collection to use when none is specified
-	Debug_bool   bool              // if debug mode is enabled (some places will print extra info in debug mode)
+	Log_fun          func(string, string)
+	Mongo_db         *mongo.Database
+	Mongo_coll       *mongo.Collection // main mongodb collection to use when none is specified
+	Debug_bool       bool              // if debug mode is enabled (some places will print extra info in debug mode)
 
 	// ERRORS
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
@@ -44,4 +45,11 @@ type Runtime_sys struct {
 	Names_prefix_str string
 
 	Validator *validator.Validate
+
+	External_plugins *External_plugins
+}
+
+// PLUGINS
+type External_plugins struct {
+	Event_app__callback func(string, map[string]interface{})
 }

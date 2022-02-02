@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,30 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_events
 
 import (
-	"os"
-	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_solo/gf_solo_service"
 )
 
-//-------------------------------------------------
-func main() {
+//-------------------------------------------------------------
+func Emit_app(p_event_app_type_str string,
+	p_meta_map    map[string]interface{},
+	p_runtime_sys *gf_core.Runtime_sys) {
 
-	log_fun := gf_core.Init_log_fun()
-	log.SetOutput(os.Stdout)
-
-
-	external_plugins := &gf_core.External_plugins{
-
-	}
+	go func() {
 
 
-	cmd__base := gf_solo_service.Cmds_init(external_plugins, log_fun)
-	err := cmd__base.Execute()
-	if err != nil {
-		panic(err)
-	}
+
+
+		// CALLBACK
+		p_runtime_sys.External_plugins.Event_app__callback(p_event_app_type_str,
+			p_meta_map)
+
+	}()
 }

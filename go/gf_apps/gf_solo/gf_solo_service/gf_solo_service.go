@@ -183,7 +183,8 @@ func Run(p_config *GF_config,
 
 //-------------------------------------------------
 func Runtime__get(p_config_path_str string,
-	p_log_fun func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
+	p_external_plugins *gf_core.External_plugins,
+	p_log_fun          func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
@@ -195,8 +196,6 @@ func Runtime__get(p_config_path_str string,
 		fmt.Println("failed to load config")
 		return nil, nil, err
 	}
-
-
 
 	//--------------------
 	// SENTRY - ERROR_REPORTING
@@ -224,7 +223,10 @@ func Runtime__get(p_config_path_str string,
 		Log_fun:          p_log_fun,
 
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,	
+		Errors_send_to_sentry_bool: true,
+
+		// EXTERNAL_PLUGINS
+		External_plugins: p_external_plugins,
 	}
 
 	//--------------------

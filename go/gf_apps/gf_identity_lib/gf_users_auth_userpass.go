@@ -24,6 +24,7 @@ import (
 	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_events"
 )
 
 //---------------------------------------------------
@@ -258,6 +259,18 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 	
 	//------------------------
+	// EVENT
+	event_meta := map[string]interface{}{
+		"user_id_str":     user_id_str,
+		"user_name_str":   user_name_str,
+		"domain_base_str": p_service_info.Domain_base_str,
+	}
+	gf_events.Emit_app(GF_EVENT_APP__USER_CREATE,
+		event_meta,
+		p_runtime_sys)
+
+	//------------------------
+
 	return output, nil
 }
 
