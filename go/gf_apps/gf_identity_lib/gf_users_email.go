@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_aws"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
 
 //---------------------------------------------------
@@ -144,13 +144,21 @@ func users_email__get_confirm_msg_info(p_confirm_code_str string,
 				<img src="https://gloflow.com/images/d/gf_logo_0.3.png"></img>
 			</div>
 			<div>
-				Welcome to %s!
-				There is no spoon. ...it is only yourself.
+				<div>Welcome to %s!</div>
+				<div>
+				<div>
+					There is no spoon. ...it is only yourself.
+				</div>
 
-				Please click on the bellow link to confirm your email address.
-
+				
 			</div>
-			<a href="https://%s/v1/identity/email_confirm?c=%s">confirm email</a>
+			<div>
+				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
+				<a href="https://%s/v1/identity/email_confirm?c=%s">confirm email</a>
+			</div>
+			<div style="font-size:'8px';">
+				dont reply to this email
+			</div>
 		</div>`,
 		p_domain_str,
 		p_domain_str,
