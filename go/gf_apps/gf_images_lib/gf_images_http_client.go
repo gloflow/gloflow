@@ -108,7 +108,7 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	// FIX!! - REMOVE THIS!! - instead use gf_rpc_client function
 	data_lst, _  := json.Marshal(data_map)
-	_, body,errs := gorequest.New().
+	_, body, errs := gorequest.New().
 		Post(url_str).
 		Set("accept", "application/json").
 		Send(string(data_lst)).
@@ -116,9 +116,11 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	if errs != nil {
 		err    := errs[0] //FIX!! - use all errors in some way, just in case
-		gf_err := gf_core.Error__create("gf_images_client start_job HTTP REST API request failed - "+url_str,
+		gf_err := gf_core.Error__create("gf_images_client start_job HTTP REST API request failed",
 			"http_client_req_error",
-			map[string]interface{}{"url_str":url_str,},
+			map[string]interface{}{
+				"url_str": url_str,
+			},
 			err, "gf_images_lib", p_runtime_sys)
 		return "", nil, gf_err
 	}
