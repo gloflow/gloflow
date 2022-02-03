@@ -13,7 +13,7 @@ body {
 #left_section {
 	position: fixed;
 	top:      100px;
-	width:    30%;
+	width:    20%;
 }
 #left_section #gf_logo {
 	position      : relative;
@@ -40,7 +40,7 @@ body {
 
 #right_section {
 	position: relative;
-	left    : 35%;
+	left:     25%;
 }
 
 @media (max-width: 600px) {

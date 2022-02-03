@@ -184,6 +184,8 @@ export function init_pallete(p_image,
                 <img src="${p_assets_paths_map["copy_to_clipboard_btn"]}"></img>
             </div>`);
         
+        var label_element = $(`<div class="color_to_clipboard_label">copy</div>`);
+
         $(element).on("click", async (p_e)=>{
 
             p_e.stopPropagation();
@@ -195,9 +197,10 @@ export function init_pallete(p_image,
             await navigator.clipboard.writeText(colors_for_clipboard_str);
 
             $(element).css("background-color", "green");
+            $(label_element).text("copied");
         });
 
-        var label_element = $(`<div class="color_to_clipboard_label">copy</div>`);
+        
         var copy_to_clipboard_btn;
         $(element).on("mouseover", ()=>{
             $(element).append(label_element);
