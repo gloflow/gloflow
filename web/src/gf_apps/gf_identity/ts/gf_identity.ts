@@ -71,23 +71,30 @@ export async function init_with_http() {
 //-------------------------------------------------
 export async function init(p_http_api_map) {
 
+    var clicked_bool = false;
     $("#identity #login").on("click", async function(p_e) {
 
-        const method_str = await auth_method_pick();
-        switch (method_str) {
-            //--------------------------
-            // ETH_METAMASK
-            case "eth_metamask":
-                await gf_identity_eth.user_auth_pipeline(p_http_api_map);
-                break;
-            
-            //--------------------------
-            // USER_AND_PASS
-            case "userpass":
-                await gf_identity_userpass.user_auth_pipeline(p_http_api_map);
-                break;
+        if (!clicked_bool) {
+            const method_str = await auth_method_pick();
+            switch (method_str) {
+                //--------------------------
+                // ETH_METAMASK
+                case "eth_metamask":
+                    await gf_identity_eth.user_auth_pipeline(p_http_api_map);
+                    break;
+                
+                //--------------------------
+                // USER_AND_PASS
+                case "userpass":
+                    await gf_identity_userpass.user_auth_pipeline(p_http_api_map);
+                    break;
 
-            //--------------------------
+                //--------------------------
+            }
+        }
+        else {
+            $("#identity").find("#auth_pick_dialog").remove();
+            clicked_bool = false;
         }
     });
 }
@@ -117,7 +124,7 @@ async function auth_method_pick() {
         $(auth_pick_dialog).find("#metamask").on('click', ()=>{
            
             // user picked to auth with wallet so remove initial auth method pick dialog
-            $("#auth_pick_dialog").remove();
+            // $("#auth_pick_dialog").remove();
 
             p_resolve_fun("eth_metamask");
         })

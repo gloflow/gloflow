@@ -52,6 +52,19 @@
     user-select: none;
 }
 
+#identity #wallet_connect_failed {
+    position: absolute;
+    bottom: 86px;
+    width: 148px;
+    right: 0px;
+    background-color: #cf7777;
+    padding: 8px;
+    padding-right: 10px;
+    padding-left: 12px;
+    font-size: 13px;
+    color: black;
+}
+
 /*------------------------------------------------------------*/
 /*USER_AND_PASS_PICK_DIALOG*/
 
@@ -73,10 +86,11 @@
 
 #identity #user_and_pass_dialog {
     position: absolute;
-    top: -126px;
-    height: 118px;
+    top: -120px;
+    height: 110px;
     right: 0px;
     background-color: white;
+    font-size: 12px;
 }
 
 /*USERNAME_INPUT*/
