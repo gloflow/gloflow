@@ -65,8 +65,9 @@ func Run(p_config *GF_config,
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
-		Domain_base_str:   "gloflow.com", // FIX!! - use GF_config.Domain_base_str  
-		Enable_email_bool: true,
+		Domain_base_str:        "gloflow.com", // FIX!! - use GF_config.Domain_base_str
+		Enable_events_app_bool: true,
+		Enable_email_bool:      true,
 		Enable_email_require_confirm_for_login_bool: true,
 	}
 	gf_err := gf_identity_lib.Init_service(gf_identity__service_info, p_runtime_sys)

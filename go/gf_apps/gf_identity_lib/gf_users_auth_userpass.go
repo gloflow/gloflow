@@ -260,14 +260,16 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	
 	//------------------------
 	// EVENT
-	event_meta := map[string]interface{}{
-		"user_id_str":     user_id_str,
-		"user_name_str":   user_name_str,
-		"domain_base_str": p_service_info.Domain_base_str,
+	if p_service_info.Enable_events_app_bool {
+		event_meta := map[string]interface{}{
+			"user_id_str":     user_id_str,
+			"user_name_str":   user_name_str,
+			"domain_base_str": p_service_info.Domain_base_str,
+		}
+		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE,
+			event_meta,
+			p_runtime_sys)
 	}
-	gf_events.Emit_app(GF_EVENT_APP__USER_CREATE,
-		event_meta,
-		p_runtime_sys)
 
 	//------------------------
 

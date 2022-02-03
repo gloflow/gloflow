@@ -45,7 +45,7 @@ func Test__users_http_eth(p_test *testing.T) {
 	private_key_hex_str, public_key_hex_str, address_str, err := gf_crypto.Eth_generate_keys()
 	if err != nil {
 		fmt.Println(err)
-		p_test.Fail()
+		p_test.FailNow()
 	}
 
 	//---------------------------------
@@ -70,7 +70,7 @@ func Test__users_http_eth(p_test *testing.T) {
 	body_map := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-        p_test.Fail()
+        p_test.FailNow()
     }
 
 	assert.True(p_test, body_map["status"].(string) != "ERROR", "user preflight http request failed")

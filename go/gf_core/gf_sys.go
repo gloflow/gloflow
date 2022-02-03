@@ -51,5 +51,5 @@ type Runtime_sys struct {
 
 // PLUGINS
 type External_plugins struct {
-	Event_app__callback func(string, map[string]interface{})
+	Event_app__callback func(string, map[string]interface{}, *Runtime_sys)
 }

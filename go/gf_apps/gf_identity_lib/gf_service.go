@@ -31,6 +31,9 @@ type GF_service_info struct {
 	// DOMAIN - where this gf_solo instance is reachable on
 	Domain_base_str string 
 
+	// EVENTS_APP - enable sending of app events from various functions
+	Enable_events_app_bool bool
+
 	// enable sending of emails for any function that needs it
 	Enable_email_bool bool
 
