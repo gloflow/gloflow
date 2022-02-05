@@ -22,6 +22,7 @@ package gf_identity_lib
 import (
 	"fmt"
 	"context"
+	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
@@ -84,13 +85,27 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
-	db_confirm_code_str, gf_err := db__user_email_confirm__get_code(p_input.User_name_str,
+	db_confirm_code_str, db_confirm_code_creation_time_f, gf_err := db__user_email_confirm__get_code(p_input.User_name_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return false, gf_err
 	}
 
+	//------------------------
+	// check confirm_code didnt expire
+	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	confirm_code_age_time_f := current_unix_time_f - db_confirm_code_creation_time_f
+
+	// check if older than 5min
+	if (5.0 < confirm_code_age_time_f/60) {
+
+		// ADD!! - some kind of description to be returned to the user
+		//         to indicate that time expiration was the reason for failure to confirm
+		return false, nil
+	}
+
+	//------------------------
 
 	// confirm_code is correct
 	if p_input.Confirm_code_str == db_confirm_code_str {

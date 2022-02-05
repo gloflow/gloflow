@@ -66,6 +66,7 @@ func Run(p_config *GF_config,
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
 		Domain_base_str:                         "gloflow.com", // FIX!! - use GF_config.Domain_base_str
+		Admin_email_str:                         p_config.Admin_email_str,
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,

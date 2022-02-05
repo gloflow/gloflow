@@ -76,6 +76,10 @@ type GF_config struct {
 	AWS_token_str             string `mapstructure:"aws_token"`
 
 	//--------------------
+	// ADMIN_EMAIL
+	Admin_email_str string `mapstructure:"admin_email"`
+
+	//--------------------
 }
 
 //-------------------------------------------------------------

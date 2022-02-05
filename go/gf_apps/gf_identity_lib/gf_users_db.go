@@ -455,13 +455,14 @@ func db__user_email_confirm__create(p_user_id_str gf_core.GF_ID,
 // GET__EMAIL_CONFIRM_CODE
 func db__user_email_confirm__get_code(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (string, float64, *gf_core.GF_error) {
 
 	coll_name_str := "gf_users_email_confirm"
 
 	find_opts := options.FindOne()
 	find_opts.Projection = map[string]interface{}{
-		"confirm_code_str": 1,
+		"confirm_code_str":     1,
+		"creation_unix_time_f": 1,
 	}
 	
 	email_confirm_map := map[string]interface{}{}
@@ -478,12 +479,13 @@ func db__user_email_confirm__get_code(p_user_name_str GF_user_name,
 				"user_name_str": string(p_user_name_str),
 			},
 			err, "gf_identity_lib", p_runtime_sys)
-		return "", gf_err
+		return "", 0.0, gf_err
 	}
 
-	confirm_code_str := email_confirm_map["confirm_code_str"].(string)
+	confirm_code_str     := email_confirm_map["confirm_code_str"].(string)
+	creation_unix_time_f := email_confirm_map["creation_unix_time_f"].(float64)
 
-	return confirm_code_str, nil
+	return confirm_code_str, creation_unix_time_f, nil
 }
 
 //---------------------------------------------------

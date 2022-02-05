@@ -41,7 +41,7 @@ func Event_send(p_event_type_str string,
 
 	request := gorequest.New()
 
-	// mixpanel uses basic http auth
+	// AUTH - mixpanel uses basic http auth
 	request.Header.Add("user", fmt.Sprintf("%s:%s", p_info.Username_str, p_info.Secret_str))
 
 
