@@ -34,6 +34,9 @@ type GF_service_info struct {
 	// EVENTS_APP - enable sending of app events from various functions
 	Enable_events_app_bool bool
 
+	// enable storage of user_creds in a secret store
+	Enable_user_creds_in_secrets_store_bool bool
+
 	// enable sending of emails for any function that needs it
 	Enable_email_bool bool
 

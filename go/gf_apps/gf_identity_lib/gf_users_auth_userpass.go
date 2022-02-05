@@ -108,6 +108,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	// VERIFY_PASSWORD
 	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
 		p_input.Pass_str,
+		p_service_info,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -220,11 +221,11 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	pass_hash_str := users_auth_userpass__get_pass_hash(pass_str, pass_salt_str)
 
 	creds__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	user_creds_id               := users__create_id(user_identifier_str, creds__creation_unix_time_f)
+	user_creds_id_str           := users__create_id(user_identifier_str, creds__creation_unix_time_f)
 
 	user_creds := &GF_user_creds {
 		V_str:                "0",
-		Id_str:               user_creds_id,
+		Id_str:               user_creds_id_str,
 		Creation_unix_time_f: creds__creation_unix_time_f,
 		User_id_str:          user_id_str,
 		User_name_str:        user_name_str,
@@ -239,10 +240,43 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 		return nil, gf_err
 	}
 
-	gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	// SECRETS_STORE
+	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
+		p_runtime_sys.External_plugins.Secret_app__create_callback != nil {
+
+		secret_name_str := fmt.Sprintf("gf_user_creds:%s", user_name_str)
+		secret_description_str := fmt.Sprintf("user creds for a particular user")
+
+
+
+		user_creds_map := map[string]interface{}{
+			"user_creds_id_str":    user_creds_id_str, 
+			"creation_unix_time_f": creds__creation_unix_time_f,
+			"user_id_str":          user_id_str,
+			"user_name_str":        user_name_str,
+			"pass_salt_str":        pass_salt_str,
+			"pass_hash_str":        pass_hash_str,
+		}
+
+
+
+		gf_err := p_runtime_sys.External_plugins.Secret_app__create_callback(secret_name_str,
+			user_creds_map,
+			secret_description_str,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+	} else {
+
+
+		// DB - otherwise use the regular DB
+		gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
 	}
+	
 
 	//------------------------
 	// EMAIL
@@ -280,22 +314,50 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 // PASS
 //---------------------------------------------------
 func users_auth_userpass__verify_pass(p_user_name_str GF_user_name,
-	p_pass_str    string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	p_pass_str     string,
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
-	// GET_PASS_AND_SALT_FROM_DB
-	db_pass_salt_str, db_pass_hash_str, gf_err := db__user_creds__get_pass_hash(p_user_name_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
+	// GET_PASS_AND_SALT
+
+	
+	var pass_salt__loaded_str string
+	var pass_hash__loaded_str string
+
+	// SECRETS_STORE
+	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
+		p_runtime_sys.External_plugins.Secret_app__get_callback != nil {
+
+		secret_name_str := fmt.Sprintf("gf_user_creds:%s", p_user_name_str)
+		secret_map, gf_err := p_runtime_sys.External_plugins.Secret_app__get_callback(secret_name_str,
+			p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
+		}
+
+		pass_salt__loaded_str = secret_map["pass_salt_str"].(string)
+		pass_hash__loaded_str = secret_map["pass_hash_str"].(string)
+		
+	} else {
+
+		// DB
+		db_pass_salt_str, db_pass_hash_str, gf_err := db__user_creds__get_pass_hash(p_user_name_str,
+			p_ctx, p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
+		}
+
+		pass_salt__loaded_str = db_pass_salt_str
+		pass_hash__loaded_str = db_pass_hash_str
 	}
 
 	// GENERATE_PASS_HASH
-	pass_hash_str := users_auth_userpass__get_pass_hash(p_pass_str, db_pass_salt_str)
+	pass_hash__expected_str := users_auth_userpass__get_pass_hash(p_pass_str, pass_salt__loaded_str)
 
 
-	if (db_pass_hash_str == pass_hash_str) {
+	if (pass_hash__loaded_str == pass_hash__expected_str) {
 		return true, nil
 	} else {
 		return false, nil

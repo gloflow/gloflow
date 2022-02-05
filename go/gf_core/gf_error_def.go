@@ -313,6 +313,9 @@ func error__get_defs() map[string]Error_def {
 		},
 
 		// SECRETS_MNGR
+		"aws_secretsmngr_create_secret_value_error": Error_def{
+			Descr_str: "failed to create secret in AWS SECRETS_MANAGER service",
+		},
 		"aws_secretsmngr_get_secret_value_error": Error_def{
 			Descr_str: "failed to get secret value from AWS SECRETS_MANAGER service",
 		},

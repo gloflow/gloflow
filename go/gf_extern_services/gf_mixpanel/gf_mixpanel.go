@@ -36,7 +36,7 @@ type GF_mixpanel_info struct {
 //-------------------------------------------------------------
 func Event_send(p_event_type_str string,
 	p_event_meta_map map[string]interface{},
-	p_info           GF_mixpanel_info,
+	p_info           *GF_mixpanel_info,
 	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	request := gorequest.New()
