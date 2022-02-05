@@ -113,6 +113,12 @@ function init(p_log_fun) {
 		}
 	});
 
+	// regenerate new piece on click 
+	$("#randomized_art").on("click", ()=>{
+		gf_procedural_art.remove();
+		gf_procedural_art.init(p_log_fun);
+	});
+
 	//---------------------
 	// UPLOAD__INIT
 
