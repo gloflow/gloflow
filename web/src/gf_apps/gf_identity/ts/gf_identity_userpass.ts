@@ -138,6 +138,7 @@ async function login_activate(p_container,
 
     const user_name_str = $(p_container).find("#username_input input").val();
     const pass_str      = $(p_container).find("#pass_input input").val();
+    const email_str     = $(p_container).find("#email_input input").val();
 
 
     // remove all previous errors that were displayed
@@ -158,7 +159,8 @@ async function login_activate(p_container,
     }
 
     const login_output_map = await p_http_api_map["userpass"]["user_login_fun"](user_name_str,
-        pass_str as string);
+        pass_str as string,
+        email_str as string);
 
     // ERROR
     // user doesnt exist

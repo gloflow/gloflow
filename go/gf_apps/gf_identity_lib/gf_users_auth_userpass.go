@@ -30,8 +30,15 @@ import (
 //---------------------------------------------------
 // io_login
 type GF_user_auth_userpass__input_login struct {
-	User_name_str string `validate:"omitempty,min=3,max=50"`
-	Pass_str      string `validate:"required,min=8,max=50"`
+
+	// username is always required, with both pass and email login
+	User_name_str string `validate:"required,min=3,max=50"`
+
+	// pass is not provided if email-login is used
+	Pass_str string `validate:"omitempty,min=8,max=50"`
+
+	// for certain emails allow email-login
+	Email_str string `validate:"optional,email"`
 }
 type GF_user_auth_userpass__output_login struct {
 	User_exists_bool     bool

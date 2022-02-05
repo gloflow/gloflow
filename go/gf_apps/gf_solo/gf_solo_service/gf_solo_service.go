@@ -77,6 +77,7 @@ func Run(p_config *GF_config,
 		return
 	}
 
+	//-------------
 	// GF_HOME
 	gf_err = gf_home_lib.Init_service(p_runtime_sys)
 	if gf_err != nil {
