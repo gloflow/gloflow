@@ -116,6 +116,10 @@ steps:
 
       # "mongo" - drone.io mongo service is given the same hostname as the name of the container
 
+      # GF_IDENTITY
+      - cd /home/gf/go/gf_apps/gf_admin_lib
+      - go test -v
+
       # GF_IMAGES_FLOWS
       - cd /home/gf/go/gf_apps/gf_images_lib/gf_images_flows
       - go test -v -mongodb_host=mongo

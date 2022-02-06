@@ -232,9 +232,28 @@ func HTTP__put_file(p_target_url_str string,
 }
 
 //-------------------------------------------------
+func HTTP__init_static_serving_with_mux(p_url_base_str string,
+	p_local_dir_path_str string,
+	p_mux                *http.ServeMux,
+	p_runtime_sys        *Runtime_sys) {
+	
+	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
+	//               match this are /*/static/some_further_text, and those will only match
+	//               if the spec here ends with "/"
+	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
+	p_mux.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+		HTTP__service_file(p_local_dir_path_str,
+			url_str,
+			p_req, p_resp, p_runtime_sys)
+	})
+}
+
+//-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
 	p_runtime_sys *Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_static_serving()")
+	
+	local_dir_str := fmt.Sprintf("./static")
 
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
@@ -242,7 +261,11 @@ func HTTP__init_static_serving(p_url_base_str string,
 	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		if p_req.Method == "GET" {
+		HTTP__service_file(local_dir_str,
+			url_str,
+			p_req, p_resp, p_runtime_sys)
+
+		/*if p_req.Method == "GET" {
 			path_str := p_req.URL.Path
 
 			//remove url_base
@@ -257,8 +280,32 @@ func HTTP__init_static_serving(p_url_base_str string,
 			p_runtime_sys.Log_fun("INFO", "local_path_str - "+local_path_str)
 
 		    http.ServeFile(p_resp, p_req, local_path_str)
-		}
+		}*/
 	})
+}
+
+//-------------------------------------------------
+func HTTP__service_file(p_local_dir_str string,
+	p_url_str     string,
+	p_req         *http.Request,
+	p_resp        http.ResponseWriter,
+	p_runtime_sys *Runtime_sys) {
+
+	if p_req.Method == "GET" {
+		path_str := p_req.URL.Path
+
+		// remove url_base
+		file_path_str      := strings.Replace(path_str, p_url_str, "", 1) // "1" - just replace one occurance
+		file_ext_str       := filepath.Ext(file_path_str)
+		file_mime_type_str := mime.TypeByExtension(file_ext_str)
+		local_path_str     := fmt.Sprintf("%s/%s", p_local_dir_str, file_path_str)
+
+		p_resp.Header().Set("Content-Type", file_mime_type_str)
+
+		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
+
+		http.ServeFile(p_resp, p_req, local_path_str)
+	}
 }
 
 //-------------------------------------------------

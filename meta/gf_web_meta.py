@@ -150,7 +150,7 @@ def get():
 		#-------------
 		"gf_admin": {
 			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_admin",
-			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_admin/templates/gf_admin.html",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_admin/template/gf_admin.html",
 			"url_base_str":       "/v1/admin/static",
 		},
 

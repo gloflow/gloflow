@@ -20,41 +20,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_admin_lib
 
 import (
-	"net/http"
+	"text/template"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-func Init_new_service(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) (*http.ServeMux, *gf_core.GF_error) {
+//------------------------------------------------
+func Pipeline__render(p_tmpl *template.Template,
+	p_subtemplates_names_lst []string,
+	p_ctx                    context.Context,
+	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 
-	mux := http.NewServeMux()
 
-	//------------------------
-	// STATIC FILES SERVING
-	static_files__url_base_str := "/v1/admin"
-	local_dir_path_str         := "./static"
 
-	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
-		local_dir_path_str,
-		mux,
-		p_runtime_sys)
-	
-	//------------------------
-	// HANDLERS
-	
-	gf_err := init_handlers(p_templates_paths_map,
-		mux,
+	template_rendered_str, gf_err := admin__render_template(p_tmpl,
+		p_subtemplates_names_lst,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil, gf_err
+		return "", gf_err
 	}
 
-	//------------------------
 
-
-
-
-	return mux, nil
+	return template_rendered_str, nil
 }
