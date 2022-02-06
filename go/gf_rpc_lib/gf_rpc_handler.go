@@ -43,7 +43,7 @@ type GF_rpc_handler_run struct {
 	End_time__unix_f   float64 `bson:"end_time__unix_f"`
 }
 
-type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.Gf_error)
+type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GF_error)
 
 //-------------------------------------------------
 func Create_handler__http(p_path_str string,
@@ -58,13 +58,40 @@ func Create_handler__http(p_path_str string,
 }
 
 //-------------------------------------------------
+// WITH_MUX
+func Create_handler__http_with_mux(p_path_str string,
+	p_handler_fun    handler_http,
+	p_mux            *http.ServeMux,
+	p_metrics        *GF_metrics,
+	p_store_run_bool bool,
+	p_runtime_sys    *gf_core.Runtime_sys) {
+
+	handler_fun := get_handler(p_path_str,
+		p_handler_fun,
+		p_metrics,
+		p_store_run_bool,
+		p_runtime_sys)
+
+	p_mux.HandleFunc(p_path_str, handler_fun)
+}
+
+//-------------------------------------------------
+// WITH_METRICS
 func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
-	http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+	handler_fun := get_handler(p_path_str,
+			p_handler_fun,
+			p_metrics,
+			p_store_run_bool,
+			p_runtime_sys)
+
+	http.HandleFunc(p_path_str, handler_fun)
+
+	/*http.HandleFunc(p_path_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -150,7 +177,104 @@ func Create_handler__http_with_metrics(p_path_str string,
 				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
 			}()
 		}
-	})
+	})*/
+}
+
+//-------------------------------------------------
+func get_handler(p_path_str string,
+	p_handler_fun    handler_http,
+	p_metrics        *GF_metrics,
+	p_store_run_bool bool,
+	p_runtime_sys    *gf_core.Runtime_sys) func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+	handler_fun := func(p_resp http.ResponseWriter, p_req *http.Request) {
+
+		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+		path_str := p_req.URL.Path
+
+		//------------------
+		// PANIC_HANDLING
+
+		// IMPORTANT!! - only defered functions are run when a panic initiates in a goroutine
+		//               as execution unwinds up the call-stack. in Panic__check_and_handle() 
+		//               recover() is executed for check for panic conditions. if panic exists
+		//               it is treated as an error that gets processed, and the go routine exits.
+
+		user_msg__internal_str := "gf_rpc handler panicked"
+		defer gf_core.Panic__check_and_handle(user_msg__internal_str,
+			map[string]interface{}{"handler_path_str": path_str},
+			// oncomplete_fn
+			func() {
+				
+				// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
+				//               and then proceed to process the panic as an error 
+				//               with gf_core.Panic__check_and_handle()
+				Error__in_handler(path_str,
+					fmt.Sprintf("handler %s failed unexpectedly", path_str),
+					nil, p_resp, p_runtime_sys)
+			},
+			"gf_rpc_lib", p_runtime_sys)
+
+		//------------------
+		// METRICS
+
+		if p_metrics != nil {
+			if counter, ok := p_metrics.Handlers_counters_map[p_path_str]; ok {
+				counter.Inc()
+			}
+		}
+
+		//------------------
+		ctx := p_req.Context()
+
+		hub := sentry.GetHubFromContext(ctx)
+		hub.Scope().SetTag("url", path_str)
+
+		//------------------
+		// TRACE
+		span_op_str := p_path_str
+		span__root := sentry.StartSpan(ctx, span_op_str)
+		defer span__root.Finish()
+
+		//------------------
+		// HANDLER
+		data_map, gf_err := p_handler_fun(span__root.Context(), p_resp, p_req)
+
+		//------------------
+		// TRACE
+		span__root.Finish()
+
+		//------------------
+		// ERROR
+		if gf_err != nil {
+
+			Error__in_handler(p_path_str,
+				fmt.Sprintf("handler %s failed", p_path_str),
+				gf_err, p_resp, p_runtime_sys)
+
+			return
+		}
+		
+		//------------------
+		// OUTPUT
+		// IMPORTANT!! - currently testing if data_map != nil because routes that render templates
+		//               (render html into body) should not also return a JSON map
+		if data_map != nil {
+			Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+		}
+
+		//------------------
+
+		end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+
+		if p_store_run_bool {
+			go func() {
+				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+			}()
+		}
+	}
+	return handler_fun
 }
 
 //-------------------------------------------------

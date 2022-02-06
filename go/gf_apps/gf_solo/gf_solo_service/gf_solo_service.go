@@ -30,6 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_admin_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
 	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
@@ -46,6 +47,22 @@ import (
 func Run(p_config *GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
+	//-------------
+	// CONFIG
+	port_metrics_int := 9110
+
+	port_int, err := strconv.Atoi(p_config.Port_str)
+	if err != nil {
+		panic(err)
+	}
+
+	port_admin_int, err := strconv.Atoi(p_config.Port_admin_str)
+	if err != nil {
+		panic(err)
+	}
+
+	//-------------
+	
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
@@ -76,6 +93,21 @@ func Run(p_config *GF_config,
 	if gf_err != nil {
 		return
 	}
+
+	//-------------
+	// GF_ADMIN - its started in a separate goroutine and listening on a diff
+	//            port than the main service.
+	go func() {
+		http_mux, gf_err := gf_admin_lib.Init_new_service(p_runtime_sys)
+		if gf_err != nil {
+			return
+		}
+
+
+		// SERVER_INIT - blocking
+		gf_rpc_lib.Server__init_with_mux(port_admin_int, http_mux)
+
+	}()
 
 	//-------------
 	// GF_HOME
@@ -172,13 +204,9 @@ func Run(p_config *GF_config,
 
 	//-------------
 
-	port_int, err := strconv.Atoi(p_config.Port_str)
-	if err != nil {
-		panic(err)
-	}
+	
 
 	// METRICS
-	port_metrics_int := 9110
 	gf_core.Metrics__init("/metrics", port_metrics_int)
 
 	// SERVER_INIT - blocking

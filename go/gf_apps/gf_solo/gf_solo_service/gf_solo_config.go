@@ -27,12 +27,12 @@ import (
 //-------------------------------------------------------------
 type GF_config struct {
 
-
 	// DOMAIN - where this gf_solo instance is reachable on
 	Domain_base_str string `mapstructure:"domain_base"`
 
 	// PORTS
 	Port_str         string `mapstructure:"port"`
+	Port_admin_str   string `mapstructure:"port_admin"`
 	Port_metrics_str string `mapstructure:"port_metrics"`
 
 	// MONGODB - this is the dedicated mongodb DB

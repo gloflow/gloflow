@@ -49,9 +49,13 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 
 	//--------------------
 	// CLI_ARGUMENT - PORT
-	cmd__base.PersistentFlags().StringP("port", "p", "PORT NUMBER",
-		"port on which to listen for HTTP traffic") // Cobra CLI argument
-	err := viper.BindPFlag("port", cmd__base.PersistentFlags().Lookup("port")) // Bind Cobra CLI argument to a Viper configuration (for default value)
+
+	// Cobra CLI argument
+	cmd__base.PersistentFlags().StringP("port", "p", "port for the main service",
+		"port on which to listen for HTTP traffic")
+
+	// Bind Cobra CLI argument to a Viper configuration (for default value)
+	err := viper.BindPFlag("port", cmd__base.PersistentFlags().Lookup("port"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)
@@ -59,6 +63,27 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 	
 	// ENV
 	err = viper.BindEnv("port", "GF_PORT")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
+	// CLI_ARGUMENT - PORT_ADMIN
+
+	// Cobra CLI argument
+	cmd__base.PersistentFlags().StringP("port_admin", "a", "port for the admin service",
+		"port on which to listen for HTTP admin traffic")
+	
+	// Bind Cobra CLI argument to a Viper configuration (for default value)
+	err = viper.BindPFlag("port_admin", cmd__base.PersistentFlags().Lookup("port_admin"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+	
+	// ENV
+	err = viper.BindEnv("port", "GF_PORT_ADMIN")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)

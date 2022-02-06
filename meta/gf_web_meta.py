@@ -145,6 +145,18 @@ def get():
 		#-------------
 	}
 
+
+	gf_admin__pages_map = {
+		#-------------
+		"gf_admin": {
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_admin",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_admin/templates/gf_admin.html",
+			"url_base_str":       "/v1/admin/static",
+		},
+
+		#-------------
+	}
+
 	apps_map = {
 		#-----------------------------
 		# GF_SOLO
@@ -184,12 +196,13 @@ def get():
 	import copy # IMPORTANT!! - do a deepcopy of pages_map, because for gf_solo we modify them
 
 	gf_solo__pages_map = {}
-	
+
 	gf_solo__pages_map.update(copy.deepcopy(gf_landing_page__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_images__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_publisher__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_admin__pages_map))
 
 	for _, page_info_map in gf_solo__pages_map.items():
 

@@ -4,6 +4,7 @@
 
 # PORTS
 port:         1900
+port_admin:   1901
 port_metrics: 9110
 
 # MONGODB

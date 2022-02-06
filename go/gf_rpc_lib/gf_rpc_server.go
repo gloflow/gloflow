@@ -32,6 +32,32 @@ import (
 )
 
 //-------------------------------------------------
+func Server__init_with_mux(p_port_int int,
+	p_mux *http.ServeMux) {
+
+	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
+	
+
+	server := http.Server{
+		Addr:    fmt.Sprintf(":%d", p_port_int),
+		Handler: p_mux,
+	}
+
+
+	err := server.ListenAndServe()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"port": p_port_int,
+			"err":  err,
+		}).Fatal("server cant start listening")
+		panic(-1)
+	}
+
+
+
+}
+
+//-------------------------------------------------
 func Server__init(p_port_int int) {
 
 	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
