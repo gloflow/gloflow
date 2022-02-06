@@ -38,7 +38,7 @@ type GF_user_auth_userpass__input_login struct {
 	Pass_str string `validate:"omitempty,min=8,max=50"`
 
 	// for certain emails allow email-login
-	Email_str string `validate:"optional,email"`
+	Email_str string `validate:"omitempty,email"`
 }
 type GF_user_auth_userpass__output_login struct {
 	User_exists_bool     bool
@@ -65,7 +65,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
-	
+
 	//------------------------
 	// VALIDATE_INPUT
 	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)

@@ -54,8 +54,16 @@ func init_handlers__userpass(p_service_info *GF_service_info,
 				if gf_err != nil {
 					return nil, gf_err
 				}
-				pass_str  := input_map["pass_str"].(string)
-				email_str := input_map["email_str"].(string)
+
+				var pass_str string
+				if val_str, ok := input_map["pass_str"]; ok {
+					pass_str = val_str.(string)
+				}
+
+				var email_str string
+				if val_str, ok := input_map["email_str"]; ok {
+					email_str = val_str.(string)
+				}
 
 				input :=&GF_user_auth_userpass__input_login{
 					User_name_str: user_name_str,
