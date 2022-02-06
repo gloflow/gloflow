@@ -33,12 +33,11 @@ type gf_templates struct {
 //-------------------------------------------------
 func tmpl__load(p_templates_paths_map map[string]string,
 	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	main_template_filepath_str := p_templates_paths_map["gf_landing_page"]
-	// templates_dir_path_str := "./templates/gf_landing_page"
 
-	tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str, p_runtime_sys)
+	tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

@@ -214,6 +214,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 				if gf_err != nil {
 					return nil, gf_err
 				}
+				
 				//------------------
 
 				p_resp.Write([]byte(template_rendered_str))

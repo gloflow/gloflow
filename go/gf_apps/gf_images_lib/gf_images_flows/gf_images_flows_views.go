@@ -101,7 +101,6 @@ func flows__render_template(p_flow_name_str string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_views.flows__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	//-------------------------

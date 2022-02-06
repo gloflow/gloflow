@@ -33,7 +33,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_view.render_template()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_view.render_template()")
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
@@ -42,7 +42,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 		Featured_imgs_0_lst []*GF_featured_img
 		Featured_imgs_1_lst []*GF_featured_img
 		Sys_release_info    gf_core.Sys_release_info
-		Is_subtmpl_def      func(string) bool //used inside the main_template to check if the subtemplate is defined
+		Is_subtmpl_def      func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
