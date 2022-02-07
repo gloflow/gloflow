@@ -39,6 +39,10 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "a golang panic was caught with recover()",
 		},
 
+		"generic_error": Error_def{
+			Descr_str: "generic error occured, check error info for more details",
+		},
+
 		//---------------
 		"int_parse_error": Error_def{
 			Descr_str: "failed to parse an integer string",

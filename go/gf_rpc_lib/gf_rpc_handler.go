@@ -231,7 +231,7 @@ func get_handler(p_path_str string,
 
 		//------------------
 		ctx := p_req.Context()
-
+		fmt.Println("CTX >>>", ctx)
 
 		// FIX!! - when creating additional http servers outside the default global
 		//         http server and default global Sentry context, the clone sentry hub
@@ -250,7 +250,7 @@ func get_handler(p_path_str string,
 		//------------------
 		// TRACE
 		span_op_str := p_path_str
-		span__root := sentry.StartSpan(ctx, span_op_str)
+		span__root  := sentry.StartSpan(ctx, span_op_str)
 		defer span__root.Finish()
 
 		//------------------
