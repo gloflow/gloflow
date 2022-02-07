@@ -64,12 +64,14 @@ func Create_handler__http_with_mux(p_path_str string,
 	p_mux            *http.ServeMux,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
+	p_sentry_hub     *sentry.Hub,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
 	handler_fun := get_handler(p_path_str,
 		p_handler_fun,
 		p_metrics,
 		p_store_run_bool,
+		p_sentry_hub,
 		p_runtime_sys)
 
 	p_mux.HandleFunc(p_path_str, handler_fun)
@@ -84,10 +86,11 @@ func Create_handler__http_with_metrics(p_path_str string,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
 	handler_fun := get_handler(p_path_str,
-			p_handler_fun,
-			p_metrics,
-			p_store_run_bool,
-			p_runtime_sys)
+		p_handler_fun,
+		p_metrics,
+		p_store_run_bool,
+		nil,
+		p_runtime_sys)
 
 	http.HandleFunc(p_path_str, handler_fun)
 
@@ -185,6 +188,7 @@ func get_handler(p_path_str string,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
+	p_sentry_hub     *sentry.Hub,
 	p_runtime_sys    *gf_core.Runtime_sys) func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 	handler_fun := func(p_resp http.ResponseWriter, p_req *http.Request) {
@@ -228,7 +232,19 @@ func get_handler(p_path_str string,
 		//------------------
 		ctx := p_req.Context()
 
-		hub := sentry.GetHubFromContext(ctx)
+
+		// FIX!! - when creating additional http servers outside the default global
+		//         http server and default global Sentry context, the clone sentry hub
+		//         is being passed in explicitly.
+		//         figure out a cleaner way to abstract all Sentry details from this handler wrapper.
+		var hub *sentry.Hub
+		if p_sentry_hub == nil {
+
+			// use the default global pre-created Hub (one thats used by the main go-routine)
+			hub = sentry.GetHubFromContext(ctx)
+		} else {
+			hub = p_sentry_hub
+		}
 		hub.Scope().SetTag("url", path_str)
 
 		//------------------
@@ -296,7 +312,7 @@ func Http_respond(p_data interface{},
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
-	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	// dont store a run if there is no DB initialized
 	if p_runtime_sys.Mongo_db == nil {
@@ -331,7 +347,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 //-------------------------------------------------
 func Error__in_handler(p_handler_url_path_str string,
 	p_user_msg_str string,
-	p_gf_err       *gf_core.Gf_error,
+	p_gf_err       *gf_core.GF_error,
 	p_resp         http.ResponseWriter,
 	p_runtime_sys  *gf_core.Runtime_sys) {
 

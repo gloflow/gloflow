@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"context"
 	"text/template"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	// "github.com/davecgh/go-spew/spew"
@@ -38,6 +39,7 @@ type gf_templates struct {
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
+	p_local_hub   *sentry.Hub,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
@@ -81,6 +83,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		p_local_hub,
 		p_runtime_sys)
 
 	//---------------------
@@ -94,6 +97,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		p_mux,
 		nil,
 		false, // p_store_run_bool
+		p_local_hub,
 		p_runtime_sys)
 
 	//---------------------

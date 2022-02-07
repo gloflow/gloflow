@@ -243,7 +243,7 @@ func HTTP__init_static_serving_with_mux(p_url_base_str string,
 	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	p_mux.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		HTTP__service_file(p_local_dir_path_str,
+		HTTP__serve_file(p_local_dir_path_str,
 			url_str,
 			p_req, p_resp, p_runtime_sys)
 	})
@@ -261,7 +261,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		HTTP__service_file(local_dir_str,
+		HTTP__serve_file(local_dir_str,
 			url_str,
 			p_req, p_resp, p_runtime_sys)
 
@@ -285,7 +285,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 }
 
 //-------------------------------------------------
-func HTTP__service_file(p_local_dir_str string,
+func HTTP__serve_file(p_local_dir_str string,
 	p_url_str     string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,

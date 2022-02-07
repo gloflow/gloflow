@@ -51,7 +51,7 @@ type Gf_error struct {
 	Descr_str            string                 `bson:"descr_str"`
 	Error                error                  `bson:"error"`
 	Service_name_str     string                 `bson:"service_name_str"`
-	Subsystem_name_str   string                 `bson:"subsystem_name_str"`   //major portion of functionality, a particular package, or a logical group of functions
+	Subsystem_name_str   string                 `bson:"subsystem_name_str"`   // major portion of functionality, a particular package, or a logical group of functions
 	Stack_trace_str      string                 `bson:"stack_trace_str"`
 	Function_name_str    string                 `bson:"func_name_str"`
 	File_str             string                 `bson:"file_str"`
@@ -121,7 +121,6 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_subsystem_name_str string,
 	p_hook_fun           func(*GF_error) map[string]interface{},
 	p_runtime_sys        *Runtime_sys) *GF_error {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create_with_hook()")
 
 	gf_error := Error__create(p_user_msg_str,
 		p_error_type_str,
@@ -141,7 +140,6 @@ func Error__create(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_runtime_sys        *Runtime_sys) *GF_error {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_error.Error__create()")
 
 	error_defs_map := error__get_defs()
 	

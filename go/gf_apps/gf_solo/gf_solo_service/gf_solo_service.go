@@ -97,23 +97,20 @@ func Run(p_config *GF_config,
 	//-------------
 	// GF_ADMIN - its started in a separate goroutine and listening on a diff
 	//            port than the main service.
-	go func() {
+	sentry_hub_clone := sentry.CurrentHub().Clone()
+	go func(p_local_hub *sentry.Hub) {
 
-
-		
 		http_mux, gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,
+			p_local_hub,
 			p_runtime_sys)
 		if gf_err != nil {
 			return
 		}
 
-
-		
-
 		// SERVER_INIT - blocking
 		gf_rpc_lib.Server__init_with_mux(port_admin_int, http_mux)
 
-	}()
+	}(sentry_hub_clone)
 
 	//-------------
 	// GF_HOME
@@ -266,7 +263,7 @@ func Runtime__get(p_config_path_str string,
 		// EXTERNAL_PLUGINS
 		External_plugins: p_external_plugins,
 	}
-
+	
 	//--------------------
 	// MONGODB
 	mongodb_host_str := config.Mongodb_host_str

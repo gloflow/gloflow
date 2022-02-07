@@ -21,11 +21,13 @@ package gf_admin_lib
 
 import (
 	"net/http"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 func Init_new_service(p_templates_paths_map map[string]string,
+	p_local_hub   *sentry.Hub,
 	p_runtime_sys *gf_core.Runtime_sys) (*http.ServeMux, *gf_core.GF_error) {
 
 
@@ -46,6 +48,7 @@ func Init_new_service(p_templates_paths_map map[string]string,
 	
 	gf_err := init_handlers(p_templates_paths_map,
 		mux,
+		p_local_hub,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
