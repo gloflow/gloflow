@@ -54,7 +54,7 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "failed to unescape a url with url.QueryUnescape()",
 		},
 		"io_reader_error": Error_def{
-			Descr_str: "failed to read bytes using the io.Reader.ReadBytes()",
+			Descr_str: "failed to read bytes using a reader",
 		},
 
 		//---------------

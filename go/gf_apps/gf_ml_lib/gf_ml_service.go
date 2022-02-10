@@ -71,7 +71,7 @@ func Run_service(p_service_info *GF_service_info,
 		os.Exit(-1)
 	}
 
-	mongo_coll := mongo_db.Collection("g_ml")
+	mongo_coll := mongo_db.Collection("gf_ml")
 
 	runtime_sys.Mongo_db   = mongo_db
 	runtime_sys.Mongo_coll = mongo_coll

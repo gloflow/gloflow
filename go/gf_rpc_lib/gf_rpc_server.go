@@ -42,14 +42,10 @@ func Server__init_with_mux(p_port_int int,
 	//               and creating spans and other sentry primitives fails with nul pointer exceptions.
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(p_mux)
 
-
 	server := http.Server{
 		Addr:    fmt.Sprintf(":%d", p_port_int),
 		Handler: sentry_handler,
 	}
-
-	
-
 
 	err := server.ListenAndServe()
 	if err != nil {
@@ -59,9 +55,6 @@ func Server__init_with_mux(p_port_int int,
 		}).Fatal("server cant start listening")
 		panic(-1)
 	}
-
-
-
 }
 
 //-------------------------------------------------

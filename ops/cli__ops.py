@@ -60,14 +60,16 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(formatter_class = argparse.RawTextHelpFormatter)
 
     #-------------
-    #RUN
+    # RUN
     arg_parser.add_argument('-run', action = "store", default = 'build',
         help = '''
 - '''+fg('yellow')+'s3_data_info'+attr(0)+''' - view AWS S3 data information summaries of files used by GF
         ''')
+
     #-------------
-    #AWS_S3_CREDS
+    # AWS_S3_CREDS
     arg_parser.add_argument('-aws_creds', action = "store", default = '%s/../../creds/aws/s3.txt'%(modd_str), help = '''path to the file containing AWS S3 credentials to be used''')
+    
     #-------------
     cli_args_lst   = sys.argv[1:]
     args_namespace = arg_parser.parse_args(cli_args_lst)
