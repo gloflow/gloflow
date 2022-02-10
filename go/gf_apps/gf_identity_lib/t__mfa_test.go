@@ -45,7 +45,7 @@ func test_mfa_main(p_test *testing.T,
 	// CODE THATS ENTERED INTO GOOGLE AUTH MANUALLY HAS TO BE 
 	// BASE32 ENCODED
 	secret_key_base32_str := "aabbccddeeffgghh"
-	token_str, gf_err := HOTP_generate_value(secret_key_base32_str, p_runtime_sys)
+	token_str, gf_err := TOTP_generate_value(secret_key_base32_str, p_runtime_sys)
 	if gf_err != nil {
 		p_test.FailNow()
 	}
