@@ -83,7 +83,6 @@ func Run(p_config *GF_config,
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
 		Domain_base_str:                         "gloflow.com", // FIX!! - use GF_config.Domain_base_str
-		Admin_email_str:                         p_config.Admin_email_str,
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
@@ -100,7 +99,16 @@ func Run(p_config *GF_config,
 	sentry_hub_clone := sentry.CurrentHub().Clone()
 	go func(p_local_hub *sentry.Hub) {
 
+		service_info := &gf_admin_lib.GF_service_info{
+			Admin_mfa_secret_key_base32_str:         p_config.Admin_mfa_secret_key_base32_str,
+			Admin_email_str:                         p_config.Admin_email_str,
+			Enable_events_app_bool:                  true,
+			Enable_user_creds_in_secrets_store_bool: true,
+			Enable_email_bool:                       true,
+		}
+
 		http_mux, gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,
+			service_info,
 			p_local_hub,
 			p_runtime_sys)
 		if gf_err != nil {

@@ -23,7 +23,34 @@ import (
 	"text/template"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 )
+
+//------------------------------------------------
+func Pipeline__mfa_confirm(p_extern_htop_value_str string,
+	p_secret_key_base32_str string,
+	p_ctx                   context.Context,
+	p_runtime_sys           *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+
+
+
+	htop_value_str, gf_err := gf_identity_lib.TOTP_generate_value(p_secret_key_base32_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
+	}
+
+
+
+
+	if p_extern_htop_value_str == htop_value_str {
+		return true, nil
+	} else {
+		return false, nil
+	}
+	return false, nil
+}
 
 //------------------------------------------------
 func Pipeline__render(p_tmpl *template.Template,

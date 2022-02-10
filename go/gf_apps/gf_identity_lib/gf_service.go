@@ -29,10 +29,7 @@ import (
 type GF_service_info struct {
 
 	// DOMAIN - where this gf_solo instance is reachable on
-	Domain_base_str string 
-
-	// ADMIN_EMAIL - what the default admin email is (for auth)
-	Admin_email_str string
+	Domain_base_str string
 
 	// EVENTS_APP - enable sending of app events from various functions
 	Enable_events_app_bool bool

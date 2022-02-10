@@ -26,9 +26,29 @@ import (
 )
 
 //-------------------------------------------------
+type GF_service_info struct {
+
+	// ADMIN_MFA_SECRET_KEY_BASE32
+	Admin_mfa_secret_key_base32_str string
+
+	// ADMIN_EMAIL - what the default admin email is (for auth)
+	Admin_email_str string
+
+	// EVENTS_APP - enable sending of app events from various functions
+	Enable_events_app_bool bool
+
+	// enable storage of user_creds in a secret store
+	Enable_user_creds_in_secrets_store_bool bool
+
+	// enable sending of emails for any function that needs it
+	Enable_email_bool bool
+}
+
+//-------------------------------------------------
 func Init_new_service(p_templates_paths_map map[string]string,
-	p_local_hub   *sentry.Hub,
-	p_runtime_sys *gf_core.Runtime_sys) (*http.ServeMux, *gf_core.GF_error) {
+	p_service_info *GF_service_info,
+	p_local_hub    *sentry.Hub,
+	p_runtime_sys  *gf_core.Runtime_sys) (*http.ServeMux, *gf_core.GF_error) {
 
 
 	mux := http.NewServeMux()
@@ -48,6 +68,7 @@ func Init_new_service(p_templates_paths_map map[string]string,
 	
 	gf_err := init_handlers(p_templates_paths_map,
 		mux,
+		p_service_info,
 		p_local_hub,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -55,9 +76,6 @@ func Init_new_service(p_templates_paths_map map[string]string,
 	}
 
 	//------------------------
-
-
-
 
 	return mux, nil
 }

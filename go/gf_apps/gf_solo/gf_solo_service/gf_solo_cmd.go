@@ -187,6 +187,24 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - ADMIN_MFA_SECRET_KEY_BASE32
+	admin_mfa_secret_key_base32_str := "aabbccddeeffgghh"
+	cmd__base.PersistentFlags().StringP("admin_mfa_secret_key_base32", "", admin_mfa_secret_key_base32_str,
+		"secret key used to verify mfa (totp/hotp), base32 encoded")
+	err = viper.BindPFlag("admin_mfa_secret_key_base32", cmd__base.PersistentFlags().Lookup("admin_mfa_secret_key_base32"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("admin_mfa_secret_key_base32", "GF_ADMIN_MFA_SECRET_KEY_BASE32")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// CLI_ARGUMENT - ADMIN_EMAIL
 	admin_email__default_str := ""
 	cmd__base.PersistentFlags().StringP("admin_email", "", admin_email__default_str, "default email of the administrator to use")
@@ -202,7 +220,7 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
-
+	
 	//--------------------
 	// START
 	cmd__start := &cobra.Command{

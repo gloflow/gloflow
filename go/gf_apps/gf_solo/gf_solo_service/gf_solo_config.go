@@ -49,6 +49,11 @@ type GF_config struct {
 	Templates_paths_map map[string]string `mapstructure:"templates_paths"`
 
 	//--------------------
+	// ADMIN
+	Admin_mfa_secret_key_base32_str string `mapstructure:"admin_mfa_secret_key_base32"`
+	Admin_email_str                 string `mapstructure:"admin_email"`
+
+	//--------------------
 	// GF_IMAGES
 	Images__config_file_path_str string `mapstructure:"images__config_file_path"`
 	/*Images__store_local_dir_path_str            string `mapstructure:"images__store_local_dir_path"`
@@ -74,10 +79,6 @@ type GF_config struct {
 	AWS_access_key_id_str     string `mapstructure:"aws_access_key_id"`
 	AWS_secret_access_key_str string `mapstructure:"aws_secret_access_key"`
 	AWS_token_str             string `mapstructure:"aws_token"`
-
-	//--------------------
-	// ADMIN_EMAIL
-	Admin_email_str string `mapstructure:"admin_email"`
 
 	//--------------------
 }
