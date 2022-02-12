@@ -49,6 +49,7 @@ func Test__templates(p_test *testing.T) {
 
 	// TEMPLATES
 	templates_paths_map := map[string]string{
+		"gf_admin_login":     "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_login/gf_admin_login.html",
 		"gf_admin_dashboard": "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_dashboard/gf_admin_dashboard.html",
 	}
 	
