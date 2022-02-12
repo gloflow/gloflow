@@ -32,13 +32,15 @@ import (
 
 //------------------------------------------------
 type gf_templates struct {
+	login__tmpl                   *template.Template
+	login__subtemplates_names_lst []string
 	dashboard__tmpl                   *template.Template
 	dashboard__subtemplates_names_lst []string
 }
 
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_mux          *http.ServeMux,
+	p_http_mux     *http.ServeMux,
 	p_service_info *GF_service_info,
 	p_local_hub    *sentry.Hub,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -54,13 +56,52 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/admin/login",
 		"/v1/admin/mfa_confirm",
-		"/v1/admin",
+		"/v1/admin/dashboard",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
 
+	//---------------------
+	// ADMIN_LOGIN
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/login",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
+			if p_req.Method == "GET" {
 
+				//---------------------
+				// INPUT
+				qs_map := p_req.URL.Query()
+
+				mfa_confirm_bool := false
+				if _, ok := qs_map["mfa_conf"]; ok {
+					mfa_confirm_bool = true
+				}
+
+				//---------------------
+
+				template_rendered_str, gf_err := Pipeline__render_login(mfa_confirm_bool,
+					gf_templates.login__tmpl,
+					gf_templates.dashboard__subtemplates_names_lst,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				p_resp.Write([]byte(template_rendered_str))
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		p_http_mux,
+		metrics,
+		true, // p_store_run_bool
+		p_local_hub,
+		p_runtime_sys)
 
 	//---------------------
 	// MFA_CONFIRM
@@ -101,20 +142,20 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		p_local_hub,
 		p_runtime_sys)
 
 	//---------------------
-	// ADMIN
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin",
+	// ADMIN_DASHBOARD
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
 
-				template_rendered_str, gf_err := Pipeline__render(gf_templates.dashboard__tmpl,
+				template_rendered_str, gf_err := Pipeline__render_dashboard(gf_templates.dashboard__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					p_ctx,
 					p_runtime_sys)
@@ -130,7 +171,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		p_local_hub,
@@ -144,7 +185,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		nil,
 		false, // p_store_run_bool
 		p_local_hub,
@@ -159,17 +200,26 @@ func init_handlers(p_templates_paths_map map[string]string,
 func tmpl__load(p_templates_paths_map map[string]string,
 	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 
-	main_template_filepath_str := p_templates_paths_map["gf_admin_dashboard"]
+	login_template_filepath_str     := p_templates_paths_map["gf_admin_login"]
+	dashboard_template_filepath_str := p_templates_paths_map["gf_admin_dashboard"]
 
-	tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+	d_tmpl, d_subtemplates_names_lst, gf_err := gf_core.Templates__load(login_template_filepath_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	l_tmpl, l_subtemplates_names_lst, gf_err := gf_core.Templates__load(dashboard_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
 	gf_templates := &gf_templates{
-		dashboard__tmpl:                   tmpl,
-		dashboard__subtemplates_names_lst: subtemplates_names_lst,
+		login__tmpl:                   l_tmpl,
+		login__subtemplates_names_lst: l_subtemplates_names_lst,
+		dashboard__tmpl:                   d_tmpl,
+		dashboard__subtemplates_names_lst: d_subtemplates_names_lst,
 	}
 	return gf_templates, nil
 }

@@ -53,21 +53,35 @@ func Pipeline__mfa_confirm(p_extern_htop_value_str string,
 }
 
 //------------------------------------------------
-func Pipeline__render(p_tmpl *template.Template,
+func Pipeline__render_login(p_mfa_confirm_bool bool,
+	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
 	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
-
-
-
-	template_rendered_str, gf_err := admin__render_template(p_tmpl,
+	template_rendered_str, gf_err := view__render_template_login(p_mfa_confirm_bool,
+		p_tmpl,
 		p_subtemplates_names_lst,
 		p_runtime_sys)
 	if gf_err != nil {
 		return "", gf_err
 	}
 
+	return template_rendered_str, nil
+}
+
+//------------------------------------------------
+func Pipeline__render_dashboard(p_tmpl *template.Template,
+	p_subtemplates_names_lst []string,
+	p_ctx                    context.Context,
+	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+
+	template_rendered_str, gf_err := view__render_template_dashboard(p_tmpl,
+		p_subtemplates_names_lst,
+		p_runtime_sys)
+	if gf_err != nil {
+		return "", gf_err
+	}
 
 	return template_rendered_str, nil
 }

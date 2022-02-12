@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 )
 
 //-------------------------------------------------
@@ -46,12 +47,11 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func Init_new_service(p_templates_paths_map map[string]string,
-	p_service_info *GF_service_info,
-	p_local_hub    *sentry.Hub,
-	p_runtime_sys  *gf_core.Runtime_sys) (*http.ServeMux, *gf_core.GF_error) {
-
-
-	mux := http.NewServeMux()
+	p_service_info          *GF_service_info,
+	p_identity_service_info *gf_identity_lib.GF_service_info,
+	p_http_mux              *http.ServeMux,
+	p_local_hub             *sentry.Hub,
+	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -60,22 +60,33 @@ func Init_new_service(p_templates_paths_map map[string]string,
 
 	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
 		local_dir_path_str,
-		mux,
+		p_http_mux,
 		p_runtime_sys)
-	
+		
 	//------------------------
-	// HANDLERS
+	// IDENTITY_HANDLERS
+
+	gf_err := gf_identity_lib.Init_service(p_http_mux,
+		p_identity_service_info,
+		p_runtime_sys)
+
+	if gf_err != nil {
+		return gf_err
+	}
+
+	//------------------------
+	// ADMIN_HANDLERS
 	
-	gf_err := init_handlers(p_templates_paths_map,
-		mux,
+	gf_err = init_handlers(p_templates_paths_map,
+		p_http_mux,
 		p_service_info,
 		p_local_hub,
 		p_runtime_sys)
 	if gf_err != nil {
-		return nil, gf_err
+		return gf_err
 	}
 
 	//------------------------
 
-	return mux, nil
+	return nil
 }

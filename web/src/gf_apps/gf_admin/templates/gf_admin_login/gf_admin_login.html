@@ -2,16 +2,27 @@
 <html>
 
 <head>
-    <title>gloflow - admin dashboard</title>
+    <title>gloflow - admin login</title>
 
-    <link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_release_info.css"/>
-    <link rel="stylesheet" type="text/css" href="./../../css/gf_admin_dashboard.css"/>
+	<link rel="stylesheet" type="text/css" href="./../../../../gf_core/css/gf_sys_release_info.css"/>
+    <link rel="stylesheet" type="text/css" href="./../../css/gf_admin_login.css"/>
 </head>
 
 <body>
     <div id='welcome'>
-        <div class='label'>ADMIN DASHBOARD</div>
+        <div class='label'>ADMIN LOGIN</div>
     </div>
+	
+	{{ if .MFA_confirm_bool }}
+	<div id="identiy_mfa_confirm">
+		
+
+	</div>
+	{{ end }}
+
+    <div id="identity">
+		<div id="login"></div>
+	</div>
 
     {{- /*-----------------------------------------------------*/}}
     <div id='sys_release_info'>
@@ -26,10 +37,10 @@
     <script type="text/javascript" src="./../../../../../libs/js/system.min.js"></script>
 	<script type="text/javascript" src="./../../../../../libs/js/system_named_register_ext.js"></script> <!-- without this SystemJS extension modules dont load -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="./../../ts/gf_admin_dashboard.ts"></script>
+    <script type="text/javascript" src="./../../ts/gf_admin_login.ts"></script>
 
     <script>
-		System.import('gf_apps/gf_admin/ts/gf_admin_dashboard').then(function(m){});
+		System.import('gf_apps/gf_admin/ts/gf_admin_login').then(function(m){});
 	</script>
 
     {{- /*-----------------------------------------------------*/}}
@@ -37,7 +48,7 @@
 	{{ if (call .Is_subtmpl_def "gf_footer")}}
 		{{ template "gf_footer" }}
 	{{ end }}
-    
+	
 	{{- /*------------------------------------------------------*/}}
 </body>
 </html>
