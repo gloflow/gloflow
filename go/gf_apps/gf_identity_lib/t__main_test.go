@@ -23,6 +23,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
