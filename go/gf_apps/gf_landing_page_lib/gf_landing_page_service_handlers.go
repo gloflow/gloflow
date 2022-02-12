@@ -40,7 +40,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 		return gf_err
 	}
 	
-
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{

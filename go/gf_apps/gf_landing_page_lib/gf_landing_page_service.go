@@ -33,7 +33,11 @@ func Init_service(p_templates_paths_map map[string]string,
 	//------------------------
 	// STATIC FILES SERVING
 	static_files__url_base_str := "/landing"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+	local_dir_path_str         := "./static"
+	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
+		local_dir_path_str,
+		p_http_mux,
+		p_runtime_sys)
 
 	//------------------------
 	// HANDLERS
