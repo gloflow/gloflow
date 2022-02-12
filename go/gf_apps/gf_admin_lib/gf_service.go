@@ -29,6 +29,8 @@ import (
 //-------------------------------------------------
 type GF_service_info struct {
 
+	Name_str string
+	
 	// ADMIN_MFA_SECRET_KEY_BASE32
 	Admin_mfa_secret_key_base32_str string
 

@@ -86,6 +86,7 @@ func Run(p_config *GF_config,
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
+		Name_str:                                "gf_identity",
 		Domain_base_str:                         p_config.Domain_base_str,
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
@@ -108,6 +109,7 @@ func Run(p_config *GF_config,
 		admin_http_mux := http.NewServeMux()
 
 		admin_service_info := &gf_admin_lib.GF_service_info{
+			Name_str:                                "gf_admin",
 			Admin_mfa_secret_key_base32_str:         p_config.Admin_mfa_secret_key_base32_str,
 			Admin_email_str:                         p_config.Admin_email_str,
 			Enable_events_app_bool:                  true,
@@ -119,6 +121,7 @@ func Run(p_config *GF_config,
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
 		admin_identity__service_info := &gf_identity_lib.GF_service_info{
+			Name_str:                                "gf_admin_identity",
 			Domain_base_str:                         p_config.Domain_admin_base_str,
 			Enable_events_app_bool:                  true,
 			Enable_user_creds_in_secrets_store_bool: true,

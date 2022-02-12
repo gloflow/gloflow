@@ -48,7 +48,7 @@ func Init_handlers(p_mux *http.ServeMux,
 		"/v1/images/upload_complete",
 		"/images/c",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_images", handlers_endpoints_lst)
 
 	//---------------------
 	// GET_IMAGE

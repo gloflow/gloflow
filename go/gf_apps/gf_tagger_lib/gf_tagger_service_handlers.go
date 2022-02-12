@@ -51,7 +51,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		"/v1/tags/create",
 		"/v1/tags/objects",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_tagger", handlers_endpoints_lst)
 	
 	//---------------------
 	// BOOKMARKS

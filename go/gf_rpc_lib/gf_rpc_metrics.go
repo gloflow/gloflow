@@ -37,14 +37,16 @@ type GF_metrics struct {
 
 //-------------------------------------------------
 // CREATE_FOR_HANDLER
-func Metrics__create_for_handlers(p_handlers_endpoints_lst []string) *GF_metrics {
+func Metrics__create_for_handlers(p_service_name_str string,
+	p_handlers_endpoints_lst []string) *GF_metrics {
 	
 
 	handlers_counters_map := map[string]prometheus.Counter{}
 	for _, handler_endpoint_str := range p_handlers_endpoints_lst {
 
 		handler_endpoint_clean_str := strings.ReplaceAll(handler_endpoint_str, "/", "_")
-		name_str                   := fmt.Sprintf("gf_rpc__handler_reqs_num__%s", handler_endpoint_clean_str)
+		name_str := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", p_service_name_str, handler_endpoint_clean_str)
+		
 		handler__reqs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
 			Name: name_str,
 			Help: "handler number of requests",

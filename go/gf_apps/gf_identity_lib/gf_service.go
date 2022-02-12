@@ -28,6 +28,9 @@ import (
 
 //-------------------------------------------------
 type GF_service_info struct {
+	
+	// name of this service, in case multiple are spawned
+	Name_str string
 
 	// DOMAIN - where this gf_solo instance is reachable on
 	Domain_base_str string

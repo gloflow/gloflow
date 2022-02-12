@@ -47,7 +47,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		"/landing/main/",
 		"/landing/register_invite_email",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_landing_page", handlers_endpoints_lst)
 
 	//---------------------
 	// MAIN

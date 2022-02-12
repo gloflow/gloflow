@@ -50,7 +50,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		"/v1/a/ue",
 		"/v1/a/dashboard",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_analytics", handlers_endpoints_lst)
 
 	//---------------------
 	// USER_EVENT

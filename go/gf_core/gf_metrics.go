@@ -31,20 +31,16 @@ import (
 func Metrics__init(p_metrics_endpoint_str string, // "/metrics"
 	p_port_int int) {
 
-
-
-
-
-	metrics_router := mux.NewRouter()
-	metrics_router.Handle(p_metrics_endpoint_str, promhttp.Handler())
-
-
-	metrics_server := http.Server{
-		Handler: metrics_router,
-		Addr:    fmt.Sprintf(":%d", p_port_int),
-	}
-
 	go func() {
+		metrics_router := mux.NewRouter()
+		metrics_router.Handle(p_metrics_endpoint_str, promhttp.Handler())
+
+
+		metrics_server := http.Server{
+			Handler: metrics_router,
+			Addr:    fmt.Sprintf(":%d", p_port_int),
+		}
+		
 		// ADD!! - check for returned error here,
 		//         and report this in some way to the user.
 		metrics_server.ListenAndServe()

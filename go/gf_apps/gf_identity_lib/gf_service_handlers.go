@@ -41,7 +41,7 @@ func init_handlers(p_mux *http.ServeMux,
 		"/v1/identity/update",
 		"/v1/identity/me",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(p_service_info.Name_str, handlers_endpoints_lst)
 
 	//---------------------
 	// EMAIL_CONFIRM

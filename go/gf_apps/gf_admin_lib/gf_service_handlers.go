@@ -60,7 +60,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		"/v1/admin/mfa_confirm",
 		"/v1/admin/dashboard",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
 
 	//---------------------
 	// ADMIN_LOGIN

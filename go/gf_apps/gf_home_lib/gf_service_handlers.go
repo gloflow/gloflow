@@ -37,7 +37,7 @@ func init_handlers(p_mux *http.ServeMux,
 	handlers_endpoints_lst := []string{
 		"/v1/home",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_home", handlers_endpoints_lst)
 
 	//---------------------
 	// HOME
