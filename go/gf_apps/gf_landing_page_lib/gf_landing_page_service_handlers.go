@@ -28,6 +28,7 @@ import (
 
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
+	p_http_mux    *http.ServeMux,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
 
@@ -50,7 +51,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 	//---------------------
 	// MAIN
-	gf_rpc_lib.Create_handler__http_with_metrics("/landing/main/",
+	gf_rpc_lib.Create_handler__http_with_mux("/landing/main/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -77,13 +78,15 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------
 	// REGISTER_INVITE_EMAIL
-	gf_rpc_lib.Create_handler__http_with_metrics("/landing/register_invite_email",
+	gf_rpc_lib.Create_handler__http_with_mux("/landing/register_invite_email",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			
@@ -91,8 +94,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 			data_map := map[string]interface{}{}
 			return data_map, nil
 		},
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------

@@ -27,6 +27,7 @@ import (
 
 //-------------------------------------------------
 func Init_service(p_templates_paths_map map[string]string,
+	p_http_mux    *http.ServeMux,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 	//------------------------
@@ -36,7 +37,7 @@ func Init_service(p_templates_paths_map map[string]string,
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_templates_paths_map, p_runtime_sys)
+	gf_err := init_handlers(p_templates_paths_map, p_http_mux, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -76,7 +77,9 @@ func Run_service(p_port_str string,
 		"gf_landing_page": "./templates/gf_landing_page",
 	}
 
-	Init_service(templates_dir_paths_map, runtime_sys)
+	http_mux := http.NewServeMux()
+
+	Init_service(templates_dir_paths_map, http_mux, runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

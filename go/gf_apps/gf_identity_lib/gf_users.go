@@ -45,7 +45,8 @@ type GF_user struct {
 
 	Email_str            string `bson:"email_str"`
 	Email_confirmed_bool bool   `bson:"email_confirmed_bool"`
-
+	MFA_confirm_bool     bool   `bson:"mfa_confirm_bool"`
+	
 	// IMAGES
 	Profile_image_url_str string `bson:"profile_image_url_str"`
 	Banner_image_url_str  string `bson:"banner_image_url_str"`

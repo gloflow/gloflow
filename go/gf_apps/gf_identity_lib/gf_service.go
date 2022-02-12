@@ -22,6 +22,7 @@ package gf_identity_lib
 import (
 	"os"
 	"flag"
+	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -45,22 +46,23 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init_service(p_mux *http.ServeMux,
+	p_service_info *GF_service_info,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_service_info, p_runtime_sys)
+	gf_err := init_handlers(p_mux, p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	gf_err = init_handlers__eth(p_service_info, p_runtime_sys)
+	gf_err = init_handlers__eth(p_mux, p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
 
-	gf_err = init_handlers__userpass(p_service_info, p_runtime_sys)
+	gf_err = init_handlers__userpass(p_mux, p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

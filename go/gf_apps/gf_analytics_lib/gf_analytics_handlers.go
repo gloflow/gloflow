@@ -32,6 +32,7 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
+	p_mux         *http.ServeMux,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
@@ -53,7 +54,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 	//---------------------
 	// USER_EVENT
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/ue",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/a/ue",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 
@@ -113,12 +114,14 @@ func init_handlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//--------------
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/a/dashboard",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/a/dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			
 		if p_req.Method == "GET" {
@@ -148,8 +151,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 		}
 		return nil, nil
 	},
+	p_mux,
 	metrics,
 	true, // p_store_run_bool
+	nil,
 	p_runtime_sys)
 
 	//--------------

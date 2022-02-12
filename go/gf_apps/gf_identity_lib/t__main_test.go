@@ -38,16 +38,17 @@ func TestMain(m *testing.M) {
 	test_port_int := 2000
 	go func() {
 
+		http_mux := http.NewServeMux()
+
 		service_info := &GF_service_info{
 
 			// IMPORTANT!! - durring testing dont send emails
 			Enable_email_bool: false,
 		}
-		Init_service(service_info, runtime_sys)
-		gf_rpc_lib.Server__init(test_port_int)
+		Init_service(http_mux, service_info, runtime_sys)
+		gf_rpc_lib.Server__init_with_mux(test_port_int, http_mux)
 	}()
 	time.Sleep(2*time.Second) // let server startup
-
 
 	v := m.Run()
 	os.Exit(v)

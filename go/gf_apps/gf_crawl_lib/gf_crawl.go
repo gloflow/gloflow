@@ -23,6 +23,7 @@ package gf_crawl_lib
 import (
 	"time"
 	"math/rand"
+	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/olivere/elastic"
 	"github.com/fatih/color"
@@ -61,17 +62,14 @@ type Gf_crawler_cycle_run struct {
 
 //--------------------------------------------------
 func Init(p_config *GF_crawler_config,
-	// p_images_local_dir_path_str  string,
-	// p_cluster_node_type_str      string,
-	// p_crawl_config_file_path_str string,
 	p_media_domain_str           string,
 	p_templates_paths_map        map[string]string,
 	p_aws_access_key_id_str      string,
 	p_aws_secret_access_key_str  string,
 	p_aws_token_str              string,
 	p_esearch_client             *elastic.Client,
-	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.Init()")
+	p_http_mux                   *http.ServeMux,
+	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//--------------
 	events_ctx := gf_events.Events__init("/a/crawl/events", p_runtime_sys)
@@ -116,6 +114,7 @@ func Init(p_config *GF_crawler_config,
 		p_config.Crawled_images_s3_bucket_name_str,
 		p_config.Images_s3_bucket_name_str,
 		p_templates_paths_map,
+		p_http_mux,
 		runtime,
 		p_runtime_sys)
 	if gf_err != nil {

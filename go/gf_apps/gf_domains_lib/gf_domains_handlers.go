@@ -21,16 +21,16 @@ package gf_domains_lib
 
 import (
 	"fmt"
-	"time"
 	"net/http"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
 func Init_handlers(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_handlers.Init_handlers()")
+	p_mux         *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// TEMPLATES
@@ -43,49 +43,47 @@ func Init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 
 	//---------------------
-	// POSTS_ELEMENTS
-	http.HandleFunc("/a/domains/browser", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/domains/browser ----------")
+	// DOMAIN_BROWSER
+	gf_rpc_lib.Create_handler__http_with_mux("/a/domains/browser",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "GET" {
+				
+				//--------------------
+				//response_format_str - "json"|"html"
 
-			//--------------------
-			//response_format_str - "json"|"html"
+				qs_map := p_req.URL.Query()
+				fmt.Println(qs_map)
 
-			qs_map := p_req.URL.Query()
-			fmt.Println(qs_map)
+				/*//response_format_str - "j"(for json)|"h"(for html)
+				response_format_str := gf_rpc_lib.Get_response_format(qs_map,
+																p_log_fun)*/
+				//--------------------
+				// GET DOMAINS FROM DB
+				domains_lst, gf_err := db__get_domains(p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
 
-			/*//response_format_str - "j"(for json)|"h"(for html)
-			response_format_str := gf_rpc_lib.Get_response_format(qs_map,
-															p_log_fun)*/
-			//--------------------
-			// GET DOMAINS FROM DB
-			domains_lst, gf_err := db__get_domains(p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/domains/browser", "rpc_handler failed getting domains", gf_err, p_resp, p_runtime_sys)
-				return
+				//--------------------
+				// RENDER TEMPLATE
+				gf_err = domains_browser__render_template(domains_lst,
+					gf_templates.domains_browser__tmpl,
+					gf_templates.domains_browser__subtemplates_names_lst,
+					p_resp,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+				return nil, nil
 			}
-
-			//--------------------
-			// RENDER TEMPLATE
-			gf_err = domains_browser__render_template(domains_lst,
-				gf_templates.domains_browser__tmpl,
-				gf_templates.domains_browser__subtemplates_names_lst,
-				p_resp,
-				p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/domains/browser", "failed to render domains_browser page", gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/domains/browser", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 	
 	//---------------------
 

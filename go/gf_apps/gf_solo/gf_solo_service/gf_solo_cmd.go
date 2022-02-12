@@ -220,7 +220,23 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
-	
+
+	//--------------------
+
+	// ENV
+	err = viper.BindEnv("domain_base", "GF_DOMAIN_BASE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("domain_admin_base", "GF_DOMAIN_ADMIN_BASE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
 	//--------------------
 	// START
 	cmd__start := &cobra.Command{

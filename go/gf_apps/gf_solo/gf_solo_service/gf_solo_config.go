@@ -28,8 +28,9 @@ import (
 type GF_config struct {
 
 	// DOMAIN - where this gf_solo instance is reachable on
-	Domain_base_str string `mapstructure:"domain_base"`
-
+	Domain_base_str       string `mapstructure:"domain_base"`
+	Domain_admin_base_str string `mapstructure:"domain_admin_base"`
+	
 	// PORTS
 	Port_str         string `mapstructure:"port"`
 	Port_admin_str   string `mapstructure:"port_admin"`

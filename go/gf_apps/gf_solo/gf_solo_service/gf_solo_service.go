@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"path"
 	"time"
+	"net/http"
 	"github.com/getsentry/sentry-go"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -78,17 +79,22 @@ func Run(p_config *GF_config,
 	validator := gf_core.Validate__init()
 	p_runtime_sys.Validator = validator
 
+
+	gf_solo_http_mux := http.NewServeMux()
+
 	//-------------
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
-		Domain_base_str:                         "gloflow.com", // FIX!! - use GF_config.Domain_base_str
+		Domain_base_str:                         p_config.Domain_base_str,
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
 		Enable_email_require_confirm_for_login_bool: true,
 	}
-	gf_err := gf_identity_lib.Init_service(gf_identity__service_info, p_runtime_sys)
+	gf_err := gf_identity_lib.Init_service(gf_solo_http_mux,
+		gf_identity__service_info,
+		p_runtime_sys)
 	if gf_err != nil {
 		return
 	}
@@ -99,7 +105,9 @@ func Run(p_config *GF_config,
 	sentry_hub_clone := sentry.CurrentHub().Clone()
 	go func(p_local_hub *sentry.Hub) {
 
-		service_info := &gf_admin_lib.GF_service_info{
+		admin_http_mux := http.NewServeMux()
+
+		admin_service_info := &gf_admin_lib.GF_service_info{
 			Admin_mfa_secret_key_base32_str:         p_config.Admin_mfa_secret_key_base32_str,
 			Admin_email_str:                         p_config.Admin_email_str,
 			Enable_events_app_bool:                  true,
@@ -107,8 +115,21 @@ func Run(p_config *GF_config,
 			Enable_email_bool:                       true,
 		}
 
-		http_mux, gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,
-			service_info,
+		// IMPORTANT!! - since admin is listening on its own port, and likely its own domain
+		//               we want further isolation from main app handlers by
+		//               instantiating gf_identity handlers dedicated to admin.
+		admin_identity__service_info := &gf_identity_lib.GF_service_info{
+			Domain_base_str:                         p_config.Domain_admin_base_str,
+			Enable_events_app_bool:                  true,
+			Enable_user_creds_in_secrets_store_bool: true,
+			Enable_email_bool:                       true,
+			Enable_email_require_confirm_for_login_bool: true,
+		}
+
+		gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,
+			admin_service_info,
+			admin_identity__service_info,
+			admin_http_mux,
 			p_local_hub,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -116,13 +137,13 @@ func Run(p_config *GF_config,
 		}
 
 		// SERVER_INIT - blocking
-		gf_rpc_lib.Server__init_with_mux(port_admin_int, http_mux)
+		gf_rpc_lib.Server__init_with_mux(port_admin_int, admin_http_mux)
 
 	}(sentry_hub_clone)
 
 	//-------------
 	// GF_HOME
-	gf_err = gf_home_lib.Init_service(p_runtime_sys)
+	gf_err = gf_home_lib.Init_service(gf_solo_http_mux, p_runtime_sys)
 	if gf_err != nil {
 		return
 	}
@@ -153,14 +174,17 @@ func Run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 	}
 
-	jobs_mngr_ch := gf_images_lib.Init_service(gf_images__service_info,
+	jobs_mngr_ch := gf_images_lib.Init_service(gf_solo_http_mux,
+		gf_images__service_info,
 		gf_images__config,
 		p_runtime_sys)
 
 	//-------------
 	// GF_LANDING_PAGE
 
-	gf_landing_page_lib.Init_service(p_config.Templates_paths_map, p_runtime_sys)
+	gf_landing_page_lib.Init_service(p_config.Templates_paths_map,
+		gf_solo_http_mux,
+		p_runtime_sys)
 
 	//-------------
 	// GF_ANALYTICS
@@ -183,6 +207,7 @@ func Run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 	}
 	gf_analytics_lib.Init_service(gf_analytics__service_info,
+		gf_solo_http_mux,
 		p_runtime_sys)
 
 	//-------------
@@ -200,28 +225,28 @@ func Run(p_config *GF_config,
 		Templates_dir_paths_map: p_config.Templates_paths_map,
 	}
 	
-	gf_publisher_lib.Init_service(gf_images_runtime_info,
+	gf_publisher_lib.Init_service(gf_solo_http_mux,
+		gf_images_runtime_info,
 		p_runtime_sys)
 
 	//-------------
 	// GF_TAGGER
 	gf_tagger_lib.Init_service(p_config.Templates_paths_map,
 		jobs_mngr_ch,
+		gf_solo_http_mux,
 		p_runtime_sys)
 
 	//-------------
 	// GF_ML
-	gf_ml_lib.Init_service(p_runtime_sys)
+	gf_ml_lib.Init_service(gf_solo_http_mux, p_runtime_sys)
 
 	//-------------
-
-	
 
 	// METRICS
 	gf_core.Metrics__init("/metrics", port_metrics_int)
 
 	// SERVER_INIT - blocking
-	gf_rpc_lib.Server__init(port_int)
+	gf_rpc_lib.Server__init_with_mux(port_int, gf_solo_http_mux)
 }
 
 //-------------------------------------------------

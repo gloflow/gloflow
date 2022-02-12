@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_crawl_lib
 
 import (
-	"time"
 	"net/http"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
@@ -32,9 +32,9 @@ func init_handlers(p_media_domain_str string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str string,
 	p_templates_paths_map          map[string]string,
+	p_http_mux                     *http.ServeMux,
 	p_runtime                      *gf_crawl_core.Gf_crawler_runtime,
 	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_handlers.init_handlers()")
 	
 	//---------------------
 	// TEMPLATES
@@ -45,135 +45,137 @@ func init_handlers(p_media_domain_str string,
 	}
 
 	//----------------
-	http.HandleFunc("/a/crawl/image/recent", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/recent ----------")
+	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/image/recent",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "GET" {
 
-			//------------------
-			recent_images_lst, gf_err := gf_crawl_core.Images__db_get_recent(p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl/image/recent", "failed to get recently crawled images", gf_err, p_resp, p_runtime_sys)
-				return
+				//------------------
+				recent_images_lst, gf_err := gf_crawl_core.Images__db_get_recent(p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{
+					"recent_images_lst": recent_images_lst,
+				}
+				return data_map, nil
+
+				//------------------
 			}
-
-			//------------------
-			// OUTPUT
-			data_map := map[string]interface{}{
-				"recent_images_lst": recent_images_lst,
-			}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-			//------------------
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/crawl/image/recent", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_http_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 
 	//----------------
-	http.HandleFunc("/a/crawl/image/add_to_flow", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/image/add_to_flow ----------")
+	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/image/add_to_flow",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "POST" {
 
-			//--------------------------
-			// INPUT
-			i, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to get input for adding a crawled image to a flow", gf_err, p_resp, p_runtime_sys)
-				return
+				//--------------------------
+				// INPUT
+				i, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				crawler_page_image_id_str := i["crawler_page_image_id_str"].(string)
+
+				flows_names_lst := []string{}
+				for _, s := range i["flows_names_lst"].([]interface{}) {
+					flows_names_lst = append(flows_names_lst, s.(string))
+				}
+
+				//--------------------------
+				gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
+					flows_names_lst,
+
+					p_media_domain_str,
+					p_crawled_images_s3_bucket_name_str,
+					p_gf_images_s3_bucket_name_str,
+					p_runtime,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//------------------
+				// OUTPUT
+				output_map := map[string]interface{}{}
+				return output_map, nil
+
+				//------------------
 			}
-
-			crawler_page_image_id_str := i["crawler_page_image_id_str"].(string)
-
-			flows_names_lst := []string{}
-			for _, s := range i["flows_names_lst"].([]interface{}) {
-				flows_names_lst = append(flows_names_lst, s.(string))
-			}
-
-			//--------------------------
-			gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
-				flows_names_lst,
-
-				p_media_domain_str,
-				p_crawled_images_s3_bucket_name_str,
-				p_gf_images_s3_bucket_name_str,
-				p_runtime,
-				p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl/image/add_to_flow", "failed to add a crawled image to a gf_images flow", gf_err, p_resp, p_runtime_sys)
-				return
-			}
-
-			//------------------
-			// OUTPUT
-			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-			
-			//------------------
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/crawl/image/add_to_flow", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_http_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 
 	//----------------
-	http.HandleFunc("/a/crawl/search", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/search ----------")
+	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/search",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		query_term_str := p_req.URL.Query()["term"][0]
-		p_runtime_sys.Log_fun("INFO", "query_term_str - "+query_term_str)
+			if p_req.Method == "POST" {
+				
+				query_term_str := p_req.URL.Query()["term"][0]
+				p_runtime_sys.Log_fun("INFO", "query_term_str - "+query_term_str)
 
-		// IMPORTANT!! - only query if the indexer is enabled
-		if p_runtime.Esearch_client != nil {
-			gf_err := gf_crawl_core.Index__query(query_term_str, p_runtime, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl/search", "failed to query the crawled index", gf_err, p_resp, p_runtime_sys)
-				return
+				// IMPORTANT!! - only query if the indexer is enabled
+				if p_runtime.Esearch_client != nil {
+					gf_err := gf_crawl_core.Index__query(query_term_str, p_runtime, p_runtime_sys)
+					if gf_err != nil {
+						return nil, gf_err
+					}
+				}
+				//------------------
+				// OUTPUT
+				output_map := map[string]interface{}{}
+				return output_map, nil
+
+				//------------------
 			}
-		}
-		//------------------
-		// OUTPUT
-		data_map := map[string]interface{}{}
-		gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-		//------------------
-	})
+			return nil, nil
+		},
+		p_http_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 
 	//----------------
-	http.HandleFunc("/a/crawl/crawl_dashboard_ff2___1112_29", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /a/crawl/crawl_dashboard_ff2___1112_29 ----------")
+	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/crawl_dashboard",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-		if p_req.Method == "GET" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+			if p_req.Method == "GET" {
 
-			//--------------------
-			// RENDER TEMPLATE
-			gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
-				gf_templates.dashboard__subtemplates_names_lst,
-				p_resp,
-				p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/a/crawl_dashboard_ff2___1112_29", "failed to render analytics dashboard page", gf_err, p_resp, p_runtime_sys)
-				return
+				//--------------------
+				// RENDER TEMPLATE
+				gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
+					gf_templates.dashboard__subtemplates_names_lst,
+					p_resp,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+				return nil, nil
 			}
-
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/a/crawl_dashboard_ff2___1112_29", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_http_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 	
 	//--------------
 

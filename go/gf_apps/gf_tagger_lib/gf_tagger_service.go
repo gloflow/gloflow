@@ -89,17 +89,23 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 //-------------------------------------------------
 func Init_service(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_http_mux         *http.ServeMux,
 	p_runtime_sys      *gf_core.Runtime_sys) {
 	
 	//------------------------
 	// STATIC FILES SERVING
-	url_base_str := "/tags"
-	gf_core.HTTP__init_static_serving(url_base_str,
+	url_base_str       := "/tags"
+	local_dir_path_str := "./static"
+	gf_core.HTTP__init_static_serving_with_mux(url_base_str,
+		local_dir_path_str,
+		p_http_mux,
 		p_runtime_sys)
 
 	//------------------------
+	
 	gf_err := init_handlers(p_templates_paths_map,
 		p_images_jobs_mngr,
+		p_http_mux,
 		p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
@@ -132,27 +138,22 @@ func Run_service__in_process(p_port_str string,
 	runtime_sys.Mongo_db   = mongo_db 
 	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
 
-	//------------------------
-	// STATIC FILES SERVING
-	dashboard__url_base_str := "/tags"
-	gf_core.HTTP__init_static_serving(dashboard__url_base_str, runtime_sys)
-
-	//------------------------
+	//----------------------
+	http_mux := http.NewServeMux()
 
 	templates_dir_paths_map := map[string]string{
 		"gf_tag_objects": "./templates/gf_tag_objects/gf_tag_objects.html",
 	}
-
 
 	// FIX!! - jobs_mngr shouldnt be used here. when gf_tagger service is run in a separate
 	//         process from gf_images service, jobs_mngr can only be reaeched via HTTP or some other
 	//         transport mechanism (not via Go messages as a goroutine).
 	var jobs_mngr gf_images_jobs_core.Jobs_mngr
 
-	gf_err = init_handlers(templates_dir_paths_map, jobs_mngr, runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
-	}
+	Init_service(templates_dir_paths_map,
+		jobs_mngr,
+		http_mux,
+		runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

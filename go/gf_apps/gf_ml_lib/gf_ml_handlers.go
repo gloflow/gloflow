@@ -20,36 +20,30 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_ml_lib
 
 import (
+	"context"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_handlers.init_handlers()")
-
-
-
-
+func init_handlers(p_mux *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// DATASETS_CREATE - register a dataset
 
-	http.HandleFunc("/ml/datasets/register", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST - /ml/datasets/register ----------")
-
-
-	})
-
-
-
+	gf_rpc_lib.Create_handler__http_with_mux("/ml/datasets/register",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			return nil, nil
+		},
+		p_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 
 	//---------------------
-
-
-
-
-
 
 	return nil
 }

@@ -20,15 +20,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
+	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init_service(p_mux *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(p_mux, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

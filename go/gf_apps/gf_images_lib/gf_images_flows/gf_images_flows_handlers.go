@@ -29,9 +29,10 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_templates_paths_map map[string]string,
-	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init_handlers(p_mux *http.ServeMux,
+	p_templates_paths_map map[string]string,
+	p_jobs_mngr_ch        chan gf_images_jobs_core.Job_msg,
+	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
 
 	//---------------------
@@ -56,7 +57,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 	//-------------------------------------------------
 	// GET_ALL_FLOWS
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/images/flows/all",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/images/flows/all",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -76,13 +77,15 @@ func Init_handlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil, 
 		p_runtime_sys)
 
 	//-------------------------------------------------
 	// ADD_IMAGE
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/flows/add_img",
+	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/add_img",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -131,15 +134,17 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//-------------------------------------------------
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/flows/imgs_exist",
+	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/imgs_exist",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -180,15 +185,17 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		false, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//-------------------------------------------------
 	// FLOWS_BROWSER
 	//-------------------------------------------------
 	// BROWSER
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/flows/browser",
+	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/browser",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -221,15 +228,17 @@ func Init_handlers(p_templates_paths_map map[string]string,
 			}
 
 			return nil, nil
-		},	
+		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//-------------------------------------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/images/flows/browser_page",
+	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/browser_page",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -250,8 +259,10 @@ func Init_handlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//-------------------------------------------------

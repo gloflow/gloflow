@@ -35,13 +35,18 @@ type GF_images_extern_runtime_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys *gf_core.Runtime_sys) {
+func Init_service(p_http_mux *http.ServeMux,
+	p_gf_images_runtime_info *GF_images_extern_runtime_info,
+	p_runtime_sys            *gf_core.Runtime_sys) {
 
 	//------------------------
 	// STATIC FILES SERVING
 	static_files__url_base_str := "/posts"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+	local_dir_path_str         := "./static"
+	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
+		local_dir_path_str,
+		p_http_mux,
+		p_runtime_sys)
 	
 	//------------------------
 
@@ -54,6 +59,7 @@ func Init_service(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	err := init_handlers(p_gf_images_runtime_info,
 		p_gf_images_runtime_info.Templates_dir_paths_map,
+		p_http_mux,
 		p_runtime_sys)
 	if err != nil {
 		msg_str := "failed to initialize http handlers - "+fmt.Sprint(err)
@@ -122,7 +128,10 @@ func Run_service(p_port_str string,
 
 	//------------------------
 	// INIT
-	Init_service(p_gf_images_runtime_info, runtime_sys)
+
+	http_mux := http.NewServeMux()
+
+	Init_service(http_mux, p_gf_images_runtime_info, runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

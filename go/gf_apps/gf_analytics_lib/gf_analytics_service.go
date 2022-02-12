@@ -53,6 +53,7 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func Init_service(p_service_info *GF_service_info,
+	p_http_mux    *http.ServeMux,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 	//-----------------
@@ -75,13 +76,15 @@ func Init_service(p_service_info *GF_service_info,
 		panic(1)
 	}*/
 
-	init_handlers(p_service_info.Templates_paths_map, p_runtime_sys)
+	init_handlers(p_service_info.Templates_paths_map, p_http_mux, p_runtime_sys)
 
 	//------------------------
 	// GF_DOMAINS
 	gf_domains_lib.DB_index__init(p_runtime_sys)
 	gf_domains_lib.Init_domains_aggregation(p_runtime_sys)
-	gf_err = gf_domains_lib.Init_handlers(p_service_info.Templates_paths_map, p_runtime_sys)
+	gf_err = gf_domains_lib.Init_handlers(p_service_info.Templates_paths_map,
+		p_http_mux,
+		p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -105,6 +108,7 @@ func Init_service(p_service_info *GF_service_info,
 		p_service_info.AWS_secret_access_key_str,
 		p_service_info.AWS_token_str,
 		esearch_client,
+		p_http_mux,
 		p_runtime_sys)
 
 	//------------------------
@@ -133,7 +137,10 @@ func Run_service(p_service_info *GF_service_info,
 	
 	//------------------------
 	// INIT
+	http_mux := http.NewServeMux()
+
 	Init_service(p_service_info,
+		http_mux,
 		p_runtime_sys)
 	
 	//------------------------

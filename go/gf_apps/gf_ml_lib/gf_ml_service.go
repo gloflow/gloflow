@@ -36,12 +36,13 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(p_runtime_sys *gf_core.Runtime_sys) {
+func Init_service(p_http_mux *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_service.Init_service()")
 
 	//-------------
 	// HANDLERS
-	gf_err := init_handlers(p_runtime_sys)
+	gf_err := init_handlers(p_http_mux, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -77,7 +78,10 @@ func Run_service(p_service_info *GF_service_info,
 	runtime_sys.Mongo_coll = mongo_coll
 	//-------------
 	// INIT
-	Init_service(runtime_sys)
+
+	http_mux := http.NewServeMux()
+
+	Init_service(http_mux, runtime_sys)
 
 	//-------------
 

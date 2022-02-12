@@ -29,7 +29,8 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers(p_mux *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
@@ -40,14 +41,16 @@ func init_handlers(p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// HOME
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/home/",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/home/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			return nil, nil
 			
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------

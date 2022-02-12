@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
-	"time"
 	"context"
 	"net/http"
 	"github.com/mitchellh/mapstructure"
@@ -32,7 +31,8 @@ import (
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_mux              *http.ServeMux,
+	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
 
 	// TEMPLATES
@@ -57,7 +57,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// BOOKMARKS
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/bookmarks/create",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/bookmarks/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
@@ -94,13 +94,15 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/bookmarks/get",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/bookmarks/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
@@ -118,12 +120,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 			}
 
 			//------------------
-
-
-
-
-			
-
 
 			output, gf_err := bookmarks__pipeline__get(input,
 				gf_templates.bookmarks__tmpl,
@@ -152,19 +148,20 @@ func init_handlers(p_templates_paths_map map[string]string,
 			return nil, nil
 
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------
 	// NOTES
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/notes/create",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/notes/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 			if p_req.Method == "POST" {
-				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-	
+
 				//------------
 				// INPUT
 				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
@@ -178,12 +175,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 				if gf_err != nil {
 					return nil, gf_err
 				}
-	
-				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-	
-				go func() {
-					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/add_note", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-				}()
 				
 				data_map := map[string]interface{}{}
 				return data_map, nil
@@ -191,29 +182,24 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------
 	// GET_NOTES
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/notes/get",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/notes/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
-				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 				notes_lst, gf_err := notes__pipeline__get(p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err 
 				}
-
-				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-				go func() {
-					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/get_notes", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-				}()
 
 				data_map := map[string]interface{}{"notes_lst": notes_lst,}
 				return data_map, nil
@@ -221,8 +207,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------
@@ -230,12 +218,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADD_TAGS
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
-		
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/create",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
-				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 				//------------
 				// INPUT
@@ -251,30 +237,25 @@ func init_handlers(p_templates_paths_map map[string]string,
 					return nil, gf_err
 				}
 
-				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-				go func() {
-					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/add_tags", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-				}()
-
 				data_map := map[string]interface{}{}
 				return data_map, nil
 			}
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 	
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/tags/objects",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/objects",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
-				start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 				objects_with_tag_lst, gf_err := tags__pipeline__get_objects(p_req, p_resp, 
 					gf_templates.tag_objects__tmpl,
@@ -283,12 +264,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 				if gf_err != nil {
 					return nil, gf_err
 				}
-
-				end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-				go func() {
-					gf_rpc_lib.Store_rpc_handler_run("/v1/tags/objects", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-				}()
 
 				// if the response_format was HTML then objects_with_tag_lst is nil,
 				// in which case there is no json to send back
@@ -303,8 +278,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,
 		p_runtime_sys)
 
 	//---------------------

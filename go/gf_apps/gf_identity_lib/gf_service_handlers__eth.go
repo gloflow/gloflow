@@ -29,8 +29,9 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__eth(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers__eth(p_mux *http.ServeMux,
+	p_service_info *GF_service_info,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
@@ -44,7 +45,7 @@ func init_handlers__eth(p_service_info *GF_service_info,
 	//---------------------
 	// USERS_PREFLIGHT
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/eth/preflight",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/preflight",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -76,14 +77,16 @@ func init_handlers__eth(p_service_info *GF_service_info,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/eth/login",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -127,15 +130,17 @@ func init_handlers__eth(p_service_info *GF_service_info,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/eth/create",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -151,7 +156,7 @@ func init_handlers__eth(p_service_info *GF_service_info,
 					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
 					Auth_signature_str:   GF_auth_signature(input_map["auth_signature_str"].(string)),
 				}
-
+				
 				//---------------------
 				output, gf_err := users_auth_eth__pipeline__create(input, p_ctx, p_runtime_sys)
 				if gf_err != nil {
@@ -167,8 +172,10 @@ func init_handlers__eth(p_service_info *GF_service_info,
 
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------

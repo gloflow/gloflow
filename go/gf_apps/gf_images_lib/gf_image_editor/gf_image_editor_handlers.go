@@ -20,44 +20,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_image_editor
 
 import (
-	"fmt"
-	"time"
+	"context"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
-func Init_handlers(p_runtime_sys *gf_core.Runtime_sys) {
+func Init_handlers(p_mux *http.ServeMux,
+	p_runtime_sys *gf_core.Runtime_sys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor_handlers.Init_handlers()")
 
 	//---------------------
-	http.HandleFunc("/images/editor/save", func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s %s ----------", p_req.Method, p_req.URL))
+	gf_rpc_lib.Create_handler__http_with_mux("/images/editor/save",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		
+			if p_req.Method == "POST" {
 
-		if p_req.Method == "POST" {
-			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+				//-------------------
+				gf_err := save_edited_image__pipeline("/images/editor/save", p_req, p_resp, p_req.Context(), p_runtime_sys)
 
-			//-------------------
-			gf_err := save_edited_image__pipeline("/images/editor/save", p_req, p_resp, p_req.Context(), p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+				
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{}
+				return data_map, nil
 
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler("/images/editor/save", "failed to save modified image", gf_err, p_resp, p_runtime_sys)
-				return
+				//------------------
 			}
-			
- 			//------------------
-			// OUTPUT
-			data_map := map[string]interface{}{}
-			gf_rpc_lib.Http_respond(data_map, "OK", p_resp, p_runtime_sys)
-
-			//------------------
-			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-			go func() {
-				gf_rpc_lib.Store_rpc_handler_run("/images/editor/save", start_time__unix_f, end_time__unix_f, p_runtime_sys)
-			}()
-		}
-	})
+			return nil, nil
+		},
+		p_mux,
+		nil,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
+	
 	//---------------------
 }

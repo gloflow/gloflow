@@ -29,8 +29,9 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers(p_mux *http.ServeMux,
+	p_service_info *GF_service_info,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_identity_lib.init_handlers()")
 
 	//---------------------
@@ -44,7 +45,7 @@ func init_handlers(p_service_info *GF_service_info,
 
 	//---------------------
 	// EMAIL_CONFIRM
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/email_confirm",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/email_confirm",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -83,15 +84,17 @@ func init_handlers(p_service_info *GF_service_info,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_UPDATE
 	// AUTH - only logged in users can update their own details
 
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/update",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -145,14 +148,16 @@ func init_handlers(p_service_info *GF_service_info,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_GET_ME
 	// AUTH
-	gf_rpc_lib.Create_handler__http_with_metrics("/v1/identity/me",
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/me",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -193,8 +198,10 @@ func init_handlers(p_service_info *GF_service_info,
 			}
 			return nil, nil
 		},
+		p_mux,
 		metrics,
 		true, // p_store_run_bool
+		nil,  // p_local_hub
 		p_runtime_sys)
 
 	//---------------------
