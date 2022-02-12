@@ -57,7 +57,7 @@ func Test__templates(p_test *testing.T) {
 		p_test.Fail()
 	}
 
-	template_rendered_str, gf_err := admin__render_template(gf_templates.dashboard__tmpl,
+	template_rendered_str, gf_err := view__render_template_dashboard(gf_templates.dashboard__tmpl,
 		gf_templates.dashboard__subtemplates_names_lst,
 		runtime_sys)
 	if gf_err != nil {
