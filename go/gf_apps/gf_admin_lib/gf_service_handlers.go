@@ -203,13 +203,13 @@ func tmpl__load(p_templates_paths_map map[string]string,
 	login_template_filepath_str     := p_templates_paths_map["gf_admin_login"]
 	dashboard_template_filepath_str := p_templates_paths_map["gf_admin_dashboard"]
 
-	d_tmpl, d_subtemplates_names_lst, gf_err := gf_core.Templates__load(login_template_filepath_str,
+	l_tmpl, l_subtemplates_names_lst, gf_err := gf_core.Templates__load(login_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	l_tmpl, l_subtemplates_names_lst, gf_err := gf_core.Templates__load(dashboard_template_filepath_str,
+	d_tmpl, d_subtemplates_names_lst, gf_err := gf_core.Templates__load(dashboard_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
