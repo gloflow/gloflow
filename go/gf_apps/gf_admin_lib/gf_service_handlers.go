@@ -57,7 +57,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/v1/admin/login",
-		"/v1/admin/mfa_confirm",
 		"/v1/admin/dashboard",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
@@ -95,51 +94,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
 			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
 			//               from returning it.
-			return nil, nil
-		},
-		p_http_mux,
-		metrics,
-		true, // p_store_run_bool
-		p_local_hub,
-		p_runtime_sys)
-
-	//---------------------
-	// MFA_CONFIRM
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/mfa_confirm",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-
-			if p_req.Method == "POST" {
-
-				//---------------------
-				// INPUT
-
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
-				var extern_htop_value_str string
-				if input_extern_htop_value_str, ok := input_map["mfa_val_str"].(string); ok {
-					extern_htop_value_str = input_extern_htop_value_str
-				}
-
-				//---------------------
-				
-				valid_bool, gf_err := Pipeline__mfa_confirm(extern_htop_value_str,
-					p_service_info.Admin_mfa_secret_key_base32_str,
-					p_ctx,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
-
-				output_map := map[string]interface{}{
-					"mfa_valid_bool": valid_bool,
-				}
-				return output_map, nil
-			}
-
 			return nil, nil
 		},
 		p_http_mux,

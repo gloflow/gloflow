@@ -110,7 +110,6 @@ func Run(p_config *GF_config,
 
 		admin_service_info := &gf_admin_lib.GF_service_info{
 			Name_str:                                "gf_admin",
-			Admin_mfa_secret_key_base32_str:         p_config.Admin_mfa_secret_key_base32_str,
 			Admin_email_str:                         p_config.Admin_email_str,
 			Enable_events_app_bool:                  true,
 			Enable_user_creds_in_secrets_store_bool: true,
@@ -127,6 +126,7 @@ func Run(p_config *GF_config,
 			Enable_user_creds_in_secrets_store_bool: true,
 			Enable_email_bool:                       true,
 			Enable_email_require_confirm_for_login_bool: true,
+			Admin_mfa_secret_key_base32_str:             p_config.Admin_mfa_secret_key_base32_str,
 		}
 
 		gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,

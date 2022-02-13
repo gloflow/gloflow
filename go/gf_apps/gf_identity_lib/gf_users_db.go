@@ -34,6 +34,7 @@ type GF_user__update_op struct {
 	Description_str      string
 	Email_str            string
 	Email_confirmed_bool bool
+	MFA_confirm_bool     *bool // if nil dont update, else update to true/false
 }
 
 //---------------------------------------------------
@@ -313,6 +314,12 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 		fields_targets["email_confirmed_bool"] = true
 	}
 	
+	// MFA_confirm_bool - is a pointer. if its not nil, then set
+	//                    the MFA_confirm field to either true/false.
+	if p_update_op.MFA_confirm_bool != nil {
+		fields_targets["mfa_confirm_bool"] = p_update_op.MFA_confirm_bool
+	}
+
 	//------------------------
 	
 	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{

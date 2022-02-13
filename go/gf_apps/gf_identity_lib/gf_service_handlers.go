@@ -29,7 +29,7 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_mux *http.ServeMux,
+func init_handlers(p_http_mux *http.ServeMux,
 	p_service_info *GF_service_info,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_identity_lib.init_handlers()")
@@ -37,11 +37,62 @@ func init_handlers(p_mux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/identity/mfa_confirm",
 		"/v1/identity/email_confirm",
 		"/v1/identity/update",
 		"/v1/identity/me",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(p_service_info.Name_str, handlers_endpoints_lst)
+
+	//---------------------
+	// MFA_CONFIRM
+	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/mfa_confirm",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "POST" {
+
+				//---------------------
+				// INPUT
+
+				input_map, user_name_str, _, gf_err := http__get_user_std_input(p_req, p_resp, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				var extern_htop_value_str string
+				if input_extern_htop_value_str, ok := input_map["mfa_val_str"].(string); ok {
+					extern_htop_value_str = input_extern_htop_value_str
+				}
+
+				input := &GF_user_auth_mfa__input_confirm{
+					User_name_str:         GF_user_name(user_name_str),
+					Extern_htop_value_str: extern_htop_value_str,
+					Secret_key_base32_str: p_service_info.Admin_mfa_secret_key_base32_str,
+				}
+				
+				//---------------------
+				
+				valid_bool, gf_err := Pipeline__mfa_confirm(input,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+
+				output_map := map[string]interface{}{
+					"mfa_valid_bool": valid_bool,
+				}
+				return output_map, nil
+			}
+
+			return nil, nil
+		},
+		p_http_mux,
+		metrics,
+		true, // p_store_run_bool
+		nil,
+		p_runtime_sys)
 
 	//---------------------
 	// EMAIL_CONFIRM
@@ -84,7 +135,7 @@ func init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,  // p_local_hub
@@ -148,7 +199,7 @@ func init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,  // p_local_hub
@@ -198,7 +249,7 @@ func init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,  // p_local_hub

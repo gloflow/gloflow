@@ -25,12 +25,73 @@ import (
 	"bytes"
 	"strings"
 	"strconv"
+	"context"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base32"
 	"encoding/binary"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//------------------------------------------------
+type GF_user_auth_mfa__input_confirm struct {
+	User_name_str         GF_user_name `validate:"required,min=3,max=50"`
+	Extern_htop_value_str string       `validate:"required,min=10,max=200"`
+	Secret_key_base32_str string       `validate:"required,min=8,max=200"`
+}
+
+//------------------------------------------------
+func Pipeline__mfa_confirm(p_input *GF_user_auth_mfa__input_confirm,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+
+
+
+	htop_value_str, gf_err := TOTP_generate_value(p_input.Secret_key_base32_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
+	}
+
+
+
+
+	if p_input.Extern_htop_value_str == htop_value_str {
+
+		//------------------------
+		// USER_ID
+		user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
+		}
+		
+		//------------------------
+		// USER_UPDATE_MFA
+		mfa_confirm_bool := true
+		update_op := &GF_user__update_op{
+			MFA_confirm_bool: &mfa_confirm_bool,
+		}
+
+		// DB_UPDATE
+		// register in the DB that the user has successfuly validated its MFA
+		gf_err = db__user__update(user_id_str,
+			update_op,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
+		}
+
+		//------------------------
+		return true, nil
+	} else {
+		return false, nil
+	}
+	return false, nil
+}
 
 //---------------------------------------------------
 // TOTP - https://datatracker.ietf.org/doc/html/rfc6238
