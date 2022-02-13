@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_tagger_client from "./gf_tagger_client";
 
 //-----------------------------------------------------
-//in gf_post view
+// in gf_post view
 export function init_tag_input(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_obj_element,
@@ -103,6 +103,7 @@ export function init_tag_input(p_obj_id_str :string,
 		//	tagging_ui_element.remove();
 		// }
 	});
+
 	//------------------------
 }
 
@@ -140,7 +141,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 	// the other for the user pressing 'enter'  
 	$(tags_input_element).on('keyup', (p_event)=>{
 
-			//'ENTER' key
+			// 'ENTER' key
 			if (p_event.which == 13) {
 				p_event.preventDefault();
 				
@@ -162,12 +163,12 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 			add_tags_to_obj(p_obj_id_str,
 				p_obj_type_str,
 				tagging_input_ui_element,
-				//p_onComplete_fun
+				// p_onComplete_fun
 				(p_tags_lst :string[])=>{
 					$(tags_input_element).val('');
 					p_on_tags_created_fun(p_tags_lst);
 				},
-				//p_onError_fun
+				// p_onError_fun
 				()=>{},
 				p_log_fun);
 		});
@@ -185,6 +186,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 	
 	return tagging_input_ui_element;
 }
+
 //-----------------------------------------------------
 function place_tagging_input_ui_element(p_tagging_input_ui_element,
 	p_relative_to_element,
@@ -196,43 +198,44 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 	const relative_element__width_int = $(p_relative_to_element).width();
 	const input_ui_element__width_int = $(p_tagging_input_ui_element).width();
 
-	//p_tagging_input_ui_element.query('input').focus();
+	// p_tagging_input_ui_element.query('input').focus();
 	//------------------------
-	//Y_COORDINATE
-	//document.body.scrollTop - is added to get the 'y' coord relative to the whole doc, regardless of amount of scrolling done
-	//const relative_to_element_y_int :number = $(p_relative_to_element).offset().top + $('body').scrollTop(); //p_relative_to_element.getClientRects()[0].top.toInt() +	
+	// Y_COORDINATE
+	// document.body.scrollTop - is added to get the 'y' coord relative to the whole doc, regardless of amount of scrolling done
+	// const relative_to_element_y_int :number = $(p_relative_to_element).offset().top + $('body').scrollTop(); //p_relative_to_element.getClientRects()[0].top.toInt() +	
 	const relative_to_element_y_int :number = $(p_relative_to_element).offset().top;						
+	
 	//------------------------
-	//X_COORDINATE
+	// X_COORDINATE
 	const relative_to_element_x_int        :number = $(p_relative_to_element).offset().left;
 	const input_ui_horizontal_overflow_int :number = (input_ui_element__width_int - relative_element__width_int)/2;
 
 	var tagging_input_x :number;
 
-	//input_ui is wider then target element
+	// input_ui is wider then target element
 	if (input_ui_horizontal_overflow_int > 0) {
 
-		//input_ui is cutoff on the left side
+		// input_ui is cutoff on the left side
 		if ((relative_to_element_x_int - input_ui_horizontal_overflow_int) < 0) {
 
-			//position input_ui with its left side aligned with left edge of element to be tagged
+			// position input_ui with its left side aligned with left edge of element to be tagged
 			tagging_input_x = relative_to_element_x_int;
 		}
-		//input_ui is cutoff on the right side
+		// input_ui is cutoff on the right side
 		else if (((relative_to_element_x_int+relative_element__width_int) + input_ui_horizontal_overflow_int) > $(window).innerWidth()) {
 
-			//position inpout_ui with its right edge aligned with the right edge of element to be tagged
+			// position inpout_ui with its right edge aligned with the right edge of element to be tagged
 			tagging_input_x = (relative_to_element_x_int+relative_element__width_int) - input_ui_element__width_int;
 		}
-		//no cutoff
+		// no cutoff
 		else {
-			//positions that tag input container in the middle, and above, of the post_element
+			// positions that tag input container in the middle, and above, of the post_element
 			tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
 		}
 	}
-	//input_ui is narrower then element, so just position normally
+	// input_ui is narrower then element, so just position normally
 	else {
-		//positions that tag input container in the middle, and above, of the post_element
+		// positions that tag input container in the middle, and above, of the post_element
 		tagging_input_x = relative_to_element_x_int-(input_ui_element__width_int-relative_element__width_int)/2;
 	}
 
@@ -242,8 +245,9 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 	$(p_tagging_input_ui_element).css('left',     tagging_input_x+'px');
 	$(p_tagging_input_ui_element).css('top',      tagging_input_y+'px');
 }
+
 //-----------------------------------------------------
-//TAGS SENDING TO SERVER
+// TAGS SENDING TO SERVER
 //-----------------------------------------------------
 function add_tags_to_obj(p_obj_id_str :string,
 	p_obj_type_str :string,
@@ -265,7 +269,7 @@ function add_tags_to_obj(p_obj_id_str :string,
 		existing_tags_lst.push(tag_str);
 	});
 
-	//filter out only tags that are currently not existing/attached to this object
+	// filter out only tags that are currently not existing/attached to this object
 	const new_tags_lst :string[] = [];
 	for (var tag_str of tags_lst) {
 		if (tag_str in existing_tags_lst) {
@@ -277,7 +281,7 @@ function add_tags_to_obj(p_obj_id_str :string,
 	console.log(existing_tags_lst);
 	console.log(new_tags_lst);
 
-	//ADD!! - some visual success/failure indicator
+	// ADD!! - some visual success/failure indicator
 	gf_tagger_client.add_tags_to_obj(new_tags_lst,
 		p_obj_id_str,
 		p_obj_type_str,
@@ -290,6 +294,7 @@ function add_tags_to_obj(p_obj_id_str :string,
 		()=>{}, //p_onError_fun
 		p_log_fun);
 }
+
 /*//-----------------------------------------------------
 //in gf_posts_browser view
 init_image_view_post_tag_input(DivElement p_post_element,

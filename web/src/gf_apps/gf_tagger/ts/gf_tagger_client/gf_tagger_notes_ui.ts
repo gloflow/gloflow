@@ -61,16 +61,17 @@ export function init(p_obj_id_str :string,
 			$(p_obj_element).append(notes_panel);
 
 			//------------------------
-			//GET
+			// GET
 			if (!notes_init_bool) {
 
 				//------------
-				//NOTE_INPUT_PANEL
+				// NOTE_INPUT_PANEL
 				const note_input_panel = $(`
 					<div class='note_input_panel'>
 						<textarea name="note_input" cols="30" rows="3"></textarea>
 					</div>`);
 				notes_panel.append(note_input_panel);
+				
 				//------------
 				
 				get_notes(p_obj_id_str,
@@ -81,17 +82,19 @@ export function init(p_obj_id_str :string,
 					},
 					p_log_fun);				
 			}
+
 			//------------------------
 			$(notes_panel).css('visibility',"visible");
 		}		
 	});
+
 	//------------------------
 	add_note_btn.on('click', (p_event)=>{
 		run__remote_add_note(p_obj_id_str,
 			p_obj_type_str,
 			notes_panel,
 
-			//p_onComplete_fun,
+			// p_onComplete_fun,
 			()=>{
 				//----------------------
 				// GROW BACKGROUND
@@ -105,9 +108,10 @@ export function init(p_obj_id_str :string,
 			},
 			p_log_fun);
 	});
+
 	//------------------------
-	//IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
-	//              but unline mouseon/mouseout it will not fire if its children are entered/left.
+	// IMPORTANT!! - onMouseEnter/onMouseLeave fire when the target element is entered/left, 
+	//               but unline mouseon/mouseout it will not fire if its children are entered/left.
 	$(p_obj_element).on('mouseenter', (p_event)=>{
 		$(notes_panel_btn).css('visibility', 'visible');
 	});
@@ -115,16 +119,19 @@ export function init(p_obj_id_str :string,
 	$(p_obj_element).on('mouseleave', (p_event)=>{
 		$(notes_panel_btn).css('visibility', 'hidden');
 	});
+
 	//------------------------
-	//'ESCAPE' key
+	// 'ESCAPE' key
 	$(document).on('keyup', (p_event)=>{
 		if (p_event.which == 27) {
-			//remove any previously present note_input_container's
+			// remove any previously present note_input_container's
 			$(notes_panel).remove();
 		}
 	});
+
 	//------------------------
 }
+
 //-----------------------------------------------------
 function get_notes(p_obj_id_str :string,
 	p_obj_type_str :string,
@@ -134,10 +141,10 @@ function get_notes(p_obj_id_str :string,
 	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.get_notes()');
 
 	//------------------------
-	//IMPORTANT!! - get notes via HTTP from backend gf_tagger_service
+	// IMPORTANT!! - get notes via HTTP from backend gf_tagger_service
 	gf_tagger_client.get_notes(p_obj_id_str,
 		p_obj_type_str,
-		//p_on_complete_fun
+		// p_on_complete_fun
 		(p_notes_lst :Object[])=>{
 
 			for (var note_map of p_notes_lst) {
@@ -152,47 +159,50 @@ function get_notes(p_obj_id_str :string,
 			}
 			p_on_complete_fun();
 		},
-		()=>{}, //p_onError_fun
+		()=>{}, // p_onError_fun
 		p_log_fun);
+
 	//------------------------	
 }
+
 //-----------------------------------------------------
 function run__remote_add_note(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_notes_panel,
 	p_on_complete_fun,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.run__remote_add_note()');
+	p_log_fun('FUN_ENTER', 'gf_tagger_notes_ui.run__remote_add_note()');
 
 	const text_element          = $(p_notes_panel).find('.note_input_panel textarea');
 	const note_body_str :string = $(text_element).val();
-	p_log_fun('INFO','note_body_str        - $note_body_str');
-	p_log_fun('INFO','note_body_str.length - ${note_body_str.length}');
+	p_log_fun('INFO', 'note_body_str        - $note_body_str');
+	p_log_fun('INFO', 'note_body_str.length - ${note_body_str.length}');
 
 	if (note_body_str.length > 0) {
 
-		//ADD!! - some visual success/failure indicator
+		// ADD!! - some visual success/failure indicator
 		gf_tagger_client.add_note_to_obj(note_body_str,
 			p_obj_id_str,
 			p_obj_type_str,
 			()=>{
 				add_note_view(note_body_str,
-					'anonymouse', //p_anonymous_user_str,
+					'anonymouse', // p_anonymous_user_str,
 					p_notes_panel,
 					p_log_fun);
 				
 				$(text_element).val(''); //reset text
 			},
-			()=>{}, //p_onError_fun
+			()=>{}, // p_onError_fun
 			p_log_fun);
 	}
 }
+
 //-----------------------------------------------------
 function add_note_view(p_body_str :string,
 	p_user_id_str :string,
 	p_notes_panel,
 	p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_notes_ui.add_note_view()');
+	p_log_fun('FUN_ENTER', 'gf_tagger_notes_ui.add_note_view()');
 
 	if (p_body_str.length > 20 ) console.log(p_body_str.substring(0,20)+'...');
 
@@ -209,12 +219,12 @@ function add_note_view(p_body_str :string,
 			</div>
 		</div>`);
 
-	//other notes already exist
+	// other notes already exist
 	if ($(p_notes_panel).find('#notes').children().length > 0) {
 		const latest_note = $(p_notes_panel).find('#notes').children()[0];
 
-		//insertBefore() - makes the new_note the first element in the list,
-		//                 because the newest notes are at the top.
+		// insertBefore() - makes the new_note the first element in the list,
+		//                  because the newest notes are at the top.
 		/*$(p_notes_panel).find('#notes').insertBefore(new_note_element, //new_child
 												latest_note);        //ref_child*/
 		$(new_note_element).insertBefore(latest_note);
