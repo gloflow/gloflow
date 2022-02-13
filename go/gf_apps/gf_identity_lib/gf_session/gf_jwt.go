@@ -145,7 +145,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	// VALIDATE
-	valid_bool, user_identifier_str, gf_err := jwt__validate(p_jwt_token_val,
+	valid_bool, user_identifier_str, gf_err := JWT__validate(p_jwt_token_val,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -167,7 +167,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 
 //---------------------------------------------------
 // VALIDATE
-func jwt__validate(p_jwt_token_val GF_jwt_token_val,
+func JWT__validate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 

@@ -25,6 +25,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -49,7 +50,7 @@ func test_jwt_main(p_test *testing.T,
 
 	// JWT_GENERATE
 	user_identifier_str := string(test_user_address_eth)
-	jwt_val, gf_err := jwt__pipeline__generate(user_identifier_str,
+	jwt_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -57,7 +58,7 @@ func test_jwt_main(p_test *testing.T,
 	}
 	
 	// JWT_VALIDATE
-	valid_bool, user_identifier_str, gf_err := jwt__validate(jwt_val,
+	valid_bool, user_identifier_str, gf_err := gf_session.JWT__validate(jwt_val,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
