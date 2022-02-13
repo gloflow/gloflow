@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_identity from "./../../gf_identity/ts/gf_identity";
+import * as gf_identity     from "./../../gf_identity/ts/gf_identity";
+import * as gf_identity_mfa from "./../../gf_identity/ts/gf_identity_mfa";
 
 //--------------------------------------------------------
 $(document).ready(()=>{
@@ -47,12 +48,23 @@ function init(p_log_fun) {
     console.log("admin login")
 
 
-	// check if login is in MFA_confirm stage of login
+
+	const http_api_map = gf_identity.get_http_api();
+
+	// MFA_CONFIRM_MODE - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {
 
 
 
-		
+		const mfa_container = gf_identity_mfa.init(http_api_map,
+			// p_on_mfa_validate_fun
+			(p_mfa_valid_bool)=>{
+
+				
+			});
+
+		$("body").append(mfa_container);
+	
 
 	}
 

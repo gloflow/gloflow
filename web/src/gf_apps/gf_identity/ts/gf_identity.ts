@@ -30,41 +30,8 @@ declare var Web3;
 
 //-------------------------------------------------
 export async function init_with_http() {
-    const http_api_map = {
-
-        // ETH
-        "eth": {
-            "user_preflight_fun": async (p_user_address_eth_str)=>{
-                const output_map = await gf_identity_http.user_preflight(null, p_user_address_eth_str);
-                return output_map;
-            },
-            "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
-                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, p_auth_signature_str);
-                return output_map;
-            },
-            "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
-                const output_map = await gf_identity_http.user_eth_create(p_user_address_eth_str, p_auth_signature_str);
-                return output_map;
-            }
-        },
-
-        // USERPASS
-        "userpass": {
-            "user_preflight_fun": async (p_username_str)=>{
-                const output_map = {};
-                return output_map;
-            },
-            "user_login_fun": async (p_username_str, p_pass_str)=>{
-                const output_map = {};
-                return output_map;
-            },
-            "user_create_fun": async (p_username_str)=>{
-                const output_map = {};
-                return output_map;
-            }
-        }
-    };
-
+    
+    const http_api_map = get_http_api();
     init(http_api_map);
 }
 
@@ -138,4 +105,50 @@ async function auth_method_pick() {
         });
     });
     return p;
+}
+
+//-------------------------------------------------
+export function get_http_api() {
+    const http_api_map = {
+
+        // ETH
+        "eth": {
+            "user_preflight_fun": async (p_user_address_eth_str)=>{
+                const output_map = await gf_identity_http.user_preflight(null, p_user_address_eth_str);
+                return output_map;
+            },
+            "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, p_auth_signature_str);
+                return output_map;
+            },
+            "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
+                const output_map = await gf_identity_http.user_eth_create(p_user_address_eth_str, p_auth_signature_str);
+                return output_map;
+            }
+        },
+
+        // USERPASS
+        "userpass": {
+            "user_preflight_fun": async (p_username_str)=>{
+                const output_map = {};
+                return output_map;
+            },
+            "user_login_fun": async (p_username_str, p_pass_str)=>{
+                const output_map = {};
+                return output_map;
+            },
+            "user_create_fun": async (p_username_str)=>{
+                const output_map = {};
+                return output_map;
+            }
+        },
+
+        "mfa": {
+            "user_mfa_confirm": async (p_mfa_val_str)=>{
+                const output_map = await gf_identity_http.user_mfa_confirm(p_mfa_val_str);
+                return output_map;
+            }
+        }
+    };
+    return http_api_map;
 }

@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_3d from "./../../../gf_core/ts/gf_3d";
-import * as gf_identity_http from "./gf_identity_http";
+///<reference path="../../../d/jquery.d.ts" />
+// import * as gf_3d from "./../../../gf_core/ts/gf_3d";
 
 //-------------------------------------------------
 export async function user_auth_pipeline(p_http_api_map) {

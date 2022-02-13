@@ -114,6 +114,32 @@ export function user_userpass_login(p_user_name_str :string,
 }
 
 //-------------------------------------------------
+export function user_mfa_confirm(p_mfa_val_str :string) {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "mfa_val_str": p_mfa_val_str,
+        };
+
+        const url_str = '/v1/identity/mfa_confirm';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                p_resolve_fun(data_map);
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+
+    });
+    return p;
+}
+
+//-------------------------------------------------
 // USER_CREATE__HTTP
 export function user_eth_create(p_user_address_eth_str :string,
     p_auth_signature_str :string) {
