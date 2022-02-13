@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_session
 
 import (
 	// "fmt"
@@ -52,7 +52,7 @@ type GF_jwt_claims struct {
 
 //---------------------------------------------------
 // PIPELINE__GENERATE
-func jwt__pipeline__generate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
+func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (GF_jwt_token_val, *gf_core.GF_error) {
 

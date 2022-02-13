@@ -62,8 +62,17 @@ func init_handlers(p_templates_paths_map map[string]string,
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
 
 	//---------------------
+	// RPC_HANDLER_RUNTIME
+	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:            p_http_mux,
+		Metrics:        metrics,
+		Store_run_bool: true,
+		Sentry_hub:     p_local_hub,
+	}
+
+	//---------------------
 	// ADMIN_LOGIN
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/login",
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -96,15 +105,13 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		p_http_mux,
-		metrics,
-		true, // p_store_run_bool
-		p_local_hub,
+		rpc_handler_runtime,
 		p_runtime_sys)
 
 	//---------------------
 	// ADMIN_DASHBOARD
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/dashboard",
+	// AUTH - only logged in admins can use the dashboard
+	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -125,24 +132,25 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		p_http_mux,
-		metrics,
-		true, // p_store_run_bool
-		p_local_hub,
+		rpc_handler_runtime,
 		p_runtime_sys)
 
 	//---------------------
 	// HEALHTZ - admin has its own healthz because its started separately from other apps services
 	//           on a different port, and registeres separate handlers (on a separate mux).
 
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/admin/healthz",
+	rpc_handler_runtime_health := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:            p_http_mux,
+		Metrics:        metrics,
+		Store_run_bool: false,
+		Sentry_hub:     p_local_hub,
+	}
+
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/healthz",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
-		p_http_mux,
-		nil,
-		false, // p_store_run_bool
-		p_local_hub,
+		rpc_handler_runtime_health,
 		p_runtime_sys)
 
 	//---------------------

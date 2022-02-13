@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //-------------------------------------------------
@@ -128,7 +128,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			//---------------------
 			// SESSION_VALIDATE
-			valid_bool, _, gf_err := gf_identity_lib.Session__validate(p_req, p_ctx, p_runtime_sys)
+			valid_bool, _, gf_err := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}

@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -115,7 +116,7 @@ func init_handlers__eth(p_mux *http.ServeMux,
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
 				session_data_str      := string(output.JWT_token_val)
 				session_ttl_hours_int := 24 // 1 day
-				session__set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+				gf_session.Set_on_req(session_data_str, p_resp, session_ttl_hours_int)
 
 				//---------------------
 

@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_session
 
 import (
 	"time"
@@ -29,7 +29,7 @@ import (
 //---------------------------------------------------
 // p_user_identifier_str - user ID or some other unique user identifier to be used
 
-func session__set_on_req(p_session_data_str string,
+func Set_on_req(p_session_data_str string,
 	p_resp          http.ResponseWriter,
 	p_ttl_hours_int int) {
 
@@ -66,7 +66,7 @@ func session__set_on_req(p_session_data_str string,
 }
 
 //---------------------------------------------------
-func Session__validate(p_req *http.Request,
+func Validate(p_req *http.Request,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 	

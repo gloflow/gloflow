@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -46,6 +47,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 
 	//---------------------
 	// MFA_CONFIRM
+	// NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/mfa_confirm",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -96,6 +98,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 
 	//---------------------
 	// EMAIL_CONFIRM
+	// NO_AUTH
 	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/email_confirm",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -152,7 +155,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// SESSION_VALIDATE
-				valid_bool, user_identifier_str, gf_err := Session__validate(p_req, p_ctx, p_runtime_sys)
+				valid_bool, user_identifier_str, gf_err := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -215,7 +218,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// SESSION_VALIDATE
-				valid_bool, me_user_identifier_str, gf_err := Session__validate(p_req, p_ctx, p_runtime_sys)
+				valid_bool, me_user_identifier_str, gf_err := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

@@ -32,10 +32,18 @@ import (
 	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
+type GF_rpc_handler_runtime struct {
+	Mux            *http.ServeMux
+	Metrics        *GF_metrics
+	Store_run_bool bool
+	Sentry_hub     *sentry.Hub
+}
+
 type GF_rpc_handler_run struct {
 	Class_str          string  `bson:"class_str"` // Rpc_Handler_Run
 	Handler_url_str    string  `bson:"handler_url_str"`
@@ -46,6 +54,7 @@ type GF_rpc_handler_run struct {
 type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GF_error)
 
 //-------------------------------------------------
+// HTTP
 func Create_handler__http(p_path_str string,
 	p_handler_fun  handler_http,
 	p_runtime_sys *gf_core.Runtime_sys) {
@@ -58,7 +67,26 @@ func Create_handler__http(p_path_str string,
 }
 
 //-------------------------------------------------
-// WITH_MUX
+// HTTP_WITH_AUTH
+func Create_handler__http_with_auth(p_auth_bool bool, // if handler uses authentication or not
+	p_path_str        string,
+	p_handler_fun     handler_http,
+	p_handler_runtime *GF_rpc_handler_runtime,
+	p_runtime_sys     *gf_core.Runtime_sys) {
+
+	handler_fun := get_handler(p_auth_bool,
+		p_path_str,
+		p_handler_fun,
+		p_handler_runtime.Metrics,
+		p_handler_runtime.Store_run_bool,
+		p_handler_runtime.Sentry_hub,
+		p_runtime_sys)
+
+	p_handler_runtime.Mux.HandleFunc(p_path_str, handler_fun)
+}
+
+//-------------------------------------------------
+// HTTP_WITH_MUX
 func Create_handler__http_with_mux(p_path_str string,
 	p_handler_fun    handler_http,
 	p_mux            *http.ServeMux,
@@ -67,7 +95,8 @@ func Create_handler__http_with_mux(p_path_str string,
 	p_sentry_hub     *sentry.Hub,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
-	handler_fun := get_handler(p_path_str,
+	handler_fun := get_handler(false, // p_auth_bool
+		p_path_str,
 		p_handler_fun,
 		p_metrics,
 		p_store_run_bool,
@@ -78,14 +107,15 @@ func Create_handler__http_with_mux(p_path_str string,
 }
 
 //-------------------------------------------------
-// WITH_METRICS
+// HTTP_WITH_METRICS
 func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
-	handler_fun := get_handler(p_path_str,
+	handler_fun := get_handler(false, // p_auth_bool
+		p_path_str,
 		p_handler_fun,
 		p_metrics,
 		p_store_run_bool,
@@ -96,7 +126,8 @@ func Create_handler__http_with_metrics(p_path_str string,
 }
 
 //-------------------------------------------------
-func get_handler(p_path_str string,
+func get_handler(p_auth_bool bool,
+	p_path_str       string,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
@@ -165,9 +196,39 @@ func get_handler(p_path_str string,
 		span__root  := sentry.StartSpan(ctx, span_op_str)
 		defer span__root.Finish()
 
+		ctx_root := span__root.Context()
+
+		//------------------
+		// AUTH
+
+		var ctx_auth context.Context
+		if p_auth_bool {
+			
+			// SESSION_VALIDATE
+			valid_bool, user_identifier_str, gf_err := gf_session.Validate(p_req, ctx, p_runtime_sys)
+			if gf_err != nil {
+				Error__in_handler(path_str,
+					fmt.Sprintf("handler %s failed to execute auth validation of session", path_str),
+					nil, p_resp, p_runtime_sys)
+				return
+			}
+
+			if !valid_bool {
+				Error__in_handler(path_str,
+					fmt.Sprintf("user not authenticated to access handler %s", path_str),
+					nil, p_resp, p_runtime_sys)
+				return
+			}
+
+
+			ctx_auth = context.WithValue(ctx_root, "gf_user_name", user_identifier_str)
+		} else {
+			ctx_auth = ctx_root
+		}
+
 		//------------------
 		// HANDLER
-		data_map, gf_err := p_handler_fun(span__root.Context(), p_resp, p_req)
+		data_map, gf_err := p_handler_fun(ctx_auth, p_resp, p_req)
 
 		//------------------
 		// TRACE
@@ -179,7 +240,6 @@ func get_handler(p_path_str string,
 			Error__in_handler(p_path_str,
 				fmt.Sprintf("handler %s failed", p_path_str),
 				gf_err, p_resp, p_runtime_sys)
-
 			return
 		}
 		

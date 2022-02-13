@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //---------------------------------------------------
@@ -44,7 +45,7 @@ type GF_user_auth_userpass__output_login struct {
 	User_exists_bool     bool
 	Email_confirmed_bool bool
 	Pass_valid_bool      bool
-	JWT_token_val        GF_jwt_token_val
+	JWT_token_val        gf_session.GF_jwt_token_val
 	User_id_str          gf_core.GF_ID 
 }
 
@@ -143,7 +144,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// JWT
 	user_identifier_str := string(user_id_str)
-	jwt_token_val, gf_err := jwt__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
+	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
