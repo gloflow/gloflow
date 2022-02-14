@@ -64,10 +64,11 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
-		Mux:            p_http_mux,
-		Metrics:        metrics,
-		Store_run_bool: true,
-		Sentry_hub:     p_local_hub,
+		Mux:                p_http_mux,
+		Metrics:            metrics,
+		Store_run_bool:     true,
+		Sentry_hub:         p_local_hub,
+		Auth_login_url_str: "/v1/admin/login",
 	}
 
 	//---------------------

@@ -38,10 +38,11 @@ import (
 
 //-------------------------------------------------
 type GF_rpc_handler_runtime struct {
-	Mux            *http.ServeMux
-	Metrics        *GF_metrics
-	Store_run_bool bool
-	Sentry_hub     *sentry.Hub
+	Mux                *http.ServeMux
+	Metrics            *GF_metrics
+	Store_run_bool     bool
+	Sentry_hub         *sentry.Hub
+	Auth_login_url_str string // url redirected too if user not logged in and tries to access auth handler
 }
 
 type GF_rpc_handler_run struct {
@@ -80,6 +81,7 @@ func Create_handler__http_with_auth(p_auth_bool bool, // if handler uses authent
 		p_handler_runtime.Metrics,
 		p_handler_runtime.Store_run_bool,
 		p_handler_runtime.Sentry_hub,
+		&p_handler_runtime.Auth_login_url_str,
 		p_runtime_sys)
 
 	p_handler_runtime.Mux.HandleFunc(p_path_str, handler_fun)
@@ -101,6 +103,7 @@ func Create_handler__http_with_mux(p_path_str string,
 		p_metrics,
 		p_store_run_bool,
 		p_sentry_hub,
+		nil,
 		p_runtime_sys)
 
 	p_mux.HandleFunc(p_path_str, handler_fun)
@@ -120,6 +123,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 		p_metrics,
 		p_store_run_bool,
 		nil,
+		nil,
 		p_runtime_sys)
 
 	http.HandleFunc(p_path_str, handler_fun)
@@ -131,8 +135,9 @@ func get_handler(p_auth_bool bool,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
 	p_store_run_bool bool,
-	p_sentry_hub     *sentry.Hub,
-	p_runtime_sys    *gf_core.Runtime_sys) func(p_resp http.ResponseWriter, p_req *http.Request) {
+	p_sentry_hub         *sentry.Hub,
+	p_auth_login_url_str *string,
+	p_runtime_sys        *gf_core.Runtime_sys) func(p_resp http.ResponseWriter, p_req *http.Request) {
 
 	handler_fun := func(p_resp http.ResponseWriter, p_req *http.Request) {
 
@@ -214,9 +219,20 @@ func get_handler(p_auth_bool bool,
 			}
 
 			if !valid_bool {
-				Error__in_handler(path_str,
-					fmt.Sprintf("user not authenticated to access handler %s", path_str),
-					nil, p_resp, p_runtime_sys)
+
+				if p_auth_login_url_str != nil {
+
+					// redirect user to login url
+					http.Redirect(p_resp,
+						p_req,
+						*p_auth_login_url_str,
+						301)
+
+				} else {
+					Error__in_handler(path_str,
+						fmt.Sprintf("user not authenticated to access handler %s", path_str),
+						nil, p_resp, p_runtime_sys)
+				}
 				return
 			}
 
