@@ -44,6 +44,7 @@ type GF_user_auth_userpass__input_login struct {
 type GF_user_auth_userpass__output_login struct {
 	User_exists_bool     bool
 	Email_confirmed_bool bool
+	MFA_confirmed_bool   *bool
 	Pass_valid_bool      bool
 	JWT_token_val        gf_session.GF_jwt_token_val
 	User_id_str          gf_core.GF_ID 
@@ -55,9 +56,15 @@ type GF_user_auth_userpass__input_create struct {
 	Pass_str      string       `validate:"required,min=8,max=50"`
 	Email_str     string       `validate:"required,email"`
 }
-type GF_user_auth_userpass__output_create struct {
+type GF_user_auth_userpass__output_create_regular struct {
 	User_exists_bool         bool
 	User_in_invite_list_bool bool
+	General                  *GF_user_auth_userpass__output_create
+}
+
+type GF_user_auth_userpass__output_create struct {
+	User_name_str GF_user_name
+	User_id_str   gf_core.GF_ID
 }
 
 //---------------------------------------------------
@@ -113,6 +120,14 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 		}
 	}
 
+	// VERIFY_MFA_CONFIRMED
+	if p_service_info.Enable_mfa_require_confirm_for_login_bool {
+
+
+
+
+	}
+
 	// VERIFY_PASSWORD
 	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
 		p_input.Pass_str,
@@ -157,6 +172,98 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 }
 
 //---------------------------------------------------
+func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GF_error) {
+
+	//------------------------
+	// VALIDATE_INPUT
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	//------------------------
+
+	output_regular := &GF_user_auth_userpass__output_create_regular{}
+
+	//------------------------
+	// VALIDATE
+
+	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// user already exists, so abort creation
+	if user_exists_bool {
+		output_regular.User_exists_bool = true
+		return output_regular, nil
+	}
+
+	// check if in invite list
+	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.Email_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	// user is not in the invite list, so abort the creation
+	if !in_invite_list_bool {
+		output_regular.User_in_invite_list_bool = false
+		return output_regular, nil
+	} else {
+		output_regular.User_in_invite_list_bool = true
+	}
+
+	//------------------------
+	// PIPELINE
+	output, gf_err := users_auth_userpass__pipeline__create(p_input,
+		p_service_info,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	output_regular.General = output
+
+	//------------------------
+	// EMAIL
+	if p_service_info.Enable_email_bool {
+
+		gf_err = users_email__verify__pipeline(p_input.Email_str,
+			output.User_id_str,
+			p_service_info.Domain_base_str,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+	}
+	
+	//------------------------
+	// EVENT
+	if p_service_info.Enable_events_app_bool {
+		event_meta := map[string]interface{}{
+			"user_id_str":     output.User_id_str,
+			"user_name_str":   p_input.User_name_str,
+			"domain_base_str": p_service_info.Domain_base_str,
+		}
+		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE_REGULAR,
+			event_meta,
+			p_runtime_sys)
+	}
+
+	//------------------------
+
+
+	return output_regular, nil
+}
+
+//---------------------------------------------------
 // PIPELINE__CREATE
 func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
@@ -172,41 +279,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 
 	//------------------------
 
-	output := &GF_user_auth_userpass__output_create{}
-
-	//------------------------
-	// VALIDATE
-
-	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	// user already exists, so abort creation
-	if user_exists_bool {
-		output.User_exists_bool = true
-		return output, nil
-	}
-
-	// check if in invite list
-	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.Email_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	// user is not in the invite list, so abort the creation
-	if !in_invite_list_bool {
-		output.User_in_invite_list_bool = false
-		return output, nil
-	} else {
-		output.User_in_invite_list_bool = true
-	}
-
 	
-
-	//------------------------
 
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 	user_name_str := p_input.User_name_str
@@ -242,7 +315,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 
 	//------------------------
-	// DB
+	// DB__USER_CREATE
 	gf_err = db__user__create(user, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
@@ -267,7 +340,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 		}
 
 
-
+		// SECRET_STORE__USER_CREDS_CREATE
 		gf_err := p_runtime_sys.External_plugins.Secret_app__create_callback(secret_name_str,
 			user_creds_map,
 			secret_description_str,
@@ -278,42 +351,19 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	} else {
 
 
-		// DB - otherwise use the regular DB
+		// DB__USER_CREDS_CREATE - otherwise use the regular DB
 		gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
 	}
 	
-
 	//------------------------
-	// EMAIL
-	if p_service_info.Enable_email_bool {
-
-		gf_err = users_email__verify__pipeline(email_str,
-			user_id_str,
-			p_service_info.Domain_base_str,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
-		}
-	}
 	
-	//------------------------
-	// EVENT
-	if p_service_info.Enable_events_app_bool {
-		event_meta := map[string]interface{}{
-			"user_id_str":     user_id_str,
-			"user_name_str":   user_name_str,
-			"domain_base_str": p_service_info.Domain_base_str,
-		}
-		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE,
-			event_meta,
-			p_runtime_sys)
+	output := &GF_user_auth_userpass__output_create{
+		User_name_str: user_name_str,
+		User_id_str:   user_id_str,
 	}
-
-	//------------------------
 
 	return output, nil
 }

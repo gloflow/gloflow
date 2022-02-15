@@ -41,7 +41,7 @@ type GF_user_auth_mfa__input_confirm struct {
 }
 
 //------------------------------------------------
-func Pipeline__mfa_confirm(p_input *GF_user_auth_mfa__input_confirm,
+func mfa__pipeline__confirm(p_input *GF_user_auth_mfa__input_confirm,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 

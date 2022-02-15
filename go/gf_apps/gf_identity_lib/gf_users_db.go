@@ -59,7 +59,7 @@ func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address
 	return user_id_str, nil
 }
 
-// GET_BASIC_INFO
+// GET_BASIC_INFO_BY_USERNAME
 func db__user__get_basic_info_by_username(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
@@ -76,7 +76,7 @@ func db__user__get_basic_info_by_username(p_user_name_str GF_user_name,
 	if gf_err != nil {
 		return gf_core.GF_ID(""), gf_err
 	}
-
+	
 	return user_id_str, nil
 }
 
@@ -195,6 +195,8 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 
 //---------------------------------------------------
 // CREATE
+//---------------------------------------------------
+// CREATE_USER
 func db__user__create(p_user *GF_user,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -244,6 +246,8 @@ func db__user_creds__create(p_user_creds *GF_user_creds,
 }
 
 //---------------------------------------------------
+// GET
+//---------------------------------------------------
 func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, string, *gf_core.GF_error) {
@@ -273,7 +277,6 @@ func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 		return "", "", gf_err
 	}
 
-
 	pass_salt_str := user_creds_info_map["pass_salt_str"].(string)
 	pass_hash_str := user_creds_info_map["pass_hash_str"].(string)
 
@@ -282,6 +285,7 @@ func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 
 //---------------------------------------------------
 // UPDATE
+//---------------------------------------------------
 func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
 	p_update_op   *GF_user__update_op,
 	p_ctx         context.Context,

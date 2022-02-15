@@ -79,6 +79,7 @@ func Init_new_service(p_templates_paths_map map[string]string,
 	gf_err = init_handlers(p_templates_paths_map,
 		p_http_mux,
 		p_service_info,
+		p_identity_service_info,
 		p_local_hub,
 		p_runtime_sys)
 	if gf_err != nil {

@@ -92,6 +92,11 @@ func Run(p_config *GF_config,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
 		Enable_email_require_confirm_for_login_bool: true,
+
+		// ADD!! - for now regular users are not required to MFA confirm for login.
+		//         there should be an option for users to be able to enable this
+		//         individually if they so desire.
+		Enable_mfa_require_confirm_for_login_bool: false,
 	}
 	gf_err := gf_identity_lib.Init_service(gf_solo_http_mux,
 		gf_identity__service_info,
@@ -126,6 +131,7 @@ func Run(p_config *GF_config,
 			Enable_user_creds_in_secrets_store_bool: true,
 			Enable_email_bool:                       true,
 			Enable_email_require_confirm_for_login_bool: true,
+			Enable_mfa_require_confirm_for_login_bool:   true, // admins have to MFA confirm to login
 			Admin_mfa_secret_key_base32_str:             p_config.Admin_mfa_secret_key_base32_str,
 		}
 

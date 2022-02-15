@@ -27,6 +27,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -40,10 +41,11 @@ type gf_templates struct {
 
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_http_mux     *http.ServeMux,
-	p_service_info *GF_service_info,
-	p_local_hub    *sentry.Hub,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_http_mux              *http.ServeMux,
+	p_service_info          *GF_service_info,
+	p_identity_service_info *gf_identity_lib.GF_service_info,
+	p_local_hub             *sentry.Hub,
+	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// TEMPLATES
@@ -68,12 +70,13 @@ func init_handlers(p_templates_paths_map map[string]string,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         p_local_hub,
-		Auth_login_url_str: "/v1/admin/login",
+		Auth_login_url_str: "/v1/admin/login_ui",
 	}
 
 	//---------------------
-	// ADMIN_LOGIN
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login",
+	// ADMIN_LOGIN_UI
+	// NO_AUTH
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login_ui",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -104,6 +107,68 @@ func init_handlers(p_templates_paths_map map[string]string,
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
 			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
 			//               from returning it.
+			return nil, nil
+		},
+		rpc_handler_runtime,
+		p_runtime_sys)
+
+	//---------------------
+	// ADMIN_LOGIN
+	// NO_AUTH
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				var user_name_str string
+				if val_str, ok := input_map["user_name_str"]; ok {
+					user_name_str = val_str.(string)
+				}
+
+				var pass_str string
+				if val_str, ok := input_map["pass_str"]; ok {
+					pass_str = val_str.(string)
+				}
+
+				if user_name_str != "admin" {
+					gf_err := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
+						"verify__invalid_value_error",
+						map[string]interface{}{
+							"user_name_str": user_name_str,
+						},
+						nil, "gf_admin_lib", p_runtime_sys)
+					return nil, gf_err
+				}
+
+				input := &gf_identity_lib.GF_user_auth_admin__input_login{
+					User_name_str: user_name_str,
+					Pass_str:      pass_str,
+					Email_str:     p_service_info.Admin_email_str,
+				}
+
+				//---------------------
+
+				output, gf_err := gf_identity_lib.Users_auth_admin__pipeline__login(input,
+					p_identity_service_info,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				output_map := map[string]interface{}{
+					"pass_valid_bool": output.Pass_valid_bool,
+				}
+				return output_map, nil
+			}
 			return nil, nil
 		},
 		rpc_handler_runtime,

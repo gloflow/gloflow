@@ -47,6 +47,9 @@ type GF_service_info struct {
 	// enable login only for users that have confirmed their email
 	Enable_email_require_confirm_for_login_bool bool
 
+	// enable login only for users that have confirmed their MFA code
+	Enable_mfa_require_confirm_for_login_bool bool
+
 	// ADMIN_MFA_SECRET_KEY_BASE32
 	Admin_mfa_secret_key_base32_str string
 }
