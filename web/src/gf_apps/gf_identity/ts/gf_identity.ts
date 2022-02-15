@@ -42,6 +42,7 @@ export async function init(p_http_api_map) {
     $("#identity #login").on("click", async function(p_e) {
 
         if (!clicked_bool) {
+            clicked_bool = true;
             const method_str = await auth_method_pick();
             switch (method_str) {
                 //--------------------------
@@ -149,13 +150,12 @@ export function get_http_api(p_urls_map) {
 
         // USERPASS
         "userpass": {
-            "user_preflight_fun": async (p_username_str)=>{
-                const output_map = {};
-                return output_map;
-            },
-            "user_login_fun": async (p_username_str, p_pass_str)=>{
+            "user_login_fun": async (p_username_str, p_pass_str, p_email_str)=>{
                 const url_str    = p_urls_map["login"];
-                const output_map = {};
+                const output_map = await gf_identity_http.user_userpass_login(p_username_str,
+                    p_pass_str,
+                    p_email_str,
+                    url_str);
                 return output_map;
             },
             "user_create_fun": async (p_username_str)=>{

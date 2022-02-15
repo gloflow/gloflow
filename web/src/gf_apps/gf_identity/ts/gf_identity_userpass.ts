@@ -40,6 +40,11 @@ export async function user_auth_pipeline(p_http_api_map) {
         </div>`);
         $("#identity").append(container);
 
+        // close_dialog
+        $("body").on("click", ()=>{
+            $(container).remove();
+        })
+        
         // gf_3d.div_follow_mouse($(container)[0], document, 90);
 
         $(container).find("input#username_input").focus();
