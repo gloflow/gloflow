@@ -86,7 +86,8 @@ export function user_eth_login(p_user_address_eth_str :string,
 // USER_USERPASS_LOGIN__HTTP
 export function user_userpass_login(p_user_name_str :string,
     p_pass_hash_str :string,
-    p_email_str     :string) {
+    p_email_str     :string,
+    p_url_str       :string) {
     
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -95,9 +96,8 @@ export function user_userpass_login(p_user_name_str :string,
             "email_str":     p_email_str,
         };
 
-        const url_str = '/v1/identity/users/login';
         $.ajax({
-            'url':         url_str,
+            'url':         p_url_str,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',

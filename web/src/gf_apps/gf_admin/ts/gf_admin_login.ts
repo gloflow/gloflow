@@ -48,8 +48,13 @@ function init(p_log_fun) {
     console.log("admin login")
 
 
+	//---------------------
+	// IDENTITY
+	const urls_map = gf_identity.get_admin_http_urls();
+	gf_identity.init_with_http(urls_map);
 
-	const http_api_map = gf_identity.get_http_api();
+	
+	const http_api_map = gf_identity.get_http_api(urls_map);
 
 	// MFA_CONFIRM_MODE - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {
@@ -68,9 +73,7 @@ function init(p_log_fun) {
 
 	}
 
-	//---------------------
-	// IDENTITY
-	gf_identity.init_with_http();
+	
 	
 	//---------------------
 

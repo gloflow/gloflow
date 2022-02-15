@@ -86,7 +86,8 @@ function init(p_log_fun) {
 	
 	//---------------------
 	// IDENTITY
-	gf_identity.init_with_http();
+	const urls_map = gf_identity.get_standard_http_urls();
+	gf_identity.init_with_http(urls_map);
 	
 	//---------------------
 	

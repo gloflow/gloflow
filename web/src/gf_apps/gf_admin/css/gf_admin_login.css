@@ -8,3 +8,14 @@ body {
 
 	background-color: #d7d7d7;
 }
+
+#welcome {
+	position: absolute;
+    top: 120px;
+    left: 46%;
+    background-color: gray;
+    padding: 21px;
+    color: white;
+    user-select: none;
+    font-size: 11px;
+}

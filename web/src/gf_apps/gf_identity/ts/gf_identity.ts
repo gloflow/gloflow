@@ -29,9 +29,9 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export async function init_with_http() {
+export async function init_with_http(p_urls_map) {
     
-    const http_api_map = get_http_api();
+    const http_api_map = get_http_api(p_urls_map);
     init(http_api_map);
 }
 
@@ -108,7 +108,25 @@ async function auth_method_pick() {
 }
 
 //-------------------------------------------------
-export function get_http_api() {
+export function get_standard_http_urls() {
+    const login_url_str = '/v1/identity/users/login';
+    const urls_map = {
+        "login": login_url_str
+    };
+    return urls_map;
+}
+
+//-------------------------------------------------
+export function get_admin_http_urls() {
+    const login_url_str = '/v1/admin/login';
+    const urls_map = {
+        "login": login_url_str
+    };
+    return urls_map;
+}
+
+//-------------------------------------------------
+export function get_http_api(p_urls_map) {
     const http_api_map = {
 
         // ETH
@@ -118,7 +136,9 @@ export function get_http_api() {
                 return output_map;
             },
             "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
-                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str, p_auth_signature_str);
+                
+                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str,
+                    p_auth_signature_str);
                 return output_map;
             },
             "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
@@ -134,6 +154,7 @@ export function get_http_api() {
                 return output_map;
             },
             "user_login_fun": async (p_username_str, p_pass_str)=>{
+                const url_str    = p_urls_map["login"];
                 const output_map = {};
                 return output_map;
             },
