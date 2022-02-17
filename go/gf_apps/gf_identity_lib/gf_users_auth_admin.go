@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
@@ -119,25 +120,79 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 	}
 
 
-
-	// VERIFY_PASSWORD
-	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
-		p_input.Pass_str,
-		p_service_info,
+	//------------------------
+	// LOGIN_ATTEMPT
+	var login_attempt *GF_login_attempt
+	login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	if !pass_valid_bool {
-		output.Pass_valid_bool = false
-		return output, nil
-	} else {
-		output.Pass_valid_bool = true
+	if login_attempt == nil {
+
+		//------------------------
+		// CREATE_LOGIN_ATTEMPT
+
+		user_identifier_str  := p_input.User_name_str
+		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+		login_attempt_id_str := users__create_id(user_identifier_str, creation_unix_time_f)
+
+		login_attempt = &GF_login_attempt{
+			V_str:                "0",
+			Id_str:               login_attempt_id_str,
+			Creation_unix_time_f: creation_unix_time_f,
+			User_type_str:        "admin",
+			User_name_str:        GF_user_name(p_input.User_name_str),
+		}
+		gf_err := db__login_attempt__create(login_attempt,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		//------------------------
+	}
+	
+	//------------------------
+	// VERIFY_PASSWORD
+
+	// only verify password if the login_attempt didnt mark it yet as complete
+	if !login_attempt.Pass_confirmed_bool {
+		pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
+			p_input.Pass_str,
+			p_service_info,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		if !pass_valid_bool {
+			output.Pass_valid_bool = false
+			return output, nil
+		} else {
+			output.Pass_valid_bool = true
+
+
+			//------------------------
+			// UPDATE_LOGIN_ATTEMPT
+			update_op := &GF_login_attempt__update_op{Pass_confirmed_bool: &pass_valid_bool}
+			gf_err = db__login_attempt__update(&login_attempt.Id_str,
+				update_op,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------------
+		}
 	}
 
-
+	
 	
 
 	//------------------------

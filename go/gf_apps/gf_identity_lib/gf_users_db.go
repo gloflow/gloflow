@@ -37,8 +37,131 @@ type GF_user__update_op struct {
 	MFA_confirm_bool     *bool // if nil dont update, else update to true/false
 }
 
+type GF_login_attempt__update_op struct {
+	Pass_confirmed_bool  *bool
+	Email_confirmed_bool *bool
+	MFA_confirmed_bool   *bool
+	Deleted_bool         *bool
+}
+
 //---------------------------------------------------
-// GET_BASIC_INFO
+// USER
+//---------------------------------------------------
+// CREATE_USER
+func db__user__create(p_user *GF_user,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	coll_name_str := "gf_users"
+
+	gf_err := gf_core.Mongo__insert(p_user,
+		coll_name_str,
+		map[string]interface{}{
+			"user_id_str":        p_user.Id_str,
+			"user_name_str":      p_user.User_name_str,
+			"description_str":    p_user.Description_str,
+			"addresses_eth_lst":  p_user.Addresses_eth_lst, 
+			"caller_err_msg_str": "failed to insert GF_user into the DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	
+	return nil
+}
+
+// UPDATE
+func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
+	p_update_op   *GF_user__update_op,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	//------------------------
+	// FIELDS
+	fields_targets := bson.M{}
+
+	if string(p_update_op.User_name_str) != "" {
+		fields_targets["username_str"] = p_update_op.User_name_str
+	}
+
+	if p_update_op.Description_str != "" {
+		fields_targets["description_str"] = p_update_op.Description_str
+	}
+
+	if p_update_op.Email_str != "" {
+		fields_targets["email_str"] = p_update_op.Email_str
+
+		// IMPORTANT!! - if the email is changed then it needs to be confirmed
+		//               again. this flag on the user can only be changed to false
+		//               indirectly like here by upding the user email
+		fields_targets["email_confirmed_bool"] = false
+	}
+
+	// email_confirmed_bool itself can only be updated to explicitly
+	// if its being set to true
+	if p_update_op.Email_confirmed_bool {
+		fields_targets["email_confirmed_bool"] = true
+	}
+	
+	// MFA_confirm_bool - is a pointer. if its not nil, then set
+	//                    the MFA_confirm field to either true/false.
+	if p_update_op.MFA_confirm_bool != nil {
+		fields_targets["mfa_confirm_bool"] = p_update_op.MFA_confirm_bool
+	}
+
+	//------------------------
+	
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{
+			// "addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
+			"id_str":       p_user_id_str,
+			"deleted_bool": false,
+		},
+		bson.M{"$set": fields_targets})
+		
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to to update user info",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"user_name_str":   p_update_op.User_name_str,
+				"description_str": p_update_op.Description_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}
+
+// GET_BY_ID
+func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+
+	find_opts := options.FindOne()
+	
+	user := GF_user{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
+			"id_str":       p_user_id_str,
+			"deleted_bool": false,
+		},
+		find_opts).Decode(&user)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to find user by ID in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_id_str": p_user_id_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return &user, nil
+}
+
+// GET_BASIC_INFO_BY_ETH_ADDR
 func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
@@ -111,7 +234,7 @@ func db__user__get_basic_info(p_query bson.M,
 }
 
 //---------------------------------------------------
-// GET_BY_ETH_ADDRESS
+// GET_BY_ETH_ADDR
 func db__user__get_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
@@ -139,35 +262,35 @@ func db__user__get_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
-// GET_BY_ID
-func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
+// EXISTS_BY_USERNAME
+func db__user__exists_by_username(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
-	find_opts := options.FindOne()
-	
-	user := GF_user{}
-	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
-			"id_str":       p_user_id_str,
-			"deleted_bool": false,
+	coll_name_str := "gf_users"
+
+	count_int, gf_err := gf_core.Mongo__count(bson.M{
+			"user_name_str": p_user_name_str,
+			"deleted_bool":  false,
 		},
-		find_opts).Decode(&user)
-
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by ID in the DB",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"user_id_str": p_user_id_str,
-			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return nil, gf_err
+		map[string]interface{}{
+			"user_name_str":  p_user_name_str,
+			"caller_err_msg": "failed to check if there is a user in the DB with a given user_name",
+		},
+		p_runtime_sys.Mongo_db.Collection(coll_name_str),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
 	}
 
-	return &user, nil
+	if count_int > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
-//---------------------------------------------------
-// EXISTS_BY_ETH_ADDRESS
+// EXISTS_BY_ETH_ADDR
 func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
@@ -194,23 +317,22 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 }
 
 //---------------------------------------------------
-// CREATE
+// INVITE_LIST
 //---------------------------------------------------
-// CREATE_USER
-func db__user__create(p_user *GF_user,
+// ADD_TO_INVITE_LIST
+func db__user__add_to_invite_list(p_user_email_str string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	coll_name_str := "gf_users"
-
-	gf_err := gf_core.Mongo__insert(p_user,
+	coll_name_str   := "gf_users_invite_list"
+	user_invite_map := map[string]interface{}{
+		"user_email_str": p_user_email_str,
+	}
+	gf_err := gf_core.Mongo__insert(user_invite_map,
 		coll_name_str,
 		map[string]interface{}{
-			"user_id_str":        p_user.Id_str,
-			"user_name_str":      p_user.User_name_str,
-			"description_str":    p_user.Description_str,
-			"addresses_eth_lst":  p_user.Addresses_eth_lst, 
-			"caller_err_msg_str": "failed to insert GF_user into the DB",
+			"user_email_str":     p_user_email_str,
+			"caller_err_msg_str": "failed to add a user email to the invite_list in the DB",
 		},
 		p_ctx,
 		p_runtime_sys)
@@ -221,6 +343,36 @@ func db__user__create(p_user *GF_user,
 	return nil
 }
 
+//---------------------------------------------------
+// CHECK_IN_INVITE_LIST_BY_USERNAME
+func db__user__check_in_invitelist_by_username(p_user_email_str string,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	
+	coll_name_str := "gf_users_invite_list"
+
+	count_int, gf_err := gf_core.Mongo__count(bson.M{
+		"user_email_str": p_user_email_str,
+	},
+	map[string]interface{}{
+		"user_email_str": p_user_email_str,
+		"caller_err_msg": "failed to check if the user_name is in the invite list",
+	},
+	p_runtime_sys.Mongo_db.Collection(coll_name_str),
+	p_ctx,
+	p_runtime_sys)
+	if gf_err != nil {
+		return false, gf_err
+	}
+
+	if count_int > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+//---------------------------------------------------
+// USER_CREDS
 //---------------------------------------------------
 // CREATE_CREDS
 func db__user_creds__create(p_user_creds *GF_user_creds,
@@ -245,8 +397,6 @@ func db__user_creds__create(p_user_creds *GF_user_creds,
 	return nil
 }
 
-//---------------------------------------------------
-// GET
 //---------------------------------------------------
 func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
@@ -281,152 +431,6 @@ func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 	pass_hash_str := user_creds_info_map["pass_hash_str"].(string)
 
 	return pass_salt_str, pass_hash_str, nil
-}
-
-//---------------------------------------------------
-// UPDATE
-//---------------------------------------------------
-func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
-	p_update_op   *GF_user__update_op,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-
-	//------------------------
-	// FIELDS
-	fields_targets := bson.M{}
-
-	if string(p_update_op.User_name_str) != "" {
-		fields_targets["username_str"] = p_update_op.User_name_str
-	}
-
-	if p_update_op.Description_str != "" {
-		fields_targets["description_str"] = p_update_op.Description_str
-	}
-
-	if p_update_op.Email_str != "" {
-		fields_targets["email_str"] = p_update_op.Email_str
-
-		// IMPORTANT!! - if the email is changed then it needs to be confirmed
-		//               again. this flag on the user can only be changed to false
-		//               indirectly like here by upding the user email
-		fields_targets["email_confirmed_bool"] = false
-	}
-
-	// email_confirmed_bool itself can only be updated to explicitly
-	// if its being set to true
-	if p_update_op.Email_confirmed_bool {
-		fields_targets["email_confirmed_bool"] = true
-	}
-	
-	// MFA_confirm_bool - is a pointer. if its not nil, then set
-	//                    the MFA_confirm field to either true/false.
-	if p_update_op.MFA_confirm_bool != nil {
-		fields_targets["mfa_confirm_bool"] = p_update_op.MFA_confirm_bool
-	}
-
-	//------------------------
-	
-	_, err := p_runtime_sys.Mongo_db.Collection("gf_users").UpdateMany(p_ctx, bson.M{
-			// "addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
-			"id_str":       p_user_id_str,
-			"deleted_bool": false,
-		},
-		bson.M{"$set": fields_targets})
-		
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to to update user info",
-			"mongodb_update_error",
-			map[string]interface{}{
-				"user_name_str":   p_update_op.User_name_str,
-				"description_str": p_update_op.Description_str,
-			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return gf_err
-	}
-
-	return nil
-}
-
-//---------------------------------------------------
-// INVITE_LIST
-func db__user__check_in_invitelist_by_username(p_user_email_str string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
-	
-	coll_name_str := "gf_users_invite_list"
-
-	count_int, gf_err := gf_core.Mongo__count(bson.M{
-		"user_email_str": p_user_email_str,
-	},
-	map[string]interface{}{
-		"user_email_str": p_user_email_str,
-		"caller_err_msg": "failed to check if the user_name is in the invite list",
-	},
-	p_runtime_sys.Mongo_db.Collection(coll_name_str),
-	p_ctx,
-	p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
-	}
-
-	if count_int > 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-//---------------------------------------------------
-// EXISTS
-func db__user__exists_by_username(p_user_name_str GF_user_name,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
-
-	coll_name_str := "gf_users"
-
-	count_int, gf_err := gf_core.Mongo__count(bson.M{
-			"user_name_str": p_user_name_str,
-			"deleted_bool":  false,
-		},
-		map[string]interface{}{
-			"user_name_str":  p_user_name_str,
-			"caller_err_msg": "failed to check if there is a user in the DB with a given user_name",
-		},
-		p_runtime_sys.Mongo_db.Collection(coll_name_str),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
-	}
-
-	if count_int > 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-//---------------------------------------------------
-// ADD_TO_INVITE_LIST
-func db__user__add_to_invite_list(p_user_email_str string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-
-	coll_name_str   := "gf_users_invite_list"
-	user_invite_map := map[string]interface{}{
-		"user_email_str": p_user_email_str,
-	}
-	gf_err := gf_core.Mongo__insert(user_invite_map,
-		coll_name_str,
-		map[string]interface{}{
-			"user_email_str":     p_user_email_str,
-			"caller_err_msg_str": "failed to add a user email to the invite_list in the DB",
-		},
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-	
-	return nil
 }
 
 //---------------------------------------------------
@@ -532,4 +536,125 @@ func db__user__get_email_confirmed_by_username(p_user_name_str GF_user_name,
 	email_confirmed_bool := user_map["email_confirmed_bool"].(bool)
 	
 	return email_confirmed_bool, nil
+}
+
+//---------------------------------------------------
+// LOGIN_ATTEMPT
+//---------------------------------------------------
+func db__login_attempt__create(p_login_attempt *GF_login_attempt,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+	coll_name_str := "gf_login_attempt"
+	gf_err := gf_core.Mongo__insert(p_login_attempt,
+		coll_name_str,
+		map[string]interface{}{
+			"login_attempt_id_str": p_login_attempt.Id_str,
+			"user_type_str":        p_login_attempt.User_type_str,
+			"user_name_str":        p_login_attempt.User_name_str,
+			"caller_err_msg_str":   "failed to insert GF_login_attempt into the DB",
+		},
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+func db__login_attempt__get_by_username(p_user_name_str GF_user_name,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
+
+	coll_name_str := "gf_login_attempt"
+
+	find_opts := options.Find()
+	cursor, gf_err := gf_core.Mongo__find(bson.M{
+			"user_name_str": string(p_user_name_str),
+			"deleted_bool":  false,
+		},
+		find_opts,
+		map[string]interface{}{
+			"user_name_str":      string(p_user_name_str),
+			"caller_err_msg_str": "failed to get login_attempt by user_name from the DB",
+		},
+		p_runtime_sys.Mongo_db.Collection(coll_name_str),
+		p_ctx,
+		p_runtime_sys)
+	
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
+	// no login_attempt found for user
+	if cursor == nil {
+		return nil, nil
+	}
+	
+	login_attempts_lst := []*GF_login_attempt{}
+	err        := cursor.All(p_ctx, &login_attempts_lst)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get login_attempt from cursor",
+			"mongodb_cursor_decode",
+			map[string]interface{}{
+				"user_name_str": string(p_user_name_str),
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	login_attempt := login_attempts_lst[0]
+
+	return login_attempt, nil
+}
+
+//---------------------------------------------------
+func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
+	p_update_op   *GF_login_attempt__update_op,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+
+	
+	fields_targets := bson.M{}
+
+	if p_update_op.Pass_confirmed_bool != nil {
+		fields_targets["pass_confirmed_bool"] = *p_update_op.Pass_confirmed_bool
+	}
+	if p_update_op.Email_confirmed_bool != nil {
+		fields_targets["email_confirmed_bool"] = *p_update_op.Email_confirmed_bool
+	}
+	if p_update_op.MFA_confirmed_bool != nil {
+		fields_targets["mfa_confirmed_bool"] = *p_update_op.MFA_confirmed_bool
+	}
+	if p_update_op.Deleted_bool != nil {
+		fields_targets["deleted_bool"] = *p_update_op.Deleted_bool
+	}
+	
+
+
+
+	_, err := p_runtime_sys.Mongo_db.Collection("gf_login_attempt").UpdateMany(p_ctx, bson.M{
+		"id_str":       p_login_attempt_id_str,
+		"deleted_bool": false,
+	},
+	bson.M{"$set": fields_targets})
+		
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to to update a login_attempt",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"login_attempt_id_str": string(*p_login_attempt_id_str),
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return gf_err
+	}
+
+
+
+	return nil
 }
