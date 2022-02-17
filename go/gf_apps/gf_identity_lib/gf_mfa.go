@@ -59,25 +59,30 @@ func mfa__pipeline__confirm(p_input *GF_user_auth_mfa__input_confirm,
 
 	if p_input.Extern_htop_value_str == htop_value_str {
 
-		//------------------------
-		// USER_ID
-		user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+
+		// get a preexisting login_attempt if one exists and hasnt expired for this user.
+		// if it has then a new one will have to be created.
+		var login_attempt *GF_login_attempt
+		login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return false, gf_err
 		}
-		
-		//------------------------
-		// USER_UPDATE_MFA
-		mfa_confirm_bool := true
-		update_op := &GF_user__update_op{
-			MFA_confirm_bool: &mfa_confirm_bool,
+
+		// there is no login_attempt for this user thats active, or it has expired.
+		// do nothing, forcing the user to restart the login process.
+		if login_attempt == nil {
+			return false, nil
 		}
 
-		// DB_UPDATE
-		// register in the DB that the user has successfuly validated its MFA
-		gf_err = db__user__update(user_id_str,
+		//------------------------
+		// UPDATE_LOGIN_ATTEMPT
+		// if password is valid then update the login_attempt 
+		// to indicate that the password has been confirmed
+		mfa_confirm_bool := true
+		update_op := &GF_login_attempt__update_op{MFA_confirmed_bool: &mfa_confirm_bool}
+		gf_err = db__login_attempt__update(&login_attempt.Id_str,
 			update_op,
 			p_ctx,
 			p_runtime_sys)

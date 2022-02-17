@@ -44,8 +44,7 @@ type GF_user struct {
 	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
 
 	Email_str            string `bson:"email_str"`
-	Email_confirmed_bool bool   `bson:"email_confirmed_bool"`
-	MFA_confirm_bool     bool   `bson:"mfa_confirm_bool"`
+	Email_confirmed_bool bool   `bson:"email_confirmed_bool"` // one-time confirmation on user-creation to validate user
 	
 	// IMAGES
 	Profile_image_url_str string `bson:"profile_image_url_str"`

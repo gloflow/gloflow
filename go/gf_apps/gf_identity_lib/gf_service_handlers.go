@@ -90,7 +90,6 @@ func init_handlers(p_http_mux *http.ServeMux,
 					return nil, gf_err
 				}
 
-
 				output_map := map[string]interface{}{
 					"mfa_valid_bool": valid_bool,
 				}

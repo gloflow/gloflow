@@ -54,6 +54,12 @@ type GF_user_auth_userpass__output_create_admin struct {
 
 //---------------------------------------------------
 // PIPELINE__LOGIN
+
+// this function is entered mutliple times for complex logins where not only pass/eth_signature
+// are verified, but where email/mfa have to be confirmed as well.
+// for each of the login stages this function is entered, and the login_attempt record
+// is used to keep track of which stages have completed.
+
 func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
@@ -68,12 +74,10 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 
 	//------------------------
 
-
 	output := &GF_user_auth_admin__output_login{}
 
 	//------------------------
 	// VERIFY
-
 
 	user_exists_bool, gf_err := db__user__exists_by_username(GF_user_name(p_input.User_name_str),
 		p_ctx,
@@ -87,15 +91,17 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 	// user doesnt exist
 	if !user_exists_bool {
 		
+		//------------------------	
+		// PIPELINE__CREATE_ADMIN
+		// if the admin user doesnt exist in the DB (most likely on first run of gloflow server),
+		// create one in the DB
+
 		input_create := &GF_user_auth_userpass__input_create{
 			User_name_str: GF_user_name(p_input.User_name_str),
 			Pass_str:      p_input.Pass_str,
 			Email_str:     p_input.Email_str,
 		}
-		//------------------------	
-		// PIPELINE__CREATE_ADMIN
-		// if the admin user doesnt exist in the DB (most likely on first run of gloflow server),
-		// create one in the DB
+
 		output, gf_err := users_auth_admin__pipeline__create_admin(input_create,
 			p_service_info,
 			p_ctx,
@@ -119,9 +125,11 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 		user_id_str = existing_user_id_str
 	}
 
-
 	//------------------------
 	// LOGIN_ATTEMPT
+
+	// get a preexisting login_attempt if one exists and hasnt expired for this user.
+	// if it has then a new one will have to be created.
 	var login_attempt *GF_login_attempt
 	login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
 		p_ctx,
@@ -179,6 +187,8 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 
 			//------------------------
 			// UPDATE_LOGIN_ATTEMPT
+			// if password is valid then update the login_attempt 
+			// to indicate that the password has been confirmed
 			update_op := &GF_login_attempt__update_op{Pass_confirmed_bool: &pass_valid_bool}
 			gf_err = db__login_attempt__update(&login_attempt.Id_str,
 				update_op,
@@ -192,20 +202,22 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 		}
 	}
 
-	
-	
-
 	//------------------------
 	// EMAIL
 	if p_service_info.Enable_email_bool {
 
-		gf_err = users_email__verify__pipeline(p_input.Email_str,
-			user_id_str,
-			p_service_info.Domain_base_str,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		// go through the email verification pipeline if the email
+		// has not yet been confirmed
+		if !login_attempt.Email_confirmed_bool {
+
+			gf_err = users_email__verify__pipeline(p_input.Email_str,
+				user_id_str,
+				p_service_info.Domain_base_str,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
 		}
 	}
 
@@ -232,9 +244,6 @@ func users_auth_admin__pipeline__create_admin(p_input *GF_user_auth_userpass__in
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_admin, *gf_core.GF_error) {
-
-
-
 
 	//------------------------
 	// PIPELINE
@@ -266,5 +275,4 @@ func users_auth_admin__pipeline__create_admin(p_input *GF_user_auth_userpass__in
 		General: output,
 	}
 	return output_admin, nil
-
 }
