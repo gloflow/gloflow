@@ -169,6 +169,11 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 
 	// only verify password if the login_attempt didnt mark it yet as complete
 	if !login_attempt.Pass_confirmed_bool {
+
+
+
+
+		
 		pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
 			p_input.Pass_str,
 			p_service_info,

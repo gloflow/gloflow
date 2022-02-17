@@ -279,8 +279,6 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 
 	//------------------------
 
-	
-
 	creation_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
 	user_name_str := p_input.User_name_str
 	pass_str      := p_input.Pass_str
@@ -325,10 +323,8 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
 		p_runtime_sys.External_plugins.Secret_app__create_callback != nil {
 
-		secret_name_str := fmt.Sprintf("gf_user_creds:%s", user_name_str)
+		secret_name_str := fmt.Sprintf("gf_user_creds@%s", user_name_str)
 		secret_description_str := fmt.Sprintf("user creds for a particular user")
-
-
 
 		user_creds_map := map[string]interface{}{
 			"user_creds_id_str":    user_creds_id_str, 
@@ -339,7 +335,6 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 			"pass_hash_str":        pass_hash_str,
 		}
 
-
 		// SECRET_STORE__USER_CREDS_CREATE
 		gf_err := p_runtime_sys.External_plugins.Secret_app__create_callback(secret_name_str,
 			user_creds_map,
@@ -349,7 +344,6 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 			return nil, gf_err
 		}
 	} else {
-
 
 		// DB__USER_CREDS_CREATE - otherwise use the regular DB
 		gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
@@ -388,7 +382,7 @@ func users_auth_userpass__verify_pass(p_user_name_str GF_user_name,
 	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
 		p_runtime_sys.External_plugins.Secret_app__get_callback != nil {
 
-		secret_name_str := fmt.Sprintf("gf_user_creds:%s", p_user_name_str)
+		secret_name_str := fmt.Sprintf("gf_user_creds@%s", p_user_name_str)
 		secret_map, gf_err := p_runtime_sys.External_plugins.Secret_app__get_callback(secret_name_str,
 			p_runtime_sys)
 		if gf_err != nil {

@@ -128,7 +128,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 				if confirmed_bool {
 
 					// redirect user to login page
-					url_redirect_str := "/v1/identity/userpass/login"
+					url_redirect_str := rpc_handler_runtime.Auth_login_url_str
 					http.Redirect(p_resp,
 						p_req,
 						url_redirect_str,
