@@ -595,7 +595,7 @@ func db__login_attempt__get_by_username(p_user_name_str GF_user_name,
 	}
 	
 	login_attempts_lst := []*GF_login_attempt{}
-	err        := cursor.All(p_ctx, &login_attempts_lst)
+	err := cursor.All(p_ctx, &login_attempts_lst)
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to get login_attempt from cursor",
 			"mongodb_cursor_decode",
@@ -606,9 +606,11 @@ func db__login_attempt__get_by_username(p_user_name_str GF_user_name,
 		return nil, gf_err
 	}
 
-	login_attempt := login_attempts_lst[0]
-
-	return login_attempt, nil
+	if len(login_attempts_lst) > 0 {
+		login_attempt := login_attempts_lst[0]
+		return login_attempt, nil
+	}
+	return nil, nil
 }
 
 //---------------------------------------------------

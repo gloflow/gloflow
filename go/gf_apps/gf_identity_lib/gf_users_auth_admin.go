@@ -22,6 +22,7 @@ package gf_identity_lib
 import (
 	"time"
 	"context"
+	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
@@ -63,6 +64,7 @@ type GF_user_auth_userpass__output_create_admin struct {
 func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
+	p_local_hub    *sentry.Hub,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_admin__output_login, *gf_core.GF_error) {
 
 	//------------------------
@@ -86,8 +88,14 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 		return nil, gf_err
 	}
 
-	var user_id_str gf_core.GF_ID
+	
+	// BREADCRUMB
+	gf_core.Breadcrumbs__add("auth", "admin user checked for existence",
+		map[string]interface{}{"user_exists_bool": user_exists_bool, "user_name_str": p_input.User_name_str},
+		p_local_hub)
 
+	var user_id_str gf_core.GF_ID
+	
 	// user doesnt exist
 	if !user_exists_bool {
 		
@@ -102,6 +110,11 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 			Email_str:     p_input.Email_str,
 		}
 
+		// BREADCRUMB
+		gf_core.Breadcrumbs__add("auth", "creating new admin user",
+			map[string]interface{}{"email_str": p_input.Email_str, "user_name_str": p_input.User_name_str},
+			p_local_hub)
+		
 		output, gf_err := users_auth_admin__pipeline__create_admin(input_create,
 			p_service_info,
 			p_ctx,
@@ -124,6 +137,11 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 
 		user_id_str = existing_user_id_str
 	}
+
+	// BREADCRUMB
+	gf_core.Breadcrumbs__add("auth", "got user_id for admin user",
+		map[string]interface{}{"user_id_str": user_id_str, "user_name_str": p_input.User_name_str},
+		p_local_hub)
 
 	//------------------------
 	// LOGIN_ATTEMPT

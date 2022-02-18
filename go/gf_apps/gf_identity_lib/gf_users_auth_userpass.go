@@ -259,7 +259,6 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 
 	//------------------------
 
-
 	return output_regular, nil
 }
 
