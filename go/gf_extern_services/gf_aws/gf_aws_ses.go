@@ -105,6 +105,9 @@ func AWS_SES__send_message(p_recipiend_address_str string,
 }
 
 //---------------------------------------------------
+// verifies an email address with SES so that it can be 
+// used for sending emails from that address.
+// not used frequently
 func AWS_SES__verify_address(p_recipiend_address_str string,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
