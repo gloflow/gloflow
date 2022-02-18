@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity_eth      from "./gf_identity_eth";
 import * as gf_identity_userpass from "./gf_identity_userpass";
 import * as gf_identity_http     from "./gf_identity_http";
+import * as gf_utils             from "./../../../gf_core/ts/gf_utils";
 
 declare const window: any;
 declare var Web3;
@@ -38,11 +39,12 @@ export async function init_with_http(p_urls_map) {
 //-------------------------------------------------
 export async function init(p_http_api_map) {
 
-    var clicked_bool = false;
     $("#identity #login").on("click", async function(p_e) {
+        
+        const opened_bool = $("#identity").has("#auth_pick_dialog").length > 0;
 
-        if (!clicked_bool) {
-            clicked_bool = true;
+        if (!opened_bool) {
+            
             const method_str = await auth_method_pick();
             switch (method_str) {
                 //--------------------------
@@ -62,7 +64,6 @@ export async function init(p_http_api_map) {
         }
         else {
             $("#identity").find("#auth_pick_dialog").remove();
-            clicked_bool = false;
         }
     });
 }
@@ -70,7 +71,9 @@ export async function init(p_http_api_map) {
 //-------------------------------------------------
 async function auth_method_pick() {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
-        const auth_pick_dialog = $(`
+
+        const container_identity = $("#identity");
+        const container = $(`
         <div id="auth_pick_dialog">
 
             <div id="wallet_pick_dialog">
@@ -87,20 +90,29 @@ async function auth_method_pick() {
             </div>
         </div>`);
 
-        $("#identity").append(auth_pick_dialog);
+        container_identity.append(container);
 
-        $(auth_pick_dialog).find("#metamask").on('click', ()=>{
-           
-            // user picked to auth with wallet so remove initial auth method pick dialog
-            // $("#auth_pick_dialog").remove();
+        // close_dialog
+        gf_utils.click_outside(container_identity, ()=>{
+            $(container).remove();
+        });
+
+        $(container).find("#metamask").on('click', (p_e)=>{
+            p_e.stopPropagation();
+
+            // user picked to auth with wallet so remove initial p
+            // auth method pick dialog.
+            // $(container).remove();
 
             p_resolve_fun("eth_metamask");
         })
 
-        $(auth_pick_dialog).find("#user_and_pass_pick_dialog").on('click', ()=>{
+        $(container).find("#user_and_pass_pick_dialog").on('click', (p_e)=>{
+            p_e.stopPropagation();
 
-            // user picked to auth with username/pass so remove initial auth method pick dialog
-            $("#auth_pick_dialog").remove();
+            // user picked to auth with username/pass so 
+            // remove initial auth method pick dialog
+            $(container).remove();
 
             p_resolve_fun("userpass");
         });

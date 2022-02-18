@@ -18,12 +18,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 ///<reference path="../../../d/jquery.d.ts" />
-// import * as gf_3d from "./../../../gf_core/ts/gf_3d";
+import * as gf_utils from "./../../../gf_core/ts/gf_utils";
 
 //-------------------------------------------------
 export async function user_auth_pipeline(p_http_api_map) {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+
+        const container_identity = $("#identity");
         const container = $(`
         <div id="user_and_pass_dialog">
             <div id="username_input">
@@ -38,18 +40,15 @@ export async function user_auth_pipeline(p_http_api_map) {
             <div id="login_btn">login</div>
             <div id="create_btn">create user</div>
         </div>`);
-        $("#identity").append(container);
-
+        $(container_identity).append(container);
+        
         // close_dialog
-        $("body").on("click", ()=>{
+        gf_utils.click_outside(container_identity, ()=>{
             $(container).remove();
-        })
+        });
         
-        // gf_3d.div_follow_mouse($(container)[0], document, 90);
-
         $(container).find("input#username_input").focus();
-
-        
+    
         //-------------------------------------------------
 
         $(container).on('keyup', function (e) {
