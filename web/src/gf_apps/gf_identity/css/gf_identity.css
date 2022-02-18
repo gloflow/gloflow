@@ -27,7 +27,7 @@
 /*WALLET_PICK_DIALOG*/
 #identity #wallet_pick_dialog {
     position: absolute;
-    top: -53px;
+    top: -57px;
     right: 0px;
     background-color: white;
     width: 198px;
@@ -48,7 +48,7 @@
     position: absolute;
     top: 18px;
     left: 54px;
-    font-size: 12px;
+    font-size: 10px;
     user-select: none;
 }
 
@@ -69,11 +69,17 @@
 /*USER_AND_PASS_PICK_DIALOG*/
 
 #identity #user_and_pass_pick_dialog {
+    top: -2px;
+    right: 0px;
+    position: absolute;
+
     width: 184px;
-    background-color: white;
+    height: 14px;
+    padding-top: 9px;
     padding: 7px;
+    background-color: white;
     text-align: center;
-    font-size: 13px;
+    font-size: 10px;
     cursor: pointer;
     user-select: none;
 }
