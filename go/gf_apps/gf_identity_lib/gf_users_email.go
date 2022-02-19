@@ -29,6 +29,7 @@ import (
 
 //---------------------------------------------------
 func users_email__verify__pipeline(p_email_address_str string,
+	p_user_name_str   GF_user_name,
 	p_user_id_str     gf_core.GF_ID,
 	p_domain_base_str string,
 	p_ctx             context.Context,
@@ -56,7 +57,8 @@ func users_email__verify__pipeline(p_email_address_str string,
 		return gf_err
 	}
 	
-	msg_subject_str, msg_body_html_str, msg_body_text_str := users_email__get_confirm_msg_info(confirm_code_str,
+	msg_subject_str, msg_body_html_str, msg_body_text_str := users_email__get_confirm_msg_info(p_user_name_str,
+		confirm_code_str,
 		p_domain_base_str)
 
 	// sender address
@@ -147,8 +149,9 @@ func users_email__generate_confirmation_code() string {
 }
 
 //---------------------------------------------------
-func users_email__get_confirm_msg_info(p_confirm_code_str string,
-	p_domain_str string) (string, string, string) {
+func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
+	p_confirm_code_str string,
+	p_domain_str       string) (string, string, string) {
 
 	subject_str := fmt.Sprintf("%s - confirm your email", p_domain_str)
 
@@ -168,7 +171,7 @@ func users_email__get_confirm_msg_info(p_confirm_code_str string,
 			</div>
 			<div>
 				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
-				<a href="https://%s/v1/identity/email_confirm?c=%s">confirm email</a>
+				<a href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
 			</div>
 			<div style="font-size:'8px';">
 				dont reply to this email
@@ -176,6 +179,7 @@ func users_email__get_confirm_msg_info(p_confirm_code_str string,
 		</div>`,
 		p_domain_str,
 		p_domain_str,
+		p_user_name_str,
 		p_confirm_code_str)
 
 	text_str := fmt.Sprintf(`

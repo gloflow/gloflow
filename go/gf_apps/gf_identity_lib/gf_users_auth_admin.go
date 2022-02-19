@@ -234,6 +234,7 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 		if !login_attempt.Email_confirmed_bool {
 
 			gf_err = users_email__verify__pipeline(p_input.Email_str,
+				GF_user_name(p_input.User_name_str),
 				user_id_str,
 				p_service_info.Domain_base_str,
 				p_ctx,

@@ -124,6 +124,7 @@ func users__pipeline__update(p_input *GF_user__input_update,
 			}
 
 			gf_err = users_email__verify__pipeline(*p_input.Email_str,
+				p_input.User_name_str,
 				user_id_str,
 				p_service_info.Domain_base_str,
 				p_ctx,
