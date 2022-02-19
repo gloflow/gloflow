@@ -33,6 +33,14 @@ func users_email__verify__pipeline(p_email_address_str string,
 	p_domain_base_str string,
 	p_ctx             context.Context,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
+	
+	//------------------------
+	// EMAIL_VERIFY_ADDRESS
+	gf_err := gf_aws.AWS_SES__verify_address(p_email_address_str,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
 	//------------------------
 	// EMAIL_CONFIRM
@@ -40,7 +48,7 @@ func users_email__verify__pipeline(p_email_address_str string,
 	confirm_code_str := users_email__generate_confirmation_code()
 
 	// DB
-	gf_err := db__user_email_confirm__create(p_user_id_str,
+	gf_err = db__user_email_confirm__create(p_user_id_str,
 		confirm_code_str,
 		p_ctx,
 		p_runtime_sys)
