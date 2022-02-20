@@ -37,8 +37,8 @@ func init_handlers(p_http_mux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
-		"/v1/identity/mfa_confirm",
 		"/v1/identity/email_confirm",
+		"/v1/identity/mfa_confirm",
 		"/v1/identity/update",
 		"/v1/identity/me",
 	}
@@ -53,6 +53,48 @@ func init_handlers(p_http_mux *http.ServeMux,
 		Sentry_hub:         nil,
 		Auth_login_url_str: "/v1/identity/userpass/login",
 	}
+
+	//---------------------
+	// EMAIL_CONFIRM
+	// NO_AUTH
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/email_confirm",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "GET" {
+
+				//---------------------
+				// INPUT
+				http_input, gf_err := http__get_email_confirm_input(p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//---------------------
+
+				confirmed_bool, gf_err := users_email__confirm__pipeline(http_input,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				if confirmed_bool {
+
+					// redirect user to login page
+					url_redirect_str := rpc_handler_runtime.Auth_login_url_str
+					http.Redirect(p_resp,
+						p_req,
+						url_redirect_str,
+						301)
+				} else {
+					return nil, nil
+				}
+
+			}
+			return nil, nil
+		},
+		rpc_handler_runtime,
+		p_runtime_sys)
 
 	//---------------------
 	// MFA_CONFIRM
@@ -96,48 +138,6 @@ func init_handlers(p_http_mux *http.ServeMux,
 				return output_map, nil
 			}
 
-			return nil, nil
-		},
-		rpc_handler_runtime,
-		p_runtime_sys)
-
-	//---------------------
-	// EMAIL_CONFIRM
-	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/email_confirm",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-
-			if p_req.Method == "GET" {
-
-				//---------------------
-				// INPUT
-				http_input, gf_err := http__get_email_confirm_input(p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
-				//---------------------
-
-				confirmed_bool, gf_err := users_email__confirm__pipeline(http_input,
-					p_ctx,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
-				if confirmed_bool {
-
-					// redirect user to login page
-					url_redirect_str := rpc_handler_runtime.Auth_login_url_str
-					http.Redirect(p_resp,
-						p_req,
-						url_redirect_str,
-						301)
-				} else {
-					return nil, nil
-				}
-
-			}
 			return nil, nil
 		},
 		rpc_handler_runtime,

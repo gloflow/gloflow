@@ -122,18 +122,60 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 			return false, gf_err
 		}
 
-		update_op := &GF_user__update_op{
-			Email_confirmed_bool: true,
+		//------------------------
+		// initial user email confirmation. only for new users.
+		// user confirmed their email as valid.
+		user_email_confirmed_bool, gf_err := db__user__email_is_confirmed(p_input.User_name_str, p_ctx, p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
 		}
 
-		// UPDATE_USER - mark user as email_confirmed
-		gf_err = db__user__update(user_id_str,
+		if user_email_confirmed_bool {
+			update_op := &GF_user__update_op{
+				Email_confirmed_bool: true,
+			}
+	
+			// UPDATE_USER - mark user as email_confirmed
+			gf_err = db__user__update(user_id_str,
+				update_op,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return false, gf_err
+			}
+		}
+
+		//------------------------
+
+
+		//------------------------
+		// UPDATE_LOGIN_ATTEMPT
+		// if email is confirmed then update the login_attempt
+
+		// get a preexisting login_attempt if one exists and hasnt expired for this user.
+		// if it has then a new one will have to be created.
+		var login_attempt *GF_login_attempt
+		login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return false, gf_err
+		}
+
+		
+		login_email_confirmed_bool := true
+		update_op := &GF_login_attempt__update_op{Email_confirmed_bool: &login_email_confirmed_bool}
+		gf_err = db__login_attempt__update(&login_attempt.Id_str,
 			update_op,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return false, gf_err
 		}
+
+		//------------------------
+
+		
 
 		return true, nil
 

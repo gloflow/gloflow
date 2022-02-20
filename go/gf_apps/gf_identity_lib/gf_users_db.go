@@ -191,6 +191,7 @@ func db__user__get_basic_info_by_username(p_user_name_str GF_user_name,
 			"user_name_str": p_user_name_str,
 			"deleted_bool":  false,
 		},
+		// meta_map
 		map[string]interface{}{
 			"user_name_str": p_user_name_str,
 		},
@@ -314,6 +315,40 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 		return true, nil
 	}
 	return false, nil
+}
+
+// EMAIL_IS_CONFIRMED
+// for initial user creation only, checks if the if the user confirmed their email.
+// this is done only once.
+func db__user__email_is_confirmed(p_user_name_str GF_user_name,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+	find_opts := options.FindOne()
+	find_opts.Projection = map[string]interface{}{
+		"email_confirmed_bool": 1,
+	}
+	
+	user_map := map[string]interface{}{}
+	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx,
+		bson.M{
+			"user_name_str": p_user_name_str,
+			"deleted_bool":  false,
+		},
+		find_opts).Decode(&user_map)
+
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get user email_confirmed from the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_name_str": p_user_name_str,
+			},
+			err, "gf_identity_lib", p_runtime_sys)
+		return false, gf_err
+	}
+
+	email_confirmed_bool := user_map["email_confirmed_bool"].(bool)
+	return email_confirmed_bool, nil
 }
 
 //---------------------------------------------------
