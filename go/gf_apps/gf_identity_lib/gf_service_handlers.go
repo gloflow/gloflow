@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -82,7 +82,8 @@ func init_handlers(p_auth_login_url_str string,
 				if confirmed_bool {
 
 					// redirect user to login page
-					url_redirect_str := rpc_handler_runtime.Auth_login_url_str
+					// "email_confirmed=1" - signals to the UI that email has been confirmed
+					url_redirect_str := fmt.Sprintf("%s?email_confirmed=1", rpc_handler_runtime.Auth_login_url_str)
 					http.Redirect(p_resp,
 						p_req,
 						url_redirect_str,

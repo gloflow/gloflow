@@ -86,7 +86,11 @@ func init_handlers(p_templates_paths_map map[string]string,
 				qs_map := p_req.URL.Query()
 
 				mfa_confirm_bool := false
-				if _, ok := qs_map["mfa_conf"]; ok {
+
+				// email_confirmed - signals that email has been confirmed. appended by the email_confirm handler
+				//                   when the user gets redirected to admin login_ui URL.
+				//                   in admin login this means that MFA_confirmation is next
+				if _, ok := qs_map["email_confirmed"]; ok {
 					mfa_confirm_bool = true
 				}
 
