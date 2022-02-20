@@ -35,6 +35,16 @@ type GF_service_info struct {
 	// DOMAIN - where this gf_solo instance is reachable on
 	Domain_base_str string
 
+	// ADMIN_MFA_SECRET_KEY_BASE32
+	Admin_mfa_secret_key_base32_str string
+
+	// AUTH_LOGIN_URL - url of the login page to which the system should
+	//                  redirect users when email is confirmed.
+	Auth_login_url_str string
+
+	//------------------------
+	// FEATURE_FLAGS
+
 	// EVENTS_APP - enable sending of app events from various functions
 	Enable_events_app_bool bool
 
@@ -50,8 +60,7 @@ type GF_service_info struct {
 	// enable login only for users that have confirmed their MFA code
 	Enable_mfa_require_confirm_for_login_bool bool
 
-	// ADMIN_MFA_SECRET_KEY_BASE32
-	Admin_mfa_secret_key_base32_str string
+	//------------------------
 }
 
 //-------------------------------------------------
@@ -61,7 +70,8 @@ func Init_service(p_mux *http.ServeMux,
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_mux, p_service_info, p_runtime_sys)
+	gf_err := init_handlers(p_service_info.Auth_login_url_str,
+		p_mux, p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

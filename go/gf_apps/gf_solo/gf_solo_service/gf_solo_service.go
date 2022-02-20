@@ -86,8 +86,10 @@ func Run(p_config *GF_config,
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
-		Name_str:                                "gf_identity",
-		Domain_base_str:                         p_config.Domain_base_str,
+		Name_str:           "gf_identity",
+		Domain_base_str:    p_config.Domain_base_str,
+		Auth_login_url_str: "/v1/identity/userpass/login", // on email confirm redirect user to this
+
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
@@ -121,18 +123,23 @@ func Run(p_config *GF_config,
 			Enable_email_bool:                       true,
 		}
 
+
 		// IMPORTANT!! - since admin is listening on its own port, and likely its own domain
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
 		admin_identity__service_info := &gf_identity_lib.GF_service_info{
-			Name_str:                                "gf_admin_identity",
-			Domain_base_str:                         p_config.Domain_admin_base_str,
+			Name_str:                        "gf_admin_identity",
+			Domain_base_str:                 p_config.Domain_admin_base_str,
+			Admin_mfa_secret_key_base32_str: p_config.Admin_mfa_secret_key_base32_str,
+			Auth_login_url_str:              "/v1/admin/login_ui", // on email confirm redirect user to this
+
+			// FEATURE_FLAGS
 			Enable_events_app_bool:                  true,
 			Enable_user_creds_in_secrets_store_bool: true,
 			Enable_email_bool:                       true,
 			Enable_email_require_confirm_for_login_bool: true,
 			Enable_mfa_require_confirm_for_login_bool:   true, // admins have to MFA confirm to login
-			Admin_mfa_secret_key_base32_str:             p_config.Admin_mfa_secret_key_base32_str,
+			
 		}
 
 		gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,

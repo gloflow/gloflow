@@ -30,7 +30,8 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers(p_http_mux *http.ServeMux,
+func init_handlers(p_auth_login_url_str string,
+	p_http_mux     *http.ServeMux,
 	p_service_info *GF_service_info,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -51,7 +52,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
-		Auth_login_url_str: "/v1/identity/userpass/login",
+		Auth_login_url_str: p_auth_login_url_str,
 	}
 
 	//---------------------
@@ -86,6 +87,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 						p_req,
 						url_redirect_str,
 						301)
+
 				} else {
 					output_map := map[string]interface{}{
 						"fail_msg_str": fail_msg_str,
