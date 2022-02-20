@@ -317,7 +317,7 @@
 #mfa_dialog #mfa_confirm_code {
     position: absolute;
     left: 46%;
-    top: 30%;
+    top: 42%;
 }
 
 #mfa_dialog #mfa_confirm_code input {
