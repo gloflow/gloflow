@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
@@ -353,7 +354,20 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 	
 	//------------------------
-	
+	// EMAIL_VERIFY_ADDRESS
+	if p_service_info.Enable_email_bool {
+
+		// this SES email verification is done only once for a new email address,
+		// so that SES allows sending to this email address.
+		gf_err = gf_aws.AWS_SES__verify_address(email_str,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+	}
+
+	//------------------------
+
 	output := &GF_user_auth_userpass__output_create{
 		User_name_str: user_name_str,
 		User_id_str:   user_id_str,

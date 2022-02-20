@@ -35,15 +35,7 @@ func users_email__verify__pipeline(p_email_address_str string,
 	p_ctx             context.Context,
 	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
 	
-	//------------------------
-	// EMAIL_VERIFY_ADDRESS
-	// FIX!! - have a way of checking that an email has already been verified,
-	//         instead of trying to verify each time.
-	gf_err := gf_aws.AWS_SES__verify_address(p_email_address_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
+	
 
 	//------------------------
 	// EMAIL_CONFIRM
@@ -51,7 +43,7 @@ func users_email__verify__pipeline(p_email_address_str string,
 	confirm_code_str := users_email__generate_confirmation_code()
 
 	// DB
-	gf_err = db__user_email_confirm__create(p_user_name_str,
+	gf_err := db__user_email_confirm__create(p_user_name_str,
 		p_user_id_str,
 		confirm_code_str,
 		p_ctx,
@@ -89,14 +81,14 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 
-	db_confirm_code_str, gf_err := users_email__get_confirmation_code(p_input.User_name_str,
+	db_confirm_code_str, expired_bool, gf_err := users_email__get_confirmation_code(p_input.User_name_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return false, "", gf_err
 	}
 	
-	if db_confirm_code_str == "" {
+	if expired_bool {
 		return false, "email confirmation code has expired", nil
 	}
 
@@ -174,13 +166,15 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 //---------------------------------------------------
 func users_email__get_confirmation_code(p_user_name_str GF_user_name,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (string, bool, *gf_core.GF_error) {
+
+	expired_bool := false
 
 	confirm_code_str, confirm_code_creation_time_f, gf_err := db__user_email_confirm__get_code(p_user_name_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		return "", gf_err
+		return "", expired_bool, gf_err
 	}
 
 	//------------------------
@@ -190,12 +184,13 @@ func users_email__get_confirmation_code(p_user_name_str GF_user_name,
 
 	// check if older than 5min
 	if (5.0 < confirm_code_age_time_f/60) {
-		return "", nil
+		expired_bool = true
+		return "", expired_bool, nil
 	}
 
 	//------------------------
 
-	return confirm_code_str, nil
+	return confirm_code_str, expired_bool, nil
 }
 
 //---------------------------------------------------
