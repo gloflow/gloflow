@@ -437,7 +437,8 @@ func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 // EMAIL
 //---------------------------------------------------
 // CREATE__EMAIL_CONFIRM
-func db__user_email_confirm__create(p_user_id_str gf_core.GF_ID,
+func db__user_email_confirm__create(p_user_name_str GF_user_name,
+	p_user_id_str      gf_core.GF_ID,
 	p_confirm_code_str string,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -446,6 +447,7 @@ func db__user_email_confirm__create(p_user_id_str gf_core.GF_ID,
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	email_confirm_map := map[string]interface{}{
+		"user_name_str":        p_user_name_str,
 		"user_id_str":          p_user_id_str,
 		"confirm_code_str":     p_confirm_code_str,
 		"creation_unix_time_f": creation_unix_time_f,

@@ -17,7 +17,7 @@ body {
 }
 #left_section #gf_logo {
 	position      : relative;
-	left          : 3%;
+	left          : 10px;
     padding-bottom: 8px;
     width: 97%;
 }
@@ -28,7 +28,7 @@ body {
 
 #left_section #randomized_art {
 	position: relative;
-	left: 3%;
+	left:     10px;
 	background-color: lightgray;
 	width:97%;
 	height:400px;

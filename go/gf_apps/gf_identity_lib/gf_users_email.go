@@ -49,7 +49,8 @@ func users_email__verify__pipeline(p_email_address_str string,
 	confirm_code_str := users_email__generate_confirmation_code()
 
 	// DB
-	gf_err = db__user_email_confirm__create(p_user_id_str,
+	gf_err = db__user_email_confirm__create(p_user_name_str,
+		p_user_id_str,
 		confirm_code_str,
 		p_ctx,
 		p_runtime_sys)
@@ -164,7 +165,7 @@ func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
 				<div>Welcome to %s!</div>
 				<div>
 				<div>
-					There is no spoon. ...it is only yourself.
+					"There is no spoon ...it is only yourself."
 				</div>
 
 				
@@ -174,7 +175,7 @@ func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
 				<a href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
 			</div>
 			<div style="font-size:'8px';">
-				dont reply to this email
+				don't reply to this email
 			</div>
 		</div>`,
 		p_domain_str,
