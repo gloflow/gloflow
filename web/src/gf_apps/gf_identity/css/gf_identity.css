@@ -243,7 +243,6 @@
     background-color: #cecece;
 }
 
-
 /*------------------------------------------------------------*/
 /*UPDATE_USER_DIALOG*/
 
@@ -300,5 +299,42 @@
 }
 
 #identity #update_user_dialog #confirm_btn:hover {
+    background-color: lightgray;
+}
+
+/*------------------------------------------------------------*/
+/*MFA_DIALOG*/
+
+
+#mfa_dialog #mfa_background {
+    width: 100%;
+    height: 100%;
+    background-color: gray;
+    position: absolute;
+    opacity: 0.6;
+}
+
+#mfa_dialog #mfa_confirm_code {
+    position: absolute;
+    left: 46%;
+    top: 30%;
+}
+
+#mfa_dialog #mfa_confirm_code input {
+    margin: 0px;
+    border: 0px;
+    font-size: 22px;
+    width: 166px;
+}
+
+#mfa_dialog #mfa_confirm_code #confirm_btn {
+    background-color: gray;
+    height: 27px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+#mfa_dialog #mfa_confirm_code #confirm_btn:hover {
     background-color: lightgray;
 }
