@@ -217,6 +217,18 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 			}
 
 			//------------------------
+
+			// EVENT
+			if p_service_info.Enable_events_app_bool {
+				event_meta := map[string]interface{}{
+					"user_id_str":     user_id_str,
+					"user_name_str":   p_input.User_name_str,
+					"domain_base_str": p_service_info.Domain_base_str,
+				}
+				gf_events.Emit_app(GF_EVENT_APP__USER_LOGIN_ADMIN_PASS_CONFIRMED,
+					event_meta,
+					p_runtime_sys)
+			}
 		}
 	}
 
@@ -237,20 +249,21 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 			if gf_err != nil {
 				return nil, gf_err
 			}
-		}
-	}
 
-	//------------------------
-	// EVENT
-	if p_service_info.Enable_events_app_bool {
-		event_meta := map[string]interface{}{
-			"user_id_str":     user_id_str,
-			"user_name_str":   p_input.User_name_str,
-			"domain_base_str": p_service_info.Domain_base_str,
+			// EVENT
+			if p_service_info.Enable_events_app_bool {
+				event_meta := map[string]interface{}{
+					"user_id_str":     user_id_str,
+					"user_name_str":   p_input.User_name_str,
+					"domain_base_str": p_service_info.Domain_base_str,
+				}
+				gf_events.Emit_app(GF_EVENT_APP__USER_LOGIN_ADMIN_EMAIL_VERIFICATION_SENT,
+					event_meta,
+					p_runtime_sys)
+			}
+
+			//------------------------
 		}
-		gf_events.Emit_app(GF_EVENT_APP__USER_LOGIN_ADMIN,
-			event_meta,
-			p_runtime_sys)
 	}
 
 	//------------------------

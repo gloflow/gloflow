@@ -71,7 +71,7 @@ func init_handlers(p_http_mux *http.ServeMux,
 
 				//---------------------
 
-				confirmed_bool, gf_err := users_email__confirm__pipeline(http_input,
+				confirmed_bool, fail_msg_str, gf_err := users_email__confirm__pipeline(http_input,
 					p_ctx,
 					p_runtime_sys)
 				if gf_err != nil {
@@ -87,9 +87,11 @@ func init_handlers(p_http_mux *http.ServeMux,
 						url_redirect_str,
 						301)
 				} else {
-					return nil, nil
+					output_map := map[string]interface{}{
+						"fail_msg_str": fail_msg_str,
+					}
+					return output_map, nil
 				}
-
 			}
 			return nil, nil
 		},

@@ -37,6 +37,8 @@ func users_email__verify__pipeline(p_email_address_str string,
 	
 	//------------------------
 	// EMAIL_VERIFY_ADDRESS
+	// FIX!! - have a way of checking that an email has already been verified,
+	//         instead of trying to verify each time.
 	gf_err := gf_aws.AWS_SES__verify_address(p_email_address_str,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -85,41 +87,28 @@ func users_email__verify__pipeline(p_email_address_str string,
 //---------------------------------------------------
 func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 
-	db_confirm_code_str, db_confirm_code_creation_time_f, gf_err := db__user_email_confirm__get_code(p_input.User_name_str,
+	db_confirm_code_str, gf_err := users_email__get_confirmation_code(p_input.User_name_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		return false, gf_err
+		return false, "", gf_err
 	}
-
-	//------------------------
-	// check confirm_code didnt expire
-	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	confirm_code_age_time_f := current_unix_time_f - db_confirm_code_creation_time_f
-
-	// check if older than 5min
-	if (5.0 < confirm_code_age_time_f/60) {
-
-		// ADD!! - some kind of description to be returned to the user
-		//         to indicate that time expiration was the reason for failure to confirm
-		return false, nil
+	
+	if db_confirm_code_str == "" {
+		return false, "email confirmation code has expired", nil
 	}
-
-	//------------------------
 
 	// confirm_code is correct
 	if p_input.Confirm_code_str == db_confirm_code_str {
 		
-		
-
 		// GET_USER_ID
 		user_id_str, gf_err := db__user__get_basic_info_by_username(p_input.User_name_str,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
-			return false, gf_err
+			return false, "", gf_err
 		}
 
 		//------------------------
@@ -127,7 +116,7 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 		// user confirmed their email as valid.
 		user_email_confirmed_bool, gf_err := db__user__email_is_confirmed(p_input.User_name_str, p_ctx, p_runtime_sys)
 		if gf_err != nil {
-			return false, gf_err
+			return false, "", gf_err
 		}
 
 		if user_email_confirmed_bool {
@@ -141,12 +130,11 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 				p_ctx,
 				p_runtime_sys)
 			if gf_err != nil {
-				return false, gf_err
+				return false, "", gf_err
 			}
 		}
 
 		//------------------------
-
 
 		//------------------------
 		// UPDATE_LOGIN_ATTEMPT
@@ -159,7 +147,7 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
-			return false, gf_err
+			return false, "", gf_err
 		}
 
 		
@@ -170,19 +158,44 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
-			return false, gf_err
+			return false, "", gf_err
 		}
 
 		//------------------------
 
-		
-
-		return true, nil
+		return true, "", nil
 
 	} else {
-		return false, nil
+		return false, "received confirm code and DB confirm code are not the same", nil
 	}
-	return false, nil
+	return false, "", nil
+}
+
+//---------------------------------------------------
+func users_email__get_confirmation_code(p_user_name_str GF_user_name,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+
+	confirm_code_str, confirm_code_creation_time_f, gf_err := db__user_email_confirm__get_code(p_user_name_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return "", gf_err
+	}
+
+	//------------------------
+	// check confirm_code didnt expire
+	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	confirm_code_age_time_f := current_unix_time_f - confirm_code_creation_time_f
+
+	// check if older than 5min
+	if (5.0 < confirm_code_age_time_f/60) {
+		return "", nil
+	}
+
+	//------------------------
+
+	return confirm_code_str, nil
 }
 
 //---------------------------------------------------
