@@ -512,6 +512,7 @@ func db__user_email_confirm__get_code(p_user_name_str GF_user_name,
 	coll_name_str := "gf_users_email_confirm"
 
 	find_opts := options.FindOne()
+	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1})
 	find_opts.Projection = map[string]interface{}{
 		"confirm_code_str":     1,
 		"creation_unix_time_f": 1,
