@@ -32,7 +32,8 @@ export function init(p_http_api_map,
     const container = $(`<div id="mfa_dialog">
         <div id="mfa_background"></div>
         <div id="mfa_confirm_code">
-            <input id="mfa_val"></input>
+            <div id="label">MFA code</div>
+            <input id="mfa_val" type="number"></input>
             <div id="confirm_btn">confirm</div>
         </div>
     </div>`);
