@@ -56,28 +56,26 @@ function init(p_log_fun) {
 	
 	const http_api_map = gf_identity.get_http_api(urls_map);
 
-	// MFA_CONFIRM_MODE - check if login is in MFA_confirm stage of login
+	// MFA_CONFIRM - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {
 
-
-
 		const mfa_container = gf_identity_mfa.init(http_api_map,
-			// p_on_mfa_validate_fun
+
+			//-------------------------------------------------
 			(p_mfa_valid_bool)=>{
 
-				
+				// MFA_VALID
+				if (p_mfa_valid_bool) {
+
+					// redirect to dashboard
+					window.location.pathname = "/v1/admin/dashboard";
+				}
 			});
 
-		$("body").append(mfa_container);
-	
+			//-------------------------------------------------
 
+		$("body").append(mfa_container);
 	}
 
-	
-	
 	//---------------------
-
-
-
-	
 }

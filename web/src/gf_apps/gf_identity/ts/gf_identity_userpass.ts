@@ -162,6 +162,7 @@ async function login_activate(p_container,
         return;
     }
 
+    // HTTP
     const login_output_map = await p_http_api_map["userpass"]["user_login_fun"](user_name_str,
         pass_str as string,
         email_str as string);

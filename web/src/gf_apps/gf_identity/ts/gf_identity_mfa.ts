@@ -25,10 +25,6 @@ import * as gf_identity_http from "./gf_identity_http";
 export function init(p_http_api_map,
     p_on_mfa_validate_fun) {
 
-
-
-
-
     const container = $(`<div id="mfa_dialog">
         <div id="mfa_background"></div>
         <div id="mfa_confirm_code">
@@ -37,7 +33,6 @@ export function init(p_http_api_map,
             <div id="confirm_btn">confirm</div>
         </div>
     </div>`);
-
 
     $(container).find("#confirm_btn").on("click", async ()=>{
 
@@ -49,16 +44,19 @@ export function init(p_http_api_map,
         const mfa_valid_bool = output_map["mfa_valid_bool"];
         if (mfa_valid_bool) {
 
+            $(container).remove();
             p_on_mfa_validate_fun(true);
         } 
         else {
-            p_on_mfa_validate_fun(false);
+            // p_on_mfa_validate_fun(false);
+
+            $(container).find("#mfa_confirm_code").append(`
+                <div id="confirm_failed">
+                    MFA confirm failed
+                </div>
+            `);
         }
-
-
-
 
     });
     return container;
-
 }
