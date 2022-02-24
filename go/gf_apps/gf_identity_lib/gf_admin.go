@@ -30,7 +30,7 @@ import (
 
 //---------------------------------------------------
 // io_login
-type GF_user_auth_admin__input_login struct {
+type GF_admin__input_login struct {
 
 	User_name_str string `validate:"required,min=3,max=50"`
 
@@ -40,17 +40,38 @@ type GF_user_auth_admin__input_login struct {
 	// admin email
 	Email_str string `validate:"omitempty,email"`
 }
-
-type GF_user_auth_admin__output_login struct {
+type GF_admin__output_login struct {
 	Email_confirmed_bool bool
 	MFA_confirmed_bool   bool
 	Pass_valid_bool      bool
 	JWT_token_val        gf_session.GF_jwt_token_val
 	User_id_str          gf_core.GF_ID 
 }
-
-type GF_user_auth_userpass__output_create_admin struct {
+type GF_admin__output_create_admin struct {
 	General *GF_user_auth_userpass__output_create
+}
+
+
+type GF_admin__input_add_to_invite_list struct {
+	User_name_str string
+	Email_str     string
+}
+
+//------------------------------------------------
+func Admin__pipeline__user_add_to_invite_list(p_input *GF_admin__input_add_to_invite_list,
+	p_ctx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+
+
+	gf_err := db__user__add_to_invite_list(p_input.Email_str,
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
+	return nil
 }
 
 //---------------------------------------------------
@@ -61,11 +82,11 @@ type GF_user_auth_userpass__output_create_admin struct {
 // for each of the login stages this function is entered, and the login_attempt record
 // is used to keep track of which stages have completed.
 
-func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
+func Admin__pipeline__login(p_input *GF_admin__input_login,
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
 	p_local_hub    *sentry.Hub,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_admin__output_login, *gf_core.GF_error) {
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_admin__output_login, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -76,7 +97,7 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 
 	//------------------------
 
-	output := &GF_user_auth_admin__output_login{}
+	output := &GF_admin__output_login{}
 
 	//------------------------
 	// VERIFY
@@ -115,7 +136,7 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 			map[string]interface{}{"email_str": p_input.Email_str, "user_name_str": p_input.User_name_str},
 			p_local_hub)
 		
-		output, gf_err := users_auth_admin__pipeline__create_admin(input_create,
+		output, gf_err := admin__pipeline__create_admin(input_create,
 			p_service_info,
 			p_ctx,
 			p_runtime_sys)
@@ -272,10 +293,10 @@ func Users_auth_admin__pipeline__login(p_input *GF_user_auth_admin__input_login,
 }
 
 //---------------------------------------------------
-func users_auth_admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
+func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_admin, *gf_core.GF_error) {
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_admin__output_create_admin, *gf_core.GF_error) {
 
 	//------------------------
 	// PIPELINE
@@ -302,8 +323,23 @@ func users_auth_admin__pipeline__create_admin(p_input *GF_user_auth_userpass__in
 
 	//------------------------
 
-	output_admin := &GF_user_auth_userpass__output_create_admin{
+	output_admin := &GF_admin__output_create_admin{
 		General: output,
 	}
 	return output_admin, nil
+}
+
+//---------------------------------------------------
+func Admin__is(p_user_name_str string,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	if p_user_name_str != "admin" {
+		gf_err := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
+			"verify__invalid_value_error",
+			map[string]interface{}{
+				"user_name_str": p_user_name_str,
+			},
+			nil, "gf_identity_lib", p_runtime_sys)
+		return gf_err
+	}
+	return nil
 }

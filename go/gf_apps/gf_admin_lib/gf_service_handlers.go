@@ -59,6 +59,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/v1/admin/login",
+		"/v1/admin/login_ui",
 		"/v1/admin/dashboard",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
@@ -142,17 +143,12 @@ func init_handlers(p_templates_paths_map map[string]string,
 					pass_str = val_str.(string)
 				}
 
-				if user_name_str != "admin" {
-					gf_err := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
-						"verify__invalid_value_error",
-						map[string]interface{}{
-							"user_name_str": user_name_str,
-						},
-						nil, "gf_admin_lib", p_runtime_sys)
+				gf_err = gf_identity_lib.Admin__is(user_name_str, p_runtime_sys)
+				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				input := &gf_identity_lib.GF_user_auth_admin__input_login{
+				input := &gf_identity_lib.GF_admin__input_login{
 					User_name_str: user_name_str,
 					Pass_str:      pass_str,
 					Email_str:     p_service_info.Admin_email_str,
@@ -160,7 +156,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//---------------------
 
-				output, gf_err := gf_identity_lib.Users_auth_admin__pipeline__login(input,
+				output, gf_err := gf_identity_lib.Admin__pipeline__login(input,
 					p_identity_service_info,
 					p_ctx,
 					p_local_hub,

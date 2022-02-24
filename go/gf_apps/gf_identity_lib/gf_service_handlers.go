@@ -116,7 +116,7 @@ func init_handlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				input_map, user_name_str, _, gf_err := http__get_user_std_input(p_req, p_resp, p_runtime_sys)
+				input_map, user_name_str, _, gf_err := Http__get_user_std_input(p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

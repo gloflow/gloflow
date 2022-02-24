@@ -44,7 +44,7 @@ type GF_user__http_input_email_confirm struct {
 }
 
 //---------------------------------------------------
-func http__get_user_std_input(p_req *http.Request,
+func Http__get_user_std_input(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, string, GF_user_address_eth, *gf_core.GF_error) {
 
