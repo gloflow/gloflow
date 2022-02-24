@@ -114,10 +114,12 @@ export function user_userpass_login(p_user_name_str :string,
 }
 
 //-------------------------------------------------
-export function user_mfa_confirm(p_mfa_val_str :string) {
+export function user_mfa_confirm(p_user_name_str :string,
+    p_mfa_val_str :string) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
-            "mfa_val_str": p_mfa_val_str,
+            "user_name_str": p_user_name_str,
+            "mfa_val_str":   p_mfa_val_str,
         };
 
         const url_str = '/v1/identity/mfa_confirm';

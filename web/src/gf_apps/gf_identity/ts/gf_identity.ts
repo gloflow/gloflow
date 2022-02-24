@@ -162,23 +162,24 @@ export function get_http_api(p_urls_map) {
 
         // USERPASS
         "userpass": {
-            "user_login_fun": async (p_username_str, p_pass_str, p_email_str)=>{
+            "user_login_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
                 const url_str    = p_urls_map["login"];
-                const output_map = await gf_identity_http.user_userpass_login(p_username_str,
+                const output_map = await gf_identity_http.user_userpass_login(p_user_name_str,
                     p_pass_str,
                     p_email_str,
                     url_str);
                 return output_map;
             },
-            "user_create_fun": async (p_username_str)=>{
+            "user_create_fun": async (p_user_name_str)=>{
                 const output_map = {};
                 return output_map;
             }
         },
 
         "mfa": {
-            "user_mfa_confirm": async (p_mfa_val_str)=>{
-                const output_map = await gf_identity_http.user_mfa_confirm(p_mfa_val_str);
+            "user_mfa_confirm": async (p_user_name_str, p_mfa_val_str)=>{
+                const output_map = await gf_identity_http.user_mfa_confirm(p_user_name_str,
+                    p_mfa_val_str);
                 return output_map;
             }
         }

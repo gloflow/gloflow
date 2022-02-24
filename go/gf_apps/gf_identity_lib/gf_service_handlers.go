@@ -83,7 +83,11 @@ func init_handlers(p_auth_login_url_str string,
 
 					// redirect user to login page
 					// "email_confirmed=1" - signals to the UI that email has been confirmed
-					url_redirect_str := fmt.Sprintf("%s?email_confirmed=1", rpc_handler_runtime.Auth_login_url_str)
+					url_redirect_str := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
+						rpc_handler_runtime.Auth_login_url_str,
+						http_input.User_name_str)
+
+					// REDIRECT
 					http.Redirect(p_resp,
 						p_req,
 						url_redirect_str,

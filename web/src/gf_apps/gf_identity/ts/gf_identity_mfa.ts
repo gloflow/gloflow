@@ -22,7 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity_http from "./gf_identity_http";
 
 //-------------------------------------------------
-export function init(p_http_api_map,
+export function init(p_user_name_str,
+    p_http_api_map,
     p_on_mfa_validate_fun) {
 
     const container = $(`<div id="mfa_dialog">
@@ -37,7 +38,7 @@ export function init(p_http_api_map,
     $(container).find("#confirm_btn").on("click", async ()=>{
 
         const mfa_val_str = $(container).find("#mfa_val input").val();
-        const output_map  = await p_http_api_map["mfa"]["user_mfa_confirm"](mfa_val_str);
+        const output_map  = await p_http_api_map["mfa"]["user_mfa_confirm"](p_user_name_str, mfa_val_str);
 
         
 

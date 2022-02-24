@@ -59,8 +59,13 @@ function init(p_log_fun) {
 	// MFA_CONFIRM - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {
 
-		const mfa_container = gf_identity_mfa.init(http_api_map,
+		// when backend redirects user to MFA confirm page, it appends
+		// the user_name to query_string args.
+		const url_params    = new URLSearchParams(window.location.search);
+		const user_name_str = url_params.get('user_name');
 
+		const mfa_container = gf_identity_mfa.init(user_name_str,
+			http_api_map,
 			//-------------------------------------------------
 			(p_mfa_valid_bool)=>{
 
