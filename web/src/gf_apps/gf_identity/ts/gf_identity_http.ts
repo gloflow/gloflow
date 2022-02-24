@@ -130,7 +130,14 @@ export function user_mfa_confirm(p_user_name_str :string,
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(data_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
