@@ -176,6 +176,7 @@ export function get_http_api(p_urls_map) {
             }
         },
 
+        // MFA
         "mfa": {
             "user_mfa_confirm": async (p_user_name_str, p_mfa_val_str)=>{
                 const output_map = await gf_identity_http.user_mfa_confirm(p_user_name_str,

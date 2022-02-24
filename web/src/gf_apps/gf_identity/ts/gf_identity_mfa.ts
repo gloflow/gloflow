@@ -37,7 +37,7 @@ export function init(p_user_name_str,
 
     $(container).find("#confirm_btn").on("click", async ()=>{
 
-        const mfa_val_str = $(container).find("#mfa_val input").val();
+        const mfa_val_str = $(container).find("input#mfa_val").val();
         const output_map  = await p_http_api_map["mfa"]["user_mfa_confirm"](p_user_name_str, mfa_val_str);
 
         
