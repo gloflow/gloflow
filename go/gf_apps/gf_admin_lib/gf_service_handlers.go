@@ -157,9 +157,9 @@ func init_handlers(p_templates_paths_map map[string]string,
 				//---------------------
 
 				output, gf_err := gf_identity_lib.Admin__pipeline__login(input,
-					p_identity_service_info,
 					p_ctx,
 					p_local_hub,
+					p_identity_service_info,
 					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err

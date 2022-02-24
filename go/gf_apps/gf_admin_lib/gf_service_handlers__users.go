@@ -81,7 +81,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				}
 
 				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
-					User_name_str: user_name_str,
+					User_name_str: gf_identity_lib.GF_user_name(user_name_str),
 					Email_str:     email_str,
 				}
 
@@ -89,6 +89,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 
 				gf_err = gf_identity_lib.Admin__pipeline__user_add_to_invite_list(input,
 					p_ctx,
+					p_identity_service_info,
 					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err

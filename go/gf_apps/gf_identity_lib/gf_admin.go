@@ -53,24 +53,53 @@ type GF_admin__output_create_admin struct {
 
 
 type GF_admin__input_add_to_invite_list struct {
-	User_name_str string
-	Email_str     string
+	User_name_str GF_user_name `validate:"required,min=3,max=50"`
+	Email_str     string       `validate:"required,email"`
 }
 
 //------------------------------------------------
 func Admin__pipeline__user_add_to_invite_list(p_input *GF_admin__input_add_to_invite_list,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_ctx          context.Context,
+	p_service_info *GF_service_info,
+	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
+	//------------------------
+	// VALIDATE_INPUT
+	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	if gf_err != nil {
+		return gf_err
+	}
 
+	//------------------------
 
+	admin_user_name_str := p_input.User_name_str
 
-	gf_err := db__user__add_to_invite_list(p_input.Email_str,
+	gf_err = db__user__add_to_invite_list(p_input.Email_str,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}
+
+	// EVENT
+	if p_service_info.Enable_events_app_bool {
+		admin_user_id_str, gf_err := db__user__get_basic_info_by_username(admin_user_name_str,
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return gf_err
+		}
+
+		event_meta := map[string]interface{}{
+			"user_id_str":                admin_user_id_str,
+			"user_name_str":              admin_user_name_str,
+			"email_added_to_invite_list": p_input.Email_str,
+		}
+		gf_events.Emit_app(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
+			event_meta,
+			p_runtime_sys)
+	}
+
 	return nil
 }
 
@@ -83,9 +112,9 @@ func Admin__pipeline__user_add_to_invite_list(p_input *GF_admin__input_add_to_in
 // is used to keep track of which stages have completed.
 
 func Admin__pipeline__login(p_input *GF_admin__input_login,
-	p_service_info *GF_service_info,
 	p_ctx          context.Context,
 	p_local_hub    *sentry.Hub,
+	p_service_info *GF_service_info,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_admin__output_login, *gf_core.GF_error) {
 
 	//------------------------
@@ -246,7 +275,7 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 					"user_name_str":   p_input.User_name_str,
 					"domain_base_str": p_service_info.Domain_base_str,
 				}
-				gf_events.Emit_app(GF_EVENT_APP__USER_LOGIN_ADMIN_PASS_CONFIRMED,
+				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					event_meta,
 					p_runtime_sys)
 			}
@@ -278,7 +307,7 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 					"user_name_str":   p_input.User_name_str,
 					"domain_base_str": p_service_info.Domain_base_str,
 				}
-				gf_events.Emit_app(GF_EVENT_APP__USER_LOGIN_ADMIN_EMAIL_VERIFICATION_SENT,
+				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					event_meta,
 					p_runtime_sys)
 			}
@@ -316,7 +345,7 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 			"user_name_str":   p_input.User_name_str,
 			"domain_base_str": p_service_info.Domain_base_str,
 		}
-		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE_ADMIN,
+		gf_events.Emit_app(GF_EVENT_APP__ADMIN_CREATE,
 			event_meta,
 			p_runtime_sys)
 	}
