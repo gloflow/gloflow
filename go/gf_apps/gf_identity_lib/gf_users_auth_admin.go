@@ -287,7 +287,6 @@ func users_auth_admin__pipeline__create_admin(p_input *GF_user_auth_userpass__in
 		return nil, gf_err
 	}
 
-
 	//------------------------
 	// EVENT
 	if p_service_info.Enable_events_app_bool {

@@ -45,10 +45,19 @@ type GF_user_auth_userpass__input_login struct {
 type GF_user_auth_userpass__output_login struct {
 	User_exists_bool     bool
 	Email_confirmed_bool bool
-	MFA_confirmed_bool   *bool
 	Pass_valid_bool      bool
-	JWT_token_val        gf_session.GF_jwt_token_val
 	User_id_str          gf_core.GF_ID 
+	JWT_token_val        gf_session.GF_jwt_token_val
+}
+
+// io_login_finalize
+type GF_user_auth_userpass__input_login_finalize struct {
+	User_name_str GF_user_name `validate:"required,min=3,max=50"`
+}
+type GF_user_auth_userpass__output_login_finalize struct {
+	Email_confirmed_bool bool
+	User_id_str          gf_core.GF_ID 
+	JWT_token_val        gf_session.GF_jwt_token_val
 }
 
 // io_create
@@ -62,10 +71,63 @@ type GF_user_auth_userpass__output_create_regular struct {
 	User_in_invite_list_bool bool
 	General                  *GF_user_auth_userpass__output_create
 }
-
 type GF_user_auth_userpass__output_create struct {
 	User_name_str GF_user_name
 	User_id_str   gf_core.GF_ID
+}
+
+//---------------------------------------------------
+func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpass__input_login_finalize,
+	p_service_info *GF_service_info,
+	p_ctx          context.Context,
+	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
+
+	output := &GF_user_auth_userpass__output_login_finalize{}
+
+	//------------------------
+	// VERIFY_EMAIL_CONFIRMED
+	// if this check is enabled, users that have not confirmed their email cant login.
+	// this is the initial confirmation of an email on user creation, or user email update.
+	if p_service_info.Enable_email_require_confirm_for_login_bool {
+
+		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(GF_user_name(p_input.User_name_str),
+			p_ctx,
+			p_runtime_sys)
+		if gf_err != nil {
+			return nil, gf_err
+		}
+
+		if !email_confirmed_bool {
+			output.Email_confirmed_bool = false
+			return output, nil
+		} else {
+			output.Email_confirmed_bool = true
+		}
+	}
+
+	//------------------------
+	// USER_ID
+	user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+		p_ctx,
+		p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	output.User_id_str = user_id_str
+
+	//------------------------
+	// JWT
+	user_identifier_str := string(user_id_str)
+	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	output.JWT_token_val = jwt_token_val
+
+	//------------------------
+	return output, nil
 }
 
 //---------------------------------------------------
@@ -102,33 +164,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 		return output, nil
 	}
 
-	// VERIFY_EMAIL_CONFIRMED
-	// if this check is enabled, users that have not confirmed their email cant login
-	if p_service_info.Enable_email_require_confirm_for_login_bool {
-
-		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(GF_user_name(p_input.User_name_str),
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
-		}
-
-		if !email_confirmed_bool {
-			output.Email_confirmed_bool = false
-			return output, nil
-		} else {
-			output.Email_confirmed_bool = true
-		}
-	}
-
-	// VERIFY_MFA_CONFIRMED
-	if p_service_info.Enable_mfa_require_confirm_for_login_bool {
-
-
-
-
-	}
-
+	//------------------------
 	// VERIFY_PASSWORD
 	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
 		p_input.Pass_str,
@@ -147,27 +183,22 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	}
 
 	//------------------------
-	// USER_ID
-	user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+	// LOGIN_FINALIZE
+	input := &GF_user_auth_userpass__input_login_finalize{
+		User_name_str: GF_user_name(p_input.User_name_str),
+	}
+	login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(input,
+		p_service_info,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	output.User_id_str = user_id_str
-
 	//------------------------
-	// JWT
-	user_identifier_str := string(user_id_str)
-	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	output.JWT_token_val = jwt_token_val
-
-	//------------------------
+	output.Email_confirmed_bool = login_finalize_output.Email_confirmed_bool
+	output.User_id_str          = login_finalize_output.User_id_str
+	output.JWT_token_val        = login_finalize_output.JWT_token_val
 
 	return output, nil
 }

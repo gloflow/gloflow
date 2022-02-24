@@ -137,6 +137,29 @@ func init_handlers(p_auth_login_url_str string,
 					return nil, gf_err
 				}
 
+				//---------------------
+				// LOGIN_FINALIZE
+
+				login_finalize_input := &GF_user_auth_userpass__input_login_finalize{
+					User_name_str: GF_user_name(user_name_str),
+				}
+				login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(login_finalize_input,
+					p_service_info,
+					p_ctx,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//---------------------
+				
+				// SET_SESSION_ID - sets gf_sid cookie on all future requests
+				session_data_str      := string(login_finalize_output.JWT_token_val)
+				session_ttl_hours_int := 24 // 1 day
+				gf_session.Set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+
+				//---------------------
+
 				output_map := map[string]interface{}{
 					"mfa_valid_bool": valid_bool,
 				}
