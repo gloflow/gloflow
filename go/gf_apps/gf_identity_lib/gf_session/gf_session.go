@@ -90,11 +90,11 @@ func Validate(p_req *http.Request,
 		}
 	}
 
-	// if this point is reached then gf_sess_data cookie was never found
+	/*// if this point is reached then gf_sess_data cookie was never found
 	gf_err := gf_core.Error__create("`gf_sess_data` cookie missing in request",
 		"verify__sess_data_missing_in_req",
 		map[string]interface{}{},
-		nil, "gf_identity_lib", p_runtime_sys)
+		nil, "gf_identity_lib", p_runtime_sys)*/
 
-	return false, "", gf_err
+	return false, "", nil
 }
