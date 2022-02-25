@@ -19,6 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_identity from "../../gf_identity/ts/gf_identity";
+import * as gf_admin    from "./gf_admin";
+
 //--------------------------------------------------------
 $(document).ready(()=>{
 	//-------------------------------------------------
@@ -35,12 +38,14 @@ $(document).ready(()=>{
 	}
 
 	//-------------------------------------------------
-	init(log_fun);
+	init_with_http(log_fun);
 });
 
 //-------------------------------------------------
-function init(p_log_fun) {
-
-
-    console.log("admin dashboard")
+export async function init_with_http(p_log_fun) {
+	
+	const urls_map     = gf_identity.get_admin_http_urls();
+	const http_api_map = gf_identity.get_http_api(urls_map);
+	
+    gf_admin.init(http_api_map);
 }

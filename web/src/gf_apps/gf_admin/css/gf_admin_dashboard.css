@@ -8,3 +8,54 @@ body {
 
 	background-color: #d7d7d7;
 }
+
+#invite_list {
+	background-color: #acacac;
+	width: 268px;
+	height: 250px;
+	position: absolute;
+	right: 191px;
+	top: 110px;
+	padding: 13px;
+}
+
+#invite_list #title {
+	text-align: center;
+	font-size: 13px;
+	color: #575757;
+}
+
+#invite_list #add_new {
+	position: absolute;
+}
+#invite_list #add_new #confirm_btn {
+	position: absolute;
+	top: 0px;
+	right: -25px;
+	background-color: orange;
+	padding: 3px;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+
+#invite_list #current {
+	position: absolute;
+	top: 60px;
+}
+#invite_list #current .invite {
+	background-color: gray;
+	position: relative;
+	width: 230px;
+	height: 22px;
+	padding: 5px;
+	padding-bottom: 5px;
+	padding-bottom: 0px;
+}
+#invite_list #current .invite .email {
+	position: absolute;
+}
+#invite_list #current .invite .creation_unix_time {
+	position: absolute;
+	right: 0px;
+}

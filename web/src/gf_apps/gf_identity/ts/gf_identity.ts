@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity_eth      from "./gf_identity_eth";
 import * as gf_identity_userpass from "./gf_identity_userpass";
 import * as gf_identity_http     from "./gf_identity_http";
+import * as gf_admin_http        from "./gf_admin_http";
 import * as gf_utils             from "./../../../gf_core/ts/gf_utils";
 
 declare const window: any;
@@ -181,6 +182,18 @@ export function get_http_api(p_urls_map) {
             "user_mfa_confirm": async (p_user_name_str, p_mfa_val_str)=>{
                 const output_map = await gf_identity_http.user_mfa_confirm(p_user_name_str,
                     p_mfa_val_str);
+                return output_map;
+            }
+        },
+
+        // ADMIN
+        "admin": {
+            "get_all_invite_list": async ()=>{
+                const output_map = await gf_admin_http.get_all_invite_list();
+                return output_map;
+            },
+            "add_to_invite_list": async (p_email_str :string)=>{
+                const output_map = await gf_admin_http.add_to_invite_list(p_email_str);
                 return output_map;
             }
         }

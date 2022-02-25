@@ -114,6 +114,7 @@ export function user_userpass_login(p_user_name_str :string,
 }
 
 //-------------------------------------------------
+// USER_MFA_CONFIRM
 export function user_mfa_confirm(p_user_name_str :string,
     p_mfa_val_str :string) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
