@@ -40,6 +40,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/admin/users/get_all_invite_list",
 		"/v1/admin/users/add_to_invite_list",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
@@ -55,7 +56,48 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 	}
 
 	//---------------------
-	// ADMIN_LOGIN
+	// GET_ALL_INVITE_LIST
+	// AUTH
+	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/users/get_all_invite_list",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				
+				_, user_name_str, _, gf_err := gf_identity_lib.Http__get_user_std_input(p_req, p_resp, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+
+				gf_err = gf_identity_lib.Admin__is(user_name_str, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				//---------------------
+
+				invite_list_lst, gf_err := gf_identity_lib.Admin__pipeline__get_all_invite_list(p_ctx,
+					p_identity_service_info,
+					p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				output_map := map[string]interface{}{
+					"invite_list_lst": invite_list_lst,
+				}
+				return output_map, nil
+			}
+			return nil, nil
+		},
+		rpc_handler_runtime,
+		p_runtime_sys)
+
+	//---------------------
+	// ADD_TO_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/users/add_to_invite_list",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {

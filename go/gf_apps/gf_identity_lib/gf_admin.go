@@ -58,6 +58,29 @@ type GF_admin__input_add_to_invite_list struct {
 }
 
 //------------------------------------------------
+func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
+	p_service_info *GF_service_info,
+	p_runtime_sys  *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+
+	// DB
+	db_invite_list_lst, gf_err := db__user__get_all_in_invite_list(p_ctx, p_runtime_sys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	invite_list_lst := []map[string]interface{}{}
+	for _, invite_map := range db_invite_list_lst {
+
+		invite_list_lst = append(invite_list_lst, map[string]interface{}{
+			"user_email_str":       invite_map["user_email_str"],
+			"creation_unix_time_f": invite_map["creation_unix_time_f"],
+		})
+	}
+
+	return invite_list_lst, nil
+}
+
+//------------------------------------------------
 func Admin__pipeline__user_add_to_invite_list(p_input *GF_admin__input_add_to_invite_list,
 	p_ctx          context.Context,
 	p_service_info *GF_service_info,

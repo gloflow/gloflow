@@ -354,14 +354,58 @@ func db__user__email_is_confirmed(p_user_name_str GF_user_name,
 //---------------------------------------------------
 // INVITE_LIST
 //---------------------------------------------------
+func db__user__get_all_in_invite_list(p_ctx context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+
+	coll_name_str := "gf_users_invite_list"
+
+	find_opts := options.Find()
+	cursor, gf_err := gf_core.Mongo__find(bson.M{
+			"deleted_bool":  false,
+		},
+		find_opts,
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to get all records in invite_list from the DB",
+		},
+		p_runtime_sys.Mongo_db.Collection(coll_name_str),
+		p_ctx,
+		p_runtime_sys)
+	
+	if gf_err != nil {
+		return nil, gf_err
+	}
+	
+	// no login_attempt found for user
+	if cursor == nil {
+		return nil, nil
+	}
+	
+	invite_list_lst := []map[string]interface{}{}
+	err := cursor.All(p_ctx, &invite_list_lst)
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to get all records in invite_list from cursor",
+			"mongodb_cursor_decode",
+			map[string]interface{}{},
+			err, "gf_identity_lib", p_runtime_sys)
+		return nil, gf_err
+	}
+
+	return invite_list_lst, nil
+}
+
+//---------------------------------------------------
 // ADD_TO_INVITE_LIST
 func db__user__add_to_invite_list(p_user_email_str string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
+	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+
 	coll_name_str   := "gf_users_invite_list"
 	user_invite_map := map[string]interface{}{
-		"user_email_str": p_user_email_str,
+		"user_email_str":       p_user_email_str,
+		"creation_unix_time_f": creation_unix_time_f,
+		"deleted_bool":         false,
 	}
 	gf_err := gf_core.Mongo__insert(user_invite_map,
 		coll_name_str,
