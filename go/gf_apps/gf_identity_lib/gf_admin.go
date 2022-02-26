@@ -25,7 +25,6 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //---------------------------------------------------
@@ -41,10 +40,9 @@ type GF_admin__input_login struct {
 	Email_str string `validate:"omitempty,email"`
 }
 type GF_admin__output_login struct {
+	User_exists_bool     bool
 	Email_confirmed_bool bool
-	MFA_confirmed_bool   bool
 	Pass_valid_bool      bool
-	JWT_token_val        gf_session.GF_jwt_token_val
 	User_id_str          gf_core.GF_ID 
 }
 type GF_admin__output_create_admin struct {
@@ -169,36 +167,46 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 
 	var user_id_str gf_core.GF_ID
 	
-	// user doesnt exist
+	// admin user doesnt exist
 	if !user_exists_bool {
 		
-		//------------------------	
-		// PIPELINE__CREATE_ADMIN
-		// if the admin user doesnt exist in the DB (most likely on first run of gloflow server),
-		// create one in the DB
+		// so create it but only if its the root admin user.
+		// other admin users have to be created explicitly
+		if p_input.User_name_str == "admin" {
 
-		input_create := &GF_user_auth_userpass__input_create{
-			User_name_str: GF_user_name(p_input.User_name_str),
-			Pass_str:      p_input.Pass_str,
-			Email_str:     p_input.Email_str,
+			//------------------------	
+			// PIPELINE__CREATE_ADMIN
+			// if the admin user doesnt exist in the DB (most likely on first run of gloflow server),
+			// create one in the DB
+
+			input_create := &GF_user_auth_userpass__input_create{
+				User_name_str: GF_user_name(p_input.User_name_str),
+				Pass_str:      p_input.Pass_str,
+				Email_str:     p_input.Email_str,
+			}
+
+			// BREADCRUMB
+			gf_core.Breadcrumbs__add("auth", "creating new admin user",
+				map[string]interface{}{"email_str": p_input.Email_str, "user_name_str": p_input.User_name_str},
+				p_local_hub)
+			
+			output_create, gf_err := admin__pipeline__create_admin(input_create,
+				p_service_info,
+				p_ctx,
+				p_runtime_sys)
+			if gf_err != nil {
+				return nil, gf_err
+			}
+
+			//------------------------
+
+			user_id_str             = output_create.General.User_id_str
+			output.User_exists_bool = true
+		} else {
+
+			output.User_exists_bool = false
+			return output, nil
 		}
-
-		// BREADCRUMB
-		gf_core.Breadcrumbs__add("auth", "creating new admin user",
-			map[string]interface{}{"email_str": p_input.Email_str, "user_name_str": p_input.User_name_str},
-			p_local_hub)
-		
-		output, gf_err := admin__pipeline__create_admin(input_create,
-			p_service_info,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
-		}
-
-		//------------------------
-
-		user_id_str = output.General.User_id_str
 	
 	} else {
 		existing_user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
@@ -208,7 +216,8 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 			return nil, gf_err
 		}
 
-		user_id_str = existing_user_id_str
+		user_id_str             = existing_user_id_str
+		output.User_exists_bool = true
 	}
 
 	// BREADCRUMB

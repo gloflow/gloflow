@@ -166,7 +166,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 				}
 
 				output_map := map[string]interface{}{
-					"pass_valid_bool": output.Pass_valid_bool,
+					"user_exists_bool": output.User_exists_bool,
+					"pass_valid_bool":  output.Pass_valid_bool,
 				}
 				return output_map, nil
 			}
