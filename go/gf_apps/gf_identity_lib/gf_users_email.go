@@ -214,7 +214,6 @@ func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
 					font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 					/*turn off horizontal scroll*/
-					max-width:  100%;
 					overflow-x: hidden;
 
 					background-color: #d7d7d7;
