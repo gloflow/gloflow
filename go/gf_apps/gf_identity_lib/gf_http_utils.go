@@ -44,7 +44,8 @@ type GF_user__http_input_email_confirm struct {
 }
 
 //---------------------------------------------------
-func Http__get_user_std_input(p_req *http.Request,
+func Http__get_user_std_input(p_ctx context.Context,
+	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, string, GF_user_address_eth, *gf_core.GF_error) {
 
@@ -57,6 +58,11 @@ func Http__get_user_std_input(p_req *http.Request,
 	var user_name_str string;
 	if input_user_name_str, ok := input_map["user_name_str"].(string); ok {
 		user_name_str = input_user_name_str
+	} else {
+
+		// logged in users are added to context by gf_rpc, not supplied explicitly
+		// via http request input (as they are for unauthenticated requests).
+		user_name_str = p_ctx.Value("gf_user_name").(string)
 	}
 
 	// users eth address is used if the user picks that method instead of traditional
