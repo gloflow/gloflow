@@ -208,23 +208,48 @@ func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
 
 	html_str := fmt.Sprintf(`
 		<div>
+			<style>
+				body {
+					margin:      0px;
+					font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+					/*turn off horizontal scroll*/
+					max-width:  100%;
+					overflow-x: hidden;
+
+					background-color: #d7d7d7;
+				}
+				#welcome_message {
+					margin-left: 10px;
+					padding-top: 9px;
+				}
+				#message {
+					font-weight: bold;
+					margin-top: 5px;
+					margin-bottom: 5px;
+					padding-left: 11px;
+				}
+				#confirm_email {
+					background-color: rgb(150, 150, 150);
+					width: 320px;
+					padding: 8px;
+				}
+			</style>
 			<div id='gf_logo'>
 				<img src="https://gloflow.com/images/d/gf_logo_0.3.png"></img>
 			</div>
 			<div>
-				<div>Welcome to %s!</div>
+				<div id="welcome_message">Welcome to %s!</div>
 				<div>
-				<div>
+				<div id="message" style="font-weight: bold;">
 					"There is no spoon ...it is only yourself."
 				</div>
-
-				
 			</div>
-			<div>
+			<div id="confirm_email" style="background-color: rgb(150, 150, 150);">
 				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
-				<a href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
+				<a style="color: white; cursor: pointer;" href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
 			</div>
-			<div style="font-size:'8px';">
+			<div style="font-size: 10px; padding: 3px; padding-left: 7px;">
 				don't reply to this email
 			</div>
 		</div>`,

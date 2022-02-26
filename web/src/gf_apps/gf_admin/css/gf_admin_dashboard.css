@@ -8,6 +8,15 @@ body {
 
 	background-color: #d7d7d7;
 }
+/*----------------------------------------------------------*/
+#welcome .label {
+	padding-top: 11px;
+	padding-left: 11px;
+	color: #a2a2a2;
+}
+
+/*----------------------------------------------------------*/
+/*INVITE_LIST*/
 
 #invite_list {
 	background-color: #acacac;
