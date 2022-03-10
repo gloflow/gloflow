@@ -20,6 +20,7 @@ import subprocess
 import signal
 import multiprocessing
 
+import json
 import delegator
 
 #---------------------------------------------------
@@ -64,7 +65,33 @@ def run_cmd_in_os_proc(p_cmd_str, p_log_fun):
 
 #---------------------------------------------------
 def get_self_ip():
-	r           = delegator.run('''dig TXT +short o-o.myaddr.l.google.com @ns1.google.com | awk -F'"' '{ print $2}' ''')
-	self_ip_str = r.out.strip()
-	assert len(self_ip_str.split(".")) == 4
+
+	#---------------------------------------------------
+	# IMPORTANT!! - this approach works most of the time.
+	#               in some providers or networks DNS traffic might be routed from different exit routers
+	#               (access points) than regular http traffic. 
+	#               in thoise situations DNS nameserver that is pinged will return IP that is not appropriate.
+	def dns_method():
+		target_namespace_server_str = "ns1.google.com"
+		cmd_str = '''dig TXT +short o-o.myaddr.l.google.com @%s | awk -F'"' '{ print $2}' '''%(target_namespace_server_str)
+		print(cmd_str)
+
+		r           = delegator.run(cmd_str)
+		self_ip_str = r.out.strip()
+		assert len(self_ip_str.split(".")) == 4
+		return self_ip_str
+
+	#---------------------------------------------------
+	def extern_service_method():
+		cmd_str = "curl http://ipinfo.io"
+		print(cmd_str)
+		
+		r           = delegator.run(cmd_str)
+		self_ip_str = json.loads(r.out)["ip"]
+		return self_ip_str
+
+	#---------------------------------------------------
+	# self_ip_str = dns_method()
+
+	self_ip_str = extern_service_method()
 	return self_ip_str
