@@ -205,29 +205,34 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 }
 
 //-------------------------------------------------
+// ADD_EXTERN_IMAGE_WITH_POLICY
+func FlowsAddExternImageWithPolicy() {
+
+}
+
+//-------------------------------------------------
 // ADD_EXTERN_IMAGE
-func Flows__add_extern_image(p_image_extern_url_str string,
-	p_image_origin_page_url_str string,
-	p_flows_names_lst           []string,
-	p_client_type_str           string,
-	p_jobs_mngr_ch              chan gf_images_jobs_core.Job_msg,
-	p_runtime_sys               *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.Flows__add_extern_image()")
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flows_names_lst - %s", p_flows_names_lst))
+func FlowsAddExternImage(pImageExternURLstr string,
+	pImageOriginPageURLstr string,
+	pFlowsNamesLst         []string,
+	pClientTypeStr         string,
+	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
 	images_urls_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{
 			{
-				Source_url_str:      p_image_extern_url_str,
-				Origin_page_url_str: p_image_origin_page_url_str,
+				Source_url_str:      pImageExternURLstr,
+				Origin_page_url_str: pImageOriginPageURLstr,
 			},
 		}
 		
-	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_extern_imgs(p_client_type_str,
+	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
 		images_urls_to_process_lst,
-		p_flows_names_lst,
-		p_jobs_mngr_ch,
-		p_runtime_sys)
+		pFlowsNamesLst,
+		pJobsMngrCh,
+		pRuntimeSys)
 
 	if gf_err != nil {
 		return nil, nil, gf_images_core.GF_image_id(""), gf_err

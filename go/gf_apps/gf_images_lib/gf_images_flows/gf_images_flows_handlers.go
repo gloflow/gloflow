@@ -29,7 +29,8 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_mux *http.ServeMux,
+func Init_handlers(p_auth_login_url_str string,
+	p_http_mux            *http.ServeMux,
 	p_templates_paths_map map[string]string,
 	p_jobs_mngr_ch        chan gf_images_jobs_core.Job_msg,
 	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -46,12 +47,23 @@ func Init_handlers(p_mux *http.ServeMux,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/v1/images/flows/all",
+		"/v1/images/flows/add_img",
 		"/images/flows/add_img",
 		"/images/flows/imgs_exist",
 		"/images/flows/browser",
 		"/images/flows/browser_page",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_images_flows", handlers_endpoints_lst)
+
+	//---------------------
+	// RPC_HANDLER_RUNTIME
+	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:                p_http_mux,
+		Metrics:            metrics,
+		Store_run_bool:     true,
+		Sentry_hub:         nil,
+		Auth_login_url_str: p_auth_login_url_str,
+	}
 
 	//---------------------
 
@@ -77,7 +89,7 @@ func Init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil, 
@@ -85,7 +97,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 	//-------------------------------------------------
 	// ADD_IMAGE
-	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/add_img",
+	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/images/flows/add_img",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -101,7 +113,6 @@ func Init_handlers(p_mux *http.ServeMux,
 				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
 				client_type_str           := i_map["client_type_str"].(string)
 
-				// flow_name_str := "general" //i["flow_name_str"].(string) // DEPRECATED
 				flows_names_lst := []string{}
 				for _, s := range i_map["flows_names_lst"].([]interface{}) {
 					flows_names_lst = append(flows_names_lst, s.(string))
@@ -109,7 +120,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 				//--------------------------
 
-				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := Flows__add_extern_image(image_extern_url_str,
+				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImage(image_extern_url_str,
 					image_origin_page_url_str,
 					flows_names_lst,
 					client_type_str,
@@ -134,7 +145,63 @@ func Init_handlers(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
+		rpc_handler_runtime,
+		p_runtime_sys)
+
+	//-------------------------------------------------
+	// ADD_IMAGE
+	// DEPRECATED!! - switch to using the v1/auth based add_img handler
+
+	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/add_img",
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if p_req.Method == "POST" {
+
+				//--------------------------
+				// INPUT
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				if gf_err != nil {
+					return nil, gf_err
+				}
+
+				image_extern_url_str      := i_map["image_extern_url_str"].(string)
+				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
+				client_type_str           := i_map["client_type_str"].(string)
+
+				// flow_name_str := "general" //i["flow_name_str"].(string) // DEPRECATED
+				flows_names_lst := []string{}
+				for _, s := range i_map["flows_names_lst"].([]interface{}) {
+					flows_names_lst = append(flows_names_lst, s.(string))
+				}
+
+				//--------------------------
+
+				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImage(image_extern_url_str,
+					image_origin_page_url_str,
+					flows_names_lst,
+					client_type_str,
+					p_jobs_mngr_ch,
+					p_runtime_sys)
+
+				if n_gf_err != nil {
+					return nil, n_gf_err
+				}
+
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{
+					"images_job_id_str":                running_job_id_str,
+					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
+					"image_id_str":                     image_id_str,
+				}
+				return data_map, nil
+
+				//------------------
+			}
+
+			return nil, nil
+		},
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -185,7 +252,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		false, // p_store_run_bool
 		nil,
@@ -229,7 +296,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -259,7 +326,7 @@ func Init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		p_http_mux,
 		metrics,
 		true, // p_store_run_bool
 		nil,

@@ -34,7 +34,7 @@ import (
 )
 
 //-------------------------------------------------
-func Init_service(p_mux *http.ServeMux,
+func Init_service(p_http_mux *http.ServeMux,
 	p_service_info *gf_images_core.GF_service_info,
 	p_config       *gf_images_core.GF_config,
 	p_runtime_sys  *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
@@ -76,7 +76,8 @@ func Init_service(p_mux *http.ServeMux,
 	// IMAGE_FLOWS
 
 	// flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
-	gf_err = gf_images_flows.Init_handlers(p_mux,
+	gf_err = gf_images_flows.Init_handlers(p_service_info.Auth_login_url_str,
+		p_http_mux,
 		p_service_info.Templates_paths_map,
 		jobs_mngr_ch,
 		p_runtime_sys)
@@ -86,14 +87,14 @@ func Init_service(p_mux *http.ServeMux,
 
 	//-------------
 	// GIF
-	gf_err = gf_gif_lib.Gif__init_handlers(p_mux, p_runtime_sys)
+	gf_err = gf_gif_lib.Gif__init_handlers(p_http_mux, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
 	//-------------
 	// IMAGE_EDITOR
-	gf_image_editor.Init_handlers(p_mux, p_runtime_sys)
+	gf_image_editor.Init_handlers(p_http_mux, p_runtime_sys)
 	
 	//-------------
 	/*gf_gif_lib.Init_img_to_gif_migration(*p_images_store_local_dir_path_str,
@@ -105,11 +106,11 @@ func Init_service(p_mux *http.ServeMux,
 	
 	//-------------
 	// JOBS_MANAGER
-	gf_images_jobs.Jobs_mngr__init_handlers(p_mux, jobs_mngr_ch, p_runtime_sys)
+	gf_images_jobs.Jobs_mngr__init_handlers(p_http_mux, jobs_mngr_ch, p_runtime_sys)
 
 	//-------------
 	// HANDLERS
-	gf_err = gf_images_service.Init_handlers(p_mux,
+	gf_err = gf_images_service.Init_handlers(p_http_mux,
 		jobs_mngr_ch,
 		p_config,
 		p_service_info.Media_domain_str,
@@ -125,7 +126,7 @@ func Init_service(p_mux *http.ServeMux,
 	local_dir_path_str         := "./static"
 	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
 		local_dir_path_str,
-		p_mux,
+		p_http_mux,
 		p_runtime_sys)
 
 	//------------------------

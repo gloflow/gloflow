@@ -249,7 +249,7 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 
 	//--------------------
 	// IN_PROCESS
-	running_job, outputs_lst, gf_err := gf_images_jobs_client.Run_extern_imgs(p_image_job_client_type_str,
+	running_job, outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(p_image_job_client_type_str,
 		images_to_process_lst,
 		flows_names_lst,
 		p_gf_images_jobs_mngr,

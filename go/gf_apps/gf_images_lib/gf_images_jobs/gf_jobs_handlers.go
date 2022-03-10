@@ -97,7 +97,7 @@ func Jobs_mngr__init_handlers(p_mux *http.ServeMux,
 
 				//-------------------
 
-				running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_extern_imgs(client_type_str,
+				running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(client_type_str,
 					images_to_process_lst,
 					flows_names_lst,
 					p_jobs_mngr_ch,

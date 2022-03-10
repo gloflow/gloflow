@@ -39,6 +39,10 @@ type GF_service_info struct {
 	AWS_token_str                              string
 	Templates_paths_map                        map[string]string
 	Config_file_path_str                       string
+
+	// AUTH_LOGIN_URL - url of the login page to which the system should
+	//                  redirect users when email is confirmed.
+	Auth_login_url_str string
 }
 
 //-------------------------------------------------

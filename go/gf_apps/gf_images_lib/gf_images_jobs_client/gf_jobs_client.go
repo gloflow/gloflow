@@ -126,13 +126,12 @@ func Run_uploaded_imgs(p_client_type_str string,
 
 //-------------------------------------------------
 // START
-func Run_extern_imgs(p_client_type_str string,
+func RunExternImgs(p_client_type_str string,
 	p_images_extern_to_process_lst []gf_images_jobs_core.GF_image_extern_to_process,
 	p_flows_names_lst              []string,
 	p_jobs_mngr_ch                 gf_images_jobs_core.Jobs_mngr,
 	p_runtime_sys                  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, []*GF_job_expected_output, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_extern_imgs()")
-	p_runtime_sys.Log_fun("INFO",      "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
+	p_runtime_sys.Log_fun("INFO", "images_extern_to_process - "+fmt.Sprint(p_images_extern_to_process_lst))
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR

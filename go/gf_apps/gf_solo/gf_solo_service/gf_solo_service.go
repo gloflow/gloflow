@@ -88,7 +88,7 @@ func Run(p_config *GF_config,
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
 		Name_str:           "gf_identity",
 		Domain_base_str:    p_config.Domain_base_str,
-		Auth_login_url_str: "/v1/identity/userpass/login", // on email confirm redirect user to this
+		Auth_login_url_str: "/landing/main/", // on email confirm redirect user to this
 
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
@@ -188,6 +188,9 @@ func Run(p_config *GF_config,
 		AWS_token_str:                              p_config.AWS_token_str,
 
 		Templates_paths_map: p_config.Templates_paths_map,
+
+		// on user trying to access authed endpoint while not logged in, redirect to this
+		Auth_login_url_str: "/landing/main/",
 	}
 
 	jobs_mngr_ch := gf_images_lib.Init_service(gf_solo_http_mux,
