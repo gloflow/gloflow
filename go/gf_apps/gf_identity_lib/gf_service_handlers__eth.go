@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -56,7 +56,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	//---------------------
 	// USERS_PREFLIGHT
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/preflight",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/preflight",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -94,7 +94,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -144,7 +144,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {

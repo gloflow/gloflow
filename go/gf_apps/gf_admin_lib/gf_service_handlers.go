@@ -77,7 +77,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADMIN_LOGIN_UI
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login_ui",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login_ui",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -120,7 +120,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADMIN_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -179,7 +179,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADMIN_DASHBOARD
 	// AUTH - only logged in admins can use the dashboard
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/dashboard",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -214,7 +214,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		Sentry_hub:     p_local_hub,
 	}
 
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/admin/healthz",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/healthz",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},

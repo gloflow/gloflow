@@ -32,7 +32,7 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 
 	//-------------------------------------------------
 	// GIF_GET_INFO
-	gf_rpc_lib.Create_handler__http_with_mux("/images/gif/get_info",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/gif/get_info",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 		
 			if p_req.Method == "GET" {

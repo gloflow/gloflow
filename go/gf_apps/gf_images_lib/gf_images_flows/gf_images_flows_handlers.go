@@ -69,7 +69,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 	//-------------------------------------------------
 	// GET_ALL_FLOWS
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/images/flows/all",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/flows/all",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -97,7 +97,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 	//-------------------------------------------------
 	// ADD_IMAGE
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/images/flows/add_img",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/add_img",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -152,7 +152,7 @@ func Init_handlers(p_auth_login_url_str string,
 	// ADD_IMAGE
 	// DEPRECATED!! - switch to using the v1/auth based add_img handler
 
-	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/add_img",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/add_img",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -211,7 +211,7 @@ func Init_handlers(p_auth_login_url_str string,
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
-	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/imgs_exist",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/imgs_exist",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -262,7 +262,7 @@ func Init_handlers(p_auth_login_url_str string,
 	// FLOWS_BROWSER
 	//-------------------------------------------------
 	// BROWSER
-	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/browser",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -305,7 +305,7 @@ func Init_handlers(p_auth_login_url_str string,
 	//-------------------------------------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 
-	gf_rpc_lib.Create_handler__http_with_mux("/images/flows/browser_page",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser_page",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {

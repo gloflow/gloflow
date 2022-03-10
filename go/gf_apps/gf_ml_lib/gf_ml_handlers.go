@@ -33,7 +33,7 @@ func init_handlers(p_mux *http.ServeMux,
 	//---------------------
 	// DATASETS_CREATE - register a dataset
 
-	gf_rpc_lib.Create_handler__http_with_mux("/ml/datasets/register",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/ml/datasets/register",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},

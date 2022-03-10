@@ -57,7 +57,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// BOOKMARKS
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/bookmarks/create",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
@@ -102,7 +102,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/bookmarks/get",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
@@ -158,7 +158,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// NOTES
 	//---------------------
 	// CREATE
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/notes/create",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 			if p_req.Method == "POST" {
 
@@ -191,7 +191,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// GET_NOTES
 
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/notes/get",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
@@ -218,7 +218,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// ADD_TAGS
 
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/create",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -252,7 +252,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/tags/objects",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/objects",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {

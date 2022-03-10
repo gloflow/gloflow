@@ -69,7 +69,7 @@ func Create_handler__http(p_path_str string,
 
 //-------------------------------------------------
 // HTTP_WITH_AUTH
-func Create_handler__http_with_auth(p_auth_bool bool, // if handler uses authentication or not
+func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authentication or not
 	p_path_str        string,
 	p_handler_fun     handler_http,
 	p_handler_runtime *GF_rpc_handler_runtime,
@@ -89,7 +89,7 @@ func Create_handler__http_with_auth(p_auth_bool bool, // if handler uses authent
 
 //-------------------------------------------------
 // HTTP_WITH_MUX
-func Create_handler__http_with_mux(p_path_str string,
+func CreateHandlerHTTPwithMux(p_path_str string,
 	p_handler_fun    handler_http,
 	p_mux            *http.ServeMux,
 	p_metrics        *GF_metrics,

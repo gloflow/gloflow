@@ -45,7 +45,7 @@ func init_handlers(p_media_domain_str string,
 	}
 
 	//----------------
-	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/image/recent",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/recent",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -74,7 +74,7 @@ func init_handlers(p_media_domain_str string,
 		p_runtime_sys)
 
 	//----------------
-	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/image/add_to_flow",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/add_to_flow",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -122,7 +122,7 @@ func init_handlers(p_media_domain_str string,
 		p_runtime_sys)
 
 	//----------------
-	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/search",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/search",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -153,7 +153,7 @@ func init_handlers(p_media_domain_str string,
 		p_runtime_sys)
 
 	//----------------
-	gf_rpc_lib.Create_handler__http_with_mux("/a/crawl/crawl_dashboard",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/crawl_dashboard",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {

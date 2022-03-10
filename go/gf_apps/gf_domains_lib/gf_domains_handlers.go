@@ -44,7 +44,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 	//---------------------
 	// DOMAIN_BROWSER
-	gf_rpc_lib.Create_handler__http_with_mux("/a/domains/browser",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/domains/browser",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {

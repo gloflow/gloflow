@@ -58,7 +58,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 	//---------------------
 	// GET_ALL_INVITE_LIST
 	// AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/users/get_all_invite_list",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all_invite_list",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -99,7 +99,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 	//---------------------
 	// ADD_TO_INVITE_LIST
 	// AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/admin/users/add_to_invite_list",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/add_to_invite_list",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {

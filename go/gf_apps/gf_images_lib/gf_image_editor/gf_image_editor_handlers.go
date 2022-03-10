@@ -32,7 +32,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor_handlers.Init_handlers()")
 
 	//---------------------
-	gf_rpc_lib.Create_handler__http_with_mux("/images/editor/save",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/editor/save",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 		
 			if p_req.Method == "POST" {

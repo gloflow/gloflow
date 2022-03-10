@@ -58,7 +58,7 @@ func init_handlers(p_auth_login_url_str string,
 	//---------------------
 	// EMAIL_CONFIRM
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/email_confirm",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -108,7 +108,7 @@ func init_handlers(p_auth_login_url_str string,
 	//---------------------
 	// MFA_CONFIRM
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/mfa_confirm",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/mfa_confirm",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -181,7 +181,7 @@ func init_handlers(p_auth_login_url_str string,
 	// USERS_UPDATE
 	// AUTH - only logged in users can update their own details
 
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/identity/update",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -241,7 +241,7 @@ func init_handlers(p_auth_login_url_str string,
 	//---------------------
 	// USERS_GET_ME
 	// AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(true, "/v1/identity/me",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {

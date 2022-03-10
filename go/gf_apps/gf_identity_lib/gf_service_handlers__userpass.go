@@ -55,7 +55,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/userpass/login",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -117,7 +117,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users, and do not get logged in automatically on success
 
-	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/userpass/create",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {

@@ -49,7 +49,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// GET_POST
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -127,7 +127,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// POST_CREATE
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/create",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -164,7 +164,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	
 	//---------------------
 	// POST_STATUS
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/status",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/status",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
@@ -175,7 +175,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		p_runtime_sys)
 	
 	//---------------------
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/update",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/update",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
@@ -186,7 +186,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		p_runtime_sys)
 
 	//---------------------
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/delete",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/delete",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -218,7 +218,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// POSTS_BROWSER
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/browser",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -256,7 +256,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
-	gf_rpc_lib.Create_handler__http_with_mux("/posts/browser_page",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser_page",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -326,7 +326,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	// POSTS_ELEMENTS
-	gf_rpc_lib.Create_handler__http_with_mux("/posts_elements/create",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts_elements/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},

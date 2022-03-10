@@ -52,7 +52,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 	//---------------------
 	// GET_IMAGE
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/images/get",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/get",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -104,7 +104,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	//---------------------
 	// GET_IMAGE_URL
 	
-	gf_rpc_lib.Create_handler__http_with_mux("/images/d/",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/d/",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if p_req.Method == "GET" {
 
@@ -155,7 +155,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	// UPLOAD_INIT - client calls this to get the presigned URL to then upload the image to directly.
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/images/upload_init",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_init",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
@@ -231,7 +231,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/images/upload_complete",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_complete",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -300,7 +300,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	//---------------------
 	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
 	
-	gf_rpc_lib.Create_handler__http_with_mux("/images/c",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/c",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -342,7 +342,7 @@ func Init_handlers(p_mux *http.ServeMux,
 	// FIX!! - change to "/v1/images/healthz" but have to also fix infra healthcheck path 
 	//         otherwise service is going to get marked as unhealthy
 	
-	gf_rpc_lib.Create_handler__http_with_mux("/images/v1/healthz",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v1/healthz",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
