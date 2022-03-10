@@ -60,7 +60,7 @@ func Test__users_http_eth(p_test *testing.T) {
 		Send(string(data_bytes_lst)).
 		End()
 
-	spew.Dump(body_str)
+	// spew.Dump(body_str)
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
@@ -74,6 +74,9 @@ func Test__users_http_eth(p_test *testing.T) {
     }
 
 	assert.True(p_test, body_map["status"].(string) != "ERROR", "user preflight http request failed")
+
+	fmt.Println("AAAAAAAAAAAAAAAAAAA")
+	spew.Dump(body_map)
 
 	nonce_val_str    := body_map["data"].(map[string]interface{})["nonce_val_str"].(string)
 	user_exists_bool := body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)

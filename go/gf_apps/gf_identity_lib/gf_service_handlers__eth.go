@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -30,7 +30,7 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__eth(p_mux *http.ServeMux,
+func init_handlers__eth(p_http_mux *http.ServeMux,
 	p_service_info *GF_service_info,
 	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -44,9 +44,19 @@ func init_handlers__eth(p_mux *http.ServeMux,
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(p_service_info.Name_str, handlers_endpoints_lst)
 
 	//---------------------
+	// RPC_HANDLER_RUNTIME
+	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:                p_http_mux,
+		Metrics:            metrics,
+		Store_run_bool:     true,
+		Sentry_hub:         nil,
+		Auth_login_url_str: "/landing/main/",
+	}
+
+	//---------------------
 	// USERS_PREFLIGHT
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/preflight",
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/preflight",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -78,16 +88,13 @@ func init_handlers__eth(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
-		metrics,
-		true, // p_store_run_bool
-		nil,  // p_local_hub
+		rpc_handler_runtime,
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/login",
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/login",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -131,17 +138,13 @@ func init_handlers__eth(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
-		metrics,
-		true, // p_store_run_bool
-		nil,  // p_local_hub
+		rpc_handler_runtime,
 		p_runtime_sys)
 
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
-
-	gf_rpc_lib.Create_handler__http_with_mux("/v1/identity/eth/create",
+	gf_rpc_lib.Create_handler__http_with_auth(false, "/v1/identity/eth/create",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
@@ -173,10 +176,7 @@ func init_handlers__eth(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
-		metrics,
-		true, // p_store_run_bool
-		nil,  // p_local_hub
+		rpc_handler_runtime,
 		p_runtime_sys)
 
 	//---------------------
