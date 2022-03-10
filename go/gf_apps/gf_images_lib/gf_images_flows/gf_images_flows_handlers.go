@@ -98,13 +98,13 @@ func Init_handlers(p_auth_login_url_str string,
 	//-------------------------------------------------
 	// ADD_IMAGE
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/add_img",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -120,7 +120,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 
-				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImage(image_extern_url_str,
+				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImageWithPolicy(image_extern_url_str,
 					image_origin_page_url_str,
 					flows_names_lst,
 					client_type_str,
@@ -235,7 +235,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 					
-				existing_images_lst, gf_err := flows__images_exist_check(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
+				existing_images_lst, gf_err := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

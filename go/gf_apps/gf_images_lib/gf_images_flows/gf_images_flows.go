@@ -36,7 +36,7 @@ import (
 // IMPORTANT!! - image_flow's are ordered sequences of images, that the user creates and then
 //               over time adds images to it... 
 
-type Images_flow struct {
+type GFflow struct {
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string             `bson:"id_str"`
 	T_str                string             `bson:"t"`
@@ -44,12 +44,16 @@ type Images_flow struct {
 	Name_str             string             `bson:"name_str"`
 }
 
-type Image_exists__check struct {
+type GFimageExistsCheck struct {
 	Id                         primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                     string             `bson:"id_str"`
 	T_str                      string             `bson:"t"`
 	Creation_unix_time_f       float64            `bson:"creation_unix_time_f"`
 	Images_extern_urls_lst     []string           `bson:"images_extern_urls_lst"`
+}
+
+type GFflowOwnership struct {
+
 }
 
 // //-------------------------------------------------
@@ -157,15 +161,14 @@ func flows__get_page__pipeline(p_req *http.Request,
 
 //-------------------------------------------------
 // IMAGES_EXIST_CHECK
-func flows__images_exist_check(p_images_extern_urls_lst []string,
-	p_flow_name_str   string,
-	p_client_type_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__images_exist_check()")
-
-	existing_images_lst, gf_err := flows_db__images_exist(p_images_extern_urls_lst,
-		p_flow_name_str,
-		p_client_type_str,
+func flowsImagesExistCheck(pImagesExternURLsLst []string,
+	pFlowNameStr   string,
+	pClientTypeStr string,
+	p_runtime_sys  *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+	
+	existing_images_lst, gf_err := flows_db__images_exist(pImagesExternURLsLst,
+		pFlowNameStr,
+		pClientTypeStr,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
@@ -178,11 +181,11 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 		id_str               := fmt.Sprintf("img_exists_check:%f",creation_unix_time_f)
 		
-		check := Image_exists__check{
+		check := GFimageExistsCheck{
 			Id_str:                 id_str,
 			T_str:                  "img_exists_check",
 			Creation_unix_time_f:   creation_unix_time_f,
-			Images_extern_urls_lst: p_images_extern_urls_lst,
+			Images_extern_urls_lst: pImagesExternURLsLst,
 		}
 
 		ctx           := context.Background()
@@ -190,9 +193,9 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 		_              = gf_core.Mongo__insert(check,
 			coll_name_str,
 			map[string]interface{}{
-				"images_extern_urls_lst": p_images_extern_urls_lst,
-				"flow_name_str":          p_flow_name_str,
-				"client_type_str":        p_client_type_str,
+				"images_extern_urls_lst": pImagesExternURLsLst,
+				"flow_name_str":          pFlowNameStr,
+				"client_type_str":        pClientTypeStr,
 				"caller_err_msg_str":     "failed to insert a img_exists_check into the DB",
 			},
 			ctx,
@@ -206,8 +209,25 @@ func flows__images_exist_check(p_images_extern_urls_lst []string,
 
 //-------------------------------------------------
 // ADD_EXTERN_IMAGE_WITH_POLICY
-func FlowsAddExternImageWithPolicy() {
+func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
+	pImageOriginPageURLstr string,
+	pFlowsNamesLst         []string,
+	pClientTypeStr         string,
+	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
+	
 
+	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(pImageExternURLstr,
+		pImageOriginPageURLstr,
+		pFlowsNamesLst,
+		pClientTypeStr,
+		pJobsMngrCh,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gf_images_core.GF_image_id(""), gfErr
+	}
+
+	return runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, nil
 }
 
 //-------------------------------------------------
@@ -248,30 +268,29 @@ func FlowsAddExternImage(pImageExternURLstr string,
 
 //-------------------------------------------------
 // CREATE
-func flows__create(p_images_flow_name_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (*Images_flow, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__create()")
+func flowsCreate(pFlowNameStr string,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFflow, *gf_core.GF_error) {
 
 	id_str               := fmt.Sprintf("img_flow:%f", float64(time.Now().UnixNano())/1000000000.0)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	flow := &Images_flow{
+	flow := &GFflow{
 		Id_str:               id_str,
 		T_str:                "img_flow",
-		Name_str:             p_images_flow_name_str,
+		Name_str:             pFlowNameStr,
 		Creation_unix_time_f: creation_unix_time_f,
 	}
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
 	_ = gf_core.Mongo__insert(flow,
 		coll_name_str,
 		map[string]interface{}{
-			"images_flow_name_str": p_images_flow_name_str,
+			"images_flow_name_str": pFlowNameStr,
 			"caller_err_msg_str":   "failed to insert a image Flow into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	return flow, nil
 }
