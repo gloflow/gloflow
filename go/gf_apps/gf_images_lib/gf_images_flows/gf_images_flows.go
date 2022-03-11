@@ -37,19 +37,19 @@ import (
 //               over time adds images to it... 
 
 type GFflow struct {
-	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               string             `bson:"id_str"`
-	T_str                string             `bson:"t"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
-	Name_str             string             `bson:"name_str"`
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             string             `bson:"id_str"`
+	Tstr              string             `bson:"t"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
+	NameStr           string             `bson:"name_str"`
 }
 
 type GFimageExistsCheck struct {
-	Id                         primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str                     string             `bson:"id_str"`
-	T_str                      string             `bson:"t"`
-	Creation_unix_time_f       float64            `bson:"creation_unix_time_f"`
-	Images_extern_urls_lst     []string           `bson:"images_extern_urls_lst"`
+	Id                  primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr               string             `bson:"id_str"`
+	Tstr                string             `bson:"t"`
+	CreationUNIXtimeF   float64            `bson:"creation_unix_time_f"`
+	ImagesExternURLsLst []string           `bson:"images_extern_urls_lst"`
 }
 
 // //-------------------------------------------------
@@ -89,11 +89,10 @@ func pipelineGetAll(pCtx context.Context,
 
 //-------------------------------------------------
 // GET_PAGE__PIPELINE
-func flows__get_page__pipeline(p_req *http.Request,
+func pipelineGetPage(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows.flows__get_page__pipeline()")
 
 	//--------------------
 	// INPUT
@@ -175,13 +174,13 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 
 	go func() {
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-		id_str               := fmt.Sprintf("img_exists_check:%f",creation_unix_time_f)
+		idStr                := fmt.Sprintf("img_exists_check:%f",creation_unix_time_f)
 		
 		check := GFimageExistsCheck{
-			Id_str:                 id_str,
-			T_str:                  "img_exists_check",
-			Creation_unix_time_f:   creation_unix_time_f,
-			Images_extern_urls_lst: pImagesExternURLsLst,
+			IDstr:               idStr,
+			Tstr:                "img_exists_check",
+			CreationUNIXtimeF:   creation_unix_time_f,
+			ImagesExternURLsLst: pImagesExternURLsLst,
 		}
 
 		ctx           := context.Background()
@@ -271,28 +270,40 @@ func FlowsAddExternImage(pImageExternURLstr string,
 //-------------------------------------------------
 // CREATE
 func flowsCreate(pFlowNameStr string,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFflow, *gf_core.GF_error) {
+	pOwnerUserIDstr gf_core.GF_ID,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.Runtime_sys) (*GFflow, *gf_core.GF_error) {
 
-	id_str               := fmt.Sprintf("img_flow:%f", float64(time.Now().UnixNano())/1000000000.0)
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	idStr             := fmt.Sprintf("img_flow:%f", float64(time.Now().UnixNano())/1000000000.0)
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	flow := &GFflow{
-		Id_str:               id_str,
-		T_str:                "img_flow",
-		Name_str:             pFlowNameStr,
-		Creation_unix_time_f: creation_unix_time_f,
+		IDstr:             idStr,
+		Tstr:              "img_flow",
+		NameStr:           pFlowNameStr,
+		CreationUNIXtimeF: creationUNIXtimeF,
 	}
 
-	ctx           := context.Background()
+	// DB
 	coll_name_str := pRuntimeSys.Mongo_coll.Name()
-	_ = gf_core.Mongo__insert(flow,
+	gfErr := gf_core.Mongo__insert(flow,
 		coll_name_str,
 		map[string]interface{}{
 			"images_flow_name_str": pFlowNameStr,
 			"caller_err_msg_str":   "failed to insert a image Flow into the DB",
 		},
-		ctx,
+		pCtx,
 		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+
+	// POLICY
+	gfErr = policyPipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
 	return flow, nil
 }

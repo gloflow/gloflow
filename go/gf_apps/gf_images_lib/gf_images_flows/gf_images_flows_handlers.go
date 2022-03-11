@@ -307,21 +307,21 @@ func Init_handlers(p_auth_login_url_str string,
 	// GET_BROWSER_PAGE (slice of posts data series)
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser_page",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
-				pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_ctx, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				pagesLst, gfErr := pipelineGetPage(pReq, pResp, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//--------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
-					"pages_lst": pages_lst,
+				dataMap := map[string]interface{}{
+					"pages_lst": pagesLst,
 				}
-				return data_map, nil
+				return dataMap, nil
 				
 				//------------------
 			}

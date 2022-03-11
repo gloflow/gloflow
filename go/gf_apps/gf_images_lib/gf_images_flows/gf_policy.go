@@ -22,16 +22,20 @@ package gf_images_flows
 import (
 	"fmt"
 	"context"
+	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type GFflowPolicy struct {
-	Id             primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr          string             `bson:"id_str"`
-	FlowIDstr      string             `bson:"flow_id_str"`
-	OwnerUserIDstr gf_core.GF_ID      `bson:"owner_user_id_str"`
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool       bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
+	
+	FlowIDstr         string             `bson:"flow_id_str"`
+	OwnerUserIDstr    gf_core.GF_ID      `bson:"owner_user_id_str"`
 
 	// if the flow is fully public and all users (including anonymous) can view it
 	PublicViewBool bool `bson:"public_view_bool"`
@@ -73,11 +77,20 @@ func policyVerify(pFlowsNamesLst []string,
 
 //-------------------------------------------------
 // PIPELINE__CREATE
-func policyPipelineCreate(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+func policyPipelineCreate(pFlowIDstr string,
+	pOwnerUserIDstr gf_core.GF_ID,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	IDstr             := policyCreateID(pFlowIDstr, creationUNIXtimeF)
 
 	policy := &GFflowPolicy{
-
+		IDstr:             IDstr,     
+		CreationUNIXtimeF: creationUNIXtimeF,
+		FlowIDstr:         pFlowIDstr,
+		OwnerUserIDstr:    pOwnerUserIDstr,
+		PublicViewBool:    true,
 	}
 
 	gfErr := DBcreatePolicy(policy, pCtx, pRuntimeSys)
@@ -86,4 +99,18 @@ func policyPipelineCreate(pCtx context.Context,
 	}
 
 	return gfErr
+}
+
+//---------------------------------------------------
+func policyCreateID(pFlowIDstr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pFlowIDstr,
+		fmt.Sprintf("%f", pCreationUNIXtimeF),
+	}
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
 }
