@@ -253,7 +253,7 @@ func users_auth_eth__pipeline__create(p_input *GF_user_auth_eth__input_create,
 	user_addresses_eth_lst := []GF_user_address_eth{user_address_eth_str, }
 
 	user_identifier_str := string(user_address_eth_str)
-	user_id := users__create_id(user_identifier_str, creation_unix_time_f)
+	user_id := usersCreateID(user_identifier_str, creation_unix_time_f)
 
 	user := &GF_user{
 		V_str:                "0",

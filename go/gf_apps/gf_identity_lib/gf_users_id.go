@@ -24,7 +24,7 @@ import (
 )
 
 //---------------------------------------------------
-func users__create_id(p_user_identifier_str string,
+func usersCreateID(p_user_identifier_str string,
 	p_creation_unix_time_f float64) gf_core.GF_ID {
 
 	fields_for_id_lst := []string{

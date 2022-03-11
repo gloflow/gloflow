@@ -317,7 +317,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	email_str     := p_input.Email_str
 
 	user_identifier_str := string(user_name_str)
-	user_id_str := users__create_id(user_identifier_str, creation_unix_time_f)
+	user_id_str := usersCreateID(user_identifier_str, creation_unix_time_f)
 
 	user := &GF_user{
 		V_str:                "0",
@@ -332,7 +332,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	pass_hash_str := users_auth_userpass__get_pass_hash(pass_str, pass_salt_str)
 
 	creds__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	user_creds_id_str           := users__create_id(user_identifier_str, creds__creation_unix_time_f)
+	user_creds_id_str           := usersCreateID(user_identifier_str, creds__creation_unix_time_f)
 
 	user_creds := &GF_user_creds {
 		V_str:                "0",

@@ -245,7 +245,7 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 
 		user_identifier_str  := p_input.User_name_str
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-		login_attempt_id_str := users__create_id(user_identifier_str, creation_unix_time_f)
+		login_attempt_id_str := usersCreateID(user_identifier_str, creation_unix_time_f)
 
 		login_attempt = &GF_login_attempt{
 			V_str:                "0",
