@@ -31,7 +31,29 @@ import (
 )
 
 //---------------------------------------------------
-func Flows_db__get_all_flows(p_ctx context.Context,
+// POLICY
+//---------------------------------------------------
+// GET
+func DBgetPolicy(pFlowNameStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFflowPolicy, *gf_core.GF_error) {
+
+
+	return nil, nil
+}
+
+func DBcreatePolicy(pPolicy *GFflowPolicy,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	return nil
+}
+
+//---------------------------------------------------
+// FLOWS
+//---------------------------------------------------
+// GET_ALL
+func DBgetAll(p_ctx context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 
 	pipeline := mongo.Pipeline{

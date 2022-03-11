@@ -33,12 +33,12 @@ func Init_handlers(p_auth_login_url_str string,
 	p_http_mux            *http.ServeMux,
 	p_templates_paths_map map[string]string,
 	p_jobs_mngr_ch        chan gf_images_jobs_core.Job_msg,
-	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
+	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
 
 	//---------------------
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -70,10 +70,10 @@ func Init_handlers(p_auth_login_url_str string,
 	//-------------------------------------------------
 	// GET_ALL_FLOWS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/flows/all",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
-				all_flows_names_lst, gf_err := flows__get_all__pipeline(p_ctx, p_runtime_sys)
+				all_flows_names_lst, gf_err := pipelineGetAll(pCtx, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -93,7 +93,7 @@ func Init_handlers(p_auth_login_url_str string,
 		metrics,
 		true, // p_store_run_bool
 		nil, 
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 	// ADD_IMAGE
@@ -104,7 +104,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -125,7 +125,8 @@ func Init_handlers(p_auth_login_url_str string,
 					flows_names_lst,
 					client_type_str,
 					p_jobs_mngr_ch,
-					p_runtime_sys)
+					pCtx,
+					pRuntimeSys)
 
 				if n_gf_err != nil {
 					return nil, n_gf_err
@@ -146,7 +147,7 @@ func Init_handlers(p_auth_login_url_str string,
 			return nil, nil
 		},
 		rpc_handler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 	// ADD_IMAGE
@@ -159,7 +160,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -181,7 +182,7 @@ func Init_handlers(p_auth_login_url_str string,
 					flows_names_lst,
 					client_type_str,
 					p_jobs_mngr_ch,
-					p_runtime_sys)
+					pRuntimeSys)
 
 				if n_gf_err != nil {
 					return nil, n_gf_err
@@ -205,7 +206,7 @@ func Init_handlers(p_auth_login_url_str string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 	// IMAGE_EXISTS_IN_SYSTEM - check if extern image url's exist in the system,
@@ -218,7 +219,7 @@ func Init_handlers(p_auth_login_url_str string,
 				
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -235,7 +236,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 					
-				existing_images_lst, gf_err := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, p_runtime_sys)
+				existing_images_lst, gf_err := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -256,7 +257,7 @@ func Init_handlers(p_auth_login_url_str string,
 		metrics,
 		false, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 	// FLOWS_BROWSER
@@ -284,7 +285,7 @@ func Init_handlers(p_auth_login_url_str string,
 					gf_templates.flows_browser__tmpl,
 					gf_templates.flows_browser__subtemplates_names_lst,
 					p_ctx,
-					p_runtime_sys)
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -300,7 +301,7 @@ func Init_handlers(p_auth_login_url_str string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
@@ -310,7 +311,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 			if p_req.Method == "GET" {
 
-				pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_ctx, p_runtime_sys)
+				pages_lst,gf_err := flows__get_page__pipeline(p_req, p_resp, p_ctx, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -330,7 +331,7 @@ func Init_handlers(p_auth_login_url_str string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------------------------------------------
 

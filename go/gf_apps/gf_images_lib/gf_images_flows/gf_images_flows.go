@@ -52,10 +52,6 @@ type GFimageExistsCheck struct {
 	Images_extern_urls_lst     []string           `bson:"images_extern_urls_lst"`
 }
 
-type GFflowOwnership struct {
-
-}
-
 // //-------------------------------------------------
 // // GET_MAPPING_TO_S3_BUCKETS
 // func flows__get_mapping_to_s3_buckets() map[string]string {
@@ -70,25 +66,25 @@ type GFflowOwnership struct {
 // }
 
 //-------------------------------------------------
-func flows__get_all__pipeline(p_ctx context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+func pipelineGetAll(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
 
-	all_flows_db_results_lst, gf_err := Flows_db__get_all_flows(p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	all_flows_lst := []map[string]interface{}{}
-	for _, flow_info_map := range all_flows_db_results_lst {
-		flow_name_str       := flow_info_map["_id"].(string)
-		flow_imgs_count_int := flow_info_map["count_int"].(int32)
+	allFlowsLst := []map[string]interface{}{}
+	for _, flowInfoMap := range resultsLst {
+		flowNameStr      := flowInfoMap["_id"].(string)
+		flowImgsCountInt := flowInfoMap["count_int"].(int32)
 
-		all_flows_lst = append(all_flows_lst, map[string]interface{}{
-			"flow_name_str":       flow_name_str,
-			"flow_imgs_count_int": flow_imgs_count_int,
+		allFlowsLst = append(allFlowsLst, map[string]interface{}{
+			"flow_name_str":       flowNameStr,
+			"flow_imgs_count_int": flowImgsCountInt,
 		})
 	}
-	return all_flows_lst, nil
+	return allFlowsLst, nil
 }
 
 //-------------------------------------------------
@@ -214,8 +210,14 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
-	
+
+	// POLICY_VERIFY
+	gfErr := policyVerify(pFlowsNamesLst, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gf_images_core.GF_image_id(""), gfErr
+	}
 
 	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(pImageExternURLstr,
 		pImageOriginPageURLstr,
