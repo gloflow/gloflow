@@ -134,7 +134,7 @@ func init_handlers(p_auth_login_url_str string,
 				
 				//---------------------
 				
-				valid_bool, gf_err := mfa__pipeline__confirm(input,
+				valid_bool, gf_err := mfaPipelineConfirm(input,
 					p_ctx,
 					p_runtime_sys)
 				if gf_err != nil {

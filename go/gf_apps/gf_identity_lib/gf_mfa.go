@@ -41,14 +41,14 @@ type GF_user_auth_mfa__input_confirm struct {
 }
 
 //------------------------------------------------
-func mfa__pipeline__confirm(p_input *GF_user_auth_mfa__input_confirm,
+func mfaPipelineConfirm(p_input *GF_user_auth_mfa__input_confirm,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
 
 
-	htop_value_str, gf_err := TOTP_generate_value(p_input.Secret_key_base32_str,
+	htop_value_str, gf_err := TOTPgenerateValue(p_input.Secret_key_base32_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return false, gf_err
@@ -101,7 +101,7 @@ func mfa__pipeline__confirm(p_input *GF_user_auth_mfa__input_confirm,
 //---------------------------------------------------
 // TOTP - https://datatracker.ietf.org/doc/html/rfc6238
 
-func TOTP_generate_value(p_secret_key_str string,
+func TOTPgenerateValue(p_secret_key_str string,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	// index number of a 30s time period since start of Unix time.
@@ -110,7 +110,7 @@ func TOTP_generate_value(p_secret_key_str string,
 	interval_int := time.Now().UTC().Unix() / 30
 
 	fmt.Println("interval", interval_int)
-	token_str, gf_err  := HOTP_generate_value(p_secret_key_str,
+	token_str, gf_err  := HOTPgenerateValue(p_secret_key_str,
 		interval_int,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -126,7 +126,7 @@ func TOTP_generate_value(p_secret_key_str string,
 
 // secret_key - symmetric key
 
-func HOTP_generate_value(p_secret_key_base32_str string,
+func HOTPgenerateValue(p_secret_key_base32_str string,
 	p_time_interval_int int64,
 	p_runtime_sys       *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
@@ -215,14 +215,14 @@ func HOTP_generate_value(p_secret_key_base32_str string,
 
 	htop_value_str := strconv.Itoa(int(htop_value))
 
-	htop_value_padded_str := pad_with_0s(htop_value_str, hotp_token_length_int)
+	htop_value_padded_str := padWith0s(htop_value_str, hotp_token_length_int)
 	return htop_value_padded_str, nil
 }
 
 //---------------------------------------------------
 // PAD_WITH_0S - append/pad string with 0's until its of target_length
 
-func pad_with_0s(p_str string, p_target_length_int int) string {
+func padWith0s(p_str string, p_target_length_int int) string {
 	if len(p_str) >= p_target_length_int {
 		return p_str
 	}
