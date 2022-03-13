@@ -58,6 +58,12 @@ func error__get_defs() map[string]Error_def {
 		},
 
 		//---------------
+		// IDENTITY
+		"policy__op_denied": Error_def{
+			Descr_str: "access policy has denied the operation",
+		},
+
+		//---------------
 		// DATA_VERIFICATION
 		"verify__invalid_value_error": Error_def{
 			Descr_str: "data failed verification, not an expected value",

@@ -26,12 +26,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
-func verify__auth_signature__all_methods(p_signature_str GF_auth_signature,
+func verify__auth_signature__all_methods(p_signature_str gf_identity_core.GF_auth_signature,
 	p_nonce_str        GF_user_nonce_val,
-	p_user_address_eth GF_user_address_eth,
+	p_user_address_eth gf_identity_core.GF_user_address_eth,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -74,9 +75,9 @@ func verify__auth_signature__all_methods(p_signature_str GF_auth_signature,
 
 // https://goethereumbook.org/signature-verify/
 
-func verify__auth_signature(p_signature_str GF_auth_signature,
+func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	p_data_str                  string,
-	p_user_address_eth          GF_user_address_eth,
+	p_user_address_eth          gf_identity_core.GF_user_address_eth,
 	p_validate_data_header_bool bool,
 	p_ctx                       context.Context,
 	p_runtime_sys               *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {

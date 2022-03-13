@@ -27,6 +27,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -38,14 +39,14 @@ type GF_user_nonce struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_id_str     gf_core.GF_ID       `bson:"user_id_str"`
-	Address_eth_str GF_user_address_eth `bson:"address_eth_str"`
-	Val_str         GF_user_nonce_val   `bson:"val_str"`
+	User_id_str     gf_core.GF_ID                        `bson:"user_id_str"`
+	Address_eth_str gf_identity_core.GF_user_address_eth `bson:"address_eth_str"`
+	Val_str         GF_user_nonce_val                    `bson:"val_str"`
 }
 
 //---------------------------------------------------
 func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
-	p_user_address_eth_str GF_user_address_eth,
+	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx                  context.Context,
 	p_runtime_sys          *gf_core.Runtime_sys) (*GF_user_nonce, *gf_core.GF_error) {
 
@@ -76,7 +77,7 @@ func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
 //---------------------------------------------------
 func nonce__create(p_nonce_val_str GF_user_nonce_val,
 	p_user_id_str          gf_core.GF_ID,
-	p_user_address_eth_str GF_user_address_eth,
+	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx                  context.Context,
 	p_runtime_sys          *gf_core.Runtime_sys) (*GF_user_nonce, *gf_core.GF_error) {
 
@@ -104,7 +105,7 @@ func nonce__create(p_nonce_val_str GF_user_nonce_val,
 }
 
 //---------------------------------------------------
-func db__nonce__delete_all(p_user_address_eth_str GF_user_address_eth,
+func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -152,7 +153,7 @@ func db__nonce__create(p_nonce *GF_user_nonce,
 }
 
 //---------------------------------------------------
-func db__nonce__get(p_user_address_eth_str GF_user_address_eth,
+func db__nonce__get(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (GF_user_nonce_val, bool, *gf_core.GF_error) {
 	

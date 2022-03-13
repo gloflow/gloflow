@@ -26,11 +26,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
 type GF_user__update_op struct {
-	User_name_str        GF_user_name
+	User_name_str        gf_identity_core.GFuserName
 	Description_str      string
 	Email_str            string
 	Email_confirmed_bool bool
@@ -161,8 +162,35 @@ func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
 	return &user, nil
 }
 
+// GET_BY_USERNAME
+func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+
+	find_opts := options.FindOne()
+	
+	user := GF_user{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx, bson.M{
+			"user_name_str": pUserNameStr,
+			"deleted_bool":  false,
+		},
+		find_opts).Decode(&user)
+
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to find user by user_name in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"user_name_str": pUserNameStr,
+			},
+			err, "gf_identity_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return &user, nil
+}
+
 // GET_BASIC_INFO_BY_ETH_ADDR
-func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
+func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
 
@@ -183,7 +211,7 @@ func db__user__get_basic_info_by_eth_addr(p_user_address_eth_str GF_user_address
 }
 
 // GET_BASIC_INFO_BY_USERNAME
-func db__user__get_basic_info_by_username(p_user_name_str GF_user_name,
+func db__user__get_basic_info_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
 
@@ -236,7 +264,7 @@ func db__user__get_basic_info(p_query bson.M,
 
 //---------------------------------------------------
 // GET_BY_ETH_ADDR
-func db__user__get_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
+func db__user__get_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
 
@@ -264,7 +292,7 @@ func db__user__get_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 
 //---------------------------------------------------
 // EXISTS_BY_USERNAME
-func db__user__exists_by_username(p_user_name_str GF_user_name,
+func db__user__exists_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -292,7 +320,7 @@ func db__user__exists_by_username(p_user_name_str GF_user_name,
 }
 
 // EXISTS_BY_ETH_ADDR
-func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
+func db__user__exists_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -320,7 +348,7 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str GF_user_address_eth,
 // EMAIL_IS_CONFIRMED
 // for initial user creation only, checks if the if the user confirmed their email.
 // this is done only once.
-func db__user__email_is_confirmed(p_user_name_str GF_user_name,
+func db__user__email_is_confirmed(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -477,7 +505,7 @@ func db__user_creds__create(p_user_creds *GF_user_creds,
 }
 
 //---------------------------------------------------
-func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
+func db__user_creds__get_pass_hash(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, string, *gf_core.GF_error) {
 
@@ -516,7 +544,7 @@ func db__user_creds__get_pass_hash(p_user_name_str GF_user_name,
 // EMAIL
 //---------------------------------------------------
 // CREATE__EMAIL_CONFIRM
-func db__user_email_confirm__create(p_user_name_str GF_user_name,
+func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 	p_user_id_str      gf_core.GF_ID,
 	p_confirm_code_str string,
 	p_ctx              context.Context,
@@ -549,7 +577,7 @@ func db__user_email_confirm__create(p_user_name_str GF_user_name,
 
 //---------------------------------------------------
 // GET__EMAIL_CONFIRM_CODE
-func db__user_email_confirm__get_code(p_user_name_str GF_user_name,
+func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, float64, *gf_core.GF_error) {
 
@@ -586,7 +614,7 @@ func db__user_email_confirm__get_code(p_user_name_str GF_user_name,
 }
 
 //---------------------------------------------------
-func db__user__get_email_confirmed_by_username(p_user_name_str GF_user_name,
+func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
@@ -647,7 +675,7 @@ func db__login_attempt__create(p_login_attempt *GF_login_attempt,
 }
 
 //---------------------------------------------------
-func db__login_attempt__get_by_username(p_user_name_str GF_user_name,
+func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
 

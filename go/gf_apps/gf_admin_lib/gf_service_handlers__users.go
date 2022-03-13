@@ -26,6 +26,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -66,7 +67,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, user_name_str, _, gf_err := gf_identity_lib.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				_, user_name_str, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -107,7 +108,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				input_map, user_name_str, _, gf_err := gf_identity_lib.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				input_map, user_name_str, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -123,7 +124,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				}
 
 				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
-					User_name_str: gf_identity_lib.GF_user_name(user_name_str),
+					User_name_str: gf_identity_core.GFuserName(user_name_str),
 					Email_str:     email_str,
 				}
 

@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -63,7 +64,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				_, _, user_address_eth_str, gf_err := Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				_, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -101,11 +102,11 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				input_map, _, user_address_eth_str, gf_err := Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				input_map, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
-				auth_signature_str := GF_auth_signature(input_map["auth_signature_str"].(string))
+				auth_signature_str := gf_identity_core.GF_auth_signature(input_map["auth_signature_str"].(string))
 
 				input :=&GF_user_auth_eth__input_login{
 					User_address_eth_str: user_address_eth_str,
@@ -157,8 +158,8 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 				}
 
 				input :=&GF_user_auth_eth__input_create{
-					User_address_eth_str: GF_user_address_eth(input_map["user_address_eth_str"].(string)),
-					Auth_signature_str:   GF_auth_signature(input_map["auth_signature_str"].(string)),
+					User_address_eth_str: gf_identity_core.GF_user_address_eth(input_map["user_address_eth_str"].(string)),
+					Auth_signature_str:   gf_identity_core.GF_auth_signature(input_map["auth_signature_str"].(string)),
 				}
 				
 				//---------------------

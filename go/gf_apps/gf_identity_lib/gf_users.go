@@ -23,13 +23,10 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
-type GF_auth_signature   string
-type GF_user_address_eth string
-type GF_user_name        string
-
 type GF_user struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
@@ -37,11 +34,11 @@ type GF_user struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_name_str     GF_user_name          `bson:"user_name_str"`   // set once at the creation of the user
-	Screen_name_str   string                `bson:"screen_name_str"` // changable durring the lifetime of the user
+	User_name_str     gf_identity_core.GFuserName `bson:"user_name_str"`   // set once at the creation of the user
+	Screen_name_str   string                      `bson:"screen_name_str"` // changable durring the lifetime of the user
 	
-	Description_str   string                `bson:"description_str"`
-	Addresses_eth_lst []GF_user_address_eth `bson:"addresses_eth_lst"`
+	Description_str   string                                 `bson:"description_str"`
+	Addresses_eth_lst []gf_identity_core.GF_user_address_eth `bson:"addresses_eth_lst"`
 
 	Email_str            string `bson:"email_str"`
 	Email_confirmed_bool bool   `bson:"email_confirmed_bool"` // one-time confirmation on user-creation to validate user
@@ -60,19 +57,19 @@ type GF_user_creds struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_id_str   gf_core.GF_ID `bson:"user_id_str"`
-	User_name_str GF_user_name  `bson:"user_name_str"`
-	Pass_salt_str string        `bson:"pass_salt_str"`
-	Pass_hash_str string        `bson:"pass_hash_str"`
+	User_id_str   gf_core.GF_ID                `bson:"user_id_str"`
+	User_name_str gf_identity_core.GFuserName  `bson:"user_name_str"`
+	Pass_salt_str string                       `bson:"pass_salt_str"`
+	Pass_hash_str string                       `bson:"pass_hash_str"`
 }
 
 // io_update
 type GF_user__input_update struct {
-	User_name_str        GF_user_name        `validate:"required,min=3,max=50"`    // required - not updated, but for lookup
-	User_address_eth_str GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
-	Screen_name_str      *string             `validate:"omitempty,min=3,max=50"`   // optional
-	Email_str            *string             `validate:"omitempty,email"`          // optional
-	Description_str      *string             `validate:"omitempty,min=1,max=2000"` // optional
+	User_name_str        gf_identity_core.GFuserName          `validate:"required,min=3,max=50"`    // required - not updated, but for lookup
+	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
+	Screen_name_str      *string                              `validate:"omitempty,min=3,max=50"`   // optional
+	Email_str            *string                              `validate:"omitempty,email"`          // optional
+	Description_str      *string                              `validate:"omitempty,min=1,max=2000"` // optional
 
 	Profile_image_url_str *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 	Banner_image_url_str  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
@@ -83,11 +80,11 @@ type GF_user__output_update struct {
 
 // io_get
 type GF_user__input_get struct {
-	User_id_str gf_core.GF_ID
+	UserNameStr gf_identity_core.GFuserName
 }
 
 type GF_user__output_get struct {
-	User_name_str         GF_user_name
+	User_name_str         gf_identity_core.GFuserName
 	Email_str             string
 	Description_str       string
 	Profile_image_url_str string
@@ -144,24 +141,24 @@ func users__pipeline__update(p_input *GF_user__input_update,
 
 //---------------------------------------------------
 // PIPELINE__GET
-func users__pipeline__get(p_input *GF_user__input_get,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
+func usersPipelineGet(p_input *GF_user__input_get,
+	pCtx         context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
 	
-	user, gf_err := db__user__get_by_id(p_input.User_id_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	user, gfErr := dbUserGetByUsername(p_input.UserNameStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 

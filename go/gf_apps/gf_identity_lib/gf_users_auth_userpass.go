@@ -26,6 +26,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
@@ -52,7 +53,7 @@ type GF_user_auth_userpass__output_login struct {
 
 // io_login_finalize
 type GF_user_auth_userpass__input_login_finalize struct {
-	User_name_str GF_user_name `validate:"required,min=3,max=50"`
+	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 }
 type GF_user_auth_userpass__output_login_finalize struct {
 	Email_confirmed_bool bool
@@ -62,9 +63,9 @@ type GF_user_auth_userpass__output_login_finalize struct {
 
 // io_create
 type GF_user_auth_userpass__input_create struct {
-	User_name_str GF_user_name `validate:"required,min=3,max=50"`
-	Pass_str      string       `validate:"required,min=8,max=50"`
-	Email_str     string       `validate:"required,email"`
+	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	Pass_str      string                      `validate:"required,min=8,max=50"`
+	Email_str     string                      `validate:"required,email"`
 }
 type GF_user_auth_userpass__output_create_regular struct {
 	User_exists_bool         bool
@@ -72,7 +73,7 @@ type GF_user_auth_userpass__output_create_regular struct {
 	General                  *GF_user_auth_userpass__output_create
 }
 type GF_user_auth_userpass__output_create struct {
-	User_name_str GF_user_name
+	User_name_str gf_identity_core.GFuserName
 	User_id_str   gf_core.GF_ID
 }
 
@@ -90,7 +91,7 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	// this is the initial confirmation of an email on user creation, or user email update.
 	if p_service_info.Enable_email_require_confirm_for_login_bool {
 
-		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(GF_user_name(p_input.User_name_str),
+		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -107,7 +108,7 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 
 	//------------------------
 	// USER_ID
-	user_id_str, gf_err := db__user__get_basic_info_by_username(GF_user_name(p_input.User_name_str),
+	user_id_str, gf_err := db__user__get_basic_info_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -151,7 +152,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// VERIFY
 
-	user_exists_bool, gf_err := db__user__exists_by_username(GF_user_name(p_input.User_name_str),
+	user_exists_bool, gf_err := db__user__exists_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -166,7 +167,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 
 	//------------------------
 	// VERIFY_PASSWORD
-	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(GF_user_name(p_input.User_name_str),
+	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(gf_identity_core.GFuserName(p_input.User_name_str),
 		p_input.Pass_str,
 		p_service_info,
 		p_ctx,
@@ -185,7 +186,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// LOGIN_FINALIZE
 	input := &GF_user_auth_userpass__input_login_finalize{
-		User_name_str: GF_user_name(p_input.User_name_str),
+		User_name_str: gf_identity_core.GFuserName(p_input.User_name_str),
 	}
 	login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(input,
 		p_service_info,
@@ -410,7 +411,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 //---------------------------------------------------
 // PASS
 //---------------------------------------------------
-func users_auth_userpass__verify_pass(p_user_name_str GF_user_name,
+func users_auth_userpass__verify_pass(p_user_name_str gf_identity_core.GFuserName,
 	p_pass_str     string,
 	p_service_info *GF_service_info,
 	p_ctx          context.Context,

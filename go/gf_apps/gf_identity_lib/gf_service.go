@@ -70,7 +70,7 @@ func Init_service(p_mux *http.ServeMux,
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_service_info.Auth_login_url_str,
+	gf_err := initHandlers(p_service_info.Auth_login_url_str,
 		p_mux, p_service_info, p_runtime_sys)
 	if gf_err != nil {
 		return gf_err

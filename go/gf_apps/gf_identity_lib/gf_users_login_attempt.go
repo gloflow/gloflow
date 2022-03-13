@@ -24,6 +24,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -34,8 +35,8 @@ type GF_login_attempt struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_type_str        string       `bson:"user_type_str"` // "regular"|"admin"
-	User_name_str        GF_user_name `bson:"user_name_str"`
+	User_type_str        string                      `bson:"user_type_str"` // "regular"|"admin"
+	User_name_str        gf_identity_core.GFuserName `bson:"user_name_str"`
 	
 	Pass_confirmed_bool  bool `bson:"pass_confirmed_bool"`
 	Email_confirmed_bool bool `bson:"email_confirmed_bool"`
@@ -43,7 +44,7 @@ type GF_login_attempt struct {
 }
 
 //---------------------------------------------------
-func login_attempt__get_if_valid(p_user_name_str GF_user_name,
+func login_attempt__get_if_valid(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
 

@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -62,7 +63,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				input_map, user_name_str, _, gf_err := Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				input_map, user_name_str, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -130,7 +131,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 				}
 
 				input :=&GF_user_auth_userpass__input_create{
-					User_name_str: GF_user_name(input_map["user_name_str"].(string)),
+					User_name_str: gf_identity_core.GFuserName(input_map["user_name_str"].(string)),
 					Pass_str:      input_map["pass_str"].(string),
 					Email_str:     input_map["email_str"].(string),
 				}

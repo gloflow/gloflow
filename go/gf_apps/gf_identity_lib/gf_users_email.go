@@ -24,12 +24,13 @@ import (
 	"context"
 	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
 
 //---------------------------------------------------
 func users_email__verify__pipeline(p_email_address_str string,
-	p_user_name_str   GF_user_name,
+	p_user_name_str   gf_identity_core.GFuserName,
 	p_user_id_str     gf_core.GF_ID,
 	p_domain_base_str string,
 	p_ctx             context.Context,
@@ -77,7 +78,7 @@ func users_email__verify__pipeline(p_email_address_str string,
 }
 
 //---------------------------------------------------
-func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
+func users_email__confirm__pipeline(p_input *gf_identity_core.GF_user__http_input_email_confirm,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 
@@ -135,7 +136,7 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
 		var login_attempt *GF_login_attempt
-		login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
+		login_attempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -164,7 +165,7 @@ func users_email__confirm__pipeline(p_input *GF_user__http_input_email_confirm,
 }
 
 //---------------------------------------------------
-func users_email__get_confirmation_code(p_user_name_str GF_user_name,
+func users_email__get_confirmation_code(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, bool, *gf_core.GF_error) {
 
@@ -200,7 +201,7 @@ func users_email__generate_confirmation_code() string {
 }
 
 //---------------------------------------------------
-func users_email__get_confirm_msg_info(p_user_name_str GF_user_name,
+func users_email__get_confirm_msg_info(p_user_name_str gf_identity_core.GFuserName,
 	p_confirm_code_str string,
 	p_domain_str       string) (string, string, string) {
 

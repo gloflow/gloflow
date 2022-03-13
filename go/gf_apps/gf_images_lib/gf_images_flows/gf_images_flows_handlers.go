@@ -25,6 +25,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
@@ -57,7 +58,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
 		Mux:                p_http_mux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
@@ -104,27 +105,31 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 				// INPUT
+
+				userNameStr := gf_identity_core.GetUserNameFromCtx(pCtx)
+
 				i_map, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				image_extern_url_str      := i_map["image_extern_url_str"].(string)
+				imageExternURLstr         := i_map["image_extern_url_str"].(string)
 				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
 				client_type_str           := i_map["client_type_str"].(string)
 
-				flows_names_lst := []string{}
+				flowsNamesLst := []string{}
 				for _, s := range i_map["flows_names_lst"].([]interface{}) {
-					flows_names_lst = append(flows_names_lst, s.(string))
+					flowsNamesLst = append(flowsNamesLst, s.(string))
 				}
 
 				//--------------------------
 
-				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImageWithPolicy(image_extern_url_str,
+				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImageWithPolicy(imageExternURLstr,
 					image_origin_page_url_str,
-					flows_names_lst,
+					flowsNamesLst,
 					client_type_str,
 					p_jobs_mngr_ch,
+					userNameStr,
 					pCtx,
 					pRuntimeSys)
 
@@ -146,7 +151,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//-------------------------------------------------

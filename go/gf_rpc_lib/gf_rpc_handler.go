@@ -75,7 +75,7 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 	p_handler_runtime *GF_rpc_handler_runtime,
 	p_runtime_sys     *gf_core.Runtime_sys) {
 
-	handler_fun := get_handler(p_auth_bool,
+	handler_fun := getHandler(p_auth_bool,
 		p_path_str,
 		p_handler_fun,
 		p_handler_runtime.Metrics,
@@ -97,7 +97,7 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 	p_sentry_hub     *sentry.Hub,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
-	handler_fun := get_handler(false, // p_auth_bool
+	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
 		p_metrics,
@@ -117,7 +117,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 	p_store_run_bool bool,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
-	handler_fun := get_handler(false, // p_auth_bool
+	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
 		p_metrics,
@@ -130,7 +130,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 }
 
 //-------------------------------------------------
-func get_handler(p_auth_bool bool,
+func getHandler(p_auth_bool bool,
 	p_path_str       string,
 	p_handler_fun    handler_http,
 	p_metrics        *GF_metrics,
@@ -210,15 +210,15 @@ func get_handler(p_auth_bool bool,
 		if p_auth_bool {
 			
 			// SESSION_VALIDATE
-			valid_bool, user_identifier_str, gf_err := gf_session.Validate(p_req, ctx, p_runtime_sys)
-			if gf_err != nil {
+			validBool, userIdentifierStr, gfErr := gf_session.Validate(p_req, ctx, p_runtime_sys)
+			if gfErr != nil {
 				Error__in_handler(path_str,
 					fmt.Sprintf("handler %s failed to execute auth validation of session", path_str),
 					nil, p_resp, p_runtime_sys)
 				return
 			}
 
-			if !valid_bool {
+			if !validBool {
 
 				if p_auth_login_url_str != nil {
 
@@ -237,14 +237,14 @@ func get_handler(p_auth_bool bool,
 			}
 
 
-			ctx_auth = context.WithValue(ctx_root, "gf_user_name", user_identifier_str)
+			ctx_auth = context.WithValue(ctx_root, "gf_user_name", userIdentifierStr)
 		} else {
 			ctx_auth = ctx_root
 		}
 
 		//------------------
 		// HANDLER
-		data_map, gf_err := p_handler_fun(ctx_auth, p_resp, p_req)
+		dataMap, gfErr := p_handler_fun(ctx_auth, p_resp, p_req)
 
 		//------------------
 		// TRACE
@@ -252,19 +252,19 @@ func get_handler(p_auth_bool bool,
 
 		//------------------
 		// ERROR
-		if gf_err != nil {
+		if gfErr != nil {
 			Error__in_handler(p_path_str,
 				fmt.Sprintf("handler %s failed", p_path_str),
-				gf_err, p_resp, p_runtime_sys)
+				gfErr, p_resp, p_runtime_sys)
 			return
 		}
 		
 		//------------------
 		// OUTPUT
-		// IMPORTANT!! - currently testing if data_map != nil because routes that render templates
+		// IMPORTANT!! - currently testing if dataMap != nil because routes that render templates
 		//               (render html into body) should not also return a JSON map
-		if data_map != nil {
-			Http_respond(data_map, "OK", p_resp, p_runtime_sys)
+		if dataMap != nil {
+			Http_respond(dataMap, "OK", p_resp, p_runtime_sys)
 		}
 
 		//------------------

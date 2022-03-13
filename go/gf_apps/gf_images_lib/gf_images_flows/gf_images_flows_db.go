@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_flows
 
 import (
-	"fmt"
+	// "fmt"
 	"context"
 	"math"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,27 +30,54 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
-//---------------------------------------------------
-// POLICY
-//---------------------------------------------------
-// GET
-func DBgetPolicy(pFlowNameStr string,
+//-------------------------------------------------
+func DBgetFlowsIDs(pFlowsNamesLst []string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFflowPolicy, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) ([]gf_core.GF_ID, *gf_core.GF_error) {
 
-
-	return nil, nil
-}
-
-func DBcreatePolicy(pPolicy *GFflowPolicy,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
-
-	return nil
+	flowsIDsLst := []gf_core.GF_ID{}
+	for _, flowNameStr := range pFlowsNamesLst {
+		flowIDstr, gfErr := DBgetID(flowNameStr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+		flowsIDsLst = append(flowsIDsLst, flowIDstr)
+	}
+	return flowsIDsLst, nil
 }
 
 //---------------------------------------------------
-// FLOWS
+func DBgetID(pFlowNameStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+
+	collNameStr := "gf_flows"
+	findOpts := options.FindOne()
+	findOpts.Projection = map[string]interface{}{
+		"id_str": 1,
+	}
+	
+	flowBasicInfoMap := map[string]interface{}{}
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
+		bson.M{
+			"name_str": pFlowNameStr,	
+		},
+		findOpts).Decode(&flowBasicInfoMap)
+		
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"flow_name_str": pFlowNameStr,
+			},
+			err, "gf_identity_lib", pRuntimeSys)
+		return "", gfErr
+	}
+	flowIDstr := gf_core.GF_ID(flowBasicInfoMap["id_str"].(gf_core.GF_ID))
+
+	return flowIDstr, nil
+}
+
 //---------------------------------------------------
 // GET_ALL
 func DBgetAll(p_ctx context.Context,
@@ -115,8 +142,6 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 	
 	ctx := context.Background()
-
-	fmt.Println("p_image_gf_id_str - "+p_image_gf_id_str)
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img",
 			"id_str": p_image_gf_id_str,	
@@ -229,9 +254,6 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
 	p_runtime_sys     *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__images_exist()")
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_flow_name_str          - %s", p_flow_name_str))
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_images_extern_urls_lst - %s", p_images_extern_urls_lst))
 	
 	//------------------------
 	var query_map bson.M
@@ -273,18 +295,18 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 
 	ctx := context.Background()
 
-	projection_map := bson.M{
+	projectionMap := bson.M{
 		"creation_unix_time_f": 1,
 		"id_str":               1,
 		"origin_url_str":       1, // image url from a page
 		"origin_page_url_str":  1, // page url from which the image url was extracted
 	}
 
-	find_opts := options.Find()
-	find_opts.SetProjection(projection_map)
+	findOpts := options.Find()
+	findOpts.SetProjection(projectionMap)
 
-	cursor, gf_err := gf_core.Mongo__find(query_map,
-		find_opts,
+	cursor, gfErr := gf_core.Mongo__find(query_map,
+		findOpts,
 		map[string]interface{}{
 			"images_extern_urls_lst": p_images_extern_urls_lst,
 			"flow_name_str":          p_flow_name_str,
@@ -294,14 +316,14 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 		p_runtime_sys.Mongo_coll,
 		ctx,
 		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	var existing_images_lst []map[string]interface{}
-	err := cursor.All(ctx, &existing_images_lst)
+	var existingImagesLst []map[string]interface{}
+	err := cursor.All(ctx, &existingImagesLst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
+		gfErr := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"images_extern_urls_lst": p_images_extern_urls_lst,
@@ -309,7 +331,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 				"client_type_str":        p_client_type_str,
 			},
 			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	/*err := p_runtime_sys.Mongodb_coll.Find(query_map).
@@ -321,7 +343,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 					"origin_url_str":       1, // image url from a page
 					"origin_page_url_str":  1, // page url from which the image url was extracted
 				}).
-				All(&existing_images_lst)
+				All(&existingImagesLst)
 
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
@@ -335,5 +357,5 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 		return nil, gf_err
 	}*/
 
-	return existing_images_lst, nil
+	return existingImagesLst, nil
 }

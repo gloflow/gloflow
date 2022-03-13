@@ -31,13 +31,14 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //------------------------------------------------
 type GF_user_auth_mfa__input_confirm struct {
-	User_name_str         GF_user_name `validate:"required,min=3,max=50"`
-	Extern_htop_value_str string       `validate:"required,min=10,max=200"`
-	Secret_key_base32_str string       `validate:"required,min=8,max=200"`
+	User_name_str         gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	Extern_htop_value_str string                      `validate:"required,min=10,max=200"`
+	Secret_key_base32_str string                      `validate:"required,min=8,max=200"`
 }
 
 //------------------------------------------------
@@ -63,7 +64,7 @@ func mfaPipelineConfirm(p_input *GF_user_auth_mfa__input_confirm,
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
 		var login_attempt *GF_login_attempt
-		login_attempt, gf_err = login_attempt__get_if_valid(GF_user_name(p_input.User_name_str),
+		login_attempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {

@@ -23,13 +23,14 @@ import (
 	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //---------------------------------------------------
 // io_preflight
 type GF_user_auth_eth__input_preflight struct {
-	User_address_eth_str GF_user_address_eth `validate:"omitempty,eth_addr"`
+	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"omitempty,eth_addr"`
 }
 type GF_user_auth_eth__output_preflight struct {
 	User_exists_bool bool             
@@ -38,8 +39,8 @@ type GF_user_auth_eth__output_preflight struct {
 
 // io_login
 type GF_user_auth_eth__input_login struct {
-	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
-	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
+	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"required,eth_addr"`
+	Auth_signature_str   gf_identity_core.GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
 type GF_user_auth_eth__output_login struct {
 	Nonce_exists_bool         bool
@@ -50,8 +51,8 @@ type GF_user_auth_eth__output_login struct {
 
 // io_create
 type GF_user_auth_eth__input_create struct {
-	User_address_eth_str GF_user_address_eth `validate:"required,eth_addr"`
-	Auth_signature_str   GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
+	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"required,eth_addr"`
+	Auth_signature_str   gf_identity_core.GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
 type GF_user_auth_eth__output_create struct {
 	Nonce_exists_bool         bool
@@ -250,7 +251,7 @@ func users_auth_eth__pipeline__create(p_input *GF_user_auth_eth__input_create,
 
 	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
 	user_address_eth_str   := p_input.User_address_eth_str
-	user_addresses_eth_lst := []GF_user_address_eth{user_address_eth_str, }
+	user_addresses_eth_lst := []gf_identity_core.GF_user_address_eth{user_address_eth_str, }
 
 	user_identifier_str := string(user_address_eth_str)
 	user_id := usersCreateID(user_identifier_str, creation_unix_time_f)

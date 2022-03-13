@@ -27,6 +27,8 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
@@ -37,16 +39,16 @@ import (
 //               over time adds images to it... 
 
 type GFflow struct {
+	Vstr              string             `bson:"v_str"` // schema_version
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr             string             `bson:"id_str"`
-	Tstr              string             `bson:"t"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 	NameStr           string             `bson:"name_str"`
 }
 
 type GFimageExistsCheck struct {
 	Id                  primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr               string             `bson:"id_str"`
+	IDstr               gf_core.GF_ID      `bson:"id_str"`
 	Tstr                string             `bson:"t"`
 	CreationUNIXtimeF   float64            `bson:"creation_unix_time_f"`
 	ImagesExternURLsLst []string           `bson:"images_extern_urls_lst"`
@@ -173,13 +175,13 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 	// PERSIST IMAGE_EXISTS_CHECK
 
 	go func() {
-		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-		idStr                := fmt.Sprintf("img_exists_check:%f",creation_unix_time_f)
+		creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+		idStr             := gf_core.GF_ID(fmt.Sprintf("img_exists_check:%f", creationUNIXtimeF))
 		
 		check := GFimageExistsCheck{
 			IDstr:               idStr,
 			Tstr:                "img_exists_check",
-			CreationUNIXtimeF:   creation_unix_time_f,
+			CreationUNIXtimeF:   creationUNIXtimeF,
 			ImagesExternURLsLst: pImagesExternURLsLst,
 		}
 
@@ -209,14 +211,17 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pUserNameStr           gf_identity_core.GFuserName,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 
 	// POLICY_VERIFY
-	gfErr := policyVerify(pFlowsNamesLst, pCtx, pRuntimeSys)
+	gfErr := flowsVerifyPolicy(pFlowsNamesLst, pUserNameStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gf_images_core.GF_image_id(""), gfErr
 	}
+
+
 
 	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(pImageExternURLstr,
 		pImageOriginPageURLstr,
@@ -242,15 +247,15 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
-	images_urls_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{
+	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{
 			{
 				Source_url_str:      pImageExternURLstr,
 				Origin_page_url_str: pImageOriginPageURLstr,
 			},
 		}
 		
-	running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
-		images_urls_to_process_lst,
+	runningJob, jobExpectedOutputsLst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
+		imagesURLsToProcessLst,
 		pFlowsNamesLst,
 		pJobsMngrCh,
 		pRuntimeSys)
@@ -261,10 +266,10 @@ func FlowsAddExternImage(pImageExternURLstr string,
 
 	//------------------
 
-	image_id_str                     := gf_images_core.GF_image_id(job_expected_outputs_lst[0].Image_id_str)
-	thumbnail_small_relative_url_str := job_expected_outputs_lst[0].Thumbnail_small_relative_url_str
+	imageIDstr                       := gf_images_core.GF_image_id(jobExpectedOutputsLst[0].Image_id_str)
+	thumbnail_small_relative_url_str := jobExpectedOutputsLst[0].Thumbnail_small_relative_url_str
 
-	return &running_job.Id_str, &thumbnail_small_relative_url_str, image_id_str, nil
+	return &runningJob.Id_str, &thumbnail_small_relative_url_str, imageIDstr, nil
 }
 
 //-------------------------------------------------
@@ -274,12 +279,13 @@ func flowsCreate(pFlowNameStr string,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.Runtime_sys) (*GFflow, *gf_core.GF_error) {
 
-	idStr             := fmt.Sprintf("img_flow:%f", float64(time.Now().UnixNano())/1000000000.0)
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	idStr             := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))
+	
 
 	flow := &GFflow{
+		Vstr:              "0",
 		IDstr:             idStr,
-		Tstr:              "img_flow",
 		NameStr:           pFlowNameStr,
 		CreationUNIXtimeF: creationUNIXtimeF,
 	}
@@ -300,10 +306,31 @@ func flowsCreate(pFlowNameStr string,
 	
 
 	// POLICY
-	gfErr = policyPipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
+	gfErr = gf_policy.PipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	return flow, nil
+}
+
+//-------------------------------------------------
+// VERIFY_POLICY
+func flowsVerifyPolicy(pFlowsNamesLst []string,
+	pUserNameStr gf_identity_core.GFuserName,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	// POLICY_VERIFY
+	flowsIDsLst, gfErr := DBgetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	for _, flowIDstr := range flowsIDsLst {
+		gfErr = gf_policy.Verify(flowIDstr, pUserNameStr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+	return nil
 }
