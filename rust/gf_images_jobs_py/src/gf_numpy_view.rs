@@ -34,14 +34,22 @@ pub fn arr_2D(p_numpy_2d_lst: &PyArray2<f64>,
     let numpy_shape_lst = p_numpy_2d_lst.shape();
     let mut img_buff = image::ImageBuffer::new(numpy_shape_lst[0] as u32, numpy_shape_lst[1] as u32);
 
-    for ((x, y), val_f) in p_numpy_2d_lst.as_array_mut().indexed_iter_mut() {
-        let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
+    
+    unsafe {
 
-        *pixel = image::Rgba([
-            (*val_f) as u8,
-            (*val_f) as u8,
-            (*val_f) as u8,
-            0 as u8]);
+        // unsafe - p_numpy_2d_lst.as_array_mut() is a call to an unsafe function,
+        //          so wrapping this in an usafe block.
+        let mut numpy_2d_mut = p_numpy_2d_lst.as_array_mut();
+
+        for ((x, y), val_f) in numpy_2d_mut.indexed_iter_mut() {
+            let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
+
+            *pixel = image::Rgba([
+                (*val_f) as u8,
+                (*val_f) as u8,
+                (*val_f) as u8,
+                0 as u8]);
+        }
     }
     img_buff.save(&p_img_target_file_path_str).unwrap();
 }
@@ -55,25 +63,31 @@ pub fn arr_3D(p_numpy_3d_lst: &PyArray3<f64>,
     assert!(numpy_shape_lst[2] == 3); // on 3rd axis the shape is always 3 (RGB)
 
     let mut img_buff = image::ImageBuffer::new(numpy_shape_lst[0] as u32, numpy_shape_lst[1] as u32);
-    let arr          = p_numpy_3d_lst.as_array_mut();
+    
+    unsafe {
+        
+        // unsafe - p_numpy_3d_lst.as_array_mut() is a call to an unsafe function,
+        //          so wrapping this in an usafe block.
+        let arr = p_numpy_3d_lst.as_array_mut();
 
-    for y in 0..numpy_shape_lst[0] {
+        for y in 0..numpy_shape_lst[0] {
 
-        // Axis(0) - gives us the first dimension of the 3D NumPy array (rows).
-        let row_2d = arr.index_axis(ndarray::Axis(0), y);
+            // Axis(0) - gives us the first dimension of the 3D NumPy array (rows).
+            let row_2d = arr.index_axis(ndarray::Axis(0), y);
 
-        for x in 0..numpy_shape_lst[1] {
-            
-            // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
-            //           which here represents the individual pixel in a particular column
-            //           (which itself is a 1D array of RGB values).
-            let col   = row_2d.index_axis(ndarray::Axis(0), x);
-            let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
-            *pixel    = image::Rgba([
-                (col[0]) as u8,
-                (col[1]) as u8,
-                (col[2]) as u8,
-                1 as u8]);
+            for x in 0..numpy_shape_lst[1] {
+                
+                // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
+                //           which here represents the individual pixel in a particular column
+                //           (which itself is a 1D array of RGB values).
+                let col   = row_2d.index_axis(ndarray::Axis(0), x);
+                let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
+                *pixel    = image::Rgba([
+                    (col[0]) as u8,
+                    (col[1]) as u8,
+                    (col[2]) as u8,
+                    1 as u8]);
+            }
         }
     }
 
@@ -106,73 +120,78 @@ pub fn arr_4D(p_numpy_4d_lst: &PyArray4<f64>,
     let mut row_int    = 0;
     let mut column_int = 0;
 
-    let numpy_4d_arr = p_numpy_4d_lst.as_array_mut();
+    unsafe {
 
-    let mut img_index_to_collage_coord_map = HashMap::new();
+        // unsafe - p_numpy_4d_lst.as_array_mut() is a call to an unsafe function,
+        //          so wrapping this in an usafe block.
+        let numpy_4d_arr = p_numpy_4d_lst.as_array_mut();
 
-    // multiple 3D numpy arrays are packed in sequence in an array
-    for i in 0..numpy_shape_lst[0] {
-        
+        let mut img_index_to_collage_coord_map = HashMap::new();
 
-        // get individual image - get "i"-th element on the 0-th axis of the numpy array
-        let image_3d = numpy_4d_arr.index_axis(ndarray::Axis(0), i);
-        // println!("image {}", i);
-
-        let img_width_int  = numpy_shape_lst[2]; // columns are in rows, so index is 2
-        let img_height_int = numpy_shape_lst[1]; // images are packed by row, so index is 1
-
-        // new image buffer for each 3d array (3d array is a single RGBA 2D image)
-        let mut img_buff = image::ImageBuffer::new(img_width_int as u32, img_height_int as u32);
-        
-        
-        // image is composed of an array of image row's (of pixels)
-        for y in 0..img_height_int {
-
-            // Axis(0) - gives us the first dimension of the image 3D NumPy array (rows).
-            let row_2d = image_3d.index_axis(ndarray::Axis(0), y);
+        // multiple 3D numpy arrays are packed in sequence in an array
+        for i in 0..numpy_shape_lst[0] {
             
-            // image row is composed of 1D pixels represented as arrays
-            for x in 0..img_width_int {
+
+            // get individual image - get "i"-th element on the 0-th axis of the numpy array
+            let image_3d = numpy_4d_arr.index_axis(ndarray::Axis(0), i);
+            // println!("image {}", i);
+
+            let img_width_int  = numpy_shape_lst[2]; // columns are in rows, so index is 2
+            let img_height_int = numpy_shape_lst[1]; // images are packed by row, so index is 1
+
+            // new image buffer for each 3d array (3d array is a single RGBA 2D image)
+            let mut img_buff = image::ImageBuffer::new(img_width_int as u32, img_height_int as u32);
+            
+            
+            // image is composed of an array of image row's (of pixels)
+            for y in 0..img_height_int {
+
+                // Axis(0) - gives us the first dimension of the image 3D NumPy array (rows).
+                let row_2d = image_3d.index_axis(ndarray::Axis(0), y);
                 
-                // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
-                //           which here represents the individual pixel in a particular column
-                //           (which itself is a 1D array of RGB values).
-                let col = row_2d.index_axis(ndarray::Axis(0), x);
+                // image row is composed of 1D pixels represented as arrays
+                for x in 0..img_width_int {
+                    
+                    // Axis(0) - gives us the first dimension of the 2D NumPy sub-array
+                    //           which here represents the individual pixel in a particular column
+                    //           (which itself is a 1D array of RGB values).
+                    let col = row_2d.index_axis(ndarray::Axis(0), x);
 
-                // PIXEL
-                let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
-                *pixel    = image::Rgba([
-                    (col[0]) as u8,
-                    (col[1]) as u8,
-                    (col[2]) as u8,
-                    255 as u8]);
+                    // PIXEL
+                    let pixel = img_buff.get_pixel_mut(x as u32, y as u32);
+                    *pixel    = image::Rgba([
+                        (col[0]) as u8,
+                        (col[1]) as u8,
+                        (col[2]) as u8,
+                        255 as u8]);
+                }
             }
-        }
 
-        // COLLAGE
-        let (new_row_int, new_column_int, full_bool) = gf_core::gf_image_collage::add_img_from_buffer(&img_buff,
-            &mut collage_img_buff,
-            row_int,
-            column_int,
-            &imgs_collage_config);
+            // COLLAGE
+            let (new_row_int, new_column_int, full_bool) = gf_core::gf_image_collage::add_img_from_buffer(&img_buff,
+                &mut collage_img_buff,
+                row_int,
+                column_int,
+                &imgs_collage_config);
+            
+            // memories the coordinate in the collage of this image. this is potentially needed later
+            // to query where the image was placed in a 2D matrix of the collage.
+            img_index_to_collage_coord_map.insert(i as u32, (row_int, column_int));
+
+            if full_bool {
+                break;
+            }
+
+            row_int    = new_row_int;
+            column_int = new_column_int;
+        }
         
-        // memories the coordinate in the collage of this image. this is potentially needed later
-        // to query where the image was placed in a 2D matrix of the collage.
-        img_index_to_collage_coord_map.insert(i as u32, (row_int, column_int));
-
-        if full_bool {
-            break;
-        }
-
-        row_int    = new_row_int;
-        column_int = new_column_int;
+        // DRAW_BORDERS
+        gf_core::gf_image_collage::draw_borders(&mut collage_img_buff,
+            p_rows_num_int,
+            p_columns_num_int,
+            img_index_to_collage_coord_map);
     }
-
-    // DRAW_BORDERS
-    gf_core::gf_image_collage::draw_borders(&mut collage_img_buff,
-        p_rows_num_int,
-        p_columns_num_int,
-        img_index_to_collage_coord_map);
 
     // SAVE_FILE
     collage_img_buff.save(&imgs_collage_config.output_img_file_path_str).unwrap();

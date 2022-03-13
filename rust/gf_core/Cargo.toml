@@ -20,8 +20,9 @@ image    = "0.21.3"
 png      = "0.14.0"
 cairo-rs = {features=["png"]} # 2D drawing
 
-# TensorFlow .tfrecord file writing uses protobuffers to serialize binary data
-protobuf = "" # "2"
+# TensorFlow .tfrecord file writing uses protobuffers to serialize 
+# binary data
+protobuf = "2.8.0" # "" # "2"
 
 # TENSORFLOW
 tensorflow = "0.15.0"
