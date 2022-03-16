@@ -25,6 +25,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -46,7 +47,7 @@ func test_jwt_main(p_test *testing.T,
 
 	ctx := context.Background()
 
-	test_user_address_eth := GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
+	test_user_address_eth := gf_identity_core.GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
 
 	// JWT_GENERATE
 	user_identifier_str := string(test_user_address_eth)

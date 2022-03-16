@@ -29,6 +29,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_crypto"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -73,10 +74,9 @@ func Test__users_http_eth(p_test *testing.T) {
         p_test.FailNow()
     }
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user preflight http request failed")
-
-	fmt.Println("AAAAAAAAAAAAAAAAAAA")
 	spew.Dump(body_map)
+
+	assert.True(p_test, body_map["status"].(string) != "ERROR", "user preflight http request failed")
 
 	nonce_val_str    := body_map["data"].(map[string]interface{})["nonce_val_str"].(string)
 	user_exists_bool := body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
@@ -228,7 +228,7 @@ func Test__users_eth_unit(p_test *testing.T) {
 
 	runtime_sys := T__init()
 
-	test_user_address_eth_str := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
+	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	test_user_signature_str   := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
 	test_user_nonce_str       := "gf_test_message_to_sign"
 	ctx := context.Background()
@@ -236,10 +236,10 @@ func Test__users_eth_unit(p_test *testing.T) {
 	//------------------
 	// NONCE_CREATE
 
-	unexisting_user_id_str := gf_core.GF_ID("")
+	unexistingUserIDstr := gf_core.GF_ID("")
 	_, gf_err := nonce__create(GF_user_nonce_val(test_user_nonce_str),
-		unexisting_user_id_str,
-		GF_user_address_eth(test_user_address_eth_str),
+		unexistingUserIDstr,
+		gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
 		ctx,
 		runtime_sys)
 	if gf_err != nil {
@@ -250,8 +250,8 @@ func Test__users_eth_unit(p_test *testing.T) {
 	// USER_CREATE
 	
 	input__create := &GF_user_auth_eth__input_create{
-		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
-		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+		Auth_signature_str:   gf_identity_core.GF_auth_signature(test_user_signature_str),
+		User_address_eth_str: gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
 		// Nonce_val_str:   nonce.Val_str,
 	}
 
@@ -266,8 +266,8 @@ func Test__users_eth_unit(p_test *testing.T) {
 
 	//------------------
 	input__login := &GF_user_auth_eth__input_login{
-		Auth_signature_str:   GF_auth_signature(test_user_signature_str),
-		User_address_eth_str: GF_user_address_eth(test_user_address_eth_str),
+		Auth_signature_str:   gf_identity_core.GF_auth_signature(test_user_signature_str),
+		User_address_eth_str: gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
 	}
 	output__login, gf_err := users_auth_eth__pipeline__login(input__login, ctx, runtime_sys)
 	if gf_err != nil {
