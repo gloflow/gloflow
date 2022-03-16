@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	// "fmt"
+	"fmt"
 	"context"
 	"net/http"
 	"io/ioutil"
@@ -46,43 +46,48 @@ type GF_user__http_input_email_confirm struct {
 
 //---------------------------------------------------
 // GET_USER_NAME_FROM_CTX
-func GetUserNameFromCtx(pCtx context.Context) GFuserName {
-	userNameStr := pCtx.Value("gf_user_name").(GFuserName)
-	return userNameStr
+func GetUserNameFromCtx(pCtx context.Context) (GFuserName, bool) {
+	userNameStr, ok := pCtx.Value("gf_user_name").(GFuserName)
+	return userNameStr, ok
 }
 
 //---------------------------------------------------
 // HTTP
 //---------------------------------------------------
-func Http__get_user_std_input(p_ctx context.Context,
+func Http__get_user_std_input(pCtx context.Context,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, string, GF_user_address_eth, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, GFuserName, GF_user_address_eth, *gf_core.GF_error) {
 
-	input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+	inputMap, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
 	if gf_err != nil {
 		return nil, "", GF_user_address_eth(""), gf_err
 	}
-
+	
 	// user-name is supplied if the traditional auth system is used, and not web3/eth
-	var user_name_str string;
-	if input_user_name_str, ok := input_map["user_name_str"].(string); ok {
-		user_name_str = input_user_name_str
+	var userNameStr GFuserName;
+	if input_user_name_str, ok := inputMap["user_name_str"].(string); ok {
+		userNameStr = GFuserName(input_user_name_str)
 	} else {
 
 		// logged in users are added to context by gf_rpc, not supplied explicitly
 		// via http request input (as they are for unauthenticated requests).
-		user_name_str = p_ctx.Value("gf_user_name").(string)
+		userNameFromCtxStr, ok := GetUserNameFromCtx(pCtx) // p_ctx.Value("gf_user_name").(string)
+		if ok {
+			userNameStr = userNameFromCtxStr
+		}
 	}
 
+	fmt.Println("user name:", userNameStr)
+
 	// users eth address is used if the user picks that method instead of traditional
-	var user_address_eth_str string;
-	if input_user_address_eth_str, ok := input_map["user_address_eth_str"].(string); ok {
-		user_address_eth_str = input_user_address_eth_str
+	var userAddressETHstr string;
+	if input_user_address_eth_str, ok := inputMap["user_address_eth_str"].(string); ok {
+		userAddressETHstr = input_user_address_eth_str
 	}
 
 	// one of the these values has to be supplied, they cant both be missing
-	if user_name_str == "" && user_address_eth_str == "" {
+	if userNameStr == "" && userAddressETHstr == "" {
 		gf_err := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
 			"verify__input_data_missing_in_req_error",
 			map[string]interface{}{},
@@ -90,7 +95,7 @@ func Http__get_user_std_input(p_ctx context.Context,
 		return nil, "", GF_user_address_eth(""), gf_err
 	}
 
-	return input_map, user_name_str, GF_user_address_eth(user_address_eth_str), nil
+	return inputMap, userNameStr, GF_user_address_eth(userAddressETHstr), nil
 }
 
 //---------------------------------------------------

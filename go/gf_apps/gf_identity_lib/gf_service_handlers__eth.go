@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	// "fmt"
+	"fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -58,13 +58,13 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	// USERS_PREFLIGHT
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/preflight",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				_, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				_, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(pCtx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -75,7 +75,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 
-				output, gf_err := users_auth_eth__pipeline__preflight(input, p_ctx, p_runtime_sys)
+				output, gf_err := users_auth_eth__pipeline__preflight(input, pCtx, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

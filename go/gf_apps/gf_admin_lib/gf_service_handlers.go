@@ -27,6 +27,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -133,9 +134,9 @@ func init_handlers(p_templates_paths_map map[string]string,
 					return nil, gf_err
 				}
 
-				var user_name_str string
+				var userNameStr gf_identity_core.GFuserName
 				if val_str, ok := input_map["user_name_str"]; ok {
-					user_name_str = val_str.(string)
+					userNameStr = val_str.(gf_identity_core.GFuserName)
 				}
 
 				var pass_str string
@@ -143,13 +144,14 @@ func init_handlers(p_templates_paths_map map[string]string,
 					pass_str = val_str.(string)
 				}
 
-				gf_err = gf_identity_lib.Admin__is(user_name_str, p_runtime_sys)
+				gf_err = gf_identity_lib.Admin__is(userNameStr,
+					p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				input := &gf_identity_lib.GF_admin__input_login{
-					User_name_str: user_name_str,
+					User_name_str: userNameStr,
 					Pass_str:      pass_str,
 					Email_str:     p_service_info.Admin_email_str,
 				}

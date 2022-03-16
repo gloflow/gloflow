@@ -32,7 +32,7 @@ import (
 // io_login
 type GF_admin__input_login struct {
 
-	User_name_str string `validate:"required,min=3,max=50"`
+	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 
 	// pass is not provided if email-login is used
 	Pass_str string `validate:"omitempty,min=8,max=50"`
@@ -49,7 +49,6 @@ type GF_admin__output_login struct {
 type GF_admin__output_create_admin struct {
 	General *GF_user_auth_userpass__output_create
 }
-
 
 type GF_admin__input_add_to_invite_list struct {
 	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
@@ -80,46 +79,46 @@ func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
 }
 
 //------------------------------------------------
-func Admin__pipeline__user_add_to_invite_list(p_input *GF_admin__input_add_to_invite_list,
-	p_ctx          context.Context,
+func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_invite_list,
+	pCtx           context.Context,
 	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
 
-	admin_user_name_str := p_input.User_name_str
+	adminUserNameStr := pInput.User_name_str
 
-	gf_err = db__user__add_to_invite_list(p_input.Email_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr = db__user__add_to_invite_list(pInput.Email_str,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	// EVENT
 	if p_service_info.Enable_events_app_bool {
-		admin_user_id_str, gf_err := db__user__get_basic_info_by_username(admin_user_name_str,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return gf_err
+		adminUserIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(adminUserNameStr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 
-		event_meta := map[string]interface{}{
-			"user_id_str":                admin_user_id_str,
-			"user_name_str":              admin_user_name_str,
-			"email_added_to_invite_list": p_input.Email_str,
+		eventMetaMap := map[string]interface{}{
+			"user_id_str":                adminUserIDstr,
+			"user_name_str":              adminUserNameStr,
+			"email_added_to_invite_list": pInput.Email_str,
 		}
 		gf_events.Emit_app(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
-			event_meta,
-			p_runtime_sys)
+			eventMetaMap,
+			pRuntimeSys)
 	}
 
 	return nil
@@ -210,7 +209,7 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 		}
 	
 	} else {
-		existing_user_id_str, gf_err := db__user__get_basic_info_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
+		existing_user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(gf_identity_core.GFuserName(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
@@ -244,7 +243,7 @@ func Admin__pipeline__login(p_input *GF_admin__input_login,
 		//------------------------
 		// CREATE_LOGIN_ATTEMPT
 
-		user_identifier_str  := p_input.User_name_str
+		user_identifier_str  := string(p_input.User_name_str)
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 		login_attempt_id_str := usersCreateID(user_identifier_str, creation_unix_time_f)
 
@@ -392,9 +391,9 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 }
 
 //---------------------------------------------------
-func Admin__is(p_user_name_str string,
+func Admin__is(p_user_name_str gf_identity_core.GFuserName,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	if p_user_name_str != "admin" {
+	if string(p_user_name_str) != "admin" {
 		gf_err := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
 			"verify__invalid_value_error",
 			map[string]interface{}{
