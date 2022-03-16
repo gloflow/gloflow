@@ -215,8 +215,11 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 
-	// POLICY_VERIFY
-	gfErr := flowsVerifyPolicy(pFlowsNamesLst, pUserNameStr, pCtx, pRuntimeSys)
+	// POLICY_VERIFY - raises error if pocliy rejects the op
+	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
+	gfErr := flowsVerifyPolicy(opStr,
+		pFlowsNamesLst,
+		pUserNameStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gf_images_core.GF_image_id(""), gfErr
 	}
@@ -305,32 +308,11 @@ func flowsCreate(pFlowNameStr string,
 	}
 	
 
-	// POLICY
+	// POLICY_CREATE
 	gfErr = gf_policy.PipelineCreate(idStr, pOwnerUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	return flow, nil
-}
-
-//-------------------------------------------------
-// VERIFY_POLICY
-func flowsVerifyPolicy(pFlowsNamesLst []string,
-	pUserNameStr gf_identity_core.GFuserName,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
-
-	// POLICY_VERIFY
-	flowsIDsLst, gfErr := DBgetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-	for _, flowIDstr := range flowsIDsLst {
-		gfErr = gf_policy.Verify(flowIDstr, pUserNameStr, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return gfErr
-		}
-	}
-	return nil
 }
