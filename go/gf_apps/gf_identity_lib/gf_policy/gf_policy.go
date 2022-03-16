@@ -35,37 +35,71 @@ type GFpolicy struct {
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 	
-	TargetResourceTypeStr string         `bson:"target_resource_type_str"`
-	TargetResourceIDstr   gf_core.GF_ID  `bson:"target_resource_id_str"`
-	OwnerUserIDstr        gf_core.GF_ID  `bson:"owner_user_id_str"`
+	// policy can be asssociated with multiple resources
+	TargetResourceIDsLst  []gf_core.GF_ID `bson:"target_resource_ids_lst"`
+	TargetResourceTypeStr string          `bson:"target_resource_type_str"`
+	OwnerUserIDstr        gf_core.GF_ID   `bson:"owner_user_id_str"`
 
 	// if the flow is fully public and all users (including anonymous) can view it
 	PublicViewBool bool `bson:"public_view_bool"`
 
-	// editors are users that are allowed by the owner to update/add/remove items to the flow
-	EditorsUserIDsLst []gf_core.GF_ID `bson:"editors_user_ids_lst"`
+	//-----------------------
+	// PRINCIPALS
 
 	// viewers are users that can view if PublicViewBool is false
 	ViewersUserIDsLst []gf_core.GF_ID `bson:"viewers_user_ids_lst"`
-	
+
 	// taggers are users that can attach tags/notes to flows
 	TaggersUserIDsLst []gf_core.GF_ID `bson:"taggers_user_ids_lst"`
+
+	// editors are users that are allowed by the owner to update/add/remove items to the flow
+	EditorsUserIDsLst []gf_core.GF_ID `bson:"editors_user_ids_lst"`
+
+	//-----------------------
 }
 
 //-------------------------------------------------
 // VERIFY
-func Verify(pTargetResourceIDstr gf_core.GF_ID,
-	pUserNameStr gf_identity_core.GFuserName,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+func Verify(pRequestedOpStr string,
+	pTargetResourceIDstr gf_core.GF_ID,
+	pUserNameStr         gf_identity_core.GFuserName,
+	pCtx                 context.Context,
+	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
 
-
-	policy, gfErr := DBgetPolicy(pTargetResourceIDstr, pCtx, pRuntimeSys)
+	// GET_POLICIES
+	policiesLst, gfErr := DBgetPolicies(pTargetResourceIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
-	fmt.Println(policy)
+	// USER_ID
+	currentUserIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(pUserNameStr,
+		pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	// GET_DEFS
+	policiesDefsMap := getDefs()
+
+	
+	
+
+
+	// VALIDATE_POLICIES
+	for _, policy := range policiesLst {
+
+		verifiedBool := policySingleVerify(pRequestedOpStr,
+			policy,
+			currentUserIDstr,
+			policiesDefsMap)
+		if verifiedBool {
+
+			// policy approved so dont raise an error
+			return nil
+		}
+	}
+
 
 
 	gfErr = gf_core.Mongo__handle_error("policy has failed to be validated",
@@ -77,9 +111,66 @@ func Verify(pTargetResourceIDstr gf_core.GF_ID,
 
 	
 
-
 	return gfErr
-	
+}
+
+//-------------------------------------------------
+// POLICY_SINGLE_VERIFY
+func policySingleVerify(pRequestedOpStr string,
+	pPolicy           *GFpolicy,
+	pCurrentUserIDstr gf_core.GF_ID,
+	pPoliciesDefsMap  map[string][]string) bool {
+
+	// 
+
+	// VIEWING
+	// this is the lowest level set of permissions, so attempt to match that first
+	for _, opStr := range pPoliciesDefsMap["viewing"] {
+
+		if pRequestedOpStr == opStr {
+			// for each allowed viwing user_id check if it equals to the
+			// user_id requesting the operation permission.
+			for _, allowedUserIDstr := range pPolicy.ViewersUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			return false
+		}
+	}
+
+	// TAGGING
+	for _, opStr := range pPoliciesDefsMap["tagging"] {
+
+		if pRequestedOpStr == opStr {
+			// for each allowed viwing user_id check if it equals to the
+			// user_id requesting the operation permission.
+			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			return false
+		}
+	}
+
+	// EDITING
+	// highest level permission set at the momement, so try last
+	for _, opStr := range pPoliciesDefsMap["editing"] {
+
+		if pRequestedOpStr == opStr {
+			// for each allowed viwing user_id check if it equals to the
+			// user_id requesting the operation permission.
+			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			return false
+		}
+	}
+
+	return false
 }
 
 //-------------------------------------------------
@@ -88,6 +179,8 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.Runtime_sys) *gf_core.GF_error {
 
+
+	getDefs()
 
 	return nil
 }
@@ -103,11 +196,11 @@ func PipelineCreate(pTargetResourceIDstr gf_core.GF_ID,
 	IDstr             := createID(pTargetResourceIDstr, creationUNIXtimeF)
 
 	policy := &GFpolicy{
-		IDstr:               IDstr,     
-		CreationUNIXtimeF:   creationUNIXtimeF,
-		TargetResourceIDstr: pTargetResourceIDstr,
-		OwnerUserIDstr:      pOwnerUserIDstr,
-		PublicViewBool:      true,
+		IDstr:                IDstr,     
+		CreationUNIXtimeF:    creationUNIXtimeF,
+		TargetResourceIDsLst: []gf_core.GF_ID{pTargetResourceIDstr, },
+		OwnerUserIDstr:       pOwnerUserIDstr,
+		PublicViewBool:       true,
 	}
 
 	// DB

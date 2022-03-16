@@ -23,21 +23,42 @@ import (
 	// "fmt"
 	"context"
 	// "go.mongodb.org/mongo-driver/mongo"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 // GET
-func DBgetPolicy(pTargetResourceIDstr gf_core.GF_ID,
+func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFpolicy, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) ([]*GFpolicy, *gf_core.GF_error) {
 
-
-	return nil, nil
+	collNameStr := "gf_policies"
+	findOpts := options.FindOne()
+	// findOpts.Projection = map[string]interface{}{}
+	
+	policiesLst := []*GFpolicy{}
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
+		bson.M{
+			"target_resource_ids_lst": bson.M{"$in": []string{string(pTargetResourceIDstr)}},	
+		},
+		findOpts).Decode(&policiesLst)
+		
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get policy basic_info in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"target_resource_id_str": pTargetResourceIDstr,
+			},
+			err, "gf_policy", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	return policiesLst, nil
 }
 
+//---------------------------------------------------
 // CREATE
 func DBcreatePolicy(pPolicy *GFpolicy,
 	pCtx        context.Context,
