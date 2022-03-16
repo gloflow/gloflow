@@ -113,7 +113,7 @@ func users__pipeline__update(p_input *GF_user__input_update,
 		if *p_input.Email_str != "" {
 			
 			// DB
-			user_id_str, gf_err := db__user__get_basic_info_by_username(p_input.User_name_str,
+			user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(p_input.User_name_str,
 				p_ctx,
 				p_runtime_sys)
 			if gf_err != nil {

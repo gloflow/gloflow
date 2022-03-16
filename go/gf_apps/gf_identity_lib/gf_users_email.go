@@ -97,7 +97,7 @@ func users_email__confirm__pipeline(p_input *gf_identity_core.GF_user__http_inpu
 	if p_input.Confirm_code_str == db_confirm_code_str {
 		
 		// GET_USER_ID
-		user_id_str, gf_err := db__user__get_basic_info_by_username(p_input.User_name_str,
+		user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(p_input.User_name_str,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {

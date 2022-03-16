@@ -71,7 +71,7 @@ func initHandlers(p_auth_login_url_str string,
 				//--------------------------
 				// INPUT
 
-				userNameStr := gf_identity_core.GetUserNameFromCtx(pCtx)
+				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
 
 				iMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gfErr != nil {
@@ -241,8 +241,8 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				userNameStr := gf_identity_core.GetUserNameFromCtx(pCtx)
-
+				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
+				
 				HTTPinput, gf_err := gf_identity_core.Http__get_user_update_input(p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
@@ -291,7 +291,7 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				userNameStr := gf_identity_core.GetUserNameFromCtx(pCtx)
+				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
 
 				input := &GF_user__input_get{
 					UserNameStr: userNameStr,

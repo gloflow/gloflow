@@ -172,7 +172,8 @@ func users_auth_eth__pipeline__login(p_input *GF_user_auth_eth__input_login,
 	//------------------------
 	// USER_ID
 
-	user_id_str, gf_err := db__user__get_basic_info_by_eth_addr(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
+	user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByETHaddr(p_input.User_address_eth_str,
+		p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

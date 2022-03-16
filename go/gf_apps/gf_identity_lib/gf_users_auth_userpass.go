@@ -35,7 +35,7 @@ import (
 type GF_user_auth_userpass__input_login struct {
 
 	// username is always required, with both pass and email login
-	User_name_str string `validate:"required,min=3,max=50"`
+	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 
 	// pass is not provided if email-login is used
 	Pass_str string `validate:"omitempty,min=8,max=50"`
@@ -108,7 +108,8 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 
 	//------------------------
 	// USER_ID
-	user_id_str, gf_err := db__user__get_basic_info_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
+	userNameStr := gf_identity_core.GFuserName(p_input.User_name_str)
+	user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
