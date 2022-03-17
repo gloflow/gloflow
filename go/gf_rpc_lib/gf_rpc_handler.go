@@ -137,13 +137,13 @@ func getHandler(p_auth_bool bool,
 	p_store_run_bool bool,
 	p_sentry_hub         *sentry.Hub,
 	p_auth_login_url_str *string,
-	p_runtime_sys        *gf_core.Runtime_sys) func(p_resp http.ResponseWriter, p_req *http.Request) {
+	pRuntimeSys          *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
-	handler_fun := func(p_resp http.ResponseWriter, p_req *http.Request) {
+	handler_fun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
 		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-		path_str := p_req.URL.Path
+		path_str := pReq.URL.Path
 
 		//------------------
 		// PANIC_HANDLING
@@ -164,9 +164,9 @@ func getHandler(p_auth_bool bool,
 				//               with gf_core.Panic__check_and_handle()
 				Error__in_handler(path_str,
 					fmt.Sprintf("handler %s failed unexpectedly", path_str),
-					nil, p_resp, p_runtime_sys)
+					nil, pResp, pRuntimeSys)
 			},
-			"gf_rpc_lib", p_runtime_sys)
+			"gf_rpc_lib", pRuntimeSys)
 
 		//------------------
 		// METRICS
@@ -178,7 +178,7 @@ func getHandler(p_auth_bool bool,
 		}
 
 		//------------------
-		ctx := p_req.Context()
+		ctx := pReq.Context()
 		fmt.Println("CTX >>>", ctx, p_sentry_hub)
 
 		// FIX!! - when creating additional http servers outside the default global
@@ -206,15 +206,15 @@ func getHandler(p_auth_bool bool,
 		//------------------
 		// AUTH
 
-		var ctx_auth context.Context
+		var ctxAuth context.Context
 		if p_auth_bool {
 			
 			// SESSION_VALIDATE
-			validBool, userIdentifierStr, gfErr := gf_session.Validate(p_req, ctx, p_runtime_sys)
+			validBool, userIdentifierStr, gfErr := gf_session.Validate(pReq, ctx, pRuntimeSys)
 			if gfErr != nil {
 				Error__in_handler(path_str,
 					fmt.Sprintf("handler %s failed to execute auth validation of session", path_str),
-					nil, p_resp, p_runtime_sys)
+					nil, pResp, pRuntimeSys)
 				return
 			}
 
@@ -223,28 +223,28 @@ func getHandler(p_auth_bool bool,
 				if p_auth_login_url_str != nil {
 
 					// redirect user to login url
-					http.Redirect(p_resp,
-						p_req,
+					http.Redirect(pResp,
+						pReq,
 						*p_auth_login_url_str,
 						301)
 
 				} else {
 					Error__in_handler(path_str,
 						fmt.Sprintf("user not authenticated to access handler %s", path_str),
-						nil, p_resp, p_runtime_sys)
+						nil, pResp, pRuntimeSys)
 				}
 				return
 			}
 
 
-			ctx_auth = context.WithValue(ctx_root, "gf_user_name", userIdentifierStr)
+			ctxAuth = context.WithValue(ctx_root, "gf_user_name", userIdentifierStr)
 		} else {
-			ctx_auth = ctx_root
+			ctxAuth = ctx_root
 		}
 
 		//------------------
 		// HANDLER
-		dataMap, gfErr := p_handler_fun(ctx_auth, p_resp, p_req)
+		dataMap, gfErr := p_handler_fun(ctxAuth, pResp, pReq)
 
 		//------------------
 		// TRACE
@@ -255,7 +255,7 @@ func getHandler(p_auth_bool bool,
 		if gfErr != nil {
 			Error__in_handler(p_path_str,
 				fmt.Sprintf("handler %s failed", p_path_str),
-				gfErr, p_resp, p_runtime_sys)
+				gfErr, pResp, pRuntimeSys)
 			return
 		}
 		
@@ -264,7 +264,7 @@ func getHandler(p_auth_bool bool,
 		// IMPORTANT!! - currently testing if dataMap != nil because routes that render templates
 		//               (render html into body) should not also return a JSON map
 		if dataMap != nil {
-			Http_respond(dataMap, "OK", p_resp, p_runtime_sys)
+			Http_respond(dataMap, "OK", pResp, pRuntimeSys)
 		}
 
 		//------------------
@@ -273,7 +273,7 @@ func getHandler(p_auth_bool bool,
 
 		if p_store_run_bool {
 			go func() {
-				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()
 		}
 	}
@@ -282,9 +282,9 @@ func getHandler(p_auth_bool bool,
 
 //-------------------------------------------------
 func Http_respond(p_data interface{},
-	p_status_str  string,
-	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_status_str string,
+	p_resp       http.ResponseWriter,
+	pRuntimeSys  *gf_core.Runtime_sys) {
 
 	r_byte_lst, _ := json.Marshal(map[string]interface{}{
 		"status": p_status_str,
@@ -299,10 +299,10 @@ func Http_respond(p_data interface{},
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
-	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	// dont store a run if there is no DB initialized
-	if p_runtime_sys.Mongo_db == nil {
+	if pRuntimeSys.Mongo_db == nil {
 		return nil
 	}
 
@@ -314,7 +314,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	}
 
 	ctx           := context.Background()
-	coll_name_str := "gf_rpc_handler_run" // p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := "gf_rpc_handler_run"
 
 	gf_err := gf_core.Mongo__insert(run,
 		coll_name_str,
@@ -323,7 +323,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 			"caller_err_msg_str": "failed to insert rpc_handler_run",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
