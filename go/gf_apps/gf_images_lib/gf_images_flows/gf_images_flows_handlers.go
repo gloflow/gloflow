@@ -106,7 +106,7 @@ func Init_handlers(p_auth_login_url_str string,
 				//--------------------------
 				// INPUT
 
-				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				i_map, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gf_err != nil {
@@ -129,7 +129,7 @@ func Init_handlers(p_auth_login_url_str string,
 					flowsNamesLst,
 					client_type_str,
 					p_jobs_mngr_ch,
-					userNameStr,
+					userIDstr,
 					pCtx,
 					pRuntimeSys)
 

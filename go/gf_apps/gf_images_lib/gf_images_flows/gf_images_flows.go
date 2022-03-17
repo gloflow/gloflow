@@ -27,7 +27,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_policy"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -211,7 +211,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
-	pUserNameStr           gf_identity_core.GFuserName,
+	pUserIDstr             gf_core.GF_ID,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 
@@ -219,7 +219,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
 	gfErr := flowsVerifyPolicy(opStr,
 		pFlowsNamesLst,
-		pUserNameStr, pCtx, pRuntimeSys)
+		pUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gf_images_core.GF_image_id(""), gfErr
 	}

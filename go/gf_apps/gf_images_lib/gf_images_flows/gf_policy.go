@@ -22,7 +22,7 @@ package gf_images_flows
 import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_policy"
 )
 
@@ -30,7 +30,7 @@ import (
 // VERIFY_POLICY
 func flowsVerifyPolicy(pOpStr string,
 	pFlowsNamesLst []string,
-	pUserNameStr   gf_identity_core.GFuserName,
+	pUserIDstr     gf_core.GF_ID,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -40,7 +40,7 @@ func flowsVerifyPolicy(pOpStr string,
 		return gfErr
 	}
 	for _, flowIDstr := range flowsIDsLst {
-		gfErr = gf_policy.Verify(pOpStr, flowIDstr, pUserNameStr, pCtx, pRuntimeSys)
+		gfErr = gf_policy.Verify(pOpStr, flowIDstr, pUserIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
