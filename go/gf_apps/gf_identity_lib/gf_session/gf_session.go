@@ -29,17 +29,17 @@ import (
 //---------------------------------------------------
 // p_user_identifier_str - user ID or some other unique user identifier to be used
 
-func Set_on_req(p_session_data_str string,
-	p_resp          http.ResponseWriter,
-	p_ttl_hours_int int) {
+func SetOnReq(pSessionDataStr string,
+	pResp        http.ResponseWriter,
+	pTTLhoursInt int) {
 
-	ttl    := time.Duration(p_ttl_hours_int) * time.Hour
+	ttl    := time.Duration(pTTLhoursInt) * time.Hour
 	expire := time.Now().Add(ttl)
-	cookie_name_str := "gf_sess_data"
+	cookieNameStr := "gf_sess_data"
 	
 	cookie := http.Cookie{
-		Name:    cookie_name_str,
-		Value:   p_session_data_str,
+		Name:    cookieNameStr,
+		Value:   pSessionDataStr,
 		Expires: expire,
 
 		// IMPORTANT!! - session cookie should be set for all paths
@@ -62,39 +62,34 @@ func Set_on_req(p_session_data_str string,
 		// some protection against cross-site request forgery attacks.
 		SameSite: http.SameSiteStrictMode,
 	}
-	http.SetCookie(p_resp, &cookie)
+	http.SetCookie(pResp, &cookie)
 }
 
 //---------------------------------------------------
-func Validate(p_req *http.Request,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
+func Validate(pReq *http.Request,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 	
-	for _, cookie := range p_req.Cookies() {
+	for _, cookie := range pReq.Cookies() {
 		if (cookie.Name == "gf_sess_data") {
-			session_data_str  := cookie.Value
-			jwt_token_val_str := session_data_str
+			sessionDataStr := cookie.Value
+			JWTtokenValStr := sessionDataStr
 
 			//---------------------
 			// JWT_VALIDATE
-			user_identifier_str, gf_err := jwt__pipeline__validate(GF_jwt_token_val(jwt_token_val_str),
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return false, "", gf_err
+			userIdentifierStr, gfErr := jwt__pipeline__validate(GF_jwt_token_val(JWTtokenValStr),
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return false, "", gfErr
 			}
 
-			return true, user_identifier_str, nil
+			return true, userIdentifierStr, nil
 
 			//---------------------
 		}
 	}
 
-	/*// if this point is reached then gf_sess_data cookie was never found
-	gf_err := gf_core.Error__create("`gf_sess_data` cookie missing in request",
-		"verify__sess_data_missing_in_req",
-		map[string]interface{}{},
-		nil, "gf_identity_lib", p_runtime_sys)*/
-
+	// if this point is reached then gf_sess_data cookie was never found
 	return false, "", nil
 }

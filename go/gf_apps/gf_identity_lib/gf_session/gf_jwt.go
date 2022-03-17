@@ -60,7 +60,7 @@ func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 
 	// JWT_GENERATE
 	jwt_secret_key_val_str := GF_jwt_secret_key_val(gf_core.Str_random())
-	jwt_token_val, gf_err := jwt__generate(p_user_identifier_str,
+	jwt_token_val, gf_err := jwtGenerate(p_user_identifier_str,
 		jwt_secret_key_val_str,
 		creation_unix_time_f,
 		p_runtime_sys)
@@ -68,7 +68,7 @@ func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 		return "", gf_err
 	}
 
-	jwt_id := jwt__generate_id(p_user_identifier_str, creation_unix_time_f)
+	jwt_id := jwtGenerateID(p_user_identifier_str, creation_unix_time_f)
 	jwt_secret_key := &GF_jwt_secret_key{
 		V_str:                "0",
 		Id_str:               jwt_id,
@@ -90,7 +90,7 @@ func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 
 //---------------------------------------------------
 // GENERATE
-func jwt__generate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
+func jwtGenerate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
 	p_jwt_secret_key_val   GF_jwt_secret_key_val,
 	p_creation_unix_time_f float64,
 	p_runtime_sys          *gf_core.Runtime_sys) (GF_jwt_token_val, *gf_core.GF_error) {
@@ -129,10 +129,11 @@ func jwt__generate(p_user_identifier_str string, // p_user_address_eth GF_user_a
 }
 
 //---------------------------------------------------
-func jwt__generate_id(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
+func jwtGenerateID(p_user_identifier_str string,
 	p_creation_unix_time_f float64) gf_core.GF_ID {
+	
 	fields_for_id_lst := []string{
-		p_user_identifier_str, // string(p_user_address_eth),
+		p_user_identifier_str,
 	}
 	gf_id_str := gf_core.ID__create(fields_for_id_lst,
 		p_creation_unix_time_f)
@@ -145,7 +146,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	// VALIDATE
-	valid_bool, user_identifier_str, gf_err := JWT__validate(p_jwt_token_val,
+	valid_bool, user_identifier_str, gf_err := JWTvalidate(p_jwt_token_val,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -167,7 +168,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 
 //---------------------------------------------------
 // VALIDATE
-func JWT__validate(p_jwt_token_val GF_jwt_token_val,
+func JWTvalidate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
 
