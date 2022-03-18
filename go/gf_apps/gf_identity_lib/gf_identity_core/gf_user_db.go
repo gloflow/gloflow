@@ -27,6 +27,37 @@ import (
 )
 
 //---------------------------------------------------
+func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (GFuserName, *gf_core.GF_error) {
+
+	findOpts := options.FindOne()
+	findOpts.Projection = map[string]interface{}{
+		"user_name_str": 1,
+	}
+	
+	userBasicInfoMap := map[string]interface{}{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+		bson.M{
+			"id_str":       string(pUserIDstr),
+			"deleted_bool": false,
+		},
+		findOpts).Decode(&userBasicInfoMap)
+
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{"user_id_str": pUserIDstr,},
+			err, "gf_identity_core", pRuntimeSys)
+		return GFuserName(""), gfErr
+	}
+
+	userNameStr := GFuserName(userBasicInfoMap["user_name_str"].(string))
+
+	return userNameStr, nil
+}
+
+//---------------------------------------------------
 // GET_BASIC_INFO_BY_ETH_ADDR
 func DBgetBasicInfoByETHaddr(pUserAddressETHstr GF_user_address_eth,
 	pCtx        context.Context,
@@ -73,31 +104,31 @@ func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 
 //---------------------------------------------------
 // DB_GET_USER_ID
-func DBgetUserID(p_query bson.M,
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+func DBgetUserID(pQuery bson.M,
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
 
 
-	find_opts := options.FindOne()
-	find_opts.Projection = map[string]interface{}{
+	findOpts := options.FindOne()
+	findOpts.Projection = map[string]interface{}{
 		"id_str": 1,
 	}
 	
-	user_basic_info_map := map[string]interface{}{}
-	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx,
-		p_query,
-		find_opts).Decode(&user_basic_info_map)
+	userBasicInfoMap := map[string]interface{}{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+		pQuery,
+		findOpts).Decode(&userBasicInfoMap)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
 			"mongodb_find_error",
-			p_meta_map,
-			err, "gf_identity_lib", p_runtime_sys)
-		return gf_core.GF_ID(""), gf_err
+			pMetaMap,
+			err, "gf_identity_core", pRuntimeSys)
+		return gf_core.GF_ID(""), gfErr
 	}
 
-	user_id_str := gf_core.GF_ID(user_basic_info_map["id_str"].(string))
+	userIDstr := gf_core.GF_ID(userBasicInfoMap["id_str"].(string))
 
-	return user_id_str, nil
+	return userIDstr, nil
 }

@@ -51,8 +51,8 @@ type GF_admin__output_create_admin struct {
 }
 
 type GF_admin__input_add_to_invite_list struct {
-	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
-	Email_str     string                      `validate:"required,email"`
+	UserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr  string        `validate:"required,email"`
 }
 
 //------------------------------------------------
@@ -93,9 +93,7 @@ func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_inv
 
 	//------------------------
 
-	adminUserNameStr := pInput.User_name_str
-
-	gfErr = db__user__add_to_invite_list(pInput.Email_str,
+	gfErr = db__user__add_to_invite_list(pInput.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -104,17 +102,16 @@ func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_inv
 
 	// EVENT
 	if p_service_info.Enable_events_app_bool {
-		adminUserIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(adminUserNameStr,
-			pCtx,
-			pRuntimeSys)
+		
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id_str":                adminUserIDstr,
+			"user_id_str":                pInput.UserIDstr,
 			"user_name_str":              adminUserNameStr,
-			"email_added_to_invite_list": pInput.Email_str,
+			"email_added_to_invite_list": pInput.EmailStr,
 		}
 		gf_events.Emit_app(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
 			eventMetaMap,
@@ -391,16 +388,23 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 }
 
 //---------------------------------------------------
-func Admin__is(p_user_name_str gf_identity_core.GFuserName,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	if string(p_user_name_str) != "admin" {
-		gf_err := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
+func AdminIs(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	userNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pUserIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	if string(userNameStr) != "admin" {
+		gfErr := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
 			"verify__invalid_value_error",
 			map[string]interface{}{
-				"user_name_str": p_user_name_str,
+				"user_name_str": userNameStr,
 			},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return gf_err
+			nil, "gf_identity_lib", pRuntimeSys)
+		return gfErr
 	}
 	return nil
 }

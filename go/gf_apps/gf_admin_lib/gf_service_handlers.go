@@ -144,12 +144,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 					pass_str = val_str.(string)
 				}
 
-				gf_err = gf_identity_lib.Admin__is(userNameStr,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
-				}
-
 				input := &gf_identity_lib.GF_admin__input_login{
 					User_name_str: userNameStr,
 					Pass_str:      pass_str,

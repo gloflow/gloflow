@@ -63,23 +63,28 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				input_map, user_name_str, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				input_map, _, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
+				var userNameStr string
+				if valStr, ok := input_map["user_name_str"]; ok {
+					userNameStr = valStr.(string)
+				}
+
 				var pass_str string
-				if val_str, ok := input_map["pass_str"]; ok {
-					pass_str = val_str.(string)
+				if valStr, ok := input_map["pass_str"]; ok {
+					pass_str = valStr.(string)
 				}
 
 				var email_str string
-				if val_str, ok := input_map["email_str"]; ok {
-					email_str = val_str.(string)
+				if valStr, ok := input_map["email_str"]; ok {
+					email_str = valStr.(string)
 				}
 
 				input :=&GF_user_auth_userpass__input_login{
-					User_name_str: user_name_str,
+					User_name_str: gf_identity_core.GFuserName(userNameStr),
 					Pass_str:      pass_str,
 					Email_str:     email_str,
 				}
@@ -95,18 +100,18 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				session_data_str      := string(output.JWT_token_val)
+				sessionDataStr        := string(output.JWT_token_val)
 				session_ttl_hours_int := 24 // 1 day
-				gf_session.Set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+				gf_session.SetOnReq(sessionDataStr, p_resp, session_ttl_hours_int)
 
 				//---------------------
 
-				output_map := map[string]interface{}{
+				outputMap := map[string]interface{}{
 					"user_exists_bool": output.User_exists_bool,
 					"pass_valid_bool":  output.Pass_valid_bool,
 					"user_id_str":      output.User_id_str,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 			return nil, nil

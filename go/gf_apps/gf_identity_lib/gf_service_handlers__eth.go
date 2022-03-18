@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -122,9 +122,9 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				session_data_str      := string(output.JWT_token_val)
+				sessionDataStr        := string(output.JWT_token_val)
 				session_ttl_hours_int := 24 // 1 day
-				gf_session.Set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+				gf_session.SetOnReq(sessionDataStr, p_resp, session_ttl_hours_int)
 
 				//---------------------
 
