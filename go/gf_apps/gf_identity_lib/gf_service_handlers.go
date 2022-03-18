@@ -71,7 +71,7 @@ func initHandlers(p_auth_login_url_str string,
 				//--------------------------
 				// INPUT
 
-				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				iMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gfErr != nil {
@@ -85,7 +85,7 @@ func initHandlers(p_auth_login_url_str string,
 
 				//--------------------------
 
-				gfErr = gf_policy.PipelineUpdate(targetResourceIDstr, userNameStr, pCtx, pRuntimeSys)
+				gfErr = gf_policy.PipelineUpdate(targetResourceIDstr, userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -161,67 +161,71 @@ func initHandlers(p_auth_login_url_str string,
 	// MFA_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/mfa_confirm",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 
-				input_map, user_name_str, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, pRuntimeSys)
+				inputMap, _, _, gf_err := gf_identity_core.Http__get_user_std_input(pCtx, pReq, pResp, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
+				var userNameStr gf_identity_core.GFuserName
+				if inputUserNameStr, ok := inputMap["user_name_str"].(string); ok {
+					userNameStr = gf_identity_core.GFuserName(inputUserNameStr)
+				}
+
 				var extern_htop_value_str string
-				if input_extern_htop_value_str, ok := input_map["mfa_val_str"].(string); ok {
+				if input_extern_htop_value_str, ok := inputMap["mfa_val_str"].(string); ok {
 					extern_htop_value_str = input_extern_htop_value_str
 				}
 
 				input := &GF_user_auth_mfa__input_confirm{
-					User_name_str:         gf_identity_core.GFuserName(user_name_str),
+					UserNameStr:           userNameStr,
 					Extern_htop_value_str: extern_htop_value_str,
 					Secret_key_base32_str: pServiceInfo.Admin_mfa_secret_key_base32_str,
 				}
 				
 				//---------------------
 				
-				valid_bool, gf_err := mfaPipelineConfirm(input,
-					p_ctx,
+				validBool, gf_err := mfaPipelineConfirm(input,
+					pCtx,
 					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				if valid_bool {
+				if validBool {
 					//---------------------
 					// LOGIN_FINALIZE
 
-					login_finalize_input := &GF_user_auth_userpass__input_login_finalize{
-						User_name_str: gf_identity_core.GFuserName(user_name_str),
+					loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
+						UserNameStr: userNameStr,
 					}
-					login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(login_finalize_input,
+					loginFinalizeOutput, gf_err := users_auth_userpass__pipeline__login_finalize(loginFinalizeInput,
 						pServiceInfo,
-						p_ctx,
+						pCtx,
 						pRuntimeSys)
 					if gf_err != nil {
 						return nil, gf_err
 					}
 
-					//---------------------
-					
+					//---------------------					
 					// SET_SESSION_ID - sets gf_sid cookie on all future requests
-					session_data_str      := string(login_finalize_output.JWT_token_val)
-					session_ttl_hours_int := 24 // 1 day
-					gf_session.Set_on_req(session_data_str, p_resp, session_ttl_hours_int)
+					sessionDataStr     := string(loginFinalizeOutput.JWT_token_val)
+					sessionTTLhoursInt := 24 // 1 day
+					gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 					//---------------------
 				}
 
-				output_map := map[string]interface{}{
-					"mfa_valid_bool": valid_bool,
+				outputMap := map[string]interface{}{
+					"mfa_valid_bool": validBool,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 			return nil, nil
@@ -241,15 +245,15 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
-				
-				HTTPinput, gf_err := gf_identity_core.Http__get_user_update_input(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				HTTPinput, gfErr := gf_identity_core.Http__get_user_update_input(p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				input := &GF_user__input_update{
-					User_name_str:         gf_identity_core.GFuserName(userNameStr),
+					UserIDstr:             userIDstr,
 					Email_str:             HTTPinput.Email_str,
 					Description_str:       HTTPinput.Description_str,
 					Profile_image_url_str: HTTPinput.Profile_image_url_str,
@@ -257,23 +261,23 @@ func initHandlers(p_auth_login_url_str string,
 				}
 				
 				// VALIDATE
-				gf_err = gf_core.Validate_struct(input, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = gf_core.Validate_struct(input, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
 				//---------------------
 
-				_, gf_err = users__pipeline__update(input,
+				_, gfErr = users__pipeline__update(input,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{}
-				return output_map, nil
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
 			}
 			return nil, nil
 		},
@@ -291,10 +295,10 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				userNameStr, _ := gf_identity_core.GetUserNameFromCtx(pCtx)
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
 				input := &GF_user__input_get{
-					UserNameStr: userNameStr,
+					UserIDstr: userIDstr,
 				}
 
 				//---------------------

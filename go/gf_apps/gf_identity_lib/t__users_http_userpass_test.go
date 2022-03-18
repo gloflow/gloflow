@@ -40,7 +40,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 	test_port_int := 2000
 	ctx           := context.Background()
 	runtime_sys   := T__init()
-	http_agent    := gorequest.New()
+	HTTPagent     := gorequest.New()
 
 
 	
@@ -79,7 +79,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 		"email_str":     test__email_str,
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
-	_, body_str, errs := http_agent.Post(url_str).
+	_, body_str, errs := HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -122,7 +122,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 		"pass_str":      test__user_pass_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
-	resp, body_str, errs := http_agent.Post(url_str).
+	resp, body_str, errs := HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -180,7 +180,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 		"description_str": "some new description",
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = http_agent.Post(url_str).
+	_, body_str, errs = HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -202,7 +202,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 	
 	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/me", test_port_int)
 	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = http_agent.Get(url_str).
+	_, body_str, errs = HTTPagent.Get(url_str).
 		End()
 
 	body_map = map[string]interface{}{}

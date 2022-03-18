@@ -65,7 +65,7 @@ type GF_user_creds struct {
 
 // io_update
 type GF_user__input_update struct {
-	User_name_str        gf_identity_core.GFuserName          `validate:"required,min=3,max=50"`    // required - not updated, but for lookup
+	UserIDstr            gf_core.GF_ID                        `validate:"required"`                 // required - not updated, but for lookup
 	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
 	Screen_name_str      *string                              `validate:"omitempty,min=3,max=50"`   // optional
 	Email_str            *string                              `validate:"omitempty,email"`          // optional
@@ -80,7 +80,7 @@ type GF_user__output_update struct {
 
 // io_get
 type GF_user__input_get struct {
-	UserNameStr gf_identity_core.GFuserName
+	UserIDstr gf_core.GF_ID
 }
 
 type GF_user__output_get struct {
@@ -93,41 +93,36 @@ type GF_user__output_get struct {
 
 //---------------------------------------------------
 // PIPELINE__UPDATE
-func users__pipeline__update(p_input *GF_user__input_update,
-	p_service_info *GF_service_info,
-	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
+func users__pipeline__update(pInput *GF_user__input_update,
+	pServiceInfo *GF_service_info,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
 	
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-
-
+	// USER_NAME
+	userNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
 	// EMAIL
-	if p_service_info.Enable_email_bool {
-		if *p_input.Email_str != "" {
-			
-			// DB
-			user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(p_input.User_name_str,
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
-			}
+	if pServiceInfo.Enable_email_bool {
+		if *pInput.Email_str != "" {
 
-			gf_err = users_email__verify__pipeline(*p_input.Email_str,
-				p_input.User_name_str,
-				user_id_str,
-				p_service_info.Domain_base_str,
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+			gfErr = users_email__verify__pipeline(*pInput.Email_str,
+				userNameStr,
+				pInput.UserIDstr,
+				pServiceInfo.Domain_base_str,
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 		}
 	}
@@ -141,20 +136,20 @@ func users__pipeline__update(p_input *GF_user__input_update,
 
 //---------------------------------------------------
 // PIPELINE__GET
-func usersPipelineGet(p_input *GF_user__input_get,
+func usersPipelineGet(pInput *GF_user__input_get,
 	pCtx         context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE
-	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//------------------------
 	
-	user, gfErr := dbUserGetByUsername(p_input.UserNameStr,
+	user, gfErr := dbUserGetByID(pInput.UserIDstr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -163,9 +158,9 @@ func usersPipelineGet(p_input *GF_user__input_get,
 
 
 	output := &GF_user__output_get{
-		User_name_str:   user.User_name_str,
-		Email_str:       user.Email_str,
-		Description_str: user.Description_str,
+		User_name_str:         user.User_name_str,
+		Email_str:             user.Email_str,
+		Description_str:       user.Description_str,
 		Profile_image_url_str: user.Profile_image_url_str,
 		Banner_image_url_str:  user.Banner_image_url_str,
 	}

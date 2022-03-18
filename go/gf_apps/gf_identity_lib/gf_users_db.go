@@ -136,7 +136,7 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 }
 
 // GET_BY_ID
-func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
+func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
 
@@ -144,7 +144,7 @@ func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
 	
 	user := GF_user{}
 	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
-			"id_str":       p_user_id_str,
+			"id_str":       pUserIDstr,
 			"deleted_bool": false,
 		},
 		find_opts).Decode(&user)
@@ -153,7 +153,7 @@ func db__user__get_by_id(p_user_id_str gf_core.GF_ID,
 		gf_err := gf_core.Mongo__handle_error("failed to find user by ID in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"user_id_str": p_user_id_str,
+				"user_id_str": pUserIDstr,
 			},
 			err, "gf_identity_lib", p_runtime_sys)
 		return nil, gf_err

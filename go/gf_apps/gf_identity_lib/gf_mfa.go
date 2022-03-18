@@ -36,44 +36,45 @@ import (
 
 //------------------------------------------------
 type GF_user_auth_mfa__input_confirm struct {
-	User_name_str         gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
-	Extern_htop_value_str string                      `validate:"required,min=10,max=200"`
-	Secret_key_base32_str string                      `validate:"required,min=8,max=200"`
+	UserNameStr           gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	Extern_htop_value_str string    `validate:"required,min=10,max=200"`
+	Secret_key_base32_str string    `validate:"required,min=8,max=200"`
 }
 
 //------------------------------------------------
-func mfaPipelineConfirm(p_input *GF_user_auth_mfa__input_confirm,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+func mfaPipelineConfirm(pInput *GF_user_auth_mfa__input_confirm,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
 
 
-	htop_value_str, gf_err := TOTPgenerateValue(p_input.Secret_key_base32_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
+	htopValueStr, gfErr := TOTPgenerateValue(pInput.Secret_key_base32_str,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
 	}
 
 
 
 
-	if p_input.Extern_htop_value_str == htop_value_str {
+	if pInput.Extern_htop_value_str == htopValueStr {
 
+		
 
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
-		var login_attempt *GF_login_attempt
-		login_attempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(p_input.User_name_str),
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+		var loginAttempt *GF_login_attempt
+		loginAttempt, gfErr = login_attempt__get_if_valid(pInput.UserNameStr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 
 		// there is no login_attempt for this user thats active, or it has expired.
 		// do nothing, forcing the user to restart the login process.
-		if login_attempt == nil {
+		if loginAttempt == nil {
 			return false, nil
 		}
 
@@ -81,14 +82,14 @@ func mfaPipelineConfirm(p_input *GF_user_auth_mfa__input_confirm,
 		// UPDATE_LOGIN_ATTEMPT
 		// if password is valid then update the login_attempt 
 		// to indicate that the password has been confirmed
-		mfa_confirm_bool := true
-		update_op := &GF_login_attempt__update_op{MFA_confirmed_bool: &mfa_confirm_bool}
-		gf_err = db__login_attempt__update(&login_attempt.Id_str,
-			update_op,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+		mfaConfirmBool := true
+		updateOp := &GF_login_attempt__update_op{MFA_confirmed_bool: &mfaConfirmBool}
+		gfErr = db__login_attempt__update(&loginAttempt.Id_str,
+			updateOp,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 
 		//------------------------
@@ -102,23 +103,23 @@ func mfaPipelineConfirm(p_input *GF_user_auth_mfa__input_confirm,
 //---------------------------------------------------
 // TOTP - https://datatracker.ietf.org/doc/html/rfc6238
 
-func TOTPgenerateValue(p_secret_key_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+func TOTPgenerateValue(pSecretKeyStr string,
+	pRuntimeSys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
 	// index number of a 30s time period since start of Unix time.
 	// TOTP is specified to use UTC time, so timezones dont have to be 
 	// accounted for between multiple parties.
-	interval_int := time.Now().UTC().Unix() / 30
+	intervalInt := time.Now().UTC().Unix() / 30
 
-	fmt.Println("interval", interval_int)
-	token_str, gf_err  := HOTPgenerateValue(p_secret_key_str,
-		interval_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	fmt.Println("interval", intervalInt)
+	tokenStr, gfErr  := HOTPgenerateValue(pSecretKeyStr,
+		intervalInt,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 
-	return token_str, nil
+	return tokenStr, nil
 }
 
 //---------------------------------------------------

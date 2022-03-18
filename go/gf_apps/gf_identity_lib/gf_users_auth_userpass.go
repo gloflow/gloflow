@@ -53,7 +53,8 @@ type GF_user_auth_userpass__output_login struct {
 
 // io_login_finalize
 type GF_user_auth_userpass__input_login_finalize struct {
-	User_name_str gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	// UserIDstr gf_core.GF_ID `validate:"required"`
+	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
 }
 type GF_user_auth_userpass__output_login_finalize struct {
 	Email_confirmed_bool bool
@@ -80,10 +81,11 @@ type GF_user_auth_userpass__output_create struct {
 //---------------------------------------------------
 func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpass__input_login_finalize,
 	p_service_info *GF_service_info,
-	p_ctx          context.Context,
+	pCtx          context.Context,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
 
 	output := &GF_user_auth_userpass__output_login_finalize{}
+	userNameStr := gf_identity_core.GFuserName(p_input.UserNameStr)
 
 	//------------------------
 	// VERIFY_EMAIL_CONFIRMED
@@ -91,14 +93,14 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	// this is the initial confirmation of an email on user creation, or user email update.
 	if p_service_info.Enable_email_require_confirm_for_login_bool {
 
-		email_confirmed_bool, gf_err := db__user__get_email_confirmed_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
-			p_ctx,
+		emailConfirmedBool, gf_err := db__user__get_email_confirmed_by_username(userNameStr,
+			pCtx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
 
-		if !email_confirmed_bool {
+		if !emailConfirmedBool {
 			output.Email_confirmed_bool = false
 			return output, nil
 		} else {
@@ -108,20 +110,20 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 
 	//------------------------
 	// USER_ID
-	userNameStr := gf_identity_core.GFuserName(p_input.User_name_str)
-	user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
-		p_ctx,
+	
+	userIDstr, gf_err := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
+		pCtx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	output.User_id_str = user_id_str
+	output.User_id_str = userIDstr
 
 	//------------------------
 	// JWT
-	user_identifier_str := string(user_id_str)
-	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
+	user_identifier_str := string(userIDstr)
+	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, pCtx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -187,7 +189,7 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// LOGIN_FINALIZE
 	input := &GF_user_auth_userpass__input_login_finalize{
-		User_name_str: gf_identity_core.GFuserName(p_input.User_name_str),
+		UserNameStr: gf_identity_core.GFuserName(p_input.User_name_str),
 	}
 	login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(input,
 		p_service_info,
