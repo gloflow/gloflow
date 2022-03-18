@@ -237,7 +237,7 @@ func getHandler(p_auth_bool bool,
 			}
 
 
-			ctxAuth = context.WithValue(ctx_root, "gf_user_name", userIdentifierStr)
+			ctxAuth = context.WithValue(ctx_root, "gf_user_id", userIdentifierStr)
 		} else {
 			ctxAuth = ctx_root
 		}

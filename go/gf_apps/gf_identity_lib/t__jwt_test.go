@@ -31,45 +31,45 @@ import (
 )
 
 //-------------------------------------------------
-func Test__jwt(p_test *testing.T) {
+func Test__jwt(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	runtime_sys := T__init()
 
-	test_jwt_main(p_test, runtime_sys)
+	test_jwt_main(pTest, runtime_sys)
 }
 
 //-------------------------------------------------
-func test_jwt_main(p_test *testing.T,
+func test_jwt_main(pTest *testing.T,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
 
 	ctx := context.Background()
 
-	test_user_address_eth := gf_identity_core.GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
+	testUserAddressETH := gf_identity_core.GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
 
 	// JWT_GENERATE
-	user_identifier_str := string(test_user_address_eth)
-	jwt_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str,
+	userIdentifierStr := string(testUserAddressETH)
+	jwt_val, gf_err := gf_session.JWT__pipeline__generate(userIdentifierStr,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 	
 	// JWT_VALIDATE
-	valid_bool, user_identifier_str, gf_err := gf_session.JWT__validate(jwt_val,
+	valid_bool, userIdentifierStr, gf_err := gf_session.JWTvalidate(jwt_val,
 		ctx,
 		p_runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 
 
-	assert.True(p_test, valid_bool == true, "test JWT token is not valid, when it should be")
-	assert.True(p_test, user_identifier_str == string(test_user_address_eth),
+	assert.True(pTest, valid_bool == true, "test JWT token is not valid, when it should be")
+	assert.True(pTest, userIdentifierStr == string(testUserAddressETH),
 		"test user_identifier extracted from JWT durring validation is the same as the input test eth address")
 	
 }
