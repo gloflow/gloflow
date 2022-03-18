@@ -25,7 +25,7 @@ import (
 	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -62,7 +62,7 @@ type GFpolicy struct {
 // VERIFY
 func Verify(pRequestedOpStr string,
 	pTargetResourceIDstr gf_core.GF_ID,
-	pUserNameStr         gf_identity_core.GFuserName,
+	pUserIDstr           gf_core.GF_ID,
 	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -72,26 +72,17 @@ func Verify(pRequestedOpStr string,
 		return gfErr
 	}
 
-	// USER_ID
-	currentUserIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(pUserNameStr,
-		pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
 
 	// GET_DEFS
 	policiesDefsMap := getDefs()
 
 	
-	
-
-
 	// VALIDATE_POLICIES
 	for _, policy := range policiesLst {
 
 		verifiedBool := policySingleVerify(pRequestedOpStr,
 			policy,
-			currentUserIDstr,
+			pUserIDstr,
 			policiesDefsMap)
 		if verifiedBool {
 
@@ -100,16 +91,12 @@ func Verify(pRequestedOpStr string,
 		}
 	}
 
-
-
 	gfErr = gf_core.Mongo__handle_error("policy has failed to be validated",
 		"policy__op_denied",
 		map[string]interface{}{
 			"target_resource_id_str": pTargetResourceIDstr,
 		},
 		nil, "gf_policy", pRuntimeSys)
-
-	
 
 	return gfErr
 }
@@ -121,8 +108,6 @@ func policySingleVerify(pRequestedOpStr string,
 	pCurrentUserIDstr gf_core.GF_ID,
 	pPoliciesDefsMap  map[string][]string) bool {
 
-	// 
-
 	// VIEWING
 	// this is the lowest level set of permissions, so attempt to match that first
 	for _, opStr := range pPoliciesDefsMap["viewing"] {
@@ -130,7 +115,21 @@ func policySingleVerify(pRequestedOpStr string,
 		if pRequestedOpStr == opStr {
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
+			// IMPORTANT!! - view operations are lowest level,
+			//               and any other policy can allow them.
+			//               thats why not only viewer user_ids are checked
+			//               but also tagging and editing ones.
 			for _, allowedUserIDstr := range pPolicy.ViewersUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
 				if pCurrentUserIDstr == allowedUserIDstr {
 					return true
 				}
@@ -146,6 +145,11 @@ func policySingleVerify(pRequestedOpStr string,
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			for _, allowedUserIDstr := range pPolicy.TaggersUserIDsLst {
+				if pCurrentUserIDstr == allowedUserIDstr {
+					return true
+				}
+			}
+			for _, allowedUserIDstr := range pPolicy.EditorsUserIDsLst {
 				if pCurrentUserIDstr == allowedUserIDstr {
 					return true
 				}
@@ -175,7 +179,7 @@ func policySingleVerify(pRequestedOpStr string,
 
 //-------------------------------------------------
 func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
-	pOwnerUserIDstr gf_identity_core.GFuserName,
+	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.Runtime_sys) *gf_core.GF_error {
 
