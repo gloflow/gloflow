@@ -27,7 +27,7 @@ import (
 )
 
 //---------------------------------------------------
-type GF_user struct {
+type GFuser struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               gf_core.GF_ID      `bson:"id_str"`

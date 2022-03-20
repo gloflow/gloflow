@@ -323,7 +323,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	user_identifier_str := string(user_name_str)
 	user_id_str := usersCreateID(user_identifier_str, creation_unix_time_f)
 
-	user := &GF_user{
+	user := &GFuser{
 		V_str:                "0",
 		Id_str:               user_id_str,
 		Creation_unix_time_f: creation_unix_time_f,

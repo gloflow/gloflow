@@ -49,7 +49,7 @@ type GF_login_attempt__update_op struct {
 // USER
 //---------------------------------------------------
 // CREATE_USER
-func db__user__create(p_user *GF_user,
+func db__user__create(p_user *GFuser,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -138,11 +138,11 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 // GET_BY_ID
 func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GFuser, *gf_core.GF_error) {
 
 	find_opts := options.FindOne()
 	
-	user := GF_user{}
+	user := GFuser{}
 	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
 			"id_str":       pUserIDstr,
 			"deleted_bool": false,
@@ -165,11 +165,11 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 // GET_BY_USERNAME
 func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) (*GFuser, *gf_core.GF_error) {
 
 	find_opts := options.FindOne()
 	
-	user := GF_user{}
+	user := GFuser{}
 	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx, bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
@@ -193,11 +193,11 @@ func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 // GET_BY_ETH_ADDR
 func db__user__get_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GFuser, *gf_core.GF_error) {
 
 	find_opts := options.FindOne()
 	
-	user := GF_user{}
+	user := GFuser{}
 	err := p_runtime_sys.Mongo_db.Collection("gf_users").FindOne(p_ctx, bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
 			"deleted_bool":      false,
