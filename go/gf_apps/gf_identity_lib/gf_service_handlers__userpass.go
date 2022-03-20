@@ -63,7 +63,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				inputMap, _, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				inputMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -93,7 +93,8 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 				// LOGIN
 				output, gfErr := users_auth_userpass__pipeline__login(input, 
 					p_service_info,
-					pCtx, pRuntimeSys)
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

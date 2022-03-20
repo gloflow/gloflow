@@ -66,11 +66,11 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 func HTTPgetUserStdInput(pCtx context.Context,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {
 
-	inputMap, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-	if gf_err != nil {
-		return nil, "", GF_user_address_eth(""), gf_err
+	inputMap, gfErr := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", GF_user_address_eth(""), gfErr
 	}
 	
 	// user-name is supplied if the traditional auth system is used, and not web3/eth
@@ -97,11 +97,11 @@ func HTTPgetUserStdInput(pCtx context.Context,
 
 	// one of the these values has to be supplied, they cant both be missing
 	if userIDstr == "" && userAddressETHstr == "" {
-		gf_err := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
+		gfErr := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
 			"verify__input_data_missing_in_req_error",
 			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return nil, "", GF_user_address_eth(""), gf_err
+			nil, "gf_identity_lib", pRuntimeSys)
+		return nil, "", GF_user_address_eth(""), gfErr
 	}
 
 	return inputMap, userIDstr, GF_user_address_eth(userAddressETHstr), nil
