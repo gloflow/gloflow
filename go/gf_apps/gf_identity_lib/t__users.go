@@ -93,8 +93,11 @@ func test_user_http_get_me(p_test *testing.T,
 	profile_image_url_str := body_map["data"].(map[string]interface{})["profile_image_url_str"].(string)
 	banner_image_url_str  := body_map["data"].(map[string]interface{})["banner_image_url_str"].(string)
 
+	fmt.Println("RESPONSE >>>>")
+	spew.Dump(body_map["data"])
+	
 	fmt.Println("====================================")
-	fmt.Println("user login response:")
+	fmt.Println("user me response:")
 	fmt.Println("user_name_str",         user_name_str)
 	fmt.Println("email_str",             email_str)
 	fmt.Println("description_str",       description_str)

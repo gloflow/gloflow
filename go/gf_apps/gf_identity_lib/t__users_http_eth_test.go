@@ -195,6 +195,9 @@ func Test__users_http_eth(p_test *testing.T) {
 	auth_signature_valid_bool = body_map["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
 	user_id_str              := body_map["data"].(map[string]interface{})["user_id_str"].(string)
 
+	fmt.Println("RESPONSE >>>>")
+	spew.Dump(body_map["data"])
+
 	fmt.Println("====================================")
 	fmt.Println("user login response:")
 	fmt.Println("nonce_exists_bool",         nonce_exists_bool)
