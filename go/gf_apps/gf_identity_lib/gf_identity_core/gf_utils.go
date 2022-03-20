@@ -47,8 +47,17 @@ type GF_user__http_input_email_confirm struct {
 //---------------------------------------------------
 // GET_USER_NAME_FROM_CTX
 func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
-	userIDstr, ok := pCtx.Value("gf_user_id").(gf_core.GF_ID)
-	return userIDstr, ok
+	
+	userID := pCtx.Value("gf_user_id")
+
+	if userID != nil {
+		userIDstr := gf_core.GF_ID(userID.(string))
+		return userIDstr, true
+	} else {
+		return "", false
+	}
+	
+	return "", false
 }
 
 //---------------------------------------------------

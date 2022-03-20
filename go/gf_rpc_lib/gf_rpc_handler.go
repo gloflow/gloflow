@@ -92,7 +92,7 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 func CreateHandlerHTTPwithMux(p_path_str string,
 	p_handler_fun    handler_http,
 	p_mux            *http.ServeMux,
-	p_metrics        *GF_metrics,
+	pMetrics         *GF_metrics,
 	p_store_run_bool bool,
 	p_sentry_hub     *sentry.Hub,
 	p_runtime_sys    *gf_core.Runtime_sys) {
@@ -100,7 +100,7 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
-		p_metrics,
+		pMetrics,
 		p_store_run_bool,
 		p_sentry_hub,
 		nil,
@@ -113,14 +113,14 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 // HTTP_WITH_METRICS
 func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun    handler_http,
-	p_metrics        *GF_metrics,
+	pMetrics         *GF_metrics,
 	p_store_run_bool bool,
 	p_runtime_sys    *gf_core.Runtime_sys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
-		p_metrics,
+		pMetrics,
 		p_store_run_bool,
 		nil,
 		nil,
@@ -131,11 +131,11 @@ func Create_handler__http_with_metrics(p_path_str string,
 
 //-------------------------------------------------
 func getHandler(p_auth_bool bool,
-	p_path_str       string,
+	pPathStr         string,
 	p_handler_fun    handler_http,
-	p_metrics        *GF_metrics,
+	pMetrics         *GF_metrics,
 	p_store_run_bool bool,
-	p_sentry_hub         *sentry.Hub,
+	pSentryHub           *sentry.Hub,
 	p_auth_login_url_str *string,
 	pRuntimeSys          *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
@@ -171,37 +171,37 @@ func getHandler(p_auth_bool bool,
 		//------------------
 		// METRICS
 
-		if p_metrics != nil {
-			if counter, ok := p_metrics.Handlers_counters_map[p_path_str]; ok {
+		if pMetrics != nil {
+			if counter, ok := pMetrics.Handlers_counters_map[pPathStr]; ok {
 				counter.Inc()
 			}
 		}
 
 		//------------------
 		ctx := pReq.Context()
-		fmt.Println("CTX >>>", ctx, p_sentry_hub)
+		fmt.Println("CTX >>>", ctx, pSentryHub)
 
 		// FIX!! - when creating additional http servers outside the default global
 		//         http server and default global Sentry context, the clone sentry hub
 		//         is being passed in explicitly.
 		//         figure out a cleaner way to abstract all Sentry details from this handler wrapper.
 		var hub *sentry.Hub
-		if p_sentry_hub == nil {
+		if pSentryHub == nil {
 
 			// use the default global pre-created Hub (one thats used by the main go-routine)
 			hub = sentry.GetHubFromContext(ctx)
 		} else {
-			hub = p_sentry_hub
+			hub = pSentryHub
 		}
 		hub.Scope().SetTag("url", path_str)
 
 		//------------------
 		// TRACE
-		span_op_str := p_path_str
-		span__root  := sentry.StartSpan(ctx, span_op_str)
-		defer span__root.Finish()
+		spanOpStr := pPathStr
+		spanRoot  := sentry.StartSpan(ctx, spanOpStr)
+		defer spanRoot.Finish()
 
-		ctx_root := span__root.Context()
+		ctxRoot := spanRoot.Context()
 
 		//------------------
 		// AUTH
@@ -236,10 +236,9 @@ func getHandler(p_auth_bool bool,
 				return
 			}
 
-
-			ctxAuth = context.WithValue(ctx_root, "gf_user_id", userIdentifierStr)
+			ctxAuth = context.WithValue(ctxRoot, "gf_user_id", userIdentifierStr)
 		} else {
-			ctxAuth = ctx_root
+			ctxAuth = ctxRoot
 		}
 
 		//------------------
@@ -248,13 +247,13 @@ func getHandler(p_auth_bool bool,
 
 		//------------------
 		// TRACE
-		span__root.Finish()
+		spanRoot.Finish()
 
 		//------------------
 		// ERROR
 		if gfErr != nil {
-			Error__in_handler(p_path_str,
-				fmt.Sprintf("handler %s failed", p_path_str),
+			Error__in_handler(pPathStr,
+				fmt.Sprintf("handler %s failed", pPathStr),
 				gfErr, pResp, pRuntimeSys)
 			return
 		}
@@ -273,7 +272,7 @@ func getHandler(p_auth_bool bool,
 
 		if p_store_run_bool {
 			go func() {
-				Store_rpc_handler_run(p_path_str, start_time__unix_f, end_time__unix_f, pRuntimeSys)
+				Store_rpc_handler_run(pPathStr, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()
 		}
 	}
