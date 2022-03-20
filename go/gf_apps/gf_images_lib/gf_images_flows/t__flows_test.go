@@ -94,7 +94,7 @@ func Test__get_all(p_test *testing.T) {
 	//------------------
 
 
-	all_flows_names_lst, gf_err := flows__get_all__pipeline(ctx, runtime_sys)
+	all_flows_names_lst, gf_err := pipelineGetAll(ctx, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
