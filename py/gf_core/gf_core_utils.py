@@ -83,15 +83,38 @@ def get_self_ip():
 
 	#---------------------------------------------------
 	def extern_service_method():
-		cmd_str = "curl http://ipinfo.io"
-		print(cmd_str)
-		
-		r           = delegator.run(cmd_str)
-		self_ip_str = json.loads(r.out)["ip"]
-		return self_ip_str
+
+		#---------------------------------------------------
+		def get_remote():
+
+			cmd_str = "curl http://ipinfo.io"
+			print(cmd_str)
+			
+			r           = delegator.run(cmd_str)
+			self_ip_str = json.loads(r.out)["ip"]
+
+			f=open("self_ip_cache.txt", "w")
+			f.write(self_ip_str)
+
+
+			return self_ip_str
+
+		#---------------------------------------------------
+		f=open("self_ip_cache.txt", "r")
+		ip_str = f.read()
+		f.close()
+
+		# if text is a valid IP 
+		if len(ip_str.split(".")) == 4:
+			return ip_str
+		else:
+			ip_str = get_remote()
+			return ip_str
 
 	#---------------------------------------------------
+	
 	# self_ip_str = dns_method()
-
 	self_ip_str = extern_service_method()
+	print(f"self IP: {self_ip_str}")
+
 	return self_ip_str
