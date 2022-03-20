@@ -33,7 +33,7 @@ import (
 //------------------------------------------------
 func init_handlers__userpass(p_http_mux *http.ServeMux,
 	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
@@ -57,29 +57,29 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 	// USERS_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/login",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				input_map, _, _, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, _, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				var userNameStr string
-				if valStr, ok := input_map["user_name_str"]; ok {
+				if valStr, ok := inputMap["user_name_str"]; ok {
 					userNameStr = valStr.(string)
 				}
 
 				var pass_str string
-				if valStr, ok := input_map["pass_str"]; ok {
+				if valStr, ok := inputMap["pass_str"]; ok {
 					pass_str = valStr.(string)
 				}
 
 				var email_str string
-				if valStr, ok := input_map["email_str"]; ok {
+				if valStr, ok := inputMap["email_str"]; ok {
 					email_str = valStr.(string)
 				}
 
@@ -91,18 +91,18 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// LOGIN
-				output, gf_err := users_auth_userpass__pipeline__login(input, 
+				output, gfErr := users_auth_userpass__pipeline__login(input, 
 					p_service_info,
-					p_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
 				sessionDataStr        := string(output.JWT_token_val)
 				session_ttl_hours_int := 24 // 1 day
-				gf_session.SetOnReq(sessionDataStr, p_resp, session_ttl_hours_int)
+				gf_session.SetOnReq(sessionDataStr, pResp, session_ttl_hours_int)
 
 				//---------------------
 
@@ -117,50 +117,50 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 			return nil, nil
 		},
 		rpc_handler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users, and do not get logged in automatically on success
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				input :=&GF_user_auth_userpass__input_create{
-					User_name_str: gf_identity_core.GFuserName(input_map["user_name_str"].(string)),
-					Pass_str:      input_map["pass_str"].(string),
-					Email_str:     input_map["email_str"].(string),
+					User_name_str: gf_identity_core.GFuserName(inputMap["user_name_str"].(string)),
+					Pass_str:      inputMap["pass_str"].(string),
+					Email_str:     inputMap["email_str"].(string),
 				}
 
 				//---------------------
-				output, gf_err := users_auth_userpass__pipeline__create_regular(input,
+				output, gfErr := users_auth_userpass__pipeline__create_regular(input,
 					p_service_info,
-					p_ctx,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
+				outputMap := map[string]interface{}{
 					"user_exists_bool":         output.User_exists_bool,
 					"user_in_invite_list_bool": output.User_in_invite_list_bool,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 			return nil, nil
 		},
 		rpc_handler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	return nil

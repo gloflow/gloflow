@@ -64,7 +64,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				_, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(pCtx, p_req, p_resp, p_runtime_sys)
+				_, _, user_address_eth_str, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -102,7 +102,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				input_map, _, user_address_eth_str, gf_err := gf_identity_core.Http__get_user_std_input(p_ctx, p_req, p_resp, p_runtime_sys)
+				input_map, _, user_address_eth_str, gf_err := gf_identity_core.HTTPgetUserStdInput(p_ctx, p_req, p_resp, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

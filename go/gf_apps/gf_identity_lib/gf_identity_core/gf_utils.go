@@ -63,7 +63,7 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 //---------------------------------------------------
 // HTTP
 //---------------------------------------------------
-func Http__get_user_std_input(pCtx context.Context,
+func HTTPgetUserStdInput(pCtx context.Context,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {

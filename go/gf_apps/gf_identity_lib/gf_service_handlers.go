@@ -168,7 +168,7 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				inputMap, _, _, gf_err := gf_identity_core.Http__get_user_std_input(pCtx, pReq, pResp, pRuntimeSys)
+				inputMap, _, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
