@@ -42,28 +42,28 @@ func TestMain(m *testing.M) {
 //---------------------------------------------------
 func Test__templates(p_test *testing.T) {
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_admin_test",
 		Log_fun:          log_fun,
 	}
 
 	// TEMPLATES
-	templates_paths_map := map[string]string{
+	templatesPathsMap := map[string]string{
 		"gf_admin_login":     "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_login/gf_admin_login.html",
 		"gf_admin_dashboard": "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_dashboard/gf_admin_dashboard.html",
 	}
 	
-	gf_templates, gf_err := tmpl__load(templates_paths_map, runtime_sys)
-	if gf_err != nil {
+	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
+	if gfErr != nil {
 		p_test.Fail()
 	}
 
-	template_rendered_str, gf_err := view__render_template_dashboard(gf_templates.dashboard__tmpl,
-		gf_templates.dashboard__subtemplates_names_lst,
-		runtime_sys)
-	if gf_err != nil {
+	templateRenderedStr, gfErr := view__render_template_dashboard(templates.dashboard__tmpl,
+		templates.dashboard__subtemplates_names_lst,
+		runtimeSys)
+	if gfErr != nil {
 		p_test.Fail()
 	}
 
-	fmt.Println(template_rendered_str)
+	fmt.Println(templateRenderedStr)
 }
