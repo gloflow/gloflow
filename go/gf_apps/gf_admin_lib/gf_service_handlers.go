@@ -41,33 +41,33 @@ type gf_templates struct {
 }
 
 //------------------------------------------------
-func init_handlers(p_templates_paths_map map[string]string,
+func init_handlers(pTemplatesPathsMap map[string]string,
 	p_http_mux              *http.ServeMux,
 	p_service_info          *GF_service_info,
 	p_identity_service_info *gf_identity_lib.GF_service_info,
 	p_local_hub             *sentry.Hub,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys             *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	gf_templates, gf_err := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
 
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/v1/admin/login",
 		"/v1/admin/login_ui",
 		"/v1/admin/dashboard",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlersEndpointsLst)
 
 	//---------------------
-	// RPC_HANDLER_RUNTIME
-	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	// rpcHandlerRuntime
+	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
 		Mux:                p_http_mux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
@@ -85,29 +85,29 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//---------------------
 				// INPUT
-				qs_map := p_req.URL.Query()
+				qsMap := p_req.URL.Query()
 
-				mfa_confirm_bool := false
+				mfaConfirmBool := false
 
 				// email_confirmed - signals that email has been confirmed. appended by the email_confirm handler
 				//                   when the user gets redirected to admin login_ui URL.
 				//                   in admin login this means that MFA_confirmation is next
-				if _, ok := qs_map["email_confirmed"]; ok {
-					mfa_confirm_bool = true
+				if _, ok := qsMap["email_confirmed"]; ok {
+					mfaConfirmBool = true
 				}
 
 				//---------------------
 
-				template_rendered_str, gf_err := Pipeline__render_login(mfa_confirm_bool,
+				templateRenderedStr, gf_err := Pipeline__render_login(mfaConfirmBool,
 					gf_templates.login__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					p_ctx,
-					p_runtime_sys)
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				p_resp.Write([]byte(template_rendered_str))
+				p_resp.Write([]byte(templateRenderedStr))
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
@@ -115,48 +115,48 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// ADMIN_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 				
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				inputMap, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				var userNameStr gf_identity_core.GFuserName
-				if val_str, ok := input_map["user_name_str"]; ok {
-					userNameStr = val_str.(gf_identity_core.GFuserName)
+				if val_str, ok := inputMap["user_name_str"]; ok {
+					userNameStr = gf_identity_core.GFuserName(val_str.(string))
 				}
 
-				var pass_str string
-				if val_str, ok := input_map["pass_str"]; ok {
-					pass_str = val_str.(string)
+				var passStr string
+				if val_str, ok := inputMap["pass_str"]; ok {
+					passStr = val_str.(string)
 				}
 
 				input := &gf_identity_lib.GF_admin__input_login{
 					User_name_str: userNameStr,
-					Pass_str:      pass_str,
+					Pass_str:      passStr,
 					Email_str:     p_service_info.Admin_email_str,
 				}
 
 				//---------------------
 
 				output, gf_err := gf_identity_lib.Admin__pipeline__login(input,
-					p_ctx,
+					pCtx,
 					p_local_hub,
 					p_identity_service_info,
-					p_runtime_sys)
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -169,8 +169,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// ADMIN_DASHBOARD
@@ -183,7 +183,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				template_rendered_str, gf_err := Pipeline__render_dashboard(gf_templates.dashboard__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					p_ctx,
-					p_runtime_sys)
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -196,14 +196,14 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// HEALHTZ - admin has its own healthz because its started separately from other apps services
 	//           on a different port, and registeres separate handlers (on a separate mux).
 
-	rpc_handler_runtime_health := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntimeHealth := &gf_rpc_lib.GF_rpc_handler_runtime {
 		Mux:            p_http_mux,
 		Metrics:        metrics,
 		Store_run_bool: false,
@@ -214,8 +214,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
-		rpc_handler_runtime_health,
-		p_runtime_sys)
+		rpcHandlerRuntimeHealth,
+		pRuntimeSys)
 
 	//---------------------
 	
@@ -223,29 +223,29 @@ func init_handlers(p_templates_paths_map map[string]string,
 }
 
 //-------------------------------------------------
-func tmpl__load(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+func templatesLoad(p_templates_paths_map map[string]string,
+	pRuntimeSys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
 
-	login_template_filepath_str     := p_templates_paths_map["gf_admin_login"]
-	dashboard_template_filepath_str := p_templates_paths_map["gf_admin_dashboard"]
+	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
+	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]
 
-	l_tmpl, l_subtemplates_names_lst, gf_err := gf_core.Templates__load(login_template_filepath_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	l_tmpl, l_subtemplates_names_lst, gfErr := gf_core.Templates__load(loginTemplateFilepathStr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	d_tmpl, d_subtemplates_names_lst, gf_err := gf_core.Templates__load(dashboard_template_filepath_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	d_tmpl, d_subtemplates_names_lst, gfErr := gf_core.Templates__load(dashboardTemplateFilepathStr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	gf_templates := &gf_templates{
+	templates := &gf_templates{
 		login__tmpl:                   l_tmpl,
 		login__subtemplates_names_lst: l_subtemplates_names_lst,
 		dashboard__tmpl:                   d_tmpl,
 		dashboard__subtemplates_names_lst: d_subtemplates_names_lst,
 	}
-	return gf_templates, nil
+	return templates, nil
 }

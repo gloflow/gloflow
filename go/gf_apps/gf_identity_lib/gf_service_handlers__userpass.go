@@ -68,9 +68,9 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				var userNameStr string
+				var userNameStr gf_identity_core.GFuserName
 				if valStr, ok := inputMap["user_name_str"]; ok {
-					userNameStr = valStr.(string)
+					userNameStr = gf_identity_core.GFuserName(valStr.(string))
 				}
 
 				var pass_str string
@@ -84,7 +84,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 				}
 
 				input :=&GF_user_auth_userpass__input_login{
-					User_name_str: gf_identity_core.GFuserName(userNameStr),
+					User_name_str: userNameStr,
 					Pass_str:      pass_str,
 					Email_str:     email_str,
 				}
