@@ -73,18 +73,18 @@ func initHandlers(p_auth_login_url_str string,
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				iMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
+				inputMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				var targetResourceIDstr gf_core.GF_ID
-				if targetResourceIDinputStr, ok := iMap["target_resource_id_str"]; ok {
+				if targetResourceIDinputStr, ok := inputMap["target_resource_id_str"]; ok {
 					targetResourceIDstr = gf_core.GF_ID(targetResourceIDinputStr.(string))
 				}
 
 				var polidyIDstr gf_core.GF_ID
-				if polidyIDinputStr, ok := iMap["policy_id_str"]; ok {
+				if polidyIDinputStr, ok := inputMap["policy_id_str"]; ok {
 					polidyIDstr = gf_core.GF_ID(polidyIDinputStr.(string))
 				}
 
@@ -174,9 +174,9 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				inputMap, _, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, gfErr := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				var userNameStr gf_identity_core.GFuserName
