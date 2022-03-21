@@ -29,6 +29,41 @@ import (
 )
 
 //---------------------------------------------------
+type GFpolicyUpdateOp struct {
+	PublicViewBool *bool
+}
+
+//---------------------------------------------------
+// GET_BY_ID
+func DBgetPolicyByID(pPolicyIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFpolicy, *gf_core.GF_error) {
+
+	collNameStr := "gf_policies"
+	findOpts := options.FindOne()
+	// findOpts.Projection = map[string]interface{}{}
+	
+	policy := &GFpolicy{}
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
+		bson.M{
+			"id_str": pPolicyIDstr,
+		},
+		findOpts).Decode(policy)
+		
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get policy by ID from the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"policy_id_str": pPolicyIDstr,
+			},
+			err, "gf_policy", pRuntimeSys)
+		return nil, gfErr
+	}
+	
+	return policy, nil
+}
+
+//---------------------------------------------------
 // GET
 func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 	pCtx        context.Context,
@@ -46,7 +81,7 @@ func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 		findOpts).Decode(&policiesLst)
 		
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get policy basic_info in the DB",
+		gfErr := gf_core.Mongo__handle_error("failed to get policies by target_resource_id in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"target_resource_id_str": pTargetResourceIDstr,
@@ -65,4 +100,66 @@ func DBcreatePolicy(pPolicy *GFpolicy,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	return nil
+}
+
+//---------------------------------------------------
+// UPDATE
+func DBupdatePolicy(pPolicyIDstr gf_core.GF_ID,
+	pUpdateOp   *GFpolicyUpdateOp,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	fieldsTargets := bson.M{}
+
+	if pUpdateOp.PublicViewBool != nil {
+		fieldsTargets["public_view_bool"] = *pUpdateOp.PublicViewBool
+	}
+
+
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_policies").UpdateMany(pCtx, bson.M{
+		"id_str":       pPolicyIDstr,
+		"deleted_bool": false,
+	},
+	bson.M{"$set": fieldsTargets})
+		
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to to update policy in DB",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"policy_id_str": string(pPolicyIDstr),
+			},
+			err, "gf_policy", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+// EXISTS_BY_USERNAME
+func DBexistsByID(pPolicyIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+
+	collNameStr := "gf_policies"
+
+	countInt, gfErr := gf_core.Mongo__count(bson.M{
+			"id_str":       pPolicyIDstr,
+			"deleted_bool": false,
+		},
+		map[string]interface{}{
+			"policy_id_str":  pPolicyIDstr,
+			"caller_err_msg": "failed to check if there is a policy in the DB with a given ID",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	if countInt > 0 {
+		return true, nil
+	}
+	return false, nil
 }

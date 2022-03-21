@@ -68,7 +68,7 @@ func initHandlers(p_auth_login_url_str string,
 
 			if pReq.Method == "POST" {
 
-				//--------------------------
+				//---------------------
 				// INPUT
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
@@ -83,21 +83,27 @@ func initHandlers(p_auth_login_url_str string,
 					targetResourceIDstr = gf_core.GF_ID(targetResourceIDinputStr.(string))
 				}
 
-				//--------------------------
+				var polidyIDstr gf_core.GF_ID
+				if polidyIDinputStr, ok := iMap["policy_id_str"]; ok {
+					polidyIDstr = gf_core.GF_ID(polidyIDinputStr.(string))
+				}
 
-				gfErr = gf_policy.PipelineUpdate(targetResourceIDstr, userIDstr, pCtx, pRuntimeSys)
+				//---------------------
+
+				
+				output, gfErr := gf_policy.PipelineUpdate(targetResourceIDstr, polidyIDstr, userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				//------------------
+				//---------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					
+					"policy_exists_bool": output.PolicyExistsBool,
 				}
 				return dataMap, nil
 
-				//------------------
+				//---------------------
 			}
 
 			return nil, nil

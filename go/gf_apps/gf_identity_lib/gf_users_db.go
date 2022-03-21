@@ -652,36 +652,33 @@ func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserN
 
 //---------------------------------------------------
 func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
-	p_update_op   *GF_login_attempt__update_op,
+	pUpdateOp     *GF_login_attempt__update_op,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
 
 	
-	fields_targets := bson.M{}
+	fieldsTargets := bson.M{}
 
-	if p_update_op.Pass_confirmed_bool != nil {
-		fields_targets["pass_confirmed_bool"] = *p_update_op.Pass_confirmed_bool
+	if pUpdateOp.Pass_confirmed_bool != nil {
+		fieldsTargets["pass_confirmed_bool"] = *pUpdateOp.Pass_confirmed_bool
 	}
-	if p_update_op.Email_confirmed_bool != nil {
-		fields_targets["email_confirmed_bool"] = *p_update_op.Email_confirmed_bool
+	if pUpdateOp.Email_confirmed_bool != nil {
+		fieldsTargets["email_confirmed_bool"] = *pUpdateOp.Email_confirmed_bool
 	}
-	if p_update_op.MFA_confirmed_bool != nil {
-		fields_targets["mfa_confirmed_bool"] = *p_update_op.MFA_confirmed_bool
+	if pUpdateOp.MFA_confirmed_bool != nil {
+		fieldsTargets["mfa_confirmed_bool"] = *pUpdateOp.MFA_confirmed_bool
 	}
-	if p_update_op.Deleted_bool != nil {
-		fields_targets["deleted_bool"] = *p_update_op.Deleted_bool
+	if pUpdateOp.Deleted_bool != nil {
+		fieldsTargets["deleted_bool"] = *pUpdateOp.Deleted_bool
 	}
 	
-
-
-
 	_, err := p_runtime_sys.Mongo_db.Collection("gf_login_attempt").UpdateMany(p_ctx, bson.M{
 		"id_str":       p_login_attempt_id_str,
 		"deleted_bool": false,
 	},
-	bson.M{"$set": fields_targets})
+	bson.M{"$set": fieldsTargets})
 		
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to to update a login_attempt",
@@ -692,8 +689,6 @@ func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
 			err, "gf_identity_lib", p_runtime_sys)
 		return gf_err
 	}
-
-
 
 	return nil
 }

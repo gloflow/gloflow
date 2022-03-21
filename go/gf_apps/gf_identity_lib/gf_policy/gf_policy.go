@@ -58,6 +58,10 @@ type GFpolicy struct {
 	//-----------------------
 }
 
+type GFpolicyUpdateOutput struct {
+	PolicyExistsBool bool
+}
+
 //-------------------------------------------------
 // VERIFY
 func Verify(pRequestedOpStr string,
@@ -108,11 +112,17 @@ func policySingleVerify(pRequestedOpStr string,
 	pCurrentUserIDstr gf_core.GF_ID,
 	pPoliciesDefsMap  map[string][]string) bool {
 
+	// if its the owner of the policy all operations are permitted
+	if pCurrentUserIDstr == pPolicy.OwnerUserIDstr {
+		return true
+	}
+	
 	// VIEWING
 	// this is the lowest level set of permissions, so attempt to match that first
 	for _, opStr := range pPoliciesDefsMap["viewing"] {
 
 		if pRequestedOpStr == opStr {
+
 			// for each allowed viwing user_id check if it equals to the
 			// user_id requesting the operation permission.
 			// IMPORTANT!! - view operations are lowest level,
@@ -179,14 +189,43 @@ func policySingleVerify(pRequestedOpStr string,
 
 //-------------------------------------------------
 func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
+	pPolicyIDstr    gf_core.GF_ID,
+	
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
-	pRuntimeSys     *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys     *gf_core.Runtime_sys) (*GFpolicyUpdateOutput, *gf_core.GF_error) {
+
+	output := &GFpolicyUpdateOutput{}
+
+	//------------------------
+	// EXISTS
+	existsBool, gfErr := DBexistsByID(pPolicyIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	if !existsBool {
+		output.PolicyExistsBool = false
+		return output, nil
+	}
+
+	//------------------------
+	// DB - GET_POLICY_BY_ID
+	publicViewBool := true
+	updateOp := &GFpolicyUpdateOp{
+		PublicViewBool: &publicViewBool,
+	}
+	gfErr = DBupdatePolicy(pPolicyIDstr, updateOp, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------------
 
 
 	getDefs()
 
-	return nil
+	return output, nil
 }
 
 //-------------------------------------------------
