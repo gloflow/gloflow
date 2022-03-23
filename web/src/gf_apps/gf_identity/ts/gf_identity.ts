@@ -31,14 +31,20 @@ declare const window: any;
 declare var Web3;
 
 //-------------------------------------------------
-export async function init_with_http(p_urls_map) {
+// INIT_WITH_HTTP
+// p_notifications_meta_map - map of notifications metadata.
+//                            allows external users of gf_identity functionality
+//                            to customize text and various user messages that are displayed.
+//                            example: different for admins and regular users.
+export async function init_with_http(p_notifications_meta_map,
+    p_urls_map) {
     
     const http_api_map = get_http_api(p_urls_map);
-    init(http_api_map);
+    init(p_notifications_meta_map, http_api_map);
 }
 
 //-------------------------------------------------
-export async function init(p_http_api_map) {
+export async function init(p_notifications_meta_map, p_http_api_map) {
 
     $("#identity #login").on("click", async function(p_e) {
         
@@ -57,7 +63,7 @@ export async function init(p_http_api_map) {
                 //--------------------------
                 // USER_AND_PASS
                 case "userpass":
-                    await gf_identity_userpass.user_auth_pipeline(p_http_api_map);
+                    await gf_identity_userpass.user_auth_pipeline(p_notifications_meta_map, p_http_api_map);
                     break;
 
                 //--------------------------

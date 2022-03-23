@@ -36,6 +36,7 @@ export function user_preflight(p_user_name_str,
             'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
+
                 const status_str = p_response_map["status"];
                 const data_map   = p_response_map["data"];
 
@@ -72,7 +73,14 @@ export function user_eth_login(p_user_address_eth_str :string,
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(p_response_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error':(jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
@@ -103,7 +111,14 @@ export function user_userpass_login(p_user_name_str :string,
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(p_response_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error':(jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
@@ -168,7 +183,14 @@ export function user_eth_create(p_user_address_eth_str :string,
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(data_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
@@ -196,7 +218,14 @@ export function user_userpass_create(p_user_name_str :string,
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(data_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
@@ -225,7 +254,14 @@ export function user_update(p_user_data_map) {
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
-                p_resolve_fun(data_map);
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
             },
             'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);

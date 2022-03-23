@@ -35,6 +35,8 @@ export async function init(p_http_api_map) {
 //-------------------------------------------------
 async function init_invite_list(p_http_api_map) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+        
         const container = $(`
             <div id="invite_list">
 

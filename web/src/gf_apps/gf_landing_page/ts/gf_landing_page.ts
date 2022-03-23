@@ -85,9 +85,15 @@ $(document).ready(()=>{
 function init(p_log_fun) {
 	
 	//---------------------
+	// META
+	const notifications_meta_map = {
+		"login_first_stage_success": "login success"
+	};
+
+	//---------------------
 	// IDENTITY
 	const urls_map = gf_identity.get_standard_http_urls();
-	gf_identity.init_with_http(urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
 	
 	//---------------------
 	

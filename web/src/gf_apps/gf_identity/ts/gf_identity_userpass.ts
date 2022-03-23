@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_utils from "./../../../gf_core/ts/gf_utils";
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_http_api_map) {
+export async function user_auth_pipeline(p_notifications_meta_map, p_http_api_map) {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -53,12 +53,12 @@ export async function user_auth_pipeline(p_http_api_map) {
 
         $(container).on('keyup', function (e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
-                login_activate(container, p_http_api_map);
+                login_activate(container, p_notifications_meta_map, p_http_api_map);
             }
         });
 
         $(container).find("#login_btn").on('click', async ()=>{
-            login_activate(container, p_http_api_map);
+            login_activate(container, p_notifications_meta_map, p_http_api_map);
         });
 
         $(container).find("#create_btn").on('click', async ()=>{
@@ -134,8 +134,10 @@ async function create_activate(p_container,
     }
     
 }
+
 //-------------------------------------------------
 async function login_activate(p_container,
+    p_notifications_meta_map,
     p_http_api_map) {
 
     console.log("login activate");
@@ -183,6 +185,7 @@ async function login_activate(p_container,
         return;
     }
 
+    // ERROR - PASS_VALID
     const pass_valid_bool = login_output_map["pass_valid_bool"];
     if (!pass_valid_bool) {
         const error = $(`<div id="error_login_pass_not_valid_dialog" class="error">
@@ -196,4 +199,24 @@ async function login_activate(p_container,
         }, 200, ()=>{});
         return;
     }
+
+    //-------------------------------------------------
+    function view_login_first_stage_success() {
+
+        const text_str = p_notifications_meta_map["login_first_stage_success"];
+        const notification = $(`<div id="notification_login_first_stage" class="notification">
+            <div class="label">${text_str}</div>
+        </div>`);
+        $(notification).css("opacity", "0.0");
+        $(p_container).append(notification);
+
+        $(notification).animate({
+            "opacity": "1.0"
+        }, 200, ()=>{});
+        return;
+    }
+
+    //-------------------------------------------------
+
+    view_login_first_stage_success();
 }

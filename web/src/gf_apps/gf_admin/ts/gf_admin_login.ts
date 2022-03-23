@@ -47,11 +47,20 @@ function init(p_log_fun) {
 
     console.log("admin login")
 
+	//---------------------
+	// META
+	const notifications_meta_map = {
+
+		// for admin logins, success of first_stage login leads to a confirmation email being sent to the
+		// user, which requires them to follow a link for the second stage to succeed
+		// (which may lead to further login stages, MFA/etc.)
+		"login_first_stage_success": "login success - please check your email for a confirmation message"
+	};
 
 	//---------------------
 	// IDENTITY
 	const urls_map = gf_identity.get_admin_http_urls();
-	gf_identity.init_with_http(urls_map);
+	gf_identity.init_with_http(notifications_meta_map, urls_map);
 
 	
 	const http_api_map = gf_identity.get_http_api(urls_map);
