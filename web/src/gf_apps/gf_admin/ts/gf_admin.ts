@@ -19,20 +19,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_time         from "./../../../gf_core/ts/gf_time";
+
 //-------------------------------------------------
-export async function init(p_http_api_map) {
+export async function init(p_http_api_map, p_log_fun) {
 
 
     console.log("admin dashboard")
 
 
-    init_invite_list(p_http_api_map);
-
-
+    init_invite_list(p_http_api_map, p_log_fun);
 }
 
 //-------------------------------------------------
-async function init_invite_list(p_http_api_map) {
+async function init_invite_list(p_http_api_map, p_log_fun) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
         
@@ -64,7 +64,7 @@ async function init_invite_list(p_http_api_map) {
             const new_invite_element = $(`
                 <div class="invite">
                     <div class="email">${new_email_str}</div>
-                    <div class="creation_unix_time">now</div>
+                    <div class="creation_time">now</div>
                 </div>`);
             $(container).find("#current").append(new_invite_element);
 
@@ -76,13 +76,18 @@ async function init_invite_list(p_http_api_map) {
         const invite_list_lst = output_map["invite_list_lst"];
 
         for (const invite_map of invite_list_lst) {
+
+            const creation_unix_time = invite_map["creation_unix_time_f"];
             const invite_element = $(`
                 <div class="invite">
                     <div class="email">${invite_map["user_email_str"]}</div>
-                    <div class="creation_unix_time">${invite_map["creation_unix_time_f"]}</div>
+                    <div class="creation_time">${creation_unix_time}</div>
                 </div>`);
 
             $(container).find("#current").append(invite_element);
+
+
+            gf_time.init_creation_date(invite_element, p_log_fun);
         }
 
         //--------------------------

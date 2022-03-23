@@ -47,5 +47,5 @@ export async function init_with_http(p_log_fun) {
 	const urls_map     = gf_identity.get_admin_http_urls();
 	const http_api_map = gf_identity.get_http_api(urls_map);
 	
-    gf_admin.init(http_api_map);
+    gf_admin.init(http_api_map, p_log_fun);
 }

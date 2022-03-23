@@ -64,7 +64,10 @@ body {
 #invite_list #current .invite .email {
 	position: absolute;
 }
-#invite_list #current .invite .creation_unix_time {
+#invite_list #current .invite .creation_time {
 	position: absolute;
 	right: 0px;
+	font-size: 10px;
+	padding-top: 3px;
+	padding-right: 5px;
 }
