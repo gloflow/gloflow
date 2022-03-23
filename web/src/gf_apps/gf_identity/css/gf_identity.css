@@ -149,7 +149,7 @@
 /*LOGIN_BTN*/
 #user_and_pass_dialog #login_btn {
     position: absolute;
-    background-color: rgb(199, 255, 0);
+    background-color: #81c261;
     width: 50%;
     text-align: center;
     padding-top: 9px;
@@ -213,6 +213,15 @@
     font-size: 14px;
     background-color: #ff8181;
     padding: 10px;
+}
+
+/*NOTIFICATION*/
+#user_and_pass_dialog #notification_login_first_stage {
+    opacity: 1;
+    position: absolute;
+    top: -54px;
+    background-color: #81c261;
+    padding: 9px;
 }
 
 /*------------------------------------------------------------*/

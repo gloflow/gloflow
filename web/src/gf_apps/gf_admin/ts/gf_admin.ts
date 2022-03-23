@@ -28,7 +28,6 @@ export async function init(p_http_api_map) {
 
     init_invite_list(p_http_api_map);
 
-    
 
 }
 
@@ -54,7 +53,7 @@ async function init_invite_list(p_http_api_map) {
         $("body").append(container);
 
 
-
+        //--------------------------
         // ADD_NEW
         $(container).find("#add_new #confirm_btn").on("click", async ()=>{
 
