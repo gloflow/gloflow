@@ -208,9 +208,31 @@ func getHandler(p_auth_bool bool,
 
 		var ctxAuth context.Context
 		if p_auth_bool {
-			
+
 			// SESSION_VALIDATE
-			validBool, userIdentifierStr, gfErr := gf_session.Validate(pReq, ctx, pRuntimeSys)
+
+			validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
+				pResp,
+				p_auth_login_url_str,
+				ctx,
+				pRuntimeSys)
+			if gfErr != nil {
+				Error__in_handler(path_str,
+					fmt.Sprintf("handler %s failed to execute/validate a auth session", path_str),
+					nil, pResp, pRuntimeSys)
+				return
+			}
+
+			if !validBool {
+				if p_auth_login_url_str == nil {
+					Error__in_handler(path_str,
+						fmt.Sprintf("user not authenticated to access handler %s", path_str),
+						nil, pResp, pRuntimeSys)
+				}
+				return
+			}
+
+			/*validBool, userIdentifierStr, gfErr := gf_session.Validate(pReq, ctx, pRuntimeSys)
 			if gfErr != nil {
 				Error__in_handler(path_str,
 					fmt.Sprintf("handler %s failed to execute auth validation of session", path_str),
@@ -234,7 +256,7 @@ func getHandler(p_auth_bool bool,
 						nil, pResp, pRuntimeSys)
 				}
 				return
-			}
+			}*/
 
 			ctxAuth = context.WithValue(ctxRoot, "gf_user_id", userIdentifierStr)
 		} else {

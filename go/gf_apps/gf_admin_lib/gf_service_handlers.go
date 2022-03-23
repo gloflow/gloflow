@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -79,13 +80,27 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	// ADMIN_LOGIN_UI
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login_ui",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
+
+				//---------------------
+				validBool, _, gfErr := gf_session.Validate(pReq, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				if validBool {
+					// if the user is logged in and accesing login UI, then redirect to admin dashboard
+					http.Redirect(pResp,
+						pReq,
+						"/v1/admin/dashboard",
+						301)
+				}
 
 				//---------------------
 				// INPUT
-				qsMap := p_req.URL.Query()
+				qsMap := pReq.URL.Query()
 
 				mfaConfirmBool := false
 
@@ -101,13 +116,13 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 				templateRenderedStr, gf_err := Pipeline__render_login(mfaConfirmBool,
 					gf_templates.login__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
-					p_ctx,
+					pCtx,
 					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				p_resp.Write([]byte(templateRenderedStr))
+				pResp.Write([]byte(templateRenderedStr))
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
@@ -180,15 +195,15 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 
 			if p_req.Method == "GET" {
 
-				template_rendered_str, gf_err := Pipeline__render_dashboard(gf_templates.dashboard__tmpl,
+				templateRenderedStr, gfErr := Pipeline__render_dashboard(gf_templates.dashboard__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					p_ctx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				p_resp.Write([]byte(template_rendered_str))
+				p_resp.Write([]byte(templateRenderedStr))
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

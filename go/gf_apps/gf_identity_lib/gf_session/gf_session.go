@@ -93,3 +93,34 @@ func Validate(pReq *http.Request,
 	// if this point is reached then gf_sess_data cookie was never found
 	return false, "", nil
 }
+
+//---------------------------------------------------
+func ValidateOrRedirectToLogin(pReq *http.Request,
+	pResp            http.ResponseWriter,
+	pAuthLoginURLstr *string,
+	pCtx             context.Context,
+	pRuntimeSys      *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
+
+	validBool, userIdentifierStr, gfErr := Validate(pReq, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, "", gfErr
+	}
+
+	if !validBool {
+
+		if pAuthLoginURLstr != nil {
+
+			// redirect user to login url
+			http.Redirect(pResp,
+				pReq,
+				*pAuthLoginURLstr,
+				301)
+
+			return false, "", nil
+		} else {
+			return false, "", nil
+		}
+	}
+
+	return validBool, userIdentifierStr, nil
+}
