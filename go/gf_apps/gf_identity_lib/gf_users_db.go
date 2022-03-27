@@ -423,12 +423,13 @@ func DBuserAddToInviteList(p_user_email_str string,
 func DBuserRemoveFromInviteList(pUserEmailStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
-
+	
+	coll_name_str := "gf_users_invite_list"
 	fieldsTargets := bson.M{
 		"deleted_bool": true,
 	}
 	
-	_, err := pRuntimeSys.Mongo_db.Collection("gf_users_invite_list").UpdateMany(pCtx, bson.M{
+	_, err := pRuntimeSys.Mongo_db.Collection(coll_name_str).UpdateMany(pCtx, bson.M{
 		"user_email_str": pUserEmailStr,
 		"deleted_bool":   false,
 	},
@@ -447,28 +448,28 @@ func DBuserRemoveFromInviteList(pUserEmailStr string,
 }
 
 //---------------------------------------------------
-// CHECK_IN_INVITE_LIST_BY_USERNAME
-func db__user__check_in_invitelist_by_username(p_user_email_str string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+// CHECK_IN_INVITE_LIST_BY_EMAIL
+func db__user__check_in_invitelist_by_email(pUserEmailStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 	
-	coll_name_str := "gf_users_invite_list"
-
-	count_int, gf_err := gf_core.Mongo__count(bson.M{
-		"user_email_str": p_user_email_str,
-	},
-	map[string]interface{}{
-		"user_email_str": p_user_email_str,
-		"caller_err_msg": "failed to check if the user_name is in the invite list",
-	},
-	p_runtime_sys.Mongo_db.Collection(coll_name_str),
-	p_ctx,
-	p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
+	collNameStr := "gf_users_invite_list"
+	countInt, gfErr := gf_core.Mongo__count(bson.M{
+			"user_email_str": pUserEmailStr,
+			"deleted_bool":   false,
+		},
+		map[string]interface{}{
+			"user_email_str": pUserEmailStr,
+			"caller_err_msg": "failed to check if the user_name is in the invite list",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
 	}
 
-	if count_int > 0 {
+	if countInt > 0 {
 		return true, nil
 	}
 	return false, nil

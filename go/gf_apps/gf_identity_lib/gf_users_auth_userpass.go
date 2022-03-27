@@ -80,9 +80,9 @@ type GF_user_auth_userpass__output_create struct {
 
 //---------------------------------------------------
 func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpass__input_login_finalize,
-	p_service_info *GF_service_info,
+	pServiceInfo *GF_service_info,
 	pCtx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
 
 	output := &GF_user_auth_userpass__output_login_finalize{}
 	userNameStr := gf_identity_core.GFuserName(p_input.UserNameStr)
@@ -91,7 +91,7 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	// VERIFY_EMAIL_CONFIRMED
 	// if this check is enabled, users that have not confirmed their email cant login.
 	// this is the initial confirmation of an email on user creation, or user email update.
-	if p_service_info.Enable_email_require_confirm_for_login_bool {
+	if pServiceInfo.Enable_email_require_confirm_for_login_bool {
 
 		emailConfirmedBool, gf_err := db__user__get_email_confirmed_by_username(userNameStr,
 			pCtx,
@@ -122,13 +122,13 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 
 	//------------------------
 	// JWT
-	user_identifier_str := string(userIDstr)
-	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, pCtx, p_runtime_sys)
+	userIdentifierStr := string(userIDstr)
+	JWTtokenVal, gf_err := gf_session.JWT__pipeline__generate(userIdentifierStr, pCtx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	output.JWT_token_val = jwt_token_val
+	output.JWT_token_val = JWTtokenVal
 
 	//------------------------
 	return output, nil
@@ -208,9 +208,10 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 }
 
 //---------------------------------------------------
+// PIPELINE__CREATE_REGULAR
 func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
-	p_ctx          context.Context,
+	pCtx           context.Context,
 	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GF_error) {
 
 	//------------------------
@@ -227,7 +228,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	//------------------------
 	// VALIDATE
 
-	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, p_ctx, p_runtime_sys)
+	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, pCtx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -239,8 +240,8 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	}
 
 	// check if in invite list
-	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_username(p_input.Email_str,
-		p_ctx,
+	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_email(p_input.Email_str,
+		pCtx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
@@ -248,17 +249,17 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 
 	// user is not in the invite list, so abort the creation
 	if !in_invite_list_bool {
+		output_regular.User_in_invite_list_bool = true
+	} else {
 		output_regular.User_in_invite_list_bool = false
 		return output_regular, nil
-	} else {
-		output_regular.User_in_invite_list_bool = true
 	}
 
 	//------------------------
 	// PIPELINE
 	output, gf_err := users_auth_userpass__pipeline__create(p_input,
 		p_service_info,
-		p_ctx,
+		pCtx,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
@@ -274,7 +275,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 			p_input.User_name_str,
 			output.User_id_str,
 			p_service_info.Domain_base_str,
-			p_ctx,
+			pCtx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
@@ -338,7 +339,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	creds__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	user_creds_id_str           := usersCreateID(user_identifier_str, creds__creation_unix_time_f)
 
-	user_creds := &GF_user_creds {
+	userCreds := &GF_user_creds {
 		V_str:                "0",
 		Id_str:               user_creds_id_str,
 		Creation_unix_time_f: creds__creation_unix_time_f,
@@ -382,7 +383,7 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	} else {
 
 		// DB__USER_CREDS_CREATE - otherwise use the regular DB
-		gf_err = db__user_creds__create(user_creds, p_ctx, p_runtime_sys)
+		gf_err = db__user_creds__create(userCreds, p_ctx, p_runtime_sys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
