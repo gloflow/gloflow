@@ -33,21 +33,21 @@ import (
 )
 
 //-------------------------------------------------
-func Test__users_http_userpass(p_test *testing.T) {
+func Test__users_http_userpass(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_USERS_HTTP_USERPASS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	test_port_int := 2000
-	ctx           := context.Background()
-	runtimeSys    := T__init()
-	HTTPagent     := gorequest.New()
+	testPortInt := 2000
+	ctx         := context.Background()
+	runtimeSys  := T__init()
+	HTTPagent   := gorequest.New()
 
 
 	
 
-	test__user_name_str := "ivan_t"
-	test__user_pass_str := "pass_lksjds;lkdj"
-	testEmailStr        := "ivan_t@gloflow.com"
+	testUserNameStr := "ivan_t"
+	testUserPassStr := "pass_lksjds;lkdj"
+	testEmailStr    := "ivan_t@gloflow.com"
 
 
 
@@ -64,20 +64,24 @@ func Test__users_http_userpass(p_test *testing.T) {
 	gfErr := DBuserAddToInviteList(testEmailStr,
 		ctx,
 		runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.FailNow()
+	}
 	
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
 	fmt.Println("====================================")
 	fmt.Println("test user CREATE USERPASS")
-	fmt.Println("user_name_str", test__user_name_str)
-	fmt.Println("pass_str",      test__user_pass_str)
+	fmt.Println("user_name_str", testUserNameStr)
+	fmt.Println("pass_str",      testUserPassStr)
 	fmt.Println("email_str",     testEmailStr)
 
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/create", test_port_int)
+	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/create", testPortInt)
 	data_map := map[string]string{
-		"user_name_str": test__user_name_str,
-		"pass_str":      test__user_pass_str,
+		"user_name_str": testUserNameStr,
+		"pass_str":      testUserPassStr,
 		"email_str":     testEmailStr,
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
@@ -89,27 +93,27 @@ func Test__users_http_userpass(p_test *testing.T) {
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
-		p_test.FailNow()
+		pTest.FailNow()
 	}
 
 	body_map := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-        p_test.FailNow()
+        pTest.FailNow()
     }
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user create http request failed")
+	assert.True(pTest, body_map["status"].(string) != "ERROR", "user create http request failed")
 
 	user_exists_bool         := body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
 	user_in_invite_list_bool := body_map["data"].(map[string]interface{})["user_in_invite_list_bool"].(bool)
 
 	if (user_exists_bool) {
 		fmt.Println("supplied user already exists and cant be created")
-		p_test.FailNow()
+		pTest.FailNow()
 	}
 	if (!user_in_invite_list_bool) {
 		fmt.Println("supplied user is not in the invite list")
-		p_test.FailNow()
+		pTest.FailNow()
 	}
 
 	//---------------------------------
@@ -118,10 +122,10 @@ func Test__users_http_userpass(p_test *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user LOGIN USERPASS")
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", testPortInt)
 	data_map = map[string]string{
-		"user_name_str": test__user_name_str,
-		"pass_str":      test__user_pass_str,
+		"user_name_str": testUserNameStr,
+		"pass_str":      testUserPassStr,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
 	resp, body_str, errs := HTTPagent.Post(url_str).
@@ -130,7 +134,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
-		p_test.FailNow()
+		pTest.FailNow()
 	}
 
 	// check if the login response sets a cookie for all future auth requests
@@ -145,22 +149,22 @@ func Test__users_http_userpass(p_test *testing.T) {
 			}
 		}
 	}
-	assert.True(p_test, auth_cookie_present_bool,
+	assert.True(pTest, auth_cookie_present_bool,
 		"login response does not contain the expected 'gf_sess_data' cookie")
 
 	body_map = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-        p_test.FailNow()
+        pTest.FailNow()
     }
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user login http request failed")
+	assert.True(pTest, body_map["status"].(string) != "ERROR", "user login http request failed")
 
 	user_exists_bool = body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
 	pass_valid_bool := body_map["data"].(map[string]interface{})["pass_valid_bool"].(bool)
 	user_id_str     := body_map["data"].(map[string]interface{})["user_id_str"].(string)
 
-	assert.True(p_test, user_id_str != "", "user_id not set in the response")
+	assert.True(pTest, user_id_str != "", "user_id not set in the response")
 
 	fmt.Println("user login response:")
 	fmt.Println("user_exists_bool", user_exists_bool)
@@ -175,7 +179,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 	fmt.Println("user inputs:")
 	fmt.Println("user_id_str", user_id_str)
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/update", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
 	data_map = map[string]string{
 		"user_name_str":   "ivan_t_new",
 		"email_str":       "ivan_t_new@gloflow.com",
@@ -189,12 +193,12 @@ func Test__users_http_userpass(p_test *testing.T) {
 	body_map = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-		p_test.FailNow()
+		pTest.FailNow()
 	}
 
 	spew.Dump(body_map)
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user updating http request failed")
+	assert.True(pTest, body_map["status"].(string) != "ERROR", "user updating http request failed")
 
 	//---------------------------------
 	// TEST_USER_GET_ME
@@ -202,7 +206,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user GET ME")
 	
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/me", test_port_int)
+	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/me", testPortInt)
 	data_bytes_lst, _ = json.Marshal(data_map)
 	_, body_str, errs = HTTPagent.Get(url_str).
 		End()
@@ -210,10 +214,10 @@ func Test__users_http_userpass(p_test *testing.T) {
 	body_map = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-        p_test.FailNow()
+        pTest.FailNow()
     }
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user get me http request failed")
+	assert.True(pTest, body_map["status"].(string) != "ERROR", "user get me http request failed")
 
 	user_name_str         := body_map["data"].(map[string]interface{})["user_name_str"].(string)
 	email_str             := body_map["data"].(map[string]interface{})["email_str"].(string)
