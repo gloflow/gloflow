@@ -55,9 +55,56 @@ type GF_admin__input_add_to_invite_list struct {
 	EmailStr  string        `validate:"required,email"`
 }
 
-type GFadminRemoveToInviteListInput struct {
+type GFadminRemoveFromInviteListInput struct {
 	UserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
 	EmailStr  string        `validate:"required,email"`
+}
+
+type GFadminUserViewOutput struct {
+	IDstr              gf_core.GF_ID
+	CreatioUNIXtimeF   float64
+	UserNameStr        gf_identity_core.GFuserName
+	ScreenNameStr      string
+	AddressesETHlst    []gf_identity_core.GF_user_address_eth
+	EmailStr           string
+	EmailConfirmedBool bool
+	ProfileImageURLstr string
+}
+
+//------------------------------------------------
+func AdminPipelineGetAllUsers(pCtx context.Context,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) ([]*GFadminUserViewOutput, *gf_core.GF_error) {
+
+	// DB
+	usersLst, gfErr := DBuserGetAll(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+
+
+	outputLst := []*GFadminUserViewOutput{}
+	for _, user := range usersLst {
+
+
+		userView := &GFadminUserViewOutput{
+			IDstr:              user.Id_str,
+			CreatioUNIXtimeF:   user.Creation_unix_time_f,
+			UserNameStr:        user.User_name_str,
+			ScreenNameStr:      user.Screen_name_str,
+			AddressesETHlst:    user.Addresses_eth_lst,
+			EmailStr:           user.Email_str,
+			EmailConfirmedBool: user.Email_confirmed_bool,
+			ProfileImageURLstr: user.Profile_image_url_str,
+
+		}
+
+		outputLst = append(outputLst, userView)
+	}
+
+	
+	return outputLst, nil
 }
 
 //------------------------------------------------
@@ -84,7 +131,7 @@ func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
 }
 
 //------------------------------------------------
-func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_invite_list,
+func AdminPipelineUserAddToInviteList(pInput *GF_admin__input_add_to_invite_list,
 	pCtx         context.Context,
 	pServiceInfo *GF_service_info,
 	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
@@ -127,7 +174,7 @@ func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_inv
 }
 
 //------------------------------------------------
-func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveToInviteListInput,
+func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListInput,
 	pCtx         context.Context,
 	pServiceInfo *GF_service_info,
 	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {

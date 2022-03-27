@@ -48,6 +48,48 @@ type GF_login_attempt__update_op struct {
 //---------------------------------------------------
 // USER
 //---------------------------------------------------
+func DBuserGetAll(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) ([]*GFuser, *gf_core.GF_error) {
+
+	collNameStr := "gf_users"
+
+	findOpts := options.Find()
+	cursor, gfErr := gf_core.Mongo__find(bson.M{
+			"deleted_bool":  false,
+		},
+		findOpts,
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to get all users records from the DB",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+	// no login_attempt found for user
+	if cursor == nil {
+		return nil, nil
+	}
+	
+	usersLst := []*GFuser{}
+	err := cursor.All(pCtx, &usersLst)
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get all users records from cursor",
+			"mongodb_cursor_decode",
+			map[string]interface{}{},
+			err, "gf_identity_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+
+
+	
+	return usersLst, nil
+}
+
+//---------------------------------------------------
 // CREATE_USER
 func db__user__create(p_user *GFuser,
 	p_ctx         context.Context,
