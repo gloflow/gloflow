@@ -137,7 +137,7 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
                 <div class="invite">
                     <div class="email">${email_str}</div>
                     <div class="creation_time">${creation_unix_time}</div>
-                    </div class="remove_btn">x</div>
+                    <div class="remove_btn">x</div>
                 </div>`);
 
             gf_time.init_creation_date(invite_element, p_log_fun);
