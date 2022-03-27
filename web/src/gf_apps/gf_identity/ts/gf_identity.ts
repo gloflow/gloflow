@@ -177,8 +177,10 @@ export function get_http_api(p_urls_map) {
                     url_str);
                 return output_map;
             },
-            "user_create_fun": async (p_user_name_str)=>{
-                const output_map = {};
+            "user_create_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
+                const output_map = await gf_identity_http.user_userpass_create(p_user_name_str,
+                    p_pass_str,
+                    p_email_str);
                 return output_map;
             }
         },
