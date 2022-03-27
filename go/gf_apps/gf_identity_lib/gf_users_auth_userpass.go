@@ -248,7 +248,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	}
 
 	// user is not in the invite list, so abort the creation
-	if !in_invite_list_bool {
+	if in_invite_list_bool {
 		output_regular.User_in_invite_list_bool = true
 	} else {
 		output_regular.User_in_invite_list_bool = false
