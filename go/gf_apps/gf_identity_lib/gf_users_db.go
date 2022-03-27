@@ -350,7 +350,7 @@ func db__user__get_all_in_invite_list(p_ctx context.Context,
 
 //---------------------------------------------------
 // ADD_TO_INVITE_LIST
-func db__user__add_to_invite_list(p_user_email_str string,
+func DBuserAddToInviteList(p_user_email_str string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -366,7 +366,7 @@ func db__user__add_to_invite_list(p_user_email_str string,
 		coll_name_str,
 		map[string]interface{}{
 			"user_email_str":     p_user_email_str,
-			"caller_err_msg_str": "failed to add a user email to the invite_list in the DB",
+			"caller_err_msg_str": "failed to add a user to the invite_list in the DB",
 		},
 		p_ctx,
 		p_runtime_sys)
@@ -374,6 +374,33 @@ func db__user__add_to_invite_list(p_user_email_str string,
 		return gf_err
 	}
 	
+	return nil
+}
+
+//---------------------------------------------------
+func DBuserRemoveFromInviteList(pUserEmailStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	fieldsTargets := bson.M{
+		"deleted_bool": true,
+	}
+	
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_users_invite_list").UpdateMany(pCtx, bson.M{
+		"user_email_str": pUserEmailStr,
+		"deleted_bool":   false,
+	},
+	bson.M{"$set": fieldsTargets})
+		
+	if err != nil {
+		gf_err := gf_core.Mongo__handle_error("failed to remove user from invite list",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"user_email_str": pUserEmailStr,
+			},
+			err, "gf_identity_lib", pRuntimeSys)
+		return gf_err
+	}
 	return nil
 }
 
@@ -656,9 +683,6 @@ func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-
-
-	
 	fieldsTargets := bson.M{}
 
 	if pUpdateOp.Pass_confirmed_bool != nil {

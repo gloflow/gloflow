@@ -55,6 +55,11 @@ type GF_admin__input_add_to_invite_list struct {
 	EmailStr  string        `validate:"required,email"`
 }
 
+type GFadminRemoveToInviteListInput struct {
+	UserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr  string        `validate:"required,email"`
+}
+
 //------------------------------------------------
 func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
 	p_service_info *GF_service_info,
@@ -93,7 +98,7 @@ func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_inv
 
 	//------------------------
 
-	gfErr = db__user__add_to_invite_list(pInput.EmailStr,
+	gfErr = DBuserAddToInviteList(pInput.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -114,6 +119,49 @@ func Admin__pipeline__user_add_to_invite_list(pInput *GF_admin__input_add_to_inv
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
 		gf_events.Emit_app(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
+			eventMetaMap,
+			pRuntimeSys)
+	}
+
+	return nil
+}
+
+//------------------------------------------------
+func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveToInviteListInput,
+	pCtx         context.Context,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	//------------------------
+	// VALIDATE_INPUT
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//------------------------
+
+	gfErr = DBuserRemoveFromInviteList(pInput.EmailStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	// EVENT
+	if pServiceInfo.Enable_events_app_bool {
+		
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		eventMetaMap := map[string]interface{}{
+			"user_id_str":                pInput.UserIDstr,
+			"user_name_str":              adminUserNameStr,
+			"email_added_to_invite_list": pInput.EmailStr,
+		}
+		gf_events.Emit_app(GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
 			eventMetaMap,
 			pRuntimeSys)
 	}

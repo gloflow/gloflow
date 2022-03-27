@@ -32,11 +32,11 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__users(p_http_mux *http.ServeMux,
-	p_service_info          *GF_service_info,
-	p_identity_service_info *gf_identity_lib.GF_service_info,
-	p_local_hub             *sentry.Hub,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.GF_error {
+func init_handlers__users(pHTTPmux *http.ServeMux,
+	pServiceInfo         *GF_service_info,
+	pIdentityServiceInfo *gf_identity_lib.GF_service_info,
+	pLocalHub          *sentry.Hub,
+	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
@@ -49,10 +49,10 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
-		Mux:                p_http_mux,
+		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
-		Sentry_hub:         p_local_hub,
+		Sentry_hub:         pLocalHub,
 		Auth_login_url_str: "/v1/admin/login_ui",
 	}
 
@@ -67,13 +67,13 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, userIDstr, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, p_runtime_sys)
+				_, userIDstr, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 
-				gf_err = gf_identity_lib.AdminIs(userIDstr, pCtx, p_runtime_sys)
+				gf_err = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -81,8 +81,8 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				//---------------------
 
 				invite_list_lst, gf_err := gf_identity_lib.Admin__pipeline__get_all_invite_list(pCtx,
-					p_identity_service_info,
-					p_runtime_sys)
+					pIdentityServiceInfo,
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -95,7 +95,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 			return nil, nil
 		},
 		rpc_handler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// ADD_TO_INVITE_LIST
@@ -108,7 +108,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				input_map, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, p_runtime_sys)
+				input_map, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -118,7 +118,7 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 					email_str = val_str.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, p_runtime_sys)
+				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -132,8 +132,8 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 
 				gfErr = gf_identity_lib.Admin__pipeline__user_add_to_invite_list(input,
 					pCtx,
-					p_identity_service_info,
-					p_runtime_sys)
+					pIdentityServiceInfo,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -146,7 +146,58 @@ func init_handlers__users(p_http_mux *http.ServeMux,
 			return nil, nil
 		},
 		rpc_handler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
+
+	//---------------------
+	// REMOVE_FROM_INVITE_LIST
+	// AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/remove_from_invite_list",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if pReq.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				
+				inputMap, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				var emailStr string
+				if valStr, ok := inputMap["email_str"]; ok {
+					emailStr = valStr.(string)
+				}
+
+				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
+					UserIDstr: userIDstr,
+					EmailStr:  emailStr,
+				}
+
+				//---------------------
+
+				gfErr = gf_identity_lib.Admin__pipeline__user_add_to_invite_list(input,
+					pCtx,
+					pIdentityServiceInfo,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{
+					
+				}
+				return outputMap, nil
+			}
+			return nil, nil
+		},
+		rpc_handler_runtime,
+		pRuntimeSys)
 
 	//---------------------
 	

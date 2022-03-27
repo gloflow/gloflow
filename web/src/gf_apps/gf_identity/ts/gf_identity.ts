@@ -201,6 +201,10 @@ export function get_http_api(p_urls_map) {
             "add_to_invite_list": async (p_email_str :string)=>{
                 const output_map = await gf_admin_http.add_to_invite_list(p_email_str);
                 return output_map;
+            },
+            "remove_from_invite_list": async (p_email_str :string)=>{
+                const output_map = await gf_admin_http.remove_from_invite_list(p_email_str);
+                return output_map;
             }
         }
     };

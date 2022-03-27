@@ -71,3 +71,10 @@ body {
 	padding-top: 3px;
 	padding-right: 5px;
 }
+#invite_list #current .invite .remove_btn {
+	position: absolute;
+	right: 0px;
+	font-size: 10px;
+	padding: 5px;
+	background-color: rgb(255, 143, 143);
+}

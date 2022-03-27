@@ -49,6 +49,7 @@ export function get_all_invite_list() {
     return p;
 }
 
+//-------------------------------------------------
 export function add_to_invite_list(p_email_str :string) {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
         const data_map = {
@@ -79,3 +80,33 @@ export function add_to_invite_list(p_email_str :string) {
     return p;
 }
 
+//-------------------------------------------------
+export function remove_from_invite_list(p_email_str :string) {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "email_str": p_email_str,
+        };
+
+        const url_str = '/v1/admin/users/remove_from_invite_list';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
