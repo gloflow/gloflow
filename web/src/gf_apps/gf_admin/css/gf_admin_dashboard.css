@@ -19,8 +19,8 @@ body {
 /*USERS_LIST*/
 
 #users_list {
-	background-color: #acacac;
-	width: 268px;
+	background-color: #b9b9b9;
+	width: 690px;
 	height: 250px;
 	position: absolute;
 	left: 40px;
@@ -36,12 +36,12 @@ body {
 
 #users_list #current {
 	position: absolute;
-	top: 60px;
+	top: 35px;
 }
 #users_list #current .user {
-	background-color: gray;
+	background-color: #12b9fb;
 	position: relative;
-	width: 230px;
+	width: 680px;
 	height: 22px;
 	padding: 5px;
 	padding-bottom: 5px;
@@ -49,11 +49,10 @@ body {
 }
 #users_list #current .user .user_name {
 	position: absolute;
-	left: 0px;
 }
 #users_list #current .user .email {
 	position: absolute;
-	left: 40px;
+	left: 100px;
 }
 #users_list #current .user .creation_time {
 	position: absolute;
@@ -67,7 +66,7 @@ body {
 /*INVITE_LIST*/
 
 #invite_list {
-	background-color: #acacac;
+	background-color: #b9b9b9;
 	width: 268px;
 	height: 250px;
 	position: absolute;
@@ -84,21 +83,35 @@ body {
 
 #invite_list #add_new {
 	position: absolute;
+	top: 35px;
+	width: 263px;
+	height: 35px;
+}
+#invite_list #add_new #new_email {
+	position: absolute;
+}
+#invite_list #add_new #new_email input {
+	height: 29px;
 }
 #invite_list #add_new #confirm_btn {
 	position: absolute;
 	top: 0px;
-	right: -25px;
+	right: 0px;
 	background-color: orange;
 	padding: 3px;
+	padding-top: 3px;
 	font-size: 12px;
 	cursor: pointer;
+	width: 50px;
+	height: 21px;
+	text-align: center;
+	padding-top: 11px;
 }
 
 
 #invite_list #current {
 	position: absolute;
-	top: 60px;
+	top: 70px;
 }
 #invite_list #current .invite {
 	background-color: gray;
@@ -106,7 +119,6 @@ body {
 	width: 230px;
 	height: 22px;
 	padding: 5px;
-	padding-bottom: 5px;
 	padding-bottom: 0px;
 }
 #invite_list #current .invite .email {
@@ -120,9 +132,13 @@ body {
 	padding-right: 5px;
 }
 #invite_list #current .invite .remove_btn {
+	right: 59px;
 	position: absolute;
-	right: 0px;
-	font-size: 10px;
-	padding: 5px;
-	background-color: rgb(255, 143, 143);
+	background-color: red;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 1px;
+	cursor: pointer;
+	top: 3px;
+	color: white;
 }

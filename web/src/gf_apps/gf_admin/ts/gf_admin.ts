@@ -137,8 +137,6 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
                 <div class="invite">
                     <div class="email">${email_str}</div>
                     <div class="creation_time">${creation_unix_time}</div>
-                    <div>
-
                     </div class="remove_btn">x</div>
                 </div>`);
 
