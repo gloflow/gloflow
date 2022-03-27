@@ -231,16 +231,19 @@ func users_email__get_confirm_msg_info(p_user_name_str gf_identity_core.GFuserNa
 					padding-top: 9px;">
 					Welcome to %s!</div>
 				<div>
+			</div>
+			<div id="confirm_email" style="background-color: rgb(214, 95, 54);margin-top: 29px;padding: 10px;width: 360px;">
+				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
+				<a style="color: white; cursor: pointer;" href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
+			</div>
+			<div>
 				<div id="message" style="
 					margin-top: 5px;
 					margin-bottom: 5px;
 					padding-left: 11px;">
 					"There is no spoon ...it is only yourself."
 				</div>
-			</div>
-			<div id="confirm_email" style="background-color: rgb(214, 95, 54);margin-top: 29px;padding: 10px;width: 360px;">
-				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
-				<a style="color: white; cursor: pointer;" href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
+				<img src="https://gloflow.com/images/d/thumbnails/b2373f98d61208c60155fce191399f9f_thumb_large.png"></img>
 			</div>
 			<div style="font-size: 10px; padding: 3px; padding-left: 7px; margin-top: 140px;">
 				don't reply to this email
