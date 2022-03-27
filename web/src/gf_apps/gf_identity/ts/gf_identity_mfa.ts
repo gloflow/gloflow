@@ -35,8 +35,18 @@ export function init(p_user_name_str,
         </div>
     </div>`);
 
-    $(container).find("#confirm_btn").on("click", async ()=>{
+    $(container).on('keyup', function (e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            mfa_confirm_activate();
+        }
+    });
 
+    $(container).find("#confirm_btn").on("click", async ()=>{
+        mfa_confirm_activate();
+    });
+
+    //-------------------------------------------------
+    async function mfa_confirm_activate() {
         const mfa_val_str = $(container).find("input#mfa_val").val();
         const output_map  = await p_http_api_map["mfa"]["user_mfa_confirm"](p_user_name_str, mfa_val_str);
 
@@ -57,7 +67,8 @@ export function init(p_user_name_str,
                 </div>
             `);
         }
+    }
 
-    });
+    //-------------------------------------------------    
     return container;
 }

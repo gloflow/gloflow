@@ -343,6 +343,10 @@
     font-size: 22px;
     width: 166px;
     text-align: center;
+
+    /*WebKit desktop browsers add little up down arrows to number inputs called spinners.
+    this turns them off visually*/
+    -moz-appearance:textfield;
 }
 
 #mfa_dialog #mfa_confirm_code #confirm_btn {
