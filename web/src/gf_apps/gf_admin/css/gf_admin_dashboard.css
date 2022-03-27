@@ -16,6 +16,54 @@ body {
 }
 
 /*----------------------------------------------------------*/
+/*USERS_LIST*/
+
+#users_list {
+	background-color: #acacac;
+	width: 268px;
+	height: 250px;
+	position: absolute;
+	left: 40px;
+	top: 110px;
+	padding: 13px;
+}
+
+#users_list #title {
+	text-align: center;
+	font-size: 13px;
+	color: #575757;
+}
+
+#users_list #current {
+	position: absolute;
+	top: 60px;
+}
+#users_list #current .user {
+	background-color: gray;
+	position: relative;
+	width: 230px;
+	height: 22px;
+	padding: 5px;
+	padding-bottom: 5px;
+	padding-bottom: 0px;
+}
+#users_list #current .user .user_name {
+	position: absolute;
+	left: 0px;
+}
+#users_list #current .user .email {
+	position: absolute;
+	left: 40px;
+}
+#users_list #current .user .creation_time {
+	position: absolute;
+	right: 0px;
+	font-size: 10px;
+	padding-top: 3px;
+	padding-right: 5px;
+}
+
+/*----------------------------------------------------------*/
 /*INVITE_LIST*/
 
 #invite_list {

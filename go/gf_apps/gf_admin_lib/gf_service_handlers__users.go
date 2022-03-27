@@ -41,6 +41,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/admin/users/get_all",
 		"/v1/admin/users/get_all_invite_list",
 		"/v1/admin/users/add_to_invite_list",
 	}

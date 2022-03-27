@@ -194,6 +194,11 @@ export function get_http_api(p_urls_map) {
 
         // ADMIN
         "admin": {
+            
+            "get_all_users": async ()=>{
+                const output_map = await gf_admin_http.get_all_users();
+                return output_map;
+            },
             "get_all_invite_list": async ()=>{
                 const output_map = await gf_admin_http.get_all_invite_list();
                 return output_map;

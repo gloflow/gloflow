@@ -27,15 +27,67 @@ export async function init(p_http_api_map, p_log_fun) {
 
     console.log("admin dashboard")
 
-
+    init_users_list(p_http_api_map, p_log_fun)
     init_invite_list(p_http_api_map, p_log_fun);
+}
+
+//-------------------------------------------------
+function init_users_list(p_http_api_map, p_log_fun) {
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+        const container = $(`
+            <div id="users_list">
+                <div id="title">users list</div>
+                <div id="current">
+                </div>
+            </div>`);
+
+        $("body").append(container);
+
+        //--------------------------
+        // GET_ALL
+
+        // HTTP
+        const output_map = await p_http_api_map["admin"]["get_all_users"]();
+        const users_lst  = output_map["users_lst"];
+
+        //-------------------------------------------------
+        function view_user(p_invite_map) {
+
+            const user_name_str      = p_invite_map["user_name_str"];
+            const email_str          = p_invite_map["email_str"];
+            const creation_unix_time = p_invite_map["creation_unix_time_f"];
+            const user_element = $(`
+                <div class="user">
+                    <div class="user_name">${user_name_str}</div>
+                    <div class="email">${email_str}</div>
+                    <div class="creation_time">${creation_unix_time}</div>
+                    <div>
+                </div>`);
+
+            gf_time.init_creation_date(user_element, p_log_fun);
+
+
+            return user_element;
+        }
+
+        //-------------------------------------------------
+
+        for (const user_map of users_lst) {
+
+            const user_element = view_user(user_map);
+            $(container).find("#current").append(user_element);
+        }
+
+        //--------------------------
+        p_resolve_fun(container);
+    });
+    return p;
 }
 
 //-------------------------------------------------
 async function init_invite_list(p_http_api_map, p_log_fun) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-        
         const container = $(`
             <div id="invite_list">
 
@@ -51,7 +103,6 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
             </div>`);
 
         $("body").append(container);
-
 
         //--------------------------
         // ADD_NEW
@@ -80,13 +131,11 @@ async function init_invite_list(p_http_api_map, p_log_fun) {
         //-------------------------------------------------
         function view_invite(p_invite_map) {
 
-            // /v1/admin/users/remove_from_invite_list
-
             const email_str          = p_invite_map["user_email_str"];
             const creation_unix_time = p_invite_map["creation_unix_time_f"];
             const invite_element = $(`
                 <div class="invite">
-                    <div class="email">${p_invite_map["user_email_str"]}</div>
+                    <div class="email">${email_str}</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div>
 

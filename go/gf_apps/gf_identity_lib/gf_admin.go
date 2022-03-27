@@ -61,14 +61,14 @@ type GFadminRemoveFromInviteListInput struct {
 }
 
 type GFadminUserViewOutput struct {
-	IDstr              gf_core.GF_ID
-	CreatioUNIXtimeF   float64
-	UserNameStr        gf_identity_core.GFuserName
-	ScreenNameStr      string
-	AddressesETHlst    []gf_identity_core.GF_user_address_eth
-	EmailStr           string
-	EmailConfirmedBool bool
-	ProfileImageURLstr string
+	IDstr              gf_core.GF_ID                          `json:"id_str"`
+	CreationUNIXtimeF  float64                                `json:"creation_unix_time_f"`
+	UserNameStr        gf_identity_core.GFuserName            `json:"user_name_str"`
+	ScreenNameStr      string                                 `json:"screen_name_str"`
+	AddressesETHlst    []gf_identity_core.GF_user_address_eth `json:"addresses_eth_lst"`
+	EmailStr           string                                 `json:"email_str"`
+	EmailConfirmedBool bool                                   `json:"email_confirmed_bool"`
+	ProfileImageURLstr string                                 `json:"profile_image_url_str"`
 }
 
 //------------------------------------------------
@@ -90,7 +90,7 @@ func AdminPipelineGetAllUsers(pCtx context.Context,
 
 		userView := &GFadminUserViewOutput{
 			IDstr:              user.Id_str,
-			CreatioUNIXtimeF:   user.Creation_unix_time_f,
+			CreationUNIXtimeF:  user.Creation_unix_time_f,
 			UserNameStr:        user.User_name_str,
 			ScreenNameStr:      user.Screen_name_str,
 			AddressesETHlst:    user.Addresses_eth_lst,
