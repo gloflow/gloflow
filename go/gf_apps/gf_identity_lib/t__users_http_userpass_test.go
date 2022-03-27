@@ -39,7 +39,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 
 	test_port_int := 2000
 	ctx           := context.Background()
-	runtime_sys   := T__init()
+	runtimeSys    := T__init()
 	HTTPagent     := gorequest.New()
 
 
@@ -47,7 +47,7 @@ func Test__users_http_userpass(p_test *testing.T) {
 
 	test__user_name_str := "ivan_t"
 	test__user_pass_str := "pass_lksjds;lkdj"
-	test__email_str     := "ivan_t@gloflow.com"
+	testEmailStr        := "ivan_t@gloflow.com"
 
 
 
@@ -57,11 +57,13 @@ func Test__users_http_userpass(p_test *testing.T) {
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to cleanup test user DB",
 		},
-		ctx, runtime_sys)
+		ctx, runtimeSys)
 
-	db__user__add_to_invite_list(test__email_str,
+	//---------------------------------
+	// ADD_TO_INVITE_LIST
+	gfErr := DBuserAddToInviteList(testEmailStr,
 		ctx,
-		runtime_sys)
+		runtimeSys)
 	
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
@@ -70,13 +72,13 @@ func Test__users_http_userpass(p_test *testing.T) {
 	fmt.Println("test user CREATE USERPASS")
 	fmt.Println("user_name_str", test__user_name_str)
 	fmt.Println("pass_str",      test__user_pass_str)
-	fmt.Println("email_str",     test__email_str)
+	fmt.Println("email_str",     testEmailStr)
 
 	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/create", test_port_int)
 	data_map := map[string]string{
 		"user_name_str": test__user_name_str,
 		"pass_str":      test__user_pass_str,
-		"email_str":     test__email_str,
+		"email_str":     testEmailStr,
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
 	_, body_str, errs := HTTPagent.Post(url_str).
