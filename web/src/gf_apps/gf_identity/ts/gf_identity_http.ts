@@ -165,7 +165,7 @@ export function user_mfa_confirm(p_user_name_str :string,
 }
 
 //-------------------------------------------------
-// USER_CREATE__HTTP
+// USER_ETH_CREATE__HTTP
 export function user_eth_create(p_user_address_eth_str :string,
     p_auth_signature_str :string) {
 
@@ -200,7 +200,8 @@ export function user_eth_create(p_user_address_eth_str :string,
     return p;
 }
 
-// USER_CREATE__HTTP
+//-------------------------------------------------
+// USER_USERPASS_CREATE__HTTP
 export function user_userpass_create(p_user_name_str :string,
     p_pass_str  :string,
     p_email_str :string) {
@@ -212,7 +213,7 @@ export function user_userpass_create(p_user_name_str :string,
             "email_str":     p_email_str, 
         };
 
-        const url_str = '/v1/identity/users/create';
+        const url_str = '/v1/identity/userpass/create';
         $.ajax({
             'url':         url_str,
             'type':        'POST',
@@ -248,7 +249,7 @@ export function user_update(p_user_data_map) {
             "user_description_str": p_user_data_map["description_str"],
         };
 
-        const url_str = '/v1/identity/users/update';
+        const url_str = '/v1/identity/update';
         $.ajax({
             'url':         url_str,
             'type':        'POST',
