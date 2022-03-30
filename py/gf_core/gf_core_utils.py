@@ -113,8 +113,8 @@ def get_self_ip():
 
 	#---------------------------------------------------
 	
-	# self_ip_str = dns_method()
-	self_ip_str = extern_service_method()
+	self_ip_str = dns_method()
+	# self_ip_str = extern_service_method()
 	print(f"self IP: {self_ip_str}")
 
 	return self_ip_str

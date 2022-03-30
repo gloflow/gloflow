@@ -164,6 +164,17 @@ def get():
 		#-------------
 	}
 
+	gf_home__pages_map = {
+		#-------------
+		"gf_home_main": {
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_home",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_home/templates/gf_home_main/gf_home_main.html",
+			"url_base_str":       "/v1/home/static",
+		},
+
+		#-------------
+	}
+
 	apps_map = {
 		#-----------------------------
 		# GF_SOLO
@@ -210,6 +221,7 @@ def get():
 	gf_solo__pages_map.update(copy.deepcopy(gf_analytics__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_tagger__pages_map))
 	gf_solo__pages_map.update(copy.deepcopy(gf_admin__pages_map))
+	gf_solo__pages_map.update(copy.deepcopy(gf_home__pages_map))
 
 	for _, page_info_map in gf_solo__pages_map.items():
 

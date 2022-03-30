@@ -46,7 +46,7 @@ import (
 
 //-------------------------------------------------
 func Run(p_config *GF_config,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 	//-------------
 	// CONFIG
@@ -77,10 +77,10 @@ func Run(p_config *GF_config,
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
 	validator := gf_core.Validate__init()
-	p_runtime_sys.Validator = validator
+	pRuntimeSys.Validator = validator
 
 
-	gf_solo_http_mux := http.NewServeMux()
+	gfSoloHTTPmux := http.NewServeMux()
 
 	//-------------
 	// GF_IDENTITY
@@ -100,9 +100,9 @@ func Run(p_config *GF_config,
 		//         individually if they so desire.
 		Enable_mfa_require_confirm_for_login_bool: false,
 	}
-	gf_err := gf_identity_lib.Init_service(gf_solo_http_mux,
+	gf_err := gf_identity_lib.Init_service(gfSoloHTTPmux,
 		gf_identity__service_info,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return
 	}
@@ -147,7 +147,7 @@ func Run(p_config *GF_config,
 			admin_identity__service_info,
 			admin_http_mux,
 			p_local_hub,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return
 		}
@@ -159,7 +159,15 @@ func Run(p_config *GF_config,
 
 	//-------------
 	// GF_HOME
-	gf_err = gf_home_lib.Init_service(gf_solo_http_mux, p_runtime_sys)
+
+	homeServiceInfo := &gf_home_lib.GFserviceInfo{
+		AuthLoginURLstr: "/landing/main/", // if not logged in redirect users to this
+	}
+
+	gf_err = gf_home_lib.InitService(p_config.Templates_paths_map,
+		homeServiceInfo,
+		gfSoloHTTPmux,
+		pRuntimeSys)
 	if gf_err != nil {
 		return
 	}
@@ -169,7 +177,7 @@ func Run(p_config *GF_config,
 
 	// CONFIG
 	gf_images__config, gf_err := gf_images_core.Config__get(p_config.Images__config_file_path_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return
 	}
@@ -193,17 +201,17 @@ func Run(p_config *GF_config,
 		Auth_login_url_str: "/landing/main/",
 	}
 
-	jobs_mngr_ch := gf_images_lib.Init_service(gf_solo_http_mux,
+	jobs_mngr_ch := gf_images_lib.Init_service(gfSoloHTTPmux,
 		gf_images__service_info,
 		gf_images__config,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------
 	// GF_LANDING_PAGE
 
 	gf_landing_page_lib.Init_service(p_config.Templates_paths_map,
-		gf_solo_http_mux,
-		p_runtime_sys)
+		gfSoloHTTPmux,
+		pRuntimeSys)
 
 	//-------------
 	// GF_ANALYTICS
@@ -226,8 +234,8 @@ func Run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 	}
 	gf_analytics_lib.Init_service(gf_analytics__service_info,
-		gf_solo_http_mux,
-		p_runtime_sys)
+		gfSoloHTTPmux,
+		pRuntimeSys)
 
 	//-------------
 	// GF_PUBLISHER
@@ -244,20 +252,20 @@ func Run(p_config *GF_config,
 		Templates_dir_paths_map: p_config.Templates_paths_map,
 	}
 	
-	gf_publisher_lib.Init_service(gf_solo_http_mux,
+	gf_publisher_lib.Init_service(gfSoloHTTPmux,
 		gf_images_runtime_info,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//-------------
 	// GF_TAGGER
 	gf_tagger_lib.Init_service(p_config.Templates_paths_map,
 		jobs_mngr_ch,
-		gf_solo_http_mux,
-		p_runtime_sys)
+		gfSoloHTTPmux,
+		pRuntimeSys)
 
 	//-------------
 	// GF_ML
-	gf_ml_lib.Init_service(gf_solo_http_mux, p_runtime_sys)
+	gf_ml_lib.Init_service(gfSoloHTTPmux, pRuntimeSys)
 
 	//-------------
 
@@ -265,7 +273,7 @@ func Run(p_config *GF_config,
 	gf_core.Metrics__init("/metrics", port_metrics_int)
 
 	// SERVER_INIT - blocking
-	gf_rpc_lib.Server__init_with_mux(port_int, gf_solo_http_mux)
+	gf_rpc_lib.Server__init_with_mux(port_int, gfSoloHTTPmux)
 }
 
 //-------------------------------------------------

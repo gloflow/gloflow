@@ -1,0 +1,10 @@
+body {
+	margin:      0px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+	/*turn off horizontal scroll*/
+	max-width:  100%;
+    overflow-x: hidden;
+
+	background-color: #d7d7d7;
+}

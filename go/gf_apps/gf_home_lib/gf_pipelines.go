@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,35 +20,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
-	"net/http"
+	"text/template"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-type GFserviceInfo struct {
+//------------------------------------------------
+func PipelineRenderDashboard(pTmpl *template.Template,
+	pSubtemplatesNamesLst []string,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
 
-	// AUTH_LOGIN_URL - url of the login page to which the system should
-	//                  redirect users after certain operations
-	AuthLoginURLstr string
-}
-
-//-------------------------------------------------
-func InitService(pTemplatesPathsMap map[string]string,
-	pServiceInfo *GFserviceInfo,
-	pHTTPmux     *http.ServeMux,
-	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
-
-	//------------------------
-	// HANDLERS
-	gfErr := initHandlers(pTemplatesPathsMap,
-		pServiceInfo.AuthLoginURLstr,
-		pHTTPmux,
+	templateRenderedStr, gfErr := viewRenderTemplateDashboard(pTmpl,
+		pSubtemplatesNamesLst,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
-	//------------------------
-
-	return nil
+	return templateRenderedStr, nil
 }

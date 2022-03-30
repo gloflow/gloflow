@@ -39,7 +39,7 @@ type GF_service_info struct {
 	Admin_mfa_secret_key_base32_str string
 
 	// AUTH_LOGIN_URL - url of the login page to which the system should
-	//                  redirect users when email is confirmed.
+	//                  redirect users after certain operations
 	Auth_login_url_str string
 
 	//------------------------
