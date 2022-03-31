@@ -31,22 +31,22 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__userpass(p_http_mux *http.ServeMux,
-	p_service_info *GF_service_info,
-	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
+func initHandlersUserpass(pHTTPmux *http.ServeMux,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/v1/identity/userpass/login",
 		"/v1/identity/userpass/create",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(p_service_info.Name_str, handlers_endpoints_lst)
+	metrics := gf_rpc_lib.Metrics__create_for_handlers(pServiceInfo.Name_str, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
-		Mux:                p_http_mux,
+	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
@@ -73,26 +73,26 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 					userNameStr = gf_identity_core.GFuserName(valStr.(string))
 				}
 
-				var pass_str string
+				var passStr string
 				if valStr, ok := inputMap["pass_str"]; ok {
-					pass_str = valStr.(string)
+					passStr = valStr.(string)
 				}
 
-				var email_str string
+				var emailStr string
 				if valStr, ok := inputMap["email_str"]; ok {
-					email_str = valStr.(string)
+					emailStr = valStr.(string)
 				}
 
 				input :=&GF_user_auth_userpass__input_login{
 					User_name_str: userNameStr,
-					Pass_str:      pass_str,
-					Email_str:     email_str,
+					Pass_str:      passStr,
+					Email_str:     emailStr,
 				}
 
 				//---------------------
 				// LOGIN
 				output, gfErr := users_auth_userpass__pipeline__login(input, 
-					p_service_info,
+					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -101,23 +101,38 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				sessionDataStr        := string(output.JWT_token_val)
-				session_ttl_hours_int := 24 // 1 day
-				gf_session.SetOnReq(sessionDataStr, pResp, session_ttl_hours_int)
+				sessionDataStr     := string(output.JWT_token_val)
+				sessionTTLhoursInt := 24 // 1 day
+				gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 				//---------------------
 
-				outputMap := map[string]interface{}{
-					"user_exists_bool": output.User_exists_bool,
-					"pass_valid_bool":  output.Pass_valid_bool,
-					"user_id_str":      output.User_id_str,
+				// if the user succeeds to login (user exists and the password is valid)
+				// redirect them if a redirect URL was specified. 
+				if pServiceInfo.AuthLoginSuccessRedirectURLstr != "" &&
+					output.User_exists_bool && 
+					output.Pass_valid_bool {
+					
+					http.Redirect(pResp,
+						pReq,
+						pServiceInfo.AuthLoginSuccessRedirectURLstr,
+						301)
+
+				}  else {
+					outputMap := map[string]interface{}{
+						"user_exists_bool": output.User_exists_bool,
+						"pass_valid_bool":  output.Pass_valid_bool,
+						"user_id_str":      output.User_id_str,
+					}
+					return outputMap, nil
 				}
-				return outputMap, nil
+
+				return nil, nil
 			}
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//---------------------
@@ -144,7 +159,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 				//---------------------
 				output, gfErr := users_auth_userpass__pipeline__create_regular(input,
-					p_service_info,
+					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -160,7 +175,7 @@ func init_handlers__userpass(p_http_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
+		rpcHandlerRuntime,
 		pRuntimeSys)
 
 	//---------------------

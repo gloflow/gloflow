@@ -38,9 +38,16 @@ type GF_service_info struct {
 	// ADMIN_MFA_SECRET_KEY_BASE32
 	Admin_mfa_secret_key_base32_str string
 
+	//------------------------
+	// AUTH
+
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users after certain operations
-	Auth_login_url_str string
+	AuthLoginURLstr string
+
+	// AUTH_LOGIN_SUCCESS_REDIRECT_URL - url to redirect to when the user 
+	//                                   logs in successfuly. if ommited then dont redirect.
+	AuthLoginSuccessRedirectURLstr string
 
 	//------------------------
 	// FEATURE_FLAGS
@@ -64,26 +71,28 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(p_mux *http.ServeMux,
-	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+func InitService(pHTTPmux *http.ServeMux,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
 	// HANDLERS
-	gf_err := initHandlers(p_service_info.Auth_login_url_str,
-		p_mux, p_service_info, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := initHandlers(pServiceInfo.AuthLoginURLstr,
+		pHTTPmux, pServiceInfo, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	gf_err = init_handlers__eth(p_mux, p_service_info, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr = init_handlers__eth(pHTTPmux, pServiceInfo, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	gf_err = init_handlers__userpass(p_mux, p_service_info, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr = initHandlersUserpass(pHTTPmux,
+		pServiceInfo,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------

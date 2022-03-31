@@ -86,10 +86,10 @@ func Run(p_config *GF_config,
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
-		Name_str:           "gf_identity",
-		Domain_base_str:    p_config.Domain_base_str,
-		Auth_login_url_str: "/landing/main/", // on email confirm redirect user to this
-
+		Name_str:                       "gf_identity",
+		Domain_base_str:                p_config.Domain_base_str,
+		AuthLoginURLstr:                "/landing/main/", // on email confirm redirect user to this
+		AuthLoginSuccessRedirectURLstr: "/v1/home/main",  // on login success redirecto to home
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
@@ -100,10 +100,10 @@ func Run(p_config *GF_config,
 		//         individually if they so desire.
 		Enable_mfa_require_confirm_for_login_bool: false,
 	}
-	gf_err := gf_identity_lib.Init_service(gfSoloHTTPmux,
+	gfErr := gf_identity_lib.InitService(gfSoloHTTPmux,
 		gf_identity__service_info,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		return
 	}
 
@@ -131,7 +131,7 @@ func Run(p_config *GF_config,
 			Name_str:                        "gf_admin_identity",
 			Domain_base_str:                 p_config.Domain_admin_base_str,
 			Admin_mfa_secret_key_base32_str: p_config.Admin_mfa_secret_key_base32_str,
-			Auth_login_url_str:              "/v1/admin/login_ui", // on email confirm redirect user to this
+			AuthLoginURLstr:                 "/v1/admin/login_ui", // on email confirm redirect user to this
 
 			// FEATURE_FLAGS
 			Enable_events_app_bool:                  true,
@@ -142,13 +142,13 @@ func Run(p_config *GF_config,
 			
 		}
 
-		gf_err := gf_admin_lib.Init_new_service(p_config.Templates_paths_map,
+		gfErr := gf_admin_lib.InitNewService(p_config.Templates_paths_map,
 			admin_service_info,
 			admin_identity__service_info,
 			admin_http_mux,
 			p_local_hub,
 			pRuntimeSys)
-		if gf_err != nil {
+		if gfErr != nil {
 			return
 		}
 
@@ -164,11 +164,11 @@ func Run(p_config *GF_config,
 		AuthLoginURLstr: "/landing/main/", // if not logged in redirect users to this
 	}
 
-	gf_err = gf_home_lib.InitService(p_config.Templates_paths_map,
+	gfErr = gf_home_lib.InitService(p_config.Templates_paths_map,
 		homeServiceInfo,
 		gfSoloHTTPmux,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		return
 	}
 
@@ -176,9 +176,9 @@ func Run(p_config *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	gf_images__config, gf_err := gf_images_core.Config__get(p_config.Images__config_file_path_str,
+	gf_images__config, gfErr := gf_images_core.Config__get(p_config.Images__config_file_path_str,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		return
 	}
 	
