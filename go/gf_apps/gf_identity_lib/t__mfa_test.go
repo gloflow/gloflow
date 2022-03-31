@@ -26,29 +26,29 @@ import (
 )
 
 //-------------------------------------------------
-func Test__mfa(p_test *testing.T) {
+func Test__mfa(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_MFA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtime_sys := T__init()
+	runtimeSys := T__init()
 
-	test_mfa_main(p_test, runtime_sys)
+	test_mfa_main(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
-func test_mfa_main(p_test *testing.T,
-	p_runtime_sys *gf_core.Runtime_sys) {
+func test_mfa_main(pTest *testing.T,
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 
 
 
 	// CODE THATS ENTERED INTO GOOGLE AUTH MANUALLY HAS TO BE 
 	// BASE32 ENCODED
-	secret_key_base32_str := "aabbccddeeffgghh"
-	token_str, gf_err := TOTPgenerateValue(secret_key_base32_str, p_runtime_sys)
-	if gf_err != nil {
-		p_test.FailNow()
+	secretKeyBase32str := "aabbccddeeffgghh"
+	tokenStr, gfErr := TOTPgenerateValue(secretKeyBase32str, pRuntimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
 	}
 
-	fmt.Println("TOTP token - ", token_str)
+	fmt.Println("TOTP token - ", tokenStr)
 }

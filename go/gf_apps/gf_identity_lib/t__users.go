@@ -61,7 +61,6 @@ func test_user_http_update(p_test *testing.T,
 	spew.Dump(body_map)
 
 	assert.True(p_test, body_map["status"].(string) != "ERROR", "user updating http request failed")
-
 }
 
 //-------------------------------------------------

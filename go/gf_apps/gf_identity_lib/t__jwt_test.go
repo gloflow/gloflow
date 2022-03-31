@@ -35,14 +35,14 @@ func Test__jwt(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtime_sys := T__init()
+	runtimeSys := T__init()
 
-	test_jwt_main(pTest, runtime_sys)
+	test_jwt_main(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
 func test_jwt_main(pTest *testing.T,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 
 	ctx := context.Background()
@@ -53,7 +53,7 @@ func test_jwt_main(pTest *testing.T,
 	userIdentifierStr := string(testUserAddressETH)
 	jwt_val, gf_err := gf_session.JWT__pipeline__generate(userIdentifierStr,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		pTest.Fail()
 	}
@@ -61,7 +61,7 @@ func test_jwt_main(pTest *testing.T,
 	// JWT_VALIDATE
 	valid_bool, userIdentifierStr, gf_err := gf_session.JWTvalidate(jwt_val,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		pTest.Fail()
 	}
