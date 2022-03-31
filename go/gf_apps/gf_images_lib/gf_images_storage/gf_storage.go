@@ -24,32 +24,42 @@ import (
 )
 
 //---------------------------------------------------
-type GF_image_storage struct {
-	Type_str string // "local_fs" | "s3" | "ipfs"
-	S3       GF_image_storage__s3
+type GFstorage struct {
+	TypeStr string // "local_fs" | "s3" | "ipfs"
+	S3      GFstorageS3
 }
 
-type GF_image_storage__s3 struct {
-	Bucket_name_str string
-	Info            *gf_core.GF_s3_info
+type GFstorageS3 struct {
+	BucketNameStr string
+	Info          *gf_core.GF_s3_info
+}
+
+type GFstorageIPFS struct {
+
 }
 
 //---------------------------------------------------
-// PUT_FILE
-func Put_file(p_source_file_path_str string,
-	p_target_file_path_str string,
-	p_storage              *GF_image_storage,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.Gf_error {
+// IPFS
+func IPFSinit() {
 
-	if p_storage.Type_str == "s3" {
-		gf_err := gf_core.S3__upload_file(p_source_file_path_str,
-			p_target_file_path_str,
-			p_storage.S3.Bucket_name_str,
-			p_storage.S3.Info,
-			p_runtime_sys)
+}
+
+//---------------------------------------------------
+// FILE_PUT
+func FilePut(pSourceFilePathStr string,
+	pTargetFilePathStr string,
+	pStorage           *GF_image_storage,
+	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GF_error {
+
+	if pStorage.TypeStr == "s3" {
+		gfErr := gf_core.S3__upload_file(pSourceFilePathStr,
+			pTargetFilePathStr,
+			pStorage.S3.Bucket_name_str,
+			pStorage.S3.Info,
+			pRuntimeSys)
 			
-		if gf_err != nil {
-			return gf_err
+		if gfErr != nil {
+			return gfErr
 		}
 	}
 
@@ -58,14 +68,14 @@ func Put_file(p_source_file_path_str string,
 }
 
 //---------------------------------------------------
-// GET_FILE
-func Get_file(p_storage *GF_image_storage,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+// FILE_GET
+func FileGet(pStorage *GF_image_storage,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
 
 
-	if p_storage.Type_str == "s3" {
+	if pStorage.TypeStr == "s3" {
 		
 	}
 
