@@ -25,7 +25,7 @@ import (
 )
 
 //---------------------------------------------------
-func Get_img(p_image_id_str gf_images_core.GF_image_id,
+func ImgGet(p_image_id_str gf_images_core.GF_image_id,
 	p_runtime_sys *gf_core.Runtime_sys) (*gf_images_core.GF_image_export, bool, *gf_core.GF_error) {
 
 	// DB_EXISTS
@@ -61,10 +61,10 @@ func Get_img(p_image_id_str gf_images_core.GF_image_id,
 }
 
 //---------------------------------------------------
-func Add_tags_to_image(p_image *gf_images_core.GF_image,
+func TagsAddToImage(p_image *gf_images_core.GF_image,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.Add_tags_to_image()")
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.TagsAddToImage()")
 	
 	if len(p_tags_lst) > 0 {
 

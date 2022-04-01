@@ -26,7 +26,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
+type GFserviceInfo struct {
 	Port_str                                   string
 	Mongodb_host_str                           string
 	Mongodb_db_name_str                        string
@@ -42,7 +42,7 @@ type GF_service_info struct {
 
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users when email is confirmed.
-	Auth_login_url_str string
+	AuthLoginURLstr string
 }
 
 //-------------------------------------------------

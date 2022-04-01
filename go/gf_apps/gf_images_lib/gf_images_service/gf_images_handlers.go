@@ -31,13 +31,14 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_mux *http.ServeMux,
+func InitHandlers(pAuthLoginURLstr string,
+	pHTTPmux           *http.ServeMux,
 	p_jobs_mngr_ch     chan gf_images_jobs_core.Job_msg,
 	p_img_config       *gf_images_core.GF_config,
 	p_media_domain_str string,
-	p_s3_info          *gf_core.GF_s3_info,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
+	pS3info            *gf_core.GF_s3_info,
+	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
 	//---------------------
 	// METRICS
@@ -51,51 +52,58 @@ func Init_handlers(p_mux *http.ServeMux,
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_images", handlers_endpoints_lst)
 
 	//---------------------
-	// GET_IMAGE
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/get",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+	// rpcHandlerRuntime
+	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+		Mux:                pHTTPmux,
+		Metrics:            metrics,
+		Store_run_bool:     true,
+		Sentry_hub:         nil,
+		Auth_login_url_str: pAuthLoginURLstr,
+	}
 
-			if p_req.Method == "GET" {
+	//---------------------
+	// GET_IMAGE
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/get",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if pReq.Method == "GET" {
 				//-----------------
 				// INPUT
-				qs_map := p_req.URL.Query()
+				qsMap := pReq.URL.Query()
 				
-				var img_id_str string 
-				if a_lst, ok := qs_map["img_id"]; ok {
-					img_id_str = a_lst[0]
+				var imgIDstr string 
+				if a_lst, ok := qsMap["img_id"]; ok {
+					imgIDstr = a_lst[0]
 				} else {
-					gf_err := gf_core.Mongo__handle_error("failed to get img_id arg from request query string",
+					gfErr := gf_core.Mongo__handle_error("failed to get img_id arg from request query string",
 						"verify__input_data_missing_in_req_error",
 						map[string]interface{}{},
-						nil, "gf_images_lib", p_runtime_sys)
-					return nil, gf_err
+						nil, "gf_images_lib", pRuntimeSys)
+					return nil, gfErr
 				}
 
 				//-----------------
 
-				img_id := gf_images_core.GF_image_id(img_id_str)
-				gf_image_export, exists_bool, gf_err := Get_img(img_id, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				imgID := gf_images_core.GF_image_id(imgIDstr)
+				imageExport, existsBool, gfErr := ImgGet(imgID, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
-					"image_exists_bool": exists_bool,      
-					"image_export_map":  gf_image_export,
+				dataMap := map[string]interface{}{
+					"image_exists_bool": existsBool,      
+					"image_export_map":  imageExport,
 				}
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}
 			return nil, nil
 		},
-		p_mux,
-		metrics,
-		true, // p_store_run_bool
-		nil,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 
@@ -128,13 +136,13 @@ func Init_handlers(p_mux *http.ServeMux,
 							"flow_name_str":    flow_name_str,
 							"handler_path_str": "/images/d/",
 						},
-						nil, "gf_images_lib", p_runtime_sys)
+						nil, "gf_images_lib", pRuntimeSys)
 					return nil, gf_err
 				}
 
 				image_s3_url_str := gf_images_core.Image__get_public_url(image_path_name_str,
 					p_media_domain_str,
-					p_runtime_sys)
+					pRuntimeSys)
 
 				// redirect user to S3 image url
 				http.Redirect(p_resp,
@@ -145,11 +153,11 @@ func Init_handlers(p_mux *http.ServeMux,
 
 			return nil, nil
 		},
-		p_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// UPLOAD_INIT - client calls this to get the presigned URL to then upload the image to directly.
@@ -202,9 +210,9 @@ func Init_handlers(p_mux *http.ServeMux,
 					image_format_str,
 					flows_names_lst,
 					client_type_str,
-					p_s3_info,
+					pS3info,
 					p_img_config,
-					p_runtime_sys)
+					pRuntimeSys)
 
 				if gf_err != nil {
 					return nil, gf_err
@@ -221,11 +229,11 @@ func Init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
@@ -247,7 +255,7 @@ func Init_handlers(p_mux *http.ServeMux,
 				// INPUT
 				qs_map := p_req.URL.Query()
 
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -271,8 +279,8 @@ func Init_handlers(p_mux *http.ServeMux,
 				running_job, gf_err := Upload__complete(upload_gf_image_id_str,
 					meta_map,
 					p_jobs_mngr_ch,
-					p_s3_info,
-					p_runtime_sys)
+					pS3info,
+					pRuntimeSys)
 
 				if gf_err != nil {
 					return nil, gf_err
@@ -291,11 +299,11 @@ func Init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
@@ -307,7 +315,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -321,7 +329,7 @@ func Init_handlers(p_mux *http.ServeMux,
 
 				//--------------------------
 				// STORE BROWSER_IMAGE_CALC_RESULT
-				gf_err = Process__browser_image_calc_result(cast_browser_jobs_runs_results_lst, p_runtime_sys)
+				gf_err = Process__browser_image_calc_result(cast_browser_jobs_runs_results_lst, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -330,11 +338,11 @@ func Init_handlers(p_mux *http.ServeMux,
 			}
 			return nil, nil
 		},
-		p_mux,
+		pHTTPmux,
 		metrics,
 		false, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// HEALTH
@@ -346,11 +354,11 @@ func Init_handlers(p_mux *http.ServeMux,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			return nil, nil
 		},
-		p_mux,
+		pHTTPmux,
 		nil,   // no metrics for health endpoint
 		false, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 	return nil

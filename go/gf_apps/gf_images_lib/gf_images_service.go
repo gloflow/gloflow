@@ -35,9 +35,9 @@ import (
 
 //-------------------------------------------------
 func Init_service(p_http_mux *http.ServeMux,
-	p_service_info *gf_images_core.GF_service_info,
-	p_config       *gf_images_core.GF_config,
-	p_runtime_sys  *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
+	pServiceInfo  *gf_images_core.GFserviceInfo,
+	p_config      *gf_images_core.GF_config,
+	p_runtime_sys *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
 
 	//-------------
 	// DB_INDEXES
@@ -46,9 +46,9 @@ func Init_service(p_http_mux *http.ServeMux,
 
 	//-------------
 	// S3
-	s3_info, gf_err := gf_core.S3__init(p_service_info.AWS_access_key_id_str,
-		p_service_info.AWS_secret_access_key_str,
-		p_service_info.AWS_token_str,
+	s3_info, gf_err := gf_core.S3__init(pServiceInfo.AWS_access_key_id_str,
+		pServiceInfo.AWS_secret_access_key_str,
+		pServiceInfo.AWS_token_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
@@ -57,17 +57,17 @@ func Init_service(p_http_mux *http.ServeMux,
 	//-------------
 	// JOBS_MANAGER
 
-	jobs_mngr_ch := gf_images_jobs.Init(p_service_info.Images_store_local_dir_path_str,
-		p_service_info.Images_thumbnails_store_local_dir_path_str,
-		p_service_info.Media_domain_str,
+	jobs_mngr_ch := gf_images_jobs.Init(pServiceInfo.Images_store_local_dir_path_str,
+		pServiceInfo.Images_thumbnails_store_local_dir_path_str,
+		pServiceInfo.Media_domain_str,
 		p_config,
 		s3_info,
 		p_runtime_sys)
 
-	/*jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(p_service_info.Images_store_local_dir_path_str,
-		p_service_info.Images_thumbnails_store_local_dir_path_str,
-		// p_service_info.Images_main_s3_bucket_name_str,
-		p_service_info.Media_domain_str,
+	/*jobs_mngr_ch := gf_images_jobs.Jobs_mngr__init(pServiceInfo.Images_store_local_dir_path_str,
+		pServiceInfo.Images_thumbnails_store_local_dir_path_str,
+		// pServiceInfo.Images_main_s3_bucket_name_str,
+		pServiceInfo.Media_domain_str,
 		p_config,
 		s3_info,
 		p_runtime_sys)*/
@@ -75,10 +75,10 @@ func Init_service(p_http_mux *http.ServeMux,
 	//-------------
 	// IMAGE_FLOWS
 
-	// flows__templates_dir_path_str := p_service_info.Templates_dir_paths_map["flows_str"]
-	gf_err = gf_images_flows.Init_handlers(p_service_info.Auth_login_url_str,
+	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
+	gf_err = gf_images_flows.Init_handlers(pServiceInfo.AuthLoginURLstr,
 		p_http_mux,
-		p_service_info.Templates_paths_map,
+		pServiceInfo.Templates_paths_map,
 		jobs_mngr_ch,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -110,10 +110,11 @@ func Init_service(p_http_mux *http.ServeMux,
 
 	//-------------
 	// HANDLERS
-	gf_err = gf_images_service.Init_handlers(p_http_mux,
+	gf_err = gf_images_service.InitHandlers(pServiceInfo.AuthLoginURLstr,
+		p_http_mux,
 		jobs_mngr_ch,
 		p_config,
-		p_service_info.Media_domain_str,
+		pServiceInfo.Media_domain_str,
 		s3_info,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -140,7 +141,7 @@ func Init_service(p_http_mux *http.ServeMux,
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
 func Run_service(p_mux *http.ServeMux,
-	p_service_info *gf_images_core.GF_service_info,
+	pServiceInfo   *gf_images_core.GFserviceInfo,
 	p_init_done_ch chan bool,
 	p_log_fun      func(string, string)) {
 	p_log_fun("FUN_ENTER", "gf_images_service.Run_service()")
@@ -184,8 +185,8 @@ func Run_service(p_mux *http.ServeMux,
 		Log_fun:          p_log_fun,
 	}
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
-		p_service_info.Mongodb_db_name_str,
+	mongo_db, _, gf_err := gf_core.Mongo__connect_new(pServiceInfo.Mongodb_host_str,
+		pServiceInfo.Mongodb_db_name_str,
 		nil,
 		runtime_sys)
 	if gf_err != nil {
@@ -197,14 +198,14 @@ func Run_service(p_mux *http.ServeMux,
 	//-------------
 	// CONFIG
 
-	gf_config, gf_err := gf_images_core.Config__get(p_service_info.Config_file_path_str, runtime_sys)
+	gf_config, gf_err := gf_images_core.Config__get(pServiceInfo.Config_file_path_str, runtime_sys)
 	if gf_err != nil {
 		return
 	}
 
 	//------------------------
 	// INIT
-	Init_service(p_mux, p_service_info, gf_config, runtime_sys)
+	Init_service(p_mux, pServiceInfo, gf_config, runtime_sys)
 
 	//------------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
@@ -215,11 +216,11 @@ func Run_service(p_mux *http.ServeMux,
 	//----------------------
 
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", p_service_info.Port_str))
+	runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", pServiceInfo.Port_str))
 	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(fmt.Sprintf(":%s", p_service_info.Port_str), nil)
+	http_err := http.ListenAndServe(fmt.Sprintf(":%s", pServiceInfo.Port_str), nil)
 	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - %s", p_service_info.Port_str)
+		msg_str := fmt.Sprintf("cant start listening on port - %s", pServiceInfo.Port_str)
 		runtime_sys.Log_fun("ERROR", msg_str)
 		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		

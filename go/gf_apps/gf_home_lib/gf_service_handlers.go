@@ -67,7 +67,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	}
 
 	//---------------------
-	// HOME
+	// MAIN
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/main/",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 

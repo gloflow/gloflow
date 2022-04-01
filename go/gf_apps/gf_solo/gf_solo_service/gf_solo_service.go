@@ -182,7 +182,7 @@ func Run(p_config *GF_config,
 		return
 	}
 	
-	gf_images__service_info := &gf_images_core.GF_service_info{
+	gf_images__service_info := &gf_images_core.GFserviceInfo{
 		Mongodb_host_str:                           p_config.Mongodb_host_str,
 		Mongodb_db_name_str:                        p_config.Mongodb_db_name_str,
 
@@ -198,7 +198,7 @@ func Run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		Auth_login_url_str: "/landing/main/",
+		AuthLoginURLstr: "/landing/main/",
 	}
 
 	jobs_mngr_ch := gf_images_lib.Init_service(gfSoloHTTPmux,
