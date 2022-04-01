@@ -129,7 +129,7 @@ async function auth_method_pick() {
 
 //-------------------------------------------------
 export function get_standard_http_urls() {
-    const login_url_str = '/v1/identity/users/login';
+    const login_url_str = '/v1/identity/userpass/login';
     const urls_map = {
         "login": login_url_str
     };
