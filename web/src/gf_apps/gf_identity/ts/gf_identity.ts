@@ -213,6 +213,13 @@ export function get_http_api(p_urls_map) {
                 const output_map = await gf_admin_http.remove_from_invite_list(p_email_str);
                 return output_map;
             }
+        },
+
+        "general": {
+            "get_me": async ()=>{
+                const output_map = await gf_admin_http.get_all_users();
+                return output_map;
+            },
         }
     };
     return http_api_map;

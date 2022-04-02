@@ -60,6 +60,7 @@ $(document).ready(()=>{
     		'images_count_int': images_count_int,
     	});
     });
+
     //-----------------
 
     init(domains_infos_lst, log_fun);
@@ -118,8 +119,9 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 			pick_domain(p_domain_info_map);
 		},
 		p_log_fun);
+
 	//-----------------
-	//SORT DATA
+	// SORT DATA
 	p_domains_infos_lst.sort((a,b)=>{
 		const a_total = a['posts_count_int'] + a['images_count_int'];
 		const b_total = b['posts_count_int'] + b['images_count_int'];
@@ -133,6 +135,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 			return 0;
 		}
 	});
+
 	//-----------------
 
 	const ctx_map          = {};
@@ -140,7 +143,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
 		width_int-300, //max_width
 		100,           //max_height
 		ctx_map,
-		//domain_onPick_fun,
+		// domain_onPick_fun,
 		(p_domain_info_map :Object)=>{
 			pick_domain(p_domain_info_map);
 		},
@@ -175,7 +178,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
     	//Dart doesnt allow <a> tags to be included in html text, so <a> has
     	//to be created/added manually
     	const a = new HTMLAnchorElement();
-    	$(a).attr('href','http://www.gloflow.com/posts/'+url_encoded_title_str);
+    	$(a).attr('href', 'http://www.gloflow.com/posts/'+url_encoded_title_str);
     	$(a).text(p_post_title_str);
 
     	//'_blank' - open the link in a new window
@@ -185,6 +188,7 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
     	$(post).append(a);
     	return <HTMLDivElement> post.get(0);
     }
+
     //-----------------------------------------------------
 	function pick_domain(p_domain_info_map :Object) {
 		p_log_fun('FUN_ENTER', 'gf_domains_browser.init().pick_domain()');
@@ -223,8 +227,10 @@ export function init_viz(p_domains_infos_lst :Object[], p_log_fun) {
     		$(new_posts_element).append(post_element);
     	}
     }
+
     //-----------------------------------------------------
 }
+
 //-----------------------------------------------------
 function draw_domains_stats(p_domains_lst :Object[],
 	p_item_max_width_int   :number,
@@ -306,10 +312,11 @@ function draw_domains_stats(p_domains_lst :Object[],
 			domain_relative_width_int,
 			domain_relative_height_int,
 			domain_images_indicator_height_int,
-			color_int, //0xFF8851+i*10,
+			color_int, // 0xFF8851+i*10,
 			p_log_fun); 
+
     	//--------------
-    	//LAYOUT
+    	// LAYOUT
 
     	if (i>0) {
     		if (domain_spr.width > 30) {
@@ -385,7 +392,7 @@ function draw_domains_stats(p_domains_lst :Object[],
 	    	}
 	    	else {
 
-	    		//randomly enter this path
+	    		// randomly enter this path
 	    		if (random_bool()) {
 
 	    			if (random_bool()) {
@@ -406,8 +413,8 @@ function draw_domains_stats(p_domains_lst :Object[],
 			    	}
 		    	}
 		    	else {
-		    		//if there are less the 5 consequent left moves
-		    		//if (random_bool() && conseq_left_moves_int < 5) {
+		    		// if there are less the 5 consequent left moves
+		    		// if (random_bool() && conseq_left_moves_int < 5) {
 		    		if (conseq_left_moves_int < 5) {
 			    		domain_spr.x = last_spr.x + last_spr.width + 5; //MOVE RIGHT
 			    		domain_spr.y = last_spr.y;
@@ -427,6 +434,7 @@ function draw_domains_stats(p_domains_lst :Object[],
 		    	}
 	    	}
     	}
+		
     	//--------------
 
     	container.addChild(domain_spr);

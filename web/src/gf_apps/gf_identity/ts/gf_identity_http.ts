@@ -20,6 +20,37 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 //-------------------------------------------------
+// ME
+//-------------------------------------------------
+export function user_me() {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+
+        const url_str = '/v1/identity/me';
+        $.ajax({
+            'url':         url_str,
+            'type':        'GET',
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+//-------------------------------------------------
+// LOGIN
+//-------------------------------------------------
 // USER_PREFLIGHT__HTTP
 export function user_preflight(p_user_name_str,
     p_user_address_eth_str) {
@@ -165,6 +196,8 @@ export function user_mfa_confirm(p_user_name_str :string,
 }
 
 //-------------------------------------------------
+// CREATE
+//-------------------------------------------------
 // USER_ETH_CREATE__HTTP
 export function user_eth_create(p_user_address_eth_str :string,
     p_auth_signature_str :string) {
@@ -238,6 +271,8 @@ export function user_userpass_create(p_user_name_str :string,
     return p;
 }
 
+//-------------------------------------------------
+// UPDATE
 //-------------------------------------------------
 // USER_UPDATE__HTTP
 export function user_update(p_user_data_map) {

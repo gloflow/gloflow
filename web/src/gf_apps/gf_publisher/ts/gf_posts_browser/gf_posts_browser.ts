@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_sys_panel          from "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_sys_panel          from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_posts_browser_view from "./gf_posts_browser_view";
 
 //-----------------------------------------------------
@@ -50,7 +50,7 @@ export function init(p_log_fun) {
     //in the dom on app startup... subsequent page loads happen from the server
     const static_posts_infos_lst :Object[] = load_data_from_dom(p_log_fun);
 
-    gf_sys_panel.init(p_log_fun);
+    gf_sys_panel.init_with_auth(p_log_fun);
 
     gf_posts_browser_view.init(static_posts_infos_lst, p_log_fun);
 }

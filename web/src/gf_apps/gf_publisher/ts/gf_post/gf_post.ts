@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../../d/jquery.d.ts" />
 
-import * as gf_sys_panel       from "./../../../../gf_core/ts/gf_sys_panel";
+import * as gf_sys_panel       from "./../../../../gf_sys_panel/ts/gf_sys_panel";
 import * as gf_post_image_view from "./gf_post_image_view";
 import * as gf_tagger_input_ui from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
 
@@ -42,11 +42,12 @@ $(document).ready(()=>{
     //-------------------------------------------------
     init(log_fun);
 });
+
 //-----------------------------------------------------
 export function init(p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_post.init()');
     
-    gf_sys_panel.init(p_log_fun);
+    gf_sys_panel.init_with_auth(p_log_fun);
 
     const post_title_str :string      = $('#post_title').text();
     const post_tags_container_element = $('#post_tags_container');
