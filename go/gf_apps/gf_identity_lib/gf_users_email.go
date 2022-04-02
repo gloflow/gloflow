@@ -135,19 +135,22 @@ func users_email__confirm__pipeline(p_input *gf_identity_core.GF_user__http_inpu
 
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
-		var login_attempt *GF_login_attempt
-		login_attempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(p_input.User_name_str),
+		var loginAttempt *GF_login_attempt
+		loginAttempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(p_input.User_name_str),
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {
 			return false, "", gf_err
 		}
 
-		
+		if loginAttempt == nil {
+			return false, "login_attempt for this user has not been found in the DB, to mark its email_confirmed flag as true", nil
+		}
+
 		login_email_confirmed_bool := true
-		update_op := &GF_login_attempt__update_op{Email_confirmed_bool: &login_email_confirmed_bool}
-		gf_err = db__login_attempt__update(&login_attempt.Id_str,
-			update_op,
+		updateOp := &GF_login_attempt__update_op{Email_confirmed_bool: &login_email_confirmed_bool}
+		gf_err = db__login_attempt__update(&loginAttempt.Id_str,
+			updateOp,
 			p_ctx,
 			p_runtime_sys)
 		if gf_err != nil {

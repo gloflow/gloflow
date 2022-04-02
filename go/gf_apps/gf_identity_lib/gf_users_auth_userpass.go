@@ -79,13 +79,13 @@ type GF_user_auth_userpass__output_create struct {
 }
 
 //---------------------------------------------------
-func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpass__input_login_finalize,
+func users_auth_userpass__pipeline__login_finalize(pInput *GF_user_auth_userpass__input_login_finalize,
 	pServiceInfo *GF_service_info,
-	pCtx          context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
 
 	output := &GF_user_auth_userpass__output_login_finalize{}
-	userNameStr := gf_identity_core.GFuserName(p_input.UserNameStr)
+	userNameStr := gf_identity_core.GFuserName(pInput.UserNameStr)
 
 	//------------------------
 	// VERIFY_EMAIL_CONFIRMED
@@ -93,11 +93,11 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	// this is the initial confirmation of an email on user creation, or user email update.
 	if pServiceInfo.Enable_email_require_confirm_for_login_bool {
 
-		emailConfirmedBool, gf_err := db__user__get_email_confirmed_by_username(userNameStr,
+		emailConfirmedBool, gfErr := db__user__get_email_confirmed_by_username(userNameStr,
 			pCtx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		if !emailConfirmedBool {
@@ -111,11 +111,11 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	//------------------------
 	// USER_ID
 	
-	userIDstr, gf_err := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
+	userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
 		pCtx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	output.User_id_str = userIDstr
@@ -123,9 +123,9 @@ func users_auth_userpass__pipeline__login_finalize(p_input *GF_user_auth_userpas
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
-	JWTtokenVal, gf_err := gf_session.JWT__pipeline__generate(userIdentifierStr, pCtx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	JWTtokenVal, gfErr := gf_session.JWT__pipeline__generate(userIdentifierStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	output.JWT_token_val = JWTtokenVal
@@ -350,20 +350,24 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 	}
 
 	//------------------------
+	// USER_PERSIST
 	// DB__USER_CREATE
 	gf_err = db__user__create(user, p_ctx, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
+	//------------------------
+	// USER_CREDS_PERSIST
+
 	// SECRETS_STORE
 	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
 		p_runtime_sys.External_plugins.Secret_app__create_callback != nil {
 
-		secret_name_str := fmt.Sprintf("gf_user_creds@%s", user_name_str)
-		secret_description_str := fmt.Sprintf("user creds for a particular user")
+		secretNameStr := fmt.Sprintf("gf_user_creds@%s", user_name_str)
+		secretDescriptionStr := fmt.Sprintf("user creds for a particular user")
 
-		user_creds_map := map[string]interface{}{
+		userCredsMap := map[string]interface{}{
 			"user_creds_id_str":    user_creds_id_str, 
 			"creation_unix_time_f": creds__creation_unix_time_f,
 			"user_id_str":          user_id_str,
@@ -373,12 +377,12 @@ func users_auth_userpass__pipeline__create(p_input *GF_user_auth_userpass__input
 		}
 
 		// SECRET_STORE__USER_CREDS_CREATE
-		gf_err := p_runtime_sys.External_plugins.Secret_app__create_callback(secret_name_str,
-			user_creds_map,
-			secret_description_str,
+		gfErr := p_runtime_sys.External_plugins.Secret_app__create_callback(secretNameStr,
+			userCredsMap,
+			secretDescriptionStr,
 			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}
 	} else {
 
