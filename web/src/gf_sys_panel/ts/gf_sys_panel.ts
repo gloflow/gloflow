@@ -29,11 +29,13 @@ export async function init_with_auth(p_log_fun) {
 	
 	const auth_http_api_map = gf_identity.get_http_api(urls_map);
 
-	await init(auth_http_api_map, p_log_fun);
+	await init(auth_http_api_map, urls_map, p_log_fun);
 }
 
 //-----------------------------------------------------
-export async function init(p_auth_http_api_map, p_log_fun) {
+export async function init(p_auth_http_api_map,
+	p_urls_map,
+	p_log_fun) {
 
 	const sys_panel_element = $(
 		`<div id="sys_panel">
@@ -55,7 +57,6 @@ export async function init(p_auth_http_api_map, p_log_fun) {
 					</div>
 
 					<div id="auth">
-						<div id="login_btn">login</div>
 						<div id="current_user">
 							
 						</div>
@@ -107,6 +108,16 @@ export async function init(p_auth_http_api_map, p_log_fun) {
 				<div id="shorthand_username">${shorthand_str}</div>
 			`);
 		}
+
+		$("#current_user").on("click", ()=>{
+
+
+			const home_url_str   = p_urls_map["home"];
+			window.location.href = home_url_str;
+
+
+
+		});
 	}
 
 	//--------------------------

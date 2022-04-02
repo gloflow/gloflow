@@ -130,8 +130,10 @@ async function auth_method_pick() {
 //-------------------------------------------------
 export function get_standard_http_urls() {
     const login_url_str = '/v1/identity/userpass/login';
+    const home_url_str  = "/v1/home/main";
     const urls_map = {
-        "login": login_url_str
+        "login": login_url_str,
+        "home":  home_url_str,
     };
     return urls_map;
 }
@@ -139,8 +141,10 @@ export function get_standard_http_urls() {
 //-------------------------------------------------
 export function get_admin_http_urls() {
     const login_url_str = '/v1/admin/login';
+    const home_url_str  = "/v1/admin/dashboard";
     const urls_map = {
-        "login": login_url_str
+        "login": login_url_str,
+        "home":  home_url_str,
     };
     return urls_map;
 }
