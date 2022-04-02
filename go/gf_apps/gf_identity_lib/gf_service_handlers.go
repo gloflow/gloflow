@@ -130,7 +130,7 @@ func initHandlers(p_auth_login_url_str string,
 
 				//---------------------
 
-				confirmedBool, fail_msg_str, gf_err := users_email__confirm__pipeline(http_input,
+				confirmedBool, fail_msg_str, gf_err := usersEmailPipelineConfirm(http_input,
 					p_ctx,
 					pRuntimeSys)
 				if gf_err != nil {

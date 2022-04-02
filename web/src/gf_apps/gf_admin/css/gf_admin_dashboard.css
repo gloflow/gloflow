@@ -85,7 +85,7 @@ body {
 
 #invite_list {
 	background-color: #b9b9b9;
-	width: 268px;
+	width: 263px;
 	height: 250px;
 	position: absolute;
 	right: 191px;
@@ -130,11 +130,12 @@ body {
 #invite_list #current {
 	position: absolute;
 	top: 70px;
+	width: 264px;
 }
 #invite_list #current .invite {
 	background-color: gray;
 	position: relative;
-	width: 230px;
+	width: 253px;
 	height: 22px;
 	padding: 5px;
 	padding-bottom: 0px;
