@@ -51,21 +51,32 @@ function init_users_list(p_http_api_map, p_log_fun) {
         const users_lst  = output_map["users_lst"];
 
         //-------------------------------------------------
-        function view_user(p_invite_map) {
+        function view_user(p_user_map) {
 
-            const user_name_str      = p_invite_map["user_name_str"];
-            const email_str          = p_invite_map["email_str"];
-            const creation_unix_time = p_invite_map["creation_unix_time_f"];
+            const user_id_str        = p_user_map["user_id_str"];
+            const user_name_str      = p_user_map["user_name_str"];
+            const email_str          = p_user_map["email_str"];
+            const creation_unix_time = p_user_map["creation_unix_time_f"];
             const user_element = $(`
                 <div class="user">
                     <div class="user_name">${user_name_str}</div>
                     <div class="email">${email_str}</div>
+
+                    <div class="resend_email_confirm_btn">email confirm resend</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div>
                 </div>`);
 
             gf_time.init_creation_date(user_element, p_log_fun);
 
+
+            $(user_element).find(".resend_email_confirm_btn").on("click", async ()=>{
+                const output_map = await p_http_api_map["admin"]["resend_email_confirm"](user_id_str,
+                    user_name_str,
+                    email_str);
+
+                $(this).css("background-color", "green");
+            });
 
             return user_element;
         }

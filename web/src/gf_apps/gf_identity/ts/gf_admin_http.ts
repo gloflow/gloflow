@@ -19,6 +19,43 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+
+//-------------------------------------------------
+// GET_ALL_USERS
+export function resend_email_confirm(p_user_id_str :string,
+    p_user_name_str :string,
+    p_email_str     :string) {
+    const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+        const data_map = {
+            "user_id_str":   p_user_id_str,
+            "user_name_str": p_user_name_str,
+            "email_str":     p_email_str
+        };
+
+        const url_str = '/v1/admin/users/resend_confirm_email';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
 //-------------------------------------------------
 // GET_ALL_USERS
 export function get_all_users() {

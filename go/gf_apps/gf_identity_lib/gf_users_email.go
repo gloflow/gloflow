@@ -29,50 +29,47 @@ import (
 )
 
 //---------------------------------------------------
-func users_email__verify__pipeline(p_email_address_str string,
-	p_user_name_str   gf_identity_core.GFuserName,
-	p_user_id_str     gf_core.GF_ID,
-	p_domain_base_str string,
-	p_ctx             context.Context,
-	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
+func usersEmailPipelineVerify(pEmailAddressStr string,
+	pUserNameStr   gf_identity_core.GFuserName,
+	pUserIDstr     gf_core.GF_ID,
+	pDomainBaseStr string,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
 	
-	
-
 	//------------------------
 	// EMAIL_CONFIRM
 
-	confirm_code_str := users_email__generate_confirmation_code()
+	confirmCodeStr := users_email__generate_confirmation_code()
 
 	// DB
-	gf_err := db__user_email_confirm__create(p_user_name_str,
-		p_user_id_str,
-		confirm_code_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := db__user_email_confirm__create(pUserNameStr,
+		pUserIDstr,
+		confirmCodeStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
-	msg_subject_str, msg_body_html_str, msg_body_text_str := users_email__get_confirm_msg_info(p_user_name_str,
-		confirm_code_str,
-		p_domain_base_str)
+	msgSubjectStr, msgBodyHTMLstr, msgBodyTextStr := users_email__get_confirm_msg_info(pUserNameStr,
+		confirmCodeStr,
+		pDomainBaseStr)
 
 	// sender address
-	sender_address_str := fmt.Sprintf("gf-email-confirm@%s", p_domain_base_str)
+	senderAddressStr := fmt.Sprintf("gf-email-confirm@%s", pDomainBaseStr)
 
-	gf_err = gf_aws.AWS_SES__send_message(p_email_address_str,
-		sender_address_str,
-		msg_subject_str,
-		msg_body_html_str,
-		msg_body_text_str,
-		p_runtime_sys)
+	gfErr = gf_aws.AWS_SES__send_message(pEmailAddressStr,
+		senderAddressStr,
+		msgSubjectStr,
+		msgBodyHTMLstr,
+		msgBodyTextStr,
+		pRuntimeSys)
 	
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
-
 
 	return nil
 }

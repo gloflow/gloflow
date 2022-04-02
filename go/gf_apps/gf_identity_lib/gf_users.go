@@ -115,7 +115,7 @@ func users__pipeline__update(pInput *GF_user__input_update,
 	if pServiceInfo.Enable_email_bool {
 		if *pInput.Email_str != "" {
 
-			gfErr = users_email__verify__pipeline(*pInput.Email_str,
+			gfErr = usersEmailPipelineVerify(*pInput.Email_str,
 				userNameStr,
 				pInput.UserIDstr,
 				pServiceInfo.Domain_base_str,

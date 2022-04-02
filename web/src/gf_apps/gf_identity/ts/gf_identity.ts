@@ -216,7 +216,16 @@ export function get_http_api(p_urls_map) {
             "remove_from_invite_list": async (p_email_str :string)=>{
                 const output_map = await gf_admin_http.remove_from_invite_list(p_email_str);
                 return output_map;
-            }
+            },
+
+            "resend_email_confirm": async (p_user_id_str :string,
+                p_user_name_str :string,
+                p_email_str     :string)=>{
+                const output_map = await gf_admin_http.resend_email_confirm(p_user_id_str,
+                    p_user_name_str,
+                    p_email_str);
+                return output_map;
+            },
         },
 
         "general": {

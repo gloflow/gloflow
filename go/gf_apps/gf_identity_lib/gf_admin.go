@@ -56,8 +56,8 @@ type GF_admin__input_add_to_invite_list struct {
 }
 
 type GFadminRemoveFromInviteListInput struct {
-	UserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
-	EmailStr  string        `validate:"required,email"`
+	AdminUserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr       string        `validate:"required,email"`
 }
 
 type GFadminUserViewOutput struct {
@@ -69,6 +69,43 @@ type GFadminUserViewOutput struct {
 	EmailStr           string                                 `json:"email_str"`
 	EmailConfirmedBool bool                                   `json:"email_confirmed_bool"`
 	ProfileImageURLstr string                                 `json:"profile_image_url_str"`
+}
+
+type GFadminResendConfirmEmailInput struct {
+	UserIDstr   gf_core.GF_ID               `validate:"required,min=3,max=50"`
+	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	EmailStr    string                      `validate:"required,email"`
+}
+
+//------------------------------------------------
+func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
+	pCtx         context.Context,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	
+	//------------------------
+	// VALIDATE_INPUT
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//------------------------
+
+	if pServiceInfo.Enable_email_bool {
+
+		gfErr = usersEmailPipelineVerify(pInput.EmailStr,
+			pInput.UserNameStr,
+			pInput.UserIDstr,
+			pServiceInfo.Domain_base_str,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	}
+
+	return nil
 }
 
 //------------------------------------------------
@@ -198,13 +235,13 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 	// EVENT
 	if pServiceInfo.Enable_events_app_bool {
 		
-		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id_str":                pInput.UserIDstr,
+			"user_id_str":                pInput.AdminUserIDstr,
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
@@ -414,7 +451,7 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 		// has not yet been confirmed
 		if !login_attempt.Email_confirmed_bool {
 
-			gf_err = users_email__verify__pipeline(pInput.Email_str,
+			gf_err = usersEmailPipelineVerify(pInput.Email_str,
 				gf_identity_core.GFuserName(pInput.User_name_str),
 				user_id_str,
 				p_service_info.Domain_base_str,

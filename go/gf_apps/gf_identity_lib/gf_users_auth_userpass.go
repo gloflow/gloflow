@@ -271,7 +271,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	// EMAIL
 	if p_service_info.Enable_email_bool {
 
-		gf_err = users_email__verify__pipeline(p_input.Email_str,
+		gf_err = usersEmailPipelineVerify(p_input.Email_str,
 			p_input.User_name_str,
 			output.User_id_str,
 			p_service_info.Domain_base_str,

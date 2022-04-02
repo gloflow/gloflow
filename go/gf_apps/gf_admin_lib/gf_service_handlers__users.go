@@ -44,6 +44,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 		"/v1/admin/users/get_all",
 		"/v1/admin/users/get_all_invite_list",
 		"/v1/admin/users/add_to_invite_list",
+		"/v1/admin/users/resend_confirm_email",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
 
@@ -72,7 +73,6 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				if gfErr != nil {
 					return nil, gfErr
 				}
-
 
 				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
@@ -114,7 +114,6 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 					return nil, gf_err
 				}
 
-
 				gf_err = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
@@ -155,9 +154,9 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				var email_str string
-				if val_str, ok := input_map["email_str"]; ok {
-					email_str = val_str.(string)
+				var emailStr string
+				if valStr, ok := input_map["email_str"]; ok {
+					emailStr = valStr.(string)
 				}
 
 				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
@@ -167,7 +166,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 
 				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
 					UserIDstr: userIDstr,
-					EmailStr:  email_str,
+					EmailStr:  emailStr,
 				}
 
 				//---------------------
@@ -180,10 +179,10 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
+				outputMap := map[string]interface{}{
 					
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 			return nil, nil
 		},
@@ -201,9 +200,70 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				var emailStr string
+				if valStr, ok := inputMap["email_str"]; ok {
+					emailStr = valStr.(string)
+				}
+
+				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				input := &gf_identity_lib.GFadminRemoveFromInviteListInput{
+					AdminUserIDstr: adminUserIDstr,
+					EmailStr:       emailStr,
+				}
+
+				//---------------------
+
+				gfErr = gf_identity_lib.AdminPipelineUserRemoveFromInviteList(input,
+					pCtx,
+					pIdentityServiceInfo,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{
+					
+				}
+				return outputMap, nil
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+	// RESEND_CONFIRM_EMAIL
+	// AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/resend_confirm_email",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if pReq.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				
 				inputMap, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
+				}
+
+				var targetUserIDstr gf_core.GF_ID
+				if valStr, ok := inputMap["user_id_str"]; ok {
+					targetUserIDstr = gf_core.GF_ID(valStr.(string))
+				}
+				
+				var targetUserNameStr gf_identity_core.GFuserName
+				if valStr, ok := inputMap["user_name_str"]; ok {
+					targetUserNameStr = gf_identity_core.GFuserName(valStr.(string))
 				}
 
 				var emailStr string
@@ -216,14 +276,15 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input := &gf_identity_lib.GFadminRemoveFromInviteListInput{
-					UserIDstr: userIDstr,
-					EmailStr:  emailStr,
+				input := &gf_identity_lib.GFadminResendConfirmEmailInput{
+					UserIDstr:   targetUserIDstr,
+					UserNameStr: targetUserNameStr,
+					EmailStr:    emailStr,
 				}
 
 				//---------------------
 
-				gfErr = gf_identity_lib.AdminPipelineUserRemoveFromInviteList(input,
+				gfErr = gf_identity_lib.AdminPipelineUserResendConfirmEmail(input,
 					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
