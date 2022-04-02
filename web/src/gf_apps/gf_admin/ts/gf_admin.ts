@@ -53,7 +53,7 @@ function init_users_list(p_http_api_map, p_log_fun) {
         //-------------------------------------------------
         function view_user(p_user_map) {
 
-            const user_id_str        = p_user_map["user_id_str"];
+            const user_id_str        = p_user_map["id_str"];
             const user_name_str      = p_user_map["user_name_str"];
             const email_str          = p_user_map["email_str"];
             const creation_unix_time = p_user_map["creation_unix_time_f"];

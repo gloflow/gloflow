@@ -46,6 +46,8 @@ body {
 	padding: 5px;
 	padding-bottom: 5px;
 	padding-bottom: 0px;
+	
+	border-bottom: 0.5px #0ea1db solid;
 }
 #users_list #current .user .user_name {
 	position: absolute;
@@ -53,13 +55,29 @@ body {
 #users_list #current .user .email {
 	position: absolute;
 	left: 100px;
+	font-size: 10px;
+	padding-top: 2px;
 }
 #users_list #current .user .creation_time {
 	position: absolute;
-	right: 0px;
+	top: 4px;
+	right: 4px;
 	font-size: 10px;
 	padding-top: 3px;
 	padding-right: 5px;
+}
+
+#users_list #current .user .resend_email_confirm_btn {
+	font-size: 10px;
+	left: 310px;
+	position: absolute;
+	background-color: #1ea4d9;
+	padding: 2px;
+	padding-right: 2px;
+	padding-left: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	cursor: pointer;
 }
 
 /*----------------------------------------------------------*/
@@ -122,6 +140,7 @@ body {
 	padding-bottom: 0px;
 }
 #invite_list #current .invite .email {
+	font-size: 10px;
 	position: absolute;
 }
 #invite_list #current .invite .creation_time {
@@ -132,7 +151,7 @@ body {
 	padding-right: 5px;
 }
 #invite_list #current .invite .remove_btn {
-	right: 59px;
+	right: 70px;
 	position: absolute;
 	background-color: red;
 	padding-left: 5px;
