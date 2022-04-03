@@ -50,8 +50,8 @@ type GF_admin__output_create_admin struct {
 }
 
 type GF_admin__input_add_to_invite_list struct {
-	UserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
-	EmailStr  string        `validate:"required,email"`
+	AdminUserIDstr gf_core.GF_ID `validate:"required,min=3,max=50"`
+	EmailStr       string        `validate:"required,email"`
 }
 
 type GFadminRemoveFromInviteListInput struct {
@@ -223,13 +223,13 @@ func AdminPipelineUserAddToInviteList(pInput *GF_admin__input_add_to_invite_list
 	// EVENT
 	if pServiceInfo.Enable_events_app_bool {
 		
-		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.UserIDstr, pCtx, pRuntimeSys)
+		adminUserNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pInput.AdminUserIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
 
 		eventMetaMap := map[string]interface{}{
-			"user_id_str":                pInput.UserIDstr,
+			"user_id_str":                pInput.AdminUserIDstr,
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}

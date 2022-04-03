@@ -70,19 +70,34 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
+				}
+
+				var userIDstr string
+				if valStr, ok := inputMap["user_id_str"]; ok {
+					userIDstr = valStr.(string)
+				}
+
+				var userNameStr string
+				if valStr, ok := inputMap["user_name_str"]; ok {
+					userNameStr = valStr.(string)
 				}
 
 				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
-
+				
 				//---------------------
 
-				gfErr := gf_identity_lib.AdminPipelineDeleteUser(pCtx,
+				input := &gf_identity_lib.GFadminUserDeleteInput{
+					UserIDstr:   gf_core.GF_ID(userIDstr),
+					UserNameStr: gf_identity_core.GFuserName(userNameStr),
+				}
+				gfErr = gf_identity_lib.AdminPipelineDeleteUser(input,
+					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -110,12 +125,12 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -150,12 +165,12 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, userIDstr, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				_, adminUserIDstr, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
-				gf_err = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
+				gf_err = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -190,24 +205,24 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				input_map, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				var emailStr string
-				if valStr, ok := input_map["email_str"]; ok {
+				if valStr, ok := inputMap["email_str"]; ok {
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
-					UserIDstr: userIDstr,
-					EmailStr:  emailStr,
+					AdminUserIDstr: adminUserIDstr,
+					EmailStr:       emailStr,
 				}
 
 				//---------------------
