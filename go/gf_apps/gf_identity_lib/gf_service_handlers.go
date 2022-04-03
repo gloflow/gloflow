@@ -180,6 +180,15 @@ func initHandlers(p_auth_login_url_str string,
 						gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 						//---------------------
+
+						// now that user is logged in redirect them if a redirect URL was specified. 
+						if pServiceInfo.AuthLoginSuccessRedirectURLstr != "" {
+						
+							http.Redirect(pResp,
+								pReq,
+								pServiceInfo.AuthLoginSuccessRedirectURLstr,
+								301)
+						}
 					}
 
 				} else {
