@@ -65,7 +65,7 @@ func mfaPipelineConfirm(pInput *GF_user_auth_mfa__input_confirm,
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
 		var loginAttempt *GF_login_attempt
-		loginAttempt, gfErr = login_attempt__get_if_valid(pInput.UserNameStr,
+		loginAttempt, gfErr = loginAttemptGetIfValid(pInput.UserNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {

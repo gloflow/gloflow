@@ -51,6 +51,7 @@ type GF_user_auth_eth__output_login struct {
 
 // io_create
 type GF_user_auth_eth__input_create struct {
+	UserTypeStr          string                               `validate:"required"` // "admin" | "standard"
 	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"required,eth_addr"`
 	Auth_signature_str   gf_identity_core.GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
 }
@@ -261,6 +262,7 @@ func users_auth_eth__pipeline__create(p_input *GF_user_auth_eth__input_create,
 		V_str:                "0",
 		Id_str:               user_id,
 		Creation_unix_time_f: creation_unix_time_f,
+		UserTypeStr:          p_input.UserTypeStr,
 		Addresses_eth_lst:    user_addresses_eth_lst,
 	}
 

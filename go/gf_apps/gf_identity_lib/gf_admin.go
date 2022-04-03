@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"time"
 	"context"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -262,30 +261,31 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 // is used to keep track of which stages have completed.
 
 func Admin__pipeline__login(pInput *GF_admin__input_login,
-	p_ctx          context.Context,
+	pCtx           context.Context,
 	p_local_hub    *sentry.Hub,
 	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_admin__output_login, *gf_core.GF_error) {
-
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_admin__output_login, *gf_core.GF_error) {
+	
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(pInput, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
 
+	userNameStr := gf_identity_core.GFuserName(pInput.User_name_str)
 	output := &GF_admin__output_login{}
 
 	//------------------------
 	// VERIFY
 
-	user_exists_bool, gf_err := db__user__exists_by_username(gf_identity_core.GFuserName(pInput.User_name_str),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	user_exists_bool, gfErr := db__user__exists_by_username(userNameStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	
@@ -309,9 +309,10 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 			// create one in the DB
 
 			input_create := &GF_user_auth_userpass__input_create{
-				User_name_str: gf_identity_core.GFuserName(pInput.User_name_str),
+				User_name_str: userNameStr,
 				Pass_str:      pInput.Pass_str,
 				Email_str:     pInput.Email_str,
+				UserTypeStr:   "admin",
 			}
 
 			// BREADCRUMB
@@ -319,12 +320,13 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 				map[string]interface{}{"email_str": pInput.Email_str, "user_name_str": pInput.User_name_str},
 				p_local_hub)
 			
-			output_create, gf_err := admin__pipeline__create_admin(input_create,
+			// CREATE
+			output_create, gfErr := admin__pipeline__create_admin(input_create,
 				p_service_info,
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------------
@@ -338,11 +340,11 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 		}
 	
 	} else {
-		existing_user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByUsername(gf_identity_core.GFuserName(pInput.User_name_str),
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		existing_user_id_str, gfErr := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		user_id_str             = existing_user_id_str
@@ -357,14 +359,20 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 	//------------------------
 	// LOGIN_ATTEMPT
 
-	// get a preexisting login_attempt if one exists and hasnt expired for this user.
+	userTypeStr := "admin"
+	loginAttempt, gfErr := loginAttemptGetOrCreate(userNameStr, userTypeStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	/*// get a preexisting login_attempt if one exists and hasnt expired for this user.
 	// if it has then a new one will have to be created.
 	var login_attempt *GF_login_attempt
-	login_attempt, gf_err = login_attempt__get_if_valid(gf_identity_core.GFuserName(pInput.User_name_str),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	login_attempt, gfErr = login_attempt__get_if_valid(userNameStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	if login_attempt == nil {
@@ -381,31 +389,31 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 			Id_str:               login_attempt_id_str,
 			Creation_unix_time_f: creation_unix_time_f,
 			User_type_str:        "admin",
-			User_name_str:        gf_identity_core.GFuserName(pInput.User_name_str),
+			User_name_str:        userNameStr,
 		}
-		gf_err := db__login_attempt__create(login_attempt,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		gfErr := db__login_attempt__create(login_attempt,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		//------------------------
-	}
+	}*/
 	
 	//------------------------
 	// VERIFY_PASSWORD
 
 	// only verify password if the login_attempt didnt mark it yet as complete
-	if !login_attempt.Pass_confirmed_bool {
+	if !loginAttempt.Pass_confirmed_bool {
 
-		pass_valid_bool, gf_err := users_auth_userpass__verify_pass(gf_identity_core.GFuserName(pInput.User_name_str),
+		pass_valid_bool, gfErr := users_auth_userpass__verify_pass(userNameStr,
 			pInput.Pass_str,
 			p_service_info,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		if !pass_valid_bool {
@@ -419,12 +427,12 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 			// if password is valid then update the login_attempt 
 			// to indicate that the password has been confirmed
 			update_op := &GF_login_attempt__update_op{Pass_confirmed_bool: &pass_valid_bool}
-			gf_err = db__login_attempt__update(&login_attempt.Id_str,
+			gfErr = db__login_attempt__update(&loginAttempt.Id_str,
 				update_op,
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------------
@@ -438,7 +446,7 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 				}
 				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					event_meta,
-					p_runtime_sys)
+					pRuntimeSys)
 			}
 		}
 	}
@@ -449,16 +457,16 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 
 		// go through the email verification pipeline if the email
 		// has not yet been confirmed
-		if !login_attempt.Email_confirmed_bool {
+		if !loginAttempt.Email_confirmed_bool {
 
-			gf_err = usersEmailPipelineVerify(pInput.Email_str,
-				gf_identity_core.GFuserName(pInput.User_name_str),
+			gfErr = usersEmailPipelineVerify(pInput.Email_str,
+				userNameStr,
 				user_id_str,
 				p_service_info.Domain_base_str,
-				p_ctx,
-				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			// EVENT
@@ -470,7 +478,7 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 				}
 				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					event_meta,
-					p_runtime_sys)
+					pRuntimeSys)
 			}
 
 			//------------------------
@@ -504,6 +512,7 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 		event_meta := map[string]interface{}{
 			"user_id_str":     output.User_id_str,
 			"user_name_str":   p_input.User_name_str,
+			"user_type_str":   p_input.UserTypeStr,
 			"domain_base_str": p_service_info.Domain_base_str,
 		}
 		gf_events.Emit_app(GF_EVENT_APP__ADMIN_CREATE,

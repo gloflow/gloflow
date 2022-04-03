@@ -34,6 +34,7 @@ type GFuser struct {
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
+	UserTypeStr       string                      `bson:"user_type_str"`   // "admin" | "standard"
 	User_name_str     gf_identity_core.GFuserName `bson:"user_name_str"`   // set once at the creation of the user
 	Screen_name_str   string                      `bson:"screen_name_str"` // changable durring the lifetime of the user
 	

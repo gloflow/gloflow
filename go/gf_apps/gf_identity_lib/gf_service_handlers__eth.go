@@ -158,6 +158,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 				}
 
 				input :=&GF_user_auth_eth__input_create{
+					UserTypeStr:          "standard",
 					User_address_eth_str: gf_identity_core.GF_user_address_eth(input_map["user_address_eth_str"].(string)),
 					Auth_signature_str:   gf_identity_core.GF_auth_signature(input_map["auth_signature_str"].(string)),
 				}

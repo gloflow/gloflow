@@ -117,45 +117,45 @@ func initHandlers(p_auth_login_url_str string,
 	// EMAIL_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
 
 				//---------------------
 				// INPUT
-				http_input, gf_err := gf_identity_core.Http__get_email_confirm_input(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				httpInput, gfErr := gf_identity_core.Http__get_email_confirm_input(p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//---------------------
 
-				confirmedBool, fail_msg_str, gf_err := usersEmailPipelineConfirm(http_input,
-					p_ctx,
+				confirmedBool, failMsgStr, gfErr := usersEmailPipelineConfirm(httpInput,
+					pCtx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				if confirmedBool {
 
 					// redirect user to login page
 					// "email_confirmed=1" - signals to the UI that email has been confirmed
-					url_redirect_str := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
+					URLredirectStr := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
 						rpcHandlerRuntime.Auth_login_url_str,
-						http_input.User_name_str)
+						httpInput.User_name_str)
 
 					// REDIRECT
 					http.Redirect(p_resp,
 						p_req,
-						url_redirect_str,
+						URLredirectStr,
 						301)
 
 				} else {
-					output_map := map[string]interface{}{
-						"fail_msg_str": fail_msg_str,
+					outputMap := map[string]interface{}{
+						"fail_msg_str": failMsgStr,
 					}
-					return output_map, nil
+					return outputMap, nil
 				}
 			}
 			return nil, nil
