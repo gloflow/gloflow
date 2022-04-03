@@ -63,6 +63,7 @@ function init_users_list(p_http_api_map, p_log_fun) {
                     <div class="email">${email_str}</div>
 
                     <div class="resend_email_confirm_btn">email confirm resend</div>
+                    <div class="delete_btn">delete</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div>
                 </div>`);
@@ -76,6 +77,31 @@ function init_users_list(p_http_api_map, p_log_fun) {
                     email_str);
 
                 $(this).css("background-color", "green");
+            });
+            
+            // DELETE
+            $(user_element).find(".delete_btn").on("click", async ()=>{
+
+                const confirm_deletion_dialog = $(`<div class="confirm_deletion_dialog">
+                    <div class="label">really want to delete user [${user_name_str}]</div>
+                    <div class="confirm_btn">confirm</div>
+                    <div class="close_btn">x</div>
+                </div>`)
+                $(user_element).append(confirm_deletion_dialog);
+
+                $(confirm_deletion_dialog).find(".close_btn").on("click", async ()=>{
+                    $(confirm_deletion_dialog).remove();
+                });
+
+                $(confirm_deletion_dialog).find(".confirm_btn").on("click", async ()=>{
+
+                    // HTTP
+                    const output_map = await p_http_api_map["admin"]["delete_user"](user_id_str,
+                        user_name_str);
+    
+                    $(user_element).remove();
+                });
+                
             });
 
             return user_element;

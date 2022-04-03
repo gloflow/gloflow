@@ -200,7 +200,11 @@ export function get_http_api(p_urls_map) {
 
         // ADMIN
         "admin": {
-            
+            "delete_user": async (p_user_id_str :string,
+                p_user_name_str :string)=>{
+                const output_map = await gf_admin_http.delete_user(p_user_id_str, p_user_name_str);
+                return output_map;
+            },
             "get_all_users": async ()=>{
                 const output_map = await gf_admin_http.get_all_users();
                 return output_map;
