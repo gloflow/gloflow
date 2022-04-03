@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_time         from "./../../../gf_core/ts/gf_time";
+import * as gf_time from "./../../../gf_core/ts/gf_time";
 
 //-------------------------------------------------
 export async function init(p_http_api_map, p_log_fun) {
@@ -53,16 +53,16 @@ function init_users_list(p_http_api_map, p_log_fun) {
         //-------------------------------------------------
         function view_user(p_user_map) {
 
-            const user_id_str        = p_user_map["id_str"];
-            const user_name_str      = p_user_map["user_name_str"];
-            const email_str          = p_user_map["email_str"];
-            const creation_unix_time = p_user_map["creation_unix_time_f"];
+            const user_id_str          = p_user_map["id_str"];
+            const user_name_str        = p_user_map["user_name_str"];
+            const email_str            = p_user_map["email_str"];
+            const creation_unix_time   = p_user_map["creation_unix_time_f"];
+            const email_confirmed_bool = p_user_map["email_confirmed_bool"];
+
             const user_element = $(`
                 <div class="user">
                     <div class="user_name">${user_name_str}</div>
-                    <div class="email">${email_str}</div>
-
-                    <div class="resend_email_confirm_btn">email confirm resend</div>
+                    <div class="email">${email_str}</div>                    
                     <div class="delete_btn">delete</div>
                     <div class="creation_time">${creation_unix_time}</div>
                     <div>
@@ -70,14 +70,25 @@ function init_users_list(p_http_api_map, p_log_fun) {
 
             gf_time.init_creation_date(user_element, p_log_fun);
 
+            // IMPORTANT!! - if email is not confirmed yet for a particular user,
+            //               show the button allowing for resending of email_confirmation emails
+            if (!email_confirmed_bool) {
 
-            $(user_element).find(".resend_email_confirm_btn").on("click", async ()=>{
-                const output_map = await p_http_api_map["admin"]["resend_email_confirm"](user_id_str,
-                    user_name_str,
-                    email_str);
+                const resend_btn = $(`<div class="resend_email_confirm_btn">email confirm resend</div>`);
+                $(user_element).append(resend_btn);
 
-                $(this).css("background-color", "green");
-            });
+                $(resend_btn).on("click", async ()=>{
+                    const output_map = await p_http_api_map["admin"]["resend_email_confirm"](user_id_str,
+                        user_name_str,
+                        email_str);
+
+                    $(this).css("background-color", "green");
+                });
+            }
+            else {
+                const email_confirmed = $(`<div class="email_confirmed">email confirmed</div>`);
+                $(user_element).append(email_confirmed);
+            }
             
             // DELETE
             $(user_element).find(".delete_btn").on("click", async ()=>{

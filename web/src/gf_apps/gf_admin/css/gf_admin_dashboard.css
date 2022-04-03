@@ -68,9 +68,9 @@ body {
 }
 
 #users_list #current .user .resend_email_confirm_btn {
-	font-size: 10px;
-	left: 310px;
 	position: absolute;
+	left: 310px;
+	font-size: 10px;
 	background-color: #1ea4d9;
 	padding: 2px;
 	padding-right: 2px;
@@ -78,6 +78,18 @@ body {
 	padding-left: 5px;
 	padding-right: 5px;
 	cursor: pointer;
+}
+
+#users_list #current .user .email_confirmed {
+	position: absolute;
+	left: 310px;
+	font-size: 10px;
+	background-color: green;
+	padding: 2px;
+	padding-right: 2px;
+	padding-left: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 /*----------------------------------------------------------*/
