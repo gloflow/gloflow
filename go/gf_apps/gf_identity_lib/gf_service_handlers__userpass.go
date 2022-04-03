@@ -155,6 +155,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					User_name_str: gf_identity_core.GFuserName(inputMap["user_name_str"].(string)),
 					Pass_str:      inputMap["pass_str"].(string),
 					Email_str:     inputMap["email_str"].(string),
+					UserTypeStr:   "standard",
 				}
 
 				//---------------------

@@ -253,6 +253,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 	// USER_CREATE
 	
 	input__create := &GF_user_auth_eth__input_create{
+		UserTypeStr:          "standard",
 		Auth_signature_str:   gf_identity_core.GF_auth_signature(test_user_signature_str),
 		User_address_eth_str: gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
 		// Nonce_val_str:   nonce.Val_str,

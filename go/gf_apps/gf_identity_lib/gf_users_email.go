@@ -222,7 +222,7 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 
 	confirmBtnStr := fmt.Sprintf(`
 		<div id="confirm_btn" style="
-			width: 100%;
+			width: 100%%;
 			background-color: #e17d44;
 			text-align: center;
 			padding-top: 12px;
