@@ -31,6 +31,7 @@ import (
 
 //---------------------------------------------------
 type GF_user__update_op struct {
+	DeletedBool          *bool // if nil dont update, else update to true/false
 	User_name_str        gf_identity_core.GFuserName
 	Description_str      string
 	Email_str            string
@@ -124,6 +125,12 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 	//------------------------
 	// FIELDS
 	fields_targets := bson.M{}
+
+	// DeletedBool - is a pointer. if its not nil, then set
+	//               the deleted_bool field to either true/false.
+	if p_update_op.DeletedBool != nil {
+		fields_targets["deleted_bool"] = p_update_op.DeletedBool
+	}
 
 	if string(p_update_op.User_name_str) != "" {
 		fields_targets["username_str"] = p_update_op.User_name_str

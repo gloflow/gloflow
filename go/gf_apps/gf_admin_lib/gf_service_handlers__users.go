@@ -41,6 +41,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/v1/admin/users/delete",
 		"/v1/admin/users/get_all",
 		"/v1/admin/users/get_all_invite_list",
 		"/v1/admin/users/add_to_invite_list",
@@ -57,6 +58,46 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 		Sentry_hub:         pLocalHub,
 		Auth_login_url_str: "/v1/admin/login_ui",
 	}
+
+	//---------------------
+	// DELETE
+	// AUTH
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/delete",
+		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			if pReq.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				
+				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				gfErr := gf_identity_lib.AdminPipelineDeleteUser(pCtx,
+					pIdentityServiceInfo,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{
+					
+				}
+				return outputMap, nil
+			}
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// GET_ALL

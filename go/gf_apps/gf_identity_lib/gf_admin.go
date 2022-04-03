@@ -76,6 +76,38 @@ type GFadminResendConfirmEmailInput struct {
 	EmailStr    string                      `validate:"required,email"`
 }
 
+type GFadminUserDeleteInput struct {
+	UserIDstr   gf_core.GF_ID               `validate:"required,min=3,max=50"`
+	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+}
+
+//------------------------------------------------
+// PIPELINE_DELETE_USER
+func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
+	pCtx         context.Context,
+	pServiceInfo *GF_service_info,
+	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+	deletedBool := true
+	updateOp := &GF_user__update_op{
+		DeletedBool: &deletedBool,
+	}
+
+	// UPDATE_USER - mark user as email_confirmed
+	gfErr := db__user__update(pInput.UserIDstr,
+		updateOp,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	
+
+	return nil
+}
+
 //------------------------------------------------
 func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 	pCtx         context.Context,
