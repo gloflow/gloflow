@@ -133,7 +133,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
 		var loginAttempt *GF_login_attempt
-		loginAttempt, gfErr = login_attempt__get_if_valid(gf_identity_core.GFuserName(pInput.User_name_str),
+		loginAttempt, gfErr = loginAttemptGetIfValid(gf_identity_core.GFuserName(pInput.User_name_str),
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -202,10 +202,37 @@ func users_email__generate_confirmation_code() string {
 
 //---------------------------------------------------
 func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
-	p_confirm_code_str string,
-	p_domain_str       string) (string, string, string) {
+	pConfirmCodeStr string,
+	pDomainStr       string) (string, string, string) {
 
-	subject_str := fmt.Sprintf("%s - confirm your email", p_domain_str)
+	subject_str := fmt.Sprintf("%s - confirm your email", pDomainStr)
+	
+
+
+	welcomeMsgStr := fmt.Sprintf(`
+		<div id="welcome_message" style="
+			margin-left: 10px;
+			padding-top: 9px;
+			margin-top:  33px;">
+			Hello <span style="font-weight: bold;">%s</span>.
+			Welcome to %s!</div>
+		<div>`,
+		pUserNameStr,
+		pDomainStr)
+
+	confirmBtnStr := fmt.Sprintf(`
+		<div id="confirm_btn" style="
+			width: 100%;
+			background-color: #e17d44;
+			text-align: center;
+			padding-top: 12px;
+			padding-bottom: 14px;
+			cursor: pointer;">
+			<a style="color: white; cursor: pointer;text-decoration: none;" href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
+		</div>`,
+		pDomainStr,
+		pUserNameStr,
+		pConfirmCodeStr)
 
 	html_str := fmt.Sprintf(`
 		<div>
@@ -225,17 +252,22 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 				<img src="https://gloflow.com/images/d/gf_logo_0.3.png"></img>
 			</div>
 			<div>
-				<div id="welcome_message" style="
-					font-weight: bold;
-					margin-left: 10px;
-					padding-top: 9px;">
-					Hello %s.
-					Welcome to %s!</div>
-				<div>
+				%s
 			</div>
-			<div id="confirm_email" style="background-color: rgb(214, 95, 54);margin-top: 29px;padding: 10px;width: 360px;">
-				<div style="font-size:'14px';">Please click on the bellow link to confirm your email address.</div>
-				<a style="color: white; cursor: pointer;" href="https://%s/v1/identity/email_confirm?u=%s&c=%s">confirm email</a>
+			<div id="confirm_email" style="
+				background-color: rgb(234, 206, 196);
+				margin-top: 50px;
+				padding: 10px;
+				width: 360px;
+				margin-bottom: 50px;">
+				
+				<div style="
+					font-size:     12px;
+					margin-bottom: 8px;">Please click on the bellow link to confirm your email address.
+				</div>
+
+				%s
+				
 			</div>
 			<div>
 				<div id="message" style="
@@ -250,11 +282,8 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 				don't reply to this email
 			</div>
 		</div>`,
-		pUserNameStr,
-		p_domain_str,
-		p_domain_str,
-		pUserNameStr,
-		p_confirm_code_str)
+		welcomeMsgStr,
+		confirmBtnStr)
 
 	text_str := fmt.Sprintf(`
 		Welcome to %s!
@@ -263,9 +292,9 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 		Please open the following link in your browser to confirm your email address.
 		
 		https://%s/v1/identity/email_confirm?c=%s`,
-		p_domain_str,
-		p_domain_str,
-		p_confirm_code_str)
+		pDomainStr,
+		pDomainStr,
+		pConfirmCodeStr)
 
 	return subject_str, html_str, text_str
 }
