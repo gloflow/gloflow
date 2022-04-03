@@ -117,13 +117,13 @@ func initHandlers(p_auth_login_url_str string,
 	// EMAIL_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//---------------------
 				// INPUT
-				httpInput, gfErr := gf_identity_core.Http__get_email_confirm_input(p_req, pRuntimeSys)
+				httpInput, gfErr := gf_identity_core.Http__get_email_confirm_input(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -139,17 +139,48 @@ func initHandlers(p_auth_login_url_str string,
 
 				if confirmedBool {
 
-					// redirect user to login page
-					// "email_confirmed=1" - signals to the UI that email has been confirmed
-					URLredirectStr := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
-						rpcHandlerRuntime.Auth_login_url_str,
-						httpInput.User_name_str)
+					userNameStr := httpInput.User_name_str
 
-					// REDIRECT
-					http.Redirect(p_resp,
-						p_req,
-						URLredirectStr,
-						301)
+					// for admins the login process has not completed yet after email confirmation
+					if userNameStr == "admin" {
+
+						// redirect user to login page
+						// "email_confirmed=1" - signals to the UI that email has been confirmed
+						URLredirectStr := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
+							rpcHandlerRuntime.Auth_login_url_str,
+							userNameStr)
+
+						// REDIRECT
+						http.Redirect(pResp,
+							pReq,
+							URLredirectStr,
+							301)
+					} else {
+
+						// for non-admins email confirmation is only run initially on user creation
+						// and if successfuly will login the user
+						//---------------------
+						// LOGIN_FINALIZE
+
+						loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
+							UserNameStr: userNameStr,
+						}
+						loginFinalizeOutput, gf_err := users_auth_userpass__pipeline__login_finalize(loginFinalizeInput,
+							pServiceInfo,
+							pCtx,
+							pRuntimeSys)
+						if gf_err != nil {
+							return nil, gf_err
+						}
+
+						//---------------------					
+						// SET_SESSION_ID - sets gf_sid cookie on all future requests
+						sessionDataStr     := string(loginFinalizeOutput.JWT_token_val)
+						sessionTTLhoursInt := 24 // 1 day
+						gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
+
+						//---------------------
+					}
 
 				} else {
 					outputMap := map[string]interface{}{
