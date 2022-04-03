@@ -44,14 +44,76 @@ type GF_login_attempt struct {
 }
 
 //---------------------------------------------------
-func login_attempt__get_if_valid(p_user_name_str gf_identity_core.GFuserName,
+func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
+	pUserTypeStr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
+	
+	// GET
+	// get a preexisting login_attempt if one exists and hasnt expired for this user.
+	// if it has then a new one will have to be created.
+	var loginAttempt *GF_login_attempt
+	loginAttempt, gfErr := loginAttemptGetIfValid(pUserNameStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	if loginAttempt == nil {
+
+		//------------------------
+		// CREATE_LOGIN_ATTEMPT
+
+		loginAttempt, gfErr = loginAttempCreate(pUserNameStr, pUserTypeStr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		//------------------------
+	}
+
+	return loginAttempt, nil
+}
+
+//---------------------------------------------------
+// CREATE
+func loginAttempCreate(pUserNameStr gf_identity_core.GFuserName,
+	pUserTypeStr string,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
+
+	userIdentifierStr := string(pUserNameStr)
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	loginAttemptIDstr := usersCreateID(userIdentifierStr, creationUNIXtimeF)
+
+	loginAttempt := &GF_login_attempt{
+		V_str:                "0",
+		Id_str:               loginAttemptIDstr,
+		Creation_unix_time_f: creationUNIXtimeF,
+		User_type_str:        pUserTypeStr,
+		User_name_str:        pUserNameStr,
+	}
+	gfErr := db__login_attempt__create(loginAttempt,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	return loginAttempt, nil
+}
+
+//---------------------------------------------------
+// GET_IF_VALID
+func loginAttemptGetIfValid(pUserNameStr gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
 
 	login_attempt_max_age_seconds_f := 5*60.0
 	
 	var login_attempt *GF_login_attempt
-	login_attempt, gf_err := db__login_attempt__get_by_username(p_user_name_str,
+	login_attempt, gf_err := db__login_attempt__get_by_username(pUserNameStr,
 		p_ctx,
 		p_runtime_sys)
 	if gf_err != nil {
