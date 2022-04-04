@@ -92,6 +92,19 @@ body {
 	padding-right: 5px;
 }
 
+#users_list #current .user .delete_btn {
+	background-color: red;
+	width: 48px;
+	left: 488px;
+	position: absolute;
+	font-size: 10px;
+	padding-left: 20px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	top: 3px;
+	cursor: pointer;
+}
+
 /*----------------------------------------------------------*/
 /*INVITE_LIST*/
 
