@@ -45,6 +45,7 @@ func initHandlers(p_auth_login_url_str string,
 		"/v1/identity/mfa_confirm",
 		"/v1/identity/update",
 		"/v1/identity/me",
+		"/v1/identity/register_invite_email",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers(pServiceInfo.Name_str, handlersEndpointsLst)
 
@@ -155,6 +156,7 @@ func initHandlers(p_auth_login_url_str string,
 							pReq,
 							URLredirectStr,
 							301)
+						
 					} else {
 
 						// for non-admins email confirmation is only run initially on user creation
@@ -165,7 +167,7 @@ func initHandlers(p_auth_login_url_str string,
 						loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
 							UserNameStr: userNameStr,
 						}
-						loginFinalizeOutput, gf_err := users_auth_userpass__pipeline__login_finalize(loginFinalizeInput,
+						loginFinalizeOutput, gf_err := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
 							pServiceInfo,
 							pCtx,
 							pRuntimeSys)
@@ -251,7 +253,7 @@ func initHandlers(p_auth_login_url_str string,
 					loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
 						UserNameStr: userNameStr,
 					}
-					loginFinalizeOutput, gf_err := users_auth_userpass__pipeline__login_finalize(loginFinalizeInput,
+					loginFinalizeOutput, gf_err := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
 						pServiceInfo,
 						pCtx,
 						pRuntimeSys)
@@ -369,6 +371,20 @@ func initHandlers(p_auth_login_url_str string,
 		pRuntimeSys)
 
 	//---------------------
+	// REGISTER_INVITE_EMAIL
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/register_invite_email",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+			
+			
+			dataMap := map[string]interface{}{}
+			return dataMap, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+
 
 	return nil
 }

@@ -88,8 +88,8 @@ func Run(p_config *GF_config,
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
 		Name_str:                       "gf_identity",
 		Domain_base_str:                p_config.Domain_base_str,
-		AuthLoginURLstr:                "/landing/main/", // on email confirm redirect user to this
-		AuthLoginSuccessRedirectURLstr: "/v1/home/main",  // on login success redirecto to home
+		AuthLoginURLstr:                "/landing/main", // on email confirm redirect user to this
+		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
 		Enable_events_app_bool:                  true,
 		Enable_user_creds_in_secrets_store_bool: true,
 		Enable_email_bool:                       true,
@@ -161,7 +161,7 @@ func Run(p_config *GF_config,
 	// GF_HOME
 
 	homeServiceInfo := &gf_home_lib.GFserviceInfo{
-		AuthLoginURLstr: "/landing/main/", // if not logged in redirect users to this
+		AuthLoginURLstr: "/landing/main", // if not logged in redirect users to this
 	}
 
 	gfErr = gf_home_lib.InitService(p_config.Templates_paths_map,

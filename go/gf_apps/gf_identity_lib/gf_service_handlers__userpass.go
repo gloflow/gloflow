@@ -91,7 +91,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// LOGIN
-				output, gfErr := users_auth_userpass__pipeline__login(input, 
+				output, gfErr := usersAuthUserpassPipelineLogin(input, 
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
@@ -107,27 +107,12 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 
-				// if the user succeeds to login (user exists and the password is valid)
-				// redirect them if a redirect URL was specified. 
-				if pServiceInfo.AuthLoginSuccessRedirectURLstr != "" &&
-					output.User_exists_bool && 
-					output.Pass_valid_bool {
-					
-					http.Redirect(pResp,
-						pReq,
-						pServiceInfo.AuthLoginSuccessRedirectURLstr,
-						301)
-
-				}  else {
-					outputMap := map[string]interface{}{
-						"user_exists_bool": output.User_exists_bool,
-						"pass_valid_bool":  output.Pass_valid_bool,
-						"user_id_str":      output.User_id_str,
-					}
-					return outputMap, nil
+				outputMap := map[string]interface{}{
+					"user_exists_bool": output.User_exists_bool,
+					"pass_valid_bool":  output.Pass_valid_bool,
+					"user_id_str":      output.User_id_str,
 				}
-
-				return nil, nil
+				return outputMap, nil
 			}
 
 			return nil, nil

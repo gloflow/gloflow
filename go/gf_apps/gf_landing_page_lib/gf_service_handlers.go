@@ -28,14 +28,14 @@ import (
 
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_http_mux    *http.ServeMux,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
+	pHTTPmux    *http.ServeMux,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -43,32 +43,32 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
-		"/landing/main/",
+		"/landing/main",
 		"/landing/register_invite_email",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_landing_page", handlers_endpoints_lst)
 
 	//---------------------
 	// MAIN
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/landing/main/",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/landing/main",
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
 
 
 				imgs__max_random_cursor_position_int  := 10000
 				posts__max_random_cursor_position_int := 2000
-				gf_err := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
+				gfErr := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
 					posts__max_random_cursor_position_int,
 					5,  // p_featured_posts_to_get_int
 					10, // p_featured_imgs_to_get_int
 					gf_templates.tmpl,
 					gf_templates.subtemplates_names_lst,
 					p_resp,
-					p_runtime_sys)
+					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 			}
 			
@@ -77,27 +77,11 @@ func init_handlers(p_templates_paths_map map[string]string,
 			//               from returning it.
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
-
-	//---------------------
-	// REGISTER_INVITE_EMAIL
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/landing/register_invite_email",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-
-			
-			
-			data_map := map[string]interface{}{}
-			return data_map, nil
-		},
-		p_http_mux,
-		metrics,
-		true, // p_store_run_bool
-		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	return nil

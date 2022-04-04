@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_utils from "./../../../gf_core/ts/gf_utils";
 
 //-------------------------------------------------
-export async function user_auth_pipeline(p_notifications_meta_map, p_http_api_map) {
+export async function user_auth_pipeline(p_notifications_meta_map,
+    p_http_api_map,
+    p_urls_map) {
 
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
@@ -53,12 +55,12 @@ export async function user_auth_pipeline(p_notifications_meta_map, p_http_api_ma
 
         $(container).on('keyup', function (e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
-                login_activate(container, p_notifications_meta_map, p_http_api_map);
+                login_activate(container, p_notifications_meta_map, p_http_api_map, p_urls_map);
             }
         });
 
         $(container).find("#login_btn").on('click', async ()=>{
-            login_activate(container, p_notifications_meta_map, p_http_api_map);
+            login_activate(container, p_notifications_meta_map, p_http_api_map, p_urls_map);
         });
 
         $(container).find("#create_btn").on('click', async ()=>{
@@ -138,7 +140,8 @@ async function create_activate(p_container,
 //-------------------------------------------------
 async function login_activate(p_container,
     p_notifications_meta_map,
-    p_http_api_map) {
+    p_http_api_map,
+    p_urls_map) {
 
     console.log("login activate");
 
@@ -219,4 +222,8 @@ async function login_activate(p_container,
     //-------------------------------------------------
 
     view_login_first_stage_success();
+
+
+    const home_url_str   = p_urls_map["home"];
+	window.location.href = home_url_str;
 }

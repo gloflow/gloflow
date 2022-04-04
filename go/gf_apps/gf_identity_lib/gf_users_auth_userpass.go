@@ -81,16 +81,16 @@ type GF_user_auth_userpass__output_create struct {
 
 //---------------------------------------------------
 // PIPELINE__LOGIN
-func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_login,
-	p_service_info *GF_service_info,
-	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
+func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
+	pServiceInfo *GF_service_info,
+	pCtx         context.Context,
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
@@ -100,15 +100,15 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// VERIFY
 
-	user_exists_bool, gf_err := db__user__exists_by_username(gf_identity_core.GFuserName(p_input.User_name_str),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	userExistsBool, gfErr := db__user__exists_by_username(gf_identity_core.GFuserName(pInput.User_name_str),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// user doesnt exists, so abort login
-	if !user_exists_bool {
+	if !userExistsBool {
 		output.User_exists_bool = false
 		return output, nil
 	} else {
@@ -117,16 +117,16 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 
 	//------------------------
 	// VERIFY_PASSWORD
-	pass_valid_bool, gf_err := users_auth_userpass__verify_pass(gf_identity_core.GFuserName(p_input.User_name_str),
-		p_input.Pass_str,
-		p_service_info,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	passValidBool, gfErr := users_auth_userpass__verify_pass(gf_identity_core.GFuserName(pInput.User_name_str),
+		pInput.Pass_str,
+		pServiceInfo,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	if !pass_valid_bool {
+	if !passValidBool {
 		output.Pass_valid_bool = false
 		return output, nil
 	} else {
@@ -136,26 +136,26 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	//------------------------
 	// LOGIN_FINALIZE
 	input := &GF_user_auth_userpass__input_login_finalize{
-		UserNameStr: gf_identity_core.GFuserName(p_input.User_name_str),
+		UserNameStr: gf_identity_core.GFuserName(pInput.User_name_str),
 	}
-	login_finalize_output, gf_err := users_auth_userpass__pipeline__login_finalize(input,
-		p_service_info,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(input,
+		pServiceInfo,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
-	output.Email_confirmed_bool = login_finalize_output.Email_confirmed_bool
-	output.User_id_str          = login_finalize_output.User_id_str
-	output.JWT_token_val        = login_finalize_output.JWT_token_val
+	output.Email_confirmed_bool = loginFinalizeOutput.Email_confirmed_bool
+	output.User_id_str          = loginFinalizeOutput.User_id_str
+	output.JWT_token_val        = loginFinalizeOutput.JWT_token_val
 
 	return output, nil
 }
 
 //---------------------------------------------------
-func users_auth_userpass__pipeline__login_finalize(pInput *GF_user_auth_userpass__input_login_finalize,
+func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input_login_finalize,
 	pServiceInfo *GF_service_info,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
