@@ -234,7 +234,7 @@ export function get_http_api(p_urls_map) {
 
         "general": {
             "get_me": async ()=>{
-                const output_map = await gf_admin_http.get_all_users();
+                const output_map = await gf_identity_http.user_get_me();
                 return output_map;
             },
         }

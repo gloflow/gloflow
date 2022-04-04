@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //-------------------------------------------------
 // ME
 //-------------------------------------------------
-export function user_me() {
+export function user_get_me() {
     const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
         const url_str = '/v1/identity/me';
