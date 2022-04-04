@@ -51,7 +51,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
-		Auth_login_url_str: "/landing/main/",
+		Auth_login_url_str: "/landing/main",
 	}
 
 	//---------------------

@@ -198,7 +198,7 @@ func Run(p_config *GF_config,
 		Templates_paths_map: p_config.Templates_paths_map,
 
 		// on user trying to access authed endpoint while not logged in, redirect to this
-		AuthLoginURLstr: "/landing/main/",
+		AuthLoginURLstr: "/landing/main",
 	}
 
 	jobs_mngr_ch := gf_images_lib.Init_service(gfSoloHTTPmux,

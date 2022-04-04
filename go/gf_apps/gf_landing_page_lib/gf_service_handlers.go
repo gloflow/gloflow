@@ -30,7 +30,6 @@ import (
 func init_handlers(p_templates_paths_map map[string]string,
 	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_landing_page_service_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES
@@ -44,7 +43,6 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/landing/main",
-		"/landing/register_invite_email",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_landing_page", handlers_endpoints_lst)
 

@@ -50,7 +50,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
-		Auth_login_url_str: "/landing/main/",
+		Auth_login_url_str: "/landing/main",
 	}
 
 	//---------------------
