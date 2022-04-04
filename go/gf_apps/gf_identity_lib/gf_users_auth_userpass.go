@@ -111,6 +111,8 @@ func users_auth_userpass__pipeline__login(p_input *GF_user_auth_userpass__input_
 	if !user_exists_bool {
 		output.User_exists_bool = false
 		return output, nil
+	} else {
+		output.User_exists_bool = true
 	}
 
 	//------------------------
