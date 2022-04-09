@@ -19,14 +19,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_home from "gf_home";
-import * as gf_home_http from "gf_home_http";
-
-declare var WebFont; 
+import * as gf_home from "./../ts/gf_home";
 
 //--------------------------------------------------------
 $(document).ready(()=>{
-	//-------------------------------------------------
+    //-------------------------------------------------
 	function log_fun(p_g, p_m) {
 		var msg_str = p_g+':'+p_m;
 		switch (p_g) {
@@ -39,44 +36,69 @@ $(document).ready(()=>{
 		}
 	}
 
-	//-------------------------------------------------
-	// $("time.timeago").timeago();
+    //-------------------------------------------------
 
-	const assets_paths_map = {
-		"gf_add_btn":        "/images/static/assets/gf_add_btn.svg",
-		"gf_confirm_btn":    "/images/static/assets/gf_confirm_btn.svg",
-		"gf_bar_handle_btn": "/images/static/assets/gf_bar_handle_btn.svg"
-	}
+	main(log_fun);
+});
 
+//--------------------------------------------------------
+function main(p_log_fun) {
+	
+	const my_eth_addresses_lst = [
+		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
+		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
+		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
+	];
 
+	const observed_eth_addresses_lst = [];
 
 	const http_api_map = {
 		"home": {
+
 			//------------------------
 			// MY_ETH_ADDRESSES
 			"get_my_eth_addresses_fun": async ()=>{
-				gf_home_http
+				const output_map = {
+                   "eth_addresses_lst": my_eth_addresses_lst,
+                };
+                return output_map;
 			},
 
 			//------------------------
 			// OBSERVED_ETH_ADDRESSES
 			"get_observed_eth_addresses_fun": async ()=>{
-
+				const output_map = {
+                   "eth_addresses_lst": observed_eth_addresses_lst
+                };
+                return output_map;
 			},
 
 			//------------------------
-			// ADD_ETH_ADDRESS
 			"add_eth_address_fun": async (p_address_str :string,
 				p_type_str :string)=>{
 
+				switch (p_type_str) {
+					case "my":
+						my_eth_addresses_lst.push(p_address_str);
+						break;
 
-
-
+					case "observed":
+						observed_eth_addresses_lst.push(p_address_str);
+						break;
+				}
+				
 			},
 
 			//------------------------
 		}
 
 	};
-	gf_home.init(http_api_map, assets_paths_map, log_fun);
-});
+
+    const assets_paths_map = {
+		"gf_add_btn":        "./../../../../assets/gf_add_btn.svg",
+		"gf_confirm_btn":    "./../../../../assets/gf_confirm_btn.svg",
+		"gf_bar_handle_btn": "./../../../../assets/gf_bar_handle_btn.svg"
+	}
+
+    gf_home.init(http_api_map, assets_paths_map, p_log_fun);
+}

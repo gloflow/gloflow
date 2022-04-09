@@ -6,7 +6,7 @@ import delegator
 
 output_file_str = './bin/gf_home_main.js'
 files_lst = [
-	'./../ts/gf_home_main.ts',
+	'test.ts',
 ]
 
 print('files_lst - %s'%(files_lst))
