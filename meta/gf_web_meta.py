@@ -62,7 +62,9 @@ def get():
 				(f"{modd_str}/../web/assets/gf_bar_handle_btn.svg",        f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
 				(f"{modd_str}/../web/assets/gf_close_btn_small.svg",       f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
 				(f"{modd_str}/../web/assets/gf_metamask_icon.svg",         f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
-				(f"{modd_str}/../web/assets/gf_copy_to_clipboard_btn.svg", f"{modd_str}/../web/build/gf_apps/gf_images/assets")
+				(f"{modd_str}/../web/assets/gf_copy_to_clipboard_btn.svg", f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
+				(f"{modd_str}/../web/assets/gf_add_btn.svg",               f"{modd_str}/../web/build/gf_apps/gf_images/assets"),
+				(f"{modd_str}/../web/assets/gf_confirm_btn.svg",           f"{modd_str}/../web/build/gf_apps/gf_images/assets")
 			]
 		}
 
