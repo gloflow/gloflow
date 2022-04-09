@@ -26,6 +26,36 @@ import (
 )
 
 //------------------------------------------------
+type GFhomeViz struct {
+	ColorBackgroundStr string               `bson:"color_background_str" json:"color_background_str"`
+	ComponentsLst      []GFhomeVizComponent `bson:"components_lst"       json:"components_lst"`
+}
+
+type GFhomeVizComponent struct {
+	ScreenXint int64 `bson:"screen_x_int" json:"screen_x_int"`
+	ScreenYint int64 `bson:"screen_y_int" json:"screen_y_int"`
+}
+
+//------------------------------------------------
+// VIZ_PROPS_GET
+func PipelineVizPropsGet(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+
+
+
+	return nil, nil
+}
+
+//------------------------------------------------
+// VIZ_PROPS_UPDATE
+func PipelineVizPropsUpdate(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+		
+
+	return nil
+}
+
+//------------------------------------------------
 func PipelineRenderDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pCtx                  context.Context,

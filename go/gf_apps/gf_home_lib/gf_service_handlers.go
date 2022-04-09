@@ -53,6 +53,8 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// METRICS
 	handlersEndpointsLst := []string{
 		"/v1/home/main",
+		"/v1/home/viz/get",
+		"/v1/home/viz/update",
 	}
 	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_home", handlersEndpointsLst)
 
@@ -65,6 +67,39 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		Sentry_hub:         nil,
 		Auth_login_url_str: pAuthLoginURLstr,
 	}
+
+	//---------------------
+	// VIZ_GET
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/get",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			if pReq.Method == "GET" {
+
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+	// VIZ_UPDATE
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/update",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			if pReq.Method == "POST" {
+
+				
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// MAIN
