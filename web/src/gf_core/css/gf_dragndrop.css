@@ -1,0 +1,37 @@
+
+
+
+
+
+
+.dnd_handle {
+    position: absolute;
+    top: 0px;
+    left: -40px;
+    background-color: gray;
+    width: 40px;
+    
+    cursor: pointer;
+    background-color: inherit;
+}
+.dnd_handle:hover {
+    background-color: white;
+}
+
+.dnd_handle .symbol {
+    position: absolute;
+    top: 44%;
+    width: 54%;
+    left: 24%;
+
+    user-drag: none;
+    user-select: none;
+}
+
+.dnd_handle .overlay {
+    width: 40px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity: 0.0;
+}
