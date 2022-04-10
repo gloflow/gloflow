@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
+	"os"
+	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -51,4 +53,33 @@ func InitService(pTemplatesPathsMap map[string]string,
 	//------------------------
 
 	return nil
+}
+
+//-------------------------------------------------
+func CLIparseArgs(p_log_fun func(string, string)) map[string]interface{} {
+
+	//-------------------
+	// MONGODB
+	mongodb_host_str    := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
+	mongodb_db_name_str := flag.String("mongodb_db_name", "prod_db",   "DB name to use")
+
+	// MONGODB_ENV
+	mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
+	mongodb_db_name_env_str := os.Getenv("GF_MONGODB_DB_NAME")
+
+	if mongodb_db_name_env_str != "" {
+		*mongodb_db_name_str = mongodb_db_name_env_str
+	}
+
+	if mongodb_host_env_str != "" {
+		*mongodb_host_str = mongodb_host_env_str
+	}
+
+	//-------------------
+	flag.Parse()
+
+	return map[string]interface{}{
+		"mongodb_host_str":    *mongodb_host_str,
+		"mongodb_db_name_str": *mongodb_db_name_str,
+	}
 }
