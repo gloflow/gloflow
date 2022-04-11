@@ -118,7 +118,7 @@ steps:
 
       # GF_HOME
       - cd /home/gf/go/gf_apps/gf_home_lib
-      - go test -v
+      - go test -v -mongodb_host=mongo
 
       # GF_ADMIN_LIB
       - cd /home/gf/go/gf_apps/gf_admin_lib
