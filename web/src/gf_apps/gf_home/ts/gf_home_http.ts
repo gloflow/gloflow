@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 //--------------------------------------------------------
-export async function () {
+export async function get_home_viz() {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 
