@@ -376,6 +376,25 @@ func Mongo__insert_bulk(p_ids_lst []string,
 
 //-------------------------------------------------
 // INSERT
+
+func MongoInsert(pRecord interface{},
+	pCollNameStr string,
+	pMetaMap     map[string]interface{}, // data describing the DB write op 
+	pCtx         context.Context,
+	pRuntimeSys  *Runtime_sys) *GF_error {
+
+	gfErr := Mongo__insert(pRecord,
+		pCollNameStr,
+		pMetaMap,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
 func Mongo__insert(p_record interface{},
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op 

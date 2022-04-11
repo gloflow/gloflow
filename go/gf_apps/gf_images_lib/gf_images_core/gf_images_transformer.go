@@ -88,9 +88,9 @@ func Trans__process_image(p_image_id_str GF_image_id,
 	//---------------------------------
 	// LOAD_IMAGE
 
-	img, gf_err := Image__load_file(p_image_local_file_path_str, p_normalized_ext_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	img, gfErr := Image__load_file(p_image_local_file_path_str, p_normalized_ext_str, p_runtime_sys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 	
 	//--------------------------
@@ -100,7 +100,7 @@ func Trans__process_image(p_image_id_str GF_image_id,
 	medium_thumb_max_size_px_int := 400
 	large_thumb_max_size_px_int  := 600
 
-	gf_image_thumbs, gf_err := Create_thumbnails(p_image_id_str,
+	gf_image_thumbs, gfErr := Create_thumbnails(p_image_id_str,
 		p_normalized_ext_str,
 		p_image_local_file_path_str,
 		p_local_thumbnails_target_dir_path_str,
@@ -109,8 +109,8 @@ func Trans__process_image(p_image_id_str GF_image_id,
 		large_thumb_max_size_px_int,
 		img,
 		p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	//--------------------------
@@ -129,9 +129,9 @@ func Trans__process_image(p_image_id_str GF_image_id,
 	// required to decode the file, but the rest of the file is not processed until later.
 	
 	// someone can forge header information in an image
-	image_title_str, gf_err := Get_image_title_from_url(p_image_origin_url_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	image_title_str, gfErr := Get_image_title_from_url(p_image_origin_url_str, p_runtime_sys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	gf_image_info := &GF_image_new_info{
@@ -156,14 +156,14 @@ func Trans__process_image(p_image_id_str GF_image_id,
 	// IMAGE_CREATE
 
 	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB
-	gf_image, gf_err := Image__create_new(gf_image_info, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	gfImage, gfErr := Image__create_new(gf_image_info, p_ctx, p_runtime_sys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	//--------------------------
 
-	return gf_image, gf_image_thumbs, nil
+	return gfImage, gf_image_thumbs, nil
 }
 
 //---------------------------------------------------
@@ -189,11 +189,18 @@ func resize_image(p_img image.Image,
 	}
 	defer out.Close()
 
+
+	//--------------------------
+	// ADD!! - enable a way to set PNG format as a target.
+	//         for very precise vector type images there is significant accuracy loss
+	//         when recoding using JPEG
+	
 	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
 	//               and so for these kinds of images it comes out with much smaller file size
 	// write new image to file
 	// jpeg.Encode(out, m, nil)
 	jpeg.Encode(out, m, nil)
 
+	//--------------------------
 	return nil
 }
