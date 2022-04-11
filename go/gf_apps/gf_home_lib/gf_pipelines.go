@@ -20,35 +20,102 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
+	"fmt"
+	"time"
 	"text/template"
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //------------------------------------------------
 type GFhomeViz struct {
-	ColorBackgroundStr string               `bson:"color_background_str" json:"color_background_str"`
-	ComponentsLst      []GFhomeVizComponent `bson:"components_lst"       json:"components_lst"`
+	Vstr               string             `bson:"v_str"` // schema_version
+	Id                 primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr              gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool        bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
+
+	OwnerUserIDstr     gf_core.GF_ID         `bson:"owner_user_id_str"`
+	ColorBackgroundStr string                `bson:"color_background_str"`
+	ComponentsLst      []*GFhomeVizComponent `bson:"components_lst"`
 }
 
 type GFhomeVizComponent struct {
-	ScreenXint int64 `bson:"screen_x_int" json:"screen_x_int"`
-	ScreenYint int64 `bson:"screen_y_int" json:"screen_y_int"`
+	NameStr    string `bson:"name_str"     json:"name_str"`
+	ScreenXint int64  `bson:"screen_x_int" json:"screen_x_int"`
+	ScreenYint int64  `bson:"screen_y_int" json:"screen_y_int"`
+}
+
+//------------------------------------------------
+// VIZ_PROPS_CREATE
+func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+		
+
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	userIdentifierStr := string(pUserIDstr)
+	IDstr := homeVizCreateID(userIdentifierStr,
+		creationUNIXtimeF)
+
+	homeViz := &GFhomeViz{
+		Vstr:               "0",
+		IDstr:              IDstr,
+		CreationUNIXtimeF:  creationUNIXtimeF,
+		OwnerUserIDstr:     pUserIDstr,
+		ColorBackgroundStr: "none",
+		ComponentsLst:      []*GFhomeVizComponent{},
+	}
+
+	// DB
+	gfErr := DBcreateHomeViz(homeViz, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	return homeViz, nil
 }
 
 //------------------------------------------------
 // VIZ_PROPS_GET
-func PipelineVizPropsGet(pCtx context.Context,
+func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+	
 
+	homeVizExisting, gfErr := DBgetHomeViz(pUserIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
+	// NONE_FOUND
+	var homeViz *GFhomeViz
+	if homeVizExisting == nil {
 
-	return nil, nil
+		fmt.Println("no home_viz found for user, creating new...")
+
+		// CREATE
+		homeVizNew, gfErr := PipelineVizPropsCreate(pUserIDstr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		homeViz = homeVizNew
+	} else {
+		homeViz = homeVizExisting
+	}
+
+	return homeViz, nil
 }
 
 //------------------------------------------------
 // VIZ_PROPS_UPDATE
-func PipelineVizPropsUpdate(pCtx context.Context,
+func PipelineVizPropsUpdate(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 		
 
@@ -56,6 +123,7 @@ func PipelineVizPropsUpdate(pCtx context.Context,
 }
 
 //------------------------------------------------
+// RENDER_DASHBOARD
 func PipelineRenderDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pCtx                  context.Context,
@@ -69,4 +137,17 @@ func PipelineRenderDashboard(pTmpl *template.Template,
 	}
 
 	return templateRenderedStr, nil
+}
+
+//---------------------------------------------------
+func homeVizCreateID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
+	}
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
 }

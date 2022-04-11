@@ -26,6 +26,7 @@ import (
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -74,6 +75,18 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "GET" {
 
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				
+				homeViz, gfErr := PipelineVizPropsGet(userIDstr, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{
+					"color_background": homeViz.ColorBackgroundStr,
+					"components_lst":   homeViz.ComponentsLst,
+				}
+				return outputMap, nil
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

@@ -25,9 +25,14 @@ import (
 	"time"
 	"testing"
 	"net/http"
+	"encoding/json"
+	"context"
+	"github.com/stretchr/testify/assert"
+	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -42,6 +47,7 @@ func TestMain(m *testing.M) {
 		"gf_home_main": "./../../../web/src/gf_apps/gf_home/templates/gf_home_main/gf_home_main.html",
 	}
 
+	// GF_HOME_SERVICE
 	testPortInt := 2000
 	go func() {
 
@@ -54,7 +60,16 @@ func TestMain(m *testing.M) {
 			runtimeSys)
 		gf_rpc_lib.Server__init_with_mux(testPortInt, HTTPmux)
 	}()
-	time.Sleep(2*time.Second) // let server startup
+
+	// GF_IDENTITY_SERVICE
+	testIdentityServicePortInt := 2001
+	go func() {
+
+		gf_identity_lib.TestStartService(testIdentityServicePortInt,
+			runtimeSys)
+	}()
+
+	time.Sleep(2*time.Second) // let services startup
 
 	v := m.Run()
 	os.Exit(v)
@@ -66,7 +81,56 @@ func TestHomeViz(pTest *testing.T) {
 	runtimeSys := Tinit()
 	fmt.Println(runtimeSys)
 
+	HTTPagent := gorequest.New()
+	ctx := context.Background()
 
+	testPortInt := 2000
+	testIdentityServicePortInt := 2001
+	testUserNameStr := "ivan_t"
+	testUserPassStr := "pass_lksjds;lkdj"
+	testEmailStr    := "ivan_t@gloflow.com"
+
+	//---------------------------------
+	// CLEANUP
+	gf_identity_lib.TestDBcleanup(ctx, runtimeSys)
+	
+	//---------------------------------
+	// GF_IDENTITY_INIT
+	gf_identity_lib.TestUserHTTPcreate(testUserNameStr,
+		testUserPassStr,
+		testEmailStr,
+		HTTPagent,
+		testIdentityServicePortInt,
+		pTest)
+
+	gf_identity_lib.TestUserHTTPlogin(testUserNameStr,
+		testUserPassStr,
+		HTTPagent,
+		testIdentityServicePortInt,
+		pTest)
+		
+	//---------------------------------
+	
+
+	fmt.Println("======== HOME_VIZ GET HTTP")
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/home/viz/get", testPortInt)
+	_, bodyStr, errs := HTTPagent.Get(urlStr).
+		End()
+
+	spew.Dump(bodyStr)
+
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
+		fmt.Println(err)
+        pTest.FailNow()
+    }
+
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
 
 }
 
@@ -85,14 +149,14 @@ func TestTemplates(pTest *testing.T) {
 	
 	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	templateRenderedStr, gfErr := viewRenderTemplateDashboard(templates.mainTmpl,
 		templates.mainSubtemplatesNamesLst,
 		runtimeSys)
 	if gfErr != nil {
-		pTest.Fail()
+		pTest.FailNow()
 	}
 
 	fmt.Println(templateRenderedStr)
