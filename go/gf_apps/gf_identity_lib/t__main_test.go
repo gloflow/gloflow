@@ -22,10 +22,7 @@ package gf_identity_lib
 import (
 	"os"
 	"testing"
-	"time"
-	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //---------------------------------------------------
@@ -34,9 +31,12 @@ func TestMain(m *testing.M) {
 	logFun     = gf_core.Init_log_fun()
 	cliArgsMap = CLI__parse_args(logFun)
 
-	runtime_sys := T__init()
+	runtimeSys := T__init()
 
-	test_port_int := 2000
+	portInt := 2000
+	TestStartService(portInt, runtimeSys)
+
+	/*test_port_int := 2000
 	go func() {
 
 		HTTPmux := http.NewServeMux()
@@ -49,7 +49,7 @@ func TestMain(m *testing.M) {
 		InitService(HTTPmux, serviceInfo, runtime_sys)
 		gf_rpc_lib.Server__init_with_mux(test_port_int, HTTPmux)
 	}()
-	time.Sleep(2*time.Second) // let server startup
+	time.Sleep(2*time.Second) // let server startup*/
 
 	v := m.Run()
 	os.Exit(v)

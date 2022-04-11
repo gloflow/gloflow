@@ -21,12 +21,37 @@ package gf_identity_lib
 
 import (
 	"fmt"
+	"time"
+	"net/http"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
 var logFun func(p_g string, p_m string)
 var cliArgsMap map[string]interface{}
+
+
+//-------------------------------------------------
+func TestStartService(pPortInt int,
+	pRuntimeSys *gf_core.Runtime_sys) {
+	// testPortInt := 2000
+	go func() {
+
+		HTTPmux := http.NewServeMux()
+
+		serviceInfo := &GF_service_info{
+
+			// IMPORTANT!! - durring testing dont send emails
+			Enable_email_bool: false,
+		}
+		InitService(HTTPmux, serviceInfo, pRuntimeSys)
+		gf_rpc_lib.Server__init_with_mux(pPortInt, HTTPmux)
+	}()
+	time.Sleep(2*time.Second) // let server startup
+}
 
 //-------------------------------------------------
 func T__init() *gf_core.Runtime_sys {
@@ -62,4 +87,17 @@ func T__init() *gf_core.Runtime_sys {
 
 
 	return runtimeSys
+}
+
+//-------------------------------------------------
+func TestDBcleanup(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) {
+	
+	// CLEANUP
+	collNameStr := "gf_users"
+	gf_core.Mongo__delete(bson.M{}, collNameStr, 
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to cleanup test user DB",
+		},
+		pCtx, pRuntimeSys)
 }

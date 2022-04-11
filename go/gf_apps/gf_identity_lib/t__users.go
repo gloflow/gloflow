@@ -23,10 +23,126 @@ import (
 	"fmt"
 	"testing"
 	"encoding/json"
+	"strings"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
 	"github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------
+// TEST_USER_HTTP_CREATE
+func TestUserHTTPcreate(pTestUserNameStr string,
+	pTestUserPassStr string,
+	pTestEmailStr    string,
+	pHTTPagent       *gorequest.SuperAgent,
+	pTestPortInt     int,
+	pTest            *testing.T) {
+
+	fmt.Println("====================================")
+	fmt.Println("test user CREATE USERPASS")
+	fmt.Println("user_name_str", pTestUserNameStr)
+	fmt.Println("pass_str",      pTestUserPassStr)
+	fmt.Println("email_str",     pTestEmailStr)
+
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/create", pTestPortInt)
+	dataMap := map[string]string{
+		"user_name_str": pTestUserNameStr,
+		"pass_str":      pTestUserPassStr,
+		"email_str":     pTestEmailStr,
+	}
+	dataBytesLst, _ := json.Marshal(dataMap)
+	_, bodyStr, errs := pHTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
+		End()
+
+	spew.Dump(bodyStr)
+
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
+		fmt.Println(err)
+        pTest.FailNow()
+    }
+
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
+
+	user_exists_bool         := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
+	user_in_invite_list_bool := bodyMap["data"].(map[string]interface{})["user_in_invite_list_bool"].(bool)
+
+	if (user_exists_bool) {
+		fmt.Println("supplied user already exists and cant be created")
+		pTest.FailNow()
+	}
+	if (!user_in_invite_list_bool) {
+		fmt.Println("supplied user is not in the invite list")
+		pTest.FailNow()
+	}
+}
+
+//-------------------------------------------------
+func TestUserHTTPlogin(pTestUserNameStr string,
+	pTestUserPassStr string,
+	pHTTPagent       *gorequest.SuperAgent,
+	pTestPortInt     int,
+	pTest            *testing.T) {
+
+
+	fmt.Println("====================================")
+	fmt.Println("test user LOGIN USERPASS")
+
+	urlStr  := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", pTestPortInt)
+	dataMap := map[string]string{
+		"user_name_str": pTestUserNameStr,
+		"pass_str":      pTestUserPassStr,
+	}
+	dataBytesLst, _ := json.Marshal(dataMap)
+	resp, bodyStr, errs := pHTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
+		End()
+
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+
+	// check if the login response sets a cookie for all future auth requests
+	auth_cookie_present_bool := false
+	for k, v := range resp.Header {
+		if (k == "Set-Cookie") {
+			for _, vv := range v {
+				o := strings.Split(vv, "=")[0]
+				if o == "gf_sess_data" {
+					auth_cookie_present_bool = true
+				}
+			}
+		}
+	}
+	assert.True(pTest, auth_cookie_present_bool,
+		"login response does not contain the expected 'gf_sess_data' cookie")
+
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
+		fmt.Println(err)
+		pTest.FailNow()
+	}
+
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user login http request failed")
+
+	user_exists_bool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
+	pass_valid_bool  := bodyMap["data"].(map[string]interface{})["pass_valid_bool"].(bool)
+	user_id_str      := bodyMap["data"].(map[string]interface{})["user_id_str"].(string)
+
+	assert.True(pTest, user_id_str != "", "user_id not set in the response")
+
+	fmt.Println("user login response:")
+	fmt.Println("user_exists_bool", user_exists_bool)
+	fmt.Println("pass_valid_bool",  pass_valid_bool)
+	fmt.Println("user_id_str",      user_id_str)
+}
 
 //-------------------------------------------------
 func test_user_http_update(p_test *testing.T,

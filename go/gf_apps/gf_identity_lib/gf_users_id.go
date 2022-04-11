@@ -24,14 +24,14 @@ import (
 )
 
 //---------------------------------------------------
-func usersCreateID(p_user_identifier_str string,
-	p_creation_unix_time_f float64) gf_core.GF_ID {
+func usersCreateID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
 
-	fields_for_id_lst := []string{
-		p_user_identifier_str,
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
 	}
-	gf_id_str := gf_core.ID__create(fields_for_id_lst,
-		p_creation_unix_time_f)
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
 
-	return gf_id_str
+	return gfIDstr
 }

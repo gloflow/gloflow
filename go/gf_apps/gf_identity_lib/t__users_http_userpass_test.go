@@ -23,12 +23,9 @@ import (
 	"fmt"
 	"testing"
 	"context"
-	"strings"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
-	"go.mongodb.org/mongo-driver/bson"
-	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -42,22 +39,13 @@ func Test__users_http_userpass(pTest *testing.T) {
 	runtimeSys  := T__init()
 	HTTPagent   := gorequest.New()
 
-
-	
-
 	testUserNameStr := "ivan_t"
 	testUserPassStr := "pass_lksjds;lkdj"
 	testEmailStr    := "ivan_t@gloflow.com"
 
-
-
+	//---------------------------------
 	// CLEANUP
-	coll_name_str := "gf_users"
-	gf_core.Mongo__delete(bson.M{}, coll_name_str, 
-		map[string]interface{}{
-			"caller_err_msg_str": "failed to cleanup test user DB",
-		},
-		ctx, runtimeSys)
+	TestDBcleanup(ctx, runtimeSys)
 
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
@@ -72,7 +60,15 @@ func Test__users_http_userpass(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-	fmt.Println("====================================")
+
+	TestUserHTTPcreate(testUserNameStr,
+		testUserPassStr,
+		testEmailStr,
+		HTTPagent,
+		testPortInt,
+		pTest)
+
+	/*fmt.Println("====================================")
 	fmt.Println("test user CREATE USERPASS")
 	fmt.Println("user_name_str", testUserNameStr)
 	fmt.Println("pass_str",      testUserPassStr)
@@ -114,12 +110,18 @@ func Test__users_http_userpass(pTest *testing.T) {
 	if (!user_in_invite_list_bool) {
 		fmt.Println("supplied user is not in the invite list")
 		pTest.FailNow()
-	}
+	}*/
 
 	//---------------------------------
 	// TEST_USER_LOGIN
 
-	fmt.Println("====================================")
+	TestUserHTTPlogin(testUserNameStr,
+		testUserPassStr,
+		HTTPagent,
+		testPortInt,
+		pTest)
+
+	/*fmt.Println("====================================")
 	fmt.Println("test user LOGIN USERPASS")
 
 	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", testPortInt)
@@ -169,28 +171,31 @@ func Test__users_http_userpass(pTest *testing.T) {
 	fmt.Println("user login response:")
 	fmt.Println("user_exists_bool", user_exists_bool)
 	fmt.Println("pass_valid_bool",  pass_valid_bool)
-	fmt.Println("user_id_str",      user_id_str)
+	fmt.Println("user_id_str",      user_id_str)*/
 
 	//---------------------------------
 	// TEST_USER_UPDATE
 
 	fmt.Println("====================================")
 	fmt.Println("test user UPDATE")
-	fmt.Println("user inputs:")
-	fmt.Println("user_id_str", user_id_str)
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
-	data_map = map[string]string{
+	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
+	data_map := map[string]string{
 		"user_name_str":   "ivan_t_new",
 		"email_str":       "ivan_t_new@gloflow.com",
 		"description_str": "some new description",
 	}
-	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = HTTPagent.Post(url_str).
+	data_bytes_lst, _ := json.Marshal(data_map)
+	_, body_str, errs := HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
-	body_map = map[string]interface{}{}
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+	
+	body_map := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -211,6 +216,11 @@ func Test__users_http_userpass(pTest *testing.T) {
 	_, body_str, errs = HTTPagent.Get(url_str).
 		End()
 
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+	
 	body_map = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
