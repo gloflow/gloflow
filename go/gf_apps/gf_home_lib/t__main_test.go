@@ -95,6 +95,16 @@ func TestHomeViz(pTest *testing.T) {
 	gf_identity_lib.TestDBcleanup(ctx, runtimeSys)
 	
 	//---------------------------------
+	// ADD_TO_INVITE_LIST
+	gfErr := gf_identity_lib.DBuserAddToInviteList(testEmailStr,
+		ctx,
+		runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.FailNow()
+	}
+
+	//---------------------------------
 	// GF_IDENTITY_INIT
 	gf_identity_lib.TestUserHTTPcreate(testUserNameStr,
 		testUserPassStr,
