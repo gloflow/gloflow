@@ -486,18 +486,18 @@ func db__user__check_in_invitelist_by_email(pUserEmailStr string,
 // USER_CREDS
 //---------------------------------------------------
 // CREATE_CREDS
-func db__user_creds__create(p_user_creds *GF_user_creds,
+func db__user_creds__create(p_user_creds *GFuserCreds,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	coll_name_str := "gf_users_creds"
+	collNameStr := "gf_users_creds"
 
 	gf_err := gf_core.Mongo__insert(p_user_creds,
-		coll_name_str,
+		collNameStr,
 		map[string]interface{}{
 			"user_id_str":        p_user_creds.User_id_str,
 			"user_name_str":      p_user_creds.User_name_str,
-			"caller_err_msg_str": "failed to insert GF_user_creds into the DB",
+			"caller_err_msg_str": "failed to insert gf_user_creds into the DB",
 		},
 		p_ctx,
 		p_runtime_sys)
@@ -513,7 +513,7 @@ func db__user_creds__get_pass_hash(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, string, *gf_core.GF_error) {
 
-	coll_name_str := "gf_users_creds"
+	collNameStr := "gf_users_creds"
 	
 	find_opts := options.FindOne()
 	find_opts.Projection = map[string]interface{}{
@@ -522,7 +522,7 @@ func db__user_creds__get_pass_hash(p_user_name_str gf_identity_core.GFuserName,
 	}
 	
 	user_creds_info_map := map[string]interface{}{}
-	err := p_runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx, bson.M{
+	err := p_runtime_sys.Mongo_db.Collection(collNameStr).FindOne(p_ctx, bson.M{
 			"user_name_str": string(p_user_name_str),
 			"deleted_bool":  false,
 		},
@@ -554,7 +554,7 @@ func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	coll_name_str        := "gf_users_email_confirm"
+	collNameStr        := "gf_users_email_confirm"
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	email_confirm_map := map[string]interface{}{
@@ -565,7 +565,7 @@ func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 	}
 
 	gf_err := gf_core.Mongo__insert(email_confirm_map,
-		coll_name_str,
+		collNameStr,
 		map[string]interface{}{
 			"user_id_str":        p_user_id_str,
 			"caller_err_msg_str": "failed to insert user email confirm_code into the DB",
@@ -585,7 +585,7 @@ func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserNam
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (string, float64, *gf_core.GF_error) {
 
-	coll_name_str := "gf_users_email_confirm"
+	collNameStr := "gf_users_email_confirm"
 
 	find_opts := options.FindOne()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1})
@@ -595,7 +595,7 @@ func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserNam
 	}
 	
 	email_confirm_map := map[string]interface{}{}
-	err := p_runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx,
+	err := p_runtime_sys.Mongo_db.Collection(collNameStr).FindOne(p_ctx,
 		bson.M{
 			"user_name_str": string(p_user_name_str),
 		},
@@ -623,7 +623,7 @@ func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.
 	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
-	coll_name_str := "gf_users"
+	collNameStr := "gf_users"
 
 	find_opts := options.FindOne()
 	find_opts.Projection = map[string]interface{}{
@@ -631,7 +631,7 @@ func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.
 	}
 	
 	user_map := map[string]interface{}{}
-	err := p_runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(p_ctx,
+	err := p_runtime_sys.Mongo_db.Collection(collNameStr).FindOne(p_ctx,
 		bson.M{
 			"user_name_str": string(p_user_name_str),
 		},
@@ -660,9 +660,9 @@ func db__login_attempt__create(p_login_attempt *GF_login_attempt,
 	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
-	coll_name_str := "gf_login_attempt"
+	collNameStr := "gf_login_attempt"
 	gf_err := gf_core.Mongo__insert(p_login_attempt,
-		coll_name_str,
+		collNameStr,
 		map[string]interface{}{
 			"login_attempt_id_str": p_login_attempt.Id_str,
 			"user_type_str":        p_login_attempt.User_type_str,
@@ -683,19 +683,19 @@ func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserN
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_login_attempt, *gf_core.GF_error) {
 
-	coll_name_str := "gf_login_attempt"
+	collNameStr := "gf_login_attempt"
 
-	find_opts := options.Find()
+	findOpts := options.Find()
 	cursor, gf_err := gf_core.Mongo__find(bson.M{
 			"user_name_str": string(p_user_name_str),
 			"deleted_bool":  false,
 		},
-		find_opts,
+		findOpts,
 		map[string]interface{}{
 			"user_name_str":      string(p_user_name_str),
 			"caller_err_msg_str": "failed to get login_attempt by user_name from the DB",
 		},
-		p_runtime_sys.Mongo_db.Collection(coll_name_str),
+		p_runtime_sys.Mongo_db.Collection(collNameStr),
 		p_ctx,
 		p_runtime_sys)
 	

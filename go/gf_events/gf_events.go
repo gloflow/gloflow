@@ -34,7 +34,7 @@ func Emit_app(p_event_app_type_str string,
 
 
 		// CALLBACK
-		p_runtime_sys.External_plugins.Event_app__callback(p_event_app_type_str,
+		p_runtime_sys.External_plugins.EventCallback(p_event_app_type_str,
 			p_meta_map,
 			p_runtime_sys)
 

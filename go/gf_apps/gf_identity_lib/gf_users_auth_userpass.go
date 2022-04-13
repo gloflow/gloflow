@@ -215,11 +215,11 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
 	pCtx           context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
+	gf_err := gf_core.Validate_struct(p_input, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -231,7 +231,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	//------------------------
 	// VALIDATE
 
-	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, pCtx, p_runtime_sys)
+	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, pCtx, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -245,7 +245,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	// check if in invite list
 	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_email(p_input.Email_str,
 		pCtx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -263,7 +263,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	output, gf_err := users_auth_userpass__pipeline__create(p_input,
 		p_service_info,
 		pCtx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -279,7 +279,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 			output.User_id_str,
 			p_service_info.Domain_base_str,
 			pCtx,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -295,7 +295,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 		}
 		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE_REGULAR,
 			event_meta,
-			p_runtime_sys)
+			pRuntimeSys)
 	}
 
 	//------------------------
@@ -341,13 +341,13 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 	pass_salt_str := users_auth_userpass__get_pass_salt()
 	pass_hash_str := users_auth_userpass__get_pass_hash(pass_str, pass_salt_str)
 
-	creds__creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	user_creds_id_str           := usersCreateID(user_identifier_str, creds__creation_unix_time_f)
+	credsCreationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	userCredsIDstr         := usersCreateID(user_identifier_str, credsCreationUNIXtimeF)
 
-	userCreds := &GF_user_creds {
+	userCreds := &GFuserCreds {
 		V_str:                "0",
-		Id_str:               user_creds_id_str,
-		Creation_unix_time_f: creds__creation_unix_time_f,
+		Id_str:               userCredsIDstr,
+		Creation_unix_time_f: credsCreationUNIXtimeF,
 		User_id_str:          user_id_str,
 		User_name_str:        userNameStr,
 		Pass_salt_str:        pass_salt_str,
@@ -367,14 +367,14 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 
 	// SECRETS_STORE
 	if pServiceInfo.Enable_user_creds_in_secrets_store_bool && 
-		pRuntimeSys.External_plugins.Secret_app__create_callback != nil {
+		pRuntimeSys.External_plugins.SecretCreateCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_user_creds@%s", userNameStr)
 		secretDescriptionStr := fmt.Sprintf("user creds for a particular user")
 
 		userCredsMap := map[string]interface{}{
-			"user_creds_id_str":    user_creds_id_str, 
-			"creation_unix_time_f": creds__creation_unix_time_f,
+			"user_creds_id_str":    userCredsIDstr, 
+			"creation_unix_time_f": credsCreationUNIXtimeF,
 			"user_id_str":          user_id_str,
 			"user_name_str":        userNameStr,
 			"pass_salt_str":        pass_salt_str,
@@ -382,7 +382,7 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 		}
 
 		// SECRET_STORE__USER_CREDS_CREATE
-		gfErr := pRuntimeSys.External_plugins.Secret_app__create_callback(secretNameStr,
+		gfErr := pRuntimeSys.External_plugins.SecretCreateCallback(secretNameStr,
 			userCredsMap,
 			secretDescriptionStr,
 			pRuntimeSys)
@@ -433,11 +433,11 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 //---------------------------------------------------
 // PASS
 //---------------------------------------------------
-func users_auth_userpass__verify_pass(p_user_name_str gf_identity_core.GFuserName,
-	p_pass_str     string,
+func users_auth_userpass__verify_pass(pUserNameStr gf_identity_core.GFuserName,
+	pPassStr       string,
 	p_service_info *GF_service_info,
-	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
 
 
 	// GET_PASS_AND_SALT
@@ -448,33 +448,35 @@ func users_auth_userpass__verify_pass(p_user_name_str gf_identity_core.GFuserNam
 
 	// SECRETS_STORE
 	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
-		p_runtime_sys.External_plugins.Secret_app__get_callback != nil {
+		pRuntimeSys.External_plugins.SecretGetCallback != nil {
 
-		secret_name_str := fmt.Sprintf("gf_user_creds@%s", p_user_name_str)
-		secret_map, gf_err := p_runtime_sys.External_plugins.Secret_app__get_callback(secret_name_str,
-			p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+		secretNameStr := fmt.Sprintf("gf_user_creds@%s", pUserNameStr)
+
+		// SECRET_GET
+		secretMap, gfErr := pRuntimeSys.External_plugins.SecretGetCallback(secretNameStr,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 
-		pass_salt__loaded_str = secret_map["pass_salt_str"].(string)
-		pass_hash__loaded_str = secret_map["pass_hash_str"].(string)
+		pass_salt__loaded_str = secretMap["pass_salt_str"].(string)
+		pass_hash__loaded_str = secretMap["pass_hash_str"].(string)
 		
 	} else {
 
 		// DB
-		db_pass_salt_str, db_pass_hash_str, gf_err := db__user_creds__get_pass_hash(p_user_name_str,
-			p_ctx, p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+		dbPassSaltStr, dbPassHashStr, gfErr := db__user_creds__get_pass_hash(pUserNameStr,
+			pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 
-		pass_salt__loaded_str = db_pass_salt_str
-		pass_hash__loaded_str = db_pass_hash_str
+		pass_salt__loaded_str = dbPassSaltStr
+		pass_hash__loaded_str = dbPassHashStr
 	}
 
 	// GENERATE_PASS_HASH
-	pass_hash__expected_str := users_auth_userpass__get_pass_hash(p_pass_str, pass_salt__loaded_str)
+	pass_hash__expected_str := users_auth_userpass__get_pass_hash(pPassStr, pass_salt__loaded_str)
 
 
 	if (pass_hash__loaded_str == pass_hash__expected_str) {
@@ -487,16 +489,16 @@ func users_auth_userpass__verify_pass(p_user_name_str gf_identity_core.GFuserNam
 }
 
 //---------------------------------------------------
-func users_auth_userpass__get_pass_hash(p_pass_str string,
-	p_pass_salt_str string) string {
+func users_auth_userpass__get_pass_hash(pPassStr string,
+	pPassSaltStr string) string {
 
-	salted_pass_str := fmt.Sprintf("%s:%s", p_pass_salt_str, p_pass_str)
-	pass_hash_str   := gf_core.Hash_val_sha256(salted_pass_str)
-	return pass_hash_str
+	saltedPassStr := fmt.Sprintf("%s:%s", pPassSaltStr, pPassStr)
+	passHashStr   := gf_core.Hash_val_sha256(saltedPassStr)
+	return passHashStr
 }
 
 //---------------------------------------------------
 func users_auth_userpass__get_pass_salt() string {
-	rand_str := gf_core.Str_random()
-	return rand_str
+	randStr := gf_core.Str_random()
+	return randStr
 }

@@ -51,7 +51,7 @@ type GFuser struct {
 
 // ADD!! - provide logic/plugin for storing this record in some alternative store
 //         separate from the main DB
-type GF_user_creds struct {
+type GFuserCreds struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               gf_core.GF_ID      `bson:"id_str"`

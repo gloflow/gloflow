@@ -51,7 +51,7 @@ type Runtime_sys struct {
 
 // PLUGINS
 type External_plugins struct {
-	Event_app__callback         func(string, map[string]interface{}, *Runtime_sys)         *GF_error
-	Secret_app__create_callback func(string, map[string]interface{}, string, *Runtime_sys) *GF_error
-	Secret_app__get_callback    func(string, *Runtime_sys) (map[string]interface{}, *GF_error)
+	EventCallback        func(string, map[string]interface{}, *Runtime_sys)         *GF_error
+	SecretCreateCallback func(string, map[string]interface{}, string, *Runtime_sys) *GF_error
+	SecretGetCallback    func(string, *Runtime_sys) (map[string]interface{}, *GF_error)
 }
