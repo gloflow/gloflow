@@ -41,6 +41,15 @@ func InitService(pTemplatesPathsMap map[string]string,
 	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//------------------------
+	// STATIC FILES SERVING
+	staticFilesURLbaseStr := "/v1/home"
+	localDirPathStr       := "./static"
+	gf_core.HTTP__init_static_serving_with_mux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
+		pRuntimeSys)
+
+	//------------------------
 	// HANDLERS
 	gfErr := initHandlers(pTemplatesPathsMap,
 		pServiceInfo.AuthLoginURLstr,

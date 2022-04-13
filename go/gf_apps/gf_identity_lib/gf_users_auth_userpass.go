@@ -58,8 +58,8 @@ type GF_user_auth_userpass__input_login_finalize struct {
 }
 type GF_user_auth_userpass__output_login_finalize struct {
 	Email_confirmed_bool bool
-	User_id_str          gf_core.GF_ID 
-	JWT_token_val        gf_session.GF_jwt_token_val
+	UserIDstr            gf_core.GF_ID 
+	JWTtokenVal          gf_session.GF_jwt_token_val
 }
 
 // io_create
@@ -148,8 +148,8 @@ func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
 
 	//------------------------
 	output.Email_confirmed_bool = loginFinalizeOutput.Email_confirmed_bool
-	output.User_id_str          = loginFinalizeOutput.User_id_str
-	output.JWT_token_val        = loginFinalizeOutput.JWT_token_val
+	output.User_id_str          = loginFinalizeOutput.UserIDstr
+	output.JWT_token_val        = loginFinalizeOutput.JWTtokenVal
 
 	return output, nil
 }
@@ -194,7 +194,7 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 		return nil, gfErr
 	}
 
-	output.User_id_str = userIDstr
+	output.UserIDstr = userIDstr
 
 	//------------------------
 	// JWT
@@ -204,7 +204,7 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 		return nil, gfErr
 	}
 
-	output.JWT_token_val = JWTtokenVal
+	output.JWTtokenVal = JWTtokenVal
 
 	//------------------------
 	return output, nil
@@ -398,9 +398,7 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 		}
 	}
 	
-
 	//------------------------
-
 	// LOGIN_ATTEMPT
 	// on user creation initiate a login process that completes after the user
 	// confirms their email.
@@ -408,7 +406,6 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 	if gfErr != nil {
 		return nil, gfErr
 	}
-
 
 	//------------------------
 	// EMAIL_VERIFY_ADDRESS

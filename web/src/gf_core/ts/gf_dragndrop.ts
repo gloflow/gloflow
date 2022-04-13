@@ -61,7 +61,7 @@ export function init(p_target_element,
         // IMPORTANT!!
         // these values indicate by how much the position of the target_element
         // have to be offset when they're moved around, to accound for the dimensions
-        // and position of the movement handle.
+        // and position of the movement handle and where the user clicked on that handle.
         var distance_to_target_origin_x;
         var distance_to_target_origin_y;
 
