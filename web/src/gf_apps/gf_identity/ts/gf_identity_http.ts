@@ -24,7 +24,7 @@ import * as gf_admin_http from "./gf_admin_http";
 //-------------------------------------------------
 export function get_standard_http_urls() {
     const login_url_str = '/v1/identity/userpass/login';
-    const home_url_str  = "/v1/home/main";
+    const home_url_str  = "/v1/home/view";
     const urls_map = {
         "login": login_url_str,
         "home":  home_url_str,

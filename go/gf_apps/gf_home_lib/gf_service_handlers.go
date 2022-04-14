@@ -53,7 +53,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
-		"/v1/home/main",
+		"/v1/home/view",
 		"/v1/home/viz/get",
 		"/v1/home/viz/update",
 	}
@@ -116,8 +116,8 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		pRuntimeSys)
 
 	//---------------------
-	// MAIN
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/main",
+	// VIEW
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/view",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 
