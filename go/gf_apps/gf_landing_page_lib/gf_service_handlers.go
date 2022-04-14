@@ -49,33 +49,44 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 	//---------------------
 	// MAIN
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/landing/main",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+	landingMainHandlerFun := func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+
+		if p_req.Method == "GET" {
 
 
-				imgs__max_random_cursor_position_int  := 10000
-				posts__max_random_cursor_position_int := 2000
-				gfErr := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
-					posts__max_random_cursor_position_int,
-					5,  // p_featured_posts_to_get_int
-					10, // p_featured_imgs_to_get_int
-					gf_templates.tmpl,
-					gf_templates.subtemplates_names_lst,
-					p_resp,
-					pRuntimeSys)
+			imgs__max_random_cursor_position_int  := 10000
+			posts__max_random_cursor_position_int := 2000
+			gfErr := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
+				posts__max_random_cursor_position_int,
+				5,  // p_featured_posts_to_get_int
+				10, // p_featured_imgs_to_get_int
+				gf_templates.tmpl,
+				gf_templates.subtemplates_names_lst,
+				p_resp,
+				pRuntimeSys)
 
-				if gfErr != nil {
-					return nil, gfErr
-				}
+			if gfErr != nil {
+				return nil, gfErr
 			}
-			
-			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
-			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
-			//               from returning it.
-			return nil, nil
-		},
+		}
+		
+		// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+		//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+		//               from returning it.
+		return nil, nil
+	}
+
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/",
+		landingMainHandlerFun,
+		pHTTPmux,
+		metrics,
+		true, // p_store_run_bool
+		nil,
+		pRuntimeSys)
+
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/landing/main",
+		landingMainHandlerFun,
 		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
