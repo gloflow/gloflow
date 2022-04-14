@@ -246,7 +246,7 @@ func getHandler(p_auth_bool bool,
 
 		//------------------
 		// HANDLER
-		dataMap, gfErr := p_handler_fun(ctxAuth, pResp, pReq)
+		outputDataMap, gfErr := p_handler_fun(ctxAuth, pResp, pReq)
 
 		//------------------
 		// TRACE
@@ -265,8 +265,8 @@ func getHandler(p_auth_bool bool,
 		// OUTPUT
 		// IMPORTANT!! - currently testing if dataMap != nil because routes that render templates
 		//               (render html into body) should not also return a JSON map
-		if dataMap != nil {
-			Http_respond(dataMap, "OK", pResp, pRuntimeSys)
+		if outputDataMap != nil {
+			Http_respond(outputDataMap, "OK", pResp, pRuntimeSys)
 		}
 
 		//------------------

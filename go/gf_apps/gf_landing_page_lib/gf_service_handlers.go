@@ -42,6 +42,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
+		"/",
 		"/landing/main",
 	}
 	metricsGroupNameStr := "main"
@@ -50,6 +51,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// MAIN
 
+	//------------------------------------------------
 	landingMainHandlerFun := func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 		if p_req.Method == "GET" {
@@ -77,6 +79,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 		return nil, nil
 	}
 
+	//------------------------------------------------
+	// ROOT
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/",
 		landingMainHandlerFun,
 		pHTTPmux,

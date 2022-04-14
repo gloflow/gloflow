@@ -84,6 +84,14 @@ func Run(p_config *GF_config,
 	gfSoloHTTPmux := http.NewServeMux()
 
 	//-------------
+	// GF_LANDING_PAGE
+	// landing_page goes first, its handlers, because it contains the root path handler ("/")
+	// and that should match first.
+	gf_landing_page_lib.Init_service(p_config.Templates_paths_map,
+		gfSoloHTTPmux,
+		pRuntimeSys)
+
+	//-------------
 	// GF_IDENTITY
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
@@ -205,13 +213,6 @@ func Run(p_config *GF_config,
 	jobs_mngr_ch := gf_images_lib.Init_service(gfSoloHTTPmux,
 		gf_images__service_info,
 		gf_images__config,
-		pRuntimeSys)
-
-	//-------------
-	// GF_LANDING_PAGE
-
-	gf_landing_page_lib.Init_service(p_config.Templates_paths_map,
-		gfSoloHTTPmux,
 		pRuntimeSys)
 
 	//-------------
