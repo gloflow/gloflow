@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_identity_eth      from "./gf_identity_eth";
 import * as gf_identity_userpass from "./gf_identity_userpass";
 import * as gf_identity_http     from "./gf_identity_http";
-import * as gf_admin_http        from "./gf_admin_http";
 import * as gf_utils             from "./../../../gf_core/ts/gf_utils";
 
 declare const window: any;
@@ -39,7 +38,7 @@ declare var Web3;
 export async function init_with_http(p_notifications_meta_map,
     p_urls_map) {
     
-    const http_api_map = get_http_api(p_urls_map);
+    const http_api_map = gf_identity_http.get_http_api(p_urls_map);
     init(p_notifications_meta_map, http_api_map, p_urls_map);
 }
 
@@ -127,119 +126,4 @@ async function auth_method_pick() {
         });
     });
     return p;
-}
-
-//-------------------------------------------------
-export function get_standard_http_urls() {
-    const login_url_str = '/v1/identity/userpass/login';
-    const home_url_str  = "/v1/home/main";
-    const urls_map = {
-        "login": login_url_str,
-        "home":  home_url_str,
-    };
-    return urls_map;
-}
-
-//-------------------------------------------------
-export function get_admin_http_urls() {
-    const login_url_str = '/v1/admin/login';
-    const home_url_str  = "/v1/admin/dashboard";
-    const urls_map = {
-        "login": login_url_str,
-        "home":  home_url_str,
-    };
-    return urls_map;
-}
-
-//-------------------------------------------------
-export function get_http_api(p_urls_map) {
-    const http_api_map = {
-
-        // ETH
-        "eth": {
-            "user_preflight_fun": async (p_user_address_eth_str)=>{
-                const output_map = await gf_identity_http.user_preflight(null, p_user_address_eth_str);
-                return output_map;
-            },
-            "user_login_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
-                
-                const output_map = await gf_identity_http.user_eth_login(p_user_address_eth_str,
-                    p_auth_signature_str);
-                return output_map;
-            },
-            "user_create_fun": async (p_user_address_eth_str, p_auth_signature_str)=>{
-                const output_map = await gf_identity_http.user_eth_create(p_user_address_eth_str, p_auth_signature_str);
-                return output_map;
-            }
-        },
-
-        // USERPASS
-        "userpass": {
-            "user_login_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
-                const url_str    = p_urls_map["login"];
-                const output_map = await gf_identity_http.user_userpass_login(p_user_name_str,
-                    p_pass_str,
-                    p_email_str,
-                    url_str);
-                return output_map;
-            },
-            "user_create_fun": async (p_user_name_str, p_pass_str, p_email_str)=>{
-                const output_map = await gf_identity_http.user_userpass_create(p_user_name_str,
-                    p_pass_str,
-                    p_email_str);
-                return output_map;
-            }
-        },
-
-        // MFA
-        "mfa": {
-            "user_mfa_confirm": async (p_user_name_str, p_mfa_val_str)=>{
-                const output_map = await gf_identity_http.user_mfa_confirm(p_user_name_str,
-                    p_mfa_val_str);
-                return output_map;
-            }
-        },
-
-        // ADMIN
-        "admin": {
-            "delete_user": async (p_user_id_str :string,
-                p_user_name_str :string)=>{
-                const output_map = await gf_admin_http.delete_user(p_user_id_str, p_user_name_str);
-                return output_map;
-            },
-            "get_all_users": async ()=>{
-                const output_map = await gf_admin_http.get_all_users();
-                return output_map;
-            },
-            "get_all_invite_list": async ()=>{
-                const output_map = await gf_admin_http.get_all_invite_list();
-                return output_map;
-            },
-            "add_to_invite_list": async (p_email_str :string)=>{
-                const output_map = await gf_admin_http.add_to_invite_list(p_email_str);
-                return output_map;
-            },
-            "remove_from_invite_list": async (p_email_str :string)=>{
-                const output_map = await gf_admin_http.remove_from_invite_list(p_email_str);
-                return output_map;
-            },
-
-            "resend_email_confirm": async (p_user_id_str :string,
-                p_user_name_str :string,
-                p_email_str     :string)=>{
-                const output_map = await gf_admin_http.resend_email_confirm(p_user_id_str,
-                    p_user_name_str,
-                    p_email_str);
-                return output_map;
-            },
-        },
-
-        "general": {
-            "get_me": async ()=>{
-                const output_map = await gf_identity_http.user_get_me();
-                return output_map;
-            },
-        }
-    };
-    return http_api_map;
 }

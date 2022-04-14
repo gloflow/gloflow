@@ -19,15 +19,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../d/jquery.d.ts" />
 
-import * as gf_identity from "./../../gf_apps/gf_identity/ts/gf_identity";
+import * as gf_identity_http from "./../../gf_apps/gf_identity/ts/gf_identity_http";
 
 //-----------------------------------------------------
 export async function init_with_auth(p_log_fun) {
 	
 	// STANDARD - non-admin urls
-	const urls_map = gf_identity.get_standard_http_urls();
+	const urls_map = gf_identity_http.get_standard_http_urls();
 	
-	const auth_http_api_map = gf_identity.get_http_api(urls_map);
+	const auth_http_api_map = gf_identity_http.get_http_api(urls_map);
 
 	await init(auth_http_api_map, urls_map, p_log_fun);
 }

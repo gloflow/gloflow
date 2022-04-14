@@ -19,8 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_identity     from "./../../gf_identity/ts/gf_identity";
-import * as gf_identity_mfa from "./../../gf_identity/ts/gf_identity_mfa";
+import * as gf_identity      from "./../../gf_identity/ts/gf_identity";
+import * as gf_identity_http from "./../../gf_identity/ts/gf_identity_http";
+import * as gf_identity_mfa  from "./../../gf_identity/ts/gf_identity_mfa";
 
 //--------------------------------------------------------
 $(document).ready(()=>{
@@ -59,11 +60,11 @@ function init(p_log_fun) {
 
 	//---------------------
 	// IDENTITY
-	const urls_map = gf_identity.get_admin_http_urls();
+	const urls_map = gf_identity_http.get_admin_http_urls();
 	gf_identity.init_with_http(notifications_meta_map, urls_map);
 
 	
-	const http_api_map = gf_identity.get_http_api(urls_map);
+	const http_api_map = gf_identity_http.get_http_api(urls_map);
 
 	// MFA_CONFIRM - check if login is in MFA_confirm stage of login
 	if ($('#identiy_mfa_confirm').length > 0) {
