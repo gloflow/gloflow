@@ -93,7 +93,7 @@ export async function init(p_auth_http_api_map,
 					
 				</div>
 			</div>`);
-		$(sys_panel_element).append(auth_container);
+		$(sys_panel_element).find("#controls").append(auth_container);
 		
 		// IMG
 		if (user_profile_img_url_str != "") { 
