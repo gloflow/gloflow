@@ -56,7 +56,6 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 			Name: name_str,
 			Help: "handler number of requests",
 		})
-
 		prometheus.MustRegister(handler__reqs_num__counter)
 
 
@@ -68,7 +67,7 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 		Name: fmt.Sprintf("gf_rpc__handler_auth_session_invalid_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of invalid auth session requests received",
 	})
-
+	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
 
 	metrics := &GF_metrics{
 		Handlers_counters_map:             handlers_counters_map,

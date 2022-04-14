@@ -52,12 +52,12 @@ func Run(p_config *GF_config,
 	// CONFIG
 	portMetricsInt := 9110
 
-	port_int, err := strconv.Atoi(p_config.Port_str)
+	portInt, err := strconv.Atoi(p_config.Port_str)
 	if err != nil {
 		panic(err)
 	}
 
-	port_admin_int, err := strconv.Atoi(p_config.Port_admin_str)
+	portAdminInt, err := strconv.Atoi(p_config.Port_admin_str)
 	if err != nil {
 		panic(err)
 	}
@@ -76,10 +76,11 @@ func Run(p_config *GF_config,
     }
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
+	// VALIDATOR
 	validator := gf_core.Validate__init()
 	pRuntimeSys.Validator = validator
 
-
+	// HTTP_MUX
 	gfSoloHTTPmux := http.NewServeMux()
 
 	//-------------
@@ -153,7 +154,7 @@ func Run(p_config *GF_config,
 		}
 
 		// SERVER_INIT - blocking
-		gf_rpc_lib.Server__init_with_mux(port_admin_int, admin_http_mux)
+		gf_rpc_lib.Server__init_with_mux(portAdminInt, admin_http_mux)
 
 	}(sentry_hub_clone)
 
@@ -274,7 +275,7 @@ func Run(p_config *GF_config,
 	
 	//-------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.Server__init_with_mux(port_int, gfSoloHTTPmux)
+	gf_rpc_lib.Server__init_with_mux(portInt, gfSoloHTTPmux)
 }
 
 //-------------------------------------------------

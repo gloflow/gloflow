@@ -38,27 +38,30 @@ type GFmetrics struct {
 // INIT
 func MetricsInit(p_metrics_endpoint_str string, // "/metrics"
 	pPortInt int) *GFmetrics {
+	
+	// ERRORS_COUNTER
+	errorsCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_core__errors_num",
+		Help: "number of gf_errors thrown in the system",
+	})
+	prometheus.MustRegister(errorsCounter)
+	
 
+	// START_SERVER
 	go func() {
 		metrics_router := mux.NewRouter()
 		metrics_router.Handle(p_metrics_endpoint_str, promhttp.Handler())
 
 
-		metrics_server := http.Server{
+		metricsServer := http.Server{
 			Handler: metrics_router,
 			Addr:    fmt.Sprintf(":%d", pPortInt),
 		}
 		
 		// ADD!! - check for returned error here,
 		//         and report this in some way to the user.
-		metrics_server.ListenAndServe()
+		metricsServer.ListenAndServe()
 	}()
-
-
-	errorsCounter := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_core__errors_num",
-		Help: "number of gf_errors thrown in the system",
-	})
 
 	metrics := &GFmetrics{
 		ErrorsCounter: errorsCounter,
