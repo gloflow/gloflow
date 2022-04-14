@@ -41,7 +41,8 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		"/v1/identity/userpass/login",
 		"/v1/identity/userpass/create",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(pServiceInfo.Name_str, handlersEndpointsLst)
+	metricsGroupNameStr := "userpass"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.Name_str, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

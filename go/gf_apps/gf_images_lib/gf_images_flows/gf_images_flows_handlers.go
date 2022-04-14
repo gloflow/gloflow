@@ -54,7 +54,8 @@ func Init_handlers(p_auth_login_url_str string,
 		"/images/flows/browser",
 		"/images/flows/browser_page",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_images_flows", handlers_endpoints_lst)
+	metricsGroupNameStr := "flows"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlers_endpoints_lst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

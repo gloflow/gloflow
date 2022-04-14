@@ -57,7 +57,8 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		"/v1/home/viz/get",
 		"/v1/home/viz/update",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_home", handlersEndpointsLst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_home", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

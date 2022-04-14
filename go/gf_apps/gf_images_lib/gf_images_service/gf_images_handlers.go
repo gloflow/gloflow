@@ -49,7 +49,8 @@ func InitHandlers(pAuthLoginURLstr string,
 		"/v1/images/upload_complete",
 		"/images/c",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_images", handlers_endpoints_lst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlers_endpoints_lst)
 
 	//---------------------
 	// rpcHandlerRuntime

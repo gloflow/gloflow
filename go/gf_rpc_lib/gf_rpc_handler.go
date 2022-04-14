@@ -89,18 +89,18 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 //-------------------------------------------------
 // HTTP_WITH_MUX
 func CreateHandlerHTTPwithMux(p_path_str string,
-	p_handler_fun    handler_http,
-	p_mux            *http.ServeMux,
-	pMetrics         *GF_metrics,
-	p_store_run_bool bool,
-	p_sentry_hub     *sentry.Hub,
-	p_runtime_sys    *gf_core.Runtime_sys) {
+	p_handler_fun handler_http,
+	p_mux         *http.ServeMux,
+	pMetrics      *GF_metrics,
+	pStoreRunBool bool,
+	p_sentry_hub  *sentry.Hub,
+	p_runtime_sys *gf_core.Runtime_sys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
 		pMetrics,
-		p_store_run_bool,
+		pStoreRunBool,
 		p_sentry_hub,
 		nil,
 		p_runtime_sys)
@@ -111,16 +111,16 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 //-------------------------------------------------
 // HTTP_WITH_METRICS
 func Create_handler__http_with_metrics(p_path_str string,
-	p_handler_fun    handler_http,
-	pMetrics         *GF_metrics,
-	p_store_run_bool bool,
-	p_runtime_sys    *gf_core.Runtime_sys) {
+	p_handler_fun handler_http,
+	pMetrics      *GF_metrics,
+	pStoreRunBool bool,
+	p_runtime_sys *gf_core.Runtime_sys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
 		p_handler_fun,
 		pMetrics,
-		p_store_run_bool,
+		pStoreRunBool,
 		nil,
 		nil,
 		p_runtime_sys)
@@ -133,10 +133,10 @@ func getHandler(p_auth_bool bool,
 	pPathStr         string,
 	p_handler_fun    handler_http,
 	pMetrics         *GF_metrics,
-	p_store_run_bool bool,
-	pSentryHub           *sentry.Hub,
+	pStoreRunBool    bool,
+	pSentryHub       *sentry.Hub,
 	pAuthLoginURLstr *string,
-	pRuntimeSys          *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
+	pRuntimeSys      *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
 	handler_fun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
@@ -273,7 +273,7 @@ func getHandler(p_auth_bool bool,
 
 		end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-		if p_store_run_bool {
+		if pStoreRunBool {
 			go func() {
 				Store_rpc_handler_run(pPathStr, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()

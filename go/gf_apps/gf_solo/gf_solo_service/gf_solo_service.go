@@ -50,7 +50,7 @@ func Run(p_config *GF_config,
 
 	//-------------
 	// CONFIG
-	port_metrics_int := 9110
+	portMetricsInt := 9110
 
 	port_int, err := strconv.Atoi(p_config.Port_str)
 	if err != nil {
@@ -270,7 +270,7 @@ func Run(p_config *GF_config,
 	//-------------
 
 	// METRICS
-	gf_core.Metrics__init("/metrics", port_metrics_int)
+	gf_core.MetricsInit("/metrics", portMetricsInt)
 
 	// SERVER_INIT - blocking
 	gf_rpc_lib.Server__init_with_mux(port_int, gfSoloHTTPmux)
@@ -313,7 +313,7 @@ func Runtime__get(p_config_path_str string,
 
 	//--------------------
 	// RUNTIME_SYS
-	runtime_sys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_solo",
 		Log_fun:          p_log_fun,
 
@@ -334,15 +334,15 @@ func Runtime__get(p_config_path_str string,
 	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
 		config.Mongodb_db_name_str,
 		nil,
-		runtime_sys)
+		runtimeSys)
 	if gf_err != nil {
 		return nil, nil, gf_err.Error
 	}
 
-	runtime_sys.Mongo_db   = mongodb_db
-	runtime_sys.Mongo_coll = mongodb_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongodb_db
+	runtimeSys.Mongo_coll = mongodb_db.Collection("data_symphony")
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------
-	return runtime_sys, config, nil
+	return runtimeSys, config, nil
 }

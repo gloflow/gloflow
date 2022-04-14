@@ -64,7 +64,8 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 		"/v1/admin/login_ui",
 		"/v1/admin/dashboard",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlersEndpointsLst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_admin", handlersEndpointsLst)
 
 	//---------------------
 	// rpcHandlerRuntime

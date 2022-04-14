@@ -47,7 +47,8 @@ func initHandlers(p_auth_login_url_str string,
 		"/v1/identity/me",
 		"/v1/identity/register_invite_email",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(pServiceInfo.Name_str, handlersEndpointsLst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.Name_str, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

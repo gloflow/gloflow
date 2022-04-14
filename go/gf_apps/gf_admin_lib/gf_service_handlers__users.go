@@ -47,7 +47,8 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 		"/v1/admin/users/add_to_invite_list",
 		"/v1/admin/users/resend_confirm_email",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_admin", handlers_endpoints_lst)
+	metricsGroupNameStr := "users"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_admin", handlers_endpoints_lst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

@@ -44,7 +44,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 	handlers_endpoints_lst := []string{
 		"/landing/main",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers("gf_landing_page", handlers_endpoints_lst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_landing_page", handlers_endpoints_lst)
 
 	//---------------------
 	// MAIN

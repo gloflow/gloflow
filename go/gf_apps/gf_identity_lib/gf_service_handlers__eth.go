@@ -42,7 +42,8 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 		"/v1/identity/eth/login",
 		"/v1/identity/eth/create",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(p_service_info.Name_str, handlers_endpoints_lst)
+	metricsGroupNameStr := "eth"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, p_service_info.Name_str, handlers_endpoints_lst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

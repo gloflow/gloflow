@@ -41,7 +41,8 @@ type GF_metrics struct {
 
 //-------------------------------------------------
 // CREATE_FOR_HANDLER
-func Metrics__create_for_handlers(p_service_name_str string,
+func MetricsCreateForHandlers(pMetricsGroupNameStr string,
+	pServiceNameStr          string,
 	p_handlers_endpoints_lst []string) *GF_metrics {
 	
 
@@ -49,7 +50,7 @@ func Metrics__create_for_handlers(p_service_name_str string,
 	for _, handler_endpoint_str := range p_handlers_endpoints_lst {
 
 		handler_endpoint_clean_str := strings.ReplaceAll(handler_endpoint_str, "/", "_")
-		name_str := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", p_service_name_str, handler_endpoint_clean_str)
+		name_str := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, handler_endpoint_clean_str)
 		
 		handler__reqs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
 			Name: name_str,
@@ -64,7 +65,7 @@ func Metrics__create_for_handlers(p_service_name_str string,
 
 
 	handlersAuthSessionInvalidCounter := prometheus.NewCounter(prometheus.CounterOpts{
-		Name: "gf_rpc__handler_auth_session_invalid_num",
+		Name: fmt.Sprintf("gf_rpc__handler_auth_session_invalid_num__%s_%s", pServiceNameStr, pMetricsGroupNameStr), 
 		Help: "number of invalid auth session requests received",
 	})
 
