@@ -63,7 +63,7 @@ func Panic__check_and_handle(p_user_msg_str string,
 	p_panic_data_map     map[string]interface{},
 	p_oncomplete_fn      func(),
 	p_subsystem_name_str string,
-	p_runtime_sys        *Runtime_sys) {
+	pRuntimeSys          *Runtime_sys) {
 
 	// call to recover stops the unwinding and returns the argument passed to panic
 	// If the goroutine is not panicking, recover returns nil.
@@ -77,7 +77,7 @@ func Panic__check_and_handle(p_user_msg_str string,
 
 		//--------------------
 		// SENTRY
-		if p_runtime_sys.Errors_send_to_sentry_bool {
+		if pRuntimeSys.Errors_send_to_sentry_bool {
 			
 			/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 				scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
@@ -87,12 +87,12 @@ func Panic__check_and_handle(p_user_msg_str string,
 
 			sentry.WithScope(func(scope *sentry.Scope) {
 
-				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   p_runtime_sys.Names_prefix_str), p_runtime_sys.Service_name_str)
-				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", p_runtime_sys.Names_prefix_str), p_subsystem_name_str)
-				scope.SetTag(fmt.Sprintf("%s_panic.type",           p_runtime_sys.Names_prefix_str), "panic_error")
+				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.Names_prefix_str), pRuntimeSys.Service_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), p_subsystem_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.Names_prefix_str), "panic_error")
 
 				for k, v := range p_panic_data_map {
-					scope.SetTag(fmt.Sprintf("%s_panic.%s", p_runtime_sys.Names_prefix_str, k),
+					scope.SetTag(fmt.Sprintf("%s_panic.%s", pRuntimeSys.Names_prefix_str, k),
 						fmt.Sprint(v))
 				}
 
@@ -120,17 +120,17 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_error              error,
 	p_subsystem_name_str string,
 	p_hook_fun           func(*GF_error) map[string]interface{},
-	p_runtime_sys        *Runtime_sys) *GF_error {
+	pRuntimeSys          *Runtime_sys) *GF_error {
 
-	gf_error := Error__create(p_user_msg_str,
+	gfError := Error__create(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
-		p_runtime_sys)
+		pRuntimeSys)
 
-	p_hook_fun(gf_error)
-	return gf_error
+	p_hook_fun(gfError)
+	return gfError
 }
 
 //-------------------------------------------------
@@ -139,7 +139,7 @@ func Error__create(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_runtime_sys        *Runtime_sys) *GF_error {
+	pRuntimeSys          *Runtime_sys) *GF_error {
 
 	error_defs_map := error__get_defs()
 	
@@ -154,7 +154,7 @@ func Error__create(p_user_msg_str string,
 		//               of Error__create() so its important to account for that to get 
 		//               the proper caller information.
 		2, // p_skip_stack_frames_num_int
-		p_runtime_sys)
+		pRuntimeSys)
 
 	return gf_err
 }
@@ -172,7 +172,7 @@ func Error__create_with_defs(p_user_msg_str string,
 	//               the error occured.
 	p_skip_stack_frames_num_int int,
 
-	p_runtime_sys *Runtime_sys) *GF_error {
+	pRuntimeSys *Runtime_sys) *GF_error {
 
 	
 
@@ -189,13 +189,13 @@ func Error__create_with_defs(p_user_msg_str string,
 	program_counter, file_str, line_num_int,_ := runtime.Caller(p_skip_stack_frames_num_int)
 
 	// FuncForPC - returns a *Func describing the function that contains the given program counter address
-	function          := runtime.FuncForPC(program_counter)
-	function_name_str := function.Name()
+	function        := runtime.FuncForPC(program_counter)
+	functionNameStr := function.Name()
 
 	//--------------------
 	// ERROR_DEF
 
-	error_def, ok := p_err_defs_map[p_error_type_str]
+	errorDef, ok := p_err_defs_map[p_error_type_str]
 	if !ok {
 		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
 	}
@@ -209,12 +209,12 @@ func Error__create_with_defs(p_user_msg_str string,
 		Type_str:             p_error_type_str,
 		User_msg_str:         p_user_msg_str,
 		Data_map:             p_error_data_map,
-		Descr_str:            error_def.Descr_str,
+		Descr_str:            errorDef.Descr_str,
 		Error:                p_error,
-		Service_name_str:     p_runtime_sys.Service_name_str,
+		Service_name_str:     pRuntimeSys.Service_name_str,
 		Subsystem_name_str:   p_subsystem_name_str,
 		Stack_trace_str:      stack_trace_str,
-		Function_name_str:    function_name_str,
+		Function_name_str:    functionNameStr,
 		File_str:             file_str,
 		Line_num_int:         line_num_int,
 	}
@@ -245,20 +245,20 @@ func Error__create_with_defs(p_user_msg_str string,
 	fmt.Printf("\n\n")
 
 	var names_prefix_str string
-	if p_runtime_sys.Names_prefix_str != "" {
-		names_prefix_str = p_runtime_sys.Names_prefix_str
+	if pRuntimeSys.Names_prefix_str != "" {
+		names_prefix_str = pRuntimeSys.Names_prefix_str
 	} else {
 		names_prefix_str = "gf"
 	}
 
 	//--------------------
 	// DB_PERSIST
-	if p_runtime_sys.Errors_send_to_mongodb_bool {
+	if pRuntimeSys.Errors_send_to_mongodb_bool {
 		
 		ctx := context.Background()
 		errs_db_coll_name_str := fmt.Sprintf("%s_errors", names_prefix_str)
 
-		_, err := p_runtime_sys.Mongo_db.Collection(errs_db_coll_name_str).InsertOne(ctx, gf_error)
+		_, err := pRuntimeSys.Mongo_db.Collection(errs_db_coll_name_str).InsertOne(ctx, gf_error)
 		if err != nil {
 
 		}
@@ -266,7 +266,7 @@ func Error__create_with_defs(p_user_msg_str string,
 	
 	//--------------------
 	// SENTRY
-	if p_runtime_sys.Errors_send_to_sentry_bool {
+	if pRuntimeSys.Errors_send_to_sentry_bool {
 		
 		/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
@@ -304,6 +304,12 @@ func Error__create_with_defs(p_user_msg_str string,
 		defer sentry.Flush(2 * time.Second)
 	}
 	
+	//--------------------
+	// METRICS - prometheus metrics
+	if pRuntimeSys.Metrics != nil {
+		pRuntimeSys.Metrics.ErrorsCounter.Inc()
+	}
+
 	//--------------------
 
 	return &gf_error

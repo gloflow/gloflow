@@ -47,6 +47,8 @@ type Runtime_sys struct {
 	Validator *validator.Validate
 
 	External_plugins *External_plugins
+
+	Metrics *GFmetrics
 }
 
 // PLUGINS

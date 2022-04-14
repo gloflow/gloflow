@@ -268,10 +268,11 @@ func Run(p_config *GF_config,
 	gf_ml_lib.Init_service(gfSoloHTTPmux, pRuntimeSys)
 
 	//-------------
-
-	// METRICS
-	gf_core.MetricsInit("/metrics", portMetricsInt)
-
+	// METRICS - start prometheus metrics endpoint, and get core_metrics
+	coreMetrics := gf_core.MetricsInit("/metrics", portMetricsInt)
+	pRuntimeSys.Metrics = coreMetrics
+	
+	//-------------
 	// SERVER_INIT - blocking
 	gf_rpc_lib.Server__init_with_mux(port_int, gfSoloHTTPmux)
 }

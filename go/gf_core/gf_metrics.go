@@ -23,13 +23,21 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 //-------------------------------------------------
+type GFmetrics struct {
+
+	// ERRORS_COUNTER - number of GF errors that were thrown
+	ErrorsCounter prometheus.Counter
+}
+
+//-------------------------------------------------
 // INIT
-func Metrics__init(p_metrics_endpoint_str string, // "/metrics"
-	p_port_int int) {
+func MetricsInit(p_metrics_endpoint_str string, // "/metrics"
+	pPortInt int) *GFmetrics {
 
 	go func() {
 		metrics_router := mux.NewRouter()
@@ -38,11 +46,23 @@ func Metrics__init(p_metrics_endpoint_str string, // "/metrics"
 
 		metrics_server := http.Server{
 			Handler: metrics_router,
-			Addr:    fmt.Sprintf(":%d", p_port_int),
+			Addr:    fmt.Sprintf(":%d", pPortInt),
 		}
 		
 		// ADD!! - check for returned error here,
 		//         and report this in some way to the user.
 		metrics_server.ListenAndServe()
 	}()
+
+
+	errorsCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_core__errors_num",
+		Help: "number of gf_errors thrown in the system",
+	})
+
+	metrics := &GFmetrics{
+		ErrorsCounter: errorsCounter,
+	}
+
+	return metrics
 }
