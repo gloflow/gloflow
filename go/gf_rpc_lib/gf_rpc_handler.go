@@ -29,7 +29,6 @@ import (
 	"net/http"
 	"context"
 	"time"
-	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
@@ -136,7 +135,7 @@ func getHandler(p_auth_bool bool,
 	pMetrics         *GF_metrics,
 	p_store_run_bool bool,
 	pSentryHub           *sentry.Hub,
-	p_auth_login_url_str *string,
+	pAuthLoginURLstr *string,
 	pRuntimeSys          *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
 	handler_fun := func(pResp http.ResponseWriter, pReq *http.Request) {
@@ -213,7 +212,7 @@ func getHandler(p_auth_bool bool,
 
 			validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 				pResp,
-				p_auth_login_url_str,
+				pAuthLoginURLstr,
 				ctx,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -224,7 +223,10 @@ func getHandler(p_auth_bool bool,
 			}
 
 			if !validBool {
-				if p_auth_login_url_str == nil {
+
+				// if a login_url is not defined then return error, otherwise redirect to this
+				// login_url   
+				if pAuthLoginURLstr == nil {
 					Error__in_handler(path_str,
 						fmt.Sprintf("user not authenticated to access handler %s", path_str),
 						nil, pResp, pRuntimeSys)
@@ -242,12 +244,12 @@ func getHandler(p_auth_bool bool,
 
 			if !validBool {
 
-				if p_auth_login_url_str != nil {
+				if pAuthLoginURLstr != nil {
 
 					// redirect user to login url
 					http.Redirect(pResp,
 						pReq,
-						*p_auth_login_url_str,
+						*pAuthLoginURLstr,
 						301)
 
 				} else {
@@ -302,21 +304,6 @@ func getHandler(p_auth_bool bool,
 }
 
 //-------------------------------------------------
-func Http_respond(p_data interface{},
-	p_status_str string,
-	p_resp       http.ResponseWriter,
-	pRuntimeSys  *gf_core.Runtime_sys) {
-
-	r_byte_lst, _ := json.Marshal(map[string]interface{}{
-		"status": p_status_str,
-		"data":   p_data,
-	})
-	
-	p_resp.Header().Set("Content-Type", "application/json")
-	p_resp.Write(r_byte_lst)
-}
-
-//-------------------------------------------------
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
@@ -350,29 +337,4 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	}
 
 	return nil
-}
-
-//-------------------------------------------------
-func Error__in_handler(p_handler_url_path_str string,
-	p_user_msg_str string,
-	p_gf_err       *gf_core.GF_error,
-	p_resp         http.ResponseWriter,
-	p_runtime_sys  *gf_core.Runtime_sys) {
-
-	status_str := "ERROR"
-	data_map   := map[string]interface{}{
-		"handler_error_user_msg": p_user_msg_str,
-	}
-
-	if p_gf_err != nil {
-		data_map["gf_error_type"]     = p_gf_err.Type_str
-		data_map["gf_error_user_msg"] = p_gf_err.User_msg_str
-	}
-
-	// DEBUG
-	if p_runtime_sys.Debug_bool {
-		data_map["error"] = p_gf_err.Error
-	}
-
-	Http_respond(data_map, status_str, p_resp, p_runtime_sys)
 }

@@ -33,6 +33,46 @@ import (
 )
 
 //-------------------------------------------------
+func Http_respond(p_data interface{},
+	p_status_str string,
+	p_resp       http.ResponseWriter,
+	pRuntimeSys  *gf_core.Runtime_sys) {
+
+	r_byte_lst, _ := json.Marshal(map[string]interface{}{
+		"status": p_status_str,
+		"data":   p_data,
+	})
+	
+	p_resp.Header().Set("Content-Type", "application/json")
+	p_resp.Write(r_byte_lst)
+}
+
+//-------------------------------------------------
+func Error__in_handler(p_handler_url_path_str string,
+	p_user_msg_str string,
+	p_gf_err       *gf_core.GF_error,
+	p_resp         http.ResponseWriter,
+	p_runtime_sys  *gf_core.Runtime_sys) {
+
+	statusStr := "ERROR"
+	dataMap   := map[string]interface{}{
+		"handler_error_user_msg": p_user_msg_str,
+	}
+
+	if p_gf_err != nil {
+		dataMap["gf_error_type"]     = p_gf_err.Type_str
+		dataMap["gf_error_user_msg"] = p_gf_err.User_msg_str
+	}
+
+	// DEBUG
+	if p_runtime_sys.Debug_bool {
+		dataMap["error"] = p_gf_err.Error
+	}
+
+	Http_respond(dataMap, statusStr, p_resp, p_runtime_sys)
+}
+
+//-------------------------------------------------
 /*
 // FIX!! - passing in structs as interface{} doesnt preserve their tags.
 func Get_http_input_to_struct(p_input_struct interface{},
