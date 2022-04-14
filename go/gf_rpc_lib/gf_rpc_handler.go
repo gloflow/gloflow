@@ -142,7 +142,7 @@ func getHandler(p_auth_bool bool,
 
 		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
-		path_str := pReq.URL.Path
+		pathStr := pReq.URL.Path
 
 		//------------------
 		// PANIC_HANDLING
@@ -154,15 +154,15 @@ func getHandler(p_auth_bool bool,
 
 		user_msg__internal_str := "gf_rpc handler panicked"
 		defer gf_core.Panic__check_and_handle(user_msg__internal_str,
-			map[string]interface{}{"handler_path_str": path_str},
+			map[string]interface{}{"handler_path_str": pathStr},
 			// oncomplete_fn
 			func() {
 				
 				// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
 				//               and then proceed to process the panic as an error 
 				//               with gf_core.Panic__check_and_handle()
-				Error__in_handler(path_str,
-					fmt.Sprintf("handler %s failed unexpectedly", path_str),
+				Error__in_handler(pathStr,
+					fmt.Sprintf("handler %s failed unexpectedly", pathStr),
 					nil, pResp, pRuntimeSys)
 			},
 			"gf_rpc_lib", pRuntimeSys)
@@ -192,7 +192,7 @@ func getHandler(p_auth_bool bool,
 		} else {
 			hub = pSentryHub
 		}
-		hub.Scope().SetTag("url", path_str)
+		hub.Scope().SetTag("url", pathStr)
 
 		//------------------
 		// TRACE
@@ -209,56 +209,35 @@ func getHandler(p_auth_bool bool,
 		if p_auth_bool {
 
 			// SESSION_VALIDATE
-
 			validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 				pResp,
 				pAuthLoginURLstr,
 				ctx,
 				pRuntimeSys)
 			if gfErr != nil {
-				Error__in_handler(path_str,
-					fmt.Sprintf("handler %s failed to execute/validate a auth session", path_str),
+				Error__in_handler(pathStr,
+					fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
 					nil, pResp, pRuntimeSys)
 				return
 			}
 
+			// SESSION_NOT_VALID
 			if !validBool {
+
+				// METRICS
+				if pMetrics != nil {
+					pMetrics.HandlersAuthSessionInvalidCounter.Inc()
+				}
 
 				// if a login_url is not defined then return error, otherwise redirect to this
 				// login_url   
 				if pAuthLoginURLstr == nil {
-					Error__in_handler(path_str,
-						fmt.Sprintf("user not authenticated to access handler %s", path_str),
+					Error__in_handler(pathStr,
+						fmt.Sprintf("user not authenticated to access handler %s", pathStr),
 						nil, pResp, pRuntimeSys)
 				}
 				return
 			}
-
-			/*validBool, userIdentifierStr, gfErr := gf_session.Validate(pReq, ctx, pRuntimeSys)
-			if gfErr != nil {
-				Error__in_handler(path_str,
-					fmt.Sprintf("handler %s failed to execute auth validation of session", path_str),
-					nil, pResp, pRuntimeSys)
-				return
-			}
-
-			if !validBool {
-
-				if pAuthLoginURLstr != nil {
-
-					// redirect user to login url
-					http.Redirect(pResp,
-						pReq,
-						*pAuthLoginURLstr,
-						301)
-
-				} else {
-					Error__in_handler(path_str,
-						fmt.Sprintf("user not authenticated to access handler %s", path_str),
-						nil, pResp, pRuntimeSys)
-				}
-				return
-			}*/
 
 			ctxAuth = context.WithValue(ctxRoot, "gf_user_id", userIdentifierStr)
 		} else {

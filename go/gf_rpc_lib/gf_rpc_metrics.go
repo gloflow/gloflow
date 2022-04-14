@@ -33,6 +33,10 @@ import (
 //-------------------------------------------------
 type GF_metrics struct {
 	Handlers_counters_map map[string]prometheus.Counter
+
+	// AUTH_SESSION_INVALID - counter for when auth session validation fails when
+	//                        request is received and validated
+	HandlersAuthSessionInvalidCounter prometheus.Counter
 }
 
 //-------------------------------------------------
@@ -58,8 +62,16 @@ func Metrics__create_for_handlers(p_service_name_str string,
 		handlers_counters_map[handler_endpoint_str] = handler__reqs_num__counter
 	}
 
+
+	handlersAuthSessionInvalidCounter := prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "gf_rpc__handler_auth_session_invalid_num",
+		Help: "number of invalid auth session requests received",
+	})
+
+
 	metrics := &GF_metrics{
-		Handlers_counters_map: handlers_counters_map,
+		Handlers_counters_map:             handlers_counters_map,
+		HandlersAuthSessionInvalidCounter: handlersAuthSessionInvalidCounter,
 	}
 
 	return metrics
