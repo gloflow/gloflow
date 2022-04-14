@@ -55,12 +55,6 @@ export async function init(p_auth_http_api_map,
 						<div id="domains_app_btn"><a href="/a/domains/browser">Domains</a></div>
 						<div id="bookmarks_app_btn"><a href="/v1/bookmarks/get">B</a></div>
 					</div>
-
-					<div id="auth">
-						<div id="current_user">
-							
-						</div>
-					</div>
 				</div>
 			</div>
 			
@@ -93,9 +87,17 @@ export async function init(p_auth_http_api_map,
 		const user_profile_img_url_str = me_user_map["profile_image_url_str"];
 		const user_name_str            = me_user_map["user_name_str"];
 
+		const auth_container = $(`
+			<div id="auth">
+				<div id="current_user">
+					
+				</div>
+			</div>`);
+		$(sys_panel_element).append(auth_container);
+		
 		// IMG
 		if (user_profile_img_url_str != "") { 
-			$(sys_panel_element).find("#auth #current_user").append(`
+			$(auth_container).find("#current_user").append(`
 				<img>${user_profile_img_url_str}</img>
 			`);
 		}
@@ -104,19 +106,15 @@ export async function init(p_auth_http_api_map,
 		else {
 
 			const shorthand_str = user_name_str[0];
-			$(sys_panel_element).find("#auth #current_user").append(`
+			$(auth_container).find("#current_user").append(`
 				<div id="shorthand_username">${shorthand_str}</div>
 			`);
 		}
 
+		// HOME_REDIRECT
 		$("#current_user").on("click", ()=>{
-
-
 			const home_url_str   = p_urls_map["home"];
 			window.location.href = home_url_str;
-
-
-
 		});
 	}
 
