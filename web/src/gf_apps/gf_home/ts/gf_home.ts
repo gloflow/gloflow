@@ -19,8 +19,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
+import * as gf_dragndrop          from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_home_eth_addresses from "gf_home_eth_addresses";
+import * as gf_utils              from "gf_utils";
 
 declare var WebFont; 
 declare var iro;
@@ -43,95 +44,165 @@ export async function init(p_http_api_map,
 			console.log("Fonts have been rendered")
 		}*/
 	});
-	
+
+
+
+	// GET_PERSISTED_COMPONENTS
+	const home_viz_map = await p_http_api_map["home"]["viz_get_fun"]();
+	const home_viz_components_map = home_viz_map["components_map"];
+
+
 	const home_container          = $("#home_container");
-	const names_container         = init_names_view(home_container, p_assets_paths_map);
-	const profile_image_container = await init_profile_image(p_assets_paths_map);
-	const my_eth_addresses_container       = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
-	const observed_eth_addresses_container = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
-	
+	const names_container         = init_names_view(home_container, p_http_api_map, p_assets_paths_map);
+	const profile_image_container = await init_profile_image(p_http_api_map, p_assets_paths_map);
+	const my_eth_addresses_container        = await gf_home_eth_addresses.init_my(home_container, p_http_api_map, p_assets_paths_map);
+	const observed_eth_addresses_container  = await gf_home_eth_addresses.init_observed(home_container, p_http_api_map, p_assets_paths_map);
+	const background_color_picker_container = await init_color_picker(home_container, p_http_api_map, p_assets_paths_map);
+
 	//-----------------------------
 	// PROFILE_IMAGE
+	var profile_img_x_int;
+	var profile_img_y_int;
+	if ("profile_image" in home_viz_components_map) {
+		profile_img_x_int = home_viz_components_map["profile_image"]["x_int"];
+		profile_img_y_int = home_viz_components_map["profile_image"]["y_int"];
+	}
+	else {
+		// default positioning
+		profile_img_x_int = ($(window).width() - $(profile_image_container).width())/2;
+		profile_img_y_int = 100;
+	}
+
+	$(profile_image_container).css("left", `${profile_img_x_int}px`);
+	$(profile_image_container).css("top",  `${profile_img_y_int}px`);
+
+
 	const profile_image_pos = $(profile_image_container).position();
 	
 	//-----------------------------
 	// NAMES
-	const names_x = profile_image_pos.left;
-	const names_y = profile_image_pos.top - 38;
+	var names_x_int;
+	var names_y_int;
+	if ("names" in home_viz_components_map) {
+		names_x_int = home_viz_components_map["names"]["x_int"];
+		names_y_int = home_viz_components_map["names"]["y_int"];
+	}
+	else {
+		// default positioning
+		names_x_int = profile_img_x_int;
+		names_y_int = profile_img_y_int - 38;
+	}
 
-	$(names_container).css("left", `${names_x}px`);
-	$(names_container).css("top", `${names_y}px`);
+	$(names_container).css("left", `${names_x_int}px`);
+	$(names_container).css("top", `${names_y_int}px`);
 
 	//-----------------------------
 	// MY_ETH_ADDRESSES
+	var eth_addr_x_int;
+	var eth_addr_y_int;
+	if ("web3_addresses_my" in home_viz_components_map) {
+		eth_addr_x_int = home_viz_components_map["web3_addresses_my"]["x_int"];
+		eth_addr_y_int = home_viz_components_map["web3_addresses_my"]["y_int"];
+	}
+	else {
+		// default positioning
+		eth_addr_x_int = profile_image_pos.left;
+		eth_addr_y_int = profile_image_pos.top + $(profile_image_container).outerHeight() + 10;
+	}
 
-	const eth_addr_x = profile_image_pos.left;
-	const eth_addr_y = profile_image_pos.top + $(profile_image_container).outerHeight() + 10 ;
-
-	$(my_eth_addresses_container).css("left", `${eth_addr_x}px`);
-	$(my_eth_addresses_container).css("top",  `${eth_addr_y}px`);
+	$(my_eth_addresses_container).css("left", `${eth_addr_x_int}px`);
+	$(my_eth_addresses_container).css("top",  `${eth_addr_y_int}px`);
 	
 	//-----------------------------
 	// OBSERVED_ETH_ADDRESSES
+	var obs_eth_addr_x_int;
+	var obs_eth_addr_y_int;
+	if ("web3_addresses_observed" in home_viz_components_map) {
+		obs_eth_addr_x_int = home_viz_components_map["web3_addresses_observed"]["x_int"];
+		obs_eth_addr_y_int = home_viz_components_map["web3_addresses_observed"]["y_int"];
+	}
+	else {
+		// default positioning
+		obs_eth_addr_x_int = eth_addr_x_int;
+		obs_eth_addr_y_int = eth_addr_y_int + $(my_eth_addresses_container)[0].getBoundingClientRect().height + 10 ;
+	}
 
-	const obs_eth_addr_x = eth_addr_x;
-	const obs_eth_addr_y = eth_addr_y + $(my_eth_addresses_container)[0].getBoundingClientRect().height + 10 ;
-
-	$(observed_eth_addresses_container).css("left", `${obs_eth_addr_x}px`);
-	$(observed_eth_addresses_container).css("top",  `${obs_eth_addr_y}px`);
+	$(observed_eth_addresses_container).css("left", `${obs_eth_addr_x_int}px`);
+	$(observed_eth_addresses_container).css("top",  `${obs_eth_addr_y_int}px`);
 	
 	//-----------------------------
+	// COLOR_PICKER
+	var background_color_picker_x_int;
+	var background_color_picker_y_int;
+	if ("background_color_picker" in home_viz_components_map) {
+		background_color_picker_x_int = home_viz_components_map["background_color_picker"]["x_int"];
+		background_color_picker_y_int = home_viz_components_map["background_color_picker"]["y_int"];
 
+		// persist background_coilor
+		const background_color_str = home_viz_components_map["background_color_picker"]["background_color_str"];
+		$("body").css("background-color", background_color_str);
+	}
+	else {
+		// default positioning
+		background_color_picker_x_int = profile_img_x_int + $(profile_image_container)[0].getBoundingClientRect().width + 10;
+		background_color_picker_y_int = profile_img_y_int;
+	}
 
-
-	//---------------------------
-    // COLOR_PICKER
-
-	const color_picker_container = $(`
-		<div id="background_color_picker">
-			<div id="control"></div>
-			<div id="picked_color">#000000</div>
-		</div>`);
-	$(home_container).append(color_picker_container);
-
-    const color_picker_color_element = $(color_picker_container).find("#picked_color");
-    const color_picker = new iro.ColorPicker("#background_color_picker #control", {
-        width: 100,   // size of the picker
-        color: "#f00" // initial color
-    });
-    color_picker.on('color:change', (p_color)=>{
-        
-        const picked_color_hex_str = p_color.hexString;
-
-        $(color_picker_color_element).text(picked_color_hex_str);
-        
-		
-		$("body").css("background-color", `${picked_color_hex_str}`);
-    });
-
+	$(background_color_picker_container).css("left", `${background_color_picker_x_int}px`);
+	$(background_color_picker_container).css("top",  `${background_color_picker_y_int}px`);
+	
     //---------------------------
 }
 
 //--------------------------------------------------------
-function init_names_view(p_parent_element, p_assets_paths_map) {
+function init_color_picker(p_parent_element,
+	p_http_api_map,
+	p_assets_paths_map) {
+
 	const container = $(`
-		<div id="names">
-			<div>@ivan</div>
+		<div id="background_color_picker">
+			<div id="control"></div>
+			<div id="picked_color">#000000</div>
 		</div>`);
 	$(p_parent_element).append(container);
 
+    const color_picker_color_element = $(container).find("#picked_color");
+    const color_picker = new iro.ColorPicker("#background_color_picker #control", {
+        width: 100,   // size of the picker
+        color: "#f00" // initial color
+    });
+    color_picker.on('color:change', async (p_color)=>{
+        
+        const background_color_hex_str = p_color.hexString;
+
+        $(color_picker_color_element).text(background_color_hex_str);
+		$("body").css("background-color", `${background_color_hex_str}`);
+
+		// update component remotely
+		const component_name_str = "background_color_picker";
+		await gf_utils.update_viz_background_color(component_name_str,
+			background_color_hex_str,
+			p_http_api_map);
+    });
 
 	// DRAG_N_DROP
 	gf_dragndrop.init(container,
 		//--------------------------------------------------------
 		// p_on_dnd_event_fun
-		(p_dnd_event_type_str :string)=>{
+		async (p_dnd_event_type_str :string, p_drag_data_map)=>{
 
 			switch (p_dnd_event_type_str) {
 				case "drag_start":
 					break;
 
 				case "drag_stop":
+
+					// update component remotely on each drag/coord change
+					const component_name_str = "background_color_picker";
+					await gf_utils.update_viz_component_remote(component_name_str,
+						p_drag_data_map,
+						p_http_api_map);
+						
 					break;
 			}
 		},
@@ -143,7 +214,47 @@ function init_names_view(p_parent_element, p_assets_paths_map) {
 }
 
 //--------------------------------------------------------
-function init_profile_image(p_assets_paths_map) {
+function init_names_view(p_parent_element,
+	p_http_api_map,
+	p_assets_paths_map) {
+	const container = $(`
+		<div id="names">
+			<div>@ivan</div>
+		</div>`);
+	$(p_parent_element).append(container);
+
+
+	// DRAG_N_DROP
+	gf_dragndrop.init(container,
+		//--------------------------------------------------------
+		// p_on_dnd_event_fun
+		async (p_dnd_event_type_str :string, p_drag_data_map)=>{
+
+			switch (p_dnd_event_type_str) {
+				case "drag_start":
+					break;
+
+				case "drag_stop":
+
+					// update component remotely on each drag/coord change
+					const component_name_str = "names";
+					await gf_utils.update_viz_component_remote(component_name_str,
+						p_drag_data_map,
+						p_http_api_map);
+
+					break;
+			}
+		},
+		
+		//--------------------------------------------------------
+		p_assets_paths_map);
+
+	return container;
+}
+
+//--------------------------------------------------------
+function init_profile_image(p_http_api_map,
+	p_assets_paths_map) {
 	const p = new Promise(function(p_resolve_fun, p_reject_fun) {
 
 		const container = $(`
@@ -158,11 +269,7 @@ function init_profile_image(p_assets_paths_map) {
 
 		
 		console.log($(window).width(), $(container).width())
-		const x = ($(window).width() - $(container).width())/2;
-		const y = 100;
-
-		$(container).css("left", `${x}px`);
-		$(container).css("top",  `${y}px`);
+		
 		  
 		$(container).find("img").one("load", function() {
 			
@@ -170,13 +277,20 @@ function init_profile_image(p_assets_paths_map) {
 			gf_dragndrop.init(container,
 				//--------------------------------------------------------
 				// p_on_dnd_event_fun
-				(p_dnd_event_type_str :string)=>{
+				async (p_dnd_event_type_str :string, p_drag_data_map)=>{
 
 					switch (p_dnd_event_type_str) {
 						case "drag_start":
 							break;
 
 						case "drag_stop":
+
+							// update component remotely on each drag/coord change
+							const component_name_str = "profile_image";
+							await gf_utils.update_viz_component_remote(component_name_str,
+								p_drag_data_map,
+								p_http_api_map);
+
 							break;
 					}
 				},

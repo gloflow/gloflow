@@ -56,26 +56,50 @@ function main(p_log_fun) {
 		"home": {
 
 			//------------------------
-			// MY_ETH_ADDRESSES
-			"get_my_eth_addresses_fun": async ()=>{
+			// VIZ
+			//------------------------
+
+			"viz_get_fun": async ()=>{
+
 				const output_map = {
-                   "eth_addresses_lst": my_eth_addresses_lst,
-                };
-                return output_map;
+					"components_map": {},
+				};
+				return output_map;
+			},
+			"viz_update_fun": async ()=>{
+				const output_map = {};
+				return output_map;
 			},
 
 			//------------------------
-			// OBSERVED_ETH_ADDRESSES
-			"get_observed_eth_addresses_fun": async ()=>{
-				const output_map = {
-                   "eth_addresses_lst": observed_eth_addresses_lst
-                };
-                return output_map;
+			// WEB3
+			//------------------------
+			// WEB3_GET_ADDRESSES
+			"web3_addresses_get_fun": async (p_type_str :string,
+				p_chain_str :string)=>{
+
+				var output_map;
+				switch (p_type_str) {
+					case "my":
+						output_map = {
+							"eth_addresses_lst": my_eth_addresses_lst,
+						};
+						return output_map;
+						break;
+					
+					case "observed":
+						output_map = {
+							"eth_addresses_lst": observed_eth_addresses_lst
+						};
+						return output_map;
+						break;
+				}
 			},
 
 			//------------------------
-			"add_eth_address_fun": async (p_address_str :string,
-				p_type_str :string)=>{
+			"web3_address_add_fun": async (p_address_str :string,
+				p_type_str  :string,
+				p_chain_str :string)=>{
 
 				switch (p_type_str) {
 					case "my":

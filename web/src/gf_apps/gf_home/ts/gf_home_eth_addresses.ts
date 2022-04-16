@@ -19,13 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-
-
-
 import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
-
-
-
+import * as gf_utils from "gf_utils";
 
 //--------------------------------------------------------
 export async function init_observed(p_parent_element,
@@ -33,7 +28,10 @@ export async function init_observed(p_parent_element,
 	p_assets_paths_map) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const output_map = await p_http_api_map["home"]["get_observed_eth_addresses_fun"]();
+		const address_type_str  = "observed";
+		const address_chain_str = "eth";
+		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
+			address_chain_str);
 		const eth_addresses_lst = output_map["eth_addresses_lst"];
 
 		const container = $(`
@@ -108,7 +106,10 @@ export async function init_my(p_parent_element,
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		// HTTP
-		const output_map = await p_http_api_map["home"]["get_my_eth_addresses_fun"]();
+		const address_type_str  = "my";
+		const address_chain_str = "eth";
+		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
+			address_chain_str);
 		const eth_addresses_lst = output_map["eth_addresses_lst"];
 
 		const container = $(`
@@ -156,13 +157,20 @@ export async function init_my(p_parent_element,
 		gf_dragndrop.init(container, 
 			//--------------------------------------------------------
 			// p_on_dnd_event_fun
-			(p_dnd_event_type_str :string)=>{
+			async (p_dnd_event_type_str :string, p_drag_data_map)=>{
 
 				switch (p_dnd_event_type_str) {
 					case "drag_start":
 						break;
 
 					case "drag_stop":
+
+						// update component remotely on each drag/coord change
+						const component_name_str = "names";
+						await gf_utils.update_viz_component_remote(component_name_str,
+							p_drag_data_map,
+							p_http_api_map);
+							
 						break;
 				}
 			},
@@ -260,8 +268,10 @@ function create_eth_address_input(p_address_type_str :string,
 		if (new_address_str != "") {
 
 			// HTTP
-			const output_map = await p_http_api_map["home"]["add_eth_address_fun"](new_address_str,
-				p_address_type_str);
+			const chain_str = "eth";
+			const output_map = await p_http_api_map["home"]["web3_address_add_fun"](new_address_str,
+				p_address_type_str,
+				chain_str);
 
 			console.log(output_map);
 

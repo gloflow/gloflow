@@ -17,12 +17,187 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+//-------------------------------------------------
+export function get_http_api() {
+    const http_api_map = {
+		"home": {
+
+			//------------------------
+			// VIZ
+			//------------------------
+			"viz_get_fun": async ()=>{
+                const output_map = await viz_get();
+				return output_map;
+			},
+			"viz_update_fun": async (p_component_name_str :string,
+				p_prop_change_map)=>{
+
+                const output_map = await viz_update(p_component_name_str,
+					p_prop_change_map);
+                return output_map;
+			},
+
+			//------------------------
+			// WEB3
+			//------------------------
+			// WEB3_ADDRESSES_GET
+			"web3_addresses_get_fun": async (p_type_str :string,
+				p_chain_str :string)=>{
+				const output_map = await web3_addresses_get(p_type_str,
+					p_chain_str);
+				return output_map;
+			},
+
+			//------------------------
+			// WEB3_ADD_ADDRESS
+			"web3_address_add_fun": async (p_address_str :string,
+				p_type_str  :string,
+				p_chain_str :string)=>{
+
+				const output_map = await web3_address_add(p_address_str,
+					p_type_str,
+					p_chain_str);
+				return output_map;
+			},
+
+			//------------------------
+		}
+
+	};
+    return http_api_map;
+}
+
 //--------------------------------------------------------
-export async function get_home_viz() {
+async function viz_get() {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
+		const url_str = "/v1/home/viz/get"
+        $.ajax({
+            'url':         url_str,
+            'type':        'GET',
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
 
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
 
+//--------------------------------------------------------
+async function viz_update(p_component_name_str :string,
+    p_prop_change_map) {
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = "/v1/home/viz/update"
+		const data_map = {
+            "component_name_str": p_component_name_str,
+            "prop_change_map":    p_prop_change_map,
+        };
+
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
+//--------------------------------------------------------
+export async function web3_addresses_get(p_type_str  :string,
+	p_chain_str :string) {
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = "/v1/home/web3/address/get"
+		const data_map = {
+            "type_str":  p_type_str,
+            "chain_str": p_chain_str,
+        };
+
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
+//--------------------------------------------------------
+export async function web3_address_add(p_address_str :string,
+	p_type_str  :string,
+	p_chain_str :string) {
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = "/v1/home/web3/address/add"
+		const data_map = {
+            "address_str": p_address_str,
+            "type_str":    p_type_str,
+            "chain_str":   p_chain_str,
+        };
+
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
     });
     return p;
 }

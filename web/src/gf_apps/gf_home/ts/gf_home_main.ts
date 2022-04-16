@@ -48,33 +48,7 @@ $(document).ready(()=>{
 
 
 
-	const http_api_map = {
-		"home": {
-			//------------------------
-			// MY_ETH_ADDRESSES
-			"get_my_eth_addresses_fun": async ()=>{
-				gf_home_http
-			},
+	const http_api_map = gf_home_http.get_http_api();
 
-			//------------------------
-			// OBSERVED_ETH_ADDRESSES
-			"get_observed_eth_addresses_fun": async ()=>{
-
-			},
-
-			//------------------------
-			// ADD_ETH_ADDRESS
-			"add_eth_address_fun": async (p_address_str :string,
-				p_type_str :string)=>{
-
-
-
-
-			},
-
-			//------------------------
-		}
-
-	};
 	gf_home.init(http_api_map, assets_paths_map, log_fun);
 });
