@@ -37,14 +37,14 @@ type GFhomeViz struct {
 	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
 
 	OwnerUserIDstr     gf_core.GF_ID         `bson:"owner_user_id_str"`
-	ColorBackgroundStr string                `bson:"color_background_str"`
 	ComponentsLst      []*GFhomeVizComponent `bson:"components_lst"`
 }
 
 type GFhomeVizComponent struct {
-	NameStr    string `bson:"name_str"     json:"name_str"`
-	ScreenXint int64  `bson:"screen_x_int" json:"screen_x_int"`
-	ScreenYint int64  `bson:"screen_y_int" json:"screen_y_int"`
+	NameStr            string `bson:"name_str"     json:"name_str"`
+	ScreenXint         int64  `bson:"screen_x_int" json:"screen_x_int"`
+	ScreenYint         int64  `bson:"screen_y_int" json:"screen_y_int"`
+	ColorBackgroundStr string `bson:"color_background_str"`
 }
 
 //------------------------------------------------
@@ -65,7 +65,6 @@ func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 		IDstr:              IDstr,
 		CreationUNIXtimeF:  creationUNIXtimeF,
 		OwnerUserIDstr:     pUserIDstr,
-		ColorBackgroundStr: "none",
 		ComponentsLst:      []*GFhomeVizComponent{},
 	}
 
