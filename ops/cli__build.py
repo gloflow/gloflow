@@ -74,7 +74,8 @@ def main():
 
 		gf_build_go.run_in_cont(app_name_str,
 			app_meta_map["go_path_str"],
-			app_meta_map["go_output_path_str"])
+			app_meta_map["go_output_path_str"],
+			p_local_dev_bool = args_map["local_dev"])
 
 	#--------------------------------------------------
 	def go_build_app(p_static_bool):
@@ -397,7 +398,13 @@ def parse_args():
 	# if build_web command is run, than this argument can specify which specific page to build
 	# and speed the build up by avoiding the rebuild of all pages
 	arg_parser.add_argument('-page_name', action = "store", default=None,
-		help = "specify which page to build in a web build'")
+		help = "specify which page to build in a web build")
+
+	#-------------
+	# LOCAL_DEV
+	# if local development is done, not a remote CI build server or something else
+	arg_parser.add_argument('-local_dev', action = "store", default='false',
+		help = "specify that local development is done, not remote building")
 
 	#-------------
 	cli_args_lst   = sys.argv[1:]
@@ -412,6 +419,11 @@ def parse_args():
 	gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
 
 
+
+	local_dev_bool = False
+	if args_namespace.local_dev == "true":
+		local_dev_bool = True
+
 	args_map = {
 		"run":              args_namespace.run,
 		"app":              args_namespace.app,
@@ -422,7 +434,8 @@ def parse_args():
 		"docker_sudo":      args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
 		"fetch_deps":       args_namespace.fetch_deps,
-		"page_name":        args_namespace.page_name
+		"page_name":        args_namespace.page_name,
+		"local_dev":        local_dev_bool
 	}
 	return args_map
 
