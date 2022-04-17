@@ -41,6 +41,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_monitor_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -268,6 +269,10 @@ func Run(p_config *GF_config,
 	//-------------
 	// GF_ML
 	gf_ml_lib.Init_service(gfSoloHTTPmux, pRuntimeSys)
+
+	//-------------
+	// GF_WEB3_MONITOR
+	gf_eth_monitor_lib.InitService()
 
 	//-------------
 	// METRICS - start prometheus metrics endpoint, and get core_metrics
