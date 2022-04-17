@@ -24,8 +24,8 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_aws"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 	"github.com/davecgh/go-spew/spew"
 )
 

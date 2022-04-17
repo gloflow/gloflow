@@ -30,7 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -283,7 +283,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := gf_core.Hash_val(gf_tx_trace)
+	db_id_hex_str         := gf_core.Hash_val_sha256(gf_tx_trace)
 	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)

@@ -28,12 +28,23 @@ import (
 	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	// "github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_indexer"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_worker"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_indexer"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_worker"
 )
+
+//-------------------------------------------------
+func InitService() {
+
+
+
+
+
+
+	
+}
 
 //-------------------------------------------------
 func Run_service(p_runtime *gf_eth_core.GF_runtime) {
@@ -113,7 +124,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 
 	//-------------
 	// HANDLERS
-	gf_err = init_handlers(get_hosts_fn,
+	gf_err = InitHandlers(get_hosts_fn,
 		indexer_cmds_ch,
 		indexer_job_updates_new_consumer_ch,
 		metrics,

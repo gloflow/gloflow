@@ -48,5 +48,11 @@ func T__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
 		p_test.Fail()
 	}
 	
+
+	// SENTRY
+	sentry_endpoint_uri_str := "https://702b507d193d45029674fbf98bcedaaf@o502595.ingest.sentry.io/5590469"
+	Sentry__init(sentry_endpoint_uri_str)
+
+
 	return runtime, nil
 }

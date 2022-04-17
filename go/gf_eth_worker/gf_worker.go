@@ -27,8 +27,8 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_aws"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------

@@ -33,9 +33,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_contract"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -521,7 +521,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := gf_core.Hash_val(gf_block)
+	db_id_hex_str         := gf_core.Hash_val_sha256(gf_block)
 	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)

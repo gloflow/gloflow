@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: gloflow-ethmonitor
+name: gloflow-web3-monitor
 
 workspace:
   # IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder

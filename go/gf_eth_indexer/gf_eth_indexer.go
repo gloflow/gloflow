@@ -27,11 +27,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_aws"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_worker"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_contract"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_worker"
 	// "github.com/davecgh/go-spew/spew"
 )
 

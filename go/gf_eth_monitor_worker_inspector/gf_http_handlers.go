@@ -26,9 +26,9 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_tx"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_blocks"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_tx"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_blocks"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -44,7 +44,10 @@ func init_handlers(p_metrics *GF_metrics,
 		"/gfethm_worker_inspect/v1/tx/trace",
 		"/gfethm_worker_inspect/v1/blocks",
 	}
-	metrics := gf_rpc_lib.Metrics__create_for_handlers(handlers_endpoints_lst)
+	metricsGroupNameStr := "main"
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr,
+		"gf_eth_monitor_worker_inspector",
+		handlers_endpoints_lst)
 
 	//---------------------
 	// GET_ACCOUNT_INFO

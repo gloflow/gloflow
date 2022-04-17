@@ -34,8 +34,8 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_contract"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_contract"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -404,7 +404,7 @@ func Load(p_tx *eth_types.Transaction,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := fmt.Sprintf("0x%s", gf_core.Hash_val(gf_tx))
+	db_id_hex_str         := fmt.Sprintf("0x%s", gf_core.Hash_val_sha256(gf_tx))
 	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 

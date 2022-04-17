@@ -27,7 +27,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-ethmonitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
