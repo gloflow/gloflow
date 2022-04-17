@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_monitor_lib
+package gf_web3_monitor_lib
 
 import (
 	"fmt"
@@ -27,20 +27,38 @@ import (
 	log "github.com/sirupsen/logrus"
 	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
-	// "github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_blocks"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_tx"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_indexer"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_worker"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_address"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_nft"
 )
 
 //-------------------------------------------------
-func InitService() {
+func InitService(pHTTPmux *http.ServeMux,
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 
+	//-------------
+	// ADDRESS
+	gfErr := gf_address.InitHandlers(pHTTPmux,
+		pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
 
+	//-------------
+	// NFT
+	gfErr = gf_nft.InitHandlers(pHTTPmux,
+		pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
 
+	//-------------
 
 
 	

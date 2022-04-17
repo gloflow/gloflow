@@ -380,10 +380,10 @@ func Get_block__from_worker_inspector(p_block_uint uint64,
 //-------------------------------------------------
 // GET_BLOCK__PIPELINE
 func Get__pipeline(p_block_num_uint uint64,
-	p_eth_rpc_client *ethclient.Client,
-	p_ctx            context.Context,
-	p_py_plugins     *gf_eth_core.GF_py_plugins,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
+	pEthRPCclient *ethclient.Client,
+	p_ctx         context.Context,
+	p_py_plugins  *gf_eth_core.GF_py_plugins,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 	//------------------
 	/*
@@ -411,7 +411,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	span__get_header := sentry.StartSpan(p_ctx, "eth_rpc__get_header")
 	defer span__get_header.Finish() // in case a panic happens before the main .Finish() for this span
 
-	header, err := p_eth_rpc_client.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
+	header, err := pEthRPCclient.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 		error_defs_map := gf_eth_core.Error__get_defs()
 		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
@@ -465,7 +465,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	span__get_block := sentry.StartSpan(p_ctx, "eth_rpc__get_block")
 	defer span__get_block.Finish() // in case a panic happens before the main .Finish() for this span
 
-	block, err := p_eth_rpc_client.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_uint))
+	block, err := pEthRPCclient.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 
 		error_defs_map := gf_eth_core.Error__get_defs()
@@ -485,7 +485,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	defer span__get_txs.Finish() // in case a panic happens before the main .Finish() for this span
 	
 	txs_lst, _ := Get__txs_pipeline(block,
-		p_eth_rpc_client,
+		pEthRPCclient,
 		span__get_txs.Context(),
 		p_py_plugins,
 		p_runtime_sys)
@@ -542,10 +542,10 @@ func Get__pipeline(p_block_num_uint uint64,
 
 //-------------------------------------------------
 func Get__txs_pipeline(p_block *types.Block,
-	p_eth_rpc_client *ethclient.Client,
-	p_ctx            context.Context,
-	p_py_plugins     *gf_eth_core.GF_py_plugins,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
+	pEthRPCclient *ethclient.Client,
+	p_ctx         context.Context,
+	p_py_plugins  *gf_eth_core.GF_py_plugins,
+	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
 
 
 
@@ -575,7 +575,7 @@ func Get__txs_pipeline(p_block *types.Block,
 				p_block.Hash(),
 				p_block.NumberU64(), // p_block_num_uint,
 				p_ctx,
-				p_eth_rpc_client,
+				pEthRPCclient,
 				p_py_plugins,
 				p_runtime_sys)
 

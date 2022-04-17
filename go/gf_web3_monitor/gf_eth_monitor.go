@@ -29,7 +29,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_monitor_lib"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3_monitor_lib"
 )
 
 //-------------------------------------------------
@@ -281,14 +281,14 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 				panic(err)
 			}
 			
-			/*service_info := gf_eth_monitor_lib.GF_service_info{
+			/*service_info := gf_web3_monitor_lib.GF_service_info{
 				Port_str:           runtime.Config.Port_str,
 				SQS_queue_name_str: runtime.Config.AWS_SQS_queue_str,
 				Influxdb_client:    runtime.Influxdb_client,
 			}*/
 
 			// RUN_SERVICE
-			gf_eth_monitor_lib.Run_service(runtime)			
+			gf_web3_monitor_lib.Run_service(runtime)			
 		},
 	}
 
@@ -318,7 +318,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 			SQS_queue_name_str := runtime.Config.AWS_SQS_queue_str
-			queue_info, err    := gf_eth_monitor_lib.Event__init_queue(SQS_queue_name_str, nil)
+			queue_info, err    := gf_web3_monitor_lib.Event__init_queue(SQS_queue_name_str, nil)
 			if err != nil {
 				panic(err)
 			}
@@ -326,7 +326,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 			ctx := context.Background()
 
 			// PROCESS_SINGLE_EVENT
-			gf_eth_monitor_lib.Event__process_from_sqs(queue_info, ctx, nil, runtime)
+			gf_web3_monitor_lib.Event__process_from_sqs(queue_info, ctx, nil, runtime)
 		},
 	}
 
