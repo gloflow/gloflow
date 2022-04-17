@@ -46,7 +46,7 @@ RUN mkdir -p /home/gf/static
 COPY static /home/gf/static
 
 #------------
-ADD config/gf_eth_monitor.yaml /home/gf/config/gf_eth_monitor.yaml
-ADD build/gf_eth_monitor       /home/gf/bin/gf_eth_monitor
+ADD config/gf_web3_monitor.yaml /home/gf/config/gf_web3_monitor.yaml
+ADD build/gf_web3_monitor       /home/gf/bin/gf_web3_monitor
 
 RUN chown -R gf /home/gf
