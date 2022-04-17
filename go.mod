@@ -1,6 +1,6 @@
 module github.com/gloflow/gloflow-web3-monitor
 
-go 1.15
+go 1.16
 
 // replace github.com/gloflow/gloflow => ./../gloflow
 
