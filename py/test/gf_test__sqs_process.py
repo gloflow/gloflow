@@ -32,11 +32,11 @@ def run(p_test_ci_bool, p_aws_region_str):
 	
 	# FIX!! - specify which SQS queue to consume a message from, this will use the default
 	#         queue name, not the test queue.
-	bin_str = f"{modd_str}/../../build/gf_eth_monitor"
+	bin_str = f"{modd_str}/../../build/gf_web3_monitor"
 	cmd_lst = [
 		bin_str,
 		"test", "worker_event_process",
-		f"--config={modd_str}/../../config/gf_eth_monitor.yaml"
+		f"--config={modd_str}/../../config/gf_web3_monitor.yaml"
 	]
 
 	p = gf_core_cli.run__view_realtime(cmd_lst, {
@@ -45,6 +45,4 @@ def run(p_test_ci_bool, p_aws_region_str):
 			"AWS_SECRET_ACCESS_KEY": os.environ["AWS_SECRET_ACCESS_KEY"],
 			"GF_AWS_SQS_QUEUE":      os.environ["GF_AWS_SQS_QUEUE"]
 		},
-		"gf_eth_monitor", "green")
-
-	
+		"gf_web3_monitor", "green")

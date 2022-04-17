@@ -33,11 +33,11 @@ def run(p_test_ci_bool, p_aws_region_str):
 
 	#--------------------------------------------------
 	def start_master():
-		bin_str = f"{modd_str}/../../build/gf_eth_monitor"
+		bin_str = f"{modd_str}/../../build/gf_web3_monitor"
 		cmd_lst = [
 			bin_str,
 			"start", "service",
-			f"--config={modd_str}/../../config/gf_eth_monitor.yaml"
+			f"--config={modd_str}/../../config/gf_web3_monitor.yaml"
 		]
 
 

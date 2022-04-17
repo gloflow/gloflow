@@ -43,11 +43,11 @@ def main():
 	service_cont_image_tag_str = "latest"
 
 	services_map = {
-		"gf_eth_monitor": {
-			"service_name_str":                 "gf_eth_monitor",
-			"service_dir_path_str":             "%s/../../go/gf_eth_monitor"%(modd_str),
-			"service_bin_output_path_str":      "%s/../../build/gf_eth_monitor"%(modd_str),
-			"service_cont_image_name_str":      f"glofloworg/gf_eth_monitor:{service_cont_image_tag_str}",
+		"gf_web3_monitor": {
+			"service_name_str":                 "gf_web3_monitor",
+			"service_dir_path_str":             "%s/../../go/gf_web3_monitor"%(modd_str),
+			"service_bin_output_path_str":      "%s/../../build/gf_web3_monitor"%(modd_str),
+			"service_cont_image_name_str":      f"glofloworg/gf_web3_monitor:{service_cont_image_tag_str}",
 			"service_cont_dockerfile_path_str": f"{modd_str}/../../Dockerfile",
 		},
 		"gf_eth_monitor_worker_inspector": {
