@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+///<reference path="../../../d/jquery.d.ts" />
+
 //-------------------------------------------------
 export function get_http_api() {
     const http_api_map = {
@@ -135,7 +137,7 @@ export async function web3_addresses_get(p_type_str  :string,
 	p_chain_str :string) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const url_str = "/v1/home/web3/address/get"
+		const url_str = "/v1/web3/address/get"
 		const data_map = {
             "type_str":  p_type_str,
             "chain_str": p_chain_str,
@@ -171,7 +173,7 @@ export async function web3_address_add(p_address_str :string,
 	p_chain_str :string) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const url_str = "/v1/home/web3/address/add"
+		const url_str = "/v1/web3/address/add"
 		const data_map = {
             "address_str": p_address_str,
             "type_str":    p_type_str,

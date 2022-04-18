@@ -56,7 +56,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		"/v1/home/view",
 		"/v1/home/viz/get",
 		"/v1/home/viz/update",
-
 		"/v1/home/web3/address/get",
 		"/v1/home/web3/address/add",
 	}
@@ -105,6 +104,17 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/update",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
+
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				gfErr := PipelineVizPropsUpdate(userIDstr,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+
 
 				
 			}
