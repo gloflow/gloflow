@@ -56,8 +56,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		"/v1/home/view",
 		"/v1/home/viz/get",
 		"/v1/home/viz/update",
-		"/v1/home/web3/address/get",
-		"/v1/home/web3/address/add",
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_home", handlersEndpointsLst)
