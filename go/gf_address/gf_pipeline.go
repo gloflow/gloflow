@@ -25,11 +25,36 @@ import(
 )
 
 //-------------------------------------------------
-func pipelineGet(pUserIDstr gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+type GFgetAllInput struct {
+	UserIDstr gf_core.GF_ID
+	TypeStr   string 
+	ChainStr  string	
+}
 
-	return nil
+type GFgetAllOutput struct {
+
+}
+
+//-------------------------------------------------
+func pipelineGetAll(pInput *GFgetAllInput,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllOutput, *gf_core.GF_error) {
+
+
+	//------------------------
+	// VALIDATE_INPUT
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------------
+
+	output := &GFgetAllOutput{
+
+	}
+
+	return output, nil
 }
 
 //-------------------------------------------------

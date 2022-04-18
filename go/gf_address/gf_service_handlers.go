@@ -34,7 +34,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
-		"/v1/web3/address/get",
+		"/v1/web3/address/get_all",
 		"/v1/web3/address/add",
 	}
 	metricsGroupNameStr := "main"
@@ -52,13 +52,22 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 	//---------------------
 	// ADDRESS_GET
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/address/get",
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/address/get_all",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-			if pReq.Method == "POST" {
+			if pReq.Method == "GET" {
 
+				//---------------------
+				// INPUT
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				gfErr := pipelineGet(userIDstr,
+				input, gfErr := httpIputForGetAll(userIDstr, pReq, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				_, gfErr = pipelineGetAll(input,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

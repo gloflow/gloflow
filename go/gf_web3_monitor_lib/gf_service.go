@@ -41,7 +41,6 @@ import (
 func InitService(pHTTPmux *http.ServeMux,
 	pRuntimeSys *gf_core.Runtime_sys) {
 
-
 	//-------------
 	// ADDRESS
 	gfErr := gf_address.InitHandlers(pHTTPmux,
@@ -59,14 +58,10 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	//-------------
-
-
-	
 }
 
 //-------------------------------------------------
 func Run_service(p_runtime *gf_eth_core.GF_runtime) {
-	p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_service.Run_service()")
 
 	//-------------
 	/*// SENTRY
