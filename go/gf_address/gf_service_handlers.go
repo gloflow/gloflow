@@ -67,12 +67,17 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 				//---------------------
 
-				_, gfErr = pipelineGetAll(input,
+				output, gfErr := pipelineGetAll(input,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
+
+				outputMap := map[string]interface{}{
+					"addresses_lst": output.AddressesLst,
+				}
+				return outputMap, nil
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

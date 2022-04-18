@@ -19,8 +19,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_address
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/gloflow/gloflow/go/gf_core"
+)
+
 //-------------------------------------------------
 type GFchainAddress struct {
-	AddressStr   string
-	ChainNameStr string
+	Vstr               string             `bson:"v_str"` // schema_version
+	Id                 primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr              gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool        bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
+
+	OwnerUserIDstr gf_core.GF_ID `bson:"owner_user_id_str"`
+	AddressStr     string        `bson:"address_str"`
+	TypeStr        string        `bson:"type_str"`       // "my" | "observed"
+	ChainNameStr   string        `bson:"chain_name_str"` // "eth" | "tezos"
 }

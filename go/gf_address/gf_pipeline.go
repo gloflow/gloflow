@@ -32,14 +32,13 @@ type GFgetAllInput struct {
 }
 
 type GFgetAllOutput struct {
-
+	AddressesLst []string
 }
 
 //-------------------------------------------------
 func pipelineGetAll(pInput *GFgetAllInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllOutput, *gf_core.GF_error) {
-
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -50,8 +49,23 @@ func pipelineGetAll(pInput *GFgetAllInput,
 
 	//------------------------
 
-	output := &GFgetAllOutput{
+	// DB
+	addressesLst, gfErr := DBgetAll(pInput.TypeStr,
+		pInput.ChainStr,
+		pInput.UserIDstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
 
+	addressesExportLst := []string{}
+	for _, a := range addressesLst {
+		addressesExportLst = append(addressesExportLst, a.AddressStr)
+	}
+
+	output := &GFgetAllOutput{
+		AddressesLst: addressesExportLst,
 	}
 
 	return output, nil
