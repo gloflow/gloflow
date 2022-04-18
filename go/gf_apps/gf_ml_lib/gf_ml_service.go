@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib/gf_rl"
 )
 
 //-------------------------------------------------
@@ -36,18 +37,21 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(p_http_mux *http.ServeMux,
-	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ml_service.Init_service()")
+func InitService(pHTTPmux *http.ServeMux,
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 	//-------------
 	// HANDLERS
-	gf_err := init_handlers(p_http_mux, p_runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	gfErr := initHandlers(pHTTPmux, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//-------------
+
+
+
+	gf_rl.Init(pRuntimeSys)
 }
 
 //-------------------------------------------------
@@ -59,7 +63,7 @@ func Run_service(p_service_info *GF_service_info,
 	//-------------
 	// RUNTIME_SYS
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_ml",
 		Log_fun:          p_log_fun,
 	}
@@ -67,32 +71,32 @@ func Run_service(p_service_info *GF_service_info,
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
 		p_service_info.Mongodb_db_name_str,
 		nil,
-		runtime_sys)
+		runtimeSys)
 	if gf_err != nil {
 		os.Exit(-1)
 	}
 
 	mongo_coll := mongo_db.Collection("gf_ml")
 
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_coll
+	runtimeSys.Mongo_db   = mongo_db
+	runtimeSys.Mongo_coll = mongo_coll
 	//-------------
 	// INIT
 
-	http_mux := http.NewServeMux()
+	HTTPmux := http.NewServeMux()
 
-	Init_service(http_mux, runtime_sys)
+	InitService(HTTPmux, runtimeSys)
 
 	//-------------
 
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	runtimeSys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
-		runtime_sys.Log_fun("ERROR", msg_str)
-		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
+		runtimeSys.Log_fun("ERROR", msg_str)
+		runtimeSys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

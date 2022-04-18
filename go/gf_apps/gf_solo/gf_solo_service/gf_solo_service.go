@@ -268,7 +268,7 @@ func Run(p_config *GF_config,
 
 	//-------------
 	// GF_ML
-	gf_ml_lib.Init_service(gfSoloHTTPmux, pRuntimeSys)
+	gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
 
 	//-------------
 	// GF_WEB3_MONITOR

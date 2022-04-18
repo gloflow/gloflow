@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,33 +17,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_ml_lib
+package gf_rl
 
 import (
-	"context"
-	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
-func initHandlers(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init(pRuntimeSys *gf_core.Runtime_sys) {
 
-	//---------------------
-	// DATASETS_CREATE - register a dataset
 
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/ml/datasets/register",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-			return nil, nil
-		},
-		pHTTPmux,
-		nil,
-		true, // p_store_run_bool
-		nil,
-		pRuntimeSys)
 
-	//---------------------
 
-	return nil
+
 }
