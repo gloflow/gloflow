@@ -51,7 +51,29 @@ func InitService(pHTTPmux *http.ServeMux,
 
 
 
-	gf_rl.Init(pRuntimeSys)
+	InitRLapps(pRuntimeSys)
+}
+
+//-------------------------------------------------
+func InitRLapps(pRuntimeSys *gf_core.Runtime_sys) {
+
+
+	// actions defined for the image picking application of RL
+	actionsDefsLst := []gf_rl.GFrlActionDef{
+		// user viewed the image and found it interesting
+		{
+			NameStr:      "image_view",
+			ProbabilityF: 0.5,
+		},
+
+		// user didnt like the displayed image and wants to view the next
+		{
+			NameStr:      "image_next",
+			ProbabilityF: 0.5,
+		},
+	}
+	gf_rl.Init(actionsDefsLst,
+		pRuntimeSys)
 }
 
 //-------------------------------------------------

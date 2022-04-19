@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_rl
 
 import (
-
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
@@ -33,7 +33,17 @@ type GFaction struct {
 }
 
 //-------------------------------------------------
+func EnvInit(pRuntimeSys *gf_core.Runtime_sys) *GFenv {
+
+
+	env := &GFenv{
+
+	}
+	return env
+}
+
+//-------------------------------------------------
 // execute a step in the environment
-func Step(pAction *GFaction) {
+func EnvStep(pAction *GFaction) {
 
 }

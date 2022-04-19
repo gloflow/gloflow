@@ -20,14 +20,86 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_rl
 
 import (
+	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
-func Init(pRuntimeSys *gf_core.Runtime_sys) {
+type GFqTable map[string]float64
+type GFrlRuntime struct {
+	QtableMap GFqTable
+}
+
+type GFrlActionDef struct {
+	NameStr      string  // name of a particular action
+	ProbabilityF float64 // probability of an action occuring
+}
+
+//-------------------------------------------------
+func Init(pActionsDefsLst []GFrlActionDef,
+	pRuntimeSys *gf_core.Runtime_sys) {
 
 
 
 
+
+
+
+
+
+	env := EnvInit(pRuntimeSys)
+	fmt.Println(env)
+
+
+}
+
+//-------------------------------------------------
+func Train() {
+	
+
+
+	episodesNumInt := 100
+
+	// Q_TABLE - quality table.
+	//           stores quality of action by state.
+	qTableMap := QtableCreate()
+
+	qRuntime := &GFrlRuntime{
+		QtableMap: qTableMap,
+	}
+
+	for i := 1; i <= episodesNumInt; i++ {
+
+		QtableGetVal(qRuntime)
+
+	}
+
+
+}
+
+//-------------------------------------------------
+func epsilonGreedy() {
+
+
+
+}
+
+//-------------------------------------------------
+// Q_TABLE
+//-------------------------------------------------
+func QtableCreate() map[string]float64 {
+	qTableMap := GFqTable(map[string]float64{})
+	return qTableMap
+}
+func QtableGetVal(pRuntime *GFrlRuntime) float64 {
+
+
+	return 0.0
+}
+func QtableGetMaxVal(pRuntime *GFrlRuntime) float64 {
+	return 0.0
+}
+func QtableSetVal(pVal float64,
+	pRuntime *GFrlRuntime) {
 
 }
