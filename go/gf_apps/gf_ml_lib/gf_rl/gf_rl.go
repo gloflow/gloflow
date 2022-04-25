@@ -21,13 +21,30 @@ package gf_rl
 
 import (
 	"fmt"
+	"math/rand"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
+type GFaction string
 type GFqTable map[string]float64
+type GFrewardFun func(pState *GFstate, pActionStr GFaction) int
+
 type GFrlRuntime struct {
-	QtableMap GFqTable
+	
+	Hyperparams GFrlHyperparams
+	QtableMap   GFqTable
+
+	RuntimeSys  *gf_core.Runtime_sys
+}
+
+type GFstate struct {
+	
+	// values of all the state-space dimensions for this particular state
+	DimensionValsLst []interface{}
+
+	// app-level data that can be associated with each state
+	DataMap map[string]interface{}
 }
 
 type GFrlActionDef struct {
@@ -35,42 +52,58 @@ type GFrlActionDef struct {
 	ProbabilityF float64 // probability of an action occuring
 }
 
-//-------------------------------------------------
-func Init(pActionsDefsLst []GFrlActionDef,
-	pRuntimeSys *gf_core.Runtime_sys) {
+type GFappInfo struct {
+	NameStr        string
+	ActionsDefsLst []GFrlActionDef
+	RewardFun      GFrewardFun
+	Hyperparams    GFrlHyperparams
+}
 
-
-
-
-
-
-
-
-
-	env := EnvInit(pRuntimeSys)
-	fmt.Println(env)
-
-
+type GFrlHyperparams struct {
+	// probability (0.0<e<1.0) for epsilon-greedy strategy
+	// (exploration/exploatation action probability)
+	EpsilonF float64
+	
+	// learning rate (0<a<1)
+	// extent to which Q-values are being updated in every iteration.
+	AlphaLearningRateF float64
 }
 
 //-------------------------------------------------
-func Train() {
+func Init(pAppInfo *GFappInfo,
+	pRuntimeSys *gf_core.Runtime_sys) {
+
 	
-
-
-	episodesNumInt := 100
 
 	// Q_TABLE - quality table.
 	//           stores quality of action by state.
 	qTableMap := QtableCreate()
 
-	qRuntime := &GFrlRuntime{
-		QtableMap: qTableMap,
+	rlRuntime := &GFrlRuntime{
+		QtableMap:  qTableMap,
+		RuntimeSys: pRuntimeSys,
 	}
+
+
+
+
+
+	env := EnvInit(rlRuntime)
+	fmt.Println(env)
+}
+
+//-------------------------------------------------
+func Train(pRuntime *GFrlRuntime) {
+	
+
+
+	episodesNumInt := 100
+
+	
 
 	for i := 1; i <= episodesNumInt; i++ {
 
-		QtableGetVal(qRuntime)
+		QtableGetVal(pRuntime)
 
 	}
 
@@ -78,10 +111,32 @@ func Train() {
 }
 
 //-------------------------------------------------
-func epsilonGreedy() {
+// get action that should be taken given the current state
+func GetAction(pState *GFstate,
+	pRuntime *GFrlRuntime) {
+
+
+	// rand.Float64() - gives rand number between 0.0 and 1.0
+	if rand.Float64() < pRuntime.Hyperparams.EpsilonF {
+
+		// explore, get a random action
+	} else {
+
+		// exploit
+
+	}
 
 
 
+}
+
+//-------------------------------------------------
+func AgentLearn(pRuntime *GFrlRuntime) {
+
+	alphaF := pRuntime.Hyperparams.AlphaLearningRateF
+
+	d := (1.0 - alphaF) 
+	fmt.Println(d)	
 }
 
 //-------------------------------------------------
