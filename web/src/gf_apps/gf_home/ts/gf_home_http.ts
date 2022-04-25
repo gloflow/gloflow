@@ -137,7 +137,7 @@ export async function web3_addresses_get(p_type_str  :string,
 	p_chain_str :string) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const url_str = "/v1/web3/address/get"
+		const url_str = "/v1/web3/address/get_all"
 		const data_map = {
             "type_str":  p_type_str,
             "chain_str": p_chain_str,

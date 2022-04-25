@@ -32,7 +32,7 @@ export async function init_observed(p_parent_element,
 		const address_chain_str = "eth";
 		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
 			address_chain_str);
-		const eth_addresses_lst = output_map["eth_addresses_lst"];
+		const eth_addresses_lst = output_map["addresses_lst"];
 
 		const container = $(`
 			<div id="observed_eth_addresses">
@@ -110,7 +110,7 @@ export async function init_my(p_parent_element,
 		const address_chain_str = "eth";
 		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
 			address_chain_str);
-		const eth_addresses_lst = output_map["eth_addresses_lst"];
+		const eth_addresses_lst = output_map["addresses_lst"];
 
 		const container = $(`
 			<div id="my_eth_addresses">

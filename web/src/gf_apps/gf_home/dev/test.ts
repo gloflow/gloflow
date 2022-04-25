@@ -82,14 +82,14 @@ function main(p_log_fun) {
 				switch (p_type_str) {
 					case "my":
 						output_map = {
-							"eth_addresses_lst": my_eth_addresses_lst,
+							"addresses_lst": my_eth_addresses_lst,
 						};
 						return output_map;
 						break;
 					
 					case "observed":
 						output_map = {
-							"eth_addresses_lst": observed_eth_addresses_lst
+							"addresses_lst": observed_eth_addresses_lst
 						};
 						return output_map;
 						break;
