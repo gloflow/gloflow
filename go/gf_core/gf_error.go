@@ -40,6 +40,7 @@ import (
 
 //-------------------------------------------------
 type GF_error = Gf_error
+type GFerror  = GF_error
 type Gf_error struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"`
 	Id_str               string                 `bson:"id_str"` 

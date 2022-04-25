@@ -50,7 +50,7 @@ func Http_respond(p_data interface{},
 //-------------------------------------------------
 func Error__in_handler(p_handler_url_path_str string,
 	p_user_msg_str string,
-	p_gf_err       *gf_core.GF_error,
+	p_gf_err       *gf_core.GFerror,
 	p_resp         http.ResponseWriter,
 	p_runtime_sys  *gf_core.Runtime_sys) {
 
@@ -73,38 +73,16 @@ func Error__in_handler(p_handler_url_path_str string,
 }
 
 //-------------------------------------------------
-/*
-// FIX!! - passing in structs as interface{} doesnt preserve their tags.
-func Get_http_input_to_struct(p_input_struct interface{},
-	p_resp        http.ResponseWriter,
-	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func GetHTTPinput(pResp http.ResponseWriter,
+	pReq        *http.Request,
+	pRuntimeSys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
 
-	handler_url_path_str := p_req.URL.Path
-	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
-	err               := json.Unmarshal(body_bytes_lst, &p_input_struct)
-		
-	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse json http input",
-			"json_decode_error",
-			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-			err, "gf_rpc_lib", p_runtime_sys)
+	return Get_http_input(pResp, pReq, pRuntimeSys)
+}
 
-		Error__in_handler(handler_url_path_str,
-			fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str),
-			gf_err,
-			p_resp,
-			p_runtime_sys)
-		return gf_err
-	}
-
-	return nil
-}*/
-
-//-------------------------------------------------
 func Get_http_input(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
 
 	handler_url_path_str := p_req.URL.Path
 
@@ -156,3 +134,32 @@ func Http_CORS_preflight_handle(p_req *http.Request,
 		p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
 	}
 }
+
+//-------------------------------------------------
+/*
+// FIX!! - passing in structs as interface{} doesnt preserve their tags.
+func Get_http_input_to_struct(p_input_struct interface{},
+	p_resp        http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
+
+	handler_url_path_str := p_req.URL.Path
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	err               := json.Unmarshal(body_bytes_lst, &p_input_struct)
+		
+	if err != nil {
+		gf_err := gf_core.Error__create("failed to parse json http input",
+			"json_decode_error",
+			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
+			err, "gf_rpc_lib", p_runtime_sys)
+
+		Error__in_handler(handler_url_path_str,
+			fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str),
+			gf_err,
+			p_resp,
+			p_runtime_sys)
+		return gf_err
+	}
+
+	return nil
+}*/

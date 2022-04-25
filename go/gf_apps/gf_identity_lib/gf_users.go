@@ -157,7 +157,6 @@ func usersPipelineGet(pInput *GF_user__input_get,
 		return nil, gfErr
 	}
 
-
 	output := &GF_user__output_get{
 		User_name_str:         user.User_name_str,
 		Email_str:             user.Email_str,
