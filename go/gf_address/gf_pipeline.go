@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_address
 
 import(
+	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -30,15 +31,22 @@ type GFgetAllInput struct {
 	TypeStr   string 
 	ChainStr  string	
 }
-
 type GFgetAllOutput struct {
 	AddressesLst []string
 }
 
+type GFaddInput struct {
+	UserIDstr  gf_core.GF_ID
+	AddressStr string
+	TypeStr    string 
+	ChainStr   string	
+}
+
 //-------------------------------------------------
+// PIPELINE_GET_ALL
 func pipelineGetAll(pInput *GFgetAllInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllOutput, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllOutput, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -72,10 +80,42 @@ func pipelineGetAll(pInput *GFgetAllInput,
 }
 
 //-------------------------------------------------
-func pipelineAdd(pUserIDstr gf_core.GF_ID,
+// PIPELINE_ADD
+func pipelineAdd(pInput *GFaddInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
+	//------------------------
+	// VALIDATE_INPUT
+	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//------------------------
+	
+
+	creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
+	idStr   := createID(string(pInput.UserIDstr), creationTimeUNIXf)
+	address := &GFchainAddress {
+		Vstr:              "0",
+		IDstr:             idStr,
+		CreationUNIXtimeF: creationTimeUNIXf,
+	
+		OwnerUserIDstr: pInput.UserIDstr,
+		AddressStr:     pInput.AddressStr,
+		TypeStr:        pInput.TypeStr,
+		ChainNameStr:   pInput.ChainStr,
+	}
+
+	// DB
+	gfErr = DBadd(address,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	
 	return nil
 }
 

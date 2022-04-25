@@ -27,15 +27,16 @@ import (
 )
 
 //-------------------------------------------------
+// GET_ALL
 func DBgetAll(pAddressTypeStr string,
 	pAddressChainNameStr string,
 	pUserIDstr           gf_core.GF_ID,
 	pCtx                 context.Context,
-	pRuntimeSys          *gf_core.Runtime_sys) ([]*GFchainAddress, *gf_core.GF_error) {
+	pRuntimeSys          *gf_core.Runtime_sys) ([]*GFchainAddress, *gf_core.GFerror) {
 
 
 
-	collNameStr := "gf_eth_addresses"
+	collNameStr := "gf_web3_addresses"
 
 	findOpts := options.Find()
 	cursor, gfErr := gf_core.MongoFind(bson.M{
@@ -74,4 +75,28 @@ func DBgetAll(pAddressTypeStr string,
 	
 
 	return addressesLst, nil
+}
+
+//-------------------------------------------------
+func DBadd(pAddress *GFchainAddress,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+
+	
+
+	collNameStr := "gf_web3_addresses"
+	
+	gfErr := gf_core.MongoInsert(pAddress,
+		collNameStr,
+		map[string]interface{}{
+			"owner_user_id_str":  pAddress.OwnerUserIDstr,
+			"caller_err_msg_str": "failed to insert GFhomeViz into the DB",
+		},
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
 }

@@ -29,7 +29,7 @@ import (
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -53,7 +53,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// ADDRESS_GET
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/address/get_all",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
 				//---------------------
@@ -94,9 +94,18 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
 
+				//---------------------
+				// INPUT
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				gfErr := pipelineAdd(userIDstr,
+				input, gfErr := httpIputForAdd(userIDstr, pReq, pResp, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				gfErr = pipelineAdd(input,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

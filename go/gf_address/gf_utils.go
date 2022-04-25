@@ -23,7 +23,46 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
+
+//---------------------------------------------------
+func httpIputForAdd(pUserIDstr gf_core.GF_ID,
+	pReq        *http.Request,
+	pResp       http.ResponseWriter,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFaddInput, *gf_core.GF_error) {
+
+
+	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	var addressStr string
+	if valStr, ok := inputMap["address_str"]; ok {
+		addressStr = valStr.(string)
+	}
+
+	var typeStr string
+	if valStr, ok := inputMap["type_str"]; ok {
+		typeStr = valStr.(string)
+	}
+
+	var chainStr string
+	if valStr, ok := inputMap["chain_str"]; ok {
+		chainStr = valStr.(string)
+	}
+	
+	input := &GFaddInput{
+		UserIDstr:  pUserIDstr,
+		AddressStr: addressStr,
+		TypeStr:    typeStr, 
+		ChainStr:   chainStr,	
+	}
+
+	return input, nil
+}
 
 //---------------------------------------------------
 func httpIputForGetAll(pUserIDstr gf_core.GF_ID,

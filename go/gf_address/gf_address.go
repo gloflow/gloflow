@@ -37,3 +37,16 @@ type GFchainAddress struct {
 	TypeStr        string        `bson:"type_str"`       // "my" | "observed"
 	ChainNameStr   string        `bson:"chain_name_str"` // "eth" | "tezos"
 }
+
+//---------------------------------------------------
+func createID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
+	}
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
+}
