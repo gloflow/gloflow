@@ -38,8 +38,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	p_indexer_cmds_ch                     gf_eth_indexer.GF_indexer_ch,
 	p_indexer_job_updates_new_consumer_ch gf_eth_indexer.GF_job_update_new_consumer_ch,
 	p_metrics                             *gf_eth_core.GF_metrics,
-	p_runtime                             *gf_eth_core.GF_runtime) *gf_core.GF_error {
-	// p_runtime.Runtime_sys.Log_fun("FUN_ENTER", "gf_eth_monitor_handlers.init_handlers()")
+	pRuntime                              *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	//---------------------
 	// INDEXER
@@ -47,7 +46,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	gf_eth_indexer.Init_handlers(p_indexer_cmds_ch,
 		p_indexer_job_updates_new_consumer_ch,
 		p_metrics,
-		p_runtime)
+		pRuntime)
 
 	/*gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GF_error) {
@@ -94,7 +93,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			return data_updates_ch, data_complete_ch, nil
 		},
 		true, // p_store_run_bool
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 
 	//---------------------
 	// GET__BLOCK_INDEX
@@ -109,7 +108,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			// INPUT
 
-			block_start_uint, block_end_uint, gf_err := Http__get_arg__block_range(p_resp, p_req, p_runtime.Runtime_sys)
+			block_start_uint, block_end_uint, gf_err := Http__get_arg__block_range(p_resp, p_req, pRuntime.Runtime_sys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -121,7 +120,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 				p_indexer_cmds_ch)
 			
 			// // ABI_DEFS
-			// abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
+			// abis_defs_map, gf_err := gf_eth_core.Eth_abi__get_defs(ctx, p_metrics, pRuntime)
 			// if gf_err != nil {
 			// 	return nil, gf_err
 			// }
@@ -134,7 +133,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			// 	// abis_defs_map,
 			// 	// span__pipeline.Context(),
 			// 	p_metrics,
-			// 	p_runtime)
+			// 	pRuntime)
 			//
 			// span__pipeline.Finish()
 			//
@@ -156,7 +155,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			return data_map, nil
 		},
-		p_runtime.Runtime_sys)*/
+		pRuntime.Runtime_sys)*/
 
 	//---------------------
 	// GET__FAVORITES_TX_ADD
@@ -164,42 +163,42 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			span__root := sentry.StartSpan(p_ctx, "http__master__favorites_tx_add", sentry.ContinueFromRequest(p_req))
-			defer span__root.Finish()
+			spanRoot := sentry.StartSpan(p_ctx, "http__master__favorites_tx_add", sentry.ContinueFromRequest(p_req))
+			defer spanRoot.Finish()
 
 			//------------------
 			// INPUT
 
-			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+			txHexStr, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.Runtime_sys)
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
 
-			span__pipeline := sentry.StartSpan(span__root.Context(), "favorites_tx_add")
+			spanPipeline := sentry.StartSpan(spanRoot.Context(), "favorites_tx_add")
 
-			gf_err = gf_eth_core.Eth_favorites__tx_add(tx_hex_str,
-				span__pipeline.Context(),
-				p_runtime)
+			gfErr = gf_eth_core.Eth_favorites__tx_add(txHexStr,
+				spanPipeline.Context(),
+				pRuntime)
 
-			span__pipeline.Finish()
+			spanPipeline.Finish()
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{}
+			dataMap := map[string]interface{}{}
 
 			//------------------
-			span__root.Finish()
+			spanRoot.Finish()
 
-			return data_map, nil
+			return dataMap, nil
 		},
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 
 	//---------------------
 	// GET__TX_TRACE_PLOT
@@ -207,27 +206,27 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			span__root := sentry.StartSpan(p_ctx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(p_req))
-			defer span__root.Finish()
+			spanRoot := sentry.StartSpan(p_ctx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(p_req))
+			defer spanRoot.Finish()
 
 			//------------------
 			// INPUT
 
-			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.Runtime_sys)
+			txHexStr, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.Runtime_sys)
 
 			if gf_err != nil {
 				return nil, gf_err
 			}
 
 			//------------------
-			span__pipeline := sentry.StartSpan(span__root.Context(), "tx_trace_plot")
+			span__pipeline := sentry.StartSpan(spanRoot.Context(), "tx_trace_plot")
 
-			plot_svg_str, gf_err := gf_eth_tx.Trace__plot(tx_hex_str,
+			plot_svg_str, gf_err := gf_eth_tx.Trace__plot(txHexStr,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
-				p_runtime.Py_plugins,
+				pRuntime.Py_plugins,
 				p_metrics,
-				p_runtime)
+				pRuntime)
 			
 			span__pipeline.Finish()
 			
@@ -237,16 +236,16 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{
+			dataMap := map[string]interface{}{
 				"plot_svg_str": plot_svg_str,
 			}
 
 			//------------------
-			span__root.Finish()
+			spanRoot.Finish()
 
-			return data_map, nil
+			return dataMap, nil
 		},
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 		
 	//---------------------
 	// GET__BLOCK
@@ -254,20 +253,20 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			span__root := sentry.StartSpan(p_ctx, "http__master__get_block")
-			ctx        := span__root.Context()
-			defer span__root.Finish()
+			spanRoot := sentry.StartSpan(p_ctx, "http__master__get_block")
+			ctx        := spanRoot.Context()
+			defer spanRoot.Finish()
 
 			//------------------
 			// INPUT
 
 			span__input := sentry.StartSpan(ctx, "get_input")
 
-			block_num_int, gf_err := gf_eth_core.Http__get_arg__block_num(p_resp,
+			block_num_int, gfErr := gf_eth_core.Http__get_arg__block_num(p_resp,
 				p_req,
-				p_runtime.Runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+				pRuntime.Runtime_sys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			span__input.Finish()
@@ -276,39 +275,39 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			// PIPELINE
 
 			// ABI_DEFS
-			abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, p_metrics, p_runtime)
-			if gf_err != nil {
-				return nil, gf_err
+			abisDefsMap, gfErr := gf_eth_contract.Eth_abi__get_defs(ctx, p_metrics, pRuntime)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			span__pipeline := sentry.StartSpan(ctx, "blocks_get_from_workers")
 
-			block_from_workers_map, miners_map, gf_err := gf_eth_blocks.Get_from_workers__pipeline(block_num_int,
+			block_from_workers_map, miners_map, gfErr := gf_eth_blocks.Get_from_workers__pipeline(block_num_int,
 				p_get_hosts_fn,
-				abis_defs_map,
+				abisDefsMap,
 				span__pipeline.Context(),
 				p_metrics,
-				p_runtime)
+				pRuntime)
 			
 			span__pipeline.Finish()
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 			
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{
+			dataMap := map[string]interface{}{
 				"block_from_workers_map": block_from_workers_map,
 				"miners_map":             miners_map,
 			}
 
 			//------------------
-			span__root.Finish()
+			spanRoot.Finish()
 
-			return data_map, nil
+			return dataMap, nil
 		},
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 
 	//---------------------
 	// GET__MINER
@@ -316,9 +315,9 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			// INPUT
-			miner_addr_str, gf_err := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, p_runtime.Runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+			miner_addr_str, gfErr := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, pRuntime.Runtime_sys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 			
 			fmt.Println(miner_addr_str)
@@ -330,7 +329,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			return data_map, nil
 		},
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 
 	//---------------------
 	// GET__PEERS
@@ -343,9 +342,9 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			}
 
 			// PEERS__GET
-			peer_names_groups_lst, gf_err := gf_eth_core.Eth_peers__db__get_pipeline(p_metrics, p_runtime)
-			if gf_err != nil {
-				return nil, gf_err
+			peer_names_groups_lst, gfErr := gf_eth_core.Eth_peers__db__get_pipeline(p_metrics, pRuntime)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 			
 			//------------------
@@ -357,7 +356,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			return data_map, nil
 		},
-		p_runtime.Runtime_sys)
+		pRuntime.Runtime_sys)
 
 	//---------------------
 	// GET__HEALTH

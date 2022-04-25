@@ -521,8 +521,8 @@ func Get__pipeline(p_block_num_uint uint64,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := gf_core.Hash_val_sha256(gf_block)
-	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
+	db_id_hex_str     := gf_core.Hash_val_sha256(gf_block)
+	creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
 	if err != nil {
@@ -533,7 +533,7 @@ func Get__pipeline(p_block_num_uint uint64,
 		return nil, gf_err
 	}*/
 	gf_block.DB_id                 = db_id_hex_str // obj_id_str
-	gf_block.Creation_time__unix_f = creation_time__unix_f
+	gf_block.Creation_time__unix_f = creationTimeUNIXf
 
 	//------------------
 
