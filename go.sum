@@ -385,6 +385,10 @@ github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8/go.mod h1:xkRDCp4j0
 github.com/gloflow/gloflow v0.0.0-20220416230651-29ce3e120f67/go.mod h1:qr4xlK+wi6PT1VT7cbcYbf1H7P38zByHN/8kJ2v3i1c=
 github.com/gloflow/gloflow-web3-monitor v0.0.0-20220417181848-9727a748557e h1:Tzq3u82GhSCUfLKTmo0drYXtyF1LZAlRxkLoz812aL4=
 github.com/gloflow/gloflow-web3-monitor v0.0.0-20220417181848-9727a748557e/go.mod h1:B0cFJKGAw/o+2lCjOAV/M0Nc/RBRkv2XkDGsYVkj3As=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426160528-7afd01cf7753 h1:dNA2zsII1XADPA6XfzthE1363GE3sLf/FLnN1x8gpME=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426160528-7afd01cf7753/go.mod h1:B0cFJKGAw/o+2lCjOAV/M0Nc/RBRkv2XkDGsYVkj3As=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426215607-90d493cca58a h1:8BUpUY1+WZKl68N96KyWNSbV1toSxTpxAVQXVAtZcMU=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426215607-90d493cca58a/go.mod h1:B0cFJKGAw/o+2lCjOAV/M0Nc/RBRkv2XkDGsYVkj3As=
 github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd/go.mod h1:/20jfyN9Y5QPEAprSgKAUr+glWDY39ZiUEAYOEv5dsE=
 github.com/glycerine/goconvey v0.0.0-20190410193231-58a59202ab31/go.mod h1:Ogl1Tioa0aV7gstGFO7KhffUsb9M4ydbEbbxpcEDc24=
 github.com/go-check/check v0.0.0-20180628173108-788fd7840127/go.mod h1:9ES+weclKsC9YodN5RgxqK/VD9HM9JsCSh7rNhMZE98=
