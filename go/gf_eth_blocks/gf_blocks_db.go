@@ -28,57 +28,57 @@ import (
 
 //-------------------------------------------------
 // BLOCKS__DB__GET_COUNT
-func DB__get_count(p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (int64, *gf_core.GF_error) {
+func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
+	pRuntime *gf_eth_core.GF_runtime) (int64, *gf_core.GFerror) {
 
-	coll_name_str := "gf_eth_blocks"
-	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+	collNameStr := "gf_eth_blocks"
+	coll := pRuntime.Runtime_sys.Mongo_db.Collection(collNameStr)
 
 	ctx := context.Background()
 	
-	count_int, err := coll.CountDocuments(ctx, bson.M{})
+	countInt, err := coll.CountDocuments(ctx, bson.M{})
 	if err != nil {
 
 		// METRICS
-		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
+		if pMetrics != nil {pMetrics.Errs_num__counter.Inc()}
 
-		gf_err := gf_core.Mongo__handle_error("failed to DB count Blocks",
+		gfErr := gf_core.Mongo__handle_error("failed to DB count Blocks",
 			"mongodb_count_error",
 			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
-		return 0, gf_err
+			err, "gf_eth_monitor_core", pRuntime.Runtime_sys)
+		return 0, gfErr
 	}
 
-	return count_int, nil
+	return countInt, nil
 }
 
 //-------------------------------------------------
 // BLOCKS__DB__WRITE_BULK
 func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	pCtx     context.Context,
+	pMetrics *gf_eth_core.GF_metrics,
+	pRuntime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
-	ids_lst         := []string{}
-	records_lst     := []interface{}{}
-	blocks_nums_lst := []uint64{}
+	ids_lst       := []string{}
+	recordsLst    := []interface{}{}
+	blocksNumsLst := []uint64{}
 	for _, b := range p_gf_blocks_lst {
-		ids_lst         = append(ids_lst, b.DB_id)
-		records_lst     = append(records_lst, interface{}(b))
-		blocks_nums_lst = append(blocks_nums_lst, b.Block_num_uint)
+		ids_lst       = append(ids_lst, b.DB_id)
+		recordsLst    = append(recordsLst, interface{}(b))
+		blocksNumsLst = append(blocksNumsLst, b.Block_num_uint)
 	}
 
-	coll_name_str := "gf_eth_blocks"
-	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
-		coll_name_str,
+	collNameStr := "gf_eth_blocks"
+	gfErr := gf_core.Mongo__insert_bulk(ids_lst, recordsLst,
+		collNameStr,
 		map[string]interface{}{
-			"blocks_nums_lst":    blocks_nums_lst,
+			"blocks_nums_lst":    blocksNumsLst,
 			"caller_err_msg_str": "failed to bulk insert Eth blocks (GF_eth__block__int) into DB",
 		},
-		p_ctx,
-		p_runtime.Runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pCtx,
+		pRuntime.Runtime_sys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
