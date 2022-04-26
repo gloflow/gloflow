@@ -38,7 +38,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		"/v1/web3/address/add",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor", handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_address", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME

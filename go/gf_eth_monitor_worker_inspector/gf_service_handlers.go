@@ -46,7 +46,7 @@ func init_handlers(p_metrics *GF_metrics,
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr,
-		"gf_eth_monitor_worker_inspector",
+		"gf_web3_monitor_worker_inspector",
 		handlers_endpoints_lst)
 
 	//---------------------
