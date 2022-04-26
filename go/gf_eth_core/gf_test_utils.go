@@ -43,7 +43,7 @@ func T__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
 	}
 
 	// RUNTIME
-	runtime, err := Runtime__get(config, runtime_sys)
+	runtime, err := RuntimeGet(config, runtime_sys)
 	if err != nil {
 		p_test.Fail()
 	}

@@ -46,7 +46,7 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_config_path_str string,
+func runtimeGet(p_config_path_str string,
 	p_log_fun func(string, string)) (*gf_eth_core.GF_runtime, error) {
 
 	// CONFIG
@@ -69,7 +69,7 @@ func runtime__get(p_config_path_str string,
 		Errors_send_to_sentry_bool: true,	
 	}
 
-	runtime, err := gf_eth_core.Runtime__get(config, runtime_sys)
+	runtime, err := gf_eth_core.RuntimeGet(config, runtime_sys)
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +276,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		Long:  "start the gf_eth_monitor service in a target cluster",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
-			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
+			runtime, err := runtimeGet(cli_config_path_str, p_log_fun)
 			if err != nil {
 				panic(err)
 			}
@@ -311,7 +311,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 
-			runtime, err := runtime__get(cli_config_path_str, p_log_fun)
+			runtime, err := runtimeGet(cli_config_path_str, p_log_fun)
 			if err != nil {
 				panic(err)
 			}

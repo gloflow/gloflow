@@ -54,7 +54,7 @@ func Test__worker(p_test *testing.T) {
 		Mongodb_host_str:    "localhost:27017",
 		Mongodb_db_name_str: "gf_eth_monitor",
 	}
-	runtime, err := Runtime__get(config, runtime_sys)
+	runtime, err := RuntimeGet(config, runtime_sys)
 	if err != nil {
 		p_test.Fail()
 	}

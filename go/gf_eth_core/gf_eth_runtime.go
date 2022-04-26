@@ -100,7 +100,7 @@ type GF_config struct {
 }
 
 //-------------------------------------------------
-func Runtime__get(p_config *GF_config,
+func RuntimeGet(p_config *GF_config,
 	p_runtime_sys *gf_core.Runtime_sys) (*GF_runtime, error) {
 
 	//--------------------

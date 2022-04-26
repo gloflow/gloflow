@@ -55,7 +55,7 @@ func main() {
 	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 
 	log_fun := gf_core.Init_log_fun()
-	runtime, err := runtime__get(geth__host_str, py_plugins_base_dir_path_str, log_fun)
+	runtime, err := runtimeGet(geth__host_str, py_plugins_base_dir_path_str, log_fun)
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ func main() {
 }
 
 //-------------------------------------------------
-func runtime__get(p_eth_rpc_host_str string,
+func runtimeGet(p_eth_rpc_host_str string,
 	p_py_plugins_base_dir_path_str string,
 	p_log_fun                      func(string, string)) (*GF_runtime, error) {
 
