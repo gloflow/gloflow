@@ -2,7 +2,7 @@ module github.com/gloflow/gloflow
 
 go 1.16
 
-replace github.com/gloflow/gloflow-web3-monitor => ./../gloflow-web3-monitor
+// replace github.com/gloflow/gloflow-web3-monitor => ./../gloflow-web3-monitor
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
