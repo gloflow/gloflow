@@ -2,7 +2,7 @@ module github.com/gloflow/gloflow-web3-monitor
 
 go 1.16
 
-replace github.com/gloflow/gloflow => ./../gloflow
+// replace github.com/gloflow/gloflow => ./../gloflow
 
 require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
