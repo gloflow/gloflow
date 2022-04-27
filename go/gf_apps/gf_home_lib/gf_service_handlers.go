@@ -84,7 +84,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				}
 
 				outputMap := map[string]interface{}{
-					"components_lst": homeViz.ComponentsLst,
+					"components_map": homeViz.ComponentsMap,
 				}
 				return outputMap, nil
 			}

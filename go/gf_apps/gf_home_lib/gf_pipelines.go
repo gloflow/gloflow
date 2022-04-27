@@ -36,8 +36,8 @@ type GFhomeViz struct {
 	DeletedBool        bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
 
-	OwnerUserIDstr     gf_core.GF_ID         `bson:"owner_user_id_str"`
-	ComponentsLst      []*GFhomeVizComponent `bson:"components_lst"`
+	OwnerUserIDstr     gf_core.GF_ID                 `bson:"owner_user_id_str"`
+	ComponentsMap      map[string]GFhomeVizComponent `bson:"components_map"`
 }
 
 type GFhomeVizComponent struct {
@@ -65,7 +65,7 @@ func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 		IDstr:              IDstr,
 		CreationUNIXtimeF:  creationUNIXtimeF,
 		OwnerUserIDstr:     pUserIDstr,
-		ComponentsLst:      []*GFhomeVizComponent{},
+		ComponentsMap:      map[string]GFhomeVizComponent{},
 	}
 
 	// DB
