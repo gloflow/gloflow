@@ -124,7 +124,7 @@ async function viz_update(p_component_name_str :string,
                     p_reject_fun(data_map);
                 }
             },
-            'error':(jqXHR, p_text_status_str)=>{
+            'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
             }
         });
@@ -137,16 +137,11 @@ export async function web3_addresses_get(p_type_str  :string,
 	p_chain_str :string) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		const url_str = "/v1/web3/address/get_all"
-		const data_map = {
-            "type_str":  p_type_str,
-            "chain_str": p_chain_str,
-        };
+		const url_str = `/v1/web3/address/get_all?type=${p_type_str}&chain=${p_chain_str}`;
 
         $.ajax({
             'url':         url_str,
-            'type':        'POST',
-            'data':        JSON.stringify(data_map),
+            'type':        'GET',
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
@@ -159,7 +154,7 @@ export async function web3_addresses_get(p_type_str  :string,
                     p_reject_fun(data_map);
                 }
             },
-            'error':(jqXHR, p_text_status_str)=>{
+            'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
             }
         });
@@ -196,7 +191,7 @@ export async function web3_address_add(p_address_str :string,
                     p_reject_fun(data_map);
                 }
             },
-            'error':(jqXHR, p_text_status_str)=>{
+            'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
             }
         });
