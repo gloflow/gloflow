@@ -32,10 +32,10 @@ export function get_http_api() {
 				return output_map;
 			},
 			"viz_update_fun": async (p_component_name_str :string,
-				p_prop_change_map)=>{
+				p_props_change_map)=>{
 
                 const output_map = await viz_update(p_component_name_str,
-					p_prop_change_map);
+					p_props_change_map);
                 return output_map;
 			},
 
@@ -99,13 +99,13 @@ async function viz_get() {
 
 //--------------------------------------------------------
 async function viz_update(p_component_name_str :string,
-    p_prop_change_map) {
+    p_props_change_map) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		const url_str = "/v1/home/viz/update"
 		const data_map = {
             "component_name_str": p_component_name_str,
-            "prop_change_map":    p_prop_change_map,
+            "props_change_map":   p_props_change_map,
         };
 
         $.ajax({

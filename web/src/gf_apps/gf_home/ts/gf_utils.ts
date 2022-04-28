@@ -25,13 +25,13 @@ export function update_viz_component_remote(p_component_name_str :string,
 
 		const x_new_int = p_drag_data_map["x_int"];
 		const y_new_int = p_drag_data_map["y_int"];
-		const prop_change_map = {
-			"x_int": x_new_int,
-			"y_int": y_new_int,
+		const props_change_map = {
+			"screen_x_int": x_new_int,
+			"screen_y_int": y_new_int,
 		};
 
 		const output_map = await p_http_api_map["home"]["viz_update_fun"](p_component_name_str,
-			prop_change_map);
+			props_change_map);
 
 		p_resolve_fun(output_map);
 	});
@@ -43,12 +43,12 @@ export function update_viz_background_color(p_component_name_str :string,
 	p_background_color_str :string,
 	p_http_api_map) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
-		const prop_change_map = {
+		const props_change_map = {
 			"background_color_str": p_background_color_str,
 		};
 
 		const output_map = await p_http_api_map["home"]["viz_update_fun"](p_component_name_str,
-			prop_change_map);
+			props_change_map);
 
 		p_resolve_fun(output_map);
 	});

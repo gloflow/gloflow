@@ -86,19 +86,29 @@ export function init(p_target_element,
 
             $("body").on("mousemove", mouse_move_fun);
 
+            
             // EVENT
-            p_on_dnd_event_fun("drag_start");
+            const data_map = {};
+            p_on_dnd_event_fun("drag_start", data_map);
         });
 
         // MOUSE_UP
-        $(control).on("mouseup", ()=>{
+        $(control).on("mouseup", (p_event)=>{
             
             $(control).css("pointer", "pointer");
 
             $("body").unbind("mousemove", mouse_move_fun);
 
+            // final coords of the element that was droped
+            const final_x_int = p_event.pageX + distance_to_target_origin_x;
+            const final_y_int = p_event.pageY - distance_to_target_origin_y;
+            const data_map = {
+                "x_int": final_x_int,
+                "y_int": final_y_int,
+            };
+
             // EVENT
-            p_on_dnd_event_fun("drag_stop");
+            p_on_dnd_event_fun("drag_stop", data_map);
         });
     }
 

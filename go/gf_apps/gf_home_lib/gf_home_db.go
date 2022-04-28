@@ -29,10 +29,40 @@ import (
 )
 
 //------------------------------------------------
+func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
+	pUpdatedComponentsMap map[string]GFhomeVizComponent,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.GFerror  {
+
+
+	fieldsTargets := bson.M{
+		"components_map": pUpdatedComponentsMap,
+	}
+
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_home_viz").UpdateMany(pCtx, bson.M{
+		"owner_user_id_str": pUserIDstr,
+		"deleted_bool":      false,
+	},
+	bson.M{"$set": fieldsTargets})
+	
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to to update home_viz components_map",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"owner_user_id_str": pUserIDstr,
+			},
+			err, "gf_home_lib", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//------------------------------------------------
 // CREATE_HOME_VIZ
 func DBcreateHomeViz(pHomeViz *GFhomeViz,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	collNameStr := "gf_home_viz"
 	gfErr := gf_core.MongoInsert(pHomeViz,

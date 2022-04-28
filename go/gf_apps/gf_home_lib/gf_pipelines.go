@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
-	"fmt"
-	"time"
 	"text/template"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -45,80 +43,6 @@ type GFhomeVizComponent struct {
 	ScreenXint         int64  `bson:"screen_x_int" json:"screen_x_int"`
 	ScreenYint         int64  `bson:"screen_y_int" json:"screen_y_int"`
 	ColorBackgroundStr string `bson:"color_background_str"`
-}
-
-//------------------------------------------------
-// VIZ_PROPS_CREATE
-func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
-		
-
-
-	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	userIdentifierStr := string(pUserIDstr)
-	IDstr := homeVizCreateID(userIdentifierStr,
-		creationUNIXtimeF)
-
-	homeViz := &GFhomeViz{
-		Vstr:               "0",
-		IDstr:              IDstr,
-		CreationUNIXtimeF:  creationUNIXtimeF,
-		OwnerUserIDstr:     pUserIDstr,
-		ComponentsMap:      map[string]GFhomeVizComponent{},
-	}
-
-	// DB
-	gfErr := DBcreateHomeViz(homeViz, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	return homeViz, nil
-}
-
-//------------------------------------------------
-// VIZ_PROPS_GET
-func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
-	
-
-	homeVizExisting, gfErr := DBgetHomeViz(pUserIDstr, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	// NONE_FOUND
-	var homeViz *GFhomeViz
-	if homeVizExisting == nil {
-
-		fmt.Println("no home_viz found for user, creating new...")
-
-		// CREATE
-		homeVizNew, gfErr := PipelineVizPropsCreate(pUserIDstr,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		homeViz = homeVizNew
-	} else {
-		homeViz = homeVizExisting
-	}
-
-	return homeViz, nil
-}
-
-//------------------------------------------------
-// VIZ_PROPS_UPDATE
-func PipelineVizPropsUpdate(pUserIDstr gf_core.GF_ID,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
-		
-
-	return nil
 }
 
 //------------------------------------------------

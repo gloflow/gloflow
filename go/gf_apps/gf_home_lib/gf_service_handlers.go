@@ -76,7 +76,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "GET" {
 
+				//---------------------
+				// INPUT
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				
+				//---------------------
 				
 				homeViz, gfErr := PipelineVizPropsGet(userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
@@ -103,18 +107,24 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
 
-				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+				//---------------------
+				// INPUT
+				input, gfErr := inputForVizPropsUpdate(pReq, pResp, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
 
-				gfErr := PipelineVizPropsUpdate(userIDstr,
+				//---------------------
+				
+				gfErr = PipelineVizPropsUpdate(input,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-
-
-				
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
