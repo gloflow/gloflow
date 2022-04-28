@@ -47,12 +47,12 @@ func inputForVizPropsUpdate(pReq *http.Request,
 
 	var screenXint int64
 	if valStr, ok := inputMap["props_change_map"].(map[string]interface{})["screen_x_int"]; ok {
-		screenXint = valStr.(int64)
+		screenXint = int64(valStr.(float64))
 	}
 
 	var screenYint int64
 	if valStr, ok := inputMap["props_change_map"].(map[string]interface{})["screen_y_int"]; ok {
-		screenYint = valStr.(int64)
+		screenYint = int64(valStr.(float64))
 	}
 
 	input := &GFvizPropsUpdateInput{
