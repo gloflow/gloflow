@@ -64,16 +64,19 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 		return gfErr
 	}
 
+	componentsMap := homeVizExisting.ComponentsMap
 
 	// update component viz properties
 	if pInput.ComponentNameStr != "" {
 		foundBool := false
-		for componentNameStr, vizComponent := range homeVizExisting.ComponentsMap {
+		for componentNameStr, vizComponent := range componentsMap {
 
 			if componentNameStr == pInput.ComponentNameStr {
 				foundBool = true
 				vizComponent.ScreenXint = pInput.ScreenXint
 				vizComponent.ScreenYint = pInput.ScreenYint
+
+				componentsMap[componentNameStr] = vizComponent
 			}
 		}
 
@@ -87,12 +90,12 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 				ScreenXint: pInput.ScreenXint,
 				ScreenYint: pInput.ScreenYint,
 			}
-			homeVizExisting.ComponentsMap[pInput.ComponentNameStr] = newComponent
+			componentsMap[pInput.ComponentNameStr] = newComponent
 		}
 
 		// DB
 		gfErr = DBupdateHomeVizComponents(pInput.UserIDstr,
-			homeVizExisting.ComponentsMap,
+			componentsMap,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
