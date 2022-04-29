@@ -45,9 +45,9 @@ $(document).ready(()=>{
 function main(p_log_fun) {
 	
 	const my_eth_addresses_lst = [
-		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
-		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
-		"0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
+		// "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
+		// "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97",
+		// "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	];
 
 	const observed_eth_addresses_lst = [];
@@ -62,7 +62,13 @@ function main(p_log_fun) {
 			"viz_get_fun": async ()=>{
 
 				const output_map = {
-					"components_map": {},
+					"components_map": {
+						"profile_image": {
+							"name_str":     "profile_image",
+							"screen_x_int": 500,
+							"screen_y_int": 113
+						}
+					},
 				};
 				return output_map;
 			},

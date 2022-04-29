@@ -40,10 +40,10 @@ type GFhomeViz struct {
 }
 
 type GFhomeVizComponent struct {
-	NameStr            string `bson:"name_str"     json:"name_str"`
-	ScreenXint         int64  `bson:"screen_x_int" json:"screen_x_int"`
-	ScreenYint         int64  `bson:"screen_y_int" json:"screen_y_int"`
-	ColorBackgroundStr string `bson:"color_background_str"`
+	NameStr            string `bson:"name_str"             json:"name_str"`
+	ScreenXint         int64  `bson:"screen_x_int"         json:"screen_x_int"`
+	ScreenYint         int64  `bson:"screen_y_int"         json:"screen_y_int"`
+	ColorBackgroundStr string `bson:"color_background_str" json:"color_background_str"`
 }
 
 type GFvizPropsUpdateInput struct {

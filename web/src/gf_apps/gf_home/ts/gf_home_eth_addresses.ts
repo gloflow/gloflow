@@ -28,6 +28,7 @@ export async function init_observed(p_parent_element,
 	p_assets_paths_map) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
+		const component_name_str = "web3_addresses_observed";
 		const address_type_str  = "observed";
 		const address_chain_str = "eth";
 		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
@@ -40,39 +41,48 @@ export async function init_observed(p_parent_element,
 			</div>`);
 		$(p_parent_element).append(container);
 
-		var total_height_int = 0;
+		
 
-		// there are no initial observed addresses, so have custom UI for
-		// adding an initial address
+		// NO_ADDRESSES - there are no initial observed addresses, so have custom UI for
+		//                adding an initial address.
 		if (eth_addresses_lst.length == 0) {
+			init_no_address_dialog(container,
+				address_type_str,
+				p_http_api_map,
+				p_assets_paths_map);
+		}
+		else {
 
-			const add_initial_btn = $(`
-				<div id="add_initial_btn">
-					<div class="add_new_address_btn">
-						<img src="${p_assets_paths_map["gf_add_btn"]}" draggable="false"></img>
-					</div>
-				</div>`)
-			$(container).append(add_initial_btn);
+			const initial_height_int = $(container).outerHeight();
+			var total_height_int = initial_height_int;
+			for (const eth_address_str of eth_addresses_lst) {
 
-			$(add_initial_btn).find(".add_new_address_btn").on("click", ()=>{
+				// CREATE_ETH_ADDRESS
+				const eth_address_element = create_eth_address(eth_address_str,
+					address_type_str,
+					container,
+					
+					//--------------------------------------------------------
+					// p_on_new_address_btn_fun
+					(p_added_address_container)=>{
 
-				// ADD_NEW_ADDRESS
-				const address_type_str = "observed";
-				const added_address_container = create_eth_address_input(address_type_str,
+						// update parent container height
+						total_height_int += $(p_added_address_container).outerHeight();
+						$(container).css("height", `${total_height_int}px`);
+					},
+
+					//--------------------------------------------------------
 					p_http_api_map,
 					p_assets_paths_map);
-				$(container).append(added_address_container);
 
-				// update parent container height
-				total_height_int += $(added_address_container).outerHeight();
-				$(container).css("height", `${total_height_int}px`);
+				$(container).append(eth_address_element);
 
-				// add_initial_btn is attached to the DOM (has a parent),
-				// so remove it because its only used for adding initial addresses
-				if ($(add_initial_btn).parent().length > 0) {
-					$(add_initial_btn).remove();
-				}
-			});
+				total_height_int += $(eth_address_element).outerHeight();
+			}
+
+			// update parent container height
+			$(container).css("height", `${total_height_int}px`);
+
 		}
 
 		// DRAG_N_DROP
@@ -80,13 +90,17 @@ export async function init_observed(p_parent_element,
 
 			//--------------------------------------------------------
 			// p_on_dnd_event_fun
-			(p_dnd_event_type_str :string)=>{
+			async (p_dnd_event_type_str :string, p_drag_data_map)=>{
 
 				switch (p_dnd_event_type_str) {
 					case "drag_start":
 						break;
 
 					case "drag_stop":
+						// update component remotely on each drag/coord change
+						await gf_utils.update_viz_component_remote(component_name_str,
+							p_drag_data_map,
+							p_http_api_map);
 						break;
 				}
 			},
@@ -105,9 +119,9 @@ export async function init_my(p_parent_element,
 	p_assets_paths_map) {
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-		// HTTP
-		const address_type_str  = "my";
-		const address_chain_str = "eth";
+		const component_name_str = "web3_addresses_my";
+		const address_type_str   = "my";
+		const address_chain_str  = "eth";
 		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
 			address_chain_str);
 		const eth_addresses_lst = output_map["addresses_lst"];
@@ -118,40 +132,45 @@ export async function init_my(p_parent_element,
 			</div>`);
 		$(p_parent_element).append(container);
 
-		const initial_height_int = $(container).outerHeight();
-		var total_height_int = initial_height_int;
-		for (const eth_address_str of eth_addresses_lst) {
-
-
-			console.log("====", eth_address_str);
-
-			const address_type_str = "my";
-
-			// CREATE_ETH_ADDRESS
-			const eth_address_element = create_eth_address(eth_address_str,
+		// NO_ADDRESSES - there are no initial observed addresses, so have custom UI for
+		//                adding an initial address.
+		if (eth_addresses_lst.length == 0) {
+			init_no_address_dialog(container,
 				address_type_str,
-				container,
-				
-				//--------------------------------------------------------
-				// p_on_new_address_btn_fun
-				(p_added_address_container)=>{
-
-					// update parent container height
-					total_height_int += $(p_added_address_container).outerHeight();
-					$(container).css("height", `${total_height_int}px`);
-				},
-
-				//--------------------------------------------------------
 				p_http_api_map,
 				p_assets_paths_map);
-
-			$(container).append(eth_address_element);
-
-			total_height_int += $(eth_address_element).outerHeight();
 		}
+		else {
+			const initial_height_int = $(container).outerHeight();
+			var total_height_int = initial_height_int;
+			for (const eth_address_str of eth_addresses_lst) {
 
-		// update parent container height
-		$(container).css("height", `${total_height_int}px`);
+				// CREATE_ETH_ADDRESS
+				const eth_address_element = create_eth_address(eth_address_str,
+					address_type_str,
+					container,
+					
+					//--------------------------------------------------------
+					// p_on_new_address_btn_fun
+					(p_added_address_container)=>{
+
+						// update parent container height
+						total_height_int += $(p_added_address_container).outerHeight();
+						$(container).css("height", `${total_height_int}px`);
+					},
+
+					//--------------------------------------------------------
+					p_http_api_map,
+					p_assets_paths_map);
+
+				$(container).append(eth_address_element);
+
+				total_height_int += $(eth_address_element).outerHeight();
+			}
+
+			// update parent container height
+			$(container).css("height", `${total_height_int}px`);
+		}
 
 
 		// DRAG_N_DROP
@@ -167,7 +186,6 @@ export async function init_my(p_parent_element,
 					case "drag_stop":
 
 						// update component remotely on each drag/coord change
-						const component_name_str = "names";
 						await gf_utils.update_viz_component_remote(component_name_str,
 							p_drag_data_map,
 							p_http_api_map);
@@ -184,6 +202,42 @@ export async function init_my(p_parent_element,
 	return p;
 }
 
+//--------------------------------------------------------
+function init_no_address_dialog(p_container,
+	p_address_type_str,
+	p_http_api_map,
+	p_assets_paths_map) {
+
+	const add_initial_btn = $(`
+		<div id="add_initial_btn">
+			<div class="add_new_address_btn">
+				<img src="${p_assets_paths_map["gf_add_btn"]}" draggable="false"></img>
+			</div>
+		</div>`)
+	$(p_container).append(add_initial_btn);
+
+
+
+	var total_height_int = 0;
+	$(add_initial_btn).find(".add_new_address_btn").on("click", ()=>{
+
+		// ADD_NEW_ADDRESS
+		const added_address_container = create_eth_address_input(p_address_type_str,
+			p_http_api_map,
+			p_assets_paths_map);
+		$(p_container).append(added_address_container);
+
+		// update parent container height
+		total_height_int += $(added_address_container).outerHeight();
+		$(p_container).css("height", `${total_height_int}px`);
+
+		// add_initial_btn is attached to the DOM (has a parent),
+		// so remove it because its only used for adding initial addresses
+		if ($(add_initial_btn).parent().length > 0) {
+			$(add_initial_btn).remove();
+		}
+	});
+}
 
 //--------------------------------------------------------
 function create_eth_address(p_eth_address_str :string,
