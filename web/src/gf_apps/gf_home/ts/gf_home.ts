@@ -64,8 +64,8 @@ export async function init(p_http_api_map,
 	var profile_img_x_int;
 	var profile_img_y_int;
 	if ("profile_image" in home_viz_components_map) {
-		profile_img_x_int = home_viz_components_map["profile_image"]["x_int"];
-		profile_img_y_int = home_viz_components_map["profile_image"]["y_int"];
+		profile_img_x_int = home_viz_components_map["profile_image"]["screen_x_int"];
+		profile_img_y_int = home_viz_components_map["profile_image"]["screen_y_int"];
 	}
 	else {
 		// default positioning
@@ -84,8 +84,8 @@ export async function init(p_http_api_map,
 	var names_x_int;
 	var names_y_int;
 	if ("names" in home_viz_components_map) {
-		names_x_int = home_viz_components_map["names"]["x_int"];
-		names_y_int = home_viz_components_map["names"]["y_int"];
+		names_x_int = home_viz_components_map["names"]["screen_x_int"];
+		names_y_int = home_viz_components_map["names"]["screen_y_int"];
 	}
 	else {
 		// default positioning
@@ -101,8 +101,8 @@ export async function init(p_http_api_map,
 	var eth_addr_x_int;
 	var eth_addr_y_int;
 	if ("web3_addresses_my" in home_viz_components_map) {
-		eth_addr_x_int = home_viz_components_map["web3_addresses_my"]["x_int"];
-		eth_addr_y_int = home_viz_components_map["web3_addresses_my"]["y_int"];
+		eth_addr_x_int = home_viz_components_map["web3_addresses_my"]["screen_x_int"];
+		eth_addr_y_int = home_viz_components_map["web3_addresses_my"]["screen_y_int"];
 	}
 	else {
 		// default positioning
@@ -118,8 +118,8 @@ export async function init(p_http_api_map,
 	var obs_eth_addr_x_int;
 	var obs_eth_addr_y_int;
 	if ("web3_addresses_observed" in home_viz_components_map) {
-		obs_eth_addr_x_int = home_viz_components_map["web3_addresses_observed"]["x_int"];
-		obs_eth_addr_y_int = home_viz_components_map["web3_addresses_observed"]["y_int"];
+		obs_eth_addr_x_int = home_viz_components_map["web3_addresses_observed"]["screen_x_int"];
+		obs_eth_addr_y_int = home_viz_components_map["web3_addresses_observed"]["screen_y_int"];
 	}
 	else {
 		// default positioning
@@ -135,8 +135,8 @@ export async function init(p_http_api_map,
 	var background_color_picker_x_int;
 	var background_color_picker_y_int;
 	if ("background_color_picker" in home_viz_components_map) {
-		background_color_picker_x_int = home_viz_components_map["background_color_picker"]["x_int"];
-		background_color_picker_y_int = home_viz_components_map["background_color_picker"]["y_int"];
+		background_color_picker_x_int = home_viz_components_map["background_color_picker"]["screen_x_int"];
+		background_color_picker_y_int = home_viz_components_map["background_color_picker"]["screen_y_int"];
 
 		// persist background_coilor
 		const background_color_str = home_viz_components_map["background_color_picker"]["background_color_str"];

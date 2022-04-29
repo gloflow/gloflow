@@ -36,7 +36,7 @@ export async function init_observed(p_parent_element,
 
 		const container = $(`
 			<div id="observed_eth_addresses">
-				
+				<div id="title">observed eth addresses</div>
 			</div>`);
 		$(p_parent_element).append(container);
 
@@ -114,7 +114,7 @@ export async function init_my(p_parent_element,
 
 		const container = $(`
 			<div id="my_eth_addresses">
-				
+				<div id="title">my eth addresses</div>
 			</div>`);
 		$(p_parent_element).append(container);
 

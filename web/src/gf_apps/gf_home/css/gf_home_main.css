@@ -54,7 +54,12 @@ body {
     background-color: #bfaa5a;
 }
 
-
+#home_container #my_eth_addresses #title {
+	font-size: 10px;
+    text-align: center;
+    padding-top: 4px;
+    color: #786c3b;
+}
 
 
 #home_container #my_eth_addresses .add_new_address_btn {
@@ -78,7 +83,6 @@ body {
 	user-select: none;
 }
 
-
 /*------------------------------------------------------------------*/
 /*OBSERVED_ETH_ADDRESSES*/
 #home_container #observed_eth_addresses {
@@ -87,6 +91,14 @@ body {
 	height: 100px;
 	background-color: #8d8051;
 }
+
+#home_container #observed_eth_addresses #title {
+	font-size: 10px;
+    text-align: center;
+    padding-top: 4px;
+    color: #524a2a;
+}
+
 #home_container #observed_eth_addresses .add_new_address_btn {
 	position: absolute;
     left: 23%;

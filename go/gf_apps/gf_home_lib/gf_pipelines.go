@@ -27,25 +27,6 @@ import (
 )
 
 //------------------------------------------------
-type GFhomeViz struct {
-	Vstr               string             `bson:"v_str"` // schema_version
-	Id                 primitive.ObjectID `bson:"_id,omitempty"`
-	IDstr              gf_core.GF_ID      `bson:"id_str"`
-	DeletedBool        bool               `bson:"deleted_bool"`
-	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
-
-	OwnerUserIDstr     gf_core.GF_ID                 `bson:"owner_user_id_str"`
-	ComponentsMap      map[string]GFhomeVizComponent `bson:"components_map"`
-}
-
-type GFhomeVizComponent struct {
-	NameStr            string `bson:"name_str"     json:"name_str"`
-	ScreenXint         int64  `bson:"screen_x_int" json:"screen_x_int"`
-	ScreenYint         int64  `bson:"screen_y_int" json:"screen_y_int"`
-	ColorBackgroundStr string `bson:"color_background_str"`
-}
-
-//------------------------------------------------
 // RENDER_DASHBOARD
 func PipelineRenderDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
