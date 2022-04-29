@@ -48,12 +48,27 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 
 	// update component viz properties
 	if pInput.ComponentNameStr != "" {
+		foundBool := false
 		for componentNameStr, vizComponent := range homeVizExisting.ComponentsMap {
 
 			if componentNameStr == pInput.ComponentNameStr {
+				foundBool = true
 				vizComponent.ScreenXint = pInput.ScreenXint
 				vizComponent.ScreenYint = pInput.ScreenYint
 			}
+		}
+
+		// if the component is not already in the list of components 
+		// then insert it as new.
+		// it wouldnt be present if its viz properties havent been 
+		// customized yet
+		if !foundBool {
+			newComponent := GFhomeVizComponent{
+				NameStr:    pInput.ComponentNameStr,
+				ScreenXint: pInput.ScreenXint,
+				ScreenYint: pInput.ScreenYint,
+			}
+			homeVizExisting.ComponentsMap[pInput.ComponentNameStr] = newComponent
 		}
 
 		// DB
