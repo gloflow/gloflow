@@ -102,7 +102,7 @@ body {
 #home_container #observed_eth_addresses .add_new_address_btn {
 	position: absolute;
     left: 23%;
-    top: 11%;
+    top: 17%;
 	cursor: pointer;
 }
 

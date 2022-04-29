@@ -118,7 +118,8 @@ export async function init_my(p_parent_element,
 			</div>`);
 		$(p_parent_element).append(container);
 
-		var total_height_int = 0;
+		const initial_height_int = $(container).outerHeight();
+		var total_height_int = initial_height_int;
 		for (const eth_address_str of eth_addresses_lst) {
 
 
