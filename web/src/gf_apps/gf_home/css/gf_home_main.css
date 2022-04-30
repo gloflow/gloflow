@@ -14,6 +14,7 @@ body {
 }
 
 /*------------------------------------------------------------------*/
+/*PROFILE_IMAGE*/
 #profile_image {
 	position: absolute;
 	background-color: #e3b91a;
@@ -50,7 +51,8 @@ body {
 #home_container #my_eth_addresses {
 	position: absolute;
     width: 132px;
-    height: 26px;
+    
+	height: 100px;
     background-color: #bfaa5a;
 }
 
@@ -61,6 +63,12 @@ body {
     color: #786c3b;
 }
 
+#home_container #my_eth_addresses .add_initial_address_btn {
+	position: absolute;
+    left: 23%;
+    top: 17%;
+	cursor: pointer;
+}
 
 #home_container #my_eth_addresses .add_new_address_btn {
 	position: absolute;
@@ -76,7 +84,6 @@ body {
 #home_container #my_eth_addresses .add_new_address_btn:hover {
 	background-color: white;
 }
-
 #home_container #my_eth_addresses .add_new_address_btn img {
 	width: 100%;
     height: auto;
@@ -99,11 +106,35 @@ body {
     color: #524a2a;
 }
 
-#home_container #observed_eth_addresses .add_new_address_btn {
+#home_container #observed_eth_addresses .add_initial_address_btn {
 	position: absolute;
     left: 23%;
     top: 17%;
 	cursor: pointer;
+}
+
+#home_container #observed_eth_addresses .add_new_address_btn {
+	position: absolute;
+    top: 0px;
+    right: -52px;
+    width: 26px;
+    height: 26px;
+    background-color: #897941;
+	cursor: pointer;
+
+	box-shadow: 9px 0px 11px #0000007a;
+}
+#home_container #observed_eth_addresses .add_new_address_btn:hover {
+	background-color: white;
+}
+#home_container #observed_eth_addresses .add_new_address_btn img {
+	width: 100%;
+    height: auto;
+	user-select: none;
+}
+
+#home_container #observed_eth_addresses .eth_address {
+	background-color: #8d8051;
 }
 
 /*------------------------------------------------------------------*/

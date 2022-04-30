@@ -135,6 +135,7 @@ export async function init_my(p_parent_element,
 		// NO_ADDRESSES - there are no initial observed addresses, so have custom UI for
 		//                adding an initial address.
 		if (eth_addresses_lst.length == 0) {
+
 			init_no_address_dialog(container,
 				address_type_str,
 				p_http_api_map,
@@ -210,7 +211,7 @@ function init_no_address_dialog(p_container,
 
 	const add_initial_btn = $(`
 		<div id="add_initial_btn">
-			<div class="add_new_address_btn">
+			<div class="add_initial_address_btn">
 				<img src="${p_assets_paths_map["gf_add_btn"]}" draggable="false"></img>
 			</div>
 		</div>`)
@@ -219,7 +220,7 @@ function init_no_address_dialog(p_container,
 
 
 	var total_height_int = 0;
-	$(add_initial_btn).find(".add_new_address_btn").on("click", ()=>{
+	$(add_initial_btn).find(".add_initial_address_btn").on("click", ()=>{
 
 		// ADD_NEW_ADDRESS
 		const added_address_container = create_eth_address_input(p_address_type_str,
