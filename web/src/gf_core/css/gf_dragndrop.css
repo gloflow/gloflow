@@ -7,7 +7,7 @@
 .dnd_handle {
     position: absolute;
     top: 0px;
-    left: -40px;
+    /*left: -40px;*/
     background-color: gray;
     width: 40px;
     

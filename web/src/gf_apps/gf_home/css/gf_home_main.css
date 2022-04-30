@@ -212,7 +212,7 @@ body {
 /*------------------------------------------------------------------*/
 /*COLOR_PICKER*/
 #background_color_picker {
-	background-color: gray;
+	background-color: #d1bf7d;
     padding: 11px;
     position: absolute;
 }

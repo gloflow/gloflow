@@ -40,19 +40,46 @@ export function init(p_target_element,
     //           to simplify event and click coordinate calculation over the dnd_handle.
     $(control).find(".overlay").css("height", `${handle_height_int}px`);
 
+
+    var control_side_str;
+    var element_dragged_bool = false;
+
     // MOUSE_ENTER
     $(p_target_element).on("mouseenter", ()=>{
         
         $(p_target_element).append(control);
         init_handle();
 
+
+
+
+        const taget_element_x_int = $(p_target_element).position().left;
+
+        if (taget_element_x_int < 100) {
+            $(control).css("right", "-40px");
+            $(control).css("left", ""); // remove old
+
+            control_side_str = "right";
+        }
+        else {
+            $(control).css("left", "-40px");
+            $(control).css("right", ""); // remove old
+
+            control_side_str = "left";
+        }
+
         handle_width_int = $(control).outerWidth();
     });
 
     // MOUSE_LEAVE
     $(p_target_element).on("mouseleave", ()=>{
-                
-        $(control).remove();
+        
+        // dont remove the control if the dragging of the element
+        // is in progress. otherwise its event handlers (including dragging)
+        // will be removed and disturbed while user is dragging.
+        if (!element_dragged_bool) {
+            $(control).remove();
+        }
     });
 
     //--------------------------------------------------------
@@ -68,7 +95,22 @@ export function init(p_target_element,
         //--------------------------------------------------------
         function mouse_move_fun(p_event) {
 
-            const new_x = p_event.pageX + distance_to_target_origin_x;
+            // const new_x = p_event.pageX + distance_to_target_origin_x;
+
+            // final coords of the element that was droped
+            var new_x;
+            switch (control_side_str) {
+                case "left":
+                    new_x = p_event.pageX + distance_to_target_origin_x;
+                    break;
+                
+                case "right":
+                    new_x = p_event.pageX - distance_to_target_origin_x;
+                    break;
+            }
+
+
+
             const new_y = p_event.pageY - distance_to_target_origin_y;
 
             $(p_target_element).css("left", `${new_x}px`);
@@ -79,13 +121,23 @@ export function init(p_target_element,
         // MOUSE_DOWN
         $(control).on("mousedown", (p_event)=>{
 
-            distance_to_target_origin_x = handle_width_int - p_event.offsetX;
+            switch (control_side_str) {
+                case "left":
+                    distance_to_target_origin_x = handle_width_int - p_event.offsetX;
+                    break;
+                
+                case "right":
+                    const element_width_int = $(p_target_element).outerWidth();
+                    distance_to_target_origin_x = element_width_int + handle_width_int - p_event.offsetX;
+                    break;
+            }
+            
             distance_to_target_origin_y = p_event.offsetY;
 
             $(control).css("pointer", "grab");
 
             $("body").on("mousemove", mouse_move_fun);
-
+            element_dragged_bool = true;
             
             // EVENT
             const data_map = {};
@@ -98,9 +150,24 @@ export function init(p_target_element,
             $(control).css("pointer", "pointer");
 
             $("body").unbind("mousemove", mouse_move_fun);
+            element_dragged_bool = false;
+
 
             // final coords of the element that was droped
-            const final_x_int = p_event.pageX + distance_to_target_origin_x;
+            var final_x_int;
+            switch (control_side_str) {
+                case "left":
+                    final_x_int = p_event.pageX + distance_to_target_origin_x;
+                    break;
+                
+                case "right":
+                    final_x_int = p_event.pageX - distance_to_target_origin_x;
+                    break;
+            }
+
+
+
+
             const final_y_int = p_event.pageY - distance_to_target_origin_y;
             const data_map = {
                 "x_int": final_x_int,
