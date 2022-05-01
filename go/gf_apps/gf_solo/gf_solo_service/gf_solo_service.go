@@ -282,7 +282,7 @@ func Run(p_config *GF_config,
 	
 	//-------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.Server__init_with_mux(portInt, gfSoloHTTPmux)
+	gf_rpc_lib.ServerInitWithMux(portInt, gfSoloHTTPmux)
 }
 
 //-------------------------------------------------

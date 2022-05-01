@@ -32,25 +32,30 @@ import (
 )
 
 //-------------------------------------------------
-func Server__init_with_mux(p_port_int int,
-	p_mux *http.ServeMux) {
+func ServerInitWithMux(pPortInt int,
+	pMux *http.ServeMux) {
+	Server__init_with_mux(pPortInt, pMux)
+}
 
-	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
+func Server__init_with_mux(pPortInt int,
+	pMux *http.ServeMux) {
+
+	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 	
 	// IMPORTANT!! - wrap mux with Sentry.
 	//               without this handler contexts are not initialized properly
 	//               and creating spans and other sentry primitives fails with nul pointer exceptions.
-	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(p_mux)
+	sentryHandler := sentryhttp.New(sentryhttp.Options{}).Handle(pMux)
 
 	server := http.Server{
-		Addr:    fmt.Sprintf(":%d", p_port_int),
-		Handler: sentry_handler,
+		Addr:    fmt.Sprintf(":%d", pPortInt),
+		Handler: sentryHandler,
 	}
 
 	err := server.ListenAndServe()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"port": p_port_int,
+			"port": pPortInt,
 			"err":  err,
 		}).Fatal("server cant start listening")
 		panic(-1)
@@ -58,16 +63,16 @@ func Server__init_with_mux(p_port_int int,
 }
 
 //-------------------------------------------------
-func Server__init(p_port_int int) {
+func Server__init(pPortInt int) {
 
-	log.WithFields(log.Fields{"port": p_port_int,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
+	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 
-	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
-	err            := http.ListenAndServe(fmt.Sprintf(":%d", p_port_int), sentry_handler)
+	sentryHandler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
+	err           := http.ListenAndServe(fmt.Sprintf(":%d", pPortInt), sentryHandler)
 
 	if err != nil {
 		log.WithFields(log.Fields{
-			"port": p_port_int,
+			"port": pPortInt,
 			"err":  err,
 		}).Fatal("server cant start listening")
 		panic(-1)

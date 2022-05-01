@@ -83,14 +83,18 @@ func TestHomeViz(pTest *testing.T) {
 
 	HTTPagent := gorequest.New()
 	ctx := context.Background()
-
 	testPortInt := 2000
 	testIdentityServicePortInt := 2001
-	testUserNameStr := "ivan_t"
-	testUserPassStr := "pass_lksjds;lkdj"
-	testEmailStr    := "ivan_t@gloflow.com"
+	
+	
+	// CREATE_AND_LOGIN_NEW_USER
+	gf_identity_lib.TestCreateAndLoginNewUser(pTest,
+		HTTPagent,
+		testIdentityServicePortInt,
+		ctx,
+		runtimeSys)
 
-	//---------------------------------
+	/*//---------------------------------
 	// CLEANUP
 	gf_identity_lib.TestDBcleanup(ctx, runtimeSys)
 	
@@ -119,7 +123,7 @@ func TestHomeViz(pTest *testing.T) {
 		testIdentityServicePortInt,
 		pTest)
 		
-	//---------------------------------
+	//---------------------------------*/
 	
 
 	fmt.Println("======== HOME_VIZ GET HTTP")

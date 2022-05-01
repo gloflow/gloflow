@@ -24,6 +24,8 @@ import (
 	"time"
 	"net/http"
 	"context"
+	"testing"
+	"github.com/parnurzeal/gorequest"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -33,10 +35,53 @@ import (
 var logFun func(p_g string, p_m string)
 var cliArgsMap map[string]interface{}
 
+//-------------------------------------------------
+func TestCreateAndLoginNewUser(pTest *testing.T,
+	pHTTPagent              *gorequest.SuperAgent,
+	pIdentityServicePortInt int,
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.Runtime_sys) {
+
+	testUserNameStr := "ivan_t"
+	testUserPassStr := "pass_lksjds;lkdj"
+	testEmailStr    := "ivan_t@gloflow.com"
+
+	//---------------------------------
+	// CLEANUP
+	TestDBcleanup(pCtx, pRuntimeSys)
+	
+	//---------------------------------
+	// ADD_TO_INVITE_LIST
+	gfErr := DBuserAddToInviteList(testEmailStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.FailNow()
+	}
+
+	//---------------------------------
+	// GF_IDENTITY_INIT
+	TestUserHTTPcreate(testUserNameStr,
+		testUserPassStr,
+		testEmailStr,
+		pHTTPagent,
+		pIdentityServicePortInt,
+		pTest)
+
+	TestUserHTTPlogin(testUserNameStr,
+		testUserPassStr,
+		pHTTPagent,
+		pIdentityServicePortInt,
+		pTest)
+		
+	//---------------------------------
+}
 
 //-------------------------------------------------
 func TestStartService(pPortInt int,
 	pRuntimeSys *gf_core.Runtime_sys) {
+
 	// testPortInt := 2000
 	go func() {
 
