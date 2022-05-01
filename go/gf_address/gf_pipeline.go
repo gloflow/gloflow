@@ -94,7 +94,6 @@ func pipelineAdd(pInput *GFaddInput,
 
 	//------------------------
 	
-
 	creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	idStr   := createID(string(pInput.UserIDstr), creationTimeUNIXf)
 	address := &GFchainAddress {
