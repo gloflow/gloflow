@@ -28,12 +28,10 @@ import (
 )
 
 //---------------------------------------------------
-func Test__plugins(p_test *testing.T) {
+func Test__plugins(pTest *testing.T) {
 
 	fmt.Println("TEST__PLUGINS ==============================================")
 	
-
-
 	//--------------------
 	// RUNTIME_SYS
 	log_fun     := gf_core.Init_log_fun()
@@ -55,7 +53,7 @@ func Test__plugins(p_test *testing.T) {
 		plugins_info,
 		runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 

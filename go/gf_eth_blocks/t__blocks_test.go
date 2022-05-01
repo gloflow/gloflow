@@ -38,9 +38,10 @@ func Test__blocks(p_test *testing.T) {
 
 	fmt.Println("TEST__BLOCKS ==============================================")
 	
-	ctx              := context.Background()
-	host_port_str    := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-	runtime, metrics := gf_eth_core.T__get_runtime(p_test)
+	ctx                := context.Background()
+	host_port_str      := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
+	mongoDBhostPortStr := "localhost:27017"
+	runtime, metrics   := gf_eth_core.TgetRuntime(mongoDBhostPortStr, p_test)
 
 	//---------------------
 	// INDEX_MULTIPLE_BLOCKS

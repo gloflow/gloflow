@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2020 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,16 +17,53 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package main
+package gf_web3_monitor_lib
 
 import (
 	"os"
+	"time"
 	"testing"
+	"net/http"
+	// "github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 )
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-
 	v := m.Run()
 	os.Exit(v)
+}
+
+//---------------------------------------------------
+func TestAddressNFT(pTest *testing.T) {
+
+
+
+	runtime, _ := gf_eth_core.TgetRuntime(pTest)
+
+
+
+
+	// GF_WEB3_MONITOR_SERVICE
+	testPortInt := 2000
+	go func() {
+
+		HTTPmux := http.NewServeMux()
+
+		InitService(HTTPmux,
+			runtime.Runtime_sys)
+		gf_rpc_lib.ServerInitWithMux(testPortInt, HTTPmux)
+	}()
+
+	// GF_IDENTITY_SERVICE
+	testIdentityServicePortInt := 2001
+	go func() {
+
+		gf_identity_lib.TestStartService(testIdentityServicePortInt,
+			runtime.Runtime_sys)
+	}()
+
+	time.Sleep(2*time.Second) // let services startup
 }

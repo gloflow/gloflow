@@ -41,9 +41,8 @@ func Test__indexer_http(p_test *testing.T) {
 	end_block_int       := uint64(13_414_402)
 	test_blocks_num_int := end_block_int - start_block_int
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-
 	ctx        := context.Background()
-	runtime, _ := gf_eth_core.T__get_runtime(p_test)
+	runtime, _ := gf_eth_core.TgetRuntime(p_test)
 
 
 	port_int := 3000

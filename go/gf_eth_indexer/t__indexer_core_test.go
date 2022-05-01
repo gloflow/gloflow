@@ -35,9 +35,8 @@ func Test__indexer_core(p_test *testing.T) {
 	fmt.Println("TEST__INDEXER_CORE ==============================================")
 
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-
 	ctx := context.Background()
-	runtime, _ := gf_eth_core.T__get_runtime(p_test)
+	runtime, _ := gf_eth_core.TgetRuntime(p_test)
 
 	
 	// ABI_DEFS

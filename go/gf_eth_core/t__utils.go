@@ -20,13 +20,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_eth_core
 
 import (
+	"os"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-func T__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
-
+func TgetRuntime(pTest *testing.T) (*GF_runtime, *GF_metrics) {
+	
+	//-----------------------
+	// MONGODB_HOST
+	var mongoDBhostPortStr string
+	envMongoDBhostPortStr := os.Getenv("GF_TEST_MONGODB_HOST_PORT")
+	if envMongoDBhostPortStr != "" {
+		mongoDBhostPortStr = envMongoDBhostPortStr
+	} else {
+		mongoDBhostPortStr = "localhost:27017"
+	}
+	
+	//-----------------------
 	// RUNTIME_SYS
 	log_fun     := gf_core.Init_log_fun()
 	runtime_sys := &gf_core.Runtime_sys{
@@ -38,14 +50,14 @@ func T__get_runtime(p_test *testing.T) (*GF_runtime, *GF_metrics) {
 	}
 
 	config := &GF_config{
-		Mongodb_host_str:    "localhost:27017",
+		Mongodb_host_str:    mongoDBhostPortStr,
 		Mongodb_db_name_str: "gf_eth_monitor",
 	}
 
 	// RUNTIME
 	runtime, err := RuntimeGet(config, runtime_sys)
 	if err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 	
 

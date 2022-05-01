@@ -160,7 +160,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	http_err       := http.ListenAndServe(fmt.Sprintf(":%s", port_str), sentry_handler)
 
 	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - ", port_str)
+		msg_str := fmt.Sprintf("cant start listening on port - %s", port_str)
 		p_runtime.Runtime_sys.Log_fun("ERROR", msg_str)
 		p_runtime.Runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
 		

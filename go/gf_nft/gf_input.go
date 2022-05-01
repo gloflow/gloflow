@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,32 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_eth_core
-
-import (
-	"fmt"
-	"testing"
-	"context"
-	"github.com/davecgh/go-spew/spew"
-)
-
-//---------------------------------------------------
-func Test__miners(pTest *testing.T) {
-
-	fmt.Println("TEST__MINERS ==============================================")
 
 
-	ctx := context.Background()
-	runtime, _ := TgetRuntime(pTest)
-
-	// ethermine
-	miner_addr_str := "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8"
-
-	miners_map, gf_err := Eth_miners__db__get_info(miner_addr_str, nil, ctx, runtime)
-	if gf_err != nil {
-		pTest.Fail()
-	}
 
 
-	spew.Dump(miners_map)
-}
+
+package gf_nft

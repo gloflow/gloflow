@@ -25,18 +25,18 @@ import (
 	"testing"
 	"context"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 )
 
 //---------------------------------------------------
-func Test__contract_opcodes(p_test *testing.T) {
+func Test__contract_opcodes(pTest *testing.T) {
 
 	fmt.Println("TEST__CONTRACT_OPCODES ==============================================")
 
-	ctx := context.Background()
-
 	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-
-	runtime, _ := t__get_runtime(p_test)
+	ctx := context.Background()
+	
+	runtime, _ := gf_eth_core.TgetRuntime(pTest)
 
 	//--------------------
 	tx_id_hex_str := "0x62974c8152c87e14880c54007260e0d5fe9d182c2cd22c58797735a9ae88370a"
@@ -47,7 +47,7 @@ func Test__contract_opcodes(p_test *testing.T) {
 		ctx,
 		runtime.Runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	spew.Dump(gf_tx_trace)
@@ -64,7 +64,7 @@ func Test__contract_opcodes(p_test *testing.T) {
 		plugins_info,
 		runtime.Runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	//--------------------

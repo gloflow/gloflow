@@ -29,6 +29,35 @@ services:
 steps:
 
   #-------------------------------
+  # TEST_GO
+  - name: test_go
+    image: glofloworg/gf_builder_go_ubuntu:latest
+
+    volumes:
+      - name: go_cache
+        path: /home/gf/go_cache 
+      
+      - name: go_mod_cache
+        path: /home/gf/go_mod_cache 
+    
+    # ENV
+    environment:
+
+      # cache for the "go" tool
+      GOCACHE: /home/gf/go_cache
+      GOMODCACHE: /home/gf/go_mod_cache
+      
+      GF_TEST_MONGODB_HOST_PORT: mongo
+
+    commands:
+
+      # "mongo" - drone.io mongo service is given the same hostname as the name of the container
+
+      # GF_HOME
+      - cd /home/gf/go/gf_web3_monitor_lib
+      - go test -v
+
+  #-------------------------------
   # BUILD_GO
   - name: build_go
     image: glofloworg/gf_builder_go_ubuntu:latest
@@ -202,19 +231,19 @@ steps:
         - master
 
   #-------------------------------
-  # NOTIFY_COMPLETION
-  - name: notify_completion
-    image: glofloworg/gf_builder_go_ubuntu:latest
-    environment:
-      GF_NOTIFY_COMPLETION_URL:
-        from_secret: gf_os__notify_completion_url
-    commands:
-      # "-u" - run unbuffered for stdout/stderr
-      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
-    when:
-      event:
-        - push
-      branch:
-        - master
+  # # NOTIFY_COMPLETION
+  # - name: notify_completion
+  #   image: glofloworg/gf_builder_go_ubuntu:latest
+  #   environment:
+  #     GF_NOTIFY_COMPLETION_URL:
+  #       from_secret: gf_os__notify_completion_url
+  #   commands:
+  #     # "-u" - run unbuffered for stdout/stderr
+  #     - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
+  #   when:
+  #     event:
+  #       - push
+  #     branch:
+  #       - master
 
   #-------------------------------
