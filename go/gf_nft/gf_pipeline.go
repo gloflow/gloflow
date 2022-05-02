@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft
 
 import (
+	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -41,10 +42,12 @@ func pipelineIndexAddress(pCtx context.Context,
 func pipelineGet(pCtx context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	gfErr := get(pCtx, pRuntimeSys)
+	nft, gfErr := get(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
+
+	fmt.Println(nft)
 	
 	return nil
 }

@@ -21,12 +21,22 @@ package gf_nft
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
+type GFnft struct {
+	Vstr               string             `bson:"v_str"` // schema_version
+	Id                 primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr              gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool        bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
+}
+
+//-------------------------------------------------
 func indexAddress(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 
 
@@ -35,9 +45,31 @@ func indexAddress(pCtx context.Context,
 
 //-------------------------------------------------
 func get(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) (*GFnft, *gf_core.GFerror) {
 
 
+	
+	return nil, nil
+}
 
-	return nil
+//---------------------------------------------------
+func create() *GFnft {
+
+	nft := &GFnft{
+
+	}
+	return nft
+}
+
+//---------------------------------------------------
+func createID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
+	}
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
 }
