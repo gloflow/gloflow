@@ -60,7 +60,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			// INPUT
 
-			txHexStr, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.Runtime_sys)
+			txHexStr, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.RuntimeSys)
 
 			if gfErr != nil {
 				return nil, gfErr
@@ -89,7 +89,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			return dataMap, nil
 		},
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 
 	//---------------------
 	// GET__TX_TRACE_PLOT
@@ -103,7 +103,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			// INPUT
 
-			txHexStr, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.Runtime_sys)
+			txHexStr, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.RuntimeSys)
 
 			if gf_err != nil {
 				return nil, gf_err
@@ -136,7 +136,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			return dataMap, nil
 		},
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 		
 	//---------------------
 	// GET__BLOCK
@@ -155,7 +155,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			block_num_int, gfErr := gf_eth_core.Http__get_arg__block_num(p_resp,
 				p_req,
-				pRuntime.Runtime_sys)
+				pRuntime.RuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -198,7 +198,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 
 			return dataMap, nil
 		},
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 
 	//---------------------
 	// GET__MINER
@@ -206,7 +206,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			// INPUT
-			miner_addr_str, gfErr := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, pRuntime.Runtime_sys)
+			miner_addr_str, gfErr := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, pRuntime.RuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -220,7 +220,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			return data_map, nil
 		},
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 
 	//---------------------
 	// GET__PEERS
@@ -247,7 +247,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			return data_map, nil
 		},
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 
 	//---------------------
 	// GET__HEALTH

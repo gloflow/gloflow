@@ -24,37 +24,32 @@ import (
 	"time"
 	"testing"
 	"net/http"
+	"context"
 	// "github.com/gloflow/gloflow/go/gf_core"
+	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_nft"
 )
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	v := m.Run()
-	os.Exit(v)
-}
 
-//---------------------------------------------------
-func TestAddressNFT(pTest *testing.T) {
-
-
-
-	runtime, _ := gf_eth_core.TgetRuntime(pTest)
-
-
-
+	runtime, _, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		panic(err)
+	}
 
 	// GF_WEB3_MONITOR_SERVICE
-	testPortInt := 2000
+	testWeb3MonitorServiceInt := 2000
 	go func() {
 
 		HTTPmux := http.NewServeMux()
 
 		InitService(HTTPmux,
-			runtime.Runtime_sys)
-		gf_rpc_lib.ServerInitWithMux(testPortInt, HTTPmux)
+			runtime.RuntimeSys)
+		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServiceInt, HTTPmux)
 	}()
 
 	// GF_IDENTITY_SERVICE
@@ -62,8 +57,45 @@ func TestAddressNFT(pTest *testing.T) {
 	go func() {
 
 		gf_identity_lib.TestStartService(testIdentityServicePortInt,
-			runtime.Runtime_sys)
+			runtime.RuntimeSys)
 	}()
 
 	time.Sleep(2*time.Second) // let services startup
+
+	v := m.Run()
+	os.Exit(v)
+}
+
+//---------------------------------------------------
+func TestAddressNFT(pTest *testing.T) {
+
+	runtime, _, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
+
+	testWeb3MonitorServiceInt  := 2000
+	testIdentityServicePortInt := 2001
+	HTTPagent := gorequest.New()
+	ctx       := context.Background()
+
+	// CREATE_AND_LOGIN_NEW_USER
+	gf_identity_lib.TestCreateAndLoginNewUser(pTest,
+		HTTPagent,
+		testIdentityServicePortInt,
+		ctx,
+		runtime.RuntimeSys)
+
+	//--------------------
+	// NFT_INDEX_ADDRESS
+	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
+	chainStr := "eth"
+	gf_nft.TindexAddress(testUserAddressEthStr,
+		chainStr,
+		HTTPagent,
+		testWeb3MonitorServiceInt,
+		pTest)
+
+	//--------------------
+	
 }

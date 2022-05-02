@@ -29,12 +29,12 @@ import (
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
-		"/v1/web3/nft/get",
+		"/v1/web3/nft/index_address",
 	}
 	metricsGroupNameStr := "main"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_nft", handlersEndpointsLst)
@@ -50,7 +50,31 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	}
 
 	//---------------------
-	// ADDRESS_GET
+	// INDEX_ADDRESS
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/index_address",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			if pReq.Method == "POST" {
+
+				gfErr := pipelineIndexAddress(pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+	// GET
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/get",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
@@ -60,6 +84,9 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				if gfErr != nil {
 					return nil, gfErr
 				}
+
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

@@ -25,6 +25,15 @@ import (
 )
 
 //-------------------------------------------------
+func indexAddress(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+
+	return nil
+}
+
+//-------------------------------------------------
 func get(pCtx context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 

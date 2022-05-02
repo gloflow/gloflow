@@ -153,7 +153,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	//-------------
 	port_str := p_runtime.Config.Port_str
 
-	// p_runtime.Runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
+	// p_runtime.RuntimeSys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
 	log.WithFields(log.Fields{"port": port_str,}).Info("STARTING HTTP SERVER")
 
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
@@ -161,8 +161,8 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - %s", port_str)
-		p_runtime.Runtime_sys.Log_fun("ERROR", msg_str)
-		p_runtime.Runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
+		p_runtime.RuntimeSys.Log_fun("ERROR", msg_str)
+		p_runtime.RuntimeSys.Log_fun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

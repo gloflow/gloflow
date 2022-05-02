@@ -25,6 +25,19 @@ import (
 )
 
 //-------------------------------------------------
+func pipelineIndexAddress(pCtx context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+
+
+	gfErr := indexAddress(pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
+//-------------------------------------------------
 func pipelineGet(pCtx context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
