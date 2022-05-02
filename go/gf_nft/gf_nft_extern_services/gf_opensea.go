@@ -21,31 +21,38 @@ package gf_nft_extern_services
 
 import (
 	"github.com/mitchellh/mapstructure"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
 type GFnftOpenSea struct {
 
-	OpenSeaIDstr    string                    `mapstructure:"id"`
-	NameStr         string                    `mapstructure:"name"`
-	DescriptionStr  string                    `mapstructure:"description"`
-	ExternalLinkStr string                    `mapstructure:"external_link"`
-	AssetContract   GFnftOpenSeaAssetContract `mapstructure:"asser_contract"`
-	OwnerStr        GFnftOpenSeaOwner         `mapstructure:"owner"`
-	PermaLinkStr    string                    `mapstructure:"permalink"`
+	Vstr               string             `bson:"v_str"` // schema_version
+	Id                 primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr              gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool        bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
+	
+	OpenSeaIDstr    string                    `bson:"token_id_str"       mapstructure:"id"`
+	NameStr         string                    `bson:"name_str"           mapstructure:"name"`
+	DescriptionStr  string                    `bson:"description_str"    mapstructure:"description"`
+	ExternalLinkStr string                    `bson:"external_link_str"  mapstructure:"external_link"`
+	AssetContract   GFnftOpenSeaAssetContract `bson:"asset_contract_map" mapstructure:"asser_contract"`
+	OwnerStr        GFnftOpenSeaOwner         `bson:"owner_str"          mapstructure:"owner"`
+	PermaLinkStr    string                    `bson:"permalink_str"      mapstructure:"permalink"`
 
-	TokenIDstr     string `mapstructure:"token_id"`
-	SalesNumberInt int    `mapstructure:"num_sales"`
+	TokenIDstr     string `bson:"token_id_str"     mapstructure:"token_id"`
+	SalesNumberInt int    `bson:"sales_number_int" mapstructure:"num_sales"`
 
 	// IMAGE
-	ImageURLstr          string `mapstructure:"image_url"`
-	ImagePreviewURLstr   string `mapstructure:"image_preview_url"`
-	ImageThumbnailURLstr string `mapstructure:"image_thumbnail_url"`
-	ImageOriginalURLstr  string `mapstructure:"image_original_url"`
-	AnimationURLstr      string `mapstructure:"animation_url"`
+	ImageURLstr          string `bson:"image_url_str"           mapstructure:"image_url"`
+	ImagePreviewURLstr   string `bson:"image_preview_url_str"   mapstructure:"image_preview_url"`
+	ImageThumbnailURLstr string `bson:"image_thumbnail_url_str" mapstructure:"image_thumbnail_url"`
+	ImageOriginalURLstr  string `bson:"image_original_url_str"  mapstructure:"image_original_url"`
+	AnimationURLstr      string `bson:"animation_url_str"       mapstructure:"animation_url"`
 
-	Collection GFnftOpenSeaCollection 
+	Collection GFnftOpenSeaCollection `bson:"collection_map"`
 
 }
 
@@ -71,7 +78,7 @@ type GFnftOpenSeaCollection struct {
 }
 
 //-------------------------------------------------
-func GetAllNFTsForAddress(pAddressStr string,
+func OpenSeaGetAllNFTsForAddress(pAddressStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) ([]GFnftOpenSea, *gf_core.GFerror) {
 
@@ -82,7 +89,7 @@ func GetAllNFTsForAddress(pAddressStr string,
 	offsetInt := 0
 	limitInt := 50
 	for ;; {
-		nftsOpenSeaParsedPageLst, gfErr := QueryOpenSeaByAddress(pAddressStr,
+		nftsOpenSeaParsedPageLst, gfErr := OpenSeaQueryByAddress(pAddressStr,
 			offsetInt,
 			limitInt,
 			pCtx,
@@ -103,7 +110,7 @@ func GetAllNFTsForAddress(pAddressStr string,
 }
 
 //-------------------------------------------------
-func QueryOpenSeaByAddress(pAddressStr string,
+func OpenSeaQueryByAddress(pAddressStr string,
 	pOffsetInt  int,
 	pLimitInt   int,
 	pCtx        context.Context,
@@ -171,7 +178,7 @@ func QueryOpenSeaByAddress(pAddressStr string,
 
 
 
-
+		// load returned json map into a struct
 		var nftOpenSea GFnftOpenSea
 		err := mapstructure.Decode(nftMap, &nftOpenSea)
 		if err != nil {
@@ -185,6 +192,18 @@ func QueryOpenSeaByAddress(pAddressStr string,
 			return nil, gfErr
 		}
 
+		
+
+
+		// standard props
+		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
+		idStr   := createID(string(nftOpenSea.OpenSeaIDstr), creationTimeUNIXf)
+		nftOpenSea.Vstr              = "0" 
+		nftOpenSea.IDstr             = idStr
+		nftOpenSea.DeletedBool       = false 
+		nftOpenSea.CreationUNIXtimeF = creationTimeUNIXf
+	
+	
 		nftsOpenSeaParsedPageLst = append(nftsOpenSeaParsedPageLst, nftOpenSea)
 	}
 
@@ -194,4 +213,17 @@ func QueryOpenSeaByAddress(pAddressStr string,
 
 
 	return nftsOpenSeaParsedPageLst, nil
+}
+
+//---------------------------------------------------
+func createID(pUserIdentifierStr string,
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
+
+	fieldsForIDlst := []string{
+		pUserIdentifierStr,
+	}
+	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+		pCreationUNIXtimeF)
+
+	return gfIDstr
 }

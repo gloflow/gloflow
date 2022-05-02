@@ -32,20 +32,41 @@ type GFnft struct {
 	IDstr              gf_core.GF_ID      `bson:"id_str"`
 	DeletedBool        bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
+
+
+
+	TokenIDstr         string `bson:"token_id_str"`
+	ContractAddressStr string `bson:"contract_address_str"`
+	ContractNameStr    string `bson:"contract_name_str"`
+	CollectionNameStr  string `bson:"collection_name_str"`
+
+	OpenSeaIDstr       string `bson:"open_sea_nft_id_str"`
 }
 
 //-------------------------------------------------
-func indexAddress(pCtx context.Context,
+func indexAddress(pAddressStr string,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
+
+
+	// OPEN_SEA
+	nftsOpenSeaParsedLst, gfErr := OpenSeaGetAllNFTsForAddress(pAddressStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr := nil {
+		return gfErr
+	}
 
 
 	return nil
 }
 
 //-------------------------------------------------
-func get(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFnft, *gf_core.GFerror) {
+func get(pTokenIDstr string,
+	pCollectionNameStr string,
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.Runtime_sys) (*GFnft, *gf_core.GFerror) {
 
 
 	
