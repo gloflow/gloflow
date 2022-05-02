@@ -242,7 +242,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 		gf_block, gf_err := Get_block__from_worker_inspector(p_block_uint,
 			host_port_str,
 			ctx,
-			p_runtime.Runtime_sys)
+			p_runtime.RuntimeSys)
 
 		if gf_err != nil {
 			gf_errs_from_workers_map[host_port_str] = gf_err

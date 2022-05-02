@@ -21,12 +21,11 @@ package gf_eth_core
 
 import (
 	"os"
-	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-func TgetRuntime(pTest *testing.T) (*GF_runtime, *GF_metrics) {
+func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	
 	//-----------------------
 	// MONGODB_HOST
@@ -40,24 +39,28 @@ func TgetRuntime(pTest *testing.T) (*GF_runtime, *GF_metrics) {
 	
 	//-----------------------
 	// RUNTIME_SYS
-	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
+	log_fun    := gf_core.Init_log_fun()
+	runtimeSys := &gf_core.Runtime_sys{
+		Service_name_str: "gf_web3_monitor_test",
 		Log_fun:          log_fun,
 		
 		// SENTRY - enable it for error reporting
 		Errors_send_to_sentry_bool: true,
 	}
 
+	// VALIDATOR
+	validator := gf_core.Validate__init()
+	runtimeSys.Validator = validator
+
 	config := &GF_config{
 		Mongodb_host_str:    mongoDBhostPortStr,
-		Mongodb_db_name_str: "gf_eth_monitor",
+		Mongodb_db_name_str: "gf_web3_monitor_test",
 	}
 
 	// RUNTIME
-	runtime, err := RuntimeGet(config, runtime_sys)
+	runtime, err := RuntimeGet(config, runtimeSys)
 	if err != nil {
-		pTest.Fail()
+		return nil, nil, err
 	}
 	
 
@@ -66,5 +69,5 @@ func TgetRuntime(pTest *testing.T) (*GF_runtime, *GF_metrics) {
 	Sentry__init(sentry_endpoint_uri_str)
 
 
-	return runtime, nil
+	return runtime, nil, nil
 }

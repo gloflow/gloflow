@@ -32,7 +32,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 	pRuntime *gf_eth_core.GF_runtime) (int64, *gf_core.GFerror) {
 
 	collNameStr := "gf_eth_blocks"
-	coll := pRuntime.Runtime_sys.Mongo_db.Collection(collNameStr)
+	coll := pRuntime.RuntimeSys.Mongo_db.Collection(collNameStr)
 
 	ctx := context.Background()
 	
@@ -45,7 +45,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 		gfErr := gf_core.Mongo__handle_error("failed to DB count Blocks",
 			"mongodb_count_error",
 			map[string]interface{}{},
-			err, "gf_eth_monitor_core", pRuntime.Runtime_sys)
+			err, "gf_eth_monitor_core", pRuntime.RuntimeSys)
 		return 0, gfErr
 	}
 
@@ -76,7 +76,7 @@ func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 			"caller_err_msg_str": "failed to bulk insert Eth blocks (GF_eth__block__int) into DB",
 		},
 		pCtx,
-		pRuntime.Runtime_sys)
+		pRuntime.RuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

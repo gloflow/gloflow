@@ -79,7 +79,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 		queue_info, gf_err := gf_aws.SQS_get_queue_info(queue_name_str,
 			p_aws_client,
 			p_ctx,
-			p_runtime.Runtime_sys)
+			p_runtime.RuntimeSys)
 		if gf_err != nil {
 			complete_job_with_error_fn(gf_err)
 			return	
@@ -92,7 +92,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 			msg_map, gf_err := gf_aws.SQS_msg_pull(queue_info,
 				p_aws_client,
 				p_ctx,
-				p_runtime.Runtime_sys)
+				p_runtime.RuntimeSys)
 
 			if gf_err != nil {
 
@@ -137,7 +137,7 @@ func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 	queue, gf_err := gf_aws.SQS_queue_create(queue_name_str,
 		p_sqs_client,
 		p_ctx,
-		p_runtime.Runtime_sys)
+		p_runtime.RuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

@@ -42,7 +42,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 	// RUNTIME_SYS
 	log_fun     := gf_core.Init_log_fun()
 	runtime_sys := &gf_core.Runtime_sys{
-		Service_name_str: "gf_eth_monitor_core__tests",
+		Service_name_str: "gf_web3_monitor_core__tests",
 		Log_fun:          log_fun,
 		
 		// SENTRY - enable it for error reporting
@@ -51,7 +51,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 
 	config := &GF_config{
 		Mongodb_host_str:    "localhost:27017",
-		Mongodb_db_name_str: "gf_eth_monitor",
+		Mongodb_db_name_str: "gf_web3_monitor",
 	}
 	runtime, err := RuntimeGet(config, runtime_sys)
 	if err != nil {
@@ -61,7 +61,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 	//--------------------
 	// DB_INSERT
 	abis_map       := t__get_abis()
-	coll_name_str := "gf_eth_meta__contracts_abi"
+	coll_name_str := "gf_web3_meta__contracts_abi"
 	for _, gf_abi := range abis_map {
 		gf_err := gf_core.Mongo__insert(gf_abi, coll_name_str,
 			map[string]interface{}{
@@ -98,7 +98,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 		p_test.Fail()
 	}
 
-
+	
 
 	value_int := decoded_logs_lst[0]["value"].(*big.Int).Uint64()
 	assert.EqualValues(p_test, value_int, 445550000, "the decoded event Eth log value should be equal to 445550000")

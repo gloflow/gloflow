@@ -40,8 +40,10 @@ func Test__contract(pTest *testing.T) {
 	// host_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST")
 	// worker_inspector__port_int := 9000
 	ctx := context.Background()
-	runtime, metrics := gf_eth_core.TgetRuntime(pTest)
-
+	runtime, metrics, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
 
 
 	abis_map     := t__get_abis()

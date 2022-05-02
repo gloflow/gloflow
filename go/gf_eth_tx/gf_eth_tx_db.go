@@ -33,7 +33,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 
 	//-------------------------------------------------
 	count_fn := func(p_collNameStr string) (uint64, *gf_core.GFerror) {
-		coll := p_runtime.Runtime_sys.Mongo_db.Collection(p_collNameStr)
+		coll := p_runtime.RuntimeSys.Mongo_db.Collection(p_collNameStr)
 
 		ctx := context.Background()
 		
@@ -46,7 +46,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 			gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
 				"mongodb_count_error",
 				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+				err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 			return 0, gf_err
 		}
 		return uint64(count_int), nil
@@ -78,7 +78,7 @@ func DB__get(pTxHashStr string,
 	q := bson.M{"hash_str": pTxHashStr, }
 
 	var gf_tx GF_eth__tx
-	err := p_runtime.Runtime_sys.Mongo_db.Collection(collNameStr).FindOne(pCtx, q).Decode(&gf_tx)
+	err := p_runtime.RuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, q).Decode(&gf_tx)
 	if err != nil {
 
 
@@ -90,7 +90,7 @@ func DB__get(pTxHashStr string,
 		gf_err := gf_core.Mongo__handle_error("failed to find Transaction with gives hash in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"tx_hash_str": pTxHashStr,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 
@@ -121,7 +121,7 @@ func DB__write_bulk(p_txs_lst []*GF_eth__tx,
 			"txs_hashes_lst":     txs_hashes_lst,
 			"caller_err_msg_str": "failed to bulk insert Eth txs (GF_eth__tx) into DB",
 		},
-		pCtx, p_runtime.Runtime_sys)
+		pCtx, p_runtime.RuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}

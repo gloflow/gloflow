@@ -34,14 +34,16 @@ import (
 )
 
 //---------------------------------------------------
-func Test__blocks(p_test *testing.T) {
+func Test__blocks(pTest *testing.T) {
 
 	fmt.Println("TEST__BLOCKS ==============================================")
 	
-	ctx                := context.Background()
-	host_port_str      := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-	mongoDBhostPortStr := "localhost:27017"
-	runtime, metrics   := gf_eth_core.TgetRuntime(mongoDBhostPortStr, p_test)
+	ctx           := context.Background()
+	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
+	runtime, metrics, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
 
 	//---------------------
 	// INDEX_MULTIPLE_BLOCKS
@@ -56,7 +58,7 @@ func Test__blocks(p_test *testing.T) {
 	// ABI_DEFS
 	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, nil, runtime)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 
 
@@ -71,7 +73,7 @@ func Test__blocks(p_test *testing.T) {
 			metrics,
 			runtime)
 		if gf_err != nil {
-			p_test.Fail()
+			pTest.FailNow()
 		}
 	}
 
@@ -87,16 +89,13 @@ func Test__blocks(p_test *testing.T) {
 	for tx_hash_str, block_num_int := range txs__to_test_map {
 		gf_tx, gf_err := gf_eth_tx.DB__get(tx_hash_str, ctx, metrics, runtime)
 		if gf_err != nil {
-			p_test.Fail()
+			pTest.FailNow()
 		}
-
 
 		spew.Dump(gf_tx)
 		
-
-		assert.EqualValues(p_test, gf_tx.Block_num_int, block_num_int,
+		assert.EqualValues(pTest, gf_tx.Block_num_int, block_num_int,
 			"test TX fetched from DB doesnt have the same block number is the specified test block that contains it")
-		
 	}
 
 
@@ -105,7 +104,7 @@ func Test__blocks(p_test *testing.T) {
 	fmt.Println("+++++++++++++++++++++++++++++++")
 	db_coll_stats, gf_err := gf_stats_lib.Db_stats__coll("gf_eth_txs_traces", ctx, runtime.Runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 	spew.Dump(db_coll_stats)
 

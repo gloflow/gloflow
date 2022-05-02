@@ -30,19 +30,21 @@ import (
 )
 
 //---------------------------------------------------
-func Test__indexer_core(p_test *testing.T) {
+func Test__indexer_core(pTest *testing.T) {
 
 	fmt.Println("TEST__INDEXER_CORE ==============================================")
 
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 	ctx := context.Background()
-	runtime, _ := gf_eth_core.TgetRuntime(p_test)
-
+	runtime, _, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
 	
 	// ABI_DEFS
 	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, nil, runtime)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 
 
@@ -63,6 +65,6 @@ func Test__indexer_core(p_test *testing.T) {
 		runtime)
 
 	if len(gf_errs_lst) > 0 {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 }

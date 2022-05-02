@@ -83,7 +83,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 			return data_updates_ch, data_err_ch, data_complete_ch, nil
 		},
 		true, // p_store_run_bool
-		p_runtime.Runtime_sys)
+		p_runtime.RuntimeSys)
 
 	//---------------------
 	// GET__BLOCK_INDEX
@@ -98,7 +98,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 			//------------------
 			// INPUT
 
-			block_start_uint, block_end_uint, gf_err := gf_eth_core.Http__get_arg__block_range(p_resp, p_req, p_runtime.Runtime_sys)
+			block_start_uint, block_end_uint, gf_err := gf_eth_core.Http__get_arg__block_range(p_resp, p_req, p_runtime.RuntimeSys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -149,7 +149,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 
 			return data_map, nil
 		},
-		p_runtime.Runtime_sys)
+		p_runtime.RuntimeSys)
 
 	//---------------------
 }

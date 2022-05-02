@@ -111,6 +111,9 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				if gfErr != nil {
 					return nil, gfErr
 				}
+
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

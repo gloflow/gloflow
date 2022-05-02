@@ -74,7 +74,7 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 			map[string]interface{}{
 				"abi_type_str": p_abi_type_str,
 			},
-			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.Runtime_sys)
+			nil, "gf_eth_monitor_core", error_defs_map, p_runtime.RuntimeSys)
 		return nil, gf_err
 	}*/
 
@@ -93,7 +93,7 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 				"abi_type_str": p_gf_abi.Type_str,
 				"abi_def_str":  abi_def_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 
@@ -116,7 +116,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 		gf_err := gf_core.Error__create_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
 			"eth_contract__not_supported_type",
 			map[string]interface{}{"type_str": p_abi_type_str,},
-			nil, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
+			nil, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 
@@ -127,7 +127,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 
 	q := bson.M{"type_str": p_abi_type_str, }
 
-	cur, err := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
+	cur, err := p_runtime.RuntimeSys.Mongo_db.Collection(coll_name_str).Find(p_ctx, q)
 	if err != nil {
 
 		// METRICS
@@ -138,7 +138,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to find Contract ABI with given type in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"type_str": p_abi_type_str,},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 	defer cur.Close(p_ctx)
@@ -153,7 +153,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get contract ABIs",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+				err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 
 			return nil, gf_err
 		}

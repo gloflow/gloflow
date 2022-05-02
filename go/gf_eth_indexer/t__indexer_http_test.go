@@ -31,7 +31,7 @@ import (
 )
 
 //---------------------------------------------------
-func Test__indexer_http(p_test *testing.T) {
+func Test__indexer_http(pTest *testing.T) {
 
 	fmt.Println("TEST__INDEXER_HTTP ==============================================")
 	
@@ -41,9 +41,11 @@ func Test__indexer_http(p_test *testing.T) {
 	end_block_int       := uint64(13_414_402)
 	test_blocks_num_int := end_block_int - start_block_int
 	worker__host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
-	ctx        := context.Background()
-	runtime, _ := gf_eth_core.TgetRuntime(p_test)
-
+	ctx             := context.Background()
+	runtime, _, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
 
 	port_int := 3000
 	host_port_str := fmt.Sprintf("localhost:%d", port_int)
@@ -58,7 +60,7 @@ func Test__indexer_http(p_test *testing.T) {
 			nil,
 			runtime)
 		if gf_err != nil {
-			p_test.Fail()
+			pTest.FailNow()
 			return
 		}
 
@@ -84,7 +86,7 @@ func Test__indexer_http(p_test *testing.T) {
 		ctx,
 		runtime.Runtime_sys)
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 
 	//---------------------
@@ -98,7 +100,7 @@ func Test__indexer_http(p_test *testing.T) {
 		runtime.Runtime_sys)
 
 	if gf_err != nil {
-		p_test.Fail()
+		pTest.FailNow()
 	}
 
 	received_job_updates_num_int := uint64(0)
@@ -113,7 +115,6 @@ func Test__indexer_http(p_test *testing.T) {
 
 				// end test
 				return
-
 			} 
 		}
 	}

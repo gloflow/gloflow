@@ -33,16 +33,19 @@ func Test__miners(pTest *testing.T) {
 
 
 	ctx := context.Background()
-	runtime, _ := TgetRuntime(pTest)
-
+	runtime, _, err := TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
+	
 	// ethermine
-	miner_addr_str := "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8"
+	minerAddrStr := "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8"
 
-	miners_map, gf_err := Eth_miners__db__get_info(miner_addr_str, nil, ctx, runtime)
-	if gf_err != nil {
+	minersMap, gfErr := Eth_miners__db__get_info(minerAddrStr, nil, ctx, runtime)
+	if gfErr != nil {
 		pTest.Fail()
 	}
 
 
-	spew.Dump(miners_map)
+	spew.Dump(minersMap)
 }

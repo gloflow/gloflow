@@ -29,9 +29,9 @@ import (
 
 //-------------------------------------------------------------
 type GF_runtime struct {
-	Config      *GF_config
-	Py_plugins  *GF_py_plugins
-	Runtime_sys *gf_core.Runtime_sys
+	Config     *GF_config
+	Py_plugins *GF_py_plugins
+	RuntimeSys *gf_core.Runtime_sys
 	// Influxdb_client *influxdb2.Client
 }
 
@@ -134,10 +134,10 @@ func RuntimeGet(p_config *GF_config,
 	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
-		Config:          p_config,
+		Config:     p_config,
+		Py_plugins: plugins_info,
+		RuntimeSys: p_runtime_sys,
 		// Influxdb_client: influxdb_client,
-		Py_plugins:      plugins_info,
-		Runtime_sys:     p_runtime_sys,
 	}
 
 	//--------------------

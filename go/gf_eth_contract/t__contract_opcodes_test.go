@@ -36,8 +36,11 @@ func Test__contract_opcodes(pTest *testing.T) {
 	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 	ctx := context.Background()
 	
-	runtime, _ := gf_eth_core.TgetRuntime(pTest)
-
+	runtime, _, err := gf_eth_core.TgetRuntime()
+	if err != nil {
+		pTest.FailNow()
+	}
+	
 	//--------------------
 	tx_id_hex_str := "0x62974c8152c87e14880c54007260e0d5fe9d182c2cd22c58797735a9ae88370a"
 

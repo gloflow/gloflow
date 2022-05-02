@@ -121,7 +121,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,
 			},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 
@@ -136,7 +136,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
 		return nil, gf_err
 	}
 

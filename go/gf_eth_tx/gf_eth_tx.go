@@ -482,7 +482,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 					"address_str":  l.Address_str,
 					"data_hex_str": l.Data_hex_str,
 				},
-				err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.Runtime_sys)
+				err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
 			return nil, gf_err
 		}
 		

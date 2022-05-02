@@ -80,7 +80,7 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 		gf_tx_trace, gf_err := Trace__get_from_worker_inspector(tx_hash_str,
 			p_worker_inspector_host_port_str,
 			p_ctx,
-			p_runtime.Runtime_sys)
+			p_runtime.RuntimeSys)
 
 		if gf_err != nil {
 			gf_errs__get_tx_trace_lst = append(gf_errs__get_tx_trace_lst, gf_err)
@@ -128,7 +128,7 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 			"txs_hashes_lst":     txs_hashes_lst,
 			"caller_err_msg_str": "failed to bulk insert Eth txs_traces into DB",
 		},
-		p_ctx, p_runtime.Runtime_sys)
+		p_ctx, p_runtime.RuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -155,7 +155,7 @@ func Trace__plot(p_tx_id_hex_str string,
 	gf_tx_trace, gf_err := Trace__get_from_worker_inspector(p_tx_id_hex_str,
 		host_port_str,
 		p_ctx,
-		p_runtime.Runtime_sys)
+		p_runtime.RuntimeSys)
 
 	end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -176,7 +176,7 @@ func Trace__plot(p_tx_id_hex_str string,
 	plot_svg_str, gf_err := py__run_plugin__plot_tx_trace(p_tx_id_hex_str,
 		gf_tx_trace,
 		p_py_plugins,
-		p_runtime.Runtime_sys)
+		p_runtime.RuntimeSys)
 	end_time__unix_f = float64(time.Now().UnixNano())/1000000000.0
 	
 	// METRICS
@@ -199,7 +199,7 @@ func Trace__plot(p_tx_id_hex_str string,
 func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.GF_error) {
+	p_RuntimeSys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.GF_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
 	p_host_port_str,
@@ -216,7 +216,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
 		
 	// GF_RPC_CLIENT
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
+	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_RuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -291,7 +291,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 		gf_err := gf_core.Error__create("failed to decode Tx_trace struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"tx_hash_str": p_tx_hash_str, },
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_monitor_core", p_RuntimeSys)
 		return nil, gf_err
 	}*/
 	gf_tx_trace.DB_id                 = db_id_hex_str // obj_id_str
@@ -308,7 +308,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
+	p_RuntimeSys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
 
 	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
 	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 
@@ -330,7 +330,7 @@ func Trace__get(p_tx_hash_str string,
 			"tx_hash_str": p_tx_hash_str,
 		},
 		p_ctx,
-		p_runtime_sys)
+		p_RuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -342,7 +342,7 @@ func Trace__get(p_tx_hash_str string,
 // metrics that are continuously calculated
 
 func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 	
 	ctx := context.Background()
 	coll_name_str := "gf_eth_txs_traces"
@@ -350,7 +350,7 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 	//---------------------
 	// COLL_EXISTS_CHECK - if collection doesnt exist (yet) in the DB then dont
 	//                     begin collection metrics on it (it will cause errors).
-	coll_exists_bool, gf_err := gf_core.Mongo__coll_exists(coll_name_str, ctx, p_runtime.Runtime_sys)
+	coll_exists_bool, gf_err := gf_core.Mongo__coll_exists(coll_name_str, ctx, p_runtime.RuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -371,7 +371,7 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 			// GET_BLOCKS_COUNTS
 			// blocks_count_int, gf_err := Eth_tx_trace__db__get_count(p_metrics, p_runtime)
 
-			db_coll_stats, gf_err := gf_stats_lib.Db_stats__coll("gf_eth_txs_traces", ctx, p_runtime.Runtime_sys)
+			db_coll_stats, gf_err := gf_stats_lib.Db_stats__coll("gf_eth_txs_traces", ctx, p_runtime.RuntimeSys)
 			blocks_count_int := db_coll_stats.Docs_count_int
 			
 			if gf_err != nil {
@@ -391,10 +391,10 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 
 /*//-------------------------------------------------
 func Eth_tx_trace__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) (int64, *gf_core.GF_error) {
+	p_runtime *GF_runtime) (int64, *gf_core.GFerror) {
 
 	coll_name_str := "gf_eth_txs_traces"
-	coll := p_runtime.Runtime_sys.Mongo_db.Collection(coll_name_str)
+	coll := p_runtime.RuntimeSys.Mongo_db.Collection(coll_name_str)
 
 	ctx := context.Background()
 	
@@ -407,7 +407,7 @@ func Eth_tx_trace__db__get_count(p_metrics *GF_metrics,
 		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions Trace",
 			"mongodb_count_error",
 			map[string]interface{}{},
-			err, "gf_eth_monitor_core", p_runtime.Runtime_sys)
+			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
 		return 0, gf_err
 	}
 
