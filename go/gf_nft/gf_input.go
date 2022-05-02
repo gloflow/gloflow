@@ -19,7 +19,71 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_nft
 
+import (
+	"net/http"
+	"context"
+	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+)
+
 //-------------------------------------------------
+// INDEX_ADDRESS
+func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
+	pReq        *http.Request,
+	pResp       http.ResponseWriter,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFindexAddressInput, *gf_core.GFerror) {
 
+	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+	var addressStr string
+	if valStr, ok := inputMap["address_str"]; ok {
+		addressStr = valStr.(string)
+	}
 
+	var chainStr string
+	if valStr, ok := inputMap["chain_str"]; ok {
+		chainStr = valStr.(string)
+	}
 
+	input := &GFindexAddressInput{
+		UserIDstr:  pUserIDstr,
+		AddressStr: addressStr,
+		ChainStr:   chainStr,
+	}
+	return input, nil
+}
+
+//-------------------------------------------------
+// GET
+func httpInputForGet(pUserIDstr gf_core.GF_ID,
+	pReq        *http.Request,
+	pResp       http.ResponseWriter,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFgetInput, *gf_core.GFerror) {
+
+	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+	
+	var tokenIDstr string
+	if valStr, ok := inputMap["token_id_str"]; ok {
+		tokenIDstr = valStr.(string)
+	}
+
+	var collectionNameStr string
+	if valStr, ok := inputMap["collection_name_str"]; ok {
+		collectionNameStr = valStr.(string)
+	}
+	
+	input := &GFgetInput{
+		UserIDstr:         pUserIDstr,
+		TokenIDstr:        tokenIDstr,
+		CollectionNameStr: collectionNameStr,
+	}
+	return input, nil
+}

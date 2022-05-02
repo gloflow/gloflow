@@ -20,14 +20,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft_extern_services
 
 import (
+	"fmt"
+	"context"
+	"strings"
+	"time"
+	"encoding/json"
 	"github.com/mitchellh/mapstructure"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 type GFnftOpenSea struct {
-
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
 	IDstr              gf_core.GF_ID      `bson:"id_str"`
@@ -95,7 +101,7 @@ func OpenSeaGetAllNFTsForAddress(pAddressStr string,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 		nftsOpenSeaParsedLst = append(nftsOpenSeaParsedLst, nftsOpenSeaParsedPageLst...)
@@ -116,6 +122,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) ([]GFnftOpenSea, *gf_core.GFerror) {
 
+	HTTPagent := gorequest.New()
 
 	qsMap := map[string]string{
 		"owner":           pAddressStr,
@@ -127,15 +134,9 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	for k, v := range qsMap {
 		qsLst = append(qsLst, fmt.Sprintf("%s=%s", k, v))
 	}
-	qsStr   := strings.Join(qsLst, "&")
-	urlStr  := fmt.Sprintf("https://api.opensea.io/api/v1/assets?%s", qsStr)
-	dataMap := map[string]string{
-		"user_name_str": pTestUserNameStr,
-		"pass_str":      pTestUserPassStr,
-		"email_str":     pTestEmailStr,
-	}
-	dataBytesLst, _ := json.Marshal(dataMap)
-	_, bodyStr, errs := pHTTPagent.Get(urlStr).End()
+	qsStr  := strings.Join(qsLst, "&")
+	urlStr := fmt.Sprintf("https://api.opensea.io/api/v1/assets?%s", qsStr)
+	_, bodyStr, errs := HTTPagent.Get(urlStr).End()
 
 	spew.Dump(bodyStr)
 
@@ -149,7 +150,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 				"url_str":     urlStr,
 			},
 			errs[0], "gf_nft_extern_services", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 
 	bodyMap := map[string]interface{}{}
@@ -163,7 +164,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 				"url_str":     urlStr,
 			},
 			err, "gf_nft_extern_services", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 
 	spew.Dump(bodyMap)

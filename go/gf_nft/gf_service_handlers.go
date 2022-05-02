@@ -24,7 +24,7 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	// "github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -55,7 +55,20 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
 
-				gfErr := pipelineIndexAddress(pCtx,
+				//---------------------
+				// INPUT
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				input, gfErr := httpInputForIndexAddress(userIDstr, pReq, pResp,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+				gfErr = pipelineIndexAddress(input,
+					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -79,7 +92,21 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 			if pReq.Method == "POST" {
 
-				gfErr := pipelineGet(pCtx,
+				//---------------------
+				// INPUT
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				input, gfErr := httpInputForGet(userIDstr, pReq, pResp,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				gfErr = pipelineGet(input,
+					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr

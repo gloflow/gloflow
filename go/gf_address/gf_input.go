@@ -31,7 +31,7 @@ func httpIputForAdd(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFaddInput, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.Runtime_sys) (*GFaddInput, *gf_core.GFerror) {
 
 
 	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)

@@ -26,11 +26,25 @@ import (
 )
 
 //-------------------------------------------------
-func pipelineIndexAddress(pCtx context.Context,
+type GFindexAddressInput struct {
+	UserIDstr  gf_core.GF_ID
+	AddressStr string
+	ChainStr   string
+}
+
+type GFgetInput struct {
+	UserIDstr         gf_core.GF_ID
+	TokenIDstr        string
+	CollectionNameStr string
+}
+
+//-------------------------------------------------
+func pipelineIndexAddress(pInput *GFindexAddressInput,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
-	gfErr := indexAddress(pCtx, pRuntimeSys)
+	gfErr := indexAddress(pInput.AddressStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -39,10 +53,13 @@ func pipelineIndexAddress(pCtx context.Context,
 }
 
 //-------------------------------------------------
-func pipelineGet(pCtx context.Context,
+func pipelineGet(pInput *GFgetInput,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
-	nft, gfErr := get(pCtx, pRuntimeSys)
+	nft, gfErr := get(pInput.TokenIDstr,
+		pInput.CollectionNameStr,
+		pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft
 
 import (
+	"fmt"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_nft/gf_nft_extern_services"
 )
 
 //-------------------------------------------------
@@ -51,12 +53,16 @@ func indexAddress(pAddressStr string,
 
 
 	// OPEN_SEA
-	nftsOpenSeaParsedLst, gfErr := OpenSeaGetAllNFTsForAddress(pAddressStr,
+	nftsOpenSeaParsedLst, gfErr := gf_nft_extern_services.OpenSeaGetAllNFTsForAddress(pAddressStr,
 		pCtx,
 		pRuntimeSys)
-	if gfErr := nil {
+	if gfErr != nil {
 		return gfErr
 	}
+
+
+
+	fmt.Println(nftsOpenSeaParsedLst)
 
 
 	return nil
