@@ -39,6 +39,7 @@ import (
 
 //-------------------------------------------------
 func InitService(pHTTPmux *http.ServeMux,
+	pConfig     gf_eth_core.GF_config,
 	pRuntimeSys *gf_core.Runtime_sys) {
 
 	//-------------
@@ -52,6 +53,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// NFT
 	gfErr = gf_nft.InitHandlers(pHTTPmux,
+		pConfig,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)

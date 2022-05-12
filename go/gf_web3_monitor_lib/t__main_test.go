@@ -36,20 +36,25 @@ import (
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
+	
 	runtime, _, err := gf_eth_core.TgetRuntime()
 	if err != nil {
 		panic(err)
 	}
 
 	// GF_WEB3_MONITOR_SERVICE
-	testWeb3MonitorServiceInt := 2000
+	testWeb3MonitorServicePortInt := 2000
 	go func() {
 
 		HTTPmux := http.NewServeMux()
 
+		config := &gf_eth_core.GF_config{
+			AlchemyAPIkeyStr: os.Getenv("GF_TEST_ALCHEMY_API_KEY"),
+		}
 		InitService(HTTPmux,
 			runtime.RuntimeSys)
-		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServiceInt, HTTPmux)
+			
+		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)
 	}()
 
 	// GF_IDENTITY_SERVICE

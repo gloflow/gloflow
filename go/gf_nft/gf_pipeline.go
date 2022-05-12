@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 )
 
 //-------------------------------------------------
@@ -40,11 +41,14 @@ type GFgetInput struct {
 
 //-------------------------------------------------
 func pipelineIndexAddress(pInput *GFindexAddressInput,
+	pConfig     gf_eth_core.GF_config,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
-	gfErr := indexAddress(pInput.AddressStr, pCtx, pRuntimeSys)
+	gfErr := indexAddress(pInput.AddressStr,
+		"alchemy",
+		pConfig, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

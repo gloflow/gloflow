@@ -24,11 +24,13 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
+	pConfig     gf_eth_core.GF_config,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//---------------------
@@ -68,6 +70,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				gfErr = pipelineIndexAddress(input,
+					pConfig,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

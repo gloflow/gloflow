@@ -52,6 +52,15 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	validator := gf_core.Validate__init()
 	runtimeSys.Validator = validator
 
+	// HTTP_PROXY
+	// if traffic should be routed through a http proxy
+	var httpProxyURIstr string
+	envHTTPproxyURIstr := os.Getenv("GF_TEST_HTTP_PROXY_URI")
+	if envHTTPproxyURIstr != "" {
+		httpProxyURIstr = envHTTPproxyURIstr
+	}
+	runtimeSys.HTTPproxyServerURIstr = httpProxyURIstr
+
 	config := &GF_config{
 		Mongodb_host_str:    mongoDBhostPortStr,
 		Mongodb_db_name_str: "gf_web3_monitor_test",

@@ -35,34 +35,6 @@ type GF_runtime struct {
 	// Influxdb_client *influxdb2.Client
 }
 
-//-------------------------------------------------
-func Sentry__init(p_sentry_endpoint_uri_str string) {
-
-	//-------------
-	// SENTRY
-	// sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
-	sentry_samplerate_f := 1.0
-	sentry_trace_handlers_map := map[string]bool{
-		"GET /gfethm/v1/block/index":   true,
-		"GET /gfethm/v1/tx/trace/plot": true,
-		"GET /gfethm/v1/block":         true,
-		"GET /gfethm/v1/miner": true,
-		// "/gfethm/v1/block": true,
-		"GET /gfethm/v1/peers": true,
-		// "http__master__get_block": true,
-		// "http__master__get_block": true,
-	}
-	err := gf_core.Error__init_sentry(p_sentry_endpoint_uri_str,
-		sentry_trace_handlers_map,
-		sentry_samplerate_f)
-	if err != nil {
-		panic(err)
-	}
-
-	defer sentry.Flush(2 * time.Second)
-}
-
-//-------------------------------------------------------------
 type GF_config struct {
 
 	// PORTS
@@ -97,6 +69,37 @@ type GF_config struct {
 
 	// PY_PLUGINS
 	Py_plugins_dir_path_str string `mapstructure:"py_plugins_dir_path"`
+
+	// EXTERN_SERVICES
+	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
+	OpenSeaAPIkeyStr string `mapstructure:"opensea_api_key"`
+}
+
+//-------------------------------------------------
+func Sentry__init(p_sentry_endpoint_uri_str string) {
+
+	//-------------
+	// SENTRY
+	// sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
+	sentry_samplerate_f := 1.0
+	sentry_trace_handlers_map := map[string]bool{
+		"GET /gfethm/v1/block/index":   true,
+		"GET /gfethm/v1/tx/trace/plot": true,
+		"GET /gfethm/v1/block":         true,
+		"GET /gfethm/v1/miner": true,
+		// "/gfethm/v1/block": true,
+		"GET /gfethm/v1/peers": true,
+		// "http__master__get_block": true,
+		// "http__master__get_block": true,
+	}
+	err := gf_core.Error__init_sentry(p_sentry_endpoint_uri_str,
+		sentry_trace_handlers_map,
+		sentry_samplerate_f)
+	if err != nil {
+		panic(err)
+	}
+
+	defer sentry.Flush(2 * time.Second)
 }
 
 //-------------------------------------------------

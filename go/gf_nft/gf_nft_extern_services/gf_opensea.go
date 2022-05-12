@@ -122,7 +122,19 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) ([]GFnftOpenSea, *gf_core.GFerror) {
 
-	HTTPagent := gorequest.New()
+	//---------------------
+	// HTTP_AGENT
+	var HTTPagent *gorequest.SuperAgent
+	
+	// sometimes OpenSea blocks access from certain locations
+	if pRuntimeSys.HTTPproxyServerURIstr != "" {
+		HTTPagent = gorequest.New().Proxy(pRuntimeSys.HTTPproxyServerURIstr)
+	} else {
+		HTTPagent = gorequest.New()
+	}
+
+	//---------------------
+	
 
 	qsMap := map[string]string{
 		"owner":           pAddressStr,
@@ -138,6 +150,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	urlStr := fmt.Sprintf("https://api.opensea.io/api/v1/assets?%s", qsStr)
 	_, bodyStr, errs := HTTPagent.Get(urlStr).End()
 
+	fmt.Printf("url - %s\n", urlStr)
 	spew.Dump(bodyStr)
 
 	if (len(errs) > 0) {
@@ -198,7 +211,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 
 		// standard props
 		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
-		idStr   := createID(string(nftOpenSea.OpenSeaIDstr), creationTimeUNIXf)
+		idStr   := createID([]string{string(nftOpenSea.OpenSeaIDstr),}, creationTimeUNIXf)
 		nftOpenSea.Vstr              = "0" 
 		nftOpenSea.IDstr             = idStr
 		nftOpenSea.DeletedBool       = false 
@@ -214,17 +227,4 @@ func OpenSeaQueryByAddress(pAddressStr string,
 
 
 	return nftsOpenSeaParsedPageLst, nil
-}
-
-//---------------------------------------------------
-func createID(pUserIdentifierStr string,
-	pCreationUNIXtimeF float64) gf_core.GF_ID {
-
-	fieldsForIDlst := []string{
-		pUserIdentifierStr,
-	}
-	gfIDstr := gf_core.ID__create(fieldsForIDlst,
-		pCreationUNIXtimeF)
-
-	return gfIDstr
 }
