@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_utils from "gf_utils";
 
+declare var web3;
+
 //--------------------------------------------------------
 export async function init_observed(p_parent_element,
 	p_http_api_map,
@@ -74,15 +76,14 @@ export async function init_observed(p_parent_element,
 					//--------------------------------------------------------
 					p_http_api_map,
 					p_assets_paths_map);
-
+				
 				$(container).append(eth_address_element);
-
+				
 				total_height_int += $(eth_address_element).outerHeight();
 			}
 
 			// update parent container height
 			$(container).css("height", `${total_height_int}px`);
-
 		}
 
 		// DRAG_N_DROP
@@ -140,6 +141,7 @@ export async function init_my(p_parent_element,
 				address_type_str,
 				p_http_api_map,
 				p_assets_paths_map);
+			
 		}
 		else {
 			const initial_height_int = $(container).outerHeight();
@@ -172,7 +174,6 @@ export async function init_my(p_parent_element,
 			// update parent container height
 			$(container).css("height", `${total_height_int}px`);
 		}
-
 
 		// DRAG_N_DROP
 		gf_dragndrop.init(container, 
@@ -323,32 +324,42 @@ function create_eth_address_input(p_address_type_str :string,
 
 		if (new_address_str != "") {
 
+			// VALIDATE
+			const valid_bool = web3.utils.isAddress(new_address_str)
+			if (!valid_bool) {
+				$(new_address_container).css("background-color", "red");
+				return;
+			}
+			
 			// HTTP
 			const chain_str = "eth";
 			const output_map = await p_http_api_map["home"]["web3_address_add_fun"](new_address_str,
 				p_address_type_str,
 				chain_str);
-
+			
 			console.log(output_map);
-
+			
 			// CREATE_NEW_ADDRESS
 			const parent_element = $(new_address_container).parent();
 			const new_address_element = create_eth_address(new_address_str,
 				p_address_type_str,
 				parent_element,
+
+				//--------------------------------------------------------
 				// on_new_address_btn_fun
 				(p_added_address_container)=>{
 
 				},
+
+				//--------------------------------------------------------
 				p_http_api_map,
 				p_assets_paths_map);
-
+			
 			$(parent_element).append(new_address_element);
-
+			
 			// remove address input field
 			$(new_address_container).remove();
 		}
-
 	});
 	
 	return new_address_container;
