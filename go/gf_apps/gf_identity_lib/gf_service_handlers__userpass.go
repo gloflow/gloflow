@@ -144,6 +144,8 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					UserTypeStr:   "standard",
 				}
 
+				
+
 				//---------------------
 				output, gfErr := users_auth_userpass__pipeline__create_regular(input,
 					pServiceInfo,

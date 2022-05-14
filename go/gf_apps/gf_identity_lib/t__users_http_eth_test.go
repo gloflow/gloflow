@@ -39,7 +39,7 @@ func Test__users_http_eth(pTest *testing.T) {
 	fmt.Println(" TEST__IDENTITY_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	test_port_int := 2000
-	http_agent    := gorequest.New()
+	HTTPagent     := gorequest.New()
 
 	//---------------------------------
 	// GENERATE_WALLET
@@ -57,7 +57,7 @@ func Test__users_http_eth(pTest *testing.T) {
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
 	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/eth/preflight", test_port_int)
-	_, body_str, errs := http_agent.Post(url_str).
+	_, body_str, errs := HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -114,7 +114,7 @@ func Test__users_http_eth(pTest *testing.T) {
 		"auth_signature_str":   signature_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = http_agent.Post(url_str).
+	_, body_str, errs = HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -159,7 +159,7 @@ func Test__users_http_eth(pTest *testing.T) {
 		"auth_signature_str":   signature_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
-	resp, body_str, errs := http_agent.Post(url_str).
+	resp, body_str, errs := HTTPagent.Post(url_str).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -215,11 +215,11 @@ func Test__users_http_eth(pTest *testing.T) {
 
 	//---------------------------------
 	// TEST_USER_HTTP_UPDATE
-	test_user_http_update(pTest, http_agent, test_port_int)
+	test_user_http_update(pTest, HTTPagent, test_port_int)
 
 	//---------------------------------
 	// TEST_USER_HTTP_GET_ME
-	test_user_http_get_me(pTest, http_agent, test_port_int)
+	test_user_http_get_me(pTest, HTTPagent, test_port_int)
 
 	//---------------------------------
 }

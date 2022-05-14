@@ -68,6 +68,8 @@ func TestUserHTTPcreate(pTestUserNameStr string,
         pTest.FailNow()
     }
 
+	spew.Dump(bodyMap)
+	
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
 
 	user_exists_bool         := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)

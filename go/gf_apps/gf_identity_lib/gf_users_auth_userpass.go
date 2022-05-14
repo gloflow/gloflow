@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -215,13 +216,13 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
 	pCtx           context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GF_error) {
+	pRuntimeSys    *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(p_input, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
@@ -231,9 +232,9 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	//------------------------
 	// VALIDATE
 
-	user_exists_bool, gf_err := db__user__exists_by_username(p_input.User_name_str, pCtx, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	user_exists_bool, gfErr := db__user__exists_by_username(p_input.User_name_str, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// user already exists, so abort creation
@@ -243,11 +244,11 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	}
 
 	// check if in invite list
-	in_invite_list_bool, gf_err := db__user__check_in_invitelist_by_email(p_input.Email_str,
+	in_invite_list_bool, gfErr := db__user__check_in_invitelist_by_email(p_input.Email_str,
 		pCtx,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// user is not in the invite list, so abort the creation
@@ -260,12 +261,12 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 
 	//------------------------
 	// PIPELINE
-	output, gf_err := users_auth_userpass__pipeline__create(p_input,
+	output, gfErr := users_auth_userpass__pipeline__create(p_input,
 		p_service_info,
 		pCtx,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	output_regular.General = output
@@ -274,14 +275,14 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 	// EMAIL
 	if p_service_info.Enable_email_bool {
 
-		gf_err = usersEmailPipelineVerify(p_input.Email_str,
+		gfErr = usersEmailPipelineVerify(p_input.Email_str,
 			p_input.User_name_str,
 			output.User_id_str,
 			p_service_info.Domain_base_str,
 			pCtx,
 			pRuntimeSys)
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}
 	}
 	

@@ -60,57 +60,12 @@ func Test__users_http_userpass(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-
 	TestUserHTTPcreate(testUserNameStr,
 		testUserPassStr,
 		testEmailStr,
 		HTTPagent,
 		testPortInt,
 		pTest)
-
-	/*fmt.Println("====================================")
-	fmt.Println("test user CREATE USERPASS")
-	fmt.Println("user_name_str", testUserNameStr)
-	fmt.Println("pass_str",      testUserPassStr)
-	fmt.Println("email_str",     testEmailStr)
-
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/userpass/create", testPortInt)
-	data_map := map[string]string{
-		"user_name_str": testUserNameStr,
-		"pass_str":      testUserPassStr,
-		"email_str":     testEmailStr,
-	}
-	data_bytes_lst, _ := json.Marshal(data_map)
-	_, body_str, errs := HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
-		End()
-
-	spew.Dump(body_str)
-
-	if (len(errs) > 0) {
-		fmt.Println(errs)
-		pTest.FailNow()
-	}
-
-	body_map := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
-		fmt.Println(err)
-        pTest.FailNow()
-    }
-
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user create http request failed")
-
-	user_exists_bool         := body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
-	user_in_invite_list_bool := body_map["data"].(map[string]interface{})["user_in_invite_list_bool"].(bool)
-
-	if (user_exists_bool) {
-		fmt.Println("supplied user already exists and cant be created")
-		pTest.FailNow()
-	}
-	if (!user_in_invite_list_bool) {
-		fmt.Println("supplied user is not in the invite list")
-		pTest.FailNow()
-	}*/
 
 	//---------------------------------
 	// TEST_USER_LOGIN
@@ -120,58 +75,6 @@ func Test__users_http_userpass(pTest *testing.T) {
 		HTTPagent,
 		testPortInt,
 		pTest)
-
-	/*fmt.Println("====================================")
-	fmt.Println("test user LOGIN USERPASS")
-
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/userpass/login", testPortInt)
-	data_map = map[string]string{
-		"user_name_str": testUserNameStr,
-		"pass_str":      testUserPassStr,
-	}
-	data_bytes_lst, _ = json.Marshal(data_map)
-	resp, body_str, errs := HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
-		End()
-
-	if (len(errs) > 0) {
-		fmt.Println(errs)
-		pTest.FailNow()
-	}
-
-	// check if the login response sets a cookie for all future auth requests
-	auth_cookie_present_bool := false
-	for k, v := range resp.Header {
-		if (k == "Set-Cookie") {
-			for _, vv := range v {
-				o := strings.Split(vv, "=")[0]
-				if o == "gf_sess_data" {
-					auth_cookie_present_bool = true
-				}
-			}
-		}
-	}
-	assert.True(pTest, auth_cookie_present_bool,
-		"login response does not contain the expected 'gf_sess_data' cookie")
-
-	body_map = map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
-		fmt.Println(err)
-        pTest.FailNow()
-    }
-
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user login http request failed")
-
-	user_exists_bool = body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
-	pass_valid_bool := body_map["data"].(map[string]interface{})["pass_valid_bool"].(bool)
-	user_id_str     := body_map["data"].(map[string]interface{})["user_id_str"].(string)
-
-	assert.True(pTest, user_id_str != "", "user_id not set in the response")
-
-	fmt.Println("user login response:")
-	fmt.Println("user_exists_bool", user_exists_bool)
-	fmt.Println("pass_valid_bool",  pass_valid_bool)
-	fmt.Println("user_id_str",      user_id_str)*/
 
 	//---------------------------------
 	// TEST_USER_UPDATE
