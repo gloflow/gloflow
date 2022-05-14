@@ -46,9 +46,15 @@ type Runtime_sys struct {
 
 	Validator *validator.Validate
 
+	// PLUGINS
 	External_plugins *External_plugins
 
 	Metrics *GFmetrics
+
+	// HTTP_PROXY
+	// if a http proxy should be use this value is set
+	// "http://proxy:8888"
+	HTTPproxyServerURIstr string
 }
 
 // PLUGINS

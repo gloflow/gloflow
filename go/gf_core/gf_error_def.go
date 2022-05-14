@@ -176,7 +176,7 @@ func error__get_defs() map[string]Error_def {
 			Descr_str: "failed to decode hex string",
 		},
 		// MAPSTRUCT
-		"mapstruct__decode": Error_def{
+		"mapstruct_decode": Error_def{
 			Descr_str: "failed to decode a map into a struct using mapstructure lib",
 		},
 
