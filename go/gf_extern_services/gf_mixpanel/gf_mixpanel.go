@@ -27,45 +27,43 @@ import (
 )
 
 //-------------------------------------------------------------
-type GF_mixpanel_info struct {
+type GFmixpanelInfo struct {
 	Username_str   string
 	Secret_str     string
 	Project_id_str string
 }
 
 //-------------------------------------------------------------
-func Event_send(p_event_type_str string,
-	p_event_meta_map map[string]interface{},
-	p_info           *GF_mixpanel_info,
-	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.GF_error {
+func Event_send(pEventTypeStr string,
+	pEventMetaMap map[string]interface{},
+	pInfo         *GFmixpanelInfo,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	request := gorequest.New()
 
 	// AUTH - mixpanel uses basic http auth
-	request.Header.Add("user", fmt.Sprintf("%s:%s", p_info.Username_str, p_info.Secret_str))
+	request.Header.Add("user", fmt.Sprintf("%s:%s", pInfo.Username_str, pInfo.Secret_str))
 
-
-	data_map := map[string]interface{}{
-		"event":      p_event_type_str,
-		"properties": p_event_meta_map,
+	dataMap := map[string]interface{}{
+		"event":      pEventTypeStr,
+		"properties": pEventMetaMap,
 	}
-	data_bytes_lst, _ := json.Marshal(data_map)
+	dataBytesLst, _ := json.Marshal(dataMap)
 
 
-	url_str := fmt.Sprintf("https://api.mixpanel.com/import?strict=1&project_id=%s", p_info.Project_id_str)
-	_, _, errs := request.Post(url_str).
-		Send(string(data_bytes_lst)).
+	urlStr := fmt.Sprintf("https://api.mixpanel.com/import?strict=1&project_id=%s", pInfo.Project_id_str)
+	_, _, errs := request.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
 	if errs != nil {
-		err    := errs[0] // FIX!! - use all errors in some way, just in case
-		gf_err := gf_core.Error__create("failed to send event to mixpanel",
+		err   := errs[0] // FIX!! - use all errors in some way, just in case
+		gfErr := gf_core.Error__create("failed to send event to mixpanel",
 			"http_client_req_error",
-			map[string]interface{}{"url_str": url_str,},
-			err, "gf_mixpanel", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"url_str": urlStr,},
+			err, "gf_mixpanel", pRuntimeSys)
+		return gfErr
 	}
-
 
 	return nil
 }

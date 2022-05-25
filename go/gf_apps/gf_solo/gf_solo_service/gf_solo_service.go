@@ -34,7 +34,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_admin_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
-	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_landing_page_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_analytics_lib"
@@ -42,23 +41,24 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3_monitor_lib"
+	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
-func Run(p_config *GF_config,
-	pRuntimeSys *gf_core.Runtime_sys) {
+func Run(pConfig *GF_config,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-------------
 	// CONFIG
 	portMetricsInt := 9110
 
-	portInt, err := strconv.Atoi(p_config.Port_str)
+	portInt, err := strconv.Atoi(pConfig.Port_str)
 	if err != nil {
 		panic(err)
 	}
 
-	portAdminInt, err := strconv.Atoi(p_config.Port_admin_str)
+	portAdminInt, err := strconv.Atoi(pConfig.Port_admin_str)
 	if err != nil {
 		panic(err)
 	}
@@ -88,7 +88,7 @@ func Run(p_config *GF_config,
 	// GF_LANDING_PAGE
 	// landing_page goes first, its handlers, because it contains the root path handler ("/")
 	// and that should match first.
-	gf_landing_page_lib.Init_service(p_config.Templates_paths_map,
+	gf_landing_page_lib.Init_service(pConfig.Templates_paths_map,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
@@ -97,7 +97,7 @@ func Run(p_config *GF_config,
 
 	gf_identity__service_info := &gf_identity_lib.GF_service_info{
 		Name_str:                       "gf_identity",
-		Domain_base_str:                p_config.Domain_base_str,
+		Domain_base_str:                pConfig.Domain_base_str,
 		AuthLoginURLstr:                "/landing/main", // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
 		Enable_events_app_bool:                  true,
@@ -127,7 +127,7 @@ func Run(p_config *GF_config,
 
 		admin_service_info := &gf_admin_lib.GF_service_info{
 			Name_str:                                "gf_admin",
-			Admin_email_str:                         p_config.Admin_email_str,
+			Admin_email_str:                         pConfig.Admin_email_str,
 			Enable_events_app_bool:                  true,
 			Enable_user_creds_in_secrets_store_bool: true,
 			Enable_email_bool:                       true,
@@ -139,8 +139,8 @@ func Run(p_config *GF_config,
 		//               instantiating gf_identity handlers dedicated to admin.
 		admin_identity__service_info := &gf_identity_lib.GF_service_info{
 			Name_str:                        "gf_admin_identity",
-			Domain_base_str:                 p_config.Domain_admin_base_str,
-			Admin_mfa_secret_key_base32_str: p_config.Admin_mfa_secret_key_base32_str,
+			Domain_base_str:                 pConfig.Domain_admin_base_str,
+			Admin_mfa_secret_key_base32_str: pConfig.Admin_mfa_secret_key_base32_str,
 			AuthLoginURLstr:                 "/v1/admin/login_ui", // on email confirm redirect user to this
 
 			// FEATURE_FLAGS
@@ -152,7 +152,7 @@ func Run(p_config *GF_config,
 			
 		}
 
-		gfErr := gf_admin_lib.InitNewService(p_config.Templates_paths_map,
+		gfErr := gf_admin_lib.InitNewService(pConfig.Templates_paths_map,
 			admin_service_info,
 			admin_identity__service_info,
 			admin_http_mux,
@@ -174,7 +174,7 @@ func Run(p_config *GF_config,
 		AuthLoginURLstr: "/landing/main", // if not logged in redirect users to this
 	}
 
-	gfErr = gf_home_lib.InitService(p_config.Templates_paths_map,
+	gfErr = gf_home_lib.InitService(pConfig.Templates_paths_map,
 		homeServiceInfo,
 		gfSoloHTTPmux,
 		pRuntimeSys)
@@ -186,26 +186,26 @@ func Run(p_config *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	gf_images__config, gfErr := gf_images_core.Config__get(p_config.Images__config_file_path_str,
+	gf_images__config, gfErr := gf_images_core.Config__get(pConfig.Images__config_file_path_str,
 		pRuntimeSys)
 	if gfErr != nil {
 		return
 	}
 	
 	gf_images__service_info := &gf_images_core.GFserviceInfo{
-		Mongodb_host_str:                           p_config.Mongodb_host_str,
-		Mongodb_db_name_str:                        p_config.Mongodb_db_name_str,
+		Mongodb_host_str:                           pConfig.Mongodb_host_str,
+		Mongodb_db_name_str:                        pConfig.Mongodb_db_name_str,
 
 		Images_store_local_dir_path_str:            gf_images__config.Store_local_dir_path_str,
 		Images_thumbnails_store_local_dir_path_str: gf_images__config.Thumbnails_store_local_dir_path_str,
 		Media_domain_str:                           gf_images__config.Media_domain_str,
 		Images_main_s3_bucket_name_str:             gf_images__config.Main_s3_bucket_name_str,
 
-		AWS_access_key_id_str:                      p_config.AWS_access_key_id_str,
-		AWS_secret_access_key_str:                  p_config.AWS_secret_access_key_str,
-		AWS_token_str:                              p_config.AWS_token_str,
+		AWS_access_key_id_str:                      pConfig.AWS_access_key_id_str,
+		AWS_secret_access_key_str:                  pConfig.AWS_secret_access_key_str,
+		AWS_token_str:                              pConfig.AWS_token_str,
 
-		Templates_paths_map: p_config.Templates_paths_map,
+		Templates_paths_map: pConfig.Templates_paths_map,
 
 		// on user trying to access authed endpoint while not logged in, redirect to this
 		AuthLoginURLstr: "/landing/main",
@@ -221,20 +221,20 @@ func Run(p_config *GF_config,
 	
 	gf_analytics__service_info := &gf_analytics_lib.GF_service_info{
 
-		Crawl__config_file_path_str:      p_config.Crawl__config_file_path_str,
-		Crawl__cluster_node_type_str:     p_config.Crawl__cluster_node_type_str,
-		Crawl__images_local_dir_path_str: p_config.Crawl__images_local_dir_path_str,
+		Crawl__config_file_path_str:      pConfig.Crawl__config_file_path_str,
+		Crawl__cluster_node_type_str:     pConfig.Crawl__cluster_node_type_str,
+		Crawl__images_local_dir_path_str: pConfig.Crawl__images_local_dir_path_str,
 
 		Media_domain_str:       gf_images__config.Media_domain_str,
-		Py_stats_dirs_lst:      p_config.Analytics__py_stats_dirs_lst,
-		Run_indexer_bool:       p_config.Analytics__run_indexer_bool,
-		Elasticsearch_host_str: p_config.Elasticsearch_host_str,
+		Py_stats_dirs_lst:      pConfig.Analytics__py_stats_dirs_lst,
+		Run_indexer_bool:       pConfig.Analytics__run_indexer_bool,
+		Elasticsearch_host_str: pConfig.Elasticsearch_host_str,
 
-		AWS_access_key_id_str:     p_config.AWS_access_key_id_str,
-		AWS_secret_access_key_str: p_config.AWS_secret_access_key_str,
-		AWS_token_str:             p_config.AWS_token_str,
+		AWS_access_key_id_str:     pConfig.AWS_access_key_id_str,
+		AWS_secret_access_key_str: pConfig.AWS_secret_access_key_str,
+		AWS_token_str:             pConfig.AWS_token_str,
 
-		Templates_paths_map: p_config.Templates_paths_map,
+		Templates_paths_map: pConfig.Templates_paths_map,
 	}
 	gf_analytics_lib.Init_service(gf_analytics__service_info,
 		gfSoloHTTPmux,
@@ -252,7 +252,7 @@ func Run(p_config *GF_config,
 	gf_images_runtime_info := &gf_publisher_lib.GF_images_extern_runtime_info{
 		Jobs_mngr:               nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
 		Service_host_port_str:   gf_images_service_host_port_str,
-		Templates_dir_paths_map: p_config.Templates_paths_map,
+		Templates_dir_paths_map: pConfig.Templates_paths_map,
 	}
 	
 	gf_publisher_lib.Init_service(gfSoloHTTPmux,
@@ -261,7 +261,7 @@ func Run(p_config *GF_config,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.Init_service(p_config.Templates_paths_map,
+	gf_tagger_lib.Init_service(pConfig.Templates_paths_map,
 		jobs_mngr_ch,
 		gfSoloHTTPmux,
 		pRuntimeSys)
@@ -273,7 +273,12 @@ func Run(p_config *GF_config,
 	//-------------
 	// GF_WEB3_MONITOR
 	
-	gf_web3_monitor_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
+	web3Config := &gf_eth_core.GF_config{
+		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
+	}
+	gf_web3_monitor_lib.InitService(gfSoloHTTPmux,
+		web3Config,
+		pRuntimeSys)
 
 	//-------------
 	// METRICS - start prometheus metrics endpoint, and get core_metrics
@@ -286,13 +291,13 @@ func Run(p_config *GF_config,
 }
 
 //-------------------------------------------------
-func Runtime__get(p_config_path_str string,
+func Runtime__get(pConfig_path_str string,
 	p_external_plugins *gf_core.External_plugins,
 	p_log_fun          func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
 
 	// CONFIG
-	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
-	config_name_str     := path.Base(p_config_path_str) // "gf_solo"
+	config_dir_path_str := path.Dir(pConfig_path_str)  // "./../config/"
+	config_name_str     := path.Base(pConfig_path_str) // "gf_solo"
 	
 	config, err := Config__init(config_dir_path_str, config_name_str)
 	if err != nil {
