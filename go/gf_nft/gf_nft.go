@@ -49,7 +49,7 @@ type GFnft struct {
 //-------------------------------------------------
 func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
-	pConfig           gf_eth_core.GF_config,
+	pConfig           *gf_eth_core.GF_config,
 	pCtx              context.Context,
 	pRuntimeSys       *gf_core.Runtime_sys) *gf_core.GFerror {
 

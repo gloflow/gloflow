@@ -49,9 +49,10 @@ func TestMain(m *testing.M) {
 		HTTPmux := http.NewServeMux()
 
 		config := &gf_eth_core.GF_config{
-			AlchemyAPIkeyStr: os.Getenv("GF_TEST_ALCHEMY_API_KEY"),
+			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
 		}
 		InitService(HTTPmux,
+			config,
 			runtime.RuntimeSys)
 			
 		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)
@@ -93,7 +94,7 @@ func TestAddressNFT(pTest *testing.T) {
 
 	//--------------------
 	// NFT_INDEX_ADDRESS
-	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
+	testUserAddressEthStr := "0x4eDE0b31Fd116B8A00ADD6F449499Cd36b70AAE6"
 	chainStr := "eth"
 	gf_nft.TindexAddress(testUserAddressEthStr,
 		chainStr,

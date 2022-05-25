@@ -30,7 +30,7 @@ import (
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
-	pConfig     gf_eth_core.GF_config,
+	pConfig     *gf_eth_core.GF_config,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//---------------------

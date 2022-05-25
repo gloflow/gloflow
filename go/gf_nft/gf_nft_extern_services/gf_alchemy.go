@@ -128,7 +128,10 @@ func AlchemyQueryByAddress(pAddressStr string,
 		qsLst = append(qsLst, fmt.Sprintf("%s=%s", k, v))
 	}
 	qsStr  := strings.Join(qsLst, "&")
-	urlStr := fmt.Sprintf("https://%s.g.alchemy.com/v2/your-api-key/getNFTs?%s", alchemyChainStr, qsStr)
+	urlStr := fmt.Sprintf("https://%s.g.alchemy.com/v2/%s/getNFTs?%s",
+		alchemyChainStr,
+		pAPIkeyStr,
+		qsStr)
 	_, bodyStr, errs := HTTPagent.Get(urlStr).End()
 
 	fmt.Printf("url - %s\n", urlStr)
@@ -197,18 +200,27 @@ func AlchemyQueryByAddress(pAddressStr string,
 			TokenURIrawStr:     nftMap["tokenUri"].(map[string]interface{})["raw"].(string),
 			TokenURIgatewayStr: nftMap["tokenUri"].(map[string]interface{})["gateway"].(string),
 
-			MediaURIrawStr:     nftMap["media"].([]map[string]interface{})[0]["raw"].(string),
-			MediaURIgatewayStr: nftMap["media"].([]map[string]interface{})[0]["raw"].(string),
+			MediaURIrawStr:     nftMap["media"].([]interface{})[0].(map[string]interface{})["raw"].(string),
+			MediaURIgatewayStr: nftMap["media"].([]interface{})[0].(map[string]interface{})["raw"].(string),
 
 			MetadataNameStr:        nftMap["metadata"].(map[string]interface{})["name"].(string),
 			MetadataImageStr:       nftMap["metadata"].(map[string]interface{})["image"].(string),
 			MetadataExternalURLstr: nftMap["metadata"].(map[string]interface{})["external_url"].(string),
-			MetadataAttributesLst:  nftMap["metadata"].(map[string]interface{})["attributes"].([]map[string]interface{}),
 		}
 
+		// attributes
+		attributesLst := []map[string]interface{}{}
+		for _, attr := range nftMap["metadata"].(map[string]interface{})["attributes"].([]interface{}) {
+			attrMap := attr.(map[string]interface{})
+			attributesLst = append(attributesLst, attrMap)
+		}
+		gfNFT.MetadataAttributesLst = attributesLst
 	
-	
-	
+		
+
+		fmt.Println(">>>>>>>>")
+		spew.Dump(gfNFT)
+
 		nftsParsedPageLst = append(nftsParsedPageLst, gfNFT)
 	}
 

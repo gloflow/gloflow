@@ -31,7 +31,7 @@ import (
 type GF_runtime struct {
 	Config     *GF_config
 	Py_plugins *GF_py_plugins
-	RuntimeSys *gf_core.Runtime_sys
+	RuntimeSys *gf_core.RuntimeSys
 	// Influxdb_client *influxdb2.Client
 }
 
@@ -44,10 +44,6 @@ type GF_config struct {
 	// MONGODB - this is the dedicated mongodb DB
 	Mongodb_host_str    string `mapstructure:"mongodb_host"`
 	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
-
-	// // INFLUXDB
-	// Influxdb_host_str    string `mapstructure:"influxdb_host"`
-	// Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
 
 	// AWS_SQS
 	AWS_SQS_queue_str string `mapstructure:"aws_sqs_queue"`
@@ -73,6 +69,10 @@ type GF_config struct {
 	// EXTERN_SERVICES
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 	OpenSeaAPIkeyStr string `mapstructure:"opensea_api_key"`
+
+	// // INFLUXDB
+	// Influxdb_host_str    string `mapstructure:"influxdb_host"`
+	// Influxdb_db_name_str string `mapstructure:"influxdb_db_name"`
 }
 
 //-------------------------------------------------
@@ -80,17 +80,13 @@ func Sentry__init(p_sentry_endpoint_uri_str string) {
 
 	//-------------
 	// SENTRY
-	// sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
 	sentry_samplerate_f := 1.0
 	sentry_trace_handlers_map := map[string]bool{
 		"GET /gfethm/v1/block/index":   true,
 		"GET /gfethm/v1/tx/trace/plot": true,
 		"GET /gfethm/v1/block":         true,
-		"GET /gfethm/v1/miner": true,
-		// "/gfethm/v1/block": true,
-		"GET /gfethm/v1/peers": true,
-		// "http__master__get_block": true,
-		// "http__master__get_block": true,
+		"GET /gfethm/v1/miner":         true,
+		"GET /gfethm/v1/peers":         true,
 	}
 	err := gf_core.Error__init_sentry(p_sentry_endpoint_uri_str,
 		sentry_trace_handlers_map,

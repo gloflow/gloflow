@@ -41,7 +41,7 @@ type GFgetInput struct {
 
 //-------------------------------------------------
 func pipelineIndexAddress(pInput *GFindexAddressInput,
-	pConfig     gf_eth_core.GF_config,
+	pConfig     *gf_eth_core.GF_config,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
