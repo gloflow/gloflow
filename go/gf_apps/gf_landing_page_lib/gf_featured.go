@@ -43,20 +43,21 @@ type GF_featured_img struct {
 	Image_origin_page_url_str      string // for each featured image this is the URL used in links
 	Image_origin_page_url_host_str string // this is displayed in the user UI for each featured image
 	Creation_unix_time_str         string
+	FlowNameStr                    string
 }
 
 //------------------------------------------
 // IMAGES
 //------------------------------------------
-func get_featured_imgs(p_max_random_cursor_position_int int, // 500
+func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
 	p_elements_num_to_get_int int, // 5
-	p_runtime_sys             *gf_core.Runtime_sys) ([]*GF_featured_img, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_imgs()")
+	pFlowNameStr              string,
+	pRuntimeSys               *gf_core.RuntimeSys) ([]*GF_featured_img, *gf_core.GFerror) {
 
 	imgs_lst, err := gf_images_core.DB__get_random_imgs_range(p_elements_num_to_get_int,
 		p_max_random_cursor_position_int,
-		"general", // p_flow_name_str
-		p_runtime_sys)
+		pFlowNameStr,
+		pRuntimeSys)
 
 	if err != nil {
 		return nil, err
@@ -87,31 +88,30 @@ func get_featured_imgs(p_max_random_cursor_position_int int, // 500
 //------------------------------------------
 // POSTS
 //------------------------------------------
-func get_featured_posts(p_max_random_cursor_position_int int, // 500
+func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
 	p_elements_num_to_get_int int, // 5
-	p_runtime_sys             *gf_core.Runtime_sys) ([]*Gf_featured_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.get_featured_posts()")
+	pRuntimeSys             *gf_core.Runtime_sys) ([]*Gf_featured_post, *gf_core.Gf_error) {
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point
 	posts_lst, gf_err := gf_publisher_core.DB__get_random_posts_range(p_elements_num_to_get_int,
 		p_max_random_cursor_position_int,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	featured_posts_lst := posts_to_featured(posts_lst, p_runtime_sys)
+	featured_posts_lst := posts_to_featured(posts_lst, pRuntimeSys)
 	return featured_posts_lst, nil
 }
 
 //------------------------------------------
-func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *gf_core.Runtime_sys) []*Gf_featured_post {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
+func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf_core.Runtime_sys) []*Gf_featured_post {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
 
 	featured_posts_lst := []*Gf_featured_post{}
 	for _, post := range p_posts_lst {
-		featured          := post_to_featured(post, p_runtime_sys)
+		featured          := post_to_featured(post, pRuntimeSys)
 		featured_posts_lst = append(featured_posts_lst, featured)
 	}
 
@@ -120,12 +120,12 @@ func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *
 	//             gf_publisher.
 	featured_elements_with_no_errors_lst := []*Gf_featured_post{}
 	for _, featured := range featured_posts_lst {
-		p_runtime_sys.Log_fun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
+		pRuntimeSys.Log_fun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
 
 		//
 		if featured.Image_url_str == "" || featured.Image_url_str == "error" {
 			err_msg_str := fmt.Sprintf("post with title [%s] has a image_src that is [%s]", featured.Title_str, featured.Image_url_str)
-			p_runtime_sys.Log_fun("ERROR", err_msg_str)
+			pRuntimeSys.Log_fun("ERROR", err_msg_str)
 		} else {
 			featured_elements_with_no_errors_lst = append(featured_elements_with_no_errors_lst, featured)
 		}
@@ -135,11 +135,11 @@ func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *
 }
 
 //------------------------------------------
-func post_to_featured(p_post *gf_publisher_core.Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_featured_post {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
+func post_to_featured(p_post *gf_publisher_core.Gf_post, pRuntimeSys *gf_core.Runtime_sys) *Gf_featured_post {
+	pRuntimeSys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)
-	p_runtime_sys.Log_fun("INFO", "p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
+	pRuntimeSys.Log_fun("INFO", "p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
 
 	featured := &Gf_featured_post{
 		Title_str:         p_post.Title_str,

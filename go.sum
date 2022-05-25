@@ -421,6 +421,8 @@ github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426160528-7afd01cf7753 h1:dN
 github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426160528-7afd01cf7753/go.mod h1:B0cFJKGAw/o+2lCjOAV/M0Nc/RBRkv2XkDGsYVkj3As=
 github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426215607-90d493cca58a h1:8BUpUY1+WZKl68N96KyWNSbV1toSxTpxAVQXVAtZcMU=
 github.com/gloflow/gloflow-web3-monitor v0.0.0-20220426215607-90d493cca58a/go.mod h1:B0cFJKGAw/o+2lCjOAV/M0Nc/RBRkv2XkDGsYVkj3As=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220525163604-225a141e685e h1:Z9iycUSWQSE2PJMVdPZrZLK7kjrf2HuJclMnheZ9KAI=
+github.com/gloflow/gloflow-web3-monitor v0.0.0-20220525163604-225a141e685e/go.mod h1:6U2Pl4CqhBgaZh4sqw0pyvHbkBiMGVcbuzgPZKH14ts=
 github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd/go.mod h1:/20jfyN9Y5QPEAprSgKAUr+glWDY39ZiUEAYOEv5dsE=
 github.com/glycerine/goconvey v0.0.0-20190410193231-58a59202ab31/go.mod h1:Ogl1Tioa0aV7gstGFO7KhffUsb9M4ydbEbbxpcEDc24=
 github.com/go-check/check v0.0.0-20180628173108-788fd7840127/go.mod h1:9ES+weclKsC9YodN5RgxqK/VD9HM9JsCSh7rNhMZE98=

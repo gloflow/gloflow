@@ -32,42 +32,44 @@ func Pipeline__render_landing_page(p_imgs__max_random_cursor_position_int int, /
 	p_featured_imgs_to_get_int  int, // 10
 	p_tmpl                      *template.Template,
 	p_subtemplates_names_lst    []string,
-	p_resp                      io.Writer,
-	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.GF_error {
+	pResp                      io.Writer,
+	pRuntimeSys               *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//-------------------
 	// FEATURED_IMAGES - two random groups of images are fetched
-	featured_imgs_0_lst, gf_err := get_featured_imgs(p_imgs__max_random_cursor_position_int,
+	featured_imgs_0_lst, gfErr := getFeaturedImgs(p_imgs__max_random_cursor_position_int,
 		p_featured_imgs_to_get_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		"general",
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	featured_imgs_1_lst, gf_err := get_featured_imgs(p_imgs__max_random_cursor_position_int,
+	featured_imgs_1_lst, gfErr := getFeaturedImgs(p_imgs__max_random_cursor_position_int,
 		p_featured_imgs_to_get_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		"general",
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//-------------------
-	featured_posts_lst, gf_err := get_featured_posts(p_posts__max_random_cursor_position_int,
+	featured_posts_lst, gfErr := getFeaturedPosts(p_posts__max_random_cursor_position_int,
 		p_featured_posts_to_get_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	gf_err = render_template(featured_posts_lst,
+	gfErr = render_template(featured_posts_lst,
 		featured_imgs_0_lst,
 		featured_imgs_1_lst,
 		p_tmpl,
 		p_subtemplates_names_lst,
-		p_resp,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pResp,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
