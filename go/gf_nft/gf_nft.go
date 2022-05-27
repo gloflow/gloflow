@@ -22,6 +22,7 @@ package gf_nft
 import (
 	"fmt"
 	"context"
+	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
@@ -36,14 +37,14 @@ type GFnft struct {
 	DeletedBool        bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
 
-
-
+	OwnerAddressStr    string `bson:"owner_address_str"`
 	TokenIDstr         string `bson:"token_id_str"`
 	ContractAddressStr string `bson:"contract_address_str"`
 	ContractNameStr    string `bson:"contract_name_str"`
-	CollectionNameStr  string `bson:"collection_name_str"`
+	ChainStr           string `bson:"chain_str"`
 
-	OpenSeaIDstr       string `bson:"open_sea_nft_id_str"`
+	OpenSeaIDstr       gf_core.GF_ID `bson:"open_sea_id_str"`
+	AlchemyIDstr       gf_core.GF_ID `bson:"alchemy_id_str"`
 }
 
 //-------------------------------------------------
@@ -70,7 +71,7 @@ func indexAddress(pAddressStr string,
 	// ALCHEMY
 	if pServiceSourceStr == "alchemy" {
 		chainStr := "eth"
-		nftsAlchemyParsedLst, gfErr := gf_nft_extern_services.AlchemyGetAllNFTsForAddress(pAddressStr,
+		nftsAlchemyLst, gfErr := gf_nft_extern_services.AlchemyGetAllNFTsForAddress(pAddressStr,
 			pConfig.AlchemyAPIkeyStr,
 			chainStr,
 			pCtx,
@@ -79,7 +80,24 @@ func indexAddress(pAddressStr string,
 			return gfErr
 		}
 
-		fmt.Println(nftsAlchemyParsedLst)
+		// DB
+		gfErr = DBcreateBulkAlchemyNFTs(nftsAlchemyLst,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+
+
+		_, gfErr = createForAlchemy(nftsAlchemyLst,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+
 
 	}
 
@@ -106,12 +124,43 @@ func get(pTokenIDstr string,
 }
 
 //---------------------------------------------------
-func create() *GFnft {
+func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
 
-	nft := &GFnft{
+	NFTsLst := []*GFnft{}
+	for _, nftAlchemy := range pNFTsAlchemyLst {
 
+		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
+		idStr := gf_nft_extern_services.CreateID([]string{
+			nftAlchemy.ContractAddressStr,
+			nftAlchemy.TokenIDstr,},
+			creationTimeUNIXf)
+
+		nft := &GFnft{
+			Vstr:  "0",
+			IDstr: idStr,
+			CreationUNIXtimeF:  creationTimeUNIXf,
+			OwnerAddressStr:    nftAlchemy.OwnerAddressStr,
+			TokenIDstr:         nftAlchemy.TokenIDstr,
+			ContractAddressStr: nftAlchemy.ContractAddressStr,
+			ContractNameStr:    nftAlchemy.TitleStr,
+			ChainStr:           nftAlchemy.ChainStr,
+			AlchemyIDstr:       nftAlchemy.IDstr,
+		}
+
+		NFTsLst = append(NFTsLst, nft)
 	}
-	return nft
+
+	// DB
+	gfErr := DBcreateBulkNFTs(NFTsLst,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	return NFTsLst, nil
 }
 
 //---------------------------------------------------

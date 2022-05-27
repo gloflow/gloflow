@@ -211,7 +211,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 
 		// standard props
 		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
-		idStr   := createID([]string{string(nftOpenSea.OpenSeaIDstr),}, creationTimeUNIXf)
+		idStr   := CreateID([]string{string(nftOpenSea.OpenSeaIDstr),}, creationTimeUNIXf)
 		nftOpenSea.Vstr              = "0" 
 		nftOpenSea.IDstr             = idStr
 		nftOpenSea.DeletedBool       = false 

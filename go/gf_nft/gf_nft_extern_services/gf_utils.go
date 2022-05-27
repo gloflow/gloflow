@@ -24,7 +24,7 @@ import (
 )
 
 //---------------------------------------------------
-func createID(pFieldsForIDlst []string,
+func CreateID(pFieldsForIDlst []string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 
 	gfIDstr := gf_core.ID__create(pFieldsForIDlst,

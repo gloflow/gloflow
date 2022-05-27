@@ -39,11 +39,13 @@ type GFnftAlchemy struct {
 	DeletedBool        bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF  float64            `bson:"creation_unix_time_f"`
 
+	OwnerAddressStr    string `bson:"owner_address_str"`
 	ContractAddressStr string `bson:"contract_address_str"`
 	TokenIDstr         string `bson:"token_id_str"`
 	TokenTypeStr       string `bson:"token_type_str"`
 	TitleStr           string `bson:"title_str"`
 	DescriptionStr     string `bson:"description_str"`
+	ChainStr           string `bson:"chain_str"`
 
 	TokenURIrawStr     string `bson:"token_uri_raw_str"`
 	TokenURIgatewayStr string `bson:"token_uri_gateway_str"`
@@ -58,7 +60,7 @@ type GFnftAlchemy struct {
 }
 
 //-------------------------------------------------
-func AlchemyGetAllNFTsForAddress(pAddressStr string,
+func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 	pAPIkeyStr  string,
 	pChainStr   string,
 	pCtx        context.Context,
@@ -71,7 +73,7 @@ func AlchemyGetAllNFTsForAddress(pAddressStr string,
 	offsetInt := 0
 	limitInt := 50
 	for ;; {
-		nftsParsedPageLst, gfErr := AlchemyQueryByAddress(pAddressStr,
+		nftsParsedPageLst, gfErr := AlchemyQueryByOwnerAddress(pOwnerAddressStr,
 			offsetInt,
 			limitInt,
 			pAPIkeyStr,
@@ -94,13 +96,13 @@ func AlchemyGetAllNFTsForAddress(pAddressStr string,
 }
 
 //-------------------------------------------------
-func AlchemyQueryByAddress(pAddressStr string,
+func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 	pOffsetInt  int,
 	pLimitInt   int,
 	pAPIkeyStr  string,
 	pChainStr   string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnftAlchemy, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, *gf_core.GFerror) {
 
 	//---------------------
 	// HTTP_AGENT
@@ -121,7 +123,7 @@ func AlchemyQueryByAddress(pAddressStr string,
 	}
 
 	qsMap := map[string]string{
-		"owner": pAddressStr,
+		"owner": pOwnerAddressStr,
 	}
 	qsLst := []string{}
 	for k, v := range qsMap {
@@ -142,7 +144,7 @@ func AlchemyQueryByAddress(pAddressStr string,
 			"http_client_req_error",
 			map[string]interface{}{
 				"extern_service_str": "alchemy",
-				"address_str": pAddressStr,
+				"owner_address_str":  pOwnerAddressStr,
 				"offset_int":  pOffsetInt,
 				"limit_int":   pLimitInt,
 				"url_str":     urlStr,
@@ -157,7 +159,7 @@ func AlchemyQueryByAddress(pAddressStr string,
 			"json_decode_error",
 			map[string]interface{}{
 				"extern_service_str": "alchemy",
-				"address_str": pAddressStr,
+				"owner_address_str":  pOwnerAddressStr,
 				"offset_int":  pOffsetInt,
 				"limit_int":   pLimitInt,
 				"url_str":     urlStr,
@@ -183,19 +185,20 @@ func AlchemyQueryByAddress(pAddressStr string,
 		tokenIDstr := idMap["tokenId"].(string)
 
 		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
-		idStr             := createID([]string{contractAddressStr, tokenIDstr,}, creationTimeUNIXf)
+		idStr             := CreateID([]string{contractAddressStr, tokenIDstr,}, creationTimeUNIXf)
 
 		gfNFT := &GFnftAlchemy{
 			Vstr:              "0",
 			IDstr:             idStr,
 			CreationUNIXtimeF: creationTimeUNIXf,
 
-
+			OwnerAddressStr:    pOwnerAddressStr,
 			ContractAddressStr: contractAddressStr,
 			TokenIDstr:         tokenIDstr,
 			TokenTypeStr:       nftMap["id"].(map[string]interface{})["tokenMetadata"].(map[string]interface{})["tokenType"].(string),
 			TitleStr:           nftMap["title"].(string),
 			DescriptionStr:     nftMap["description"].(string),
+			ChainStr:           pChainStr,
 
 			TokenURIrawStr:     nftMap["tokenUri"].(map[string]interface{})["raw"].(string),
 			TokenURIgatewayStr: nftMap["tokenUri"].(map[string]interface{})["gateway"].(string),
@@ -216,18 +219,11 @@ func AlchemyQueryByAddress(pAddressStr string,
 		}
 		gfNFT.MetadataAttributesLst = attributesLst
 	
-		
-
 		fmt.Println(">>>>>>>>")
 		spew.Dump(gfNFT)
 
 		nftsParsedPageLst = append(nftsParsedPageLst, gfNFT)
 	}
-
-
-
-
-
 
 	return nftsParsedPageLst, nil
 }
