@@ -122,7 +122,7 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 		txs_hashes_lst = append(txs_hashes_lst, tx.Tx_hash_str)
 	}
 
-	gf_err := gf_core.Mongo__insert_bulk(ids_lst, records_lst,
+	gf_err := gf_core.MongoInsertBulk(ids_lst, records_lst,
 		coll_name_str,
 		map[string]interface{}{
 			"txs_hashes_lst":     txs_hashes_lst,
