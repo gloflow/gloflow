@@ -1,0 +1,27 @@
+
+
+
+
+# PORTS
+port:         4050
+port_metrics: 9110
+
+# MONGODB
+mongodb_host:    "127.0.0.1:27017"
+mongodb_db_name: "gf_eth_monitor"
+
+# INFLUXDB
+influxdb_host: "127.0.0.1:8086"
+
+# SQS
+aws_sqs_queue: "gf_eth_monitor"
+
+# WORKERS
+workers_aws_discovery: true 
+workers_hosts:         "127.0.0.1:9000"
+
+# SENTRY_ENDPOINT
+sentry_endpoint: ""
+
+# EVENTS_CONSUME
+events_consume: true

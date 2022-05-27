@@ -1,0 +1,249 @@
+kind: pipeline
+type: docker
+name: gloflow-web3-monitor
+
+workspace:
+  # IMPORTANT!! - this is where Drone will clone the gloflow repo, and where the gf_builder
+  #               container is placing all its code.
+  base: /home/gf
+
+volumes:
+  - name: docker-sock
+    host:
+      path: /var/run/docker.sock
+  
+  # caching build artifacts
+  - name: go_cache
+    host:
+      path: /home/gf/go_cache
+
+  # caching downloaded modules
+  - name: go_mod_cache
+    host:
+      path: /home/gf/go_mod_cache
+
+services:
+  - name:  mongo
+    image: mongo
+
+steps:
+
+  #-------------------------------
+  # TEST_GO
+  - name: test_go
+    image: glofloworg/gf_builder_go_ubuntu:latest
+
+    volumes:
+      - name: go_cache
+        path: /home/gf/go_cache 
+      
+      - name: go_mod_cache
+        path: /home/gf/go_mod_cache 
+    
+    # ENV
+    environment:
+
+      # cache for the "go" tool
+      GOCACHE: /home/gf/go_cache
+      GOMODCACHE: /home/gf/go_mod_cache
+      
+      GF_TEST_MONGODB_HOST_PORT: mongo
+
+    commands:
+
+      # "mongo" - drone.io mongo service is given the same hostname as the name of the container
+
+      # GF_HOME
+      - cd /home/gf/go/gf_web3_monitor_lib
+      - go test -v
+
+  #-------------------------------
+  # BUILD_GO
+  - name: build_go
+    image: glofloworg/gf_builder_go_ubuntu:latest
+
+    volumes:
+      - name: go_cache
+        path: /home/gf/go_cache 
+      
+      - name: go_mod_cache
+        path: /home/gf/go_mod_cache 
+
+    # ENV
+    environment:
+
+      # cache for the "go" tool
+      GOCACHE: /home/gf/go_cache
+      GOMODCACHE: /home/gf/go_mod_cache
+      
+    commands:
+      # "-u"      - run unbuffered for stdout/stderr
+      # "-static" - compile Go binary with static linking, needed to run in Alpine containers
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build -static
+    when:
+      event:
+        - push
+      branch:
+        - master
+  
+  #-------------------------------
+  # # TEST_GO
+  # # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
+  # #               to be tested by integration Py tests.
+  # - name: test_go
+  #   image: glofloworg/gf_builder_go_ubuntu:latest
+  #
+  #   #-------------------------------
+  #   # ENV
+  #   environment:
+  #
+  #     AWS_ACCESS_KEY_ID:
+  #       from_secret: gf_testing__aws_access_key_id
+  #     AWS_SECRET_ACCESS_KEY:
+  #       from_secret: gf_testing__aws_secret_access_key
+  #   
+  #     GF_SENTRY_ENDPOINT:
+  #       from_secret: gf_os__sentry_endpoint_test
+  #   
+  #     # IMPORTANT!! - external geth host is used, to not start Geth on the build server (for sec reasons),
+  #     #               and not be able to expect some reasonable level of state-sync with the public chain.
+  #     GF_GETH_HOST:
+  #       from_secret: gf_os__geth_host_test
+  #   
+  #     # local worker_inspector is started, freshly built in the previous stage.
+  #     # this ENV var is used by tests in case a remote worker_inspector should be used when testing master.
+  #     GF_WORKER_INSPECTOR_HOST_PORT: "127.0.0.1"
+  #
+  #     GF_AWS_SQS_QUEUE:
+  #       from_secret: gf_os__aws_sqs_queue_test
+  #
+  #   #-------------------------------
+  #   commands:
+  #     - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=test_go
+  #   when:
+  #     event:
+  #       - push
+  #     branch:
+  #       - master
+
+  #-------------------------------
+  # # TEST_PY
+  # # IMPORTANT!! - run after build stage, to make sure code can build first, and to have built binaries
+  # #               to be tested by integration Py tests.
+  # - name: test_py
+  #   image: glofloworg/gf_builder_go_ubuntu:latest
+  #
+  #   #-------------------------------
+  #   # ENV
+  #   environment:
+  #
+  #     #-------------------------------
+  #     AWS_ACCESS_KEY_ID:
+  #       from_secret: gf_testing__aws_access_key_id
+  #     AWS_SECRET_ACCESS_KEY:
+  #       from_secret: gf_testing__aws_secret_access_key
+  #   
+  #     GF_SENTRY_ENDPOINT:
+  #       from_secret: gf_os__sentry_endpoint_test
+  #   
+  #     #-------------------------------
+  #     GF_AWS_SQS_QUEUE:
+  #       from_secret: gf_os__aws_sqs_queue_test
+  #
+  #     # IMPORTANT!! - external geth host is used, to not start Geth on the build server (for sec reasons),
+  #     #               and not be able to expect some reasonable level of state-sync with the public chain.
+  #     GF_GETH_HOST:
+  #       from_secret: gf_os__geth_host_test
+  #   
+  #     GF_WORKERS_AWS_DISCOVERY: "true"
+  #
+  #     # local worker_inspector is started, freshly built in the previous stage.
+  #     # this ENV var is used by tests in case a remote worker_inspector should be used when testing master.
+  #     GF_WORKER_INSPECTOR_HOST_PORT: "127.0.0.1"
+  #
+  #     #-------------------------------
+  #
+  #   #-------------------------------
+  #   commands:
+  #     - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=test_py -test_ci
+  #   when:
+  #     event:
+  #       - push
+  #     branch:
+  #       - master
+
+  #-------------------------------
+  # BUILD_CONTAINERS
+  - name: build_containers
+    image: glofloworg/gf_builder_go_ubuntu:latest
+
+    environment:
+      GF_DOCKERHUB_USER:
+        from_secret: gf_os__dockerhub_user # used to build the container for a particular user
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container building.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    commands:
+
+      # FIX!! - install docker properly in gf_builder_go_ubuntu
+      - apt-get update
+      - apt-get install -y docker.io
+
+      # "-u" - run unbuffered for stdout/stderr
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=build_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # PUBLISH_CONTAINERS
+  - name: publish_containers
+    image: glofloworg/gf_builder_go_ubuntu:latest
+    environment:
+      GF_DOCKER_USER:
+        from_secret: gf_os__dockerhub_user
+      GF_DOCKER_PASS:
+        from_secret: gf_os__dockerhub_p
+
+    # IMPORTANT!! - needed for Docker client running in gf_builder container to be able to 
+    #               connect to the Docker daemon running on the host machine. this connection
+    #               is whats used for container  publishing.
+    volumes:
+      - name: docker-sock
+        path: /var/run/docker.sock
+    commands:
+      # FIX!! - install docker properly in gf_builder_go_ubuntu
+      - apt-get update
+      - apt-get install -y docker.io
+
+      # "-u" - run unbuffered for stdout/stderr
+      - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=publish_containers
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  #-------------------------------
+  # # NOTIFY_COMPLETION
+  # - name: notify_completion
+  #   image: glofloworg/gf_builder_go_ubuntu:latest
+  #   environment:
+  #     GF_NOTIFY_COMPLETION_URL:
+  #       from_secret: gf_os__notify_completion_url
+  #   commands:
+  #     # "-u" - run unbuffered for stdout/stderr
+  #     - python3 -u /home/gf/py/ops/gf_builder_cli.py -run=notify_completion
+  #   when:
+  #     event:
+  #       - push
+  #     branch:
+  #       - master
+
+  #-------------------------------

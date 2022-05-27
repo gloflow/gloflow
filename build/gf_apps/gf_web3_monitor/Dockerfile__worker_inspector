@@ -1,0 +1,34 @@
+FROM alpine:3.12.0
+
+RUN apk update
+RUN apk upgrade
+
+RUN adduser --home /home/gf --disabled-password gf
+RUN mkdir -p /home/gf/bin
+RUN mkdir -p /home/gf/logs
+RUN mkdir -p /home/gf/config
+
+RUN chown -R gf /home/gf
+
+RUN apk add --update bash
+
+#------------
+ENTRYPOINT ["/home/gf/gf_eth_monitor_worker_inspector"]
+
+#------------
+# PY
+
+RUN apk --update add build-base
+RUN apk --update add python3
+RUN apk --update add python3-dev
+RUN apk --update add py-pip
+RUN pip install --upgrade pip
+
+ADD requirements__worker_inspector.txt /home/gf/requirements__worker_inspector.txt
+RUN pip install -r /home/gf/requirements__worker_inspector.txt
+
+RUN mkdir -p /home/gf/py/plugins
+ADD py/plugins/gf_plugin__get_contract_info.py /home/gf/py/plugins/gf_plugin__get_contract_info.py
+
+#------------
+ADD build/gf_eth_monitor_worker_inspector /home/gf/gf_eth_monitor_worker_inspector
