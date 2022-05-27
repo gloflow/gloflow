@@ -46,16 +46,16 @@ def main():
 		"gf_web3_monitor": {
 			"service_name_str":                 "gf_web3_monitor",
 			"service_dir_path_str":             "%s/../../../go/gf_web3"%(modd_str),
-			"service_bin_output_path_str":      "%s/../../../build/gf_web3_monitor"%(modd_str),
+			"service_bin_output_path_str":      "%s/../../../build/gf_apps/gf_web3_monitor/gf_web3_monitor"%(modd_str),
 			"service_cont_image_name_str":      f"glofloworg/gf_web3_monitor:{service_cont_image_tag_str}",
-			"service_cont_dockerfile_path_str": f"{modd_str}/../../../Dockerfile",
+			"service_cont_dockerfile_path_str": f"{modd_str}/../../../build/gf_apps/gf_web3_monitor/Dockerfile",
 		},
 		"gf_eth_monitor_worker_inspector": {
 			"service_name_str":                 "gf_eth_monitor_worker_inspector",
 			"service_dir_path_str":             "%s/../../../go/gf_web3/gf_eth_monitor_worker_inspector"%(modd_str),
-			"service_bin_output_path_str":      "%s/../../../build/gf_eth_monitor_worker_inspector"%(modd_str),
+			"service_bin_output_path_str":      "%s/../../../build/gf_apps/gf_web3_monitor/gf_eth_monitor_worker_inspector"%(modd_str),
 			"service_cont_image_name_str":      f"glofloworg/gf_eth_monitor_worker_inspector:{service_cont_image_tag_str}",
-			"service_cont_dockerfile_path_str": f"{modd_str}/../../../Dockerfile__worker_inspector",
+			"service_cont_dockerfile_path_str": f"{modd_str}/../../../build/gf_apps/gf_web3_monitor/Dockerfile__worker_inspector",
 		}
 	}
 	
