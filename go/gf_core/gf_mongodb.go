@@ -29,7 +29,6 @@ import (
 	"os" 
 	"time"
 	"strings"
-	// "encoding/json"
 	"os/exec"
 	"context"
 	"crypto/tls"
@@ -39,6 +38,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	// "encoding/json"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -332,17 +332,17 @@ func Mongo__upsert(p_query bson.M,
 
 //-------------------------------------------------
 // INSERT_BULK
-func Mongo__insert_bulk(p_ids_lst []string,
-	p_record_lst    []interface{},
-	p_coll_name_str string,
-	p_meta_map      map[string]interface{}, // data describing the DB write op 
-	p_ctx           context.Context,
-	p_runtime_sys   *Runtime_sys) *GF_error {
+func MongoInsertBulk(pIDsLst []string,
+	pRecordsLst  []interface{},
+	pCollNameStr string,
+	pMetaMap     map[string]interface{}, // data describing the DB write op 
+	pCtx         context.Context,
+	pRuntimeSys  *RuntimeSys) *GFerror {
 
 	models := []mongo.WriteModel{}
-	for i, id_str := range p_ids_lst {
+	for i, IDstr := range pIDsLst {
 
-		replacement_doc := p_record_lst[i]
+		replacementDoc := pRecordsLst[i]
 
 		// FIX!! - "$set" - replaces existing doc with _id with this new one. 
 		//                  but if ID is some sort of hash of the document (as is in a few GF apps)
@@ -350,20 +350,20 @@ func Mongo__insert_bulk(p_ids_lst []string,
 		//                  so the DB update with a replacement doc is redundant. 
 		//                  fix this special (but frequent in GF) case.
 		model := mongo.NewUpdateOneModel().
-			SetFilter(bson.D{{"_id", id_str}}).
-			SetUpdate(bson.M{"$set": replacement_doc,}).
+			SetFilter(bson.D{{"_id", IDstr}}).
+			SetUpdate(bson.M{"$set": replacementDoc,}).
 			SetUpsert(true) // upsert=true - insert new document if the _id doesnt exist
 		models = append(models, model)
 	}
 
 	opts := options.BulkWrite().SetOrdered(false)
 
-	r, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).BulkWrite(p_ctx, models, opts)
+	r, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).BulkWrite(pCtx, models, opts)
 	if err != nil {
 		gf_err := Mongo__handle_error("failed to bulk write new documents into the DB",
 			"mongodb_write_bulk_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 
