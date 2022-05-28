@@ -40,8 +40,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3_monitor_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -276,7 +276,7 @@ func Run(pConfig *GF_config,
 	web3Config := &gf_eth_core.GF_config{
 		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
 	}
-	gf_web3_monitor_lib.InitService(gfSoloHTTPmux,
+	gf_web3_lib.InitService(gfSoloHTTPmux,
 		web3Config,
 		pRuntimeSys)
 

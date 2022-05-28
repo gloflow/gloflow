@@ -22,7 +22,9 @@ package gf_images_lib
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
@@ -140,7 +142,7 @@ func Init_service(p_http_mux *http.ServeMux,
 // An HTTP servr is started and listens on a supplied port.
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
-func Run_service(p_mux *http.ServeMux,
+func Run_service(pHTTPmux *http.ServeMux,
 	pServiceInfo   *gf_images_core.GFserviceInfo,
 	p_init_done_ch chan bool,
 	p_log_fun      func(string, string)) {
@@ -205,7 +207,7 @@ func Run_service(p_mux *http.ServeMux,
 
 	//------------------------
 	// INIT
-	Init_service(p_mux, pServiceInfo, gf_config, runtime_sys)
+	Init_service(pHTTPmux, pServiceInfo, gf_config, runtime_sys)
 
 	//------------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
@@ -215,15 +217,12 @@ func Run_service(p_mux *http.ServeMux,
 
 	//----------------------
 
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", pServiceInfo.Port_str))
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(fmt.Sprintf(":%s", pServiceInfo.Port_str), nil)
-	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - %s", pServiceInfo.Port_str)
-		runtime_sys.Log_fun("ERROR", msg_str)
-		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
-		
-		panic(fmt.Sprint(http_err))
+	portInt, err := strconv.Atoi(pServiceInfo.Port_str)
+	if err != nil {
+		fmt.Println(err)
+		panic(1)
 	}
+
+	// SERVER_INIT - blocking
+	gf_rpc_lib.ServerInitWithMux(portInt, pHTTPmux)
 }

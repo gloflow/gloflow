@@ -2,8 +2,6 @@ module github.com/gloflow/gloflow
 
 go 1.16
 
-replace github.com/gloflow/gloflow-web3-monitor => ./../gloflow-web3-monitor
-
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/andybalholm/cascadia v1.2.0 // indirect
@@ -18,7 +16,6 @@ require (
 	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/getsentry/sentry-go v0.13.0
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/gloflow/gloflow-web3-monitor v0.0.0-20220525163604-225a141e685e // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
