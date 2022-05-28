@@ -32,9 +32,9 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_tx"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_contract"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
 	// "go.mongodb.org/mongo-driver/bson"
 	// "github.com/davecgh/go-spew/spew"
 )

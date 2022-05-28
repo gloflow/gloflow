@@ -22,7 +22,7 @@ package main
 import (
 	"strings"
 	"github.com/spf13/viper"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
 
 //-------------------------------------------------------------

@@ -34,8 +34,8 @@ import (
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	eth_common "github.com/ethereum/go-ethereum/common"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_contract"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
 	"github.com/davecgh/go-spew/spew"
 )
 

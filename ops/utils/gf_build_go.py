@@ -33,8 +33,7 @@ def run_in_cont(p_name_str,
     p_local_dev_bool = False):
     assert isinstance(p_local_dev_bool, bool)
 
-    repo_local_path_str        = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
-    gfweb3_repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow-web3-monitor').strip()
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
 
     cmd_lst = [
         "sudo", "docker", "run",
@@ -46,12 +45,6 @@ def run_in_cont(p_name_str,
         # mount GF repo into the container
         "-v", f"{repo_local_path_str}:/home/gf"
     ]
-    if p_local_dev_bool:
-
-        # for faster local dev without needing to push to github when web3 repo is changed.
-        # mounts that repo into the home/ dir where the build code in the container can find it.
-        # mount GF web3 repo
-        volumes_lst.extend(["-v", f"{gfweb3_repo_local_path_str}:/home/gloflow-web3-monitor"])
 
     cmd_lst.extend(volumes_lst)
 

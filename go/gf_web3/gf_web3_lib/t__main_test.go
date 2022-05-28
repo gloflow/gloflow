@@ -29,8 +29,8 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_nft"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
 //---------------------------------------------------

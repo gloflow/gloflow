@@ -28,10 +28,10 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_contract"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_blocks"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_worker"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_worker"
 	// "github.com/davecgh/go-spew/spew"
 )
 

@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"testing"
 	"context"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	// eth_common "github.com/ethereum/go-ethereum/common"
 	// "github.com/stretchr/testify/assert"
 	// "github.com/gloflow/gloflow/go/gf_core"

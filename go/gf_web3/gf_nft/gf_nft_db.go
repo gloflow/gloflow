@@ -22,7 +22,7 @@ package gf_nft
 import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_nft/gf_nft_extern_services"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
 
 //-------------------------------------------------

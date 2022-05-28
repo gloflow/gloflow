@@ -23,7 +23,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
 
 //-------------------------------------------------

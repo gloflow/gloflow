@@ -25,8 +25,8 @@ import (
 	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_nft/gf_nft_extern_services"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
 
 //-------------------------------------------------

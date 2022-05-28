@@ -26,9 +26,9 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_contract"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_tx"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_contract"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
 	"github.com/davecgh/go-spew/spew"
 	// "github.com/gloflow/gloflow/go/gf_core"
 )

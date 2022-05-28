@@ -28,8 +28,8 @@ import (
 	"github.com/spf13/viper"
 	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_web3_lib"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 )
 
 //-------------------------------------------------

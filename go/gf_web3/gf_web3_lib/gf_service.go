@@ -28,13 +28,13 @@ import (
 	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_blocks"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_tx"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_indexer"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_worker"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_address"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_nft"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_indexer"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_worker"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
 //-------------------------------------------------

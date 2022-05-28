@@ -24,13 +24,13 @@ import (
 	"context"
 	"time"
 	"strings"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/getsentry/sentry-go"
-	// "go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_stats/gf_stats_lib"
-	"github.com/gloflow/gloflow-web3-monitor/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	// "go.mongodb.org/mongo-driver/bson/primitive"
+	// "go.mongodb.org/mongo-driver/bson"
 	// "github.com/davecgh/go-spew/spew"
 )
 
