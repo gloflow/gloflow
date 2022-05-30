@@ -40,17 +40,17 @@ def run__view_realtime(p_cmd_lst,
 	p = subprocess.Popen(p_cmd_lst, shell=False, stdout=subprocess.PIPE, bufsize=1,
 		env=p_env_map)
 
-	t = threading.Thread(target=read_process_stdout, args=(p.stdout, p_view__type_str, p_view__color_str))
+	t = threading.Thread(target=read_process_std_stream, args=(p.stdout, p_view__type_str, p_view__color_str))
 	t.start()
 
 	return p
 
 #-------------------------------------------------------------
-def read_process_stdout(p_out,
+def read_process_std_stream(p_std_stream,
 	p_view_type_str,
 	p_view_color_str):
 
-	for line in iter(p_out.readline, b''):
+	for line in iter(p_std_stream.readline, b''):
 		
 		header_color_str = fg(p_view_color_str)
 		line_str         = line.strip().decode("utf-8")
@@ -61,16 +61,20 @@ def read_process_stdout(p_out,
 		else:
 			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
 
-	p_out.close()
+	p_std_stream.close()
 
 #---------------------------------------------------
 # RUN
 def run(p_cmd_str,
 	p_env_map = {},
-	p_exit_on_fail_bool = True):
+	p_exit_on_fail_bool = True,
+	p_print_cmd_str     = True):
 
 	# env map has to contains all the parents ENV vars as well
 	p_env_map.update(os.environ)
+
+	if p_print_cmd_str:
+		print(f"{fg('yellow')}cmd{attr(0)} {fg('green')}{p_cmd_str}{attr(0)}")
 
 	p = subprocess.Popen(p_cmd_str,
 		env     = p_env_map,
@@ -79,16 +83,23 @@ def run(p_cmd_str,
 		stderr  = subprocess.PIPE,
 		bufsize = 1)
 
-	for line in iter(p.stdout.readline, b''):	
-		line_str = line.strip().decode("utf-8")
-		print(line_str)
+	t_o = threading.Thread(target=read_process_std_stream, args=(p.stdout, "stdout", "green"))
+	t_o.start()
 
-	for line in iter(p.stderr.readline, b''):	
-		line_str = line.strip().decode("utf-8")
-		print(line_str)
+	t_e = threading.Thread(target=read_process_std_stream, args=(p.stderr, "stderr", "yellow"))
+	t_e.start()
 
-	p.communicate()
-	
+	# for line in iter(p.stdout.readline, b''):	
+	# 	line_str = line.strip().decode("utf-8")
+	# 	print(line_str)
+	#
+	# for line in iter(p.stderr.readline, b''):	
+	# 	line_str = line.strip().decode("utf-8")
+	# 	print(line_str)
+
+	# p.communicate()
+	p.wait()
+
 	if p_exit_on_fail_bool:
 		if not p.returncode == 0:
 
