@@ -49,10 +49,16 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 		chainStr = valStr.(string)
 	}
 
+	var fetcherNameStr string
+	if valStr, ok := inputMap["fetcher_name_str"]; ok {
+		fetcherNameStr = valStr.(string)
+	}
+
 	input := &GFindexAddressInput{
-		UserIDstr:  pUserIDstr,
-		AddressStr: addressStr,
-		ChainStr:   chainStr,
+		UserIDstr:      pUserIDstr,
+		AddressStr:     addressStr,
+		ChainStr:       chainStr,
+		FetcherNameStr: fetcherNameStr,
 	}
 	return input, nil
 }

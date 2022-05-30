@@ -31,6 +31,10 @@ type GFindexAddressInput struct {
 	UserIDstr  gf_core.GF_ID
 	AddressStr string
 	ChainStr   string
+
+	// if a specific NFT fetcher should be used (perhaps one
+	// thats not included by the OS gloflow core)
+	FetcherNameStr string
 }
 
 type GFgetInput struct {
