@@ -68,10 +68,33 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 //-------------------------------------------------
 func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 	
-	return nil
+
+
+	nftsLst, gfErr := DBgetByOwner(pInput.AddressStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	// export NFT data for public usage
+	nftsExternLst := []*GFnftExtern{}
+	for _, nft := range nftsLst {
+
+		nftExtern := &GFnftExtern{
+			OwnerAddressStr:    nft.OwnerAddressStr,
+			TokenIDstr:         nft.TokenIDstr,
+			ContractAddressStr: nft.ContractAddressStr,
+			ContractNameStr:    nft.ContractNameStr,
+			ChainStr:           nft.ChainStr,
+		}
+
+		nftsExternLst = append(nftsExternLst, nftExtern)
+	}
+
+	return nftsExternLst, nil
 }
 
 //-------------------------------------------------

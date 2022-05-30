@@ -264,6 +264,9 @@ function create_eth_address(p_eth_address_str :string,
 		if (!added_bool) {
 			info_container_element = $(`
 				<div class="info">
+					<div class="index_nfts_for_owner_btn">
+						index NFTs
+					</div>
 					<div class="etherscan_btn">
 						<a href="https://etherscan.io/address/${p_eth_address_str}" target="_blank">e</a>
 					</div>
@@ -272,6 +275,11 @@ function create_eth_address(p_eth_address_str :string,
 					</div>
 				</div>`);
 
+			//------------------------------
+			$(info_container_element).find(".index_nfts_for_owner_btn").on("click", ()=>{
+
+				console.log("index owner NFTs")
+			});
 			//------------------------------
 			$(info_container_element).find(".add_new_address_btn").on("click", ()=>{
 

@@ -45,6 +45,14 @@ type GFnft struct {
 	AlchemyIDstr       gf_core.GF_ID `bson:"alchemy_id_str"`
 }
 
+type GFnftExtern struct {
+	OwnerAddressStr    string `json:"owner_address_str"`
+	TokenIDstr         string `json:"token_id_str"`
+	ContractAddressStr string `json:"contract_address_str"`
+	ContractNameStr    string `json:"contract_name_str"`
+	ChainStr           string `json:"chain_str"`
+}
+
 //-------------------------------------------------
 func get(pTokenIDstr string,
 	pCollectionNameStr string,

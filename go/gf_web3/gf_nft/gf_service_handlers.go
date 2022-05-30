@@ -109,14 +109,16 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 				//---------------------
 
-				gfErr = pipelineGetByOwner(input,
+				nftsExternLst, gfErr := pipelineGetByOwner(input,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				outputMap := map[string]interface{}{}
+				outputMap := map[string]interface{}{
+					"nfts_lst": nftsExternLst,
+				}
 				return outputMap, nil
 			}
 

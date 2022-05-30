@@ -61,6 +61,15 @@ export function get_http_api() {
 					p_chain_str);
 				return output_map;
 			},
+            
+            // WEB3_NFT_INDEX_FOR_ADDRESS
+            "web3_nft_index_for_address_fun": async (p_address_str :string,
+                p_chain_str :string)=>{
+
+                const output_map = await web3_nft_index_for_address(p_address_str,
+                    p_chain_str);
+                return output_map;
+            },
 
 			//------------------------
 		}
@@ -112,6 +121,40 @@ async function viz_update(p_component_name_str :string,
             'url':         url_str,
             'type':        'POST',
             'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+                
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error': (jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
+    });
+    return p;
+}
+
+//--------------------------------------------------------
+export async function web3_nft_index_for_address(p_address_str :string,
+    p_chain_str :string) {
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+		const url_str = `/v1/web3/nft/index_address`;
+        const data_map = {
+            "address_str": p_address_str,
+            "chain_str":   p_chain_str,
+        };
+
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 
