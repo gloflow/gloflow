@@ -123,7 +123,7 @@ func Run(pConfig *GF_config,
 	sentry_hub_clone := sentry.CurrentHub().Clone()
 	go func(p_local_hub *sentry.Hub) {
 
-		admin_http_mux := http.NewServeMux()
+		adminHTTPmux := http.NewServeMux()
 
 		admin_service_info := &gf_admin_lib.GF_service_info{
 			Name_str:                                "gf_admin",
@@ -155,7 +155,7 @@ func Run(pConfig *GF_config,
 		gfErr := gf_admin_lib.InitNewService(pConfig.Templates_paths_map,
 			admin_service_info,
 			admin_identity__service_info,
-			admin_http_mux,
+			adminHTTPmux,
 			p_local_hub,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -163,7 +163,7 @@ func Run(pConfig *GF_config,
 		}
 
 		// SERVER_INIT - blocking
-		gf_rpc_lib.Server__init_with_mux(portAdminInt, admin_http_mux)
+		gf_rpc_lib.Server__init_with_mux(portAdminInt, adminHTTPmux)
 
 	}(sentry_hub_clone)
 

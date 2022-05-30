@@ -118,8 +118,6 @@ def run(p_name_str,
         print("")
         print("")
 
-    
-
     #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
     #                  required libraries are present. so its safest to compile to a statically
@@ -186,7 +184,6 @@ def run(p_name_str,
 
     #-----------------------------
     
-    print(c_str)
     _, _, exit_code_int = gf_core_cli.run(c_str)
 
     # IMPORTANT!! - if "go build" returns a non-zero exit code in some environments (CI) we

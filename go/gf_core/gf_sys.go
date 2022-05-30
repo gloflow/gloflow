@@ -58,9 +58,26 @@ type Runtime_sys struct {
 	HTTPproxyServerURIstr string
 }
 
+//-------------------------------------------------
 // PLUGINS
 type External_plugins struct {
-	EventCallback        func(string, map[string]interface{}, *Runtime_sys)         *GF_error
-	SecretCreateCallback func(string, map[string]interface{}, string, *Runtime_sys) *GF_error
-	SecretGetCallback    func(string, *Runtime_sys) (map[string]interface{}, *GF_error)
+
+	//---------------------------
+	// EVENTS
+	EventCallback func(string, map[string]interface{}, *RuntimeSys) *GFerror
+
+	//---------------------------
+	// SECRETS
+	SecretCreateCallback func(string, map[string]interface{}, string, *RuntimeSys) *GFerror
+	SecretGetCallback    func(string, *RuntimeSys) (map[string]interface{}, *GFerror)
+
+	//---------------------------
+	// NFT
+	// get metadata on defined fetchers
+	NFTgetFetchersMetaCallback func() map[string]map[string]interface{}
+
+	// fetch NFTs for a particular owner account using a particular fetcher (with name)
+	NFTfetchForOwnerAddressCallback func(string, string, *RuntimeSys) *GFerror
+
+	//---------------------------
 }
