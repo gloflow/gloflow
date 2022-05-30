@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
 import * as gf_utils from "gf_utils";
 
-declare var web3;
+declare var Web3;
 
 //--------------------------------------------------------
 export async function init_observed(p_parent_element,
@@ -31,8 +31,8 @@ export async function init_observed(p_parent_element,
 	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		const component_name_str = "web3_addresses_observed";
-		const address_type_str  = "observed";
-		const address_chain_str = "eth";
+		const address_type_str   = "observed";
+		const address_chain_str  = "eth";
 		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
 			address_chain_str);
 		const eth_addresses_lst = output_map["addresses_lst"];
@@ -318,6 +318,7 @@ function create_eth_address_input(p_address_type_str :string,
 		</div>`);
 
 
+	// ADD_NEW_ADDRESS
 	$(new_address_container).find(".confirm_btn").on("click", async ()=>{
 
 		const new_address_str = $(new_address_container).find("input").val();
@@ -325,7 +326,7 @@ function create_eth_address_input(p_address_type_str :string,
 		if (new_address_str != "") {
 
 			// VALIDATE
-			const valid_bool = web3.utils.isAddress(new_address_str)
+			const valid_bool = Web3.utils.isAddress(new_address_str)
 			if (!valid_bool) {
 				$(new_address_container).css("background-color", "red");
 				return;
