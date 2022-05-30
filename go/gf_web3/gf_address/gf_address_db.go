@@ -34,8 +34,6 @@ func DBgetAll(pAddressTypeStr string,
 	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.Runtime_sys) ([]*GFchainAddress, *gf_core.GFerror) {
 
-
-
 	collNameStr := "gf_web3_addresses"
 
 	findOpts := options.Find()
@@ -58,8 +56,6 @@ func DBgetAll(pAddressTypeStr string,
 		return nil, gfErr
 	}
 
-	
-	
 	var addressesLst []*GFchainAddress
 	err := cursor.All(pCtx, &addressesLst)
 	if err != nil {
@@ -69,10 +65,6 @@ func DBgetAll(pAddressTypeStr string,
 			err, "gf_address", pRuntimeSys)
 		return nil, gfErr
 	}
-
-
-
-	
 
 	return addressesLst, nil
 }

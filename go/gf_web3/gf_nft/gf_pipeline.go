@@ -43,11 +43,16 @@ type GFgetInput struct {
 	CollectionNameStr string
 }
 
+type GFgetByOwnerInput struct {
+	UserIDstr  gf_core.GF_ID
+	AddressStr string
+}
+
 //-------------------------------------------------
 func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	gfErr := indexAddress(pInput.AddressStr,
@@ -61,13 +66,23 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 }
 
 //-------------------------------------------------
+func pipelineGetByOwner(pInput *GFgetByOwnerInput,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	
+	return nil
+}
+
+//-------------------------------------------------
 func pipelineGet(pInput *GFgetInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	nft, gfErr := get(pInput.TokenIDstr,
 		pInput.CollectionNameStr,
-		pCtx, pRuntimeSys)
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

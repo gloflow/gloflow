@@ -424,6 +424,8 @@ def parse_args():
 	if args_namespace.local_dev == "true":
 		local_dev_bool = True
 
+	fetch_deps_bool = args_namespace.fetch_deps
+
 	args_map = {
 		"run":              args_namespace.run,
 		"app":              args_namespace.app,
@@ -433,7 +435,7 @@ def parse_args():
 		"dockerhub_pass":   gf_dockerhub_pass_str,
 		"docker_sudo":      args_namespace.docker_sudo,
 		"build_outof_cont": args_namespace.build_outof_cont,
-		"fetch_deps":       args_namespace.fetch_deps,
+		"fetch_deps":       fetch_deps_bool,
 		"page_name":        args_namespace.page_name,
 		"local_dev":        local_dev_bool
 	}

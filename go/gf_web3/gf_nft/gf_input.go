@@ -63,6 +63,32 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	return input, nil
 }
 
+
+//-------------------------------------------------
+// GET
+func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
+	pReq        *http.Request,
+	pResp       http.ResponseWriter,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.Runtime_sys) (*GFgetByOwnerInput, *gf_core.GFerror) {
+
+	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	var addressStr string
+	if valStr, ok := inputMap["address_str"]; ok {
+		addressStr = valStr.(string)
+	}
+
+	input := &GFgetByOwnerInput{
+		UserIDstr:  pUserIDstr,
+		AddressStr: addressStr,
+	}
+	return input, nil
+}
+
 //-------------------------------------------------
 // GET
 func httpInputForGet(pUserIDstr gf_core.GF_ID,

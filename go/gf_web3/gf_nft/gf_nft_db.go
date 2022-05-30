@@ -21,9 +21,54 @@ package gf_nft
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
+
+//-------------------------------------------------
+func DBgetByOwner(pAddressStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
+
+
+	collNameStr := "gf_web3_nfts"
+	
+
+	findOpts := options.Find()
+	cursor, gfErr := gf_core.MongoFind(bson.M{
+			"owner_address_str": pAddressStr,
+			"deleted_bool":      false,
+		},
+		findOpts,
+		map[string]interface{}{
+			"owner_address_str":  pAddressStr,
+			"caller_err_msg_str": "failed to get all NFTs for an owner address from the DB",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	
+	
+	var nftsLst []*GFnft
+	err := cursor.All(pCtx, &nftsLst)
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to get all NFTs for an owner address from cursor",
+			"mongodb_cursor_decode",
+			map[string]interface{}{},
+			err, "gf_nft", pRuntimeSys)
+		return nil, gfErr
+	}
+
+
+	return nil, nil
+}
 
 //-------------------------------------------------
 func DBcreateBulkNFTs(pNFTsLst []*GFnft,

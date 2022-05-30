@@ -31,7 +31,7 @@ import (
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
 	pConfig     *gf_eth_core.GF_config,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -53,8 +53,9 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 	//---------------------
 	// INDEX_ADDRESS
+	// this is potentially a long-running process
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/index_address",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 
 				//---------------------
@@ -90,9 +91,47 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		pRuntimeSys)
 
 	//---------------------
-	// GET
+	// GET_BY_OWNER - all NFTs for a particular owner address
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/get_by_owner",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+			if pReq.Method == "POST" {
+
+				//---------------------
+				// INPUT
+				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
+
+				input, gfErr := httpInputForGetByOwner(userIDstr, pReq, pResp,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//---------------------
+
+				gfErr = pipelineGetByOwner(input,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				outputMap := map[string]interface{}{}
+				return outputMap, nil
+			}
+
+			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
+			//               and should not return any JSON data, so mark data_map as nil t prevent gf_rpc_lib
+			//               from returning it.
+			return nil, nil
+		},
+		rpcHandlerRuntime,
+		pRuntimeSys)
+
+	//---------------------
+	// GET - individual NFT information
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/get",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 
 				//---------------------
