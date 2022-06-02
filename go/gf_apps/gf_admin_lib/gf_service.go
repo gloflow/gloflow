@@ -50,7 +50,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	pIdentityServiceInfo *gf_identity_lib.GF_service_info,
 	pHTTPmux             *http.ServeMux,
 	pLocalHub            *sentry.Hub,
-	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//------------------------
 	// STATIC FILES SERVING

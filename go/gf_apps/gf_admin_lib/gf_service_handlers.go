@@ -47,7 +47,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	p_service_info          *GF_service_info,
 	p_identity_service_info *gf_identity_lib.GF_service_info,
 	p_local_hub             *sentry.Hub,
-	pRuntimeSys             *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys             *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
@@ -138,7 +138,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	// ADMIN_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -192,7 +192,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	// ADMIN_DASHBOARD
 	// AUTH - only logged in admins can use the dashboard
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/dashboard",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -227,7 +227,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	}
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/healthz",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		rpcHandlerRuntimeHealth,
@@ -240,7 +240,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 func templatesLoad(p_templates_paths_map map[string]string,
-	pRuntimeSys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+	pRuntimeSys *gf_core.Runtime_sys) (*gf_templates, *gf_core.GFerror) {
 
 	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
 	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]

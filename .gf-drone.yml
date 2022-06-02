@@ -114,6 +114,8 @@ steps:
 
       GF_ALCHEMY_SERVICE_ACC__API_KEY:
         from_secret: gf_os__alchemy_service_api_key_test
+
+      GF_TEST_MONGODB_HOST_PORT: mongo
       
     commands:
 
