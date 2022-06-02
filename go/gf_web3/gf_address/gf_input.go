@@ -31,25 +31,24 @@ func httpIputForAdd(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFaddInput, *gf_core.GFerror) {
-
+	pRuntimeSys *gf_core.RuntimeSys) (*GFaddInput, *gf_core.GFerror) {
 
 	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	var addressStr string
+	var addressStr string 
 	if valStr, ok := inputMap["address_str"]; ok {
 		addressStr = valStr.(string)
 	}
 
-	var typeStr string
+	var typeStr string // "my"|"observed"
 	if valStr, ok := inputMap["type_str"]; ok {
 		typeStr = valStr.(string)
 	}
 
-	var chainStr string
+	var chainStr string // "eth"|"tezos"
 	if valStr, ok := inputMap["chain_str"]; ok {
 		chainStr = valStr.(string)
 	}
@@ -68,15 +67,12 @@ func httpIputForAdd(pUserIDstr gf_core.GF_ID,
 func httpIputForGetAll(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllInput, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgetAllInput, *gf_core.GFerror) {
 
-	
-	
-	
 	queryArgsMap := pReq.URL.Query()
 
 	// TYPE
-	var typeStr string;  // "my"|"observed"
+	var typeStr string // "my"|"observed"
 	if valuesLst, ok := queryArgsMap["chain"]; ok {
 		typeStr = valuesLst[0]
 	} else {
@@ -88,7 +84,7 @@ func httpIputForGetAll(pUserIDstr gf_core.GF_ID,
 	}
 
 	// CHAIN
-	var chainStr string; // "eth"|"tezos"
+	var chainStr string // "eth"|"tezos"
 	if valuesLst, ok := queryArgsMap["chain"]; ok {
 		chainStr = valuesLst[0]
 	} else {

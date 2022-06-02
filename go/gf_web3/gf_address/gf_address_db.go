@@ -74,8 +74,6 @@ func DBadd(pAddress *GFchainAddress,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
-	
-
 	collNameStr := "gf_web3_addresses"
 	
 	gfErr := gf_core.MongoInsert(pAddress,

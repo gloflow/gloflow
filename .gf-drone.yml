@@ -111,10 +111,17 @@ steps:
       # cache for the "go" tool
       GOCACHE: /home/gf/go_cache
       GOMODCACHE: /home/gf/go_mod_cache
+
+      GF_ALCHEMY_SERVICE_ACC__API_KEY:
+        from_secret: gf_os__alchemy_service_api_key_test
       
     commands:
 
       # "mongo" - drone.io mongo service is given the same hostname as the name of the container
+
+      # GF_WEB3
+      - cd /home/gf/go/gf_web3/gf_web3_lib
+      - go test -v -mongodb_host=mongo
 
       # GF_HOME
       - cd /home/gf/go/gf_apps/gf_home_lib

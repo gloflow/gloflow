@@ -42,10 +42,10 @@ export function get_http_api() {
 			//------------------------
 			// WEB3
 			//------------------------
-			// WEB3_ADDRESSES_GET
-			"web3_addresses_get_fun": async (p_type_str :string,
+			// WEB3_ADDRESSES_GET_ALL
+			"web3_addresses_get_all_fun": async (p_type_str :string,
 				p_chain_str :string)=>{
-				const output_map = await web3_addresses_get(p_type_str,
+				const output_map = await web3_addresses_get_all(p_type_str,
 					p_chain_str);
 				return output_map;
 			},
@@ -176,7 +176,7 @@ export async function web3_nft_index_for_address(p_address_str :string,
 }
 
 //--------------------------------------------------------
-export async function web3_addresses_get(p_type_str  :string,
+export async function web3_addresses_get_all(p_type_str  :string,
 	p_chain_str :string) {
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
