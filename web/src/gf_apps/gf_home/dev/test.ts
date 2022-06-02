@@ -80,8 +80,8 @@ function main(p_log_fun) {
 			//------------------------
 			// WEB3
 			//------------------------
-			// WEB3_GET_ADDRESSES
-			"web3_addresses_get_fun": async (p_type_str :string,
+			// WEB3_GET_ALL_ADDRESSES
+			"web3_addresses_get_all_fun": async (p_type_str :string,
 				p_chain_str :string)=>{
 
 				var output_map;

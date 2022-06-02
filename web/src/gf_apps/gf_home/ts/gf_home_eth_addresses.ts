@@ -123,7 +123,7 @@ export async function init_my(p_parent_element,
 		const component_name_str = "web3_addresses_my";
 		const address_type_str   = "my";
 		const address_chain_str  = "eth";
-		const output_map = await p_http_api_map["home"]["web3_addresses_get_fun"](address_type_str,
+		const output_map = await p_http_api_map["home"]["web3_addresses_get_all_fun"](address_type_str,
 			address_chain_str);
 		const eth_addresses_lst = output_map["addresses_lst"];
 
