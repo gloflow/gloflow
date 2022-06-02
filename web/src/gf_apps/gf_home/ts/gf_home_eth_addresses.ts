@@ -265,7 +265,7 @@ function create_eth_address(p_eth_address_str :string,
 			info_container_element = $(`
 				<div class="info">
 					<div class="index_nfts_for_owner_btn">
-						index NFTs
+						get NFTs
 					</div>
 					<div class="etherscan_btn">
 						<a href="https://etherscan.io/address/${p_eth_address_str}" target="_blank">e</a>

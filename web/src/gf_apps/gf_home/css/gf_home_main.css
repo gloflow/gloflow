@@ -73,7 +73,7 @@ body {
 #home_container #my_eth_addresses .add_new_address_btn {
 	position: absolute;
     top: 0px;
-    right: -52px;
+    right: -109px;
     width: 26px;
     height: 26px;
     background-color: #897941;
@@ -151,11 +151,30 @@ body {
     padding-top: 6px;
 }
 
+.eth_address .index_nfts_for_owner_btn {
+	font-size: 10px;
+    color: white;
+    background-color: #bda85c;
+    width: 57px;
+    padding-left: 6px;
+    padding-right: 2px;
+    padding-top: 7px;
+    padding-bottom: 8px;
+    position: absolute;
+    right: -65px;
+    top: 0px;
+	cursor: pointer;
+	box-shadow: 9px 0px 11px #0000007a;
+}
+.eth_address .index_nfts_for_owner_btn:hover {
+	background-color: gray;
+}
+
 .eth_address .etherscan_btn {
 	width: 26px;
     height: 23px;
     background-color: #a9964f;
-    right: -26px;
+    right: -83px;
     position: absolute;
     top: 0px;
     text-align: center;
