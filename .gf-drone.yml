@@ -123,7 +123,7 @@ steps:
 
       # GF_WEB3
       - cd /home/gf/go/gf_web3/gf_web3_lib
-      - go test -v -mongodb_host=mongo
+      - go test -v
 
       # GF_HOME
       - cd /home/gf/go/gf_apps/gf_home_lib
