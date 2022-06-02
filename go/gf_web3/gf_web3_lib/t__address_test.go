@@ -20,11 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_web3_lib
 
 import (
+	"fmt"
 	"testing"
 	"context"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
 )
 
 //---------------------------------------------------
@@ -36,7 +38,7 @@ func TestAddresses(pTest *testing.T) {
 		pTest.FailNow()
 	}
 
-	// testWeb3MonitorServiceInt  := 2000
+	testGFserviceInt           := 2000
 	testIdentityServicePortInt := 2001
 	HTTPagent := gorequest.New()
 	ctx       := context.Background()
@@ -49,6 +51,26 @@ func TestAddresses(pTest *testing.T) {
 		runtime.RuntimeSys)	
 
 
+		
+	
+	testUserAddressEthStr := "0x4eDE0b31Fd116B8A00ADD6F449499Cd36b70AAE6"
+	testAddressTypeStr := "observed"
+	chainStr := "eth"
+	
+	gf_address.TaddAddress(testUserAddressEthStr,
+		testAddressTypeStr,
+		chainStr,
+		HTTPagent,
+		testGFserviceInt,
+		pTest)
 
+
+	fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDD")
+
+	gf_address.TgetAllAddresses(testAddressTypeStr,
+		chainStr,
+		HTTPagent,
+		testGFserviceInt,
+		pTest)
 
 }

@@ -73,7 +73,7 @@ func httpIputForGetAll(pUserIDstr gf_core.GF_ID,
 
 	// TYPE
 	var typeStr string // "my"|"observed"
-	if valuesLst, ok := queryArgsMap["chain"]; ok {
+	if valuesLst, ok := queryArgsMap["type"]; ok {
 		typeStr = valuesLst[0]
 	} else {
 		gfErr := gf_core.Error__create("incoming http request is missing the 'type' query-string arg",
