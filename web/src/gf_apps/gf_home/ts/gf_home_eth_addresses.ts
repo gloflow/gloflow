@@ -242,15 +242,15 @@ function init_no_address_dialog(p_container,
 }
 
 //--------------------------------------------------------
-function create_eth_address(p_eth_address_str :string,
+function create_eth_address(p_address_str :string,
 	p_address_type_str :string,
 	p_parent_element,
 	p_on_new_address_btn_fun,
 	p_http_api_map,
 	p_assets_paths_map) {
 	
-	const eth_address_short_start_str = `${p_eth_address_str.substr(0, 7)}`;
-	const eth_address_short_end_str   = `${p_eth_address_str.substr(p_eth_address_str.length-7, 7)}`;
+	const eth_address_short_start_str = `${p_address_str.substr(0, 7)}`;
+	const eth_address_short_end_str   = `${p_address_str.substr(p_address_str.length-7, 7)}`;
 	const eth_address_element = $(`
 		<div class="eth_address">
 			<div class="hex_address">${eth_address_short_start_str}...${eth_address_short_end_str}</div>
@@ -268,7 +268,7 @@ function create_eth_address(p_eth_address_str :string,
 						get NFTs
 					</div>
 					<div class="etherscan_btn">
-						<a href="https://etherscan.io/address/${p_eth_address_str}" target="_blank">e</a>
+						<a href="https://etherscan.io/address/${p_address_str}" target="_blank">e</a>
 					</div>
 					<div class="add_new_address_btn">
 						<img src="${p_assets_paths_map["gf_add_btn"]}" draggable="false"></img>
@@ -276,9 +276,22 @@ function create_eth_address(p_eth_address_str :string,
 				</div>`);
 
 			//------------------------------
-			$(info_container_element).find(".index_nfts_for_owner_btn").on("click", ()=>{
+			$(info_container_element).find(".index_nfts_for_owner_btn").on("click", async ()=>{
 
-				console.log("index owner NFTs")
+				console.log("index owner NFTs");
+
+
+
+				console.log("+++++++++++++++++++++++++++++++++++++++++++++++")
+
+
+				const nfts_container_element = await index_address_nfts(p_address_str,
+					p_http_api_map);
+
+
+				$(eth_address_element).append(nfts_container_element as HTMLElement);
+
+
 			});
 			//------------------------------
 			$(info_container_element).find(".add_new_address_btn").on("click", ()=>{
@@ -372,4 +385,89 @@ function create_eth_address_input(p_address_type_str :string,
 	});
 	
 	return new_address_container;
+}
+
+//--------------------------------------------------------
+function index_address_nfts(p_address_str :string,
+	p_http_api_map) {
+	
+
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
+
+
+
+		const chain_str = "eth";
+		const output_map = await p_http_api_map["home"]["web3_nft_index_for_address_fun"](p_address_str,
+			chain_str)
+
+
+		const nfts_lst = output_map["nfts_lst"];
+
+
+		const nfts_container = $(`
+			<div class="nfts_container">
+			
+			</div>`);
+		for (const nft_map of nfts_lst) {
+
+
+
+			console.log(">>>>", nft_map);
+
+
+			const owner_address_str = nft_map["owner_address_str"]
+			const token_id_str      = nft_map["token_id_str"]
+			const contract_address_str = nft_map["contract_address_str"]
+			const contract_name_str    = nft_map["contract_name_str"]
+			const chain_str            = nft_map["chain_str"]
+
+			const token_uri_raw_str = nft_map["token_uri_raw_str"]
+			const media_uri_raw_str = nft_map["media_uri_raw_str"]
+
+
+			const nft_element = $(`
+				<div class="nft">
+					<div class="owner_address">
+						${owner_address_str}
+					</div>
+
+					<div class="token_id">
+						${token_id_str}
+					</div>
+
+					<div class="contract_address">
+						${contract_address_str}
+					</div>
+
+					<div class="contract_name">
+						${contract_name_str}
+					</div>
+
+					<div class="chain">
+						${chain_str}
+					</div>
+
+					<div class="token_uri_raw">
+						${token_uri_raw_str}
+					</div>
+
+					<div class="media_uri_raw">
+						${media_uri_raw_str}
+					</div>
+				</div>`);
+			$(nfts_container).append(nft_element);
+
+		}
+
+
+
+		p_resolve_fun(nfts_container);
+
+
+	});
+	return p;
+
+
+
+	
 }
