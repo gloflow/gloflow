@@ -140,7 +140,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 	spew.Dump(bodyStr)
 
 	if (len(errs) > 0) {
-		gfErr := gf_core.Error__create("failed to query opensea http API for all assets for address",
+		gfErr := gf_core.Error__create("failed to query alchemy http API for all assets for address",
 			"http_client_req_error",
 			map[string]interface{}{
 				"extern_service_str": "alchemy",
@@ -155,7 +155,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
-		gfErr := gf_core.Error__create("failed to decode JSON response from opensea http API for all assets for address",
+		gfErr := gf_core.Error__create("failed to decode JSON response from alchemy http API for all assets for address",
 			"json_decode_error",
 			map[string]interface{}{
 				"extern_service_str": "alchemy",

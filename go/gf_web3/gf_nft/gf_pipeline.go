@@ -54,17 +54,25 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 
+	
+	if pInput.FetcherNameStr == "alchemy" {
+		
+		serviceSourceStr := "alchemy"
+		nftsLst, gfErr := indexAddress(pInput.AddressStr,
+			serviceSourceStr,
+			pConfig,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
 
-	nftsLst, gfErr := indexAddress(pInput.AddressStr,
-		"alchemy",
-		pConfig, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
+		nftsExternLst := getNFTextern(nftsLst)
+
+		return nftsExternLst, nil
 	}
 
-	nftsExternLst := getNFTextern(nftsLst)
-
-	return nftsExternLst, nil
+	return nil, nil
 }
 
 //-------------------------------------------------

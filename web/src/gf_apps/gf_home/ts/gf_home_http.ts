@@ -148,9 +148,12 @@ export async function web3_nft_index_for_address(p_address_str :string,
     const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
 		const url_str = `/v1/web3/nft/index_address`;
+        const fetcher_name_str = "alchemy";
+
         const data_map = {
             "address_str": p_address_str,
             "chain_str":   p_chain_str,
+            "fetcher_name_str": fetcher_name_str,
         };
 
         $.ajax({
