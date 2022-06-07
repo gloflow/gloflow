@@ -41,6 +41,10 @@ type GFnft struct {
 	ContractNameStr    string `bson:"contract_name_str"`
 	ChainStr           string `bson:"chain_str"`
 
+	// URIs
+	TokenURIrawStr     string `bson:"token_uri_raw_str"`
+	MediaURIrawStr     string `bson:"media_uri_raw_str"`
+
 	OpenSeaIDstr       gf_core.GF_ID `bson:"open_sea_id_str"`
 	AlchemyIDstr       gf_core.GF_ID `bson:"alchemy_id_str"`
 }
@@ -51,6 +55,9 @@ type GFnftExtern struct {
 	ContractAddressStr string `json:"contract_address_str"`
 	ContractNameStr    string `json:"contract_name_str"`
 	ChainStr           string `json:"chain_str"`
+	
+	TokenURIrawStr     string `json:"token_uri_raw_str"`
+	MediaURIrawStr     string `json:"media_uri_raw_str"`
 }
 
 //-------------------------------------------------
@@ -66,6 +73,9 @@ func getNFTextern(pNFTsLst []*GFnft) []*GFnftExtern {
 			ContractAddressStr: nft.ContractAddressStr,
 			ContractNameStr:    nft.ContractNameStr,
 			ChainStr:           nft.ChainStr,
+
+			TokenURIrawStr: nft.TokenURIrawStr,
+			MediaURIrawStr: nft.MediaURIrawStr,
 		}
 
 		nftsExternLst = append(nftsExternLst, nftExtern)
@@ -108,7 +118,12 @@ func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 			ContractAddressStr: nftAlchemy.ContractAddressStr,
 			ContractNameStr:    nftAlchemy.TitleStr,
 			ChainStr:           nftAlchemy.ChainStr,
-			AlchemyIDstr:       nftAlchemy.IDstr,
+
+			// URIs
+			TokenURIrawStr: nftAlchemy.TokenURIrawStr,
+			MediaURIrawStr: nftAlchemy.MediaURIrawStr,
+
+			AlchemyIDstr: nftAlchemy.IDstr,
 		}
 
 		NFTsLst = append(NFTsLst, nft)
