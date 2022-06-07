@@ -73,12 +73,14 @@ def get_self_ip():
 	#               in thoise situations DNS nameserver that is pinged will return IP that is not appropriate.
 	def dns_method():
 		target_namespace_server_str = "ns1.google.com"
-		cmd_str = '''dig TXT +short o-o.myaddr.l.google.com @%s | awk -F'"' '{ print $2}' '''%(target_namespace_server_str)
+
+		# "-4" - force discovery of ipv4 address, since some ISP's by default return ipv6
+		cmd_str = '''dig -4 TXT +short o-o.myaddr.l.google.com @%s | awk -F'"' '{ print $2}' '''%(target_namespace_server_str)
 		print(cmd_str)
 
 		r           = delegator.run(cmd_str)
 		self_ip_str = r.out.strip()
-		assert len(self_ip_str.split(".")) == 4
+		# assert len(self_ip_str.split(".")) == 4
 		return self_ip_str
 
 	#---------------------------------------------------
