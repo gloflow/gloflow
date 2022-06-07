@@ -57,6 +57,7 @@ func TestAddresses(pTest *testing.T) {
 	testAddressTypeStr := "observed"
 	chainStr := "eth"
 	
+	// ADD_ADDRESS
 	gf_address.TaddAddress(testUserAddressEthStr,
 		testAddressTypeStr,
 		chainStr,
@@ -64,9 +65,7 @@ func TestAddresses(pTest *testing.T) {
 		testGFserviceInt,
 		pTest)
 
-
-	fmt.Println("DDDDDDDDDDDDDDDDDDDDDDDD")
-
+	// GET_ALL_ADDRESSES
 	gf_address.TgetAllAddresses(testAddressTypeStr,
 		chainStr,
 		HTTPagent,

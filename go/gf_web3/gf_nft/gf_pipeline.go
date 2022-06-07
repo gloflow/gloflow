@@ -52,17 +52,19 @@ type GFgetByOwnerInput struct {
 func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 
 
-	gfErr := indexAddress(pInput.AddressStr,
+	nftsLst, gfErr := indexAddress(pInput.AddressStr,
 		"alchemy",
 		pConfig, pCtx, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
-	return nil
+	nftsExternLst := getNFTextern(nftsLst)
+
+	return nftsExternLst, nil
 }
 
 //-------------------------------------------------
@@ -79,20 +81,9 @@ func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 		return nil, gfErr
 	}
 
-	// export NFT data for public usage
-	nftsExternLst := []*GFnftExtern{}
-	for _, nft := range nftsLst {
 
-		nftExtern := &GFnftExtern{
-			OwnerAddressStr:    nft.OwnerAddressStr,
-			TokenIDstr:         nft.TokenIDstr,
-			ContractAddressStr: nft.ContractAddressStr,
-			ContractNameStr:    nft.ContractNameStr,
-			ChainStr:           nft.ChainStr,
-		}
 
-		nftsExternLst = append(nftsExternLst, nftExtern)
-	}
+	nftsExternLst := getNFTextern(nftsLst)
 
 	return nftsExternLst, nil
 }

@@ -54,10 +54,30 @@ type GFnftExtern struct {
 }
 
 //-------------------------------------------------
+func getNFTextern(pNFTsLst []*GFnft) []*GFnftExtern {
+
+	// export NFT data for public usage
+	nftsExternLst := []*GFnftExtern{}
+	for _, nft := range pNFTsLst {
+
+		nftExtern := &GFnftExtern{
+			OwnerAddressStr:    nft.OwnerAddressStr,
+			TokenIDstr:         nft.TokenIDstr,
+			ContractAddressStr: nft.ContractAddressStr,
+			ContractNameStr:    nft.ContractNameStr,
+			ChainStr:           nft.ChainStr,
+		}
+
+		nftsExternLst = append(nftsExternLst, nftExtern)
+	}
+	return nftsExternLst
+}
+
+//-------------------------------------------------
 func get(pTokenIDstr string,
 	pCollectionNameStr string,
 	pCtx               context.Context,
-	pRuntimeSys        *gf_core.Runtime_sys) (*GFnft, *gf_core.GFerror) {
+	pRuntimeSys        *gf_core.RuntimeSys) (*GFnft, *gf_core.GFerror) {
 
 
 	
@@ -65,6 +85,7 @@ func get(pTokenIDstr string,
 }
 
 //---------------------------------------------------
+// CREATE_FOR_ALCHEMY
 func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
@@ -116,3 +137,4 @@ func createID(pUserIdentifierStr string,
 
 	return gfIDstr
 }
+

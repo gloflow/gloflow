@@ -13,7 +13,7 @@ func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
 	pConfig           *gf_eth_core.GF_config,
 	pCtx              context.Context,
-	pRuntimeSys       *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys       *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
 
 
 
@@ -23,7 +23,7 @@ func indexAddress(pAddressStr string,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 		fmt.Println(nftsOpenSeaParsedLst)
@@ -38,7 +38,7 @@ func indexAddress(pAddressStr string,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 		// DB
@@ -46,20 +46,22 @@ func indexAddress(pAddressStr string,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 
 
-		_, gfErr = createForAlchemy(nftsAlchemyLst,
+		nftsLst, gfErr := createForAlchemy(nftsAlchemyLst,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
+
+		return nftsLst, nil
 	}
 
-	return nil
+	return nil, nil
 }
 
 

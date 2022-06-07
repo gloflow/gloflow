@@ -70,7 +70,8 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				}
 
 				//---------------------
-				gfErr = pipelineIndexAddress(input,
+				// INDEX
+				nftsExternLst, gfErr := pipelineIndexAddress(input,
 					pConfig,
 					pCtx,
 					pRuntimeSys)
@@ -78,7 +79,9 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				outputMap := map[string]interface{}{}
+				outputMap := map[string]interface{}{
+					"nfts_lst": nftsExternLst,
+				}
 				return outputMap, nil
 			}
 
