@@ -410,15 +410,16 @@ function index_address_nfts(p_address_str :string,
 			</div>`);
 
 		if (nfts_lst != null) {
-		for (const nft_map of nfts_lst) {
+			for (const nft_map of nfts_lst) {
 
 
 
-			console.log(">>>>", nft_map);
+				console.log(">>>>", nft_map);
 
 
-			view_nft(nft_map);			
+				view_nft(nft_map);			
 
+			}
 		}
 
 		//--------------------------------------------------------
