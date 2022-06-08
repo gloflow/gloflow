@@ -159,6 +159,7 @@ export async function web3_nft_index_for_address(p_address_str :string,
         $.ajax({
             'url':         url_str,
             'type':        'POST',
+            'data':        JSON.stringify(data_map),
             'contentType': 'application/json',
             'success':     (p_response_map)=>{
                 

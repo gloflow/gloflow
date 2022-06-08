@@ -408,6 +408,8 @@ function index_address_nfts(p_address_str :string,
 			<div class="nfts_container">
 			
 			</div>`);
+
+		if (nfts_lst != null) {
 		for (const nft_map of nfts_lst) {
 
 
@@ -415,14 +417,20 @@ function index_address_nfts(p_address_str :string,
 			console.log(">>>>", nft_map);
 
 
-			const owner_address_str = nft_map["owner_address_str"]
-			const token_id_str      = nft_map["token_id_str"]
-			const contract_address_str = nft_map["contract_address_str"]
-			const contract_name_str    = nft_map["contract_name_str"]
-			const chain_str            = nft_map["chain_str"]
+			view_nft(nft_map);			
 
-			const token_uri_raw_str = nft_map["token_uri_raw_str"]
-			const media_uri_raw_str = nft_map["media_uri_raw_str"]
+		}
+
+		//--------------------------------------------------------
+		function view_nft(p_nft_map) {
+			const owner_address_str = p_nft_map["owner_address_str"]
+			const token_id_str      = p_nft_map["token_id_str"]
+			const contract_address_str = p_nft_map["contract_address_str"]
+			const contract_name_str    = p_nft_map["contract_name_str"]
+			const chain_str            = p_nft_map["chain_str"]
+
+			const token_uri_raw_str = p_nft_map["token_uri_raw_str"]
+			const media_uri_raw_str = p_nft_map["media_uri_raw_str"]
 
 
 			const nft_element = $(`
@@ -456,11 +464,9 @@ function index_address_nfts(p_address_str :string,
 					</div>
 				</div>`);
 			$(nfts_container).append(nft_element);
-
 		}
 
-
-
+		//--------------------------------------------------------
 		p_resolve_fun(nfts_container);
 
 
