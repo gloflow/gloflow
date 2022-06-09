@@ -22,88 +22,126 @@ package gf_tagger_lib
 import (
 	"fmt"
 	"strings"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_publisher_lib/gf_publisher_core"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_address"
 )
 
 //---------------------------------------------------
-//p_tags_str      - :String - "," separated list of strings
-//p_object_id_str - :String - this is an external identifier for an object, not necessarily its internal. 
-//                            for posts - their p_object_extern_id_str is their Title, but internally they have
-//                                        another ID.
+// pTagsStr           - "," separated list of strings
+// pObjectExternIDstr - this is an external identifier for an object, not necessarily its internal. 
+//                      for posts - their p_object_extern_id_str is their Title, but internally they have
+//                      another ID.
 
-func add_tags_to_object(p_tags_str string,
-	p_object_type_str      string,
-	p_object_extern_id_str string,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.add_tags_to_object()")
+func addTagsToObject(pTagsStr string,
+	pObjectTypeStr     string,
+	pObjectExternIDstr string,
+	pMetaMap           map[string]interface{},
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	if p_object_type_str != "post" &&
-		p_object_type_str != "image" &&
-		p_object_type_str != "event" {
-		gf_err := gf_core.Error__create(fmt.Sprintf("p_object_type_str (%s) is not of supported type (post|image|event)",p_object_type_str),
+	if pObjectTypeStr != "post" &&
+		pObjectTypeStr != "image" &&
+		pObjectTypeStr != "event" &&
+		pObjectTypeStr != "address" {
+
+		gfErr := gf_core.Error__create(fmt.Sprintf("object_type (%s) is not of supported type (post|image|event)",
+			pObjectTypeStr),
 			"verify__invalid_value_error",
 			map[string]interface{}{
-				"tags_str":        p_tags_str,
-				"object_type_str": p_object_type_str,
+				"tags_str":        pTagsStr,
+				"object_type_str": pObjectTypeStr,
 			},
-			nil, "gf_tagger", p_runtime_sys)
-		return gf_err
+			nil, "gf_tagger", pRuntimeSys)
+		return gfErr
 	}
 	
-	tags_lst, gf_err := parse_tags(p_tags_str,
-		500, //p_max_tags_bulk_size_int        int, //500
-		20,  //p_max_tag_characters_number_int int, //20	
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	tagsLst, gfErr := parse_tags(pTagsStr,
+		500, // p_max_tags_bulk_size_int        int, // 500
+		20,  // p_max_tag_characters_number_int int, // 20	
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("tags_lst - %s", tags_lst))
+	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("tags_lst - %s", tagsLst))
 
 	//---------------
 	// POST
 	
-	switch p_object_type_str {
+	switch pObjectTypeStr {
 		//---------------
 		// POST
 		case "post":
-			post_title_str      := p_object_extern_id_str
-			exists_bool, gf_err := gf_publisher_core.DB__check_post_exists(post_title_str, p_runtime_sys)
-			if gf_err != nil {
-				return gf_err
+			postTitleStr      := pObjectExternIDstr
+			existsBool, gfErr := gf_publisher_core.DB__check_post_exists(postTitleStr,
+				pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
 			}
 			
-			if exists_bool {
-				p_runtime_sys.Log_fun("INFO", "POST EXISTS")
-				gf_err := db__add_tags_to_post(post_title_str, tags_lst, p_runtime_sys)
-				return gf_err
+			if existsBool {
+				pRuntimeSys.Log_fun("INFO", "POST EXISTS")
+				gfErr := db__add_tags_to_post(postTitleStr, tagsLst, pRuntimeSys)
+				return gfErr
 
 			} else {
-				gf_err := gf_core.Error__create(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", post_title_str, tags_lst),
+				gfErr := gf_core.Error__create(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", 
+					postTitleStr,
+					tagsLst),
 					"verify__invalid_value_error",
 					map[string]interface{}{
-						"post_title_str": post_title_str,
-						"tags_lst":       tags_lst,
+						"post_title_str": postTitleStr,
+						"tags_lst":       tagsLst,
 					},
-					nil, "gf_tagger", p_runtime_sys)
-				return gf_err
+					nil, "gf_tagger", pRuntimeSys)
+				return gfErr
 			}
 
 		//---------------
 		// IMAGE
 		case "image":
-			image_id_str := p_object_extern_id_str
-			image_id     := gf_images_core.GF_image_id(image_id_str)
-			exists_bool, gf_err := gf_images_core.DB__image_exists(image_id, p_runtime_sys)
-			if gf_err != nil {
-				return gf_err
+			imageIDstr := pObjectExternIDstr
+			image_id   := gf_images_core.GF_image_id(imageIDstr)
+			exists_bool, gfErr := gf_images_core.DB__image_exists(image_id, pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
 			}
 			if exists_bool {
-				gf_err := db__add_tags_to_image(image_id_str, tags_lst, p_runtime_sys)
-				if gf_err != nil {
-					return gf_err
+				gfErr := db__add_tags_to_image(imageIDstr, tagsLst, pRuntimeSys)
+				if gfErr != nil {
+					return gfErr
+				}
+			}
+
+		//---------------
+		// WEB3
+		case "address":
+
+			chainStr := pMetaMap["chain_str"].(string)
+
+
+
+			addressStr := pObjectExternIDstr
+			existsBool, gfErr := gf_address.DBexists(addressStr,
+				chainStr,
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
+			}
+
+			
+			if existsBool {
+				gfErr := gf_address.DBaddTag(tagsLst,
+					addressStr,
+					chainStr,
+					pCtx,
+					pRuntimeSys)
+				if gfErr != nil {
+					return gfErr
 				}
 			}
 
@@ -183,13 +221,13 @@ func get_objects_with_tag(p_tag_str string,
 }
 
 //---------------------------------------------------
-func parse_tags(p_tags_str string,
+func parse_tags(pTagsStr string,
 	p_max_tags_bulk_size_int        int, // 500
 	p_max_tag_characters_number_int int, // 20
 	p_runtime_sys                   *gf_core.Runtime_sys) ([]string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.parse_tags()")
 	
-	tags_lst := strings.Split(p_tags_str," ")
+	tags_lst := strings.Split(pTagsStr," ")
 	//---------------------
 	if len(tags_lst) > p_max_tags_bulk_size_int {
 		gf_err := gf_core.Error__create(fmt.Sprintf("too many tags supplied - max is %d", p_max_tags_bulk_size_int),

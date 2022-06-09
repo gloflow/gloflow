@@ -36,6 +36,8 @@ type GFchainAddress struct {
 	AddressStr     string        `bson:"address_str"`
 	TypeStr        string        `bson:"type_str"`       // "my" | "observed"
 	ChainNameStr   string        `bson:"chain_name_str"` // "eth" | "tezos"
+
+	TagsMap map[string]string `bson:"tags_map"`
 }
 
 //---------------------------------------------------

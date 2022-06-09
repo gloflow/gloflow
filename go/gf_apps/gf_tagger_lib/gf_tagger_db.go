@@ -236,26 +236,25 @@ func db__add_tags_to_post(p_post_title_str string,
 //---------------------------------------------------
 // IMAGES
 //---------------------------------------------------
-func db__add_tags_to_image(p_image_id_str string,
-	p_tags_lst    []string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_image()")
+func db__add_tags_to_image(pImageIDstr string,
+	pTagsLst    []string,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img",
-			"id_str": p_image_id_str,
+			"id_str": pImageIDstr,
 		},
-		bson.M{"$push": bson.M{"tags_lst": p_tags_lst},
+		bson.M{"$push": bson.M{"tags_lst": pTagsLst},
 	})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to update a gf_image with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"image_id_str": p_image_id_str,
-				"tags_lst":     p_tags_lst,
+				"image_id_str": pImageIDstr,
+				"tags_lst":     pTagsLst,
 			},
-			err, "gf_tagger_lib", p_runtime_sys)
+			err, "gf_tagger_lib", pRuntimeSys)
 		return gf_err
 	}
 	return nil

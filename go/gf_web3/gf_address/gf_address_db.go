@@ -72,7 +72,7 @@ func DBgetAll(pAddressTypeStr string,
 //-------------------------------------------------
 func DBadd(pAddress *GFchainAddress,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr := "gf_web3_addresses"
 	
@@ -87,6 +87,75 @@ func DBadd(pAddress *GFchainAddress,
 	if gfErr != nil {
 		return gfErr
 	}
+
+	return nil
+}
+
+//-------------------------------------------------
+// EXISTS
+func DBexists(pAddressStr string,
+	pChainStr   string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	collNameStr := "gf_web3_addresses"
+
+	countInt, gfErr := gf_core.Mongo__count(bson.M{
+			"address_str":    pAddressStr,
+			"chain_name_str": pChainStr,
+			"deleted_bool":   false,
+		},
+		map[string]interface{}{
+			"address_str":    pAddressStr,
+			"chain_name_str": pChainStr,
+			"caller_err_msg": "failed to check if there is an address in the DB",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	if countInt > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+//-------------------------------------------------
+// ADD_TAG
+func DBaddTag(pTagsLst []string,
+	pAddressStr string,
+	pChainStr   string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_home_viz").UpdateMany(pCtx, bson.M{
+			"address_str":    pAddressStr,
+			"chain_name_str": pChainStr,
+			"deleted_bool":   false,
+		},
+
+		// push all tags into the "tags_lst" list.
+		// "$each" - needed to push each element of pTagsLst as a separate element
+		bson.M{"$push": bson.M{
+			"tags_lst": bson.M{"$each": pTagsLst},
+		}})
+
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to update adress with new tags",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"tags_lst":    pTagsLst,
+				"address_str": pAddressStr,
+				"chain_str":   pChainStr,
+			},
+			err, "gf_address", pRuntimeSys)
+		return gfErr
+	}
+
+	
 
 	return nil
 }

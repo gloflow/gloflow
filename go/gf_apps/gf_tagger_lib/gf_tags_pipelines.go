@@ -22,6 +22,7 @@ package gf_tagger_lib
 import (
 	"strings"
 	"strconv"
+	"context"
 	"text/template"
 	"net/http"
 	"io"
@@ -32,47 +33,74 @@ import (
 //---------------------------------------------------
 // AUTHORIZED
 
-func tags__pipeline__add(p_input_data_map map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__add()")
+func pipelineAdd(pInputDataMap map[string]interface{},
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------
 	// INPUT
-	if _, ok := p_input_data_map["otype"]; !ok {
-		gf_err := gf_core.Error__create("input 'otype' not supplied",
+	if _, ok := pInputDataMap["otype"]; !ok {
+		gfErr := gf_core.Error__create("input 'otype' not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"input_data_map":p_input_data_map,},
-			nil, "gf_tagger", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"input_data_map":pInputDataMap,},
+			nil, "gf_tagger", pRuntimeSys)
+		return gfErr
 	}
 
-	if _, ok := p_input_data_map["o_id"]; !ok {
-		gf_err := gf_core.Error__create("input 'o_id' not supplied",
+	if _, ok := pInputDataMap["o_id"]; !ok {
+		gfErr := gf_core.Error__create("input 'o_id' not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"input_data_map":p_input_data_map,},
-			nil, "gf_tagger", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"input_data_map": pInputDataMap,},
+			nil, "gf_tagger", pRuntimeSys)
+		return gfErr
 	}
 
-	if _, ok := p_input_data_map["tags"]; !ok {
-		gf_err := gf_core.Error__create("input 'tags' not supplied",
+	if _, ok := pInputDataMap["tags"]; !ok {
+		gfErr := gf_core.Error__create("input 'tags' not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"input_data_map":p_input_data_map,},
-			nil, "gf_tagger", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"input_data_map": pInputDataMap,},
+			nil, "gf_tagger", pRuntimeSys)
+		return gfErr
 	}
 
-	object_type_str      := strings.TrimSpace(p_input_data_map["otype"].(string))
-	object_extern_id_str := strings.TrimSpace(p_input_data_map["o_id"].(string))
-	tags_str             := strings.TrimSpace(p_input_data_map["tags"].(string))
+	object_type_str      := strings.TrimSpace(pInputDataMap["otype"].(string))
+	object_extern_id_str := strings.TrimSpace(pInputDataMap["o_id"].(string))
+	tags_str             := strings.TrimSpace(pInputDataMap["tags"].(string))
+
+
+	var metaMap map[string]interface{}
+	if _, ok := pInputDataMap["meta_map"]; ok {
+		metaMap = pInputDataMap["meta_map"].(map[string]interface{})
+	}
+
+
+	if object_type_str == "address" {
+		if metaMap == nil {
+			gfErr := gf_core.Error__create("tagging objects of type 'address' has to contain meta_map with",
+				"verify__missing_key_error",
+				map[string]interface{}{"input_data_map": pInputDataMap,},
+				nil, "gf_tagger", pRuntimeSys)
+			return gfErr
+		}
+
+		if _, ok := metaMap["chain_str"]; !ok {
+			gfErr := gf_core.Error__create("tagging objects of type 'address' has to contain meta_map with chain_str key",
+				"verify__missing_key_error",
+				map[string]interface{}{"input_data_map": pInputDataMap,},
+				nil, "gf_tagger", pRuntimeSys)
+			return gfErr	
+		}
+	}
 
 	//----------------
-	gf_err := add_tags_to_object(tags_str,
+	gfErr := addTagsToObject(tags_str,
 		object_type_str,
 		object_extern_id_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		metaMap,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//----------------

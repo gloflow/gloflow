@@ -32,11 +32,10 @@ import (
 func init_handlers(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
 	p_mux              *http.ServeMux,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_service_handlers.init_handlers()")
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -59,13 +58,13 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "POST" {
 
 				//------------------
 				// INPUT
-				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				input_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -76,7 +75,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 					gf_err := gf_core.Error__create("failed to load http input into GF_bookmark__input_create struct",
 						"mapstruct__decode",
 						map[string]interface{}{},
-						err, "gf_tagger_lib", p_runtime_sys)
+						err, "gf_tagger_lib", pRuntimeSys)
 					return nil, gf_err
 				}
 
@@ -86,8 +85,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				gf_err = bookmarks__pipeline__create(&input,
 					p_images_jobs_mngr,
-					p_ctx,
-					p_runtime_sys)
+					pCtx,
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -99,12 +98,12 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/get",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			//------------------
 			// INPUT
@@ -112,7 +111,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			qs_map := p_req.URL.Query()
 
 			// response_format_str - "j"(for json) | "h"(for html)
-			response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+			response_format_str := gf_rpc_lib.Get_response_format(qs_map, pRuntimeSys)
 
 			
 			input := &GF_bookmark__input_get{
@@ -125,8 +124,8 @@ func init_handlers(p_templates_paths_map map[string]string,
 			output, gf_err := bookmarks__pipeline__get(input,
 				gf_templates.bookmarks__tmpl,
 				gf_templates.bookmarks__subtemplates_names_lst,
-				p_ctx,
-				p_runtime_sys)
+				pCtx,
+				pRuntimeSys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -153,26 +152,26 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// NOTES
 	//---------------------
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 			if p_req.Method == "POST" {
 
 				//------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
 
 				//------------
 	
-				gf_err = notes__pipeline__add(i_map, p_runtime_sys)
+				gf_err = notes__pipeline__add(i_map, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -187,17 +186,17 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// GET_NOTES
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/get",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
 
-				notes_lst, gf_err := notes__pipeline__get(p_req, p_runtime_sys)
+				notes_lst, gf_err := notes__pipeline__get(p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err 
 				}
@@ -212,7 +211,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// TAGS
@@ -220,26 +219,26 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// ADD_TAGS
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "POST" {
 
 				//------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				iMap, gfErr := gf_rpc_lib.GetHTTPinput(p_resp, p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------
 
-				gf_err = tags__pipeline__add(i_map, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = pipelineAdd(iMap, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				data_map := map[string]interface{}{}
-				return data_map, nil
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
 			}
 
 			return nil, nil
@@ -248,20 +247,20 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 	// GET_OBJECTS_WITH_TAG
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/objects",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
 
 			if p_req.Method == "GET" {
 
 				objects_with_tag_lst, gf_err := tags__pipeline__get_objects(p_req, p_resp, 
 					gf_templates.tag_objects__tmpl,
 					gf_templates.tag_objects__subtemplates_names_lst,
-					p_runtime_sys)
+					pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -283,7 +282,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 
