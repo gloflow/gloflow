@@ -75,7 +75,7 @@ func pipelineGetAll(pInput *GFgetAllInput,
 	
 	addressesFullExportLst := []GFchainAddressExtern{}
 	for _, a := range addressesLst {
-		addressExtern := GFchainAddressExtern struct {
+		addressExtern := GFchainAddressExtern{
 			AddressStr:   a.AddressStr,
 			TypeStr:      a.TypeStr,
 			ChainNameStr: a.ChainNameStr,
