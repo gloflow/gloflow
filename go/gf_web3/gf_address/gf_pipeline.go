@@ -32,7 +32,8 @@ type GFgetAllInput struct {
 	ChainStr  string	
 }
 type GFgetAllOutput struct {
-	AddressesLst []string
+	AddressesLst     []string
+	AddressesFullLst []GFchainAddressExtern
 }
 
 type GFaddInput struct {
@@ -71,9 +72,21 @@ func pipelineGetAll(pInput *GFgetAllInput,
 	for _, a := range addressesLst {
 		addressesExportLst = append(addressesExportLst, a.AddressStr)
 	}
+	
+	addressesFullExportLst := []GFchainAddressExtern{}
+	for _, a := range addressesLst {
+		addressExtern := GFchainAddressExtern struct {
+			AddressStr:   a.AddressStr,
+			TypeStr:      a.TypeStr,
+			ChainNameStr: a.ChainNameStr,
+			TagsLst:      a.TagsLst,
+		}
+		addressesFullExportLst = append(addressesFullExportLst, addressExtern)
+	}
 
 	output := &GFgetAllOutput{
-		AddressesLst: addressesExportLst,
+		AddressesLst:     addressesExportLst,
+		AddressesFullLst: addressesFullExportLst,
 	}
 
 	return output, nil

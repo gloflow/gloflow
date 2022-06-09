@@ -75,7 +75,8 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				}
 
 				outputMap := map[string]interface{}{
-					"addresses_lst": output.AddressesLst,
+					"addresses_lst":      output.AddressesLst,
+					"addresses_full_lst": output.AddressesFullLst,
 				}
 				return outputMap, nil
 			}
