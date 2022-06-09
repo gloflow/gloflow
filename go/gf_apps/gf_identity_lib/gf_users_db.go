@@ -268,28 +268,28 @@ func db__user__get_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_a
 
 //---------------------------------------------------
 // EXISTS_BY_USERNAME
-func db__user__exists_by_username(p_user_name_str gf_identity_core.GFuserName,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+func db__user__exists_by_username(pUserNameStr gf_identity_core.GFuserName,
+	pCtx         context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-	coll_name_str := "gf_users"
+	collNameStr := "gf_users"
 
-	count_int, gf_err := gf_core.Mongo__count(bson.M{
-			"user_name_str": p_user_name_str,
+	countInt, gfErr := gf_core.Mongo__count(bson.M{
+			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
 		},
 		map[string]interface{}{
-			"user_name_str":  p_user_name_str,
+			"user_name_str":  pUserNameStr,
 			"caller_err_msg": "failed to check if there is a user in the DB with a given user_name",
 		},
-		p_runtime_sys.Mongo_db.Collection(coll_name_str),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
 	}
 
-	if count_int > 0 {
+	if countInt > 0 {
 		return true, nil
 	}
 	return false, nil

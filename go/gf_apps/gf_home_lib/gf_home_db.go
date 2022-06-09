@@ -40,13 +40,13 @@ func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 	}
 
 	_, err := pRuntimeSys.Mongo_db.Collection("gf_home_viz").UpdateMany(pCtx, bson.M{
-		"owner_user_id_str": pUserIDstr,
-		"deleted_bool":      false,
-	},
-	bson.M{"$set": fieldsTargets})
+			"owner_user_id_str": pUserIDstr,
+			"deleted_bool":      false,
+		},
+		bson.M{"$set": fieldsTargets})
 	
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to to update home_viz components_map",
+		gfErr := gf_core.Mongo__handle_error("failed to update home_viz components_map",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"owner_user_id_str": pUserIDstr,

@@ -32,6 +32,8 @@ func indexAddress(pAddressStr string,
 	// ALCHEMY
 	if pServiceSourceStr == "alchemy" {
 		chainStr := "eth"
+
+		// GET_ALL
 		nftsAlchemyLst, gfErr := gf_nft_extern_services.AlchemyGetAllNFTsForAddress(pAddressStr,
 			pConfig.AlchemyAPIkeyStr,
 			chainStr,
