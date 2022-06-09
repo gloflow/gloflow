@@ -229,6 +229,23 @@ body {
 }
 
 /*------------------------------------------------------------------*/
+/*NFTs*/
+.nfts_container {
+	background-color: #746a44;
+    width: 250px;
+    height: 290px;
+    position: absolute;
+    left: -250px;
+}
+
+.nfts_container .nft {
+	font-size: 12px;
+	background-color: gray;
+
+
+}
+
+/*------------------------------------------------------------------*/
 /*COLOR_PICKER*/
 #background_color_picker {
 	background-color: #d1bf7d;
