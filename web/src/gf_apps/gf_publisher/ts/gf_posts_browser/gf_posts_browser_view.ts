@@ -26,38 +26,42 @@ import * as gf_tagger_input_ui      from "./../../../gf_tagger/ts/gf_tagger_clie
 import * as gf_tagger_notes_ui      from "./../../../gf_tagger/ts/gf_tagger_client/gf_tagger_notes_ui";
 
 //-----------------------------------------------------
-export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
+export function init(p_initial_posts_infos_lst :Object[],
+    p_http_api_map,
+    p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init()');
   
     const image_view_container_element = $('<div id="image_view_posts_container"></div>');
 
     //----------------
-    //JS - MASONRY
+    // JS - MASONRY
 
     $('#gf_posts_container').masonry({
             'columnWidth':  10,
             'itemSelector': '.item'
         });
+
     //----------------
     init_posts_images(p_initial_posts_infos_lst,
         ()=>{
 
             //---------------------
-            //IMPORTANT!! - masonry() is a layout call. without calling this every time a new
-            //              item is added to the layout, all the items will initially overlap 
-            //              (one over the other)
+            // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
+            //               item is added to the layout, all the items will initially overlap 
+            //               (one over the other)
 
-            $('#gf_posts_container').masonry(); //'reloadItems');
+            $('#gf_posts_container').masonry();
+
             //---------------------
         },
+        p_http_api_map,
         p_log_fun);
 
     //-----------------------------------------------------
     function init_page_loading() {
-        //p_log_fun('FUN_ENTER','gf_posts_browser_view.init().init_page_loading()');
 
         var loading_page_bool = false;
-        var current_page_int  = 6; //the few initial pages are already statically embedded in the document
+        var current_page_int  = 6; // the few initial pages are already statically embedded in the document
         $(window).on('scroll', (e)=>{
 
             //print('SCROLL >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
@@ -91,6 +95,7 @@ export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
                         ()=>{
 
                         },
+                        p_http_api_map,
                         p_log_fun);
                 }
             //}
@@ -105,8 +110,8 @@ export function init(p_initial_posts_infos_lst :Object[], p_log_fun) {
 function load_new_page(p_page_index_int :number,
     p_page_elements_num_int :number,
     p_on_complete_fun,
+    p_http_api_map,
     p_log_fun) {
-    //p_log_fun('FUN_ENTER','gf_posts_browser_view.load_new_page()');
 
     gf_posts_browser_client.get_page(p_page_index_int,
         p_page_elements_num_int,
@@ -116,15 +121,17 @@ function load_new_page(p_page_index_int :number,
                 ()=>{
 
                     //---------------------
-                    //IMPORTANT!! - masonry() is a layout call. without calling this every time a new
-                    //              item is added to the layout, all the items will initially overlap 
-                    //              (one over the other)
+                    // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
+                    //               item is added to the layout, all the items will initially overlap 
+                    //               (one over the other)
 
                     $('#gf_posts_container').masonry(<any>'reloadItems');
+
                     //---------------------
 
                     p_on_complete_fun();
                 },
+                p_http_api_map,
                 p_log_fun); //load_new_page() only runs with server_comm
         },
         ()=>{},
@@ -194,7 +201,7 @@ function create_posts_from_page(p_page_lst :Object[],
             'post':              post,
             'post_url_str':      post_url_str,
             'thumbnail_url_str': thumbnail_url_str,
-            //'images_number_str':images_number_str
+            // 'images_number_str':images_number_str
         };
         posts_infos_lst.push(post_info_map);
     }
@@ -205,6 +212,7 @@ function create_posts_from_page(p_page_lst :Object[],
 //--------------------------------------------------------
 function init_posts_images(p_posts_infos_lst :Object[],
     p_on_complete_fun,
+    p_http_api_map,
     p_log_fun) {
     p_log_fun('FUN_ENTER','gf_posts_browser_view.init_posts_images()');
         
@@ -230,7 +238,9 @@ function init_posts_images(p_posts_infos_lst :Object[],
                 console.log('image loaded');
                 const post_url_str :string = p_post_info_map['post_url_str'];
                 
-                init_post(post, post_url_str, p_log_fun);
+                init_post(post, post_url_str,
+                    p_http_api_map,
+                    p_log_fun);
 
                 //post has finished loading, so make it visible
                 $(post).css('visibility','visible');
@@ -241,14 +251,17 @@ function init_posts_images(p_posts_infos_lst :Object[],
                     p_on_complete_fun();
                 }
             },
+
             //--------------------------------------------------------
             (p_error_str)=>{
                 p_log_fun("ERROR",p_error_str);
             },
+
             //--------------------------------------------------------
             p_log_fun);
     });
 }
+
 //--------------------------------------------------------
 function init_post_image(p_thumbnail_image_src :string,
     p_error_img_url_str       :string,
@@ -257,12 +270,11 @@ function init_post_image(p_thumbnail_image_src :string,
     p_on_complete_fun,
     p_on_error_fun,
     p_log_fun) {
-    //p_log_fun('FUN_ENTER','gf_posts_browser_view.init_post_image()');
 
     const image :HTMLImageElement = <HTMLImageElement> $(p_post).find('img')[0];
 
-    //ADD!! - for some reason this post does not have a thumbnail image, 
-    //        so use some generic post image
+    // ADD!! - for some reason this post does not have a thumbnail image, 
+    //         so use some generic post image
     if (p_thumbnail_image_src == null ||
         p_thumbnail_image_src == 'error') {
         $(image).attr('src',p_error_img_url_str);
@@ -271,9 +283,9 @@ function init_post_image(p_thumbnail_image_src :string,
     $(image).on('load',(p_e)=>{
 
         //---------------------
-        //IMPORTANT!! - masonry() is a layout call. without calling this every time a new
-        //              item is added to the layout, all the items will initially overlap 
-        //              (one over the other)
+        // IMPORTANT!! - masonry() is a layout call. without calling this every time a new
+        //               item is added to the layout, all the items will initially overlap 
+        //               (one over the other)
 
         $('#gf_posts_container').masonry();
         //---------------------
@@ -285,15 +297,17 @@ function init_post_image(p_thumbnail_image_src :string,
         p_on_error_fun('image with url failed to load - '+p_thumbnail_image_src);
     });
 }
+
 //--------------------------------------------------------
 function init_post(p_post :HTMLDivElement,
     p_post_url_str :string,
+    p_http_api_map,
     p_log_fun) {
-    p_log_fun('FUN_ENTER','gf_posts_browser_view.init_post()');
+    p_log_fun('FUN_ENTER', 'gf_posts_browser_view.init_post()');
 
     init_post_date(p_post, p_log_fun);
     //---------------------
-    //IMAGES_NUMBER
+    // IMAGES_NUMBER
 
     const post_images_number = $(p_post).find('.post_images_number');
 
@@ -304,8 +318,9 @@ function init_post(p_post :HTMLDivElement,
         $(post_images_number).css('visibility', 'hidden');
     });
     $(post_images_number).css('right', -$(post_images_number).width()+'px');
+
     //---------------------
-    //TAGGING
+    // TAGGING
     const post_title_str :string = $(p_post).find('.post_title').text();
 
     gf_tagger_input_ui.init_tag_input(post_title_str, //p_obj_id_str
@@ -342,6 +357,7 @@ function init_post(p_post :HTMLDivElement,
         //--------------------------------------------------------
         ()=>{},
         ()=>{},
+        p_http_api_map,
         p_log_fun);
     //---------------------
     //SNIPPET

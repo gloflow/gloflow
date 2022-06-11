@@ -40,11 +40,14 @@ $(document).ready(()=>{
         }
     }
     //-------------------------------------------------
-    init(log_fun);
+    const http_api_map = null;
+    init(http_api_map,
+        log_fun);
 });
 
 //-----------------------------------------------------
-export function init(p_log_fun) {
+export function init(p_http_api,
+    p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_post.init()');
     
     gf_sys_panel.init_with_auth(p_log_fun);
@@ -53,58 +56,60 @@ export function init(p_log_fun) {
     const post_tags_container_element = $('#post_tags_container');
     
     //------------------------------
-    //INIT IMAGE TAGGING
+    // INIT IMAGE TAGGING
     $('.post_element_image').each((p_i, p_post_element)=>{
         
         const image_element          = $(p_post_element).find('img');
         const img_url_str  :string   = $(image_element).attr('src');
-        const path_lst     :string[] = img_url_str.split('/'); //Uri.parse(img_url_str).pathSegments;
+        const path_lst     :string[] = img_url_str.split('/'); // Uri.parse(img_url_str).pathSegments;
         const img_file_str :string   = path_lst[path_lst.length-1];
         const tags_num_int :number   = $(p_post_element).find('.tags_container .gf_post_element_tag').length;
         
-        //img_file_str example - "6c4a667457f05939af6a5f68690d0f55_thumb_medium.jpeg"
+        // img_file_str example - "6c4a667457f05939af6a5f68690d0f55_thumb_medium.jpeg"
         const img_id_str :string = img_file_str.split('_')[0];
         p_log_fun('INFO', 'img_id_str - '+img_id_str);
 
         var tag_ui_added_bool :boolean = false;
-        gf_tagger_input_ui.init_tag_input(img_id_str, //p_obj_id_str
-            'image',    //p_obj_type_str
+        gf_tagger_input_ui.init_tag_input(img_id_str, // p_obj_id_str
+            'image',    // p_obj_type_str
             p_post_element,
-            //p_onTagsCreated_fun
+            // p_on_tags_created_fun
             (p_added_tags_lst :string[])=>{
                 view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
             },
-            //p_onTagUIAdd_fun
+            // p_on_tag_ui_add_fun
             ()=>{
                 tag_ui_added_bool = true;
             },
-            //p_onTagUIRemove_fun
+            // p_on_tag_ui_remove_fun
             ()=>{
                 tag_ui_added_bool = false;
             },
+            p_http_api,
             p_log_fun);
 
         gf_post_image_view.init(p_post_element, p_log_fun);
 
         $(p_post_element).on('mouseenter', (p_event)=>{
 
-            //IMPORTANT!! - only show tags_container if there are tags attached to this post_element
+            // IMPORTANT!! - only show tags_container if there are tags attached to this post_element
             if (tags_num_int > 0) {
                 $(p_post_element).find('.tags_container').css('visibility', 'visible');
             }
         });
         $(p_post_element).on('mouseleave', (p_event)=>{
 
-            //hide the tags_container only if the tagging UI is not open. 
-            //if it is open we want the tags_container visible so that we can 
-            //see the tags as they're added
+            // hide the tags_container only if the tagging UI is not open. 
+            // if it is open we want the tags_container visible so that we can 
+            // see the tags as they're added
             if (!tag_ui_added_bool) {
                 $(p_post_element).find('.tags_container').css("visibility", 'hidden');
             }
         });
     });
+    
     //------------------------------
-    //VIDEO TAGGING
+    // VIDEO TAGGING
 
     $('.post_element_video').each((p_i, p_post_element)=>{
 
@@ -113,19 +118,17 @@ export function init(p_log_fun) {
             'video',
             p_post_element,
                     
-            //p_onTagsCreated_fun
+            // p_on_tags_created_fun
             (p_added_tags_lst :string[])=>{
                 view_added_tags(p_post_element, p_added_tags_lst, p_log_fun);
             },
-            ()=>{}, // p_onTagUIAdd_fun
-            ()=>{}, // p_onTagUIRemove_fun
+            ()=>{}, // p_on_tag_ui_add_fun
+            ()=>{}, // p_on_tag_ui_remove_fun
+            p_http_api,
             p_log_fun);
     });
 
     //------------------------------
-
-    // final List<String> tags_lst = queryAll('.post_tag').map((p_element) => p_element.text);
-    // gf_post_tag_mini_view.init_tags_mini_view(tags_lst, p_log_fun);
 }
 
 //-----------------------------------------------------

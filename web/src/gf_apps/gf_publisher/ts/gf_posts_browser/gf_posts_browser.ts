@@ -42,6 +42,7 @@ $(document).ready(()=>{
 
     init(log_fun);
 });
+
 //-----------------------------------------------------
 export function init(p_log_fun) {
     p_log_fun('FUN_ENTER', 'gf_posts_browser.init()');
@@ -52,7 +53,10 @@ export function init(p_log_fun) {
 
     gf_sys_panel.init_with_auth(p_log_fun);
 
-    gf_posts_browser_view.init(static_posts_infos_lst, p_log_fun);
+    const http_api_map = null;
+    gf_posts_browser_view.init(static_posts_infos_lst,
+        http_api_map,
+        p_log_fun);
 }
 //-----------------------------------------------------
 //DATA LOADING
