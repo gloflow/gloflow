@@ -217,7 +217,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// TAGS
 	//---------------------
 	// ADD_TAGS
-
+	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/create",
 		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
@@ -240,7 +240,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				dataMap := map[string]interface{}{}
 				return dataMap, nil
 			}
-
+			
 			return nil, nil
 		},
 		p_mux,

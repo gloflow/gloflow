@@ -91,37 +91,46 @@ export function add_note_to_obj(p_body_str :string,
 //-----------------------------------------------------
 // TAGS
 //-----------------------------------------------------
-export function add_tags_to_obj(p_tags_lst :string[],  
+export async function add_tags_to_obj(p_tags_lst :string[],  
     p_object_id_str   :string,
     p_object_type_str :string,
-    p_on_complete_fun,
-    p_on_error_fun,
+    p_meta_map,
     p_log_fun) {
-    p_log_fun('FUN_ENTER', 'gf_tagger_client.add_tags_to_obj()');
     p_log_fun('INFO', 'p_tags_lst:$p_tags_lst');
 
-    const tags_str :string = p_tags_lst.join(' ');
-    const data_map         = {
-        'otype': p_object_type_str,
-        'o_id':  p_object_id_str,
-        'tags':  tags_str,
-    };
+    const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-    const url_str = '/v1/tags/create';
-    $.ajax({
-        'url':         url_str,
-        'type':        'POST',
-        'data':        JSON.stringify(data_map),
-        'contentType': 'application/json',
-        'success':     (p_response_str)=>{
+        const tags_str :string = p_tags_lst.join(' ');
+        const data_map         = {
+            "otype": p_object_type_str,
+            "o_id":  p_object_id_str,
+            "tags":  tags_str,
+            "meta_map": p_meta_map,
+        };
 
-            const data_map :Object = JSON.parse(p_response_str);
-            p_on_complete_fun('success', data_map);
-        },
-        'error':(jqXHR,p_text_status_str)=>{
-            p_on_error_fun(p_text_status_str);
-        }
+        const url_str = '/v1/tags/create';
+        $.ajax({
+            'url':         url_str,
+            'type':        'POST',
+            'data':        JSON.stringify(data_map),
+            'contentType': 'application/json',
+            'success':     (p_response_map)=>{
+
+                const status_str = p_response_map["status"];
+                const data_map   = p_response_map["data"];
+
+                if (status_str == "OK") {
+                    p_resolve_fun(data_map);
+                } else {
+                    p_reject_fun(data_map);
+                }
+            },
+            'error':(jqXHR, p_text_status_str)=>{
+                p_reject_fun(p_text_status_str);
+            }
+        });
     });
+    return p;
 }
 
 //-----------------------------------------------------

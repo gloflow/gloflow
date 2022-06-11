@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ///<reference path="../../../d/jquery.d.ts" />
 
 import * as gf_dragndrop from "./../../../gf_core/ts/gf_dragndrop";
+import * as gf_tagger_input_ui from "./../../gf_tagger/ts/gf_tagger_client/gf_tagger_input_ui";
 import * as gf_utils from "gf_utils";
 
 declare var Web3;
@@ -267,16 +268,24 @@ function create_eth_address(p_address_str :string,
 					<div class="index_nfts_for_owner_btn">
 						get NFTs
 					</div>
+					<div class="add_tag_btn">
+						t
+					</div>
 					<div class="etherscan_btn">
 						<a href="https://etherscan.io/address/${p_address_str}" target="_blank">e</a>
 					</div>
 					<div class="add_new_address_btn">
 						<img src="${p_assets_paths_map["gf_add_btn"]}" draggable="false"></img>
 					</div>
+					<div class="tags_container">
+
+					</div>
 				</div>`);
 
 			//------------------------------
-			$(info_container_element).find(".index_nfts_for_owner_btn").on("click", async ()=>{
+			// INDEX_NFTS
+			$(info_container_element).find(".index_nfts_for_owner_btn").on("click", async (p_e)=>{
+				p_e.stopImmediatePropagation();
 
 				console.log("index owner NFTs");
 
@@ -293,9 +302,73 @@ function create_eth_address(p_address_str :string,
 
 
 			});
-			//------------------------------
-			$(info_container_element).find(".add_new_address_btn").on("click", ()=>{
 
+			//------------------------------
+			// ADD_TAG
+			$(info_container_element).find(".add_tag_btn").on("click", async (p_e)=>{
+				p_e.stopImmediatePropagation();
+
+				console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
+				const obj_id_str   = p_address_str;
+				const obj_type_str = "address"
+				const obj_element  = info_container_element;
+
+
+				const log_fun = (p_g, p_m)=>{
+					console.log(p_g+":"+p_m);
+				};
+				const tagging_input_ui_element = gf_tagger_input_ui.init_tagging_input_ui_element(obj_id_str,
+					obj_type_str,
+
+					//--------------------------------------------------------
+					// p_on_tags_created_fun
+					(p_tags_lst)=>{
+
+						console.log("CCCCCCCCCCCCCCCCCCCCCC")
+						console.log(p_tags_lst)
+
+
+						const tags_element = $(info_container_element).find(".tags_container");
+
+						for (const tag_str of p_tags_lst) {
+
+
+							const new_tag = $(`<div class="tag">
+									${tag_str}
+								</div>`);
+							$(tags_element).append(new_tag);
+
+
+							if (tag_str.startsWith("name:")) {
+								const name_str = tag_str.split(":")[1];
+								$(eth_address_element).find(".hex_address").text(name_str);
+							}
+
+
+						}
+
+
+					},
+
+					//--------------------------------------------------------
+					// p_on_tag_ui_remove_fun
+					()=>{
+
+					},
+					p_http_api_map,
+					log_fun);
+
+				gf_tagger_input_ui.place_tagging_input_ui_element(tagging_input_ui_element,
+						obj_element,
+						log_fun);
+				
+			});
+
+			//------------------------------
+			// ADD_NEW_ADDRESS
+			$(info_container_element).find(".add_new_address_btn").on("click", (p_e)=>{
+				p_e.stopImmediatePropagation();
 
 				// ADD_NEW_ADDRESS
 				const added_address_container = create_eth_address_input(p_address_type_str,

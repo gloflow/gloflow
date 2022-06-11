@@ -19,9 +19,33 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
+import * as gf_tagger_client from "./../../gf_tagger/ts/gf_tagger_client/gf_tagger_client";
+
 //-------------------------------------------------
 export function get_http_api() {
     const http_api_map = {
+
+        //------------------------
+        // TAGGING
+        //------------------------
+        "gf_tagger": {
+            
+            "add_tags_to_obj": async (p_tags_lst :string[],  
+                p_object_id_str   :string,
+                p_object_type_str :string,
+                p_meta_map,
+                p_log_fun)=>{
+
+                await gf_tagger_client.add_tags_to_obj(p_tags_lst,  
+                    p_object_id_str,
+                    p_object_type_str,
+                    p_meta_map,
+                    p_log_fun);
+            }
+        },
+
+        //------------------------
+
 		"home": {
 
 			//------------------------
@@ -99,7 +123,7 @@ async function viz_get() {
                     p_reject_fun(data_map);
                 }
             },
-            'error':(jqXHR, p_text_status_str)=>{
+            'error': (jqXHR, p_text_status_str)=>{
                 p_reject_fun(p_text_status_str);
             }
         });

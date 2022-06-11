@@ -73,7 +73,7 @@ body {
 #home_container #my_eth_addresses .add_new_address_btn {
 	position: absolute;
     top: 0px;
-    right: -109px;
+    right: -137px;
     width: 26px;
     height: 26px;
     background-color: #897941;
@@ -119,7 +119,7 @@ body {
     right: -109px;
     width: 26px;
     height: 26px;
-    background-color: #897941;
+    background-color: #61562d;
 	cursor: pointer;
 
 	box-shadow: 9px 0px 11px #0000007a;
@@ -155,13 +155,13 @@ body {
 	font-size: 10px;
     color: white;
     background-color: #bda85c;
-    width: 57px;
-    padding-left: 6px;
+    width: 48px;
+    padding-left: 10px;
     padding-right: 2px;
     padding-top: 7px;
     padding-bottom: 8px;
     position: absolute;
-    right: -65px;
+    right: -60px;
     top: 0px;
 	cursor: pointer;
 	box-shadow: 9px 0px 11px #0000007a;
@@ -170,11 +170,30 @@ body {
 	background-color: gray;
 }
 
-.eth_address .etherscan_btn {
+.eth_address .add_tag_btn {
 	width: 26px;
     height: 23px;
     background-color: #a9964f;
-    right: -83px;
+    right: -86px;
+    position: absolute;
+    top: 0px;
+    text-align: center;
+    padding-top: 3px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 9px 0px 11px #0000007a;
+}
+.eth_address .add_tag_btn:hover {
+	background-color: gray;
+}
+
+
+
+.eth_address .etherscan_btn {
+	width: 26px;
+    height: 23px;
+    background-color: #8d7d41;
+    right: -111px;
     position: absolute;
     top: 0px;
     text-align: center;
@@ -226,6 +245,21 @@ body {
     width: 100%;
     height: 100%;
 	user-select: none;
+}
+
+/*------------------------------------------------------------*/
+.eth_address .tags_container {
+	position: absolute;
+    left: 157px;
+    top: 33px;
+}
+
+.eth_address .tag {
+	width: 100px;
+    background-color: #a9964f;
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 /*------------------------------------------------------------------*/

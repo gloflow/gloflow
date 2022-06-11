@@ -29,13 +29,16 @@ export function init_tag_input(p_obj_id_str :string,
 	p_on_tags_created_fun,
 	p_on_tag_ui_add_fun,
 	p_on_tag_ui_remove_fun,
+	p_http_api_map,
 	p_log_fun) {
 	
 	const tagging_input_ui_element = init_tagging_input_ui_element(p_obj_id_str,
 		p_obj_type_str,
 		p_on_tags_created_fun,
 		p_on_tag_ui_remove_fun,
+		p_http_api_map,
 		p_log_fun);
+		
 	const tagging_ui_element = $(`
 		<div class="post_element_controls">
 			<div class="add_tags_button">add tags</div>
@@ -50,11 +53,9 @@ export function init_tag_input(p_obj_id_str :string,
 			$('#tagging_input_container').remove();
 		}
 
-		// post_element_element - as in part of a post. post_element_element because its a 
-		//                        html element of the post_element
-		// final DivElement post_element_element = p_event.target.parent.parent;
+	
 		place_tagging_input_ui_element(tagging_input_ui_element,
-			p_obj_element, //post_element_element,
+			p_obj_element,
 			p_log_fun);
 
 		if (p_on_tag_ui_add_fun != null) p_on_tag_ui_add_fun();
@@ -110,10 +111,11 @@ export function init_tag_input(p_obj_id_str :string,
 //-----------------------------------------------------
 // TAGS UI UTILS
 //-----------------------------------------------------
-function init_tagging_input_ui_element(p_obj_id_str :string,
+export function init_tagging_input_ui_element(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_on_tags_created_fun,
 	p_on_tag_ui_remove_fun,
+	p_http_api_map,
 	p_log_fun) {
 	
 	const tagging_input_ui_element = $(`
@@ -139,46 +141,50 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 
 	// to handlers for the same thing, one for the user clicking on the button,
 	// the other for the user pressing 'enter'  
-	$(tags_input_element).on('keyup', (p_event)=>{
+	$(tags_input_element).on('keyup', async (p_event)=>{
 
 			// 'ENTER' key
 			if (p_event.which == 13) {
 				p_event.preventDefault();
 				
-				add_tags_to_obj(p_obj_id_str,
+				const tags_lst = await add_tags_to_obj(p_obj_id_str,
 					p_obj_type_str,
 					tagging_input_ui_element,
-					//p_onComplete_fun
-					(p_tags_lst :string[])=>{
-						$(tags_input_element).val('');
-						p_on_tags_created_fun(p_tags_lst);
-					},
-					//p_onError_fun
-					()=>{},
+					p_http_api_map,
 					p_log_fun);
+
+				close();
+				p_on_tags_created_fun(tags_lst);
       		}
 		});
 	
-	$(tagging_input_ui_element).find('#submit_tags_button').on('onmouseup',(p_event)=>{
-			add_tags_to_obj(p_obj_id_str,
+	$(tagging_input_ui_element).find('#submit_tags_button').on('click', async (p_event)=>{
+
+			const tags_lst = await add_tags_to_obj(p_obj_id_str,
 				p_obj_type_str,
 				tagging_input_ui_element,
-				// p_onComplete_fun
-				(p_tags_lst :string[])=>{
-					$(tags_input_element).val('');
-					p_on_tags_created_fun(p_tags_lst);
-				},
-				// p_onError_fun
-				()=>{},
+				p_http_api_map,
 				p_log_fun);
+
+			close();
+			p_on_tags_created_fun(tags_lst);
 		});
-	
+
+	//-----------------------------------------------------
+	function close() {
+		$(tagging_input_ui_element).remove();
+		if (p_on_tag_ui_remove_fun != null) {
+			p_on_tag_ui_remove_fun();
+		}
+	}
+
+	//-----------------------------------------------------
 	// TAG INPUT CLOSE BUTTON
 	$(tagging_input_ui_element).find('#close_tagging_input_container_button').on('click',(p_event)=>{
 
 		const tagging_input_container_element = $(p_event.target).parent();
-		$(tagging_input_container_element).remove();
 
+		$(tagging_input_container_element).remove();
 		if (p_on_tag_ui_remove_fun != null) {
 			p_on_tag_ui_remove_fun();
 		}
@@ -188,7 +194,7 @@ function init_tagging_input_ui_element(p_obj_id_str :string,
 }
 
 //-----------------------------------------------------
-function place_tagging_input_ui_element(p_tagging_input_ui_element,
+export function place_tagging_input_ui_element(p_tagging_input_ui_element,
 	p_relative_to_element,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_tagger_input_ui.place_tagging_input_ui_element()');
@@ -249,89 +255,61 @@ function place_tagging_input_ui_element(p_tagging_input_ui_element,
 //-----------------------------------------------------
 // TAGS SENDING TO SERVER
 //-----------------------------------------------------
-function add_tags_to_obj(p_obj_id_str :string,
+async function add_tags_to_obj(p_obj_id_str :string,
 	p_obj_type_str :string,
 	p_tagging_ui_element,
-	p_onComplete_fun,
-	p_onError_fun,
+	p_http_api_map,
 	p_log_fun) {
 	p_log_fun('FUN_ENTER', 'gf_tagger_input_ui.add_tags_to_obj()');
-	
-	const tags_str :string   = $(p_tagging_ui_element).find('#tags_input').val();
-	const tags_lst :string[] = tags_str.split(' ');
-	p_log_fun('INFO','tags_lst - '+tags_lst.toString());
-	
+	const p = new Promise(async function(p_resolve_fun, p_reject_fun) {
 
-	const existing_tags_lst :string[] = [];
-
-	$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i, p_tag)=>{
-		const tag_str = $(p_tag).text().trim();
-		existing_tags_lst.push(tag_str);
-	});
-
-	// filter out only tags that are currently not existing/attached to this object
-	const new_tags_lst :string[] = [];
-	for (var tag_str of tags_lst) {
-		if (tag_str in existing_tags_lst) {
-			new_tags_lst.push(tag_str);
-		}
-	}
-
-	console.log('>>>>>>>>>>>>>>>>');
-	console.log(existing_tags_lst);
-	console.log(new_tags_lst);
-
-	// ADD!! - some visual success/failure indicator
-	gf_tagger_client.add_tags_to_obj(new_tags_lst,
-		p_obj_id_str,
-		p_obj_type_str,
-		(p_data_map)=>{
-			const added_tags_lst :string[] = p_data_map['added_tags_lst'];
-			p_log_fun('INFO', 'added_tags_lst:'+added_tags_lst);
-
-			p_onComplete_fun(added_tags_lst);
-		},
-		()=>{}, //p_onError_fun
-		p_log_fun);
-}
-
-/*//-----------------------------------------------------
-//in gf_posts_browser view
-init_image_view_post_tag_input(DivElement p_post_element,
-							   String     p_domain_str,
-							   Function   p_log_fun) {
-	p_log_fun('FUN_ENTER','gf_tagger_input_ui.init_image_view_post_tag_input()');
-	
-	const tagging_input_ui_element = init_tagging_input_ui_element(p_domain_str,
-																   p_log_fun);
-	final DivElement tagging_ui_element = new Element.html('''
-		<div class="post_controls">
-			<div class="add_tags_button">add tags</div>
-		</div>''');
-	
-	tagging_ui_element.query('.add_tags_button').onClick.listen((p_event) {
-		final DivElement post_element = p_event.target.parent.parent;
+		const tags_str :string   = $(p_tagging_ui_element).find('#tags_input').val();
+		const tags_lst :string[] = tags_str.split(' ');
+		p_log_fun('INFO', 'tags_lst - '+tags_lst.toString());
 		
-		place_tagging_input_ui_element(tagging_input_ui_element,
-			                           post_element,
-			                           p_log_fun);
+
+		const existing_tags_lst :string[] = [];
+
+		$(p_tagging_ui_element).parent().find('.tags_container').find('a').each((p_i, p_tag)=>{
+			const tag_str = $(p_tag).text().trim();
+			existing_tags_lst.push(tag_str);
+		});
+
+		
+		const new_tags_lst :string[] = [];
+		for (var tag_str of tags_lst) {
+
+			// filter out only tags that are currently not existing/attached to this object
+			if (!(tag_str in existing_tags_lst)) {
+				new_tags_lst.push(tag_str);
+			}
+		}
+
+		// ADD!! - some visual success/failure indicator
+		const tags_meta_map = {};
+
+		var data_map;
+		if (p_http_api_map == null) {
+
+			data_map = await gf_tagger_client.add_tags_to_obj(new_tags_lst,
+				p_obj_id_str,
+				p_obj_type_str,
+				tags_meta_map,
+				p_log_fun);
+
+		} else {
+
+			data_map = await p_http_api_map["gf_tagger"]["add_tags_to_obj"](new_tags_lst,
+				p_obj_id_str,
+				p_obj_type_str,
+				tags_meta_map,
+				p_log_fun);
+		}
+
+		const added_tags_lst :string[] = data_map['added_tags_lst'];
+		p_log_fun('INFO', 'added_tags_lst:'+added_tags_lst);
+
+		p_resolve_fun(added_tags_lst);
 	});
-
-	p_post_element.onMouseOver.listen((p_event) {
-			p_event.stopPropagation();
-			
-			//fixes a bug where after masonry scrolling elements are left even after mouseLeave
-			document.body.query('.post_controls').remove(); //detach();
-			
-
-			//insertAdjacentElement() - Inserts element into the DOM at the specified location.
-			p_post_element.insertAdjacentElement('beforeBegin', //Immediately before this element
-												 tagging_ui_element);
-			//$(p_post_element).prepend(tagging_ui_element);
-		});
-
-	p_post_element.onMouseOut.listen((p_event) {
-			p_event.stopPropagation();
-			p_event.target.query(".post_controls").remove(); //detach();	
-		});
-}*/
+	return p;
+}

@@ -52,7 +52,28 @@ function main(p_log_fun) {
 
 	const observed_eth_addresses_lst = [];
 
+	const tags_by_address_map = {};
+
 	const http_api_map = {
+		//------------------------
+        // TAGGING
+        //------------------------
+        "gf_tagger": {
+            
+            "add_tags_to_obj": async (p_tags_lst :string[],  
+                p_object_id_str   :string,
+                p_object_type_str :string,
+                p_meta_map,
+                p_log_fun)=>{
+				
+				const output_map = {
+					"added_tags_lst": p_tags_lst
+				};
+				return output_map;
+            }
+        },
+		
+		//------------------------
 		"home": {
 
 			//------------------------
@@ -110,10 +131,12 @@ function main(p_log_fun) {
 				switch (p_type_str) {
 					case "my":
 						my_eth_addresses_lst.push(p_address_str);
+						tags_by_address_map[p_address_str] = [];
 						break;
 
 					case "observed":
 						observed_eth_addresses_lst.push(p_address_str);
+						tags_by_address_map[p_address_str] = [];
 						break;
 				}
 				
