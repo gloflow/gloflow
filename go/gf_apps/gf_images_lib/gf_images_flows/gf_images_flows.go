@@ -215,7 +215,8 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 
-	// POLICY_VERIFY - raises error if pocliy rejects the op
+	//-------------------------
+	// POLICY_VERIFY - raises error if policy rejects the op
 	opStr := gf_policy.GF_POLICY_OP__FLOW_ADD_IMG
 	gfErr := flowsVerifyPolicy(opStr,
 		pFlowsNamesLst,
@@ -224,7 +225,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 		return nil, nil, gf_images_core.GF_image_id(""), gfErr
 	}
 
-
+	//-------------------------
 
 	runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(pImageExternURLstr,
 		pImageOriginPageURLstr,
@@ -237,6 +238,57 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	}
 
 	return runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, nil
+}
+
+//-------------------------------------------------
+// ADD_EXTERN_IMAGES - BATCH
+func FlowsAddExternImages(pImagesExternURLsLst []string,
+	pImagesOriginPagesURLsStr []string,
+	pFlowsNamesLst            []string,
+	pClientTypeStr            string,
+	pJobsMngrCh               chan gf_images_jobs_core.Job_msg,
+	pRuntimeSys               *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
+
+	//------------------
+	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{}
+	for i:=0; i<len(pImagesExternURLsLst); i++ {
+
+		imageExternURLstr := pImagesExternURLsLst[i]
+		imageOriginPageURLstr := pImagesOriginPagesURLsStr[i]
+		
+		image := gf_images_jobs_core.GF_image_extern_to_process{
+			Source_url_str:      imageExternURLstr,
+			Origin_page_url_str: imageOriginPageURLstr,
+		}
+		imagesURLsToProcessLst = append(imagesURLsToProcessLst, image)
+	}
+	
+	// GF_IMAGES_JOBS_CLIENT
+	runningJob, jobExpectedOutputsLst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
+		imagesURLsToProcessLst,
+		pFlowsNamesLst,
+		pJobsMngrCh,
+		pRuntimeSys)
+
+	if gf_err != nil {
+		return nil, nil, nil, gf_err
+	}
+
+	//------------------
+
+	imagesIDsLst                   := []gf_images_core.GFimageID{}
+	imagesThumbSmallRelativeURLlst := []*string{}
+
+	for i:=0; i < len(jobExpectedOutputsLst); i++ {	
+		imageIDstr               := gf_images_core.GFimageID(jobExpectedOutputsLst[i].Image_id_str)
+		thumbSmallRelativeURLstr := jobExpectedOutputsLst[i].Thumbnail_small_relative_url_str
+
+
+		imagesIDsLst = append(imagesIDsLst, imageIDstr)
+		imagesThumbSmallRelativeURLlst = append(imagesThumbSmallRelativeURLlst, &thumbSmallRelativeURLstr)
+	}
+
+	return &runningJob.Id_str, imagesThumbSmallRelativeURLlst, imagesIDsLst, nil
 }
 
 //-------------------------------------------------
@@ -256,7 +308,8 @@ func FlowsAddExternImage(pImageExternURLstr string,
 				Origin_page_url_str: pImageOriginPageURLstr,
 			},
 		}
-		
+	
+	// GF_IMAGES_JOBS_CLIENT
 	runningJob, jobExpectedOutputsLst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
@@ -264,7 +317,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 		pRuntimeSys)
 
 	if gf_err != nil {
-		return nil, nil, gf_images_core.GF_image_id(""), gf_err
+		return nil, nil, gf_images_core.GFimageID(""), gf_err
 	}
 
 	//------------------

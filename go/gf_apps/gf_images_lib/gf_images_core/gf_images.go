@@ -27,11 +27,12 @@ import (
 )
 
 //---------------------------------------------------
+type GFimage  = Gf_image
 type GF_image = Gf_image
 type Gf_image struct {
 
 	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
-	Id_str               Gf_image_id   `json:"id_str"               bson:"id_str"`
+	Id_str               GFimageID     `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	
@@ -50,12 +51,12 @@ type Gf_image struct {
 	Origin_url_str string `json:"origin_url_str" bson:"origin_url_str"`
 
 	// if the image is extracted from a page, this holds the page_url
-	Origin_page_url_str string `json:"origin_page_url_str" bson:"origin_page_url_str"`
+	Origin_page_url_str string `json:"origin_page_url_str,omitempty" bson:"origin_page_url_str,omitempty"`
 
 	// DEPRECATED!! - is this used? images are stored in S3, and accessible via URL.
 	// actual path on the OS filesystem, of the fullsized image gotten from origin_url_str durring
 	// processing (download/transformation/s3_upload).
-	Original_file_internal_uri_str string `json:"original_file_internal_uri_str" bson:"original_file_internal_uri_str"`
+	Original_file_internal_uri_str string `json:"original_file_internal_uri_str,omitempty" bson:"original_file_internal_uri_str,omitempty"`
 
 	//---------------
 	// relative url"s - "/images/image_name.*"
@@ -108,7 +109,7 @@ type GF_image_thumbs struct {
 }
 
 type GF_image_new_info struct {
-	Id_str                         Gf_image_id
+	Id_str                         GFimageID
 	Title_str                      string
 	Flows_names_lst                []string
 	Image_client_type_str          string
@@ -128,7 +129,7 @@ type GF_image_new_info struct {
 //---------------------------------------------------
 func Image__create_new(p_image_info *GF_image_new_info,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create_new()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -179,7 +180,7 @@ func Image__create(p_image_info_map map[string]interface{},
 
 	title_str       := new_image_info_map["title_str"].(string)
 	flows_names_lst := new_image_info_map["flows_names_lst"].([]string)
-	gf_image_id_str := Gf_image_id(new_image_info_map["id_str"].(string))
+	gf_image_id_str := GFimageID(new_image_info_map["id_str"].(string))
 
 	gf_image := &GF_image{
 		Id_str:                         gf_image_id_str,
@@ -196,6 +197,7 @@ func Image__create(p_image_info_map map[string]interface{},
 		Thumbnail_large_url_str:        new_image_info_map["thumbnail_large_url_str"].(string),
 		Format_str:                     new_image_info_map["format_str"].(string),
 	}
+	
 	//----------------------------------
 	// DB PERSIST
 

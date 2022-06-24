@@ -33,6 +33,7 @@ import (
 //---------------------------------------------------
 type Gf_image_id string // DEPRECATED!! - switch to using GF_image_id fully
 type GF_image_id = Gf_image_id
+type GFimageID   = GF_image_id
 
 //---------------------------------------------------
 // CREATES_ID

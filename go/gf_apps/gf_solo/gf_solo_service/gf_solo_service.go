@@ -211,7 +211,7 @@ func Run(pConfig *GF_config,
 		AuthLoginURLstr: "/landing/main",
 	}
 
-	jobs_mngr_ch := gf_images_lib.Init_service(gfSoloHTTPmux,
+	imagesJobsMngrCh := gf_images_lib.Init_service(gfSoloHTTPmux,
 		gf_images__service_info,
 		gf_images__config,
 		pRuntimeSys)
@@ -262,7 +262,7 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_TAGGER
 	gf_tagger_lib.Init_service(pConfig.Templates_paths_map,
-		jobs_mngr_ch,
+		imagesJobsMngrCh,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
@@ -271,13 +271,14 @@ func Run(pConfig *GF_config,
 	gf_ml_lib.InitService(gfSoloHTTPmux, pRuntimeSys)
 
 	//-------------
-	// GF_WEB3_MONITOR
+	// GF_WEB3
 	
 	web3Config := &gf_eth_core.GF_config{
 		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
 	}
 	gf_web3_lib.InitService(gfSoloHTTPmux,
 		web3Config,
+		imagesJobsMngrCh,
 		pRuntimeSys)
 
 	//-------------
