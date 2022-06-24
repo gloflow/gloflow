@@ -28,6 +28,7 @@ import (
 	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_tx"
@@ -39,8 +40,9 @@ import (
 
 //-------------------------------------------------
 func InitService(pHTTPmux *http.ServeMux,
-	pConfig     *gf_eth_core.GF_config,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	pConfig           *gf_eth_core.GF_config,
+	pImagesJobsMngrCh chan gf_images_jobs_core.Job_msg,
+	pRuntimeSys       *gf_core.RuntimeSys) {
 
 	//-------------
 	// ADDRESS
@@ -54,6 +56,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	// NFT
 	gfErr = gf_nft.InitHandlers(pHTTPmux,
 		pConfig,
+		pImagesJobsMngrCh,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)

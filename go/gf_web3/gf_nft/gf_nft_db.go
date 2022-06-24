@@ -24,8 +24,47 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
+
+
+//-------------------------------------------------
+func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
+	pGFimageID          gf_images_core.GFimageID,
+	pGFimageThumbURLstr *string,
+	pCtx                context.Context,
+	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
+
+	
+	collNameStr := "gf_web3_nfts"
+
+
+	_, err := pRuntimeSys.Mongo_db.Collection(collNameStr).UpdateMany(pCtx, bson.M{
+			"id_str":       pNFTid,
+			"deleted_bool": false,
+		},
+		bson.M{"$set": bson.M{
+			"gf_image_id_str":        pGFimageID,
+			"gf_image_thumb_url_str": pGFimageThumbURLstr,
+		}})
+
+	if err != nil {
+		gfErr := gf_core.Mongo__handle_error("failed to update gf_nft with new gf_image_id",
+			"mongodb_update_error",
+			map[string]interface{}{
+				"nft_id_str":  pNFTid,
+				"gf_image_id": pGFimageID,
+			},
+			err, "gf_nft", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
 
 //-------------------------------------------------
 func DBgetByOwner(pAddressStr string,

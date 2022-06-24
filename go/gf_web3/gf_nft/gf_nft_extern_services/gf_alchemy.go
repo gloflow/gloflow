@@ -47,10 +47,12 @@ type GFnftAlchemy struct {
 	DescriptionStr     string `bson:"description_str"`
 	ChainStr           string `bson:"chain_str"`
 
+	// URIs
 	TokenURIrawStr     string `bson:"token_uri_raw_str"`
-	TokenURIgatewayStr string `bson:"token_uri_gateway_str"`
-
 	MediaURIrawStr     string `bson:"media_uri_raw_str"`
+
+	// GATEWAY_URIs
+	TokenURIgatewayStr string `bson:"token_uri_gateway_str"`
 	MediaURIgatewayStr string `bson:"media_uri_gateway_str"`
 
 	MetadataNameStr        string                   `bson:"metadata_name_str"`
@@ -200,10 +202,12 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 			DescriptionStr:     nftMap["description"].(string),
 			ChainStr:           pChainStr,
 
+			// URIs
 			TokenURIrawStr:     nftMap["tokenUri"].(map[string]interface{})["raw"].(string),
-			TokenURIgatewayStr: nftMap["tokenUri"].(map[string]interface{})["gateway"].(string),
-
 			MediaURIrawStr:     nftMap["media"].([]interface{})[0].(map[string]interface{})["raw"].(string),
+
+			// GATEWAY_URIs
+			TokenURIgatewayStr: nftMap["tokenUri"].(map[string]interface{})["gateway"].(string),
 			MediaURIgatewayStr: nftMap["media"].([]interface{})[0].(map[string]interface{})["raw"].(string),
 
 			MetadataNameStr:        nftMap["metadata"].(map[string]interface{})["name"].(string),

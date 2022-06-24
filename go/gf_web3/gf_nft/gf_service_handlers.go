@@ -24,14 +24,16 @@ import (
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
-	pConfig     *gf_eth_core.GF_config,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pConfig           *gf_eth_core.GF_config,
+	pImagesJobsMngrCh chan gf_images_jobs_core.Job_msg,
+	pRuntimeSys       *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -73,6 +75,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				// INDEX
 				nftsExternLst, gfErr := pipelineIndexAddress(input,
 					pConfig,
+					pImagesJobsMngrCh,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

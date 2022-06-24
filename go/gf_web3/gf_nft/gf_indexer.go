@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
@@ -12,8 +13,9 @@ import (
 func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
 	pConfig           *gf_eth_core.GF_config,
+	pJobsMngrCh       chan gf_images_jobs_core.Job_msg,
 	pCtx              context.Context,
-	pRuntimeSys       *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
+	pRuntimeSys       *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
 
 
@@ -43,7 +45,7 @@ func indexAddress(pAddressStr string,
 			return nil, gfErr
 		}
 
-		// DB
+		// DB - persist alchemy records
 		gfErr = DBcreateBulkAlchemyNFTs(nftsAlchemyLst,
 			pCtx,
 			pRuntimeSys)
@@ -52,13 +54,32 @@ func indexAddress(pAddressStr string,
 		}
 
 
-
-		nftsLst, gfErr := createForAlchemy(nftsAlchemyLst,
+		// create NFT records from Alchemy NFT records
+		nftsLst, gfErr := createFromAlchemy(nftsAlchemyLst,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
+
+
+
+		//---------------------
+		// GF_IMAGES
+		flowsNamesLst := []string{
+			fmt.Sprintf("gf_web3:gf_nft:owner:%s", pAddressStr),
+		}
+		gfErr = createAsImagesInFlows(nftsLst,
+			flowsNamesLst,
+			pJobsMngrCh,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+
+		//---------------------
+		
 
 		return nftsLst, nil
 	}

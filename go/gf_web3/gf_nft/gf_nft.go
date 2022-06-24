@@ -24,6 +24,9 @@ import (
 	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
 
@@ -45,8 +48,15 @@ type GFnft struct {
 	TokenURIrawStr     string `bson:"token_uri_raw_str"`
 	MediaURIrawStr     string `bson:"media_uri_raw_str"`
 
-	OpenSeaIDstr       gf_core.GF_ID `bson:"open_sea_id_str"`
-	AlchemyIDstr       gf_core.GF_ID `bson:"alchemy_id_str"`
+	// GATEWAY_URIs
+	TokenURIgatewayStr string `bson:"token_uri_gateway_str"`
+	MediaURIgatewayStr string `bson:"media_uri_gateway_str"`
+
+	GFimageID          gf_images_core.GFimageID `bson:"gf_image_id_str"`
+	GFimageThumbURLstr string                   `bson:"gf_image_thumb_url_str"`
+
+	OpenSeaIDstr       gf_core.GF_ID            `bson:"open_sea_id_str"`
+	AlchemyIDstr       gf_core.GF_ID            `bson:"alchemy_id_str"`
 }
 
 type GFnftExtern struct {
@@ -58,6 +68,15 @@ type GFnftExtern struct {
 	
 	TokenURIrawStr     string `json:"token_uri_raw_str"`
 	MediaURIrawStr     string `json:"media_uri_raw_str"`
+
+	// GATEWAY_URIs
+	TokenURIgatewayStr string `json:"token_uri_gateway_str"`
+	MediaURIgatewayStr string `json:"media_uri_gateway_str"`
+
+
+
+	GFimageID          gf_images_core.GFimageID `json:"gf_image_id_str"`
+	GFimageThumbURLstr string                   `json:"gf_image_thumb_url_str"`
 }
 
 //-------------------------------------------------
@@ -76,6 +95,12 @@ func getNFTextern(pNFTsLst []*GFnft) []*GFnftExtern {
 
 			TokenURIrawStr: nft.TokenURIrawStr,
 			MediaURIrawStr: nft.MediaURIrawStr,
+
+			TokenURIgatewayStr: nft.TokenURIgatewayStr,
+			MediaURIgatewayStr: nft.MediaURIgatewayStr,
+
+			GFimageID:          nft.GFimageID,
+			GFimageThumbURLstr: nft.GFimageThumbURLstr,
 		}
 
 		nftsExternLst = append(nftsExternLst, nftExtern)
@@ -96,7 +121,7 @@ func get(pTokenIDstr string,
 
 //---------------------------------------------------
 // CREATE_FOR_ALCHEMY
-func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
+func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
 
@@ -104,6 +129,7 @@ func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	for _, nftAlchemy := range pNFTsAlchemyLst {
 
 		creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
+
 		idStr := gf_nft_extern_services.CreateID([]string{
 			nftAlchemy.ContractAddressStr,
 			nftAlchemy.TokenIDstr,},
@@ -113,6 +139,7 @@ func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 			Vstr:  "0",
 			IDstr: idStr,
 			CreationUNIXtimeF:  creationTimeUNIXf,
+
 			OwnerAddressStr:    nftAlchemy.OwnerAddressStr,
 			TokenIDstr:         nftAlchemy.TokenIDstr,
 			ContractAddressStr: nftAlchemy.ContractAddressStr,
@@ -122,6 +149,10 @@ func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 			// URIs
 			TokenURIrawStr: nftAlchemy.TokenURIrawStr,
 			MediaURIrawStr: nftAlchemy.MediaURIrawStr,
+
+			// GATEWAY_URIs
+			TokenURIgatewayStr: nftAlchemy.TokenURIgatewayStr,
+			MediaURIgatewayStr: nftAlchemy.MediaURIgatewayStr,
 
 			AlchemyIDstr: nftAlchemy.IDstr,
 		}
@@ -141,6 +172,7 @@ func createForAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 }
 
 //---------------------------------------------------
+// CREATE_ID
 func createID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 
@@ -153,3 +185,59 @@ func createID(pUserIdentifierStr string,
 	return gfIDstr
 }
 
+//---------------------------------------------------
+// CREATE_AS_IMAGES_IN_FLOWS
+func createAsImagesInFlows(pNFTsLst []*GFnft,
+	pFlowsNamesLst []string,
+	pJobsMngrCh    chan gf_images_jobs_core.Job_msg,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GFerror {
+		
+	//---------------------
+	// GF_IMAGES_JOB
+
+	clientTypeStr := "gf_web3:gf_nft"
+	imagesExternURLsLst      := []string{}
+	imagesOriginPagesURLsStr := []string{}
+
+	for _, nft := range pNFTsLst {
+
+		imagesExternURLsLst      = append(imagesExternURLsLst, nft.MediaURIgatewayStr)
+		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "")
+	}
+
+	_, imagesThumbSmallRelativeURLlst, imagesIDsLst, gfErr := gf_images_flows.FlowsAddExternImages(imagesExternURLsLst,
+		imagesOriginPagesURLsStr,
+		pFlowsNamesLst,
+		clientTypeStr,
+		pJobsMngrCh,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//---------------------
+	// DB
+	i := 0
+	for _, nft := range pNFTsLst {
+
+		gfImageID          := imagesIDsLst[i]
+		gfImageThumbURLstr := imagesThumbSmallRelativeURLlst[i]
+
+		gfErr := DBupdateGFimageProps(nft.IDstr,
+			gfImageID,
+			gfImageThumbURLstr,
+			pCtx,
+			pRuntimeSys)
+		
+		if gfErr != nil {
+			// do nothing for now, let other image_ids be updated
+		}
+
+		i++
+	}
+
+	//---------------------
+
+	return nil
+}

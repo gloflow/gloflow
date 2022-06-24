@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
 
@@ -51,6 +52,7 @@ type GFgetByOwnerInput struct {
 //-------------------------------------------------
 func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
+	pJobsMngrCh chan gf_images_jobs_core.Job_msg,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 
@@ -61,6 +63,7 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 		nftsLst, gfErr := indexAddress(pInput.AddressStr,
 			serviceSourceStr,
 			pConfig,
+			pJobsMngrCh,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
