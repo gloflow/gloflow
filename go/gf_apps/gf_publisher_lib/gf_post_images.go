@@ -31,7 +31,7 @@ import (
 
 //---------------------------------------------------
 type Gf_images_client_result struct {
-	image_ids_lst      []gf_images_core.Gf_image_id
+	image_ids_lst      []gf_images_core.GFimageID
 	running_job_id_str string
 	post_thumbnail_str string
 }
@@ -39,7 +39,7 @@ type Gf_images_client_result struct {
 //---------------------------------------------------
 func process_external_images(p_post *gf_publisher_core.Gf_post,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
 
 	//-------------------	
@@ -230,8 +230,8 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 	p_post_elements_images_urls_lst              []string,
 	p_post_elements_images_origin_pages_urls_str []string,
 	p_image_job_client_type_str                  string,
-	p_gf_images_jobs_mngr                        gf_images_jobs_core.Jobs_mngr,
-	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.Gf_error) {
+	p_gf_images_jobs_mngr                        gf_images_jobs_core.JobsMngr,
+	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.GFerror) {
 
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 	flows_names_lst := []string{"general",}

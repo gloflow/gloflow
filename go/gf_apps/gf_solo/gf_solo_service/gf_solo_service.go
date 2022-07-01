@@ -186,20 +186,20 @@ func Run(pConfig *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	gf_images__config, gfErr := gf_images_core.Config__get(pConfig.Images__config_file_path_str,
+	gfImagesConfig, gfErr := gf_images_core.Config__get(pConfig.Images__config_file_path_str,
 		pRuntimeSys)
 	if gfErr != nil {
 		return
 	}
 	
-	gf_images__service_info := &gf_images_core.GFserviceInfo{
+	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
 		Mongodb_host_str:                           pConfig.Mongodb_host_str,
 		Mongodb_db_name_str:                        pConfig.Mongodb_db_name_str,
 
-		Images_store_local_dir_path_str:            gf_images__config.Store_local_dir_path_str,
-		Images_thumbnails_store_local_dir_path_str: gf_images__config.Thumbnails_store_local_dir_path_str,
-		Media_domain_str:                           gf_images__config.Media_domain_str,
-		Images_main_s3_bucket_name_str:             gf_images__config.Main_s3_bucket_name_str,
+		Images_store_local_dir_path_str:            gfImagesConfig.Store_local_dir_path_str,
+		Images_thumbnails_store_local_dir_path_str: gfImagesConfig.Thumbnails_store_local_dir_path_str,
+		Media_domain_str:                           gfImagesConfig.Media_domain_str,
+		Images_main_s3_bucket_name_str:             gfImagesConfig.Main_s3_bucket_name_str,
 
 		AWS_access_key_id_str:                      pConfig.AWS_access_key_id_str,
 		AWS_secret_access_key_str:                  pConfig.AWS_secret_access_key_str,
@@ -211,9 +211,9 @@ func Run(pConfig *GF_config,
 		AuthLoginURLstr: "/landing/main",
 	}
 
-	imagesJobsMngrCh := gf_images_lib.Init_service(gfSoloHTTPmux,
-		gf_images__service_info,
-		gf_images__config,
+	imagesJobsMngrCh := gf_images_lib.InitService(gfSoloHTTPmux,
+		gfImagesServiceInfo,
+		gfImagesConfig,
 		pRuntimeSys)
 
 	//-------------
@@ -225,7 +225,7 @@ func Run(pConfig *GF_config,
 		Crawl__cluster_node_type_str:     pConfig.Crawl__cluster_node_type_str,
 		Crawl__images_local_dir_path_str: pConfig.Crawl__images_local_dir_path_str,
 
-		Media_domain_str:       gf_images__config.Media_domain_str,
+		Media_domain_str:       gfImagesConfig.Media_domain_str,
 		Py_stats_dirs_lst:      pConfig.Analytics__py_stats_dirs_lst,
 		Run_indexer_bool:       pConfig.Analytics__run_indexer_bool,
 		Elasticsearch_host_str: pConfig.Elasticsearch_host_str,

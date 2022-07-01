@@ -210,7 +210,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
-	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pUserIDstr             gf_core.GF_ID,
 	pCtx                   context.Context,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
@@ -246,7 +246,7 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 	pImagesOriginPagesURLsStr []string,
 	pFlowsNamesLst            []string,
 	pClientTypeStr            string,
-	pJobsMngrCh               chan gf_images_jobs_core.Job_msg,
+	pJobsMngrCh               chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys               *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//------------------
@@ -297,7 +297,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
-	pJobsMngrCh            chan gf_images_jobs_core.Job_msg,
+	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 

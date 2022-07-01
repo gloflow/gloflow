@@ -32,7 +32,7 @@ import (
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
 	pConfig           *gf_eth_core.GF_config,
-	pImagesJobsMngrCh chan gf_images_jobs_core.Job_msg,
+	pImagesJobsMngrCh chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys       *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------

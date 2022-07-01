@@ -13,7 +13,7 @@ import (
 func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
 	pConfig           *gf_eth_core.GF_config,
-	pJobsMngrCh       chan gf_images_jobs_core.Job_msg,
+	pJobsMngrCh       chan gf_images_jobs_core.JobMsg,
 	pCtx              context.Context,
 	pRuntimeSys       *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 

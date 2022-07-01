@@ -48,9 +48,21 @@ func TestMain(m *testing.M) {
 
 		HTTPmux := http.NewServeMux()
 
+
+
+		jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
+			test__images_thumbs_local_dir_path_str,
+			img_config,
+			gf_s3_test_info.Gf_s3_info,
+			runtime_sys)
+			
+		imagesJobsMngrCh := 
+
 		config := &gf_eth_core.GF_config{
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
 		}
+
+		
 		InitService(HTTPmux,
 			config,
 			runtime.RuntimeSys)

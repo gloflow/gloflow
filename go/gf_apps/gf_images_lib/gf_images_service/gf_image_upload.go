@@ -59,7 +59,7 @@ func Upload__init(p_image_name_str string,
 	p_image_format_str string,
 	p_flows_names_lst  []string,
 	p_client_type_str  string,
-	p_s3_info          *gf_core.GF_s3_info,
+	p_s3_info          *gf_core.GFs3Info,
 	p_config           *gf_images_core.GF_config,
 	p_runtime_sys      *gf_core.Runtime_sys) (*GF_image_upload_info, *gf_core.GF_error) {
 	
@@ -132,9 +132,9 @@ func Upload__init(p_image_name_str string,
 // the upload operation.
 func Upload__complete(p_upload_gf_image_id_str gf_images_core.GF_image_id,
 	p_meta_map     map[string]interface{},
-	p_jobs_mngr_ch chan gf_images_jobs_core.Job_msg,
-	p_s3_info      *gf_core.GF_s3_info,
-	p_runtime_sys  *gf_core.Runtime_sys) (*gf_images_jobs_core.GF_job_running, *gf_core.GF_error) {
+	p_jobs_mngr_ch chan gf_images_jobs_core.JobMsg,
+	p_s3_info      *gf_core.GFs3Info,
+	p_runtime_sys  *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
 
 

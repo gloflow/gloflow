@@ -145,7 +145,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 //---------------------------------------------------
 // CREATE
 func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
-	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_ctx              context.Context,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
@@ -218,7 +218,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 func bookmarks__pipeline__screenshot(p_url_str string,
 	p_bookmark_id_str  gf_core.GF_ID,
 	p_ctx              context.Context,
-	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
 
 	//-----------------

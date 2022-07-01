@@ -29,6 +29,6 @@ import (
 type Gf_crawler_runtime struct {
 	Events_ctx            *gf_events.Events_ctx
 	Esearch_client        *elastic.Client
-	S3_info               *gf_core.GF_s3_info
+	S3_info               *gf_core.GFs3Info
 	Cluster_node_type_str string
 }

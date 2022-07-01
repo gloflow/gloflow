@@ -42,7 +42,7 @@ func Create_thumbnails(p_image_id_str GF_image_id,
 	new_thumb_small_file_name_str         := fmt.Sprintf("%s_thumb_small.%s", p_image_id_str, p_image_format_str)
 	small__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_small_file_name_str)
 
-	gf_err := resize_image(p_image, //p_image_file,
+	gf_err := resizeImage(p_image, //p_image_file,
 		small__target_thumbnail_file_path_str,
 		p_image_format_str,
 		p_small_thumb_max_size_px_int,
@@ -56,7 +56,7 @@ func Create_thumbnails(p_image_id_str GF_image_id,
 	new_thumb_medium_file_name_str         := fmt.Sprintf("%s_thumb_medium.%s", p_image_id_str, p_image_format_str)
 	medium__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_medium_file_name_str)
 
-	gf_err = resize_image(p_image, //p_image_file,
+	gf_err = resizeImage(p_image, //p_image_file,
 		medium__target_thumbnail_file_path_str,
 		p_image_format_str,
 		p_medium_thumb_max_size_px_int,
@@ -70,7 +70,7 @@ func Create_thumbnails(p_image_id_str GF_image_id,
 	new_thumb_large_file_name_str         := fmt.Sprintf("%s_thumb_large.%s", p_image_id_str, p_image_format_str)
 	large__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_large_file_name_str)
 
-	gf_err = resize_image(p_image, //p_image_file,
+	gf_err = resizeImage(p_image, //p_image_file,
 		large__target_thumbnail_file_path_str,
 		p_image_format_str,
 		p_large_thumb_max_size_px_int,

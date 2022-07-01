@@ -31,10 +31,10 @@ import (
 
 //-------------------------------------------------
 func Init_handlers(p_auth_login_url_str string,
-	p_http_mux            *http.ServeMux,
+	pHTTPmux              *http.ServeMux,
 	p_templates_paths_map map[string]string,
-	p_jobs_mngr_ch        chan gf_images_jobs_core.Job_msg,
-	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.GF_error {
+	pJobsMngrCh           chan gf_images_jobs_core.JobMsg,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
 
 	//---------------------
@@ -60,7 +60,7 @@ func Init_handlers(p_auth_login_url_str string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
-		Mux:                p_http_mux,
+		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
@@ -91,7 +91,7 @@ func Init_handlers(p_auth_login_url_str string,
 			}
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil, 
@@ -129,7 +129,7 @@ func Init_handlers(p_auth_login_url_str string,
 					image_origin_page_url_str,
 					flowsNamesLst,
 					client_type_str,
-					p_jobs_mngr_ch,
+					pJobsMngrCh,
 					userIDstr,
 					pCtx,
 					pRuntimeSys)
@@ -187,7 +187,7 @@ func Init_handlers(p_auth_login_url_str string,
 					image_origin_page_url_str,
 					flows_names_lst,
 					client_type_str,
-					p_jobs_mngr_ch,
+					pJobsMngrCh,
 					pRuntimeSys)
 
 				if n_gf_err != nil {
@@ -208,7 +208,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -259,7 +259,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		false, // p_store_run_bool
 		nil,
@@ -303,7 +303,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -333,7 +333,7 @@ func Init_handlers(p_auth_login_url_str string,
 			}
 			return nil, nil
 		},
-		p_http_mux,
+		pHTTPmux,
 		metrics,
 		true, // p_store_run_bool
 		nil,

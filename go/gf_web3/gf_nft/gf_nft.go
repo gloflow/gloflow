@@ -189,7 +189,7 @@ func createID(pUserIdentifierStr string,
 // CREATE_AS_IMAGES_IN_FLOWS
 func createAsImagesInFlows(pNFTsLst []*GFnft,
 	pFlowsNamesLst []string,
-	pJobsMngrCh    chan gf_images_jobs_core.Job_msg,
+	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GFerror {
 		

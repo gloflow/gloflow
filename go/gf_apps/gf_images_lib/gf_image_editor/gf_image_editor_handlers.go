@@ -27,9 +27,8 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_mux *http.ServeMux,
-	p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image_editor_handlers.Init_handlers()")
+func InitHandlers(p_mux *http.ServeMux,
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/editor/save",

@@ -30,7 +30,7 @@ import (
 
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
-	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_mux              *http.ServeMux,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 

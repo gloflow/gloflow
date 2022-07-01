@@ -31,8 +31,8 @@ func Init(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_config                                     *gf_images_core.GF_config,
-	p_s3_info                                    *gf_core.GF_s3_info,
-	p_runtime_sys                                *gf_core.Runtime_sys) gf_images_jobs_core.Jobs_mngr {
+	p_s3_info                                    *gf_core.GFs3Info,
+	pRuntimeSys                                  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
 	lifecycle_callbacks := &gf_images_jobs_core.GF_jobs_lifecycle_callbacks{
 		Job_type__transform_imgs__fun: func() *gf_core.Gf_error {
@@ -54,13 +54,13 @@ func Init(p_images_store_local_dir_path_str string,
 		},
 	}
 
-	jobs_mngr_ch := gf_images_jobs_core.Jobs_mngr__init(p_images_store_local_dir_path_str,
+	jobs_mngr_ch := gf_images_jobs_core.JobsMngrInit(p_images_store_local_dir_path_str,
 		p_images_thumbnails_store_local_dir_path_str,
 		p_media_domain_str,
 		lifecycle_callbacks,
 		p_config,
 		p_s3_info,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	return jobs_mngr_ch
 }

@@ -88,7 +88,7 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 
 //-------------------------------------------------
 func Init_service(p_templates_paths_map map[string]string,
-	p_images_jobs_mngr gf_images_jobs_core.Jobs_mngr,
+	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_http_mux         *http.ServeMux,
 	p_runtime_sys      *gf_core.Runtime_sys) {
 	
@@ -148,7 +148,7 @@ func Run_service__in_process(p_port_str string,
 	// FIX!! - jobs_mngr shouldnt be used here. when gf_tagger service is run in a separate
 	//         process from gf_images service, jobs_mngr can only be reaeched via HTTP or some other
 	//         transport mechanism (not via Go messages as a goroutine).
-	var jobs_mngr gf_images_jobs_core.Jobs_mngr
+	var jobs_mngr gf_images_jobs_core.JobsMngr
 
 	Init_service(templates_dir_paths_map,
 		jobs_mngr,

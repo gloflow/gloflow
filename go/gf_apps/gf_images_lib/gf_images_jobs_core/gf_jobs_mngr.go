@@ -29,13 +29,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_storage"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
-type Jobs_mngr chan Job_msg
+type JobsMngr chan JobMsg
 
-type GF_job_running struct {
+type GFjobRunning struct {
 	Id              primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str          string        `bson:"id_str"`
 	T_str           string        `bson:"t"`
@@ -48,14 +49,15 @@ type GF_job_running struct {
 	Images_extern_to_process_lst   []GF_image_extern_to_process   `bson:"images_to_process_lst"`
 	Images_uploaded_to_process_lst []GF_image_uploaded_to_process `bson:"images_uploaded_to_process_lst"`
 	
-	Errors_lst     []Job_Error         `bson:"errors_lst"`
-	job_updates_ch chan Job_update_msg `bson:"-"`
+	Errors_lst     []Job_Error       `bson:"errors_lst"`
+	job_updates_ch chan JobUpdateMsg `bson:"-"`
 }
 
-type GF_job_runtime struct {
-	job_id_str          string
-	job_client_type_str string
-	job_updates_ch      chan Job_update_msg
+type GFjobRuntime struct {
+	job_id_str              string
+	job_client_type_str     string
+	job_updates_ch          chan JobUpdateMsg
+	useNewStorageEngineBool bool
 }
 
 //------------------------
@@ -78,13 +80,13 @@ type GF_image_local_to_process struct {
 //------------------------
 // JOB_MSGS
 
-type Job_msg struct {
+type JobMsg struct {
 	Job_id_str                     string // if its an existing job. for new jobs the mngr creates a new job ID
 	Client_type_str                string 
 	Cmd_str                        string // "start_job" | "get_running_job_ids"
 	
-	Job_init_ch                    chan *GF_job_running // used by clients for receiving outputs of job initialization by jobs_mngr
-	Job_updates_ch                 chan Job_update_msg  // used by jobs_mngr to send job_updates to
+	Job_init_ch                    chan *GFjobRunning   // used by clients for receiving outputs of job initialization by jobs_mngr
+	Job_updates_ch                 chan JobUpdateMsg  // used by jobs_mngr to send job_updates to
 	Msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
 
 	Images_extern_to_process_lst   []GF_image_extern_to_process
@@ -94,7 +96,7 @@ type Job_msg struct {
 	Flows_names_lst                []string
 }
 
-type Job_update_msg struct {
+type JobUpdateMsg struct {
 	Name_str             string                     `json:"name_str"`
 	Type_str             job_update_type_val        `json:"type_str"`             // "ok" | "error" | "complete"
 	Image_id_str         gf_images_core.GF_image_id `json:"image_id_str"`
@@ -122,44 +124,17 @@ const JOB_UPDATE_TYPE__ERROR     job_update_type_val = "error"
 const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 
 //-------------------------------------------------
-// CREATE_RUNNING_JOB
-func Jobs_mngr__create_running_job(p_client_type_str string,
-	p_job_updates_ch chan Job_update_msg,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_job_running, *gf_core.GF_error) {
-
-	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
-	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
-
-	running_job := &GF_job_running{
-		Id_str:          job_id_str,
-		T_str:           "img_running_job",
-		Client_type_str: p_client_type_str,
-		Status_str:      "running",
-		Start_time_f:    job_start_time_f,
-		job_updates_ch:  p_job_updates_ch,
-	}
-
-	// DB
-	gf_err := db__jobs_mngr__create_running_job(running_job, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
-	}
-
-	return running_job, nil
-}
-
-//-------------------------------------------------
 // INIT
-func Jobs_mngr__init(p_images_store_local_dir_path_str string,
+func JobsMngrInit(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_lifecycle_callbacks                        *GF_jobs_lifecycle_callbacks,
-	p_config                                     *gf_images_core.GF_config,
-	p_s3_info                                    *gf_core.GF_s3_info,
-	p_runtime_sys                                *gf_core.Runtime_sys) Jobs_mngr {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
+	pConfig                                      *gf_images_core.GF_config,
+	pS3info                                      *gf_core.GFs3Info,
+	pRuntimeSys                                  *gf_core.RuntimeSys) JobsMngr {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
 
-	jobs_mngr_ch := make(chan Job_msg, 100)
+	jobsMngrCh := make(chan JobMsg, 100)
 
 	// IMPORTANT!! - start jobs_mngr as an independent goroutine of the HTTP handlers at
 	//               service initialization time
@@ -168,11 +143,20 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 		// METRICS
 		metrics := Metrics__create()
 
-		running_jobs_map := map[string]chan Job_update_msg{}
+		//---------------------
+		// IMAGE_STORAGE
+		imageStorage, gfErr := gf_images_storage.Init("s3", pRuntimeSys)
+		if gfErr != nil {
+			panic(gfErr.Error)
+		}
+
+		//---------------------
+		
+		running_jobs_map := map[string]chan JobUpdateMsg{}
 
 		// listen to messages
 		for {
-			job_msg := <- jobs_mngr_ch
+			job_msg := <- jobsMngrCh
 
 			// IMPORTANT!! - only one job is processed per jobs_mngr.
 			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
@@ -190,7 +174,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
-						p_runtime_sys)
+						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
@@ -202,7 +186,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					job_msg.Job_init_ch <- running_job
 
 					//------------------------
-					// S3_BUCKETS
+					/*// S3_BUCKETS
 
 					var target_s3_bucket_name_str string
 					if len(job_msg.Flows_names_lst) > 0 {
@@ -210,17 +194,17 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 						// check if the specified flow has an associated s3 bucket
 						var ok bool
-						target_s3_bucket_name_str, ok = p_config.Images_flow_to_s3_bucket_map[main_flow_str]
+						target_s3_bucket_name_str, ok = pConfig.Images_flow_to_s3_bucket_map[main_flow_str]
 						if !ok {
-							target_s3_bucket_name_str = p_config.Images_flow_to_s3_bucket_default_str
+							target_s3_bucket_name_str = pConfig.Images_flow_to_s3_bucket_default_str
 						}
 					} else {
-						target_s3_bucket_name_str = p_config.Images_flow_to_s3_bucket_default_str
-					}
+						target_s3_bucket_name_str = pConfig.Images_flow_to_s3_bucket_default_str
+					}*/
 
 					//------------------------
 
-					job_runtime := &GF_job_runtime{
+					job_runtime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
@@ -230,10 +214,11 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						job_msg.Flows_names_lst,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
-						target_s3_bucket_name_str,
-						p_s3_info,
+						// target_s3_bucket_name_str,
+						pS3info,
+						imageStorage,
 						job_runtime,
-						p_runtime_sys)
+						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
@@ -245,7 +230,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					} else {
 						job_status_str = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, pRuntimeSys)
 
 					//------------------------
 
@@ -280,7 +265,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
-						p_runtime_sys)
+						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
@@ -293,17 +278,17 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 					//------------------------
 					// S3_BUCKETS
-					source_s3_bucket_name_str := p_config.Uploaded_images_s3_bucket_str
+					source_s3_bucket_name_str := pConfig.Uploaded_images_s3_bucket_str
 
 					// ADD!! - due to legacy reasons the "general" flow is still used as the main flow
 					//         that images are added to when a uploaded_images job is processed.
 					//         this should be generalized so that images are added to dedicated flow S3 buckets
 					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
-					target_s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
+					target_s3_bucket_name_str := pConfig.Images_flow_to_s3_bucket_map["general"]
 
 					//------------------------
 
-					job_runtime := &GF_job_runtime{
+					jobRuntime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
@@ -315,9 +300,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 						p_images_thumbnails_store_local_dir_path_str,
 						source_s3_bucket_name_str,
 						target_s3_bucket_name_str,
-						p_s3_info,
-						job_runtime,
-						p_runtime_sys)
+						pS3info,
+						imageStorage,
+						jobRuntime,
+						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
@@ -329,7 +315,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					} else {
 						job_status_str = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, pRuntimeSys)
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
@@ -349,7 +335,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					// RUNNING_JOB
 					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
-						p_runtime_sys)
+						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
@@ -365,11 +351,11 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					//         that images are added to when a external_images job is processed.
 					//         this should be generalized so that images are added to dedicated flow S3 buckets
 					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
-					s3_bucket_name_str := p_config.Images_flow_to_s3_bucket_map["general"]
+					s3_bucket_name_str := pConfig.Images_flow_to_s3_bucket_map["general"]
 
 					//------------------------
 
-					job_runtime := &GF_job_runtime{
+					job_runtime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
 						job_client_type_str: job_msg.Client_type_str,
 						job_updates_ch:      job_msg.Job_updates_ch,
@@ -382,9 +368,10 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 
 						p_media_domain_str,
 						s3_bucket_name_str,
-						p_s3_info,
+						pS3info,
+						imageStorage,
 						job_runtime,
-						p_runtime_sys)
+						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
@@ -396,7 +383,7 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 					} else {
 						job_status_str = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, p_runtime_sys)
+					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, pRuntimeSys)
 
 					//------------------------
 
@@ -425,18 +412,45 @@ func Jobs_mngr__init(p_images_store_local_dir_path_str string,
 			} 
 		}
 	}()
-	return jobs_mngr_ch
+	return jobsMngrCh
+}
+
+//-------------------------------------------------
+// CREATE_RUNNING_JOB
+func Jobs_mngr__create_running_job(p_client_type_str string,
+	p_job_updates_ch chan JobUpdateMsg,
+	pRuntimeSys      *gf_core.RuntimeSys) (*GFjobRunning, *gf_core.GFerror) {
+
+	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
+	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
+
+	running_job := &GFjobRunning{
+		Id_str:          job_id_str,
+		T_str:           "img_running_job",
+		Client_type_str: p_client_type_str,
+		Status_str:      "running",
+		Start_time_f:    job_start_time_f,
+		job_updates_ch:  p_job_updates_ch,
+	}
+
+	// DB
+	gf_err := db__jobs_mngr__create_running_job(running_job, pRuntimeSys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	return running_job, nil
 }
 
 //-------------------------------------------------
 // DB
 //-------------------------------------------------
-func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+func db__jobs_mngr__create_running_job(p_running_job *GFjobRunning,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	ctx           := context.Background()
-	coll_name_str := "gf_images__jobs_running" // p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := "gf_images__jobs_running" // pRuntimeSys.Mongo_coll.Name()
 	gf_err        := gf_core.Mongo__insert(p_running_job,
 		coll_name_str,
 		map[string]interface{}{
@@ -445,7 +459,7 @@ func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
 			"caller_err_msg_str": "failed to create a Running_job record into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	if gf_err != nil {
 		return gf_err
@@ -457,8 +471,8 @@ func db__jobs_mngr__create_running_job(p_running_job *GF_job_running,
 //-------------------------------------------------
 func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	p_job_id_str  string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
 
 	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {
 		// status values are not generated at runtime, but are static, so its ok to panic here since
@@ -469,7 +483,7 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	ctx := context.Background()
 
 	job_end_time_f := float64(time.Now().UnixNano())/1000000000.0
-	coll           := p_runtime_sys.Mongo_db.Collection("gf_images__jobs_running")
+	coll           := pRuntimeSys.Mongo_db.Collection("gf_images__jobs_running")
 	_, err         := coll.UpdateMany(ctx, bson.M{
 			"t":      "img_running_job",
 			"id_str": p_job_id_str,
@@ -488,7 +502,7 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 				"job_id_str":     p_job_id_str,
 				"job_end_time_f": job_end_time_f,
 			},
-			err, "gf_jobs_mngr", p_runtime_sys)
+			err, "gf_jobs_mngr", pRuntimeSys)
 		return gf_err
 	}
 

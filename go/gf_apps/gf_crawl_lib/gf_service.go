@@ -77,7 +77,7 @@ func Init(p_config *GF_crawler_config,
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
 
-	gf_s3_info, gf_err := gf_core.S3__init(p_aws_access_key_id_str,
+	gf_s3_info, gf_err := gf_core.S3init(p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
 		p_aws_token_str,
 		p_runtime_sys)

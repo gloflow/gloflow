@@ -29,7 +29,7 @@ import (
 
 //-------------------------------------------------
 type GF_images_extern_runtime_info struct {
-	Jobs_mngr               gf_images_jobs_core.Jobs_mngr
+	Jobs_mngr               gf_images_jobs_core.JobsMngr
 	Service_host_port_str   string // "http://127.0.0.1:2060"
 	Templates_dir_paths_map map[string]string
 }

@@ -27,17 +27,17 @@ import (
 )
 
 //---------------------------------------------------
-func S3__get_gf_image(p_image_s3_file_path_str string,
-	p_target_file__local_path_str string,
-	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GF_s3_info,
-	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.GF_error {
+func S3__get_gf_image(pImageS3filePathStr string,
+	pTargetFileLocalPathStr string,
+	pS3bucketNameStr string,
+	pS3info          *gf_core.GFs3Info,
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	gf_err := gf_core.S3__get_file(p_image_s3_file_path_str,
-		p_target_file__local_path_str,
-		p_s3_bucket_name_str,
-		p_s3_info,
-		p_runtime_sys)
+	gf_err := gf_core.S3getFile(pImageS3filePathStr,
+		pTargetFileLocalPathStr,
+		pS3bucketNameStr,
+		pS3info,
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -47,11 +47,11 @@ func S3__get_gf_image(p_image_s3_file_path_str string,
 
 //---------------------------------------------------
 func S3__store_gf_image(p_image_local_file_path_str string,
-	p_image_thumbs       *GF_image_thumbs,
-	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GF_s3_info,
-	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image()")
+	pImageThumbs       *GF_image_thumbs,
+	pS3bucketNameStr   string,
+	pS3info            *gf_core.GFs3Info,
+	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image()")
 
 	//--------------------
 	// UPLOAD FULL_SIZE (ORIGINAL) IMAGE
@@ -63,7 +63,7 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	//         and instead should be the image ID with the file extension. 
 	//         it also makes it more difficult to find the image on S3 that is represented by an Gf_img given 
 	//         only the ID of that Gf_img
-	s3_file_name_str := path.Base(p_image_local_file_path_str)
+	s3FileNameStr := path.Base(p_image_local_file_path_str)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -72,27 +72,27 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 	with their Gf_img ID as their filename. so here the p_image_local_file_path_str value is already 
 	the image ID.
 	
-	ADD!! - have an explicit p_target_s3_file_name_str argument, and dont derive it
+	ADD!! - have an explicit p_target_s3FileNameStr argument, and dont derive it
 	        automatically from the the filename in p_image_local_file_path_str */
 
 	target_file__local_path_str := p_image_local_file_path_str
-	target_file__s3_path_str    := s3_file_name_str
-	s3_response_str, gf_err := gf_core.S3__upload_file(target_file__local_path_str,
+	target_file__s3_path_str    := s3FileNameStr
+	s3_response_str, gf_err := gf_core.S3uploadFile(target_file__local_path_str,
 		target_file__s3_path_str,
-		p_s3_bucket_name_str,
-		p_s3_info,
-		p_runtime_sys)
+		pS3bucketNameStr,
+		pS3info,
+		pRuntimeSys)
 
 	if gf_err != nil {
 		return gf_err
 	}
 
-	p_runtime_sys.Log_fun("INFO", "s3_response_str - "+s3_response_str)
+	pRuntimeSys.Log_fun("INFO", "s3_response_str - "+s3_response_str)
 	
 	//--------------------
 	// UPLOAD THUMBS
 
-	gf_err = S3__store_gf_image_thumbs(p_image_thumbs, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+	gf_err = S3__store_gf_image_thumbs(pImageThumbs, pS3bucketNameStr, pS3info, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -102,45 +102,45 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 }
 
 //---------------------------------------------------
-func S3__store_gf_image_thumbs(p_image_thumbs *GF_image_thumbs,
-	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GF_s3_info,
-	p_runtime_sys        *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image_thumbs()")
+func S3__store_gf_image_thumbs(pImageThumbs *GF_image_thumbs,
+	pS3bucketNameStr string,
+	pS3info          *gf_core.GFs3Info,
+	pRuntimeSys      *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image_thumbs()")
 
 	// IMPORTANT - for some image types (GIF) the system doesnt produce thumbs,
-	//             and therefore p_image_thumbs is nil.
-	if p_image_thumbs != nil {
+	//             and therefore pImageThumbs is nil.
+	if pImageThumbs != nil {
 		//--------------------
 		// SMALL THUMB
-		small_t_path_str         := p_image_thumbs.Small_local_file_path_str // thumbs_info_map["small__target_thumbnail_file_path_str"]
+		small_t_path_str         := pImageThumbs.Small_local_file_path_str // thumbs_info_map["small__target_thumbnail_file_path_str"]
 		small_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(small_t_path_str))
-		s3_response_str,gf_err   := gf_core.S3__upload_file(small_t_path_str, small_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+		s3_response_str,gf_err   := gf_core.S3uploadFile(small_t_path_str, small_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
-		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// MEDIUM THUMB
-		medium_t_path_str         := p_image_thumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
+		medium_t_path_str         := pImageThumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
 		medium_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(medium_t_path_str))
 
-		s3_response_str,gf_err = gf_core.S3__upload_file(medium_t_path_str, medium_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+		s3_response_str,gf_err = gf_core.S3uploadFile(medium_t_path_str, medium_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
-		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// LARGE THUMB
-		large_t_path_str         := p_image_thumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
+		large_t_path_str         := pImageThumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
 		large_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(large_t_path_str))
-		s3_response_str,gf_err    = gf_core.S3__upload_file(large_t_path_str, large_t_s3_file_name_str, p_s3_bucket_name_str, p_s3_info, p_runtime_sys)
+		s3_response_str,gf_err    = gf_core.S3uploadFile(large_t_path_str, large_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
-		p_runtime_sys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 	}
@@ -153,9 +153,9 @@ func S3__store_gf_image_thumbs(p_image_thumbs *GF_image_thumbs,
 // Original image is the full-size file that was initially acquired, whether fetched from an external source
 // or uploaded via API by other programs or by users via UI's).
 // As input it requires a Gf_image struct.
-func S3__get_image_original_file_s3_filepath(p_image *GF_image,
-	p_runtime_sys *gf_core.Runtime_sys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_original_file_s3_filepath()")
+func S3__get_image_original_file_s3_filepath(p_image *GFimage,
+	pRuntimeSys *gf_core.Runtime_sys) string {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_original_file_s3_filepath()")
 
 	// when image is downloaded its renamed to its ID
 	downloaded_image_filename_str := fmt.Sprintf("%s.%s", p_image.Id_str, p_image.Format_str)
@@ -167,7 +167,7 @@ func S3__get_image_original_file_s3_filepath(p_image *GF_image,
 //---------------------------------------------------
 func S3__get_image_s3_filepath(p_gf_image_id_str GF_image_id,
 	p_image_format_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) string {
+	pRuntimeSys        *gf_core.Runtime_sys) string {
 
 	image_filename_str := fmt.Sprintf("%s.%s", p_gf_image_id_str, p_image_format_str)
 	s3_filepath_str    := image_filename_str
@@ -175,9 +175,9 @@ func S3__get_image_s3_filepath(p_gf_image_id_str GF_image_id,
 }
 
 //---------------------------------------------------
-func S3__get_image_thumbs_s3_filepaths(p_image *GF_image,
-	p_runtime_sys *gf_core.Runtime_sys) (string, string, string) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_thumbs_s3_filepaths()")
+func S3__get_image_thumbs_s3_filepaths(p_image *GFimage,
+	pRuntimeSys *gf_core.Runtime_sys) (string, string, string) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_thumbs_s3_filepaths()")
 	
 	thumb_small__s3_filepath_str  := strings.Replace(p_image.Thumbnail_small_url_str,  "/images/d", "", 1)
 	thumb_medium__s3_filepath_str := strings.Replace(p_image.Thumbnail_medium_url_str, "/images/d", "", 1)

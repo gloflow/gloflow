@@ -33,10 +33,10 @@ import (
 //-------------------------------------------------
 func InitHandlers(pAuthLoginURLstr string,
 	pHTTPmux           *http.ServeMux,
-	p_jobs_mngr_ch     chan gf_images_jobs_core.Job_msg,
+	p_jobs_mngr_ch     chan gf_images_jobs_core.JobMsg,
 	p_img_config       *gf_images_core.GF_config,
 	p_media_domain_str string,
-	pS3info            *gf_core.GF_s3_info,
+	pS3info            *gf_core.GFs3Info,
 	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GF_error {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	

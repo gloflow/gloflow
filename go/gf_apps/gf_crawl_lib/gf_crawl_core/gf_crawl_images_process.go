@@ -237,7 +237,7 @@ func image__process_bitmap(p_page_img *Gf_crawler_page_image,
 
 		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
 		//               also creates gf_image thumbnails as local files.
-		gf_image, gf_image_thumbs, gf_err := gf_images_core.Transform_image(gf_image_id_str,
+		gf_image, gf_image_thumbs, gf_err := gf_images_core.TransformImage(gf_image_id_str,
 			image_client_type_str,
 			image_flows_names_lst,
 			image_origin_url_str,

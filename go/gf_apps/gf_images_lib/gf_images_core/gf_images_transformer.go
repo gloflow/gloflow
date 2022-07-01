@@ -34,7 +34,7 @@ import (
 //                               was found. this is valid for gf_chrome_ext image sources.
 //                               its not relevant for direct image uploads from clients.
 
-func Transform_image(p_image_id_str Gf_image_id,
+func TransformImage(p_image_id_str Gf_image_id,
 	p_image_client_type_str                      string,
 	p_images_flows_names_lst                     []string,
 	p_image_origin_url_str                       string,
@@ -43,8 +43,7 @@ func Transform_image(p_image_id_str Gf_image_id,
 	p_image_local_file_path_str                  string,
 	p_images_store_thumbnails_local_dir_path_str string,
 	p_ctx                                        context.Context,
-	p_runtime_sys                                *gf_core.Runtime_sys) (*GF_image, *GF_image_thumbs, *gf_core.GF_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.Transform_image()")
+	p_runtime_sys                                *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
 
 	// normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_origin_url_str, p_runtime_sys)
 	normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_local_file_path_str, p_runtime_sys)
@@ -52,7 +51,7 @@ func Transform_image(p_image_id_str Gf_image_id,
 		return nil, nil, gf_err
 	}
 
-	gf_image, gf_image_thumbs, gf_err := Trans__process_image(p_image_id_str,
+	gf_image, gf_image_thumbs, gf_err := TransformProcessImage(p_image_id_str,
 		p_image_client_type_str,
 		p_images_flows_names_lst,
 		p_image_origin_url_str,
@@ -71,7 +70,7 @@ func Transform_image(p_image_id_str Gf_image_id,
 }
 
 //---------------------------------------------------
-func Trans__process_image(p_image_id_str GF_image_id,
+func TransformProcessImage(p_image_id_str GF_image_id,
 	p_image_client_type_str                string,
 	p_images_flows_names_lst               []string,
 	p_image_origin_url_str                 string,
@@ -167,12 +166,11 @@ func Trans__process_image(p_image_id_str GF_image_id,
 }
 
 //---------------------------------------------------
-func resize_image(p_img image.Image,
+func resizeImage(p_img image.Image,
 	p_image_output_path_str string,
 	p_image_format_str      string,
 	p_size_px_int           int,
 	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.resize_image()")
 	
 	// resize to width 1000 using Lanczos resampling
 	// and preserve aspect ratio

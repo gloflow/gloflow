@@ -35,19 +35,18 @@ import (
 )
 
 //---------------------------------------------------
-type GF_s3_info struct {
+type GFs3Info struct {
 	Client   *s3.S3
 	Uploader *s3manager.Uploader
 	Session  *session.Session
 }
 
 //---------------------------------------------------
-func S3__get_file(p_target_file__s3_path_str string,
+func S3getFile(p_target_file__s3_path_str string,
 	p_target_file__local_path_str string,
 	p_s3_bucket_name_str          string,
-	p_s3_info                     *GF_s3_info,
-	p_runtime_sys                 *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__get_file()")
+	p_s3_info                     *GFs3Info,
+	pRuntimeSys                   *RuntimeSys) *GFerror {
 	
 	fmt.Printf("target_file__s3_path - %s\n", p_target_file__s3_path_str)
 	fmt.Printf("s3_bucket_name       - %s\n", p_s3_bucket_name_str)
@@ -63,7 +62,7 @@ func S3__get_file(p_target_file__s3_path_str string,
 				"target_file__s3_path_str":    p_target_file__s3_path_str,
 				"target_file__local_path_str": p_target_file__local_path_str,
 				"s3_bucket_name_str":          p_s3_bucket_name_str,
-			}, err, "gf_core", p_runtime_sys)
+			}, err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 
@@ -75,7 +74,7 @@ func S3__get_file(p_target_file__s3_path_str string,
 
 	if err != nil {
 		gf_err := Error__create("failed to download an image from S3 bucket",
-			"s3_file_download_error", nil, err, "gf_core", p_runtime_sys)
+			"s3_file_download_error", nil, err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 	fmt.Printf("file downloaded, %d bytes\n", bytes_downloaded_int)
@@ -85,12 +84,12 @@ func S3__get_file(p_target_file__s3_path_str string,
 }
 
 //---------------------------------------------------
-// S3__INIT
-func S3__init(p_aws_access_key_id_str string,
+// S3_INIT
+func S3init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
 	p_token_str                 string,
-	p_runtime_sys               *Runtime_sys) (*GF_s3_info, *Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__init()")
+	pRuntimeSys                 *Runtime_sys) (*GFs3Info, *GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3init()")
 
 	
 	config := &aws.Config{
@@ -111,7 +110,7 @@ func S3__init(p_aws_access_key_id_str string,
 
 		if err != nil {
 			gf_err := Error__create("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
-				"s3_credentials_error", nil, err, "gf_core", p_runtime_sys)
+				"s3_credentials_error", nil, err, "gf_core", pRuntimeSys)
 			return nil, gf_err
 		}
 
@@ -125,7 +124,7 @@ func S3__init(p_aws_access_key_id_str string,
 	s3_uploader := s3manager.NewUploader(sess)
 	s3_client   := s3.New(sess)
 
-	s3_info := &GF_s3_info{
+	s3_info := &GFs3Info{
 		Client:   s3_client,
 		Uploader: s3_uploader,
 		Session:  sess,
@@ -138,8 +137,8 @@ func S3__init(p_aws_access_key_id_str string,
 // S3__GENERATE_PRESIGNED_URL
 func S3__generate_presigned_url(p_target_file__s3_path_str string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *GF_s3_info,
-	p_runtime_sys        *Runtime_sys) (string, *Gf_error) {
+	p_s3_info            *GFs3Info,
+	pRuntimeSys          *Runtime_sys) (string, *GFerror) {
 
 	// INPUT
 	file_ext_str     := filepath.Ext(p_target_file__s3_path_str)
@@ -158,7 +157,7 @@ func S3__generate_presigned_url(p_target_file__s3_path_str string,
 	presigned_url_str, err := req.Presign(time.Minute * 1)
 	if err != nil { // resp is now filled
 		gf_err := Error__create("failed to generate pre-signed S3 putObject URL",
-			"s3_file_upload_url_presign_error", nil, err, "gf_core", p_runtime_sys)
+			"s3_file_upload_url_presign_error", nil, err, "gf_core", pRuntimeSys)
 		return "", gf_err
 	}
 
@@ -167,14 +166,14 @@ func S3__generate_presigned_url(p_target_file__s3_path_str string,
 
 //---------------------------------------------------
 // S3__UPLOAD_FILE
-func S3__upload_file(p_target_file__local_path_str string,
+func S3uploadFile(p_target_file__local_path_str string,
 	p_target_file__s3_path_str string,
 	p_s3_bucket_name_str       string,
-	p_s3_info                  *GF_s3_info,
-	p_runtime_sys              *Runtime_sys) (string,*Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__upload_file()")
-	p_runtime_sys.Log_fun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
-	p_runtime_sys.Log_fun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
+	p_s3_info                  *GFs3Info,
+	pRuntimeSys                *Runtime_sys) (string, *GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3uploadFile()")
+	pRuntimeSys.Log_fun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
+	pRuntimeSys.Log_fun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
 
 	//-----------------
 	file, fs_err := os.Open(p_target_file__local_path_str)
@@ -186,7 +185,7 @@ func S3__upload_file(p_target_file__local_path_str string,
 				"target_file__local_path_str": p_target_file__local_path_str,
 				"target_file__s3_path_str":    p_target_file__s3_path_str,
 			},
-			fs_err, "gf_core", p_runtime_sys)
+			fs_err, "gf_core", pRuntimeSys)
 		return "", gf_err
 	}
 	defer file.Close()
@@ -222,12 +221,12 @@ func S3__upload_file(p_target_file__local_path_str string,
 				"target_file__local_path_str": p_target_file__local_path_str,
 				"target_file__s3_path_str":    p_target_file__s3_path_str,
 			},
-			s3_err,"gf_core",p_runtime_sys)
-		return "",gf_err
+			s3_err, "gf_core", pRuntimeSys)
+		return "", gf_err
 	}
 
-	r_str := fmt.Sprint(result)
-	return r_str, nil
+	rStr := fmt.Sprint(result)
+	return rStr, nil
 }
 
 //---------------------------------------------------
@@ -236,9 +235,9 @@ func S3__copy_file(p_source_bucket_str string,
 	p_source_file__s3_path_str string,
 	p_target_bucket_name_str   string,
 	p_target_file__s3_path_str string,
-	p_s3_info                  *GF_s3_info,
-	p_runtime_sys              *Runtime_sys) *Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_s3.S3__copy_file()")
+	pS3info                    *GFs3Info,
+	pRuntimeSys                *Runtime_sys) *GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3__copy_file()")
 
 	fmt.Printf("source_bucket        - %s\n", p_source_bucket_str)
 	fmt.Printf("source_file__s3_path - %s\n", p_source_file__s3_path_str)
@@ -247,7 +246,7 @@ func S3__copy_file(p_source_bucket_str string,
 
 	source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", p_source_bucket_str, p_source_file__s3_path_str))
 
-	svc   := s3.New(p_s3_info.Session)
+	svc   := s3.New(pS3info.Session)
 	input := &s3.CopyObjectInput{
 		CopySource: aws.String(source_bucket_and_file__s3_path_str),
 	    Bucket:     aws.String(p_target_bucket_name_str),
@@ -263,7 +262,7 @@ func S3__copy_file(p_source_bucket_str string,
 				"target_bucket_name_str":              p_target_bucket_name_str,
 				"target_file__s3_path_str":            p_target_file__s3_path_str,
 			},
-			err, "gf_core", p_runtime_sys)
+			err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 

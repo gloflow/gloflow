@@ -17,21 +17,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_image_storage
+package gf_images_storage
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-type GFstorage struct {
+type GFimageStorageOpDef struct {
+	SourceFilePathStr string
+	TargetFilePathStr string
+	S3bucketNameStr   string
+}
+
+type GFimageStorage struct {
 	TypeStr string // "local_fs" | "s3" | "ipfs"
-	S3      GFstorageS3
+	S3      *GFstorageS3
+	IPFS    *GFstorageIPFS
 }
 
 type GFstorageS3 struct {
-	BucketNameStr string
-	Info          *gf_core.GF_s3_info
+	Info *gf_core.GFs3Info
 }
 
 type GFstorageIPFS struct {
@@ -40,21 +46,45 @@ type GFstorageIPFS struct {
 
 //---------------------------------------------------
 // IPFS
-func IPFSinit() {
+func Init(pTypeStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimageStorage, *gf_core.GFerror) {
+
+
+	var S3storage *GFstorageS3
+	if pTypeStr == "s3" {
+
+		// get new S3 client, and get AWS creds from environment
+		S3info, gfErr := gf_core.S3init("", "", "", pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+		S3storage = &GFstorageS3{
+			Info: S3info,
+		}
+	}
+
+
+
+	storage := &GFimageStorage{
+		TypeStr: pTypeStr,
+		S3:      S3storage,
+	}
+
+	return storage, nil
+
 
 }
 
 //---------------------------------------------------
 // FILE_PUT
-func FilePut(pSourceFilePathStr string,
-	pTargetFilePathStr string,
-	pStorage           *GF_image_storage,
-	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GF_error {
+func FilePut(pOpDef *GFimageStorageOpDef,
+	pStorage    *GFimageStorage,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	if pStorage.TypeStr == "s3" {
-		gfErr := gf_core.S3__upload_file(pSourceFilePathStr,
-			pTargetFilePathStr,
-			pStorage.S3.Bucket_name_str,
+		_, gfErr := gf_core.S3uploadFile(pOpDef.SourceFilePathStr,
+			pOpDef.TargetFilePathStr,
+			pOpDef.S3bucketNameStr,
 			pStorage.S3.Info,
 			pRuntimeSys)
 			
@@ -69,7 +99,7 @@ func FilePut(pSourceFilePathStr string,
 
 //---------------------------------------------------
 // FILE_GET
-func FileGet(pStorage *GF_image_storage,
+func FileGet(pStorage *GFimageStorage,
 	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
 
 
