@@ -55,7 +55,7 @@ func Image__get_public_url(p_image_s3_file_path_str string,
 // LOAD_FILE
 func Image__load_file(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
-	p_runtime_sys        *gf_core.Runtime_sys) (image.Image, *gf_core.Gf_error) {
+	p_runtime_sys        *gf_core.RuntimeSys) (image.Image, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__load_file()")
 
 	file, fs_err := os.Open(p_image_local_file_path_str)

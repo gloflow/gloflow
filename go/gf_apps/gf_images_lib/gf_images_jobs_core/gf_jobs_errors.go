@@ -56,7 +56,8 @@ func job_error__send(p_job_error_type_str string,
 		Err_str:              error_str,
 	}
 	p_job_updates_ch <- update_msg
-	//------------
+
+	//-------------------------------------------------
 	go func() {
 		_ = job_error__persist(p_job_id_str,
 			p_job_error_type_str,
@@ -65,7 +66,7 @@ func job_error__send(p_job_error_type_str string,
 			p_runtime_sys)
 	}()
 	
-	//------------
+	//-------------------------------------------------
 	return nil
 }
 

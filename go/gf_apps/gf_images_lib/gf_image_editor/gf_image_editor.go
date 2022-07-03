@@ -180,7 +180,7 @@ func save_edited_image(p_source_image_id_str gf_images_core.GF_image_id,
 	defer file.Close()
 
 	// FILE_WRITE_IMAGE
-	err = png.Encode(file,png_image)
+	err = png.Encode(file, png_image)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 			"png_encoding_error",
@@ -188,18 +188,6 @@ func save_edited_image(p_source_image_id_str gf_images_core.GF_image_id,
 			err, "gf_image_editor", p_runtime_sys)
 		return nil, gf_err
 	}
-
-	/*//FILE_WRITE
-	if _, err := f.Write(image_byte_lst); err != nil {
-		gf_err := gf_core.Error__create("OS failed to write to a file",
-			"file_write_error",
-			&map[string]interface{}{
-				"source_image_id_str":   p_source_image_id_str,
-				"tmp_local_filepath_str":tmp_local_filepath_str,
-			},
-			err,"gf_image_editor",p_runtime_sys)
-		return nil,gf_err
-	}*/
 
 	// FILE_SYNC
 	if err := file.Sync(); err != nil {

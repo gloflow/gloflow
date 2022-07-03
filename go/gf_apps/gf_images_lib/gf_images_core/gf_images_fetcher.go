@@ -73,7 +73,7 @@ func Fetcher__get_extern_image(p_image_url_str string,
 	//--------------
 	// HTTP DOWNLOAD
 
-	gf_err = Download_file(p_image_url_str, new_image_local_file_path_str, p_runtime_sys)
+	gf_err = DownloadFile(p_image_url_str, new_image_local_file_path_str, p_runtime_sys)
 	if gf_err != nil {
 		return "", "", gf_err
 	}
@@ -102,19 +102,19 @@ func analytics__log_image_fetch(p_image_url_str string,
 }
 
 //---------------------------------------------------
-func Download_file(p_image_url_str string,
+func DownloadFile(p_image_url_str string,
 	p_local_image_file_path_str string,
-	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.Download_file()")
+	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
 
 	//-----------------------
 	headers_map    := map[string]string{}
 	user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
 	ctx            := context.Background()
 
-	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_image_url_str, headers_map, user_agent_str, ctx, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gf_http_fetch, gfErr := gf_core.HTTP__fetch_url(p_image_url_str, headers_map, user_agent_str, ctx, p_runtime_sys)
+	if gfErr != nil {
+		return gfErr
 	}
 	defer gf_http_fetch.Resp.Body.Close()
 	
@@ -139,7 +139,7 @@ func Download_file(p_image_url_str string,
 
 		ctx := context.Background()
 		coll_name_str := p_runtime_sys.Mongo_coll.Name()
-		gf_err := gf_core.Mongo__insert(fetch_error,
+		gfErr := gf_core.Mongo__insert(fetch_error,
 			coll_name_str,
 			map[string]interface{}{
 				"image_url_str":             p_image_url_str,
@@ -148,11 +148,11 @@ func Download_file(p_image_url_str string,
 			},
 			ctx,
 			p_runtime_sys)
-		if gf_err != nil {
-			return gf_err
+		if gfErr != nil {
+			return gfErr
 		}
 
-		gf_err = gf_core.Error__create("image fetching failed with HTTP status error",
+		gfErr = gf_core.Error__create("image fetching failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
 				"image_url_str":             p_image_url_str,
@@ -160,7 +160,7 @@ func Download_file(p_image_url_str string,
 				"status_code_int":           gf_http_fetch.Status_code_int,
 			},
 			nil, "gf_images_core", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}
 
 	//-----------------------
@@ -176,23 +176,23 @@ func Download_file(p_image_url_str string,
 	defer out.Close()
 
 	if c_err != nil {
-		gf_err := gf_core.Error__create("failed to create local file for fetched image",
+		gfErr := gf_core.Error__create("failed to create local file for fetched image",
 			"file_create_error",
 			map[string]interface{}{"local_image_file_path_str": p_local_image_file_path_str,},
 			c_err, "gf_images_core", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}
 
 	_, cp_err := io.Copy(out,gf_http_fetch.Resp.Body)
 	if cp_err != nil {
-		gf_err := gf_core.Error__create("failed to copy HTTP GET response Body buffer to a image file",
+		gfErr := gf_core.Error__create("failed to copy HTTP GET response Body buffer to a image file",
 			"file_buffer_copy_error",
 			map[string]interface{}{
 				"local_image_file_path_str": p_local_image_file_path_str,
 				"image_url_str":             p_image_url_str,
 			},
 			cp_err, "gf_images_core", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}
 	
 	//--------------

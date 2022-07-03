@@ -54,7 +54,7 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 	for _, m := range p_browser_jobs_runs_results_lst {
 
 		color_pallete_lst := []string{}
-		for _,c := range m["p"].([]interface{}) {
+		for _, c := range m["p"].([]interface{}) {
 			color_pallete_lst = append(color_pallete_lst, c.(string))
 		}
 

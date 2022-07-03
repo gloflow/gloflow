@@ -80,7 +80,7 @@ func TransformProcessImage(p_image_id_str GF_image_id,
 	p_image_local_file_path_str            string,
 	p_local_thumbnails_target_dir_path_str string,
 	p_ctx                                  context.Context,
-	p_runtime_sys                          *gf_core.Runtime_sys) (*GF_image, *GF_image_thumbs, *gf_core.GF_error) {
+	p_runtime_sys                          *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
 	fmt.Println("p_image_local_file_path_str - "+p_image_local_file_path_str)
 

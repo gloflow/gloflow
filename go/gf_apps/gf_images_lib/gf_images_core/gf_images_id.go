@@ -70,7 +70,9 @@ func Image_ID__create_from_url(p_image_url_str string,
 	}
 	
 	//-------------
-	gf_image_id_str := Image_ID__create(image_path_str, normalized_ext_str, p_runtime_sys)
+	gf_image_id_str := Image_ID__create(image_path_str,
+		normalized_ext_str,
+		p_runtime_sys)
 	
 	//-------------
 	return gf_image_id_str, nil
@@ -82,7 +84,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 
 func Image_ID__create(p_image_path_str string,
 	p_image_format_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) GF_image_id {
+	p_runtime_sys      *gf_core.Runtime_sys) GFimageID {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()
@@ -95,6 +97,6 @@ func Image_ID__create(p_image_path_str string,
 	sum     := h.Sum(nil)
 	hex_str := hex.EncodeToString(sum)
 	
-	gf_image_id_str := GF_image_id(hex_str)
-	return gf_image_id_str
+	gfImageIDstr := GFimageID(hex_str)
+	return gfImageIDstr
 }

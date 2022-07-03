@@ -172,7 +172,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_local_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
+					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
@@ -263,7 +263,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
+					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
@@ -333,7 +333,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_extern_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := Jobs_mngr__create_running_job(job_msg.Client_type_str,
+					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
 						job_msg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
@@ -417,7 +417,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 //-------------------------------------------------
 // CREATE_RUNNING_JOB
-func Jobs_mngr__create_running_job(p_client_type_str string,
+func JobsMngrCreateRunningJob(p_client_type_str string,
 	p_job_updates_ch chan JobUpdateMsg,
 	pRuntimeSys      *gf_core.RuntimeSys) (*GFjobRunning, *gf_core.GFerror) {
 
@@ -434,7 +434,7 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 	}
 
 	// DB
-	gf_err := db__jobs_mngr__create_running_job(running_job, pRuntimeSys)
+	gf_err := db__jobsMngrCreateRunningJob(running_job, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -445,7 +445,7 @@ func Jobs_mngr__create_running_job(p_client_type_str string,
 //-------------------------------------------------
 // DB
 //-------------------------------------------------
-func db__jobs_mngr__create_running_job(p_running_job *GFjobRunning,
+func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 

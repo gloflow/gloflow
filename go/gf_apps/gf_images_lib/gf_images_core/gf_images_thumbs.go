@@ -34,8 +34,7 @@ func Create_thumbnails(p_image_id_str GF_image_id,
 	p_medium_thumb_max_size_px_int         int,
 	p_large_thumb_max_size_px_int          int,
 	p_image                                image.Image,
-	p_runtime_sys                          *gf_core.Runtime_sys) (*GF_image_thumbs, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_thumbs.Create_thumbnails()")
+	p_runtime_sys                          *gf_core.RuntimeSys) (*GF_image_thumbs, *gf_core.GFerror) {
 
 	//-----------------
 	// SMALL THUMBS

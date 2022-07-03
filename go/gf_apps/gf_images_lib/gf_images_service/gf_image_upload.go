@@ -52,10 +52,10 @@ type GF_image_upload_info struct {
 }
 
 //---------------------------------------------------
-// Upload__init initializes an file upload process.
+// UploadInit initializes an file upload process.
 // This will create a pre-signed S3 URL for the caller of this function to use
 // for uploading of content to GF.
-func Upload__init(p_image_name_str string,
+func UploadInit(p_image_name_str string,
 	p_image_format_str string,
 	p_flows_names_lst  []string,
 	p_client_type_str  string,
@@ -115,22 +115,22 @@ func Upload__init(p_image_name_str string,
 		Presigned_url_str:      presigned_url_str,
 	}
 
-
+	//------------------
 	// DB
 	gf_err = Upload_db__put_info(upload_info, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-
+	//------------------
 	return upload_info, nil
 }
 
 //---------------------------------------------------
-// Upload__complete completes the image file upload sequence.
+// UploadComplete completes the image file upload sequence.
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
-func Upload__complete(p_upload_gf_image_id_str gf_images_core.GF_image_id,
+func UploadComplete(p_upload_gf_image_id_str gf_images_core.GF_image_id,
 	p_meta_map     map[string]interface{},
 	p_jobs_mngr_ch chan gf_images_jobs_core.JobMsg,
 	p_s3_info      *gf_core.GFs3Info,
