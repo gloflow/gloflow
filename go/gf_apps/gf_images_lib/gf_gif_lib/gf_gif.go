@@ -38,7 +38,7 @@ import (
 )
 
 //--------------------------------------------------
-type Gf_gif struct {
+type GFgif struct {
 	Id                         primitive.ObjectID `json:"-"                     bson:"_id,omitempty"`
 	Id_str                     string        `json:"id_str"                     bson:"id_str"` 
 	T_str                      string        `json:"-"                          bson:"t"` //"gif"
@@ -83,7 +83,7 @@ func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_s3_bucket_name_str                          string,
 	pS3info                                       *gf_core.GFs3Info,
 	pCtx                                          context.Context,
-	pRuntimeSys                                   *gf_core.Runtime_sys) (*Gf_gif, *gf_core.GFerror) {
+	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
 	gif, local_image_file_path_str, gf_err := Process(p_gf_image_id_str,
@@ -139,7 +139,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_s3_bucket_name_str                          string,
 	pS3info                                       *gf_core.GFs3Info,
 	pCtx                                          context.Context,
-	pRuntimeSys                                   *gf_core.Runtime_sys) (*Gf_gif, string, *gf_core.GF_error) {
+	pRuntimeSys                                   *gf_core.Runtime_sys) (*GFgif, string, *gf_core.GF_error) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
@@ -299,10 +299,10 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	pRuntimeSys                  *gf_core.Runtime_sys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.gif__s3_upload_preview_frames()")
 
-	max_num__of_preview_frames_int      := 10
-	frames_images_file_paths_lst,gf_err := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
+	max_num__of_preview_frames_int       := 10
+	frames_images_file_paths_lst, gf_err := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
 	if gf_err != nil {
-		return 0,nil,gf_err,nil
+		return 0, nil, gf_err, nil
 	}
 
 	fmt.Println("== - ==++++   frames_images_file_paths_lst - "+fmt.Sprint(frames_images_file_paths_lst))
@@ -313,8 +313,8 @@ func gif__s3_upload_preview_frames(p_local_file_path_src string,
 	//-----------------------
 	// SAVE_IMAGES TO FS (S3)
 	preview_frames_s3_urls_lst := []string{}
-	gf_errors_lst              := make([]*gf_core.Gf_error,len(frames_images_file_paths_lst))
-	for i,frame_image_file_path_str := range frames_images_file_paths_lst {
+	gf_errors_lst              := make([]*gf_core.GFerror, len(frames_images_file_paths_lst))
+	for i, frame_image_file_path_str := range frames_images_file_paths_lst {
 
 		frame_image_file_name_str      := filepath.Base(frame_image_file_path_str)
 		s3_target_file_path_str        := fmt.Sprintf("gifs/frames/%s",frame_image_file_name_str)
@@ -358,26 +358,27 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	cyan  := color.New(color.FgCyan).SprintFunc()
 	black := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
 
-	pRuntimeSys.Log_fun("INFO","")
-	pRuntimeSys.Log_fun("INFO",cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
-	pRuntimeSys.Log_fun("INFO",black(p_local_file_path_src))
-	pRuntimeSys.Log_fun("INFO","")
+	pRuntimeSys.Log_fun("INFO", "")
+	pRuntimeSys.Log_fun("INFO", cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
+	pRuntimeSys.Log_fun("INFO", black(p_local_file_path_src))
+	pRuntimeSys.Log_fun("INFO", "")
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int,img_height_int,gf_err := gif__get_dimensions(p_local_file_path_src,pRuntimeSys)
+	img_width_int, img_height_int, gf_err := gif__get_dimensions(p_local_file_path_src, pRuntimeSys)
 	if gf_err != nil {
-		return nil,gf_err
+		return nil, gf_err
 	}
+
 	//---------------------
 
-	file,err := os.Open(p_local_file_path_src)
+	file, err := os.Open(p_local_file_path_src)
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a GIF file to then save its frames as individual files",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-			err,"gf_gif_lib",pRuntimeSys)
-		return nil,gf_err
+			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			err, "gf_gif_lib", pRuntimeSys)
+		return nil, gf_err
 	}
 
 	//---------------------
@@ -387,8 +388,8 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		if r := recover(); r != nil {
 			_ = gf_core.Error__create("Gif__frames__save_to_fs() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-				err,"gf_gif_lib",pRuntimeSys)
+				map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
 
@@ -397,14 +398,14 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	if gif_err != nil {
 		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-			gif_err,"gf_gif_lib",pRuntimeSys)
-		return nil,gf_err
+			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			gif_err, "gf_gif_lib", pRuntimeSys)
+		return nil, gf_err
 	}
 
 	//---------------------
 
-	overpaint_image := image.NewRGBA(image.Rect(0,0,img_width_int,img_height_int))
+	overpaint_image := image.NewRGBA(image.Rect(0, 0, img_width_int, img_height_int))
 
 	// draw first frame of the GIF to the canvas
 	draw.Draw(overpaint_image,
@@ -417,7 +418,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	new_files_names_lst  := []string{}
 
 	// IMPORTANT!! - save GIF frames to .png files on local filesystem
-	for i,frame_img := range gif_image.Image {
+	for i, frame_img := range gif_image.Image {
 
 		//-------------------
 		// IMPORTANT!! - if p_frames_num_to_get_int is 0, the caller wants all GIF frames, so no need 
@@ -441,22 +442,22 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		//-------------------
 		// save current frame
 		new_file_name_str := fmt.Sprintf("%s/%s_%d.png", p_frames_images_dir_path_str, source_file_name_str, i)
-		file,err          := os.Create(new_file_name_str)
+		file, err         := os.Create(new_file_name_str)
 		if err != nil {
 			gf_err := gf_core.Error__create("OS failed to create a file to save a GIF frame to FS",
 				"file_create_error",
-				map[string]interface{}{"new_file_name_str":new_file_name_str,},
-				err,"gf_gif_lib",pRuntimeSys)
-			return nil,gf_err
+				map[string]interface{}{"new_file_name_str": new_file_name_str,},
+				err, "gf_gif_lib", pRuntimeSys)
+			return nil, gf_err
 		}
 
 		err = png.Encode(file,overpaint_image)
 		if err != nil {
 			gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 				"png_encoding_error",
-				map[string]interface{}{"new_file_name_str":new_file_name_str,},
-				err,"gf_gif_lib",pRuntimeSys)
-			return nil,gf_err
+				map[string]interface{}{"new_file_name_str": new_file_name_str,},
+				err, "gf_gif_lib", pRuntimeSys)
+			return nil, gf_err
 		}
 
 		file.Close()
@@ -464,10 +465,10 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		//-------------------
 		fmt.Sprint("++++++++  new_file_name_str - "+new_file_name_str)
 
-		new_files_names_lst = append(new_files_names_lst,new_file_name_str)
+		new_files_names_lst = append(new_files_names_lst, new_file_name_str)
 	}
 
-	return new_files_names_lst,nil
+	return new_files_names_lst, nil
 }
 
 //--------------------------------------------------

@@ -462,7 +462,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 }
 
 //--------------------------------------------------
-func migrate__rebuild_gif(p_old_gif *Gf_gif,
+func migrate__rebuild_gif(p_old_gif *GFgif,
 	p_images_store_local_dir_path_str string,
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
@@ -483,7 +483,7 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 
 	ctx := context.Background()
 
-	new_gif,gf_err := Process_and_upload("", // p_gf_image_id_str
+	new_gif, gf_err := Process_and_upload("", // p_gf_image_id_str
 		p_old_gif.Origin_url_str,            // p_image_source_url_str
 		p_old_gif.Origin_page_url_str,       // p_image_origin_page_url_str
 		p_images_store_local_dir_path_str,
@@ -540,15 +540,15 @@ func migrate__rebuild_gif(p_old_gif *Gf_gif,
 }
 
 //--------------------------------------------------
-func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.Gf_image_id,
-	p_runtime_sys *gf_core.Runtime_sys) ([]string,*gf_core.GF_error) {
+func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.GFimageID,
+	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	var flows_names_lst []string
 
 	// IMPORTANT!! - GIF is not linked to a particular GF_Image
 	if p_gif__gf_image_id_str != "" {
 
 		ctx := context.Background()
-		var gf_img gf_images_core.Gf_image
+		var gf_img gf_images_core.GFimage
 		err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).Decode(&gf_img)
 
 		// err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
