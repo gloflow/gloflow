@@ -53,34 +53,34 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 				}
 				
 				//--------------------------
-				var gf_gif *Gf_gif
-				var gf_err *gf_core.Gf_error
+				var gfGIF *GFgif
+				var gfErr *gf_core.GFerror
 
 				// BY_ORIGIN_URL
 				if origin_url_str != "" {
 					p_runtime_sys.Log_fun("INFO","origin_url_str - "+origin_url_str)
 
-					gf_gif, gf_err = gif_db__get_by_origin_url(origin_url_str,p_runtime_sys)
+					gfGIF, gfErr = gif_db__get_by_origin_url(origin_url_str, p_runtime_sys)
 
-					if gf_err != nil {
-						return nil, gf_err
+					if gfErr != nil {
+						return nil, gfErr
 					}
 
 				// BY_GF_IMG_ID
 				} else if gf_img_id_str != "" {
 					p_runtime_sys.Log_fun("INFO","gf_img_id_str - "+gf_img_id_str)
 
-					gf_gif, gf_err = gif_db__get_by_img_id(gf_img_id_str,p_runtime_sys)
+					gfGIF, gfErr = gif_db__get_by_img_id(gf_img_id_str,p_runtime_sys)
 
-					if gf_err != nil {
-						return nil, gf_err
+					if gfErr != nil {
+						return nil, gfErr
 					}
 				}
 
 				//------------------
 				// OUTPUT
 				output_map := map[string]interface{}{
-					"gif_map":gf_gif,
+					"gif_map":gfGIF,
 				}
 				return output_map, nil
 				

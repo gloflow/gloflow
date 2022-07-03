@@ -220,7 +220,7 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gfErr := gf_core.Mongo__find(bson.M{
 			"t":                      "gif",
 			"valid_bool":             true,
 			"preview_frames_num_int": bson.M{"$gte": 0},
@@ -238,49 +238,25 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 		ctx,
 		p_runtime_sys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
-	gifs_lst := []Gf_gif{}
+	gifs_lst := []GFgif{}
 	for cursor.Next(ctx) {
 
-		var gf_gif Gf_gif
+		var gf_gif GFgif
 		err := cursor.Decode(&gf_gif)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get GIFs",
+			gfErr := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get GIFs",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_gif_lib", p_runtime_sys)
 
-			return nil, gf_err
+			return nil, gfErr
 		}
 		gifs_lst = append(gifs_lst, gf_gif)
 	}
-
-	/*err := p_runtime_sys.Mongo_coll.Find(bson.M{
-			"t":                      "gif",
-			"valid_bool":             true,
-			"preview_frames_num_int": bson.M{"$gte":0},
-			"title_str":              bson.M{"$exists":true,},
-			"origin_page_url_str":    bson.M{"$exists":true,},
-			"tags_lst":               bson.M{"$exists":true,},
-		}).
-		Sort("-creation_unix_time_f"). //descending:true
-		Skip(p_cursor_start_position_int).
-		Limit(p_elements_num_int).
-		All(&gifs_lst)
-
-	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("GIFs pages failed to be retreived",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"cursor_start_position_int": p_cursor_start_position_int,
-				"elements_num_int":          p_elements_num_int,
-			},
-			err, "gf_gif_lib", p_runtime_sys)
-		return nil,gf_err
-	}*/
 
 	return gifs_lst, nil
 }

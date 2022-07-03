@@ -207,7 +207,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// UPLOAD__INIT
-				upload_info, gf_err := Upload__init(image_name_str,
+				upload_info, gf_err := UploadInit(image_name_str,
 					image_format_str,
 					flows_names_lst,
 					client_type_str,
@@ -277,7 +277,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// COMPLETE
-				running_job, gf_err := Upload__complete(upload_gf_image_id_str,
+				running_job, gf_err := UploadComplete(upload_gf_image_id_str,
 					meta_map,
 					p_jobs_mngr_ch,
 					pS3info,

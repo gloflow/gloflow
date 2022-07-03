@@ -208,7 +208,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			
 			cursor.Next(ctx)
 
-			var old_gif Gf_gif
+			var old_gif GFgif
 			err = cursor.Decode(&old_gif)
 			if err != nil {
 				_ = gf_core.Mongo__handle_error("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
@@ -395,7 +395,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 
 			//---------------------
 
-			var gif Gf_gif
+			var gif GFgif
 			err = p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
 				"t":                   "gif",
 				"origin_url_str":      img.Origin_url_str,
@@ -403,15 +403,6 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				"origin_page_url_str": bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
 				"tags_lst":            bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
 			}).Decode(&gif)
-				
-			/*var gif Gf_gif
-			err = p_runtime_sys.Mongo_coll.Find(bson.M{
-					"t":                   "gif",
-					"origin_url_str":      img.Origin_url_str,
-					"title_str":           bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
-					"origin_page_url_str": bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
-					"tags_lst":            bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
-				}).One(&gif)*/
 
 			// IMPORTANT!! - a "gif" object was not found in the DB for an "img"
 			//               with "gif" format. so a new gif is created
