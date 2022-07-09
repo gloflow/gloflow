@@ -19,6 +19,7 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
+	github.com/h2non/bimg v1.1.9 // indirect
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c
 	github.com/ipfs/go-ipfs-api v0.3.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect

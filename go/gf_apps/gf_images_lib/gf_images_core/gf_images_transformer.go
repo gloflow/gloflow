@@ -26,6 +26,7 @@ import (
 	"image"
 	"image/jpeg"
 	"github.com/nfnt/resize"
+	"github.com/h2non/bimg"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -34,60 +35,95 @@ import (
 //                               was found. this is valid for gf_chrome_ext image sources.
 //                               its not relevant for direct image uploads from clients.
 
-func TransformImage(p_image_id_str Gf_image_id,
-	p_image_client_type_str                      string,
-	p_images_flows_names_lst                     []string,
-	p_image_origin_url_str                       string,
-	p_image_origin_page_url_str                  string,
-	p_meta_map                                   map[string]interface{},
-	p_image_local_file_path_str                  string,
-	p_images_store_thumbnails_local_dir_path_str string,
-	p_ctx                                        context.Context,
-	p_runtime_sys                                *gf_core.RuntimeSys) (*GFimage, *GF_image_thumbs, *gf_core.GFerror) {
+func TransformImage(p_image_id_str GFimageID,
+	p_image_client_type_str               string,
+	p_images_flows_names_lst              []string,
+	p_image_origin_url_str                string,
+	p_image_origin_page_url_str           string,
+	p_meta_map                            map[string]interface{},
+	pImageLocalFilePathStr                string,
+	pImagesStoreThumbnailsLocalDirPathStr string,
+	pCtx                                  context.Context,
+	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GF_image_thumbs, *gf_core.GFerror) {
 
-	// normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_origin_url_str, p_runtime_sys)
-	normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_local_file_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	// normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_origin_url_str, pRuntimeSys)
+	normalizedExtStr, gfErr := Get_image_ext_from_url(pImageLocalFilePathStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
-	gf_image, gf_image_thumbs, gf_err := TransformProcessImage(p_image_id_str,
+	gfImage, gfImageThumbs, gfErr := TransformProcessImage(p_image_id_str,
 		p_image_client_type_str,
 		p_images_flows_names_lst,
 		p_image_origin_url_str,
 		p_image_origin_page_url_str,
 		p_meta_map,
-		normalized_ext_str,
-		p_image_local_file_path_str,
-		p_images_store_thumbnails_local_dir_path_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+		normalizedExtStr,
+		pImageLocalFilePathStr,
+		pImagesStoreThumbnailsLocalDirPathStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
-	return gf_image,gf_image_thumbs, nil
+
+	//--------------------------
+	// FINISH!! - this processing function uses "bimg", which uses
+	//            and underlying C lib "libvips"
+	gfErr := TransformProcessImageV2(pImageLocalFilePathStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
+	}
+
+	//--------------------------
+	
+	return gfImage, gfImageThumbs, nil
 }
 
 //---------------------------------------------------
-func TransformProcessImage(p_image_id_str GF_image_id,
-	p_image_client_type_str                string,
-	p_images_flows_names_lst               []string,
-	p_image_origin_url_str                 string,
-	p_image_origin_page_url_str            string,
-	p_meta_map                             map[string]interface{},
-	p_normalized_ext_str                   string,
-	p_image_local_file_path_str            string,
-	p_local_thumbnails_target_dir_path_str string,
-	p_ctx                                  context.Context,
-	p_runtime_sys                          *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
-	fmt.Println("p_image_local_file_path_str - "+p_image_local_file_path_str)
+// V2
+func TransformProcessImageV2(pImageLocalFilePathStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	buffer, err := bimg.Read(pImageLocalFilePathStr)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	newImage, err := bimg.NewImage(buffer).Convert(bimg.PNG)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	if bimg.NewImage(newImage).Type() == "png" {
+		fmt.Fprintln(os.Stderr, "The image was converted into png")
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+func TransformProcessImage(pImageIDstr GFimageID,
+	pImageClientTypeStr                string,
+	pImagesFlowsNamesLst               []string,
+	pImageOriginURLstr                 string,
+	pImageOriginPageURLstr             string,
+	pMetaMap                           map[string]interface{},
+	pNormalizedExtStr                  string,
+	pImageLocalFilePathStr             string,
+	pImagesStoreThumbnailsLocalDirPathStr string,
+	pCtx                                  context.Context,
+	pRuntimeSys                           *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
 
 	//---------------------------------
 	// LOAD_IMAGE
 
-	img, gfErr := Image__load_file(p_image_local_file_path_str, p_normalized_ext_str, p_runtime_sys)
+	img, gfErr := ImageLoadFile(pImageLocalFilePathStr, pNormalizedExtStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -99,15 +135,15 @@ func TransformProcessImage(p_image_id_str GF_image_id,
 	medium_thumb_max_size_px_int := 400
 	large_thumb_max_size_px_int  := 600
 
-	gf_image_thumbs, gfErr := CreateThumbnails(p_image_id_str,
-		p_normalized_ext_str,
-		p_image_local_file_path_str,
-		p_local_thumbnails_target_dir_path_str,
+	gf_image_thumbs, gfErr := CreateThumbnails(pImageIDstr,
+		pNormalizedExtStr,
+		pImageLocalFilePathStr,
+		pImagesStoreThumbnailsLocalDirPathStr,
 		small_thumb_max_size_px_int,
 		medium_thumb_max_size_px_int,
 		large_thumb_max_size_px_int,
 		img,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -115,10 +151,10 @@ func TransformProcessImage(p_image_id_str GF_image_id,
 	//--------------------------
 	/* //DOMINANT COLOR DETERMINATION
 	//it"s computed only for non-gif"s
-	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(p_image_local_file_path_str,p_log_fun)*/
+	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(pImageLocalFilePathStr,p_log_fun)*/
 
 	//--------------------------
-	image_width_int, image_height_int := Get_image_dimensions__from_image(img, p_runtime_sys)
+	image_width_int, image_height_int := Get_image_dimensions__from_image(img, pRuntimeSys)
 
 	//--------------------------
 
@@ -128,34 +164,34 @@ func TransformProcessImage(p_image_id_str GF_image_id,
 	// required to decode the file, but the rest of the file is not processed until later.
 	
 	// someone can forge header information in an image
-	image_title_str, gfErr := Get_image_title_from_url(p_image_origin_url_str, p_runtime_sys)
+	image_title_str, gfErr := Get_image_title_from_url(pImageOriginURLstr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
 
-	gf_image_info := &GF_image_new_info{
-		Id_str:                         p_image_id_str,
+	imageInfo := &GF_image_new_info{
+		Id_str:                         pImageIDstr,
 		Title_str:                      image_title_str,
-		Flows_names_lst:                p_images_flows_names_lst,
-		Image_client_type_str:          p_image_client_type_str,
-		Origin_url_str:                 p_image_origin_url_str,
-		Origin_page_url_str:            p_image_origin_page_url_str,
-		Original_file_internal_uri_str: p_image_local_file_path_str,
+		Flows_names_lst:                pImagesFlowsNamesLst,
+		Image_client_type_str:          pImageClientTypeStr,
+		Origin_url_str:                 pImageOriginURLstr,
+		Origin_page_url_str:            pImageOriginPageURLstr,
+		Original_file_internal_uri_str: pImageLocalFilePathStr,
 		Thumbnail_small_url_str:        gf_image_thumbs.Small_relative_url_str,
 		Thumbnail_medium_url_str:       gf_image_thumbs.Medium_relative_url_str,
 		Thumbnail_large_url_str:        gf_image_thumbs.Large_relative_url_str,
-		Format_str:                     p_normalized_ext_str,
+		Format_str:                     pNormalizedExtStr,
 		Width_int:                      image_width_int,
 		Height_int:                     image_height_int,
 
-		Meta_map: p_meta_map,
+		Meta_map: pMetaMap,
 	}
 
 	//--------------------------
 	// IMAGE_CREATE
 
 	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB
-	gfImage, gfErr := Image__create_new(gf_image_info, p_ctx, p_runtime_sys)
+	gfImage, gfErr := ImageCreateNew(imageInfo, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -170,7 +206,7 @@ func resizeImage(p_img image.Image,
 	p_image_output_path_str string,
 	p_image_format_str      string,
 	p_size_px_int           int,
-	p_runtime_sys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.Gf_error {
 	
 	// resize to width 1000 using Lanczos resampling
 	// and preserve aspect ratio
@@ -182,7 +218,7 @@ func resizeImage(p_img image.Image,
 		gf_err := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
 			map[string]interface{}{"image_output_path_str": p_image_output_path_str,},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return gf_err
 	}
 	defer out.Close()
