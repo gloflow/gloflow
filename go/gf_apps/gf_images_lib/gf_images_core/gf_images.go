@@ -127,10 +127,9 @@ type GF_image_new_info struct {
 }
 
 //---------------------------------------------------
-func Image__create_new(p_image_info *GF_image_new_info,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create_new()")
+func ImageCreateNew(p_image_info *GF_image_new_info,
+	pCtx       context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	image := &GF_image{
@@ -155,7 +154,7 @@ func Image__create_new(p_image_info *GF_image_new_info,
 
 	//----------------------------------
 	// DB PERSIST
-	db_gf_err := DB__put_image(image, p_ctx, p_runtime_sys)
+	db_gf_err := DB__put_image(image, pCtx, pRuntimeSys)
 	if db_gf_err != nil {
 		return nil, db_gf_err
 	}

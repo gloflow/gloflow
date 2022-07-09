@@ -416,6 +416,7 @@ def parse_args():
 	else:
 		gf_dockerhub_user_str = os.environ.get("GF_DOCKERHUB_USER", None)
 
+	# DOCKERHUB_PASS
 	gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
 
 

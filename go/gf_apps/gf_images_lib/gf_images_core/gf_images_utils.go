@@ -53,10 +53,9 @@ func Image__get_public_url(p_image_s3_file_path_str string,
 
 //---------------------------------------------------
 // LOAD_FILE
-func Image__load_file(p_image_local_file_path_str string,
+func ImageLoadFile(p_image_local_file_path_str string,
 	p_normalized_ext_str string,
 	p_runtime_sys        *gf_core.RuntimeSys) (image.Image, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Image__load_file()")
 
 	file, fs_err := os.Open(p_image_local_file_path_str)
 	if fs_err != nil {
@@ -175,8 +174,8 @@ func Get_image_title_from_url(p_image_url_str string,
 }
 
 //---------------------------------------------------
-func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.Runtime_sys) (int,int) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_image()")
+func Get_image_dimensions__from_image(p_img image.Image,
+	p_runtime_sys *gf_core.RuntimeSys) (int, int) {
 
 	p          := p_img.Bounds()
 	width_int  := p.Max.X - p.Min.X
@@ -186,8 +185,7 @@ func Get_image_dimensions__from_image(p_img image.Image, p_runtime_sys *gf_core.
 
 //---------------------------------------------------
 func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (int, int, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_filepath()")
+	p_runtime_sys *gf_core.Runtime_sys) (int, int, *gf_core.GFerror) {
 
 	//-------------------
 	file, fs_err := os.Open(p_image_local_file_path_str)
@@ -219,8 +217,7 @@ func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
 //---------------------------------------------------
 func Get_image_dimensions__from_file(p_file io.Reader,
 	p_img_extension_str string,
-	p_runtime_sys       *gf_core.Runtime_sys) (int, int, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_dimensions__from_file()")
+	p_runtime_sys       *gf_core.Runtime_sys) (int, int, *gf_core.GFerror) {
 
 	var image_config image.Config
 	var config_err   error
@@ -272,8 +269,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 
 //---------------------------------------------------
 func Get_image_ext_from_url(p_image_url_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER","gf_images_utils.Get_image_ext_from_url()")
+	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	fmt.Println("p_image_url_str - "+p_image_url_str)
 

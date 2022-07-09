@@ -36,7 +36,6 @@ def cont__publish(p_app_name_str,
 	assert isinstance(p_gf_dockerhub_user_str, str)
 
 	# PUBLISH
-	# app_name_str = "gf_builder"
 	gf_containers.publish(p_app_name_str,
 		p_app_build_meta_map,
 		p_gf_dockerhub_user_str,

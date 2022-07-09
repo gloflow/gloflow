@@ -275,7 +275,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 		//               these two structs are related by origin_url
 
-		_, c_gf_err := gf_images_core.Image__create_new(gf_image_info, pCtx, pRuntimeSys)
+		_, c_gf_err := gf_images_core.ImageCreateNew(gf_image_info, pCtx, pRuntimeSys)
 		if c_gf_err != nil {
 			return nil, "", c_gf_err
 		}

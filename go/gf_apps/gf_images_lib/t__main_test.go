@@ -208,7 +208,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	fmt.Println(fmt.Sprintf("test__image dimensions - %d/%d",img_width_int,img_height_int))
 
 	//---------------
-	img, gf_err := gf_images_core.Image__load_file(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
+	img, gf_err := gf_images_core.ImageLoadFile(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
