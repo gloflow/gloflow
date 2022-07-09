@@ -79,6 +79,10 @@ type GF_config struct {
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 
 	//--------------------
+	// IPFS
+	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
+
+	//--------------------
 }
 
 //-------------------------------------------------------------

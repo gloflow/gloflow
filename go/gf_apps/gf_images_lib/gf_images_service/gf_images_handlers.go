@@ -34,10 +34,10 @@ import (
 func InitHandlers(pAuthLoginURLstr string,
 	pHTTPmux           *http.ServeMux,
 	p_jobs_mngr_ch     chan gf_images_jobs_core.JobMsg,
-	p_img_config       *gf_images_core.GF_config,
+	p_img_config       *gf_images_core.GFconfig,
 	p_media_domain_str string,
 	pS3info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
 	//---------------------
@@ -114,31 +114,31 @@ func InitHandlers(pAuthLoginURLstr string,
 	// GET_IMAGE_URL
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/d/",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
-			if p_req.Method == "GET" {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+			if pReq.Method == "GET" {
 
 				//-----------------
 				// INPUT
-				path_str            := p_req.URL.Path
+				path_str            := pReq.URL.Path
 				image_path_name_str := strings.Replace(path_str, "/images/d/", "", 1)
 
-				qs_map        := p_req.URL.Query()
-				flow_name_str := "general"
-				if a_lst, ok := qs_map["fname"]; ok {
-					flow_name_str = a_lst[0]
+				qsMap       := pReq.URL.Query()
+				flowNameStr := "general"
+				if aLst, ok := qsMap["fname"]; ok {
+					flowNameStr = aLst[0]
 				}
 				
 				//-----------------
 
-				if _, ok := p_img_config.Images_flow_to_s3_bucket_map[flow_name_str]; !ok {
-					gf_err := gf_core.Error__create("image to resolve in unexisting flow",
+				if _, ok := p_img_config.Images_flow_to_s3_bucket_map[flowNameStr]; !ok {
+					gfErr := gf_core.Error__create("image to resolve in unexisting flow",
 						"verify__invalid_value_error",
 						map[string]interface{}{
-							"flow_name_str":    flow_name_str,
+							"flow_name_str":    flowNameStr,
 							"handler_path_str": "/images/d/",
 						},
 						nil, "gf_images_lib", pRuntimeSys)
-					return nil, gf_err
+					return nil, gfErr
 				}
 
 				image_s3_url_str := gf_images_core.Image__get_public_url(image_path_name_str,
@@ -146,8 +146,8 @@ func InitHandlers(pAuthLoginURLstr string,
 					pRuntimeSys)
 
 				// redirect user to S3 image url
-				http.Redirect(p_resp,
-					p_req,
+				http.Redirect(pResp,
+					pReq,
 					image_s3_url_str,
 					301)
 			}
@@ -165,7 +165,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_init",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
 			if p_req.Method == "GET" {
 
@@ -178,53 +178,53 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// INPUT
-				qs_map := p_req.URL.Query()
+				qsMap := p_req.URL.Query()
 
 				// IMAGE_FORMAT
-				var image_format_str string
-				if a_lst, ok := qs_map["imgf"]; ok {
-					image_format_str = a_lst[0]
+				var imageFormatStr string
+				if a_lst, ok := qsMap["imgf"]; ok {
+					imageFormatStr = a_lst[0]
 				}
 
 				// IMAGE_NAME - name that the user has potentially assigned to the image
-				var image_name_str string
-				if a_lst, ok := qs_map["imgn"]; ok {
-					image_name_str = a_lst[0]
+				var imageNameStr string
+				if a_lst, ok := qsMap["imgn"]; ok {
+					imageNameStr = a_lst[0]
 				}
 
 				// FLOWS_NAMES - names of flows to which this image should be added
-				var flows_names_lst []string
-				if a_lst, ok := qs_map["f"]; ok {
-					flows_names_str := a_lst[0]
-					flows_names_lst = strings.Split(flows_names_str, ",")
+				var flowsNamesLst []string
+				if aLst, ok := qsMap["f"]; ok {
+					flowsNamesStr := aLst[0]
+					flowsNamesLst = strings.Split(flowsNamesStr, ",")
 				}
 
 				// CLIENT_TYPE - type of client thats doing the upload
 				var client_type_str string
-				if a_lst, ok := qs_map["ct"]; ok {
-					client_type_str = a_lst[0]
+				if aLst, ok := qsMap["ct"]; ok {
+					client_type_str = aLst[0]
 				}
 
 				//------------------
 				// UPLOAD__INIT
-				upload_info, gf_err := UploadInit(image_name_str,
-					image_format_str,
-					flows_names_lst,
+				uploadInfo, gfErr := UploadInit(imageNameStr,
+					imageFormatStr,
+					flowsNamesLst,
 					client_type_str,
 					pS3info,
 					p_img_config,
 					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
-					"upload_info_map": upload_info,
+				dataMap := map[string]interface{}{
+					"upload_info_map": uploadInfo,
 				}
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}

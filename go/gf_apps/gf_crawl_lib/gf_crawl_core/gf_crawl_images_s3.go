@@ -29,14 +29,14 @@ import (
 )
 
 //--------------------------------------------------
-//STAGE
+// STAGE
 func images_s3__stage__store_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_origin_page_url_str           string,
 	p_s3_bucket_name_str            string,
 	p_runtime                       *Gf_crawler_runtime,
-	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.images_s3__stage__store_images")
+	pRuntimeSys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.images_s3__stage__store_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")
@@ -71,13 +71,13 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 				page_img__pinfo.thumbs,
 				p_s3_bucket_name_str,
 				p_runtime,
-				p_runtime_sys)
+				pRuntimeSys)
 
 			if gf_err != nil {
 				t := "image_s3_upload__failed"
 				m := "failed s3 uploading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
 				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, p_crawler_name_str,
-					gf_err, p_runtime, p_runtime_sys)
+					gf_err, p_runtime, pRuntimeSys)
 				page_img__pinfo.gf_error = gf_err
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
@@ -90,41 +90,44 @@ func images_s3__stage__store_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image_s3__upload(p_image *Gf_crawler_page_image,
-	p_local_image_file_path_str string,
-	p_image_thumbs              *gf_images_core.GF_image_thumbs,
-	p_s3_bucket_name_str        string,
-	p_runtime                   *Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
+func image_s3__upload(pImage *Gf_crawler_page_image,
+	pLocalImageFilePathStr string,
+	pImageThumbs           *gf_images_core.GF_image_thumbs,
+	p_s3_bucket_name_str   string,
+	p_runtime              *Gf_crawler_runtime,
+	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__upload()")
 	
 	cyan   := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow := color.New(color.FgYellow, color.BgBlack).SprintFunc()
-	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"), yellow(p_image.Id_str), yellow(p_local_image_file_path_str))
+	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"),
+		yellow(pImage.Id_str),
+		yellow(pLocalImageFilePathStr))
 
-	gf_err := gf_images_core.S3__store_gf_image(p_local_image_file_path_str,
-		p_image_thumbs,
+	gfErr := gf_images_core.S3storeImage(pLocalImageFilePathStr,
+		pImageThumbs,
 		p_s3_bucket_name_str,
 		p_runtime.S3_info,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	image_s3__db_flag_as_uploaded(p_image, p_runtime_sys)
+	image_s3__db_flag_as_uploaded(pImage, pRuntimeSys)
 
 	return nil
 }
 
 //--------------------------------------------------
 // UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
-func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
+func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_s3.image_s3__db_flag_as_uploaded()")
 
 	ctx := context.Background()
 
 	p_image.S3_stored_bool = true
-	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"t":        "crawler_page_img",
 			"hash_str": p_image.Hash_str,
 		},
@@ -136,7 +139,7 @@ func image_s3__db_flag_as_uploaded(p_image *Gf_crawler_page_image, p_runtime_sys
 		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
 			"mongodb_update_error",
 			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
-			err, "gf_crawl_core", p_runtime_sys)
+			err, "gf_crawl_core", pRuntimeSys)
 		return gf_err
 	}
 	return nil

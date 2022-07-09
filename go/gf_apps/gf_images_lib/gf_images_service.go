@@ -38,8 +38,8 @@ import (
 //-------------------------------------------------
 func InitService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_images_core.GFserviceInfo,
-	pConfig      *gf_images_core.GF_config,
-	pRuntimeSys  *gf_core.Runtime_sys) gf_images_jobs_core.JobsMngr {
+	pConfig      *gf_images_core.GFconfig,
+	pRuntimeSys  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
 	//-------------
 	// DB_INDEXES
@@ -173,32 +173,35 @@ func Run_service(pHTTPmux *http.ServeMux,
 	//-------------
 	// RUNTIME_SYS
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.Runtime_sys{
 		Service_name_str: "gf_images",
 		Log_fun:          p_log_fun,
 	}
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(pServiceInfo.Mongodb_host_str,
+	mongoDB, _, gfErr := gf_core.Mongo__connect_new(pServiceInfo.Mongodb_host_str,
 		pServiceInfo.Mongodb_db_name_str,
 		nil,
-		runtime_sys)
-	if gf_err != nil {
+		runtimeSys)
+	if gfErr != nil {
 		return
 	}
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongoDB
+	runtimeSys.Mongo_coll = mongoDB.Collection("data_symphony")
 
 	//-------------
 	// CONFIG
 
-	gf_config, gf_err := gf_images_core.Config__get(pServiceInfo.Config_file_path_str, runtime_sys)
-	if gf_err != nil {
+	IPFSnodeHostStr := "" // FINISH!! - load this from ENV var
+	config, gfErr := gf_images_core.ConfigGet(pServiceInfo.Config_file_path_str,
+		IPFSnodeHostStr,
+		runtimeSys)
+	if gfErr != nil {
 		return
 	}
 
 	//------------------------
 	// INIT
-	InitService(pHTTPmux, pServiceInfo, gf_config, runtime_sys)
+	InitService(pHTTPmux, pServiceInfo, config, runtimeSys)
 
 	//------------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

@@ -27,15 +27,15 @@ import (
 )
 
 //-------------------------------------------------
-func Cmds_init(p_external_plugins *gf_core.External_plugins,
-	p_log_fun func(string, string)) *cobra.Command {
+func Cmds_init(pExternalPlugins *gf_core.External_plugins,
+	pLogFun func(string, string)) *cobra.Command {
 
 	// BASE
 	cmdBase := &cobra.Command{
 		Use:   "gf_solo",
 		Short: "gf_solo",
 		Long:  "",
-		Run:   func(p_cmd *cobra.Command, p_args []string) {
+		Run:   func(p_cmd *cobra.Command, pArgs []string) {
 
 		},
 	}
@@ -43,8 +43,8 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 	//--------------------
 	// CLI_ARGUMENT - CONFIG
 	cli_config_path__default_str := "./config/gf_solo"
-	var cli_config_path_str string
-	cmdBase.PersistentFlags().StringVarP(&cli_config_path_str, "config", "", cli_config_path__default_str,
+	var cliConfigPathStr string
+	cmdBase.PersistentFlags().StringVarP(&cliConfigPathStr, "config", "", cli_config_path__default_str,
 		"config file path on the local FS")
 
 	//--------------------
@@ -251,12 +251,19 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 		panic(err)
 	}
 
+	// ENV
+	err = viper.BindEnv("ipfs_node_host", "GF_IPFS__NODE_HOST")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
 	//--------------------
 	// START
 	cmdStart := &cobra.Command{
 		Use:   "start",
 		Short: "start some service or function",
-		Run:   func(pCmd *cobra.Command, p_args []string) {
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
 		},
 	}
@@ -266,14 +273,14 @@ func Cmds_init(p_external_plugins *gf_core.External_plugins,
 		Use:   "service",
 		Short: "start the gf_solo service",
 		Long:  "start the gf_solo service",
-		Run:   func(pCmd *cobra.Command, p_args []string) {
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
 			
 
 
 
 
-			runtimeSys, config, err := Runtime__get(cli_config_path_str, p_external_plugins, p_log_fun)
+			runtimeSys, config, err := Runtime__get(cliConfigPathStr, pExternalPlugins, pLogFun)
 			if err != nil {
 				panic(err)
 			}

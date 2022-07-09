@@ -188,7 +188,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 
 			//-----------------
 
-			_, gf_err := gf_gif_lib.Process_and_upload("", // p_gf_image_id_str
+			_, gfErr := gf_gif_lib.ProcessAndUpload("", // p_gf_image_id_str
 				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
@@ -202,13 +202,13 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				ctx,
 				pRuntimeSys)
 
-			if gf_err != nil {
+			if gfErr != nil {
 				job_error_type_str := "gif_process_and_upload_error"
-				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str,
+				_ = job_error__send(job_error_type_str, gfErr, image_source_url_str, image_id_str,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)
-				gf_errors_lst = append(gf_errors_lst, gf_err)
+				gf_errors_lst = append(gf_errors_lst, gfErr)
 				continue
 			}
 
@@ -217,7 +217,7 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 		//-----------------------
 		// STANDARD
 		} else {
-			gf_err := job__pipeline__process_image_extern(image_id_str,
+			gfErr := job__pipeline__process_image_extern(image_id_str,
 				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
@@ -228,13 +228,13 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				pJobRuntime,
 				pRuntimeSys)
 
-			if gf_err != nil {
+			if gfErr != nil {
 				job_error_type_str := "image_process_error"
-				_ = job_error__send(job_error_type_str, gf_err, image_source_url_str, image_id_str,
+				_ = job_error__send(job_error_type_str, gfErr, image_source_url_str, image_id_str,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)
-				gf_errors_lst = append(gf_errors_lst, gf_err)
+				gf_errors_lst = append(gf_errors_lst, gfErr)
 				continue
 			}
 		}

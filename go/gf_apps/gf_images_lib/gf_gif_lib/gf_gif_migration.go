@@ -474,7 +474,7 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 
 	ctx := context.Background()
 
-	new_gif, gf_err := Process_and_upload("", // p_gf_image_id_str
+	new_gif, gf_err := ProcessAndUpload("", // p_gf_image_id_str
 		p_old_gif.Origin_url_str,            // p_image_source_url_str
 		p_old_gif.Origin_page_url_str,       // p_image_origin_page_url_str
 		p_images_store_local_dir_path_str,

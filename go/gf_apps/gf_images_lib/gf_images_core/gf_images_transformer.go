@@ -43,7 +43,7 @@ func TransformImage(p_image_id_str Gf_image_id,
 	p_image_local_file_path_str                  string,
 	p_images_store_thumbnails_local_dir_path_str string,
 	p_ctx                                        context.Context,
-	p_runtime_sys                                *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
+	p_runtime_sys                                *gf_core.RuntimeSys) (*GFimage, *GF_image_thumbs, *gf_core.GFerror) {
 
 	// normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_origin_url_str, p_runtime_sys)
 	normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_local_file_path_str, p_runtime_sys)
@@ -99,7 +99,7 @@ func TransformProcessImage(p_image_id_str GF_image_id,
 	medium_thumb_max_size_px_int := 400
 	large_thumb_max_size_px_int  := 600
 
-	gf_image_thumbs, gfErr := Create_thumbnails(p_image_id_str,
+	gf_image_thumbs, gfErr := CreateThumbnails(p_image_id_str,
 		p_normalized_ext_str,
 		p_image_local_file_path_str,
 		p_local_thumbnails_target_dir_path_str,

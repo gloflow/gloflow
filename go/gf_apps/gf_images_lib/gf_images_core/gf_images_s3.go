@@ -46,12 +46,11 @@ func S3__get_gf_image(pImageS3filePathStr string,
 }
 
 //---------------------------------------------------
-func S3__store_gf_image(p_image_local_file_path_str string,
-	pImageThumbs       *GF_image_thumbs,
-	pS3bucketNameStr   string,
-	pS3info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.Runtime_sys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image()")
+func S3storeImage(p_image_local_file_path_str string,
+	pImageThumbs     *GF_image_thumbs,
+	pS3bucketNameStr string,
+	pS3info          *gf_core.GFs3Info,
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//--------------------
 	// UPLOAD FULL_SIZE (ORIGINAL) IMAGE
@@ -87,12 +86,12 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 		return gfErr
 	}
 
-	pRuntimeSys.Log_fun("INFO", "s3_response_str - "+s3_response_str)
+	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("s3_response_str - %s", s3_response_str))
 	
 	//--------------------
 	// UPLOAD THUMBS
 
-	gfErr = S3__store_gf_image_thumbs(pImageThumbs,
+	gfErr = StoreThumbnails(pImageThumbs,
 		pS3bucketNameStr,
 		pS3info,
 		pRuntimeSys)
@@ -105,11 +104,10 @@ func S3__store_gf_image(p_image_local_file_path_str string,
 }
 
 //---------------------------------------------------
-func S3__store_gf_image_thumbs(pImageThumbs *GF_image_thumbs,
+func S3storeThumbnails(pImageThumbs *GF_image_thumbs,
 	pS3bucketNameStr string,
 	pS3info          *gf_core.GFs3Info,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__store_gf_image_thumbs()")
 
 	// IMPORTANT - for some image types (GIF) the system doesnt produce thumbs,
 	//             and therefore pImageThumbs is nil.
@@ -148,7 +146,6 @@ func S3__store_gf_image_thumbs(pImageThumbs *GF_image_thumbs,
 
 		//--------------------
 	}
-
 	return nil
 }
 

@@ -27,36 +27,38 @@ import (
 )
 
 //-------------------------------------------------
-func InitHandlers(p_mux *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) {
+func InitHandlers(pMux *http.ServeMux,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/editor/save",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 		
 			if p_req.Method == "POST" {
 
 				//-------------------
-				gf_err := save_edited_image__pipeline("/images/editor/save", p_req, p_resp, p_req.Context(), p_runtime_sys)
+				gfErr := save_edited_image__pipeline("/images/editor/save", p_req, p_resp,
+					pCtx,
+					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{}
-				return data_map, nil
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
 
 				//------------------
 			}
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 }

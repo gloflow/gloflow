@@ -45,7 +45,7 @@ func job__pipeline__process_image_local(pFlowsNamesLst []string,
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_IMAGE_UPLOADED
-func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_image_id,
+func job__pipeline__process_image_uploaded(pImageIDstr gf_images_core.GFimageID,
 	p_s3_file_path_str                 string,
 	p_meta_map                         map[string]interface{},
 	p_images_store_local_dir_path_str  string,
@@ -57,15 +57,18 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 	pStorage               *gf_images_storage.GFimageStorage,
 	pJobRuntime            *GFjobRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_uploaded()")
 
 	//-----------------------
 	// GET_IMAGE_FROM_FS
 
-	image_local_file_path_str := fmt.Sprintf("%s/%s", p_images_store_local_dir_path_str, filepath.Base(p_s3_file_path_str))
+	image_local_file_path_str := fmt.Sprintf("%s/%s",
+		p_images_store_local_dir_path_str,
+		filepath.Base(p_s3_file_path_str))
 	
 	// NEW_STORAGE
 	if pJobRuntime.useNewStorageEngineBool {
+
+		
 
 	} else {
 		// LEGACY
@@ -82,7 +85,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 			error_type_str := "s3_download_for_processing_error"
 			job_error__send(error_type_str, gfErr,
 				"", // p_image_source_url_str,
-				p_image_id_str, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 			return gfErr
 		}
 	}
@@ -90,13 +93,13 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 	//-----------------------
 	// TRANSFORM_IMAGE
 	
-	gf_image_thumbs, gf_t_err := jobTransform(p_image_id_str,
+	gf_image_thumbs, gf_t_err := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
 		"", // p_image_source_url_str,
 		"", // p_image_origin_page_url_str,
 		p_meta_map,
 		image_local_file_path_str,
-		p_images_thumbs_local_dir_path_str,
+		p_images_thumbs_local_dir_path_str, 
 		pJobRuntime,
 		pRuntimeSys)
 	if gf_t_err != nil {
@@ -110,6 +113,24 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 	if pJobRuntime.useNewStorageEngineBool {
 
 
+		op := &gf_images_storage.GFcopyOpDef{
+			SourceFilePathStr:         p_s3_file_path_str,
+			SourceFileS3bucketNameStr: pSourceS3bucketNameStr,
+			TargetFilePathStr:         p_s3_file_path_str,
+			TargetFileS3bucketNameStr: pTargetS3bucketNameStr,
+		}
+		gfErr := gf_images_storage.FileCopy(op,
+			pStorage,
+			pRuntimeSys)
+		if gfErr != nil {
+			error_type_str := "s3_store_error"
+			job_error__send(error_type_str, gfErr,
+				"", // p_image_source_url_str,
+				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+				
+			return gfErr
+		}
+
 	} else {
 		// LEGACY
 	
@@ -119,23 +140,24 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 		if pSourceS3bucketNameStr != pTargetS3bucketNameStr {
 
 			// S3_FILE_COPY
-			gfErr := gf_core.S3__copy_file(pSourceS3bucketNameStr,
+			gfErr := gf_core.S3copyFile(pSourceS3bucketNameStr,
 				p_s3_file_path_str,
 				pTargetS3bucketNameStr,
 				p_s3_file_path_str,
 				pS3info,
 				pRuntimeSys)
 			if gfErr != nil {
+				
 				error_type_str := "s3_store_error"
 				job_error__send(error_type_str, gfErr,
 					"", // p_image_source_url_str,
-					p_image_id_str, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+					pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 				return gfErr
 			}
 		}
 
 		// STORE__IMAGE_THUMBS
-		gfErr := gf_images_core.S3__store_gf_image_thumbs(gf_image_thumbs,
+		gfErr := gf_images_core.S3storeThumbnails(gf_image_thumbs,
 			pTargetS3bucketNameStr,
 			pS3info,
 			pRuntimeSys)
@@ -143,7 +165,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 			error_type_str := "s3_store_error"
 			job_error__send(error_type_str, gfErr,
 				"", // p_image_source_url_str,
-				p_image_id_str, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 			return gfErr
 		}
 	}
@@ -151,7 +173,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 	update_msg := JobUpdateMsg{
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
-		Image_id_str:         p_image_id_str,
+		Image_id_str:         pImageIDstr,
 		Image_source_url_str: "", // p_image_source_url_str,
 	}
 	pJobRuntime.job_updates_ch <- update_msg
@@ -161,7 +183,7 @@ func job__pipeline__process_image_uploaded(p_image_id_str gf_images_core.GF_imag
 	update_msg = JobUpdateMsg{
 		Name_str:             "image_done",
 		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
-		Image_id_str:         p_image_id_str,
+		Image_id_str:         pImageIDstr,
 		Image_source_url_str: "", // p_image_source_url_str,
 		Image_thumbs:         gf_image_thumbs,
 	}
@@ -200,26 +222,26 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_core.GF_image_
 		return gf_f_err
 	}
 
-	update_msg := JobUpdateMsg{
+	updateMsg := JobUpdateMsg{
 		Name_str:             "image_fetch",
 		Type_str:             JOB_UPDATE_TYPE__OK,
 		Image_id_str:         p_image_id_str,
 		Image_source_url_str: p_image_source_url_str,
 	}
 
-	pJobRuntime.job_updates_ch <- update_msg
+	pJobRuntime.job_updates_ch <- updateMsg
 
 	//-----------------------
 	// TRANSFORM_IMAGE
 	
 	// FIX!! - this should be passed it from outside this function
-	meta_map := map[string]interface{}{}
+	metaMap := map[string]interface{}{}
 
 	gf_image_thumbs, gf_t_err := jobTransform(p_image_id_str,
 		pFlowsNamesLst,
 		p_image_source_url_str,
 		p_image_origin_page_url_str,
-		meta_map,
+		metaMap,
 		image_local_file_path_str,
 		p_images_thumbs_local_dir_path_str,
 		pJobRuntime,
@@ -237,7 +259,7 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_core.GF_image_
 	} else {
 		// LEGACY
 	
-		gf_s3_err := gf_images_core.S3__store_gf_image(image_local_file_path_str,
+		gf_s3_err := gf_images_core.S3storeImage(image_local_file_path_str,
 			gf_image_thumbs,
 			pS3bucketNameStr,
 			pS3info,
@@ -252,24 +274,24 @@ func job__pipeline__process_image_extern(p_image_id_str gf_images_core.GF_image_
 		}
 	}
 
-	update_msg = JobUpdateMsg{
+	updateMsg = JobUpdateMsg{
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
 		Image_id_str:         p_image_id_str,
 		Image_source_url_str: p_image_source_url_str,
 	}
-	pJobRuntime.job_updates_ch <- update_msg
+	pJobRuntime.job_updates_ch <- updateMsg
 
 	//-----------------------
 	// DONE
-	update_msg = JobUpdateMsg{
+	updateMsg = JobUpdateMsg{
 		Name_str:             "image_done",
 		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
 		Image_id_str:         p_image_id_str,
 		Image_source_url_str: p_image_source_url_str,
 		Image_thumbs:         gf_image_thumbs,
 	}
-	pJobRuntime.job_updates_ch <- update_msg
+	pJobRuntime.job_updates_ch <- updateMsg
 
 	//-----------------------
 	return nil

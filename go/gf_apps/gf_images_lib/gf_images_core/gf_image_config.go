@@ -43,10 +43,13 @@ type GFserviceInfo struct {
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users when email is confirmed.
 	AuthLoginURLstr string
+
+	// IPFS_NODE_HOST - host/gateway to use to connect to for IPFS operations
+	IPFSnodeHostStr string
 }
 
 //-------------------------------------------------
-type GF_config struct {
+type GFconfig struct {
 
 	Store_local_dir_path_str            string `yaml:"store_local_dir_path"`
 	Thumbnails_store_local_dir_path_str string `yaml:"thumbnails_store_local_dir_path"`
@@ -70,11 +73,17 @@ type GF_config struct {
 
 	Images_flow_to_s3_bucket_default_str string            `yaml:"images_flow_to_s3_bucket_default"`
 	Images_flow_to_s3_bucket_map         map[string]string `yaml:"images_flow_to_s3_bucket"`
+
+	//------------------------
+	// IPFS
+	IPFSnodeHostStr string `yaml:"ipfs_node_host"`
+
+	//------------------------
 }
 
 //-------------------------------------------------
 func Config__get_s3_bucket_for_flow(p_flow_name_str string,
-	p_config *GF_config) string {
+	p_config *GFconfig) string {
 
 	var s3_bucket_name_final_str string
 	if s3_bucket_str, ok := p_config.Images_flow_to_s3_bucket_map[p_flow_name_str]; !ok {
@@ -86,38 +95,38 @@ func Config__get_s3_bucket_for_flow(p_flow_name_str string,
 }
 
 //-------------------------------------------------
-func Config__get(p_config_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_config, *gf_core.Gf_error) {
+func ConfigGet(pConfigPathStr string,
+	pIPFSnodeHostStr string, // pServiceInfo *GFserviceInfo,
+	pRuntimeSys      *gf_core.RuntimeSys) (*GFconfig, *gf_core.GFerror) {
 
-	config_str, err := ioutil.ReadFile(p_config_path_str) 
+	configStr, err := ioutil.ReadFile(pConfigPathStr) 
 	if err != nil {
 		
-		gf_err := gf_core.Error__create("failed to read YAML config for gf_images",
+		gfErr := gf_core.Error__create("failed to read YAML config for gf_images",
 			"file_read_error",
-			map[string]interface{}{"config_path": p_config_path_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"config_path": pConfigPathStr,},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-
-	config := &GF_config{}
-	err = yaml.Unmarshal([]byte(config_str), config)
+	config := &GFconfig{}
+	
+	// YAML - parse config file
+	err = yaml.Unmarshal([]byte(configStr), config)
 	if err != nil {
 
-		gf_err := gf_core.Error__create("failed to parse YAML config for gf_images",
+		gfErr := gf_core.Error__create("failed to parse YAML config for gf_images",
 			"yaml_decode_error",
-			map[string]interface{}{"config_path": p_config_path_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"config_path": pConfigPathStr,},
+			err, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	return config, nil
+	//------------------------
+	// IPFS
+	config.IPFSnodeHostStr = pIPFSnodeHostStr
 
-	// flow_to_s3_bucket_map := flows__get_mapping_to_s3_buckets()
-	//
-	// config := &Config{
-	// 	Uploaded_images_s3bucket_str: "gf--uploaded--img",
-	// 	Images_flow_to_s3_bucket_map: flow_to_s3_bucket_map,
-	// }
-	// return config
+	//------------------------
+	
+	return config, nil
 }

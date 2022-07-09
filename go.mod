@@ -20,9 +20,12 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/ianoshen/uaparser v0.0.0-20170929040706-6aabb7c4e98c
+	github.com/ipfs/go-ipfs-api v0.3.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/libp2p/go-libp2p-metrics v0.0.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/multiformats/go-multiaddr-net v0.0.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/olivere/elastic v6.2.37+incompatible
 	github.com/parnurzeal/gorequest v0.2.16

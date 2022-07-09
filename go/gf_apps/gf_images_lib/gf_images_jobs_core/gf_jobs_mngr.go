@@ -129,7 +129,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 	p_images_thumbnails_store_local_dir_path_str string,
 	p_media_domain_str                           string,
 	p_lifecycle_callbacks                        *GF_jobs_lifecycle_callbacks,
-	pConfig                                      *gf_images_core.GF_config,
+	pConfig                                      *gf_images_core.GFconfig,
 	pS3info                                      *gf_core.GFs3Info,
 	pRuntimeSys                                  *gf_core.RuntimeSys) JobsMngr {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_mngr.Jobs_mngr__init()")
@@ -140,12 +140,18 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 	//               service initialization time
 	go func() {
 		
-		// METRICS
+		// METRICS 
 		metrics := Metrics__create()
 
 		//---------------------
 		// IMAGE_STORAGE
-		imageStorage, gfErr := gf_images_storage.Init("s3", pRuntimeSys)
+
+		storageConfig := &gf_images_storage.GFimageStorageConfig{
+			TypesToProvisionLst: []string{"s3", "ipfs"},
+			IPFSnodeHostStr:     pConfig.IPFSnodeHostStr,
+		}
+
+		imageStorage, gfErr := gf_images_storage.Init(storageConfig, pRuntimeSys)
 		if gfErr != nil {
 			panic(gfErr.Error)
 		}

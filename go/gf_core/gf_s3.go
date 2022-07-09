@@ -231,13 +231,12 @@ func S3uploadFile(p_target_file__local_path_str string,
 
 //---------------------------------------------------
 // S3__COPY_FILE
-func S3__copy_file(p_source_bucket_str string,
+func S3copyFile(p_source_bucket_str string,
 	p_source_file__s3_path_str string,
 	p_target_bucket_name_str   string,
 	p_target_file__s3_path_str string,
 	pS3info                    *GFs3Info,
 	pRuntimeSys                *Runtime_sys) *GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3__copy_file()")
 
 	fmt.Printf("source_bucket        - %s\n", p_source_bucket_str)
 	fmt.Printf("source_file__s3_path - %s\n", p_source_file__s3_path_str)

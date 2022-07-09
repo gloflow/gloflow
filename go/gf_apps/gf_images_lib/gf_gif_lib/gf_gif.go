@@ -72,7 +72,7 @@ type GFgif struct {
 }
 
 //--------------------------------------------------
-func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
+func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_image_source_url_str                        string,
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
@@ -84,7 +84,6 @@ func Process_and_upload(p_gf_image_id_str gf_images_core.GF_image_id,
 	pS3info                                       *gf_core.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Process_and_upload()")
 
 	gif, local_image_file_path_str, gf_err := Process(p_gf_image_id_str,
 		p_image_source_url_str,
@@ -159,14 +158,14 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	//               (to save on bandwidth and download the full GIF only when the 
 	//               user explicitly wants to view the full version)
 
-	frames_num_int, frames_s3_urls_lst, var_gf_err, frames_gf_errs_lst := gif__s3_upload_preview_frames(local_image_file_path_str,
+	frames_num_int, frames_s3_urls_lst, varGFerr, frames_gf_errs_lst := storePreviewFrames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_media_domain_str,
 		p_s3_bucket_name_str,
 		pS3info,
 		pRuntimeSys)
-	if var_gf_err != nil {
-		return nil, "", var_gf_err
+	if varGFerr != nil {
+		return nil, "", varGFerr
 	}
 
 
@@ -181,7 +180,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 	//-----------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gf_err := gif__get_dimensions(local_image_file_path_str, pRuntimeSys)
+	img_width_int, img_height_int, gf_err := getDimensions(local_image_file_path_str, pRuntimeSys)
 	if gf_err != nil {
 		return nil, "", gf_err
 	}
@@ -291,13 +290,13 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 }
 
 //--------------------------------------------------
-func gif__s3_upload_preview_frames(p_local_file_path_src string,
+func storePreviewFrames(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
 	pS3info                      *gf_core.GFs3Info,
 	pRuntimeSys                  *gf_core.Runtime_sys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.gif__s3_upload_preview_frames()")
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
 	max_num__of_preview_frames_int       := 10
 	frames_images_file_paths_lst, gf_err := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
@@ -365,7 +364,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gf_err := gif__get_dimensions(p_local_file_path_src, pRuntimeSys)
+	img_width_int, img_height_int, gf_err := getDimensions(p_local_file_path_src, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -472,17 +471,16 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 }
 
 //--------------------------------------------------
-func gif__get_dimensions(p_local_file_path_src string,
-	pRuntimeSys *gf_core.Runtime_sys) (int,int,*gf_core.GF_error) {
-	pRuntimeSys.Log_fun("FUN_ENTER","gf_gif.gif__get_dimensions()")
+func getDimensions(p_local_file_path_src string,
+	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
-	file,err := os.Open(p_local_file_path_src)
+	file, err := os.Open(p_local_file_path_src)
 	if err != nil {
 		gf_err := gf_core.Error__create("OS failed to open a file to get image dimensions",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-			err,"gf_gif_lib",pRuntimeSys)
-		return 0,0,gf_err
+			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			err, "gf_gif_lib", pRuntimeSys)
+		return 0, 0, gf_err
 	}
 
 	//---------------------
@@ -490,21 +488,21 @@ func gif__get_dimensions(p_local_file_path_src string,
 	//                               because a lot of the GIF images on the internet are somewhat broken
 	defer func() {
 		if r := recover(); r != nil {
-			_ = gf_core.Error__create("gif__get_dimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
+			_ = gf_core.Error__create("getDimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-				err,"gf_gif_lib",pRuntimeSys)
+				map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
 
-	gif,gif_err := gif.DecodeAll(file)
+	gif, gif_err := gif.DecodeAll(file)
 
 	if gif_err != nil {
 		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src":p_local_file_path_src,},
-			gif_err,"gf_gif_lib",pRuntimeSys)
-		return 0,0,gf_err
+			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			gif_err, "gf_gif_lib", pRuntimeSys)
+		return 0, 0, gf_err
 	}
 
 	//---------------------
@@ -534,7 +532,7 @@ func gif__get_dimensions(p_local_file_path_src string,
 
 //--------------------------------------------------
 func gif__get_hash(p_image_local_file_path_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.gif__get_hash()")
 
 	hash := sha256.New()
@@ -545,7 +543,7 @@ func gif__get_hash(p_image_local_file_path_str string,
 			"file_open_error",
 			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
 			err, "gf_gif_lib", pRuntimeSys)
-		return "",gf_err
+		return "", gf_err
 	}
 	defer f.Close()
 

@@ -96,7 +96,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		//               so we need to upload the new image to that gf_images S3 bucket as well.
 		// FIX!! - too much uploading, very inefficient, figure out a better way!
 
-		gf_err = gf_images_core.S3__store_gf_image(local_image_file_path_str,
+		gf_err = gf_images_core.S3storeImage(local_image_file_path_str,
 			gf_image_thumbs,
 			p_gf_images_s3_bucket_name_str,
 			p_runtime.S3_info,
@@ -182,7 +182,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 			// source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", source_gf_crawl_s3_bucket_str, s3_path_str))
 
-			gf_err := gf_core.S3__copy_file(source_gf_crawl_s3_bucket_str, // p_source_file__s3_path_str
+			gf_err := gf_core.S3copyFile(source_gf_crawl_s3_bucket_str, // p_source_file__s3_path_str
 				s3_path_str,
 				p_gf_images_s3_bucket_name_str, // p_target_bucket_name_str,
 				s3_path_str,                    // p_target_file__s3_path_str
