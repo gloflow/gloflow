@@ -30,29 +30,27 @@ import (
 )
 
 //-------------------------------------------------
-func run_job__local_imgs(p_images_to_process_lst []GF_image_local_to_process,
-	pFlowsNamesLst                               []string,
-	p_images_store_local_dir_path_str            string,
-	p_images_thumbnails_store_local_dir_path_str string,
-
-	// p_target_s3_bucket_name_str string, // S3 bucket to which processed images are stored in after this pipeline processing
-	pS3info                     *gf_core.GFs3Info,
-	pStorage                    *gf_images_storage.GFimageStorage,
-	pJobRuntime                 *GFjobRuntime,
-	pRuntimeSys                 *gf_core.Runtime_sys) []*gf_core.GF_error {
+func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
+	pFlowsNamesLst                        []string,
+	p_images_store_local_dir_path_str     string,
+	pImagesThumbnailsStoreLocalDirPathStr string,
+	pS3info                               *gf_core.GFs3Info,
+	pStorage                              *gf_images_storage.GFimageStorage,
+	pJobRuntime                           *GFjobRuntime,
+	pRuntimeSys                           *gf_core.Runtime_sys) []*gf_core.GFerror {
 	
 
 
 
-	gf_errors_lst := []*gf_core.GF_error{}
-	for _, image_to_process := range p_images_to_process_lst {
+	gf_errors_lst := []*gf_core.GFerror{}
+	for _, imageToProcess := range pImagesToProcessLst {
 		
 
-		fmt.Println(image_to_process)
+		fmt.Println(imageToProcess)
 
 
 
-		gf_err := job__pipeline__process_image_local(pFlowsNamesLst,
+		gf_err := pipelineProcessLocalImage(pFlowsNamesLst,
 			pS3info,
 			pStorage,
 			pRuntimeSys)
@@ -65,32 +63,32 @@ func run_job__local_imgs(p_images_to_process_lst []GF_image_local_to_process,
 }
 
 //-------------------------------------------------
-func run_job__uploaded_imgs(p_images_to_process_lst []GF_image_uploaded_to_process,
-	pFlowsNamesLst                               []string,
-	p_images_store_local_dir_path_str            string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	p_source_s3_bucket_name_str                  string, // S3_bucket to which the image was uploaded to
-	p_target_s3_bucket_name_str                  string, // S3 bucket to which processed images are stored in after this pipeline processing
-	pS3info                                      *gf_core.GFs3Info,
-	pStorage                                     *gf_images_storage.GFimageStorage,
-	pJobRuntime                                  *GFjobRuntime,
-	pRuntimeSys                                  *gf_core.RuntimeSys) []*gf_core.GFerror {
+func run_job__uploaded_imgs(pImagesToProcessLst []GF_image_uploaded_to_process,
+	pFlowsNamesLst                        []string,
+	p_images_store_local_dir_path_str     string,
+	pImagesThumbnailsStoreLocalDirPathStr string,
+	p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
+	p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
+	pS3info                               *gf_core.GFs3Info,
+	pStorage                              *gf_images_storage.GFimageStorage,
+	pJobRuntime                           *GFjobRuntime,
+	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__uploaded_imgs()")
 
-	gf_errors_lst := []*gf_core.GF_error{}
-	for _, image_to_process := range p_images_to_process_lst {
+	gfErrorsLst := []*gf_core.GF_error{}
+	for _, imageToProcess := range pImagesToProcessLst {
 
-		fmt.Println(image_to_process)
+		fmt.Println(imageToProcess)
 
-		gf_image_id_str  := image_to_process.GF_image_id_str
-		s3_file_path_str := image_to_process.S3_file_path_str
-		meta_map         := image_to_process.Meta_map
+		gf_image_id_str  := imageToProcess.GF_image_id_str
+		s3_file_path_str := imageToProcess.S3_file_path_str
+		meta_map         := imageToProcess.Meta_map
 
-		gf_err := job__pipeline__process_image_uploaded(gf_image_id_str,
+		gfErr := pipelineProcessUploadedImage(gf_image_id_str,
 			s3_file_path_str,
 			meta_map,
 			p_images_store_local_dir_path_str,
-			p_images_thumbnails_store_local_dir_path_str,
+			pImagesThumbnailsStoreLocalDirPathStr,
 			pFlowsNamesLst,
 			p_source_s3_bucket_name_str,
 			p_target_s3_bucket_name_str,
@@ -98,35 +96,34 @@ func run_job__uploaded_imgs(p_images_to_process_lst []GF_image_uploaded_to_proce
 			pStorage,
 			pJobRuntime,
 			pRuntimeSys)
-		if gf_err != nil {
-			gf_errors_lst = append(gf_errors_lst, gf_err)
+		if gfErr != nil {
+			gfErrorsLst = append(gfErrorsLst, gfErr)
 		}
 	}
 
-	return gf_errors_lst
+	return gfErrorsLst
 }
 
 //-------------------------------------------------
 // RUN_JOB__EXTERN_IMAGES
-func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
-	pFlowsNamesLst                               []string,
-	p_images_store_local_dir_path_str            string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	p_media_domain_str                           string,
-	p_s3_bucket_name_str                         string,
-	pS3info                                      *gf_core.GFs3Info,
-	pStorage                                     *gf_images_storage.GFimageStorage,
-	pJobRuntime                                  *GFjobRuntime,
-	pRuntimeSys                                  *gf_core.RuntimeSys) []*gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_run.run_job__extern_imgs()")
+func run_job__extern_imgs(pImagesToProcessLst []GF_image_extern_to_process,
+	pFlowsNamesLst                        []string,
+	p_images_store_local_dir_path_str     string,
+	pImagesThumbnailsStoreLocalDirPathStr string,
+	pMediaDomainStr                       string,
+	pS3bucketNameStr                      string,
+	pS3info                               *gf_core.GFs3Info,
+	pStorage                              *gf_images_storage.GFimageStorage,
+	pJobRuntime                           *GFjobRuntime,
+	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 
 	ctx := context.Background()
 
 	gf_errors_lst := []*gf_core.GF_error{}
-	for _, image_to_process := range p_images_to_process_lst {
+	for _, imageToProcess := range pImagesToProcessLst {
 
-		image_source_url_str      := image_to_process.Source_url_str // FIX!! rename source_url_str to origin_url_str
-		image_origin_page_url_str := image_to_process.Origin_page_url_str
+		image_source_url_str      := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
+		image_origin_page_url_str := imageToProcess.Origin_page_url_str
 
 		//--------------
 		// IMAGE_ID
@@ -196,8 +193,8 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 				flows_names_lst,
 				true, // p_create_new_db_img_bool
 
-				p_media_domain_str,
-				p_s3_bucket_name_str,
+				pMediaDomainStr,
+				pS3bucketNameStr,
 				pS3info,
 				ctx,
 				pRuntimeSys)
@@ -217,20 +214,20 @@ func run_job__extern_imgs(p_images_to_process_lst []GF_image_extern_to_process,
 		//-----------------------
 		// STANDARD
 		} else {
-			gfErr := job__pipeline__process_image_extern(image_id_str,
+			gfErr := pipelineProcessExternImage(image_id_str,
 				image_source_url_str,
 				image_origin_page_url_str,
 				p_images_store_local_dir_path_str,
-				p_images_thumbnails_store_local_dir_path_str,
+				pImagesThumbnailsStoreLocalDirPathStr,
 				pFlowsNamesLst,
-				p_s3_bucket_name_str,
+				pS3bucketNameStr,
 				pS3info,
 				pJobRuntime,
 				pRuntimeSys)
 
 			if gfErr != nil {
-				job_error_type_str := "image_process_error"
-				_ = job_error__send(job_error_type_str, gfErr, image_source_url_str, image_id_str,
+				jobErrorTypeStr := "image_process_error"
+				_ = job_error__send(jobErrorTypeStr, gfErr, image_source_url_str, image_id_str,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)

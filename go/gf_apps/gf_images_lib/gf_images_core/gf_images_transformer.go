@@ -71,7 +71,7 @@ func TransformImage(p_image_id_str GFimageID,
 	//--------------------------
 	// FINISH!! - this processing function uses "bimg", which uses
 	//            and underlying C lib "libvips"
-	gfErr := TransformProcessImageV2(pImageLocalFilePathStr,
+	gfErr = TransformProcessImageV2(pImageLocalFilePathStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

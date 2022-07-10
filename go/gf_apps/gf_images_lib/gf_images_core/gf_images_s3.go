@@ -27,7 +27,7 @@ import (
 )
 
 //---------------------------------------------------
-func S3__get_gf_image(pImageS3filePathStr string,
+func S3getImage(pImageS3filePathStr string,
 	pTargetFileLocalPathStr string,
 	pS3bucketNameStr string,
 	pS3info          *gf_core.GFs3Info,

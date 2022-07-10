@@ -26,6 +26,14 @@ import (
 )
 
 //---------------------------------------------------
+// OP_DEFs
+//---------------------------------------------------
+type GFgetOpDef struct {
+	ImageLocalFilePathStr string
+	TargetFilePathStr     string
+	S3bucketNameStr       string
+}
+
 type GFputFromLocalOpDef struct {
 	SourceLocalFilePathStr string
 	TargetFilePathStr      string
@@ -39,6 +47,9 @@ type GFcopyOpDef struct {
 	TargetFileS3bucketNameStr string
 }
 
+//---------------------------------------------------
+// VAR
+//---------------------------------------------------
 type GFimageStorage struct {
 	TypeStr string // "local_fs" | "s3" | "ipfs"
 	S3      *GFstorageS3
@@ -148,8 +159,9 @@ func FileCopy(pOpDef *GFcopyOpDef,
 
 //---------------------------------------------------
 // FILE_GET
-func FileGet(pStorage *GFimageStorage,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+func FileGet(pOpDef *GFgetOpDef,
+	pStorage    *GFimageStorage,
+	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 
 
