@@ -24,6 +24,7 @@ import (
 	"image"
 	"path"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_storage"
 )
 
 //---------------------------------------------------
@@ -99,44 +100,62 @@ func CreateThumbnails(p_image_id_str GFimageID,
 
 //---------------------------------------------------
 func StoreThumbnails(pImageThumbs *GF_image_thumbs,
-	pS3bucketNameStr string,
-	pS3info          *gf_core.GFs3Info,
-	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
+	pStorage    *gf_images_storage.GFimageStorage,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// IMPORTANT - for some image types (GIF) the system doesnt produce thumbs,
 	//             and therefore pImageThumbs is nil.
 	if pImageThumbs != nil {
 
+		//---------------------------------------------------
+		filePutFunc := func(pLocalFilePathStr string,
+			pTargetFilePathStr string) *gf_core.GFerror {
+
+			op := &gf_images_storage.GFputFromLocalOpDef{
+				SourceLocalFilePathStr: pLocalFilePathStr,
+				TargetFilePathStr:      pTargetFilePathStr,
+			}
+			if pStorage.TypeStr == "s3" {
+				op.S3bucketNameStr = pStorage.S3.ThumbsS3bucketNameStr
+			}
+			gfErr := gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
+			}
+			return nil
+		}
+
+		//---------------------------------------------------
+
 		//--------------------
 		// SMALL THUMB
-		small_t_path_str         := pImageThumbs.Small_local_file_path_str // thumbs_info_map["small__target_thumbnail_file_path_str"]
-		small_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(small_t_path_str))
-		s3_response_str,gf_err   := gf_core.S3uploadFile(small_t_path_str, small_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		smallTpathStr           := pImageThumbs.Small_local_file_path_str // thumbs_info_map["small__target_thumbnail_file_path_str"]
+		smallTtargetFilePathStr := fmt.Sprintf("/thumbnails/%s", path.Base(smallTpathStr))
+
+		gfErr := filePutFunc(smallTpathStr, smallTtargetFilePathStr)
+		if gfErr != nil {
+			return gfErr
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// MEDIUM THUMB
-		medium_t_path_str         := pImageThumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
-		medium_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(medium_t_path_str))
+		mediumTpathStr           := pImageThumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
+		mediumTtargetFilePathStr := fmt.Sprintf("/thumbnails/%s", path.Base(mediumTpathStr))
 
-		s3_response_str,gf_err = gf_core.S3uploadFile(medium_t_path_str, medium_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		gfErr = filePutFunc(mediumTpathStr, mediumTtargetFilePathStr)
+		if gfErr != nil {
+			return gfErr
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// LARGE THUMB
-		large_t_path_str         := pImageThumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
-		large_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(large_t_path_str))
-		s3_response_str,gf_err    = gf_core.S3uploadFile(large_t_path_str, large_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		largeTpathStr         := pImageThumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
+		largeTtargetFilePathStr := fmt.Sprintf("/thumbnails/%s",path.Base(largeTpathStr))
+
+		gfErr = filePutFunc(largeTpathStr, largeTtargetFilePathStr)
+		if gfErr != nil {
+			return gfErr
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 	}

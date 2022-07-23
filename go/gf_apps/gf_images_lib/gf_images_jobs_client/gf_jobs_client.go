@@ -32,11 +32,11 @@ import (
 // called "expected" because jobs are long-running processes, and they might fail at various stages
 // of their processing. in that case some of these result values will be satisfied, others will not.
 type GF_job_expected_output struct {
-	Image_id_str                      gf_images_core.GF_image_id `json:"image_id_str"`
-	Image_source_url_str              string                     `json:"image_source_url_str"`
-	Thumbnail_small_relative_url_str  string                     `json:"thumbnail_small_relative_url_str"`
-	Thumbnail_medium_relative_url_str string                     `json:"thumbnail_medium_relative_url_str"`
-	Thumbnail_large_relative_url_str  string                     `json:"thumbnail_large_relative_url_str"`
+	Image_id_str                      gf_images_core.GFimageID `json:"image_id_str"`
+	Image_source_url_str              string                   `json:"image_source_url_str"`
+	Thumbnail_small_relative_url_str  string                   `json:"thumbnail_small_relative_url_str"`
+	Thumbnail_medium_relative_url_str string                   `json:"thumbnail_medium_relative_url_str"`
+	Thumbnail_large_relative_url_str  string                   `json:"thumbnail_large_relative_url_str"`
 }
 
 //-------------------------------------------------
@@ -46,7 +46,7 @@ func Run_local_imgs(p_client_type_str string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_local_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          gf_images_jobs_core.JobsMngr,
-	p_runtime_sys           *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GF_job_expected_output, *gf_core.GF_error) {
+	p_runtime_sys           *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GF_job_expected_output, *gf_core.GFerror) {
 
 	job_cmd_str    := "start_job_local_imgs"
 	job_init_ch    := make(chan *gf_images_jobs_core.GFjobRunning)
@@ -96,7 +96,7 @@ func Run_uploaded_imgs(p_client_type_str string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_uploaded_to_process,
 	p_flows_names_lst       []string,
 	p_jobs_mngr_ch          gf_images_jobs_core.JobsMngr,
-	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GF_error) {
+	p_runtime_sys           *gf_core.Runtime_sys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_jobs_client.Run_uploaded_imgs()")
 
 	job_cmd_str    := "start_job_uploaded_imgs"

@@ -51,13 +51,25 @@ type GFcopyOpDef struct {
 // VAR
 //---------------------------------------------------
 type GFimageStorage struct {
-	TypeStr string // "local_fs" | "s3" | "ipfs"
+	TypeStr string // "local" | "s3" | "ipfs"
+	Local   *GFstorageLocal
 	S3      *GFstorageS3
 	IPFS    *GFstorageIPFS
 }
 
+type GFstorageLocal struct {
+	ThumbsDirPathStr        string
+	UploadsSourceDirPathStr string
+	UploadsTargetDirPathStr string
+	ExternImagesDirPathStr  string
+}
+
 type GFstorageS3 struct {
-	Info *gf_core.GFs3Info
+	Info                         *gf_core.GFs3Info
+	ThumbsS3bucketNameStr        string
+	UploadsSourceS3bucketNameStr string
+	UploadsTargetS3bucketNameStr string
+	ExternImagesS3bucketNameStr  string
 }
 
 type GFstorageIPFS struct {
@@ -67,6 +79,18 @@ type GFstorageIPFS struct {
 type GFimageStorageConfig struct {
 	TypesToProvisionLst []string // list of storage types to initialize
 	IPFSnodeHostStr     string
+
+	// LOCAL_DIRS
+	ThumbsDirPathStr        string
+	UploadsSourceDirPathStr string
+	UploadsTargetDirPathStr string
+	ExternImagesDirPathStr  string
+
+	// S3_BUCKETS
+	ThumbsS3bucketNameStr        string
+	UploadsSourceS3bucketNameStr string
+	UploadsTargetS3bucketNameStr string
+	ExternImagesS3bucketNameStr  string
 }
 
 //---------------------------------------------------
@@ -78,6 +102,19 @@ func Init(pConfig *GFimageStorageConfig,
 	for _, storageTypeStr := range pConfig.TypesToProvisionLst {
 		
 		switch storageTypeStr {
+
+		//-------------
+		// LOCAL
+		case "local":
+
+			localStorage := &GFstorageLocal{
+				ThumbsDirPathStr:        pConfig.ThumbsDirPathStr,
+				UploadsSourceDirPathStr: pConfig.UploadsSourceDirPathStr,
+				UploadsTargetDirPathStr: pConfig.UploadsTargetDirPathStr,
+				ExternImagesDirPathStr:  pConfig.ExternImagesDirPathStr,
+			}
+			storage.Local = localStorage
+
 		//-------------
 		// S3
 		case "s3":
@@ -88,7 +125,10 @@ func Init(pConfig *GFimageStorageConfig,
 				return nil, gfErr
 			}
 			S3storage := &GFstorageS3{
-				Info: S3info,
+				Info:                         S3info,
+				ThumbsS3bucketNameStr:        pConfig.ThumbsS3bucketNameStr,
+				UploadsSourceS3bucketNameStr: pConfig.UploadsSourceS3bucketNameStr,
+				UploadsTargetS3bucketNameStr: pConfig.UploadsTargetS3bucketNameStr,
 			}
 			storage.S3 = S3storage
 

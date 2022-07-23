@@ -127,6 +127,74 @@ type GF_image_new_info struct {
 }
 
 //---------------------------------------------------
+// DEPRECATED!!
+func storeImage(pImageLocalFilePathStr string,
+	pImageThumbs *GF_image_thumbs,
+	pStorage     *gf_images_storage.GFimageStorage,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	//--------------------
+	// UPLOAD FULL_SIZE (ORIGINAL) IMAGE
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// FIX!! - target filename of the original image should not be its original file name (that might collide accross domains or other images),
+	//         and instead should be the image ID with the file extension. 
+	//         it also makes it more difficult to find the image on S3 that is represented by an Gf_img given 
+	//         only the ID of that Gf_img
+	fileNameStr := path.Base(pImageLocalFilePathStr)
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	/* for files acquired by the Fetcher images are already uploaded 
+	with their Gf_img ID as their filename. so here the pImageLocalFilePathStr value is already 
+	the image ID.
+	
+	ADD!! - have an explicit p_target_fileNameStr argument, and dont derive it
+	        automatically from the the filename in pImageLocalFilePathStr */
+
+	targetFilePathStr := fileNameStr
+
+	op := &gf_images_storage.GFputFromLocalOpDef{
+		SourceLocalFilePathStr: pImageLocalFilePathStr,
+		TargetFilePathStr:      targetFilePathStr,
+	}
+	if pStorage.TypeStr == "s3" {
+		op.S3bucketNameStr = pStorage.S3.ThumbsS3bucketNameStr
+	}
+	gfErr := gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+	s3_response_str, gfErr := gf_core.S3uploadFile(pImageLocalFilePathStr,
+		targetFilePathStr,
+		pS3bucketNameStr,
+		pS3info,
+		pRuntimeSys)
+
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//--------------------
+	// UPLOAD THUMBS
+
+	gfErr = StoreThumbnails(pImageThumbs,
+		pStorage,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//--------------------
+	return nil
+}
+
+//---------------------------------------------------
 func ImageCreateNew(p_image_info *GF_image_new_info,
 	pCtx       context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {

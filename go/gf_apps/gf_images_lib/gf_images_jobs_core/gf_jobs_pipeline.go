@@ -51,8 +51,8 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
-	pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
-	pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
+	// pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
+	// pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                      *gf_core.GFs3Info,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
@@ -68,10 +68,13 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	// NEW_STORAGE
 	if pJobRuntime.useNewStorageEngineBool {
 
+		imageFilePathStr := pS3filePathStr
 		op := &gf_images_storage.GFgetOpDef{
 			ImageLocalFilePathStr: imageLocalFilePathStr,
-			TargetFilePathStr:     pS3filePathStr,
-			S3bucketNameStr:       pSourceS3bucketNameStr,
+			TargetFilePathStr:     imageFilePathStr,
+		}
+		if pStorage.TypeStr == "s3" {
+			op.S3bucketNameStr = pStorage.S3.UploadsSourceS3bucketNameStr // pSourceS3bucketNameStr
 		}
 		gfErr := gf_images_storage.FileGet(op,
 			pStorage,
@@ -88,7 +91,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 		//               all external image upload traffic going through GF servers.
 		gfErr := gf_images_core.S3getImage(pS3filePathStr,
 			imageLocalFilePathStr,
-			pSourceS3bucketNameStr,
+			pStorage.S3.UploadsSourceS3bucketNameStr, // pSourceS3bucketNameStr,
 			pS3info,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -118,41 +121,43 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 
 	//-----------------------
 	// SAVE_IMAGE_TO_FS
-	
-	// NEW_STORAGE
-	if pJobRuntime.useNewStorageEngineBool {
+		
+	// if the source and target S3 buckets are not the same for processing this image then
+	// then copy this image from the source to the target bucket.
+	// use the same image ID that is the name of the image.
+	if pStorage.S3.UploadsSourceS3bucketNameStr != pStorage.S3.UploadsTargetS3bucketNameStr {
 
+		// NEW_STORAGE
+		if pJobRuntime.useNewStorageEngineBool {
 
-		op := &gf_images_storage.GFcopyOpDef{
-			SourceFilePathStr:         pS3filePathStr,
-			SourceFileS3bucketNameStr: pSourceS3bucketNameStr,
-			TargetFilePathStr:         pS3filePathStr,
-			TargetFileS3bucketNameStr: pTargetS3bucketNameStr,
-		}
-		gfErr := gf_images_storage.FileCopy(op,
-			pStorage,
-			pRuntimeSys)
-		if gfErr != nil {
-			error_type_str := "s3_store_error"
-			job_error__send(error_type_str, gfErr,
-				"", // p_image_source_url_str,
-				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
-				
-			return gfErr
-		}
+			imageFilePathStr := pS3filePathStr
+			op := &gf_images_storage.GFcopyOpDef{
+				SourceFilePathStr: imageFilePathStr,
+				TargetFilePathStr: imageFilePathStr,
+			}
+			if pStorage.TypeStr == "s3" {
+				op.SourceFileS3bucketNameStr = pStorage.S3.UploadsSourceS3bucketNameStr
+				op.TargetFileS3bucketNameStr = pStorage.S3.UploadsTargetS3bucketNameStr
+			}
+			gfErr := gf_images_storage.FileCopy(op,
+				pStorage,
+				pRuntimeSys)
+			if gfErr != nil {
+				error_type_str := "s3_store_error"
+				job_error__send(error_type_str, gfErr,
+					"", // p_image_source_url_str,
+					pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
+					
+				return gfErr
+			}
 
-	} else {
-		// LEGACY
-	
-		// if the source and target S3 buckets are not the same for processing this image then
-		// then copy this image from the source to the target bucket.
-		// use the same image ID that is the name of the image.
-		if pSourceS3bucketNameStr != pTargetS3bucketNameStr {
+		} else {
+			// LEGACY
 
 			// S3_FILE_COPY
-			gfErr := gf_core.S3copyFile(pSourceS3bucketNameStr,
+			gfErr := gf_core.S3copyFile(pStorage.S3.UploadsSourceS3bucketNameStr, // pSourceS3bucketNameStr,
 				pS3filePathStr,
-				pTargetS3bucketNameStr,
+				pStorage.S3.UploadsTargetS3bucketNameStr, // pTargetS3bucketNameStr,
 				pS3filePathStr,
 				pS3info,
 				pRuntimeSys)
@@ -165,10 +170,24 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 				return gfErr
 			}
 		}
+		
+	}
+
+	// NEW_STORAGE
+	if pJobRuntime.useNewStorageEngineBool {
+
+
+		gfErr := gf_images_core.StoreThumbnails(imageThumbs, pStorage, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+	} else {
+		// LEGACY
 
 		// STORE__IMAGE_THUMBS
 		gfErr := gf_images_core.S3storeThumbnails(imageThumbs,
-			pTargetS3bucketNameStr,
+			pStorage.S3.UploadsTargetS3bucketNameStr, // pTargetS3bucketNameStr,
 			pS3info,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -179,6 +198,8 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 			return gfErr
 		}
 	}
+
+	
 
 	update_msg := JobUpdateMsg{
 		Name_str:             "image_persist",

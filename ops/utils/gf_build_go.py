@@ -69,7 +69,7 @@ def run(p_name_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = True,
     p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str)),
-    p_go_get_bool = True):
+    p_go_get_bool = False):
     assert isinstance(p_static_bool, bool)
     
     print("")
@@ -114,9 +114,12 @@ def run(p_name_str,
 
     # GO_GET
     if p_go_get_bool:
+
         _, _, exit_code_int = gf_core_cli.run(f"{LD_paths_str} go get -u")
         print("")
         print("")
+
+    
 
     #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
@@ -125,6 +128,7 @@ def run(p_name_str,
     #                  build time a few times larger then regular, so slow for dev.
     # "-ldflags '-s'" - omit the symbol table and debug information.
 
+    c_str = None
     if p_static_bool:
         
         print(f"{fg('yellow')}STATIC LINKING{attr(0)} --")
