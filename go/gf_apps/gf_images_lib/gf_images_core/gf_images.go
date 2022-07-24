@@ -108,7 +108,7 @@ type GF_image_thumbs struct {
 	Large_local_file_path_str  string
 }
 
-type GF_image_new_info struct {
+type GFimageNewInfo struct {
 	Id_str                         GFimageID
 	Title_str                      string
 	Flows_names_lst                []string
@@ -127,104 +127,36 @@ type GF_image_new_info struct {
 }
 
 //---------------------------------------------------
-// DEPRECATED!!
-func storeImage(pImageLocalFilePathStr string,
-	pImageThumbs *GF_image_thumbs,
-	pStorage     *gf_images_storage.GFimageStorage,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	//--------------------
-	// UPLOAD FULL_SIZE (ORIGINAL) IMAGE
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// FIX!! - target filename of the original image should not be its original file name (that might collide accross domains or other images),
-	//         and instead should be the image ID with the file extension. 
-	//         it also makes it more difficult to find the image on S3 that is represented by an Gf_img given 
-	//         only the ID of that Gf_img
-	fileNameStr := path.Base(pImageLocalFilePathStr)
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	/* for files acquired by the Fetcher images are already uploaded 
-	with their Gf_img ID as their filename. so here the pImageLocalFilePathStr value is already 
-	the image ID.
-	
-	ADD!! - have an explicit p_target_fileNameStr argument, and dont derive it
-	        automatically from the the filename in pImageLocalFilePathStr */
-
-	targetFilePathStr := fileNameStr
-
-	op := &gf_images_storage.GFputFromLocalOpDef{
-		SourceLocalFilePathStr: pImageLocalFilePathStr,
-		TargetFilePathStr:      targetFilePathStr,
-	}
-	if pStorage.TypeStr == "s3" {
-		op.S3bucketNameStr = pStorage.S3.ThumbsS3bucketNameStr
-	}
-	gfErr := gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-
-	s3_response_str, gfErr := gf_core.S3uploadFile(pImageLocalFilePathStr,
-		targetFilePathStr,
-		pS3bucketNameStr,
-		pS3info,
-		pRuntimeSys)
-
-	if gfErr != nil {
-		return gfErr
-	}
-
-	//--------------------
-	// UPLOAD THUMBS
-
-	gfErr = StoreThumbnails(pImageThumbs,
-		pStorage,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	//--------------------
-	return nil
-}
-
-//---------------------------------------------------
-func ImageCreateNew(p_image_info *GF_image_new_info,
+func ImageCreateNew(pImageInfo *GFimageNewInfo,
 	pCtx       context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	image := &GF_image{
-		Id_str:                         p_image_info.Id_str,
+		Id_str:                         pImageInfo.Id_str,
 		T_str:                          "img",
-		Creation_unix_time_f:           creation_unix_time_f,
-		Client_type_str:                p_image_info.Image_client_type_str,
-		Title_str:                      p_image_info.Title_str,
-		Flows_names_lst:                p_image_info.Flows_names_lst,
-		Origin_url_str:                 p_image_info.Origin_url_str,
-		Origin_page_url_str:            p_image_info.Origin_page_url_str,
-		Original_file_internal_uri_str: p_image_info.Original_file_internal_uri_str,
-		Thumbnail_small_url_str:        p_image_info.Thumbnail_small_url_str,
-		Thumbnail_medium_url_str:       p_image_info.Thumbnail_medium_url_str,
-		Thumbnail_large_url_str:        p_image_info.Thumbnail_large_url_str,
-		Format_str:                     p_image_info.Format_str,
-		Width_int:                      p_image_info.Width_int,
-		Height_int:                     p_image_info.Height_int,
+		Creation_unix_time_f:           creationUNIXtimeF,
+		Client_type_str:                pImageInfo.Image_client_type_str,
+		Title_str:                      pImageInfo.Title_str,
+		Flows_names_lst:                pImageInfo.Flows_names_lst,
+		Origin_url_str:                 pImageInfo.Origin_url_str,
+		Origin_page_url_str:            pImageInfo.Origin_page_url_str,
+		Original_file_internal_uri_str: pImageInfo.Original_file_internal_uri_str,
+		Thumbnail_small_url_str:        pImageInfo.Thumbnail_small_url_str,
+		Thumbnail_medium_url_str:       pImageInfo.Thumbnail_medium_url_str,
+		Thumbnail_large_url_str:        pImageInfo.Thumbnail_large_url_str,
+		Format_str:                     pImageInfo.Format_str,
+		Width_int:                      pImageInfo.Width_int,
+		Height_int:                     pImageInfo.Height_int,
 
-		Meta_map: p_image_info.Meta_map,
+		Meta_map: pImageInfo.Meta_map,
 	}
 
 	//----------------------------------
 	// DB PERSIST
-	db_gf_err := DB__put_image(image, pCtx, pRuntimeSys)
-	if db_gf_err != nil {
-		return nil, db_gf_err
+	gfErr := DB__put_image(image, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//----------------------------------
@@ -235,45 +167,45 @@ func ImageCreateNew(p_image_info *GF_image_new_info,
 //---------------------------------------------------
 // DEPRECATED!! - use Image__create_new and its structured input
 
-func Image__create(p_image_info_map map[string]interface{},
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GF_error) {
+func Image__create(pImageInfoMap map[string]interface{},
+	pCtx         context.Context,
+	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create()")
 	
-	new_image_info_map, gf_err := Image__verify_image_info(p_image_info_map, p_runtime_sys)
+	newImageInfoMap, gf_err := Image__verify_image_info(pImageInfoMap, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	title_str       := new_image_info_map["title_str"].(string)
-	flows_names_lst := new_image_info_map["flows_names_lst"].([]string)
-	gf_image_id_str := GFimageID(new_image_info_map["id_str"].(string))
+	title_str       := newImageInfoMap["title_str"].(string)
+	flows_names_lst := newImageInfoMap["flows_names_lst"].([]string)
+	gf_image_id_str := GFimageID(newImageInfoMap["id_str"].(string))
 
-	gf_image := &GF_image{
+	image := &GF_image{
 		Id_str:                         gf_image_id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           float64(time.Now().UnixNano())/1000000000.0,
-		Client_type_str:                new_image_info_map["image_client_type_str"].(string),
+		Client_type_str:                newImageInfoMap["image_client_type_str"].(string),
 		Title_str:                      title_str,
 		Flows_names_lst:                flows_names_lst,
-		Origin_url_str:                 new_image_info_map["origin_url_str"].(string),
-		Origin_page_url_str:            new_image_info_map["origin_page_url_str"].(string),
-		Original_file_internal_uri_str: new_image_info_map["original_file_internal_uri_str"].(string),
-		Thumbnail_small_url_str:        new_image_info_map["thumbnail_small_url_str"].(string),
-		Thumbnail_medium_url_str:       new_image_info_map["thumbnail_medium_url_str"].(string),
-		Thumbnail_large_url_str:        new_image_info_map["thumbnail_large_url_str"].(string),
-		Format_str:                     new_image_info_map["format_str"].(string),
+		Origin_url_str:                 newImageInfoMap["origin_url_str"].(string),
+		Origin_page_url_str:            newImageInfoMap["origin_page_url_str"].(string),
+		Original_file_internal_uri_str: newImageInfoMap["original_file_internal_uri_str"].(string),
+		Thumbnail_small_url_str:        newImageInfoMap["thumbnail_small_url_str"].(string),
+		Thumbnail_medium_url_str:       newImageInfoMap["thumbnail_medium_url_str"].(string),
+		Thumbnail_large_url_str:        newImageInfoMap["thumbnail_large_url_str"].(string),
+		Format_str:                     newImageInfoMap["format_str"].(string),
 	}
 	
 	//----------------------------------
 	// DB PERSIST
 
-	db_gf_err := DB__put_image(gf_image, p_ctx, p_runtime_sys)
+	db_gf_err := DB__put_image(image, pCtx, p_runtime_sys)
 	if db_gf_err != nil {
 		return nil, db_gf_err
 	}
 	
 	//----------------------------------
 
-	return gf_image, nil
+	return image, nil
 }

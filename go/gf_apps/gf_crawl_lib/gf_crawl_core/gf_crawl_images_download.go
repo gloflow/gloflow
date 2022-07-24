@@ -117,7 +117,7 @@ func images__stage__download_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image__download(p_image *Gf_crawler_page_image,
+func image__download(pImage *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str string,
 	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__download()")
@@ -130,7 +130,7 @@ func image__download(p_image *Gf_crawler_page_image,
 	//-------------------
 	// DOWNLOAD
 	// IMPORTANT!! - this creates a new gf_images ID, from the image URL
-	local_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.Fetcher__get_extern_image(p_image.Url_str,
+	localImageFilePathStr, imageIDstr, gfErr := gf_images_core.FetcherGetExternImage(pImage.Url_str,
 		p_images_store_local_dir_path_str,
 
 		// IMPORTANT!! - dont add any time delay, instead download images as fast as possible
@@ -138,26 +138,26 @@ func image__download(p_image *Gf_crawler_page_image,
 		//               by the users browser in rapid succession, so no need to simulate user delay
 		false, // p_random_time_delay_bool
 		p_runtime_sys)
-	if gf_err != nil {
-		return "",gf_err
+	if gfErr != nil {
+		return "", gfErr
 	}
 
 	//-------------------
 	// DB_UPDATE
-	gf_err = image__db_mark_as_downloaded(p_image, p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	gfErr = image__db_mark_as_downloaded(pImage, p_runtime_sys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 
-	gf_err = image__db_set_gf_image_id(gf_image_id_str, p_image, p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	gfErr = image__db_set_gf_image_id(imageIDstr, pImage, p_runtime_sys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 	
 	//-------------------
 
-	p_image.Downloaded_bool = true
-	p_image.Gf_image_id_str = gf_image_id_str
+	pImage.Downloaded_bool = true
+	pImage.Gf_image_id_str = imageIDstr
 
-	return local_image_file_path_str, nil
+	return localImageFilePathStr, nil
 }

@@ -107,7 +107,7 @@ func runJobUploadedImgs(pImagesToProcessLst []GF_image_uploaded_to_process,
 // RUN_JOB__EXTERN_IMAGES
 func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	pFlowsNamesLst                        []string,
-	p_images_store_local_dir_path_str     string,
+	pImagesStoreLocalDirPathStr     string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	pMediaDomainStr                       string,
 	pS3bucketNameStr                      string,
@@ -121,16 +121,16 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	gfErrorsLst := []*gf_core.GFerror{}
 	for _, imageToProcess := range pImagesToProcessLst {
 
-		image_source_url_str      := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
-		image_origin_page_url_str := imageToProcess.Origin_page_url_str
+		imageSourceURLstr      := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
+		imageOriginPageURLstr := imageToProcess.Origin_page_url_str
 
 		//--------------
 		// IMAGE_ID
-		imageIDstr, gfErr := gf_images_core.Image_ID__create_from_url(image_source_url_str, pRuntimeSys)
+		imageIDstr, gfErr := gf_images_core.Image_ID__create_from_url(imageSourceURLstr, pRuntimeSys)
 
 		if gfErr != nil {
-			job_error_type_str := "create_image_id_error"
-			_ = job_error__send(job_error_type_str, gfErr, image_source_url_str,
+			jobErrorTypeStr := "create_image_id_error"
+			_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr,
 				imageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
@@ -141,15 +141,15 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		
 		//--------------
 
-		pRuntimeSys.Log_fun("INFO", "PROCESSING IMAGE - "+image_source_url_str)
+		pRuntimeSys.Log_fun("INFO", "PROCESSING IMAGE - "+imageSourceURLstr)
 
 		// IMPORTANT!! - 'ok' is '_' because Im already calling Get_image_ext_from_url()
 		//               in Image__create_id_from_url()
-		extStr, gfErr := gf_images_core.GetImageExtFromURL(image_source_url_str, pRuntimeSys)
+		extStr, gfErr := gf_images_core.GetImageExtFromURL(imageSourceURLstr, pRuntimeSys)
 		
 		if gfErr != nil {
-			job_error_type_str := "get_image_ext_error"
-			_ = job_error__send(job_error_type_str, gfErr, image_source_url_str, imageIDstr,
+			jobErrorTypeStr := "get_image_ext_error"
+			_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
 				pRuntimeSys)
@@ -185,9 +185,9 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 			//-----------------
 
 			_, gfErr := gf_gif_lib.ProcessAndUpload("", // p_gf_imageIDstr
-				image_source_url_str,
-				image_origin_page_url_str,
-				p_images_store_local_dir_path_str,
+				imageSourceURLstr,
+				imageOriginPageURLstr,
+				pImagesStoreLocalDirPathStr,
 				pJobRuntime.job_client_type_str,
 				flowsNamesLst,
 				true, // p_create_new_db_img_bool
@@ -199,8 +199,8 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 				pRuntimeSys)
 
 			if gfErr != nil {
-				job_error_type_str := "gif_process_and_upload_error"
-				_ = job_error__send(job_error_type_str, gfErr, image_source_url_str, imageIDstr,
+				jobErrorTypeStr := "gif_process_and_upload_error"
+				_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)
@@ -214,19 +214,20 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		// STANDARD
 		} else {
 			gfErr := pipelineProcessExternImage(imageIDstr,
-				image_source_url_str,
-				image_origin_page_url_str,
-				p_images_store_local_dir_path_str,
+				imageSourceURLstr,
+				imageOriginPageURLstr,
+				pImagesStoreLocalDirPathStr,
 				pImagesThumbnailsStoreLocalDirPathStr,
 				pFlowsNamesLst,
 				pS3bucketNameStr,
 				pS3info,
+				pStorage,
 				pJobRuntime,
 				pRuntimeSys)
 
 			if gfErr != nil {
 				jobErrorTypeStr := "image_process_error"
-				_ = job_error__send(jobErrorTypeStr, gfErr, image_source_url_str, imageIDstr,
+				_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)

@@ -24,6 +24,7 @@ package gf_images_jobs_core
 import (
 	"fmt"
 	"context"
+	"path"
 	"path/filepath"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -228,36 +229,37 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 //-------------------------------------------------
 // PIPELINE__PROCESS_EXTERN_IMAGE
 func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
-	p_image_source_url_str       string,
+	pImageSourceURLstr       string,
 	p_image_origin_page_url_str  string,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
 	pS3bucketNameStr             string,
 	pS3info                      *gf_core.GFs3Info,
+	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_extern()")
 	
 	//-----------------------
 	// FETCH_IMAGE
-	image_local_file_path_str, _, gf_f_err := gf_images_core.Fetcher__get_extern_image(p_image_source_url_str,
+	imageLocalFilePathStr, _, gfErr := gf_images_core.FetcherGetExternImage(pImageSourceURLstr,
 		pImagesStoreLocalDirPathStr,
 		false, // p_random_time_delay_bool
 		pRuntimeSys)
-	if gf_f_err != nil {
+	if gfErr != nil {
 		error_type_str := "fetch_error"
-		job_error__send(error_type_str, gf_f_err, p_image_source_url_str, pImageIDstr, 
+		job_error__send(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr, 
 			pJobRuntime.job_id_str,
 			pJobRuntime.job_updates_ch, pRuntimeSys)
-		return gf_f_err
+		return gfErr
 	}
 
 	updateMsg := JobUpdateMsg{
 		Name_str:             "image_fetch",
 		Type_str:             JOB_UPDATE_TYPE__OK,
 		Image_id_str:         pImageIDstr,
-		Image_source_url_str: p_image_source_url_str,
+		Image_source_url_str: pImageSourceURLstr,
 	}
 
 	pJobRuntime.job_updates_ch <- updateMsg
@@ -268,17 +270,17 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	// FIX!! - this should be passed it from outside this function
 	metaMap := map[string]interface{}{}
 
-	gf_image_thumbs, gf_t_err := jobTransform(pImageIDstr,
+	imageThumbs, gfErr := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
-		p_image_source_url_str,
+		pImageSourceURLstr,
 		p_image_origin_page_url_str,
 		metaMap,
-		image_local_file_path_str,
+		imageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
-	if gf_t_err != nil {
-		return gf_t_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//-----------------------
@@ -287,21 +289,65 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	// NEW_STORAGE
 	if pJobRuntime.useNewStorageEngineBool {
 
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// FIX!! - target filename of the original image should not be its original file name (that might collide accross domains or other images),
+		//         and instead should be the image ID with the file extension. 
+		//         it also makes it more difficult to find the image on S3 that is represented by an Gf_img given 
+		//         only the ID of that Gf_img
+		fileNameStr := path.Base(imageLocalFilePathStr)
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		/* for files acquired by the Fetcher images are already uploaded 
+		with their Gf_img ID as their filename. so here the pImageLocalFilePathStr value is already 
+		the image ID.
+		
+		ADD!! - have an explicit p_target_fileNameStr argument, and dont derive it
+				automatically from the the filename in pImageLocalFilePathStr */
+		targetFilePathStr := fileNameStr
+
+		op := &gf_images_storage.GFputFromLocalOpDef{
+			SourceLocalFilePathStr: imageLocalFilePathStr,
+			TargetFilePathStr:      targetFilePathStr,
+		}
+		if pStorage.TypeStr == "s3" {
+			op.S3bucketNameStr = pStorage.S3.ExternImagesS3bucketNameStr
+		}
+		gfErr := gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		//--------------------
+		// STORE THUMBS
+
+		gfErr = gf_images_core.StoreThumbnails(imageThumbs,
+			pStorage,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+		//--------------------
+		
 	} else {
 		// LEGACY
 	
-		gf_s3_err := gf_images_core.S3storeImage(image_local_file_path_str,
-			gf_image_thumbs,
+		gfErr := gf_images_core.S3storeImage(imageLocalFilePathStr,
+			imageThumbs,
 			pS3bucketNameStr,
 			pS3info,
 			pRuntimeSys)
-		if gf_s3_err != nil {
+		if gfErr != nil {
 			error_type_str := "s3_store_error"
-			job_error__send(error_type_str, gf_s3_err, p_image_source_url_str, pImageIDstr,
+			job_error__send(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
 				pRuntimeSys)
-			return gf_s3_err
+			return gfErr
 		}
 	}
 
@@ -309,7 +355,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
 		Image_id_str:         pImageIDstr,
-		Image_source_url_str: p_image_source_url_str,
+		Image_source_url_str: pImageSourceURLstr,
 	}
 	pJobRuntime.job_updates_ch <- updateMsg
 
@@ -319,8 +365,8 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		Name_str:             "image_done",
 		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
 		Image_id_str:         pImageIDstr,
-		Image_source_url_str: p_image_source_url_str,
-		Image_thumbs:         gf_image_thumbs,
+		Image_source_url_str: pImageSourceURLstr,
+		Image_thumbs:         imageThumbs,
 	}
 	pJobRuntime.job_updates_ch <- updateMsg
 

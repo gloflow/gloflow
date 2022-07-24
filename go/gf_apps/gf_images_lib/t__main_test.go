@@ -252,7 +252,7 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 
 	//---------------
 
-	image_new_info := &gf_images_core.Gf_image_new_info{
+	image_new_info := &gf_images_core.GFimageNewInfo{
 		Id_str:                         test__image_id_str,
 		Title_str:                      test__image_title_str,
 		Flows_names_lst:                p_test_image_data.image_flows_names_lst,

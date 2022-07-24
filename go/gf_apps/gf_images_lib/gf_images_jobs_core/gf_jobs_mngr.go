@@ -151,7 +151,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 			ThumbsS3bucketNameStr:        pConfig.Images_flow_to_s3_bucket_map["general"],
 			UploadsSourceS3bucketNameStr: pConfig.Uploaded_images_s3_bucket_str,
 			UploadsTargetS3bucketNameStr: pConfig.Images_flow_to_s3_bucket_map["general"],
-			ExternImgsS3bucketNameStr:    pConfig.Images_flow_to_s3_bucket_map["general"],
+			ExternImagesS3bucketNameStr:  pConfig.Images_flow_to_s3_bucket_map["general"],
 		}
 
 		imageStorage, gfErr := gf_images_storage.Init(storageConfig, pRuntimeSys)
@@ -161,15 +161,15 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 		//---------------------
 		
-		running_jobs_map := map[string]chan JobUpdateMsg{}
+		runningJobsMap := map[string]chan JobUpdateMsg{}
 
 		// listen to messages
 		for {
-			job_msg := <- jobsMngrCh
+			jobMsg := <- jobsMngrCh
 
 			// IMPORTANT!! - only one job is processed per jobs_mngr.
 			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
-			switch job_msg.Cmd_str {
+			switch jobMsg.Cmd_str {
 
 
 				//------------------------
@@ -181,25 +181,25 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_local_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
-						job_msg.Job_updates_ch,
+					running_job, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+						jobMsg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					running_jobs_map[running_job.Id_str] = job_msg.Job_updates_ch
+					runningJobsMap[running_job.Id_str] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
-					job_msg.Job_init_ch <- running_job
+					jobMsg.Job_init_ch <- running_job
 
 					//------------------------
 					/*// S3_BUCKETS
 
 					var target_s3_bucket_name_str string
-					if len(job_msg.Flows_names_lst) > 0 {
-						main_flow_str := job_msg.Flows_names_lst[0]
+					if len(jobMsg.Flows_names_lst) > 0 {
+						main_flow_str := jobMsg.Flows_names_lst[0]
 
 						// check if the specified flow has an associated s3 bucket
 						var ok bool
@@ -215,12 +215,12 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 					job_runtime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
-						job_client_type_str: job_msg.Client_type_str,
-						job_updates_ch:      job_msg.Job_updates_ch,
+						job_client_type_str: jobMsg.Client_type_str,
+						job_updates_ch:      jobMsg.Job_updates_ch,
 					}
 
-					run_job_gf_errs_lst := run_job__local_imgs(job_msg.Images_local_to_process_lst,
-						job_msg.Flows_names_lst,
+					run_job_gf_errs_lst := run_job__local_imgs(jobMsg.Images_local_to_process_lst,
+						jobMsg.Flows_names_lst,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 						// target_s3_bucket_name_str,
@@ -232,7 +232,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					//------------------------
 					// JOB_STATUS
 					var job_status_str job_status_val
-					if len(run_job_gf_errs_lst) == len(job_msg.Images_uploaded_to_process_lst) {
+					if len(run_job_gf_errs_lst) == len(jobMsg.Images_uploaded_to_process_lst) {
 						job_status_str = JOB_STATUS__FAILED
 					} else if len(run_job_gf_errs_lst) > 0 {
 						job_status_str = JOB_STATUS__FAILED_PARTIAL
@@ -272,18 +272,18 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
-						job_msg.Job_updates_ch,
+					running_job, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+						jobMsg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					running_jobs_map[running_job.Id_str] = job_msg.Job_updates_ch
+					runningJobsMap[running_job.Id_str] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
-					job_msg.Job_init_ch <- running_job
+					jobMsg.Job_init_ch <- running_job
 
 					// //------------------------
 					// // S3_BUCKETS
@@ -299,12 +299,12 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 					jobRuntime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
-						job_client_type_str: job_msg.Client_type_str,
-						job_updates_ch:      job_msg.Job_updates_ch,
+						job_client_type_str: jobMsg.Client_type_str,
+						job_updates_ch:      jobMsg.Job_updates_ch,
 					}
 
-					run_job_gf_errs_lst := runJobUploadedImgs(job_msg.Images_uploaded_to_process_lst,
-						job_msg.Flows_names_lst,
+					run_job_gf_errs_lst := runJobUploadedImgs(jobMsg.Images_uploaded_to_process_lst,
+						jobMsg.Flows_names_lst,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 						// imageStorage.S3.UploadsSourceS3bucketNameStr, // source_s3_bucket_name_str,
@@ -317,7 +317,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					//------------------------
 					// JOB_STATUS
 					var jobStatusStr job_status_val
-					if len(run_job_gf_errs_lst) == len(job_msg.Images_uploaded_to_process_lst) {
+					if len(run_job_gf_errs_lst) == len(jobMsg.Images_uploaded_to_process_lst) {
 						jobStatusStr = JOB_STATUS__FAILED
 					} else if len(run_job_gf_errs_lst) > 0 {
 						jobStatusStr = JOB_STATUS__FAILED_PARTIAL
@@ -342,18 +342,18 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_extern_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := JobsMngrCreateRunningJob(job_msg.Client_type_str,
-						job_msg.Job_updates_ch,
+					running_job, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+						jobMsg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
 						continue
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					running_jobs_map[running_job.Id_str] = job_msg.Job_updates_ch
+					runningJobsMap[running_job.Id_str] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
-					job_msg.Job_init_ch <- running_job
+					jobMsg.Job_init_ch <- running_job
 					
 					//------------------------
 					// ADD!! - due to legacy reasons the "general" flow is still used as the main flow
@@ -366,12 +366,12 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 					job_runtime := &GFjobRuntime{
 						job_id_str:          running_job.Id_str,
-						job_client_type_str: job_msg.Client_type_str,
-						job_updates_ch:      job_msg.Job_updates_ch,
+						job_client_type_str: jobMsg.Client_type_str,
+						job_updates_ch:      jobMsg.Job_updates_ch,
 					}
 
-					run_job_gf_errs_lst := runJobExternImages(job_msg.Images_extern_to_process_lst,
-						job_msg.Flows_names_lst,
+					run_job_gf_errs_lst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
+						jobMsg.Flows_names_lst,
 						p_images_store_local_dir_path_str,
 						p_images_thumbnails_store_local_dir_path_str,
 
@@ -385,7 +385,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					//------------------------
 					// JOB_STATUS
 					var job_status_str job_status_val
-					if len(run_job_gf_errs_lst) == len(job_msg.Images_extern_to_process_lst) {
+					if len(run_job_gf_errs_lst) == len(jobMsg.Images_extern_to_process_lst) {
 						job_status_str = JOB_STATUS__FAILED
 					} else if len(run_job_gf_errs_lst) > 0 {
 						job_status_str = JOB_STATUS__FAILED_PARTIAL
@@ -400,22 +400,22 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 				// GET_JOB_UPDATE_CH
 				case "get_job_update_ch":
 
-					job_id_str := job_msg.Job_id_str
+					jobIDstr := jobMsg.Job_id_str
 
-					if _, ok := running_jobs_map[job_id_str]; ok {
+					if _, ok := runningJobsMap[jobIDstr]; ok {
 
-						job_updates_ch := running_jobs_map[job_id_str]
-						job_msg.Msg_response_ch <- job_updates_ch
+						jobUpdatesCh := runningJobsMap[jobIDstr]
+						jobMsg.Msg_response_ch <- jobUpdatesCh
 
 					} else {
-						job_msg.Msg_response_ch <- nil
+						jobMsg.Msg_response_ch <- nil
 					}
 
 				//------------------------
 				// CLEANUP_JOB
 				case "cleanup_job":
-					job_id_str := job_msg.Job_id_str
-					delete(running_jobs_map, job_id_str) // remove running job from lookup, since its complete
+					jobIDstr := jobMsg.Job_id_str
+					delete(runningJobsMap, jobIDstr) // remove running job from lookup, since its complete
 
 				//------------------------
 			} 

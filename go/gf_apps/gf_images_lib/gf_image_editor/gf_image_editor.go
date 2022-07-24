@@ -260,7 +260,7 @@ func create_gf_image(p_new_title_str string,
 
 	//--------------------------
 
-	gfImageInfo := &gf_images_core.GF_image_new_info{
+	gfImageInfo := &gf_images_core.GFimageNewInfo{
 		Id_str:                         imageIDstr,
 		Title_str:                      p_new_title_str,
 		Flows_names_lst:                p_images_flows_names_lst,

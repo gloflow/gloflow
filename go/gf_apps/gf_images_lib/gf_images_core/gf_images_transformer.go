@@ -46,8 +46,7 @@ func TransformImage(p_image_id_str GFimageID,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GF_image_thumbs, *gf_core.GFerror) {
 
-	// normalized_ext_str, gf_err := Get_image_ext_from_url(p_image_origin_url_str, pRuntimeSys)
-	normalizedExtStr, gfErr := Get_image_ext_from_url(pImageLocalFilePathStr, pRuntimeSys)
+	normalizedExtStr, gfErr := GetImageExtFromURL(pImageLocalFilePathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -164,14 +163,14 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	// required to decode the file, but the rest of the file is not processed until later.
 	
 	// someone can forge header information in an image
-	image_title_str, gfErr := Get_image_title_from_url(pImageOriginURLstr, pRuntimeSys)
+	imageTitleStr, gfErr := Get_image_title_from_url(pImageOriginURLstr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
 
-	imageInfo := &GF_image_new_info{
+	imageInfo := &GFimageNewInfo{
 		Id_str:                         pImageIDstr,
-		Title_str:                      image_title_str,
+		Title_str:                      imageTitleStr,
 		Flows_names_lst:                pImagesFlowsNamesLst,
 		Image_client_type_str:          pImageClientTypeStr,
 		Origin_url_str:                 pImageOriginURLstr,

@@ -138,12 +138,12 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_s3_bucket_name_str                          string,
 	pS3info                                       *gf_core.GFs3Info,
 	pCtx                                          context.Context,
-	pRuntimeSys                                   *gf_core.Runtime_sys) (*GFgif, string, *gf_core.GF_error) {
+	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, string, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
 	// FETCH
-	local_image_file_path_str, _, f_gf_err := gf_images_core.Fetcher__get_extern_image(p_image_source_url_str,
+	local_image_file_path_str, _, f_gf_err := gf_images_core.FetcherGetExternImage(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		false, // p_random_time_delay_bool
 		pRuntimeSys)
@@ -257,7 +257,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		}
 		//-----------------------
 		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
-		gf_image_info := &gf_images_core.GF_image_new_info{
+		gf_image_info := &gf_images_core.GFimageNewInfo{
 			Id_str:                         verified_gf_image_id_str,                                           //image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
 			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
@@ -295,7 +295,7 @@ func storePreviewFrames(p_local_file_path_src string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
 	pS3info                      *gf_core.GFs3Info,
-	pRuntimeSys                  *gf_core.Runtime_sys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
+	pRuntimeSys                  *gf_core.RuntimeSys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
 	max_num__of_preview_frames_int       := 10
@@ -351,7 +351,7 @@ func storePreviewFrames(p_local_file_path_src string,
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
-	pRuntimeSys                  *gf_core.Runtime_sys) ([]string, *gf_core.GF_error) {
+	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GF_error) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
