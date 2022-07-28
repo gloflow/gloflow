@@ -115,11 +115,9 @@ def run(p_name_str,
     # GO_GET
     if p_go_get_bool:
 
-        _, _, exit_code_int = gf_core_cli.run(f"{LD_paths_str} go get -u")
+        _, _, exit_code_int = gf_core_cli.run(f"{LD_paths_str} go get -u") 
         print("")
         print("")
-
-    
 
     #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all

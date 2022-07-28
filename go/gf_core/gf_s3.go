@@ -135,33 +135,33 @@ func S3init(p_aws_access_key_id_str string,
 
 //---------------------------------------------------
 // S3__GENERATE_PRESIGNED_URL
-func S3__generate_presigned_url(p_target_file__s3_path_str string,
-	p_s3_bucket_name_str string,
-	p_s3_info            *GFs3Info,
-	pRuntimeSys          *Runtime_sys) (string, *GFerror) {
+func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
+	pS3bucketNameStr string,
+	pS3info          *GFs3Info,
+	pRuntimeSys      *Runtime_sys) (string, *GFerror) {
 
 	// INPUT
-	file_ext_str     := filepath.Ext(p_target_file__s3_path_str)
-	content_type_str := mime.TypeByExtension(file_ext_str)
+	fileEXTstr     := filepath.Ext(pTargetFileS3pathStr)
+	contentTypeStr := mime.TypeByExtension(fileEXTstr)
 
 	s3_put_object_params := &s3.PutObjectInput{
-		ACL:         aws.String("public-read"), // "public-read"),
-		Bucket:      aws.String(p_s3_bucket_name_str),
-		Key:         aws.String(p_target_file__s3_path_str),
-		ContentType: aws.String(content_type_str),
+		ACL:         aws.String("public-read"),
+		Bucket:      aws.String(pS3bucketNameStr),
+		Key:         aws.String(pTargetFileS3pathStr),
+		ContentType: aws.String(contentTypeStr),
 	}
 
-	req, _ := p_s3_info.Client.PutObjectRequest(s3_put_object_params)
+	req, _ := pS3info.Client.PutObjectRequest(s3_put_object_params)
 
 	// PRESIGN
-	presigned_url_str, err := req.Presign(time.Minute * 1)
+	presignedURLstr, err := req.Presign(time.Minute * 1)
 	if err != nil { // resp is now filled
 		gf_err := Error__create("failed to generate pre-signed S3 putObject URL",
 			"s3_file_upload_url_presign_error", nil, err, "gf_core", pRuntimeSys)
 		return "", gf_err
 	}
 
-	return presigned_url_str, nil
+	return presignedURLstr, nil
 }
 
 //---------------------------------------------------

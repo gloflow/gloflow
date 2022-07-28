@@ -79,6 +79,9 @@ type GF_config struct {
 	AlchemyAPIkeyStr string `mapstructure:"alchemy_api_key"`
 
 	//--------------------
+	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
+	ImagesUseNewStorageEngineBool bool `mapstructure:"images_use_new_storage_engine"`
+
 	// IPFS
 	IPFSnodeHostStr string `mapstructure:"ipfs_node_host"`
 

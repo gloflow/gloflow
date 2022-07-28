@@ -23,19 +23,21 @@ package gf_images_jobs
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
-func Init(p_images_store_local_dir_path_str string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	pMediaDomainStr                              string,
-	pConfig                                      *gf_images_core.GFconfig,
-	pS3info                                      *gf_core.GFs3Info,
-	pRuntimeSys                                  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
+func Init(pImagesStoreLocalDirPathStr string,
+	pImagesThumbnailsStoreLocalDirPathStr string,
+	pMediaDomainStr                       string,
+	pConfig                               *gf_images_core.GFconfig,
+	pImageStorage                         *gf_images_storage.GFimageStorage,
+	pS3info                               *gf_core.GFs3Info,
+	pRuntimeSys                           *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
-	lifecycle_callbacks := &gf_images_jobs_core.GF_jobs_lifecycle_callbacks{
-		Job_type__transform_imgs__fun: func() *gf_core.Gf_error {
+	lifecycleCallbacks := &gf_images_jobs_core.GF_jobs_lifecycle_callbacks{
+		Job_type__transform_imgs__fun: func() *gf_core.GFerror {
 			// RUST
 			// FIX!! - this just runs Rust job code for testing.
 			//         pass in proper job_cmd argument.
@@ -44,7 +46,7 @@ func Init(p_images_store_local_dir_path_str string,
 			return nil
 		},
 
-		Job_type__uploaded_imgs__fun: func() *gf_core.Gf_error {
+		Job_type__uploaded_imgs__fun: func() *gf_core.GFerror {
 			// RUST
 			// FIX!! - this just runs Rust job code for testing.
 			//         pass in proper job_cmd argument.
@@ -54,13 +56,14 @@ func Init(p_images_store_local_dir_path_str string,
 		},
 	}
 
-	jobs_mngr_ch := gf_images_jobs_core.JobsMngrInit(p_images_store_local_dir_path_str,
-		p_images_thumbnails_store_local_dir_path_str,
+	jobsMngrCh := gf_images_jobs_core.JobsMngrInit(pImagesStoreLocalDirPathStr,
+		pImagesThumbnailsStoreLocalDirPathStr,
 		pMediaDomainStr,
-		lifecycle_callbacks,
+		lifecycleCallbacks,
 		pConfig,
+		pImageStorage,
 		pS3info,
 		pRuntimeSys)
 
-	return jobs_mngr_ch
+	return jobsMngrCh
 }

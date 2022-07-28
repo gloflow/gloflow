@@ -27,22 +27,24 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 )
 
 //-------------------------------------------------
 func InitHandlers(pAuthLoginURLstr string,
-	pHTTPmux           *http.ServeMux,
-	p_jobs_mngr_ch     chan gf_images_jobs_core.JobMsg,
-	p_img_config       *gf_images_core.GFconfig,
-	p_media_domain_str string,
-	pS3info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
+	pHTTPmux        *http.ServeMux,
+	pJobsMngrCh     chan gf_images_jobs_core.JobMsg,
+	pImgConfig      *gf_images_core.GFconfig,
+	pMediaDomainStr string,
+	pStorage        *gf_images_storage.GFimageStorage,
+	pS3info         *gf_core.GFs3Info,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/images/d/",
 		"/v1/images/get",
 		"/v1/images/upload_init",
@@ -50,7 +52,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		"/images/c",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlers_endpoints_lst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst)
 
 	//---------------------
 	// rpcHandlerRuntime
@@ -119,8 +121,8 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//-----------------
 				// INPUT
-				path_str            := pReq.URL.Path
-				image_path_name_str := strings.Replace(path_str, "/images/d/", "", 1)
+				path_str         := pReq.URL.Path
+				imagePathNameStr := strings.Replace(path_str, "/images/d/", "", 1)
 
 				qsMap       := pReq.URL.Query()
 				flowNameStr := "general"
@@ -130,7 +132,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				
 				//-----------------
 
-				if _, ok := p_img_config.Images_flow_to_s3_bucket_map[flowNameStr]; !ok {
+				if _, ok := pImgConfig.ImagesFlowToS3bucketMap[flowNameStr]; !ok {
 					gfErr := gf_core.Error__create("image to resolve in unexisting flow",
 						"verify__invalid_value_error",
 						map[string]interface{}{
@@ -141,14 +143,14 @@ func InitHandlers(pAuthLoginURLstr string,
 					return nil, gfErr
 				}
 
-				image_s3_url_str := gf_images_core.Image__get_public_url(image_path_name_str,
-					p_media_domain_str,
+				imageURLstr := gf_images_core.ImageGetPublicURL(imagePathNameStr,
+					pMediaDomainStr,
 					pRuntimeSys)
 
-				// redirect user to S3 image url
+				// redirect user to image url
 				http.Redirect(pResp,
 					pReq,
-					image_s3_url_str,
+					imageURLstr,
 					301)
 			}
 
@@ -165,20 +167,20 @@ func InitHandlers(pAuthLoginURLstr string,
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_init",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//------------------
 				// CORS - in "simple" requests a CORS PREFLIGHT request is not necessary, 
 				//        and a CORS header needs to be set on the response of the GET request itself
 				//        (not on the preflight OPTIONS request).
 				//        "simple" requests are GET/HEAD/POST with standard form/text_plain content-types.
-				p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+				pResp.Header().Set("Access-Control-Allow-Origin", "*")
 
 				//------------------
 				// INPUT
-				qsMap := p_req.URL.Query()
+				qsMap := pReq.URL.Query()
 
 				// IMAGE_FORMAT
 				var imageFormatStr string
@@ -211,8 +213,9 @@ func InitHandlers(pAuthLoginURLstr string,
 					imageFormatStr,
 					flowsNamesLst,
 					client_type_str,
+					pStorage,
 					pS3info,
-					p_img_config,
+					pImgConfig,
 					pRuntimeSys)
 
 				if gfErr != nil {
@@ -279,8 +282,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				// COMPLETE
 				running_job, gf_err := UploadComplete(upload_gf_image_id_str,
 					meta_map,
-					p_jobs_mngr_ch,
-					pS3info,
+					pJobsMngrCh,
 					pRuntimeSys)
 
 				if gf_err != nil {

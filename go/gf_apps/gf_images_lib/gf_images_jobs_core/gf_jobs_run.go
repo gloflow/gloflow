@@ -63,9 +63,9 @@ func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
 }
 
 //-------------------------------------------------
-func runJobUploadedImgs(pImagesToProcessLst []GF_image_uploaded_to_process,
+func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 	pFlowsNamesLst                        []string,
-	p_images_store_local_dir_path_str     string,
+	pImagesStoreLocalDirPathStr     string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	// p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
 	// p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
@@ -86,7 +86,7 @@ func runJobUploadedImgs(pImagesToProcessLst []GF_image_uploaded_to_process,
 		gfErr := pipelineProcessUploadedImage(imageIDstr,
 			S3filePathStr,
 			metaMap,
-			p_images_store_local_dir_path_str,
+			pImagesStoreLocalDirPathStr,
 			pImagesThumbnailsStoreLocalDirPathStr,
 			pFlowsNamesLst,
 			// p_source_s3_bucket_name_str,

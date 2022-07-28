@@ -279,9 +279,9 @@ func create_gf_image(p_new_title_str string,
 	// IMPORTANT!! - creates a GF_Image struct and stores it in the DB.
 	//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 	//               these two structs are related by origin_url
-	_, cGFerr := gf_images_core.ImageCreateNew(gfImageInfo, pCtx, pRuntimeSys)
-	if cGFerr != nil {
-		return cGFerr
+	_, gfErr = gf_images_core.ImageCreateNew(gfImageInfo, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil

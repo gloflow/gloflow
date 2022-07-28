@@ -25,12 +25,13 @@ import (
 	"strconv"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_service"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_image_editor"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -56,6 +57,23 @@ func InitService(pHTTPmux *http.ServeMux,
 		panic(gfErr.Error)
 	}
 
+	//---------------------
+	// IMAGE_STORAGE
+
+	storageConfig := &gf_images_storage.GFimageStorageConfig{
+		TypesToProvisionLst:          []string{"s3", "ipfs"},
+		IPFSnodeHostStr:              pConfig.IPFSnodeHostStr,
+		ThumbsS3bucketNameStr:        pConfig.ImagesFlowToS3bucketMap["general"],
+		UploadsSourceS3bucketNameStr: pConfig.Uploaded_images_s3_bucket_str,
+		UploadsTargetS3bucketNameStr: pConfig.ImagesFlowToS3bucketMap["general"],
+		ExternImagesS3bucketNameStr:  pConfig.ImagesFlowToS3bucketMap["general"],
+	}
+
+	imageStorage, gfErr := gf_images_storage.Init(storageConfig, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
 	//-------------
 	// JOBS_MANAGER
 
@@ -63,6 +81,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		pServiceInfo.Images_thumbnails_store_local_dir_path_str,
 		pServiceInfo.Media_domain_str,
 		pConfig,
+		imageStorage,
 		s3Info,
 		pRuntimeSys)
 
@@ -108,6 +127,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		jobsMngrCh,
 		pConfig,
 		pServiceInfo.Media_domain_str,
+		imageStorage,
 		s3Info,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -190,10 +210,9 @@ func Run_service(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// CONFIG
-
-	IPFSnodeHostStr := "" // FINISH!! - load this from ENV var
 	config, gfErr := gf_images_core.ConfigGet(pServiceInfo.Config_file_path_str,
-		IPFSnodeHostStr,
+		pServiceInfo.UseNewStorageEngineBool,
+		pServiceInfo.IPFSnodeHostStr,
 		runtimeSys)
 	if gfErr != nil {
 		return

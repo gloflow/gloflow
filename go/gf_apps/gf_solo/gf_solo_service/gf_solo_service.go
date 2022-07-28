@@ -187,6 +187,7 @@ func Run(pConfig *GF_config,
 
 	// CONFIG
 	imagesConfig, gfErr := gf_images_core.ConfigGet(pConfig.Images__config_file_path_str,
+		pConfig.ImagesUseNewStorageEngineBool,
 		pConfig.IPFSnodeHostStr,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -294,10 +295,12 @@ func Run(pConfig *GF_config,
 	//-------------
 	// SERVER_INIT - blocking
 	gf_rpc_lib.ServerInitWithMux(portInt, gfSoloHTTPmux)
+
+	//-------------
 }
 
 //-------------------------------------------------
-func Runtime__get(pConfig_path_str string,
+func RuntimeGet(pConfig_path_str string,
 	p_external_plugins *gf_core.External_plugins,
 	p_log_fun          func(string, string)) (*gf_core.Runtime_sys, *GF_config, error) {
 

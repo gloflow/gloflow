@@ -44,6 +44,9 @@ type GFserviceInfo struct {
 	//                  redirect users when email is confirmed.
 	AuthLoginURLstr string
 
+	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
+	UseNewStorageEngineBool bool
+
 	// IPFS_NODE_HOST - host/gateway to use to connect to for IPFS operations
 	IPFSnodeHostStr string
 }
@@ -71,8 +74,10 @@ type GFconfig struct {
 
 	//------------------------
 
-	Images_flow_to_s3_bucket_default_str string            `yaml:"images_flow_to_s3_bucket_default"`
-	Images_flow_to_s3_bucket_map         map[string]string `yaml:"images_flow_to_s3_bucket"`
+	ImagesFlowToS3bucketDefaultStr string            `yaml:"images_flow_to_s3_bucket_default"`
+	ImagesFlowToS3bucketMap        map[string]string `yaml:"images_flow_to_s3_bucket"`
+
+	UseNewStorageEngineBool bool `yaml:"use_new_storage_engine"`
 
 	//------------------------
 	// IPFS
@@ -82,26 +87,26 @@ type GFconfig struct {
 }
 
 //-------------------------------------------------
-func Config__get_s3_bucket_for_flow(p_flow_name_str string,
-	p_config *GFconfig) string {
+func ConfigGetS3bucketForFlow(pFlowNameStr string,
+	pConfig *GFconfig) string {
 
-	var s3_bucket_name_final_str string
-	if s3_bucket_str, ok := p_config.Images_flow_to_s3_bucket_map[p_flow_name_str]; !ok {
-		s3_bucket_name_final_str = s3_bucket_str
+	var s3bucketNameFinalStr string
+	if s3bucketStr, ok := pConfig.ImagesFlowToS3bucketMap[pFlowNameStr]; !ok {
+		s3bucketNameFinalStr = s3bucketStr
 	} else {
-		s3_bucket_name_final_str = p_config.Images_flow_to_s3_bucket_default_str
+		s3bucketNameFinalStr = pConfig.ImagesFlowToS3bucketDefaultStr
 	}
-	return s3_bucket_name_final_str
+	return s3bucketNameFinalStr
 }
 
 //-------------------------------------------------
 func ConfigGet(pConfigPathStr string,
-	pIPFSnodeHostStr string, // pServiceInfo *GFserviceInfo,
-	pRuntimeSys      *gf_core.RuntimeSys) (*GFconfig, *gf_core.GFerror) {
+	pUseNewStorageEngineBool bool,
+	pIPFSnodeHostStr         string,
+	pRuntimeSys              *gf_core.RuntimeSys) (*GFconfig, *gf_core.GFerror) {
 
 	configStr, err := ioutil.ReadFile(pConfigPathStr) 
 	if err != nil {
-		
 		gfErr := gf_core.Error__create("failed to read YAML config for gf_images",
 			"file_read_error",
 			map[string]interface{}{"config_path": pConfigPathStr,},
@@ -124,7 +129,8 @@ func ConfigGet(pConfigPathStr string,
 
 	//------------------------
 	// IPFS
-	config.IPFSnodeHostStr = pIPFSnodeHostStr
+	config.UseNewStorageEngineBool = pUseNewStorageEngineBool
+	config.IPFSnodeHostStr         = pIPFSnodeHostStr
 
 	//------------------------
 	

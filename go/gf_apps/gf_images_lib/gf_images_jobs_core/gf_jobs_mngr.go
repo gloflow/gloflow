@@ -125,11 +125,12 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 
 //-------------------------------------------------
 // INIT
-func JobsMngrInit(p_images_store_local_dir_path_str string,
-	p_images_thumbnails_store_local_dir_path_str string,
-	p_media_domain_str                           string,
+func JobsMngrInit(pImagesStoreLocalDirPathStr string,
+	pImagesThumbnailsStoreLocalDirPathStr string,
+	pMediaDomainStr                           string,
 	pLifecycleCallbacks                          *GF_jobs_lifecycle_callbacks,
 	pConfig                                      *gf_images_core.GFconfig,
+	pImageStorage                                *gf_images_storage.GFimageStorage,
 	pS3info                                      *gf_core.GFs3Info,
 	pRuntimeSys                                  *gf_core.RuntimeSys) JobsMngr {
 
@@ -141,23 +142,6 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 		
 		// METRICS 
 		metrics := Metrics__create()
-
-		//---------------------
-		// IMAGE_STORAGE
-
-		storageConfig := &gf_images_storage.GFimageStorageConfig{
-			TypesToProvisionLst:          []string{"s3", "ipfs"},
-			IPFSnodeHostStr:              pConfig.IPFSnodeHostStr,
-			ThumbsS3bucketNameStr:        pConfig.Images_flow_to_s3_bucket_map["general"],
-			UploadsSourceS3bucketNameStr: pConfig.Uploaded_images_s3_bucket_str,
-			UploadsTargetS3bucketNameStr: pConfig.Images_flow_to_s3_bucket_map["general"],
-			ExternImagesS3bucketNameStr:  pConfig.Images_flow_to_s3_bucket_map["general"],
-		}
-
-		imageStorage, gfErr := gf_images_storage.Init(storageConfig, pRuntimeSys)
-		if gfErr != nil {
-			panic(gfErr.Error)
-		}
 
 		//---------------------
 		
@@ -213,33 +197,34 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 
 					//------------------------
 
-					job_runtime := &GFjobRuntime{
-						job_id_str:          running_job.Id_str,
-						job_client_type_str: jobMsg.Client_type_str,
-						job_updates_ch:      jobMsg.Job_updates_ch,
+					jobRuntime := &GFjobRuntime{
+						job_id_str:              running_job.Id_str,
+						job_client_type_str:     jobMsg.Client_type_str,
+						job_updates_ch:          jobMsg.Job_updates_ch,
+						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 					}
 
-					run_job_gf_errs_lst := run_job__local_imgs(jobMsg.Images_local_to_process_lst,
+					runJobErrsLst := run_job__local_imgs(jobMsg.Images_local_to_process_lst,
 						jobMsg.Flows_names_lst,
-						p_images_store_local_dir_path_str,
-						p_images_thumbnails_store_local_dir_path_str,
+						pImagesStoreLocalDirPathStr,
+						pImagesThumbnailsStoreLocalDirPathStr,
 						// target_s3_bucket_name_str,
 						pS3info,
-						imageStorage,
-						job_runtime,
+						pImageStorage,
+						jobRuntime,
 						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
-					var job_status_str job_status_val
-					if len(run_job_gf_errs_lst) == len(jobMsg.Images_uploaded_to_process_lst) {
-						job_status_str = JOB_STATUS__FAILED
-					} else if len(run_job_gf_errs_lst) > 0 {
-						job_status_str = JOB_STATUS__FAILED_PARTIAL
+					var jobStatusStr job_status_val
+					if len(runJobErrsLst) == len(jobMsg.Images_uploaded_to_process_lst) {
+						jobStatusStr = JOB_STATUS__FAILED
+					} else if len(runJobErrsLst) > 0 {
+						jobStatusStr = JOB_STATUS__FAILED_PARTIAL
 					} else {
-						job_status_str = JOB_STATUS__COMPLETED
+						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, pRuntimeSys)
+					_ = db__jobs_mngr__update_job_status(jobStatusStr, running_job.Id_str, pRuntimeSys)
 
 					//------------------------
 
@@ -272,7 +257,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+					runningJob, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
@@ -280,10 +265,10 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					runningJobsMap[running_job.Id_str] = jobMsg.Job_updates_ch
+					runningJobsMap[runningJob.Id_str] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
-					jobMsg.Job_init_ch <- running_job
+					jobMsg.Job_init_ch <- runningJob
 
 					// //------------------------
 					// // S3_BUCKETS
@@ -298,33 +283,34 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					// //------------------------
 
 					jobRuntime := &GFjobRuntime{
-						job_id_str:          running_job.Id_str,
+						job_id_str:          runningJob.Id_str,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
+						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 					}
 
-					run_job_gf_errs_lst := runJobUploadedImgs(jobMsg.Images_uploaded_to_process_lst,
+					runJobErrsLst := runJobUploadedImages(jobMsg.Images_uploaded_to_process_lst,
 						jobMsg.Flows_names_lst,
-						p_images_store_local_dir_path_str,
-						p_images_thumbnails_store_local_dir_path_str,
+						pImagesStoreLocalDirPathStr,
+						pImagesThumbnailsStoreLocalDirPathStr,
 						// imageStorage.S3.UploadsSourceS3bucketNameStr, // source_s3_bucket_name_str,
 						// imageStorage.S3.UploadsTargetS3bucketNameStr, // target_s3_bucket_name_str,
 						pS3info,
-						imageStorage,
+						pImageStorage,
 						jobRuntime,
 						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
 					var jobStatusStr job_status_val
-					if len(run_job_gf_errs_lst) == len(jobMsg.Images_uploaded_to_process_lst) {
+					if len(runJobErrsLst) == len(jobMsg.Images_uploaded_to_process_lst) {
 						jobStatusStr = JOB_STATUS__FAILED
-					} else if len(run_job_gf_errs_lst) > 0 {
+					} else if len(runJobErrsLst) > 0 {
 						jobStatusStr = JOB_STATUS__FAILED_PARTIAL
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(jobStatusStr, running_job.Id_str, pRuntimeSys)
+					_ = db__jobs_mngr__update_job_status(jobStatusStr, runningJob.Id_str, pRuntimeSys)
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
@@ -342,7 +328,7 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					metrics.Cmd__start_job_extern_imgs__count.Inc()
 
 					// RUNNING_JOB
-					running_job, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+					runningJob, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
 						pRuntimeSys)
 					if gf_err != nil {
@@ -350,49 +336,50 @@ func JobsMngrInit(p_images_store_local_dir_path_str string,
 					}
 
 					// IMPORTANT!! - send sending running_job back to client, to avoid race conditions
-					runningJobsMap[running_job.Id_str] = jobMsg.Job_updates_ch
+					runningJobsMap[runningJob.Id_str] = jobMsg.Job_updates_ch
 
 					// SEND_MSG
-					jobMsg.Job_init_ch <- running_job
+					jobMsg.Job_init_ch <- runningJob
 					
 					//------------------------
 					// ADD!! - due to legacy reasons the "general" flow is still used as the main flow
 					//         that images are added to when a external_images job is processed.
 					//         this should be generalized so that images are added to dedicated flow S3 buckets
 					//         if those flows have their S3_bucket mapping defined in Gf_config.Images_flow_to_s3_bucket_map
-					s3_bucket_name_str := pConfig.Images_flow_to_s3_bucket_map["general"]
+					s3bucketNameStr := pConfig.ImagesFlowToS3bucketMap["general"]
 
 					//------------------------
 
-					job_runtime := &GFjobRuntime{
-						job_id_str:          running_job.Id_str,
+					jobRuntime := &GFjobRuntime{
+						job_id_str:          runningJob.Id_str,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
+						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
 					}
 
-					run_job_gf_errs_lst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
+					runJobErrsLst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
 						jobMsg.Flows_names_lst,
-						p_images_store_local_dir_path_str,
-						p_images_thumbnails_store_local_dir_path_str,
+						pImagesStoreLocalDirPathStr,
+						pImagesThumbnailsStoreLocalDirPathStr,
 
-						p_media_domain_str,
-						s3_bucket_name_str,
+						pMediaDomainStr,
+						s3bucketNameStr,
 						pS3info,
-						imageStorage,
-						job_runtime,
+						pImageStorage,
+						jobRuntime,
 						pRuntimeSys)
 					
 					//------------------------
 					// JOB_STATUS
-					var job_status_str job_status_val
-					if len(run_job_gf_errs_lst) == len(jobMsg.Images_extern_to_process_lst) {
-						job_status_str = JOB_STATUS__FAILED
-					} else if len(run_job_gf_errs_lst) > 0 {
-						job_status_str = JOB_STATUS__FAILED_PARTIAL
+					var jobStatusStr job_status_val
+					if len(runJobErrsLst) == len(jobMsg.Images_extern_to_process_lst) {
+						jobStatusStr = JOB_STATUS__FAILED
+					} else if len(runJobErrsLst) > 0 {
+						jobStatusStr = JOB_STATUS__FAILED_PARTIAL
 					} else {
-						job_status_str = JOB_STATUS__COMPLETED
+						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(job_status_str, running_job.Id_str, pRuntimeSys)
+					_ = db__jobs_mngr__update_job_status(jobStatusStr, runningJob.Id_str, pRuntimeSys)
 
 					//------------------------
 

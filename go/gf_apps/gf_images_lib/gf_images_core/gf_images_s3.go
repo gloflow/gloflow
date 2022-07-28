@@ -168,13 +168,13 @@ func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 }
 
 //---------------------------------------------------
-func S3__get_image_s3_filepath(p_gf_image_id_str GF_image_id,
-	p_image_format_str string,
+func S3getImageFilepath(pImageIDstr GFimageID,
+	pImageFormatStr string,
 	pRuntimeSys        *gf_core.RuntimeSys) string {
 
-	image_filename_str := fmt.Sprintf("%s.%s", p_gf_image_id_str, p_image_format_str)
-	s3_filepath_str    := image_filename_str
-	return s3_filepath_str
+	imageFileNameStr := ImageGetFilepathFromID(pImageIDstr, pImageFormatStr) // fmt.Sprintf("%s.%s", p_gf_image_id_str, pImageFormatStr)
+	s3FilepathStr    := imageFileNameStr
+	return s3FilepathStr
 }
 
 //---------------------------------------------------

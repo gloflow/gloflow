@@ -252,6 +252,13 @@ func Cmds_init(pExternalPlugins *gf_core.External_plugins,
 	}
 
 	// ENV
+	err = viper.BindEnv("images_use_new_storage_engine", "GF_IMAGES_USE_NEW_STORAGE_ENGINE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	// ENV
 	err = viper.BindEnv("ipfs_node_host", "GF_IPFS__NODE_HOST")
 	if err != nil {
 		fmt.Println("failed to bind ENV var to Viper config")
@@ -275,12 +282,7 @@ func Cmds_init(pExternalPlugins *gf_core.External_plugins,
 		Long:  "start the gf_solo service",
 		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
-			
-
-
-
-
-			runtimeSys, config, err := Runtime__get(cliConfigPathStr, pExternalPlugins, pLogFun)
+			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun)
 			if err != nil {
 				panic(err)
 			}

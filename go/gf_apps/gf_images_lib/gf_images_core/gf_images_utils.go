@@ -33,22 +33,28 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+
 //------------------------------------------------
-// S3__get_image_url returns the S3 URL of a particular image S3 path.
-// This URL is where the image can be fetched from directly
-// (if S3 bucket has HTTP file serving enabled on it).
-func Image__get_public_url(p_image_s3_file_path_str string,
-	p_media_domain_str string,
+func ImageGetFilepathFromID(pImageIDstr GFimageID,
+	pImageFormatStr string) string {
+	imageFileNameStr := fmt.Sprintf("%s.%s", pImageIDstr, pImageFormatStr)
+	return imageFileNameStr
+}
+
+//------------------------------------------------
+// returns the URL of a particular image path,
+// this URL is where the image can be fetched from directly.
+
+func ImageGetPublicURL(pImageFilePathStr string,
+	pMediaDomainStr string,
 	pRuntimeSys      *gf_core.Runtime_sys) string {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Image__get_public_url()")
 
 	// // IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
 	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
 	// url_str := fmt.Sprintf("http://%s.s3-website-us-east-1.amazonaws.com/%s", p_s3_bucket_name_str, p_image_s3_file_path_str)
 
-	url_str := fmt.Sprintf("https://%s/%s", p_media_domain_str, p_image_s3_file_path_str)
-
-	return url_str
+	urlStr := fmt.Sprintf("https://%s/%s", pMediaDomainStr, pImageFilePathStr)
+	return urlStr
 }
 
 //---------------------------------------------------

@@ -47,6 +47,11 @@ type GFcopyOpDef struct {
 	TargetFileS3bucketNameStr string
 }
 
+type GFgeneratePresignedURLopDef struct {
+	TargetFilePathStr         string
+	TargetFileS3bucketNameStr string
+}
+
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
@@ -201,10 +206,7 @@ func FileCopy(pOpDef *GFcopyOpDef,
 // FILE_GET
 func FileGet(pOpDef *GFgetOpDef,
 	pStorage    *GFimageStorage,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
-
-
-
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	switch pStorage.TypeStr {
 	case "s3":
@@ -214,10 +216,31 @@ func FileGet(pOpDef *GFgetOpDef,
 		fmt.Println("ipfs")
 	}
 
-	
-
-
-
 	return nil
+}
 
+//---------------------------------------------------
+func FileGeneratePresignedURL(pOpDef *GFgeneratePresignedURLopDef,
+	pStorage    *GFimageStorage,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+
+	var presignedURLstr string
+
+	switch pStorage.TypeStr {
+	case "s3":
+		S3presignedURLstr, gfErr := gf_core.S3generatePresignedUploadURL( pOpDef.TargetFilePathStr,
+			pOpDef.TargetFileS3bucketNameStr,
+			pStorage.S3.Info,
+			pRuntimeSys)
+		if gfErr != nil {
+			return "", gfErr
+		}
+
+		presignedURLstr = S3presignedURLstr
+		
+		
+	}
+
+	return presignedURLstr, nil
 }

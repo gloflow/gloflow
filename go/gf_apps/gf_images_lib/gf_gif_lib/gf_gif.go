@@ -306,7 +306,7 @@ func storePreviewFrames(p_local_file_path_src string,
 
 	fmt.Println("== - ==++++   frames_images_file_paths_lst - "+fmt.Sprint(frames_images_file_paths_lst))
 
-	preview_frames_num_int := len(frames_images_file_paths_lst)
+	previewFramesNumInt := len(frames_images_file_paths_lst)
 
 	// ADD!! - make thumbnails out of individual frames - to reduce/standardize their size
 	//-----------------------
@@ -335,16 +335,16 @@ func storePreviewFrames(p_local_file_path_src string,
 
 		//-----------------------
 
-		image_s3_url_str := gf_images_core.Image__get_public_url(s3_target_file_path_str,
+		imageURLstr := gf_images_core.ImageGetPublicURL(s3_target_file_path_str,
 			p_media_domain_str, // p_s3_bucket_name_str,
 			pRuntimeSys)
 
-		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst, image_s3_url_str)
+		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst, imageURLstr)
 	}
 
 	//-----------------------
 
-	return preview_frames_num_int, preview_frames_s3_urls_lst, nil, gf_errors_lst
+	return previewFramesNumInt, preview_frames_s3_urls_lst, nil, gf_errors_lst
 }
 
 //--------------------------------------------------
