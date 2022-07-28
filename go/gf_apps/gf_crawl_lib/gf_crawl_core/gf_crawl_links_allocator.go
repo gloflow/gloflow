@@ -53,7 +53,7 @@ type Gf_crawl_link_alloc_block struct {
 }
 
 //--------------------------------------------------
-func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
 
 	allocator, gf_err := Link_alloc__create(p_crawler_name_str, p_runtime_sys)
@@ -79,7 +79,7 @@ func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_
 }
 
 //--------------------------------------------------
-func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawl_link_alloc, *gf_core.Gf_error) {
+func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawl_link_alloc, *gf_core.GFerror) {
 
 	block_size_int     := 100
 	sleep_time_sec_int := 60*20 // 20min
@@ -129,7 +129,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 }
 
 //--------------------------------------------------
-func Link_alloc__run(p_alloc *Gf_crawl_link_alloc, p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func Link_alloc__run(p_alloc *Gf_crawl_link_alloc, p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
 
 	alloc_run_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -148,8 +148,8 @@ func Link_alloc__run(p_alloc *Gf_crawl_link_alloc, p_runtime_sys *gf_core.Runtim
 //--------------------------------------------------
 func Link_alloc__create_links_block(p_alloc_id_str string,
 	p_crawler_name_str string,
-	p_block_size_int int,
-	p_runtime_sys *gf_core.Runtime_sys) (*Gf_crawl_link_alloc_block, *gf_core.Gf_error) {
+	p_block_size_int   int,
+	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
 
 

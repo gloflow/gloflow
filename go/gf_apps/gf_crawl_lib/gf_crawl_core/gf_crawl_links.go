@@ -33,7 +33,7 @@ import (
 )
 
 //--------------------------------------------------
-type Gf_crawler_page_outgoing_link struct {
+type GFcrawlerPageOutgoingLink struct {
 	Id                    primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                string        `bson:"id_str"`
 	T_str                 string        `bson:"t"`                    //"crawler_page_outgoing_link"
@@ -70,15 +70,15 @@ type Gf_crawler_page_outgoing_link struct {
 }
 
 //--------------------------------------------------
-func link__create(p_url_str string,
-	p_origin_url_str   string,
-	p_cycle_run_id_str string,
-	p_crawler_name_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_page_outgoing_link, *gf_core.Gf_error) {
+func link__create(pURLstr string,
+	pOriginURLstr   string,
+	pCycleRunIDstr  string,
+	pCrawlerNameStr string,
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
 
 	//-------------
 	// DOMAIN
-	domain_str, origin_url_domain_str, gf_err := gf_crawl_utils.Get_domain(p_url_str, p_origin_url_str, p_runtime_sys)
+	domain_str, origin_url_domain_str, gf_err := gf_crawl_utils.Get_domain(pURLstr, pOriginURLstr, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -86,7 +86,7 @@ func link__create(p_url_str string,
 	// COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
 	//                   and complete them to get the full url
 	
-	complete_a_href_str, gf_err := gf_crawl_utils.Complete_url(p_url_str, domain_str, p_runtime_sys)
+	complete_a_href_str, gf_err := gf_crawl_utils.Complete_url(pURLstr, domain_str, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -101,22 +101,22 @@ func link__create(p_url_str string,
 	//               if a particular origin page has several links in it that point to the same target URL, then all those links
 	//               will have the same hash (which can be used for efficient queries or grouping).
 	hash := md5.New()
-	hash.Write([]byte(p_origin_url_str))
-	hash.Write([]byte(p_url_str))
+	hash.Write([]byte(pOriginURLstr))
+	hash.Write([]byte(pURLstr))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
 	//-------------
 
-	link__valid_for_crawl_bool := link__verify_for_crawl(p_url_str, domain_str, p_runtime_sys)
-	link := &Gf_crawler_page_outgoing_link{
+	link__valid_for_crawl_bool := link__verify_for_crawl(pURLstr, domain_str, pRuntimeSys)
+	link := &GFcrawlerPageOutgoingLink{
 		Id_str:                id_str,
 		T_str:                 "crawler_page_outgoing_link",
 		Creation_unix_time_f:  creation_unix_time_f,
-		Crawler_name_str:      p_crawler_name_str,
-		Cycle_run_id_str:      p_cycle_run_id_str,
+		Crawler_name_str:      pCrawlerNameStr,
+		Cycle_run_id_str:      pCycleRunIDstr,
 		A_href_str:            complete_a_href_str,
 		Domain_str:            domain_str,
-		Origin_url_str:        p_origin_url_str,
+		Origin_url_str:        pOriginURLstr,
 		Origin_url_domain_str: origin_url_domain_str,
 		Hash_str:              hash_str,
 		Valid_for_crawl_bool:  link__valid_for_crawl_bool,
@@ -128,29 +128,29 @@ func link__create(p_url_str string,
 }
 
 //--------------------------------------------------
-func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
-	p_cycle_run_id_str string,
-	p_crawler_name_str string,
-	p_runtime          *Gf_crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
+func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
+	pCycleRunIDstr  string,
+	pCrawlerNameStr string,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 	blue   := color.New(color.FgBlue).SprintFunc()
 
 	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
-	fmt.Println("INFO","GET__PAGE_LINKS - "+blue(p_url_fetch.Url_str))
+	fmt.Println("INFO","GET__PAGE_LINKS - "+blue(pURLfetch.Url_str))
 	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	crawled_links_lst := []*Gf_crawler_page_outgoing_link{}
+	crawled_links_lst := []*GFcrawlerPageOutgoingLink{}
 
-	p_url_fetch.goquery_doc.Find("a").Each(func(p_i int, p_elem *goquery.Selection) {
+	pURLfetch.goquery_doc.Find("a").Each(func(p_i int, p_elem *goquery.Selection) {
 
-		origin_url_str := p_url_fetch.Url_str
+		origin_url_str := pURLfetch.Url_str
 		a_href_str,_   := p_elem.Attr("href")
 
-		fmt.Println(">> "+cyan("<a>")+" --- crawler_page_outgoing_link FOUND - domain - "+p_url_fetch.Domain_str+" -- "+yellow(fmt.Sprint(a_href_str)))
+		fmt.Println(">> "+cyan("<a>")+" --- crawler_page_outgoing_link FOUND - domain - "+pURLfetch.Domain_str+" -- "+yellow(fmt.Sprint(a_href_str)))
 
 		//-------------
 		if a_href_str == "" {
@@ -182,14 +182,14 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 
 		link,gf_err := link__create(a_href_str,
 			origin_url_str,
-			p_cycle_run_id_str,
-			p_crawler_name_str,
-			p_runtime_sys)
+			pCycleRunIDstr,
+			pCrawlerNameStr,
+			pRuntimeSys)
 		if gf_err != nil {
 			t := "link__complete_url__failed"
 			m := "failed completing the url of a_href_str - "+a_href_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_url_fetch.Url_str,}, a_href_str, p_crawler_name_str,
-				gf_err, p_runtime, p_runtime_sys)
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, a_href_str, pCrawlerNameStr,
+				gf_err, pRuntime, pRuntimeSys)
 			return
 		}
 
@@ -202,12 +202,12 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 	// STAGE - PERSIST ALL LINKS
 	for _, link := range crawled_links_lst {
 
-		gf_err := link__db_create(link, p_runtime_sys)
+		gf_err := link__db_create(link, pRuntimeSys)
 		if gf_err != nil {
 			t := "link__db_create__failed"
 			m := "failed creating link in the DB - "+link.A_href_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_url_fetch.Url_str,}, link.A_href_str, p_crawler_name_str,
-				gf_err, p_runtime, p_runtime_sys)
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, link.A_href_str, pCrawlerNameStr,
+				gf_err, pRuntime, pRuntimeSys)
 			return
 		}
 	}
@@ -216,12 +216,12 @@ func Links__get_outgoing_in_page(p_url_fetch *Gf_crawler_url_fetch,
 }
 
 //--------------------------------------------------
-func link__verify_for_crawl(p_url_str string,
+func link__verify_for_crawl(pURLstr string,
 	p_domain_str  string,
-	p_runtime_sys *gf_core.Runtime_sys) bool {
-	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
+	pRuntimeSys *gf_core.RuntimeSys) bool {
+	// pRuntimeSys.Log_fun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
 
-	blacklisted_domains_map := get_domains_blacklist(p_runtime_sys)
+	blacklisted_domains_map := get_domains_blacklist(pRuntimeSys)
 
 	// dont crawl these mainstream sites
 	if val_bool,ok := blacklisted_domains_map[p_domain_str]; ok {

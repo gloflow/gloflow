@@ -41,9 +41,9 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	p_media_domain_str                  string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str      string,
-	p_runtime                           *Gf_crawler_runtime,
-	p_runtime_sys                       *gf_core.Runtime_sys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_flows.Flows__add_extern_image()")
+	p_runtime                           *GFcrawlerRuntime,
+	pRuntimeSys                         *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_flows.Flows__add_extern_image()")
 
 	green := color.New(color.BgGreen, color.FgBlack).SprintFunc()
 	cyan := color.New(color.FgWhite, color.BgCyan).SprintFunc()
@@ -55,7 +55,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	fmt.Printf("flows_names               - %s\n", fmt.Sprint(p_flows_names_lst))
 
 	// DB - get gf_crawler_page_image from the DB
-	gf_page_img, gf_err := image__db_get(p_crawler_page_image_id_str, p_runtime, p_runtime_sys)
+	gf_page_img, gf_err := image__db_get(p_crawler_page_image_id_str, p_runtime, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -69,9 +69,9 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	//               which means that they dont have their corresponding gf_image.
 	if gf_image_id_str == "" {
 
-		p_runtime_sys.Log_fun("INFO", "")
-		p_runtime_sys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
-		p_runtime_sys.Log_fun("INFO", "")
+		pRuntimeSys.Log_fun("INFO", "")
+		pRuntimeSys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
+		pRuntimeSys.Log_fun("INFO", "")
 
 		// S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
 		//             after it finishes processing it.
@@ -81,7 +81,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 			p_media_domain_str,
 			p_crawled_images_s3_bucket_name_str,
 			p_runtime,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -100,7 +100,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 			gf_image_thumbs,
 			p_gf_images_s3_bucket_name_str,
 			p_runtime.S3_info,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -113,7 +113,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		//-------------------
 		//CLEANUP
 
-		gf_err = image__cleanup(local_image_file_path_str, gf_image_thumbs, p_runtime_sys)
+		gf_err = image__cleanup(local_image_file_path_str, gf_image_thumbs, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -125,7 +125,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
 	for _, flow_name_str := range p_flows_names_lst {
-		gf_err := gf_images_flows.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, p_runtime_sys)
+		gf_err := gf_images_flows.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -143,7 +143,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(source_gf_crawl_s3_bucket_str), cyan(p_gf_images_s3_bucket_name_str))
 
-		gf_image, gf_err := gf_images_core.DB__get_image(gf_image_id_str, p_runtime_sys)
+		gf_image, gf_err := gf_images_core.DB__get_image(gf_image_id_str, pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
@@ -155,8 +155,8 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		original_file_s3_path_str                                      := gf_images_core.S3__get_image_original_file_s3_filepath(gf_image, p_runtime_sys)
-		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_core.S3__get_image_thumbs_s3_filepaths(gf_image, p_runtime_sys)
+		original_file_s3_path_str                                      := gf_images_core.S3__get_image_original_file_s3_filepath(gf_image, pRuntimeSys)
+		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_core.S3__get_image_thumbs_s3_filepaths(gf_image, pRuntimeSys)
 
 		fmt.Printf("original_file_s3_path_str - %s\n", original_file_s3_path_str)
 		fmt.Printf("t_small_s3_path_str       - %s\n", t_small_s3_path_str)
@@ -187,7 +187,7 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 				p_gf_images_s3_bucket_name_str, // p_target_bucket_name_str,
 				s3_path_str,                    // p_target_file__s3_path_str
 				p_runtime.S3_info,
-				p_runtime_sys)
+				pRuntimeSys)
 			if gf_err != nil {
 				return gf_err
 			}

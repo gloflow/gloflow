@@ -27,61 +27,61 @@ import (
 )
 
 //--------------------------------------------------
-type Gf_crawl_config struct {
-	Crawlers_defs_lst []Gf_crawler_def `yaml:"crawlers-defs"`
+type GFcrawlConfig struct {
+	Crawlers_defs_lst []GFcrawlerDef `yaml:"crawlers-defs"`
 }
 
-type Gf_crawler_def struct {
+type GFcrawlerDef struct {
 	Name_str      string `yaml:"name"`
 	Start_url_str string `yaml:"start-url"`
 }
 
 //--------------------------------------------------
-func Get_all_crawlers(p_crawl_config_file_path_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]Gf_crawler_def, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_config.Get_all_crawlers()")
+func Get_all_crawlers(pCrawlConfigFilePathStr string,
+	pRuntimeSys *gf_core.Runtime_sys) (map[string]GFcrawlerDef, *gf_core.GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_config.Get_all_crawlers()")
 
 	// no config file found, so use hard-coded crawler definitions
-	if _, err := os.Stat(p_crawl_config_file_path_str); os.IsNotExist(err) {
+	if _, err := os.Stat(pCrawlConfigFilePathStr); os.IsNotExist(err) {
 
-		crawlers_map := map[string]Gf_crawler_def{
-			"gloflow.com": Gf_crawler_def{
+		crawlersMap := map[string]GFcrawlerDef{
+			"gloflow.com": GFcrawlerDef{
 				Name_str:      "gloflow.com",
 				Start_url_str: "http://gloflow.com/",
 			},
 		}
-		return crawlers_map, nil
+		return crawlersMap, nil
 	} else {
 
 		//-------------
 		// OPEN_CONFIG_FILE
-		config_byte_lst, fs_err := ioutil.ReadFile(p_crawl_config_file_path_str)
-		if fs_err != nil {
-			gf_err := gf_core.Error__create("failed to read a local file to load the image",
+		configByteLst, gfErr := ioutil.ReadFile(pCrawlConfigFilePathStr)
+		if gfErr != nil {
+			gfErr := gf_core.Error__create("failed to read a local file to load the image",
 				"file_read_error",
-				map[string]interface{}{"crawl_config_file_path_str": p_crawl_config_file_path_str,},
-				fs_err, "gf_crawl_lib", p_runtime_sys)
-			return nil, gf_err
+				map[string]interface{}{"crawl_config_file_path_str": pCrawlConfigFilePathStr,},
+				gfErr, "gf_crawl_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 		
 		//-------------
 		// PARSE_YAML
-		crawl_config := Gf_crawl_config{}
-		err = yaml.Unmarshal(config_byte_lst, &crawl_config)
+		crawlConfig := GFcrawlConfig{}
+		err = yaml.Unmarshal(configByteLst, &crawlConfig)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to parse gf_crawler YAML config file",
+			gfErr := gf_core.Mongo__handle_error("failed to parse gf_crawler YAML config file",
 				"yaml_decode_error",
-				map[string]interface{}{"crawl_config_file_path_str": p_crawl_config_file_path_str,},
-				err, "gf_crawl_core", p_runtime_sys)
-			return nil, gf_err
+				map[string]interface{}{"crawl_config_file_path_str": pCrawlConfigFilePathStr,},
+				err, "gf_crawl_core", pRuntimeSys)
+			return nil, gfErr
 		}
 
 		// index crawler_defs by name
-		crawlers_map := map[string]Gf_crawler_def{}
-		for _, crawler_def := range crawl_config.Crawlers_defs_lst {
-			crawlers_map[crawler_def.Name_str] = crawler_def
+		crawlersMap := map[string]GFcrawlerDef{}
+		for _, crawlerDef := range crawlConfig.Crawlers_defs_lst {
+			crawlersMap[crawlerDef.Name_str] = crawlerDef
 		}
-		return crawlers_map, nil
+		return crawlersMap, nil
 	}
 	return nil, nil
 }

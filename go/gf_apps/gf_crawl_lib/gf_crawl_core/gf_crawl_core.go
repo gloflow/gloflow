@@ -26,7 +26,7 @@ import (
 )
 
 //--------------------------------------------------
-type Gf_crawler_runtime struct {
+type GFcrawlerRuntime struct {
 	Events_ctx            *gf_events.Events_ctx
 	Esearch_client        *elastic.Client
 	S3_info               *gf_core.GFs3Info

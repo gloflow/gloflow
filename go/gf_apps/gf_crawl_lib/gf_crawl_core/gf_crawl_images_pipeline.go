@@ -36,12 +36,12 @@ type gf_page_img__pipeline_info struct {
 	thumbs              *gf_images_core.GF_image_thumbs
 	exists_bool         bool                   // has the page_img already been discovered in the past
 	nsfv_bool           bool
-	gf_error            *gf_core.GF_error      // if page_img processing failed at some stage
+	gf_error            *gf_core.GFerror       // if page_img processing failed at some stage
 
 	// in some situations (or in tests) we wish to manually assign a gf_image_id,
 	// instead of letting the gf_image processing/transformation
 	// operations create those ID's themselves
-	gf_image_id_str gf_images_core.GF_image_id
+	gf_image_id_str gf_images_core.GFimageID
 }
 
 type gf_page_img_link struct {
@@ -50,161 +50,161 @@ type gf_page_img_link struct {
 }
 
 //--------------------------------------------------
-func images_pipe__from_html(p_url_fetch *Gf_crawler_url_fetch,
-	p_cycle_run_id_str          string,
-	p_crawler_name_str          string,
-	p_images_local_dir_path_str string,
+func images_pipe__from_html(pURLfetch *Gf_crawler_url_fetch,
+	pCycleRunIDstr         string,
+	pCrawlerNameStr        string,
+	pImagesLocalDirPathStr string,
 
-	p_media_domain_str          string,
-	p_s3_bucket_name_str        string,
-	p_runtime                   *Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
+	pMediaDomainStr        string,
+	pS3bucketNameStr       string,
+	pRuntime              *GFcrawlerRuntime,
+	pRuntimeSys            *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
 
 	cyan := color.New(color.FgCyan).SprintFunc()
 	blue := color.New(color.FgBlue).SprintFunc()
 	//yellow := color.New(color.FgYellow).SprintFunc()
 
 	fmt.Println(cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
-	fmt.Println(">> IMAGES__GET_IN_PAGE - "+blue(p_url_fetch.Url_str))
+	fmt.Println(">> IMAGES__GET_IN_PAGE - "+blue(pURLfetch.Url_str))
 	fmt.Println(cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	origin_page_url_str := p_url_fetch.Url_str
+	origin_page_url_str := pURLfetch.Url_str
 
 	//------------------
 	// STAGE - pull all page image links
 
-	page_imgs__pipeline_infos_lst := images__stage__pull_image_links(p_url_fetch,
-		p_crawler_name_str,
-		p_cycle_run_id_str,
-		p_runtime,
-		p_runtime_sys)
+	page_imgs__pipeline_infos_lst := images__stage__pull_image_links(pURLfetch,
+		pCrawlerNameStr,
+		pCycleRunIDstr,
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGE - create gf_image/gf_image_refs structs
 
-	page_imgs__pinfos_with_imgs_lst := images__stage__create_page_images(p_crawler_name_str,
-		p_cycle_run_id_str,
+	page_imgs__pinfos_with_imgs_lst := images__stage__create_page_images(pCrawlerNameStr,
+		pCycleRunIDstr,
 		page_imgs__pipeline_infos_lst,
-		p_runtime,
-		p_runtime_sys)
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGE - persist gf_image/gf_image_ref to DB
 	
-	page_imgs__pinfos_with_persists_lst := images__stage__page_images_persist(p_crawler_name_str,
+	page_imgs__pinfos_with_persists_lst := images__stage__page_images_persist(pCrawlerNameStr,
 		page_imgs__pinfos_with_imgs_lst,
-		p_runtime,
-		p_runtime_sys)
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGE - download gf_images from target URL
 	
-	page_imgs__pinfos_with_local_file_paths_lst := images__stage__download_images(p_crawler_name_str,
+	page_imgs__pinfos_with_local_file_paths_lst := images__stage__download_images(pCrawlerNameStr,
 		page_imgs__pinfos_with_persists_lst,
-		p_images_local_dir_path_str,
+		pImagesLocalDirPathStr,
 		origin_page_url_str,
-		p_runtime,
-		p_runtime_sys)
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGES - process images
 
-	page_imgs__pinfos_with_thumbs_lst := images__stages__process_images(p_crawler_name_str,
+	page_imgs__pinfos_with_thumbs_lst := images__stages__process_images(pCrawlerNameStr,
 		page_imgs__pinfos_with_local_file_paths_lst,
-		p_images_local_dir_path_str,
+		pImagesLocalDirPathStr,
 		origin_page_url_str,
 
-		p_media_domain_str,
-		p_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
+		pMediaDomainStr,
+		pS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGE - persist all images files (S3, etc.)
 
-	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(p_crawler_name_str,
+	page_imgs__pinfos_with_s3_lst := imagesS3stageStoreImages(pCrawlerNameStr,
 		page_imgs__pinfos_with_thumbs_lst,
 		origin_page_url_str,
-		p_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
+		pS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	// STAGE - cleanup
 
-	images__stages_cleanup(page_imgs__pinfos_with_s3_lst, p_runtime, p_runtime_sys)
+	images__stages_cleanup(page_imgs__pinfos_with_s3_lst, pRuntime, pRuntimeSys)
+
 	//------------------
 }
 
 //--------------------------------------------------
 // SINGLE_IMAGE
 
-func images_pipe__single_simple(p_image *Gf_crawler_page_image,
-	p_images_store_local_dir_path_str   string,
-
-	p_media_domain_str                  string,
-	p_crawled_images_s3_bucket_name_str string,
-	p_runtime                           *Gf_crawler_runtime,
-	p_runtime_sys                       *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GF_image_thumbs, string, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
+func images_pipe__single_simple(pImage *Gf_crawler_page_image,
+	pImagesStoreLocalDirPathStr   string,
+	pMediaDomainStr               string,
+	pCrawledImagesS3bucketNameStr string,
+	pRuntime                      *GFcrawlerRuntime,
+	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GF_image_thumbs, string, *gf_core.GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 
 	//------------------------
-	local_image_file_path_str, gf_err := image__download(p_image, p_images_store_local_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, "", gf_err
+	localImageFilePathStr, gfErr := image__download(pImage, pImagesStoreLocalDirPathStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, "", gfErr
 	}
 
 	//------------------------
-	image, image_thumbs, gf_err := image__process(p_image,
+	image, image_thumbs, gfErr := image__process(pImage,
 		"", // p_gf_image_id_str
-		local_image_file_path_str,
-		p_images_store_local_dir_path_str,
+		localImageFilePathStr,
+		pImagesStoreLocalDirPathStr,
 
-		p_media_domain_str,
-		p_crawled_images_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, "", gf_err
+		pMediaDomainStr,
+		pCrawledImagesS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, "", gfErr
 	}
 
 	//------------------------
-	gf_err = image_s3__upload(p_image,
-		local_image_file_path_str,
+	gfErr = imageS3upload(pImage,
+		localImageFilePathStr,
 		image_thumbs,
-		p_crawled_images_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, "", gf_err
+		pCrawledImagesS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, "", gfErr
 	}
 
 	//------------------------
 
-	return image, image_thumbs, local_image_file_path_str, nil
+	return image, image_thumbs, localImageFilePathStr, nil
 }
 
 //--------------------------------------------------
 // STAGES
 //--------------------------------------------------
-func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
-	p_crawler_name_str string,
-	p_cycle_run_id_str string,
-	p_runtime          *Gf_crawler_runtime,
-	p_runtime_sys      *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__pull_image_links")
+func images__stage__pull_image_links(pURLfetch *Gf_crawler_url_fetch,
+	pCrawlerNameStr string,
+	pCycleRunIDstr  string,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__pull_image_links")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - pull_image_links")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
 	page_imgs__pipeline_infos_lst := []*gf_page_img__pipeline_info{}
-	p_url_fetch.goquery_doc.Find("img").Each(func(p_i int, p_elem *goquery.Selection) {
+	pURLfetch.goquery_doc.Find("img").Each(func(p_i int, p_elem *goquery.Selection) {
 
 		img_src_str, _      := p_elem.Attr("src")
-		origin_page_url_str := p_url_fetch.Url_str
+		origin_page_url_str := pURLfetch.Url_str
 		
 		// GF_PAGE_IMG__LINK
 		page_img_link := &gf_page_img_link{
@@ -224,12 +224,12 @@ func images__stage__pull_image_links(p_url_fetch *Gf_crawler_url_fetch,
 }
 
 //--------------------------------------------------
-func images__stage__create_page_images(p_crawler_name_str string,
-	p_cycle_run_id_str              string,
+func images__stage__create_page_images(pCrawlerNameStr string,
+	pCycleRunIDstr                  string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
-	p_runtime                       *Gf_crawler_runtime,
-	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
+	pRuntime                        *GFcrawlerRuntime,
+	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - create_page_images")
@@ -240,12 +240,12 @@ func images__stage__create_page_images(p_crawler_name_str string,
 		//------------------
 		// CRAWLER_PAGE_IMG
 
-		gf_img, gf_err := images_adt__prepare_and_create(p_crawler_name_str,
-			p_cycle_run_id_str,                       // p_cycle_run_id_str
+		gf_img, gf_err := images_adt__prepare_and_create(pCrawlerNameStr,
+			pCycleRunIDstr,                       // pCycleRunIDstr
 			page_img__pinfo.link.img_src_str,         // p_img_src_url_str
 			page_img__pinfo.link.origin_page_url_str, // p_origin_page_url_str
-			p_runtime,
-			p_runtime_sys)
+			pRuntime,
+			pRuntimeSys)
 		if gf_err != nil {
 			page_img__pinfo.gf_error = gf_err
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
@@ -253,13 +253,13 @@ func images__stage__create_page_images(p_crawler_name_str string,
 		//------------------
 		// CRAWLER_PAGE_IMG_REF
 
-		gf_img_ref := images_adt__ref_create(p_crawler_name_str,
-			p_cycle_run_id_str,
+		gf_img_ref := images_adt__ref_create(pCrawlerNameStr,
+			pCycleRunIDstr,
 			gf_img.Url_str,                           // p_image_url_str
 			gf_img.Domain_str,                        // p_image_url_domain_str
 			page_img__pinfo.link.origin_page_url_str, // p_origin_page_url_str
 			gf_img.Origin_page_url_domain_str,        // p_origin_page_url_domain_str
-			p_runtime_sys)
+			pRuntimeSys)
 
 		//------------------
 		// GIF
@@ -278,11 +278,11 @@ func images__stage__create_page_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func images__stage__page_images_persist(p_crawler_name_str string,
+func images__stage__page_images_persist(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
-	p_runtime                       *Gf_crawler_runtime,
-	p_runtime_sys                   *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
+	pRuntime                        *GFcrawlerRuntime,
+	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - page_images_persist")
@@ -298,28 +298,28 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 		page_img := page_img__pinfo.page_img
 
 		//------------------
-		img_exists_bool, gf_err := Image__db_create(page_img__pinfo.page_img, p_runtime, p_runtime_sys)
-		if gf_err != nil {
+		img_exists_bool, gfErr := Image__db_create(page_img__pinfo.page_img, pRuntime, pRuntimeSys)
+		if gfErr != nil {
 			t := "image_db_create__failed"
 			m := "failed db creation of image with img_url_str - "+page_img.Url_str
-			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
-				gf_err, p_runtime, p_runtime_sys)
+			Create_error_and_event(t,m,map[string]interface{}{"origin_page_url_str": page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, pCrawlerNameStr,
+				gfErr, pRuntime, pRuntimeSys)
 
-			page_img__pinfo.gf_error = gf_err
+			page_img__pinfo.gf_error = gfErr
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 
 		page_img__pinfo.exists_bool = img_exists_bool
 
 		//------------------
-		gf_err = Image__db_create_ref(page_img__pinfo.page_img_ref, p_runtime, p_runtime_sys)
-		if gf_err != nil {
+		gfErr = Image__db_create_ref(page_img__pinfo.page_img_ref, pRuntime, pRuntimeSys)
+		if gfErr != nil {
 			t := "image_ref_db_create__failed"
 			m := "failed db creation of image_ref with img_url_str - "+page_img.Url_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, p_crawler_name_str,
-				gf_err, p_runtime, p_runtime_sys)
+			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":page_img__pinfo.link.origin_page_url_str,}, page_img.Url_str, pCrawlerNameStr,
+				gfErr, pRuntime, pRuntimeSys)
 
-			page_img__pinfo.gf_error = gf_err
+			page_img__pinfo.gf_error = gfErr
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 		
@@ -329,39 +329,39 @@ func images__stage__page_images_persist(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func images__stages__process_images(p_crawler_name_str string,
+func images__stages__process_images(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
 
-	p_media_domain_str                string,
-	p_s3_bucket_name_str              string,
-	p_runtime                         *Gf_crawler_runtime,
-	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
+	pMediaDomainStr                   string,
+	pS3bucketNameStr                  string,
+	pRuntime                          *GFcrawlerRuntime,
+	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
 
 	//------------------
 	// // STAGE - determine if image is NSFV (contains nudity)
 	// // FIX!! - check if the processing cost of large images is not lower then determening NSFV first on large images,
 	// //         and then processing (which is whats done now). perhaps processing all images and then taking the 
 	
-	// page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(p_crawler_name_str,
+	// page_imgs__pinfos_with_nsfv_lst := images__stage__determine_are_nsfv(pCrawlerNameStr,
 	// 	p_page_imgs__pipeline_infos_lst,
 	// 	p_origin_page_url_str,
-	// 	p_runtime,
-	// 	p_runtime_sys)
+	// 	pRuntime,
+	// 	pRuntimeSys)
 	//------------------
 	// STAGE - process images - resize for all thumbnail sizes
 
-	page_imgs__pinfos_with_thumbs_lst := images__stage__process_images(p_crawler_name_str,
+	page_imgs__pinfos_with_thumbs_lst := images__stage__process_images(pCrawlerNameStr,
 		p_page_imgs__pipeline_infos_lst, // page_imgs__pinfos_with_nsfv_lst,
 		p_images_store_local_dir_path_str,
 		p_origin_page_url_str,
 
-		p_media_domain_str,
-		p_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
+		pMediaDomainStr,
+		pS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
 
 	//------------------
 	return page_imgs__pinfos_with_thumbs_lst
@@ -369,15 +369,15 @@ func images__stages__process_images(p_crawler_name_str string,
 
 //--------------------------------------------------
 func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
-	p_runtime     *Gf_crawler_runtime,
-	p_runtime_sys *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
+	pRuntime    *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
 
 	// IMPORTANT!! - delete local tmp transformed image, since the files
 	//               have just been uploaded to S3 so no need for them localy anymore
 	//               crawling servers are not meant to hold their own image files,
 	//               and service runs in Docker with temporary 
-	for _,page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
 
 		// IMPORTANT!! - skip failed images
 		if page_img__pinfo.gf_error != nil {
@@ -389,9 +389,9 @@ func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipe
 			continue
 		}
 
-		gf_err := image__cleanup(page_img__pinfo.local_file_path_str, page_img__pinfo.thumbs, p_runtime_sys)
-		if gf_err != nil {
-			page_img__pinfo.gf_error = gf_err
+		gfErr := image__cleanup(page_img__pinfo.local_file_path_str, page_img__pinfo.thumbs, pRuntimeSys)
+		if gfErr != nil {
+			page_img__pinfo.gf_error = gfErr
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 	}

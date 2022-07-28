@@ -28,7 +28,7 @@ import (
 //--------------------------------------------------
 func image__cleanup(p_img_local_file_path_str string,
 	p_img_thumbs  *gf_images_core.GF_image_thumbs,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_utils.image__cleanup()")
 
 	files_to_remove_lst := []string{

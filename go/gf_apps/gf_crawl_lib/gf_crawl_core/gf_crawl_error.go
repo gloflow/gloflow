@@ -49,7 +49,7 @@ func Create_error_and_event(p_error_type_str string,
 	p_error_url_str    string,
 	p_crawler_name_str string,
 	p_gf_err           *gf_core.GF_error,
-	p_runtime          *Gf_crawler_runtime,
+	p_runtime          *GFcrawlerRuntime,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
@@ -87,7 +87,7 @@ func create_error(p_type_str string,
 	p_url_str          string,
 	p_crawler_name_str string,
 	p_gf_err           *gf_core.Gf_error,
-	p_runtime          *Gf_crawler_runtime,
+	p_runtime          *GFcrawlerRuntime,
 	p_runtime_sys      *gf_core.Runtime_sys) (*Gf_crawler_error, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.create_error()")
 

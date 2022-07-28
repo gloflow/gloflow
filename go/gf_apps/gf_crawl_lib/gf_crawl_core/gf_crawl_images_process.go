@@ -37,7 +37,7 @@ func images__stage__process_images(p_crawler_name_str string,
 
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
-	p_runtime                         *Gf_crawler_runtime,
+	p_runtime                         *GFcrawlerRuntime,
 	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
@@ -99,7 +99,7 @@ func image__process(p_page_img *Gf_crawler_page_image,
 
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
-	p_runtime                         *Gf_crawler_runtime,
+	p_runtime                         *GFcrawlerRuntime,
 	p_runtime_sys                     *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GF_image_thumbs, *gf_core.GF_error) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()

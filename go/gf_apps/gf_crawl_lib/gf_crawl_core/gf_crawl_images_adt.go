@@ -99,8 +99,8 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	p_cycle_run_id_str    string,
 	p_img_src_url_str     string,
 	p_origin_page_url_str string,
-	p_runtime             *Gf_crawler_runtime,
-	pRuntimeSys         *gf_core.RuntimeSys) (*Gf_crawler_page_image, *gf_core.GFerror) {
+	p_runtime             *GFcrawlerRuntime,
+	pRuntimeSys           *gf_core.RuntimeSys) (*Gf_crawler_page_image, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__prepare_and_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()

@@ -61,72 +61,72 @@ type Gf_crawler_cycle_run struct {
 }
 
 //--------------------------------------------------
-func Init(p_config *GF_crawler_config,
-	p_media_domain_str           string,
-	p_templates_paths_map        map[string]string,
-	p_aws_access_key_id_str      string,
-	p_aws_secret_access_key_str  string,
-	p_aws_token_str              string,
-	p_esearch_client             *elastic.Client,
-	p_http_mux                   *http.ServeMux,
-	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.GF_error {
+func Init(pConfig *GF_crawler_config,
+	pMediaDomainStr             string,
+	pTemplatesPathsMap       map[string]string,
+	p_aws_access_key_id_str     string,
+	p_aws_secret_access_key_str string,
+	p_aws_token_str             string,
+	pEsearchClient              *elastic.Client,
+	pHTTPmux                    *http.ServeMux,
+	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//--------------
-	events_ctx := gf_events.Events__init("/a/crawl/events", p_runtime_sys)
+	events_ctx := gf_events.Events__init("/a/crawl/events", pRuntimeSys)
 
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
 
-	gf_s3_info, gf_err := gf_core.S3init(p_aws_access_key_id_str,
+	gf_s3_info, gfErr := gf_core.S3init(p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
 		p_aws_token_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	runtime := &gf_crawl_core.Gf_crawler_runtime{
+	runtime := &gf_crawl_core.GFcrawlerRuntime{
 		Events_ctx:            events_ctx,
-		Esearch_client:        p_esearch_client,
+		Esearch_client:        pEsearchClient,
 		S3_info:               gf_s3_info,
-		Cluster_node_type_str: p_config.Cluster_node_type_str,
+		Cluster_node_type_str: pConfig.Cluster_node_type_str,
 	}
 
 	//--------------
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	db_index__init(runtime, p_runtime_sys)
+	db_index__init(runtime, pRuntimeSys)
 	
-	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_config.Crawl_config_file_path_str,
-		p_runtime_sys)
+	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(pConfig.Crawl_config_file_path_str,
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}*/
 
 	/*start_crawlers_cycles(crawlers_map,
-		p_config.Images_local_dir_path_str,
+		pConfig.Images_local_dir_path_str,
 		crawled_images_s3_bucket_name_str,
 		runtime,
-		p_runtime_sys)*/
+		pRuntimeSys)*/
 
 	//--------------
 	// HTTP_HANDLERS
-	gf_err = init_handlers(p_media_domain_str,
-		p_config.Crawled_images_s3_bucket_name_str,
-		p_config.Images_s3_bucket_name_str,
-		p_templates_paths_map,
-		p_http_mux,
+	gfErr = init_handlers(pMediaDomainStr,
+		pConfig.Crawled_images_s3_bucket_name_str,
+		pConfig.Images_s3_bucket_name_str,
+		pTemplatesPathsMap,
+		pHTTPmux,
 		runtime,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 		
 	// HTTP_HANDLERS__CLUSTER
-	gf_err = cluster__init_handlers(p_config.Crawl_config_file_path_str,
+	gfErr = cluster__init_handlers(pConfig.Crawl_config_file_path_str,
 		runtime,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
 	//--------------
@@ -135,54 +135,54 @@ func Init(p_config *GF_crawler_config,
 }
 
 //--------------------------------------------------
-func start_crawlers_cycles(p_crawlers_map map[string]gf_crawl_core.Gf_crawler_def,
-	p_images_local_dir_path_str string,
-	p_media_domain_str          string,
-	p_images_s3_bucket_name_str string,
-	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.start_crawlers_cycles()")
+func start_crawlers_cycles(pCrawlersMap map[string]gf_crawl_core.GFcrawlerDef,
+	pImagesLocalDirPathStr string,
+	pMediaDomainStr          string,
+	pImagesS3bucketNameStr string,
+	pRuntime                   *gf_crawl_core.GFcrawlerRuntime,
+	pRuntimeSys               *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl.start_crawlers_cycles()")
 
 	events_id_str := "crawler_events"
 	
-	gf_events.Events__register_producer(events_id_str, p_runtime.Events_ctx, p_runtime_sys)
+	gf_events.Events__register_producer(events_id_str, pRuntime.Events_ctx, pRuntimeSys)
 
-	for _, crawler := range p_crawlers_map {
+	for _, crawler := range pCrawlersMap {
 
 		// IMPORTANT!! - each crawler runs in its own goroutine, and continuously
 		//               crawls the target domains
-		go func(p_crawler gf_crawl_core.Gf_crawler_def) {
-			start_crawler(p_crawler,
-				p_images_local_dir_path_str,
+		go func(pCrawler gf_crawl_core.GFcrawlerDef) {
+			start_crawler(pCrawler,
+				pImagesLocalDirPathStr,
 
-				p_media_domain_str,
-				p_images_s3_bucket_name_str,
-				p_runtime,
-				p_runtime_sys)
+				pMediaDomainStr,
+				pImagesS3bucketNameStr,
+				pRuntime,
+				pRuntimeSys)
 
 		}(crawler)
 	}
 }
 
 //--------------------------------------------------
-func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
-	p_images_local_dir_path_str string,
-	p_media_domain_str          string,
-	p_images_s3_bucket_name_str string,
-	p_runtime                   *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl.start_crawler()")
+func start_crawler(pCrawler gf_crawl_core.GFcrawlerDef,
+	pImagesLocalDirPathStr string,
+	pMediaDomainStr          string,
+	pImagesS3bucketNameStr string,
+	pRuntime                   *gf_crawl_core.GFcrawlerRuntime,
+	pRuntimeSys               *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl.start_crawler()")
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 
-	p_runtime_sys.Log_fun("INFO", black("------------------------------------"))
-	p_runtime_sys.Log_fun("INFO", black(">>>    STARTING CRAWLER >>> ")+yellow(p_crawler.Name_str))
-	p_runtime_sys.Log_fun("INFO", black("------------------------------------"))
+	pRuntimeSys.Log_fun("INFO", black("------------------------------------"))
+	pRuntimeSys.Log_fun("INFO", black(">>>    STARTING CRAWLER >>> ")+yellow(pCrawler.Name_str))
+	pRuntimeSys.Log_fun("INFO", black("------------------------------------"))
 
 	//-----------------
 	// LINK_ALLOCATOR
-	gf_crawl_core.Link_alloc__init(p_crawler.Name_str, p_runtime_sys)
+	gf_crawl_core.Link_alloc__init(pCrawler.Name_str, pRuntimeSys)
 	
 	//-----------------
 
@@ -192,16 +192,16 @@ func start_crawler(p_crawler gf_crawl_core.Gf_crawler_def,
 	i := 0
 
 	for ;; {
-		gf_crawl_utils.Crawler_sleep(p_crawler.Name_str, i, r, p_runtime_sys)
+		gf_crawl_utils.Crawler_sleep(pCrawler.Name_str, i, r, pRuntimeSys)
 		//-----------------
 		// RUN CRAWLER
-		gf_err := Run_crawler_cycle(p_crawler,
-			p_images_local_dir_path_str,
+		gf_err := Run_crawler_cycle(pCrawler,
+			pImagesLocalDirPathStr,
 
-			p_media_domain_str,
-			p_images_s3_bucket_name_str,
-			p_runtime,
-			p_runtime_sys)
+			pMediaDomainStr,
+			pImagesS3bucketNameStr,
+			pRuntime,
+			pRuntimeSys)
 		if gf_err != nil {
 			// ADD!! - do something useful with this error, although its persisted to DB since its a gf_err
 		}

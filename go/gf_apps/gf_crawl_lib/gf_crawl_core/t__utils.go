@@ -34,7 +34,7 @@ import (
 
 //-------------------------------------------------
 // INIT
-func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
+func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
 	// MONGODB
@@ -69,7 +69,7 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	log_fun := gf_core.Init_log_fun()
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_crawl_tests",
 		Log_fun:          log_fun,
 	}
@@ -77,17 +77,17 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
 		test__mongodb_db_name_str,
 		nil,
-		runtime_sys)
+		runtimeSys)
 	if gf_err != nil {
 		panic("failed to get Mongodb client in test initialization")
 		return nil, nil
 	}
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongo_db
+	runtimeSys.Mongo_coll = mongo_db.Collection("data_symphony")
 	
 	//-------------
 	// ELASTICSEARCH
-	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtime_sys)
+	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtimeSys)
 	if gf_err != nil {
 		panic("failed to get ElasticSearch client in test initialization")
 		return nil, nil
@@ -95,74 +95,74 @@ func T__init() (*gf_core.Runtime_sys, *Gf_crawler_runtime) {
 
 	//-------------
 	// S3
-	s3_test_info := gf_core.T__get_s3_info(runtime_sys)
+	s3_test_info := gf_core.T__get_s3_info(runtimeSys)
 
 	//-------------
 
-	crawler_runtime := &Gf_crawler_runtime{
+	crawlerRuntime := &GFcrawlerRuntime{
 		Events_ctx:            nil,
 		Esearch_client:        esearch_client,
 		S3_info:               s3_test_info.Gf_s3_info,
 		Cluster_node_type_str: test__cluster_node_type_str,
 	}
 
-	return runtime_sys, crawler_runtime
+	return runtimeSys, crawlerRuntime
 }
 
 //---------------------------------------------------
 func t__create_test_image_ADTs(p_test *testing.T,
-	p_test__crawler_name_str    string,
-	p_test__cycle_run_id_str    string,
+	pTestCrawlerNameStr    string,
+	pTestCycleRunIDstr    string,
 	p_test__img_src_url_str     string,
 	p_test__origin_page_url_str string,
-	p_crawler_runtime           *Gf_crawler_runtime,
-	p_runtime_sys               *gf_core.Runtime_sys) (*Gf_crawler_page_image, *Gf_crawler_page_image_ref) {
+	pCrawlerRuntime             *GFcrawlerRuntime,
+	pRuntimeSys                 *gf_core.RuntimeSys) (*Gf_crawler_page_image, *Gf_crawler_page_image_ref) {
 
 	//-------------------
 	// CRAWLED_IMAGE_CREATE
-	test__crawled_image, gf_err := images_adt__prepare_and_create(p_test__crawler_name_str,
-		p_test__cycle_run_id_str,
+	testCrawledImage, gfErr := images_adt__prepare_and_create(pTestCrawlerNameStr,
+		pTestCycleRunIDstr,
 		p_test__img_src_url_str,
 		p_test__origin_page_url_str,
-		p_crawler_runtime,
-		p_runtime_sys)
-	if gf_err != nil { 
+		pCrawlerRuntime,
+		pRuntimeSys)
+	if gfErr != nil { 
 		p_test.Errorf("failed to prepare and create image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 		return nil, nil
 	}
 
 	// DB - CRAWLED_IMAGE_PERSIST
-	exists_bool, gf_err := Image__db_create(test__crawled_image, p_crawler_runtime, p_runtime_sys)
-	if gf_err != nil {
+	existsBool, gfErr := Image__db_create(testCrawledImage, pCrawlerRuntime, pRuntimeSys)
+	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 		return nil, nil
 	}
 
-	assert.Equal(p_test, exists_bool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
+	assert.Equal(p_test, existsBool, false, "test page_image exists in the DB already, test cleanup hasnt been done")
 
 	//-------------------
 	// CRAWLED_IMAGE_REF_CREATE
-	test__crawled_image_ref := images_adt__ref_create(p_test__crawler_name_str,
-		p_test__cycle_run_id_str,
-		test__crawled_image.Url_str,                    // p_image_url_str
-		test__crawled_image.Domain_str,                 // p_image_url_domain_str
-		test__crawled_image.Origin_page_url_str,        // p_origin_page_url_str
-		test__crawled_image.Origin_page_url_domain_str, // p_origin_page_url_domain_str
-		p_runtime_sys)
+	testCrawledImageRef := images_adt__ref_create(pTestCrawlerNameStr,
+		pTestCycleRunIDstr,
+		testCrawledImage.Url_str,                    // p_image_url_str
+		testCrawledImage.Domain_str,                 // p_image_url_domain_str
+		testCrawledImage.Origin_page_url_str,        // p_origin_page_url_str
+		testCrawledImage.Origin_page_url_domain_str, // p_origin_page_url_domain_str
+		pRuntimeSys)
 
 	// DB - CRAWLED_IMAGE_REF_PERSIST
-	gf_err = Image__db_create_ref(test__crawled_image_ref, p_crawler_runtime, p_runtime_sys)
-	if gf_err != nil {
+	gfErr = Image__db_create_ref(testCrawledImageRef, pCrawlerRuntime, pRuntimeSys)
+	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 		return nil, nil
 	}
 
 	//-------------------
 
-	return test__crawled_image, test__crawled_image_ref
+	return testCrawledImage, testCrawledImageRef
 }
 
 //-------------------------------------------------
@@ -173,15 +173,15 @@ func t__create_test_image_ADTs(p_test *testing.T,
 func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
 	p_test__local_image_file_path_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, gf_images_core.Gf_image_id) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
+	pRuntimeSys                       *gf_core.RuntimeSys) (string, gf_images_core.GFimageID) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
 
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
 	// IMPORTANT!! - creates a new gf_image ID from the image URL
 	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
 		test__local_image_dir_path_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		p_test.Errorf(fmt.Sprintf("failed to create a gf_image local file path from URL [%s]", p_test__img_src_url_str))
 		panic(gf_err.Error)
@@ -201,11 +201,11 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 }
 
 //-------------------------------------------------
-func t__cleanup__test_page_imgs(p_test__crawler_name_str string, p_runtime_sys *gf_core.Runtime_sys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
+func t__cleanup__test_page_imgs(p_test__crawler_name_str string, pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").DeleteMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").DeleteMany(ctx, bson.M{
 			"t":                bson.M{"$in": []string{"crawler_page_img", "crawler_page_img_ref",},},
 			"crawler_name_str": p_test__crawler_name_str,
 		})
