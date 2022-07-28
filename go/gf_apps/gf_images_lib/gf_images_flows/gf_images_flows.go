@@ -264,14 +264,14 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 	}
 	
 	// GF_IMAGES_JOBS_CLIENT
-	runningJob, jobExpectedOutputsLst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
+	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
 		pJobsMngrCh,
 		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, nil, nil, gf_err
+	if gfErr != nil {
+		return nil, nil, nil, gfErr
 	}
 
 	//------------------
@@ -298,7 +298,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
+	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
@@ -310,14 +310,14 @@ func FlowsAddExternImage(pImageExternURLstr string,
 		}
 	
 	// GF_IMAGES_JOBS_CLIENT
-	runningJob, jobExpectedOutputsLst, gf_err := gf_images_jobs_client.RunExternImgs(pClientTypeStr,
+	runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(pClientTypeStr,
 		imagesURLsToProcessLst,
 		pFlowsNamesLst,
 		pJobsMngrCh,
 		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, nil, gf_images_core.GFimageID(""), gf_err
+	if gfErr != nil {
+		return nil, nil, gf_images_core.GFimageID(""), gfErr
 	}
 
 	//------------------
@@ -333,7 +333,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 func flowsCreate(pFlowNameStr string,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
-	pRuntimeSys     *gf_core.Runtime_sys) (*GFflow, *gf_core.GF_error) {
+	pRuntimeSys     *gf_core.Runtime_sys) (*GFflow, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	idStr             := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))

@@ -58,7 +58,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				pRuntimeSys.Log_fun("INFO", "input_map - "+fmt.Sprint(input_map))
 
 				job_type_str                           := input_map["job_type_str"].(string)
-				client_type_str                        := input_map["client_type_str"].(string)
+				clientTypeStr                          := input_map["client_type_str"].(string)
 				url_encoded_imgs_urls_str              := input_map["imgs_urls_str"].(string)
 				url_encoded_imgs_origin_pages_urls_str := input_map["imgs_origin_pages_urls_str"].(string)
 
@@ -66,7 +66,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				flows_names_lst := []string{"general",}
 
 				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
-				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("client_type_str - %s", client_type_str))
+				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("client_type_str - %s", clientTypeStr))
 				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
 
 				//-------------------
@@ -95,7 +95,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 
 				//-------------------
 
-				running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(client_type_str,
+				running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImages(clientTypeStr,
 					images_to_process_lst,
 					flows_names_lst,
 					pJobsMngrCh,

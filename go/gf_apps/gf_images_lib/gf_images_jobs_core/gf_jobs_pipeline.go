@@ -107,7 +107,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	//-----------------------
 	// TRANSFORM_IMAGE
 	
-	imageThumbs, gfTerr := jobTransform(pImageIDstr,
+	imageThumbs, gfErr := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
 		"", // p_image_source_url_str,
 		"", // p_image_origin_page_url_str,
@@ -116,8 +116,8 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 		pImagesThumbsLocalDirPathStr, 
 		pJobRuntime,
 		pRuntimeSys)
-	if gfTerr != nil {
-		return gfTerr
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//-----------------------

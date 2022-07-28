@@ -39,8 +39,8 @@ type Gf_images_client_result struct {
 //---------------------------------------------------
 func process_external_images(p_post *gf_publisher_core.Gf_post,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
+	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
 
 	//-------------------	
 	// POST ELEMENTS IMAGES
@@ -63,7 +63,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 	image_job_client_type_str := "gf_publisher"
 
 	var result *Gf_images_client_result
-	var gf_err *gf_core.Gf_error
+	var gf_err *gf_core.GFerror
 
 	// HTTP
 	if p_gf_images_runtime_info.Jobs_mngr == nil {
@@ -74,7 +74,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 			post_elements_images_origin_pages_urls_str,       //p_input_images_origin_pages_urls_str
 			image_job_client_type_str,
 			p_gf_images_runtime_info.service_host_port_str,
-			p_runtime_sys)
+			pRuntimeSys)
 
 		if gf_err != nil {
 			return "", gf_err
@@ -90,7 +90,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 			post_elements_images_origin_pages_urls_str,
 			image_job_client_type_str,
 			p_gf_images_runtime_info.Service_host_port_str,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return "", nil	
 		}
@@ -103,7 +103,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 			post_elements_images_origin_pages_urls_str,
 			image_job_client_type_str,
 			p_gf_images_runtime_info.Jobs_mngr,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return "", nil	
 		}
@@ -117,7 +117,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
 				&map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
-				nil, "gf_publisher_lib", p_runtime_sys)
+				nil, "gf_publisher_lib", pRuntimeSys)
 			return "", gf_err
 		}
 
@@ -145,12 +145,12 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 	post_thumbnail_str      := first_post_element.Img_thumbnail_small_url_str*/
 
 	p_post.Thumbnail_url_str = result.post_thumbnail_str
-	p_runtime_sys.Log_fun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
+	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
 
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
 	// in the initiation of image post_elements)
-	gf_err = gf_publisher_core.DB__update_post(p_post, p_runtime_sys)
+	gf_err = gf_publisher_core.DB__update_post(p_post, pRuntimeSys)
 	if gf_err != nil {
 		return "", gf_err
 	}
@@ -161,48 +161,48 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 }
 
 //---------------------------------------------------
-func process_external_images__via_http(p_post_elements_map map[string]*gf_publisher_core.Gf_post_element,
-	p_post_elements_images_urls_lst              []string,
-	p_post_elements_images_origin_pages_urls_str []string,
-	p_image_job_client_type_str                  string,
-	p_gf_images_service_host_port_str            string,
-	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.Gf_error) {
+func process_external_images__via_http(pPostElementsMap map[string]*gf_publisher_core.Gf_post_element,
+	pPostElementsImagesURLsLst            []string,
+	pPostElementsImagesOriginPagesURLsStr []string,
+	pImageJobClientTypeStr                string,
+	pImagesServiceHostPortStr             string,
+	pRuntimeSys                           *gf_core.RuntimeSys) (*Gf_images_client_result, *gf_core.GFerror) {
 
 	//--------------------
 	// HTTP
-	running_job_id_str, outputs_lst, gf_err := gf_images_lib.Client__dispatch_process_extern_images(p_post_elements_images_urls_lst, //p_input_images_urls_lst
-		p_post_elements_images_origin_pages_urls_str, // p_input_images_origin_pages_urls_str
-		p_image_job_client_type_str,
-		p_gf_images_service_host_port_str,
-		p_runtime_sys)
+	runningJobIDstr, outputs_lst, gfErr := gf_images_lib.Client__dispatch_process_extern_images(pPostElementsImagesURLsLst, //p_input_images_urls_lst
+		pPostElementsImagesOriginPagesURLsStr, // p_input_images_origin_pages_urls_str
+		pImageJobClientTypeStr,
+		pImagesServiceHostPortStr,
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//--------------------
 
-	image_ids_lst := []gf_images_core.Gf_image_id{}
+	imageIDsLst := []gf_images_core.GFimageID{}
 	for _, output := range outputs_lst {
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 
-		if _, ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
-			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
+		if _, ok := pPostElementsMap[gf_images__output_img_source_url_str]; !ok {
+			gfErr := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
-				map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
-				nil, "gf_publisher_lib", p_runtime_sys)
-			return nil, gf_err
+				map[string]interface{}{"gf_images__output_img_source_url_str": gf_images__output_img_source_url_str,},
+				nil, "gf_publisher_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 
 		//--------------------
 		// IMPORTANT!! - this is IMAGE_JOB EXPECTED_OUTPUT - these image url's will be resolved
 		//               at a later time when the job completes (job is a long-running process)
-		post_element                             := p_post_elements_map[output.Image_source_url_str]
+		post_element                             := pPostElementsMap[output.Image_source_url_str]
 		post_element.Image_id_str                 = output.Image_id_str
 		post_element.Img_thumbnail_small_url_str  = output.Thumbnail_small_relative_url_str
 		post_element.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
 		post_element.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
-		image_ids_lst = append(image_ids_lst, output.Image_id_str)
+		imageIDsLst = append(imageIDsLst, output.Image_id_str)
 
 		//--------------------
 	}
@@ -211,35 +211,35 @@ func process_external_images__via_http(p_post_elements_map map[string]*gf_publis
 	// POST THUMBNAIL
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
 	first_image_url_str := outputs_lst[0].Image_source_url_str
-	first_post_element  := p_post_elements_map[first_image_url_str]
-	post_thumbnail_str  := first_post_element.Img_thumbnail_small_url_str
+	first_post_element  := pPostElementsMap[first_image_url_str]
+	postThumbnailStr    := first_post_element.Img_thumbnail_small_url_str
 
 	//--------------------
 
 	result := &Gf_images_client_result{
-		image_ids_lst:      image_ids_lst,
-		running_job_id_str: running_job_id_str,
-		post_thumbnail_str: post_thumbnail_str,
+		image_ids_lst:      imageIDsLst,
+		running_job_id_str: runningJobIDstr,
+		post_thumbnail_str: postThumbnailStr,
 	}
 
 	return result, nil
 }
 
 //---------------------------------------------------
-func process_external_images__in_process(p_post_elements_map map[string]*gf_publisher_core.Gf_post_element,
-	p_post_elements_images_urls_lst              []string,
-	p_post_elements_images_origin_pages_urls_str []string,
-	p_image_job_client_type_str                  string,
-	p_gf_images_jobs_mngr                        gf_images_jobs_core.JobsMngr,
-	p_runtime_sys                                *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.GFerror) {
+func process_external_images__in_process(pPostElementsMap map[string]*gf_publisher_core.Gf_post_element,
+	pPostElementsImagesURLsLst            []string,
+	pPostElementsImagesOriginPagesURLsStr []string,
+	pImageJobClientTypeStr                string,
+	pImagesJobsMngr                       gf_images_jobs_core.JobsMngr,
+	pRuntimeSys                           *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.GFerror) {
 
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 	flows_names_lst := []string{"general",}
 
 	images_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{}
-	for i, image_url_str := range p_post_elements_images_urls_lst {
+	for i, image_url_str := range pPostElementsImagesURLsLst {
 		
-		origin_page_url_str := p_post_elements_images_origin_pages_urls_str[i]
+		origin_page_url_str := pPostElementsImagesOriginPagesURLsStr[i]
 		img_to_process      := gf_images_jobs_core.GF_image_extern_to_process{
 			Source_url_str:      image_url_str,
 			Origin_page_url_str: origin_page_url_str,
@@ -249,54 +249,54 @@ func process_external_images__in_process(p_post_elements_map map[string]*gf_publ
 
 	//--------------------
 	// IN_PROCESS
-	running_job, outputs_lst, gf_err := gf_images_jobs_client.RunExternImgs(p_image_job_client_type_str,
+	runningJob, outputs_lst, gfErr := gf_images_jobs_client.RunExternImages(pImageJobClientTypeStr,
 		images_to_process_lst,
 		flows_names_lst,
-		p_gf_images_jobs_mngr,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pImagesJobsMngr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//--------------------
 	
-	image_ids_lst := []gf_images_core.Gf_image_id{}
+	imageIDsLst := []gf_images_core.GFimageID{}
 	for _, output := range outputs_lst {
-		gf_images__output_img_source_url_str := output.Image_source_url_str
+		imagesOutputImgSourceURLstr := output.Image_source_url_str
 
-		if _, ok := p_post_elements_map[gf_images__output_img_source_url_str]; !ok {
-			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
+		if _, ok := pPostElementsMap[imagesOutputImgSourceURLstr]; !ok {
+			gfErr := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+imagesOutputImgSourceURLstr),
 				"verify__invalid_value_error",
-				map[string]interface{}{"gf_images__output_img_source_url_str": gf_images__output_img_source_url_str,},
-				nil, "gf_publisher_lib", p_runtime_sys)
-			return nil, gf_err
+				map[string]interface{}{"images_output_img_source_url_str": imagesOutputImgSourceURLstr,},
+				nil, "gf_publisher_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 
 		//--------------------
 		// IMPORTANT!! - this is IMAGE_JOB EXPECTED_OUTPUT - these image url's will be resolved
 		//               at a later time when the job completes (job is a long-running process)
-		post_element                             := p_post_elements_map[output.Image_source_url_str]
-		post_element.Image_id_str                 = output.Image_id_str
-		post_element.Img_thumbnail_small_url_str  = output.Thumbnail_small_relative_url_str
-		post_element.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
-		post_element.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
-		image_ids_lst = append(image_ids_lst, output.Image_id_str)
+		postElement                             := pPostElementsMap[output.Image_source_url_str]
+		postElement.Image_id_str                 = output.Image_id_str
+		postElement.Img_thumbnail_small_url_str  = output.Thumbnail_small_relative_url_str
+		postElement.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
+		postElement.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
+		imageIDsLst = append(imageIDsLst, output.Image_id_str)
 
 		//--------------------
 	}
 	//--------------------
 	// POST THUMBNAIL
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
-	first_image_uri_str := outputs_lst[0].Image_source_url_str
-	first_post_element  := p_post_elements_map[first_image_uri_str]
-	post_thumbnail_str  := first_post_element.Img_thumbnail_small_url_str
+	firstImageURIstr := outputs_lst[0].Image_source_url_str
+	firstPostElement := pPostElementsMap[firstImageURIstr]
+	postThumbnailStr := firstPostElement.Img_thumbnail_small_url_str
 	
 	//--------------------
 
 	result := &Gf_images_client_result{
-		image_ids_lst:      image_ids_lst,
-		running_job_id_str: running_job.Id_str,
-		post_thumbnail_str: post_thumbnail_str,
+		image_ids_lst:      imageIDsLst,
+		running_job_id_str: runningJob.Id_str,
+		post_thumbnail_str: postThumbnailStr,
 	}
 
 	return result, nil

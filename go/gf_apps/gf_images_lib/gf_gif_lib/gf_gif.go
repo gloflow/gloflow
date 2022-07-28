@@ -143,12 +143,12 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	
 	//-------------
 	// FETCH
-	local_image_file_path_str, _, f_gf_err := gf_images_core.FetcherGetExternImage(p_image_source_url_str,
+	local_image_file_path_str, _, gfErr := gf_images_core.FetcherGetExternImage(p_image_source_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		false, // p_random_time_delay_bool
 		pRuntimeSys)
-	if f_gf_err != nil {
-		return nil, "", f_gf_err
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//-----------------------
@@ -180,22 +180,22 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 	//-----------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gf_err := getDimensions(local_image_file_path_str, pRuntimeSys)
-	if gf_err != nil {
-		return nil, "", gf_err
+	img_width_int, img_height_int, gfErr := getDimensions(local_image_file_path_str, pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//-----------------------
 	// GIF_OBJ_CREATE
-	gif, gf_err := gif_db__create(p_image_source_url_str,
+	gif, gfErr := gif_db__create(p_image_source_url_str,
 		p_image_origin_page_url_str,
 		img_width_int,
 		img_height_int,
 		frames_num_int,
 		frames_s3_urls_lst,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, "", gf_err
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//-----------------------
@@ -204,11 +204,11 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	if p_create_new_db_img_bool {
 
 		// IMAGE_ID
-		var gf_image_id_str gf_images_core.Gf_image_id
+		var gf_image_id_str gf_images_core.GFimageID
 		if p_gf_image_id_str == "" {
-			new_image_id_str, i_err := gf_images_core.Image_ID__create_from_url(p_image_source_url_str, pRuntimeSys)
-			if i_err != nil {
-				return nil, "", i_err
+			new_image_id_str, gfErr := gf_images_core.Image_ID__create_from_url(p_image_source_url_str, pRuntimeSys)
+			if gfErr != nil {
+				return nil, "", gfErr
 			}
 			gf_image_id_str = new_image_id_str
 		} else {
@@ -216,9 +216,9 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		}
 
 		// IMAGE_TITLE
-		image_title_str, gf_err := gf_images_core.Get_image_title_from_url(p_image_source_url_str,pRuntimeSys)
-		if gf_err != nil {
-			return nil,"",gf_err
+		image_title_str, gfErr := gf_images_core.Get_image_title_from_url(p_image_source_url_str,pRuntimeSys)
+		if gfErr != nil {
+			return nil, "", gfErr
 		}
 
 		gif_first_frame_str := gif.Preview_frames_s3_urls_lst[0]
@@ -251,9 +251,9 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 			//"dominant_color_hex_str":dominant_color_hex_str,
 		}
 
-		verified_image_info_map, gf_err := gf_images_core.Image__verify_image_info(gf_image_info_map, pRuntimeSys)
-		if gf_err != nil {
-			return nil, "", gf_err
+		verified_image_info_map, gfErr := gf_images_core.Image__verify_image_info(gf_image_info_map, pRuntimeSys)
+		if gfErr != nil {
+			return nil, "", gfErr
 		}
 		//-----------------------
 		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
@@ -275,9 +275,9 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		//               every GIF in the system has its GF_Gif DB struct and GF_Image DB struct.
 		//               these two structs are related by origin_url
 
-		_, c_gf_err := gf_images_core.ImageCreateNew(gf_image_info, pCtx, pRuntimeSys)
-		if c_gf_err != nil {
-			return nil, "", c_gf_err
+		_, gfErr = gf_images_core.ImageCreateNew(gf_image_info, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, "", gfErr
 		}
 
 		// link the new gf_image DB record to the gf_gif DB record
@@ -299,9 +299,9 @@ func storePreviewFrames(p_local_file_path_src string,
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
 	max_num__of_preview_frames_int       := 10
-	frames_images_file_paths_lst, gf_err := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
-	if gf_err != nil {
-		return 0, nil, gf_err, nil
+	frames_images_file_paths_lst, gfErr := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
+	if gfErr != nil {
+		return 0, nil, gfErr, nil
 	}
 
 	fmt.Println("== - ==++++   frames_images_file_paths_lst - "+fmt.Sprint(frames_images_file_paths_lst))
@@ -364,20 +364,20 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gf_err := getDimensions(p_local_file_path_src, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	img_width_int, img_height_int, gfErr := getDimensions(p_local_file_path_src, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//---------------------
 
 	file, err := os.Open(p_local_file_path_src)
 	if err != nil {
-		gf_err := gf_core.Error__create("OS failed to open a GIF file to then save its frames as individual files",
+		gfErr := gf_core.Error__create("OS failed to open a GIF file to then save its frames as individual files",
 			"file_open_error",
 			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
 			err, "gf_gif_lib", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//---------------------
@@ -395,11 +395,11 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	gif_image,gif_err := gif.DecodeAll(file)
 
 	if gif_err != nil {
-		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
+		gfErr := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
 			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//---------------------
@@ -443,20 +443,20 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		new_file_name_str := fmt.Sprintf("%s/%s_%d.png", p_frames_images_dir_path_str, source_file_name_str, i)
 		file, err         := os.Create(new_file_name_str)
 		if err != nil {
-			gf_err := gf_core.Error__create("OS failed to create a file to save a GIF frame to FS",
+			gfErr := gf_core.Error__create("OS failed to create a file to save a GIF frame to FS",
 				"file_create_error",
 				map[string]interface{}{"new_file_name_str": new_file_name_str,},
 				err, "gf_gif_lib", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 
 		err = png.Encode(file,overpaint_image)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
+			gfErr := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
 				"png_encoding_error",
 				map[string]interface{}{"new_file_name_str": new_file_name_str,},
 				err, "gf_gif_lib", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 
 		file.Close()
@@ -476,11 +476,11 @@ func getDimensions(p_local_file_path_src string,
 
 	file, err := os.Open(p_local_file_path_src)
 	if err != nil {
-		gf_err := gf_core.Error__create("OS failed to open a file to get image dimensions",
+		gfErr := gf_core.Error__create("OS failed to open a file to get image dimensions",
 			"file_open_error",
 			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
 			err, "gf_gif_lib", pRuntimeSys)
-		return 0, 0, gf_err
+		return 0, 0, gfErr
 	}
 
 	//---------------------
@@ -498,11 +498,11 @@ func getDimensions(p_local_file_path_src string,
 	gif, gif_err := gif.DecodeAll(file)
 
 	if gif_err != nil {
-		gf_err := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
+		gfErr := gf_core.Error__create("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
 			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
-		return 0, 0, gf_err
+		return 0, 0, gfErr
 	}
 
 	//---------------------
@@ -539,11 +539,11 @@ func gif__get_hash(p_image_local_file_path_str string,
 
 	f, err := os.Open(p_image_local_file_path_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("OS failed to open a GIF file to get its hash",
+		gfErr := gf_core.Error__create("OS failed to open a GIF file to get its hash",
 			"file_open_error",
 			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
 			err, "gf_gif_lib", pRuntimeSys)
-		return "", gf_err
+		return "", gfErr
 	}
 	defer f.Close()
 
