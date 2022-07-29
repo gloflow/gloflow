@@ -21,6 +21,7 @@ package gf_web3_lib
 
 import (
 	"os"
+	// "fmt"
 	"time"
 	"testing"
 	"net/http"
@@ -29,6 +30,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
@@ -50,13 +52,14 @@ func TestMain(m *testing.M) {
 
 
 
-		jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
+		/*jobs_mngr := gf_images_jobs_core.JobsMngrInit(test__images_local_dir_path_str,
 			test__images_thumbs_local_dir_path_str,
 			img_config,
 			gf_s3_test_info.Gf_s3_info,
 			runtime_sys)
-			
-		imagesJobsMngrCh := nil
+		fmt.Println(jobs_mngr)
+
+		imagesJobsMngrCh := nil*/
 
 		config := &gf_eth_core.GF_config{
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
@@ -65,7 +68,7 @@ func TestMain(m *testing.M) {
 		
 		InitService(HTTPmux,
 			config,
-			imagesJobsMngrCh,
+			nil, // imagesJobsMngrCh,
 			runtime.RuntimeSys)
 			
 		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)
