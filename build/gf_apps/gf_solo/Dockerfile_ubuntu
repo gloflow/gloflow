@@ -7,9 +7,11 @@ RUN useradd --create-home --no-log-init -r -g gf gf
 
 
 
-
-
-
+# FIX!! - this is a hacky solution for the "apt-get update" issue
+#         "The following signatures couldn't be verified because the public key is not available: NO_PUBKEY" 
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
 
 #------------
 RUN apt-get update && \
