@@ -49,10 +49,13 @@ type GF_service_info struct {
 	AWS_token_str             string
 	
 	Templates_paths_map map[string]string
+
+	// IMAGES_STORAGE
+	ImagesUseNewStorageEngineBool bool
 }
 
 //-------------------------------------------------
-func Init_service(p_service_info *GF_service_info,
+func Init_service(pServiceInfo *GF_service_info,
 	p_http_mux    *http.ServeMux,
 	p_runtime_sys *gf_core.Runtime_sys) {
 
@@ -60,8 +63,8 @@ func Init_service(p_service_info *GF_service_info,
 	// ELASTICSEARCH
 	var esearch_client *elastic.Client
 	var gf_err         *gf_core.Gf_error
-	if p_service_info.Run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(p_service_info.Elasticsearch_host_str, p_runtime_sys)
+	if pServiceInfo.Run_indexer_bool {
+		esearch_client, gf_err = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, p_runtime_sys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -76,13 +79,13 @@ func Init_service(p_service_info *GF_service_info,
 		panic(1)
 	}*/
 
-	init_handlers(p_service_info.Templates_paths_map, p_http_mux, p_runtime_sys)
+	init_handlers(pServiceInfo.Templates_paths_map, p_http_mux, p_runtime_sys)
 
 	//------------------------
 	// GF_DOMAINS
 	gf_domains_lib.DB_index__init(p_runtime_sys)
 	gf_domains_lib.Init_domains_aggregation(p_runtime_sys)
-	gf_err = gf_domains_lib.Init_handlers(p_service_info.Templates_paths_map,
+	gf_err = gf_domains_lib.Init_handlers(pServiceInfo.Templates_paths_map,
 		p_http_mux,
 		p_runtime_sys)
 	if gf_err != nil {
@@ -92,21 +95,22 @@ func Init_service(p_service_info *GF_service_info,
 	//------------------------
 	// GF_CRAWL
 
-	crawl_config := &gf_crawl_lib.GF_crawler_config{
+	crawl_config := &gf_crawl_lib.GFcrawlerConfig{
 		Crawled_images_s3_bucket_name_str: "gf--discovered--img",
 		Images_s3_bucket_name_str:         "gf--img",
-		Images_local_dir_path_str:         p_service_info.Crawl__images_local_dir_path_str,
-		Cluster_node_type_str:             p_service_info.Crawl__cluster_node_type_str,
-		Crawl_config_file_path_str:        p_service_info.Crawl__config_file_path_str,
+		Images_local_dir_path_str:         pServiceInfo.Crawl__images_local_dir_path_str,
+		Cluster_node_type_str:             pServiceInfo.Crawl__cluster_node_type_str,
+		Crawl_config_file_path_str:        pServiceInfo.Crawl__config_file_path_str,
+		ImagesUseNewStorageEngineBool:     pServiceInfo.ImagesUseNewStorageEngineBool,
 	}
-	gf_crawl_lib.Init(crawl_config, // p_service_info.Crawl__images_local_dir_path_str,
-		// p_service_info.Crawl__cluster_node_type_str,
-		// p_service_info.Crawl__config_file_path_str,
-		p_service_info.Media_domain_str,
-		p_service_info.Templates_paths_map,
-		p_service_info.AWS_access_key_id_str,
-		p_service_info.AWS_secret_access_key_str,
-		p_service_info.AWS_token_str,
+	gf_crawl_lib.Init(crawl_config, // pServiceInfo.Crawl__images_local_dir_path_str,
+		// pServiceInfo.Crawl__cluster_node_type_str,
+		// pServiceInfo.Crawl__config_file_path_str,
+		pServiceInfo.Media_domain_str,
+		pServiceInfo.Templates_paths_map,
+		pServiceInfo.AWS_access_key_id_str,
+		pServiceInfo.AWS_secret_access_key_str,
+		pServiceInfo.AWS_token_str,
 		esearch_client,
 		p_http_mux,
 		p_runtime_sys)
@@ -115,7 +119,7 @@ func Init_service(p_service_info *GF_service_info,
 	// GF_STATS
 
 	stats_url_base_str    := "/a/stats"
-	py_stats_dir_path_str := p_service_info.Py_stats_dirs_lst[0]
+	py_stats_dir_path_str := pServiceInfo.Py_stats_dirs_lst[0]
 
 	gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, p_runtime_sys)
 	if gf_err != nil {

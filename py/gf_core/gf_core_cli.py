@@ -74,7 +74,7 @@ def run(p_cmd_str,
 	p_env_map.update(os.environ)
 
 	if p_print_cmd_str:
-		print(f"{fg('yellow')}cmd{attr(0)} {fg('green')}{p_cmd_str}{attr(0)}")
+		print(f"{fg('yellow')}cmd{attr(0)} >>> {fg('green')}{p_cmd_str}{attr(0)}")
 
 	p = subprocess.Popen(p_cmd_str,
 		env     = p_env_map,

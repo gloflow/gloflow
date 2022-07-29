@@ -34,12 +34,13 @@ import (
 )
 
 //--------------------------------------------------
-type GF_crawler_config struct {
+type GFcrawlerConfig struct {
 	Crawled_images_s3_bucket_name_str string
 	Images_s3_bucket_name_str         string
 	Images_local_dir_path_str         string
 	Cluster_node_type_str             string
 	Crawl_config_file_path_str        string
+	ImagesUseNewStorageEngineBool     bool
 }
 
 type Gf_crawler struct {
@@ -61,7 +62,7 @@ type Gf_crawler_cycle_run struct {
 }
 
 //--------------------------------------------------
-func Init(pConfig *GF_crawler_config,
+func Init(pConfig *GFcrawlerConfig,
 	pMediaDomainStr             string,
 	pTemplatesPathsMap       map[string]string,
 	p_aws_access_key_id_str     string,
@@ -86,10 +87,11 @@ func Init(pConfig *GF_crawler_config,
 	}
 
 	runtime := &gf_crawl_core.GFcrawlerRuntime{
-		Events_ctx:            events_ctx,
-		Esearch_client:        pEsearchClient,
-		S3_info:               gf_s3_info,
-		Cluster_node_type_str: pConfig.Cluster_node_type_str,
+		Events_ctx:                    events_ctx,
+		Esearch_client:                pEsearchClient,
+		S3_info:                       gf_s3_info,
+		Cluster_node_type_str:         pConfig.Cluster_node_type_str,
+		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 	}
 
 	//--------------

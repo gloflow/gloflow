@@ -94,7 +94,7 @@ func init_handlers(p_media_domain_str string,
 				}
 
 				//--------------------------
-				gf_err = gf_crawl_core.Flows__add_extern_image(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
+				gf_err = gf_crawl_core.FlowsAddExternImage(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 					flows_names_lst,
 
 					p_media_domain_str,

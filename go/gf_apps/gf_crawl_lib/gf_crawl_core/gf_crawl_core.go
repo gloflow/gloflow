@@ -27,8 +27,9 @@ import (
 
 //--------------------------------------------------
 type GFcrawlerRuntime struct {
-	Events_ctx            *gf_events.Events_ctx
-	Esearch_client        *elastic.Client
-	S3_info               *gf_core.GFs3Info
-	Cluster_node_type_str string
+	Events_ctx                    *gf_events.Events_ctx
+	Esearch_client                *elastic.Client
+	S3_info                       *gf_core.GFs3Info
+	Cluster_node_type_str         string
+	ImagesUseNewStorageEngineBool bool
 }

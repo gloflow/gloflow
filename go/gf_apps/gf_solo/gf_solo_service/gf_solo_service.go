@@ -213,6 +213,9 @@ func Run(pConfig *GF_config,
 		// on user trying to access authed endpoint while not logged in, redirect to this
 		AuthLoginURLstr: "/landing/main",
 
+		// IMAGES_STORAGE
+		UseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
+
 		// IPFS
 		IPFSnodeHostStr: imagesConfig.IPFSnodeHostStr,
 	}
@@ -241,6 +244,9 @@ func Run(pConfig *GF_config,
 		AWS_token_str:             pConfig.AWS_token_str,
 
 		Templates_paths_map: pConfig.Templates_paths_map,
+
+		// IMAGES_STORAGE
+		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 	}
 	gf_analytics_lib.Init_service(gf_analytics__service_info,
 		gfSoloHTTPmux,

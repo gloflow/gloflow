@@ -31,7 +31,7 @@ import (
 //--------------------------------------------------
 // STAGE
 func imagesS3stageStoreImages(pCrawlerNameStr string,
-	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
+	pPageImagesPipelineInfosLst []*gf_page_img__pipeline_info,
 	pOriginPageURLstr               string,
 	pS3bucketNameStr                string,
 	pRuntime                        *GFcrawlerRuntime,
@@ -41,20 +41,20 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 
-	for _, page_img__pinfo := range p_page_imgs__pipeline_infos_lst {
+	for _, pageImagePipelineInfo := range pPageImagesPipelineInfosLst {
 
 		// IMPORTANT!! - skip failed images
-		if page_img__pinfo.gf_error != nil {
+		if pageImagePipelineInfo.gf_error != nil {
 			continue
 		}
 
 		// IMPORTANT!! - skip images that have already been processed (and is in the DB)
-		if page_img__pinfo.exists_bool {
+		if pageImagePipelineInfo.exists_bool {
 			continue
 		}
 
 		// IMPORTANT!! - check image is not flagged as a NSFV image
-		if page_img__pinfo.nsfv_bool {
+		if pageImagePipelineInfo.nsfv_bool {
 			continue
 		}
 
@@ -63,32 +63,32 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 		//               if they're a GIF (all GIF's are stored/persisted,
 		//               even if they determined to be NSFV for some reason).
 
-		if page_img__pinfo.page_img.Img_ext_str == "gif" || page_img__pinfo.page_img.Valid_for_usage_bool {
+		if pageImagePipelineInfo.page_img.Img_ext_str == "gif" || pageImagePipelineInfo.page_img.Valid_for_usage_bool {
 
-			gf_err := imageS3upload(page_img__pinfo.page_img,
-				page_img__pinfo.local_file_path_str,
-				page_img__pinfo.thumbs,
+			gfErr := imageS3upload(pageImagePipelineInfo.page_img,
+				pageImagePipelineInfo.local_file_path_str,
+				pageImagePipelineInfo.thumbs,
 				pS3bucketNameStr,
 				pRuntime,
 				pRuntimeSys)
 
-			if gf_err != nil {
+			if gfErr != nil {
 				t := "image_s3_upload__failed"
-				m := "failed s3 uploading of image with img_url_str - "+page_img__pinfo.page_img.Url_str
+				m := "failed s3 uploading of image with img_url_str - "+pageImagePipelineInfo.page_img.Url_str
 				Create_error_and_event(t, m, 
 					map[string]interface{}{"origin_page_url_str": pOriginPageURLstr,},
-					page_img__pinfo.page_img.Url_str,
+					pageImagePipelineInfo.page_img.Url_str,
 					pCrawlerNameStr,
-					gf_err, pRuntime, pRuntimeSys)
-				page_img__pinfo.gf_error = gf_err
-				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
+					gfErr, pRuntime, pRuntimeSys)
+				pageImagePipelineInfo.gf_error = gfErr
+				continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
 
 		//------------------
 	}
 
-	return p_page_imgs__pipeline_infos_lst
+	return pPageImagesPipelineInfosLst
 }
 
 //--------------------------------------------------

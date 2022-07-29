@@ -148,7 +148,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	fmt.Printf("\n")
 	
 
-	gf_err := Flows__add_extern_image(test__crawled_image.Id_str,
+	gf_err := FlowsAddExternImage(test__crawled_image.Id_str,
 		test_config.test__image_flows_names_lst,
 		test_config.test__crawled_images_s3_bucket_name_str,
 		test_config.test__gf_images_s3_bucket_name_str,

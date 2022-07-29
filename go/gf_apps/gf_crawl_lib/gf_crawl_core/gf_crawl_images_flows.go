@@ -36,38 +36,37 @@ import (
 // gf_crawlers file_storage (S3/IPFS) to gf_images service file_storage (S3/IPFS).
 // at the moment this is called directly in the gf_crawl HTTP handler.
 
-func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_id,
-	p_flows_names_lst                   []string,
-	p_media_domain_str                  string,
-	p_crawled_images_s3_bucket_name_str string,
-	p_gf_images_s3_bucket_name_str      string,
-	p_runtime                           *GFcrawlerRuntime,
-	pRuntimeSys                         *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_flows.Flows__add_extern_image()")
+func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
+	pFlowsNamesLst                []string,
+	pMediaDomainStr               string,
+	pCrawledImagesS3bucketNameStr string,
+	pImagesS3bucketNameStr        string,
+	pRuntime                      *GFcrawlerRuntime,
+	pRuntimeSys                   *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	green := color.New(color.BgGreen, color.FgBlack).SprintFunc()
 	cyan := color.New(color.FgWhite, color.BgCyan).SprintFunc()
 
 	// this is used temporarily to donwload images to, before upload to S3
-	images_store_local_dir_path_str := "."
+	imagesStoreLocalDirPathStr := "."
 
-	fmt.Printf("crawler_page_image_id_str - %s\n", p_crawler_page_image_id_str)
-	fmt.Printf("flows_names               - %s\n", fmt.Sprint(p_flows_names_lst))
+	fmt.Printf("crawler_page_image_id_str - %s\n", pCrawlerPageImageIDstr)
+	fmt.Printf("flows_names               - %s\n", fmt.Sprint(pFlowsNamesLst))
 
 	// DB - get gf_crawler_page_image from the DB
-	gf_page_img, gf_err := image__db_get(p_crawler_page_image_id_str, p_runtime, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	pageImage, gfErr := image__db_get(pCrawlerPageImageIDstr, pRuntime, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	gf_image_id_str := gf_page_img.Gf_image_id_str
-	gf_images_s3_bucket__upload_complete__bool := false
+	imageIDstr := pageImage.Gf_image_id_str
+	imagesS3bucketUploadCompleteBool := false
 
 	//--------------------------
 	// SPECIAL_CASE
-	// IMPORTANT!! - some crawler_page_images dont have their gf_image_id_str set,
+	// IMPORTANT!! - some crawler_page_images dont have their imageIDstr set,
 	//               which means that they dont have their corresponding gf_image.
-	if gf_image_id_str == "" {
+	if imageIDstr == "" {
 
 		pRuntimeSys.Log_fun("INFO", "")
 		pRuntimeSys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
@@ -75,18 +74,18 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 
 		// S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
 		//             after it finishes processing it.
-		gf_image, gf_image_thumbs, local_image_file_path_str, gf_err := images_pipe__single_simple(gf_page_img,
-			images_store_local_dir_path_str,
+		gfImage, gf_image_thumbs, localImageFilePathStr, gfErr := images_pipe__single_simple(pageImage,
+			imagesStoreLocalDirPathStr,
 
-			p_media_domain_str,
-			p_crawled_images_s3_bucket_name_str,
-			p_runtime,
+			pMediaDomainStr,
+			pCrawledImagesS3bucketNameStr,
+			pRuntime,
 			pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		if gfErr != nil {
+			return gfErr
 		}
 
-		gf_image_id_str = gf_image.Id_str
+		imageIDstr = gfImage.Id_str
 
 		//-------------------
 		// S3_UPLOAD_TO_GF_IMAGES_BUCKET
@@ -96,26 +95,26 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		//               so we need to upload the new image to that gf_images S3 bucket as well.
 		// FIX!! - too much uploading, very inefficient, figure out a better way!
 
-		gf_err = gf_images_core.S3storeImage(local_image_file_path_str,
+		gfErr = gf_images_core.S3storeImage(localImageFilePathStr,
 			gf_image_thumbs,
-			p_gf_images_s3_bucket_name_str,
-			p_runtime.S3_info,
+			pImagesS3bucketNameStr,
+			pRuntime.S3_info,
 			pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		if gfErr != nil {
+			return gfErr
 		}
 
 		// IMPORTANT!! - gf_images service has its own dedicate S3 bucket, which is different from the gf_crawl bucket.
 		//               gf_images_core.Trans__s3_store_image() uploads the image and its thumbs to S3, 
 		//               to indicate that we dont need to upload it later again.
-		gf_images_s3_bucket__upload_complete__bool = true
+		imagesS3bucketUploadCompleteBool = true
 
 		//-------------------
 		//CLEANUP
 
-		gf_err = image__cleanup(local_image_file_path_str, gf_image_thumbs, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		gfErr = image__cleanup(localImageFilePathStr, gf_image_thumbs, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 		//-------------------
 	}
@@ -124,10 +123,10 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	// ADD_FLOWS_NAMES_TO_IMAGE_DB_RECORD
 
 	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
-	for _, flow_name_str := range p_flows_names_lst {
-		gf_err := gf_images_flows.Flows_db__add_flow_name_to_image(flow_name_str, gf_image_id_str, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+	for _, flowNameStr := range pFlowsNamesLst {
+		gfErr := gf_images_flows.Flows_db__add_flow_name_to_image(flowNameStr, imageIDstr, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 	}
 
@@ -137,15 +136,15 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 	//                           because they needed to be reprecossed and were downloaded from a URL onto
 	//                           the local FS first.
 
-	if !gf_images_s3_bucket__upload_complete__bool {
+	if !imagesS3bucketUploadCompleteBool {
 
-		source_gf_crawl_s3_bucket_str := p_crawled_images_s3_bucket_name_str
+		sourceCrawlS3bucketStr := pCrawledImagesS3bucketNameStr
 
-		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(source_gf_crawl_s3_bucket_str), cyan(p_gf_images_s3_bucket_name_str))
+		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(sourceCrawlS3bucketStr), cyan(pImagesS3bucketNameStr))
 
-		gf_image, gf_err := gf_images_core.DB__get_image(gf_image_id_str, pRuntimeSys)
-		if gf_err != nil {
-			return gf_err
+		gfImage, gfErr := gf_images_core.DB__get_image(imageIDstr, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 
 		/*S3__get_image_original_file_s3_filepath is wrong!! FIXX!!!
@@ -155,41 +154,41 @@ func Flows__add_extern_image(p_crawler_page_image_id_str Gf_crawler_page_image_i
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		original_file_s3_path_str                                      := gf_images_core.S3__get_image_original_file_s3_filepath(gf_image, pRuntimeSys)
-		t_small_s3_path_str, t_medium_s3_path_str, t_large_s3_path_str := gf_images_core.S3__get_image_thumbs_s3_filepaths(gf_image, pRuntimeSys)
+		originalFileS3pathStr                              := gf_images_core.S3__get_image_original_file_s3_filepath(gfImage, pRuntimeSys)
+		tSmallS3pathStr, tMediumS3pathStr, tLargeS3pathStr := gf_images_core.S3__get_image_thumbs_s3_filepaths(gfImage, pRuntimeSys)
 
-		fmt.Printf("original_file_s3_path_str - %s\n", original_file_s3_path_str)
-		fmt.Printf("t_small_s3_path_str       - %s\n", t_small_s3_path_str)
-		fmt.Printf("t_medium_s3_path_str      - %s\n", t_medium_s3_path_str)
-		fmt.Printf("t_large_s3_path_str       - %s\n", t_large_s3_path_str)
+		fmt.Printf("original_file_s3_path_str - %s\n", originalFileS3pathStr)
+		fmt.Printf("t_small_s3_path_str       - %s\n", tSmallS3pathStr)
+		fmt.Printf("t_medium_s3_path_str      - %s\n", tMediumS3pathStr)
+		fmt.Printf("t_large_s3_path_str       - %s\n", tLargeS3pathStr)
 
-		// ADD!! - copy t_small_s3_path_str first, and then copy original_file_s3_path_str and medium/large thumb in separate goroutines
+		// ADD!! - copy t_small_s3_path_str first, and then copy originalFileS3pathStr and medium/large thumb in separate goroutines
 		//         (in parallel and after the response returns back to the user). 
 		//         this is critical to improve perceived user response time, since the small thumb is necessary to view an image in flows, 
 		//         but the original_file and medium/large thumbs are not (and can take much longer to S3 copy without the user noticing).
-		files_to_copy_lst := []string{
-			original_file_s3_path_str,
-			t_small_s3_path_str, 
-			t_medium_s3_path_str,
-			t_large_s3_path_str,
+		filesToCopyLst := []string{
+			originalFileS3pathStr,
+			tSmallS3pathStr, 
+			tMediumS3pathStr,
+			tLargeS3pathStr,
 		}
 		
-		for _, s3_path_str := range files_to_copy_lst {
+		for _, S3pathStr := range filesToCopyLst {
 
 			// IMPORTANT!! - the Crawler_page_img has alread been uploaded to S3, so we dont need 
 			//               to download it from S3 and reupload to gf_images S3 bucket. Instead we do 
 			//               a file copy operation within the S3 system without downloading here.
 
-			// source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", source_gf_crawl_s3_bucket_str, s3_path_str))
+			// source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", sourceCrawlS3bucketStr, s3_path_str))
 
-			gf_err := gf_core.S3copyFile(source_gf_crawl_s3_bucket_str, // p_source_file__s3_path_str
-				s3_path_str,
-				p_gf_images_s3_bucket_name_str, // p_target_bucket_name_str,
-				s3_path_str,                    // p_target_file__s3_path_str
-				p_runtime.S3_info,
+			gfErr := gf_core.S3copyFile(sourceCrawlS3bucketStr, // p_source_file__s3_path_str
+				S3pathStr,
+				pImagesS3bucketNameStr, // p_target_bucket_name_str,
+				S3pathStr,              // p_target_file__s3_path_str
+				pRuntime.S3_info,
 				pRuntimeSys)
-			if gf_err != nil {
-				return gf_err
+			if gfErr != nil {
+				return gfErr
 			}
 		}
 	}

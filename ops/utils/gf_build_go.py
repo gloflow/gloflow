@@ -119,6 +119,9 @@ def run(p_name_str,
         print("")
         print("")
 
+    # c_str = f"go mod tidy -compat=1.17"
+    # gf_core_cli.run(c_str)
+    
     #-----------------------------
     # STATIC_LINKING - when deploying to containers it is not always guaranteed that all
     #                  required libraries are present. so its safest to compile to a statically

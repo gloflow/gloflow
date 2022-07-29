@@ -24,7 +24,7 @@ import (
 )
 
 //--------------------------------------------------
-func get_domains_blacklist(p_runtime_sys *gf_core.Runtime_sys) map[string]bool {
+func get_domains_blacklist(pRuntimeSys *gf_core.RuntimeSys) map[string]bool {
 
 	domains_map := map[string]bool{
 		"facebook.com":     false,
