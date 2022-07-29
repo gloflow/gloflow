@@ -72,8 +72,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 		pRuntimeSys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
 		pRuntimeSys.Log_fun("INFO", "")
 
-		// S3_UPLOAD - images__process_crawler_page_image() uploads image and its thumbs to S3 
-		//             after it finishes processing it.
+
 		gfImage, gf_image_thumbs, localImageFilePathStr, gfErr := images_pipe__single_simple(pageImage,
 			imagesStoreLocalDirPathStr,
 

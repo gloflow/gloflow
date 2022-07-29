@@ -68,7 +68,7 @@ func images__stage__download_images(p_crawler_name_str string,
 		//               since when users view a page in their browser the browser issues all requests
 		//               for all the images in the page immediatelly. 
 
-		local_image_file_path_str, gf_err := image__download(page_img__pinfo.page_img,
+		local_image_file_path_str, gf_err := imageDownload(page_img__pinfo.page_img,
 			p_images_store_local_dir_path_str,
 			p_runtime_sys)
 		
@@ -117,10 +117,9 @@ func images__stage__download_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func image__download(pImage *Gf_crawler_page_image,
+func imageDownload(pImage *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.image__download()")
+	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

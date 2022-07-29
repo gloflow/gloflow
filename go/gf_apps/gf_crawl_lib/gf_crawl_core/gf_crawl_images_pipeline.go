@@ -151,13 +151,14 @@ func images_pipe__single_simple(pImage *Gf_crawler_page_image,
 
 
 	//------------------------
-	localImageFilePathStr, gfErr := image__download(pImage, pImagesStoreLocalDirPathStr, pRuntimeSys)
+	// IMAGE_DOWNLOAD - download image from some external source
+	localImageFilePathStr, gfErr := imageDownload(pImage, pImagesStoreLocalDirPathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, "", gfErr
 	}
 
 	//------------------------
-	image, image_thumbs, gfErr := image__process(pImage,
+	image, image_thumbs, gfErr := imageProcess(pImage,
 		"", // p_gf_image_id_str
 		localImageFilePathStr,
 		pImagesStoreLocalDirPathStr,
@@ -171,6 +172,7 @@ func images_pipe__single_simple(pImage *Gf_crawler_page_image,
 	}
 
 	//------------------------
+	// S3_UPLOAD
 	gfErr = imageS3upload(pImage,
 		localImageFilePathStr,
 		image_thumbs,
