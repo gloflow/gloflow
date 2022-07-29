@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.10
 
 #------------
 # GROUP/USER
@@ -7,8 +7,12 @@ RUN useradd --create-home --no-log-init -r -g gf gf
 
 
 
-
-
+# RUN apt-get install -y gpgv
+# FIX!! - this is a hacky solution for the "apt-get update" issue
+#         "The following signatures couldn't be verified because the public key is not available: NO_PUBKEY" 
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
 
 #------------
 RUN apt-get update && \
