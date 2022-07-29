@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 			gf_s3_test_info.Gf_s3_info,
 			runtime_sys)
 			
-		imagesJobsMngrCh := 
+		imagesJobsMngrCh := nil
 
 		config := &gf_eth_core.GF_config{
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
@@ -65,6 +65,7 @@ func TestMain(m *testing.M) {
 		
 		InitService(HTTPmux,
 			config,
+			imagesJobsMngrCh,
 			runtime.RuntimeSys)
 			
 		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)
