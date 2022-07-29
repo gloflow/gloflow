@@ -7,13 +7,11 @@ RUN useradd --create-home --no-log-init -r -g gf gf
 
 #------------
 
-# RUN apt-get update && apt-get install -y gnupg
+RUN apt-get update && apt-get install -y gnupg
 # 
 # # FIX!! - this is a hacky solution for the "apt-get update" issue
 # #         "The following signatures couldn't be verified because the public key is not available: NO_PUBKEY" 
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
-# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
 
 #------------
 RUN apt-get update
