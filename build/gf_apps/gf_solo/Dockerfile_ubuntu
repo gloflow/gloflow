@@ -1,4 +1,4 @@
-FROM ubuntu:22.10
+FROM ubuntu:20.04
 
 #------------
 # GROUP/USER
@@ -7,11 +7,16 @@ RUN useradd --create-home --no-log-init -r -g gf gf
 
 #------------
 
-RUN apt-get install -y gnupg
+
+
+
+# RUN apt-get install -y gnupg
 # 
 # # FIX!! - this is a hacky solution for the "apt-get update" issue
 # #         "The following signatures couldn't be verified because the public key is not available: NO_PUBKEY" 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+# RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+
+
 
 #------------
 RUN apt-get update
