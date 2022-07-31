@@ -117,7 +117,7 @@ body {
 
 #flows_picker {
 	position: fixed;
-	top: 440px;
+	top: 46px;
 	right: 0px;
 }
 #flows_picker #flow_info {
@@ -148,7 +148,7 @@ body {
 #view_type_picker {
 	position: fixed;
 	right:    -16px;
-	top:      329px;
+	top:      529px;
 	width:    50px;
 	height:   50px;
 }
@@ -186,7 +186,7 @@ body {
 	position: fixed;
     background-color: #f7f7f7;
     right: 0px;
-    top: 200px;
+    top: 400px;
     font-size: 12px;
     padding-top: 7px;
     padding-left: 10px;
