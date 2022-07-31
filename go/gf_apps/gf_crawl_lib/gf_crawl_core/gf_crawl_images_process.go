@@ -100,7 +100,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 	p_media_domain_str                string,
 	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
-	pRuntimeSys                       *gf_core.Runtime_sys) (*gf_images_core.GFimage, *gf_images_core.GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys                       *gf_core.Runtime_sys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -183,10 +183,10 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 
 //--------------------------------------------------
 func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str               gf_images_core.GF_image_id,
+	pImageIDstr               gf_images_core.GFimageID,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
-	pRuntimeSys                   *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys                   *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
@@ -200,17 +200,17 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 	yellow := color.New(color.FgYellow).SprintFunc()
 
 	//-------------------
-	img_width_int, img_height_int, gf_err := gf_images_core.Get_image_dimensions__from_filepath(p_local_image_file_path_str, pRuntimeSys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	imgWidthInt, imgHeightInt, gfErr := gf_images_core.GetImageDimensionsFromFilepath(p_local_image_file_path_str, pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	//-------------------
 
 	// IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
 	//               part of a particular page
-	if img_width_int <= 130 || img_height_int <= 130 {
-		pRuntimeSys.Log_fun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(img_width_int))+"/height-"+cyan(fmt.Sprint(img_height_int))+")"))
+	if imgWidthInt <= 130 || imgHeightInt <= 130 {
+		pRuntimeSys.Log_fun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(imgWidthInt))+"/height-"+cyan(fmt.Sprint(imgHeightInt))+")"))
 		return nil, nil, nil
 	} else {
 
@@ -218,37 +218,37 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 		// TRANSFORM DOWNLOADED IMAGE - CREATE THUMBS, SAVE TO DB, AND UPLOAD TO AWS_S3
 
 		// IMPORTANT!! - a new gf_image ID is created if an external ID is not supplied
-		var gf_image_id_str gf_images_core.GF_image_id
-		if p_gf_image_id_str == "" {
-			new_gf_image_id_str, gf_err := gf_images_core.Image_ID__create_from_url(p_page_img.Url_str, pRuntimeSys)
-			if gf_err != nil {
-				return nil, nil, gf_err
+		var imageIDstr gf_images_core.GFimageID
+		if pImageIDstr == "" {
+			newImageIDstr, gfErr := gf_images_core.Image_ID__create_from_url(p_page_img.Url_str, pRuntimeSys)
+			if gfErr != nil {
+				return nil, nil, gfErr
 			}
-			gf_image_id_str = new_gf_image_id_str
+			imageIDstr = newImageIDstr
 		} else {
-			gf_image_id_str = p_gf_image_id_str
+			imageIDstr = pImageIDstr
 		}
 
-		image_origin_url_str      := p_page_img.Url_str
-		image_origin_page_url_str := p_page_img.Origin_page_url_str
+		imageOriginURLstr     := p_page_img.Url_str
+		imageOriginPageURLstr := p_page_img.Origin_page_url_str
 		meta_map := map[string]interface{}{}
 
 		ctx := context.Background()
 
 		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
 		//               also creates gf_image thumbnails as local files.
-		gf_image, gf_image_thumbs, gf_err := gf_images_core.TransformImage(gf_image_id_str,
+		gf_image, gf_image_thumbs, gfErr := gf_images_core.TransformImage(imageIDstr,
 			image_client_type_str,
 			image_flows_names_lst,
-			image_origin_url_str,
-			image_origin_page_url_str,
+			imageOriginURLstr,
+			imageOriginPageURLstr,
 			meta_map,
 			p_local_image_file_path_str,
 			p_thumbnails_local_dir_path_str,
 			ctx,
 			pRuntimeSys)
-		if gf_err != nil {
-			return nil, nil, gf_err
+		if gfErr != nil {
+			return nil, nil, gfErr
 		}
 		//--------------------------------
 

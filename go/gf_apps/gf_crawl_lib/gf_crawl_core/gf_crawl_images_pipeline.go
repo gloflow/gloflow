@@ -33,7 +33,7 @@ type gf_page_img__pipeline_info struct {
 	page_img            *Gf_crawler_page_image
 	page_img_ref        *Gf_crawler_page_image_ref
 	local_file_path_str string
-	thumbs              *gf_images_core.GF_image_thumbs
+	thumbs              *gf_images_core.GFimageThumbs
 	exists_bool         bool                   // has the page_img already been discovered in the past
 	nsfv_bool           bool
 	gf_error            *gf_core.GFerror       // if page_img processing failed at some stage
@@ -146,7 +146,7 @@ func images_pipe__single_simple(pImage *Gf_crawler_page_image,
 	pMediaDomainStr               string,
 	pCrawledImagesS3bucketNameStr string,
 	pRuntime                      *GFcrawlerRuntime,
-	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GF_image_thumbs, string, *gf_core.GFerror) {
+	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, string, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 

@@ -94,7 +94,7 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 //--------------------------------------------------
 func imageS3upload(pImage *Gf_crawler_page_image,
 	pLocalImageFilePathStr string,
-	pImageThumbs           *gf_images_core.GF_image_thumbs,
+	pImageThumbs           *gf_images_core.GFimageThumbs,
 	pS3bucketNameStr       string,
 	pRuntime               *GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
