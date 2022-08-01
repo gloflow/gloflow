@@ -131,12 +131,6 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	//---------------------------------
 	// DIMENSIONS
 	imageWidthInt, imageHeightInt := GetImageDimensionsFromImage(img, pRuntimeSys)
-	var largerDimensionInt int
-	if imageWidthInt > imageHeightInt {
-		largerDimensionInt = imageWidthInt
-	} else {
-		largerDimensionInt = imageHeightInt
-	}
 
 	//--------------------------
 	// CREATE THUMBNAILS
@@ -145,14 +139,13 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	medium_thumb_max_size_px_int := 400
 	large_thumb_max_size_px_int  := 600
 
-	gfImageThumbs, gfErr := CreateThumbnails(pImageIDstr,
+	gfImageThumbs, gfErr := CreateThumbnails(img,
+		pImageIDstr,
 		pNormalizedExtStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
-		largerDimensionInt,
 		small_thumb_max_size_px_int,
 		medium_thumb_max_size_px_int,
 		large_thumb_max_size_px_int,
-		img,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
@@ -212,13 +205,15 @@ func TransformProcessImage(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
+// OPS
+//---------------------------------------------------
 func resizeImage(pImg image.Image,
 	pImageOutputPathStr string,
-	pSizePxInt          int,
+	pWidthPxInt         int,
+	pHeightPxInt        int,
 	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	// preserves the aspect ratio
-	m := resize.Resize(uint(pSizePxInt), 0, pImg, resize.Lanczos3)
+	m := resize.Resize(uint(pWidthPxInt), uint(pHeightPxInt), pImg, resize.Lanczos3)
 
 	out, err := os.Create(pImageOutputPathStr)
 	if err != nil {

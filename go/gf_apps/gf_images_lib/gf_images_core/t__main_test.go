@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -50,21 +51,34 @@ func TestImageTransform(pTest *testing.T) {
 
 	testImageLocalFilePathStr       := "./../tests_data/test_image_03.jpeg"
 	testImageOutputLocalFilePathStr := "./../tests_data/transform/test_image_03_resized.jpeg"
-	testImageSizePxInt              := 600
+	testImageThumbSizePxInt         := 600
 
 	normalizedExtStr := "jpeg"
-	img, gfErr := ImageLoadFile(testImageLocalFilePathStr, normalizedExtStr, runtimeSys)
+	
+	image, gfErr := ImageLoadFile(testImageLocalFilePathStr, normalizedExtStr, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
 
+	largerDimensionPxInt, largerDimensionNameStr := GetImageLargerDimension(image, runtimeSys)
+	
+	
 
-	
-	
 	// RESIZE_IMAGE
-	gfErr = resizeImage(img,
+
+	thumbWidthPxInt, thumbHeightPxInt := ThumbsGetSizeInPx(testImageThumbSizePxInt,
+		largerDimensionPxInt,
+		largerDimensionNameStr)
+
+
+	fmt.Printf("larger dimension (px) - %d %s\n", largerDimensionPxInt, largerDimensionNameStr)
+	fmt.Printf("thumb size (px)       - %d %d\n", thumbWidthPxInt, thumbHeightPxInt)
+
+
+	gfErr = resizeImage(image,
 		testImageOutputLocalFilePathStr,
-		testImageSizePxInt,
+		thumbWidthPxInt,
+		thumbHeightPxInt,
 		runtimeSys)
 
 	if gfErr != nil {

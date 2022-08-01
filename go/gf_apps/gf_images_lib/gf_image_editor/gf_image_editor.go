@@ -237,14 +237,6 @@ func createImage(p_new_title_str string,
 	large_thumb_max_size_px_int          := 600
 	
 	//--------------------------
-	var largerDimensionInt int
-	if pProcessingInfo.image_width_int > pProcessingInfo.image_height_int {
-		largerDimensionInt = pProcessingInfo.image_width_int
-	} else {
-		largerDimensionInt = pProcessingInfo.image_height_int
-	}
-
-	//--------------------------
 	// GF_IMAGE_ID
 	imageIDstr := gf_images_core.Image_ID__create(pProcessingInfo.tmp_local_filepath_str,
 		image_format_str,
@@ -252,15 +244,13 @@ func createImage(p_new_title_str string,
 
 	//--------------------------
 	// THUMBNAILS
-	imageThumbs, gfErr := gf_images_core.CreateThumbnails(imageIDstr,
-		image_format_str, // p_normalized_ext_str,
-		// pProcessingInfo.tmp_local_filepath_str,
+	imageThumbs, gfErr := gf_images_core.CreateThumbnails(pProcessingInfo.png_image,
+		imageIDstr,
+		image_format_str,
 		local_thumbnails_target_dir_path_str,
-		largerDimensionInt,
 		small_thumb_max_size_px_int,
 		medium_thumb_max_size_px_int,
 		large_thumb_max_size_px_int,
-		pProcessingInfo.png_image,
 		pRuntimeSys)
 
 	if gfErr != nil {

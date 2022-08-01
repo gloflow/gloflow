@@ -179,50 +179,50 @@ func GetImageTitleFromURL(pImageURLstr string,
 }
 
 //---------------------------------------------------
-func GetImageDimensionsFromImage(p_img image.Image,
+func GetImageDimensionsFromImage(pImg image.Image,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int) {
 
-	p          := p_img.Bounds()
+	p          := pImg.Bounds()
 	width_int  := p.Max.X - p.Min.X
 	height_int := p.Max.Y - p.Min.Y
 	return width_int, height_int
 }
 
 //---------------------------------------------------
-func GetImageDimensionsFromFilepath(p_image_local_file_path_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (int, int, *gf_core.GFerror) {
+func GetImageDimensionsFromFilepath(pImageLocalFilePathStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
 	//-------------------
-	file, fs_err := os.Open(p_image_local_file_path_str)
-	if fs_err != nil {
+	file, err := os.Open(pImageLocalFilePathStr)
+	if err != nil {
 		gfErr := gf_core.Error__create("failed to open a local image file to get its dimensions",
 			"file_open_error",
-			map[string]interface{}{"image_local_file_path_str": p_image_local_file_path_str,},
-			fs_err, "gf_images_core", pRuntimeSys)
+			map[string]interface{}{"image_local_file_path_str": pImageLocalFilePathStr,},
+			err, "gf_images_core", pRuntimeSys)
 		return 0, 0, gfErr
 	}
 	defer file.Close()
 
 	//-------------------
-	format, gfErr := GetImageExtFromURL(p_image_local_file_path_str, pRuntimeSys)
+	format, gfErr := GetImageExtFromURL(pImageLocalFilePathStr, pRuntimeSys)
 	if gfErr != nil {
 		return 0, 0, gfErr
 	}
 
 	//-------------------
-	image_width_int, image_height_int, gfErr := Get_image_dimensions__from_file(file, format, pRuntimeSys)
+	imageWidthInt, imageHeightInt, gfErr := GetImageDimensionsFromFile(file, format, pRuntimeSys)
 	if gfErr != nil {
 		return 0, 0, gfErr
 	}
 
 	//-------------------
-	return image_width_int, image_height_int, nil
+	return imageWidthInt, imageHeightInt, nil
 }
 
 //---------------------------------------------------
-func Get_image_dimensions__from_file(p_file io.Reader,
+func GetImageDimensionsFromFile(pFile io.Reader,
 	p_img_extension_str string,
-	pRuntimeSys         *gf_core.Runtime_sys) (int, int, *gf_core.GFerror) {
+	pRuntimeSys         *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
 	var image_config image.Config
 	var config_err   error
@@ -230,7 +230,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	//-------------------
 	// JPEG
 	if p_img_extension_str == "jpeg" {
-		image_config, config_err = jpeg.DecodeConfig(p_file)
+		image_config, config_err = jpeg.DecodeConfig(pFile)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for JPEG image file to get image dimensions",
 				"image_decoding_config_error",
@@ -242,7 +242,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	//-------------------
 	// PNG
 	} else if p_img_extension_str == "png" {
-		image_config, config_err = png.DecodeConfig(p_file)
+		image_config, config_err = png.DecodeConfig(pFile)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for PNG image file to get image dimensions",
 				"image_decoding_config_error",
@@ -254,7 +254,7 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	//-------------------
 	// GENERAL
 	} else {
-		image_config, _, config_err = image.DecodeConfig(p_file)
+		image_config, _, config_err = image.DecodeConfig(pFile)
 		if config_err != nil {
 			gf_err := gf_core.Error__create("failed to decode config for image file to get image dimensions",
 				"image_decoding_config_error",
@@ -270,6 +270,19 @@ func Get_image_dimensions__from_file(p_file io.Reader,
 	image_height_int := image_config.Height
 
 	return image_width_int, image_height_int, nil
+}
+
+//---------------------------------------------------
+func GetImageLargerDimension(pImage image.Image,
+	pRuntimeSys *gf_core.RuntimeSys) (int, string) {
+
+	imageWidthInt, imageHeightInt := GetImageDimensionsFromImage(pImage, pRuntimeSys)
+	if imageWidthInt > imageHeightInt {
+		return imageWidthInt, "width"
+	} else {
+		return imageHeightInt, "height"
+	}
+	return 0, ""
 }
 
 //---------------------------------------------------

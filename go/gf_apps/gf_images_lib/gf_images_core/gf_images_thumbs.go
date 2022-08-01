@@ -28,26 +28,31 @@ import (
 )
 
 //---------------------------------------------------
-func CreateThumbnails(pImageIDstr GFimageID,
+func CreateThumbnails(pImage image.Image,
+	pImageIDstr                      GFimageID,
 	pImageFormatStr                  string,
 	pTargetThumbnailsLocalDirPathStr string,
-	pLargerOriginalDimensionPxInt    int,
 	pSmallThumbSizePxInt             int,
 	pMediumThumbSizePxInt            int,
 	pLargeThumbSizePxInt             int,
-	pImage                           image.Image,
 	pRuntimeSys                      *gf_core.RuntimeSys) (*GFimageThumbs, *gf_core.GFerror) {
+
+	// determine if the width or height is larger, and get its value
+	largerDimensionPxInt, largerDimensionNameStr := GetImageLargerDimension(pImage, pRuntimeSys)
 
 	//-----------------
 	// SMALL THUMBS
 	new_thumb_small_file_name_str         := fmt.Sprintf("%s_thumb_small.%s", pImageIDstr, pImageFormatStr)
 	small__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_small_file_name_str)
 	
-	smallThumbSizePxInt := ThumbsGetSizeInPx(pSmallThumbSizePxInt, pLargerOriginalDimensionPxInt)
-
+	smallThumbWidthPxInt, smallThumbHeightPxInt := ThumbsGetSizeInPx(pSmallThumbSizePxInt,
+		largerDimensionPxInt,
+		largerDimensionNameStr)
+	
 	gfErr := resizeImage(pImage,
 		small__target_thumbnail_file_path_str,
-		smallThumbSizePxInt,
+		smallThumbWidthPxInt,
+		smallThumbHeightPxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -58,11 +63,12 @@ func CreateThumbnails(pImageIDstr GFimageID,
 	new_thumb_medium_file_name_str         := fmt.Sprintf("%s_thumb_medium.%s", pImageIDstr, pImageFormatStr)
 	medium__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_medium_file_name_str)
 
-	mediumThumbSizePxInt := ThumbsGetSizeInPx(pMediumThumbSizePxInt, pLargerOriginalDimensionPxInt)
+	mediumThumbWidthPxInt, mediumThumbHeightPxInt := ThumbsGetSizeInPx(pMediumThumbSizePxInt, largerDimensionPxInt, largerDimensionNameStr)
 
 	gfErr = resizeImage(pImage,
 		medium__target_thumbnail_file_path_str,
-		mediumThumbSizePxInt,
+		mediumThumbWidthPxInt,
+		mediumThumbHeightPxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -73,11 +79,12 @@ func CreateThumbnails(pImageIDstr GFimageID,
 	new_thumb_large_file_name_str         := fmt.Sprintf("%s_thumb_large.%s", pImageIDstr, pImageFormatStr)
 	large__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_large_file_name_str)
 
-	largerThumbSizePxInt := ThumbsGetSizeInPx(pLargeThumbSizePxInt, pLargerOriginalDimensionPxInt)
+	largerThumbWidthPxInt, largerThumbHeightPxInt := ThumbsGetSizeInPx(pLargeThumbSizePxInt, largerDimensionPxInt, largerDimensionNameStr)
 
 	gfErr = resizeImage(pImage,
 		large__target_thumbnail_file_path_str,
-		largerThumbSizePxInt,
+		largerThumbWidthPxInt,
+		largerThumbHeightPxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -168,21 +175,41 @@ func StoreThumbnails(pImageThumbs *GFimageThumbs,
 
 //---------------------------------------------------
 func ThumbsGetSizeInPx(pThumbSizeInPxInt int,
-	pOriginalSizeInPxInt int) int {
+	pOriginalLargerDimensionInPxInt int,
+	pOriginalLargerDimensionNameStr string) (int, int) {
 
-	if pOriginalSizeInPxInt > pThumbSizeInPxInt {
+		
+
+
+	var thumbDimensionSizeInPxInt int
+	if pOriginalLargerDimensionInPxInt > pThumbSizeInPxInt {
 
 		// if the original image is larger than the desired
 		// thumb size then use that desired thumb size as its
 		// final size to use.
-		return pThumbSizeInPxInt
+		thumbDimensionSizeInPxInt = pThumbSizeInPxInt
 	} else {
 
 		// if the original image is smaller than the desired
 		// thumb size then dont upscale the image to fit with the 
 		// desired thumbs size, and instead use the original size
 		// as the final size to use.
-		return pOriginalSizeInPxInt	
+		thumbDimensionSizeInPxInt = pOriginalLargerDimensionInPxInt	
 	}
-	return 0
+
+	var widthInt int
+	var heightInt int 
+	if pOriginalLargerDimensionNameStr == "width" {
+		widthInt  = thumbDimensionSizeInPxInt
+
+		// setting the dimension to value of 0 causes the resizer
+		// to maintain the original aspect-ratio
+		heightInt = 0
+
+	} else {
+		widthInt  = 0
+		heightInt = thumbDimensionSizeInPxInt
+	}
+
+	return widthInt, heightInt
 }
