@@ -98,7 +98,7 @@ type GF_image_export struct {
 	Tags_lst                 []string `json:"tags_lst"`
 }
 
-type GF_image_thumbs struct {
+type GFimageThumbs struct {
 	Small_relative_url_str     string `json:"small_relative_url_str"`
 	Medium_relative_url_str    string `json:"medium_relative_url_str"`
 	Large_relative_url_str     string `json:"large_relative_url_str"`

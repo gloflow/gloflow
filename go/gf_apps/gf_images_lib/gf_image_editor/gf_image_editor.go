@@ -110,7 +110,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	processingInfo.image_origin_url_str      = source_gf_image.Origin_url_str
 	processingInfo.image_origin_page_url_str = source_gf_image.Origin_page_url_str
 
-	gfErr = create_gf_image(new_title_str,
+	gfErr = createImage(new_title_str,
 		[]string{input.Target_flow_name_str,},
 		processingInfo,
 		pCtx,
@@ -205,7 +205,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 	//--------------------------
 	// IMAGE_DIMENSIONS
 
-	imageWidthInt, imageHeightInt := gf_images_core.Get_image_dimensions__from_image(png_image,
+	imageWidthInt, imageHeightInt := gf_images_core.GetImageDimensionsFromImage(png_image,
 		pRuntimeSys)
 	
 	//--------------------------
@@ -221,7 +221,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 }
 
 //-------------------------------------------------
-func create_gf_image(p_new_title_str string,
+func createImage(p_new_title_str string,
 	p_images_flows_names_lst []string,
 	pProcessingInfo          *GFeditedImageProcessingInfo,
 	pCtx                     context.Context,
@@ -237,6 +237,14 @@ func create_gf_image(p_new_title_str string,
 	large_thumb_max_size_px_int          := 600
 	
 	//--------------------------
+	var largerDimensionInt int
+	if pProcessingInfo.image_width_int > pProcessingInfo.image_height_int {
+		largerDimensionInt = pProcessingInfo.image_width_int
+	} else {
+		largerDimensionInt = pProcessingInfo.image_height_int
+	}
+
+	//--------------------------
 	// GF_IMAGE_ID
 	imageIDstr := gf_images_core.Image_ID__create(pProcessingInfo.tmp_local_filepath_str,
 		image_format_str,
@@ -246,8 +254,9 @@ func create_gf_image(p_new_title_str string,
 	// THUMBNAILS
 	imageThumbs, gfErr := gf_images_core.CreateThumbnails(imageIDstr,
 		image_format_str, // p_normalized_ext_str,
-		pProcessingInfo.tmp_local_filepath_str,
+		// pProcessingInfo.tmp_local_filepath_str,
 		local_thumbnails_target_dir_path_str,
+		largerDimensionInt,
 		small_thumb_max_size_px_int,
 		medium_thumb_max_size_px_int,
 		large_thumb_max_size_px_int,

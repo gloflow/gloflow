@@ -43,7 +43,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_runtime_sys               *gf_core.Runtime_sys) (*GFgif, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
-	img_title_str, gf_err := gf_images_core.Get_image_title_from_url(p_image_source_url_str, p_runtime_sys)
+	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

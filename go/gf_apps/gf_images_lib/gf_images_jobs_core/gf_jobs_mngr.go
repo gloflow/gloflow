@@ -102,7 +102,7 @@ type JobUpdateMsg struct {
 	Image_id_str         gf_images_core.GF_image_id `json:"image_id_str"`
 	Image_source_url_str string                     `json:"image_source_url_str"`
 	Err_str              string                     `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
-	Image_thumbs         *gf_images_core.GF_image_thumbs `json:"-"`
+	Image_thumbs         *gf_images_core.GFimageThumbs `json:"-"`
 }
 
 //------------------------

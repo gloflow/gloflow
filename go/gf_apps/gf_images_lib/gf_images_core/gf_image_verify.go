@@ -42,7 +42,7 @@ import (
 
 //---------------------------------------------------
 func Image__verify_image_info(p_image_info_map map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{},*gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_verify.Image__verify_image_info()")
 	
 	spew.Dump(p_image_info_map)

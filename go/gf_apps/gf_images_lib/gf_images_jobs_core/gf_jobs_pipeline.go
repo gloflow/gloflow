@@ -383,7 +383,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	pImageLocalFilePathStr       string,
 	pImagesThumbsLocalDirPathStr string,
 	pJobRuntime                  *GFjobRuntime,
-	pRuntimeSys                  *gf_core.RuntimeSys) (*gf_images_core.GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys                  *gf_core.RuntimeSys) (*gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
 	// TRANSFORM
 	ctx := context.Background()

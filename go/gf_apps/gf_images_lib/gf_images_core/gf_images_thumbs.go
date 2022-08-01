@@ -28,25 +28,26 @@ import (
 )
 
 //---------------------------------------------------
-func CreateThumbnails(p_image_id_str GFimageID,
-	p_image_format_str                     string,
-	p_image_file_path_str                  string,
-	p_local_target_thumbnails_dir_path_str string,
-	p_small_thumb_max_size_px_int          int,
-	p_medium_thumb_max_size_px_int         int,
-	p_large_thumb_max_size_px_int          int,
-	p_image                                image.Image,
-	pRuntimeSys                            *gf_core.RuntimeSys) (*GF_image_thumbs, *gf_core.GFerror) {
+func CreateThumbnails(pImageIDstr GFimageID,
+	pImageFormatStr                  string,
+	pTargetThumbnailsLocalDirPathStr string,
+	pLargerOriginalDimensionPxInt    int,
+	pSmallThumbSizePxInt             int,
+	pMediumThumbSizePxInt            int,
+	pLargeThumbSizePxInt             int,
+	pImage                           image.Image,
+	pRuntimeSys                      *gf_core.RuntimeSys) (*GFimageThumbs, *gf_core.GFerror) {
 
 	//-----------------
 	// SMALL THUMBS
-	new_thumb_small_file_name_str         := fmt.Sprintf("%s_thumb_small.%s", p_image_id_str, p_image_format_str)
-	small__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_small_file_name_str)
+	new_thumb_small_file_name_str         := fmt.Sprintf("%s_thumb_small.%s", pImageIDstr, pImageFormatStr)
+	small__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_small_file_name_str)
+	
+	smallThumbSizePxInt := ThumbsGetSizeInPx(pSmallThumbSizePxInt, pLargerOriginalDimensionPxInt)
 
-	gfErr := resizeImage(p_image, // p_image_file,
+	gfErr := resizeImage(pImage,
 		small__target_thumbnail_file_path_str,
-		p_image_format_str,
-		p_small_thumb_max_size_px_int,
+		smallThumbSizePxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -54,13 +55,14 @@ func CreateThumbnails(p_image_id_str GFimageID,
 
 	//-----------------
 	// MEDIUM THUMBS
-	new_thumb_medium_file_name_str         := fmt.Sprintf("%s_thumb_medium.%s", p_image_id_str, p_image_format_str)
-	medium__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_medium_file_name_str)
+	new_thumb_medium_file_name_str         := fmt.Sprintf("%s_thumb_medium.%s", pImageIDstr, pImageFormatStr)
+	medium__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_medium_file_name_str)
 
-	gfErr = resizeImage(p_image, // p_image_file,
+	mediumThumbSizePxInt := ThumbsGetSizeInPx(pMediumThumbSizePxInt, pLargerOriginalDimensionPxInt)
+
+	gfErr = resizeImage(pImage,
 		medium__target_thumbnail_file_path_str,
-		p_image_format_str,
-		p_medium_thumb_max_size_px_int,
+		mediumThumbSizePxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -68,13 +70,14 @@ func CreateThumbnails(p_image_id_str GFimageID,
 
 	//-----------------
 	// LARGE THUMBS
-	new_thumb_large_file_name_str         := fmt.Sprintf("%s_thumb_large.%s", p_image_id_str, p_image_format_str)
-	large__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", p_local_target_thumbnails_dir_path_str, new_thumb_large_file_name_str)
+	new_thumb_large_file_name_str         := fmt.Sprintf("%s_thumb_large.%s", pImageIDstr, pImageFormatStr)
+	large__target_thumbnail_file_path_str := fmt.Sprintf("%s/%s", pTargetThumbnailsLocalDirPathStr, new_thumb_large_file_name_str)
 
-	gfErr = resizeImage(p_image, // p_image_file,
+	largerThumbSizePxInt := ThumbsGetSizeInPx(pLargeThumbSizePxInt, pLargerOriginalDimensionPxInt)
+
+	gfErr = resizeImage(pImage,
 		large__target_thumbnail_file_path_str,
-		p_image_format_str,
-		p_large_thumb_max_size_px_int,
+		largerThumbSizePxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -82,11 +85,11 @@ func CreateThumbnails(p_image_id_str GFimageID,
 
 	//-----------------
 
-	thumb_small_relative_url_str  := "/images/d/thumbnails/"+new_thumb_small_file_name_str
-	thumb_medium_relative_url_str := "/images/d/thumbnails/"+new_thumb_medium_file_name_str
-	thumb_large_relative_url_str  := "/images/d/thumbnails/"+new_thumb_large_file_name_str
+	thumb_small_relative_url_str  := fmt.Sprintf("/images/d/thumbnails/%s", new_thumb_small_file_name_str)
+	thumb_medium_relative_url_str := fmt.Sprintf("/images/d/thumbnails/%s", new_thumb_medium_file_name_str)
+	thumb_large_relative_url_str  := fmt.Sprintf("/images/d/thumbnails/%s", new_thumb_large_file_name_str)
 
-	image_thumbs := &GF_image_thumbs{
+	imageThumbs := &GFimageThumbs{
 		Small_relative_url_str:     thumb_small_relative_url_str,
 		Medium_relative_url_str:    thumb_medium_relative_url_str,
 		Large_relative_url_str:     thumb_large_relative_url_str,
@@ -95,11 +98,11 @@ func CreateThumbnails(p_image_id_str GFimageID,
 		Large_local_file_path_str:  large__target_thumbnail_file_path_str,
 	}
 
-	return image_thumbs, nil
+	return imageThumbs, nil
 }
 
 //---------------------------------------------------
-func StoreThumbnails(pImageThumbs *GF_image_thumbs,
+func StoreThumbnails(pImageThumbs *GFimageThumbs,
 	pStorage    *gf_images_storage.GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -161,4 +164,25 @@ func StoreThumbnails(pImageThumbs *GF_image_thumbs,
 	}
 
 	return nil
+}
+
+//---------------------------------------------------
+func ThumbsGetSizeInPx(pThumbSizeInPxInt int,
+	pOriginalSizeInPxInt int) int {
+
+	if pOriginalSizeInPxInt > pThumbSizeInPxInt {
+
+		// if the original image is larger than the desired
+		// thumb size then use that desired thumb size as its
+		// final size to use.
+		return pThumbSizeInPxInt
+	} else {
+
+		// if the original image is smaller than the desired
+		// thumb size then dont upscale the image to fit with the 
+		// desired thumbs size, and instead use the original size
+		// as the final size to use.
+		return pOriginalSizeInPxInt	
+	}
+	return 0
 }

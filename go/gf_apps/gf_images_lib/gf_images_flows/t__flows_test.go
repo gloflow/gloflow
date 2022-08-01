@@ -54,22 +54,22 @@ func Test__get_all(p_test *testing.T) {
 
 	//------------------
 	// CREATE_TEST_IMAGES
-	test_img_0 := &gf_images_core.GF_image{
+	test_img_0 := &gf_images_core.GFimage{
 		Id_str: "test_img_0",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_0"},
 	}
-	test_img_1 := &gf_images_core.GF_image{
+	test_img_1 := &gf_images_core.GFimage{
 		Id_str: "test_img_1",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_0"},
 	}
-	test_img_2 := &gf_images_core.GF_image{
+	test_img_2 := &gf_images_core.GFimage{
 		Id_str: "test_img_2",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_0", "flow_1"},
 	}
-	test_img_3 := &gf_images_core.GF_image{
+	test_img_3 := &gf_images_core.GFimage{
 		Id_str: "test_img_3",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_1", "flow_2"},

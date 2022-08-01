@@ -160,15 +160,14 @@ func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 }
 
 //---------------------------------------------------
-func Get_image_title_from_url(p_image_url_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (string,*gf_core.Gf_error) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_title_from_url()")
+func GetImageTitleFromURL(pImageURLstr string,
+	pRuntimeSys *gf_core.RuntimeSys) (string,*gf_core.GFerror) {
 	
-	url, err := url.Parse(p_image_url_str)
+	url, err := url.Parse(pImageURLstr)
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to parse image_url to get image title",
 			"url_parse_error",
-			map[string]interface{}{"image_url_str":p_image_url_str,},
+			map[string]interface{}{"image_url_str":pImageURLstr,},
 			err, "gf_images_core", pRuntimeSys)
 		return "", gf_err
 	}
@@ -180,7 +179,7 @@ func Get_image_title_from_url(p_image_url_str string,
 }
 
 //---------------------------------------------------
-func Get_image_dimensions__from_image(p_img image.Image,
+func GetImageDimensionsFromImage(p_img image.Image,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int) {
 
 	p          := p_img.Bounds()
@@ -190,7 +189,7 @@ func Get_image_dimensions__from_image(p_img image.Image,
 }
 
 //---------------------------------------------------
-func Get_image_dimensions__from_filepath(p_image_local_file_path_str string,
+func GetImageDimensionsFromFilepath(p_image_local_file_path_str string,
 	pRuntimeSys *gf_core.Runtime_sys) (int, int, *gf_core.GFerror) {
 
 	//-------------------

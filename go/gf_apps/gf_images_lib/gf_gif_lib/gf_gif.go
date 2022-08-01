@@ -104,7 +104,7 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	//-----------------------
 	// SAVE_IMAGE TO FS (S3)
 
-	img_title_str, gf_err := gf_images_core.Get_image_title_from_url(p_image_source_url_str,pRuntimeSys)
+	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str,pRuntimeSys)
 	if gf_err != nil {
 		return nil,gf_err
 	}
@@ -216,7 +216,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		}
 
 		// IMAGE_TITLE
-		image_title_str, gfErr := gf_images_core.Get_image_title_from_url(p_image_source_url_str,pRuntimeSys)
+		image_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str,pRuntimeSys)
 		if gfErr != nil {
 			return nil, "", gfErr
 		}

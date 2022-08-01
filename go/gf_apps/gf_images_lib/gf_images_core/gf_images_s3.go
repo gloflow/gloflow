@@ -48,7 +48,7 @@ func S3getImage(pImageS3filePathStr string,
 //---------------------------------------------------
 // DEPRECATED!!
 func S3storeImage(p_image_local_file_path_str string,
-	pImageThumbs     *GF_image_thumbs,
+	pImageThumbs     *GFimageThumbs,
 	pS3bucketNameStr string,
 	pS3info          *gf_core.GFs3Info,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -106,7 +106,7 @@ func S3storeImage(p_image_local_file_path_str string,
 
 //---------------------------------------------------
 // DEPRECATED!!
-func S3storeThumbnails(pImageThumbs *GF_image_thumbs,
+func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 	pS3bucketNameStr string,
 	pS3info          *gf_core.GFs3Info,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {

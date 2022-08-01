@@ -25,6 +25,7 @@ import (
 	"context"
 	"image"
 	"image/jpeg"
+	// "image/png"
 	"github.com/nfnt/resize"
 	"github.com/h2non/bimg"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -35,28 +36,28 @@ import (
 //                               was found. this is valid for gf_chrome_ext image sources.
 //                               its not relevant for direct image uploads from clients.
 
-func TransformImage(p_image_id_str GFimageID,
+func TransformImage(pImageIDstr GFimageID,
 	p_image_client_type_str               string,
 	p_images_flows_names_lst              []string,
 	p_image_origin_url_str                string,
 	p_image_origin_page_url_str           string,
-	p_meta_map                            map[string]interface{},
+	pMetaMap                              map[string]interface{},
 	pImageLocalFilePathStr                string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pCtx                                  context.Context,
-	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
 
 	normalizedExtStr, gfErr := GetImageExtFromURL(pImageLocalFilePathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
 
-	gfImage, gfImageThumbs, gfErr := TransformProcessImage(p_image_id_str,
+	gfImage, gfImageThumbs, gfErr := TransformProcessImage(pImageIDstr,
 		p_image_client_type_str,
 		p_images_flows_names_lst,
 		p_image_origin_url_str,
 		p_image_origin_page_url_str,
-		p_meta_map,
+		pMetaMap,
 		normalizedExtStr,
 		pImageLocalFilePathStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
@@ -116,7 +117,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pImageLocalFilePathStr             string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pCtx                                  context.Context,
-	pRuntimeSys                           *gf_core.RuntimeSys) (*GF_image, *GF_image_thumbs, *gf_core.GFerror) {
+	pRuntimeSys                           *gf_core.RuntimeSys) (*GF_image, *GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
 
 	//---------------------------------
@@ -126,7 +127,17 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
-	
+
+	//---------------------------------
+	// DIMENSIONS
+	imageWidthInt, imageHeightInt := GetImageDimensionsFromImage(img, pRuntimeSys)
+	var largerDimensionInt int
+	if imageWidthInt > imageHeightInt {
+		largerDimensionInt = imageWidthInt
+	} else {
+		largerDimensionInt = imageHeightInt
+	}
+
 	//--------------------------
 	// CREATE THUMBNAILS
 
@@ -134,10 +145,10 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	medium_thumb_max_size_px_int := 400
 	large_thumb_max_size_px_int  := 600
 
-	gf_image_thumbs, gfErr := CreateThumbnails(pImageIDstr,
+	gfImageThumbs, gfErr := CreateThumbnails(pImageIDstr,
 		pNormalizedExtStr,
-		pImageLocalFilePathStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
+		largerDimensionInt,
 		small_thumb_max_size_px_int,
 		medium_thumb_max_size_px_int,
 		large_thumb_max_size_px_int,
@@ -153,7 +164,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(pImageLocalFilePathStr,p_log_fun)*/
 
 	//--------------------------
-	image_width_int, image_height_int := Get_image_dimensions__from_image(img, pRuntimeSys)
+	
 
 	//--------------------------
 
@@ -163,7 +174,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	// required to decode the file, but the rest of the file is not processed until later.
 	
 	// someone can forge header information in an image
-	imageTitleStr, gfErr := Get_image_title_from_url(pImageOriginURLstr, pRuntimeSys)
+	imageTitleStr, gfErr := GetImageTitleFromURL(pImageOriginURLstr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -176,12 +187,12 @@ func TransformProcessImage(pImageIDstr GFimageID,
 		Origin_url_str:                 pImageOriginURLstr,
 		Origin_page_url_str:            pImageOriginPageURLstr,
 		Original_file_internal_uri_str: pImageLocalFilePathStr,
-		Thumbnail_small_url_str:        gf_image_thumbs.Small_relative_url_str,
-		Thumbnail_medium_url_str:       gf_image_thumbs.Medium_relative_url_str,
-		Thumbnail_large_url_str:        gf_image_thumbs.Large_relative_url_str,
+		Thumbnail_small_url_str:        gfImageThumbs.Small_relative_url_str,
+		Thumbnail_medium_url_str:       gfImageThumbs.Medium_relative_url_str,
+		Thumbnail_large_url_str:        gfImageThumbs.Large_relative_url_str,
 		Format_str:                     pNormalizedExtStr,
-		Width_int:                      image_width_int,
-		Height_int:                     image_height_int,
+		Width_int:                      imageWidthInt,
+		Height_int:                     imageHeightInt,
 
 		Meta_map: pMetaMap,
 	}
@@ -197,43 +208,48 @@ func TransformProcessImage(pImageIDstr GFimageID,
 
 	//--------------------------
 
-	return gfImage, gf_image_thumbs, nil
+	return gfImage, gfImageThumbs, nil
 }
 
 //---------------------------------------------------
-func resizeImage(p_img image.Image,
-	p_image_output_path_str string,
-	p_image_format_str      string,
-	p_size_px_int           int,
-	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.Gf_error {
+func resizeImage(pImg image.Image,
+	pImageOutputPathStr string,
+	pSizePxInt          int,
+	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	// resize to width 1000 using Lanczos resampling
-	// and preserve aspect ratio
-	
-	m := resize.Resize(uint(p_size_px_int), 0, p_img, resize.Bilinear) // resize.Lanczos3)
+	// preserves the aspect ratio
+	m := resize.Resize(uint(pSizePxInt), 0, pImg, resize.Lanczos3)
 
-	out, err := os.Create(p_image_output_path_str)
+	out, err := os.Create(pImageOutputPathStr)
 	if err != nil {
-		gf_err := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
+		gfErr := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
-			map[string]interface{}{"image_output_path_str": p_image_output_path_str,},
+			map[string]interface{}{"image_output_path_str": pImageOutputPathStr,},
 			err, "gf_images_core", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 	defer out.Close()
 
+	/*out_png, err := os.Create(fmt.Sprintf("%s.png", pImageOutputPathStr))
+	if err != nil {
+		gfErr := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
+			"file_create_error",
+			map[string]interface{}{"image_output_path_str": pImageOutputPathStr,},
+			err, "gf_images_core", pRuntimeSys)
+		return gfErr
+	}
+	defer out.Close()*/
 
 	//--------------------------
 	// ADD!! - enable a way to set PNG format as a target.
 	//         for very precise vector type images there is significant accuracy loss
 	//         when recoding using JPEG
-	
-	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
-	//               and so for these kinds of images it comes out with much smaller file size
-	// write new image to file
-	// jpeg.Encode(out, m, nil)
-	jpeg.Encode(out, m, nil)
+	// png.Encode(out_png, m)
 
+	// IMPORTANT!! - using JPEG instead of PNG, because JPEG compression was made for photographic images,
+	//               and so for these kinds of images it comes out with much smaller file size.	
+	jpeg.Encode(out, m, nil)
+	
 	//--------------------------
 	return nil
 }
