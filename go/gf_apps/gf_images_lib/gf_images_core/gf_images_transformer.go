@@ -137,7 +137,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 
 	small_thumb_max_size_px_int  := 200
 	medium_thumb_max_size_px_int := 400
-	large_thumb_max_size_px_int  := 600
+	large_thumb_max_size_px_int  := 800
 
 	gfImageThumbs, gfErr := CreateThumbnails(img,
 		pImageIDstr,
