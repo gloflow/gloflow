@@ -124,8 +124,8 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
 				sessionDataStr        := string(output.JWT_token_val)
-				session_ttl_hours_int := 24 // 1 day
-				gf_session.SetOnReq(sessionDataStr, p_resp, session_ttl_hours_int)
+				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
+				gf_session.SetOnReq(sessionDataStr, p_resp, sessionTTLhoursInt)
 
 				//---------------------
 

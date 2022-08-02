@@ -61,6 +61,13 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 }
 
 //---------------------------------------------------
+func GetSessionTTL() (int, int64) {
+	sessionTTLhoursInt   := 24 * 30 // 1 month
+	sessionTTLsecondsInt := int64(60*60*24*7)
+	return sessionTTLhoursInt, sessionTTLsecondsInt
+}
+
+//---------------------------------------------------
 // HTTP
 //---------------------------------------------------
 func HTTPgetUserStdInput(pCtx context.Context,

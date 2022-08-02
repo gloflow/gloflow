@@ -90,22 +90,22 @@ func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 
 //---------------------------------------------------
 // GENERATE
-func jwtGenerate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
-	p_jwt_secret_key_val   GF_jwt_secret_key_val,
-	p_creation_unix_time_f float64,
-	p_runtime_sys          *gf_core.Runtime_sys) (GF_jwt_token_val, *gf_core.GF_error) {
+func jwtGenerate(pUserIdentifierStr string, // p_user_address_eth GF_user_address_eth,
+	pJWTsecretKeyVal GF_jwt_secret_key_val,
+	pCreationUNIXtimeF   float64,
+	pRuntimeSys          *gf_core.RuntimeSys) (GF_jwt_token_val, *gf_core.GFerror) {
 
 
-	issuer_str := "gf"
-	jwt_token_ttl_sec_int    := int64(60*60*24*7) // 7 days
-	expiration_unix_time_int := int64(p_creation_unix_time_f) + jwt_token_ttl_sec_int
+	issuerStr := "gf"
+	_, jwtTokenTTLsecInt  := gf_identity_core.GetSessionTTL()
+	expirationUNIXtimeInt := int64(pCreationUNIXtimeF) + jwtTokenTTLsecInt
 
 	// CLAIMS
 	claims := GF_jwt_claims{
-		p_user_identifier_str,
+		pUserIdentifierStr,
 		jwt.StandardClaims{
-			ExpiresAt: expiration_unix_time_int,
-			Issuer:    issuer_str, 
+			ExpiresAt: expirationUNIXtimeInt,
+			Issuer:    issuerStr, 
 		},
 	}
 
@@ -114,14 +114,14 @@ func jwtGenerate(p_user_identifier_str string, // p_user_address_eth GF_user_add
 
 	// SIGNING - to be able to verify using the same secret_key that in the future
 	//           a received token is valid and unchanged.
-	jwt_token_val_str, err := jwt_token.SignedString([]byte(p_jwt_secret_key_val))
+	jwt_token_val_str, err := jwt_token.SignedString([]byte(pJWTsecretKeyVal))
 	if err != nil {
 		gf_err := gf_core.Error__create("failed to to update user info",
 			"crypto_jwt_sign_token_error",
 			map[string]interface{}{
-				"user_identifier_str": p_user_identifier_str,
+				"user_identifier_str": pUserIdentifierStr,
 			},
-			err, "gf_identity_lib", p_runtime_sys)
+			err, "gf_identity_lib", pRuntimeSys)
 		return GF_jwt_token_val(""), gf_err
 	}
 
@@ -129,11 +129,11 @@ func jwtGenerate(p_user_identifier_str string, // p_user_address_eth GF_user_add
 }
 
 //---------------------------------------------------
-func jwtGenerateID(p_user_identifier_str string,
+func jwtGenerateID(pUserIdentifierStr string,
 	p_creation_unix_time_f float64) gf_core.GF_ID {
 	
 	fields_for_id_lst := []string{
-		p_user_identifier_str,
+		pUserIdentifierStr,
 	}
 	gf_id_str := gf_core.ID__create(fields_for_id_lst,
 		p_creation_unix_time_f)

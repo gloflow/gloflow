@@ -102,8 +102,8 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				sessionDataStr     := string(output.JWT_token_val)
-				sessionTTLhoursInt := 24 // 1 day
+				sessionDataStr        := string(output.JWT_token_val)
+				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
 				gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 				//---------------------
