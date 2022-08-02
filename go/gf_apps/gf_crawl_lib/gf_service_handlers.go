@@ -81,7 +81,7 @@ func init_handlers(p_media_domain_str string,
 
 				//--------------------------
 				// INPUT
-				i, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, p_runtime_sys)
+				i, gf_err := gf_core.HTTPgetInput(p_resp, p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

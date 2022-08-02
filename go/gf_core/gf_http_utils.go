@@ -45,6 +45,38 @@ type Gf_http_fetch struct {
 	Resp             *http.Response    `bson:"-"`
 }
 
+//-------------------------------------------------
+func HTTPgetInput(p_resp http.ResponseWriter,
+	p_req         *http.Request,
+	p_runtime_sys *RuntimeSys) (map[string]interface{}, *GFerror) {
+
+	handler_url_path_str := p_req.URL.Path
+
+	var i map[string]interface{}
+	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+
+	// parse body bytes only if they're larger than 0
+	if len(body_bytes_lst) > 0 {
+		err := json.Unmarshal(body_bytes_lst, &i)
+
+		if err != nil {
+			gfErr := Error__create("failed to parse json http input",
+				"json_decode_error",
+				map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
+				err, "gf_core", p_runtime_sys)
+
+			/*Error__in_handler(handler_url_path_str,
+				fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str), // p_user_msg_str
+				gf_err,
+				p_resp,
+				p_runtime_sys)*/
+			return nil, gfErr
+		}
+	}
+
+	return i, nil
+}
+
 //---------------------------------------------------
 func HTTP__fetch_url(p_url_str string,
 	p_headers_map    map[string]string,

@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
@@ -35,7 +34,7 @@ func inputForVizPropsUpdate(pReq *http.Request,
 
 	userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

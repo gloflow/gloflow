@@ -29,6 +29,7 @@ import (
 	// "github.com/dgrijalva/jwt-go"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------

@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //---------------------------------------------------
@@ -33,7 +32,7 @@ func httpIputForAdd(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFaddInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

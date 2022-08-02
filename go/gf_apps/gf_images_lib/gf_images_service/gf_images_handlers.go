@@ -259,7 +259,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				// INPUT
 				qs_map := p_req.URL.Query()
 
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
+				i_map, gf_err :=  gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -318,7 +318,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
+				i_map, gf_err :=  gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

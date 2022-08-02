@@ -33,6 +33,7 @@ func indexAddress(pAddressStr string,
 
 	// ALCHEMY
 	if pServiceSourceStr == "alchemy" {
+
 		chainStr := "eth"
 
 		// GET_ALL
@@ -61,8 +62,6 @@ func indexAddress(pAddressStr string,
 		if gfErr != nil {
 			return nil, gfErr
 		}
-
-
 
 		//---------------------
 		// GF_IMAGES

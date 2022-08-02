@@ -145,7 +145,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 				//---------------------
 				// INPUT
 				
-				inputMap, gf_err := gf_rpc_lib.Get_http_input(pResp, pReq, pRuntimeSys)
+				inputMap, gf_err := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft
 
 import (
+	// "fmt"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -59,6 +60,11 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/web3/nft/index_address",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
+
+
+				
+
+
 
 				//---------------------
 				// INPUT

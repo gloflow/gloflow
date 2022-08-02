@@ -25,9 +25,8 @@ SOFTWARE.
 package gf_rpc_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -70,45 +69,6 @@ func Error__in_handler(p_handler_url_path_str string,
 	}
 
 	Http_respond(dataMap, statusStr, p_resp, p_runtime_sys)
-}
-
-//-------------------------------------------------
-func GetHTTPinput(pResp http.ResponseWriter,
-	pReq        *http.Request,
-	pRuntimeSys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
-
-	return Get_http_input(pResp, pReq, pRuntimeSys)
-}
-
-func Get_http_input(p_resp http.ResponseWriter,
-	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
-
-	handler_url_path_str := p_req.URL.Path
-
-	var i map[string]interface{}
-	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
-
-	// parse body bytes only if they're larger than 0
-	if len(body_bytes_lst) > 0 {
-		err := json.Unmarshal(body_bytes_lst, &i)
-
-		if err != nil {
-			gf_err := gf_core.Error__create("failed to parse json http input",
-				"json_decode_error",
-				map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-				err, "gf_rpc_lib", p_runtime_sys)
-
-			Error__in_handler(handler_url_path_str,
-				fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str), // p_user_msg_str
-				gf_err,
-				p_resp,
-				p_runtime_sys)
-			return nil, gf_err
-		}
-	}
-
-	return i, nil
 }
 
 //-------------------------------------------------

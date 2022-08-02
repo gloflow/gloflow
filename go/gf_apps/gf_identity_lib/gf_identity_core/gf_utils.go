@@ -26,7 +26,6 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //------------------------------------------------
@@ -75,7 +74,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 	p_resp        http.ResponseWriter,
 	pRuntimeSys *gf_core.Runtime_sys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {
 
-	inputMap, gfErr := gf_rpc_lib.Get_http_input(p_resp, p_req, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
 	if gfErr != nil {
 		return nil, "", GF_user_address_eth(""), gfErr
 	}
