@@ -43,8 +43,9 @@ func TindexAddress(pAddressStr string,
 	fmt.Println("URL", urlStr)
 	
 	dataMap := map[string]string{
-		"address_str": pAddressStr,
-		"chain_str":   pChainStr,
+		"address_str":      pAddressStr,
+		"chain_str":        pChainStr,
+		"fetcher_name_str": "alchemy",
 	}
 	dataBytesLst, _ := json.Marshal(dataMap)
 
@@ -66,7 +67,12 @@ func TindexAddress(pAddressStr string,
 	spew.Dump(bodyMap)
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "nft address indexing http request failed")
+	
 
+
+	responseDataMap := bodyMap["data"].(map[string]interface{})
+	nftsLst := responseDataMap["nfts_lst"].([]map[string]interface{})
+	assert.True(pTest, len(nftsLst) > 0, "list of nft's that were returned is empty")
 
 
 }

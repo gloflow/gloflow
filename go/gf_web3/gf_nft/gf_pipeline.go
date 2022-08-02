@@ -25,6 +25,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -56,7 +57,6 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 
-	
 	if pInput.FetcherNameStr == "alchemy" {
 		
 		serviceSourceStr := "alchemy"
@@ -70,7 +70,7 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 			return nil, gfErr
 		}
 
-		nftsExternLst := getNFTextern(nftsLst)
+		nftsExternLst := getNFTexternForm(nftsLst)
 
 		return nftsExternLst, nil
 	}
@@ -94,7 +94,7 @@ func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 
 
 
-	nftsExternLst := getNFTextern(nftsLst)
+	nftsExternLst := getNFTexternForm(nftsLst)
 
 	return nftsExternLst, nil
 }

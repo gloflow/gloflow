@@ -25,14 +25,11 @@ import (
 	"time"
 	"testing"
 	"net/http"
-	"context"
 	// "github.com/gloflow/gloflow/go/gf_core"
-	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
 //---------------------------------------------------
@@ -86,38 +83,4 @@ func TestMain(m *testing.M) {
 
 	v := m.Run()
 	os.Exit(v)
-}
-
-//---------------------------------------------------
-func TestNFT(pTest *testing.T) {
-
-	runtime, _, err := gf_eth_core.TgetRuntime()
-	if err != nil {
-		pTest.FailNow()
-	}
-
-	testWeb3MonitorServiceInt  := 2000
-	testIdentityServicePortInt := 2001
-	HTTPagent := gorequest.New()
-	ctx       := context.Background()
-
-	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity_lib.TestCreateAndLoginNewUser(pTest,
-		HTTPagent,
-		testIdentityServicePortInt,
-		ctx,
-		runtime.RuntimeSys)
-
-	//--------------------
-	// NFT_INDEX_ADDRESS
-	testUserAddressEthStr := "0x4eDE0b31Fd116B8A00ADD6F449499Cd36b70AAE6"
-	chainStr := "eth"
-	gf_nft.TindexAddress(testUserAddressEthStr,
-		chainStr,
-		HTTPagent,
-		testWeb3MonitorServiceInt,
-		pTest)
-
-	//--------------------
-	
 }

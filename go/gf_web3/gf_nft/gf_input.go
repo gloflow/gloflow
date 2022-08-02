@@ -23,7 +23,6 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
@@ -32,9 +31,9 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFindexAddressInput, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFindexAddressInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -51,7 +50,12 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 
 	var fetcherNameStr string
 	if valStr, ok := inputMap["fetcher_name_str"]; ok {
-		fetcherNameStr = valStr.(string)
+		if valStr.(string) == "" {
+			// default value
+			fetcherNameStr = "alchemy"
+		} else {
+			fetcherNameStr = valStr.(string)
+		}
 	}
 
 	input := &GFindexAddressInput{
@@ -70,9 +74,9 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFgetByOwnerInput, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgetByOwnerInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -95,9 +99,9 @@ func httpInputForGet(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFgetInput, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgetInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_rpc_lib.GetHTTPinput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

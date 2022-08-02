@@ -25,8 +25,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
 )
 
@@ -80,7 +78,7 @@ type GFnftExtern struct {
 }
 
 //-------------------------------------------------
-func getNFTextern(pNFTsLst []*GFnft) []*GFnftExtern {
+func getNFTexternForm(pNFTsLst []*GFnft) []*GFnftExtern {
 
 	// export NFT data for public usage
 	nftsExternLst := []*GFnftExtern{}
@@ -123,7 +121,7 @@ func get(pTokenIDstr string,
 // CREATE_FOR_ALCHEMY
 func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnft, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
 	NFTsLst := []*GFnft{}
 	for _, nftAlchemy := range pNFTsAlchemyLst {
@@ -183,61 +181,4 @@ func createID(pUserIdentifierStr string,
 		pCreationUNIXtimeF)
 
 	return gfIDstr
-}
-
-//---------------------------------------------------
-// CREATE_AS_IMAGES_IN_FLOWS
-func createAsImagesInFlows(pNFTsLst []*GFnft,
-	pFlowsNamesLst []string,
-	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,
-	pCtx           context.Context,
-	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GFerror {
-		
-	//---------------------
-	// GF_IMAGES_JOB
-
-	clientTypeStr := "gf_web3:gf_nft"
-	imagesExternURLsLst      := []string{}
-	imagesOriginPagesURLsStr := []string{}
-
-	for _, nft := range pNFTsLst {
-
-		imagesExternURLsLst      = append(imagesExternURLsLst, nft.MediaURIgatewayStr)
-		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "")
-	}
-
-	_, imagesThumbSmallRelativeURLlst, imagesIDsLst, gfErr := gf_images_flows.FlowsAddExternImages(imagesExternURLsLst,
-		imagesOriginPagesURLsStr,
-		pFlowsNamesLst,
-		clientTypeStr,
-		pJobsMngrCh,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	//---------------------
-	// DB
-	i := 0
-	for _, nft := range pNFTsLst {
-
-		gfImageID          := imagesIDsLst[i]
-		gfImageThumbURLstr := imagesThumbSmallRelativeURLlst[i]
-
-		gfErr := DBupdateGFimageProps(nft.IDstr,
-			gfImageID,
-			gfImageThumbURLstr,
-			pCtx,
-			pRuntimeSys)
-		
-		if gfErr != nil {
-			// do nothing for now, let other image_ids be updated
-		}
-
-		i++
-	}
-
-	//---------------------
-
-	return nil
 }
