@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2021 Ivan Trajkovic
@@ -18,24 +17,59 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_jobs_core
+package gf_images_core
 
 import (
 	"fmt"
-	"strings"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//-------------------------------------------------
-type GF_py_plugins struct {
-	Base_dir_path_str string
+//---------------------------------------------------
+func runPyImagePlugins(pImageLocalFilePathStr string,
+	pPluginsPyDirPathStr string,
+	pCtx                 context.Context,
+	pRuntimeSys          *gf_core.RuntimeSys) {
+
+	
+
+	// Py plugins are lost running, so dont block this function and its callers,
+	// instead run the Py command in a new goroutine.
+	//
+	// ADD!! - dont run the Py plugin from scratch each time, instead start it once 
+	//         (so that it can import its dependencies once) and then pass in
+	//         requests for new image processing via STDIN
+	go func() {
+
+		pyPathStr := fmt.Sprintf("%s/gf_images_plugins_main.py", pPluginsPyDirPathStr)
+		argsLst := []string{
+			fmt.Sprintf("-image_local_file_path=%s", pImageLocalFilePathStr),
+		}
+		stdoutPrefixStr := "GF_OUT:"
+
+
+		inputStdinStr := ""
+
+		// PY_RUN
+		outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
+			argsLst,
+			&inputStdinStr,
+			stdoutPrefixStr,
+			pRuntimeSys)
+		if gfErr != nil {
+
+		}
+
+		fmt.Println(outputsLst)
+
+	}()
 }
 
 //-------------------------------------------------
-func py__run_plugin__color_palette(p_input_images_local_file_paths_lst []string,
+/*func py__run_plugin__color_palette(p_input_images_local_file_paths_lst []string,
 	p_output_dir_path_str string,
 	p_plugins_info        *GF_py_plugins,
-	p_runtime_sys         *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys         *gf_core.RuntimeSys) *gf_core.GF_error {
 
 
 
@@ -65,4 +99,4 @@ func py__run_plugin__color_palette(p_input_images_local_file_paths_lst []string,
 	fmt.Println(outputs_lst)
 
 	return nil
-}
+}*/

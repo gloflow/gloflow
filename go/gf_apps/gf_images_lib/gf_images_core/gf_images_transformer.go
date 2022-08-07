@@ -37,7 +37,7 @@ import (
 //                               its not relevant for direct image uploads from clients.
 
 func TransformImage(pImageIDstr GFimageID,
-	p_image_client_type_str               string,
+	pImageClientTypeStr                   string,
 	p_images_flows_names_lst              []string,
 	p_image_origin_url_str                string,
 	p_image_origin_page_url_str           string,
@@ -53,7 +53,7 @@ func TransformImage(pImageIDstr GFimageID,
 	}
 
 	gfImage, gfImageThumbs, gfErr := TransformProcessImage(pImageIDstr,
-		p_image_client_type_str,
+		pImageClientTypeStr,
 		p_images_flows_names_lst,
 		p_image_origin_url_str,
 		p_image_origin_page_url_str,
@@ -79,7 +79,17 @@ func TransformImage(pImageIDstr GFimageID,
 	}
 
 	//--------------------------
-	
+	// PY_PLUGINS
+	// runs the Py VM in a new process, spawned via a new go-routine
+
+	pluginsPyDirPathStr := "./gf_images/plugins"
+	runPyImagePlugins(pImageLocalFilePathStr,
+		pluginsPyDirPathStr,
+		pCtx,
+		pRuntimeSys)
+
+	//--------------------------
+
 	return gfImage, gfImageThumbs, nil
 }
 

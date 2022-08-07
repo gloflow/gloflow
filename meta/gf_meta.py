@@ -85,22 +85,26 @@ def get():
             "gf_solo": {
                 "type_str":             "main_go",
                 "version_str":          "latest",
-                "go_path_str":          "%s/../go/gf_apps/gf_solo"%(modd_str),
-                "go_output_path_str":   "%s/../build/gf_apps/gf_solo/gf_solo"%(modd_str),
+                "go_path_str":          f"{modd_str}/../go/gf_apps/gf_solo",
+                "go_output_path_str":   f"{modd_str}/../build/gf_apps/gf_solo/gf_solo",
                 "service_name_str":     "gf_solo",
-                "service_base_dir_str": "%s/../build/gf_apps/gf_solo"%(modd_str),
-                "service_dockerfile_path_str": "%s/../build/gf_apps/gf_solo/Dockerfile_ubuntu"%(modd_str),
+                "service_base_dir_str": f"{modd_str}/../build/gf_apps/gf_solo",
+                "service_dockerfile_path_str": f"{modd_str}/../build/gf_apps/gf_solo/Dockerfile_ubuntu",
                 "copy_to_dir_lst":    [
                     
                     #------------------------
                     # TENSORFLOW C_LIBS
-                    ("%s/../rust/build/tf_lib/lib/libtensorflow.so"%(modd_str),           "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
-                    ("%s/../rust/build/tf_lib/lib/libtensorflow_framework.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+                    (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow.so",           f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+                    (f"{modd_str}/../rust/build/tf_lib/lib/libtensorflow_framework.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
 
                     #------------------------
-                    # GF_IMAGES_JOBS
+                    # GF_IMAGES
                     
-                    ("%s/../rust/build/libgf_images_jobs.so"%(modd_str), "%s/../build/gf_apps/gf_solo/libs"%(modd_str)),
+                    (f"{modd_str}/../rust/build/libgf_images_jobs.so", f"{modd_str}/../build/gf_apps/gf_solo/libs"),
+
+                    # PY_PLUGINS                
+                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
+                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_color_palette.py",       f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
 
                     #------------------------
                     # GF_ML_WORKER
