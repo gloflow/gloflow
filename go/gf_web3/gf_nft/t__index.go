@@ -71,7 +71,7 @@ func TindexAddress(pAddressStr string,
 
 
 	responseDataMap := bodyMap["data"].(map[string]interface{})
-	nftsLst := responseDataMap["nfts_lst"].([]map[string]interface{})
+	nftsLst := responseDataMap["nfts_lst"].([]interface{})
 	assert.True(pTest, len(nftsLst) > 0, "list of nft's that were returned is empty")
 
 
