@@ -24,7 +24,7 @@ import (
 )
 
 //--------------------------------------------------
-func DB_index__init(p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+func DB_index__init(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
 	
 	indexes_keys_lst := [][]string{
 		[]string{"t", }, //all stat queries first match on "t"

@@ -57,7 +57,7 @@ type GF_service_info struct {
 //-------------------------------------------------
 func Init_service(pServiceInfo *GF_service_info,
 	p_http_mux    *http.ServeMux,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	//-----------------
 	// ELASTICSEARCH
@@ -137,7 +137,7 @@ func Init_service(pServiceInfo *GF_service_info,
 
 //-------------------------------------------------
 func Run_service(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 	
 	//------------------------
 	// INIT
@@ -178,7 +178,7 @@ func Run_service(p_service_info *GF_service_info,
 	mongodb_db   := gf_core.Mongo__connect(mongodb_host_str, mongodb_db_name_str, log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_analytics",
 		Log_fun:          log_fun,
 		Mongodb_db:       mongodb_db,

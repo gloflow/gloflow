@@ -47,7 +47,7 @@ func ImageGetFilepathFromID(pImageIDstr GFimageID,
 
 func ImageGetPublicURL(pImageFilePathStr string,
 	pMediaDomainStr string,
-	pRuntimeSys      *gf_core.Runtime_sys) string {
+	pRuntimeSys      *gf_core.RuntimeSys) string {
 
 	// // IMPORTANT!! - amazon URL escapes image file names when it makes them public in a bucket
 	// //               escaped_str := url.QueryEscape(*p_image_s3_file_path_str)
@@ -111,7 +111,7 @@ func ImageLoadFile(p_image_local_file_path_str string,
 // VAR
 //---------------------------------------------------
 func Get_image_original_filename_from_url(p_image_url_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (string, *gf_core.Gf_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.Gf_error) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
 
 	url,err := url.Parse(p_image_url_str)
@@ -132,7 +132,7 @@ func Get_image_original_filename_from_url(p_image_url_str string,
 func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 	p_image_url_str                   string,
 	p_images_store_local_dir_path_str string,
-	pRuntimeSys                       *gf_core.Runtime_sys) (string, Gf_image_id, *gf_core.Gf_error) {
+	pRuntimeSys                       *gf_core.RuntimeSys) (string, Gf_image_id, *gf_core.Gf_error) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Create_gf_image_file_path_from_url()")
 
 	// IMPORTANT!! - gf_image_id can be supplied externally. if its not supplied then a new gf_image_id is generated
@@ -324,7 +324,7 @@ func GetImageExtFromURL(pImageURLstr string,
 }
 
 //---------------------------------------------------	
-func Image__check_image_format(pFormatStr string, pRuntimeSys *gf_core.Runtime_sys) (string, bool) {
+func Image__check_image_format(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (string, bool) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Image__check_image_format()")
 	
 	if pFormatStr != "jpeg" && 

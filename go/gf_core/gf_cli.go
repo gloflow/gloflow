@@ -38,67 +38,67 @@ type GF_CLI_cmd_info struct {
 
 //-------------------------------------------------
 // RUN_STANDARD
-func CLI__run_standard(p_cmd_lst []string,
+func CLIrunStandard(pCmdLst []string,
 	p_env_vars_map map[string]string,
-	p_runtime_sys  *Runtime_sys) ([]string, []string, *Gf_error) {
+	pRuntimeSys    *RuntimeSys) ([]string, []string, *GFerror) {
 
-	cli_info := &GF_CLI_cmd_info{
-		Cmd_lst:          p_cmd_lst,
+	cliInfo := &GF_CLI_cmd_info{
+		Cmd_lst:          pCmdLst,
 		Env_vars_map:     p_env_vars_map,
 		Dir_str:          "",
 		View_output_bool: true,
 	}
-	stdout_lst, stderr_lst, gf_err := CLI__run(cli_info, p_runtime_sys)
-	return stdout_lst, stderr_lst, gf_err
+	stdoutLst, stderrLst, gfErr := CLIrun(cliInfo, pRuntimeSys)
+	return stdoutLst, stderrLst, gfErr
 }
 
 //-------------------------------------------------
 // RUN
-func CLI__run(p_cmd_info *GF_CLI_cmd_info,
-	p_runtime_sys *Runtime_sys) ([]string, []string, *Gf_error) {
+func CLIrun(pCmdInfo *GF_CLI_cmd_info,
+	pRuntimeSys *RuntimeSys) ([]string, []string, *GFerror) {
 
-	stdout_ch, stderr_ch, gf_err := CLI__run_core(p_cmd_info,
+	stdoutCh, stderrCh, gfErr := CLIrunCore(pCmdInfo,
 		true,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
-	stdout_lst, stderr_lst := consume_outputs(stdout_ch, stderr_ch)
+	stdoutLst, stderrLst := consumeOutputs(stdoutCh, stderrCh)
 
-	return stdout_lst, stderr_lst, nil
+	return stdoutLst, stderrLst, nil
 }
 
 //-------------------------------------------------
-func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
-	p_wait_for_completion_bool bool,
-	p_runtime_sys              *Runtime_sys) (chan string, chan string, *Gf_error) {
+func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
+	pWaitForCompletionBool bool,
+	pRuntimeSys            *RuntimeSys) (chan string, chan string, *GFerror) {
 
-	cmd_str := strings.Join(p_cmd_info.Cmd_lst, " ")
+	cmd_str := strings.Join(pCmdInfo.Cmd_lst, " ")
 	fmt.Printf("%s\n", cmd_str)
 
 
 
-	cmd_name_str := p_cmd_info.Cmd_lst[0]
-	cmd_args_lst := p_cmd_info.Cmd_lst[1:]
+	cmd_name_str := pCmdInfo.Cmd_lst[0]
+	cmd_args_lst := pCmdInfo.Cmd_lst[1:]
 	p := exec.Command(cmd_name_str, cmd_args_lst...)
 
 
 
 
 	// CMD_DIR
-	if p_cmd_info.Dir_str != "" {
-		p.Dir = p_cmd_info.Dir_str
+	if pCmdInfo.Dir_str != "" {
+		p.Dir = pCmdInfo.Dir_str
 	}
 
 	// STDIN
 	stdin, err := p.StdinPipe()
 	if err != nil {
-		gf_err := Error__create("failed to get STDIN pipe of a CLI process",
+		gfErr := Error__create("failed to get STDIN pipe of a CLI process",
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, nil, gf_err 
+			err, "gf_core", pRuntimeSys)
+		return nil, nil, gfErr 
 	}
 	// defer stdin.Close()
 
@@ -116,17 +116,17 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	// START
 	err = p.Start()
 	if err != nil {
-		gf_err := Error__create("failed to Start a CLI command",
+		gfErr := Error__create("failed to Start a CLI command",
 			"cli_run_error",
 			map[string]interface{}{"cmd": cmd_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, nil, gf_err	
+			err, "gf_core", pRuntimeSys)
+		return nil, nil, gfErr	
 	}
 
 	//----------------------
 	// STDIN - input is written to stdin after the process is started
-	if p_cmd_info.Stdin_data_str != nil {
-		io.WriteString(stdin, fmt.Sprintf("%s\n", *p_cmd_info.Stdin_data_str))
+	if pCmdInfo.Stdin_data_str != nil {
+		io.WriteString(stdin, fmt.Sprintf("%s\n", *pCmdInfo.Stdin_data_str))
 	}
 
 	//----------------------
@@ -145,7 +145,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 			if err != nil {
 				continue
 			}
-			if p_cmd_info.View_output_bool {
+			if pCmdInfo.View_output_bool {
 				fmt.Printf("%s", l)
 			}
 			l_str := strings.TrimSuffix(l, "\n")
@@ -168,7 +168,7 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 			if err != nil {
 				continue
 			}
-			if p_cmd_info.View_output_bool {
+			if pCmdInfo.View_output_bool {
 				fmt.Printf("%s\n", l)
 			}
 			l_str := strings.TrimSuffix(l, "\n")
@@ -179,19 +179,20 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 	//----------------------
 	// WAIT
 
-	if p_wait_for_completion_bool {
+	if pWaitForCompletionBool {
+
 		err = p.Wait()
 		if err != nil {
-			stdout_lst, stderr_lst := consume_outputs(stdout_ch, stderr_ch)
-			gf_err := Error__create("failed to Wait for a CLI command to complete",
+			stdoutLst, stderrLst := consumeOutputs(stdout_ch, stderr_ch)
+			gfErr := Error__create("failed to Wait for a CLI command to complete",
 				"cli_run_error",
 				map[string]interface{}{
 					"cmd":        cmd_str,
-					"stdout_lst": stdout_lst,
-					"stderr_lst": stderr_lst,
+					"stdout_lst": stdoutLst,
+					"stderr_lst": stderrLst,
 				},
-				err, "gf_core", p_runtime_sys)
-			return nil, nil, gf_err
+				err, "gf_core", pRuntimeSys)
+			return nil, nil, gfErr
 		}
 	}
 
@@ -201,24 +202,24 @@ func CLI__run_core(p_cmd_info *GF_CLI_cmd_info,
 }
 
 //-------------------------------------------------
-func consume_outputs(p_stdout_ch chan string, p_stderr_ch chan string) ([]string, []string) {
-	stdout_lst := []string{}
-	stderr_lst := []string{}
+func consumeOutputs(pStdoutCh chan string, pStderrCh chan string) ([]string, []string) {
+	stdoutLst := []string{}
+	stderrLst := []string{}
 	for {
 		select {
-		case stdout_l_str := <- p_stdout_ch:
+		case stdoutLineStr := <- pStdoutCh:
 
-			if stdout_l_str == "EOF" {
-				return stdout_lst, stderr_lst
+			if stdoutLineStr == "EOF" {
+				return stdoutLst, stderrLst
 			} else {
-				stdout_lst = append(stdout_lst, stdout_l_str)
+				stdoutLst = append(stdoutLst, stdoutLineStr)
 			}
 			
-		case stderr_l_str := <- p_stderr_ch:
-			stderr_lst = append(stdout_lst, stderr_l_str)
+		case stderr_l_str := <- pStderrCh:
+			stderrLst = append(stdoutLst, stderr_l_str)
 
 		// case _ = <- done_ch:
-		// 	return stdout_lst, stderr_lst
+		// 	return stdoutLst, stderrLst
 		
 		}
 	}
@@ -226,7 +227,7 @@ func consume_outputs(p_stdout_ch chan string, p_stderr_ch chan string) ([]string
 }
 
 //-------------------------------------------------
-func CLI__prompt() {
+func CLIprompt() {
 
 
 

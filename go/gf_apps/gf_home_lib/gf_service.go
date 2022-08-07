@@ -38,7 +38,7 @@ type GFserviceInfo struct {
 func InitService(pTemplatesPathsMap map[string]string,
 	pServiceInfo *GFserviceInfo,
 	pHTTPmux     *http.ServeMux,
-	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//------------------------
 	// STATIC FILES SERVING

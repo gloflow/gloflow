@@ -30,7 +30,7 @@ import (
 //------------------------------------------------
 func Get_posts_page(p_page_index_int int,
 	p_page_elements_num_int int,
-	p_runtime_sys           *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys           *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_posts_browser_pipelines.Get_posts_page()")
 
 	cursor_start_position_int := p_page_index_int*p_page_elements_num_int
@@ -64,7 +64,7 @@ func Render_initial_pages(p_response_format_str string,
 	p_tmpl                   *template.Template,
 	p_subtempaltes_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_posts_browser_pipelines.Render_initial_pages()")
 	
 	posts_pages_lst := [][]*gf_publisher_core.Gf_post{}

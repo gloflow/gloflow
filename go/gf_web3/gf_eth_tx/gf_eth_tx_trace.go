@@ -199,7 +199,7 @@ func Trace__plot(p_tx_id_hex_str string,
 func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_RuntimeSys   *gf_core.Runtime_sys) (*GF_eth__tx_trace, *gf_core.GF_error) {
+	p_RuntimeSys   *gf_core.RuntimeSys) (*GF_eth__tx_trace, *gf_core.GF_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
 	p_host_port_str,
@@ -308,7 +308,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
 	p_ctx              context.Context,
-	p_RuntimeSys      *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GFerror) {
+	p_RuntimeSys      *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
 	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
 	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 

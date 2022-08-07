@@ -30,7 +30,7 @@ import (
 )
 
 //--------------------------------------------------
-func Link__db_index__init(pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+func Link__db_index__init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")
 
 	indexes_keys_lst := [][]string{
@@ -48,7 +48,7 @@ func Link__db_index__init(pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
 //--------------------------------------------------
 // LINK_DB_GET_UNRESOLVED
 func Link__db_get_unresolved(p_crawler_name_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__get_unresolved()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -144,7 +144,7 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 
 //--------------------------------------------------
 func Link__db_get(p_link_id_str string,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_get()")
 
 	ctx := context.Background()
@@ -172,7 +172,7 @@ func Link__db_get(p_link_id_str string,
 
 //--------------------------------------------------
 func link__db_create(p_link *GFcrawlerPageOutgoingLink,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -231,7 +231,7 @@ func link__db_create(p_link *GFcrawlerPageOutgoingLink,
 
 //--------------------------------------------------
 func link__db_exists(pLinkHashStr string,
-	pRuntimeSys *gf_core.Runtime_sys) (bool, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	ctx := context.Background()
 	c, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx,
@@ -267,7 +267,7 @@ func Link__db_mark_import_in_progress(pStatusBool bool,
 	p_unix_time_f float64,
 	p_link        *GFcrawlerPageOutgoingLink,
 	p_runtime     *GFcrawlerRuntime,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_mark_import_in_progress()")
 
 	//----------------
@@ -305,7 +305,7 @@ func Link__db_mark_import_in_progress(pStatusBool bool,
 func Link__db_mark_as_resolved(p_link *GFcrawlerPageOutgoingLink,
 	p_fetch_id_str          string,
 	p_fetch_creation_time_f float64,
-	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.Link__db_mark_as_resolved()")
 	
 	ctx := context.Background()
@@ -339,9 +339,9 @@ func Link__db_mark_as_resolved(p_link *GFcrawlerPageOutgoingLink,
 
 //--------------------------------------------------
 func link__db_mark_as_failed(p_error *Gf_crawler_error,
-	p_link        *GFcrawlerPageOutgoingLink,
-	p_runtime     *GFcrawlerRuntime,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_link      *GFcrawlerPageOutgoingLink,
+	p_runtime   *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links_db.link__mark_as_failed()")
 
 	ctx := context.Background()

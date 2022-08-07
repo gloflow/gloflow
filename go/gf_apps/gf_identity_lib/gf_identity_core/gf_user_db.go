@@ -29,7 +29,7 @@ import (
 //---------------------------------------------------
 func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (GFuserName, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (GFuserName, *gf_core.GF_error) {
 
 	findOpts := options.FindOne()
 	findOpts.Projection = map[string]interface{}{
@@ -61,7 +61,7 @@ func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 // GET_BASIC_INFO_BY_ETH_ADDR
 func DBgetBasicInfoByETHaddr(pUserAddressETHstr GF_user_address_eth,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GF_error) {
 
 	userIDstr, gfErr := DBgetUserID(bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{pUserAddressETHstr, }},
@@ -83,7 +83,7 @@ func DBgetBasicInfoByETHaddr(pUserAddressETHstr GF_user_address_eth,
 // GET_BASIC_INFO_BY_USERNAME
 func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GF_error) {
 
 	userIDstr, gfErr := DBgetUserID(bson.M{
 			"user_name_str": pUserNameStr,
@@ -107,7 +107,7 @@ func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 func DBgetUserID(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (gf_core.GF_ID, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GF_error) {
 
 
 	findOpts := options.FindOne()

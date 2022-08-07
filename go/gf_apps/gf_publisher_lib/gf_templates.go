@@ -35,7 +35,7 @@ type gf_templates struct {
 
 //-------------------------------------------------
 func tmpl__load(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.Runtime_sys) (*gf_templates, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	post__main_template_filepath_str          := p_templates_paths_map["gf_post"]

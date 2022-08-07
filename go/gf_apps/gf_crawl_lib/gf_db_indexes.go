@@ -26,7 +26,7 @@ import (
 
 //--------------------------------------------------
 func db_index__init(p_runtime *gf_crawl_core.GFcrawlerRuntime,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	indexes_keys_lst := [][]string{
 		[]string{"t", }, // all stat queries first match on "t"

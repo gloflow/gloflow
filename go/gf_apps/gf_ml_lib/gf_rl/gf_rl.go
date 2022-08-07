@@ -35,7 +35,7 @@ type GFrlRuntime struct {
 	Hyperparams GFrlHyperparams
 	QtableMap   GFqTable
 
-	RuntimeSys  *gf_core.Runtime_sys
+	RuntimeSys  *gf_core.RuntimeSys
 }
 
 type GFstate struct {
@@ -71,7 +71,7 @@ type GFrlHyperparams struct {
 
 //-------------------------------------------------
 func Init(pAppInfo *GFappInfo,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	
 

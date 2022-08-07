@@ -102,7 +102,7 @@ type Gf_domain_posts struct {
 }
 
 //---------------------------------------------------
-func Get_domains_posts__mongo(p_runtime_sys *gf_core.Runtime_sys) ([]Gf_domain_posts, *gf_core.Gf_error) {
+func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_posts, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
 
 	// cyan   := color.New(color.FgCyan).SprintFunc()

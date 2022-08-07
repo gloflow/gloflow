@@ -63,7 +63,7 @@ type Gf_post_note struct {
 }
 
 //------------------------------------------------
-func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) (*Gf_post, *gf_core.Gf_error) {
+func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.Create_new_post()")
 	p_runtime_sys.Log_fun("INFO",      "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
@@ -179,12 +179,12 @@ func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 //------------------------------------------------	
 // a post has to first be created, and only then can it be published
 
-func publish(p_post_title_str string, p_runtime_sys *gf_core.Runtime_sys) {
+func publish(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
 }
 
 //------------------------------------------------
-func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.Runtime_sys) []*Gf_post_note {
+func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) []*Gf_post_note {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
 
 	notes_lst := []*Gf_post_note{}

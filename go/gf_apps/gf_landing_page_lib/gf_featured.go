@@ -90,7 +90,7 @@ func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
 //------------------------------------------
 func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
 	p_elements_num_to_get_int int, // 5
-	pRuntimeSys             *gf_core.Runtime_sys) ([]*Gf_featured_post, *gf_core.Gf_error) {
+	pRuntimeSys             *gf_core.RuntimeSys) ([]*Gf_featured_post, *gf_core.Gf_error) {
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point
@@ -106,7 +106,7 @@ func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
 }
 
 //------------------------------------------
-func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf_core.Runtime_sys) []*Gf_featured_post {
+func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf_core.RuntimeSys) []*Gf_featured_post {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
 
 	featured_posts_lst := []*Gf_featured_post{}
@@ -135,7 +135,7 @@ func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf
 }
 
 //------------------------------------------
-func post_to_featured(p_post *gf_publisher_core.Gf_post, pRuntimeSys *gf_core.Runtime_sys) *Gf_featured_post {
+func post_to_featured(p_post *gf_publisher_core.Gf_post, pRuntimeSys *gf_core.RuntimeSys) *Gf_featured_post {
 	pRuntimeSys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)

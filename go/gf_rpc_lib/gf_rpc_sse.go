@@ -45,7 +45,7 @@ type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Reque
 func SSE_create_handler__http(p_path_str string,
 	p_handler_fun    handler_http_sse,
 	p_store_run_bool bool,
-	p_runtime_sys    *gf_core.Runtime_sys) {
+	p_runtime_sys    *gf_core.RuntimeSys) {
 
 	Create_handler__http_with_metrics(p_path_str,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
@@ -174,7 +174,7 @@ func SSE_create_handler__http(p_path_str string,
 
 //-------------------------------------------------
 func SSE_client__parse_response(p_body_str string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
 	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_sse.SSE_client__parse_response()")
 
 	data_items_lst := []map[string]interface{}{}

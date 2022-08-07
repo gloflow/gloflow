@@ -42,7 +42,7 @@ func Test__jwt(pTest *testing.T) {
 
 //-------------------------------------------------
 func test_jwt_main(pTest *testing.T,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 
 	ctx := context.Background()

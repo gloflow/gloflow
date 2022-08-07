@@ -49,7 +49,7 @@ func main() {
 	//-----------------
 	// MONGODB
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_analytics",
 		Log_fun:          log_fun,
 	}

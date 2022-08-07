@@ -38,7 +38,7 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func InitService(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-------------
 	// HANDLERS
@@ -63,7 +63,7 @@ func Run_service(p_service_info *GF_service_info,
 	//-------------
 	// RUNTIME_SYS
 	
-	runtimeSys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_ml",
 		Log_fun:          p_log_fun,
 	}

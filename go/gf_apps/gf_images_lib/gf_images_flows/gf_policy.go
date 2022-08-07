@@ -32,7 +32,7 @@ func flowsVerifyPolicy(pOpStr string,
 	pFlowsNamesLst []string,
 	pUserIDstr     gf_core.GF_ID,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	// POLICY_VERIFY
 	flowsIDsLst, gfErr := DBgetFlowsIDs(pFlowsNamesLst, pCtx, pRuntimeSys)

@@ -42,7 +42,7 @@ func TestMain(m *testing.M) {
 //---------------------------------------------------
 func Test__templates(p_test *testing.T) {
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_flows_tests",
 		Log_fun:          log_fun,
 	}

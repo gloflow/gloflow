@@ -151,7 +151,7 @@ func TestHomeViz(pTest *testing.T) {
 //---------------------------------------------------
 func TestTemplates(pTest *testing.T) {
 
-	runtimeSys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_home_test",
 		Log_fun:          logFun,
 	}

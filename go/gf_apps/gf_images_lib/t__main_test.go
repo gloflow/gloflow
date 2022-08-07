@@ -78,7 +78,7 @@ func Test__main(p_test *testing.T) {
 	
 
 	// RUNTIME
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_tests",
 		Log_fun:          log_fun,
 	}
@@ -119,7 +119,7 @@ func Test__main(p_test *testing.T) {
 
 //---------------------------------------------------
 func test__images_transformer(p_test_image_data *Gf_test_image_data,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_TRANSFORMER   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -163,7 +163,7 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 
 //---------------------------------------------------
 func test__images_ops(p_test_image_data *Gf_test_image_data,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_OPS   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -187,7 +187,7 @@ func test__images_ops(p_test_image_data *Gf_test_image_data,
 func test__image_ops(p_test_image_data *Gf_test_image_data,
 	p_test__image_local_filepath_str string,
 	p_test__image_format_str         string,
-	p_runtime_sys                    *gf_core.Runtime_sys) {
+	p_runtime_sys                    *gf_core.RuntimeSys) {
 
 	//---------------
 	test__image_id_str := gf_images_core.Image_ID__create(p_test__image_local_filepath_str, p_test__image_format_str, p_runtime_sys)

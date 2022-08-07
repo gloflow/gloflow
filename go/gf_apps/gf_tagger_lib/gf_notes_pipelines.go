@@ -38,7 +38,7 @@ type GF_note struct {
 
 //---------------------------------------------------
 func notes__pipeline__add(p_input_data_map map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.notes__pipeline__add()")
 
 	//----------------
@@ -96,7 +96,7 @@ func notes__pipeline__add(p_input_data_map map[string]interface{},
 
 //---------------------------------------------------
 func notes__pipeline__get(p_req *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_note, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*GF_note, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_notes_pipelines.notes__pipeline__get()")
 
 	//-----------------

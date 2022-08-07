@@ -34,7 +34,7 @@ import (
 //---------------------------------------------------
 func db__get_objects_with_tag_count(p_tag_str string,
 	p_object_type_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) (int64, *gf_core.GF_error) {
+	p_runtime_sys     *gf_core.RuntimeSys) (int64, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_objects_with_tag_count()")
 
 	switch p_object_type_str {
@@ -65,7 +65,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 // POSTS
 //---------------------------------------------------
 func db__get_post_notes(p_post_title_str string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_note, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*GF_note, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
 
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
@@ -93,7 +93,7 @@ func db__get_post_notes(p_post_title_str string,
 //---------------------------------------------------
 func db__add_post_note(p_note *GF_note,
 	p_post_title_str string,
-	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys    *gf_core.RuntimeSys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_post_note()")
 
 	//--------------------
@@ -130,7 +130,7 @@ func db__add_post_note(p_note *GF_note,
 func db__get_posts_with_tag(p_tag_str string,
 	p_page_index_int int,
 	p_page_size_int  int,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*gf_publisher_core.Gf_post, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) ([]*gf_publisher_core.Gf_post, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
 	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_tag_str - %s", p_tag_str))
 
@@ -210,7 +210,7 @@ func db__get_posts_with_tag(p_tag_str string,
 //---------------------------------------------------
 func db__add_tags_to_post(p_post_title_str string,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_post()")
 
 	ctx := context.Background()

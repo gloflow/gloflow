@@ -40,7 +40,7 @@ type gfTemplates struct {
 func initHandlers(pTemplatesPathsMap map[string]string,
 	pAuthLoginURLstr string,
 	pHTTPmux         *http.ServeMux,
-	pRuntimeSys      *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GF_error {
 	
 	//---------------------
 	// TEMPLATES
@@ -169,7 +169,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 func templatesLoad(pTemplatesPathsMap map[string]string,
-	pRuntimeSys *gf_core.Runtime_sys) (*gfTemplates, *gf_core.Gf_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.Gf_error) {
 
 	mainTemplateFilepathStr := pTemplatesPathsMap["gf_home_main"]
 

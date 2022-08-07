@@ -42,7 +42,7 @@ func job_error__send(p_job_error_type_str string,
 	p_image_id_str         gf_images_core.Gf_image_id,
 	p_job_id_str           string,
 	p_job_updates_ch       chan JobUpdateMsg,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
 
@@ -75,7 +75,7 @@ func job_error__persist(p_job_id_str string,
 	p_error_type_str       string,
 	p_error_str            string,
 	p_image_source_url_str string,
-	p_runtime_sys          *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	job_error := Job_Error{
 		Type_str:             p_error_type_str,

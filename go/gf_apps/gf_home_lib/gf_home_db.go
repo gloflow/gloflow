@@ -32,7 +32,7 @@ import (
 func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 	pUpdatedComponentsMap map[string]GFhomeVizComponent,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.Runtime_sys) *gf_core.GFerror  {
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror  {
 
 
 	fieldsTargets := bson.M{
@@ -62,7 +62,7 @@ func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 // CREATE_HOME_VIZ
 func DBcreateHomeViz(pHomeViz *GFhomeViz,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr := "gf_home_viz"
 	gfErr := gf_core.MongoInsert(pHomeViz,
@@ -84,7 +84,7 @@ func DBcreateHomeViz(pHomeViz *GFhomeViz,
 // GET_HOME_VIZ
 func DBgetHomeViz(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GF_error) {
 
 	
 	collNameStr := "gf_home_viz"

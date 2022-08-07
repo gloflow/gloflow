@@ -42,7 +42,7 @@ func Client__request_sse(p_url_str string,
 	p_resp_data_ch chan(map[string]interface{}),
 	p_headers_map  map[string]string,
 	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//-----------------------
 	// FETCH_URL
@@ -153,7 +153,7 @@ func Client__request_sse(p_url_str string,
 func Client__request(p_url_str string,
 	p_headers_map map[string]string,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
 
 	yellow   := color.New(color.FgYellow).SprintFunc()
 	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()

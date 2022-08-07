@@ -34,7 +34,7 @@ func init_handlers(p_media_domain_str string,
 	p_templates_paths_map          map[string]string,
 	p_http_mux                     *http.ServeMux,
 	p_runtime                      *gf_crawl_core.GFcrawlerRuntime,
-	p_runtime_sys                  *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//---------------------
 	// TEMPLATES

@@ -169,7 +169,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 
 func Image__create(pImageInfoMap map[string]interface{},
 	pCtx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_image, *gf_core.GFerror) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images.Image__create()")
 	
 	newImageInfoMap, gf_err := Image__verify_image_info(pImageInfoMap, p_runtime_sys)

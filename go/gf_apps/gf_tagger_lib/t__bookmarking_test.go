@@ -53,7 +53,7 @@ func Test__main(p_test *testing.T) {
 	log_fun := gf_core.Init_log_fun()
 
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger_tests",
 		Log_fun:          log_fun,
 		Validator:        gf_core.Validate__init(),
@@ -73,7 +73,7 @@ func Test__main(p_test *testing.T) {
 
 //-------------------------------------------------
 func test_bookmarking(p_test *testing.T,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
 	ctx := context.Background()

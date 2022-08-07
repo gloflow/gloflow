@@ -47,7 +47,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	p_service_info          *GF_service_info,
 	p_identity_service_info *gf_identity_lib.GF_service_info,
 	p_local_hub             *sentry.Hub,
-	pRuntimeSys             *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
@@ -240,7 +240,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 func templatesLoad(p_templates_paths_map map[string]string,
-	pRuntimeSys *gf_core.Runtime_sys) (*gf_templates, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
 
 	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
 	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]

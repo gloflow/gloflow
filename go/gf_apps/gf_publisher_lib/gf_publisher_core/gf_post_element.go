@@ -85,7 +85,7 @@ type Gf_post_element struct {
 //---------------------------------------------------
 func create_post_elements(p_post_elements_infos_lst []interface{},
 	p_post_title_str string,
-	p_runtime_sys    *gf_core.Runtime_sys) []*Gf_post_element {
+	p_runtime_sys    *gf_core.RuntimeSys) []*Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.create_post_elements()")
 	p_runtime_sys.Log_fun("INFO",      "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
@@ -133,7 +133,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 }
 
 //---------------------------------------------------
-func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtime_sys) *Gf_post_element {
+func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.RuntimeSys) *Gf_post_element {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_first_image_post_element()")
 
 	for _, post_element := range p_post.Post_elements_lst {
@@ -147,7 +147,7 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 //---------------------------------------------------
 func Get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*Gf_post_element, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*Gf_post_element, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.Get_post_elements_of_type()")
 	
 	gf_err := Verify_post_element_type(p_type_str, p_runtime_sys)

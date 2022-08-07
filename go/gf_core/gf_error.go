@@ -64,7 +64,7 @@ func Panic__check_and_handle(p_user_msg_str string,
 	p_panic_data_map     map[string]interface{},
 	p_oncomplete_fn      func(),
 	p_subsystem_name_str string,
-	pRuntimeSys          *Runtime_sys) {
+	pRuntimeSys          *RuntimeSys) {
 
 	// call to recover stops the unwinding and returns the argument passed to panic
 	// If the goroutine is not panicking, recover returns nil.
@@ -120,18 +120,18 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_hook_fun           func(*GF_error) map[string]interface{},
-	pRuntimeSys          *Runtime_sys) *GF_error {
+	p_hook_fun           func(*GFerror) map[string]interface{},
+	pRuntimeSys          *RuntimeSys) *GFerror {
 
-	gfError := Error__create(p_user_msg_str,
+	gfErr := Error__create(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
 		pRuntimeSys)
 
-	p_hook_fun(gfError)
-	return gfError
+	p_hook_fun(gfErr)
+	return gfErr
 }
 
 //-------------------------------------------------
@@ -140,7 +140,7 @@ func Error__create(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	pRuntimeSys          *Runtime_sys) *GF_error {
+	pRuntimeSys          *RuntimeSys) *GFerror {
 
 	error_defs_map := error__get_defs()
 	
@@ -173,7 +173,7 @@ func Error__create_with_defs(p_user_msg_str string,
 	//               the error occured.
 	p_skip_stack_frames_num_int int,
 
-	pRuntimeSys *Runtime_sys) *GF_error {
+	pRuntimeSys *RuntimeSys) *GFerror {
 
 	
 

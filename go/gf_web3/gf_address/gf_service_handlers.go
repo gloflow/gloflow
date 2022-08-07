@@ -29,7 +29,7 @@ import (
 
 //-------------------------------------------------
 func InitHandlers(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS

@@ -30,7 +30,7 @@ import (
 func inputForVizPropsUpdate(pReq *http.Request,
 	pResp       http.ResponseWriter,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFvizPropsUpdateInput, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFvizPropsUpdateInput, *gf_core.GFerror) {
 
 	userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 

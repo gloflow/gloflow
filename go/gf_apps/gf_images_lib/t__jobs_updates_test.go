@@ -67,7 +67,7 @@ func Test__jobs_updates(p_test *testing.T) {
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_tests",
 		Log_fun:          log_fun,
 		Mongodb_db:       mongodb_db,
@@ -142,7 +142,7 @@ func test__job_updates__via_http(p_test__image_url_str string,
 	p_test__origin_page_url_str   string,
 	p_test__image_client_type_str string,
 	p_test_image_service_port_str string,
-	p_runtime_sys                 *gf_core.Runtime_sys) {
+	p_runtime_sys                 *gf_core.RuntimeSys) {
 	
 	test__input_images_urls_lst                    := []string{p_test__image_url_str,}
 	test__input_images_origin_pages_urls_lst       := []string{p_test__origin_page_url_str,}
@@ -170,7 +170,7 @@ func test__job_updates__in_process(p_test__image_url_str string,
 	p_test__image_client_type_str string,
 	p_test__origin_page_url_str   string,
 	p_jobs_mngr                   gf_images_jobs.Jobs_mngr,
-	p_runtime_sys                 *gf_core.Runtime_sys) {
+	p_runtime_sys                 *gf_core.RuntimeSys) {
 
 	images_to_process_lst := []gf_images_jobs.Gf_image_extern_to_process{
 		gf_images_jobs.Gf_image_extern_to_process{

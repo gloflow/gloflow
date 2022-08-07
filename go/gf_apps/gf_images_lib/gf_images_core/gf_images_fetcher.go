@@ -96,14 +96,14 @@ func FetcherGetExternImage(p_image_url_str string,
 
 //---------------------------------------------------
 func analytics__log_image_fetch(p_image_url_str string,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
 }
 
 //---------------------------------------------------
 func DownloadFile(p_image_url_str string,
 	p_local_image_file_path_str string,
-	pRuntimeSys               *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
 
 	//-----------------------

@@ -32,7 +32,7 @@ func DBgetAll(pAddressTypeStr string,
 	pAddressChainNameStr string,
 	pUserIDstr           gf_core.GF_ID,
 	pCtx                 context.Context,
-	pRuntimeSys          *gf_core.Runtime_sys) ([]*GFchainAddress, *gf_core.GFerror) {
+	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFchainAddress, *gf_core.GFerror) {
 
 	collNameStr := "gf_web3_addresses"
 

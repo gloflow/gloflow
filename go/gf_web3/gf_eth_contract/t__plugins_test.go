@@ -35,7 +35,7 @@ func Test__plugins(pTest *testing.T) {
 	//--------------------
 	// RUNTIME_SYS
 	log_fun     := gf_core.Init_log_fun()
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_core__tests",
 		Log_fun:          log_fun,
 		

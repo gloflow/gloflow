@@ -37,7 +37,7 @@ type GF_images_extern_runtime_info struct {
 //-------------------------------------------------
 func Init_service(p_http_mux *http.ServeMux,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) {
+	p_runtime_sys            *gf_core.RuntimeSys) {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -114,7 +114,7 @@ func Run_service(p_port_str string,
                  |############\`
     p_log_fun("INFO",logo_str)
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_publisher",
 		Log_fun:          p_log_fun,
 	}

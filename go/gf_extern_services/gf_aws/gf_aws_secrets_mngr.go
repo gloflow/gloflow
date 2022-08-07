@@ -38,7 +38,7 @@ import (
 func AWS_SECMNGR__create_secret(p_secret_name_str string,
 	p_data_map        map[string]interface{},
 	p_description_str string,
-	p_runtime_sys     *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	data_str, err := json.Marshal(p_data_map)
 	if err != nil {
@@ -99,7 +99,7 @@ func AWS_SECMNGR__create_secret(p_secret_name_str string,
 
 //-------------------------------------------------------------
 func AWS_SECMNGR__get_secret(p_secret_name_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
 
 	svc   := secretsmanager.New(session.New())
 	input := &secretsmanager.GetSecretValueInput{

@@ -97,7 +97,7 @@ type GF_user__output_get struct {
 func users__pipeline__update(pInput *GF_user__input_update,
 	pServiceInfo *GF_service_info,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user__output_update, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user__output_update, *gf_core.GF_error) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -139,7 +139,7 @@ func users__pipeline__update(pInput *GF_user__input_update,
 // PIPELINE__GET
 func usersPipelineGet(pInput *GF_user__input_get,
 	pCtx         context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GF_user__output_get, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_user__output_get, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE

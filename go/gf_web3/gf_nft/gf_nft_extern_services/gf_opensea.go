@@ -86,7 +86,7 @@ type GFnftOpenSeaCollection struct {
 //-------------------------------------------------
 func OpenSeaGetAllNFTsForAddress(pAddressStr string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]GFnftOpenSea, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]GFnftOpenSea, *gf_core.GFerror) {
 
 	//---------------------
 	// GET_ALL_PAGES
@@ -120,7 +120,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	pOffsetInt  int,
 	pLimitInt   int,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]GFnftOpenSea, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]GFnftOpenSea, *gf_core.GFerror) {
 
 	//---------------------
 	// HTTP_AGENT

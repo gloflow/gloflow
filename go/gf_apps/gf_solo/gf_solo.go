@@ -29,17 +29,17 @@ import (
 //-------------------------------------------------
 func main() {
 
-	log_fun := gf_core.Init_log_fun()
+	logFun := gf_core.Init_log_fun()
 	log.SetOutput(os.Stdout)
 
 
-	external_plugins := &gf_core.External_plugins{
+	externalPlugins := &gf_core.ExternalPlugins{
 
 	}
 
 
-	cmd__base := gf_solo_service.Cmds_init(external_plugins, log_fun)
-	err := cmd__base.Execute()
+	cmdBase := gf_solo_service.Cmds_init(externalPlugins, logFun)
+	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)
 	}

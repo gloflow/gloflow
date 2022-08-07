@@ -27,7 +27,7 @@ import (
 )
 
 //-------------------------------------------------
-func Cmds_init(pExternalPlugins *gf_core.External_plugins,
+func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	pLogFun func(string, string)) *cobra.Command {
 
 	// BASE

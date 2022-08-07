@@ -43,7 +43,7 @@ type gf_test_config struct {
 	test__gf_images_s3_bucket_name_str      string
 }
 
-var runtime_sys *gf_core.Runtime_sys
+var runtime_sys *gf_core.RuntimeSys
 var crawler_runtime *Gf_crawler_runtime
 
 //---------------------------------------------------
@@ -175,7 +175,7 @@ func t__images__stage__process_images(p_test *testing.T,
 	p_test__local_gf_image_file_path_str string,
 	p_test_config                        *gf_test_config,
 	p_crawler_runtime                    *Gf_crawler_runtime, 
-	p_runtime_sys                        *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
+	p_runtime_sys                        *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 
 	//-------------------
 	//PIPELINE_STAGE__PROCESS_IMAGES - apply image transformations, create thumbnails, etc.
@@ -250,7 +250,7 @@ func t__images__stage__s3_store_images(p_test *testing.T,
 	p_test__crawled_image               *Gf_crawler_page_image,
 	p_test_config                       *gf_test_config,
 	p_crawler_runtime                   *Gf_crawler_runtime, 
-	p_runtime_sys                       *gf_core.Runtime_sys) {
+	p_runtime_sys                       *gf_core.RuntimeSys) {
 
 	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(p_test_config.test__crawler_name_str,
 		p_page_imgs__pinfos_with_thumbs_lst,

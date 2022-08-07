@@ -47,7 +47,7 @@ type GFaddInput struct {
 // PIPELINE_GET_ALL
 func pipelineGetAll(pInput *GFgetAllInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFgetAllOutput, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgetAllOutput, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -96,7 +96,7 @@ func pipelineGetAll(pInput *GFgetAllInput,
 // PIPELINE_ADD
 func pipelineAdd(pInput *GFaddInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// VALIDATE_INPUT

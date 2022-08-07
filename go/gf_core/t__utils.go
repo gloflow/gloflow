@@ -32,7 +32,7 @@ type Gf_s3_test_info struct {
 }
 
 //---------------------------------------------------
-func T__get_s3_info(p_runtime_sys *Runtime_sys) *Gf_s3_test_info {
+func T__get_s3_info(p_runtime_sys *RuntimeSys) *Gf_s3_test_info {
 
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")

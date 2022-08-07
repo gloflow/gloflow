@@ -85,7 +85,7 @@ type GF_user_auth_userpass__output_create struct {
 func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
 	pServiceInfo *GF_service_info,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -159,7 +159,7 @@ func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
 func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input_login_finalize,
 	pServiceInfo *GF_service_info,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
 
 	output := &GF_user_auth_userpass__output_login_finalize{}
 	userNameStr := gf_identity_core.GFuserName(pInput.UserNameStr)
@@ -216,7 +216,7 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
 	p_service_info *GF_service_info,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -309,7 +309,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_create,
 	pServiceInfo *GF_service_info,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.Runtime_sys) (*GF_user_auth_userpass__output_create, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_create, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -368,7 +368,7 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 
 	// SECRETS_STORE
 	if pServiceInfo.Enable_user_creds_in_secrets_store_bool && 
-		pRuntimeSys.External_plugins.SecretCreateCallback != nil {
+		pRuntimeSys.ExternalPlugins.SecretCreateCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_user_creds@%s", userNameStr)
 		secretDescriptionStr := fmt.Sprintf("user creds for a particular user")
@@ -383,7 +383,7 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 		}
 
 		// SECRET_STORE__USER_CREDS_CREATE
-		gfErr := pRuntimeSys.External_plugins.SecretCreateCallback(secretNameStr,
+		gfErr := pRuntimeSys.ExternalPlugins.SecretCreateCallback(secretNameStr,
 			userCredsMap,
 			secretDescriptionStr,
 			pRuntimeSys)
@@ -438,7 +438,7 @@ func users_auth_userpass__verify_pass(pUserNameStr gf_identity_core.GFuserName,
 	pPassStr       string,
 	p_service_info *GF_service_info,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	pRuntimeSys    *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
 
 
 	// GET_PASS_AND_SALT
@@ -449,12 +449,12 @@ func users_auth_userpass__verify_pass(pUserNameStr gf_identity_core.GFuserName,
 
 	// SECRETS_STORE
 	if p_service_info.Enable_user_creds_in_secrets_store_bool && 
-		pRuntimeSys.External_plugins.SecretGetCallback != nil {
+		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_user_creds@%s", pUserNameStr)
 
 		// SECRET_GET
-		secretMap, gfErr := pRuntimeSys.External_plugins.SecretGetCallback(secretNameStr,
+		secretMap, gfErr := pRuntimeSys.ExternalPlugins.SecretGetCallback(secretNameStr,
 			pRuntimeSys)
 		if gfErr != nil {
 			return false, gfErr

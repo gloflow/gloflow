@@ -33,7 +33,7 @@ import (
 //------------------------------------------------
 func initHandlersUserpass(pHTTPmux *http.ServeMux,
 	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS

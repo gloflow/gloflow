@@ -32,7 +32,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 	p_subtemplates_names_lst []string,
 	p_posts_page_size_int    int, // 5
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_posts_browser_view.posts_browser__render_template()")
 
 	pages_lst := [][]map[string]interface{}{}

@@ -38,7 +38,7 @@ func images__stage__process_images(p_crawler_name_str string,
 	p_media_domain_str                string,
 	pS3bucketNameStr              string,
 	p_runtime                         *GFcrawlerRuntime,
-	pRuntimeSys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
+	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
@@ -100,7 +100,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 	p_media_domain_str                string,
 	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
-	pRuntimeSys                       *gf_core.Runtime_sys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
+	pRuntimeSys                       *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -186,7 +186,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 	pImageIDstr               gf_images_core.GFimageID,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
-	pRuntimeSys                   *gf_core.Runtime_sys) (*gf_images_core.GF_image, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
+	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GF_image, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------

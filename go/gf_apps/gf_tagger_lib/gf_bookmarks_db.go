@@ -30,7 +30,7 @@ import (
 //---------------------------------------------------
 func db__bookmark__create(p_bookmark *GF_bookmark,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	coll_name_str := "gf_bookmarks"
 
@@ -54,7 +54,7 @@ func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
 	p_screenshot_image_id_str            gf_images_core.GF_image_id,
 	p_screenshot_image_thumbnail_url_str string,
 	p_ctx                                context.Context,
-	p_runtime_sys                        *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys                        *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	
 
@@ -87,7 +87,7 @@ func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
 //---------------------------------------------------
 func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*GF_bookmark, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*GF_bookmark, *gf_core.GF_error) {
 
 
 

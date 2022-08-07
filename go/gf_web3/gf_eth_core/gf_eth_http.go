@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------
 func Http__get_arg__acc_address_hex(p_req *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	qs_map := p_req.URL.Query()
 
@@ -52,7 +52,7 @@ func Http__get_arg__acc_address_hex(p_req *http.Request,
 //-------------------------------------------------
 func Http__get_arg__block_range(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (uint64, uint64, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (uint64, uint64, *gf_core.GF_error) {
 
 	qs_map := p_req.URL.Query()
 
@@ -100,7 +100,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	qs_map := p_req.URL.Query()
 
@@ -146,7 +146,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__block_num(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (uint64, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (uint64, *gf_core.GF_error) {
 	
 	qs_map := p_req.URL.Query()
 	
@@ -172,7 +172,7 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__miner_addr(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 	
 	miner_addr_str := ""
 	

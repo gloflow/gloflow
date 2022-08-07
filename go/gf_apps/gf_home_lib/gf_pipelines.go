@@ -30,7 +30,7 @@ import (
 func PipelineRenderDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	templateRenderedStr, gfErr := viewRenderTemplateDashboard(pTmpl,
 		pSubtemplatesNamesLst,

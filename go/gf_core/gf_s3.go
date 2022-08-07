@@ -88,7 +88,7 @@ func S3getFile(p_target_file__s3_path_str string,
 func S3init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
 	p_token_str                 string,
-	pRuntimeSys                 *Runtime_sys) (*GFs3Info, *GFerror) {
+	pRuntimeSys                 *RuntimeSys) (*GFs3Info, *GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3init()")
 
 	
@@ -138,7 +138,7 @@ func S3init(p_aws_access_key_id_str string,
 func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 	pS3bucketNameStr string,
 	pS3info          *GFs3Info,
-	pRuntimeSys      *Runtime_sys) (string, *GFerror) {
+	pRuntimeSys      *RuntimeSys) (string, *GFerror) {
 
 	// INPUT
 	fileEXTstr     := filepath.Ext(pTargetFileS3pathStr)
@@ -170,7 +170,7 @@ func S3uploadFile(p_target_file__local_path_str string,
 	p_target_file__s3_path_str string,
 	p_s3_bucket_name_str       string,
 	p_s3_info                  *GFs3Info,
-	pRuntimeSys                *Runtime_sys) (string, *GFerror) {
+	pRuntimeSys                *RuntimeSys) (string, *GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3uploadFile()")
 	pRuntimeSys.Log_fun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
 	pRuntimeSys.Log_fun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
@@ -236,7 +236,7 @@ func S3copyFile(p_source_bucket_str string,
 	p_target_bucket_name_str   string,
 	p_target_file__s3_path_str string,
 	pS3info                    *GFs3Info,
-	pRuntimeSys                *Runtime_sys) *GFerror {
+	pRuntimeSys                *RuntimeSys) *GFerror {
 
 	fmt.Printf("source_bucket        - %s\n", p_source_bucket_str)
 	fmt.Printf("source_file__s3_path - %s\n", p_source_file__s3_path_str)

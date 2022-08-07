@@ -35,7 +35,7 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 	pOriginPageURLstr               string,
 	pS3bucketNameStr                string,
 	pRuntime                        *GFcrawlerRuntime,
-	pRuntimeSys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
+	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")

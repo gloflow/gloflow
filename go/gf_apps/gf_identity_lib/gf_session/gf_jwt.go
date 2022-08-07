@@ -55,7 +55,7 @@ type GF_jwt_claims struct {
 // PIPELINE__GENERATE
 func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_jwt_token_val, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (GF_jwt_token_val, *gf_core.GF_error) {
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -144,7 +144,7 @@ func jwtGenerateID(pUserIdentifierStr string,
 //---------------------------------------------------
 func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context .Context,
-	p_runtime_sys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	// VALIDATE
 	valid_bool, user_identifier_str, gf_err := JWTvalidate(p_jwt_token_val,
@@ -171,7 +171,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 // VALIDATE
 func JWTvalidate(p_jwt_token_val GF_jwt_token_val,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (bool, string, *gf_core.GF_error) {
 
 	claims := &GF_jwt_claims{}
 	jwt_token, err := jwt.ParseWithClaims(string(p_jwt_token_val),
@@ -210,7 +210,7 @@ func JWTvalidate(p_jwt_token_val GF_jwt_token_val,
 //---------------------------------------------------
 func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	coll_name_str := "gf_auth_jwt"
 
@@ -233,7 +233,7 @@ func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
 //---------------------------------------------------
 func db__jwt_secret_key__get(p_user_identifier_str string,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_jwt_secret_key, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_jwt_secret_key, *gf_core.GF_error) {
 
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first

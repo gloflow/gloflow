@@ -28,7 +28,7 @@ import (
 //------------------------------------------------
 func viewRenderTemplateDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
-	pRuntimeSys            *gf_core.Runtime_sys) (string, *gf_core.GFerror) {
+	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	sysReleaseInfo := gf_core.Get_sys_relese_info(pRuntimeSys)
 	

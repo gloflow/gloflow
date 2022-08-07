@@ -26,7 +26,7 @@ import (
 //-------------------------------------------------------------
 func Emit_app(p_event_app_type_str string,
 	p_meta_map    map[string]interface{},
-	p_runtime_sys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	go func() {
 
@@ -34,9 +34,9 @@ func Emit_app(p_event_app_type_str string,
 
 
 		// CALLBACK
-		p_runtime_sys.External_plugins.EventCallback(p_event_app_type_str,
+		pRuntimeSys.ExternalPlugins.EventCallback(p_event_app_type_str,
 			p_meta_map,
-			p_runtime_sys)
+			pRuntimeSys)
 
 	}()
 }

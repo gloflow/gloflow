@@ -30,7 +30,7 @@ func Pipeline__render_login(p_mfa_confirm_bool bool,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	template_rendered_str, gf_err := view__render_template_login(p_mfa_confirm_bool,
 		p_tmpl,
@@ -47,7 +47,7 @@ func Pipeline__render_login(p_mfa_confirm_bool bool,
 func Pipeline__render_dashboard(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	template_rendered_str, gf_err := view__render_template_dashboard(p_tmpl,
 		p_subtemplates_names_lst,

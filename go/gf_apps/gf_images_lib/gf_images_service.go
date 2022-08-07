@@ -193,7 +193,7 @@ func Run_service(pHTTPmux *http.ServeMux,
 	//-------------
 	// RUNTIME_SYS
 	
-	runtimeSys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images",
 		Log_fun:          p_log_fun,
 	}

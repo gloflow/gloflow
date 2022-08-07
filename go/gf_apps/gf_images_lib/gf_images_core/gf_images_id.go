@@ -38,7 +38,7 @@ type GFimageID   = GF_image_id
 //---------------------------------------------------
 // CREATES_ID
 func Image_ID__create_from_url(p_image_url_str string,
-	p_runtime_sys *gf_core.Runtime_sys) (GF_image_id, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (GF_image_id, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create_from_url()")
 	
 	// urlparse() - used so that any possible url query parameters are not used in the 
@@ -84,7 +84,7 @@ func Image_ID__create_from_url(p_image_url_str string,
 
 func Image_ID__create(p_image_path_str string,
 	p_image_format_str string,
-	p_runtime_sys      *gf_core.Runtime_sys) GFimageID {
+	p_runtime_sys      *gf_core.RuntimeSys) GFimageID {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()

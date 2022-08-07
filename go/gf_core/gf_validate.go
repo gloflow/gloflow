@@ -36,7 +36,7 @@ func Validate__init() *validator.Validate {
 
 //-------------------------------------------------
 func Validate_struct(p_target interface{},
-	pRuntimeSys *Runtime_sys) *GFerror {
+	pRuntimeSys *RuntimeSys) *GFerror {
 
 	err := pRuntimeSys.Validator.Struct(p_target)
 	if err != nil {

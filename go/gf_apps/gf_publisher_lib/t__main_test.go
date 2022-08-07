@@ -88,7 +88,7 @@ func Test__main(p_test *testing.T) {
 	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_publisher_tests",
 		Log_fun:          log_fun,
 		Mongodb_coll:     mongodb_coll,
@@ -126,7 +126,7 @@ func Test__main(p_test *testing.T) {
 //-------------------------------------------------
 func test_posts_creation(p_test_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) {
+	p_runtime_sys            *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_posts_creation()")
 
 	

@@ -37,7 +37,7 @@ func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
 	pS3info                               *gf_core.GFs3Info,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
-	pRuntimeSys                           *gf_core.Runtime_sys) []*gf_core.GFerror {
+	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 	
 
 

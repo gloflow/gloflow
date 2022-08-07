@@ -38,7 +38,7 @@ import (
 //-------------------------------------------------
 func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------

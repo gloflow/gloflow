@@ -30,7 +30,7 @@ func domains_browser__render_template(p_domains_lst []Gf_domain,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains_view.domains_browser__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)

@@ -25,7 +25,7 @@ import (
 )
 
 //-------------------------------------------------
-func Init(pRuntimeSys *gf_core.Runtime_sys) {
+func Init(pRuntimeSys *gf_core.RuntimeSys) {
 
 
 	// ACTIONS_DEFS

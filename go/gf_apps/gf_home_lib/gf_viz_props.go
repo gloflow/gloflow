@@ -57,7 +57,7 @@ type GFvizPropsUpdateInput struct {
 // VIZ_PROPS_UPDATE
 func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
 	
 	homeVizExisting, gfErr := DBgetHomeViz(pInput.UserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -110,7 +110,7 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 // VIZ_PROPS_CREATE
 func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GF_error) {
 		
 
 
@@ -140,7 +140,7 @@ func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 // VIZ_PROPS_GET
 func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (*GFhomeViz, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GF_error) {
 	
 
 	homeVizExisting, gfErr := DBgetHomeViz(pUserIDstr, pCtx, pRuntimeSys)

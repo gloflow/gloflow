@@ -27,21 +27,21 @@ import (
 )
 
 //-------------------------------------------------
-func CLI_py__run(p_py_path_str string,
-	p_args_lst          []string,
-	p_input_stdin_str   *string,
-	p_stdout_prefix_str string,
-	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
+func CLIpyRun(pPyPathStr string,
+	pArgsLst         []string,
+	pInputStdinStr   *string,
+	pStdoutPrefixStr string,
+	pRuntimeSys      *RuntimeSys) ([]map[string]interface{}, *GFerror) {
 	
 
-	py_abs_path_str, _ := filepath.Abs(p_py_path_str)
+	pyAbsPathStr, _ := filepath.Abs(pPyPathStr)
 
-	cmd_lst := []string{"python3", "-u", py_abs_path_str,}
-	cmd_lst = append(cmd_lst, p_args_lst...)
+	cmdLst := []string{"python3", "-u", pyAbsPathStr,}
+	cmdLst = append(cmdLst, pArgsLst...)
 
-	cmd_info := GF_CLI_cmd_info {
-		Cmd_lst:          cmd_lst,
-		Stdin_data_str:   p_input_stdin_str,
+	cmdInfo := GF_CLI_cmd_info {
+		Cmd_lst:          cmdLst,
+		Stdin_data_str:   pInputStdinStr,
 		Env_vars_map:     map[string]string{},
 		Dir_str:          "",
 		View_output_bool: true,
@@ -49,49 +49,49 @@ func CLI_py__run(p_py_path_str string,
 
 
 	// RUN
-	stdout_lst, _, gf_err := CLI__run(&cmd_info, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	stdoutLst, _, gfErr := CLIrun(&cmdInfo, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 
 	// PARSE
-	parsed_output_lst, gf_err := cli_py__parse_output(stdout_lst, p_stdout_prefix_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	parsedOutputLst, gfErr := cliPyParseOutput(stdoutLst, pStdoutPrefixStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	return parsed_output_lst, nil
+	return parsedOutputLst, nil
 }
 
 //-------------------------------------------------
-func cli_py__parse_output(p_stdout_lst []string,
-	p_stdout_prefix_str string,
-	p_runtime_sys       *Runtime_sys) ([]map[string]interface{}, *Gf_error) {
+func cliPyParseOutput(pStdoutLst []string,
+	pStdoutPrefixStr string,
+	pRuntimeSys      *RuntimeSys) ([]map[string]interface{}, *GFerror) {
 
-	outputs_lst := []map[string]interface{}{}
-	for _, l_str := range p_stdout_lst {
+	outputsLst := []map[string]interface{}{}
+	for _, l_str := range pStdoutLst {
 		
-		if strings.HasPrefix(l_str, p_stdout_prefix_str) {
+		if strings.HasPrefix(l_str, pStdoutPrefixStr) {
 
 			// remove the stdout prefix of the Py program stdout
-			output_str := strings.Replace(l_str, p_stdout_prefix_str, "", 1)
+			output_str := strings.Replace(l_str, pStdoutPrefixStr, "", 1)
 
 			// JSON_DECODE
-			var output_map map[string]interface{}
-			err := json.Unmarshal([]byte(output_str), &output_map)
+			var outputMap map[string]interface{}
+			err := json.Unmarshal([]byte(output_str), &outputMap)
 
 			if err != nil {
-				gf_err := Error__create("failed to parse json output in py program stdout",
+				gfErr := Error__create("failed to parse json output in py program stdout",
 					"json_decode_error",
 					map[string]interface{}{"stdout_line_str": l_str,},
-					err, "gf_core", p_runtime_sys)
-				return nil, gf_err
+					err, "gf_core", pRuntimeSys)
+				return nil, gfErr
 			}
 
-			outputs_lst = append(outputs_lst, output_map)
+			outputsLst = append(outputsLst, outputMap)
 		}
 	}
 
-	return outputs_lst, nil
+	return outputsLst, nil
 }

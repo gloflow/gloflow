@@ -49,7 +49,7 @@ type Gf_json_msg__link__get_unresolved struct {
 //--------------------------------------------------
 func cluster__client(p_req_type_str string,
 	p_runtime   *gf_crawl_core.GFcrawlerRuntime,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_cluster.cluster__client()")
 	switch p_req_type_str {
 		case "register_worker":
@@ -65,7 +65,7 @@ func cluster__client(p_req_type_str string,
 //--------------------------------------------------
 func cluster__register_worker(p_ext_worker_name_str string,
 	p_runtime   *gf_crawl_core.GFcrawlerRuntime,
-	pRuntimeSys *gf_core.Runtime_sys) (*Gf_crawler_cluster_worker, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawler_cluster_worker, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_cluster.cluster__register_worker()")
 
 	id_str               := "crawler_cluster_worker__"+fmt.Sprint()
@@ -114,7 +114,7 @@ func cluster__register_worker(p_ext_worker_name_str string,
 //--------------------------------------------------
 func cluster__init_handlers(p_crawl_config_file_path_str string,
 	p_runtime *gf_crawl_core.GFcrawlerRuntime,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_cluster.cluster__init_handlers()")
 	
 	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_crawl_config_file_path_str, pRuntimeSys)

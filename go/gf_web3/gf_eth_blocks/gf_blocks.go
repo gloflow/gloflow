@@ -329,7 +329,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 func Get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
+	p_runtime_sys   *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 
 
@@ -383,7 +383,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_eth__block__int, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GF_error) {
 
 	//------------------
 	/*
@@ -545,7 +545,7 @@ func Get__txs_pipeline(p_block *types.Block,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
 
 
 

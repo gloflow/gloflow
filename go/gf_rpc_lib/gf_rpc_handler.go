@@ -57,7 +57,7 @@ type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map
 // HTTP
 func Create_handler__http(p_path_str string,
 	p_handler_fun  handler_http,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	Create_handler__http_with_metrics(p_path_str,
 		p_handler_fun,
@@ -72,7 +72,7 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 	p_path_str        string,
 	p_handler_fun     handler_http,
 	p_handler_runtime *GF_rpc_handler_runtime,
-	p_runtime_sys     *gf_core.Runtime_sys) {
+	p_runtime_sys     *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(p_auth_bool,
 		p_path_str,
@@ -94,7 +94,7 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
 	p_sentry_hub  *sentry.Hub,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
@@ -114,7 +114,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun handler_http,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
@@ -136,7 +136,7 @@ func getHandler(p_auth_bool bool,
 	pStoreRunBool    bool,
 	pSentryHub       *sentry.Hub,
 	pAuthLoginURLstr *string,
-	pRuntimeSys      *gf_core.Runtime_sys) func(pResp http.ResponseWriter, pReq *http.Request) {
+	pRuntimeSys      *gf_core.RuntimeSys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
 	handler_fun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
@@ -286,7 +286,7 @@ func getHandler(p_auth_bool bool,
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
-	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	// dont store a run if there is no DB initialized
 	if pRuntimeSys.Mongo_db == nil {

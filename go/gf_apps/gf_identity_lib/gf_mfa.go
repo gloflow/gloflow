@@ -44,7 +44,7 @@ type GF_user_auth_mfa__input_confirm struct {
 //------------------------------------------------
 func mfaPipelineConfirm(pInput *GF_user_auth_mfa__input_confirm,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (bool, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
 
 
 
@@ -104,7 +104,7 @@ func mfaPipelineConfirm(pInput *GF_user_auth_mfa__input_confirm,
 // TOTP - https://datatracker.ietf.org/doc/html/rfc6238
 
 func TOTPgenerateValue(pSecretKeyStr string,
-	pRuntimeSys *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	// index number of a 30s time period since start of Unix time.
 	// TOTP is specified to use UTC time, so timezones dont have to be 
@@ -130,7 +130,7 @@ func TOTPgenerateValue(pSecretKeyStr string,
 
 func HOTPgenerateValue(p_secret_key_base32_str string,
 	p_time_interval_int int64,
-	p_runtime_sys       *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys       *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 
 	// expected length, can be 6-10 long, google-authenticator uses 6
 	hotp_token_length_int := 6

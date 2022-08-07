@@ -231,7 +231,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 	pPostElementsImagesOriginPagesURLsStr []string,
 	pImageJobClientTypeStr                string,
 	pImagesJobsMngr                       gf_images_jobs_core.JobsMngr,
-	pRuntimeSys                           *gf_core.Runtime_sys) (*Gf_images_client_result, *gf_core.GFerror) {
+	pRuntimeSys                           *gf_core.RuntimeSys) (*Gf_images_client_result, *gf_core.GFerror) {
 
 	// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 	flows_names_lst := []string{"general",}

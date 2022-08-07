@@ -80,7 +80,7 @@ func Client_http__index_block_range(p_block_start_uint uint64,
 	p_block_end_uint uint64,
 	p_host_port_str  string,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.Runtime_sys) (GF_indexer_job_id, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) (GF_indexer_job_id, *gf_core.GF_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index?br=%d-%d",
 		p_host_port_str,
@@ -105,7 +105,7 @@ func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 	p_job_updates_ch chan(map[string]interface{}),
 	p_host_port_str  string,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys    *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index/job_updates?job_id=%s",
 		p_host_port_str,

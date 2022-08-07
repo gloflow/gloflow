@@ -29,7 +29,7 @@ import (
 func view__render_template_login(p_mfa_confirm_bool bool,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	
@@ -73,7 +73,7 @@ func view__render_template_login(p_mfa_confirm_bool bool,
 //------------------------------------------------
 func view__render_template_dashboard(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.Runtime_sys) (string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	

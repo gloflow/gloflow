@@ -28,7 +28,7 @@ import (
 //-------------------------------------------------
 func Init_service(p_templates_paths_map map[string]string,
 	p_http_mux    *http.ServeMux,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -61,7 +61,7 @@ func Run_service(p_port_str string,
 	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
 	p_log_fun("INFO", "")
 
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_landing_page",
 		Log_fun:          p_log_fun,
 	}

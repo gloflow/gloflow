@@ -38,7 +38,7 @@ type GFcrawlerDef struct {
 
 //--------------------------------------------------
 func Get_all_crawlers(pCrawlConfigFilePathStr string,
-	pRuntimeSys *gf_core.Runtime_sys) (map[string]GFcrawlerDef, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]GFcrawlerDef, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_config.Get_all_crawlers()")
 
 	// no config file found, so use hard-coded crawler definitions

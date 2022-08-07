@@ -34,7 +34,7 @@ func images__stage__download_images(p_crawler_name_str string,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
 	p_runtime                         *GFcrawlerRuntime,
-	p_runtime_sys                     *gf_core.Runtime_sys) []*gf_page_img__pipeline_info {
+	p_runtime_sys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_download.images__stage__download_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
@@ -119,7 +119,7 @@ func images__stage__download_images(p_crawler_name_str string,
 //--------------------------------------------------
 func imageDownload(pImage *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str string,
-	p_runtime_sys                     *gf_core.Runtime_sys) (string, *gf_core.GFerror) {
+	p_runtime_sys                     *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

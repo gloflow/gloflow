@@ -30,7 +30,7 @@ import (
 
 //-------------------------------------------------
 func Templates__load(p_main_template_filepath_str string,
-	p_runtime_sys *Runtime_sys) (*template.Template, []string, *Gf_error) {
+	p_runtime_sys *RuntimeSys) (*template.Template, []string, *Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.Templates__load()")
 
 	template_filename_str := filepath.Base(p_main_template_filepath_str)

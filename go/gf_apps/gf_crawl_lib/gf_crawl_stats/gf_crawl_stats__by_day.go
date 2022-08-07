@@ -46,7 +46,7 @@ type Gf_domain_counts_for_all_days struct {
 //-------------------------------------------------
 func stats__objs_by_days(p_match_query_map map[string]interface{},
 	p_obj_type_str string,
-	p_runtime_sys  *gf_core.Runtime_sys) (*Gf_stats__objs_by_days, *gf_core.Gf_error) {
+	p_runtime_sys  *gf_core.RuntimeSys) (*Gf_stats__objs_by_days, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
 
 	type Domain_objs__stat struct {
@@ -294,7 +294,7 @@ func (d_lst domains_counts) Less(i, j int) bool {
 	return d_lst[i].Total_count_int > d_lst[j].Total_count_int
 }
 
-func sort__domains_counts(p_domains__counts_for_all_days_lst []*Gf_domain_counts_for_all_days, p_runtime_sys *gf_core.Runtime_sys) {
+func sort__domains_counts(p_domains__counts_for_all_days_lst []*Gf_domain_counts_for_all_days, p_runtime_sys *gf_core.RuntimeSys) {
 	/*//------------------
 	//SORT
 	func (s domains_counts) Len() int {

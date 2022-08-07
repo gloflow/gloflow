@@ -29,7 +29,7 @@ import (
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	pHTTPmux    *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//---------------------
 	// TEMPLATES

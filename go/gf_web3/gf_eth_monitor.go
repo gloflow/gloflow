@@ -61,7 +61,7 @@ func runtimeGet(p_config_path_str string,
 	}
 
 	// RUNTIME_SYS
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor",
 		Log_fun:          p_log_fun,
 

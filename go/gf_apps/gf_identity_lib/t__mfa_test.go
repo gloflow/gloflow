@@ -37,7 +37,7 @@ func Test__mfa(pTest *testing.T) {
 
 //-------------------------------------------------
 func test_mfa_main(pTest *testing.T,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 
 

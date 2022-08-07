@@ -96,7 +96,7 @@ func RunUploadedImages(pClientTypeStr string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_uploaded_to_process,
 	p_flows_names_lst       []string,
 	pJobsMngrCh             gf_images_jobs_core.JobsMngr,
-	pRuntimeSys             *gf_core.Runtime_sys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pRuntimeSys             *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 
 	job_cmd_str    := "start_job_uploaded_imgs"
 	job_init_ch    := make(chan *gf_images_jobs_core.GFjobRunning)
@@ -134,27 +134,24 @@ func RunExternImages(pClientTypeStr string,
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR
-	job_cmd_str    := "start_job"
-	job_init_ch    := make(chan *gf_images_jobs_core.GFjobRunning)
-	job_updates_ch := make(chan gf_images_jobs_core.JobUpdateMsg, 10) // ADD!! - channel buffer size should be larger for large jobs (with a lot of images)
+	jobCmdStr    := "start_job"
+	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
+	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10) // ADD!! - channel buffer size should be larger for large jobs (with a lot of images)
 
-	job_msg := gf_images_jobs_core.JobMsg{
+	jobMsg := gf_images_jobs_core.JobMsg{
 		Client_type_str:              pClientTypeStr,
-		Cmd_str:                      job_cmd_str,
-		Job_init_ch:                  job_init_ch,
-		Job_updates_ch:               job_updates_ch,
+		Cmd_str:                      jobCmdStr,
+		Job_init_ch:                  jobInitCh,
+		Job_updates_ch:               jobUpdatesCh,
 		Images_extern_to_process_lst: pImagesExternToProcessLst,
 		Flows_names_lst:              pFlowsNamesLst,
 	}
 
 	// SEND_MSG
-	pJobsMngrCh <- job_msg
+	pJobsMngrCh <- jobMsg
 
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
-	runningJob := <- job_init_ch
-
-	
-
+	runningJob := <- jobInitCh
 
 	//-----------------
 	// JOB_EXPECTED_OUTPUT - its "expected" because results are not available yet (and might not

@@ -35,7 +35,7 @@ import (
 func Http_respond(p_data interface{},
 	p_status_str string,
 	p_resp       http.ResponseWriter,
-	pRuntimeSys  *gf_core.Runtime_sys) {
+	pRuntimeSys  *gf_core.RuntimeSys) {
 
 	r_byte_lst, _ := json.Marshal(map[string]interface{}{
 		"status": p_status_str,
@@ -51,7 +51,7 @@ func Error__in_handler(p_handler_url_path_str string,
 	p_user_msg_str string,
 	p_gf_err       *gf_core.GFerror,
 	p_resp         http.ResponseWriter,
-	p_runtime_sys  *gf_core.Runtime_sys) {
+	p_runtime_sys  *gf_core.RuntimeSys) {
 
 	statusStr := "ERROR"
 	dataMap   := map[string]interface{}{
@@ -73,7 +73,7 @@ func Error__in_handler(p_handler_url_path_str string,
 
 //-------------------------------------------------
 func Get_response_format(p_qs_map map[string][]string,
-	p_runtime_sys *gf_core.Runtime_sys) string {
+	p_runtime_sys *gf_core.RuntimeSys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Get_response_format()")
 
 	response_format_str := "html" // default - "h" - HTML
@@ -101,7 +101,7 @@ func Http_CORS_preflight_handle(p_req *http.Request,
 func Get_http_input_to_struct(p_input_struct interface{},
 	p_resp        http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.GFerror {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	handler_url_path_str := p_req.URL.Path
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)

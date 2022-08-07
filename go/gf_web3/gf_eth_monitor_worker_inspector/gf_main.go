@@ -37,7 +37,7 @@ type GF_runtime struct {
 	eth_rpc_host_str string
 	eth_rpc_client   *ethclient.Client
 	py_plugins       *gf_eth_core.GF_py_plugins
-	runtime_sys      *gf_core.Runtime_sys
+	runtime_sys      *gf_core.RuntimeSys
 }
 
 //-------------------------------------------------
@@ -120,7 +120,7 @@ func runtimeGet(p_eth_rpc_host_str string,
 
 	//--------------------
 	// RUNTIME_SYS
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_worker_inspector",
 		Log_fun:          p_log_fun,
 		

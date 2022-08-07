@@ -29,23 +29,23 @@ import (
 )
 
 //-------------------------------------------------
-func Py__run_plugin__get_contract_info(p_new_contract_addr_str string,
-	p_plugins_info *gf_eth_core.GF_py_plugins,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
+	pPluginsInfo *gf_eth_core.GF_py_plugins,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
 
 
-	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", p_plugins_info.Base_dir_path_str)
+	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", pPluginsInfo.Base_dir_path_str)
 	args_lst := []string{
-		fmt.Sprintf("-contract_addr=%s", p_new_contract_addr_str),
+		fmt.Sprintf("-contract_addr=%s", pNewContractAddrStr),
 	}
 	stdout_prefix_str := "GF_OUT:"
 
 	// PY_RUN
-	outputs_lst, gf_err := gf_core.CLI_py__run(py_path_str,
+	outputs_lst, gf_err := gf_core.CLIpyRun(py_path_str,
 		args_lst,
 		nil,
 		stdout_prefix_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}

@@ -63,7 +63,7 @@ type GF_user_auth_eth__output_create struct {
 //---------------------------------------------------
 func users_auth_eth__pipeline__preflight(p_input *GF_user_auth_eth__input_preflight,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_eth__output_preflight, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_preflight, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE
@@ -122,7 +122,7 @@ func users_auth_eth__pipeline__preflight(p_input *GF_user_auth_eth__input_prefli
 // PIPELINE__LOGIN
 func users_auth_eth__pipeline__login(p_input *GF_user_auth_eth__input_login,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_eth__output_login, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_login, *gf_core.GF_error) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -200,7 +200,7 @@ func users_auth_eth__pipeline__login(p_input *GF_user_auth_eth__input_login,
 // PIPELINE__CREATE
 func users_auth_eth__pipeline__create(p_input *GF_user_auth_eth__input_create,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_user_auth_eth__output_create, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_create, *gf_core.GF_error) {
 
 	//------------------------
 	// VALIDATE_INPUT

@@ -100,7 +100,7 @@ func Sentry__init(p_sentry_endpoint_uri_str string) {
 
 //-------------------------------------------------
 func RuntimeGet(p_config *GF_config,
-	p_runtime_sys *gf_core.Runtime_sys) (*GF_runtime, error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_runtime, error) {
 
 	//--------------------
 	// MONGODB

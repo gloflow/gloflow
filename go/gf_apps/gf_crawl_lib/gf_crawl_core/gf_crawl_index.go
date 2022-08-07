@@ -42,14 +42,14 @@ type Gf_index__query_run struct {
 
 //--------------------------------------------------
 func index__get_stats(p_runtime *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 	p_runtime.Esearch_client.IndexStats("gf_crawl_pages")
 }
 
 //--------------------------------------------------
 func Index__query(p_term_str string,
 	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_index.Index__query()")
 
 
@@ -173,7 +173,7 @@ func Index__query(p_term_str string,
 //--------------------------------------------------
 func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.Runtime_sys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_index.index__add_to__of_url_fetch()")
 
 	index_name_str     := "gf_crawl_pages"

@@ -30,7 +30,7 @@ import (
 //------------------------------------------
 func Add_tags_to_post_in_db(p_post_title_str string,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.Runtime_sys) (*gf_publisher_core.Gf_post, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, *gf_core.Gf_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.Add_tags_to_post_in_db()")
 	
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
@@ -52,7 +52,7 @@ func Add_tags_to_post_in_db(p_post_title_str string,
 //------------------------------------------
 func add_tags_to_post(p_post *gf_publisher_core.Gf_post,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
@@ -83,7 +83,7 @@ func add_tags_to_post(p_post *gf_publisher_core.Gf_post,
 }
 
 //---------------------------------------------------
-func get_posts_small_thumbnails_urls(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *gf_core.Runtime_sys) map[string][]string {
+func get_posts_small_thumbnails_urls(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *gf_core.RuntimeSys) map[string][]string {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}

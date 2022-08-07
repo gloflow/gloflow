@@ -34,7 +34,7 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 	pUserIDstr     gf_core.GF_ID,
 	pDomainBaseStr string,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GF_error {
 	
 	//------------------------
 	// EMAIL_CONFIRM
@@ -77,7 +77,7 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 //---------------------------------------------------
 func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_email_confirm,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) (bool, string, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GF_error) {
 
 	dbConfirmCodeStr, expiredBool, gfErr := usersEmailGetConfirmationCode(pInput.User_name_str,
 		pCtx,
@@ -167,7 +167,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 //---------------------------------------------------
 func usersEmailGetConfirmationCode(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) (string, bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, bool, *gf_core.GF_error) {
 
 	expired_bool := false
 

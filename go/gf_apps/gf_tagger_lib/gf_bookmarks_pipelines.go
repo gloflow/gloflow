@@ -83,7 +83,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.Runtime_sys) (*GF_bookmark__output_get, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (*GF_bookmark__output_get, *gf_core.GF_error) {
 
 
 
@@ -147,7 +147,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//------------------------
 	// VALIDATE
@@ -219,7 +219,7 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 	p_bookmark_id_str  gf_core.GF_ID,
 	p_ctx              context.Context,
 	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
-	p_runtime_sys      *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//-----------------
 	// SCREENSHOT_CREATE
@@ -272,13 +272,13 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 }
 
 //---------------------------------------------------
-func bookmarks__screenshot_create(p_url_str string,
-	p_target_local_file_path_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *gf_core.GF_error {
+func bookmarks__screenshot_create(pURLstr string,
+	pTargetLocalFilePathStr string,
+	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// SCREENSHOT
-	cmd_lst := []string{
+	cmdLst := []string{
 		"google-chrome", // "chromium",
 		"--headless",
 		
@@ -304,19 +304,19 @@ func bookmarks__screenshot_create(p_url_str string,
 		//-----------------
 		"--screenshot",
 		"--hide-scrollbars", // Hide scrollbars from screenshots
-		p_url_str,
+		pURLstr,
 	}
-	_, _, gf_err := gf_core.CLI__run_standard(cmd_lst, nil, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	_, _, gfErr := gf_core.CLIrunStandard(cmdLst, nil, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
 	// RENAME_SCREENSHOT_FILE
-	_, _, gf_err = gf_core.CLI__run_standard([]string{"mv", "screenshot.png", p_target_local_file_path_str},
-		nil, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	_, _, gfErr = gf_core.CLIrunStandard([]string{"mv", "screenshot.png", pTargetLocalFilePathStr},
+		nil, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------

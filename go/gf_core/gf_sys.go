@@ -31,8 +31,8 @@ import (
 
 //-------------------------------------------------
 // RUNTIME_SYS
-type RuntimeSys = Runtime_sys
-type Runtime_sys struct {
+// type RuntimeSys = Runtime_sys
+type RuntimeSys struct {
 	Service_name_str string
 	Log_fun          func(string, string)
 	Mongo_db         *mongo.Database
@@ -48,7 +48,7 @@ type Runtime_sys struct {
 	Validator *validator.Validate
 
 	// PLUGINS
-	External_plugins *External_plugins
+	ExternalPlugins *ExternalPlugins
 
 	Metrics *GFmetrics
 
@@ -60,7 +60,7 @@ type Runtime_sys struct {
 
 //-------------------------------------------------
 // PLUGINS
-type External_plugins struct {
+type ExternalPlugins struct {
 
 	//---------------------------
 	// EVENTS

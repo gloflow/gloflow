@@ -33,7 +33,7 @@ import (
 //------------------------------------------------
 func init_handlers__eth(p_http_mux *http.ServeMux,
 	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS

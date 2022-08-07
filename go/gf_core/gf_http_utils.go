@@ -82,7 +82,7 @@ func HTTP__fetch_url(p_url_str string,
 	p_headers_map    map[string]string,
 	p_user_agent_str string,
 	p_ctx            context.Context,
-	p_runtime_sys    *Runtime_sys) (*GF_http_fetch, *GF_error) {
+	p_runtime_sys    *RuntimeSys) (*GF_http_fetch, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
 
 
@@ -182,7 +182,7 @@ func HTTP__fetch_url(p_url_str string,
 func HTTP__put_file(p_target_url_str string,
 	p_file_path_str string,
 	p_headers_map   map[string]string,
-	p_runtime_sys   *Runtime_sys) (*http.Response, *GF_error) {
+	p_runtime_sys   *RuntimeSys) (*http.Response, *GF_error) {
 
 
 
@@ -267,7 +267,7 @@ func HTTP__put_file(p_target_url_str string,
 func HTTP__init_static_serving_with_mux(p_url_base_str string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
-	p_runtime_sys        *Runtime_sys) {
+	p_runtime_sys        *RuntimeSys) {
 	
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
@@ -283,7 +283,7 @@ func HTTP__init_static_serving_with_mux(p_url_base_str string,
 
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
-	p_runtime_sys *Runtime_sys) {
+	p_runtime_sys *RuntimeSys) {
 	
 	local_dir_str := fmt.Sprintf("./static")
 
@@ -321,7 +321,7 @@ func HTTP__serve_file(p_local_dir_str string,
 	p_url_str     string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *Runtime_sys) {
+	p_runtime_sys *RuntimeSys) {
 
 	if p_req.Method == "GET" {
 		path_str := p_req.URL.Path
@@ -342,7 +342,7 @@ func HTTP__serve_file(p_local_dir_str string,
 
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
-	p_runtime_sys *Runtime_sys) string {
+	p_runtime_sys *RuntimeSys) string {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
@@ -356,7 +356,7 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
-	p_runtime_sys *Runtime_sys) (http.Flusher, *GF_error) {
+	p_runtime_sys *RuntimeSys) (http.Flusher, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
 
 	flusher, ok := p_resp.(http.Flusher)
@@ -390,7 +390,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 
 //-------------------------------------------------
 func HTTP__get_streaming_response(p_url_str string,
-	p_runtime_sys *Runtime_sys) (*[]map[string]interface{}, *GF_error) {
+	p_runtime_sys *RuntimeSys) (*[]map[string]interface{}, *GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
 
 

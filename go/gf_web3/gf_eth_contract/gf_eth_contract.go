@@ -65,7 +65,7 @@ func Get_via_rpc(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__contract_new, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__contract_new, *gf_core.GF_error) {
 
 	code_bytes_lst, gf_err := Get_code(p_contract_addr_str,
 		p_block_num_int,
@@ -99,7 +99,7 @@ func Get_code(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]byte, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) ([]byte, *gf_core.GF_error) {
 
 	contract_addr := eth_common.HexToAddress(p_contract_addr_str)
 

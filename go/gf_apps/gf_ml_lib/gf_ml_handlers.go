@@ -28,7 +28,7 @@ import (
 
 //-------------------------------------------------
 func initHandlers(pHTTPmux *http.ServeMux,
-	pRuntimeSys *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//---------------------
 	// DATASETS_CREATE - register a dataset

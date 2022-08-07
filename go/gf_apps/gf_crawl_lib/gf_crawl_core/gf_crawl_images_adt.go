@@ -171,7 +171,7 @@ func images_adt__create(p_crawler_name_str string,
 	p_img_src_domain_str         string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image {
+	p_runtime_sys                *gf_core.RuntimeSys) *Gf_crawler_page_image {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__create()")
 
 	
@@ -208,7 +208,7 @@ func images_adt__ref_create(p_crawler_name_str string,
 	p_image_url_domain_str       string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.Runtime_sys) *Gf_crawler_page_image_ref {
+	p_runtime_sys                *gf_core.RuntimeSys) *Gf_crawler_page_image_ref {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_images_adt.images_adt__ref_create()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0

@@ -61,7 +61,7 @@ func Events__send_event(p_events_id_str string,
 	p_msg_str     string,
 	p_data_map    map[string]interface{},
 	p_events_ctx  *Events_ctx,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 	e := Event__msg{
 		Events_id_str: p_events_id_str,
@@ -75,7 +75,7 @@ func Events__send_event(p_events_id_str string,
 //-------------------------------------------------
 func Events__register_producer(p_events_id_str string,
 	p_events_ctx  *Events_ctx,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
 
 	register_producer_msg := Events__register_producer_msg{
@@ -86,7 +86,7 @@ func Events__register_producer(p_events_id_str string,
 }
 
 //-------------------------------------------------
-func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.Runtime_sys) *Events_ctx {
+func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.RuntimeSys) *Events_ctx {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__init()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
@@ -154,7 +154,7 @@ func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.Runtime_sys) *Eve
 func events__init_handlers(p_sse_url_str string,
 	p_register_consumer_ch chan<- Events__register_consumer_msg,
 	p_events_ctx           *Events_ctx,
-	p_runtime_sys          *gf_core.Runtime_sys) {
+	p_runtime_sys          *gf_core.RuntimeSys) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.events__init_handlers()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
@@ -234,7 +234,7 @@ func events__init_handlers(p_sse_url_str string,
 //-------------------------------------------------
 func events__stream_msg(p_event_msg Event__msg,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.Runtime_sys) {
+	p_runtime_sys *gf_core.RuntimeSys) {
 
 
 	unix_f       := float64(time.Now().UnixNano())/1000000000.0

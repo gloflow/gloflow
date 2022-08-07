@@ -41,14 +41,14 @@ func Test__stages(p_test *testing.T) {
 func test__stages(p_test__crawler_images_local_dir_path_str string,
 	p_test__images_s3_bucket_name_str string,
 	p_runtime                         *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys                     *gf_core.Runtime_sys) {
+	p_runtime_sys                     *gf_core.RuntimeSys) {
 
 	/*fetch_url(p_url_str string,
 		p_link             *Crawler_page_outgoing_link,
 		p_cycle_run_id_str string,
 		p_crawler_name_str string,
 		p_runtime          *Crawler_runtime,
-		p_runtime_sys      *gf_core.Runtime_sys)
+		p_runtime_sys      *gf_core.RuntimeSys)
 
 	crawled_images_lst,crawled_images_refs_lst := images__stage__pull_image_links(p_url_fetch,
 		p_crawler_name_str,

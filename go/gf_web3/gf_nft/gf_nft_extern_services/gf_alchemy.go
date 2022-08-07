@@ -66,7 +66,7 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 	pAPIkeyStr  string,
 	pChainStr   string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]*GFnftAlchemy, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, *gf_core.GFerror) {
 
 	//---------------------
 	// GET_ALL_PAGES
@@ -208,7 +208,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 
 			// GATEWAY_URIs
 			TokenURIgatewayStr: nftMap["tokenUri"].(map[string]interface{})["gateway"].(string),
-			MediaURIgatewayStr: nftMap["media"].([]interface{})[0].(map[string]interface{})["raw"].(string),
+			MediaURIgatewayStr: nftMap["media"].([]interface{})[0].(map[string]interface{})["gateway"].(string),
 
 			MetadataNameStr:        nftMap["metadata"].(map[string]interface{})["name"].(string),
 			MetadataImageStr:       nftMap["metadata"].(map[string]interface{})["image"].(string),

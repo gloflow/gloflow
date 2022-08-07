@@ -32,7 +32,7 @@ import (
 // CREATE_POST
 func Pipeline__create_post(p_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.Runtime_sys) (*gf_publisher_core.Gf_post, string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, string, *gf_core.GF_error) {
 	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
 
 	//----------------------
@@ -86,7 +86,7 @@ func Pipeline__get_post(p_post_title_str string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.Runtime_sys) *gf_core.GF_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GF_error {
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)

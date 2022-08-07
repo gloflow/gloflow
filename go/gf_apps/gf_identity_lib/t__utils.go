@@ -40,7 +40,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,
 	pCtx                    context.Context,
-	pRuntimeSys             *gf_core.Runtime_sys) {
+	pRuntimeSys             *gf_core.RuntimeSys) {
 
 	testUserNameStr := "ivan_t"
 	testUserPassStr := "pass_lksjds;lkdj"
@@ -80,7 +80,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 
 //-------------------------------------------------
 func TestStartService(pPortInt int,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	// testPortInt := 2000
 	go func() {
@@ -99,14 +99,14 @@ func TestStartService(pPortInt int,
 }
 
 //-------------------------------------------------
-func T__init() *gf_core.Runtime_sys {
+func T__init() *gf_core.RuntimeSys {
 
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
 
-	runtimeSys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_identity_tests",
 		Log_fun:          logFun,
 		Validator:        gf_core.Validate__init(),
@@ -136,7 +136,7 @@ func T__init() *gf_core.Runtime_sys {
 
 //-------------------------------------------------
 func TestDBcleanup(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 	
 	// CLEANUP
 	collNameStr := "gf_users"

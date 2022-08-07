@@ -151,7 +151,7 @@ func Load(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_py_plugins     *gf_eth_core.GF_py_plugins,
-	p_runtime_sys    *gf_core.Runtime_sys) (*GF_eth__tx, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GF_error) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
@@ -507,7 +507,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 func Get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.Runtime_sys) ([]*GF_eth__log, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) ([]*GF_eth__log, *gf_core.GF_error) {
 
 
 	

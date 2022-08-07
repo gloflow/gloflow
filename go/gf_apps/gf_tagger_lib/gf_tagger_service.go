@@ -90,7 +90,7 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 func Init_service(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_http_mux         *http.ServeMux,
-	p_runtime_sys      *gf_core.Runtime_sys) {
+	p_runtime_sys      *gf_core.RuntimeSys) {
 	
 	//------------------------
 	// STATIC FILES SERVING
@@ -126,7 +126,7 @@ func Run_service__in_process(p_port_str string,
 	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
 	p_log_fun("INFO", "")
 	
-	runtime_sys := &gf_core.Runtime_sys{
+	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger",
 		Log_fun:          p_log_fun,
 	}

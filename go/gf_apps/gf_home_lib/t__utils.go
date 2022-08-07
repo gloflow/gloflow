@@ -29,14 +29,14 @@ var logFun func(p_g string, p_m string)
 var cliArgsMap map[string]interface{}
 
 //-------------------------------------------------
-func Tinit() *gf_core.Runtime_sys {
+func Tinit() *gf_core.RuntimeSys {
 
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
 
-	runtimeSys := &gf_core.Runtime_sys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_home_tests",
 		Log_fun:          logFun,
 		Validator:        gf_core.Validate__init(),

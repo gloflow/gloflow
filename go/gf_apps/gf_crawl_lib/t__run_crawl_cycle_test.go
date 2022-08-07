@@ -27,7 +27,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 )
 
-var runtime_sys *gf_core.Runtime_sys
+var runtime_sys *gf_core.RuntimeSys
 var crawler_runtime *gf_crawl_core.Gf_crawler_runtime
 
 //---------------------------------------------------
@@ -61,7 +61,7 @@ func test__run_crawl_cycle(p_test *testing.T,
 	p_test__crawled_images_s3_bucket_name_str string,
 	p_test__crawl_config_file_path_str        string,
 	p_runtime                                 *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys                             *gf_core.Runtime_sys) {
+	p_runtime_sys                             *gf_core.RuntimeSys) {
 
 	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_test__crawl_config_file_path_str, p_runtime_sys)
 	if gf_err != nil {

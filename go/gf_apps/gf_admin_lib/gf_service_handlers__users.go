@@ -36,7 +36,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	pServiceInfo         *GF_service_info,
 	pIdentityServiceInfo *gf_identity_lib.GF_service_info,
 	pLocalHub            *sentry.Hub,
-	pRuntimeSys          *gf_core.Runtime_sys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GF_error {
 
 	//---------------------
 	// METRICS

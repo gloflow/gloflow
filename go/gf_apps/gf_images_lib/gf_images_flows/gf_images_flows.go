@@ -69,7 +69,7 @@ type GFimageExistsCheck struct {
 
 //-------------------------------------------------
 func pipelineGetAll(pCtx context.Context,
-	pRuntimeSys *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
 
 	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -94,7 +94,7 @@ func pipelineGetAll(pCtx context.Context,
 func pipelineGetPage(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.Runtime_sys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
 
 	//--------------------
 	// INPUT
@@ -161,7 +161,7 @@ func pipelineGetPage(p_req *http.Request,
 func flowsImagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
-	p_runtime_sys  *gf_core.Runtime_sys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
 	
 	existing_images_lst, gf_err := flows_db__images_exist(pImagesExternURLsLst,
 		pFlowNameStr,
@@ -213,7 +213,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pUserIDstr             gf_core.GF_ID,
 	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
+	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
 
 	//-------------------------
 	// POLICY_VERIFY - raises error if policy rejects the op
@@ -298,7 +298,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pFlowsNamesLst         []string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys            *gf_core.Runtime_sys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
+	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
@@ -333,7 +333,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 func flowsCreate(pFlowNameStr string,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
-	pRuntimeSys     *gf_core.Runtime_sys) (*GFflow, *gf_core.GFerror) {
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFflow, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	idStr             := gf_core.GF_ID(fmt.Sprintf("img_flow:%f", creationUNIXtimeF))
