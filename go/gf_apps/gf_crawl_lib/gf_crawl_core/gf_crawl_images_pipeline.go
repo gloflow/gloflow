@@ -54,10 +54,9 @@ func images_pipe__from_html(pURLfetch *Gf_crawler_url_fetch,
 	pCycleRunIDstr         string,
 	pCrawlerNameStr        string,
 	pImagesLocalDirPathStr string,
-
 	pMediaDomainStr        string,
 	pS3bucketNameStr       string,
-	pRuntime              *GFcrawlerRuntime,
+	pRuntime               *GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
 

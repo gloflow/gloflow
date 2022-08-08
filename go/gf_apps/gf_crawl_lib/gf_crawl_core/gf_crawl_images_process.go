@@ -34,11 +34,10 @@ func images__stage__process_images(p_crawler_name_str string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
-
 	p_media_domain_str                string,
-	pS3bucketNameStr              string,
+	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
-	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
@@ -96,7 +95,6 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 	p_gf_image_id_str                 gf_images_core.GFimageID,
 	p_local_image_file_path_str       string,
 	p_images_store_local_dir_path_str string,
-
 	p_media_domain_str                string,
 	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
@@ -183,10 +181,10 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 
 //--------------------------------------------------
 func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
-	pImageIDstr               gf_images_core.GFimageID,
+	pImageIDstr                     gf_images_core.GFimageID,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
-	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GF_image, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
+	pRuntimeSys                     *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
@@ -235,6 +233,10 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 
 		ctx := context.Background()
 
+
+		// FINISH!! - properly create an instance of GFmetrics
+		var imagesCoreMetrics *gf_images_core.GFmetrics
+
 		// IMPORTANT!! - this creates a Gf_image object, and persists it in the DB ("t" == "img"),
 		//               also creates gf_image thumbnails as local files.
 		gf_image, gf_image_thumbs, gfErr := gf_images_core.TransformImage(imageIDstr,
@@ -245,6 +247,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 			meta_map,
 			p_local_image_file_path_str,
 			p_thumbnails_local_dir_path_str,
+			imagesCoreMetrics,
 			ctx,
 			pRuntimeSys)
 		if gfErr != nil {

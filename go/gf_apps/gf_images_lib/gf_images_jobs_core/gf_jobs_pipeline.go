@@ -396,6 +396,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 		p_meta_map,
 		pImageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
+		pJobRuntime.metricsCore,
 		ctx,
 		pRuntimeSys)
 

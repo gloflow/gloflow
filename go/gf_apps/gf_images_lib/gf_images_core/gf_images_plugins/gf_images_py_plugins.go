@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2021 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package gf_images_plugins
 
 import (
 	"fmt"
+	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -28,6 +29,7 @@ import (
 //---------------------------------------------------
 func RunPyImagePlugins(pImageLocalFilePathStr string,
 	pPluginsPyDirPathStr string,
+	pMetrics             *GFmetrics,
 	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.RuntimeSys) {
 
@@ -46,9 +48,12 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 			fmt.Sprintf("-image_local_file_path=%s", pImageLocalFilePathStr),
 		}
 		stdoutPrefixStr := "GF_OUT:"
+		inputStdinStr   := ""
 
 
-		inputStdinStr := ""
+
+		runStartUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+
 
 		// PY_RUN
 		outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
@@ -56,8 +61,18 @@ func RunPyImagePlugins(pImageLocalFilePathStr string,
 			&inputStdinStr,
 			stdoutPrefixStr,
 			pRuntimeSys)
+
+		
+
 		if gfErr != nil {
 			return
+		}
+
+		runEndUNIXtimeF   := float64(time.Now().UnixNano())/1000000000.0
+		runDurrationSecsF := runEndUNIXtimeF - runStartUNIXtimeF
+		
+		if pMetrics != nil {
+			pMetrics.PyPluginsExecDurationGauge.Set(runDurrationSecsF)
 		}
 
 		fmt.Println(outputsLst)
