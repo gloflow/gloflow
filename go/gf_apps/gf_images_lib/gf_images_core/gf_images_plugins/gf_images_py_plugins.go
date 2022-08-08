@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_images_core
+package gf_images_plugins
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ import (
 )
 
 //---------------------------------------------------
-func runPyImagePlugins(pImageLocalFilePathStr string,
+func RunPyImagePlugins(pImageLocalFilePathStr string,
 	pPluginsPyDirPathStr string,
 	pCtx                 context.Context,
 	pRuntimeSys          *gf_core.RuntimeSys) {
@@ -57,7 +57,7 @@ func runPyImagePlugins(pImageLocalFilePathStr string,
 			stdoutPrefixStr,
 			pRuntimeSys)
 		if gfErr != nil {
-
+			return
 		}
 
 		fmt.Println(outputsLst)

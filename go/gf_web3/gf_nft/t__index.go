@@ -39,7 +39,7 @@ func TindexAddress(pAddressStr string,
 	fmt.Println("====================================")
 	fmt.Println("test NFT INDEX ADDRESS")
 
-	urlStr  := fmt.Sprintf("http://localhost:%d/v1/web3/nft/index_address", pTestPortInt)
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/web3/nft/index_address", pTestPortInt)
 	fmt.Println("URL", urlStr)
 	
 	dataMap := map[string]string{

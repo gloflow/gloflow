@@ -29,6 +29,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/h2non/bimg"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
 )
 
 //-------------------------------------------------
@@ -83,7 +84,7 @@ func TransformImage(pImageIDstr GFimageID,
 	// runs the Py VM in a new process, spawned via a new go-routine
 
 	pluginsPyDirPathStr := "./gf_images/plugins"
-	runPyImagePlugins(pImageLocalFilePathStr,
+	gf_images_plugins.RunPyImagePlugins(pImageLocalFilePathStr,
 		pluginsPyDirPathStr,
 		pCtx,
 		pRuntimeSys)
