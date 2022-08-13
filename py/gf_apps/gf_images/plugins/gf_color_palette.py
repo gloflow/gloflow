@@ -68,6 +68,7 @@ def main(p_test_bool=True):
 def run_multiple(p_input_images_local_file_paths_lst):
 
 	print(f"RUNNING {fg('green')}GF_COLOR_PALETTE{attr(0)} PLUGIN ")
+	
 	# VERIFY
 	for f in p_input_images_local_file_paths_lst:
 		assert os.path.isfile(f)
