@@ -195,17 +195,18 @@ func Run(pConfig *GF_config,
 	}
 	
 	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
-		Mongodb_host_str:                           pConfig.Mongodb_host_str,
-		Mongodb_db_name_str:                        pConfig.Mongodb_db_name_str,
+		Mongodb_host_str:                     pConfig.Mongodb_host_str,
+		Mongodb_db_name_str:                  pConfig.Mongodb_db_name_str,
 
-		Images_store_local_dir_path_str:            imagesConfig.Store_local_dir_path_str,
-		Images_thumbnails_store_local_dir_path_str: imagesConfig.Thumbnails_store_local_dir_path_str,
-		Media_domain_str:                           imagesConfig.Media_domain_str,
-		Images_main_s3_bucket_name_str:             imagesConfig.Main_s3_bucket_name_str,
+		ImagesStoreLocalDirPathStr:           imagesConfig.ImagesStoreLocalDirPathStr,
+		ImagesThumbnailsStoreLocalDirPathStr: imagesConfig.ImagesThumbnailsStoreLocalDirPathStr,
+		VideoStoreLocalDirPathStr:            imagesConfig.VideoStoreLocalDirPathStr,
+		Media_domain_str:                     imagesConfig.Media_domain_str,
+		Images_main_s3_bucket_name_str:       imagesConfig.Main_s3_bucket_name_str,
 
-		AWS_access_key_id_str:                      pConfig.AWS_access_key_id_str,
-		AWS_secret_access_key_str:                  pConfig.AWS_secret_access_key_str,
-		AWS_token_str:                              pConfig.AWS_token_str,
+		AWS_access_key_id_str:                pConfig.AWS_access_key_id_str,
+		AWS_secret_access_key_str:            pConfig.AWS_secret_access_key_str,
+		AWS_token_str:                        pConfig.AWS_token_str,
 
 		Templates_paths_map: pConfig.Templates_paths_map,
 

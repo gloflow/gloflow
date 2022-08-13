@@ -32,7 +32,7 @@ import (
 //-------------------------------------------------
 func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
 	pFlowsNamesLst                        []string,
-	p_images_store_local_dir_path_str     string,
+	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	pS3info                               *gf_core.GFs3Info,
 	pStorage                              *gf_images_storage.GFimageStorage,
@@ -65,7 +65,7 @@ func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
 //-------------------------------------------------
 func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 	pFlowsNamesLst                        []string,
-	pImagesStoreLocalDirPathStr     string,
+	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	// p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
 	// p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
@@ -107,13 +107,15 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 // RUN_JOB__EXTERN_IMAGES
 func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	pFlowsNamesLst                        []string,
-	pImagesStoreLocalDirPathStr     string,
+	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
+	pVideoStoreLocalDirPathStr            string,
 	pMediaDomainStr                       string,
 	pS3bucketNameStr                      string,
 	pS3info                               *gf_core.GFs3Info,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
+	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 
 	ctx := context.Background()
@@ -121,16 +123,38 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	gfErrorsLst := []*gf_core.GFerror{}
 	for _, imageToProcess := range pImagesToProcessLst {
 
-		imageSourceURLstr      := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
-		imageOriginPageURLstr := imageToProcess.Origin_page_url_str
+		sourceURLstr     := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
+		originPageURLstr := imageToProcess.Origin_page_url_str
+
+		//--------------
+		// GET_MIME_CONTENT_TYPE
+		// determening mime types from file headers is more robust/reliable 
+		// than using file extensions for 
+		headersMap, userAgentStr := gf_images_core.GetHTTPreqConfig()
+		imageContentTypeStr, gfErr := gf_core.HTTPdetectMIMEtypeFromURL(sourceURLstr,
+			headersMap,
+			userAgentStr,
+			pCtx,
+			pRuntimeSys)
+			
+		if gfErr != nil {
+			jobErrorTypeStr := "get_image_mime_content_type_error"
+			_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr,
+				gf_images_core.GFimageID(""),
+				pJobRuntime.job_id_str,
+				pJobRuntime.job_updates_ch,
+				pRuntimeSys)
+			gfErrorsLst = append(gfErrorsLst, gfErr)
+			continue
+		}
 
 		//--------------
 		// IMAGE_ID
-		imageIDstr, gfErr := gf_images_core.Image_ID__create_from_url(imageSourceURLstr, pRuntimeSys)
+		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(sourceURLstr, pRuntimeSys)
 
 		if gfErr != nil {
 			jobErrorTypeStr := "create_image_id_error"
-			_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr,
+			_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr,
 				imageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
@@ -141,29 +165,53 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		
 		//--------------
 
-		pRuntimeSys.Log_fun("INFO", "PROCESSING IMAGE - "+imageSourceURLstr)
-
-		// IMPORTANT!! - 'ok' is '_' because Im already calling Get_image_ext_from_url()
-		//               in Image__create_id_from_url()
-		extStr, gfErr := gf_images_core.GetImageExtFromURL(imageSourceURLstr, pRuntimeSys)
-		
+		/*extStr, gfErr := gf_images_core.GetImageExtFromURL(sourceURLstr, pRuntimeSys)
 		if gfErr != nil {
 			jobErrorTypeStr := "get_image_ext_error"
-			_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
+			_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, imageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
 				pRuntimeSys)
 			gfErrorsLst = append(gfErrorsLst, gfErr)
 			continue
-		}
+		}*/
+		
+		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("PROCESSING IMAGE - %s", sourceURLstr))
+
+		//--------------
+		// VIDEO
+
+		if imageContentTypeStr == "video/mp4" || imageContentTypeStr == "video/webm" {
+
+			videoIDstr := imageIDstr
+
+			gfErr := pipelineProcessExternVideo(videoIDstr,
+				sourceURLstr,
+				originPageURLstr,
+				pVideoStoreLocalDirPathStr,
+				pImagesThumbnailsStoreLocalDirPathStr,
+				pFlowsNamesLst,
+				pStorage,
+				pJobRuntime,
+				pRuntimeSys)
+			if gfErr != nil {
+				jobErrorTypeStr := "video_process_error"
+				_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, videoIDstr,
+					pJobRuntime.job_id_str,
+					pJobRuntime.job_updates_ch,
+					pRuntimeSys)
+				gfErrorsLst = append(gfErrorsLst, gfErr)
+				continue
+			}
+			
+			continue
 
 		//--------------
 		// GIF - gifs have their own processing pipeline
 
 		// FIX!! - move GIF processing logic into gf_images_pipeline.go as well,
 		//         it doesnt belong here in general images_job logic.
-
-		if extStr == "gif" {
+		} else if imageContentTypeStr == "image/gif" {
 
 			//-----------------
 			// FLOWS_NAMES
@@ -185,8 +233,8 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 			//-----------------
 
 			_, gfErr := gf_gif_lib.ProcessAndUpload("", // p_gf_imageIDstr
-				imageSourceURLstr,
-				imageOriginPageURLstr,
+				sourceURLstr,
+				originPageURLstr,
 				pImagesStoreLocalDirPathStr,
 				pJobRuntime.job_client_type_str,
 				flowsNamesLst,
@@ -200,7 +248,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 
 			if gfErr != nil {
 				jobErrorTypeStr := "gif_process_and_upload_error"
-				_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
+				_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, imageIDstr,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)
@@ -213,9 +261,15 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		//-----------------------
 		// STANDARD
 		} else {
+			
+
+			fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
+
+
 			gfErr := pipelineProcessExternImage(imageIDstr,
-				imageSourceURLstr,
-				imageOriginPageURLstr,
+				sourceURLstr,
+				originPageURLstr,
 				pImagesStoreLocalDirPathStr,
 				pImagesThumbnailsStoreLocalDirPathStr,
 				pFlowsNamesLst,
@@ -227,7 +281,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 
 			if gfErr != nil {
 				jobErrorTypeStr := "image_process_error"
-				_ = job_error__send(jobErrorTypeStr, gfErr, imageSourceURLstr, imageIDstr,
+				_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, imageIDstr,
 					pJobRuntime.job_id_str,
 					pJobRuntime.job_updates_ch,
 					pRuntimeSys)

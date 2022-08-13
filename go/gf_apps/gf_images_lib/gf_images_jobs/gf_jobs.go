@@ -30,6 +30,7 @@ import (
 //-------------------------------------------------
 func Init(pImagesStoreLocalDirPathStr string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
+	pVideoStoreLocalDirPathStr            string,
 	pMediaDomainStr                       string,
 	pConfig                               *gf_images_core.GFconfig,
 	pImageStorage                         *gf_images_storage.GFimageStorage,
@@ -58,6 +59,7 @@ func Init(pImagesStoreLocalDirPathStr string,
 
 	jobsMngrCh := gf_images_jobs_core.JobsMngrInit(pImagesStoreLocalDirPathStr,
 		pImagesThumbnailsStoreLocalDirPathStr,
+		pVideoStoreLocalDirPathStr,
 		pMediaDomainStr,
 		lifecycleCallbacks,
 		pConfig,

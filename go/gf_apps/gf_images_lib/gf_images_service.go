@@ -77,8 +77,9 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// JOBS_MANAGER
 
-	jobsMngrCh := gf_images_jobs.Init(pServiceInfo.Images_store_local_dir_path_str,
-		pServiceInfo.Images_thumbnails_store_local_dir_path_str,
+	jobsMngrCh := gf_images_jobs.Init(pServiceInfo.ImagesStoreLocalDirPathStr,
+		pServiceInfo.ImagesThumbnailsStoreLocalDirPathStr,
+		pServiceInfo.VideoStoreLocalDirPathStr,
 		pServiceInfo.Media_domain_str,
 		pConfig,
 		imageStorage,
@@ -89,7 +90,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	// IMAGE_FLOWS
 
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
-	gfErr = gf_images_flows.Init_handlers(pServiceInfo.AuthLoginURLstr,
+	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthLoginURLstr,
 		pHTTPmux,
 		pServiceInfo.Templates_paths_map,
 		jobsMngrCh,

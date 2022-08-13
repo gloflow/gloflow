@@ -37,45 +37,49 @@ type GFimageID   = GF_image_id
 
 //---------------------------------------------------
 // CREATES_ID
-func Image_ID__create_from_url(p_image_url_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_image_id, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create_from_url()")
+func CreateIDfromURL(pImageURLstr string,
+	pRuntimeSys *gf_core.RuntimeSys) (GF_image_id, *gf_core.GFerror) {
 	
 	// urlparse() - used so that any possible url query parameters are not used in the 
 	//              os.path.basename() result
-	url,err := url.Parse(p_image_url_str)
+	url, err := url.Parse(pImageURLstr)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse image_url to create image ID",
+		gfErr := gf_core.Error__create("failed to parse image_url to create image ID",
 			"url_parse_error",
-			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return "", gf_err
+			map[string]interface{}{"image_url_str": pImageURLstr,},
+			err, "gf_images_core", pRuntimeSys)
+		return "", gfErr
 	}
 	
-	image_path_str      := url.Path
-	image_ext_str       := filepath.Ext(image_path_str)
-	clean_image_ext_str := strings.Trim(strings.ToLower(image_ext_str),".")
-	// image_file_name_str := path.Base(image_path_str)
-	// image_ext_str       := strings.Split(image_file_name_str,".")[1]
+	imagePathStr     := url.Path
+	imageExtStr      := filepath.Ext(imagePathStr)
+	cleanImageExtStr := strings.Trim(strings.ToLower(imageExtStr),".")
+	// imageFileNameStr := path.Base(imagePathStr)
+	// imageExtStr      := strings.Split(imageFileNameStr,".")[1]
 
-	normalized_ext_str,ok := Image__check_image_format(clean_image_ext_str, p_runtime_sys)
+
+
+	fmt.Println("CCCCCCCCCCCCCCCCCCCCCCCCC", cleanImageExtStr)
+
+
+	normalizedExtStr, ok := CheckImageFormat(cleanImageExtStr, pRuntimeSys)
 	if !ok {
-		usr_msg_str := "invalid image extension found in image url - "+p_image_url_str
+		usrMsgStr := "invalid image extension found in image url - "+pImageURLstr
 
-		gf_err := gf_core.Error__create(usr_msg_str,
+		gfErr := gf_core.Error__create(usrMsgStr,
 			"verify__invalid_image_extension_error",
-			map[string]interface{}{"image_url_str": p_image_url_str,},
-			err, "gf_images_core", p_runtime_sys)
-		return "", gf_err
+			map[string]interface{}{"image_url_str": pImageURLstr,},
+			err, "gf_images_core", pRuntimeSys)
+		return "", gfErr
 	}
 	
 	//-------------
-	gf_image_id_str := Image_ID__create(image_path_str,
-		normalized_ext_str,
-		p_runtime_sys)
+	imageIDstr := Image_ID__create(imagePathStr,
+		normalizedExtStr,
+		pRuntimeSys)
 	
 	//-------------
-	return gf_image_id_str, nil
+	return imageIDstr, nil
 }
 
 //---------------------------------------------------

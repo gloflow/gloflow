@@ -36,34 +36,35 @@ type Job_Error struct {
 }
 
 //-------------------------------------------------
-func job_error__send(p_job_error_type_str string,
-	p_gf_err               *gf_core.GFerror,
-	p_image_source_url_str string,
-	p_image_id_str         gf_images_core.Gf_image_id,
-	p_job_id_str           string,
-	p_job_updates_ch       chan JobUpdateMsg,
-	p_runtime_sys          *gf_core.RuntimeSys) *gf_core.GFerror {
+func jobErrorSend(p_job_error_type_str string,
+	pGFerr             *gf_core.GFerror,
+	pImageSourceURLstr string,
+	pImageIDstr        gf_images_core.GFimageID,
+	pJobIDstr          string,
+	p_job_updates_ch   chan JobUpdateMsg,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", p_image_source_url_str, p_gf_err.Error))
+	pRuntimeSys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", pImageSourceURLstr, pGFerr.Error))
 
-	error_str := fmt.Sprint(p_gf_err.Error)
+	error_str := fmt.Sprint(pGFerr.Error)
 	
 	update_msg := JobUpdateMsg{
-		Name_str:             p_gf_err.Type_str,
+		Name_str:             pGFerr.Type_str,
 		Type_str:             JOB_UPDATE_TYPE__ERROR,
-		Image_id_str:         p_image_id_str,
-		Image_source_url_str: p_image_source_url_str,
+		ImageIDstr:           pImageIDstr,
+		Image_source_url_str: pImageSourceURLstr,
 		Err_str:              error_str,
 	}
+
 	p_job_updates_ch <- update_msg
 
 	//-------------------------------------------------
 	go func() {
-		_ = job_error__persist(p_job_id_str,
+		_ = jobErrorPersist(pJobIDstr,
 			p_job_error_type_str,
 			error_str,
-			p_image_source_url_str,
-			p_runtime_sys)
+			pImageSourceURLstr,
+			pRuntimeSys)
 	}()
 	
 	//-------------------------------------------------
@@ -71,22 +72,22 @@ func job_error__send(p_job_error_type_str string,
 }
 
 //-------------------------------------------------
-func job_error__persist(p_job_id_str string,
-	p_error_type_str       string,
-	p_error_str            string,
-	p_image_source_url_str string,
-	p_runtime_sys          *gf_core.RuntimeSys) *gf_core.GFerror {
+func jobErrorPersist(pJobIDstr string,
+	p_error_type_str   string,
+	p_error_str        string,
+	pImageSourceURLstr string,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	job_error := Job_Error{
 		Type_str:             p_error_type_str,
 		Error_str:            p_error_str,
-		Image_source_url_str: p_image_source_url_str,
+		Image_source_url_str: pImageSourceURLstr,
 	}
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img_running_job",
-			"id_str": p_job_id_str,
+			"id_str": pJobIDstr,
 		},
 		bson.M{
 			"$push": bson.M{"errors_lst": job_error,},
@@ -96,12 +97,12 @@ func job_error__persist(p_job_id_str string,
 		gf_err := gf_core.Mongo__handle_error("failed to update img_running_job type document in mongodb, to add a job error",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"job_id_str":           p_job_id_str,
+				"job_id_str":           pJobIDstr,
 				"error_type_str":       p_error_type_str,
 				"error_str":            p_error_str,
-				"image_source_url_str": p_image_source_url_str,
+				"image_source_url_str": pImageSourceURLstr,
 			},
-			err, "gf_images_jobs", p_runtime_sys)
+			err, "gf_images_jobs", pRuntimeSys)
 		return gf_err
 	}
 

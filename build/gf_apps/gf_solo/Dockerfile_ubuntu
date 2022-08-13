@@ -75,6 +75,7 @@ RUN mkdir -p /home/gf/static
 # used for fetched images, and intermediate processing results
 RUN mkdir -p /home/gf/images
 RUN mkdir -p /home/gf/images/thumbnails
+RUN mkdir -p /home/gf/videos
 
 
 # PY_DEPENDENCIES

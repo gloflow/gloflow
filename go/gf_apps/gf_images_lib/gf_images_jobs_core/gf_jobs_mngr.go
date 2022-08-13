@@ -69,7 +69,7 @@ type GF_image_extern_to_process struct {
 }
 
 type GF_image_uploaded_to_process struct {
-	GF_image_id_str  gf_images_core.GF_image_id
+	GF_image_id_str  gf_images_core.GFimageID
 	S3_file_path_str string                 // path to image in S3 in a bucket that it was originally uploaded to by client
 	Meta_map         map[string]interface{} // metadata user might include for this image
 }
@@ -98,11 +98,11 @@ type JobMsg struct {
 }
 
 type JobUpdateMsg struct {
-	Name_str             string                     `json:"name_str"`
-	Type_str             job_update_type_val        `json:"type_str"`             // "ok" | "error" | "complete"
-	Image_id_str         gf_images_core.GF_image_id `json:"image_id_str"`
-	Image_source_url_str string                     `json:"image_source_url_str"`
-	Err_str              string                     `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
+	Name_str             string                        `json:"name_str"`
+	Type_str             job_update_type_val           `json:"type_str"`             // "ok" | "error" | "complete"
+	ImageIDstr           gf_images_core.GFimageID      `json:"image_id_str"`
+	Image_source_url_str string                        `json:"image_source_url_str"`
+	Err_str              string                        `json:"err_str,omitempty"`    // if the update indicates an error, this is its value
 	Image_thumbs         *gf_images_core.GFimageThumbs `json:"-"`
 }
 
@@ -128,12 +128,13 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 // INIT
 func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
-	pMediaDomainStr                           string,
-	pLifecycleCallbacks                          *GF_jobs_lifecycle_callbacks,
-	pConfig                                      *gf_images_core.GFconfig,
-	pImageStorage                                *gf_images_storage.GFimageStorage,
-	pS3info                                      *gf_core.GFs3Info,
-	pRuntimeSys                                  *gf_core.RuntimeSys) JobsMngr {
+	pVideoStoreLocalDirPathStr            string,
+	pMediaDomainStr                       string,
+	pLifecycleCallbacks                   *GF_jobs_lifecycle_callbacks,
+	pConfig                               *gf_images_core.GFconfig,
+	pImageStorage                         *gf_images_storage.GFimageStorage,
+	pS3info                               *gf_core.GFs3Info,
+	pRuntimeSys                           *gf_core.RuntimeSys) JobsMngr {
 
 	jobsMngrCh := make(chan JobMsg, 100)
 
@@ -153,6 +154,9 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 		for {
 			jobMsg := <- jobsMngrCh
 
+
+			ctx := context.Background()
+
 			// IMPORTANT!! - only one job is processed per jobs_mngr.
 			//              Scaling is done with multiple jobs_mngr's (exp. per-core)           
 			switch jobMsg.Cmd_str {
@@ -167,10 +171,10 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					metrics.Cmd__start_job_local_imgs__count.Inc()
 
 					// RUNNING_JOB
-					runningJob, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
 						pRuntimeSys)
-					if gf_err != nil {
+					if gfErr != nil {
 						continue
 					}
 
@@ -245,9 +249,11 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
-					gf_err := pLifecycleCallbacks.Job_type__transform_imgs__fun()
-					if gf_err != nil {
-						continue
+					if pLifecycleCallbacks != nil {
+						gfErr := pLifecycleCallbacks.Job_type__transform_imgs__fun()
+						if gfErr != nil {
+							continue
+						}
 					}
 
 					//------------------------
@@ -260,10 +266,10 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					metrics.Cmd__start_job_uploaded_imgs__count.Inc()
 
 					// RUNNING_JOB
-					runningJob, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
 						pRuntimeSys)
-					if gf_err != nil {
+					if gfErr != nil {
 						continue
 					}
 
@@ -318,9 +324,11 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
-					gf_err = pLifecycleCallbacks.Job_type__uploaded_imgs__fun()
-					if gf_err != nil {
-						continue
+					if pLifecycleCallbacks != nil {
+						gfErr = pLifecycleCallbacks.Job_type__uploaded_imgs__fun()
+						if gfErr != nil {
+							continue
+						}
 					}
 				
 				//------------------------
@@ -332,10 +340,10 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					metrics.Cmd__start_job_extern_imgs__count.Inc()
 
 					// RUNNING_JOB
-					runningJob, gf_err := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
+					runningJob, gfErr := JobsMngrCreateRunningJob(jobMsg.Client_type_str,
 						jobMsg.Job_updates_ch,
 						pRuntimeSys)
-					if gf_err != nil {
+					if gfErr != nil {
 						continue
 					}
 
@@ -362,16 +370,23 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						metricsCore:             metricsCore,
 					}
 
+
+					
+					fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+
+
+
 					runJobErrsLst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
 						jobMsg.Flows_names_lst,
 						pImagesStoreLocalDirPathStr,
 						pImagesThumbnailsStoreLocalDirPathStr,
-
+						pVideoStoreLocalDirPathStr,
 						pMediaDomainStr,
 						s3bucketNameStr,
 						pS3info,
 						pImageStorage,
 						jobRuntime,
+						ctx,
 						pRuntimeSys)
 					
 					//------------------------
@@ -435,9 +450,9 @@ func JobsMngrCreateRunningJob(p_client_type_str string,
 	}
 
 	// DB
-	gf_err := db__jobsMngrCreateRunningJob(running_job, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := db__jobsMngrCreateRunningJob(running_job, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return running_job, nil
@@ -451,9 +466,9 @@ func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 
 
 	ctx           := context.Background()
-	coll_name_str := "gf_images__jobs_running" // pRuntimeSys.Mongo_coll.Name()
-	gf_err        := gf_core.Mongo__insert(p_running_job,
-		coll_name_str,
+	collNameStr := "gf_images__jobs_running" // pRuntimeSys.Mongo_coll.Name()
+	gfErr        := gf_core.Mongo__insert(p_running_job,
+		collNameStr,
 		map[string]interface{}{
 			"running_job_id_str": p_running_job.Id_str,
 			"client_type_str":    p_running_job.Client_type_str,
@@ -462,8 +477,8 @@ func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 		ctx,
 		pRuntimeSys)
 	
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
@@ -497,14 +512,14 @@ func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 		},)
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an img_running_job in the DB, as complete and its end_time",
+		gfErr := gf_core.Mongo__handle_error("failed to update an img_running_job in the DB, as complete and its end_time",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"job_id_str":     p_job_id_str,
 				"job_end_time_f": job_end_time_f,
 			},
 			err, "gf_jobs_mngr", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil

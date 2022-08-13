@@ -42,12 +42,13 @@ type Image_fetch__error struct {
 }
 
 //---------------------------------------------------
-func FetcherGetExternImage(p_image_url_str string,
-	p_images_store_local_dir_path_str string,
-	p_random_time_delay_bool          bool,
-	pRuntimeSys                     *gf_core.RuntimeSys) (string, GFimageID, *gf_core.GFerror) {
+func FetcherGetExternImage(pImageURLstr string,
+	pImagesStoreLocalDirPathStr string,
+	pRandomTimeDelayBool        bool,
+	pRuntimeSys                 *gf_core.RuntimeSys) (string, GFimageID, *gf_core.GFerror) {
 
-	if p_random_time_delay_bool {
+	if pRandomTimeDelayBool {
+
 		// FIX!! - have a sleep time per domain, so that there"s no wait time if the next image
 		//         thats processed comes from a different domain
 		//         (store these time counters per domain in redis)
@@ -62,60 +63,64 @@ func FetcherGetExternImage(p_image_url_str string,
 	//--------------
 	// NEW_IMAGE_LOCAL_FILE_PATH
 
-	// IMPORTANT!! - 0.4 system, image naming, new scheme containing image_id,
-	//               instead of the old original_image naming scheme.
-	new_image_local_file_path_str, image_id_str, gf_err := Create_gf_image_file_path_from_url("", p_image_url_str, p_images_store_local_dir_path_str, pRuntimeSys)
-	if gf_err != nil {
-		return "", "", gf_err
+	newImageLocalFilePathStr, imageIDstr, gfErr := Create_gf_image_file_path_from_url("",
+		pImageURLstr,
+		pImagesStoreLocalDirPathStr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", "", gfErr
 	}
 
 	//--------------
 	// HTTP DOWNLOAD
 
-	gf_err = DownloadFile(p_image_url_str, new_image_local_file_path_str, pRuntimeSys)
-	if gf_err != nil {
-		return "", "", gf_err
+
+	
+
+
+	gfErr = DownloadFile(pImageURLstr, newImageLocalFilePathStr, pRuntimeSys)
+	if gfErr != nil {
+		return "", "", gfErr
 	}
 	
 	//--------------
 
 	// LOG
-	analytics__log_image_fetch(p_image_url_str, pRuntimeSys)
+	analytics__log_image_fetch(pImageURLstr, pRuntimeSys)
 	
 	// check if local file exists
-	if _, err := os.Stat(new_image_local_file_path_str); os.IsNotExist(err) {
-		gf_err := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
+	if _, err := os.Stat(newImageLocalFilePathStr); os.IsNotExist(err) {
+		gfErr := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
 			"file_missing_error",
-			map[string]interface{}{"new_image_local_file_path_str": new_image_local_file_path_str,},
+			map[string]interface{}{"new_image_local_file_path_str": newImageLocalFilePathStr,},
 			err, "gf_images_core", pRuntimeSys)
-		return "", "", gf_err
+		return "", "", gfErr
 	}
 
-	return new_image_local_file_path_str, image_id_str, nil
+	return newImageLocalFilePathStr, imageIDstr, nil
 }
 
 //---------------------------------------------------
-func analytics__log_image_fetch(p_image_url_str string,
+func analytics__log_image_fetch(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
 }
 
 //---------------------------------------------------
-func DownloadFile(p_image_url_str string,
+func DownloadFile(pImageURLstr string,
 	p_local_image_file_path_str string,
 	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
 
 	//-----------------------
-	headers_map    := map[string]string{}
-	user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-	ctx            := context.Background()
+	headersMap, userAgentStr := GetHTTPreqConfig()
+	ctx := context.Background()
 
-	gf_http_fetch, gfErr := gf_core.HTTP__fetch_url(p_image_url_str, headers_map, user_agent_str, ctx, pRuntimeSys)
+	HTTPfetch, gfErr := gf_core.HTTPfetchURL(pImageURLstr, headersMap, userAgentStr, ctx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
-	defer gf_http_fetch.Resp.Body.Close()
+	defer HTTPfetch.Resp.Body.Close()
 	
 	//-----------------------
 	// STATUS_CODE CHECK
@@ -123,7 +128,7 @@ func DownloadFile(p_image_url_str string,
 	// IMPORTANT!! - check if the reponse is as expected
 	// 	  			 "2" - 2xx - response success
 	//               "3" - 3xx - response redirection
-	if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
+	if !(HTTPfetch.Status_code_int >= 200 && HTTPfetch.Status_code_int < 400) {
 
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 		id_str               := "image_fetch_error__"+fmt.Sprint(creation_unix_time_f)
@@ -132,16 +137,16 @@ func DownloadFile(p_image_url_str string,
 			Id_str:               id_str,
 			T_str:                "img_fetch_error",
 			Creation_unix_time_f: creation_unix_time_f,
-			Image_url_str:        p_image_url_str,
-			Status_code_int:      gf_http_fetch.Status_code_int,
+			Image_url_str:        pImageURLstr,
+			Status_code_int:      HTTPfetch.Status_code_int,
 		}
 
 		ctx := context.Background()
-		coll_name_str := pRuntimeSys.Mongo_coll.Name()
+		collNameStr := pRuntimeSys.Mongo_coll.Name()
 		gfErr := gf_core.Mongo__insert(fetch_error,
-			coll_name_str,
+			collNameStr,
 			map[string]interface{}{
-				"image_url_str":             p_image_url_str,
+				"image_url_str":             pImageURLstr,
 				"local_image_file_path_str": p_local_image_file_path_str,
 				"caller_err_msg_str":        "failed to insert a Image_fetch__error into the DB",
 			},
@@ -154,9 +159,9 @@ func DownloadFile(p_image_url_str string,
 		gfErr = gf_core.Error__create("image fetching failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
-				"image_url_str":             p_image_url_str,
+				"image_url_str":             pImageURLstr,
 				"local_image_file_path_str": p_local_image_file_path_str,
-				"status_code_int":           gf_http_fetch.Status_code_int,
+				"status_code_int":           HTTPfetch.Status_code_int,
 			},
 			nil, "gf_images_core", pRuntimeSys)
 		return gfErr
@@ -164,8 +169,8 @@ func DownloadFile(p_image_url_str string,
 
 	//-----------------------
 
-	final_url_str := gf_http_fetch.Resp.Request.URL.String() //after possible redirects, this is the url
-	pRuntimeSys.Log_fun("INFO", "final_url_str - "+final_url_str)
+	finalURLstr := HTTPfetch.Resp.Request.URL.String() // after possible redirects, this is the url
+	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("final_url_str - %s", finalURLstr))
 
 	//--------------
 	// WRITE TO FILE
@@ -182,13 +187,13 @@ func DownloadFile(p_image_url_str string,
 		return gfErr
 	}
 
-	_, cp_err := io.Copy(out,gf_http_fetch.Resp.Body)
+	_, cp_err := io.Copy(out, HTTPfetch.Resp.Body)
 	if cp_err != nil {
 		gfErr := gf_core.Error__create("failed to copy HTTP GET response Body buffer to a image file",
 			"file_buffer_copy_error",
 			map[string]interface{}{
 				"local_image_file_path_str": p_local_image_file_path_str,
-				"image_url_str":             p_image_url_str,
+				"image_url_str":             pImageURLstr,
 			},
 			cp_err, "gf_images_core", pRuntimeSys)
 		return gfErr
@@ -197,4 +202,11 @@ func DownloadFile(p_image_url_str string,
 	//--------------
 
 	return nil
+}
+
+//---------------------------------------------------
+func GetHTTPreqConfig() (map[string]string, string) {
+	headersMap   := map[string]string{}
+	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+	return headersMap, userAgentStr
 }

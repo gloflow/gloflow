@@ -41,7 +41,6 @@ func pipelineProcessLocalImage(pFlowsNamesLst []string,
 
 
 	return nil
-	
 }
 
 //-------------------------------------------------
@@ -97,7 +96,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 			pRuntimeSys)
 		if gfErr != nil {
 			error_type_str := "s3_download_for_processing_error"
-			job_error__send(error_type_str, gfErr,
+			jobErrorSend(error_type_str, gfErr,
 				"", // p_image_source_url_str,
 				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 			return gfErr
@@ -145,7 +144,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 				pRuntimeSys)
 			if gfErr != nil {
 				error_type_str := "s3_store_error"
-				job_error__send(error_type_str, gfErr,
+				jobErrorSend(error_type_str, gfErr,
 					"", // p_image_source_url_str,
 					pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 					
@@ -165,7 +164,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 			if gfErr != nil {
 				
 				error_type_str := "s3_store_error"
-				job_error__send(error_type_str, gfErr,
+				jobErrorSend(error_type_str, gfErr,
 					"", // p_image_source_url_str,
 					pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 				return gfErr
@@ -193,7 +192,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 			pRuntimeSys)
 		if gfErr != nil {
 			error_type_str := "s3_store_error"
-			job_error__send(error_type_str, gfErr,
+			jobErrorSend(error_type_str, gfErr,
 				"", // p_image_source_url_str,
 				pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
 			return gfErr
@@ -205,7 +204,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	update_msg := JobUpdateMsg{
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
-		Image_id_str:         pImageIDstr,
+		ImageIDstr:           pImageIDstr,
 		Image_source_url_str: "", // p_image_source_url_str,
 	}
 	pJobRuntime.job_updates_ch <- update_msg
@@ -215,7 +214,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	update_msg = JobUpdateMsg{
 		Name_str:             "image_done",
 		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
-		Image_id_str:         pImageIDstr,
+		ImageIDstr:           pImageIDstr,
 		Image_source_url_str: "", // p_image_source_url_str,
 		Image_thumbs:         imageThumbs,
 	}
@@ -227,10 +226,27 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 }
 
 //-------------------------------------------------
+// PIPELINE__PROCESS_EXTERN_VIDEO
+func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
+	pImageSourceURLstr           string,
+	pOriginPageURLstr            string,
+	pVideosStoreLocalDirPathStr  string,
+	pImagesThumbsLocalDirPathStr string,
+	pFlowsNamesLst               []string,
+	pStorage                     *gf_images_storage.GFimageStorage,
+	pJobRuntime                  *GFjobRuntime,
+	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
+	return nil
+}
+
+//-------------------------------------------------
 // PIPELINE__PROCESS_EXTERN_IMAGE
 func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
-	pImageSourceURLstr       string,
-	p_image_origin_page_url_str  string,
+	pImageSourceURLstr           string,
+	pOriginPageURLstr            string,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
@@ -239,7 +255,6 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_pipeline.job__pipeline__process_image_extern()")
 	
 	//-----------------------
 	// FETCH_IMAGE
@@ -249,7 +264,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		pRuntimeSys)
 	if gfErr != nil {
 		error_type_str := "fetch_error"
-		job_error__send(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr, 
+		jobErrorSend(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr, 
 			pJobRuntime.job_id_str,
 			pJobRuntime.job_updates_ch, pRuntimeSys)
 		return gfErr
@@ -258,7 +273,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	updateMsg := JobUpdateMsg{
 		Name_str:             "image_fetch",
 		Type_str:             JOB_UPDATE_TYPE__OK,
-		Image_id_str:         pImageIDstr,
+		ImageIDstr:           pImageIDstr,
 		Image_source_url_str: pImageSourceURLstr,
 	}
 
@@ -267,13 +282,13 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	//-----------------------
 	// TRANSFORM_IMAGE
 	
-	// FIX!! - this should be passed it from outside this function
+	// FIX!! - this should be passed in from outside this function
 	metaMap := map[string]interface{}{}
 
 	imageThumbs, gfErr := jobTransform(pImageIDstr,
 		pFlowsNamesLst,
 		pImageSourceURLstr,
-		p_image_origin_page_url_str,
+		pOriginPageURLstr,
 		metaMap,
 		imageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
@@ -343,7 +358,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 			pRuntimeSys)
 		if gfErr != nil {
 			error_type_str := "s3_store_error"
-			job_error__send(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr,
+			jobErrorSend(error_type_str, gfErr, pImageSourceURLstr, pImageIDstr,
 				pJobRuntime.job_id_str,
 				pJobRuntime.job_updates_ch,
 				pRuntimeSys)
@@ -354,7 +369,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	updateMsg = JobUpdateMsg{
 		Name_str:             "image_persist",
 		Type_str:             JOB_UPDATE_TYPE__OK,
-		Image_id_str:         pImageIDstr,
+		ImageIDstr:           pImageIDstr,
 		Image_source_url_str: pImageSourceURLstr,
 	}
 	pJobRuntime.job_updates_ch <- updateMsg
@@ -364,7 +379,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	updateMsg = JobUpdateMsg{
 		Name_str:             "image_done",
 		Type_str:             JOB_UPDATE_TYPE__COMPLETED,
-		Image_id_str:         pImageIDstr,
+		ImageIDstr:           pImageIDstr,
 		Image_source_url_str: pImageSourceURLstr,
 		Image_thumbs:         imageThumbs,
 	}
@@ -377,9 +392,9 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 //-------------------------------------------------
 func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	pFlowsNamesLst               []string,
-	p_image_source_url_str       string,
-	p_image_origin_page_url_str  string,
-	p_meta_map                   map[string]interface{},
+	pImageSourceURLstr           string,
+	pImageOriginPageURLstr       string,
+	pMetaMap                     map[string]interface{},
 	pImageLocalFilePathStr       string,
 	pImagesThumbsLocalDirPathStr string,
 	pJobRuntime                  *GFjobRuntime,
@@ -388,35 +403,35 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	// TRANSFORM
 	ctx := context.Background()
 
-	_, gfImageThumbs, gfTerr := gf_images_core.TransformImage(pImageIDstr,
+	_, imageThumbs, gfErr := gf_images_core.TransformImage(pImageIDstr,
 		pJobRuntime.job_client_type_str,
 		pFlowsNamesLst,
-		p_image_source_url_str,
-		p_image_origin_page_url_str,
-		p_meta_map,
+		pImageSourceURLstr,
+		pImageOriginPageURLstr,
+		pMetaMap,
 		pImageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
 		pJobRuntime.metricsCore,
 		ctx,
 		pRuntimeSys)
 
-	if gfTerr != nil {
+	if gfErr != nil {
 		error_type_str := "transform_error"
-		job_error__send(error_type_str, gfTerr,
-			p_image_source_url_str,
+		jobErrorSend(error_type_str, gfErr,
+			pImageSourceURLstr,
 			pImageIDstr, pJobRuntime.job_id_str, pJobRuntime.job_updates_ch, pRuntimeSys)
-		return nil, gfTerr
+		return nil, gfErr
 	}
 
-	update_msg := JobUpdateMsg{
+	updateMsg := JobUpdateMsg{
 		Name_str:             "image_transform",
 		Type_str:             JOB_UPDATE_TYPE__OK,
-		Image_id_str:         pImageIDstr,
-		Image_source_url_str: p_image_source_url_str,
+		ImageIDstr:           pImageIDstr,
+		Image_source_url_str: pImageSourceURLstr,
 	}
-	pJobRuntime.job_updates_ch <- update_msg
+	pJobRuntime.job_updates_ch <- updateMsg
 
 
 
-	return gfImageThumbs, nil
+	return imageThumbs, nil
 }

@@ -31,50 +31,53 @@ import (
 )
 
 //--------------------------------------------------
-func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.RuntimeSys) (*goquery.Document, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_utils.Get__html_doc_over_http()")
+func Get__html_doc_over_http(pURLstr string,
+	pRuntimeSys *gf_core.RuntimeSys) (*goquery.Document, *gf_core.GFerror) {
+
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_utils.Get__html_doc_over_http()")
 
 	//-----------------------
-	user_agent_str := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-	headers_map    := map[string]string{}
-	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
-		headers_map,
-		user_agent_str,
+	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+	headersMap   := map[string]string{}
+	
+	HTTPfetch, gfErr := gf_core.HTTPfetchURL(pURLstr,
+		headersMap,
+		userAgentStr,
 		context.Background(),
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
-	defer gf_http_fetch.Resp.Body.Close()
+	defer HTTPfetch.Resp.Body.Close()
 	
 	//-----------------------
 	
-	if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
+	if !(HTTPfetch.Status_code_int >= 200 && HTTPfetch.Status_code_int < 400) {
 
 		// GET_RESPONSE_BODY
 		buff := new(bytes.Buffer)
-		buff.ReadFrom(gf_http_fetch.Resp.Body)
+		buff.ReadFrom(HTTPfetch.Resp.Body)
 		body_str := buff.String() 
 
-		gf_err := gf_core.Error__create("crawler fetch failed with HTTP status error",
+		gfErr := gf_core.Error__create("crawler fetch failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
-				"url_str":         p_url_str,
-				"status_code_int": gf_http_fetch.Status_code_int,
+				"url_str":         pURLstr,
+				"status_code_int": HTTPfetch.Status_code_int,
 				"body_str":        body_str,
 			},
-			nil, "gf_crawl_utils", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_crawl_utils", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	// doc,err := goquery.NewDocument(p_url_str)
-	doc,err := goquery.NewDocumentFromResponse(gf_http_fetch.Resp)
+	// doc, err := goquery.NewDocument(pURLstr)
+	doc, err := goquery.NewDocumentFromResponse(HTTPfetch.Resp)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse a fetched HTML page from a crawled url",
+		gfErr := gf_core.Error__create("failed to parse a fetched HTML page from a crawled url",
 			"html_parse_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_crawl_utils", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"url_str": pURLstr,},
+			err, "gf_crawl_utils", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return doc, nil
@@ -84,8 +87,8 @@ func Get__html_doc_over_http(p_url_str string, p_runtime_sys *gf_core.RuntimeSys
 func Crawler_sleep(p_crawler_name_str string,
 	p_cycle_index_int int,
 	p_rand            *rand.Rand,
-	p_runtime_sys     *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
+	pRuntimeSys       *gf_core.RuntimeSys) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
 
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

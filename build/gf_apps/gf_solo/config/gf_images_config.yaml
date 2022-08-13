@@ -6,6 +6,7 @@
 # LOCAL_DIRS
 store_local_dir_path:            "/home/gf/images"
 thumbnails_store_local_dir_path: "/home/gf/images/thumbnails"
+videos_store_local_dir_path:     "/home/gf/videos"
 
 #----------------------------
 media_domain:        "media.gloflow.com"
