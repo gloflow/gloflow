@@ -28,14 +28,17 @@ import (
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
-	// "github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
-	
+	testImagesStoreLocalDirPathStr := "./../tests_data/transform"
+	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/thumbnails"
+	testMediaDomainStr := ""
+
 	runtime, _, err := gf_eth_core.TgetRuntime()
 	if err != nil {
 		panic(err)
@@ -48,15 +51,15 @@ func TestMain(m *testing.M) {
 		HTTPmux := http.NewServeMux()
 
 
+		//------------------------
+		// IMAGES_JOBS_MNGR
 
-		/*jobs_mngr := gf_images_jobs_core.JobsMngrInit(test__images_local_dir_path_str,
-			test__images_thumbs_local_dir_path_str,
-			img_config,
-			gf_s3_test_info.Gf_s3_info,
-			runtime_sys)
-		fmt.Println(jobs_mngr)
-
-		imagesJobsMngrCh := nil*/
+		jobsMngr := gf_images_jobs_core.TgetJobsMngr(testImagesStoreLocalDirPathStr,
+			testImagesThumbnailsStoreLocalDirPathStr,
+			testMediaDomainStr,
+			runtime.RuntimeSys)		
+		
+		//------------------------
 
 		config := &gf_eth_core.GF_config{
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
@@ -65,7 +68,7 @@ func TestMain(m *testing.M) {
 		
 		InitService(HTTPmux,
 			config,
-			nil, // imagesJobsMngrCh,
+			jobsMngr,
 			runtime.RuntimeSys)
 			
 		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)

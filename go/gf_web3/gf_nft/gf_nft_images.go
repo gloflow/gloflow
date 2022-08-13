@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft
 
 import (
+	// "fmt"
 	"context"
+	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -43,7 +45,7 @@ func createAsImagesInFlows(pNFTsLst []*GFnft,
 
 	for _, nft := range pNFTsLst {
 
-		imagesExternURLsLst      = append(imagesExternURLsLst, nft.MediaURIgatewayStr)
+		imagesExternURLsLst      = append(imagesExternURLsLst, strings.TrimSpace(nft.MediaURIgatewayStr))
 		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "")
 	}
 
