@@ -74,7 +74,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 	p_resp        http.ResponseWriter,
 	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(p_req, pRuntimeSys)
 	if gfErr != nil {
 		return nil, "", GF_user_address_eth(""), gfErr
 	}

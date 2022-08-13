@@ -64,7 +64,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -132,7 +132,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

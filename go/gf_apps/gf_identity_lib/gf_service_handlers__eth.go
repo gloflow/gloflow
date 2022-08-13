@@ -153,7 +153,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_core.HTTPgetInput(p_resp, p_req, p_runtime_sys)
+				input_map, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

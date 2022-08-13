@@ -45,31 +45,60 @@ type Gf_http_fetch struct {
 	Resp             *http.Response    `bson:"-"`
 }
 
-//-------------------------------------------------
-func HTTPgetInput(p_resp http.ResponseWriter,
-	p_req         *http.Request,
-	p_runtime_sys *RuntimeSys) (map[string]interface{}, *GFerror) {
+//---------------------------------------------------
+func HTTPdetectMIMEtypeFromURL(pURLstr string,
+	pHeadersMap   map[string]string,
+	pUserAgentStr string,
+	pCtx          context.Context,
+	pRuntimeSys   *RuntimeSys) (string, *GFerror) {
 
-	handler_url_path_str := p_req.URL.Path
+	
+
+	// fetch the first 512 bytes, which is all we need
+	// for determening MIME type.
+	//
+	// "Range" - HTTP request header indicates the part of a document 
+	//           that the server should return.
+	pHeadersMap["Range"] = "bytes=0-511"
+
+	// HTTP REQUEST
+	HTTPfetch, gfErr := HTTPfetchURL(pURLstr, pHeadersMap, pUserAgentStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+	defer HTTPfetch.Resp.Body.Close()
+	
+
+
+
+
+	bodyBuffer, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
+
+	contentTypeStr := http.DetectContentType(bodyBuffer)
+
+
+
+	return contentTypeStr, nil
+}
+
+//---------------------------------------------------
+func HTTPgetInput(pReq *http.Request,
+	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
+
+	handlerURLpathStr := pReq.URL.Path
 
 	var i map[string]interface{}
-	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
+	bodyBytesLst, _ := ioutil.ReadAll(pReq.Body)
 
 	// parse body bytes only if they're larger than 0
-	if len(body_bytes_lst) > 0 {
-		err := json.Unmarshal(body_bytes_lst, &i)
+	if len(bodyBytesLst) > 0 {
+		err := json.Unmarshal(bodyBytesLst, &i)
 
 		if err != nil {
 			gfErr := Error__create("failed to parse json http input",
 				"json_decode_error",
-				map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-				err, "gf_core", p_runtime_sys)
-
-			/*Error__in_handler(handler_url_path_str,
-				fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str), // p_user_msg_str
-				gf_err,
-				p_resp,
-				p_runtime_sys)*/
+				map[string]interface{}{"handler_url_path_str": handlerURLpathStr,},
+				err, "gf_core", pRuntimeSys)
 			return nil, gfErr
 		}
 	}
@@ -78,19 +107,18 @@ func HTTPgetInput(p_resp http.ResponseWriter,
 }
 
 //---------------------------------------------------
-func HTTP__fetch_url(p_url_str string,
-	p_headers_map    map[string]string,
-	p_user_agent_str string,
-	p_ctx            context.Context,
-	p_runtime_sys    *RuntimeSys) (*GF_http_fetch, *GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__fetch_url()")
+func HTTPfetchURL(pURLstr string,
+	pHeadersMap   map[string]string,
+	pUserAgentStr string,
+	pCtx          context.Context,
+	pRuntimeSys   *RuntimeSys) (*GF_http_fetch, *GFerror) {
 
 
 	// TIMEOUT
-	timeout_sec := time.Second * 60
+	timeoutSec := time.Second * 60
 
 	client := &http.Client{
-		Timeout: timeout_sec, // time.Second * 10, // to prevent requests taking too long to return
+		Timeout: timeoutSec, // time.Second * 10, // to prevent requests taking too long to return
 
 		/* IMPORTANT!! - golang http lib does not copy user-set headers on redirects, so a manual
 		setting of these headers had to be added, via the CheckRedirect function
@@ -111,92 +139,96 @@ func HTTP__fetch_url(p_url_str string,
 		which is to stop after 10 consecutive requests. */
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			req.Header.Del("User-Agent")
-			req.Header.Set("User-Agent", p_user_agent_str)
+			req.Header.Set("User-Agent", pUserAgentStr)
 			return nil
 		},
 	}
 
-	req, err := http.NewRequest("GET", p_url_str, nil)
+	req, err := http.NewRequest("GET", pURLstr, nil)
 	if err != nil {
-		gf_err := Error__create("image fetcher failed to create HTTP request to fetch a file",
+		gfErr := Error__create("image fetcher failed to create HTTP request to fetch a file",
 			"http_client_req_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"url_str": pURLstr,},
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	//-------------------------
 	// HEADERS
-	for k, v := range p_headers_map {
+	for k, v := range pHeadersMap {
 		req.Header.Set(k, v)
 	}
 
 	//-------------------------
 	// USER_AGENT
 	req.Header.Del("User-Agent")
-	req.Header.Set("User-Agent", p_user_agent_str)
+	req.Header.Set("User-Agent", pUserAgentStr)
 
 	//-------------------------
-	// req_with_ctx := req.WithContext(p_ctx)
+	// req_with_ctx := req.WithContext(pCtx)
+
+	
+	reqUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	// EXECUTE
-	req_unix_time_f  := float64(time.Now().UnixNano())/1000000000.0
-	resp, err        := client.Do(req)
-	resp_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+	resp, err := client.Do(req)
+	
+	
+	respUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	if err != nil {
-		gf_err := Error__create("http fetch failed to execute HTTP request to fetch a url",
+		gfErr := Error__create("http fetch failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"url_str": pURLstr,},
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	status_code_int := resp.StatusCode
-	headers_map     := resp.Header
+	statusCodeInt := resp.StatusCode
+	headersMap    := resp.Header
 
 
 
-	fmt.Println(fmt.Sprintf("http response status_code - %d", status_code_int))
+	fmt.Println(fmt.Sprintf("http response status_code - %d", statusCodeInt))
 
 
-	resp_headers_map := map[string]string{}
-	for k, v := range headers_map {
-		resp_headers_map[k] = v[0]
+	respHeadersMap := map[string]string{}
+	for k, v := range headersMap {
+		respHeadersMap[k] = v[0]
 	}
 
-	gf_http_fetch := &GF_http_fetch{
-		Url_str:          p_url_str, 
-		Status_code_int:  status_code_int,
-		Resp_headers_map: resp_headers_map,
-		Req_time_f:       req_unix_time_f,
-		Resp_time_f:      resp_unix_time_f,
+	HTTPfetch := &GF_http_fetch{
+		Url_str:          pURLstr, 
+		Status_code_int:  statusCodeInt,
+		Resp_headers_map: respHeadersMap,
+		Req_time_f:       reqUNIXtimeF,
+		Resp_time_f:      respUNIXtimeF,
 		Resp:             resp,
 	}
 
-	return gf_http_fetch, nil
+	return HTTPfetch, nil
 }
 
 //---------------------------------------------------
 // PUT_FILE
-func HTTP__put_file(p_target_url_str string,
+func HTTPputFile(p_target_url_str string,
 	p_file_path_str string,
-	p_headers_map   map[string]string,
-	p_runtime_sys   *RuntimeSys) (*http.Response, *GF_error) {
+	pHeadersMap     map[string]string,
+	pRuntimeSys     *RuntimeSys) (*http.Response, *GF_error) {
 
 
 
 	// FILE_OPEN
 	f, err := os.Open(p_file_path_str)
 	if err != nil {
-		gf_err := Error__create("failed to open a file on the local FS that is to be sent to AWS S3",
+		gfErr := Error__create("failed to open a file on the local FS that is to be sent to AWS S3",
 			"file_open_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
 				"file_path_str":  p_file_path_str,
 			},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 	buffer := bufio.NewReader(f)
 
@@ -204,14 +236,14 @@ func HTTP__put_file(p_target_url_str string,
 
 	req, err := http.NewRequest(http.MethodPut, p_target_url_str, buffer)
     if err != nil {
-        gf_err := Error__create("failed to create a HTTP PUT request to upload file to S3",
+        gfErr := Error__create("failed to create a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
 				"file_path_str":  p_file_path_str,
 			},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	// golang http client sets "Transfer-Encoding": "chunked", 
@@ -223,36 +255,36 @@ func HTTP__put_file(p_target_url_str string,
 	// FILE_SIZE
 	fi, err := os.Stat(p_file_path_str)
     if err != nil {
-		gf_err := Error__create("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
+		gfErr := Error__create("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
 			"file_stat_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
 				"file_path_str":  p_file_path_str,
 			},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
     }
 	req.ContentLength = fi.Size()
 
 
 	// HEADERS
-	for k, v := range p_headers_map {
+	for k, v := range pHeadersMap {
     	req.Header.Set(k, v)
 	}
 
     client := http.Client{}
 
-	p_runtime_sys.Log_fun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
+	pRuntimeSys.Log_fun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
     resp, err := client.Do(req)
     if err != nil {
-		gf_err := Error__create("failed to execute a HTTP PUT request to upload file to S3",
+		gfErr := Error__create("failed to execute a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
 				"file_path_str":  p_file_path_str,
 			},
-			err, "gf_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_core", pRuntimeSys)
+		return nil, gfErr
     }
 
 
@@ -267,7 +299,7 @@ func HTTP__put_file(p_target_url_str string,
 func HTTP__init_static_serving_with_mux(p_url_base_str string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
-	p_runtime_sys        *RuntimeSys) {
+	pRuntimeSys        *RuntimeSys) {
 	
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
@@ -277,13 +309,13 @@ func HTTP__init_static_serving_with_mux(p_url_base_str string,
 
 		HTTP__serve_file(p_local_dir_path_str,
 			url_str,
-			p_req, p_resp, p_runtime_sys)
+			p_req, p_resp, pRuntimeSys)
 	})
 }
 
 //-------------------------------------------------
 func HTTP__init_static_serving(p_url_base_str string,
-	p_runtime_sys *RuntimeSys) {
+	pRuntimeSys *RuntimeSys) {
 	
 	local_dir_str := fmt.Sprintf("./static")
 
@@ -295,7 +327,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 
 		HTTP__serve_file(local_dir_str,
 			url_str,
-			p_req, p_resp, p_runtime_sys)
+			p_req, p_resp, pRuntimeSys)
 
 		/*if p_req.Method == "GET" {
 			path_str := p_req.URL.Path
@@ -308,8 +340,8 @@ func HTTP__init_static_serving(p_url_base_str string,
 
 			p_resp.Header().Set("Content-Type", file_mime_type_str)
 
-			p_runtime_sys.Log_fun("INFO", "file_path_str  - "+file_path_str)
-			p_runtime_sys.Log_fun("INFO", "local_path_str - "+local_path_str)
+			pRuntimeSys.Log_fun("INFO", "file_path_str  - "+file_path_str)
+			pRuntimeSys.Log_fun("INFO", "local_path_str - "+local_path_str)
 
 		    http.ServeFile(p_resp, p_req, local_path_str)
 		}*/
@@ -321,7 +353,7 @@ func HTTP__serve_file(p_local_dir_str string,
 	p_url_str     string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *RuntimeSys) {
+	pRuntimeSys *RuntimeSys) {
 
 	if p_req.Method == "GET" {
 		path_str := p_req.URL.Path
@@ -334,7 +366,7 @@ func HTTP__serve_file(p_local_dir_str string,
 
 		p_resp.Header().Set("Content-Type", file_mime_type_str)
 
-		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
+		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
 
 		http.ServeFile(p_resp, p_req, local_path_str)
 	}
@@ -342,8 +374,8 @@ func HTTP__serve_file(p_local_dir_str string,
 
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
-	p_runtime_sys *RuntimeSys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
+	pRuntimeSys *RuntimeSys) string {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
 	for _, cookie := range p_cookies_lst {
@@ -356,8 +388,8 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
-	p_runtime_sys *RuntimeSys) (http.Flusher, *GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
+	pRuntimeSys *RuntimeSys) (http.Flusher, *GF_error) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
 
 	flusher, ok := p_resp.(http.Flusher)
 	if !ok {
@@ -366,7 +398,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 
 		gf_err := Error__create(err_msg_str,
 			"http_server_flusher_not_supported_error",
-			nil, nil, "gf_core", p_runtime_sys)
+			nil, nil, "gf_core", pRuntimeSys)
 
 		return nil, gf_err
 	}
@@ -375,7 +407,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 	notify := p_resp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
-		p_runtime_sys.Log_fun("INFO", "HTTP SSE CONNECTION CLOSED")
+		pRuntimeSys.Log_fun("INFO", "HTTP SSE CONNECTION CLOSED")
 	}()
 
 	p_resp.Header().Set("Content-Type",                "text/event-stream")
@@ -389,12 +421,12 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 }
 
 //-------------------------------------------------
-func HTTP__get_streaming_response(p_url_str string,
-	p_runtime_sys *RuntimeSys) (*[]map[string]interface{}, *GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
+func HTTP__get_streaming_response(pURLstr string,
+	pRuntimeSys *RuntimeSys) (*[]map[string]interface{}, *GF_error) {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
 
 
-	req,err := http.NewRequest("GET", p_url_str, nil)
+	req,err := http.NewRequest("GET", pURLstr, nil)
     req.Header.Set("accept", "text/event-stream")
 
 	client   := &http.Client{}
@@ -402,12 +434,12 @@ func HTTP__get_streaming_response(p_url_str string,
     if err != nil {
     	gf_err := Error__create("http get_streaming_response failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_core", p_runtime_sys)
+			map[string]interface{}{"url_str": pURLstr,},
+			err, "gf_core", pRuntimeSys)
     	return nil,gf_err
     }
 
-	// resp, err := http.Get(p_url_str)
+	// resp, err := http.Get(pURLstr)
 	// if err != nil {
 	//	return nil,err
 	// }
@@ -419,8 +451,8 @@ func HTTP__get_streaming_response(p_url_str string,
 	    if err != nil {
 	    	gf_err := Error__create("failed to read a line of SSE streaming response from a server url",
 				"io_reader_error",
-				map[string]interface{}{"url_str": p_url_str,},
-				err, "gf_core", p_runtime_sys)
+				map[string]interface{}{"url_str": pURLstr,},
+				err, "gf_core", pRuntimeSys)
 	    	return nil,gf_err
 	    }
 	    
@@ -435,8 +467,8 @@ func HTTP__get_streaming_response(p_url_str string,
 	    	if err != nil {
 	    		gf_err := Error__create("http get_streaming_response failed to parse JSON response",
 					"json_decode_error",
-					map[string]interface{}{"url_str": p_url_str,},
-					err, "gf_core", p_runtime_sys)
+					map[string]interface{}{"url_str": pURLstr,},
+					err, "gf_core", pRuntimeSys)
 	    		return nil, gf_err
 	    	}
 

@@ -33,7 +33,7 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFindexAddressInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -76,7 +76,7 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFgetByOwnerInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -101,7 +101,7 @@ func httpInputForGet(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFgetInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

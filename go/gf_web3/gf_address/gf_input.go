@@ -32,7 +32,7 @@ func httpIputForAdd(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFaddInput, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+	inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

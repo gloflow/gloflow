@@ -75,7 +75,7 @@ func initHandlers(p_auth_login_url_str string,
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -217,7 +217,7 @@ func initHandlers(p_auth_login_url_str string,
 				//---------------------
 				// INPUT
 
-				inputMap, gfErr := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

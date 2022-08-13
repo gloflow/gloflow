@@ -103,7 +103,7 @@ func query__init_handlers(p_stats_url_base_str string,
 
 			//--------------------------
 			// INPUT
-			i, gf_err := gf_core.HTTPgetInput(p_resp, p_req, p_runtime_sys)
+			i, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
 			if gf_err != nil {
 				return
 			}

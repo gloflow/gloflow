@@ -50,7 +50,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 
 				//--------------------------
 				// INPUT
-				input_map, gf_err := gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
+				input_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

@@ -34,7 +34,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -48,7 +48,7 @@ func Client__request_sse(p_url_str string,
 	// FETCH_URL
 
 	user_agent_str := "gf_rpc_client"
-	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
+	gf_http_fetch, gf_err := gf_core.HTTPfetchURL(p_url_str,
 		p_headers_map,
 		user_agent_str,
 		p_ctx,
@@ -136,11 +136,6 @@ func Client__request_sse(p_url_str string,
 			data_map := msg_map["data_map"].(map[string]interface{})
 			
 			//-------------------
-			
-
-
-			fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-			spew.Dump(data_map)
 
 			p_resp_data_ch <- data_map
 		}
@@ -150,7 +145,7 @@ func Client__request_sse(p_url_str string,
 }
 
 //-------------------------------------------------
-func Client__request(p_url_str string,
+func Client__request(pURLstr string,
 	p_headers_map map[string]string,
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
@@ -158,33 +153,33 @@ func Client__request(p_url_str string,
 	yellow   := color.New(color.FgYellow).SprintFunc()
 	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
 
-	fmt.Printf("%s - REQUEST SENT - %s\n", yellow("gf_rpc_client"), yellowBg(p_url_str))
+	fmt.Printf("%s - REQUEST SENT - %s\n", yellow("gf_rpc_client"), yellowBg(pURLstr))
 	
 
 	//-----------------------
 	// FETCH_URL
 	user_agent_str := "gf_rpc_client"
-	gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(p_url_str,
+	HTTPfetch, gfErr := gf_core.HTTPfetchURL(pURLstr,
 		p_headers_map,
 		user_agent_str,
 		p_ctx,
 		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//-----------------------
 	// JSON_DECODE
-	body_bytes_lst, _ := ioutil.ReadAll(gf_http_fetch.Resp.Body)
+	body_bytes_lst, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
 
 	var resp_map map[string]interface{}
 	err := json.Unmarshal(body_bytes_lst, &resp_map)
 	if err != nil {
-		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
+		gfErr := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
-			map[string]interface{}{"url_str": p_url_str,},
+			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_rpc_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//-----------------------
@@ -197,11 +192,11 @@ func Client__request(p_url_str string,
 		return data_map, nil
 	} else {
 
-		gf_err := gf_core.Error__create(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
+		gfErr := gf_core.Error__create(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
 			"http_client_gf_status_error",
-			map[string]interface{}{"url_str": p_url_str,},
+			map[string]interface{}{"url_str": pURLstr,},
 			nil, "gf_rpc_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	return nil, nil
