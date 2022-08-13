@@ -50,6 +50,7 @@ func Test__upload(p_test *testing.T) {
 
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
+	testVideosLocalDirPathStr              := "./tests_data/videos"
 	// test__s3_bucket_name_str               := "gf--test--img"
 
 	//-------------
@@ -77,8 +78,9 @@ func Test__upload(p_test *testing.T) {
 
 	//-------------
 	// JOBS_MANAGER
-	jobs_mngr := gf_images_jobs.Jobs_mngr__init(test__images_local_dir_path_str,
+	jobsMngr := gf_images_jobs.Init(test__images_local_dir_path_str,
 		test__images_thumbs_local_dir_path_str,
+		testVideosLocalDirPathStr,
 		img_config,
 		gf_s3_test_info.Gf_s3_info,
 		runtime_sys)
@@ -140,14 +142,14 @@ func Test__upload(p_test *testing.T) {
 	//-------------
 	// UPLOAD_COMPLETE
 	running_job, gf_err := Upload__complete(upload_info.Upload_gf_image_id_str,
-		jobs_mngr,
+		jobsMngr,
 		gf_s3_test_info.Gf_s3_info,
 		runtime_sys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
 
-	T__test_image_job__updates(running_job.Id_str, jobs_mngr, runtime_sys)
+	T__test_image_job__updates(running_job.Id_str, jobsMngr, runtime_sys)
 	
 	//-------------
 }

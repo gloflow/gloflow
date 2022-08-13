@@ -35,8 +35,10 @@ import (
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
-	testImagesStoreLocalDirPathStr := "./../tests_data/transform"
-	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/thumbnails"
+	testImagesStoreLocalDirPathStr := "./../tests_data/images"
+	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/images_thumbnails"
+	testVideosStoreLocalDirPathStr := "./../tests_data/videos"
+
 	testMediaDomainStr := ""
 
 	runtime, _, err := gf_eth_core.TgetRuntime()
@@ -56,6 +58,7 @@ func TestMain(m *testing.M) {
 
 		jobsMngr := gf_images_jobs_core.TgetJobsMngr(testImagesStoreLocalDirPathStr,
 			testImagesThumbnailsStoreLocalDirPathStr,
+			testVideosStoreLocalDirPathStr,
 			testMediaDomainStr,
 			runtime.RuntimeSys)		
 		
