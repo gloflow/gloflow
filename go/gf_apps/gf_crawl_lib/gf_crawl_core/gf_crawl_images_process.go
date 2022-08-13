@@ -218,7 +218,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 		// IMPORTANT!! - a new gf_image ID is created if an external ID is not supplied
 		var imageIDstr gf_images_core.GFimageID
 		if pImageIDstr == "" {
-			newImageIDstr, gfErr := gf_images_core.Image_ID__create_from_url(p_page_img.Url_str, pRuntimeSys)
+			newImageIDstr, gfErr := gf_images_core.CreateIDfromURL(p_page_img.Url_str, pRuntimeSys)
 			if gfErr != nil {
 				return nil, nil, gfErr
 			}

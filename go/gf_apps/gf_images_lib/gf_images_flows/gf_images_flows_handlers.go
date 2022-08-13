@@ -30,18 +30,17 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_auth_login_url_str string,
-	pHTTPmux              *http.ServeMux,
-	p_templates_paths_map map[string]string,
-	pJobsMngrCh           chan gf_images_jobs_core.JobMsg,
-	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows_handlers.Init_handlers()")
+func InitHandlers(pAuthLoginURLstr string,
+	pHTTPmux           *http.ServeMux,
+	pTemplatesPathsMap map[string]string,
+	pJobsMngrCh        chan gf_images_jobs_core.JobMsg,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	gf_templates, gfErr := tmpl__load(pTemplatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//---------------------
@@ -64,7 +63,7 @@ func Init_handlers(p_auth_login_url_str string,
 		Metrics:            metrics,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
-		Auth_login_url_str: p_auth_login_url_str,
+		Auth_login_url_str: pAuthLoginURLstr,
 	}
 
 	//---------------------
@@ -109,7 +108,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				i_map, gf_err := gf_core.HTTPgetInput(pResp, pReq, pRuntimeSys)
+				i_map, gf_err := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -166,7 +165,7 @@ func Init_handlers(p_auth_login_url_str string,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
+				i_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -225,7 +224,7 @@ func Init_handlers(p_auth_login_url_str string,
 				
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_resp, p_req, pRuntimeSys)
+				i_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}

@@ -108,7 +108,7 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	
 	lower_case_format_str := strings.ToLower(p_image_info_map["format_str"].(string))
 	
-	normalized_format_str, ok := Image__check_image_format(lower_case_format_str, p_runtime_sys)
+	normalized_format_str, ok := CheckImageFormat(lower_case_format_str, p_runtime_sys)
 	if !ok {
 		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image_info - %s", lower_case_format_str, title_str),
 			"verify__invalid_image_extension_error",

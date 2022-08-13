@@ -138,7 +138,7 @@ func Create_gf_image_file_path_from_url(p_gf_image_id_str Gf_image_id,
 	// IMPORTANT!! - gf_image_id can be supplied externally. if its not supplied then a new gf_image_id is generated
 	var gf_image_id_str Gf_image_id
 	if p_gf_image_id_str == "" {
-		new_gf_image_id_str, _ := Image_ID__create_from_url(p_image_url_str, pRuntimeSys)
+		new_gf_image_id_str, _ := CreateIDfromURL(p_image_url_str, pRuntimeSys)
 		gf_image_id_str = new_gf_image_id_str
 	} else {
 		gf_image_id_str = p_gf_image_id_str
@@ -289,7 +289,7 @@ func GetImageLargerDimension(pImage image.Image,
 func GetImageExtFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	fmt.Printf("image url - %s\n", pImageURLstr)
+	// fmt.Printf("image url - %s\n", pImageURLstr)
 
 	// urlparse() - used so that any possible url query parameters are not used in the 
 	//              os.path.basename() result
@@ -302,12 +302,12 @@ func GetImageExtFromURL(pImageURLstr string,
 		return "", gfErr
 	}
 
-	imagePathStr      := url.Path
+	imagePathStr     := url.Path
 	imageFileNameStr := path.Base(imagePathStr)
-	extStr             := filepath.Ext(imageFileNameStr)
-	cleanExtStr       := strings.TrimPrefix(strings.ToLower(extStr),".")
+	extStr           := filepath.Ext(imageFileNameStr)
+	cleanExtStr      := strings.TrimPrefix(strings.ToLower(extStr),".")
 
-	normalizedExtStr, ok := Image__check_image_format(cleanExtStr,pRuntimeSys)
+	normalizedExtStr, ok := CheckImageFormat(cleanExtStr,pRuntimeSys)
 
 	if !ok {
 		gfErr := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image url - %s", extStr, pImageURLstr),
@@ -324,8 +324,7 @@ func GetImageExtFromURL(pImageURLstr string,
 }
 
 //---------------------------------------------------	
-func Image__check_image_format(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (string, bool) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Image__check_image_format()")
+func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (string, bool) {
 	
 	if pFormatStr != "jpeg" && 
 		pFormatStr != "jpg" &&

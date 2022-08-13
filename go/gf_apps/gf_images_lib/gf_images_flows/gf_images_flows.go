@@ -251,7 +251,7 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 
 	//------------------
 	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{}
-	for i:=0; i<len(pImagesExternURLsLst); i++ {
+	for i := 0; i < len(pImagesExternURLsLst); i++ {
 
 		imageExternURLstr := pImagesExternURLsLst[i]
 		imageOriginPageURLstr := pImagesOriginPagesURLsStr[i]

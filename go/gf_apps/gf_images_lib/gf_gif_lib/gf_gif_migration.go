@@ -229,7 +229,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			gif__full_gf_url_str  := fmt.Sprintf("http://%s%s",p_gf_domain_str,old_gif.Gf_url_str)
 			headers_map           := map[string]string{}
 			user_agent_str        := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			gf_http_fetch, gf_err := gf_core.HTTP__fetch_url(gif__full_gf_url_str,
+			gf_http_fetch, gf_err := gf_core.HTTPfetchURL(gif__full_gf_url_str,
 				headers_map,
 				user_agent_str,
 				context.Background(),
@@ -280,7 +280,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			frame_url_str := old_gif.Preview_frames_s3_urls_lst[0]
 			headers_map    = map[string]string{}
 			user_agent_str = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			fpf__gf_http_fetch,gf_err := gf_core.HTTP__fetch_url(frame_url_str,
+			fpf__gf_http_fetch, gf_err := gf_core.HTTPfetchURL(frame_url_str,
 				headers_map,
 				user_agent_str,
 				context.Background(),

@@ -206,7 +206,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		// IMAGE_ID
 		var gf_image_id_str gf_images_core.GFimageID
 		if p_gf_image_id_str == "" {
-			new_image_id_str, gfErr := gf_images_core.Image_ID__create_from_url(p_image_source_url_str, pRuntimeSys)
+			new_image_id_str, gfErr := gf_images_core.CreateIDfromURL(p_image_source_url_str, pRuntimeSys)
 			if gfErr != nil {
 				return nil, "", gfErr
 			}
@@ -313,29 +313,29 @@ func storePreviewFrames(p_local_file_path_src string,
 	// SAVE_IMAGES TO FS (S3)
 	preview_frames_s3_urls_lst := []string{}
 	gf_errors_lst              := make([]*gf_core.GFerror, len(frames_images_file_paths_lst))
-	for i, frame_image_file_path_str := range frames_images_file_paths_lst {
+	for i, frameImageFilePathStr := range frames_images_file_paths_lst {
 
-		frame_image_file_name_str      := filepath.Base(frame_image_file_path_str)
-		s3_target_file_path_str        := fmt.Sprintf("gifs/frames/%s",frame_image_file_name_str)
-		s3_target_file__local_path_str := frame_image_file_path_str
+		frameImageFileNameStr  := filepath.Base(frameImageFilePathStr)
+		targetFilePathStr      := fmt.Sprintf("gifs/frames/%s", frameImageFileNameStr)
+		targetFileLocalPathStr := frameImageFilePathStr
 
 		// UPLOAD
-		s3_response_str, s_gf_err := gf_core.S3uploadFile(s3_target_file__local_path_str,
-			s3_target_file_path_str,
+		s3_response_str, gfErr := gf_core.S3uploadFile(targetFileLocalPathStr,
+			targetFilePathStr,
 			p_s3_bucket_name_str,
 			pS3info,
 			pRuntimeSys)
 
-		if s_gf_err != nil {
-			pRuntimeSys.Log_fun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(s_gf_err.Error))
-			gf_errors_lst[i] = s_gf_err
+		if gfErr != nil {
+			pRuntimeSys.Log_fun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(gfErr.Error))
+			gf_errors_lst[i] = gfErr
 		}
 
 		fmt.Println(s3_response_str)
 
 		//-----------------------
 
-		imageURLstr := gf_images_core.ImageGetPublicURL(s3_target_file_path_str,
+		imageURLstr := gf_images_core.ImageGetPublicURL(targetFilePathStr,
 			p_media_domain_str, // p_s3_bucket_name_str,
 			pRuntimeSys)
 

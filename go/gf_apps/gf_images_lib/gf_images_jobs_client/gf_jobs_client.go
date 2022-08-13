@@ -222,7 +222,7 @@ func job__get_expected_output(pImagesSourceURIsLst []string,
 
 		//--------------
 		// IMAGE_ID
-		image_id_str, gfErr := gf_images_core.Image_ID__create_from_url(imgSourceURLstr, pRuntimeSys)
+		image_id_str, gfErr := gf_images_core.CreateIDfromURL(imgSourceURLstr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
