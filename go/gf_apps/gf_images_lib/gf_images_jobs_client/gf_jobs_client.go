@@ -222,29 +222,22 @@ func getJobExpectedOutput(pImagesSourceURIsLst []string,
 
 		//--------------
 		// IMAGE_ID
-		image_id_str, gfErr := gf_images_core.CreateIDfromURL(imgSourceURLstr, pRuntimeSys)
+		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(imgSourceURLstr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
 
 		//--------------
-		// GET FILE_FORMAT
-		normalizedExtStr, gfErr := gf_images_core.GetImageExtFromURL(imgSourceURLstr, pRuntimeSys)
+
+		// all thumbs are stored as jpeg's
+		thumbsExtStr := "jpeg"
 		
-		// FIX!! - it should not fail the whole job if one image is invalid,
-		//         it should continue and just mark that image with an error.
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		//--------------
-
 		output := &GF_job_expected_output{
-			Image_id_str:                      image_id_str,
+			Image_id_str:                      imageIDstr,
 			Image_source_url_str:              imgSourceURLstr,
-			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  image_id_str, normalizedExtStr),
-			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", image_id_str, normalizedExtStr),
-			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s",  image_id_str, normalizedExtStr),
+			Thumbnail_small_relative_url_str : fmt.Sprintf("/images/d/thumbnails/%s_thumb_small.%s",  imageIDstr, thumbsExtStr),
+			Thumbnail_medium_relative_url_str: fmt.Sprintf("/images/d/thumbnails/%s_thumb_medium.%s", imageIDstr, thumbsExtStr),
+			Thumbnail_large_relative_url_str:  fmt.Sprintf("/images/d/thumbnails/%s_thumb_large.%s",  imageIDstr, thumbsExtStr),
 		}
 		jobExpectedOutputsLst = append(jobExpectedOutputsLst, output)
 	}

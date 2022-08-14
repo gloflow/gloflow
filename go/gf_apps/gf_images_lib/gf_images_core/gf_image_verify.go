@@ -41,11 +41,11 @@ import (
 ]*/
 
 //---------------------------------------------------
-func Image__verify_image_info(p_image_info_map map[string]interface{},
-	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_image_verify.Image__verify_image_info()")
+func Image__verify_image_info(pImageInfoMap map[string]interface{},
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.Log_fun("FUN_ENTER","gf_image_verify.Image__verify_image_info()")
 	
-	spew.Dump(p_image_info_map)
+	spew.Dump(pImageInfoMap)
 
 	max_title_characters_int := 100
 	//-------------------
@@ -54,93 +54,95 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 	//           ID is determined if image_info_dict comes from the DB or someplace
 	//           else within the system
 	
-	id_str := p_image_info_map["id_str"].(string)
+	id_str := pImageInfoMap["id_str"].(string)
 
 	//-------------------
 	// TITLE
 	
-	if _,ok := p_image_info_map["title_str"]; !ok {
-		gf_err := gf_core.Error__create("image title_str not supplied",
+	if _, ok := pImageInfoMap["title_str"]; !ok {
+		gfErr := gf_core.Error__create("image title_str not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil,gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	title_str := p_image_info_map["title_str"].(string)
+	title_str := pImageInfoMap["title_str"].(string)
 		
 	if len(title_str) > max_title_characters_int {
 
 		usr_msg_str := fmt.Sprintf("image title_str length (%d) is longer then max_title_characters_int (%d)", len(title_str), max_title_characters_int)
-		gf_err := gf_core.Error__create(usr_msg_str,
+		gfErr := gf_core.Error__create(usr_msg_str,
 			"verify__string_too_long_error",
 			map[string]interface{}{
-				"image_info_map":           p_image_info_map,
+				"image_info_map":           pImageInfoMap,
 				"max_title_characters_int": max_title_characters_int,
 			},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	//-------------------
 	// IMAGE_CLIENT_TYPE
 	
-	if _,ok := p_image_info_map["image_client_type_str"]; !ok {
-		gf_err := gf_core.Error__create("image image_client_type_str not supplied",
+	if _, ok := pImageInfoMap["image_client_type_str"]; !ok {
+		gfErr := gf_core.Error__create("image image_client_type_str not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 	
-	image_client_type_str := p_image_info_map["image_client_type_str"].(string)
+	image_client_type_str := pImageInfoMap["image_client_type_str"].(string)
 
 	//-------------------
 	// FORMAT
 	
-	if _,ok := p_image_info_map["format_str"]; !ok {
-		gf_err := gf_core.Error__create("image format_str not supplied",
+	if _, ok := pImageInfoMap["format_str"]; !ok {
+		gfErr := gf_core.Error__create("image format_str not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil,gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 	
-	lower_case_format_str := strings.ToLower(p_image_info_map["format_str"].(string))
+	lowercaseFormatStr := strings.ToLower(pImageInfoMap["format_str"].(string))
 	
-	normalized_format_str, ok := CheckImageFormat(lower_case_format_str, p_runtime_sys)
+	ok := CheckImageFormat(lowercaseFormatStr, pRuntimeSys)
 	if !ok {
-		gf_err := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image_info - %s", lower_case_format_str, title_str),
+		gfErr := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image_info - %s", lowercaseFormatStr, title_str),
 			"verify__invalid_image_extension_error",
 			map[string]interface{}{
 				"title_str":             title_str,
-				"lower_case_format_str": lower_case_format_str,
+				"lower_case_format_str": lowercaseFormatStr,
 			},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
+
+	normalizedFormatStr := NormalizeImageFormat(lowercaseFormatStr)
 
 	//-------------------
 	// WIDTH/HEIGHT
 	
-	if _,ok := p_image_info_map["width_int"]; !ok {
-		gf_err := gf_core.Error__create("image width_int not supplied",
+	if _, ok := pImageInfoMap["width_int"]; !ok {
+		gfErr := gf_core.Error__create("image width_int not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	if _,ok := p_image_info_map["height_int"]; !ok {
-		gf_err := gf_core.Error__create("image height_int not supplied",
+	if _, ok := pImageInfoMap["height_int"]; !ok {
+		gfErr := gf_core.Error__create("image height_int not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	width_int  := int(p_image_info_map["width_int"].(int))
-	height_int := int(p_image_info_map["height_int"].(int))
+	width_int  := int(pImageInfoMap["width_int"].(int))
+	height_int := int(pImageInfoMap["height_int"].(int))
 	
 	/*if _, err := strconv.Atoi(width_int); err != nil {
 		return nil,errors.New("image width_int is not a digit")
@@ -151,50 +153,50 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 
 	//-------------------
 	// IMAGE FLOWS NAMES
-	if _, ok := p_image_info_map["flows_names_lst"]; !ok {
-		gf_err := gf_core.Error__create("image flows_names_lst not supplied",
+	if _, ok := pImageInfoMap["flows_names_lst"]; !ok {
+		gfErr := gf_core.Error__create("image flows_names_lst not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	flows_names_lst := p_image_info_map["flows_names_lst"].([]string)
+	flows_names_lst := pImageInfoMap["flows_names_lst"].([]string)
 
 	//-------------------
 	// ORIGIN URL
 	
-	if _, ok := p_image_info_map["origin_url_str"]; !ok {
-		gf_err := gf_core.Error__create("image origin_url_str not supplied",
+	if _, ok := pImageInfoMap["origin_url_str"]; !ok {
+		gfErr := gf_core.Error__create("image origin_url_str not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map": p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map": pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	origin_url_str := p_image_info_map["origin_url_str"].(string)
+	origin_url_str := pImageInfoMap["origin_url_str"].(string)
 
 	//-------------------
-	if _, ok := p_image_info_map["origin_page_url_str"]; !ok {
-		gf_err := gf_core.Error__create("image origin_page_url_str not supplied",
+	if _, ok := pImageInfoMap["origin_page_url_str"]; !ok {
+		gfErr := gf_core.Error__create("image origin_page_url_str not supplied",
 			"verify__missing_key_error",
-			map[string]interface{}{"image_info_map":p_image_info_map,},
-			nil, "gf_images_core", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"image_info_map":pImageInfoMap,},
+			nil, "gf_images_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	origin_page_url_str := p_image_info_map["origin_page_url_str"].(string)
+	origin_page_url_str := pImageInfoMap["origin_page_url_str"].(string)
 
 	//-------------------
-	original_file_internal_uri_str := p_image_info_map["original_file_internal_uri_str"].(string)
-	thumbnail_small_url_str        := p_image_info_map["thumbnail_small_url_str"].(string)
-	thumbnail_medium_url_str       := p_image_info_map["thumbnail_medium_url_str"].(string)
-	thumbnail_large_url_str        := p_image_info_map["thumbnail_large_url_str"].(string)
+	original_file_internal_uri_str := pImageInfoMap["original_file_internal_uri_str"].(string)
+	thumbnail_small_url_str        := pImageInfoMap["thumbnail_small_url_str"].(string)
+	thumbnail_medium_url_str       := pImageInfoMap["thumbnail_medium_url_str"].(string)
+	thumbnail_large_url_str        := pImageInfoMap["thumbnail_large_url_str"].(string)
 	
 	//-------------------
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("image (id - %s) verified",id_str))
+	pRuntimeSys.Log_fun("INFO",fmt.Sprintf("image (id - %s) verified",id_str))
 	
-	verified_image_info_map := map[string]interface{}{
+	verifiedImageInfoMap := map[string]interface{}{
 		"id_str":                         id_str,
 		"title_str":                      title_str,
 		"image_client_type_str":          image_client_type_str,
@@ -205,12 +207,12 @@ func Image__verify_image_info(p_image_info_map map[string]interface{},
 		"thumbnail_small_url_str":        thumbnail_small_url_str,
 		"thumbnail_medium_url_str":       thumbnail_medium_url_str,
 		"thumbnail_large_url_str":        thumbnail_large_url_str,
-		"format_str":                     normalized_format_str,
+		"format_str":                     normalizedFormatStr,
 		"width_int":                      width_int,
 		"height_int":                     height_int,
 		
 		//"dominant_color_hex_str":p_image_info_map["dominant_color_hex_str"],
 	}
 	
-	return verified_image_info_map,nil
+	return verifiedImageInfoMap,nil
 }

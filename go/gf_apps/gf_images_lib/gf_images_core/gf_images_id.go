@@ -22,9 +22,7 @@ package gf_images_core
 import (
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
-	"path/filepath"
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -51,29 +49,9 @@ func CreateIDfromURL(pImageURLstr string,
 		return "", gfErr
 	}
 	
-	imageHostStr     := url.Host
-	imagePathStr     := url.Path
-	imageURIstr      := fmt.Sprintf("%s/%s", imageHostStr, imagePathStr)
-	imageExtStr      := filepath.Ext(imagePathStr)
-	cleanImageExtStr := strings.Trim(strings.ToLower(imageExtStr),".")
-	// imageFileNameStr := path.Base(imagePathStr)
-	// imageExtStr      := strings.Split(imageFileNameStr,".")[1]
-
-
-
-	fmt.Println("CCCCCCCCCCCCCCCCCCCCCCCCC", cleanImageExtStr)
-
-
-	_, ok := CheckImageFormat(cleanImageExtStr, pRuntimeSys)
-	if !ok {
-		usrMsgStr := "invalid image extension found in image url - "+pImageURLstr
-
-		gfErr := gf_core.Error__create(usrMsgStr,
-			"verify__invalid_image_extension_error",
-			map[string]interface{}{"image_url_str": pImageURLstr,},
-			err, "gf_images_core", pRuntimeSys)
-		return "", gfErr
-	}
+	imageHostStr := url.Host
+	imagePathStr := url.Path
+	imageURIstr  := fmt.Sprintf("%s/%s", imageHostStr, imagePathStr)
 	
 	//-------------
 	imageIDstr := CreateImageID(imageURIstr,
@@ -89,7 +67,6 @@ func CreateIDfromURL(pImageURLstr string,
 
 func CreateImageID(pImageURIstr string,
 	pRuntimeSys *gf_core.RuntimeSys) GFimageID {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()
 		

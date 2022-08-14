@@ -305,9 +305,9 @@ func GetImageExtFromURL(pImageURLstr string,
 	imagePathStr     := url.Path
 	imageFileNameStr := path.Base(imagePathStr)
 	extStr           := filepath.Ext(imageFileNameStr)
-	cleanExtStr      := strings.TrimPrefix(strings.ToLower(extStr),".")
+	cleanExtStr      := strings.TrimPrefix(strings.ToLower(extStr), ".")
 
-	normalizedExtStr, ok := CheckImageFormat(cleanExtStr,pRuntimeSys)
+	ok := CheckImageFormat(cleanExtStr, pRuntimeSys)
 
 	if !ok {
 		gfErr := gf_core.Error__create(fmt.Sprintf("invalid image extension (%s) found in image url - %s", extStr, pImageURLstr),
@@ -320,11 +320,13 @@ func GetImageExtFromURL(pImageURLstr string,
 		return "", gfErr
 	}
 
+	normalizedExtStr := NormalizeImageFormat(cleanExtStr)
+
 	return normalizedExtStr, nil
 }
 
 //---------------------------------------------------	
-func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (string, bool) {
+func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) bool {
 	
 	supportedFileFormatsLst := []string{
 		
@@ -346,11 +348,11 @@ func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (strin
 			supportedBool = true
 		}
 	}
-	if !supportedBool {
+	return supportedBool
+}
 
-		// IMPORTANT!! - format is not a valid image format, so 'false' is returned
-		return pFormatStr, false
-	}
+//---------------------------------------------------
+func NormalizeImageFormat(pFormatStr string) string {
 
 	var normalizedFormatStr string
 
@@ -361,7 +363,7 @@ func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (strin
 		normalizedFormatStr = pFormatStr
 	}
 
-	return normalizedFormatStr, true
+	return normalizedFormatStr
 }
 
 //---------------------------------------------------
@@ -388,33 +390,4 @@ for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		histogram[b>>12][2]++
 		histogram[a>>12][3]++
 	}
-}*/
-//---------------------------------------------------
-//TAGS
-//---------------------------------------------------
-/*func add_tags_to_image_in_db(p_id_str string,
-					p_tags_lst   []string,
-					p_mongo_coll *mgo.Collection,
-					p_log_fun    func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_images_utils.add_tags_to_image_in_db()")
-	
-	image,err := image__db_get(p_id_str,
-						p_mongo_coll,
-						p_log_fun)
-	if err != nil {
-		return err
-	}
-
-	add_tags_to_image(post_adt,
-					  p_tags_lst,
-					  p_log_fun)
-	
-	i_err := image__db_put(image,
-					p_mongo_coll,
-					p_log_fun)
-	if i_err != nil {
-		return i_err
-	}
-
-	return nil
 }*/
