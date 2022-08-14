@@ -148,7 +148,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 
 				running_job := running_jobs_map[images_job_id_str]*/
 
-				job_updates_ch := gf_images_jobs_client.Job__get_update_ch(images_job_id_str, pJobsMngrCh, pRuntimeSys)
+				jobUpdatesCh := gf_images_jobs_client.GetJobUpdateCh(images_job_id_str, pJobsMngrCh, pRuntimeSys)
 
 				//-------------------------
 
@@ -187,7 +187,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 					//               its messages were consumed.
 					//               to avoid this a channel is not closed, and instead the last update message is waited for here, or an error,
 					//               and cleanup only done after that.
-					job_update := <- job_updates_ch
+					job_update := <- jobUpdatesCh
 					
 					sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 					sse_event_id_str         := sse_event__unix_time_str
@@ -202,7 +202,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 					// IMPORTANT!! - this is the last update message, so exit the loop
 					if job_update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR || job_update.Type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
 
-						gf_images_jobs_client.Job__cleanup(images_job_id_str, pJobsMngrCh, pRuntimeSys)
+						gf_images_jobs_client.CleanupJob(images_job_id_str, pJobsMngrCh, pRuntimeSys)
 						break
 					}
 				}

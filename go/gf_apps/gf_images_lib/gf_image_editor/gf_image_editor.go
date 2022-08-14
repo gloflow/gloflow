@@ -238,8 +238,8 @@ func createImage(p_new_title_str string,
 	
 	//--------------------------
 	// GF_IMAGE_ID
-	imageIDstr := gf_images_core.Image_ID__create(pProcessingInfo.tmp_local_filepath_str,
-		image_format_str,
+	imageURIstr := pProcessingInfo.tmp_local_filepath_str
+	imageIDstr  := gf_images_core.CreateImageID(imageURIstr,
 		pRuntimeSys)
 
 	//--------------------------

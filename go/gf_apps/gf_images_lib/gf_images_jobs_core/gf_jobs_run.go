@@ -148,6 +148,11 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 			continue
 		}
 
+
+
+		fmt.Println("DDDDDDDDDDDDDDDDDD", imageContentTypeStr)
+
+		
 		//--------------
 		// IMAGE_ID
 		imageIDstr, gfErr := gf_images_core.CreateIDfromURL(sourceURLstr, pRuntimeSys)

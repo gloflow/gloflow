@@ -326,10 +326,27 @@ func GetImageExtFromURL(pImageURLstr string,
 //---------------------------------------------------	
 func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) (string, bool) {
 	
-	if pFormatStr != "jpeg" && 
-		pFormatStr != "jpg" &&
-		pFormatStr != "gif" &&
-		pFormatStr != "png" {
+	supportedFileFormatsLst := []string{
+		
+		// images
+		"jpeg",
+		"jpg",
+		"gif",
+		"png",
+
+		// videos
+		"mp4",
+		"webm",
+		"flv",
+	}
+
+	supportedBool := false
+	for _, supportedFormatStr := range supportedFileFormatsLst {
+		if pFormatStr == supportedFormatStr {
+			supportedBool = true
+		}
+	}
+	if !supportedBool {
 
 		// IMPORTANT!! - format is not a valid image format, so 'false' is returned
 		return pFormatStr, false

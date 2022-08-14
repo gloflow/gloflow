@@ -51,7 +51,9 @@ func CreateIDfromURL(pImageURLstr string,
 		return "", gfErr
 	}
 	
+	imageHostStr     := url.Host
 	imagePathStr     := url.Path
+	imageURIstr      := fmt.Sprintf("%s/%s", imageHostStr, imagePathStr)
 	imageExtStr      := filepath.Ext(imagePathStr)
 	cleanImageExtStr := strings.Trim(strings.ToLower(imageExtStr),".")
 	// imageFileNameStr := path.Base(imagePathStr)
@@ -62,7 +64,7 @@ func CreateIDfromURL(pImageURLstr string,
 	fmt.Println("CCCCCCCCCCCCCCCCCCCCCCCCC", cleanImageExtStr)
 
 
-	normalizedExtStr, ok := CheckImageFormat(cleanImageExtStr, pRuntimeSys)
+	_, ok := CheckImageFormat(cleanImageExtStr, pRuntimeSys)
 	if !ok {
 		usrMsgStr := "invalid image extension found in image url - "+pImageURLstr
 
@@ -74,8 +76,7 @@ func CreateIDfromURL(pImageURLstr string,
 	}
 	
 	//-------------
-	imageIDstr := Image_ID__create(imagePathStr,
-		normalizedExtStr,
+	imageIDstr := CreateImageID(imageURIstr,
 		pRuntimeSys)
 	
 	//-------------
@@ -86,17 +87,15 @@ func CreateIDfromURL(pImageURLstr string,
 // CREATES_ID
 // p_image_type_str - :String - "jpeg"|"gif"|"png"
 
-func Image_ID__create(p_image_path_str string,
-	p_image_format_str string,
-	p_runtime_sys      *gf_core.RuntimeSys) GFimageID {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
+func CreateImageID(pImageURIstr string,
+	pRuntimeSys *gf_core.RuntimeSys) GFimageID {
+	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_id.Image_ID__create()")
 	
 	h := md5.New()
 		
 	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	h.Write([]byte(fmt.Sprint(current_unix_time_f)))
-	h.Write([]byte(p_image_path_str))
-	h.Write([]byte(p_image_format_str))
+	h.Write([]byte(pImageURIstr))
 
 	sum     := h.Sum(nil)
 	hex_str := hex.EncodeToString(sum)

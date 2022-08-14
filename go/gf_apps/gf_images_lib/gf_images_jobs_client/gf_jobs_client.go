@@ -81,7 +81,7 @@ func Run_local_imgs(pClientTypeStr string,
 		imgs_local_paths_lst = append(imgs_local_paths_lst, image_to_process.Local_file_path_str)
 	}
 
-	job_expected_outputs_lst, gf_err := job__get_expected_output(imgs_local_paths_lst, pRuntimeSys)
+	job_expected_outputs_lst, gf_err := getJobExpectedOutput(imgs_local_paths_lst, pRuntimeSys)
 	if gf_err != nil {
 		return nil, nil, gf_err
 	}
@@ -130,7 +130,7 @@ func RunExternImages(pClientTypeStr string,
 	pFlowsNamesLst            []string,
 	pJobsMngrCh               gf_images_jobs_core.JobsMngr,
 	pRuntimeSys               *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GF_job_expected_output, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("INFO", "images_extern_to_process - "+fmt.Sprint(pImagesExternToProcessLst))
+	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("images_extern_to_process - %s", fmt.Sprint(pImagesExternToProcessLst)))
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR
@@ -164,7 +164,7 @@ func RunExternImages(pClientTypeStr string,
 		imagesSourceURLsLst = append(imagesSourceURLsLst, image_to_process.Source_url_str)
 	}
 
-	jobExpectedOutputsLst, gfErr := job__get_expected_output(imagesSourceURLsLst, pRuntimeSys)
+	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesSourceURLsLst, pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -174,7 +174,7 @@ func RunExternImages(pClientTypeStr string,
 }
 
 //-------------------------------------------------
-func Job__get_update_ch(pJobIDstr string,
+func GetJobUpdateCh(pJobIDstr string,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) chan gf_images_jobs_core.JobUpdateMsg {
 
@@ -197,23 +197,23 @@ func Job__get_update_ch(pJobIDstr string,
 }
 
 //-------------------------------------------------
-func Job__cleanup(pJobIDstr string,
+func CleanupJob(pJobIDstr string,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
-	job_cmd_str := "cleanup_job"
-	job_msg     := gf_images_jobs_core.JobMsg{
+	jobCmdStr := "cleanup_job"
+	jobMsg    := gf_images_jobs_core.JobMsg{
 		Job_id_str: pJobIDstr,
-		Cmd_str:    job_cmd_str,
+		Cmd_str:    jobCmdStr,
 	}
 
-	pJobsMngrCh <- job_msg
+	pJobsMngrCh <- jobMsg
 }
 
 //-------------------------------------------------
 // VAR
 //-------------------------------------------------
-func job__get_expected_output(pImagesSourceURIsLst []string,
+func getJobExpectedOutput(pImagesSourceURIsLst []string,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GF_job_expected_output, *gf_core.GFerror) {
 
 	jobExpectedOutputsLst := []*GF_job_expected_output{}

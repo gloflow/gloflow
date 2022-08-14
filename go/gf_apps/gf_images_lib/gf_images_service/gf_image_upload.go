@@ -79,14 +79,8 @@ func UploadInit(pImageNameStr string,
 	//------------------
 	// GF_IMAGE_ID
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	imagePathStr      := pImageNameStr
-	uploadImageIDstr  := gf_images_core.Image_ID__create(imagePathStr, normalizedFormatStr, pRuntimeSys)
-
-	
-
-	
-	
-
+	imageURIstr       := pImageNameStr
+	uploadImageIDstr  := gf_images_core.CreateImageID(imageURIstr, pRuntimeSys)
 
 	//------------------
 	// PRESIGN_URL

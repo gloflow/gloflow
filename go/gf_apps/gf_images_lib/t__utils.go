@@ -28,32 +28,32 @@ import (
 )
 
 //---------------------------------------------------
-func T__test_image_job__updates(p_job_id_str string,
-	p_jobs_mngr   gf_images_jobs_core.JobsMngr,
-	p_runtime_sys *gf_core.RuntimeSys) {
+func T__test_image_job__updates(pJobIDstr string,
+	pJobsMngr   gf_images_jobs_core.JobsMngr,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-------------
 	// TEST_JOB_UPDATES
-	job_updates_ch := gf_images_jobs_client.Job__get_update_ch(p_job_id_str, p_jobs_mngr, p_runtime_sys)
+	jobUpdatesCh := gf_images_jobs_client.GetJobUpdateCh(pJobIDstr, pJobsMngr, pRuntimeSys)
 
 	for ;; {
 
 		fmt.Println("\n\n------------------------- TESTING - GET_JOB_UPDATE -----")
-		job_update := <-job_updates_ch
+		jobUpdate := <- jobUpdatesCh
 
-		spew.Dump(job_update)
+		spew.Dump(jobUpdate)
 
-		job_update_type_str := job_update.Type_str
-		if job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR {
+		jobUpdateTypeStr := jobUpdate.Type_str
+		if jobUpdateTypeStr == gf_images_jobs_core.JOB_UPDATE_TYPE__ERROR {
 			panic("job encountered an error while processing")
 		}
 
-		if !(job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__OK || job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED) {
-			panic(fmt.Sprintf("job_update is expected to be of type 'ok' but instead is - %s", job_update_type_str))
+		if !(jobUpdateTypeStr == gf_images_jobs_core.JOB_UPDATE_TYPE__OK || jobUpdateTypeStr == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED) {
+			panic(fmt.Sprintf("job_update is expected to be of type 'ok' but instead is - %s", jobUpdateTypeStr))
 		}
 		
 		// test complete
-		if job_update_type_str == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
+		if jobUpdateTypeStr == gf_images_jobs_core.JOB_UPDATE_TYPE__COMPLETED {
 			break
 		}
 	}
