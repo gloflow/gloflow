@@ -42,7 +42,7 @@ type GF_job_expected_output struct {
 //-------------------------------------------------
 // CLIENT
 //-------------------------------------------------
-func Run_local_imgs(pClientTypeStr string,
+func RunLocalImgs(pClientTypeStr string,
 	p_images_to_process_lst []gf_images_jobs_core.GF_image_local_to_process,
 	p_flows_names_lst       []string,
 	pJobsMngrCh             gf_images_jobs_core.JobsMngr,

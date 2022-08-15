@@ -79,7 +79,6 @@ func indexAddress(pAddressStr string,
 
 		//---------------------
 		
-
 		return nftsLst, nil
 	}
 

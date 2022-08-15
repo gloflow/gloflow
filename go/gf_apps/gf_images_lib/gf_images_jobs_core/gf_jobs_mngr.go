@@ -370,12 +370,6 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						metricsCore:             metricsCore,
 					}
 
-
-					
-					fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-
-
-
 					runJobErrsLst := runJobExternImages(jobMsg.Images_extern_to_process_lst,
 						jobMsg.Flows_names_lst,
 						pImagesStoreLocalDirPathStr,

@@ -20,34 +20,36 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_video
 
 import (
-	"net/http"
+	"fmt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
-func IsVideoFileURL(pURLstr string,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+func GetVideoFrameFromURL(pURLstr string,
+	pImageLocalFilePathStr string,
+	pFrameIndexInt         int,
+	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	formatStr := "mjpeg"
+	cmdLst := []string{
+		"ffmpeg",
+		"-seekable", fmt.Sprint(pFrameIndexInt),
+		"-i", pURLstr,
+		"-ss", "00:00:01.000",
+		"-vframes", "1",
+		"-f", formatStr,
+		pImageLocalFilePathStr,
+	}
 
 
 
-	headersMap := map[string]string{}
-	userAgentStr
-	fileMIMEtypeStr, gfErr := gf_core.HTTPdetectMIMEtypeFromURL(pURLstr,
-		headersMap,
-		)
+	_, _, gfErr := gf_core.CLIrunStandard(cmdLst,
+		nil,
+		pRuntimeSys)
 	if gfErr != nil {
-		return false, gfErr
-	}
-
-	if (fileMIMEtypeStr == "video/mp4") {
-		return true, nil
+		return gfErr
 	}
 
 
-
-	return false, nil
-
-
-
-
+	return nil
 }

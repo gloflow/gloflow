@@ -39,16 +39,8 @@ RUN apt-get install -y \
 RUN apt-get install -y libvips-dev
 
 #------------
-
-
-
-
-
-
-
-
-#------------
 # CHROMIUM - used by bookmarking logic to take screenshots of bookmarked sites
+
 # RUN snap install chromium
 # RUN apt-get install -y chromium-browser
 
@@ -57,8 +49,11 @@ RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' |
 RUN apt-get update 
 RUN apt-get install -y google-chrome-stable
 
+#------------
+# FFMPEG - used for video operations, getting frames for videos, etc.
+RUN apt-get install -y ffmpeg
 
-
+#------------
 
 WORKDIR /home/gf
 USER gf

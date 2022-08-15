@@ -29,17 +29,85 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_video"
 )
 
 //-------------------------------------------------
-// PIPELINE__PROCESS_LOCAL_IMAGE
-func pipelineProcessLocalImage(pFlowsNamesLst []string,
-	pS3info     *gf_core.GFs3Info,
-	pStorage    *gf_images_storage.GFimageStorage,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+// PIPELINE__PROCESS_EXTERN_VIDEO
+func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
+	pVideoSourceURLstr           string,
+	pOriginPageURLstr            string,
+	pVideosStoreLocalDirPathStr  string,
+	pImagesStoreLocalDirPathStr  string,
+	pImagesThumbsLocalDirPathStr string,
+	pFlowsNamesLst               []string,
+	pStorage                     *gf_images_storage.GFimageStorage,
+	pJobRuntime                  *GFjobRuntime,
+	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 
+	
+	
 
+	
+	//-----------------------
+	// GET_VIDEO_FRAME_IMAGE
+	imageFileNameStr      := fmt.Sprintf("%s.jpeg", pVideoIDstr)
+	imageLocalFilePathStr := fmt.Sprintf("%s/%s", pImagesStoreLocalDirPathStr, imageFileNameStr)
+	frameIndexInt := 1
 
+	gfErr := gf_video.GetVideoFrameFromURL(pVideoSourceURLstr,
+		imageLocalFilePathStr,
+		frameIndexInt,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//-----------------------
+	// IMAGE_TRANSFORM	
+
+	// FIX!! - this should be passed in from outside this function
+	metaMap := map[string]interface{}{}
+
+	imageThumbs, gfErr := jobTransform(pVideoIDstr,
+		pFlowsNamesLst,
+		pVideoSourceURLstr,
+		pOriginPageURLstr,
+		metaMap,
+		imageLocalFilePathStr,
+		pImagesThumbsLocalDirPathStr,
+		pJobRuntime,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//-----------------------
+	// IMAGE_FULLSIZE_STORE
+
+	op := &gf_images_storage.GFputFromLocalOpDef{
+		SourceLocalFilePathStr: imageLocalFilePathStr,
+		TargetFilePathStr:      imageFileNameStr,
+	}
+	if pStorage.TypeStr == "s3" {
+		op.S3bucketNameStr = pStorage.S3.ExternImagesS3bucketNameStr
+	}
+	gfErr = gf_images_storage.FilePutFromLocal(op, pStorage, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//--------------------
+	// THUMBS_STORE
+
+	gfErr = gf_images_core.StoreThumbnails(imageThumbs,
+		pStorage,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//-----------------------
 	return nil
 }
 
@@ -226,23 +294,6 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 }
 
 //-------------------------------------------------
-// PIPELINE__PROCESS_EXTERN_VIDEO
-func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
-	pImageSourceURLstr           string,
-	pOriginPageURLstr            string,
-	pVideosStoreLocalDirPathStr  string,
-	pImagesThumbsLocalDirPathStr string,
-	pFlowsNamesLst               []string,
-	pStorage                     *gf_images_storage.GFimageStorage,
-	pJobRuntime                  *GFjobRuntime,
-	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
-
-
-
-	return nil
-}
-
-//-------------------------------------------------
 // PIPELINE__PROCESS_EXTERN_IMAGE
 func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pImageSourceURLstr           string,
@@ -304,6 +355,9 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	// NEW_STORAGE
 	if pJobRuntime.useNewStorageEngineBool {
 
+		//--------------------
+		// IMAGE_FULLSIZE_STORE
+
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -337,7 +391,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		}
 
 		//--------------------
-		// STORE THUMBS
+		// THUMBS_STORE
 
 		gfErr = gf_images_core.StoreThumbnails(imageThumbs,
 			pStorage,
@@ -386,6 +440,18 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pJobRuntime.job_updates_ch <- updateMsg
 
 	//-----------------------
+	return nil
+}
+
+//-------------------------------------------------
+// PIPELINE__PROCESS_LOCAL_IMAGE
+func pipelineProcessLocalImage(pFlowsNamesLst []string,
+	pS3info     *gf_core.GFs3Info,
+	pStorage    *gf_images_storage.GFimageStorage,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+
 	return nil
 }
 

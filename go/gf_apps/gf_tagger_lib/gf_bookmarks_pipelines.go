@@ -83,14 +83,14 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.RuntimeSys) (*GF_bookmark__output_get, *gf_core.GF_error) {
+	pRuntimeSys              *gf_core.RuntimeSys) (*GF_bookmark__output_get, *gf_core.GFerror) {
 
 
 
 	// DB
 	bookmarks_lst, gf_err := db__bookmark__get_all(p_input.User_id_str,
 		p_ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -106,7 +106,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 		template_rendered_str, gf_err := render_bookmarks(bookmarks_lst,
 			p_tmpl,
 			p_subtemplates_names_lst,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return nil, gf_err
 		}
@@ -145,36 +145,36 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 //---------------------------------------------------
 // CREATE
 func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
-	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
-	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GF_error {
+	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// VALIDATE
 
-	gf_err := gf_core.Validate_struct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
 
-	user_id_str          := gf_core.GF_ID(p_input.User_id_str)
+	userIDstr            := gf_core.GF_ID(p_input.User_id_str)
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	unique_vals_for_id_lst := []string{
 		p_input.Url_str,
-		string(user_id_str),
+		string(userIDstr),
 	}
-	gf_id_str := gf_core.ID__create(unique_vals_for_id_lst,
+	IDstr := gf_core.ID__create(unique_vals_for_id_lst,
 		creation_unix_time_f)
 	
 	bookmark := &GF_bookmark{
 		V_str:                "0",
-		Id_str:               gf_id_str,
+		Id_str:               IDstr,
 		Deleted_bool:         false,
 		Creation_unix_time_f: creation_unix_time_f,
-		User_id_str:          user_id_str,
+		User_id_str:          userIDstr,
 
 		Url_str:         p_input.Url_str,
 		Description_str: p_input.Description_str,
@@ -182,9 +182,9 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	}
 
 	// DB
-	gf_err = db__bookmark__create(bookmark, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr = db__bookmark__create(bookmark, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------------
@@ -192,17 +192,17 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 
 	// IMPORTANT!! - only run bookmark screenshoting if a images_jobs_mngr was
 	//               supplied to run image processing.
-	if p_images_jobs_mngr != nil {
+	if pImagesJobsMngr != nil {
 
 		go func() {
 
 			ctx := context.Background()
-			gf_err := bookmarks__pipeline__screenshot(p_input.Url_str,
-				gf_id_str,
+			gfErr := bookmarks__pipeline__screenshot(p_input.Url_str,
+			 IDstr,
 				ctx,
-				p_images_jobs_mngr,
-				p_runtime_sys)
-			if gf_err != nil {
+				pImagesJobsMngr,
+				pRuntimeSys)
+			if gfErr != nil {
 				return
 			}
 		}()
@@ -215,21 +215,21 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 //---------------------------------------------------
 // SCREENSHOTS
 //---------------------------------------------------
-func bookmarks__pipeline__screenshot(p_url_str string,
-	p_bookmark_id_str  gf_core.GF_ID,
-	p_ctx              context.Context,
-	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
-	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GF_error {
+func bookmarks__pipeline__screenshot(pURLstr string,
+	pBookmarkIDstr  gf_core.GF_ID,
+	pCtx            context.Context,
+	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-----------------
 	// SCREENSHOT_CREATE
-	bookmark_local_image_name_str := fmt.Sprintf("%s.png", p_bookmark_id_str)
+	bookmark_local_image_name_str := fmt.Sprintf("%s.png", pBookmarkIDstr)
 
-	gf_err := bookmarks__screenshot_create(p_url_str,
+	gfErr := bookmarks__screenshot_create(pURLstr,
 		bookmark_local_image_name_str,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 
@@ -243,13 +243,13 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 	client_type_str := "gf_tagger_bookmarks"
 	flows_names_lst := []string{"bookmarks", }
 	
-	_, job_expected_outputs_lst, gf_err := gf_images_jobs_client.Run_local_imgs(client_type_str,
+	_, job_expected_outputs_lst, gfErr := gf_images_jobs_client.RunLocalImgs(client_type_str,
 		images_to_process_lst,
 		flows_names_lst,
-		p_images_jobs_mngr,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pImagesJobsMngr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 
@@ -258,13 +258,13 @@ func bookmarks__pipeline__screenshot(p_url_str string,
 
 	//-----------------
 	// DB_UPDATE - updated bookmark with screenshot image information
-	gf_err = db__bookmark__update_screenshot(p_bookmark_id_str,
+	gfErr = db__bookmark__update_screenshot(pBookmarkIDstr,
 		screenshot_image_id_str,
 		screenshot_image_thumbnail_small_url_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
 	//-----------------

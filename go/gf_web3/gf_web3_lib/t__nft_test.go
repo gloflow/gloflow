@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_web3_lib
 
 import (
+	// "fmt"
 	"testing"
+	"time"
 	"context"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
@@ -57,6 +59,9 @@ func TestNFT(pTest *testing.T) {
 		HTTPagent,
 		testWeb3MonitorServiceInt,
 		pTest)
+
+	// give indexer time to index this address
+	time.Sleep(10 * time.Second)
 
 	//--------------------
 	

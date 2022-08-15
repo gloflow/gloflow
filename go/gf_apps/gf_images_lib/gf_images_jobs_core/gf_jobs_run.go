@@ -150,7 +150,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 
 
 
-		fmt.Println("DDDDDDDDDDDDDDDDDD", imageContentTypeStr)
+		fmt.Printf("image content type - %s\n", imageContentTypeStr)
 
 		
 		//--------------
@@ -169,17 +169,6 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		}
 		
 		//--------------
-
-		/*extStr, gfErr := gf_images_core.GetImageExtFromURL(sourceURLstr, pRuntimeSys)
-		if gfErr != nil {
-			jobErrorTypeStr := "get_image_ext_error"
-			_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, imageIDstr,
-				pJobRuntime.job_id_str,
-				pJobRuntime.job_updates_ch,
-				pRuntimeSys)
-			gfErrorsLst = append(gfErrorsLst, gfErr)
-			continue
-		}*/
 		
 		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("PROCESSING IMAGE - %s", sourceURLstr))
 
@@ -194,11 +183,13 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 				sourceURLstr,
 				originPageURLstr,
 				pVideoStoreLocalDirPathStr,
+				pImagesStoreLocalDirPathStr,
 				pImagesThumbnailsStoreLocalDirPathStr,
 				pFlowsNamesLst,
 				pStorage,
 				pJobRuntime,
 				pRuntimeSys)
+				
 			if gfErr != nil {
 				jobErrorTypeStr := "video_process_error"
 				_ = jobErrorSend(jobErrorTypeStr, gfErr, sourceURLstr, videoIDstr,

@@ -63,7 +63,7 @@ func FetcherGetExternImage(pImageURLstr string,
 	//--------------
 	// NEW_IMAGE_LOCAL_FILE_PATH
 
-	newImageLocalFilePathStr, imageIDstr, gfErr := Create_gf_image_file_path_from_url("",
+	newImageLocalFilePathStr, imageIDstr, gfErr := CreateImageFilePathFromURL("",
 		pImageURLstr,
 		pImagesStoreLocalDirPathStr,
 		pRuntimeSys)
@@ -73,10 +73,6 @@ func FetcherGetExternImage(pImageURLstr string,
 
 	//--------------
 	// HTTP DOWNLOAD
-
-
-	
-
 
 	gfErr = DownloadFile(pImageURLstr, newImageLocalFilePathStr, pRuntimeSys)
 	if gfErr != nil {

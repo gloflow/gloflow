@@ -179,7 +179,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
 	// IMPORTANT!! - creates a new gf_image ID from the image URL
-	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.Create_gf_image_file_path_from_url("", p_test__img_src_url_str,
+	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.CreateImageFilePathFromURL("", p_test__img_src_url_str,
 		test__local_image_dir_path_str,
 		pRuntimeSys)
 	if gf_err != nil {
