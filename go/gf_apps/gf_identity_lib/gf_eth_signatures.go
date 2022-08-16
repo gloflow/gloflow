@@ -99,7 +99,7 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	// decode signature from hex form
 	sig_decoded_bytes_lst, err := hexutil.Decode(string(p_signature_str))
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to hex-decode a signature supplied for validation",
+		gf_err := gf_core.ErrorCreate("failed to hex-decode a signature supplied for validation",
 			"crypto_hex_decode",
 			map[string]interface{}{},
 			err, "gf_identity_lib", p_runtime_sys)
@@ -126,7 +126,7 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 
 	sig_last_byte := sig_decoded_bytes_lst[64]
 	if sig_last_byte != 27 && sig_last_byte != 28 && sig_last_byte != 0 && sig_last_byte != 1 {
-		gf_err := gf_core.Error__create("signature validation failed because the last byte (V value) of the signature is invalid",
+		gf_err := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
 			"crypto_signature_eth_last_byte_invalid_value",
 			map[string]interface{}{
 				"sig_last_byte": sig_last_byte,
@@ -154,7 +154,7 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	data_hash := crypto.Keccak256Hash([]byte(final_data_str))
 	public_key_ECDSA, err := crypto.SigToPub(data_hash.Bytes(), sig_decoded_bytes_lst)
 	if err != nil {
-		gf_err := gf_core.Error__create("signature validation failed because the last byte (V value) of the signature is invalid",
+		gf_err := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
 			"crypto_ec_recover_pubkey",
 			map[string]interface{}{
 				"sig_last_byte": sig_last_byte,

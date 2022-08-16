@@ -154,7 +154,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 	spew.Dump(bodyStr)
 
 	if (len(errs) > 0) {
-		gfErr := gf_core.Error__create("failed to query opensea http API for all assets for address",
+		gfErr := gf_core.ErrorCreate("failed to query opensea http API for all assets for address",
 			"http_client_req_error",
 			map[string]interface{}{
 				"address_str": pAddressStr,
@@ -168,7 +168,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
-		gfErr := gf_core.Error__create("failed to decode JSON response from opensea http API for all assets for address",
+		gfErr := gf_core.ErrorCreate("failed to decode JSON response from opensea http API for all assets for address",
 			"json_decode_error",
 			map[string]interface{}{
 				"address_str": pAddressStr,
@@ -197,7 +197,7 @@ func OpenSeaQueryByAddress(pAddressStr string,
 		err := mapstructure.Decode(nftMap, &nftOpenSea)
 		if err != nil {
 
-			gfErr := gf_core.Error__create("failed to decode JSON nft asset for address into struct GFnftOpenSea",
+			gfErr := gf_core.ErrorCreate("failed to decode JSON nft asset for address into struct GFnftOpenSea",
 				"mapstruct_decode",
 				map[string]interface{}{
 					"address_str": pAddressStr,

@@ -56,7 +56,7 @@ func viewRenderTemplateDashboard(pTmpl *template.Template,
 	})
 
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to render the admin dashboard template",
+		gfErr := gf_core.ErrorCreate("failed to render the admin dashboard template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_home", pRuntimeSys)

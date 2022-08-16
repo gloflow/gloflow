@@ -91,7 +91,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
             }
         }
 
-		gf_err := gf_core.Error__create("failed to send AWS SES email message",
+		gf_err := gf_core.ErrorCreate("failed to send AWS SES email message",
 			"aws_ses_service_send_message_error",
 			map[string]interface{}{
 				"recipiend_address_str": p_recipiend_address_str,
@@ -131,7 +131,7 @@ func AWS_SES__verify_address(p_recipiend_address_str string,
             }
         }
 
-		gf_err := gf_core.Error__create("failed to verify AWS SES address",
+		gf_err := gf_core.ErrorCreate("failed to verify AWS SES address",
 			"aws_ses_service_verify_address_error",
 			map[string]interface{}{"recipiend_address_str": p_recipiend_address_str,},
 			err, "gf_aws", p_runtime_sys)

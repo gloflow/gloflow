@@ -80,7 +80,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
 	err               := json.Unmarshal(body_bytes_lst, input)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to parse json edited_image_save http_input",
+		gfErr := gf_core.ErrorCreate("failed to parse json edited_image_save http_input",
 			"json_decode_error",
 			map[string]interface{}{"handler_url_path_str": p_handler_url_path_str,},
 			err, "gf_image_editor", pRuntimeSys)
@@ -134,7 +134,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 
 	image_byte_lst, err := base64.StdEncoding.DecodeString(p_image_base64_data_str)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to decode base64 string of image_data",
+		gfErr := gf_core.ErrorCreate("failed to decode base64 string of image_data",
 			"base64_decoding_error",
 			map[string]interface{}{
 				"source_image_id_str":   p_source_image_id_str,
@@ -150,7 +150,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 	image_reader   := bytes.NewReader(image_byte_lst)
 	png_image, err := png.Decode(image_reader)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to encode png image_byte array while saving edited_image",
+		gfErr := gf_core.ErrorCreate("failed to encode png image_byte array while saving edited_image",
 			"png_encoding_error",
 			map[string]interface{}{
 				"source_image_id_str":   p_source_image_id_str,
@@ -169,7 +169,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 	// FILE_CREATE
 	file, err := os.Create(tmp_local_filepath_str)
 	if err != nil {
-		gfErr := gf_core.Error__create("OS failed to create a file to save edited_image to FS",
+		gfErr := gf_core.ErrorCreate("OS failed to create a file to save edited_image to FS",
 			"file_create_error",
 			map[string]interface{}{
 				"source_image_id_str":    p_source_image_id_str,
@@ -183,7 +183,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 	// FILE_WRITE_IMAGE
 	err = png.Encode(file, png_image)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to encode png image_byte array while saving GIF frame to FS",
+		gfErr := gf_core.ErrorCreate("failed to encode png image_byte array while saving GIF frame to FS",
 			"png_encoding_error",
 			map[string]interface{}{"tmp_local_filepath_str": tmp_local_filepath_str,},
 			err, "gf_image_editor", pRuntimeSys)
@@ -192,7 +192,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 
 	// FILE_SYNC
 	if err := file.Sync(); err != nil {
-		gfErr := gf_core.Error__create("failed to decode jpen image_byte array while saving edited_image",
+		gfErr := gf_core.ErrorCreate("failed to decode jpen image_byte array while saving edited_image",
 			"file_sync_error",
 			map[string]interface{}{
 				"source_image_id_str":    p_source_image_id_str,

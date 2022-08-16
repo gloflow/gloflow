@@ -39,7 +39,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	//-------------------
 	// CLIENT_TYPE
 	if _,ok := p_post_info_map["client_type_str"]; !ok {
-		gf_err := gf_core.Error__create("post client_type_str not supplied",
+		gf_err := gf_core.ErrorCreate("post client_type_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -50,7 +50,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	//-------------------
 	// TITLE
 	if _,ok := p_post_info_map["title_str"]; !ok {
-		gf_err := gf_core.Error__create("post title_str not supplied",
+		gf_err := gf_core.ErrorCreate("post title_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -59,7 +59,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	title_str := p_post_info_map["title_str"].(string)
 
 	if len(title_str) > p_max_title_chars_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("title_str is longer (%d) then the max allowed number of chars (%d)", len(title_str), p_max_title_chars_int),
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("title_str is longer (%d) then the max allowed number of chars (%d)", len(title_str), p_max_title_chars_int),
 			"verify__string_too_long_error",
 			map[string]interface{}{
 				"title_str":           title_str,
@@ -83,7 +83,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	//-------------------
 	// DESCRIPTION
 	if _,ok := p_post_info_map["description_str"]; !ok {
-		gf_err := gf_core.Error__create("post description_str not supplied",
+		gf_err := gf_core.ErrorCreate("post description_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -92,7 +92,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	description_str := p_post_info_map["description_str"].(string)
 
 	if len(description_str) > p_max_description_chars_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("description_str is longer (%d) then the max allowed number of chars (%d)", len(description_str), p_max_description_chars_int),
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("description_str is longer (%d) then the max allowed number of chars (%d)", len(description_str), p_max_description_chars_int),
 			"verify__string_too_long_error",
 			map[string]interface{}{
 				"description_str":          description_str,
@@ -112,7 +112,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	//-------------------
 	// POSTER_USER_NAME
 	if _,ok := p_post_info_map["poster_user_name_str"]; !ok {
-		gf_err := gf_core.Error__create("post poster_user_name_str not supplied",
+		gf_err := gf_core.ErrorCreate("post poster_user_name_str not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -147,7 +147,7 @@ func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
 	if _, ok := p_post_info_map["tags_str"]; !ok {
-		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the tags_str key",
+		gf_err := gf_core.ErrorCreate("p_post_info_map doesnt contain the tags_str key",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -170,7 +170,7 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
 	if _, ok := p_post_info_map["post_elements_lst"]; !ok {
-		gf_err := gf_core.Error__create("p_post_info_map doesnt contain the post_elements_lst key",
+		gf_err := gf_core.ErrorCreate("p_post_info_map doesnt contain the post_elements_lst key",
 			"verify__missing_key_error",
 			map[string]interface{}{"post_info_map":p_post_info_map,},
 			nil, "gf_publisher_lib", p_runtime_sys)
@@ -222,7 +222,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		//         remove p_post_element_info_map has_key "url_str" check from this assert
 		if !(gf_core.Map_has_key(p_post_element_info_map,"url_str") || gf_core.Map_has_key(p_post_element_info_map,"extern_url_str")) {
 		
-			gf_err := gf_core.Error__create("p_post_element_info_map doesnt contain url_str|extern_url_str",
+			gf_err := gf_core.ErrorCreate("p_post_element_info_map doesnt contain url_str|extern_url_str",
 				"verify__missing_key_error",
 				map[string]interface{}{"post_element_info_map":p_post_element_info_map,},
 				nil, "gf_publisher_lib", p_runtime_sys)
@@ -236,7 +236,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		for _,tag_str := range pe_tags_lst.([]string) {
 
 			if len(tag_str) >= p_post_element_tag_max_int {
-				gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int),
+				gf_err := gf_core.ErrorCreate(fmt.Sprintf("tag (%s) is longer then max chars per tag (%d)", tag_str, p_post_element_tag_max_int),
 					"verify__string_too_long_error",
 					map[string]interface{}{
 						"tag_str":                  tag_str,
@@ -260,7 +260,7 @@ func Verify_post_element_type(p_type_str string, p_runtime_sys *gf_core.RuntimeS
 		p_type_str == "iframe" ||
 		p_type_str == "text") {
 		
-		gf_err := gf_core.Error__create(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - %s", p_type_str),
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("post_element type_str not of value image|link|video|iframe|text - instead its - %s", p_type_str),
 			"verify__invalid_value_error",
 			map[string]interface{}{"post_element_type_str": p_type_str,},
 			nil, "gf_publisher_lib", p_runtime_sys)

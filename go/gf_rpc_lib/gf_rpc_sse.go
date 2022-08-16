@@ -72,7 +72,7 @@ func SSE_create_handler__http(p_path_str string,
 				flusher,ok := p_resp.(http.Flusher)
 				if !ok {
 					err_msg_str := fmt.Sprintf("%s handler failed - SSE http streaming is not supported on the server", p_path_str)
-					gf_err := gf_core.Error__create(err_msg_str, 
+					gf_err := gf_core.ErrorCreate(err_msg_str, 
 						"http_server_flusher_not_supported_error",
 						map[string]interface{}{"path_str": p_path_str,},
 						nil, "gf_rpc_lib", p_runtime_sys)
@@ -194,7 +194,7 @@ func SSE_client__parse_response(p_body_str string,
 
 			if err != nil {
 
-				gf_err := gf_core.Error__create("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
+				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					map[string]interface{}{"line_str": line_str,},
 					err, "gf_images_lib", p_runtime_sys)
@@ -206,7 +206,7 @@ func SSE_client__parse_response(p_body_str string,
 			// STATUS
 			if _,ok := msg_map["status_str"]; !ok {
 				err_usr_msg := "sse message json doesnt container key status_str"
-				gf_err      := gf_core.Error__create(err_usr_msg,
+				gf_err      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
 					nil, "gf_images_lib", p_runtime_sys)
@@ -217,7 +217,7 @@ func SSE_client__parse_response(p_body_str string,
 			if !(status_str == "ok" || status_str == "error") {
 
 				err_usr_msg := "sse message json status_str key is not of value ok|error"
-				gf_err      := gf_core.Error__create(err_usr_msg,
+				gf_err      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__invalid_key_value_error",
 					map[string]interface{}{
 						"status_str": status_str,
@@ -231,7 +231,7 @@ func SSE_client__parse_response(p_body_str string,
 			// DATA
 			if _,ok := msg_map["data_map"]; !ok {
 				err_usr_msg := "sse message json doesnt container key data_map"
-				gf_err      := gf_core.Error__create(err_usr_msg,
+				gf_err      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
 					nil, "gf_images_lib", p_runtime_sys)

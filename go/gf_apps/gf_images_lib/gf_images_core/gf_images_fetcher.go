@@ -86,7 +86,7 @@ func FetcherGetExternImage(pImageURLstr string,
 	
 	// check if local file exists
 	if _, err := os.Stat(newImageLocalFilePathStr); os.IsNotExist(err) {
-		gfErr := gf_core.Error__create("file that was just fetched by the image fetcher doesnt exist in the FS",
+		gfErr := gf_core.ErrorCreate("file that was just fetched by the image fetcher doesnt exist in the FS",
 			"file_missing_error",
 			map[string]interface{}{"new_image_local_file_path_str": newImageLocalFilePathStr,},
 			err, "gf_images_core", pRuntimeSys)
@@ -152,7 +152,7 @@ func DownloadFile(pImageURLstr string,
 			return gfErr
 		}
 
-		gfErr = gf_core.Error__create("image fetching failed with HTTP status error",
+		gfErr = gf_core.ErrorCreate("image fetching failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
 				"image_url_str":             pImageURLstr,
@@ -176,7 +176,7 @@ func DownloadFile(pImageURLstr string,
 	defer out.Close()
 
 	if c_err != nil {
-		gfErr := gf_core.Error__create("failed to create local file for fetched image",
+		gfErr := gf_core.ErrorCreate("failed to create local file for fetched image",
 			"file_create_error",
 			map[string]interface{}{"local_image_file_path_str": p_local_image_file_path_str,},
 			c_err, "gf_images_core", pRuntimeSys)
@@ -185,7 +185,7 @@ func DownloadFile(pImageURLstr string,
 
 	_, cp_err := io.Copy(out, HTTPfetch.Resp.Body)
 	if cp_err != nil {
-		gfErr := gf_core.Error__create("failed to copy HTTP GET response Body buffer to a image file",
+		gfErr := gf_core.ErrorCreate("failed to copy HTTP GET response Body buffer to a image file",
 			"file_buffer_copy_error",
 			map[string]interface{}{
 				"local_image_file_path_str": p_local_image_file_path_str,

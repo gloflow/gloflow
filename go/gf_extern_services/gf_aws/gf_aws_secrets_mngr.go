@@ -42,7 +42,7 @@ func AWS_SECMNGR__create_secret(p_secret_name_str string,
 
 	data_str, err := json.Marshal(p_data_map)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to JSON encode AWS secret",
+		gf_err := gf_core.ErrorCreate("failed to JSON encode AWS secret",
 			"json_encode_error",
 			map[string]interface{}{"secret_name_str": p_secret_name_str,},
 			err, "gf_aws", p_runtime_sys)
@@ -87,7 +87,7 @@ func AWS_SECMNGR__create_secret(p_secret_name_str string,
 			}
 		}
 
-		gf_err := gf_core.Error__create("failed to create AWS secret",
+		gf_err := gf_core.ErrorCreate("failed to create AWS secret",
 			"aws_secretsmngr_create_secret_value_error",
 			map[string]interface{}{"secrets_name": p_secret_name_str,},
 			err, "gf_aws", p_runtime_sys)
@@ -126,7 +126,7 @@ func AWS_SECMNGR__get_secret(p_secret_name_str string,
 			}
 		}
 		
-		gf_err := gf_core.Error__create("failed to get AWS secret",
+		gf_err := gf_core.ErrorCreate("failed to get AWS secret",
 			"aws_secretsmngr_get_secret_value_error",
 			map[string]interface{}{"secrets_name": p_secret_name_str,},
 			err, "gf_aws", p_runtime_sys)
@@ -144,7 +144,7 @@ func AWS_SECMNGR__get_secret(p_secret_name_str string,
 	err = json.Unmarshal([]byte(value_str), &s_map)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to JSON parse AWS secret",
+		gf_err := gf_core.ErrorCreate("failed to JSON parse AWS secret",
 			"json_decode_error",
 			map[string]interface{}{"secret_name_str": p_secret_name_str,},
 			err, "gf_aws", p_runtime_sys)

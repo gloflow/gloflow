@@ -165,7 +165,7 @@ func query__run_fun(p_stat_name_str string,
 
 		return stat_result,nil	
 	} else {
-		gf_err := gf_core.Error__create("failed to get random img range from the DB",
+		gf_err := gf_core.ErrorCreate("failed to get random img range from the DB",
 			"verify__invalid_key_value_error",
 			map[string]interface{}{"stat_name_str": p_stat_name_str,},
 			nil, "gf_stats_lib", p_runtime_sys)

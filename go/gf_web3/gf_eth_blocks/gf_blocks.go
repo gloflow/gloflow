@@ -364,7 +364,7 @@ func Get_block__from_worker_inspector(p_block_uint uint64,
 	var gf_block GF_eth__block__int
 	err := mapstructure.Decode(block_map, &gf_block)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to load response block_map into a GF_eth__block__int struct",
+		gf_err := gf_core.ErrorCreate("failed to load response block_map into a GF_eth__block__int struct",
 			"mapstruct__decode",
 			map[string]interface{}{
 				"url_str":   url_str,
@@ -414,7 +414,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	header, err := pEthRPCclient.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to get block Header by number, from eth json-rpc API",
+		gf_err := gf_core.ErrorCreate_with_defs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
@@ -469,7 +469,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	if err != nil {
 
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to get block by number, from eth json-rpc API",
+		gf_err := gf_core.ErrorCreate_with_defs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
@@ -526,7 +526,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to decode Block struct hash hex signature to create Mongodb ObjectID",
+		gf_err := gf_core.ErrorCreate("failed to decode Block struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"block_hash_hex_str": block_hash_hex_str, },
 			err, "gf_eth_monitor_core", p_runtime_sys)

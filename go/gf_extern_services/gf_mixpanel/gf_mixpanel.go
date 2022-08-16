@@ -58,7 +58,7 @@ func Event_send(pEventTypeStr string,
 
 	if errs != nil {
 		err   := errs[0] // FIX!! - use all errors in some way, just in case
-		gfErr := gf_core.Error__create("failed to send event to mixpanel",
+		gfErr := gf_core.ErrorCreate("failed to send event to mixpanel",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": urlStr,},
 			err, "gf_mixpanel", pRuntimeSys)

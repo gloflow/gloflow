@@ -108,7 +108,7 @@ func Get_http_input_to_struct(p_input_struct interface{},
 	err               := json.Unmarshal(body_bytes_lst, &p_input_struct)
 		
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse json http input",
+		gf_err := gf_core.ErrorCreate("failed to parse json http input",
 			"json_decode_error",
 			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
 			err, "gf_rpc_lib", p_runtime_sys)

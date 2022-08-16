@@ -111,7 +111,7 @@ func ConfigGet(pConfigPathStr string,
 
 	configStr, err := ioutil.ReadFile(pConfigPathStr) 
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to read YAML config for gf_images",
+		gfErr := gf_core.ErrorCreate("failed to read YAML config for gf_images",
 			"file_read_error",
 			map[string]interface{}{"config_path": pConfigPathStr,},
 			err, "gf_images_core", pRuntimeSys)
@@ -124,7 +124,7 @@ func ConfigGet(pConfigPathStr string,
 	err = yaml.Unmarshal([]byte(configStr), config)
 	if err != nil {
 
-		gfErr := gf_core.Error__create("failed to parse YAML config for gf_images",
+		gfErr := gf_core.ErrorCreate("failed to parse YAML config for gf_images",
 			"yaml_decode_error",
 			map[string]interface{}{"config_path": pConfigPathStr,},
 			err, "gf_images_core", pRuntimeSys)

@@ -74,7 +74,7 @@ func batch__get_stats_list(p_py_stats_dir_path_str string,
 
 	files_lst, err := ioutil.ReadDir(p_py_stats_dir_path_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to list py_stats dir in order to get a list of batch py_stats",
+		gf_err := gf_core.ErrorCreate("failed to list py_stats dir in order to get a list of batch py_stats",
 			"dir_list_error",
 			map[string]interface{}{"py_stats_dir_path_str": p_py_stats_dir_path_str,},
 			err, "gf_stats_lib", p_runtime_sys)

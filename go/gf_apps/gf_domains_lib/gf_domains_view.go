@@ -59,7 +59,7 @@ func domains_browser__render_template(p_domains_lst []Gf_domain,
 	})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to render the domains_browser template",
+		gf_err := gf_core.ErrorCreate("failed to render the domains_browser template",
             "template_render_error",
             map[string]interface{}{"domains_lst": p_domains_lst,},
             err, "gf_domains_lib", p_runtime_sys)

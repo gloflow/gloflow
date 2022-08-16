@@ -57,7 +57,7 @@ func Get_all_crawlers(pCrawlConfigFilePathStr string,
 		// OPEN_CONFIG_FILE
 		configByteLst, gfErr := ioutil.ReadFile(pCrawlConfigFilePathStr)
 		if gfErr != nil {
-			gfErr := gf_core.Error__create("failed to read a local file to load the image",
+			gfErr := gf_core.ErrorCreate("failed to read a local file to load the image",
 				"file_read_error",
 				map[string]interface{}{"crawl_config_file_path_str": pCrawlConfigFilePathStr,},
 				gfErr, "gf_crawl_lib", pRuntimeSys)

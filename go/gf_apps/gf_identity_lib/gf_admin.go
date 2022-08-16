@@ -571,7 +571,7 @@ func AdminIs(pUserIDstr gf_core.GF_ID,
 	}
 
 	if string(userNameStr) != "admin" {
-		gfErr := gf_core.Error__create("username thats not 'admin' is trying to login as admin",
+		gfErr := gf_core.ErrorCreate("username thats not 'admin' is trying to login as admin",
 			"verify__invalid_value_error",
 			map[string]interface{}{
 				"user_name_str": userNameStr,

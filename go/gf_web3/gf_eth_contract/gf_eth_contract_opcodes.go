@@ -116,7 +116,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	// HEX_DECODE
 	code_bytes_lst, err := hex.DecodeString(p_bytecode_hex_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to decode contract bytecode hex string into byte list",
+		gf_err := gf_core.ErrorCreate("failed to decode contract bytecode hex string into byte list",
 			"decode_hex",
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,
@@ -131,7 +131,7 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	output_lst, err := eth_asm.Disassemble(code_bytes_lst)
 	if err != nil {
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to disassemble contract hex bytecode",
+		gf_err := gf_core.ErrorCreate_with_defs("failed to disassemble contract hex bytecode",
 			"eth_contract__disassemble",
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,

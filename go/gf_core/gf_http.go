@@ -95,7 +95,7 @@ func HTTPgetInput(pReq *http.Request,
 		err := json.Unmarshal(bodyBytesLst, &i)
 
 		if err != nil {
-			gfErr := Error__create("failed to parse json http input",
+			gfErr := ErrorCreate("failed to parse json http input",
 				"json_decode_error",
 				map[string]interface{}{"handler_url_path_str": handlerURLpathStr,},
 				err, "gf_core", pRuntimeSys)
@@ -146,7 +146,7 @@ func HTTPfetchURL(pURLstr string,
 
 	req, err := http.NewRequest("GET", pURLstr, nil)
 	if err != nil {
-		gfErr := Error__create("image fetcher failed to create HTTP request to fetch a file",
+		gfErr := ErrorCreate("image fetcher failed to create HTTP request to fetch a file",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_core", pRuntimeSys)
@@ -177,7 +177,7 @@ func HTTPfetchURL(pURLstr string,
 	respUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	if err != nil {
-		gfErr := Error__create("http fetch failed to execute HTTP request to fetch a url",
+		gfErr := ErrorCreate("http fetch failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_core", pRuntimeSys)
@@ -221,7 +221,7 @@ func HTTPputFile(p_target_url_str string,
 	// FILE_OPEN
 	f, err := os.Open(p_file_path_str)
 	if err != nil {
-		gfErr := Error__create("failed to open a file on the local FS that is to be sent to AWS S3",
+		gfErr := ErrorCreate("failed to open a file on the local FS that is to be sent to AWS S3",
 			"file_open_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
@@ -236,7 +236,7 @@ func HTTPputFile(p_target_url_str string,
 
 	req, err := http.NewRequest(http.MethodPut, p_target_url_str, buffer)
     if err != nil {
-        gfErr := Error__create("failed to create a HTTP PUT request to upload file to S3",
+        gfErr := ErrorCreate("failed to create a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
@@ -255,7 +255,7 @@ func HTTPputFile(p_target_url_str string,
 	// FILE_SIZE
 	fi, err := os.Stat(p_file_path_str)
     if err != nil {
-		gfErr := Error__create("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
+		gfErr := ErrorCreate("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
 			"file_stat_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
@@ -277,7 +277,7 @@ func HTTPputFile(p_target_url_str string,
 	pRuntimeSys.Log_fun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
     resp, err := client.Do(req)
     if err != nil {
-		gfErr := Error__create("failed to execute a HTTP PUT request to upload file to S3",
+		gfErr := ErrorCreate("failed to execute a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
 				"target_url_str": p_target_url_str,
@@ -396,7 +396,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 		err_msg_str := "GF - SSE streaming not supported by this server"
 		http.Error(p_resp, err_msg_str, http.StatusInternalServerError)
 
-		gf_err := Error__create(err_msg_str,
+		gf_err := ErrorCreate(err_msg_str,
 			"http_server_flusher_not_supported_error",
 			nil, nil, "gf_core", pRuntimeSys)
 
@@ -432,7 +432,7 @@ func HTTP__get_streaming_response(pURLstr string,
 	client   := &http.Client{}
     resp,err := client.Do(req)
     if err != nil {
-    	gf_err := Error__create("http get_streaming_response failed to execute HTTP request to fetch a url",
+    	gf_err := ErrorCreate("http get_streaming_response failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_core", pRuntimeSys)
@@ -449,7 +449,7 @@ func HTTP__get_streaming_response(pURLstr string,
 	for {
 	    line_lst, err := reader.ReadBytes('\n')
 	    if err != nil {
-	    	gf_err := Error__create("failed to read a line of SSE streaming response from a server url",
+	    	gf_err := ErrorCreate("failed to read a line of SSE streaming response from a server url",
 				"io_reader_error",
 				map[string]interface{}{"url_str": pURLstr,},
 				err, "gf_core", pRuntimeSys)
@@ -465,7 +465,7 @@ func HTTP__get_streaming_response(pURLstr string,
 	    	err      := json.Unmarshal([]byte(clean_line_str), &data_map)
 
 	    	if err != nil {
-	    		gf_err := Error__create("http get_streaming_response failed to parse JSON response",
+	    		gf_err := ErrorCreate("http get_streaming_response failed to parse JSON response",
 					"json_decode_error",
 					map[string]interface{}{"url_str": pURLstr,},
 					err, "gf_core", pRuntimeSys)

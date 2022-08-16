@@ -71,7 +71,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 				// IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
 				if len(url_elements_lst) != 3 {
 					usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s", url_str)
-					gf_err      := gf_core.Error__create(usr_msg_str,
+					gf_err      := gf_core.ErrorCreate(usr_msg_str,
 						"verify__invalid_value_error",
 						map[string]interface{}{"url_str":url_str,},
 						nil, "gf_publisher_lib", p_runtime_sys)
@@ -93,7 +93,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 				if err != nil {
 
 					usr_msg_str := fmt.Sprintf("post title cant be query_unescaped - %s", post_title_encoded_str)
-					gf_err      := gf_core.Error__create(usr_msg_str,
+					gf_err      := gf_core.ErrorCreate(usr_msg_str,
 						"verify__invalid_query_string_encoding_error",
 						map[string]interface{}{"post_title_encoded_str": post_title_encoded_str,},
 						err, "gf_publisher_lib", p_runtime_sys)
@@ -275,7 +275,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 					if err != nil {
 					
 						usr_msg_str := "pg_index (page_index) is not an integer"
-						gf_err      := gf_core.Error__create(usr_msg_str,
+						gf_err      := gf_core.ErrorCreate(usr_msg_str,
 							"verify__value_not_integer_error",
 							map[string]interface{}{"input_val": input_val,},
 							err, "gf_publisher_lib", p_runtime_sys)
@@ -290,7 +290,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 					if err != nil {
 
 						usr_msg_str := "pg_size (page_size) is not an integer"
-						gf_err      := gf_core.Error__create(usr_msg_str,
+						gf_err      := gf_core.ErrorCreate(usr_msg_str,
 							"verify__value_not_integer_error",
 							map[string]interface{}{"input_val": input_val,},
 							err, "gf_publisher_lib", p_runtime_sys)

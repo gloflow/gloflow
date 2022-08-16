@@ -47,7 +47,7 @@ func Templates__load(p_main_template_filepath_str string,
 
 		files_lst, err := ioutil.ReadDir(subtemplates_dir_path_str)
 		if err != nil {
-			gf_err := Error__create("failed to parse a template",
+			gf_err := ErrorCreate("failed to parse a template",
 				"dir_list_error",
 				map[string]interface{}{"subtemplates_dir_path_str": subtemplates_dir_path_str,},
 				err, "gf_core", p_runtime_sys)
@@ -70,7 +70,7 @@ func Templates__load(p_main_template_filepath_str string,
 	// IMPORTANT!! - load several template files into a single template name
 	main__tmpl, err := template.New(template_filename_str).ParseFiles(templates_paths_lst...)
 	if err != nil {
-		gf_err := Error__create("failed to parse a template",
+		gf_err := ErrorCreate("failed to parse a template",
 			"template_create_error",
 			map[string]interface{}{"main_template_filepath_str": p_main_template_filepath_str,},
 			err, "gf_core", p_runtime_sys)

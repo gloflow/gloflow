@@ -40,7 +40,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	//----------------
 	// INPUT
 	if _, ok := pInputDataMap["otype"]; !ok {
-		gfErr := gf_core.Error__create("input 'otype' not supplied",
+		gfErr := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map":pInputDataMap,},
 			nil, "gf_tagger", pRuntimeSys)
@@ -48,7 +48,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	}
 
 	if _, ok := pInputDataMap["o_id"]; !ok {
-		gfErr := gf_core.Error__create("input 'o_id' not supplied",
+		gfErr := gf_core.ErrorCreate("input 'o_id' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map": pInputDataMap,},
 			nil, "gf_tagger", pRuntimeSys)
@@ -56,7 +56,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 	}
 
 	if _, ok := pInputDataMap["tags"]; !ok {
-		gfErr := gf_core.Error__create("input 'tags' not supplied",
+		gfErr := gf_core.ErrorCreate("input 'tags' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map": pInputDataMap,},
 			nil, "gf_tagger", pRuntimeSys)
@@ -76,7 +76,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 
 	if object_type_str == "address" {
 		if metaMap == nil {
-			gfErr := gf_core.Error__create("tagging objects of type 'address' has to contain meta_map with",
+			gfErr := gf_core.ErrorCreate("tagging objects of type 'address' has to contain meta_map with",
 				"verify__missing_key_error",
 				map[string]interface{}{"input_data_map": pInputDataMap,},
 				nil, "gf_tagger", pRuntimeSys)
@@ -84,7 +84,7 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 		}
 
 		if _, ok := metaMap["chain_str"]; !ok {
-			gfErr := gf_core.Error__create("tagging objects of type 'address' has to contain meta_map with chain_str key",
+			gfErr := gf_core.ErrorCreate("tagging objects of type 'address' has to contain meta_map with chain_str key",
 				"verify__missing_key_error",
 				map[string]interface{}{"input_data_map": pInputDataMap,},
 				nil, "gf_tagger", pRuntimeSys)
@@ -124,7 +124,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
 
 	if _, ok := qs_map["otype"]; !ok {
-		gf_err := gf_core.Error__create("input 'otype' not supplied",
+		gf_err := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -132,7 +132,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	}
 
 	if _,ok := qs_map["tag"]; !ok {
-		gf_err := gf_core.Error__create("input 'tag' not supplied",
+		gf_err := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -149,7 +149,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		input_val          := a_lst[0]
 		page_index_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
-			gf_err := gf_core.Error__create("input pg_index not an integer",
+			gf_err := gf_core.ErrorCreate("input pg_index not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", p_runtime_sys)
@@ -163,7 +163,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		input_val         := a_lst[0]
 		page_size_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
-			gf_err := gf_core.Error__create("input pg_size not an integer",
+			gf_err := gf_core.ErrorCreate("input pg_size not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", p_runtime_sys)

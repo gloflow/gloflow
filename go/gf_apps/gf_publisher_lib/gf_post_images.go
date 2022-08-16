@@ -114,7 +114,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 
 		if _,ok := post_elements_map[gf_images__output_img_source_url_str]; !ok {
-			gf_err := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
+			gf_err := gf_core.ErrorCreate(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
 				&map[string]interface{}{"gf_images__output_img_source_url_str":gf_images__output_img_source_url_str,},
 				nil, "gf_publisher_lib", pRuntimeSys)
@@ -187,7 +187,7 @@ func process_external_images__via_http(pPostElementsMap map[string]*gf_publisher
 		gf_images__output_img_source_url_str := output.Image_source_url_str
 
 		if _, ok := pPostElementsMap[gf_images__output_img_source_url_str]; !ok {
-			gfErr := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
+			gfErr := gf_core.ErrorCreate(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+gf_images__output_img_source_url_str),
 				"verify__invalid_value_error",
 				map[string]interface{}{"gf_images__output_img_source_url_str": gf_images__output_img_source_url_str,},
 				nil, "gf_publisher_lib", pRuntimeSys)
@@ -265,7 +265,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 		imagesOutputImgSourceURLstr := output.Image_source_url_str
 
 		if _, ok := pPostElementsMap[imagesOutputImgSourceURLstr]; !ok {
-			gfErr := gf_core.Error__create(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+imagesOutputImgSourceURLstr),
+			gfErr := gf_core.ErrorCreate(fmt.Sprintf("gf_images_lib client returned results for unknown image url - "+imagesOutputImgSourceURLstr),
 				"verify__invalid_value_error",
 				map[string]interface{}{"images_output_img_source_url_str": imagesOutputImgSourceURLstr,},
 				nil, "gf_publisher_lib", pRuntimeSys)

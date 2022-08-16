@@ -65,7 +65,7 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.Error__create("failed to construct HTTP POST request using JSON input",
+		gf_err := gf_core.ErrorCreate("failed to construct HTTP POST request using JSON input",
 			"http_client_req_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
@@ -80,7 +80,7 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.Error__create("failed to execute HTTP POST request to eth_rpc API",
+		gf_err := gf_core.ErrorCreate("failed to execute HTTP POST request to eth_rpc API",
 			"http_client_req_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
@@ -98,7 +98,7 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
@@ -132,7 +132,7 @@ func Eth_rpc__init(p_host_str string,
 		
 			
 		error_defs_map := Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
+		gf_err := gf_core.ErrorCreate_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},
 			err, "gf_eth_core", error_defs_map, 1, p_runtime_sys)

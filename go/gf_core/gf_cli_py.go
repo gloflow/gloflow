@@ -82,7 +82,7 @@ func cliPyParseOutput(pStdoutLst []string,
 			err := json.Unmarshal([]byte(output_str), &outputMap)
 
 			if err != nil {
-				gfErr := Error__create("failed to parse json output in py program stdout",
+				gfErr := ErrorCreate("failed to parse json output in py program stdout",
 					"json_decode_error",
 					map[string]interface{}{"stdout_line_str": l_str,},
 					err, "gf_core", pRuntimeSys)

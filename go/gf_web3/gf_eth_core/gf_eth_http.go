@@ -65,7 +65,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 		range_lst := strings.Split(block_range_str, "-")
 
 		if len(range_lst) != 2 {
-			gf_err := gf_core.Error__create("suplied block range is not composed of start/end block number",
+			gf_err := gf_core.ErrorCreate("suplied block range is not composed of start/end block number",
 				"verify__invalid_value_error",
 				map[string]interface{}{"block_range_str": block_range_str,},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -74,7 +74,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 		
 		block_start_int, err := strconv.Atoi(range_lst[0])
 		if err != nil {
-			gf_err := gf_core.Error__create("suplied block_start is not an integer",
+			gf_err := gf_core.ErrorCreate("suplied block_start is not an integer",
 				"int_parse_error",
 				map[string]interface{}{"block_start_str": range_lst[0],},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -83,7 +83,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 
 		block_end_int, err := strconv.Atoi(range_lst[1])
 		if err != nil {
-			gf_err := gf_core.Error__create("suplied block_end is not an integer",
+			gf_err := gf_core.ErrorCreate("suplied block_end is not an integer",
 				"int_parse_error",
 				map[string]interface{}{"block_end_str": range_lst[1],},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -112,7 +112,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		// IMPORTANT!! - TX hashes are 64 chars long, but have to contain
 		//               the "0x" prefix, so the total is 66.
 		if len(tx_hex_str) != 66 {
-			gf_err := gf_core.Error__create("supplied transaction ID is not 66 chars long",
+			gf_err := gf_core.ErrorCreate("supplied transaction ID is not 66 chars long",
 				"verify__string_not_correct_length_error",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -121,7 +121,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 
 		// check tax ID is prefixed with "0x"
 		if !strings.HasPrefix(tx_hex_str, "0x") {
-			gf_err := gf_core.Error__create("supplied transaction ID is not prefixed with '0x'",
+			gf_err := gf_core.ErrorCreate("supplied transaction ID is not prefixed with '0x'",
 				"verify__invalid_value_error",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -132,7 +132,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 		tx_hex_clean_str := strings.TrimPrefix(tx_hex_str, "0x")
 		_, err := hex.DecodeString(tx_hex_clean_str)
 		if err != nil {
-			gf_err := gf_core.Error__create("supplied transaction ID is not a hex string",
+			gf_err := gf_core.ErrorCreate("supplied transaction ID is not a hex string",
 				"decode_hex",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
 				nil, "gf_eth_monitor_lib", p_runtime_sys)
@@ -157,7 +157,7 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 
 		i, err := strconv.Atoi(block_num_str)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to parse input querystring arg as a an integer",
+			gf_err := gf_core.ErrorCreate("failed to parse input querystring arg as a an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"block_num": block_num_str,},
 				err, "gf_eth_monitor_lib", p_runtime_sys)

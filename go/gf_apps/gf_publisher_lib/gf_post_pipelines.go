@@ -131,7 +131,7 @@ func Pipeline__get_post(p_post_title_str string,
 
 			post_byte_lst,err := json.Marshal(post)
 			if err != nil {
-				gf_err := gf_core.Error__create("failed to serialize a Post into JSON form",
+				gf_err := gf_core.ErrorCreate("failed to serialize a Post into JSON form",
 					"json_marshal_error",
 					map[string]interface{}{"post_title_str": p_post_title_str,},
 					err, "gf_publisher_lib", p_runtime_sys)

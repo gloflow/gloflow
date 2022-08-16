@@ -110,7 +110,7 @@ func Get_code(p_contract_addr_str string,
 		
 	if err != nil {
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("failed to get code at particular account address in target block",
+		gf_err := gf_core.ErrorCreate_with_defs("failed to get code at particular account address in target block",
 			"eth_rpc__get_contract_code",
 			map[string]interface{}{"contract_addr_str": p_contract_addr_str, "block_num_int": p_block_num_int,},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)

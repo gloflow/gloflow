@@ -236,7 +236,7 @@ func resizeImage(pImg image.Image,
 
 	out, err := os.Create(pImageOutputPathStr)
 	if err != nil {
-		gfErr := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
+		gfErr := gf_core.ErrorCreate("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
 			map[string]interface{}{"image_output_path_str": pImageOutputPathStr,},
 			err, "gf_images_core", pRuntimeSys)
@@ -246,7 +246,7 @@ func resizeImage(pImg image.Image,
 
 	/*out_png, err := os.Create(fmt.Sprintf("%s.png", pImageOutputPathStr))
 	if err != nil {
-		gfErr := gf_core.Error__create("OS failed to create a file to save a resized image to FS",
+		gfErr := gf_core.ErrorCreate("OS failed to create a file to save a resized image to FS",
 			"file_create_error",
 			map[string]interface{}{"image_output_path_str": pImageOutputPathStr,},
 			err, "gf_images_core", pRuntimeSys)

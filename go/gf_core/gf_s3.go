@@ -56,7 +56,7 @@ func S3getFile(p_target_file__s3_path_str string,
 	// create a local host FS file to store the downloaded image into
 	file, err := os.Create(p_target_file__local_path_str)
 	if err != nil {
-		gf_err := Error__create("failed to create local file on host FS, to save a downloaded S3 file to.",
+		gf_err := ErrorCreate("failed to create local file on host FS, to save a downloaded S3 file to.",
 			"file_create_error", 
 			map[string]interface{}{
 				"target_file__s3_path_str":    p_target_file__s3_path_str,
@@ -73,7 +73,7 @@ func S3getFile(p_target_file__s3_path_str string,
 	})
 
 	if err != nil {
-		gf_err := Error__create("failed to download an image from S3 bucket",
+		gf_err := ErrorCreate("failed to download an image from S3 bucket",
 			"s3_file_download_error", nil, err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
@@ -109,7 +109,7 @@ func S3init(p_aws_access_key_id_str string,
 		_, err := creds.Get()
 
 		if err != nil {
-			gf_err := Error__create("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
+			gf_err := ErrorCreate("failed to acquire S3 static credentials - (credentials.NewStaticCredentials().Get())",
 				"s3_credentials_error", nil, err, "gf_core", pRuntimeSys)
 			return nil, gf_err
 		}
@@ -156,7 +156,7 @@ func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 	// PRESIGN
 	presignedURLstr, err := req.Presign(time.Minute * 1)
 	if err != nil { // resp is now filled
-		gf_err := Error__create("failed to generate pre-signed S3 putObject URL",
+		gf_err := ErrorCreate("failed to generate pre-signed S3 putObject URL",
 			"s3_file_upload_url_presign_error", nil, err, "gf_core", pRuntimeSys)
 		return "", gf_err
 	}
@@ -178,7 +178,7 @@ func S3uploadFile(p_target_file__local_path_str string,
 	//-----------------
 	file, fs_err := os.Open(p_target_file__local_path_str)
 	if fs_err != nil {
-		gf_err := Error__create("failed to open a local file to upload it to S3",
+		gf_err := ErrorCreate("failed to open a local file to upload it to S3",
 			"file_open_error",
 			map[string]interface{}{
 				"bucket_name_str":             p_s3_bucket_name_str,
@@ -214,7 +214,7 @@ func S3uploadFile(p_target_file__local_path_str string,
 	})
 
 	if s3_err != nil {
-		gf_err := Error__create("failed to upload a file to an S3 bucket",
+		gf_err := ErrorCreate("failed to upload a file to an S3 bucket",
 			"s3_file_upload_error",
 			map[string]interface{}{
 				"bucket_name_str":             p_s3_bucket_name_str,
@@ -254,7 +254,7 @@ func S3copyFile(p_source_bucket_str string,
 
 	result, err := svc.CopyObject(input)
 	if err != nil {
-		gf_err := Error__create("failed to copy a file within S3",
+		gf_err := ErrorCreate("failed to copy a file within S3",
 			"s3_file_copy_error",
 			map[string]interface{}{
 				"source_bucket_and_file__s3_path_str": source_bucket_and_file__s3_path_str,

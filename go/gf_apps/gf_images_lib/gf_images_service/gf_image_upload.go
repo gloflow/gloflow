@@ -69,7 +69,7 @@ func UploadInit(pImageNameStr string,
 	// CHECK_IMAGE_FORMAT
 	ok := gf_images_core.CheckImageFormat(pImageFormatStr, pRuntimeSys)
 	if !ok {
-		gfErr := gf_core.Error__create("image format is invalid that specified for image thats being prepared for uploading via upload__init",
+		gfErr := gf_core.ErrorCreate("image format is invalid that specified for image thats being prepared for uploading via upload__init",
 			"verify__invalid_value_error",
 			map[string]interface{}{"image_format_str": pImageFormatStr,},
 			nil, "gf_images_lib", pRuntimeSys)

@@ -74,8 +74,8 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	pWaitForCompletionBool bool,
 	pRuntimeSys            *RuntimeSys) (chan string, chan string, *GFerror) {
 
-	cmd_str := strings.Join(pCmdInfo.Cmd_lst, " ")
-	fmt.Printf("%s\n", cmd_str)
+	cmdStr := strings.Join(pCmdInfo.Cmd_lst, " ")
+	fmt.Printf("%s\n", cmdStr)
 
 
 
@@ -94,9 +94,9 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	// STDIN
 	stdin, err := p.StdinPipe()
 	if err != nil {
-		gfErr := Error__create("failed to get STDIN pipe of a CLI process",
+		gfErr := ErrorCreate("failed to get STDIN pipe of a CLI process",
 			"cli_run_error",
-			map[string]interface{}{"cmd": cmd_str,},
+			map[string]interface{}{"cmd": cmdStr,},
 			err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr 
 	}
@@ -116,9 +116,9 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	// START
 	err = p.Start()
 	if err != nil {
-		gfErr := Error__create("failed to Start a CLI command",
+		gfErr := ErrorCreate("failed to Start a CLI command",
 			"cli_run_error",
-			map[string]interface{}{"cmd": cmd_str,},
+			map[string]interface{}{"cmd": cmdStr,},
 			err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr	
 	}
@@ -132,13 +132,13 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	//----------------------
 	// STDOUT
 
-	stdout_ch := make(chan string, 100)
-	go func(p_stdout_ch chan string) {
+	stdOutCh := make(chan string, 100)
+	go func(p_stdOutCh chan string) {
 		for {
 			l, err := cmd_stdout__buffer.ReadString('\n')
 
 			if fmt.Sprint(err) == "EOF" {
-				p_stdout_ch <- "EOF"
+				p_stdOutCh <- "EOF"
 				// done_ch <- true
 				return
 			}
@@ -148,16 +148,16 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 			if pCmdInfo.View_output_bool {
 				fmt.Printf("%s", l)
 			}
-			l_str := strings.TrimSuffix(l, "\n")
+			lStr := strings.TrimSuffix(l, "\n")
 
-			p_stdout_ch <- l_str
+			p_stdOutCh <- lStr
 		}
-	}(stdout_ch)
+	}(stdOutCh)
 
 	//----------------------
 	// STDERR
 
-	stderr_ch := make(chan string, 100)
+	stdErrCh := make(chan string, 100)
 	go func() {
 		for {
 			l, err := cmd_stderr__buffer.ReadString('\n')
@@ -171,8 +171,8 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 			if pCmdInfo.View_output_bool {
 				fmt.Printf("%s\n", l)
 			}
-			l_str := strings.TrimSuffix(l, "\n")
-			stderr_ch <- l_str
+			lStr := strings.TrimSuffix(l, "\n")
+			stdErrCh <- lStr
 		}
 	}()
 
@@ -183,11 +183,11 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 
 		err = p.Wait()
 		if err != nil {
-			stdoutLst, stderrLst := consumeOutputs(stdout_ch, stderr_ch)
-			gfErr := Error__create("failed to Wait for a CLI command to complete",
+			stdoutLst, stderrLst := consumeOutputs(stdOutCh, stdErrCh)
+			gfErr := ErrorCreate("failed to Wait for a CLI command to complete",
 				"cli_run_error",
 				map[string]interface{}{
-					"cmd":        cmd_str,
+					"cmd":        cmdStr,
 					"stdout_lst": stdoutLst,
 					"stderr_lst": stderrLst,
 				},
@@ -198,7 +198,7 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 
 	//----------------------
 
-	return stdout_ch, stderr_ch, nil // done_ch, nil
+	return stdOutCh, stdErrCh, nil // done_ch, nil
 }
 
 //-------------------------------------------------

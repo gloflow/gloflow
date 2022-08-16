@@ -115,7 +115,7 @@ func Panic__check_and_handle(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func Error__create_with_hook(p_user_msg_str string,
+func ErrorCreate_with_hook(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
@@ -123,7 +123,7 @@ func Error__create_with_hook(p_user_msg_str string,
 	p_hook_fun           func(*GFerror) map[string]interface{},
 	pRuntimeSys          *RuntimeSys) *GFerror {
 
-	gfErr := Error__create(p_user_msg_str,
+	gfErr := ErrorCreate(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
@@ -135,7 +135,7 @@ func Error__create_with_hook(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func Error__create(p_user_msg_str string,
+func ErrorCreate(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
@@ -144,15 +144,15 @@ func Error__create(p_user_msg_str string,
 
 	error_defs_map := error__get_defs()
 	
-	gf_err := Error__create_with_defs(p_user_msg_str,
+	gf_err := ErrorCreate_with_defs(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
 		error_defs_map,
 
-		// IMPORTANT!! - Error__create_with_defs() is 2 stack levels away from the caller
-		//               of Error__create() so its important to account for that to get 
+		// IMPORTANT!! - ErrorCreate_with_defs() is 2 stack levels away from the caller
+		//               of ErrorCreate() so its important to account for that to get 
 		//               the proper caller information.
 		2, // p_skip_stack_frames_num_int
 		pRuntimeSys)
@@ -161,7 +161,7 @@ func Error__create(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func Error__create_with_defs(p_user_msg_str string,
+func ErrorCreate_with_defs(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,

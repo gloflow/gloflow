@@ -55,7 +55,7 @@ func gif_db__create(p_image_source_url_str string,
 	//--------------
 	origin_page_url, err := url.Parse(p_image_origin_page_url_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse GIF's origin_page url when creating a DB record",
+		gf_err := gf_core.ErrorCreate("failed to parse GIF's origin_page url when creating a DB record",
 			"url_parse_error",
 			map[string]interface{}{
 				"image_source_url_str":      p_image_source_url_str,

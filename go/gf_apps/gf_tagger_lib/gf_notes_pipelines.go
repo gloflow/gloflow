@@ -44,7 +44,7 @@ func notes__pipeline__add(p_input_data_map map[string]interface{},
 	//----------------
 	// INPUT
 	if _, ok := p_input_data_map["otype"]; !ok {
-		gf_err := gf_core.Error__create("note 'otype' not supplied",
+		gf_err := gf_core.ErrorCreate("note 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -52,7 +52,7 @@ func notes__pipeline__add(p_input_data_map map[string]interface{},
 	}
 
 	if _, ok := p_input_data_map["o_id"]; !ok {
-		gf_err := gf_core.Error__create("note 'o_id' not supplied",
+		gf_err := gf_core.ErrorCreate("note 'o_id' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -60,7 +60,7 @@ func notes__pipeline__add(p_input_data_map map[string]interface{},
 	}
 
 	if _, ok := p_input_data_map["body"]; !ok {
-		gf_err := gf_core.Error__create("note 'body' not supplied",
+		gf_err := gf_core.ErrorCreate("note 'body' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"input_data_map": p_input_data_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -104,7 +104,7 @@ func notes__pipeline__get(p_req *http.Request,
 	qs_map := p_req.URL.Query()
 
 	if _,ok := qs_map["otype"]; !ok {
-		gf_err := gf_core.Error__create("note 'otype' not supplied",
+		gf_err := gf_core.ErrorCreate("note 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qs_map,},
 			nil, "gf_tagger", p_runtime_sys)
@@ -112,7 +112,7 @@ func notes__pipeline__get(p_req *http.Request,
 	}
 
 	if _,ok := qs_map["o_id"]; !ok {
-		gf_err := gf_core.Error__create("note 'o_id' not supplied",
+		gf_err := gf_core.ErrorCreate("note 'o_id' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map": qs_map,},
 			nil, "gf_tagger", p_runtime_sys)

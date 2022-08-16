@@ -66,7 +66,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to render the landing_page template",
+		gf_err := gf_core.ErrorCreate("failed to render the landing_page template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_landing_page", p_runtime_sys)

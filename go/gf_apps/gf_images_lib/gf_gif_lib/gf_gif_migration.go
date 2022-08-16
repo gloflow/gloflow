@@ -545,7 +545,7 @@ func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.GFimageID,
 		// err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
 		
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to find images with GIF id_str",
+			gf_err := gf_core.ErrorCreate("failed to find images with GIF id_str",
 				"mongodb_find_error",
 				map[string]interface{}{"gif__gf_image_id_str": p_gif__gf_image_id_str,},
 				err, "gf_gif_lib", p_runtime_sys)

@@ -73,7 +73,7 @@ func Index__query(p_term_str string,
 	    Do(ctx)                                                  // execute
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to issue a elasticsearch index query - "+p_term_str,
+		gf_err := gf_core.ErrorCreate("failed to issue a elasticsearch index query - "+p_term_str,
 			"elasticsearch_query_index",
 			map[string]interface{}{
 				"term_str":       p_term_str,
@@ -188,7 +188,7 @@ func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
 		Do(ctx)
 	if err != nil {
 		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", es_record_type_str, index_name_str)
-		gf_err := gf_core.Error__create(err_msg_str,
+		gf_err := gf_core.ErrorCreate(err_msg_str,
 			"elasticsearch_add_to_index",
 			map[string]interface{}{
 				"url_fetch_url_str":  p_url_fetch.Url_str,

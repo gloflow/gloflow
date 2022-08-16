@@ -113,7 +113,7 @@ func pipelineGetPage(p_req *http.Request,
 		page_index_int, err = strconv.Atoi(pg_index) // user supplied value
 		
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to parse integer pg_index query string arg",
+			gf_err := gf_core.ErrorCreate("failed to parse integer pg_index query string arg",
 				"int_parse_error",
 				map[string]interface{}{"pg_index": pg_index,},
 				err, "gf_images_lib", p_runtime_sys)
@@ -126,7 +126,7 @@ func pipelineGetPage(p_req *http.Request,
 		pg_size          := a_lst[0]
 		page_size_int,err = strconv.Atoi(pg_size) // user supplied value
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to parse integer pg_size query string arg",
+			gf_err := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
 				"int_parse_error",
 				map[string]interface{}{"pg_size": pg_size,},
 				err, "gf_images_lib", p_runtime_sys)

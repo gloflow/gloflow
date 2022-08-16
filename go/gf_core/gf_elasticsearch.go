@@ -75,7 +75,7 @@ func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elas
 		elastic.SetRetrier(new_gf_elasticsearch_retrier()))
 
 	if err != nil {
-		gf_err := Error__create("failed to create an ElasticSearch client",
+		gf_err := ErrorCreate("failed to create an ElasticSearch client",
 			"elasticsearch_get_client",
 			map[string]interface{}{"es_host_str": p_es_host_str,},
 			err, "gf_core", p_runtime_sys)
@@ -87,7 +87,7 @@ func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elas
 	ping_url_str            := fmt.Sprintf("http://%s", p_es_host_str)
 	es_info, resp_code, err := elasticsearch_client.Ping(ping_url_str).Do(ctx)
 	if err != nil {
-		gf_err := Error__create("failed to ping ElasticSearch server with a client",
+		gf_err := ErrorCreate("failed to ping ElasticSearch server with a client",
 			"elasticsearch_ping",
 			map[string]interface{}{"ping_url_str": ping_url_str,},
 			err, "gf_core", p_runtime_sys)

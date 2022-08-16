@@ -82,7 +82,7 @@ func Fetch__url(p_url_str string,
 		t := "fetcher_parse_url__failed"
 		m := fmt.Sprintf("failed to parse url for fetch - %s", p_url_str)
 
-		gf_err := gf_core.Error__create(m,
+		gf_err := gf_core.ErrorCreate(m,
 			"url_parse_error",
 			map[string]interface{}{"url_str": p_url_str,},
 			err, "gf_crawl_core", p_runtime_sys)

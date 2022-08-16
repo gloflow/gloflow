@@ -117,7 +117,7 @@ func jwtGenerate(pUserIdentifierStr string, // p_user_address_eth GF_user_addres
 	//           a received token is valid and unchanged.
 	jwt_token_val_str, err := jwt_token.SignedString([]byte(pJWTsecretKeyVal))
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to to update user info",
+		gf_err := gf_core.ErrorCreate("failed to to update user info",
 			"crypto_jwt_sign_token_error",
 			map[string]interface{}{
 				"user_identifier_str": pUserIdentifierStr,
@@ -155,7 +155,7 @@ func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
 	}
 
 	if !valid_bool {
-		gf_err := gf_core.Error__create("JWT token supplied for validation is invalid",
+		gf_err := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
 			"crypto_jwt_verify_token_invalid_error",
 			map[string]interface{}{
 				"jwt_token_val_str": p_jwt_token_val,
@@ -190,7 +190,7 @@ func JWTvalidate(p_jwt_token_val GF_jwt_token_val,
 		})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to verify a JWT token",
+		gf_err := gf_core.ErrorCreate("failed to verify a JWT token",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
 				"jwt_token_val_str": p_jwt_token_val,

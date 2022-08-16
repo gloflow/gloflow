@@ -75,7 +75,7 @@ func httpIputForGetAll(pUserIDstr gf_core.GF_ID,
 	if valuesLst, ok := queryArgsMap["type"]; ok {
 		typeStr = valuesLst[0]
 	} else {
-		gfErr := gf_core.Error__create("incoming http request is missing the 'type' query-string arg",
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the 'type' query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_address", pRuntimeSys)
@@ -87,7 +87,7 @@ func httpIputForGetAll(pUserIDstr gf_core.GF_ID,
 	if valuesLst, ok := queryArgsMap["chain"]; ok {
 		chainStr = valuesLst[0]
 	} else {
-		gfErr := gf_core.Error__create("incoming http request is missing the 'chain' query-string arg",
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the 'chain' query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_address", pRuntimeSys)

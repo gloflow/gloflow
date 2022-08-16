@@ -93,7 +93,7 @@ func AWS_ECR__update_service(p_service_name_str string,
 			fmt.Println(err.Error())
 		}
 
-		gf_err := gf_core.Error__create("failed to update AWS ECS service",
+		gf_err := gf_core.ErrorCreate("failed to update AWS ECS service",
 			"aws_ecs_service_update_error",
 			map[string]interface{}{"service_name_str": p_service_name_str,},
 			err, "gf_aws", p_runtime_sys)

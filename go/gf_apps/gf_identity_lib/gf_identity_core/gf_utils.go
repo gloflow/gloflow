@@ -122,7 +122,7 @@ func Http__get_user_address_eth_input(p_req *http.Request,
 	if values_lst, ok := query_args_map["addr_eth"]; ok {
 		return GF_user_address_eth(values_lst[0]), nil
 	} else {
-		gf_err := gf_core.Error__create("incoming http request is missing the addr_eth query-string arg",
+		gf_err := gf_core.ErrorCreate("incoming http request is missing the addr_eth query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_identity_lib", p_runtime_sys)
@@ -141,7 +141,7 @@ func Http__get_user_update_input(p_req *http.Request,
 	err               := json.Unmarshal(body_bytes_lst, &input)
 		
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse json http input for user update",
+		gf_err := gf_core.ErrorCreate("failed to parse json http input for user update",
 			"json_decode_error",
 			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
 			err, "gf_identity_lib", p_runtime_sys)
@@ -163,7 +163,7 @@ func Http__get_email_confirm_input(p_req *http.Request,
 	if values_lst, ok := query_args_map["u"]; ok {
 		user_name_str = values_lst[0]
 	} else {
-		gf_err := gf_core.Error__create("incoming http request is missing the email user_name query-string arg",
+		gf_err := gf_core.ErrorCreate("incoming http request is missing the email user_name query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_identity_lib", p_runtime_sys)
@@ -173,7 +173,7 @@ func Http__get_email_confirm_input(p_req *http.Request,
 	if values_lst, ok := query_args_map["c"]; ok {
 		confirmation_code_str = values_lst[0]
 	} else {
-		gf_err := gf_core.Error__create("incoming http request is missing the email confirmation_code query-string arg",
+		gf_err := gf_core.ErrorCreate("incoming http request is missing the email confirmation_code query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
 			nil, "gf_identity_lib", p_runtime_sys)

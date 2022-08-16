@@ -59,7 +59,7 @@ func Get__html_doc_over_http(pURLstr string,
 		buff.ReadFrom(HTTPfetch.Resp.Body)
 		body_str := buff.String() 
 
-		gfErr := gf_core.Error__create("crawler fetch failed with HTTP status error",
+		gfErr := gf_core.ErrorCreate("crawler fetch failed with HTTP status error",
 			"http_client_req_status_error",
 			map[string]interface{}{
 				"url_str":         pURLstr,
@@ -73,7 +73,7 @@ func Get__html_doc_over_http(pURLstr string,
 	// doc, err := goquery.NewDocument(pURLstr)
 	doc, err := goquery.NewDocumentFromResponse(HTTPfetch.Resp)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to parse a fetched HTML page from a crawled url",
+		gfErr := gf_core.ErrorCreate("failed to parse a fetched HTML page from a crawled url",
 			"html_parse_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_crawl_utils", pRuntimeSys)

@@ -72,7 +72,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				var input GF_bookmark__input_create
 				err := mapstructure.Decode(input_map, &input)
 				if err != nil {
-					gf_err := gf_core.Error__create("failed to load http input into GF_bookmark__input_create struct",
+					gf_err := gf_core.ErrorCreate("failed to load http input into GF_bookmark__input_create struct",
 						"mapstruct__decode",
 						map[string]interface{}{},
 						err, "gf_tagger_lib", pRuntimeSys)

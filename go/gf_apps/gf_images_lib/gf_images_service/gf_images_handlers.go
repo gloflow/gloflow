@@ -133,7 +133,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				//-----------------
 
 				if _, ok := pImgConfig.ImagesFlowToS3bucketMap[flowNameStr]; !ok {
-					gfErr := gf_core.Error__create("image to resolve in unexisting flow",
+					gfErr := gf_core.ErrorCreate("image to resolve in unexisting flow",
 						"verify__invalid_value_error",
 						map[string]interface{}{
 							"flow_name_str":    flowNameStr,

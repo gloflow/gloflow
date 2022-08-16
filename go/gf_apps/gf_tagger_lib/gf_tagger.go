@@ -47,7 +47,7 @@ func addTagsToObject(pTagsStr string,
 		pObjectTypeStr != "event" &&
 		pObjectTypeStr != "address" {
 
-		gfErr := gf_core.Error__create(fmt.Sprintf("object_type (%s) is not of supported type (post|image|event)",
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("object_type (%s) is not of supported type (post|image|event)",
 			pObjectTypeStr),
 			"verify__invalid_value_error",
 			map[string]interface{}{
@@ -88,7 +88,7 @@ func addTagsToObject(pTagsStr string,
 				return gfErr
 
 			} else {
-				gfErr := gf_core.Error__create(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", 
+				gfErr := gf_core.ErrorCreate(fmt.Sprintf("post with title (%s) doesnt exist, while adding a tags - %s", 
 					postTitleStr,
 					tagsLst),
 					"verify__invalid_value_error",
@@ -185,7 +185,7 @@ func get_objects_with_tag(p_tag_str string,
 
 	//ADD!! - add support for tagging "image" p_object_type_str's
 	if p_object_type_str != "post" {
-		gf_err := gf_core.Error__create(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", p_tag_str, p_object_type_str),
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", p_tag_str, p_object_type_str),
 			"verify__invalid_value_error",
 			map[string]interface{}{
 				"tag_str":         p_tag_str,
@@ -230,7 +230,7 @@ func parse_tags(pTagsStr string,
 	tags_lst := strings.Split(pTagsStr," ")
 	//---------------------
 	if len(tags_lst) > p_max_tags_bulk_size_int {
-		gf_err := gf_core.Error__create(fmt.Sprintf("too many tags supplied - max is %d", p_max_tags_bulk_size_int),
+		gf_err := gf_core.ErrorCreate(fmt.Sprintf("too many tags supplied - max is %d", p_max_tags_bulk_size_int),
 			"verify__value_too_many_error",
 			map[string]interface{}{
 				"tags_lst":               tags_lst,
@@ -243,7 +243,7 @@ func parse_tags(pTagsStr string,
 	//---------------------
 	for _, tag_str := range tags_lst {
 		if len(tag_str) > p_max_tag_characters_number_int {
-			gf_err := gf_core.Error__create(fmt.Sprintf("tag (%s) is too long - max is (%d)", tag_str, p_max_tag_characters_number_int),
+			gf_err := gf_core.ErrorCreate(fmt.Sprintf("tag (%s) is too long - max is (%d)", tag_str, p_max_tag_characters_number_int),
 				"verify__string_too_long_error",
 				map[string]interface{}{
 					"tag_str":                       tag_str,

@@ -42,7 +42,7 @@ func CreateIDfromURL(pImageURLstr string,
 	//              os.path.basename() result
 	url, err := url.Parse(pImageURLstr)
 	if err != nil {
-		gfErr := gf_core.Error__create("failed to parse image_url to create image ID",
+		gfErr := gf_core.ErrorCreate("failed to parse image_url to create image ID",
 			"url_parse_error",
 			map[string]interface{}{"image_url_str": pImageURLstr,},
 			err, "gf_images_core", pRuntimeSys)

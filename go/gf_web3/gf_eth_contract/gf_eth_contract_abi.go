@@ -69,7 +69,7 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	/*// VALIDATE
 	if p_abi_type_str != "erc20" {
 		error_defs_map := Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("ABI type is not supported",
+		gf_err := gf_core.ErrorCreate_with_defs("ABI type is not supported",
 			"eth_contract__abi_not_loadable",
 			map[string]interface{}{
 				"abi_type_str": p_abi_type_str,
@@ -87,7 +87,7 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	abi, err := abi.JSON(strings.NewReader(string(abi_def_str)))
 	if err != nil {
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("cant load ABI JSON whos definition was loaded from DB",
+		gf_err := gf_core.ErrorCreate_with_defs("cant load ABI JSON whos definition was loaded from DB",
 			"eth_contract__abi_not_loadable",
 			map[string]interface{}{
 				"abi_type_str": p_gf_abi.Type_str,
@@ -113,7 +113,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 
 	if !Is_type_valid(p_abi_type_str) {
 		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.Error__create_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
+		gf_err := gf_core.ErrorCreate_with_defs("supplied Eth contract to get an ABI from DB for is not valid",
 			"eth_contract__not_supported_type",
 			map[string]interface{}{"type_str": p_abi_type_str,},
 			nil, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)

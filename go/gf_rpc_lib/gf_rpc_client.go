@@ -67,7 +67,7 @@ func Client__request_sse(p_url_str string,
 		line_lst, err := resp_reader.ReadBytes('\n')
 		if err != nil {
 			
-			gf_err := gf_core.Error__create("failed to read a line in body reasponse stream for client http sse connection",
+			gf_err := gf_core.ErrorCreate("failed to read a line in body reasponse stream for client http sse connection",
 				"io_reader_error",
 				map[string]interface{}{"url_str": p_url_str,},
 				nil, "gf_rpc_lib", p_runtime_sys)
@@ -87,7 +87,7 @@ func Client__request_sse(p_url_str string,
 			msg_map := map[string]interface{}{}
 			err     := json.Unmarshal([]byte(msg_str), &msg_map)
 			if err != nil {
-				gf_err := gf_core.Error__create("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
+				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					map[string]interface{}{
 						"url_str":  p_url_str,
@@ -100,7 +100,7 @@ func Client__request_sse(p_url_str string,
 			//-------------------
 			// STATUS
 			if _, ok := msg_map["status_str"]; !ok {
-				gf_err := gf_core.Error__create("sse message json doesnt container key status_str",
+				gf_err := gf_core.ErrorCreate("sse message json doesnt container key status_str",
 					"verify__missing_key_error",
 					map[string]interface{}{
 						"url_str":  p_url_str,
@@ -112,7 +112,7 @@ func Client__request_sse(p_url_str string,
 			status_str := msg_map["status_str"].(string)
 
 			if !(status_str == "ok" || status_str == "error" || status_str == "complete") {
-				gf_err := gf_core.Error__create("sse message json status_str key is not of value ok|complete|error",
+				gf_err := gf_core.ErrorCreate("sse message json status_str key is not of value ok|complete|error",
 					"verify__invalid_key_value_error",
 					map[string]interface{}{
 						"status_str": status_str,
@@ -126,7 +126,7 @@ func Client__request_sse(p_url_str string,
 			//-------------------
 			// DATA
 			if _, ok := msg_map["data_map"]; !ok {
-				gf_err := gf_core.Error__create("sse message json doesnt container key data_map",
+				gf_err := gf_core.ErrorCreate("sse message json doesnt container key data_map",
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
 					nil, "gf_rpc_lib", p_runtime_sys)
@@ -175,7 +175,7 @@ func Client__request(pURLstr string,
 	var resp_map map[string]interface{}
 	err := json.Unmarshal(body_bytes_lst, &resp_map)
 	if err != nil {
-		gfErr := gf_core.Error__create(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_rpc_lib", p_runtime_sys)
@@ -192,7 +192,7 @@ func Client__request(pURLstr string,
 		return data_map, nil
 	} else {
 
-		gfErr := gf_core.Error__create(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
 			"http_client_gf_status_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			nil, "gf_rpc_lib", p_runtime_sys)

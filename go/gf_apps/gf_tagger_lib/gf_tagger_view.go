@@ -62,7 +62,7 @@ func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 
 	if err != nil {
 
-		gf_err := gf_core.Error__create("failed to render the gf_bookmarks template",
+		gf_err := gf_core.ErrorCreate("failed to render the gf_bookmarks template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_tagger", p_runtime_sys)
@@ -167,7 +167,7 @@ func render_objects_with_tag(p_tag_str string,
 		})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to render the objects_with_tag template",
+		gf_err := gf_core.ErrorCreate("failed to render the objects_with_tag template",
 			"template_render_error",
 			map[string]interface{}{"tag_str": p_tag_str,},
 			err, "gf_tagger", p_runtime_sys)

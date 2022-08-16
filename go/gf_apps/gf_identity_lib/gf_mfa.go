@@ -143,7 +143,7 @@ func HOTPgenerateValue(p_secret_key_base32_str string,
 	key_uppercase_base32_str := strings.ToUpper(p_secret_key_base32_str)
 	key_bytes_lst, err       := base32.StdEncoding.DecodeString(key_uppercase_base32_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to base32 encode secret key for HOTP token generation",
+		gf_err := gf_core.ErrorCreate("failed to base32 encode secret key for HOTP token generation",
 			"generic_error",
 			map[string]interface{}{
 				"time_interval_int": p_time_interval_int,
@@ -193,7 +193,7 @@ func HOTPgenerateValue(p_secret_key_base32_str string,
 	reader            := bytes.NewReader(chunk_4_bytes_lst)
 	err = binary.Read(reader, binary.BigEndian, &header_int)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to base32 encode secret key for HOTP token generation",
+		gf_err := gf_core.ErrorCreate("failed to base32 encode secret key for HOTP token generation",
 			"io_reader_error",
 			map[string]interface{}{
 				"time_interval_int": p_time_interval_int,

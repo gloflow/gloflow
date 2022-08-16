@@ -75,7 +75,7 @@ func User_event__parse_input(p_req *http.Request,
 	//--------------------
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to parse json http input for user_event",
+		gf_err := gf_core.ErrorCreate("failed to parse json http input for user_event",
 			"json_unmarshal_error",
 			nil, err, "gf_analytics", p_runtime_sys)
 		return nil, "", gf_err

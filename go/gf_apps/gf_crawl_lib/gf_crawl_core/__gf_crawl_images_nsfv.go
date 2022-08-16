@@ -185,7 +185,7 @@ func image__is_nsfv(p_img_path_str string,
 
 	is_nude_bool,err := nude.IsNude(p_img_path_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to classify image as NSFV or not, using the 'nude' package",
+		gf_err := gf_core.ErrorCreate("failed to classify image as NSFV or not, using the 'nude' package",
 			"verify__invalid_image_nsfv_error",
 			map[string]interface{}{"img_path_str":p_img_path_str,},
 			err, "gf_crawl_core", p_runtime_sys)

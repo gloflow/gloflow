@@ -154,7 +154,7 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 			},
 		})
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to add a flow to an existing image DB record",
+		gf_err := gf_core.ErrorCreate("failed to add a flow to an existing image DB record",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"flow_name_str":   p_flow_name_str,

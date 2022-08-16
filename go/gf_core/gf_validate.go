@@ -40,7 +40,7 @@ func Validate_struct(p_target interface{},
 
 	err := pRuntimeSys.Validator.Struct(p_target)
 	if err != nil {
-		gf_err := Error__create("failed to validate target struct", 
+		gf_err := ErrorCreate("failed to validate target struct", 
 			"verify__invalid_input_struct_error",
 			map[string]interface{}{"target": p_target,},
 			err, "gf_core", pRuntimeSys)

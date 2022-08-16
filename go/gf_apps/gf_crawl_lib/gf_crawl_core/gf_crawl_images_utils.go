@@ -44,7 +44,7 @@ func image__cleanup(p_img_local_file_path_str string,
 	for _, f_str := range files_to_remove_lst {
 		err := os.Remove(f_str)
 		if err != nil {
-			gf_err := gf_core.Error__create("failed to cleanup a crawled image files",
+			gf_err := gf_core.ErrorCreate("failed to cleanup a crawled image files",
 				"file_remove_error",
 				map[string]interface{}{"file_str": f_str,},
 				err, "gf_crawl_core", p_runtime_sys)

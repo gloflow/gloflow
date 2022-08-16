@@ -496,7 +496,7 @@ func Mongo__coll_exists(p_coll_name_str string,
 
 	coll_names_lst, err := p_runtime_sys.Mongo_db.ListCollectionNames(p_ctx, bson.D{})
 	if err != nil {
-		gf_err := Error__create("failed to get a list of all collection names to check if the given collection exists",
+		gf_err := ErrorCreate("failed to get a list of all collection names to check if the given collection exists",
 			"mongodb_get_collection_names_error",
 			map[string]interface{}{
 				"coll_name_str": p_coll_name_str,
@@ -534,7 +534,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 	mongo_client, err := mongo.Connect(ctx, mongo_options)
 	if err != nil {
 
-		gf_err := Error__create("failed to connect to a MongoDB server at target url",
+		gf_err := ErrorCreate("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
@@ -546,7 +546,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 	ctx, _ = context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
 	err = mongo_client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		gf_err := Error__create("failed to ping a MongoDB server at target url",
+		gf_err := ErrorCreate("failed to ping a MongoDB server at target url",
 			"mongodb_ping_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
@@ -568,7 +568,7 @@ func Mongo__handle_error(p_user_msg_str string,
 	p_subsystem_name_str string,
 	p_runtime_sys        *RuntimeSys) *GF_error {
 
-	gf_err := Error__create_with_hook(p_user_msg_str,
+	gf_err := ErrorCreate_with_hook(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,

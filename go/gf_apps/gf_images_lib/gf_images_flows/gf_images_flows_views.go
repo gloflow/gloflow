@@ -169,7 +169,7 @@ func flows__render_template(p_flow_name_str string,
 	})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to render the images flow template",
+		gf_err := gf_core.ErrorCreate("failed to render the images flow template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_images_lib", p_runtime_sys)

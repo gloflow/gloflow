@@ -288,7 +288,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to decode Tx_trace struct hash hex signature to create Mongodb ObjectID",
+		gf_err := gf_core.ErrorCreate("failed to decode Tx_trace struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"tx_hash_str": p_tx_hash_str, },
 			err, "gf_eth_monitor_core", p_RuntimeSys)

@@ -101,7 +101,7 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 	})
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to render the post template",
+		gf_err := gf_core.ErrorCreate("failed to render the post template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_publisher_lib", p_runtime_sys)

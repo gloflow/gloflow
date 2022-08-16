@@ -67,7 +67,7 @@ func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
 			fmt.Println(err.Error())
 		}
 
-		gf_err := gf_core.Error__create("failed to describe ec2 instances with specified tags",
+		gf_err := gf_core.ErrorCreate("failed to describe ec2 instances with specified tags",
 			"aws_ec2_instances_describe_error",
 			map[string]interface{}{"tags_lst": p_tags_lst,},
 			err, "gf_aws", p_runtime_sys)

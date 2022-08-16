@@ -223,7 +223,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	err := query.All(&unresolved_links_ids_lst)
 
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
+		gf_err := gf_core.ErrorCreate("failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"crawler_name_str": p_crawler_name_str,

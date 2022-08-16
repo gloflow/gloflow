@@ -45,7 +45,7 @@ func SQS_init(p_runtime_sys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GF_error
 
     cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		gf_err := gf_core.Error__create("failed to create AWS API session",
+		gf_err := gf_core.ErrorCreate("failed to create AWS API session",
 			"aws_client_v2_create",
 			map[string]interface{}{},
 			err, "gf_aws", p_runtime_sys)
@@ -57,7 +57,7 @@ func SQS_init(p_runtime_sys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GF_error
 
     /*sess, err := session.NewSession()
     if err != nil {
-        gf_err := gf_core.Error__create("failed to create AWS API session",
+        gf_err := gf_core.ErrorCreate("failed to create AWS API session",
 			"aws_session_create",
 			map[string]interface{}{},
 			err, "gf_aws", p_runtime_sys)
@@ -99,7 +99,7 @@ func SQS_queue_get_url(p_sqs_queue_name_str string,
         QueueName: aws.String(p_sqs_queue_name_str),
     })
     if err != nil {
-        gf_err := gf_core.Error__create("failed to get AWS SQS queue URL",
+        gf_err := gf_core.ErrorCreate("failed to get AWS SQS queue URL",
 			"aws_sqs_queue_get_url_error",
 			map[string]interface{}{
                 "sqs_queue_name_str": p_sqs_queue_name_str,
@@ -127,7 +127,7 @@ func SQS_queue_create(p_sqs_queue_name_str string,
         QueueName: aws.String(p_sqs_queue_name_str),
     })
     if err != nil {
-        gf_err := gf_core.Error__create("failed to create AWS SQS queue",
+        gf_err := gf_core.ErrorCreate("failed to create AWS SQS queue",
 			"aws_sqs_queue_create_error",
 			map[string]interface{}{
                 "sqs_queue_name_str": p_sqs_queue_name_str,
@@ -193,7 +193,7 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
 		WaitTimeSeconds: int32(timeout_sec_int),
 	})
 	if err != nil {
-        gf_err := gf_core.Error__create("failed to receive a message from SQS queue durring msg_pull function",
+        gf_err := gf_core.ErrorCreate("failed to receive a message from SQS queue durring msg_pull function",
 			"aws_sqs_queue_receive_msg_error",
 			map[string]interface{}{
                 "sqs_queue_name_str": p_queue_info.Name_str,
@@ -217,7 +217,7 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
         // DECODE_MESSAGE
         msg_map      := map[string]interface{}{}
         if err := json.Unmarshal([]byte(msg_body_str), &msg_map); err != nil {
-            gf_err := gf_core.Error__create("failed to JSON decode a message body pulled from SQS",
+            gf_err := gf_core.ErrorCreate("failed to JSON decode a message body pulled from SQS",
                 "json_decode_error",
                 map[string]interface{}{
                     "sqs_queue_name_str": p_queue_info.Name_str,
@@ -240,7 +240,7 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
             ReceiptHandle: msg_receipt_handle,
         })
         if err != nil {
-            gf_err := gf_core.Error__create("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
+            gf_err := gf_core.ErrorCreate("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
                 "aws_sqs_queue_delete_msg_error",
                 map[string]interface{}{
                     "sqs_queue_name_str": p_queue_info.Name_str,
@@ -271,7 +271,7 @@ func SQS_msg_push(p_msg interface{},
 
     msg_data_JSON_encoded, err := json.Marshal(p_msg)
     if err != nil {
-        gf_err := gf_core.Error__create("failed to JSON encode a message to send to SQS queue",
+        gf_err := gf_core.ErrorCreate("failed to JSON encode a message to send to SQS queue",
 			"json_encode_error",
 			map[string]interface{}{
                 "sqs_queue_name_str": p_queue_info.Name_str,
@@ -308,7 +308,7 @@ func SQS_msg_push(p_msg interface{},
     })
 
     if err != nil {
-        gf_err := gf_core.Error__create("failed to send a message to SQS queue",
+        gf_err := gf_core.ErrorCreate("failed to send a message to SQS queue",
 			"aws_sqs_queue_send_msg_error",
 			map[string]interface{}{
                 "sqs_queue_name_str": p_queue_info.Name_str,
