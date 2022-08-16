@@ -39,7 +39,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.GFs3Info,
 	p_runtime_sys        *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_migration.Init_img_to_gif_migration()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_migration.Init_img_to_gif_migration()")
 
 	gf_domain_str := "gloflow.com"
 	fmt.Println(gf_domain_str)
@@ -51,7 +51,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 			p_s3_client,
 			p_s3_uploader,
 			p_mongodb_coll,
-			p_log_fun)*/
+			pLogFun)*/
 
 
 	/*migrate__create_gifs_from_images(p_images_store_local_dir_path_str,
@@ -59,7 +59,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 			p_s3_client,
 			p_s3_uploader,
 			p_mongodb_coll,
-			p_log_fun)*/
+			pLogFun)*/
 
 	/*// DELETE_DUPLICATES
 	go func() {
@@ -109,7 +109,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 				return
 			}
 			if err != nil {
-				p_log_fun("ERROR",fmt.Sprint(err))
+				pLogFun("ERROR",fmt.Sprint(err))
 				continue
 			}
 
@@ -123,7 +123,7 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 					},
 					bson.M{"$push":bson.M{"flows_names_lst":"gifs",},})
 				if err != nil {
-					p_log_fun("ERROR",fmt.Sprint(err))
+					pLogFun("ERROR",fmt.Sprint(err))
 					continue
 				}
 			}

@@ -35,7 +35,7 @@ type Gf_stat__crawled_url_fetches struct {
 
 //-------------------------------------------------
 func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_days()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_days()")
 
 	stats__fetches_by_days, gf_err := stats__objs_by_days(map[string]interface{}{}, "crawler_url_fetch", p_runtime_sys)
 	if gf_err != nil {
@@ -50,7 +50,7 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[stri
 
 //-------------------------------------------------
 func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
 
 
 	ctx := context.Background()

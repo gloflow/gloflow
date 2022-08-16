@@ -64,8 +64,8 @@ type Gf_post_note struct {
 
 //------------------------------------------------
 func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.Create_new_post()")
-	p_runtime_sys.Log_fun("INFO",      "p_post_info_map - "+fmt.Sprint(p_post_info_map))
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post.Create_new_post()")
+	p_runtime_sys.LogFun("INFO",      "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 
 	// IMPORTANT!! - not all posts have "tags_lst" element, check if this is fine or if should be enforced
 	// assert(p_post_info_map.containsKey("tags_lst"));
@@ -78,7 +78,7 @@ func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 
 	post_elements_infos_lst := p_post_info_map["post_elements_lst"].([]interface{})
 	post_elements_lst       := create_post_elements(post_elements_infos_lst, post_title_str, p_runtime_sys)
-	p_runtime_sys.Log_fun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
+	p_runtime_sys.LogFun("INFO","post_elements_lst - "+fmt.Sprint(post_elements_lst))
 
 	//--------------------
 	// CREATION DATETIME
@@ -180,12 +180,12 @@ func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_c
 // a post has to first be created, and only then can it be published
 
 func publish(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.publish()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post.publish()")
 }
 
 //------------------------------------------------
 func create_post_notes(p_raw_notes_lst []map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) []*Gf_post_note {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post.create_post_notes()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post.create_post_notes()")
 
 	notes_lst := []*Gf_post_note{}
 	for _, note_map := range p_raw_notes_lst {

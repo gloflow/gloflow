@@ -25,8 +25,8 @@ import (
 )
 
 //-------------------------------------------------
-func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_publisher_cli.CLI__parse_args()")
+func CLI__parse_args(pLogFun func(string,string)) map[string]interface{} {
+	pLogFun("FUN_ENTER", "gf_publisher_cli.CLI__parse_args()")
 
 	//-------------------
 	run__start_service_bool         := flag.Bool("run__start_service",                true,                       "run the service daemon")

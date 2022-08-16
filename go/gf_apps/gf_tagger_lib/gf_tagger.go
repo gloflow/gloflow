@@ -66,7 +66,7 @@ func addTagsToObject(pTagsStr string,
 		return gfErr
 	}
 
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("tags_lst - %s", tagsLst))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("tags_lst - %s", tagsLst))
 
 	//---------------
 	// POST
@@ -83,7 +83,7 @@ func addTagsToObject(pTagsStr string,
 			}
 			
 			if existsBool {
-				pRuntimeSys.Log_fun("INFO", "POST EXISTS")
+				pRuntimeSys.LogFun("INFO", "POST EXISTS")
 				gfErr := db__add_tags_to_post(postTitleStr, tagsLst, pRuntimeSys)
 				return gfErr
 
@@ -156,7 +156,7 @@ func get_objects_with_tags(p_tags_lst []string,
 	p_page_index_int  int,
 	p_page_size_int   int,
 	p_runtime_sys     *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
 		
 	objects_with_tags_map := map[string][]map[string]interface{}{}
 	for _, tag_str := range p_tags_lst {
@@ -180,8 +180,8 @@ func get_objects_with_tag(p_tag_str string,
 	p_page_index_int  int,
 	p_page_size_int   int,
 	p_runtime_sys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
-	p_runtime_sys.Log_fun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
+	p_runtime_sys.LogFun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
 
 	//ADD!! - add support for tagging "image" p_object_type_str's
 	if p_object_type_str != "post" {
@@ -225,7 +225,7 @@ func parse_tags(pTagsStr string,
 	p_max_tags_bulk_size_int        int, // 500
 	p_max_tag_characters_number_int int, // 20
 	p_runtime_sys                   *gf_core.RuntimeSys) ([]string, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger.parse_tags()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.parse_tags()")
 	
 	tags_lst := strings.Split(pTagsStr," ")
 	//---------------------

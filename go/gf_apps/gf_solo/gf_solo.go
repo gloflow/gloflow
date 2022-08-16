@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 func main() {
 
-	logFun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 	log.SetOutput(os.Stdout)
 
 

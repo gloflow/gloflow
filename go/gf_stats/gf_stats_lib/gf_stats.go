@@ -54,7 +54,7 @@ func Init(p_stats_url_base_str string,
 	p_py_stats_dir_path_str       string,
 	p_stats_query_funs_groups_lst []map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error),
 	p_runtime_sys                 *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats.Init()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.Init()")
 
 	//----------------
 	// BATCH__HANDLERS
@@ -91,12 +91,12 @@ func Init(p_stats_url_base_str string,
 func query__init_handlers(p_stats_url_base_str string,
 	p_stats_query_funs_map map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error),
 	p_runtime_sys          *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats.query__init_handlers()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		p_runtime_sys.Log_fun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
+		p_runtime_sys.LogFun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
 		if p_req.Method == "POST" {
 			
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -135,7 +135,7 @@ func query__init_handlers(p_stats_url_base_str string,
 func query__run_fun(p_stat_name_str string,
 	p_stats_query_funs_map map[string](func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error)),
 	p_runtime_sys          *gf_core.RuntimeSys) (*Stat_query_run__extern_result, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats.query__run_fun()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.query__run_fun()")
 
 	if stat_fun, ok := p_stats_query_funs_map[p_stat_name_str]; ok {
 

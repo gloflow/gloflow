@@ -26,7 +26,7 @@ import pymongo
 import delegator
 
 #-------------------------------------------------------------
-def main(p_log_fun):
+def main(pLogFun):
 
 	args_map = parse_args()
 
@@ -46,9 +46,9 @@ def main(p_log_fun):
 			cli_stats_path_str,
 			crontab_file_path_str,
 			mongodb_host_str,
-			p_log_fun)
+			pLogFun)
 
-		crontab__run(crontab_file_path_str,p_log_fun)
+		crontab__run(crontab_file_path_str,pLogFun)
 	#---------------
 	elif args_map['run'] == 'crontab_config':
 
@@ -59,12 +59,12 @@ def main(p_log_fun):
 			cli_stats_path_str,
 			crontab_file_path_str,
 			mongodb_host_str,
-			p_log_fun)
+			pLogFun)
 	#---------------
 	elif args_map['run'] == 'run_py_stat':
 
 		
-		mongo_client = get_mongodb_client(mongodb_host_str,p_log_fun)
+		mongo_client = get_mongodb_client(mongodb_host_str,pLogFun)
 
 		py_stat_str = args_map['py_stat']
 
@@ -72,7 +72,7 @@ def main(p_log_fun):
 			py_stats_dirs_lst,
 			plots_dir_str,
 			mongo_client,
-			p_log_fun)
+			pLogFun)
 	#---------------
 
 #----------------------------------------------
@@ -80,24 +80,24 @@ def run_py_stat(p_py_stat_str,
 	p_py_stats_dirs_lst,
 	p_plots_dir_str,
 	p_mongo_client,
-	p_log_fun):
-	p_log_fun('FUN_ENTER', 'cli_stats.run_py_stat()')
+	pLogFun):
+	pLogFun('FUN_ENTER', 'cli_stats.run_py_stat()')
 	assert isinstance(p_py_stats_dirs_lst, list)
 
-	m = import_module(p_py_stat_str, p_py_stats_dirs_lst, p_log_fun)
+	m = import_module(p_py_stat_str, p_py_stats_dirs_lst, pLogFun)
 
 	img_filepath_str = '%s/%s.png'%(p_plots_dir_str, p_py_stat_str)
-	m.run(p_mongo_client, p_log_fun, p_output_img_str=img_filepath_str)
+	m.run(p_mongo_client, pLogFun, p_output_img_str=img_filepath_str)
 
 #----------------------------------------------
-def get_mongodb_client(p_host_str, p_log_fun):
-	p_log_fun('FUN_ENTER', 'cli__gf_crawl__stats.get_mongodb_client()')
+def get_mongodb_client(p_host_str, pLogFun):
+	pLogFun('FUN_ENTER', 'cli__gf_crawl__stats.get_mongodb_client()')
 
 	mongo_client = pymongo.MongoClient(p_host_str, 27017)
 	return mongo_client
 
 #----------------------------------------------
-def import_module(p_py_stat_str, p_py_stats_dirs_lst, p_log_fun):
+def import_module(p_py_stat_str, p_py_stats_dirs_lst, pLogFun):
 	assert isinstance(p_py_stats_dirs_lst, list)
 
 	for d in p_py_stats_dirs_lst:
@@ -115,8 +115,8 @@ def crontab__build_config(p_py_stats_dirs_lst,
 	p_cli_stats_path_str,
 	p_crontab_file_path_str,
 	p_mongodb_host_str,
-	p_log_fun):
-	p_log_fun('FUN_ENTER', 'cli_stats.crontab__build_config()')
+	pLogFun):
+	pLogFun('FUN_ENTER', 'cli_stats.crontab__build_config()')
 	assert isinstance(p_py_stats_dirs_lst, list)
 	for d in p_py_stats_dirs_lst: assert os.path.isdir(d)
 	assert os.path.isdir(p_plots_dir_str)
@@ -135,7 +135,7 @@ def crontab__build_config(p_py_stats_dirs_lst,
 
 				py_stat__file_name_str        = os.path.basename(stat_f_str)
 				py_stat__file_name_no_ext_str = py_stat__file_name_str.split('.')[0]
-				m                             = import_module(py_stat__file_name_no_ext_str, p_py_stats_dirs_lst, p_log_fun)
+				m                             = import_module(py_stat__file_name_no_ext_str, p_py_stats_dirs_lst, pLogFun)
 				py_stat__files_lst.append((m, py_stat__file_name_str))
 
 	#-------------------------
@@ -220,8 +220,8 @@ MAILTO=""
 	return py_stats__names_lst
 
 #----------------------------------------------
-def crontab__run(p_crontab_file_path_str, p_log_fun):
-	p_log_fun('FUN_ENTER', 'cli_stats.crontab__run()')
+def crontab__run(p_crontab_file_path_str, pLogFun):
+	pLogFun('FUN_ENTER', 'cli_stats.crontab__run()')
 	assert isinstance(p_crontab_file_path_str, basestring)
 	assert os.path.isfile(p_crontab_file_path_str)
 
@@ -240,8 +240,8 @@ def crontab__run(p_crontab_file_path_str, p_log_fun):
 # ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
 #         instead of just picking the first element
 
-def get_mongodb_client(p_host_str, p_log_fun):
-	p_log_fun('FUN_ENTER', 'cli_stats.get_mongodb_client()')
+def get_mongodb_client(p_host_str, pLogFun):
+	pLogFun('FUN_ENTER', 'cli_stats.get_mongodb_client()')
 
 	mongo_client = pymongo.MongoClient(p_host_str, 27017)
 	return mongo_client

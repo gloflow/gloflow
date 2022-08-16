@@ -27,9 +27,9 @@ import (
 
 //-------------------------------------------------
 func main() {
-	log_fun := gf_core.Init_log_fun()
+	logFun := gf_core.InitLogs()
 
-	cli_args_map            := parse__cli_args(log_fun)
+	cli_args_map            := parse__cli_args(logFun)
 	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)
 	port_str                := cli_args_map["port_str"].(string)
 	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
@@ -41,13 +41,13 @@ func main() {
 			mongodb_host_str,
 			mongodb_db_name_str,
 			nil,
-			log_fun)
+			logFun)
 	}
 }
 
 //-------------------------------------------------
-func parse__cli_args(p_log_fun func(string, string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_landing_page_service.parse__cli_args()")
+func parse__cli_args(pLogFun func(string, string)) map[string]interface{} {
+	pLogFun("FUN_ENTER", "gf_landing_page_service.parse__cli_args()")
 
 	//-------------------
 	run__start_service_bool := flag.Bool("run__start_service", true,        "run the service daemon")

@@ -608,22 +608,22 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	p_mongodb_data_dir_path_str string,
 	p_mongodb_log_file_path_str string,
 	p_sudo_bool                 bool,
-	p_log_fun                   func(string, string)) error {
-	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__start()")
-	p_log_fun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
-	p_log_fun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
+	pLogFun                   func(string, string)) error {
+	pLogFun("FUN_ENTER", "gf_mongodb.Mongo__start()")
+	pLogFun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
+	pLogFun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
 
 	if _, err := os.Stat(p_mongodb_log_file_path_str); os.IsNotExist(err) {
-		p_log_fun("ERROR", fmt.Sprintf("supplied log_file path is not a file - %s", p_mongodb_log_file_path_str))
+		pLogFun("ERROR", fmt.Sprintf("supplied log_file path is not a file - %s", p_mongodb_log_file_path_str))
 		return err
 	}
 
-	p_log_fun("INFO", "-----------------------------------------")
-	p_log_fun("INFO", "--------- STARTING - MONGODB ------------")
-	p_log_fun("INFO", "-----------------------------------------")
-	p_log_fun("INFO", "p_mongodb_bin_path_str      - "+p_mongodb_bin_path_str)
-	p_log_fun("INFO", "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
-	p_log_fun("INFO", "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
+	pLogFun("INFO", "-----------------------------------------")
+	pLogFun("INFO", "--------- STARTING - MONGODB ------------")
+	pLogFun("INFO", "-----------------------------------------")
+	pLogFun("INFO", "p_mongodb_bin_path_str      - "+p_mongodb_bin_path_str)
+	pLogFun("INFO", "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
+	pLogFun("INFO", "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
 
 	args_lst := []string{
 		"--fork",            //start the server as a deamon
@@ -648,7 +648,7 @@ func Mongo__start(p_mongodb_bin_path_str string,
 		cmd = exec.Command(p_mongodb_bin_path_str, args_lst...)
 	}
 
-	p_log_fun("INFO", "cmd - "+strings.Join(cmd.Args, " "))
+	pLogFun("INFO", "cmd - "+strings.Join(cmd.Args, " "))
 	cmd.Start()
 
 	return nil
@@ -657,10 +657,10 @@ func Mongo__start(p_mongodb_bin_path_str string,
 //--------------------------------------------------------------------
 /*func Mongo__connect(p_mongodb_host_str string,
 	p_mongodb_db_name_str string,
-	p_log_fun             func(string, string)) *mgo.Database {
-	p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
-	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
-	p_log_fun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
+	pLogFun             func(string, string)) *mgo.Database {
+	pLogFun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
+	pLogFun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
+	pLogFun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
 	
 	session, err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
 	if err != nil {
@@ -685,9 +685,9 @@ func Mongo__start(p_mongodb_bin_path_str string,
 
 /*//--------------------------------------------------------------------
 func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
-	p_log_fun func(string, string)) ([]map[string]interface{}, error) {
-	// p_log_fun("FUN_ENTER", "gf_mongodb.Mongo__get_rs_members_info()")
-	// p_log_fun("INFO",      p_mongodb_primary_host_str)
+	pLogFun func(string, string)) ([]map[string]interface{}, error) {
+	// pLogFun("FUN_ENTER", "gf_mongodb.Mongo__get_rs_members_info()")
+	// pLogFun("INFO",      p_mongodb_primary_host_str)
 
 	mongo_client__cmd_str := fmt.Sprintf("mongo --host %s --quiet --eval 'JSON.stringify(rs.status())'", p_mongodb_primary_host_str)
 

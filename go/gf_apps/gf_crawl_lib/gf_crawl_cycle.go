@@ -35,8 +35,8 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	pS3bucketNameStr       string,
 	p_runtime              *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
-	pRuntimeSys.Log_fun("INFO",      "pS3bucketNameStr - "+pS3bucketNameStr)
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
+	pRuntimeSys.LogFun("INFO",      "pS3bucketNameStr - "+pS3bucketNameStr)
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()

@@ -44,7 +44,7 @@ func jobErrorSend(p_job_error_type_str string,
 	p_job_updates_ch   chan JobUpdateMsg,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	pRuntimeSys.Log_fun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", pImageSourceURLstr, pGFerr.Error))
+	pRuntimeSys.LogFun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", pImageSourceURLstr, pGFerr.Error))
 
 	error_str := fmt.Sprint(pGFerr.Error)
 	

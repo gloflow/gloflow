@@ -54,8 +54,8 @@ func main() {
 	sentry_endpoint_str          := os.Getenv("GF_SENTRY_ENDPOINT")
 	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 
-	log_fun := gf_core.Init_log_fun()
-	runtime, err := runtimeGet(geth__host_str, py_plugins_base_dir_path_str, log_fun)
+	logFun, _ := gf_core.InitLogs()
+	runtime, err := runtimeGet(geth__host_str, py_plugins_base_dir_path_str, logFun)
 	if err != nil {
 		panic(err)
 	}
@@ -116,13 +116,13 @@ func main() {
 //-------------------------------------------------
 func runtimeGet(p_eth_rpc_host_str string,
 	p_py_plugins_base_dir_path_str string,
-	p_log_fun                      func(string, string)) (*GF_runtime, error) {
+	pLogFun                        func(string, string)) (*GF_runtime, error) {
 
 	//--------------------
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_worker_inspector",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 		
 		// SENTRY - enable it for error reporting
 		Errors_send_to_sentry_bool: true,

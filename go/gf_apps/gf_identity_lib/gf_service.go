@@ -101,7 +101,7 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
-func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
+func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
 
 	//-------------------
 	// MONGODB

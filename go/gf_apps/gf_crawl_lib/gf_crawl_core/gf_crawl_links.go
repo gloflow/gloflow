@@ -133,7 +133,7 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 	pCrawlerNameStr string,
 	pRuntime        *GFcrawlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -219,7 +219,7 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 func link__verify_for_crawl(pURLstr string,
 	p_domain_str  string,
 	pRuntimeSys *gf_core.RuntimeSys) bool {
-	// pRuntimeSys.Log_fun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
+	// pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
 
 	blacklisted_domains_map := get_domains_blacklist(pRuntimeSys)
 

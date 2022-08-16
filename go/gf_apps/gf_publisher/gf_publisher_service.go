@@ -26,9 +26,9 @@ import (
 
 //-------------------------------------------------
 func main() {
-	log_fun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 
-	cli_args_map            := gf_publisher_lib.CLI__parse_args(log_fun)
+	cli_args_map            := gf_publisher_lib.CLI__parse_args(logFun)
 	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)
 	port_str                := cli_args_map["port_str"].(string)
 	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
@@ -49,7 +49,7 @@ func main() {
 			mongodb_db_name_str,
 			gf_images_runtime,
 			nil, //init_done_ch,
-			log_fun)
+			logFun)
 		//<-init_done_ch
 	}
 }

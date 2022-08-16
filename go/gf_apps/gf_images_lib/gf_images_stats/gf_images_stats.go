@@ -28,7 +28,7 @@ import (
 
 //-------------------------------------------------
 func Get_query_funs(p_runtime_sys *gf_core.RuntimeSys) map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_stats.Init()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_stats.Init()")
 
 	stats_funs_map := map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
 		"image_jobs_errors":                  stats__image_jobs_errors,
@@ -39,7 +39,7 @@ func Get_query_funs(p_runtime_sys *gf_core.RuntimeSys) map[string]func(*gf_core.
 
 //-------------------------------------------------
 func stats__image_jobs_errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_stats.stats__image_jobs_errors()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_stats.stats__image_jobs_errors()")
 
 
 	ctx := context.Background()
@@ -131,7 +131,7 @@ func stats__image_jobs_errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]int
 
 //-------------------------------------------------
 func stats__completed_image_jobs_runtime_infos(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_stats.stats__completed_image_jobs_runtime_infos()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_stats.stats__completed_image_jobs_runtime_infos()")
 
 
 

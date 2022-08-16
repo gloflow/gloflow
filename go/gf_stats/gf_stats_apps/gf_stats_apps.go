@@ -30,7 +30,7 @@ import (
 func Init(p_stats_url_base_str string,
 	p_py_stats_dir_path_str string,
 	p_runtime_sys           *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_stats_apps.Init()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats_apps.Init()")
 
 	images_stats__query_funs_map := gf_images_stats.Get_query_funs(p_runtime_sys)
 	crawl_stats__query_funs_map  := gf_crawl_stats.Get_query_funs(p_runtime_sys)

@@ -43,7 +43,7 @@ import (
 //---------------------------------------------------
 func Image__verify_image_info(pImageInfoMap map[string]interface{},
 	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER","gf_image_verify.Image__verify_image_info()")
+	pRuntimeSys.LogFun("FUN_ENTER","gf_image_verify.Image__verify_image_info()")
 	
 	spew.Dump(pImageInfoMap)
 
@@ -194,7 +194,7 @@ func Image__verify_image_info(pImageInfoMap map[string]interface{},
 	thumbnail_large_url_str        := pImageInfoMap["thumbnail_large_url_str"].(string)
 	
 	//-------------------
-	pRuntimeSys.Log_fun("INFO",fmt.Sprintf("image (id - %s) verified",id_str))
+	pRuntimeSys.LogFun("INFO",fmt.Sprintf("image (id - %s) verified",id_str))
 	
 	verifiedImageInfoMap := map[string]interface{}{
 		"id_str":                         id_str,

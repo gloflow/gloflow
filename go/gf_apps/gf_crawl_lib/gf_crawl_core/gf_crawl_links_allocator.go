@@ -54,7 +54,7 @@ type Gf_crawl_link_alloc_block struct {
 
 //--------------------------------------------------
 func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
 
 	allocator, gf_err := Link_alloc__create(p_crawler_name_str, p_runtime_sys)
 	if gf_err != nil {
@@ -150,7 +150,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	p_crawler_name_str string,
 	p_block_size_int   int,
 	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
 
 
 	ctx := context.Background()

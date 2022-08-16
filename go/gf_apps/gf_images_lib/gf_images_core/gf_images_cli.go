@@ -25,8 +25,8 @@ import (
 )
 
 //-------------------------------------------------
-func CLI__parse_args(p_log_fun func(string,string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_images_cli.CLI__parse_args()")
+func CLI__parse_args(pLogFun func(string,string)) map[string]interface{} {
+	pLogFun("FUN_ENTER", "gf_images_cli.CLI__parse_args()")
 
 	//-------------------
 	// CLI_ARGS

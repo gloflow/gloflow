@@ -89,7 +89,7 @@ func S3init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
 	p_token_str                 string,
 	pRuntimeSys                 *RuntimeSys) (*GFs3Info, *GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3init()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_s3.S3init()")
 
 	
 	config := &aws.Config{
@@ -171,9 +171,9 @@ func S3uploadFile(p_target_file__local_path_str string,
 	p_s3_bucket_name_str       string,
 	p_s3_info                  *GFs3Info,
 	pRuntimeSys                *RuntimeSys) (string, *GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_s3.S3uploadFile()")
-	pRuntimeSys.Log_fun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
-	pRuntimeSys.Log_fun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_s3.S3uploadFile()")
+	pRuntimeSys.LogFun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
+	pRuntimeSys.LogFun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
 
 	//-----------------
 	file, fs_err := os.Open(p_target_file__local_path_str)

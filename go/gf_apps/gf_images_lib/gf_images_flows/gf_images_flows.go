@@ -134,9 +134,9 @@ func pipelineGetPage(p_req *http.Request,
 		}
 	}
 
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
-	p_runtime_sys.Log_fun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
+	p_runtime_sys.LogFun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
+	p_runtime_sys.LogFun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
+	p_runtime_sys.LogFun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
 
 	//--------------------
 
@@ -299,7 +299,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pClientTypeStr         string,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
 	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{

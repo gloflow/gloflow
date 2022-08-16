@@ -34,7 +34,7 @@ type gf_templates struct {
 //-------------------------------------------------
 func tmpl__load(p_templates_paths_map map[string]string, // p_templates_dir_path_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_templates.tmpl__load()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	main_template_filepath_str := p_templates_paths_map["gf_domains_browser"] // "gf_domains_browser.html"
 	// templates_dir_path_str     := fmt.Sprintf("%s/gf_domains_browser", p_templates_dir_path_str)

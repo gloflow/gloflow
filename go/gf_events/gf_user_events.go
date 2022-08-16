@@ -158,7 +158,7 @@ func session__create_id_cookie(p_req *http.Request,
 	ip_str               := p_req.RemoteAddr
 	session_id_str       := fmt.Sprintf("%f_%s", current_time__unix_f, ip_str)
 
-	p_runtime_sys.Log_fun("INFO", "session_id_str - "+session_id_str)
+	p_runtime_sys.LogFun("INFO", "session_id_str - "+session_id_str)
 
 	new_cookie := http.Cookie{Name:"gf", Value:session_id_str}
 	http.SetCookie(p_resp, &new_cookie)

@@ -103,11 +103,11 @@ type Gf_domain_posts struct {
 
 //---------------------------------------------------
 func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_posts, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
 
 	// cyan   := color.New(color.FgCyan).SprintFunc()
 	// yellow := color.New(color.FgYellow).SprintFunc()
-	// p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
+	// p_runtime_sys.LogFun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
 	ctx := context.Background()
 	pipeline := mongo.Pipeline{
@@ -247,7 +247,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 		domain_posts_lst = append(domain_posts_lst, domain_posts)
 	}
 
-	// p_runtime_sys.Log_fun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
+	// p_runtime_sys.LogFun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
 	//---------------
 
 	return domain_posts_lst, nil

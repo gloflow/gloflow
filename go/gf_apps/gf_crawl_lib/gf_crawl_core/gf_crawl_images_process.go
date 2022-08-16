@@ -38,7 +38,7 @@ func images__stage__process_images(p_crawler_name_str string,
 	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
 	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - process_images")
@@ -103,7 +103,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	pRuntimeSys.Log_fun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("PROCESS_IMAGE"))
+	pRuntimeSys.LogFun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("PROCESS_IMAGE"))
 
 	//----------------------------
 	// GIF
@@ -185,7 +185,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
 	pRuntimeSys                     *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
 	//----------------------
 	// CONFIG
@@ -208,7 +208,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 	// IMPORTANT!! - check that the image is too small, and is likely to be irrelevant 
 	//               part of a particular page
 	if imgWidthInt <= 130 || imgHeightInt <= 130 {
-		pRuntimeSys.Log_fun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(imgWidthInt))+"/height-"+cyan(fmt.Sprint(imgHeightInt))+")"))
+		pRuntimeSys.LogFun("INFO", yellow("IMG IS SMALLER THEN MINIMUM DIMENSIONS (width-"+cyan(fmt.Sprint(imgWidthInt))+"/height-"+cyan(fmt.Sprint(imgHeightInt))+")"))
 		return nil, nil, nil
 	} else {
 

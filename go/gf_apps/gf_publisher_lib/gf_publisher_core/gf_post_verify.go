@@ -34,7 +34,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 	p_max_description_chars_int int, // 1000
 	p_post_element_tag_max_int  int, // 20
 	p_runtime_sys               *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_verify.Verify_external_post_info()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_verify.Verify_external_post_info()")
 
 	//-------------------
 	// CLIENT_TYPE
@@ -144,7 +144,7 @@ func Verify_external_post_info(p_post_info_map map[string]interface{},
 
 //---------------------------------------------------
 func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.Gf_error) { 
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_tags()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_post_verify.verify_tags()")
 		
 	if _, ok := p_post_info_map["tags_str"]; !ok {
 		gf_err := gf_core.ErrorCreate("p_post_info_map doesnt contain the tags_str key",
@@ -157,8 +157,8 @@ func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.
 	input_tags_str := p_post_info_map["tags_str"].(string)
 	tags_lst       := strings.Split(input_tags_str," ")
 
-	p_runtime_sys.Log_fun("INFO","input_tags_str - "+fmt.Sprint(input_tags_str))
-	p_runtime_sys.Log_fun("INFO","tags_lst       - "+fmt.Sprint(tags_lst))
+	p_runtime_sys.LogFun("INFO","input_tags_str - "+fmt.Sprint(input_tags_str))
+	p_runtime_sys.LogFun("INFO","tags_lst       - "+fmt.Sprint(tags_lst))
 
 	return tags_lst, nil
 }
@@ -167,7 +167,7 @@ func verify_tags(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.
 func verify_post_elements(p_post_info_map map[string]interface{},
 	p_post_element_tag_max_int int,
 	p_runtime_sys              *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_elements()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_post_verify.verify_post_elements()")
 	
 	if _, ok := p_post_info_map["post_elements_lst"]; !ok {
 		gf_err := gf_core.ErrorCreate("p_post_info_map doesnt contain the post_elements_lst key",
@@ -200,8 +200,8 @@ func verify_post_elements(p_post_info_map map[string]interface{},
 func verify_post_element(p_post_element_info_map map[string]interface{},
 	p_post_element_tag_max_int int, //20
 	p_runtime_sys              *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_verify.verify_post_element()")
-	p_runtime_sys.Log_fun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
+	p_runtime_sys.LogFun("FUN_ENTER","gf_post_verify.verify_post_element()")
+	p_runtime_sys.LogFun("INFO"     ,"p_post_element_info_map - "+fmt.Sprint(p_post_element_info_map))
 
 	//--------------
 	// POST_ELEMENT_TYPE

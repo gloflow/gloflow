@@ -24,30 +24,62 @@ import (
 	"time"
 	"strconv"
 	"github.com/fatih/color"
-	// log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 //-------------------------------------------------
-func Init_log_fun() func(string,string) {
+func InitLogs() (func(string, string), func(string, string, string, map[string]interface{})) {
 
-
+	
+	log := logrus.New()
+	
 	// log to stdout instead of the default stderr
 	// log.SetOutput(os.Stdout)
-	// log.SetLevel(log.WarnLevel)
+	// log.SetLevel(log.ErrorLevel)
+	
+	// Log as JSON instead of the default ASCII formatter.
+	// log.SetFormatter(&log.JSONFormatter{})
+
+	// adds the caller as 'method' to the output
+	// log.SetReportCaller(true)
 
 	green  := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 	red    := color.New(color.FgRed).SprintFunc()
+	
+	//-------------------------------------------------
+	logFun := func(pGroupStr string, pMsgStr string) {
+		timeStr := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 
-	logFun := func(p_g string, p_m string) {
-		t_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0,'f',10,64)
-
-		if p_g == "FUN_ENTER" {
-			fmt.Printf(t_str+":"+yellow(p_g)+":"+p_m+"\n")
-		} else if p_g == "INFO" {
-			fmt.Printf(t_str+":"+green(p_g)+":"+green(p_m)+"\n")
-		} else if p_g == "ERROR" {
-			fmt.Printf(t_str+":"+red(p_g)+":"+p_m+"\n")
+		if pGroupStr == "FUN_ENTER" {
+			fmt.Printf(timeStr+":"+yellow(pGroupStr)+":"+pMsgStr+"\n")
+		} else if pGroupStr == "INFO" {
+			fmt.Printf(timeStr+":"+green(pGroupStr)+":"+green(pMsgStr)+"\n")
+		} else if pGroupStr == "ERROR" {
+			fmt.Printf(timeStr+":"+red(pGroupStr)+":"+pMsgStr+"\n")
 		}
 	}
-	return logFun
+
+	//-------------------------------------------------
+	logNewFun := func(pMsgStr string, pGroupStr string, pLevelStr string, pMetaMap map[string]interface{}) {
+		if pMetaMap != nil {
+			logFields := logrus.Fields{}
+			for k, v := range pMetaMap {
+				logFields[k] = v
+			}
+
+			contextLogger := log.WithFields(logFields)
+
+			switch pLevelStr {
+			case "INFO":
+				contextLogger.Info(pMsgStr)
+			case "WARNING":
+				contextLogger.Warn(pMsgStr)
+			case "ERROR":
+				contextLogger.Error(pMsgStr)
+			}
+		}
+	}
+
+	//-------------------------------------------------
+	return logFun, logNewFun
 }

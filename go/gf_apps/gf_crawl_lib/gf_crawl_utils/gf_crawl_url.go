@@ -31,7 +31,7 @@ import (
 func Complete_url(p_url_str string,
 	p_domain_str  string,
 	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.Gf_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawler_url.complete_url()")
+	// p_runtime_sys.LogFun("FUN_ENTER", "gf_crawler_url.complete_url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -59,7 +59,7 @@ func Complete_url(p_url_str string,
 		u.Path        = path.Join(u.Path,p_url_str)
 		full_url_str := u.String()
 
-		p_runtime_sys.Log_fun("INFO", cyan("COMPLETED_URL")+" - "+yellow(full_url_str))
+		p_runtime_sys.LogFun("INFO", cyan("COMPLETED_URL")+" - "+yellow(full_url_str))
 
 		//-----------------
 
@@ -72,7 +72,7 @@ func Complete_url(p_url_str string,
 func Get_domain(p_link_url_str string,
 	p_origin_url_str string,
 	p_runtime_sys    *gf_core.RuntimeSys) (string, string, *gf_core.Gf_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER","gf_crawler_url.get_domain()")
+	// p_runtime_sys.LogFun("FUN_ENTER","gf_crawler_url.get_domain()")
 
 	origin_url,err := url.Parse(p_origin_url_str)
 	if err != nil {

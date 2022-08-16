@@ -31,7 +31,7 @@ import (
 func Add_tags_to_post_in_db(p_post_title_str string,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.Add_tags_to_post_in_db()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_utils.Add_tags_to_post_in_db()")
 	
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
 	if gf_err != nil {
@@ -53,7 +53,7 @@ func Add_tags_to_post_in_db(p_post_title_str string,
 func add_tags_to_post(p_post *gf_publisher_core.Gf_post,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.add_tags_to_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_utils.add_tags_to_post()")
 	
 	if len(p_tags_lst) > 0 {
 		p_post.Tags_lst = append(p_post.Tags_lst, p_tags_lst...)
@@ -84,7 +84,7 @@ func add_tags_to_post(p_post *gf_publisher_core.Gf_post,
 
 //---------------------------------------------------
 func get_posts_small_thumbnails_urls(p_posts_lst []*gf_publisher_core.Gf_post, p_runtime_sys *gf_core.RuntimeSys) map[string][]string {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_utils.get_posts_small_thumbnails_urls()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_utils.get_posts_small_thumbnails_urls()")
 	
 	posts_small_thumbnails_urls_map := map[string][]string{}
 	for _, post := range p_posts_lst {
@@ -105,8 +105,8 @@ func get_posts_small_thumbnails_urls(p_posts_lst []*gf_publisher_core.Gf_post, p
 //---------------------------------------------------
 //->:List<:Tuple<:String(post_day_month_year_str),:List<:Post_ADT>>>(posts_by_day_groups_sorted_lst)
 List group_posts_by_creation_date(List<gf_post.Post_ADT> p_posts_adts_lst,
-								  Function               p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_post_utils.group_posts_by_creation_date()");
+								  Function               pLogFun) {
+	pLogFun("FUN_ENTER","gf_post_utils.group_posts_by_creation_date()");
 	
 	//--------------------
 	//SORTING_1
@@ -175,8 +175,8 @@ List group_posts_by_creation_date(List<gf_post.Post_ADT> p_posts_adts_lst,
 //---------------------------------------------------
 /*//DEPRECEATED!!
 String get_post_thumbnail_url_str(gf_post.Post_ADT p_post_adt,
-								  Function         p_log_fun) {
-	p_log_fun("FUN_ENTER","gf_post_utils.get_post_thumbnail_url_str()");
+								  Function         pLogFun) {
+	pLogFun("FUN_ENTER","gf_post_utils.get_post_thumbnail_url_str()");
 
 	//HACK!!
 	//IMPORTANT!! - old versions of code counlnt depend on post_adt.thumbnail_url_str, so they had
@@ -185,7 +185,7 @@ String get_post_thumbnail_url_str(gf_post.Post_ADT p_post_adt,
 	//              then using the opportunity to initialize the new SYMPHONY thumbnail_url_str property
 	if (p_post_adt.thumbnail_url_str == null) {
 
-		List<gf_post_element.PostElement_ADT> image_post_elements_lst = gf_post_element.get_post_elements_of_type(p_post_adt, "image", p_log_fun);
+		List<gf_post_element.PostElement_ADT> image_post_elements_lst = gf_post_element.get_post_elements_of_type(p_post_adt, "image", pLogFun);
 
 		//some posts dont have any image elements, and since the first image element of the post is used as its thumbnail,
 		//this will fail... 

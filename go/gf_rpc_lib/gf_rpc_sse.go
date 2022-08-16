@@ -82,7 +82,7 @@ func SSE_create_handler__http(p_path_str string,
 				notify := p_resp.(http.CloseNotifier).CloseNotify()
 				go func() {
 					<- notify
-					p_runtime_sys.Log_fun("ERROR", "HTTP connection just closed")
+					p_runtime_sys.LogFun("ERROR", "HTTP connection just closed")
 				}()
 
 				p_resp.Header().Set("Content-Type",                "text/event-stream")
@@ -175,14 +175,14 @@ func SSE_create_handler__http(p_path_str string,
 //-------------------------------------------------
 func SSE_client__parse_response(p_body_str string,
 	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_sse.SSE_client__parse_response()")
+	// p_runtime_sys.LogFun("FUN_ENTER", "gf_rpc_sse.SSE_client__parse_response()")
 
 	data_items_lst := []map[string]interface{}{}
 
 	for _, line_str := range strings.Split(p_body_str, `\n`) {
 
-		p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
-		p_runtime_sys.Log_fun("INFO", line_str)
+		p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
+		p_runtime_sys.LogFun("INFO", line_str)
 
 		// filter out keep-alive new lines
 		if line_str != "" && strings.HasPrefix(line_str, "data: ") {

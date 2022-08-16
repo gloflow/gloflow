@@ -99,14 +99,14 @@ func FetcherGetExternImage(pImageURLstr string,
 //---------------------------------------------------
 func analytics__log_image_fetch(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
 }
 
 //---------------------------------------------------
 func DownloadFile(pImageURLstr string,
 	p_local_image_file_path_str string,
 	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
 
 	//-----------------------
 	headersMap, userAgentStr := GetHTTPreqConfig()
@@ -166,7 +166,7 @@ func DownloadFile(pImageURLstr string,
 	//-----------------------
 
 	finalURLstr := HTTPfetch.Resp.Request.URL.String() // after possible redirects, this is the url
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("final_url_str - %s", finalURLstr))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("final_url_str - %s", finalURLstr))
 
 	//--------------
 	// WRITE TO FILE

@@ -65,7 +65,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 }
 
 //-------------------------------------------------
-func CLIparseArgs(p_log_fun func(string, string)) map[string]interface{} {
+func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 
 	//-------------------
 	// MONGODB

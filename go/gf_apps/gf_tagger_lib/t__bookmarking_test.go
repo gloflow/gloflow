@@ -30,13 +30,13 @@ import (
 )
 
 //---------------------------------------------------
-var log_fun func(string,string)
+var logFun func(string,string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	log_fun = gf_core.Init_log_fun()
-	cli_args_map = CLI__parse_args(log_fun)
+	logFun, _ = gf_core.InitLogs()
+	cli_args_map = CLI__parse_args(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -50,12 +50,12 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 
-	log_fun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 
 
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger_tests",
-		Log_fun:          log_fun,
+		LogFun:           logFun,
 		Validator:        gf_core.Validate__init(),
 	}
 
@@ -74,7 +74,7 @@ func Test__main(p_test *testing.T) {
 //-------------------------------------------------
 func test_bookmarking(p_test *testing.T,
 	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "t__main_test.test_bookmarking()")
+	p_runtime_sys.LogFun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
 	ctx := context.Background()
 

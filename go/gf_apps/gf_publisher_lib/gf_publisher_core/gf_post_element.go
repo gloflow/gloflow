@@ -86,8 +86,8 @@ type Gf_post_element struct {
 func create_post_elements(p_post_elements_infos_lst []interface{},
 	p_post_title_str string,
 	p_runtime_sys    *gf_core.RuntimeSys) []*Gf_post_element {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.create_post_elements()")
-	p_runtime_sys.Log_fun("INFO",      "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_element.create_post_elements()")
+	p_runtime_sys.LogFun("INFO",      "p_post_elements_infos_lst - "+fmt.Sprint(p_post_elements_infos_lst))
 
 	post_elements_lst := []*Gf_post_element{}
 	for i, post_element := range p_post_elements_infos_lst {
@@ -114,7 +114,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 		extern_url_str                    := post_element_map["extern_url_str"].(string)
 		post_element__origin_page_url_str := post_element_map["origin_page_url_str"].(string)
 
-		p_runtime_sys.Log_fun("INFO", "post_element extern_url_str - "+fmt.Sprint(extern_url_str))
+		p_runtime_sys.LogFun("INFO", "post_element extern_url_str - "+fmt.Sprint(extern_url_str))
 
 		post_element := &Gf_post_element{
 			Id_str:                post_element_id_str,
@@ -134,7 +134,7 @@ func create_post_elements(p_post_elements_infos_lst []interface{},
 
 //---------------------------------------------------
 func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.RuntimeSys) *Gf_post_element {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.get_first_image_post_element()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_element.get_first_image_post_element()")
 
 	for _, post_element := range p_post.Post_elements_lst {
 		if post_element.Type_str == "image" {
@@ -148,7 +148,7 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 func Get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
 	p_runtime_sys *gf_core.RuntimeSys) ([]*Gf_post_element, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_element.Get_post_elements_of_type()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_element.Get_post_elements_of_type()")
 	
 	gf_err := Verify_post_element_type(p_type_str, p_runtime_sys)
 	if gf_err != nil {
@@ -169,16 +169,16 @@ func Get_post_elements_of_type(p_post *Gf_post,
 					p_post_title_str                  *string,
 					p_gf_images_main_service_host_str *string,
 					p_mongodb_coll                    *mgo.Collection,
-					p_log_fun                         func(string,string)) error {
-	p_log_fun("FUN_ENTER","gf_post_element.create_extern_post_element()")
+					pLogFun                         func(string,string)) error {
+	pLogFun("FUN_ENTER","gf_post_element.create_extern_post_element()")
 	
 	post_element := create_post_elements([p_post_element_info_dict], //p_post_elements_lst,
 								p_post_title_str,
-								p_log_fun)[0]
+								pLogFun)[0]
 	
 	post,err := db__get_post(p_post_title_str,
 						p_mongodb_coll,
-						p_log_fun)
+						pLogFun)
 	if err != nil {
 		return err
 	}
@@ -187,14 +187,14 @@ func Get_post_elements_of_type(p_post *Gf_post,
 		init_image_post_element(post_element,
 							post,
 							p_gf_images_main_service_host_str,
-							p_log_fun)
+							pLogFun)
 	}
 
 	post.Post_elements_lst = append(post.Post_elements_lst,post_element)
 	
 	err := db__update_post(post,
 				p_mongodb_coll,
-				p_log_fun)
+				pLogFun)
 	if err != nil {
 		return err
 	}
@@ -203,8 +203,8 @@ func Get_post_elements_of_type(p_post *Gf_post,
 /*func init_image_post_element(p_post_element *Post_element,
 					p_post                            *Post,
 					p_gf_images_main_service_host_str *string,
-					p_log_fun                         func(string,string)) (*Post_element,error) {
-	p_log_fun("FUN_ENTER","gf_post_element.init_image_post_element()")
+					pLogFun                         func(string,string)) (*Post_element,error) {
+	pLogFun("FUN_ENTER","gf_post_element.init_image_post_element()")
 	
 
 		image_url_str := ""
@@ -222,13 +222,13 @@ func Get_post_elements_of_type(p_post *Gf_post,
 		//                                                   to dispatch the processing of this external image
 		
 		final f = gf_images_lib.Client__dispatch_process_extern_images(image_url_str,
-														p_log_fun,
+														pLogFun,
 														p_reprocess_if_prexisting_bool   :false,
 														p_gf_images_main_service_host_str:p_gf_images_main_service_host_str)
 		return f;
 	})
 	.then((Map p_result_dict) {
-		p_log_fun("INFO","result_dict - $p_result_dict");
+		pLogFun("INFO","result_dict - $p_result_dict");
 
 		final String new_image_id_str   = p_result_dict["image_id_str"];
 		p_post_element.image_id_str = new_image_id_str;
@@ -245,8 +245,8 @@ func Get_post_elements_of_type(p_post *Gf_post,
 	//------------------
 	//ERROR HANDLING
 	.catchError((p_error) {
-		p_log_fun("ERROR","PROCESSING IMAGE POST_ELEMENT FAILED!! [$image_url_str]");
-		p_log_fun("INFO" ,p_error.toString());
+		pLogFun("ERROR","PROCESSING IMAGE POST_ELEMENT FAILED!! [$image_url_str]");
+		pLogFun("INFO" ,p_error.toString());
 
 		//ADD!! - in case of an error in generating a thumbnail, these properties should 
 		//        not be set to "error" but instead to some generic thumbnail image url (so that 

@@ -29,13 +29,13 @@ import crawler_page_outgoing_links__per_crawler
 import crawler_url_fetches__counts_by_day
 
 #-------------------------------------------------------------
-def main(p_log_fun):
+def main(pLogFun):
 
 	args_map = parse_args()
 
 	plots_dir_str    = args_map['plots_dir']
 	mongodb_host_str = args_map['mongodb_host']
-	mongo_client     = get_mongodb_client(mongodb_host_str,p_log_fun)
+	mongo_client     = get_mongodb_client(mongodb_host_str,pLogFun)
 
 
 	stats__config_map = {
@@ -63,39 +63,39 @@ def main(p_log_fun):
 	#---------------------
 	if args_map['run'] == 'run_batch_sequence':
 
-		run_batch_sequence(stats__config_map, mongo_client, p_log_fun)
+		run_batch_sequence(stats__config_map, mongo_client, pLogFun)
 	#---------------------
 	elif args_map['run'] == 'stat__crawler_page_imgs__counts_by_day':		
 		crawler_page_imgs__counts_by_day.run(mongo_client,
-			p_log_fun,
+			pLogFun,
 			p_output_img_str = stats__config_map['crawler_page_imgs__counts_by_day']['plot_path_str'])
 	#---------------------
 	elif args_map['run'] == 'stat__crawler_page_outgoing_links__counts_by_day':		
 		crawler_page_outgoing_links__counts_by_day.run(mongo_client,
-			p_log_fun,
+			pLogFun,
 			p_output_img_str = stats__config_map['crawler_page_outgoing_links__counts_by_day']['plot_path_str'])
 	#---------------------
 	if args_map['run'] == 'stat__crawler_page_outgoing_links__per_crawler':		
 		crawler_page_outgoing_links__per_crawler.run(mongo_client,
-			p_log_fun,
+			pLogFun,
 			p_output_img_str = stats__config_map['crawler_page_outgoing_links__per_crawler']['plot_path_str'])
 	#---------------------
 	elif args_map['run'] == 'stat__crawler_page_outgoing_links__null_breakdown':
 		crawler_page_outgoing_links__null_breakdown.run(mongo_client,
-			p_log_fun,
+			pLogFun,
 			p_output_img_str = stats__config_map['crawler_page_outgoing_links__null_breakdown']['plot_path_str'])
 	#---------------------
 	elif args_map['run'] == 'stat__crawler_url_fetches__counts_by_day':
 		crawler_url_fetches__counts_by_day.run(mongo_client,
-			p_log_fun,
+			pLogFun,
 			p_output_img_str = stats__config_map['crawler_url_fetches__counts_by_day']['plot_path_str'])
 	#---------------------
 
 #----------------------------------------------
 def run_batch_sequence(p_stats__config_map,
 	p_mongo_client,
-	p_log_fun):
-	p_log_fun('FUN_ENTER','cli__gf_crawl__stats.run_batch_sequence()')
+	pLogFun):
+	pLogFun('FUN_ENTER','cli__gf_crawl__stats.run_batch_sequence()')
 
 
 	print('')
@@ -103,23 +103,23 @@ def run_batch_sequence(p_stats__config_map,
 	print('')
 
 	crawler_page_outgoing_links__counts_by_day.run(p_mongo_client,
-		p_log_fun,
+		pLogFun,
 		p_output_img_str = p_stats__config_map['crawler_page_outgoing_links__counts_by_day']['plot_path_str'])
 
 	crawler_page_outgoing_links__per_crawler.run(p_mongo_client,
-		p_log_fun,
+		pLogFun,
 		p_output_img_str = p_stats__config_map['crawler_page_outgoing_links__per_crawler']['plot_path_str'])
 
 	crawler_page_outgoing_links__null_breakdown.run(p_mongo_client,
-		p_log_fun,
+		pLogFun,
 		p_output_img_str = p_stats__config_map['crawler_page_outgoing_links__null_breakdown']['plot_path_str'])
 
 #----------------------------------------------
 # ADD!! - figure out a smarter way to pick the right hostport from p_host_port_lst,
 #         instead of just picking the first element
 
-def get_mongodb_client(p_host_str, p_log_fun):
-	p_log_fun('FUN_ENTER','cli__gf_crawl__stats.get_mongodb_client()')
+def get_mongodb_client(p_host_str, pLogFun):
+	pLogFun('FUN_ENTER','cli__gf_crawl__stats.get_mongodb_client()')
 
 	mongo_client = pymongo.MongoClient(p_host_str, 27017)
 	return mongo_client

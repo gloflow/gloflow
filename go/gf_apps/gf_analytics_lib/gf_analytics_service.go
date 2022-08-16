@@ -75,7 +75,7 @@ func Init_service(pServiceInfo *GF_service_info,
 	// TEMPLATES_DIR
 	/*templates_dir_path_str := "./templates"
 	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-		p_runtime_sys.Log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+		p_runtime_sys.LogFun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
 		panic(1)
 	}*/
 
@@ -149,23 +149,23 @@ func Run_service(p_service_info *GF_service_info,
 	
 	//------------------------
 
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
-	p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	p_runtime_sys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	
 	err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
 	if err != nil {
 		msg_str := "cant start listening on port - "+p_service_info.Port_str
-		p_runtime_sys.Log_fun("ERROR", msg_str)
+		p_runtime_sys.LogFun("ERROR", msg_str)
 		panic(err)
 	}
 }
 
 //-------------------------------------------------
 /*func main() {
-	log_fun := gf_core.Init_log_fun()
+	logFun := gf_core.InitLogs()
 
-	cli_args_map        := CLI__parse_args(log_fun)
+	cli_args_map        := CLI__parse_args(logFun)
 	run_str             := cli_args_map["run_str"].(string)
 	port_str            := cli_args_map["port_str"].(string)
 	mongodb_host_str       := cli_args_map["mongodb_host_str"].(string)
@@ -175,12 +175,12 @@ func Run_service(p_service_info *GF_service_info,
 	//-----------------
 	// MONGODB
 
-	mongodb_db   := gf_core.Mongo__connect(mongodb_host_str, mongodb_db_name_str, log_fun)
+	mongodb_db   := gf_core.Mongo__connect(mongodb_host_str, mongodb_db_name_str, logFun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_analytics",
-		Log_fun:          log_fun,
+		LogFun:          logFun,
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
@@ -282,7 +282,7 @@ func Run_service(p_service_info *GF_service_info,
 			// TEMPLATES_DIR
 			templates_dir_path_str := "./templates"
 			if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-				log_fun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+				logFun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
 				panic(1)
 			}
 
@@ -327,14 +327,14 @@ func Run_service(p_service_info *GF_service_info,
 
 			//------------------------
 
-			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-			log_fun("INFO", "STARTING HTTP SERVER - PORT - "+port_str)
-			log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			logFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+			logFun("INFO", "STARTING HTTP SERVER - PORT - "+port_str)
+			logFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 			
 			err := http.ListenAndServe(":"+port_str, nil)
 			if err != nil {
 				msg_str := "cant start listening on port - "+port_str
-				log_fun("ERROR", msg_str)
+				logFun("ERROR", msg_str)
 				panic(err)
 			}
 

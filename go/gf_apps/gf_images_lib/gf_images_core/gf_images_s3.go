@@ -87,7 +87,7 @@ func S3storeImage(p_image_local_file_path_str string,
 		return gfErr
 	}
 
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("s3_response_str - %s", s3_response_str))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("s3_response_str - %s", s3_response_str))
 	
 	//--------------------
 	// UPLOAD THUMBS
@@ -123,7 +123,7 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 		if gf_err != nil {
 			return gf_err
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// MEDIUM THUMB
@@ -134,7 +134,7 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 		if gf_err != nil {
 			return gf_err
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 		// LARGE THUMB
@@ -144,7 +144,7 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 		if gf_err != nil {
 			return gf_err
 		}
-		pRuntimeSys.Log_fun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
 
 		//--------------------
 	}
@@ -158,7 +158,7 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 // As input it requires a Gf_image struct.
 func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) string {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_original_file_s3_filepath()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_s3.S3__get_image_original_file_s3_filepath()")
 
 	// when image is downloaded its renamed to its ID
 	downloaded_image_filename_str := fmt.Sprintf("%s.%s", p_image.Id_str, p_image.Format_str)
@@ -180,7 +180,7 @@ func S3getImageFilepath(pImageIDstr GFimageID,
 //---------------------------------------------------
 func S3__get_image_thumbs_s3_filepaths(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) (string, string, string) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_s3.S3__get_image_thumbs_s3_filepaths()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_s3.S3__get_image_thumbs_s3_filepaths()")
 	
 	thumb_small__s3_filepath_str  := strings.Replace(p_image.Thumbnail_small_url_str,  "/images/d", "", 1)
 	thumb_medium__s3_filepath_str := strings.Replace(p_image.Thumbnail_medium_url_str, "/images/d", "", 1)

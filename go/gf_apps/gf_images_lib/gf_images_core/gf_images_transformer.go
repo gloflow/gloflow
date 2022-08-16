@@ -137,7 +137,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GF_image, *GFimageThumbs, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_transformer.Trans__process_image()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_transformer.TransformProcessImage()")
 
 	//---------------------------------
 	// LOAD_IMAGE
@@ -173,7 +173,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	//--------------------------
 	/* //DOMINANT COLOR DETERMINATION
 	//it"s computed only for non-gif"s
-	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(pImageLocalFilePathStr,p_log_fun)*/
+	dominant_color_hex_str := gf_images_core_graphic.get_dominant_image_color(pImageLocalFilePathStr,pLogFun)*/
 
 	//--------------------------
 	

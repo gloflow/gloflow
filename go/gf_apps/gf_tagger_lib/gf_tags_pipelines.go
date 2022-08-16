@@ -113,7 +113,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
 
 	//----------------
 	// INPUT
@@ -177,7 +177,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		//------------------
 		// HTML RENDERING
 		case "html":
-			p_runtime_sys.Log_fun("INFO","HTML RESPONSE >>")
+			p_runtime_sys.LogFun("INFO","HTML RESPONSE >>")
 			gf_err := render_objects_with_tag(tag_str,
 				p_tmpl,
 				p_subtemplates_names_lst,
@@ -192,7 +192,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		//------------------
 		// JSON EXPORT
 		case "json":
-			p_runtime_sys.Log_fun("INFO","JSON RESPONSE >>")
+			p_runtime_sys.LogFun("INFO","JSON RESPONSE >>")
 			objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
 				object_type_str,
 				page_index_int,

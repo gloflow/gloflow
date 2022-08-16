@@ -139,7 +139,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	pS3info                                       *gf_core.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, string, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Process()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Process()")
 	
 	//-------------
 	// FETCH
@@ -296,7 +296,7 @@ func storePreviewFrames(p_local_file_path_src string,
 	p_s3_bucket_name_str         string,
 	pS3info                      *gf_core.GFs3Info,
 	pRuntimeSys                  *gf_core.RuntimeSys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.storePreviewFrames()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
 	max_num__of_preview_frames_int       := 10
 	frames_images_file_paths_lst, gfErr := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
@@ -327,7 +327,7 @@ func storePreviewFrames(p_local_file_path_src string,
 			pRuntimeSys)
 
 		if gfErr != nil {
-			pRuntimeSys.Log_fun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(gfErr.Error))
+			pRuntimeSys.LogFun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(gfErr.Error))
 			gf_errors_lst[i] = gfErr
 		}
 
@@ -352,15 +352,15 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
 	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GF_error) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
 	black := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
 
-	pRuntimeSys.Log_fun("INFO", "")
-	pRuntimeSys.Log_fun("INFO", cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
-	pRuntimeSys.Log_fun("INFO", black(p_local_file_path_src))
-	pRuntimeSys.Log_fun("INFO", "")
+	pRuntimeSys.LogFun("INFO", "")
+	pRuntimeSys.LogFun("INFO", cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
+	pRuntimeSys.LogFun("INFO", black(p_local_file_path_src))
+	pRuntimeSys.LogFun("INFO", "")
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
@@ -533,7 +533,7 @@ func getDimensions(p_local_file_path_src string,
 //--------------------------------------------------
 func gif__get_hash(p_image_local_file_path_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_gif.gif__get_hash()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.gif__get_hash()")
 
 	hash := sha256.New()
 

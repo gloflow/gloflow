@@ -170,7 +170,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		
 		//--------------
 		
-		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("PROCESSING IMAGE - %s", sourceURLstr))
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf("PROCESSING IMAGE - %s", sourceURLstr))
 
 		//--------------
 		// VIDEO

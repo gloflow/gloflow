@@ -58,7 +58,7 @@ func images_pipe__from_html(pURLfetch *Gf_crawler_url_fetch,
 	pS3bucketNameStr       string,
 	pRuntime               *GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images_pipe__from_html()")
 
 	cyan := color.New(color.FgCyan).SprintFunc()
 	blue := color.New(color.FgBlue).SprintFunc()
@@ -146,7 +146,7 @@ func images_pipe__single_simple(pImage *Gf_crawler_page_image,
 	pCrawledImagesS3bucketNameStr string,
 	pRuntime                      *GFcrawlerRuntime,
 	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, string, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 
 	//------------------------
@@ -195,7 +195,7 @@ func images__stage__pull_image_links(pURLfetch *Gf_crawler_url_fetch,
 	pCycleRunIDstr  string,
 	pRuntime        *GFcrawlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__pull_image_links")
+	pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__pull_image_links")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - pull_image_links")
@@ -230,7 +230,7 @@ func images__stage__create_page_images(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	pRuntime                        *GFcrawlerRuntime,
 	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__create_page_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - create_page_images")
@@ -283,7 +283,7 @@ func images__stage__page_images_persist(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	pRuntime                        *GFcrawlerRuntime,
 	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__page_images_persist")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - page_images_persist")
@@ -339,7 +339,7 @@ func images__stages__process_images(pCrawlerNameStr string,
 	pS3bucketNameStr                  string,
 	pRuntime                          *GFcrawlerRuntime,
 	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images.images__stages__process_images")
 
 	//------------------
 	// // STAGE - determine if image is NSFV (contains nudity)
@@ -372,7 +372,7 @@ func images__stages__process_images(pCrawlerNameStr string,
 func images__stages_cleanup(p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	pRuntime    *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stages_cleanup")
 
 	// IMPORTANT!! - delete local tmp transformed image, since the files
 	//               have just been uploaded to S3 so no need for them localy anymore

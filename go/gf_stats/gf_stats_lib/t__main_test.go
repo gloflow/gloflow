@@ -34,14 +34,15 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_host_str    := "127.0.0.1"
 	test__mongodb_db_name_str := "test_db"
 
-	log_fun      := gf_core.Init_log_fun()
-	mongo_db     := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
+	logFun, logNewFun := gf_core.InitLogs()
+	mongo_db     := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, logFun)
 	mongodb_coll := mongo_db.C("data_symphony")
 
 	runtime_sys := &gf_core.RuntimeSys{
-		Service_name_str:"gf_stats_lib_test",
-		Log_fun:         log_fun,
-		Mongodb_coll:    mongodb_coll,
+		Service_name_str: "gf_stats_lib_test",
+		LogFun:           logFun,
+		LogNewFun:        logNewFun,
+		Mongodb_coll:     mongodb_coll,
 	}
 	//-----------------
 

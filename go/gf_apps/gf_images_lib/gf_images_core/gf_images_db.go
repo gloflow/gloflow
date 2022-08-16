@@ -52,7 +52,7 @@ func DB__put_image(p_image *GF_image,
 //---------------------------------------------------
 func DB__get_image(p_image_id_str GF_image_id,
 	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__get_image()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__get_image()")
 	
 
 
@@ -109,7 +109,7 @@ func DB__get_image(p_image_id_str GF_image_id,
 //---------------------------------------------------
 func DB__image_exists(p_image_id_str GF_image_id,
 	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
-	// p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__image_exists()")
+	// p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__image_exists()")
 
 	ctx := context.Background()
 	c, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
@@ -133,14 +133,14 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 2000
 	p_flow_name_str                  string,
 	p_runtime_sys                    *gf_core.RuntimeSys) ([]*GF_image, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
 
 	// reseed the random number source
 	rand.Seed(time.Now().UnixNano())
 	
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) // new Random().nextInt(p_max_random_cursor_position_int)
-	p_runtime_sys.Log_fun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
-	p_runtime_sys.Log_fun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	p_runtime_sys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
+	p_runtime_sys.LogFun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 
 

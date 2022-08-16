@@ -40,7 +40,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	pStorage        *gf_images_storage.GFimageStorage,
 	pS3info         *gf_core.GFs3Info,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_handlers.init_handlers()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
 	//---------------------
 	// METRICS

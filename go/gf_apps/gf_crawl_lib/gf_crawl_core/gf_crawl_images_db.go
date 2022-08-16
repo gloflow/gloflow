@@ -32,7 +32,7 @@ import (
 func Image__db_create(p_img *Gf_crawler_page_image,
 	p_runtime   *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	// pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.Image__db_create()")
+	// pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.Image__db_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -66,7 +66,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 		// crawler_page_img already exists, from previous crawls, so ignore it
 		var exists_bool bool
 		if c > 0 {
-			pRuntimeSys.Log_fun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
+			pRuntimeSys.LogFun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
 			
 			exists_bool = true
 			return exists_bool, nil
@@ -120,7 +120,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 	p_runtime   *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	//p_log_fun("FUN_ENTER", "gf_crawl_images_db.Image__db_create_ref()")
+	//pLogFun("FUN_ENTER", "gf_crawl_images_db.Image__db_create_ref()")
 
 	if p_runtime.Cluster_node_type_str == "master" {
 
@@ -190,7 +190,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 func image__db_get(p_id_str Gf_crawler_page_image_id,
 	p_runtime     *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawler_page_image, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_get()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_get()")
 
 	var img Gf_crawler_page_image
 	ctx := context.Background()
@@ -218,7 +218,7 @@ func image__db_get(p_id_str Gf_crawler_page_image_id,
 
 //-------------------------------------------------
 func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recent_images, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.Images__db_get_recent()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.Images__db_get_recent()")
 
 	ctx := context.Background()
 
@@ -302,7 +302,7 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 
 //--------------------------------------------------
 func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_mark_as_downloaded()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_mark_as_downloaded()")
 
 	ctx := context.Background()
 
@@ -333,7 +333,7 @@ func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, pRuntimeSys *g
 func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_image       *Gf_crawler_page_image,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
 
 	ctx := context.Background()
 
@@ -364,7 +364,7 @@ func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 func image__db_update_after_process(p_page_img *Gf_crawler_page_image,
 	p_gf_image_id_str gf_images_core.Gf_image_id,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_images_db.image__db_update_after_process()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_update_after_process()")
 
 	ctx := context.Background()
 

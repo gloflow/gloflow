@@ -128,7 +128,7 @@ func init_handlers(p_media_domain_str string,
 			if p_req.Method == "POST" {
 				
 				query_term_str := p_req.URL.Query()["term"][0]
-				p_runtime_sys.Log_fun("INFO", "query_term_str - "+query_term_str)
+				p_runtime_sys.LogFun("INFO", "query_term_str - "+query_term_str)
 
 				// IMPORTANT!! - only query if the indexer is enabled
 				if p_runtime.Esearch_client != nil {

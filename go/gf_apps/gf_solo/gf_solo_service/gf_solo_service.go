@@ -309,7 +309,7 @@ func Run(pConfig *GF_config,
 //-------------------------------------------------
 func RuntimeGet(pConfig_path_str string,
 	p_external_plugins *gf_core.ExternalPlugins,
-	p_log_fun          func(string, string)) (*gf_core.RuntimeSys, *GF_config, error) {
+	pLogFun            func(string, string)) (*gf_core.RuntimeSys, *GF_config, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(pConfig_path_str)  // "./../config/"
@@ -345,7 +345,7 @@ func RuntimeGet(pConfig_path_str string,
 	// RUNTIME_SYS
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_solo",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 
 		// SENTRY - enable it for error reporting
 		Errors_send_to_sentry_bool: true,

@@ -34,7 +34,9 @@ import (
 // type RuntimeSys = Runtime_sys
 type RuntimeSys struct {
 	Service_name_str string
-	Log_fun          func(string, string)
+	LogFun           func(string, string)
+	LogNewFun        func(pMsgStr string, pGroupStr string, pLevelStr string, pMetaMap map[string]interface{})
+
 	Mongo_db         *mongo.Database
 	Mongo_coll       *mongo.Collection // main mongodb collection to use when none is specified
 	Debug_bool       bool              // if debug mode is enabled (some places will print extra info in debug mode)

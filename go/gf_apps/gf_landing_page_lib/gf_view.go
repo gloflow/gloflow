@@ -33,7 +33,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_view.render_template()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_view.render_template()")
 	
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 	

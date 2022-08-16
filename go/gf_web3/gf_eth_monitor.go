@@ -35,10 +35,10 @@ import (
 //-------------------------------------------------
 func main() {
 
-	log_fun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 	log.SetOutput(os.Stdout)
 
-	cmd__base := cmds_init(log_fun)
+	cmd__base := cmds_init(logFun)
 	err := cmd__base.Execute()
 	if err != nil {
 		panic(err)
@@ -47,7 +47,7 @@ func main() {
 
 //-------------------------------------------------
 func runtimeGet(p_config_path_str string,
-	p_log_fun func(string, string)) (*gf_eth_core.GF_runtime, error) {
+	pLogFun func(string, string)) (*gf_eth_core.GF_runtime, error) {
 
 	// CONFIG
 	config_dir_path_str := path.Dir(p_config_path_str)  // "./../config/"
@@ -63,7 +63,7 @@ func runtimeGet(p_config_path_str string,
 	// RUNTIME_SYS
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 
 		// SENTRY - enable it for error reporting
 		Errors_send_to_sentry_bool: true,	
@@ -78,7 +78,7 @@ func runtimeGet(p_config_path_str string,
 }
 
 //-------------------------------------------------
-func cmds_init(p_log_fun func(string, string)) *cobra.Command {
+func cmds_init(pLogFun func(string, string)) *cobra.Command {
 
 	// BASE
 	cmd__base := &cobra.Command{
@@ -276,7 +276,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 		Long:  "start the gf_eth_monitor service in a target cluster",
 		Run:   func(p_cmd *cobra.Command, p_args []string) {
 
-			runtime, err := runtimeGet(cli_config_path_str, p_log_fun)
+			runtime, err := runtimeGet(cli_config_path_str, pLogFun)
 			if err != nil {
 				panic(err)
 			}
@@ -311,7 +311,7 @@ func cmds_init(p_log_fun func(string, string)) *cobra.Command {
 
 
 
-			runtime, err := runtimeGet(cli_config_path_str, p_log_fun)
+			runtime, err := runtimeGet(cli_config_path_str, pLogFun)
 			if err != nil {
 				panic(err)
 			}

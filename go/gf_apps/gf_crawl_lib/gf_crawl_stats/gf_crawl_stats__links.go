@@ -57,7 +57,7 @@ type Gf_stat__links_in_day struct {
 
 //-------------------------------------------------
 func stats__new_links_by_day(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__new_links_by_day()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__links.stats__new_links_by_day()")
 
 	type Minimal_link struct {
 		Creation_unix_time_f float64 `bson:"creation_unix_time_f"`
@@ -209,7 +209,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 
 //-------------------------------------------------
 func stats__unresolved_links(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__unresolved_links()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__links.stats__unresolved_links()")
 
 
 
@@ -320,7 +320,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 
 //-------------------------------------------------
 func stats__crawled_links_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_crawl_stats__links.stats__crawled_links_domains()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__links.stats__crawled_links_domains()")
 
 
 

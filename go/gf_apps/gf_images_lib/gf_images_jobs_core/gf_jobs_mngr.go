@@ -482,7 +482,7 @@ func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 func db__jobs_mngr__update_job_status(p_status_str job_status_val,
 	p_job_id_str  string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
 
 	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {
 		// status values are not generated at runtime, but are static, so its ok to panic here since

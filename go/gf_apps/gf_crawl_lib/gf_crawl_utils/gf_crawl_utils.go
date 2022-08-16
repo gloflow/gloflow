@@ -34,7 +34,7 @@ import (
 func Get__html_doc_over_http(pURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (*goquery.Document, *gf_core.GFerror) {
 
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_utils.Get__html_doc_over_http()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_utils.Get__html_doc_over_http()")
 
 	//-----------------------
 	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
@@ -88,7 +88,7 @@ func Crawler_sleep(p_crawler_name_str string,
 	p_cycle_index_int int,
 	p_rand            *rand.Rand,
 	pRuntimeSys       *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
 
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()

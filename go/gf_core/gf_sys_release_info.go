@@ -29,7 +29,7 @@ type Sys_release_info struct {
 
 //-------------------------------------------------
 func Get_sys_relese_info(p_runtime_sys *RuntimeSys) Sys_release_info {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_sys_release_info.Get_sys_relese_info()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_sys_release_info.Get_sys_relese_info()")
 
 	r := Sys_release_info{
 		Name_str:        "precious",

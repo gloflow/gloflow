@@ -28,7 +28,7 @@ import (
 //-------------------------------------------------
 func Gif__init_handlers(p_mux *http.ServeMux,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_gif.Flows__init_handlers()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------
 	// GIF_GET_INFO
@@ -58,7 +58,7 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 
 				// BY_ORIGIN_URL
 				if origin_url_str != "" {
-					p_runtime_sys.Log_fun("INFO","origin_url_str - "+origin_url_str)
+					p_runtime_sys.LogFun("INFO","origin_url_str - "+origin_url_str)
 
 					gfGIF, gfErr = gif_db__get_by_origin_url(origin_url_str, p_runtime_sys)
 
@@ -68,7 +68,7 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 
 				// BY_GF_IMG_ID
 				} else if gf_img_id_str != "" {
-					p_runtime_sys.Log_fun("INFO","gf_img_id_str - "+gf_img_id_str)
+					p_runtime_sys.LogFun("INFO","gf_img_id_str - "+gf_img_id_str)
 
 					gfGIF, gfErr = gif_db__get_by_img_id(gf_img_id_str,p_runtime_sys)
 

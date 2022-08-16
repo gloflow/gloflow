@@ -274,7 +274,7 @@ func HTTPputFile(p_target_url_str string,
 
     client := http.Client{}
 
-	pRuntimeSys.Log_fun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
+	pRuntimeSys.LogFun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
     resp, err := client.Do(req)
     if err != nil {
 		gfErr := ErrorCreate("failed to execute a HTTP PUT request to upload file to S3",
@@ -340,8 +340,8 @@ func HTTP__init_static_serving(p_url_base_str string,
 
 			p_resp.Header().Set("Content-Type", file_mime_type_str)
 
-			pRuntimeSys.Log_fun("INFO", "file_path_str  - "+file_path_str)
-			pRuntimeSys.Log_fun("INFO", "local_path_str - "+local_path_str)
+			pRuntimeSys.LogFun("INFO", "file_path_str  - "+file_path_str)
+			pRuntimeSys.LogFun("INFO", "local_path_str - "+local_path_str)
 
 		    http.ServeFile(p_resp, p_req, local_path_str)
 		}*/
@@ -366,7 +366,7 @@ func HTTP__serve_file(p_local_dir_str string,
 
 		p_resp.Header().Set("Content-Type", file_mime_type_str)
 
-		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
 
 		http.ServeFile(p_resp, p_req, local_path_str)
 	}
@@ -375,7 +375,7 @@ func HTTP__serve_file(p_local_dir_str string,
 //-------------------------------------------------
 func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 	pRuntimeSys *RuntimeSys) string {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
 	for _, cookie := range p_cookies_lst {
@@ -389,7 +389,7 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 //-------------------------------------------------
 func HTTP__init_sse(p_resp http.ResponseWriter,
 	pRuntimeSys *RuntimeSys) (http.Flusher, *GF_error) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
 
 	flusher, ok := p_resp.(http.Flusher)
 	if !ok {
@@ -407,7 +407,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 	notify := p_resp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
-		pRuntimeSys.Log_fun("INFO", "HTTP SSE CONNECTION CLOSED")
+		pRuntimeSys.LogFun("INFO", "HTTP SSE CONNECTION CLOSED")
 	}()
 
 	p_resp.Header().Set("Content-Type",                "text/event-stream")
@@ -423,7 +423,7 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func HTTP__get_streaming_response(pURLstr string,
 	pRuntimeSys *RuntimeSys) (*[]map[string]interface{}, *GF_error) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
 
 
 	req,err := http.NewRequest("GET", pURLstr, nil)

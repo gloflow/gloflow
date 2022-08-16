@@ -51,7 +51,7 @@ func Create_error_and_event(p_error_type_str string,
 	p_gf_err           *gf_core.GF_error,
 	p_runtime          *GFcrawlerRuntime,
 	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
 	if p_runtime.Events_ctx != nil {
 		events_id_str  := "crawler_events"
@@ -89,7 +89,7 @@ func create_error(p_type_str string,
 	p_gf_err           *gf_core.Gf_error,
 	p_runtime          *GFcrawlerRuntime,
 	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_error.create_error()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_error.create_error()")
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawl_error:"+fmt.Sprint(creation_unix_time_f)

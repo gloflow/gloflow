@@ -34,7 +34,7 @@ import (
 func init_handlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES

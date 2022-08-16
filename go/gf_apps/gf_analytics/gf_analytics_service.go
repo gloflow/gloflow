@@ -32,9 +32,9 @@ import (
 
 //-------------------------------------------------
 func main() {
-	log_fun := gf_core.Init_log_fun()
+	logFun := gf_core.InitLogs()
 
-	cli_args_map        := CLI__parse_args(log_fun)
+	cli_args_map        := CLI__parse_args(logFun)
 	run_str             := cli_args_map["run_str"].(string)
 	port_str            := cli_args_map["port_str"].(string)
 	mongodb_host_str       := cli_args_map["mongodb_host_str"].(string)
@@ -51,7 +51,7 @@ func main() {
 
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_analytics",
-		Log_fun:          log_fun,
+		LogFun:           logFun,
 	}
 
 	mongo_db, gf_err := gf_core.Mongo__connect_new(mongodb_host_str, mongodb_db_name_str, runtime_sys)

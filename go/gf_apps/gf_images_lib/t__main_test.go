@@ -41,13 +41,13 @@ type Gf_test_image_data struct {
 	large_thumb_max_size_px_int      int
 }
 
-var log_fun func(string, string)
+var logFun func(string, string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	log_fun = gf_core.Init_log_fun()
-	cli_args_map = gf_images_core.CLI__parse_args(log_fun)
+	logFun = gf_core.InitLogs()
+	cli_args_map = gf_images_core.CLI__parse_args(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -80,7 +80,7 @@ func Test__main(p_test *testing.T) {
 	// RUNTIME
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_tests",
-		Log_fun:          log_fun,
+		LogFun:          logFun,
 	}
 	
 	//-----------------

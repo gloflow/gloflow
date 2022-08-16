@@ -74,7 +74,7 @@ func Error__in_handler(p_handler_url_path_str string,
 //-------------------------------------------------
 func Get_response_format(p_qs_map map[string][]string,
 	p_runtime_sys *gf_core.RuntimeSys) string {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_rpc_utils.Get_response_format()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_rpc_utils.Get_response_format()")
 
 	response_format_str := "html" // default - "h" - HTML
 	if f_lst, ok := p_qs_map["f"]; ok {

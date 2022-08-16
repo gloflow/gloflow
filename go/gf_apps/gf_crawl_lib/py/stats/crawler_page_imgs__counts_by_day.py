@@ -28,7 +28,7 @@ def freq():
 
 #-------------------------------------------------------------
 def run(p_mongo_client,
-	p_log_fun,
+	pLogFun,
 	p_output_img_str = '../plots/crawler_page_imgs__counts_by_day.png'):
 		
 	#-------------------------------------------------------------

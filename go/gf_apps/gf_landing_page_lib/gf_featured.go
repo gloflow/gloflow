@@ -107,7 +107,7 @@ func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
 
 //------------------------------------------
 func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf_core.RuntimeSys) []*Gf_featured_post {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_featured.posts_to_featured()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_featured.posts_to_featured()")
 
 	featured_posts_lst := []*Gf_featured_post{}
 	for _, post := range p_posts_lst {
@@ -120,12 +120,12 @@ func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf
 	//             gf_publisher.
 	featured_elements_with_no_errors_lst := []*Gf_featured_post{}
 	for _, featured := range featured_posts_lst {
-		pRuntimeSys.Log_fun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
+		pRuntimeSys.LogFun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
 
 		//
 		if featured.Image_url_str == "" || featured.Image_url_str == "error" {
 			err_msg_str := fmt.Sprintf("post with title [%s] has a image_src that is [%s]", featured.Title_str, featured.Image_url_str)
-			pRuntimeSys.Log_fun("ERROR", err_msg_str)
+			pRuntimeSys.LogFun("ERROR", err_msg_str)
 		} else {
 			featured_elements_with_no_errors_lst = append(featured_elements_with_no_errors_lst, featured)
 		}
@@ -136,10 +136,10 @@ func posts_to_featured(p_posts_lst []*gf_publisher_core.Gf_post, pRuntimeSys *gf
 
 //------------------------------------------
 func post_to_featured(p_post *gf_publisher_core.Gf_post, pRuntimeSys *gf_core.RuntimeSys) *Gf_featured_post {
-	pRuntimeSys.Log_fun("FUN_ENTER","gf_featured.post_to_featured()")
+	pRuntimeSys.LogFun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	post_url_str := fmt.Sprintf("/posts/%s", p_post.Title_str)
-	pRuntimeSys.Log_fun("INFO", "p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
+	pRuntimeSys.LogFun("INFO", "p_post.Thumbnail_url_str - "+p_post.Thumbnail_url_str)
 
 	featured := &Gf_featured_post{
 		Title_str:         p_post.Title_str,

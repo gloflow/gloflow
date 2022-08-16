@@ -37,7 +37,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_templates_paths_map map[string]string,
 	p_mux                 *http.ServeMux,
 	p_runtime_sys         *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
 
 	//---------------------
 	// TEMPLATES
@@ -100,7 +100,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 					return nil, gf_err
 				}
-				p_runtime_sys.Log_fun("INFO", "post_title_str - "+post_title_str)
+				p_runtime_sys.LogFun("INFO", "post_title_str - "+post_title_str)
 
 				//--------------------
 

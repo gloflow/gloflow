@@ -47,7 +47,7 @@ type Gf_domain_counts_for_all_days struct {
 func stats__objs_by_days(p_match_query_map map[string]interface{},
 	p_obj_type_str string,
 	p_runtime_sys  *gf_core.RuntimeSys) (*Gf_stats__objs_by_days, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
 
 	type Domain_objs__stat struct {
 		Domain_str         string    `bson:"_id"`

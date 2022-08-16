@@ -28,7 +28,7 @@ import (
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
-	logFun     = gf_core.Init_log_fun()
+	logFun     = gf_core.InitLogs()
 	cliArgsMap = CLI__parse_args(logFun)
 
 	runtimeSys := T__init()

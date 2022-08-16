@@ -23,7 +23,7 @@ def freq():
 	return '0m' #0m means every 1h - CRON semantics
 #-------------------------------------------------------------
 def run(p_mongo_client,
-	p_log_fun,
+	pLogFun,
 	p_output_img_str = '../plots/crawler_page_outgoing_links__null_breakdown.png'):
 
 	fig = plt.figure(figsize=(30,10))

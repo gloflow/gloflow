@@ -143,7 +143,7 @@ func start_crawlers_cycles(pCrawlersMap map[string]gf_crawl_core.GFcrawlerDef,
 	pImagesS3bucketNameStr string,
 	pRuntime                   *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys               *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl.start_crawlers_cycles()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl.start_crawlers_cycles()")
 
 	events_id_str := "crawler_events"
 	
@@ -173,14 +173,14 @@ func start_crawler(pCrawler gf_crawl_core.GFcrawlerDef,
 	pImagesS3bucketNameStr string,
 	pRuntime                   *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys               *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_crawl.start_crawler()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl.start_crawler()")
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 
-	pRuntimeSys.Log_fun("INFO", black("------------------------------------"))
-	pRuntimeSys.Log_fun("INFO", black(">>>    STARTING CRAWLER >>> ")+yellow(pCrawler.Name_str))
-	pRuntimeSys.Log_fun("INFO", black("------------------------------------"))
+	pRuntimeSys.LogFun("INFO", black("------------------------------------"))
+	pRuntimeSys.LogFun("INFO", black(">>>    STARTING CRAWLER >>> ")+yellow(pCrawler.Name_str))
+	pRuntimeSys.LogFun("INFO", black("------------------------------------"))
 
 	//-----------------
 	// LINK_ALLOCATOR

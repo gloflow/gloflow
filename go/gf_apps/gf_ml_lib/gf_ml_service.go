@@ -57,15 +57,15 @@ func InitService(pHTTPmux *http.ServeMux,
 //-------------------------------------------------
 func Run_service(p_service_info *GF_service_info,
 	p_init_done_ch chan bool,
-	p_log_fun      func(string, string)) {
-	p_log_fun("FUN_ENTER", "gf_ml_service.Run_service()")
+	pLogFun        func(string, string)) {
+	pLogFun("FUN_ENTER", "gf_ml_service.Run_service()")
 
 	//-------------
 	// RUNTIME_SYS
 	
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_ml",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 	}
 
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
@@ -89,14 +89,14 @@ func Run_service(p_service_info *GF_service_info,
 
 	//-------------
 
-	runtimeSys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtimeSys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
-	runtimeSys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	runtimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
-		runtimeSys.Log_fun("ERROR", msg_str)
-		runtimeSys.Log_fun("ERROR", fmt.Sprint(http_err))
+		runtimeSys.LogFun("ERROR", msg_str)
+		runtimeSys.LogFun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

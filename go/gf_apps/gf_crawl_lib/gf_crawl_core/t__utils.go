@@ -67,11 +67,11 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
 
-	log_fun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_crawl_tests",
-		Log_fun:          log_fun,
+		LogFun:           logFun,
 	}
 
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
@@ -174,7 +174,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
 	p_test__local_image_file_path_str string,
 	pRuntimeSys                       *gf_core.RuntimeSys) (string, gf_images_core.GFimageID) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
+	pRuntimeSys.LogFun("FUN_ENTER", "t__utils.t__create_test_gf_image_named_image_file()")
 
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
@@ -202,7 +202,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 
 //-------------------------------------------------
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
+	pRuntimeSys.LogFun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
 
 	ctx := context.Background()
 	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").DeleteMany(ctx, bson.M{

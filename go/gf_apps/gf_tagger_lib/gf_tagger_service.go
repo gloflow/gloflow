@@ -29,9 +29,9 @@ import (
 
 //-------------------------------------------------
 func main() {
-	log_fun := gf_core.Init_log_fun()
+	logFun, _ := gf_core.InitLogs()
 
-	cli_args_map            := CLI__parse_args(log_fun)
+	cli_args_map            := CLI__parse_args(logFun)
 	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)
 	port_str                := cli_args_map["port_str"].(string)
 	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
@@ -46,14 +46,14 @@ func main() {
 			mongodb_host_str,
 			mongodb_db_name_str,
 			nil, // init_done_ch,
-			log_fun)
+			logFun)
 		// <-init_done_ch
 	}
 }
 
 //-------------------------------------------------
-func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_tagger_service.CLI__parse_args()")
+func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
+	pLogFun("FUN_ENTER", "gf_tagger_service.CLI__parse_args()")
 
 	//-------------------
 	run__start_service_bool := flag.Bool("run__start_service", true,   "run the service daemon")
@@ -119,16 +119,16 @@ func Run_service__in_process(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
-	p_log_fun             func(string, string)) {
-	p_log_fun("FUN_ENTER", "gf_tagger_service.Run_service__in_process()")
+	pLogFun               func(string, string)) {
+	pLogFun("FUN_ENTER", "gf_tagger_service.Run_service__in_process()")
 
-	p_log_fun("INFO", "")
-	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
-	p_log_fun("INFO", "")
+	pLogFun("INFO", "")
+	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
+	pLogFun("INFO", "")
 	
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 	}
 
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)
@@ -163,13 +163,13 @@ func Run_service__in_process(p_port_str string,
 
 	//----------------------
 
-	p_log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
-	p_log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	pLogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
+	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	err := http.ListenAndServe(":"+p_port_str, nil)
 	if err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		p_log_fun("ERROR", msg_str)
+		pLogFun("ERROR", msg_str)
 		panic(msg_str)
 	}
 }

@@ -32,7 +32,7 @@ import (
 //---------------------------------------------------
 func DB__get_post(p_post_title_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__get_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_post()")
 
 	ctx := context.Background()
 
@@ -56,7 +56,7 @@ func DB__get_post(p_post_title_str string,
 // CREATE
 func DB__create_post(p_post *Gf_post,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__create_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__create_post()")
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
@@ -88,7 +88,7 @@ func DB__create_post(p_post *Gf_post,
 // UPDATE
 func DB__update_post(p_post *Gf_post, 
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__update_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__update_post()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -111,7 +111,7 @@ func DB__update_post(p_post *Gf_post,
 // DELETE
 func DB__mark_as_deleted_post(p_post_title_str string,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__mark_as_deleted_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__mark_as_deleted_post()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -134,7 +134,7 @@ func DB__mark_as_deleted_post(p_post_title_str string,
 //---------------------------------------------------
 // DELETE
 func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__delete_post()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__delete_post()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.DeleteOne(ctx, bson.M{"title_str": p_post_title_str})
@@ -153,7 +153,7 @@ func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys
 func DB__get_posts_page(p_cursor_start_position_int int, // 0
 	p_elements_num_int int, // 50
 	p_runtime_sys      *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__get_posts_page()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_posts_page()")
 
 	ctx := context.Background()
 	
@@ -206,7 +206,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 func DB__get_posts_from_offset(p_cursor_position_int int,
 	p_posts_num_to_get_int int,
 	p_runtime_sys          *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__get_posts_from_offset()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_posts_from_offset()")
 
 	ctx := context.Background()
 
@@ -264,11 +264,11 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 500
 	p_runtime_sys                    *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
 
 	rand.Seed(time.Now().Unix())
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
-	p_runtime_sys.Log_fun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	p_runtime_sys.LogFun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 	posts_in_random_range_lst, gf_err := DB__get_posts_from_offset(random_cursor_position_int,
 		p_posts_num_to_get_int,
@@ -283,7 +283,7 @@ func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
 //---------------------------------------------------
 func DB__check_post_exists(p_post_title_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_post_db.DB__check_post_exists()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__check_post_exists()")
 	
 	ctx := context.Background()
 	count_int, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{

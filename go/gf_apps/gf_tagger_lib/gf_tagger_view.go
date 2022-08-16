@@ -82,7 +82,7 @@ func render_objects_with_tag(p_tag_str string,
 	p_page_size_int          int,
 	p_resp                   io.Writer,
 	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
 
 	//-----------------------------
 	// FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long

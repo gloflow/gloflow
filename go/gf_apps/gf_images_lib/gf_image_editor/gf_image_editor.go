@@ -72,7 +72,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_resp        http.ResponseWriter, 
 	pCtx          context.Context,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
 	// INPUT
@@ -226,7 +226,7 @@ func createImage(p_new_title_str string,
 	pProcessingInfo          *GFeditedImageProcessingInfo,
 	pCtx                     context.Context,
 	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_image_editor.create_gf_image()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_image_editor.create_gf_image()")
 	
 	
 	image_client_type_str                := "gf_image_editor" // IMPORTANT!! - since gf_image_editor is creating the image,

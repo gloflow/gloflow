@@ -139,7 +139,7 @@ func DBgetAll(p_ctx context.Context,
 func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 	p_image_gf_id_str gf_images_core.Gf_image_id,
 	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GF_error {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 	
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -201,7 +201,7 @@ func flows_db__get_page(p_flow_name_str string,
 	p_elements_num_int          int, // 50
 	p_ctx                       context.Context,
 	p_runtime_sys               *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
 
 	find_opts := options.Find()
     find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first

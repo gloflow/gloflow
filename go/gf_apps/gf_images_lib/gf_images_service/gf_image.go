@@ -64,7 +64,7 @@ func ImgGet(p_image_id_str gf_images_core.GF_image_id,
 func TagsAddToImage(p_image *gf_images_core.GF_image,
 	p_tags_lst    []string,
 	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_image.TagsAddToImage()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_image.TagsAddToImage()")
 	
 	if len(p_tags_lst) > 0 {
 

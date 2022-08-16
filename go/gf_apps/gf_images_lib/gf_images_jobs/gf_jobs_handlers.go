@@ -39,7 +39,7 @@ import (
 func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------
 	// START_JOB
@@ -55,7 +55,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 					return nil, gf_err
 				}
 				
-				pRuntimeSys.Log_fun("INFO", "input_map - "+fmt.Sprint(input_map))
+				pRuntimeSys.LogFun("INFO", "input_map - "+fmt.Sprint(input_map))
 
 				job_type_str                           := input_map["job_type_str"].(string)
 				clientTypeStr                          := input_map["client_type_str"].(string)
@@ -65,9 +65,9 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
 				flows_names_lst := []string{"general",}
 
-				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
-				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("client_type_str - %s", clientTypeStr))
-				pRuntimeSys.Log_fun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
+				pRuntimeSys.LogFun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
+				pRuntimeSys.LogFun("INFO", fmt.Sprintf("client_type_str - %s", clientTypeStr))
+				pRuntimeSys.LogFun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
 
 				//-------------------
 				// IMAGES_TO_PROCESS
@@ -78,8 +78,8 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				imgs_origin_pages_urls_str,_ := url.QueryUnescape(url_encoded_imgs_origin_pages_urls_str)
 				imgs_origin_pages_urls_lst   := strings.Split(imgs_origin_pages_urls_str, ",")
 				
-				pRuntimeSys.Log_fun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
-				pRuntimeSys.Log_fun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
+				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
+				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
 
 				images_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{}
 				for i, image_url_str := range images_urls_lst {
@@ -134,7 +134,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				
 				//-------------------------
 				images_job_id_str := p_req.URL.Query().Get("images_job_id_str")
-				pRuntimeSys.Log_fun("INFO", "images_job_id_str - "+images_job_id_str)
+				pRuntimeSys.LogFun("INFO", "images_job_id_str - "+images_job_id_str)
 
 				/*if _,ok := running_jobs_map[images_job_id_str]; !ok {
 					gf_rpc_lib.Error__in_handler("/images/jobs/status",
@@ -142,7 +142,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 									"job with ID doesnt exist - "+images_job_id_str, //p_user_msg_str
 									p_resp,
 									p_mongodb_coll,
-									p_log_fun)
+									pLogFun)
 					return
 				}
 
@@ -170,7 +170,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				notify := p_resp.(http.CloseNotifier).CloseNotify()
 				go func() {
 					<- notify
-					pRuntimeSys.Log_fun("ERROR", "HTTP connection just closed")
+					pRuntimeSys.LogFun("ERROR", "HTTP connection just closed")
 				}()
 
 				p_resp.Header().Set("Content-Type",                "text/event-stream")

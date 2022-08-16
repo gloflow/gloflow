@@ -68,9 +68,9 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 	//               which means that they dont have their corresponding gf_image.
 	if imageIDstr == "" {
 
-		pRuntimeSys.Log_fun("INFO", "")
-		pRuntimeSys.Log_fun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
-		pRuntimeSys.Log_fun("INFO", "")
+		pRuntimeSys.LogFun("INFO", "")
+		pRuntimeSys.LogFun("INFO", "CRAWL_PAGE_IMAGE MISSING ITS GF_IMAGE --- STARTING_PROCESSING")
+		pRuntimeSys.LogFun("INFO", "")
 
 
 		gfImage, gf_image_thumbs, localImageFilePathStr, gfErr := images_pipe__single_simple(pageImage,

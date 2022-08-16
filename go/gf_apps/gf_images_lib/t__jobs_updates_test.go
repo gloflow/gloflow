@@ -64,12 +64,12 @@ func Test__jobs_updates(p_test *testing.T) {
 	
 	//-------------
 	
-	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, log_fun)
+	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, logFun)
 	mongodb_coll := mongodb_db.C("data_symphony")
 	
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_tests",
-		Log_fun:          log_fun,
+		LogFun:           logFun,
 		Mongodb_db:       mongodb_db,
 		Mongodb_coll:     mongodb_coll,
 	}
@@ -114,7 +114,7 @@ func Test__jobs_updates(p_test *testing.T) {
 		
 		Run_service(service_info,
 			done_ch,
-			log_fun)
+			logFun)
 	}()
 	<-done_ch //wait for the service to finish initializing
 

@@ -130,7 +130,7 @@ func RunExternImages(pClientTypeStr string,
 	pFlowsNamesLst            []string,
 	pJobsMngrCh               gf_images_jobs_core.JobsMngr,
 	pRuntimeSys               *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GF_job_expected_output, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("images_extern_to_process - %s", fmt.Sprint(pImagesExternToProcessLst)))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("images_extern_to_process - %s", fmt.Sprint(pImagesExternToProcessLst)))
 
 	//-----------------
 	// SEND_MSG_TO_JOBS_MNGR

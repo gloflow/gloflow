@@ -24,7 +24,7 @@ def freq():
 	
 #-------------------------------------------------------------
 def run(p_mongo_client,
-	p_log_fun,
+	pLogFun,
 	p_output_img_str = '../plots/crawler_page_outgoing_links__per_crawler.png'):
 
 	fig = plt.figure(figsize=(30,10))

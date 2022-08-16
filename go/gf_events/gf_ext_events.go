@@ -76,7 +76,7 @@ func Events__send_event(p_events_id_str string,
 func Events__register_producer(p_events_id_str string,
 	p_events_ctx  *Events_ctx,
 	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
 
 	register_producer_msg := Events__register_producer_msg{
 		Events_id_str: p_events_id_str,
@@ -87,7 +87,7 @@ func Events__register_producer(p_events_id_str string,
 
 //-------------------------------------------------
 func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.RuntimeSys) *Events_ctx {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.Events__init()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.Events__init()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
@@ -155,7 +155,7 @@ func events__init_handlers(p_sse_url_str string,
 	p_register_consumer_ch chan<- Events__register_consumer_msg,
 	p_events_ctx           *Events_ctx,
 	p_runtime_sys          *gf_core.RuntimeSys) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_ext_events.events__init_handlers()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.events__init_handlers()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
@@ -163,12 +163,12 @@ func events__init_handlers(p_sse_url_str string,
 
 	// IMPORTANT!! - new event_consumers (clients) register via this HTTP handler
 	http.HandleFunc(p_sse_url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.Log_fun("INFO", "INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
+		p_runtime_sys.LogFun("INFO", "INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
 
 		// start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 		events_id_str := p_req.URL.Query()["events_id"][0]
-		p_runtime_sys.Log_fun("INFO", "events_id_str - "+events_id_str)
+		p_runtime_sys.LogFun("INFO", "events_id_str - "+events_id_str)
 
 		register_consumer__response_ch := make(chan chan Event__msg)
 		register_consumer_msg          := Events__register_consumer_msg{
@@ -203,7 +203,7 @@ func events__init_handlers(p_sse_url_str string,
 		for ;; {
 
 			event_msg,more_bool := <- events_consumer_ch
-			// p_log_fun("INFO",black("EVENTS >> EVENTS_CONSUMER <- EVENTS_BROKER msg")+" > "+yellow(event_msg.Type_str))
+			// pLogFun("INFO",black("EVENTS >> EVENTS_CONSUMER <- EVENTS_BROKER msg")+" > "+yellow(event_msg.Type_str))
 
 			// channel is not closed, and there are more messages to be received/processed
 			if more_bool {
@@ -226,7 +226,7 @@ func events__init_handlers(p_sse_url_str string,
 								start_time__unix_f,
 								end_time__unix_f,
 								p_mongodb_coll,
-								p_log_fun)
+								pLogFun)
 		}()*/
 	})
 }

@@ -112,7 +112,7 @@ func ImageLoadFile(pImageLocalFilePathStr string,
 //---------------------------------------------------
 func GetImageOriginalFilenameFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
 
 	url, err := url.Parse(pImageURLstr)
 	if err != nil {
@@ -153,7 +153,7 @@ func CreateImageFilePathFromURL(pImageIDstr GFimageID,
 	localImageFileNameStr := fmt.Sprintf("%s.%s", imageIDstr, extStr)
 	localImageFilePathStr := fmt.Sprintf("%s/%s", pImagesStoreLocalDirPathStr, localImageFileNameStr)
 
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("local_image_file_path_str - %s", localImageFilePathStr))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("local_image_file_path_str - %s", localImageFilePathStr))
 	
 	return localImageFilePathStr, imageIDstr, nil
 }

@@ -54,16 +54,16 @@ func Run_service(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
-	p_log_fun             func(string, string)) {
-	p_log_fun("FUN_ENTER", "gf_landing_page_service.Run_service()")
+	pLogFun               func(string, string)) {
+	pLogFun("FUN_ENTER", "gf_landing_page_service.Run_service()")
 
-	p_log_fun("INFO", "")
-	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
-	p_log_fun("INFO", "")
+	pLogFun("INFO", "")
+	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_LANDING_PAGE SERVICE")
+	pLogFun("INFO", "")
 
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_landing_page",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 	}
 
 	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)
@@ -93,14 +93,14 @@ func Run_service(p_port_str string,
 
 	//----------------------
 
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.Log_fun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
-	runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtime_sys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
+	runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.Log_fun("ERROR", msg_str)
-		runtime_sys.Log_fun("ERROR", fmt.Sprint(http_err))
+		runtime_sys.LogFun("ERROR", msg_str)
+		runtime_sys.LogFun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

@@ -111,7 +111,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		s3_client,
 		s3_uploader, //s3_client,
 		mongodb_coll,
-		p_log_fun)*/
+		pLogFun)*/
 
 	//-------------
 	// IMAGE_EDITOR
@@ -157,12 +157,12 @@ func InitService(pHTTPmux *http.ServeMux,
 func Run_service(pHTTPmux *http.ServeMux,
 	pServiceInfo   *gf_images_core.GFserviceInfo,
 	p_init_done_ch chan bool,
-	p_log_fun      func(string, string)) {
-	p_log_fun("FUN_ENTER", "gf_images_service.Run_service()")
+	pLogFun      func(string, string)) {
+	pLogFun("FUN_ENTER", "gf_images_service.Run_service()")
 
-	p_log_fun("INFO", "")
-	p_log_fun("INFO", " >>>>>>>>>>> STARTING GF_IMAGES SERVICE")
-	p_log_fun("INFO", "")
+	pLogFun("INFO", "")
+	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_IMAGES SERVICE")
+	pLogFun("INFO", "")
 	logo_str := `.           ..         .         
       .         .            .          .       .
             .         ..xxxxxxxxxx....               .       .             .
@@ -189,14 +189,14 @@ func Run_service(pHTTPmux *http.ServeMux,
                .                  ""MMMMMMMMMMMMM""" .  : . '   .        .
           .              .     .    .                      .         .
 .                                         .          .         .`
-	p_log_fun("INFO", logo_str)
+	pLogFun("INFO", logo_str)
 
 	//-------------
 	// RUNTIME_SYS
 	
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images",
-		Log_fun:          p_log_fun,
+		LogFun:           pLogFun,
 	}
 
 	mongoDB, _, gfErr := gf_core.Mongo__connect_new(pServiceInfo.Mongodb_host_str,

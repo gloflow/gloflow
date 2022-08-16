@@ -57,7 +57,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 
 				/*//response_format_str - "j"(for json)|"h"(for html)
 				response_format_str := gf_rpc_lib.Get_response_format(qs_map,
-																p_log_fun)*/
+																pLogFun)*/
 				//--------------------
 				// GET DOMAINS FROM DB
 				domains_lst, gf_err := db__get_domains(p_runtime_sys)

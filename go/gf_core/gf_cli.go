@@ -79,9 +79,9 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 
 
 
-	cmd_name_str := pCmdInfo.Cmd_lst[0]
-	cmd_args_lst := pCmdInfo.Cmd_lst[1:]
-	p := exec.Command(cmd_name_str, cmd_args_lst...)
+	cmdNameStr := pCmdInfo.Cmd_lst[0]
+	cmdArgsLst := pCmdInfo.Cmd_lst[1:]
+	p := exec.Command(cmdNameStr, cmdArgsLst...)
 
 
 
@@ -103,12 +103,12 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	// defer stdin.Close()
 
 	// STDOUT
-	cmd_stdout__reader, _ := p.StdoutPipe()
-	cmd_stdout__buffer    := bufio.NewReader(cmd_stdout__reader)
+	cmdStdoutReader, _ := p.StdoutPipe()
+	cmdStdoutBuffer    := bufio.NewReader(cmdStdoutReader)
 	
 	// STDERR
-	cmd_stderr__reader, _ := p.StderrPipe()
-	cmd_stderr__buffer    := bufio.NewReader(cmd_stderr__reader)
+	cmdStderrReader, _ := p.StderrPipe()
+	cmdStderrBuffer    := bufio.NewReader(cmdStderrReader)
 
 	// done_ch := make(chan bool)
 	
@@ -135,7 +135,7 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	stdOutCh := make(chan string, 100)
 	go func(p_stdOutCh chan string) {
 		for {
-			l, err := cmd_stdout__buffer.ReadString('\n')
+			l, err := cmdStdoutBuffer.ReadString('\n')
 
 			if fmt.Sprint(err) == "EOF" {
 				p_stdOutCh <- "EOF"
@@ -160,7 +160,7 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	stdErrCh := make(chan string, 100)
 	go func() {
 		for {
-			l, err := cmd_stderr__buffer.ReadString('\n')
+			l, err := cmdStderrBuffer.ReadString('\n')
 			// if fmt.Sprint(err) == "EOF" {
 			// 	done_ch <- true
 			// 	return
@@ -169,7 +169,7 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 				continue
 			}
 			if pCmdInfo.View_output_bool {
-				fmt.Printf("%s\n", l)
+				fmt.Printf("%s", l)
 			}
 			lStr := strings.TrimSuffix(l, "\n")
 			stdErrCh <- lStr

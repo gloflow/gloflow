@@ -118,7 +118,7 @@ func UploadInit(pImageNameStr string,
 
 		S3bucketNameStr := pConfig.Uploaded_images_s3_bucket_str // "gf--uploaded--img"
 
-		pRuntimeSys.Log_fun("INFO", fmt.Sprintf("S3 generating presigned_url - bucket (%s) - file (%s)",
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf("S3 generating presigned_url - bucket (%s) - file (%s)",
 			S3bucketNameStr,
 			S3filePathStr))
 
@@ -131,7 +131,7 @@ func UploadInit(pImageNameStr string,
 		}
 	}
 
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("S3 presigned URL - %s", presignedURLstr))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("S3 presigned URL - %s", presignedURLstr))
 	
 	//------------------
 	

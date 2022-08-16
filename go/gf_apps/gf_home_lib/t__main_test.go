@@ -38,7 +38,7 @@ import (
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
-	logFun     = gf_core.Init_log_fun()
+	logFun     = gf_core.InitLogs()
 	cliArgsMap = CLIparseArgs(logFun)
 
 	runtimeSys := Tinit()
@@ -153,7 +153,7 @@ func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_home_test",
-		Log_fun:          logFun,
+		LogFun:           logFun,
 	}
 
 	// TEMPLATES

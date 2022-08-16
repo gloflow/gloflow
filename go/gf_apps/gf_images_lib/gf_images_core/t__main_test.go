@@ -31,7 +31,7 @@ var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	logFun     = gf_core.Init_log_fun()
+	logFun     = gf_core.InitLogs()
 	cliArgsMap = CLI__parse_args(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -44,7 +44,7 @@ func TestImageTransform(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_core_tests",
-		Log_fun:          logFun,
+		LogFun:           logFun,
 	}
 
 

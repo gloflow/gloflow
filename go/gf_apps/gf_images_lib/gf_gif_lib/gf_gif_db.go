@@ -41,7 +41,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
 	p_runtime_sys               *gf_core.RuntimeSys) (*GFgif, *gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__create()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
 	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)
 	if gf_err != nil {
@@ -107,7 +107,7 @@ func gif_db__create(p_image_source_url_str string,
 //--------------------------------------------------
 func gif_db__delete(p_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -131,7 +131,7 @@ func gif_db__delete(p_id_str string,
 //--------------------------------------------------
 func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_img_id()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_img_id()")
 
 
 	ctx := context.Background()
@@ -172,7 +172,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 //--------------------------------------------------
 func gif_db__get_by_origin_url(p_origin_url_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
 
 	ctx := context.Background()
 
@@ -211,7 +211,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 	p_elements_num_int int,                // 50
 	p_runtime_sys      *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_gif_db.gif_db__get_page()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_page()")
 
 	ctx := context.Background()
 

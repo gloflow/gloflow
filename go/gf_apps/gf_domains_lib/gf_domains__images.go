@@ -41,11 +41,11 @@ type Gf_domain_images struct {
 }
 
 func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_images,*gf_core.Gf_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_domains__images.Get_domains_images__mongo()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_domains__images.Get_domains_images__mongo()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
-	p_runtime_sys.Log_fun("INFO",cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
+	p_runtime_sys.LogFun("INFO",cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
 
 
@@ -201,7 +201,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 		domain_images_lst = append(domain_images_lst, v)
 	}
 
-	// p_runtime_sys.Log_fun("INFO",yellow(">>>>>>>> DOMAIN_IMAGES FOUND - ")+cyan(fmt.Sprint(len(domain_images_lst))))
+	// p_runtime_sys.LogFun("INFO",yellow(">>>>>>>> DOMAIN_IMAGES FOUND - ")+cyan(fmt.Sprint(len(domain_images_lst))))
 	//----------------------
 
 	return domain_images_lst, nil

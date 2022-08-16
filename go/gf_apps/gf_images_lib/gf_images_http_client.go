@@ -51,7 +51,7 @@ func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
 	p_runtime_sys                         *gf_core.RuntimeSys) (string, []*Client_job_image_output, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_http_client.Client__dispatch_process_extern_images()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.Client__dispatch_process_extern_images()")
 
 	running_job_id_str, images_outputs_lst, gf_err := client__start_job(p_input_images_urls_lst,
 		p_input_images_origin_pages_urls_lst,
@@ -72,12 +72,12 @@ func client__start_job(p_input_images_urls_lst []string,
 	p_client_type_str                     string,
 	p_target__image_service_host_port_str string,
 	p_runtime_sys                         *gf_core.RuntimeSys) (string, []*Client_job_image_output, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER","gf_images_http_client.client__start_job()")
+	p_runtime_sys.LogFun("FUN_ENTER","gf_images_http_client.client__start_job()")
 
 	//------------------
 	// HTTP REQUEST
 
-	p_runtime_sys.Log_fun("INFO","p_target__image_service_host_port_str - "+p_target__image_service_host_port_str)
+	p_runtime_sys.LogFun("INFO","p_target__image_service_host_port_str - "+p_target__image_service_host_port_str)
 
 	url_str  := fmt.Sprintf("http://%s/images/jobs/start", p_target__image_service_host_port_str)
 	data_map := map[string]string{
@@ -94,10 +94,10 @@ func client__start_job(p_input_images_urls_lst []string,
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.Log_fun("INFO", "")
-	p_runtime_sys.Log_fun("INFO", cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
-	p_runtime_sys.Log_fun("INFO", yellow(p_input_images_urls_lst))
-    p_runtime_sys.Log_fun("INFO", "")
+	p_runtime_sys.LogFun("INFO", "")
+	p_runtime_sys.LogFun("INFO", cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
+	p_runtime_sys.LogFun("INFO", yellow(p_input_images_urls_lst))
+    p_runtime_sys.LogFun("INFO", "")
 
     fmt.Println("")
 	spew.Dump(data_map)
@@ -127,7 +127,7 @@ func client__start_job(p_input_images_urls_lst []string,
 
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
 	fmt.Println(fmt.Sprintf("images_service %s RESPONSE", url_str))
-	p_runtime_sys.Log_fun("INFO", fmt.Sprint(body))
+	p_runtime_sys.LogFun("INFO", fmt.Sprint(body))
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
 
 	//------------------
@@ -200,7 +200,7 @@ func client__start_job(p_input_images_urls_lst []string,
 func client__get_status(p_running_job_id_str string,
 	p_target__image_service_host_port_str string,
 	p_runtime_sys                         *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_http_client.client__get_status()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.client__get_status()")
 
 	url_str := fmt.Sprintf("http://%s/images/jobs/status", p_target__image_service_host_port_str)
 
@@ -234,14 +234,14 @@ func client__get_status(p_running_job_id_str string,
 // SSE
 func client__parse_sse_response(p_body_str string,
 	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
-	p_runtime_sys.Log_fun("FUN_ENTER", "gf_images_http_client.client__parse_sse_response()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.client__parse_sse_response()")
 
 	data_items_lst := []map[string]interface{}{}
 
 	for _, line_str := range strings.Split(p_body_str, `\n`) {
 
-		p_runtime_sys.Log_fun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
-		p_runtime_sys.Log_fun("INFO", line_str)
+		p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
+		p_runtime_sys.LogFun("INFO", line_str)
 
 		// filter out keep-alive new lines
 		if line_str != "" && strings.HasPrefix(line_str, "data: ") {

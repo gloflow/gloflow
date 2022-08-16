@@ -26,8 +26,8 @@ import (
 )
 
 //-------------------------------------------------
-func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
-	p_log_fun("FUN_ENTER", "gf_analytics_cli.CLI__parse_args()")
+func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
+	pLogFun("FUN_ENTER", "gf_analytics_cli.CLI__parse_args()")
 
 	default_command_str := "start_service"
 	//-------------------
@@ -75,7 +75,7 @@ func CLI__parse_args(p_log_fun func(string, string)) map[string]interface{} {
 	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
 
 	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
-		p_log_fun("ERROR", "ENV vars not set - GF_AWS_ACCESS_KEY_ID, GF_AWS_SECRET_ACCESS_KEY")
+		pLogFun("ERROR", "ENV vars not set - GF_AWS_ACCESS_KEY_ID, GF_AWS_SECRET_ACCESS_KEY")
 		panic(1)
 	}
 	//-------------------

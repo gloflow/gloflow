@@ -40,7 +40,7 @@ type Gf_images_client_result struct {
 func process_external_images(p_post *gf_publisher_core.Gf_post,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.Log_fun("FUN_ENTER", "gf_post_images.process_external_images()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_post_images.process_external_images()")
 
 	//-------------------	
 	// POST ELEMENTS IMAGES
@@ -145,7 +145,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 	post_thumbnail_str      := first_post_element.Img_thumbnail_small_url_str*/
 
 	p_post.Thumbnail_url_str = result.post_thumbnail_str
-	pRuntimeSys.Log_fun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
 
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
