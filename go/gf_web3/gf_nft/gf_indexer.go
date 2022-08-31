@@ -66,7 +66,7 @@ func indexAddress(pAddressStr string,
 		//---------------------
 		// GF_IMAGES
 		flowsNamesLst := []string{
-			fmt.Sprintf("gf_web3:gf_nft:owner:%s", pAddressStr),
+			fmt.Sprintf("nft:owner:%s", pAddressStr),
 		}
 		gfErr = createAsImagesInFlows(nftsLst,
 			flowsNamesLst,
