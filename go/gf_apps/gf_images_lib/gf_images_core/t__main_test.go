@@ -31,7 +31,7 @@ var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 func TestMain(m *testing.M) {
-	logFun     = gf_core.InitLogs()
+	logFun, _  = gf_core.InitLogs()
 	cliArgsMap = CLI__parse_args(logFun)
 	v := m.Run()
 	os.Exit(v)
