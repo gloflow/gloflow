@@ -1,19 +1,26 @@
 FROM ubuntu:20.04
 
+RUN echo "1"
 RUN mkdir /home/gf
 
 # needed to avoid user prompt durring installation
 # of tzdata
 ENV DEBIAN_FRONTEND=noninteractive
 
-# libvips-dev - dependency for golang image processing package "bimg"
-#               used in gf_images app, for image transformations and pipelines.
+
 RUN apt-get update && \
     apt-get install -y \
     python3 \
     python3-pip \
-    wget \
-    libvips-dev
+    wget
+
+# libvips-dev - dependency for golang image processing package "bimg"
+#               used in gf_images app, for image transformations and pipelines.
+RUN apt-get install -y libvips-dev
+
+# ffmpeg - dependency for golang video operations, and needed in tests
+#          to be invoked via CLI
+RUN apt-get install -y ffmpeg
 
 # PY_DEPENDENCIES
 RUN pip3 install \
@@ -30,8 +37,8 @@ RUN DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     
 #-----------------------------
 # GO
-RUN wget https://golang.org/dl/go1.17.5.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.5.linux-amd64.tar.gz
+RUN wget https://golang.org/dl/go1.19.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.linux-amd64.tar.gz
 
 # has to be added this way to PATH, to work in a Dockerfile
 ENV PATH=$PATH:/usr/local/go/bin
