@@ -29,9 +29,9 @@ import (
 // OP_DEFs
 //---------------------------------------------------
 type GFgetOpDef struct {
-	ImageLocalFilePathStr string
-	TargetFilePathStr     string
-	S3bucketNameStr       string
+	ImageSourceFilePathStr      string
+	ImageTargetLocalFilePathStr string
+	S3bucketNameStr             string
 }
 
 type GFputFromLocalOpDef struct {
@@ -41,9 +41,9 @@ type GFputFromLocalOpDef struct {
 }
 
 type GFcopyOpDef struct {
-	SourceFilePathStr         string
+	ImageSourceFilePathStr    string
 	SourceFileS3bucketNameStr string
-	TargetFilePathStr         string
+	ImageTargetFilePathStr    string
 	TargetFileS3bucketNameStr string
 }
 
@@ -187,11 +187,29 @@ func FileCopy(pOpDef *GFcopyOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	if pStorage.TypeStr == "s3" {
+	switch pStorage.TypeStr {
+
+	// LOCAL
+	case "local":
+		
+		sourceFileLocalPathStr := pOpDef.ImageSourceFilePathStr
+		targetFileLocalPathStr := pOpDef.ImageTargetFilePathStr
+
+		// local file get operation copies the image file from the local image storage dir
+		// to some desired working dir path 
+		gfErr := gf_core.FileCopy(sourceFileLocalPathStr,
+			targetFileLocalPathStr,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+	// S3
+	case "s3":
 		gfErr := gf_core.S3copyFile(pOpDef.SourceFileS3bucketNameStr,
-			pOpDef.SourceFilePathStr,
+			pOpDef.ImageSourceFilePathStr,
 			pOpDef.TargetFileS3bucketNameStr,
-			pOpDef.TargetFilePathStr,
+			pOpDef.ImageTargetFilePathStr,
 			pStorage.S3.Info,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -209,8 +227,32 @@ func FileGet(pOpDef *GFgetOpDef,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	switch pStorage.TypeStr {
+
+	// LOCAL
+	case "local":
+		
+		sourceFileLocalPathStr := pOpDef.ImageSourceFilePathStr
+		targetFileLocalPathStr := pOpDef.ImageTargetLocalFilePathStr
+
+		// local file get operation copies the image file from the local image storage dir
+		// to some desired working dir path 
+		gfErr := gf_core.FileCopy(sourceFileLocalPathStr,
+			targetFileLocalPathStr,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+	
+	// S3
 	case "s3":
-		fmt.Println("s3")
+		gfErr := gf_core.S3getFile(pOpDef.ImageSourceFilePathStr,
+			pOpDef.ImageTargetLocalFilePathStr,
+			pOpDef.S3bucketNameStr,
+			pStorage.S3.Info,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 
 	case "ipfs":
 		fmt.Println("ipfs")
@@ -228,6 +270,8 @@ func FileGeneratePresignedURL(pOpDef *GFgeneratePresignedURLopDef,
 	var presignedURLstr string
 
 	switch pStorage.TypeStr {
+
+	// s3 is the only file storage for which generating presigned URL's makes sense
 	case "s3":
 		S3presignedURLstr, gfErr := gf_core.S3generatePresignedUploadURL( pOpDef.TargetFilePathStr,
 			pOpDef.TargetFileS3bucketNameStr,

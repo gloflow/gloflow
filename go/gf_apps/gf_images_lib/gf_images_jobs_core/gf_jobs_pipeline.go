@@ -138,8 +138,9 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 
 		imageFilePathStr := pS3filePathStr
 		op := &gf_images_storage.GFgetOpDef{
-			ImageLocalFilePathStr: imageLocalFilePathStr,
-			TargetFilePathStr:     imageFilePathStr,
+			ImageSourceFilePathStr:      imageFilePathStr,
+			ImageTargetLocalFilePathStr: imageLocalFilePathStr,
+			
 		}
 		if pStorage.TypeStr == "s3" {
 			op.S3bucketNameStr = pStorage.S3.UploadsSourceS3bucketNameStr // pSourceS3bucketNameStr
@@ -200,8 +201,8 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 
 			imageFilePathStr := pS3filePathStr
 			op := &gf_images_storage.GFcopyOpDef{
-				SourceFilePathStr: imageFilePathStr,
-				TargetFilePathStr: imageFilePathStr,
+				ImageSourceFilePathStr: imageFilePathStr,
+				ImageTargetFilePathStr: imageFilePathStr,
 			}
 			if pStorage.TypeStr == "s3" {
 				op.SourceFileS3bucketNameStr = pStorage.S3.UploadsSourceS3bucketNameStr

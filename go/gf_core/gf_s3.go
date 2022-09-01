@@ -42,42 +42,42 @@ type GFs3Info struct {
 }
 
 //---------------------------------------------------
-func S3getFile(p_target_file__s3_path_str string,
-	p_target_file__local_path_str string,
-	p_s3_bucket_name_str          string,
-	p_s3_info                     *GFs3Info,
-	pRuntimeSys                   *RuntimeSys) *GFerror {
+func S3getFile(pTargetFileS3pathStr string,
+	pTargetFileLocalPathStr string,
+	pS3bucketNameStr        string,
+	pS3info                 *GFs3Info,
+	pRuntimeSys             *RuntimeSys) *GFerror {
 	
-	fmt.Printf("target_file__s3_path - %s\n", p_target_file__s3_path_str)
-	fmt.Printf("s3_bucket_name       - %s\n", p_s3_bucket_name_str)
+	fmt.Printf("target_file_s3_path - %s\n", pTargetFileS3pathStr)
+	fmt.Printf("s3_bucket_name      - %s\n", pS3bucketNameStr)
 	
-	downloader := s3manager.NewDownloader(p_s3_info.Session)
+	downloader := s3manager.NewDownloader(pS3info.Session)
 
 	// create a local host FS file to store the downloaded image into
-	file, err := os.Create(p_target_file__local_path_str)
+	file, err := os.Create(pTargetFileLocalPathStr)
 	if err != nil {
-		gf_err := ErrorCreate("failed to create local file on host FS, to save a downloaded S3 file to.",
+		gfErr := ErrorCreate("failed to create local file on host FS, to save a downloaded S3 file to.",
 			"file_create_error", 
 			map[string]interface{}{
-				"target_file__s3_path_str":    p_target_file__s3_path_str,
-				"target_file__local_path_str": p_target_file__local_path_str,
-				"s3_bucket_name_str":          p_s3_bucket_name_str,
+				"target_file__s3_path_str":    pTargetFileS3pathStr,
+				"target_file__local_path_str": pTargetFileLocalPathStr,
+				"s3_bucket_name_str":          pS3bucketNameStr,
 			}, err, "gf_core", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	// write downloaded S3 file contents to the local FS file
-	bytes_downloaded_int, err := downloader.Download(file, &s3.GetObjectInput{
-		Bucket: aws.String(p_s3_bucket_name_str),
-		Key:    aws.String(p_target_file__s3_path_str),
+	bytesDownloadedInt, err := downloader.Download(file, &s3.GetObjectInput{
+		Bucket: aws.String(pS3bucketNameStr),
+		Key:    aws.String(pTargetFileS3pathStr),
 	})
 
 	if err != nil {
-		gf_err := ErrorCreate("failed to download an image from S3 bucket",
+		gfErr := ErrorCreate("failed to download an image from S3 bucket",
 			"s3_file_download_error", nil, err, "gf_core", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
-	fmt.Printf("file downloaded, %d bytes\n", bytes_downloaded_int)
+	fmt.Printf("file downloaded, %d bytes\n", bytesDownloadedInt)
 
 
 	return nil
