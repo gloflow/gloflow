@@ -122,8 +122,8 @@ func StoreThumbnails(pImageThumbs *GFimageThumbs,
 			pTargetFilePathStr string) *gf_core.GFerror {
 
 			op := &gf_images_storage.GFputFromLocalOpDef{
-				SourceLocalFilePathStr: pLocalFilePathStr,
-				TargetFilePathStr:      pTargetFilePathStr,
+				ImageSourceLocalFilePathStr: pLocalFilePathStr,
+				ImageTargetFilePathStr:      pTargetFilePathStr,
 			}
 			if pStorage.TypeStr == "s3" {
 				op.S3bucketNameStr = pStorage.S3.ThumbsS3bucketNameStr

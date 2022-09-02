@@ -35,9 +35,9 @@ type GFgetOpDef struct {
 }
 
 type GFputFromLocalOpDef struct {
-	SourceLocalFilePathStr string
-	TargetFilePathStr      string
-	S3bucketNameStr        string
+	ImageSourceLocalFilePathStr string
+	ImageTargetFilePathStr      string
+	S3bucketNameStr             string
 }
 
 type GFcopyOpDef struct {
@@ -165,9 +165,27 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	if pStorage.TypeStr == "s3" {
-		_, gfErr := gf_core.S3uploadFile(pOpDef.SourceLocalFilePathStr,
-			pOpDef.TargetFilePathStr,
+	switch pStorage.TypeStr {
+
+	// LOCAL
+	case "local":
+
+		sourceFileLocalPathStr := pOpDef.ImageSourceLocalFilePathStr
+		targetFileLocalPathStr := pOpDef.ImageTargetFilePathStr
+
+		// local file get operation copies the image file from the local image storage dir
+		// to some desired working dir path 
+		gfErr := gf_core.FileCopy(sourceFileLocalPathStr,
+			targetFileLocalPathStr,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
+	// S3
+	case "s3":
+		_, gfErr := gf_core.S3uploadFile(pOpDef.ImageSourceLocalFilePathStr,
+			pOpDef.ImageTargetFilePathStr,
 			pOpDef.S3bucketNameStr,
 			pStorage.S3.Info,
 			pRuntimeSys)
@@ -178,7 +196,6 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 	}
 
 	return nil
-
 }
 
 //---------------------------------------------------

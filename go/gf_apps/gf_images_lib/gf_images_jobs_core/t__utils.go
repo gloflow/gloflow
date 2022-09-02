@@ -37,15 +37,19 @@ func TgetJobsMngr(pImagesStoreLocalDirPathStr string,
 		UseNewStorageEngineBool: true,
 	}
 
+	//---------------------
+	// IMAGE_STORAGE
 	storageConfig := &gf_images_storage.GFimageStorageConfig{
 		TypesToProvisionLst: []string{"local"},
 	}
-
+	
 	imageStorage, gfErr := gf_images_storage.Init(storageConfig, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 
+	//---------------------
+	// JOBS_MNGR
 	jobsMngr := JobsMngrInit(pImagesStoreLocalDirPathStr,
 		pImagesThumbnailsStoreLocalDirPathStr,
 		pVideoStoreLocalDirPathStr,
@@ -56,6 +60,7 @@ func TgetJobsMngr(pImagesStoreLocalDirPathStr string,
 		nil, // pS3info
 		pRuntimeSys)
 
-
+	//---------------------
+	
 	return jobsMngr
 }

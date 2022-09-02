@@ -86,8 +86,8 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 	// IMAGE_FULLSIZE_STORE
 
 	op := &gf_images_storage.GFputFromLocalOpDef{
-		SourceLocalFilePathStr: imageLocalFilePathStr,
-		TargetFilePathStr:      imageFileNameStr,
+		ImageSourceLocalFilePathStr: imageLocalFilePathStr,
+		ImageTargetFilePathStr:      imageFileNameStr,
 	}
 	if pStorage.TypeStr == "s3" {
 		op.S3bucketNameStr = pStorage.S3.ExternImagesS3bucketNameStr
@@ -380,8 +380,8 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		targetFilePathStr := fileNameStr
 
 		op := &gf_images_storage.GFputFromLocalOpDef{
-			SourceLocalFilePathStr: imageLocalFilePathStr,
-			TargetFilePathStr:      targetFilePathStr,
+			ImageSourceLocalFilePathStr: imageLocalFilePathStr,
+			ImageTargetFilePathStr:      targetFilePathStr,
 		}
 		if pStorage.TypeStr == "s3" {
 			op.S3bucketNameStr = pStorage.S3.ExternImagesS3bucketNameStr
