@@ -31,28 +31,28 @@ import (
 )
 
 //---------------------------------------------------
-func DB__put_image(p_image *GF_image,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+func DBputImage(pImage *GF_image,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	// UPSERT
-	query  := bson.M{"t": "img", "id_str": p_image.Id_str,}
-	gf_err := gf_core.Mongo__upsert(query,
-		p_image,
-		map[string]interface{}{"image_id_str": p_image.Id_str,},
-		p_runtime_sys.Mongo_coll,
-		p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	query  := bson.M{"t": "img", "id_str": pImage.IDstr,}
+	gfErr := gf_core.Mongo__upsert(query,
+		pImage,
+		map[string]interface{}{"image_id_str": pImage.IDstr,},
+		pRuntimeSys.Mongo_coll,
+		pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
 }
 
 //---------------------------------------------------
-func DB__get_image(p_image_id_str GF_image_id,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GF_error) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__get_image()")
+func DB__get_image(p_image_id_str GFimageID,
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__get_image()")
 	
 
 
@@ -60,8 +60,8 @@ func DB__get_image(p_image_id_str GF_image_id,
 	var image GF_image
 
 	q             := bson.M{"t": "img", "id_str": p_image_id_str}
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	err           := p_runtime_sys.Mongo_db.Collection(coll_name_str).FindOne(ctx, q).Decode(&image)
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
+	err           := pRuntimeSys.Mongo_db.Collection(coll_name_str).FindOne(ctx, q).Decode(&image)
 	if err != nil {
 
 		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
@@ -70,20 +70,20 @@ func DB__get_image(p_image_id_str GF_image_id,
 			gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 				"mongodb_not_found_error",
 				map[string]interface{}{"image_id_str": p_image_id_str,},
-				err, "gf_images_core", p_runtime_sys)
+				err, "gf_images_core", pRuntimeSys)
 			return nil, gf_err
 		}
 		
 		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return nil, gf_err
 	}
 
 
 	/*var image Gf_image
-	err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_image_id_str}).One(&image)
+	err := pRuntimeSys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_image_id_str}).One(&image)
 
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
@@ -91,7 +91,7 @@ func DB__get_image(p_image_id_str GF_image_id,
 		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return nil, gf_err
 	}
 
@@ -99,7 +99,7 @@ func DB__get_image(p_image_id_str GF_image_id,
 		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return nil, gf_err
 	}*/
 	
@@ -108,16 +108,16 @@ func DB__get_image(p_image_id_str GF_image_id,
 
 //---------------------------------------------------
 func DB__image_exists(p_image_id_str GF_image_id,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
-	// p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__image_exists()")
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	// pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__image_exists()")
 
 	ctx := context.Background()
-	c, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
+	c, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
 	if err != nil {
 		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return false, gf_err
 	}
 
@@ -132,15 +132,15 @@ func DB__image_exists(p_image_id_str GF_image_id,
 func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 2000
 	p_flow_name_str                  string,
-	p_runtime_sys                    *gf_core.RuntimeSys) ([]*GF_image, *gf_core.GF_error) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
+	pRuntimeSys                    *gf_core.RuntimeSys) ([]*GF_image, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
 
 	// reseed the random number source
 	rand.Seed(time.Now().UnixNano())
 	
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) // new Random().nextInt(p_max_random_cursor_position_int)
-	p_runtime_sys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
-	p_runtime_sys.LogFun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	pRuntimeSys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
+	pRuntimeSys.LogFun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 
 
@@ -169,9 +169,9 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 			"flow_name_str":                  p_flow_name_str,
 			"caller_err_msg_str":             "failed to get random img range from the DB",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	if gf_err != nil {
 		return nil, gf_err
@@ -187,12 +187,12 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 				"max_random_cursor_position_int": p_max_random_cursor_position_int,
 				"flow_name_str":                  p_flow_name_str,
 			},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return nil, gf_err
 	}
 
 	/*var imgs_lst []*gf_images_core.Gf_image
-	err := p_runtime_sys.Mongo_coll.Find(bson.M{
+	err := pRuntimeSys.Mongo_coll.Find(bson.M{
 			"t":                    "img",
 			"creation_unix_time_f": bson.M{"$exists": true,},
 			"flows_names_lst":      bson.M{"$in": []string{p_flow_name_str},},
@@ -216,7 +216,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 				"max_random_cursor_position_int": p_max_random_cursor_position_int,
 				"flow_name_str":                  p_flow_name_str,
 			},
-			err, "gf_images_core", p_runtime_sys)
+			err, "gf_images_core", pRuntimeSys)
 		return nil, gf_err
 	}*/
 

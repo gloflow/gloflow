@@ -418,7 +418,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				//               p_create_new_db_img_bool is set to 'false'.
 				image_client_type_str := ""
 
-				flows_names_lst, gf_err := migrate__get_flows_names(img.Id_str, p_runtime_sys)
+				flows_names_lst, gf_err := migrate__get_flows_names(img.IDstr, p_runtime_sys)
 				if gf_err != nil {
 					continue
 				}

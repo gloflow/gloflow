@@ -84,7 +84,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 			return gfErr
 		}
 
-		imageIDstr = gfImage.Id_str
+		imageIDstr = gfImage.IDstr
 
 		//-------------------
 		// S3_UPLOAD_TO_GF_IMAGES_BUCKET

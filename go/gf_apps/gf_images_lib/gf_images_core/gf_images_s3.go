@@ -158,10 +158,9 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 // As input it requires a Gf_image struct.
 func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) string {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_s3.S3__get_image_original_file_s3_filepath()")
-
+	
 	// when image is downloaded its renamed to its ID
-	downloaded_image_filename_str := fmt.Sprintf("%s.%s", p_image.Id_str, p_image.Format_str)
+	downloaded_image_filename_str := fmt.Sprintf("%s.%s", p_image.IDstr, p_image.Format_str)
 	s3_filepath_str               := downloaded_image_filename_str
 
 	return s3_filepath_str
@@ -170,7 +169,7 @@ func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 //---------------------------------------------------
 func S3getImageFilepath(pImageIDstr GFimageID,
 	pImageFormatStr string,
-	pRuntimeSys        *gf_core.RuntimeSys) string {
+	pRuntimeSys     *gf_core.RuntimeSys) string {
 
 	imageFileNameStr := ImageGetFilepathFromID(pImageIDstr, pImageFormatStr) // fmt.Sprintf("%s.%s", p_gf_image_id_str, pImageFormatStr)
 	s3FilepathStr    := imageFileNameStr

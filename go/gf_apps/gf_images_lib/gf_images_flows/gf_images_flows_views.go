@@ -115,7 +115,7 @@ func flows__render_template(p_flow_name_str string,
 
 			image_info_map := map[string]interface{}{
 				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
-				"id_str":                    image.Id_str,
+				"id_str":                    image.IDstr,
 				"title_str":                 image.Title_str,
 				"meta_json_str":             meta_json_str,
 				"format_str":                image.Format_str,

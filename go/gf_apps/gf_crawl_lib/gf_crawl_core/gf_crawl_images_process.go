@@ -166,7 +166,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 		
 		//spew.Dump(gf_image)
 
-		gf_image_id_str := gf_image.Id_str
+		gf_image_id_str := gf_image.IDstr
 		gfErr           = image__db_update_after_process(p_page_img, gf_image_id_str, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr

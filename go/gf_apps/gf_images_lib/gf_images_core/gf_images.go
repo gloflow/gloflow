@@ -32,7 +32,7 @@ type GF_image = Gf_image
 type Gf_image struct {
 
 	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
-	Id_str               GFimageID     `json:"id_str"               bson:"id_str"`
+	IDstr                GFimageID     `json:"id_str"               bson:"id_str"`
 	T_str                string        `json:"-"                    bson:"t"` // "img"
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	
@@ -133,7 +133,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	image := &GF_image{
-		Id_str:                         pImageInfo.Id_str,
+		IDstr:                          pImageInfo.Id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           creationUNIXtimeF,
 		Client_type_str:                pImageInfo.Image_client_type_str,
@@ -154,7 +154,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 
 	//----------------------------------
 	// DB PERSIST
-	gfErr := DB__put_image(image, pCtx, pRuntimeSys)
+	gfErr := DBputImage(image, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -168,13 +168,12 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 // DEPRECATED!! - use Image__create_new and its structured input
 
 func Image__create(pImageInfoMap map[string]interface{},
-	pCtx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images.Image__create()")
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 	
-	newImageInfoMap, gf_err := Image__verify_image_info(pImageInfoMap, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	newImageInfoMap, gfErr := Image__verify_image_info(pImageInfoMap, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	title_str       := newImageInfoMap["title_str"].(string)
@@ -182,7 +181,7 @@ func Image__create(pImageInfoMap map[string]interface{},
 	gf_image_id_str := GFimageID(newImageInfoMap["id_str"].(string))
 
 	image := &GF_image{
-		Id_str:                         gf_image_id_str,
+		IDstr:                          gf_image_id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           float64(time.Now().UnixNano())/1000000000.0,
 		Client_type_str:                newImageInfoMap["image_client_type_str"].(string),
@@ -200,9 +199,9 @@ func Image__create(pImageInfoMap map[string]interface{},
 	//----------------------------------
 	// DB PERSIST
 
-	db_gf_err := DB__put_image(image, pCtx, p_runtime_sys)
-	if db_gf_err != nil {
-		return nil, db_gf_err
+	gfErr = DBputImage(image, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
 	//----------------------------------
