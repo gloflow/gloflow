@@ -33,7 +33,7 @@ func db_index__init(p_runtime *gf_crawl_core.GFcrawlerRuntime,
 		[]string{"t", "hash_str"},
 	}
 
-	_, gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", p_runtime_sys)
+	_, gf_err := gf_core.MongoEnsureIndex(indexes_keys_lst, "gf_crawl", p_runtime_sys)
 	if gf_err != nil {
 		return gf_err
 	}

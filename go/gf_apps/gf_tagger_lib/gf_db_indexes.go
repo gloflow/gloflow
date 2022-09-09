@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,26 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_domains_lib
+package gf_tagger_lib
 
 import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
-func DB_index__init(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	indexesKeysLst := [][]string{
+		[]string{"t", "tags_lst",},
+	}
 	
-	indexes_keys_lst := [][]string{
-		[]string{"t", }, // all stat queries first match on "t"
-		[]string{"t", "origin_page_url_str"},
-		[]string{"t", "name_str"},
-		[]string{"t", "count_int"},
-	}
-
-	_, gf_err := gf_core.MongoEnsureIndex(indexes_keys_lst, "data_symphony", p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
-	}
-
-	return nil
+	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "data_symphony", pRuntimeSys)
+	return gfErr
 }

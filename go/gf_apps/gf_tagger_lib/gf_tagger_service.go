@@ -87,10 +87,17 @@ func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
 }
 
 //-------------------------------------------------
-func Init_service(p_templates_paths_map map[string]string,
+func InitService(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_http_mux         *http.ServeMux,
-	p_runtime_sys      *gf_core.RuntimeSys) {
+	pRuntimeSys        *gf_core.RuntimeSys) {
+	
+	//------------------------
+	// DB_INDEXES
+	gfErr := DBindexInit(pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
 	
 	//------------------------
 	// STATIC FILES SERVING
@@ -99,16 +106,16 @@ func Init_service(p_templates_paths_map map[string]string,
 	gf_core.HTTP__init_static_serving_with_mux(url_base_str,
 		local_dir_path_str,
 		p_http_mux,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//------------------------
 	
-	gf_err := init_handlers(p_templates_paths_map,
+	gfErr = initHandlers(p_templates_paths_map,
 		p_images_jobs_mngr,
 		p_http_mux,
-		p_runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+		pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//------------------------
@@ -150,7 +157,7 @@ func Run_service__in_process(p_port_str string,
 	//         transport mechanism (not via Go messages as a goroutine).
 	var jobs_mngr gf_images_jobs_core.JobsMngr
 
-	Init_service(templates_dir_paths_map,
+	InitService(templates_dir_paths_map,
 		jobs_mngr,
 		http_mux,
 		runtime_sys)

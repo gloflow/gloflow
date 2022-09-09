@@ -45,7 +45,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// DB_INDEXES
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	gf_images_service.DB_index__init(pRuntimeSys)
+	gf_images_service.DBindexInit(pRuntimeSys)
 
 	//-------------
 	// S3

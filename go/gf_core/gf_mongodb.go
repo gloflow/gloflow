@@ -416,15 +416,15 @@ func Mongo__insert(p_record interface{},
 
 //-------------------------------------------------
 // ENSURE_INDEX
-func Mongo__ensure_index(p_indexes_keys_lst [][]string, 
+func MongoEnsureIndex(p_indexes_keys_lst [][]string, 
 	p_coll_name_str string,
 	p_runtime_sys   *RuntimeSys) ([]string, *GF_error) {
 
 	models := []mongo.IndexModel{}
-	for _, index_keys_lst := range p_indexes_keys_lst {
+	for _, indexKeysLst := range p_indexes_keys_lst {
 		
 		keys_bson := bson.D{}
-		for _, k := range index_keys_lst {
+		for _, k := range indexKeysLst {
 			keys_bson = append(keys_bson, bson.E{k, 1})
 		}
 

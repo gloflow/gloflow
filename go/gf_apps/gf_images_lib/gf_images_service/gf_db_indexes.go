@@ -24,9 +24,9 @@ import (
 )
 
 //--------------------------------------------------
-func DB_index__init(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	indexes_keys_lst := [][]string{
+	indexesKeysLst := [][]string{
 		[]string{"t", }, // all stat queries first match on "t"
 
 		// QUERIES - flows_db__images_exist() issues these queries
@@ -38,8 +38,11 @@ func DB_index__init(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
 
 		// QUERIES - flows_db__images_exist() issues these queries
 		[]string{"t", "flows_names_lst", "origin_url_str"},
+
+		[]string{"t", "flow_name_str",},
+		[]string{"t", "flows_names_lst",},
 	}
 	
-	_, gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "data_symphony", p_runtime_sys)
-	return gf_err
+	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "data_symphony", pRuntimeSys)
+	return gfErr
 }

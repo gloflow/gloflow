@@ -33,7 +33,7 @@ import (
 func Link__db_index__init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")
 
-	indexes_keys_lst := [][]string{
+	indexesKeysLst := [][]string{
 		[]string{"t", "crawler_name_str"}, // all stat queries first match on "t"
 		[]string{"t", "id_str"},
 		[]string{"t", "hash_str"},
@@ -41,15 +41,14 @@ func Link__db_index__init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 		[]string{"t", "hash_str", "valid_for_crawl_bool"}, // Link__mark_as_resolved()
 	}
 
-	_, gf_err := gf_core.Mongo__ensure_index(indexes_keys_lst, "gf_crawl", pRuntimeSys)
-	return gf_err
+	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "gf_crawl", pRuntimeSys)
+	return gfErr
 }
 
 //--------------------------------------------------
 // LINK_DB_GET_UNRESOLVED
 func Link__db_get_unresolved(p_crawler_name_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageOutgoingLink, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.Link__get_unresolved()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
