@@ -1,6 +1,4 @@
 
-
-body {}
 /*-----------------------------------------------------*/
 /*IMAGE_TO_POST*/
 
@@ -52,21 +50,26 @@ body {}
 /*-----------------------------------------------------*/
 #page_info_container {
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-
+	margin: 0;
+	padding: 0;
 	position:absolute;
-	top     :0px;
-	left    :0px;
-	z-index :50000;
-
-	width       : 100%;
-	height      : 100%;
-	padding-left: 12px;
-	padding-top : 12px;
-
+	left:	0px;
+	z-index:	50000;
+	width: 100%;
 	background-color:gray;	
 
-	overflow-y:scroll;
-	overflow-x:hidden; /*no horizontal scroll bars*/
+	/* overflow-y:scroll; */
+	overflow-x:hidden; 
+	/*no horizontal scroll bars*/
+}
+#parameters{
+	padding-top: 16px;
+    padding-left: 25px;
+}
+#collection{
+	top: 6px;
+	margin-bottom: 40px;
+	margin-left: 15px;
 }
 /*-----------------------------------------------------*/
 /*IMAGE_IN_PAGE*/
@@ -152,6 +155,40 @@ body {}
 }
 #page_info_container .image_in_page .hud .img_width span {
 	font-weight: bold;
+}
+/*-----------------------------------------------------*/
+/*GF EXTENTION INPUT FIELD*/
+.flow_name_field{
+	position: fixed;
+    right: 16px;
+    top: 47vh;
+    z-index: 1000;
+	width: 350px;
+}
+.flow_name_field .flow_name_msg{
+	font-size: 18px;
+	margin-bottom: 3px;
+	color: #000;
+	font-weight: 700;
+}
+.flow_name_field .flow_name{
+	font-size: 20px;
+	text-transform: lowercase;
+	font-weight: 800;
+	width: 100%;
+	color: #da4c1dff;
+	/* color: rgb(0, 35, 58); */
+	padding-left: 15px;
+	right: 20px;
+	position: relative; 
+	filter: drop-shadow(0 0 0.25rem rgb(56, 54, 54));
+}
+.flow_name_field .flow_name::placeholder{
+	opacity:1;
+	font-weight: normal;
+	font-size: 16px;
+	color: #696969;
+	margin-bottom: 4px;
 }
 /*-----------------------------------------------------*/
 /*IMAGE_IN_PAGE__HUD_ACTIONS*/
@@ -313,10 +350,11 @@ body {}
 #page_info_container #close_btn {
 
 	position: fixed;
-	top     : 0px;
-	right   : 0px;
-	width   : 50px;
-	height  : 38px;
+	top: 0px;
+	right: 0;
+	width: 55px;
+	margin-right: 16px;
+	height: 38px;
 	background-color: rgb(166, 166, 166);
 
 	/*this is specified programmatically in JS, because this 
@@ -325,10 +363,14 @@ body {}
 	  chrome.extension.getURL(), so that the PACKAGE_ID can 
 	  be set by the runtime, to its correct value.
 	  background-image   : url('assets/icons.png');*/
-	background-position: -145px -423px;
+	background-position: -143px -423px;
 
 	padding-top: 14px;
 	font-weight: bold;
 	font-size  : 20px;
 	text-align : center;
+}
+
+#page_info_container #close_btn:hover {
+	cursor: pointer;
 }

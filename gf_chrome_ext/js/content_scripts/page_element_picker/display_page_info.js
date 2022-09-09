@@ -28,12 +28,29 @@ function display_page_info(p_page_images_infos_lst,
 			<div id="parameters">
 				<input id="gf_host" value="https://gloflow.com"></input>
 			</div>
+			<div class="flow_name_field">
+				<p class="flow_name_msg"># Add flow names</p>
+				<input type="text" class="flow_name" placeholder="general"></input>
+			</div>
 			<div id="collection"></div>
 			<div id="selected_elements_preview"></div>
 		</div>`);
 	$("body").append(gf_container);
 
-	$(gf_container).css('height', $(document).height());
+	$("body").css({
+		"overflow":"hidden",
+		"overflow-y":"hidden",
+		"overflow-x":"hidden"
+	});
+
+	// $(gf_container).css('height', $(document).height());
+    var current_scroll_y = window.scrollY;
+
+	$(gf_container).css({
+		"height":	"100%",
+		"overflow-y": "visible",
+		"top":	current_scroll_y+"px",
+	})
 
 	create_close_btn();
 
@@ -70,6 +87,7 @@ function display_page_info(p_page_images_infos_lst,
 
 	//---------------------------------------------------
 	function create_close_btn() {
+		
 		p_log_fun("FUN_ENTER", "display_page_info.display_page_info().create_close_btn()");
 
 		const close_btn_element = $(`<div id="close_btn"></div>`);
@@ -81,10 +99,17 @@ function display_page_info(p_page_images_infos_lst,
 		$(close_btn_element).css('background-image', icons_chrome_ext_url_str);
 		//--------
 		
-		$(document).on('click', '#page_info_container #close_btn',
+		$(document).on('click', '#close_btn',
 			() => {
 				$(gf_container).remove();
+				$("body").css({
+					"overflow": "overlay",
+					"overflow-y":"visible",
+					"overflow-x":"hidden"
+				});
 			});
+
+			
 	}
 
 	//---------------------------------------------------
@@ -99,8 +124,13 @@ function display_page_info(p_page_images_infos_lst,
 		//p_log_fun('INFO',full_img_src_str);
 		//p_log_fun('INFO',img_name_str);
 
-		const image_in_page_element = $('<div class="image_in_page"></div>');
-		const img                   = $('<img></img>').attr('src', full_img_src_str);
+		const image_in_page_element = $(`
+			<div class="image_in_page">
+				
+			</div>
+		`);
+		
+		const img = $('<img></img>').attr('src', full_img_src_str);
 
 		$(image_in_page_element).append(img);
 		//-----------------
@@ -350,7 +380,20 @@ function init_image_hud(p_image_id_str,
 			},
 			p_log_fun);*/
 
-		const image_flows_names_lst = ["general"];
+		// IN GF EXTENTION ADDED INPUT FIELD THAT DIRECTS IMAGES TO FLOWS VIA STRING
+		const flows_names_str 			 = $("input.flow_name").val();
+		const flows_names_lowercased_str = flows_names_str.toLowerCase()
+		const flows_names_lst 			 = flows_names_lowercased_str.split(" ");
+		const flows_names_filtered_lst   = flows_names_lst.filter(n => n) // removes empty strings from array
+		const image_flows_names_lst 	 = []
+
+		if(flows_names_str == ""){
+			image_flows_names_lst.push("general");
+		}else{
+			image_flows_names_lst.push(...flows_names_filtered_lst);
+		}
+
+		//const image_flows_names_lst = ["general"];
 		const gf_host_str           = $(p_gf_container_element).find("input#gf_host").val();
 		add_image_to_flow(full_img_src_str,
 			image_flows_names_lst,
