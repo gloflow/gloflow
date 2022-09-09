@@ -33,9 +33,9 @@ import (
 )
 
 //-------------------------------------------------
-// p_image_origin_page_url_str - urls of pages (html or some other resource) where the image image_url
-//                               was found. this is valid for gf_chrome_ext image sources.
-//                               its not relevant for direct image uploads from clients.
+// pImageOriginPageURLstr - urls of pages (html or some other resource) where the image image_url
+//                          was found. this is valid for gf_chrome_ext image sources.
+//                          its not relevant for direct image uploads from clients.
 
 func TransformImage(pImageIDstr GFimageID,
 	pImageClientTypeStr                   string,
@@ -192,7 +192,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	}
 
 	imageInfo := &GFimageNewInfo{
-		Id_str:                         pImageIDstr,
+		IDstr:                          pImageIDstr,
 		Title_str:                      imageTitleStr,
 		Flows_names_lst:                pImagesFlowsNamesLst,
 		Image_client_type_str:          pImageClientTypeStr,

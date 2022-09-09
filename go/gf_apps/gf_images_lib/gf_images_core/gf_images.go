@@ -109,7 +109,7 @@ type GFimageThumbs struct {
 }
 
 type GFimageNewInfo struct {
-	Id_str                         GFimageID
+	IDstr                          GFimageID
 	Title_str                      string
 	Flows_names_lst                []string
 	Image_client_type_str          string
@@ -133,7 +133,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	image := &GF_image{
-		IDstr:                          pImageInfo.Id_str,
+		IDstr:                          pImageInfo.IDstr,
 		T_str:                          "img",
 		Creation_unix_time_f:           creationUNIXtimeF,
 		Client_type_str:                pImageInfo.Image_client_type_str,

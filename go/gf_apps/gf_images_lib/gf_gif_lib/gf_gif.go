@@ -258,7 +258,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		//-----------------------
 		verified_gf_image_id_str := gf_images_core.Gf_image_id(verified_image_info_map["id_str"].(string)) //type-casting, gf_images_core.Gf_image_id is a type (not function)
 		gf_image_info := &gf_images_core.GFimageNewInfo{
-			Id_str:                         verified_gf_image_id_str,                                           //image_id_str,
+			IDstr:                          verified_gf_image_id_str,                                           //image_id_str,
 			Title_str:                      verified_image_info_map["title_str"].(string),                      //image_title_str,
 			Flows_names_lst:                verified_image_info_map["flows_names_lst"].([]string),              //p_flows_names_lst,
 			Image_client_type_str:          verified_image_info_map["image_client_type_str"].(string),          //p_image_client_type_str,
