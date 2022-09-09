@@ -113,7 +113,7 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get unresolved_link from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"crawler_name_str": p_crawler_name_str,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -125,7 +125,7 @@ func Link__db_get_unresolved(p_crawler_name_str string,
 	//               so for proper usage it is unescaped here and stored back in the unresolved_link struct.
 	unescaped_unresolved_link_url_str, err := url.QueryUnescape(unresolved_link.A_href_str)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get unresolved_link from mongodb", "url_unescape_error",
+		gf_err := gf_core.MongoHandleError("failed to get unresolved_link from mongodb", "url_unescape_error",
 			map[string]interface{}{
 				"crawler_name_str":        p_crawler_name_str,
 				"unresolved_link_url_str": unresolved_link.A_href_str,
@@ -159,7 +159,7 @@ func Link__db_get(p_link_id_str string,
 		}).One(&unresolved_link)*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_outgoing_link by ID from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get crawler_page_outgoing_link by ID from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"link_id_str": p_link_id_str,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -215,7 +215,7 @@ func link__db_create(p_link *GFcrawlerPageOutgoingLink,
 		/*err := pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(p_link)
 		if err != nil {
 
-			gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_outgoing_link in mongodb",
+			gf_err := gf_core.MongoHandleError("failed to insert a crawler_page_outgoing_link in mongodb",
 				"mongodb_insert_error",
 				map[string]interface{}{
 					"link_a_href_str": p_link.A_href_str,
@@ -245,7 +245,7 @@ func link__db_exists(pLinkHashStr string,
 		}).Count()*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to count crawler_page_outgoing_link by its hash",
+		gf_err := gf_core.MongoHandleError("failed to count crawler_page_outgoing_link by its hash",
 			"mongodb_find_error",
 			map[string]interface{}{"hash_str": pLinkHashStr,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -288,7 +288,7 @@ func Link__db_mark_import_in_progress(pStatusBool bool,
 		bson.M{"$set": update_map,})
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as in_progress/complete",
+		gf_err := gf_core.MongoHandleError("failed to update a crawler_page_outgoing_link in mongodb as in_progress/complete",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"link_id_str": p_link.Id_str,
@@ -323,7 +323,7 @@ func Link__db_mark_as_resolved(p_link *GFcrawlerPageOutgoingLink,
 		})
 	
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as resolved/fetched",
+		gf_err := gf_core.MongoHandleError("failed to update a crawler_page_outgoing_link in mongodb as resolved/fetched",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"link_id_str":  p_link.Id_str,
@@ -355,7 +355,7 @@ func link__db_mark_as_failed(p_error *Gf_crawler_error,
 		})
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a crawler_page_outgoing_link in mongodb as failed",
+		gf_err := gf_core.MongoHandleError("failed to update a crawler_page_outgoing_link in mongodb as failed",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"link_id_str":    p_link.Id_str,

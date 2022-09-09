@@ -108,7 +108,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains images",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_domains_lib", p_runtime_sys)
@@ -125,7 +125,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains images",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 			"mongodb_aggregation_error",
 			nil, err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err
@@ -137,7 +137,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 		var r Images_Origin_Page
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains images",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_domains_lib", p_runtime_sys)

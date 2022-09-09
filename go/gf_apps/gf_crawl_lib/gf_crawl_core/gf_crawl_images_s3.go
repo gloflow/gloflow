@@ -136,7 +136,7 @@ func imageS3dbFlagAsUploaded(pImage *Gf_crawler_page_image,
 		})
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img s3_stored flag by its hash",
+		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img s3_stored flag by its hash",
 			"mongodb_update_error",
 			map[string]interface{}{"image_hash_str": pImage.Hash_str,},
 			err, "gf_crawl_core", pRuntimeSys)

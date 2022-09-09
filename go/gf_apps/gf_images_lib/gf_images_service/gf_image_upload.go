@@ -231,7 +231,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 		}).Decode(&upload_info)
 
 	if err == mongo.ErrNoDocuments {
-		gf_err := gf_core.Mongo__handle_error("image_upload_info does not exist in mongodb",
+		gf_err := gf_core.MongoHandleError("image_upload_info does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"upload_gf_image_id_str": p_upload_gf_image_id_str,},
 			err, "gf_images_lib", pRuntimeSys)
@@ -239,7 +239,7 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get image_upload_info from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get image_upload_info from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"upload_gf_image_id_str": p_upload_gf_image_id_str,},
 			err, "gf_images_lib", pRuntimeSys)

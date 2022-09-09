@@ -89,7 +89,7 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 		/*err := p_runtime_sys.Mongo_coll.Insert(browser_job_result)
 		if err != nil {
 
-			gf_err := gf_core.Mongo__handle_error("failed to insert a Browser__job_run_result in mongodb",
+			gf_err := gf_core.MongoHandleError("failed to insert a Browser__job_run_result in mongodb",
 				"mongodb_insert_error",
 				map[string]interface{}{"image_id_str": image_id_str,},
 				err, "gf_images_lib", p_runtime_sys)

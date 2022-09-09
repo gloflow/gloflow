@@ -208,7 +208,7 @@ func Stat_run__create(p_stat_name_str string,
 
 	/*err := p_runtime_sys.Mongo_coll.Insert(run)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to persist a stat_run",
+		gf_err := gf_core.MongoHandleError("failed to persist a stat_run",
 			"mongodb_insert_error",
 			map[string]interface{}{"stat_name_str": p_stat_name_str,},
 			err, "gf_stats_lib", p_runtime_sys)

@@ -95,7 +95,7 @@ func Verify(pRequestedOpStr string,
 		}
 	}
 
-	gfErr = gf_core.Mongo__handle_error("policy has failed to be validated",
+	gfErr = gf_core.MongoHandleError("policy has failed to be validated",
 		"policy__op_denied",
 		map[string]interface{}{
 			"target_resource_id_str": pTargetResourceIDstr,

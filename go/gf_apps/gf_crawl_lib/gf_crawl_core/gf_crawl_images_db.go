@@ -53,7 +53,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 			}).Count()*/
 
 		if err != nil {
-			gfErr := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img's in the DB",
+			gfErr := gf_core.MongoHandleError("failed to count the number of crawler_page_img's in the DB",
 				"mongodb_find_error",
 				map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
@@ -90,7 +90,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 
 			/*err = pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(p_img)
 			if err != nil {
-				gfErr := gf_core.Mongo__handle_error("failed to insert a crawler_page_img in mongodb",
+				gfErr := gf_core.MongoHandleError("failed to insert a crawler_page_img in mongodb",
 					"mongodb_insert_error",
 					map[string]interface{}{
 						"img_ref_url_str":             p_img.Url_str,
@@ -136,7 +136,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 			}).Count()*/
 
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to count the number of crawler_page_img_ref's in mongodb",
+			gf_err := gf_core.MongoHandleError("failed to count the number of crawler_page_img_ref's in mongodb",
 				"mongodb_find_error",
 				map[string]interface{}{
 					"img_ref_url_str":             p_img_ref.Url_str,
@@ -169,7 +169,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 
 			/*err = pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(p_img_ref)
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error("failed to insert a crawler_page_img_ref in mongodb",
+				gf_err := gf_core.MongoHandleError("failed to insert a crawler_page_img_ref in mongodb",
 					"mongodb_insert_error",
 					map[string]interface{}{
 						"img_ref_url_str":             p_img_ref.Url_str,
@@ -206,7 +206,7 @@ func image__db_get(p_id_str Gf_crawler_page_image_id,
 		}).One(&img)*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get crawler_page_img by ID from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get crawler_page_img by ID from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"id_str": p_id_str,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -271,7 +271,7 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 	
 	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
 			nil,
 			err, "gf_crawl_core", pRuntimeSys)
@@ -281,7 +281,7 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 	
 	/*err := pipe.AllowDiskUse().All(&results_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_core", pRuntimeSys)
 		return nil, gf_err
@@ -290,7 +290,7 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 	results_lst := []Gf_crawler__recent_images{}
 	err          = cursor.All(ctx, &results_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
 			"mongodb_cursor_decode",
 			nil,
 			err, "gf_crawl_core", pRuntimeSys)
@@ -319,7 +319,7 @@ func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, pRuntimeSys *g
 			"$set": bson.M{"downloaded_bool": true},
 		})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
+		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img downloaded flag by its hash",
 			"mongodb_update_error",
 			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -350,7 +350,7 @@ func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 			"$set": bson.M{"image_id_str": p_gf_image_id_str},
 		})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img downloaded flag by its hash",
+		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img downloaded flag by its hash",
 			"mongodb_update_error",
 			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
 			err, "gf_crawl_core", pRuntimeSys)
@@ -387,7 +387,7 @@ func image__db_update_after_process(p_page_img *Gf_crawler_page_image,
 		})
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img valid_for_usage flag and its image_id (Gf_image) by its ID",
+		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img valid_for_usage flag and its image_id (Gf_image) by its ID",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"id_str":          p_page_img.Id_str,

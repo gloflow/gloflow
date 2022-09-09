@@ -69,7 +69,7 @@ func Get_all_crawlers(pCrawlConfigFilePathStr string,
 		crawlConfig := GFcrawlConfig{}
 		err = yaml.Unmarshal(configByteLst, &crawlConfig)
 		if err != nil {
-			gfErr := gf_core.Mongo__handle_error("failed to parse gf_crawler YAML config file",
+			gfErr := gf_core.MongoHandleError("failed to parse gf_crawler YAML config file",
 				"yaml_decode_error",
 				map[string]interface{}{"crawl_config_file_path_str": pCrawlConfigFilePathStr,},
 				err, "gf_crawl_core", pRuntimeSys)

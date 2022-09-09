@@ -37,7 +37,7 @@ func DBputImage(pImage *GF_image,
 	
 	// UPSERT
 	query  := bson.M{"t": "img", "id_str": pImage.IDstr,}
-	gfErr := gf_core.Mongo__upsert(query,
+	gfErr := gf_core.MongoUpsert(query,
 		pImage,
 		map[string]interface{}{"image_id_str": pImage.IDstr,},
 		pRuntimeSys.Mongo_coll,
@@ -67,14 +67,14 @@ func DB__get_image(p_image_id_str GFimageID,
 		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 		//         if this should not return an error but instead just a "nil" value for the record.
 		if err == mongo.ErrNoDocuments {
-			gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
+			gf_err := gf_core.MongoHandleError("image does not exist in mongodb",
 				"mongodb_not_found_error",
 				map[string]interface{}{"image_id_str": p_image_id_str,},
 				err, "gf_images_core", pRuntimeSys)
 			return nil, gf_err
 		}
 		
-		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
 			err, "gf_images_core", pRuntimeSys)
@@ -88,7 +88,7 @@ func DB__get_image(p_image_id_str GFimageID,
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
 	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.Mongo__handle_error("image does not exist in mongodb",
+		gf_err := gf_core.MongoHandleError("image does not exist in mongodb",
 			"mongodb_not_found_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
 			err, "gf_images_core", pRuntimeSys)
@@ -96,7 +96,7 @@ func DB__get_image(p_image_id_str GFimageID,
 	}
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get image from mongodb",
+		gf_err := gf_core.MongoHandleError("failed to get image from mongodb",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
 			err, "gf_images_core", pRuntimeSys)
@@ -114,7 +114,7 @@ func DB__image_exists(p_image_id_str GF_image_id,
 	ctx := context.Background()
 	c, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to check if image exists in the DB",
+		gf_err := gf_core.MongoHandleError("failed to check if image exists in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"image_id_str": p_image_id_str,},
 			err, "gf_images_core", pRuntimeSys)
@@ -180,7 +180,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	var imgs_lst []*Gf_image
 	err := cursor.All(ctx, &imgs_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get Images",
+		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"imgs_num_to_get_int":            p_imgs_num_to_get_int,
@@ -209,7 +209,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 		All(&imgs_lst)
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get random img range from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get random img range from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"imgs_num_to_get_int":            p_imgs_num_to_get_int,

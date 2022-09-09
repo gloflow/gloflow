@@ -109,7 +109,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get new links by day",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get new links by day",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_crawl_stats", p_runtime_sys)
@@ -121,7 +121,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get new links by day",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get new links by day",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
@@ -133,7 +133,7 @@ func stats__new_links_by_day(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 		var r Minimal_link
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get new links by day",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get new links by day",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_crawl_stats", p_runtime_sys)
@@ -277,7 +277,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to unresolved links",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to unresolved links",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_crawl_stats", p_runtime_sys)
@@ -290,7 +290,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to unresolved links",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to unresolved links",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
@@ -302,7 +302,7 @@ func stats__unresolved_links(p_runtime_sys *gf_core.RuntimeSys) (map[string]inte
 		var r Gf_stat__unresolved_links
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to unresolved links",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to unresolved links",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_crawl_stats", p_runtime_sys)
@@ -403,7 +403,7 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string
 	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawled links domains",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawled links domains",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_images_stats", p_runtime_sys)
@@ -415,7 +415,7 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawled links domains",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawled links domains",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
@@ -427,7 +427,7 @@ func stats__crawled_links_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string
 		var r Gf_stat__crawled_links_domain
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get crawled links domains",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawled links domains",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_images_stats", p_runtime_sys)

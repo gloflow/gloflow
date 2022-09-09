@@ -42,7 +42,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 		// METRICS
 		if pMetrics != nil {pMetrics.Errs_num__counter.Inc()}
 
-		gfErr := gf_core.Mongo__handle_error("failed to DB count Blocks",
+		gfErr := gf_core.MongoHandleError("failed to DB count Blocks",
 			"mongodb_count_error",
 			map[string]interface{}{},
 			err, "gf_eth_monitor_core", pRuntime.RuntimeSys)

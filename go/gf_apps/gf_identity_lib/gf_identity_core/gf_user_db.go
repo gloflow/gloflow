@@ -45,7 +45,7 @@ func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 		findOpts).Decode(&userBasicInfoMap)
 
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+		gfErr := gf_core.MongoHandleError("failed to get user basic_info in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"user_id_str": pUserIDstr,},
 			err, "gf_identity_core", pRuntimeSys)
@@ -121,7 +121,7 @@ func DBgetUserID(pQuery bson.M,
 		findOpts).Decode(&userBasicInfoMap)
 
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+		gfErr := gf_core.MongoHandleError("failed to get user basic_info in the DB",
 			"mongodb_find_error",
 			pMetaMap,
 			err, "gf_identity_core", pRuntimeSys)

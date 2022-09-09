@@ -47,7 +47,7 @@ func db__get_objects_with_tag_count(p_tag_str string,
 			})
 
 			if err != nil {
-				gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to count of posts with tag - %s in DB", p_tag_str),
+				gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", p_tag_str),
 					"mongodb_find_error",
 					map[string]interface{}{
 						"tag_str":         p_tag_str,
@@ -114,7 +114,7 @@ func db__add_post_note(p_note *GF_note,
 	})
 	
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb with a new note in DB",
+		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb with a new note in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"post_title_str": p_post_title_str,
@@ -172,7 +172,7 @@ func db__get_posts_with_tag(p_tag_str string,
 	var posts_lst []*gf_publisher_core.Gf_post
 	err := cursor.All(ctx, &posts_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag in DB",
+		gf_err := gf_core.MongoHandleError("failed to get posts with specified tag in DB",
 			"mongodb_cursor_decode",
 			map[string]interface{}{
 				"tag_str":        p_tag_str,
@@ -193,7 +193,7 @@ func db__get_posts_with_tag(p_tag_str string,
 		All(&posts_lst)
 
 	if gf_err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get posts with specified tag",
+		gf_err := gf_core.MongoHandleError("failed to get posts with specified tag",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"tag_str":        p_tag_str,
@@ -221,7 +221,7 @@ func db__add_tags_to_post(p_post_title_str string,
 		bson.M{"$push": bson.M{"tags_lst": p_tags_lst},
 	})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post with new tags in DB",
+		gf_err := gf_core.MongoHandleError("failed to update a gf_post with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"post_title_str": p_post_title_str,
@@ -248,7 +248,7 @@ func db__add_tags_to_image(pImageIDstr string,
 		bson.M{"$push": bson.M{"tags_lst": pTagsLst},
 	})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_image with new tags in DB",
+		gf_err := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"image_id_str": pImageIDstr,

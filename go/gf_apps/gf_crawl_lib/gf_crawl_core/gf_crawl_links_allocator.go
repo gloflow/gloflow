@@ -116,7 +116,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 
 	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(allocator)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc in mongodb",
+		gf_err := gf_core.MongoHandleError("failed to insert a crawl_link_alloc in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{
 				"crawler_name_str": p_crawler_name_str,
@@ -189,7 +189,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	var unresolved_links_ids_lst []string
 	err := cursor.All(ctx, &unresolved_links_ids_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get Images",
+		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"crawler_name_str":   p_crawler_name_str,
@@ -263,7 +263,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 
 	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(block)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert a crawl_link_alloc_block in mongodb",
+		gf_err := gf_core.MongoHandleError("failed to insert a crawl_link_alloc_block in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{
 				"allocator_id_str": p_alloc_id_str,

@@ -65,7 +65,7 @@ func DBgetID(pFlowNameStr string,
 		findOpts).Decode(&flowBasicInfoMap)
 		
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get user basic_info in the DB",
+		gfErr := gf_core.MongoHandleError("failed to get user basic_info in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"flow_name_str": pFlowNameStr,
@@ -114,7 +114,7 @@ func DBgetAll(p_ctx context.Context,
 	}
 	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(p_ctx, pipeline)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run DB aggregation to get all flows names",
+		gf_err := gf_core.MongoHandleError("failed to run DB aggregation to get all flows names",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_images_flows", p_runtime_sys)
@@ -125,7 +125,7 @@ func DBgetAll(p_ctx context.Context,
 	all_flows_lst := []map[string]interface{}{}
 	err = cursor.All(p_ctx, &all_flows_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get mongodb results of query to get all flows names",
+		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get all flows names",
 			"mongodb_cursor_all",
 			map[string]interface{}{},
 			err, "gf_images_flows", p_runtime_sys)
@@ -239,7 +239,7 @@ func flows_db__get_page(p_flow_name_str string,
 	images_lst := []*gf_images_core.GF_image{}
 	err        := cursor.All(p_ctx, &images_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get a page of images from a flow",
+		gf_err := gf_core.MongoHandleError("failed to get a page of images from a flow",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_images_lib", p_runtime_sys)
@@ -323,7 +323,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 	var existingImagesLst []map[string]interface{}
 	err := cursor.All(ctx, &existingImagesLst)
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
+		gfErr := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"images_extern_urls_lst": p_images_extern_urls_lst,
@@ -346,7 +346,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 				All(&existingImagesLst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find images in flow when checking if images exist",
+		gf_err := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"images_extern_urls_lst": p_images_extern_urls_lst,

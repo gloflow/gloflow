@@ -103,7 +103,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 
 	// one of the these values has to be supplied, they cant both be missing
 	if userIDstr == "" && userAddressETHstr == "" {
-		gfErr := gf_core.Mongo__handle_error("user_name_str or user_address_eth_str arguments are missing from request",
+		gfErr := gf_core.MongoHandleError("user_name_str or user_address_eth_str arguments are missing from request",
 			"verify__input_data_missing_in_req_error",
 			map[string]interface{}{},
 			nil, "gf_identity_lib", pRuntimeSys)

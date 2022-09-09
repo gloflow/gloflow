@@ -70,7 +70,7 @@ func db__bookmark__update_screenshot(p_bookmark_id_str gf_core.GF_ID,
 	},)
 	
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update DB ",
+		gf_err := gf_core.MongoHandleError("failed to update DB ",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"bookmark_id_str":                    p_bookmark_id_str,
@@ -115,7 +115,7 @@ func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 	var bookmarks_lst []*GF_bookmark
 	err := db_cursor.All(p_ctx, &bookmarks_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get DB results of query to get all Bookmarks",
+		gf_err := gf_core.MongoHandleError("failed to get DB results of query to get all Bookmarks",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"user_id_str": p_user_id_str,

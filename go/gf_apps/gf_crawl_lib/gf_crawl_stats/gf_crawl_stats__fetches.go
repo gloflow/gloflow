@@ -113,7 +113,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_crawl_stats", p_runtime_sys)
@@ -125,7 +125,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 			"mongodb_aggregation_error",
 			nil, err, "gf_crawl_stats", p_runtime_sys)
 		return nil, gf_err
@@ -137,7 +137,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 		var r Gf_stat__crawled_url_fetches
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to group all crawler_url_fetch's",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_crawl_stats", p_runtime_sys)

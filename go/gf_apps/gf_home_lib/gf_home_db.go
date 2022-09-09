@@ -46,7 +46,7 @@ func DBupdateHomeVizComponents(pUserIDstr gf_core.GF_ID,
 		bson.M{"$set": fieldsTargets})
 	
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to update home_viz components_map",
+		gfErr := gf_core.MongoHandleError("failed to update home_viz components_map",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"owner_user_id_str": pUserIDstr,
@@ -112,7 +112,7 @@ func DBgetHomeViz(pUserIDstr gf_core.GF_ID,
 	var homeVizLst []*GFhomeViz
 	err := cursor.All(pCtx, &homeVizLst)
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get a home_viz record from cursor",
+		gfErr := gf_core.MongoHandleError("failed to get a home_viz record from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_home_lib", pRuntimeSys)

@@ -102,14 +102,14 @@ func Mongo__tx_run(p_tx_fun func() *GF_error,
 	if err != nil {
 
 		if err_abort := txSession.AbortTransaction(p_ctx); err_abort != nil {
-            gf_err := Mongo__handle_error("failed to execute Mongodb session",
+            gf_err := MongoHandleError("failed to execute Mongodb session",
 				"mongodb_session_abort_error",
 				p_meta_map,
 				err, "gf_core", p_runtime_sys)
 			return nil, gf_err
         }
 
-		gf_err := Mongo__handle_error("failed to execute Mongodb session",
+		gf_err := MongoHandleError("failed to execute Mongodb session",
 			"mongodb_session_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -134,7 +134,7 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
 
     session, err := p_mongo_client.StartSession()
     if err != nil {
-		gf_err := Mongo__handle_error("failed to start a Mongo session",
+		gf_err := MongoHandleError("failed to start a Mongo session",
 			"mongodb_start_session_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -168,7 +168,7 @@ func Mongo__count(p_query bson.M,
 
 	count_int, err := p_coll.CountDocuments(p_ctx, p_query, opts)
 	if err != nil {
-		gf_err := Mongo__handle_error("failed to count number of particular docs in DB",
+		gf_err := MongoHandleError("failed to count number of particular docs in DB",
 			"mongodb_count_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -226,7 +226,7 @@ func Mongo__find_latest(p_query bson.M,
 	var records_lst []map[string]interface{}
 	err := cursor.All(p_ctx, &records_lst)
 	if err != nil {
-		gf_err := Mongo__handle_error("failed to load DB results from DB cursor",
+		gf_err := MongoHandleError("failed to load DB results from DB cursor",
 			"mongodb_cursor_all",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -272,7 +272,7 @@ func Mongo__find(p_query bson.M,
 			return nil, nil
 		}
 
-		gf_err := Mongo__handle_error("failed to find records in DB",
+		gf_err := MongoHandleError("failed to find records in DB",
 			"mongodb_find_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -292,7 +292,7 @@ func Mongo__delete(p_query bson.M,
 
 	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).DeleteMany(p_ctx, p_query)
 	if err != nil {
-		gf_err := Mongo__handle_error("failed to delete documents in the DB",
+		gf_err := MongoHandleError("failed to delete documents in the DB",
 			"mongodb_delete_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -303,15 +303,15 @@ func Mongo__delete(p_query bson.M,
 
 //-------------------------------------------------
 // UPSERT
-func Mongo__upsert(p_query bson.M,
-	p_record      interface{},
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_coll        *mongo.Collection,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) *GF_error {
+func MongoUpsert(pQuery bson.M,
+	pRecord     interface{},
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	pColl       *mongo.Collection,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) *GF_error {
 
 
-	_, err := p_coll.UpdateOne(p_ctx, p_query, bson.M{"$set": p_record,},
+	_, err := pColl.UpdateOne(pCtx, pQuery, bson.M{"$set": pRecord,},
 		options.Update().SetUpsert(true))
 	if err != nil {
 
@@ -320,10 +320,10 @@ func Mongo__upsert(p_query bson.M,
 			return nil
 		}
 
-		gf_err := Mongo__handle_error("failed to update/upsert document in the DB",
+		gf_err := MongoHandleError("failed to update/upsert document in the DB",
 			"mongodb_update_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 
@@ -360,7 +360,7 @@ func MongoInsertBulk(pIDsLst []string,
 
 	r, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).BulkWrite(pCtx, models, opts)
 	if err != nil {
-		gf_err := Mongo__handle_error("failed to bulk write new documents into the DB",
+		gf_err := MongoHandleError("failed to bulk write new documents into the DB",
 			"mongodb_write_bulk_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
@@ -404,7 +404,7 @@ func Mongo__insert(p_record interface{},
 	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(p_ctx, p_record)
 	if err != nil {
 		p_meta_map["coll_name_str"] = p_coll_name_str
-		gf_err := Mongo__handle_error("failed to insert a new record into the DB",
+		gf_err := MongoHandleError("failed to insert a new record into the DB",
 			"mongodb_insert_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
@@ -449,7 +449,7 @@ func MongoEnsureIndex(p_indexes_keys_lst [][]string,
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			return []string{}, nil
 		} else {
-			gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db indexes on fields"), 
+			gf_err := MongoHandleError(fmt.Sprintf("failed to create db indexes on fields"), 
 				"mongodb_ensure_index_error",
 				map[string]interface{}{"indexes_keys_lst": p_indexes_keys_lst,},
 				err, "gf_core", p_runtime_sys)
@@ -476,7 +476,7 @@ func MongoEnsureIndex(p_indexes_keys_lst [][]string,
 				if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 					continue // ignore, index already exists
 				} else {
-					gf_err := Mongo__handle_error(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
+					gf_err := MongoHandleError(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
 						"mongodb_ensure_index_error", nil, err, "gf_core", p_runtime_sys)
 					gf_errs_lst = append(gf_errs_lst, gf_err)
 				}
@@ -561,7 +561,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 
 //--------------------------------------------------------------------
 // HANDLE_ERROR
-func Mongo__handle_error(p_user_msg_str string,
+func MongoHandleError(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,

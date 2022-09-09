@@ -59,7 +59,7 @@ func DBgetAll(pAddressTypeStr string,
 	var addressesLst []*GFchainAddress
 	err := cursor.All(pCtx, &addressesLst)
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get a home_viz record from cursor",
+		gfErr := gf_core.MongoHandleError("failed to get a home_viz record from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_address", pRuntimeSys)
@@ -144,7 +144,7 @@ func DBaddTag(pTagsLst []string,
 		}})
 
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to update adress with new tags",
+		gfErr := gf_core.MongoHandleError("failed to update adress with new tags",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"tags_lst":    pTagsLst,

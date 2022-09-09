@@ -118,7 +118,7 @@ func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_addre
 		}})
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to mark all nonces for a user_address_eth as deleted",
+		gf_err := gf_core.MongoHandleError("failed to mark all nonces for a user_address_eth as deleted",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"user_address_eth": p_user_address_eth_str,
@@ -168,7 +168,7 @@ func db__nonce__get(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 			return GF_user_nonce_val(""), false, nil
 		}
 
-		gf_err := gf_core.Mongo__handle_error("failed to find user by address in the DB",
+		gf_err := gf_core.MongoHandleError("failed to find user by address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": p_user_address_eth_str,

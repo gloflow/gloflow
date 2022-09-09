@@ -404,7 +404,7 @@ func Eth_tx_trace__db__get_count(p_metrics *GF_metrics,
 		// METRICS
 		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
 
-		gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions Trace",
+		gf_err := gf_core.MongoHandleError("failed to DB count Transactions Trace",
 			"mongodb_count_error",
 			map[string]interface{}{},
 			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)

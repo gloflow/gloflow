@@ -49,7 +49,7 @@ func Db_stats__coll(p_coll_name_str string,
 	count_int, err := coll.CountDocuments(p_ctx, bson.M{})
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to DB count records in collection - %s", p_coll_name_str),
+		gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to DB count records in collection - %s", p_coll_name_str),
 			"mongodb_count_error",
 			map[string]interface{}{},
 			err, "gf_stats_lib", p_runtime_sys)
@@ -67,7 +67,7 @@ func Db_stats__coll(p_coll_name_str string,
 	err = r.Decode(&r_map)
 
 	if err !=nil {
-		gf_err := gf_core.Mongo__handle_error(fmt.Sprintf("failed to DB decode collStats for collection - %s", p_coll_name_str),
+		gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to DB decode collStats for collection - %s", p_coll_name_str),
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_stats_lib", p_runtime_sys)

@@ -259,7 +259,7 @@ func db__jwt_secret_key__get(p_user_identifier_str string,
 	var jwt_secret_keys_lst []*GF_jwt_secret_key
 	err := db_cursor.All(p_ctx, &jwt_secret_keys_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get DB results of query to get latest JWT key ",
+		gf_err := gf_core.MongoHandleError("failed to get DB results of query to get latest JWT key ",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"user_identifier_str": p_user_identifier_str,

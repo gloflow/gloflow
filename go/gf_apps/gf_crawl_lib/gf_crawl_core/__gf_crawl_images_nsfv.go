@@ -213,7 +213,7 @@ func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
 			"$set":bson.M{"nsfv_bool":true},
 		})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update an crawler_page_img NSFV flag by its ID",
+		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img NSFV flag by its ID",
 			"mongodb_update_error",
 			map[string]interface{}{"image_id_str": p_image.Id_str,},
 			err, "gf_crawl_core", p_runtime_sys)

@@ -135,7 +135,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 			p_metrics.Errs_num__counter.Inc()
 		}
 
-		gf_err := gf_core.Mongo__handle_error("failed to find Contract ABI with given type in DB",
+		gf_err := gf_core.MongoHandleError("failed to find Contract ABI with given type in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"type_str": p_abi_type_str,},
 			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
@@ -150,7 +150,7 @@ func Eth_abi__db__get(p_abi_type_str string,
 		var gf_abi GF_eth__abi
 		err := cur.Decode(&gf_abi)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get contract ABIs",
+			gf_err := gf_core.MongoHandleError("failed to decode mongodb result of query to get contract ABIs",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_eth_monitor_core", p_runtime.RuntimeSys)

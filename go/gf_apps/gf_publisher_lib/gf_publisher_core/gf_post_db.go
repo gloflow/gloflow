@@ -42,7 +42,7 @@ func DB__get_post(p_post_title_str string,
 
 	// err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post", "title_str": p_post_title_str}).One(&post)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get a post from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get a post from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_core", p_runtime_sys)
@@ -74,7 +74,7 @@ func DB__create_post(p_post *Gf_post,
 
 	/*err := p_runtime_sys.Mongodb_coll.Insert(p_post) // writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to create a post in the DB",
+		gf_err := gf_core.MongoHandleError("failed to create a post in the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{},
 			err, "gf_publisher_core", p_runtime_sys)
@@ -97,7 +97,7 @@ func DB__update_post(p_post *Gf_post,
 		},
 		p_post)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
+		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"post_title_str":p_post.Title_str,},
 			err, "gf_publisher_core", p_runtime_sys)
@@ -121,7 +121,7 @@ func DB__mark_as_deleted_post(p_post_title_str string,
 		bson.M{"$set": bson.M{"deleted_bool": true}})
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to mark as deleted a gf_post in a mongodb",
+		gf_err := gf_core.MongoHandleError("failed to mark as deleted a gf_post in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_core", p_runtime_sys)
@@ -139,7 +139,7 @@ func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.DeleteOne(ctx, bson.M{"title_str": p_post_title_str})
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to update a gf_post in a mongodb",
+		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
 			"mongodb_delete_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_core", p_runtime_sys)
@@ -188,7 +188,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 		All(&posts_lst)*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get a posts page from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get a posts page from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"cursor_start_position_int": p_cursor_start_position_int,
@@ -247,7 +247,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 		All(&posts_lst)*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get a posts page from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get a posts page from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"cursor_start_position_int": p_cursor_position_int,
@@ -297,7 +297,7 @@ func DB__check_post_exists(p_post_title_str string,
 		}).Count()*/
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to check if the post exists in DB",
+		gf_err := gf_core.MongoHandleError("failed to check if the post exists in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
 			err, "gf_publisher_core", p_runtime_sys)

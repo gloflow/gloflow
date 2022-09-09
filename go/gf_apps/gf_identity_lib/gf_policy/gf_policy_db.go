@@ -51,7 +51,7 @@ func DBgetPolicyByID(pPolicyIDstr gf_core.GF_ID,
 		findOpts).Decode(policy)
 		
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get policy by ID from the DB",
+		gfErr := gf_core.MongoHandleError("failed to get policy by ID from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"policy_id_str": pPolicyIDstr,
@@ -81,7 +81,7 @@ func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 		findOpts).Decode(&policiesLst)
 		
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get policies by target_resource_id in the DB",
+		gfErr := gf_core.MongoHandleError("failed to get policies by target_resource_id in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"target_resource_id_str": pTargetResourceIDstr,
@@ -123,7 +123,7 @@ func DBupdatePolicy(pPolicyIDstr gf_core.GF_ID,
 	bson.M{"$set": fieldsTargets})
 		
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to to update policy in DB",
+		gfErr := gf_core.MongoHandleError("failed to to update policy in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"policy_id_str": string(pPolicyIDstr),

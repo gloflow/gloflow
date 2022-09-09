@@ -137,7 +137,6 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GF_image, *GFimageThumbs, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_transformer.TransformProcessImage()")
 
 	//---------------------------------
 	// LOAD_IMAGE

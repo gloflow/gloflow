@@ -78,7 +78,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				if a_lst, ok := qsMap["img_id"]; ok {
 					imgIDstr = a_lst[0]
 				} else {
-					gfErr := gf_core.Mongo__handle_error("failed to get img_id arg from request query string",
+					gfErr := gf_core.MongoHandleError("failed to get img_id arg from request query string",
 						"verify__input_data_missing_in_req_error",
 						map[string]interface{}{},
 						nil, "gf_images_lib", pRuntimeSys)

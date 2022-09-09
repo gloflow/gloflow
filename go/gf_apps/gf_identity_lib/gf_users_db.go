@@ -78,7 +78,7 @@ func DBuserGetAll(pCtx context.Context,
 	usersLst := []*GFuser{}
 	err := cursor.All(pCtx, &usersLst)
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get all users records from cursor",
+		gfErr := gf_core.MongoHandleError("failed to get all users records from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_identity_lib", pRuntimeSys)
@@ -171,7 +171,7 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 		bson.M{"$set": fields_targets})
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to to update user info",
+		gf_err := gf_core.MongoHandleError("failed to to update user info",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"user_name_str":   p_update_op.User_name_str,
@@ -199,7 +199,7 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 		find_opts).Decode(&user)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by ID in the DB",
+		gf_err := gf_core.MongoHandleError("failed to find user by ID in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_id_str": pUserIDstr,
@@ -226,7 +226,7 @@ func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 		find_opts).Decode(&user)
 
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to find user by user_name in the DB",
+		gfErr := gf_core.MongoHandleError("failed to find user by user_name in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_name_str": pUserNameStr,
@@ -254,7 +254,7 @@ func db__user__get_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_a
 		find_opts).Decode(&user)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user by Eth address in the DB",
+		gf_err := gf_core.MongoHandleError("failed to find user by Eth address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_address_eth_str": p_user_address_eth_str,
@@ -342,7 +342,7 @@ func db__user__email_is_confirmed(p_user_name_str gf_identity_core.GFuserName,
 		find_opts).Decode(&user_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get user email_confirmed from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get user email_confirmed from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_name_str": p_user_name_str,
@@ -387,7 +387,7 @@ func db__user__get_all_in_invite_list(p_ctx context.Context,
 	invite_list_lst := []map[string]interface{}{}
 	err := cursor.All(p_ctx, &invite_list_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get all records in invite_list from cursor",
+		gf_err := gf_core.MongoHandleError("failed to get all records in invite_list from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_identity_lib", p_runtime_sys)
@@ -443,7 +443,7 @@ func DBuserRemoveFromInviteList(pUserEmailStr string,
 	bson.M{"$set": fieldsTargets})
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to remove user from invite list",
+		gf_err := gf_core.MongoHandleError("failed to remove user from invite list",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"user_email_str": pUserEmailStr,
@@ -529,7 +529,7 @@ func db__user_creds__get_pass_hash(p_user_name_str gf_identity_core.GFuserName,
 		find_opts).Decode(&user_creds_info_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to find user creds by user_name in the DB",
+		gf_err := gf_core.MongoHandleError("failed to find user creds by user_name in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_name_str": p_user_name_str,
@@ -602,7 +602,7 @@ func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserNam
 		find_opts).Decode(&email_confirm_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get user email_confirm info from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get user email_confirm info from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_name_str": string(p_user_name_str),
@@ -638,7 +638,7 @@ func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.
 		find_opts).Decode(&user_map)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get user email_confirm status of a user from the DB",
+		gf_err := gf_core.MongoHandleError("failed to get user email_confirm status of a user from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"user_name_str": string(p_user_name_str),
@@ -711,7 +711,7 @@ func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserN
 	login_attempts_lst := []*GF_login_attempt{}
 	err := cursor.All(p_ctx, &login_attempts_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get login_attempt from cursor",
+		gf_err := gf_core.MongoHandleError("failed to get login_attempt from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{
 				"user_name_str": string(p_user_name_str),
@@ -755,7 +755,7 @@ func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
 	bson.M{"$set": fieldsTargets})
 		
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to to update a login_attempt",
+		gf_err := gf_core.MongoHandleError("failed to to update a login_attempt",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"login_attempt_id_str": string(*p_login_attempt_id_str),

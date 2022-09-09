@@ -185,7 +185,7 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 			"t":        "domain",
 			"name_str": d.Name_str,
 		}
-		gf_err := gf_core.Mongo__upsert(query,
+		gf_err := gf_core.MongoUpsert(query,
 			d,
 			map[string]interface{}{
 				"domain_name_str":    d.Name_str,
@@ -235,7 +235,7 @@ func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.G
 	/*coll_name_str := p_runtime_sys.Mongo_coll.Name()
 	cursor, err      := p_runtime_sys.Mongo_db.Collection(coll_name_str).Find(ctx, q)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get all domains",
+		gf_err := gf_core.MongoHandleError("failed to get all domains",
 			"mongodb_find_error",
 			nil,
 			err, "gf_domains_lib", p_runtime_sys)
@@ -249,7 +249,7 @@ func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.G
 		var domain Gf_domain
 		err := cursor.Decode(&domain)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to decode mongodb result of query to get domains",
+			gf_err := gf_core.MongoHandleError("failed to decode mongodb result of query to get domains",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_domains_lib", p_runtime_sys)
@@ -268,7 +268,7 @@ func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.G
 		Sort("-count_int").
 		All(&results_lst)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to get all domains",
+		gf_err := gf_core.MongoHandleError("failed to get all domains",
 			"mongodb_find_error",
 			nil, err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err

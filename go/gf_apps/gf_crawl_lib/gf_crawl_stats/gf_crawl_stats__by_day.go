@@ -118,7 +118,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_crawl_stats", p_runtime_sys)
@@ -130,7 +130,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	err         := pipe.AllowDiskUse().All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			map[string]interface{}{"obj_type_str": p_obj_type_str,},
 			err, "gf_crawl_stats", p_runtime_sys)
@@ -143,7 +143,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		var r Domain_objs__stat
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to count objects by days",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_crawl_stats", p_runtime_sys)

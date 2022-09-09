@@ -157,7 +157,7 @@ func Index__query(p_term_str string,
 
 	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(query_run)
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to insert a index__query_run into mongodb for a elasticsearch index query",
+		gf_err := gf_core.MongoHandleError("failed to insert a index__query_run into mongodb for a elasticsearch index query",
 			"mongodb_insert_error",
 			map[string]interface{}{
 				"term_str":       p_term_str,

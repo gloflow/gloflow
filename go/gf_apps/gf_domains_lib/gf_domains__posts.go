@@ -178,7 +178,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
 			err, "gf_domains_lib", p_runtime_sys)
@@ -194,7 +194,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
+		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
 			nil, err, "gf_domains_lib", p_runtime_sys)
 		return nil, gf_err
@@ -206,7 +206,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 		var r Posts_extern_urls_result
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to run an aggregation pipeline to get domains posts",
+			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_domains_lib", p_runtime_sys)

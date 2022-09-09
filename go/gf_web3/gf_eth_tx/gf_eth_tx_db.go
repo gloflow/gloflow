@@ -43,7 +43,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 			// METRICS
 			if pMetrics != nil {pMetrics.Errs_num__counter.Inc()}
 
-			gf_err := gf_core.Mongo__handle_error("failed to DB count Transactions",
+			gf_err := gf_core.MongoHandleError("failed to DB count Transactions",
 				"mongodb_count_error",
 				map[string]interface{}{},
 				err, "gf_eth_monitor_core", p_runtime.RuntimeSys)
@@ -87,7 +87,7 @@ func DB__get(pTxHashStr string,
 			pMetrics.Errs_num__counter.Inc()
 		}
 
-		gf_err := gf_core.Mongo__handle_error("failed to find Transaction with gives hash in DB",
+		gf_err := gf_core.MongoHandleError("failed to find Transaction with gives hash in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"tx_hash_str": pTxHashStr,},
 			err, "gf_eth_monitor_core", p_runtime.RuntimeSys)

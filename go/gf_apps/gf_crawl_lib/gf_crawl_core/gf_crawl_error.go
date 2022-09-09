@@ -123,7 +123,7 @@ func create_error(p_type_str string,
 		}
 		/*err := p_runtime_sys.Mongo_db.C("gf_crawl").Insert(crawl_err)
 		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to persist a crawler_error",
+			gf_err := gf_core.MongoHandleError("failed to persist a crawler_error",
 				"mongodb_insert_error",
 				map[string]interface{}{
 					"type_str":         p_type_str,
