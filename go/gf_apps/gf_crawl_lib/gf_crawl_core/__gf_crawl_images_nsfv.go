@@ -59,7 +59,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 		var gf_err       *gf_core.Gf_error
 
 		//--------------
-		//GIF
+		// GIF
 		if gf_img.Img_ext_str == "gif" {
 
 			is_nsfv_bool,gf_err = image__is_nsfv__gif(page_img__pinfo.local_file_path_str, gf_img.Url_str, p_runtime_sys)
@@ -74,8 +74,9 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 				page_img__pinfo.gf_error = gf_err
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
+
 		//--------------
-		//STATIC-IMAGE
+		// STATIC-IMAGE
 		} else {
 
 			//IMPORTANT!! - if image has nudity it is flagged as not valid
@@ -92,8 +93,9 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
+
 		//--------------
-		//FLAG_IMAGE
+		// FLAG_IMAGE
 		
 		page_img__pinfo.nsfv_bool = is_nsfv_bool
 
@@ -111,6 +113,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
+
 		//--------------
 	}
 	return p_page_imgs__pipeline_infos_lst
@@ -138,27 +141,29 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
 
 	frames_images_dir_path_str := "./"
-	new_files_names_lst,gf_err := gf_gif_lib.Gif__frames__save_to_fs(p_img_gif_path_str,
+	new_files_names_lst, gf_err := gf_gif_lib.Gif__frames__save_to_fs(p_img_gif_path_str,
 		frames_images_dir_path_str,
 		0, //p_frames_num_to_get_int //IMPORTANT!! - if its 0 it gets all frames
 		p_runtime_sys)
 	if gf_err != nil {
 		return false,gf_err
 	}
+
 	//-------------------------
-	//CLEANUP!! - remove extracted GIF frames in dir frames_images_dir_path_str,
-	//            after NSFV analysis is complete
+	// CLEANUP!! - remove extracted GIF frames in dir frames_images_dir_path_str,
+	//             after NSFV analysis is complete
 	defer func() {
-		for _,f_str := range new_files_names_lst {
+		for _, f_str := range new_files_names_lst {
 			err := os.Remove(f_str)
 			if err != nil {
 
 			}
 		}
 	}()
+
 	//-------------------------
-	//IMPORTANT!! - run NSFV detection on each GIF frame, and for the first one that fails the test
-	//              use it as a signal to mark the whole GIF as NSFV
+	// IMPORTANT!! - run NSFV detection on each GIF frame, and for the first one that fails the test
+	//               use it as a signal to mark the whole GIF as NSFV
 	for _,frame_image_file_path_str := range new_files_names_lst {
 		is_nsfv_bool,gf_err := image__is_nsfv(frame_image_file_path_str, p_runtime_sys)
 		if gf_err != nil {
@@ -166,12 +171,14 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 		}
 
 		//-----------------
-		//IMPORTANT!! - first frame that fails the NSFV test indicates the whole GIF is NSFV
+		// IMPORTANT!! - first frame that fails the NSFV test indicates the whole GIF is NSFV
 		if is_nsfv_bool {
 			return is_nsfv_bool, nil
 		}
+
 		//-----------------
 	}
+
 	//-------------------------
 
 	is_nsfv_bool := false //if all frames pass as non-nsfv then the GIF is not NSFV
@@ -181,7 +188,6 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 //--------------------------------------------------
 func image__is_nsfv(p_img_path_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.Gf_error) {
-	//p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_images_nsfv.image__is_nsfv()")
 
 	is_nude_bool,err := nude.IsNude(p_img_path_str)
 	if err != nil {
@@ -198,7 +204,6 @@ func image__is_nsfv(p_img_path_str string,
 //--------------------------------------------------
 func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	//p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_images_nsfv.image__flag_as_nsfv()")
 
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":      "crawler_page_img",

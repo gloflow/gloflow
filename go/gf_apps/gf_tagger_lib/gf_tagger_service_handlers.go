@@ -29,13 +29,13 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_templates_paths_map map[string]string,
-	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
-	p_mux              *http.ServeMux,
-	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
+func initHandlers(pTemplatesPathsMap map[string]string,
+	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
+	pMux            *http.ServeMux,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
+	gf_templates, gf_err := tmpl__load(pTemplatesPathsMap, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -84,7 +84,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 				//------------------
 
 				gf_err = bookmarks__pipeline__create(&input,
-					p_images_jobs_mngr,
+					pImagesJobsMngr,
 					pCtx,
 					pRuntimeSys)
 				if gf_err != nil {
@@ -94,7 +94,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -148,7 +148,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			return nil, nil
 
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -182,7 +182,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -207,7 +207,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -243,7 +243,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 			
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,
@@ -278,7 +278,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // p_store_run_bool
 		nil,

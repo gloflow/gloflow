@@ -274,7 +274,7 @@ func Run(pConfig *GF_config,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.Init_service(pConfig.Templates_paths_map,
+	gf_tagger_lib.InitService(pConfig.Templates_paths_map,
 		imagesJobsMngrCh,
 		gfSoloHTTPmux,
 		pRuntimeSys)

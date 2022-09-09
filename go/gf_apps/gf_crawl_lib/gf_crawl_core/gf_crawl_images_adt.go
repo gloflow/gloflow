@@ -111,8 +111,8 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 
 	img_src_domain_str, origin_page_url_domain_str, gfErr := gf_crawl_utils.Get_domain(p_img_src_url_str, p_origin_page_url_str, pRuntimeSys)
 	if gfErr != nil {
-		t:="images_in_page__get_domain__failed"
-		m:="failed to get domain of image with img_src - "+p_img_src_url_str
+		t := "images_in_page__get_domain__failed"
+		m := "failed to get domain of image with img_src - "+p_img_src_url_str
 		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
 			gfErr, p_runtime, pRuntimeSys)
 		return nil, gfErr

@@ -266,7 +266,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 	//------------------
 	// ACCUMULATE LIST OF GLOBAL FETCH COUNTS PER DAY
 	total_counts_by_day__sorted_lst := []int{}
-	for _,day_stat := range stats__sorted_by_day_lst {
+	for _, day_stat := range stats__sorted_by_day_lst {
 		total_counts_by_day__sorted_lst = append(total_counts_by_day__sorted_lst, day_stat.Total_count_int)
 	}
 

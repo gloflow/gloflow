@@ -82,6 +82,7 @@ func link__create(pURLstr string,
 	if gf_err != nil {
 		return nil, gf_err
 	}
+
 	//-------------
 	// COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
 	//                   and complete them to get the full url
@@ -90,6 +91,7 @@ func link__create(pURLstr string,
 	if gf_err != nil {
 		return nil, gf_err
 	}
+	
 	//-------------
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0

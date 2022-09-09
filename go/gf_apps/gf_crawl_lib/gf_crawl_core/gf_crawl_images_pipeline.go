@@ -195,7 +195,7 @@ func images__stage__pull_image_links(pURLfetch *Gf_crawler_url_fetch,
 	pCycleRunIDstr  string,
 	pRuntime        *GFcrawlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_images_pipeline.images__stage__pull_image_links")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_pipeline.images__stage__pull_image_links")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE - STAGE - pull_image_links")

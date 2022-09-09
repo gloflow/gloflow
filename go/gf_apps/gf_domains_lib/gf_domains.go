@@ -195,18 +195,6 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 		if gf_err != nil {
 			return gf_err
 		}
-		
-		/*_, err := p_runtime_sys.Mongo_coll.Upsert(bson.M{
-			"t":        "domain",
-			"name_str": d.Name_str,
-		}, d)
-		if err != nil {
-			gf_err := gf_core.Mongo__handle_error("failed to persist a domain in mongodb",
-				"mongodb_update_error",
-				map[string]interface{}{"domain_name_str":d.Name_str,},
-				err, "gf_domains_lib", p_runtime_sys)
-			return gf_err
-		}*/
 
 		i+=1
 	}

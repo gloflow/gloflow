@@ -36,12 +36,12 @@ import (
 
 type Gf_domain_images struct {
 	Name_str            string         `bson:"_id"`
-	Count_int           int            `bson:"count_int"`           //total count of all subpages counts
-	Subpages_Counts_map map[string]int `bson:"subpages_counts_map"` //ccounts of individual sub-page urls that images come from
+	Count_int           int            `bson:"count_int"`           // total count of all subpages counts
+	Subpages_Counts_map map[string]int `bson:"subpages_counts_map"` // counts of individual sub-page urls that images come from
 }
 
-func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_images,*gf_core.Gf_error) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_domains__images.Get_domains_images__mongo()")
+func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_images, *gf_core.Gf_error) {
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains__images.Get_domains_images__mongo()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
