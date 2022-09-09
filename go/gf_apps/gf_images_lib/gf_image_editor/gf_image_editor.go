@@ -102,7 +102,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 
 	//--------------------------
 
-	source_gf_image, gfErr := gf_images_core.DB__get_image(source_image_id_str, pRuntimeSys)
+	source_gf_image, gfErr := gf_images_core.DBgetImage(source_image_id_str, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

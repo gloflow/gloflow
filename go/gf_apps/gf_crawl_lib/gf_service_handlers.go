@@ -34,26 +34,26 @@ func init_handlers(p_media_domain_str string,
 	p_templates_paths_map          map[string]string,
 	p_http_mux                     *http.ServeMux,
 	p_runtime                      *gf_crawl_core.GFcrawlerRuntime,
-	p_runtime_sys                  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gf_templates, gfErr := tmpl__load(p_templates_paths_map, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//----------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/recent",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
 				//------------------
-				recent_images_lst, gf_err := gf_crawl_core.Images__db_get_recent(p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				recent_images_lst, gfErr := gf_crawl_core.Images__db_get_recent(pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
@@ -71,19 +71,19 @@ func init_handlers(p_media_domain_str string,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//----------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/add_to_flow",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
 				//--------------------------
 				// INPUT
-				i, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				i, gfErr := gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				crawler_page_image_id_str := i["crawler_page_image_id_str"].(string)
@@ -94,16 +94,17 @@ func init_handlers(p_media_domain_str string,
 				}
 
 				//--------------------------
-				gf_err = gf_crawl_core.FlowsAddExternImage(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
+				gfErr = gf_crawl_core.FlowsAddExternImage(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 					flows_names_lst,
 
 					p_media_domain_str,
 					p_crawled_images_s3_bucket_name_str,
 					p_gf_images_s3_bucket_name_str,
+					pCtx,
 					p_runtime,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
@@ -119,22 +120,22 @@ func init_handlers(p_media_domain_str string,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//----------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/search",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 				
 				query_term_str := p_req.URL.Query()["term"][0]
-				p_runtime_sys.LogFun("INFO", "query_term_str - "+query_term_str)
+				pRuntimeSys.LogFun("INFO", "query_term_str - "+query_term_str)
 
 				// IMPORTANT!! - only query if the indexer is enabled
 				if p_runtime.Esearch_client != nil {
-					gf_err := gf_crawl_core.Index__query(query_term_str, p_runtime, p_runtime_sys)
-					if gf_err != nil {
-						return nil, gf_err
+					gfErr := gf_crawl_core.Index__query(query_term_str, p_runtime, pRuntimeSys)
+					if gfErr != nil {
+						return nil, gfErr
 					}
 				}
 				//------------------
@@ -150,22 +151,22 @@ func init_handlers(p_media_domain_str string,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//----------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/crawl_dashboard",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
 				//--------------------
 				// RENDER TEMPLATE
-				gf_err := dashboard__render_template(gf_templates.dashboard__tmpl,
+				gfErr := dashboard__render_template(gf_templates.dashboard__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					p_resp,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				return nil, nil
 			}
@@ -175,7 +176,7 @@ func init_handlers(p_media_domain_str string,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//--------------
 

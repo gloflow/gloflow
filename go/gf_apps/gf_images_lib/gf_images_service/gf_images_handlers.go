@@ -75,8 +75,8 @@ func InitHandlers(pAuthLoginURLstr string,
 				qsMap := pReq.URL.Query()
 				
 				var imgIDstr string 
-				if a_lst, ok := qsMap["img_id"]; ok {
-					imgIDstr = a_lst[0]
+				if aLst, ok := qsMap["img_id"]; ok {
+					imgIDstr = aLst[0]
 				} else {
 					gfErr := gf_core.MongoHandleError("failed to get img_id arg from request query string",
 						"verify__input_data_missing_in_req_error",
@@ -87,8 +87,8 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//-----------------
 
-				imgID := gf_images_core.GF_image_id(imgIDstr)
-				imageExport, existsBool, gfErr := ImgGet(imgID, pRuntimeSys)
+				imgID := gf_images_core.GFimageID(imgIDstr)
+				imageExport, existsBool, gfErr := ImgGet(imgID, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

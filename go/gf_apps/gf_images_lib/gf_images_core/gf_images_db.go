@@ -50,75 +50,49 @@ func DBputImage(pImage *GF_image,
 }
 
 //---------------------------------------------------
-func DB__get_image(p_image_id_str GFimageID,
-	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__get_image()")
-	
+func DBgetImage(pImageIDstr GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 
+	var image GFimage
 
-	ctx := context.Background()
-	var image GF_image
-
-	q             := bson.M{"t": "img", "id_str": p_image_id_str}
+	q             := bson.M{"t": "img", "id_str": pImageIDstr}
 	coll_name_str := pRuntimeSys.Mongo_coll.Name()
-	err           := pRuntimeSys.Mongo_db.Collection(coll_name_str).FindOne(ctx, q).Decode(&image)
+	err           := pRuntimeSys.Mongo_db.Collection(coll_name_str).FindOne(pCtx, q).Decode(&image)
 	if err != nil {
 
 		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 		//         if this should not return an error but instead just a "nil" value for the record.
 		if err == mongo.ErrNoDocuments {
-			gf_err := gf_core.MongoHandleError("image does not exist in mongodb",
+			gfErr := gf_core.MongoHandleError("image does not exist in mongodb",
 				"mongodb_not_found_error",
-				map[string]interface{}{"image_id_str": p_image_id_str,},
+				map[string]interface{}{"image_id_str": pImageIDstr,},
 				err, "gf_images_core", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 		
-		gf_err := gf_core.MongoHandleError("failed to get image from mongodb",
+		gfErr := gf_core.MongoHandleError("failed to get image from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"image_id_str": p_image_id_str,},
+			map[string]interface{}{"image_id_str": pImageIDstr,},
 			err, "gf_images_core", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
-
-
-	/*var image Gf_image
-	err := pRuntimeSys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_image_id_str}).One(&image)
-
-	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
-	//         if this should not return an error but instead just a "nil" value for the record.
-	if fmt.Sprint(err) == "not found" {
-		gf_err := gf_core.MongoHandleError("image does not exist in mongodb",
-			"mongodb_not_found_error",
-			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", pRuntimeSys)
-		return nil, gf_err
-	}
-
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get image from mongodb",
-			"mongodb_find_error",
-			map[string]interface{}{"image_id_str": p_image_id_str,},
-			err, "gf_images_core", pRuntimeSys)
-		return nil, gf_err
-	}*/
 	
 	return &image, nil
 }
 
 //---------------------------------------------------
-func DB__image_exists(p_image_id_str GF_image_id,
+func DBimageExists(pImageIDstr GFimageID,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	// pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__image_exists()")
 
-	ctx := context.Background()
-	c, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{"t": "img", "id_str": p_image_id_str})
+	c, err := pRuntimeSys.Mongo_coll.CountDocuments(pCtx, bson.M{"t": "img", "id_str": pImageIDstr})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to check if image exists in the DB",
+		gfErr := gf_core.MongoHandleError("failed to check if image exists in the DB",
 			"mongodb_find_error",
-			map[string]interface{}{"image_id_str": p_image_id_str,},
+			map[string]interface{}{"image_id_str": pImageIDstr,},
 			err, "gf_images_core", pRuntimeSys)
-		return false, gf_err
+		return false, gfErr
 	}
 
 	if c > 0 {

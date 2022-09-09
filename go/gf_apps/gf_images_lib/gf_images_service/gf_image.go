@@ -20,26 +20,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_service 
 
 import (
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
 //---------------------------------------------------
-func ImgGet(p_image_id_str gf_images_core.GF_image_id,
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_images_core.GF_image_export, bool, *gf_core.GF_error) {
+func ImgGet(pImageIDstr gf_images_core.GFimageID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GF_image_export, bool, *gf_core.GFerror) {
 
 	// DB_EXISTS
-	exists_bool, gf_err := gf_images_core.DB__image_exists(p_image_id_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, false, gf_err
+	exists_bool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, false, gfErr
 	}
 
 	if exists_bool {
 
 		// DB_GET
-		gf_img, gf_err := gf_images_core.DB__get_image(p_image_id_str, p_runtime_sys)
-		if gf_err != nil {
-			return nil, false, gf_err
+		gf_img, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, false, gfErr
 		}
 
 		gf_img_export := &gf_images_core.GF_image_export{
@@ -63,8 +65,8 @@ func ImgGet(p_image_id_str gf_images_core.GF_image_id,
 //---------------------------------------------------
 func TagsAddToImage(p_image *gf_images_core.GF_image,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_image.TagsAddToImage()")
+	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_image.TagsAddToImage()")
 	
 	if len(p_tags_lst) > 0 {
 

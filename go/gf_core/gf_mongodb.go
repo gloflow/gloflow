@@ -288,7 +288,7 @@ func Mongo__delete(p_query bson.M,
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op
 	p_ctx           context.Context,
-	p_runtime_sys   *RuntimeSys) *GF_error {
+	p_runtime_sys   *RuntimeSys) *GFerror {
 
 	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).DeleteMany(p_ctx, p_query)
 	if err != nil {
@@ -308,8 +308,7 @@ func MongoUpsert(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pColl       *mongo.Collection,
 	pCtx        context.Context,
-	pRuntimeSys *RuntimeSys) *GF_error {
-
+	pRuntimeSys *RuntimeSys) *GFerror {
 
 	_, err := pColl.UpdateOne(pCtx, pQuery, bson.M{"$set": pRecord,},
 		options.Update().SetUpsert(true))

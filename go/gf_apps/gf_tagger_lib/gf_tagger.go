@@ -104,8 +104,8 @@ func addTagsToObject(pTagsStr string,
 		// IMAGE
 		case "image":
 			imageIDstr := pObjectExternIDstr
-			image_id   := gf_images_core.GF_image_id(imageIDstr)
-			exists_bool, gfErr := gf_images_core.DB__image_exists(image_id, pRuntimeSys)
+			imageID    := gf_images_core.GF_image_id(imageIDstr)
+			exists_bool, gfErr := gf_images_core.DBimageExists(imageID, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return gfErr
 			}

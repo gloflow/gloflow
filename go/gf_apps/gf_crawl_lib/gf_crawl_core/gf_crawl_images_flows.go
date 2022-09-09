@@ -24,6 +24,7 @@ package gf_crawl_core
 
 import (
 	"fmt"
+	"context"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -41,6 +42,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 	pMediaDomainStr               string,
 	pCrawledImagesS3bucketNameStr string,
 	pImagesS3bucketNameStr        string,
+	pCtx                          context.Context,
 	pRuntime                      *GFcrawlerRuntime,
 	pRuntimeSys                   *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -141,7 +143,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 
 		fmt.Printf("\n%s - %s -> %s\n\n", green("COPYING IMAGE between S3 BUCKETS"), cyan(sourceCrawlS3bucketStr), cyan(pImagesS3bucketNameStr))
 
-		gfImage, gfErr := gf_images_core.DB__get_image(imageIDstr, pRuntimeSys)
+		gfImage, gfErr := gf_images_core.DBgetImage(imageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
