@@ -284,7 +284,7 @@ func Mongo__find(p_query bson.M,
 }
 
 //-------------------------------------------------
-func Mongo__delete(p_query bson.M,
+func MongoDelete(p_query bson.M,
 	p_coll_name_str string,
 	p_meta_map      map[string]interface{}, // data describing the DB write op
 	p_ctx           context.Context,
@@ -319,19 +319,19 @@ func MongoUpsert(pQuery bson.M,
 			return nil
 		}
 
-		gf_err := MongoHandleError("failed to update/upsert document in the DB",
+		gfErr := MongoHandleError("failed to update/upsert document in the DB",
 			"mongodb_update_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil
 }
 
 //-------------------------------------------------
-// INSERT_BULK
-func MongoInsertBulk(pIDsLst []string,
+// UPSERT_BULK
+func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 	pRecordsLst  []interface{},
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op 
@@ -339,9 +339,15 @@ func MongoInsertBulk(pIDsLst []string,
 	pRuntimeSys  *RuntimeSys) *GFerror {
 
 	models := []mongo.WriteModel{}
-	for i, IDstr := range pIDsLst {
+	for i, filterDocByFieldsMap := range pFilterDocsByFieldsLst {
 
 		replacementDoc := pRecordsLst[i]
+
+		// bulk filter lists to select objects to run updates(upserts) on
+		filter := bson.D{}
+		for k, v := range filterDocByFieldsMap {
+			filter = append(filter, bson.E{k, v}) 
+		}
 
 		// FIX!! - "$set" - replaces existing doc with _id with this new one. 
 		//                  but if ID is some sort of hash of the document (as is in a few GF apps)
@@ -349,7 +355,7 @@ func MongoInsertBulk(pIDsLst []string,
 		//                  so the DB update with a replacement doc is redundant. 
 		//                  fix this special (but frequent in GF) case.
 		model := mongo.NewUpdateOneModel().
-			SetFilter(bson.D{{"_id", IDstr}}).
+			SetFilter(filter). // bson.D{{"id_str", IDstr}}).
 			SetUpdate(bson.M{"$set": replacementDoc,}).
 			SetUpsert(true) // upsert=true - insert new document if the _id doesnt exist
 		models = append(models, model)
@@ -403,12 +409,12 @@ func Mongo__insert(p_record interface{},
 	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(p_ctx, p_record)
 	if err != nil {
 		p_meta_map["coll_name_str"] = p_coll_name_str
-		gf_err := MongoHandleError("failed to insert a new record into the DB",
+		gfErr := MongoHandleError("failed to insert a new record into the DB",
 			"mongodb_insert_error",
 			p_meta_map,
 			err, "gf_core", p_runtime_sys)
 		
-		return gf_err
+		return gfErr
 	}
 	return nil
 }
@@ -448,11 +454,11 @@ func MongoEnsureIndex(p_indexes_keys_lst [][]string,
 		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
 			return []string{}, nil
 		} else {
-			gf_err := MongoHandleError(fmt.Sprintf("failed to create db indexes on fields"), 
+			gfErr := MongoHandleError(fmt.Sprintf("failed to create db indexes on fields"), 
 				"mongodb_ensure_index_error",
 				map[string]interface{}{"indexes_keys_lst": p_indexes_keys_lst,},
 				err, "gf_core", p_runtime_sys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 	}
 
@@ -491,16 +497,16 @@ func MongoEnsureIndex(p_indexes_keys_lst [][]string,
 //--------------------------------------------------------------------
 func Mongo__coll_exists(p_coll_name_str string,
 	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (bool, *GF_error) {
+	p_runtime_sys *RuntimeSys) (bool, *GFerror) {
 
 	coll_names_lst, err := p_runtime_sys.Mongo_db.ListCollectionNames(p_ctx, bson.D{})
 	if err != nil {
-		gf_err := ErrorCreate("failed to get a list of all collection names to check if the given collection exists",
+		gfErr := ErrorCreate("failed to get a list of all collection names to check if the given collection exists",
 			"mongodb_get_collection_names_error",
 			map[string]interface{}{
 				"coll_name_str": p_coll_name_str,
 			}, err, "gf_core", p_runtime_sys)
-		return false, gf_err
+		return false, gfErr
 	}
 
 	for _, name_str := range coll_names_lst {
@@ -533,24 +539,24 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 	mongo_client, err := mongo.Connect(ctx, mongo_options)
 	if err != nil {
 
-		gf_err := ErrorCreate("failed to connect to a MongoDB server at target url",
+		gfErr := ErrorCreate("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)
-		return nil, nil, gf_err
+		return nil, nil, gfErr
 	}
 
 	// test new connection
 	ctx, _ = context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
 	err = mongo_client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		gf_err := ErrorCreate("failed to ping a MongoDB server at target url",
+		gfErr := ErrorCreate("failed to ping a MongoDB server at target url",
 			"mongodb_ping_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
 			}, err, "gf_core", p_runtime_sys)
-		return nil, nil, gf_err
+		return nil, nil, gfErr
 	}
 
 	mongo_db := mongo_client.Database(p_db_name_str)
@@ -565,9 +571,9 @@ func MongoHandleError(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_runtime_sys        *RuntimeSys) *GF_error {
+	p_runtime_sys        *RuntimeSys) *GFerror {
 
-	gf_err := ErrorCreate_with_hook(p_user_msg_str,
+	gfErr := ErrorCreate_with_hook(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
@@ -597,7 +603,7 @@ func MongoHandleError(p_user_msg_str string,
 			return nil
 		},
 		p_runtime_sys)
-	return gf_err
+	return gfErr
 }
 
 //--------------------------------------------------------------------

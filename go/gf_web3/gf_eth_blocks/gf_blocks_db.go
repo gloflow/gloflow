@@ -59,17 +59,21 @@ func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	pMetrics *gf_eth_core.GF_metrics,
 	pRuntime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
-	ids_lst       := []string{}
-	recordsLst    := []interface{}{}
-	blocksNumsLst := []uint64{}
+	filterDocsByFieldsLst := []map[string]string{}
+	recordsLst            := []interface{}{}
+	blocksNumsLst         := []uint64{}
+
 	for _, b := range p_gf_blocks_lst {
-		ids_lst       = append(ids_lst, b.DB_id)
+
+		filterDocsByFieldsLst = append(filterDocsByFieldsLst,
+			map[string]string{"_id": b.DB_id,})
+
 		recordsLst    = append(recordsLst, interface{}(b))
 		blocksNumsLst = append(blocksNumsLst, b.Block_num_uint)
 	}
 
 	collNameStr := "gf_eth_blocks"
-	gfErr := gf_core.MongoInsertBulk(ids_lst, recordsLst,
+	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"blocks_nums_lst":    blocksNumsLst,

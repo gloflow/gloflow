@@ -140,7 +140,7 @@ func TestDBcleanup(pCtx context.Context,
 	
 	// CLEANUP
 	collNameStr := "gf_users"
-	gf_core.Mongo__delete(bson.M{}, collNameStr, 
+	gf_core.MongoDelete(bson.M{}, collNameStr, 
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to cleanup test user DB",
 		},

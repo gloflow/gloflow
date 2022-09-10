@@ -39,7 +39,7 @@ func DBputImage(pImage *GF_image,
 	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
 
 	// UPSERT
-	query  := bson.M{"t": "img", "id_str": pImage.IDstr,}
+	query := bson.M{"t": "img", "id_str": pImage.IDstr,}
 	gfErr := gf_core.MongoUpsert(query,
 		pImage,
 		map[string]interface{}{"image_id_str": pImage.IDstr,},

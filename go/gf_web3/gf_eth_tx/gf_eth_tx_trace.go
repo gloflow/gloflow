@@ -113,19 +113,23 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 
 	coll_name_str := "gf_eth_txs_traces"
 
-	ids_lst        := []string{}
-	records_lst    := []interface{}{}
-	txs_hashes_lst := []string{}
+	filterDocsByFieldsLst := []map[string]string{}
+	recordsLst            := []interface{}{}
+	txsHashesLst          := []string{}
+	
 	for _, tx := range p_txs_traces_lst {
-		ids_lst        = append(ids_lst, tx.DB_id)
-		records_lst    = append(records_lst, interface{}(tx))
-		txs_hashes_lst = append(txs_hashes_lst, tx.Tx_hash_str)
+
+		filterDocsByFieldsLst = append(filterDocsByFieldsLst,
+			map[string]string{"_id": tx.DB_id,})
+
+		recordsLst   = append(recordsLst, interface{}(tx))
+		txsHashesLst = append(txsHashesLst, tx.Tx_hash_str)
 	}
 
-	gf_err := gf_core.MongoInsertBulk(ids_lst, records_lst,
+	gf_err := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		coll_name_str,
 		map[string]interface{}{
-			"txs_hashes_lst":     txs_hashes_lst,
+			"txs_hashes_lst":     txsHashesLst,
 			"caller_err_msg_str": "failed to bulk insert Eth txs_traces into DB",
 		},
 		p_ctx, p_runtime.RuntimeSys)

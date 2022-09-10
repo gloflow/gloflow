@@ -99,29 +99,33 @@ func DB__get(pTxHashStr string,
 
 //-------------------------------------------------
 // DB__WRITE_BULK
-func DB__write_bulk(p_txs_lst []*GF_eth__tx,
+func DB__write_bulk(pTXsLst []*GF_eth__tx,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
+	pRuntime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	collNameStr := "gf_eth_txs"
 
-	ids_lst        := []string{}
+	filterDocsByFieldsLst := []map[string]string{}
 	records_lst    := []interface{}{}
 	txs_hashes_lst := []string{}
-	for _, tx := range p_txs_lst {
-		ids_lst        = append(ids_lst, tx.DB_id)
+
+	for _, tx := range pTXsLst {
+		
+		filterDocsByFieldsLst = append(filterDocsByFieldsLst,
+			map[string]string{"_id": tx.DB_id,})
+
 		records_lst    = append(records_lst, interface{}(tx))
 		txs_hashes_lst = append(txs_hashes_lst, tx.Hash_str)
 	}
 
-	gf_err := gf_core.MongoInsertBulk(ids_lst, records_lst,
+	gf_err := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, records_lst,
 		collNameStr,
 		map[string]interface{}{
 			"txs_hashes_lst":     txs_hashes_lst,
 			"caller_err_msg_str": "failed to bulk insert Eth txs (GF_eth__tx) into DB",
 		},
-		pCtx, p_runtime.RuntimeSys)
+		pCtx, pRuntime.RuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
