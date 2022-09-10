@@ -60,7 +60,7 @@ func Test__templates(p_test *testing.T) {
 	images_pages_lst := [][]*gf_images_core.GF_image{
 		{
 			&gf_images_core.GF_image{
-				Id_str:     "some_test_id",
+				IDstr:      "some_test_id",
 				Title_str:  "some_test_img",
 				Meta_map:   map[string]interface{}{"t_k": "val"},
 				Format_str: "jpg",
