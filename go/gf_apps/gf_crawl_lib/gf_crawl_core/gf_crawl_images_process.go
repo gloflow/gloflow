@@ -38,7 +38,6 @@ func images__stage__process_images(p_crawler_name_str string,
 	pS3bucketNameStr                  string,
 	p_runtime                         *GFcrawlerRuntime,
 	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.images__stage__process_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - process_images")
@@ -97,7 +96,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 	p_images_store_local_dir_path_str string,
 	p_media_domain_str                string,
 	pS3bucketNameStr                  string,
-	p_runtime                         *GFcrawlerRuntime,
+	pRuntime                          *GFcrawlerRuntime,
 	pRuntimeSys                       *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -126,7 +125,7 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 
 			p_media_domain_str,
 			pS3bucketNameStr,
-			p_runtime.S3_info,
+			pRuntime.S3_info,
 			ctx,
 			pRuntimeSys)
 
@@ -151,7 +150,9 @@ func imageProcess(p_page_img *Gf_crawler_page_image,
 			p_gf_image_id_str,
 			p_local_image_file_path_str,
 			thumbnailsLocalDirPathStr,
+			pRuntime.PluginsPyDirPathStr,
 			pRuntimeSys)
+
 		if gfErr != nil {
 			return nil, nil, gfErr
 		}
@@ -184,6 +185,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 	pImageIDstr                     gf_images_core.GFimageID,
 	p_local_image_file_path_str     string,
 	p_thumbnails_local_dir_path_str string,
+	pPluginsPyDirPathStr            string,
 	pRuntimeSys                     *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.image__process_bitmap()")
 
@@ -247,6 +249,7 @@ func imageProcessBitmap(p_page_img *Gf_crawler_page_image,
 			meta_map,
 			p_local_image_file_path_str,
 			p_thumbnails_local_dir_path_str,
+			pPluginsPyDirPathStr,
 			imagesCoreMetrics,
 			ctx,
 			pRuntimeSys)

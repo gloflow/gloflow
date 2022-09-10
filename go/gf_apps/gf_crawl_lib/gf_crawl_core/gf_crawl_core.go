@@ -32,4 +32,6 @@ type GFcrawlerRuntime struct {
 	S3_info                       *gf_core.GFs3Info
 	Cluster_node_type_str         string
 	ImagesUseNewStorageEngineBool bool
+
+	PluginsPyDirPathStr string
 }

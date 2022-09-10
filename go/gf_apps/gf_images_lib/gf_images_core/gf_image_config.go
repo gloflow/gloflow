@@ -88,6 +88,11 @@ type GFconfig struct {
 	IPFSnodeHostStr string `yaml:"ipfs_node_host"`
 
 	//------------------------
+	// PLUGINS_PY
+	// dir path from which to load Py plugins
+	PluginsPyDirPathStr string `yaml:"plugins_py_dir_path"`
+
+	//------------------------
 }
 
 //-------------------------------------------------

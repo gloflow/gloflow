@@ -146,7 +146,6 @@ func images_pipe__single_simple(pImage *Gf_crawler_page_image,
 	pCrawledImagesS3bucketNameStr string,
 	pRuntime                      *GFcrawlerRuntime,
 	pRuntimeSys                   *gf_core.RuntimeSys) (*gf_images_core.GFimage, *gf_images_core.GFimageThumbs, string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_process.images_pipe__single_simple")
 
 
 	//------------------------

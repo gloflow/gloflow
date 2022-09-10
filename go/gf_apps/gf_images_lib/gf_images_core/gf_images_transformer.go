@@ -45,6 +45,7 @@ func TransformImage(pImageIDstr GFimageID,
 	pMetaMap                              map[string]interface{},
 	pImageLocalFilePathStr                string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
+	pPluginsPyDirPathStr                  string,
 	pMetrics                              *GFmetrics,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
@@ -84,15 +85,13 @@ func TransformImage(pImageIDstr GFimageID,
 	// PY_PLUGINS
 	// runs the Py VM in a new process, spawned via a new go-routine
 	
-	pluginsPyDirPathStr := "./gf_images/plugins"
-	
 	var pyPluginsMetrics *gf_images_plugins.GFmetrics
 	if pMetrics != nil {
 		pyPluginsMetrics = pMetrics.PyPluginsMetrics
 	}
 	
 	gf_images_plugins.RunPyImagePlugins(pImageLocalFilePathStr,
-		pluginsPyDirPathStr,
+		pPluginsPyDirPathStr,
 		pyPluginsMetrics,
 		pCtx,
 		pRuntimeSys)

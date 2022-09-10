@@ -34,14 +34,18 @@ import (
 func DBputImage(pImage *GF_image,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	
+
+	collNameStr := "data_symphony"
+	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
+
 	// UPSERT
 	query  := bson.M{"t": "img", "id_str": pImage.IDstr,}
 	gfErr := gf_core.MongoUpsert(query,
 		pImage,
 		map[string]interface{}{"image_id_str": pImage.IDstr,},
-		pRuntimeSys.Mongo_coll,
-		pCtx, pRuntimeSys)
+		coll,
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -54,11 +58,13 @@ func DBgetImage(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 
+	collNameStr := "data_symphony"
+	coll        := pRuntimeSys.Mongo_db.Collection(collNameStr)
+	
 	var image GFimage
 
-	q             := bson.M{"t": "img", "id_str": pImageIDstr}
-	coll_name_str := pRuntimeSys.Mongo_coll.Name()
-	err           := pRuntimeSys.Mongo_db.Collection(coll_name_str).FindOne(pCtx, q).Decode(&image)
+	q   := bson.M{"t": "img", "id_str": pImageIDstr}
+	err := coll.FindOne(pCtx, q).Decode(&image)
 	if err != nil {
 
 		// FIX!! - a record not being found in the DB is possible valid state. it should be considered
@@ -85,8 +91,11 @@ func DBgetImage(pImageIDstr GFimageID,
 func DBimageExists(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	
+	collNameStr := "data_symphony"
+	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
 
-	c, err := pRuntimeSys.Mongo_coll.CountDocuments(pCtx, bson.M{"t": "img", "id_str": pImageIDstr})
+	c, err := coll.CountDocuments(pCtx, bson.M{"t": "img", "id_str": pImageIDstr})
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to check if image exists in the DB",
 			"mongodb_find_error",
@@ -124,7 +133,10 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	find_opts.SetSkip(int64(random_cursor_position_int))
     find_opts.SetLimit(int64(p_imgs_num_to_get_int))
 
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	collNameStr := "data_symphony"
+	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
+
+	cursor, gfErr := gf_core.Mongo__find(bson.M{
 			"t":                    "img",
 			"creation_unix_time_f": bson.M{"$exists": true,},
 			"flows_names_lst":      bson.M{"$in": []string{p_flow_name_str},},
@@ -143,18 +155,18 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 			"flow_name_str":                  p_flow_name_str,
 			"caller_err_msg_str":             "failed to get random img range from the DB",
 		},
-		pRuntimeSys.Mongo_coll,
+		coll,
 		ctx,
 		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
-	var imgs_lst []*Gf_image
-	err := cursor.All(ctx, &imgs_lst)
+	var imgsLst []*Gf_image
+	err := cursor.All(ctx, &imgsLst)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
+		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
 			"mongodb_cursor_all",
 			map[string]interface{}{
 				"imgs_num_to_get_int":            p_imgs_num_to_get_int,
@@ -162,37 +174,8 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 				"flow_name_str":                  p_flow_name_str,
 			},
 			err, "gf_images_core", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
-	/*var imgs_lst []*gf_images_core.Gf_image
-	err := pRuntimeSys.Mongo_coll.Find(bson.M{
-			"t":                    "img",
-			"creation_unix_time_f": bson.M{"$exists": true,},
-			"flows_names_lst":      bson.M{"$in": []string{p_flow_name_str},},
-			//---------------------
-			// IMPORTANT!! - this is the new member that indicates which page url (if not directly uploaded) the
-			//               image came from. only use these images, since only they can be properly credited
-			//               to the source site
-			"origin_page_url_str": bson.M{"$exists": true,},
-			
-			//---------------------
-		}).
-		Skip(random_cursor_position_int).
-		Limit(p_imgs_num_to_get_int).
-		All(&imgs_lst)
-		
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get random img range from the DB",
-			"mongodb_find_error",
-			map[string]interface{}{
-				"imgs_num_to_get_int":            p_imgs_num_to_get_int,
-				"max_random_cursor_position_int": p_max_random_cursor_position_int,
-				"flow_name_str":                  p_flow_name_str,
-			},
-			err, "gf_images_core", pRuntimeSys)
-		return nil, gf_err
-	}*/
-
-	return imgs_lst, nil
+	return imgsLst, nil
 }

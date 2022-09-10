@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
+	// "fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -128,7 +129,7 @@ type GFimageNewInfo struct {
 
 //---------------------------------------------------
 func ImageCreateNew(pImageInfo *GFimageNewInfo,
-	pCtx       context.Context,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0

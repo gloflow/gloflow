@@ -41,6 +41,7 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 	pImagesStoreLocalDirPathStr  string,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
+	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -76,6 +77,7 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 		metaMap,
 		imageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
+		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -122,6 +124,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	// pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
 	// pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                      *gf_core.GFs3Info,
+	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -181,7 +184,8 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 		"", // p_image_origin_page_url_str,
 		pMetaMap,
 		imageLocalFilePathStr,
-		pImagesThumbsLocalDirPathStr, 
+		pImagesThumbsLocalDirPathStr,
+		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -304,6 +308,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pFlowsNamesLst               []string,
 	pS3bucketNameStr             string,
 	pS3info                      *gf_core.GFs3Info,
+	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -344,6 +349,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 		metaMap,
 		imageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
+		pPluginsPyDirPathStr,
 		pJobRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -447,9 +453,10 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 //-------------------------------------------------
 // PIPELINE__PROCESS_LOCAL_IMAGE
 func pipelineProcessLocalImage(pFlowsNamesLst []string,
-	pS3info     *gf_core.GFs3Info,
-	pStorage    *gf_images_storage.GFimageStorage,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pS3info              *gf_core.GFs3Info,
+	pPluginsPyDirPathStr string,
+	pStorage             *gf_images_storage.GFimageStorage,
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 
@@ -464,6 +471,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	pMetaMap                     map[string]interface{},
 	pImageLocalFilePathStr       string,
 	pImagesThumbsLocalDirPathStr string,
+	pPluginsPyDirPathStr         string,
 	pJobRuntime                  *GFjobRuntime,
 	pRuntimeSys                  *gf_core.RuntimeSys) (*gf_images_core.GFimageThumbs, *gf_core.GFerror) {
 
@@ -478,6 +486,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 		pMetaMap,
 		pImageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
+		pPluginsPyDirPathStr,
 		pJobRuntime.metricsCore,
 		ctx,
 		pRuntimeSys)

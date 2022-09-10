@@ -26,3 +26,7 @@ images_flow_to_s3_bucket:
   general:    "media.gloflow.com" # "gf-apps--img"
   discovered: "gf-apps--discovered--img"
   bookmarks:  "gf-apps--bookmarks--img"
+
+#----------------------------
+# PLUGINS_PY
+plugins_py_dir_path: ./gf_images/plugins

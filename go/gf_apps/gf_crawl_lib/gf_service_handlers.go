@@ -30,11 +30,11 @@ import (
 //-------------------------------------------------
 func init_handlers(p_media_domain_str string,
 	p_crawled_images_s3_bucket_name_str string,
-	p_gf_images_s3_bucket_name_str string,
-	p_templates_paths_map          map[string]string,
-	p_http_mux                     *http.ServeMux,
-	p_runtime                      *gf_crawl_core.GFcrawlerRuntime,
-	pRuntimeSys                  *gf_core.RuntimeSys) *gf_core.GFerror {
+	p_gf_images_s3_bucket_name_str      string,
+	p_templates_paths_map               map[string]string,
+	p_http_mux                          *http.ServeMux,
+	pRuntime                            *gf_crawl_core.GFcrawlerRuntime,
+	pRuntimeSys                         *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//---------------------
 	// TEMPLATES
@@ -96,12 +96,11 @@ func init_handlers(p_media_domain_str string,
 				//--------------------------
 				gfErr = gf_crawl_core.FlowsAddExternImage(gf_crawl_core.Gf_crawler_page_image_id(crawler_page_image_id_str),
 					flows_names_lst,
-
 					p_media_domain_str,
 					p_crawled_images_s3_bucket_name_str,
 					p_gf_images_s3_bucket_name_str,
 					pCtx,
-					p_runtime,
+					pRuntime,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -132,8 +131,8 @@ func init_handlers(p_media_domain_str string,
 				pRuntimeSys.LogFun("INFO", "query_term_str - "+query_term_str)
 
 				// IMPORTANT!! - only query if the indexer is enabled
-				if p_runtime.Esearch_client != nil {
-					gfErr := gf_crawl_core.Index__query(query_term_str, p_runtime, pRuntimeSys)
+				if pRuntime.Esearch_client != nil {
+					gfErr := gf_crawl_core.Index__query(query_term_str, pRuntime, pRuntimeSys)
 					if gfErr != nil {
 						return nil, gfErr
 					}

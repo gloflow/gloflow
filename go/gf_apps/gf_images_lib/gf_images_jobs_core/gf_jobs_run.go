@@ -30,28 +30,24 @@ import (
 )
 
 //-------------------------------------------------
-func run_job__local_imgs(pImagesToProcessLst []GF_image_local_to_process,
+func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	pS3info                               *gf_core.GFs3Info,
+	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
 	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
 	
-
-
-
 	gfErrorsLst := []*gf_core.GFerror{}
 	for _, imageToProcess := range pImagesToProcessLst {
 		
-
 		fmt.Println(imageToProcess)
-
-
 
 		gf_err := pipelineProcessLocalImage(pFlowsNamesLst,
 			pS3info,
+			pPluginsPyDirPathStr,
 			pStorage,
 			pRuntimeSys)
 		if gf_err != nil {
@@ -70,6 +66,7 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 	// p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
 	// p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                               *gf_core.GFs3Info,
+	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
 	pRuntimeSys                           *gf_core.RuntimeSys) []*gf_core.GFerror {
@@ -92,6 +89,7 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 			// p_source_s3_bucket_name_str,
 			// p_target_s3_bucket_name_str,
 			pS3info,
+			pPluginsPyDirPathStr,
 			pStorage,
 			pJobRuntime,
 			pRuntimeSys)
@@ -113,6 +111,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	pMediaDomainStr                       string,
 	pS3bucketNameStr                      string,
 	pS3info                               *gf_core.GFs3Info,
+	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
 	pCtx                                  context.Context,
@@ -186,6 +185,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 				pImagesStoreLocalDirPathStr,
 				pImagesThumbnailsStoreLocalDirPathStr,
 				pFlowsNamesLst,
+				pPluginsPyDirPathStr,
 				pStorage,
 				pJobRuntime,
 				pRuntimeSys)
@@ -257,11 +257,6 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 		//-----------------------
 		// STANDARD
 		} else {
-			
-
-			fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
-
 
 			gfErr := pipelineProcessExternImage(imageIDstr,
 				sourceURLstr,
@@ -271,6 +266,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 				pFlowsNamesLst,
 				pS3bucketNameStr,
 				pS3info,
+				pPluginsPyDirPathStr,
 				pStorage,
 				pJobRuntime,
 				pRuntimeSys)
