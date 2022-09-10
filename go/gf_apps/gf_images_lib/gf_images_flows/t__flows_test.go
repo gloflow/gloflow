@@ -47,6 +47,7 @@ func Test__get_all(p_test *testing.T) {
 		p_test.Fail()
 	}
 	mongodb_coll := mongodb_db.Collection("data_symphony")
+	runtime_sys.Mongo_db   = mongodb_db
 	runtime_sys.Mongo_coll = mongodb_coll
 	
 	//------------------
