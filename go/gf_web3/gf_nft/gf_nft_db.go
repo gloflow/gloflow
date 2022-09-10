@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_nft
 
 import (
+	// "fmt"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -53,7 +54,7 @@ func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
 		}})
 
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to update gf_nft with new gf_image_id",
+		gfErr := gf_core.MongoHandleError("failed to update gf_nft with new gf_image_id",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"nft_id_str":  pNFTid,
@@ -68,16 +69,17 @@ func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
 
 //-------------------------------------------------
 func DBgetByOwner(pAddressStr string,
+	pChainStr   string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
 
 	collNameStr := "gf_web3_nfts"
 	
-
 	findOpts := options.Find()
 	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"owner_address_str": pAddressStr,
+			"chain_str":         pChainStr,
 			"deleted_bool":      false,
 		},
 		findOpts,
@@ -98,7 +100,7 @@ func DBgetByOwner(pAddressStr string,
 	var nftsLst []*GFnft
 	err := cursor.All(pCtx, &nftsLst)
 	if err != nil {
-		gfErr := gf_core.Mongo__handle_error("failed to get all NFTs for an owner address from cursor",
+		gfErr := gf_core.MongoHandleError("failed to get all NFTs for an owner address from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
 			err, "gf_nft", pRuntimeSys)
@@ -106,7 +108,7 @@ func DBgetByOwner(pAddressStr string,
 	}
 
 
-	return nil, nil
+	return nftsLst, nil
 }
 
 //-------------------------------------------------
@@ -116,18 +118,30 @@ func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 
 	collNameStr := "gf_web3_nfts"
 
-	IDsLst     := []string{}
-	recordsLst := []interface{}{}
-	contractAddressesLst := []string{}
+	filterDocsByFieldsLst := []map[string]string{}
+	recordsLst            := []interface{}{}
+	contractAddressesLst  := []string{}
 	for _, nft := range pNFTsLst {
-		IDsLst     = append(IDsLst, string(nft.IDstr))
+		
+		// IMPORTANT!! - upsert NFT docs based on their token_id and contract_address,
+		//               (without also including the owner_address as a filter).
+		//               this way the given NFT record will always reflect
+		//               only the latest owner.
+		//               NFT ownership history has to be kept track of in some other way.
+		docFilterMap := map[string]string{
+			"token_id_str":         nft.TokenIDstr,
+			"contract_address_str": nft.ContractAddressStr,
+		}
+		filterDocsByFieldsLst = append(filterDocsByFieldsLst, docFilterMap)
+
+
 		recordsLst = append(recordsLst, interface{}(nft))
 		contractAddressesLst = append(contractAddressesLst, nft.ContractAddressStr)
 	}
 
 
 	// DB_INSERT_BULK
-	gfErr := gf_core.MongoInsertBulk(IDsLst, recordsLst,
+	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"contract_addresses_lst": contractAddressesLst,
@@ -150,17 +164,29 @@ func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 
 	collNameStr := "gf_web3_nfts_alchemy"
 
-	IDsLst     := []string{}
-	recordsLst := []interface{}{}
-	contractAddressesLst := []string{}
+	filterDocsByFieldsLst := []map[string]string{}
+	recordsLst            := []interface{}{}
+	contractAddressesLst  := []string{}
+	
 	for _, nft := range pNFTsLst {
-		IDsLst     = append(IDsLst, string(nft.IDstr))
+		
+		// IMPORTANT!! - upsert NFT docs based on their token_id and contract_address,
+		//               (without also including the owner_address as a filter).
+		//               this way the given NFT record will always reflect
+		//               only the latest owner.
+		//               NFT ownership history has to be kept track of in some other way.
+		docFilterMap := map[string]string{
+			"token_id_str":         nft.TokenIDstr,
+			"contract_address_str": nft.ContractAddressStr,
+		}
+		filterDocsByFieldsLst = append(filterDocsByFieldsLst, docFilterMap)
+
 		recordsLst = append(recordsLst, interface{}(nft))
 		contractAddressesLst = append(contractAddressesLst, nft.ContractAddressStr)
 	}
 
 	// DB_INSERT_BULK
-	gfErr := gf_core.MongoInsertBulk(IDsLst, recordsLst,
+	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"contract_addresses_lst": contractAddressesLst,

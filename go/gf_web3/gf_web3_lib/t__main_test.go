@@ -35,11 +35,11 @@ import (
 //---------------------------------------------------
 func TestMain(m *testing.M) {
 
-	testImagesStoreLocalDirPathStr := "./../tests_data/images"
+	testImagesStoreLocalDirPathStr           := "./../tests_data/images"
 	testImagesThumbnailsStoreLocalDirPathStr := "./../tests_data/images_thumbnails"
-	testVideosStoreLocalDirPathStr := "./../tests_data/videos"
-
-	testMediaDomainStr := ""
+	testVideosStoreLocalDirPathStr           := "./../tests_data/videos"
+	testMediaDomainStr                       := ""
+	pluginsPyDirPathStr                      := "./../../../py/gf_apps/gf_images/plugins"
 
 	runtime, _, err := gf_eth_core.TgetRuntime()
 	if err != nil {
@@ -60,6 +60,7 @@ func TestMain(m *testing.M) {
 			testImagesThumbnailsStoreLocalDirPathStr,
 			testVideosStoreLocalDirPathStr,
 			testMediaDomainStr,
+			pluginsPyDirPathStr,
 			runtime.RuntimeSys)		
 		
 		//------------------------

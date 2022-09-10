@@ -38,8 +38,12 @@ func TestNFT(pTest *testing.T) {
 		pTest.FailNow()
 	}
 
-	testWeb3MonitorServiceInt  := 2000
-	testIdentityServicePortInt := 2001
+	testWeb3MonitorServicePortInt := 2000
+	testIdentityServicePortInt    := 2001
+
+	testUserAddressEthStr := "0x4eDE0b31Fd116B8A00ADD6F449499Cd36b70AAE6"
+	chainStr := "eth"
+	
 	HTTPagent := gorequest.New()
 	ctx       := context.Background()
 
@@ -52,16 +56,24 @@ func TestNFT(pTest *testing.T) {
 
 	//--------------------
 	// NFT_INDEX_ADDRESS
-	testUserAddressEthStr := "0x4eDE0b31Fd116B8A00ADD6F449499Cd36b70AAE6"
-	chainStr := "eth"
+	
 	gf_nft.TindexAddress(testUserAddressEthStr,
 		chainStr,
 		HTTPagent,
-		testWeb3MonitorServiceInt,
+		testWeb3MonitorServicePortInt,
 		pTest)
 
 	// give indexer time to index this address
 	time.Sleep(10 * time.Second)
+
+	//--------------------
+	// NFT_GET_BY_OWNER
+
+	gf_nft.TgetByOwner(testUserAddressEthStr,
+		chainStr,
+		HTTPagent,
+		testWeb3MonitorServicePortInt,
+		pTest)
 
 	//--------------------
 	

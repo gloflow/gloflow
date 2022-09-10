@@ -39,15 +39,16 @@ type GFindexAddressInput struct {
 	FetcherNameStr string
 }
 
+type GFgetByOwnerInput struct {
+	UserIDstr  gf_core.GF_ID
+	AddressStr string
+	ChainStr   string
+}
+
 type GFgetInput struct {
 	UserIDstr         gf_core.GF_ID
 	TokenIDstr        string
 	CollectionNameStr string
-}
-
-type GFgetByOwnerInput struct {
-	UserIDstr  gf_core.GF_ID
-	AddressStr string
 }
 
 //-------------------------------------------------
@@ -84,8 +85,9 @@ func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
 	
 
-
+	// DB
 	nftsLst, gfErr := DBgetByOwner(pInput.AddressStr,
+		pInput.ChainStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

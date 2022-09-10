@@ -76,3 +76,50 @@ func TindexAddress(pAddressStr string,
 
 
 }
+
+//-------------------------------------------------
+func TgetByOwner(pAddressStr string,
+	pChainStr    string,
+	pHTTPagent   *gorequest.SuperAgent,
+	pTestPortInt int,
+	pTest        *testing.T) {
+
+	fmt.Println("====================================")
+	fmt.Println("test NFT GET BY OWNER ADDRESS")
+
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/web3/nft/get_by_owner", pTestPortInt)
+	fmt.Println("URL", urlStr)
+	
+	dataMap := map[string]string{
+		"address_str": pAddressStr,
+		"chain_str":   pChainStr,
+	}
+	dataBytesLst, _ := json.Marshal(dataMap)
+
+	_, bodyStr, errs := pHTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
+		End()
+
+	if (len(errs) > 0) {
+		fmt.Println(errs)
+		pTest.FailNow()
+	}
+	
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
+		fmt.Println(err)
+		pTest.FailNow()
+	}
+
+	spew.Dump(bodyMap)
+
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "nft get_by_owner http request failed")
+	
+
+
+	responseDataMap := bodyMap["data"].(map[string]interface{})
+	nftsLst := responseDataMap["nfts_lst"].([]interface{})
+	assert.True(pTest, len(nftsLst) > 0, "list of nft's that were returned is empty")
+
+
+}

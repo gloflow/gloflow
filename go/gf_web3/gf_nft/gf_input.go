@@ -22,6 +22,7 @@ package gf_nft
 import (
 	"net/http"
 	"context"
+	"strings"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -40,12 +41,12 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	
 	var addressStr string
 	if valStr, ok := inputMap["address_str"]; ok {
-		addressStr = valStr.(string)
+		addressStr = strings.ToLower(valStr.(string))
 	}
 
 	var chainStr string
 	if valStr, ok := inputMap["chain_str"]; ok {
-		chainStr = valStr.(string)
+		chainStr = strings.ToLower(valStr.(string))
 	}
 
 	var fetcherNameStr string
@@ -83,12 +84,18 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 
 	var addressStr string
 	if valStr, ok := inputMap["address_str"]; ok {
-		addressStr = valStr.(string)
+		addressStr = strings.ToLower(valStr.(string))
+	}
+
+	var chainStr string
+	if valStr, ok := inputMap["chain_str"]; ok {
+		chainStr = strings.ToLower(valStr.(string))
 	}
 
 	input := &GFgetByOwnerInput{
 		UserIDstr:  pUserIDstr,
 		AddressStr: addressStr,
+		ChainStr:   chainStr,
 	}
 	return input, nil
 }
