@@ -61,6 +61,7 @@ func Test__basic_image_ops(p_test *testing.T) {
 		p_test.Fail()
 	}
 	mongodbColl := mongodbDB.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongodbDB
 	runtimeSys.Mongo_coll = mongodbColl
 	
 	//------------------
