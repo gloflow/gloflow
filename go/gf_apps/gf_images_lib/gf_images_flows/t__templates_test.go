@@ -57,9 +57,9 @@ func Test__templates(p_test *testing.T) {
 		p_test.Fail()
 	}
 
-	images_pages_lst := [][]*gf_images_core.GF_image{
+	images_pages_lst := [][]*gf_images_core.GFimage{
 		{
-			&gf_images_core.GF_image{
+			&gf_images_core.GFimage{
 				IDstr:      "some_test_id",
 				Title_str:  "some_test_img",
 				Meta_map:   map[string]interface{}{"t_k": "val"},

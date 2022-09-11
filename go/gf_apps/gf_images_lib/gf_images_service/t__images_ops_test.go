@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 //-------------------------------------------------
 func Test__basic_image_ops(p_test *testing.T) {
 
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_ops_tests",
 		LogFun:           logFun,
 	}
@@ -54,26 +54,27 @@ func Test__basic_image_ops(p_test *testing.T) {
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	test__mongodb_db_name_str := "gf_tests"
-	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
-	if gf_err != nil {
-		fmt.Println(gf_err.Error)
+	
+	mongodbDB, _, gfErr := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
 		p_test.Fail()
 	}
-	mongodb_coll := mongodb_db.Collection("data_symphony")
-	runtime_sys.Mongo_coll = mongodb_coll
+	mongodbColl := mongodbDB.Collection("data_symphony")
+	runtimeSys.Mongo_coll = mongodbColl
 	
 	//------------------
 	ctx := context.Background()
 
 	//------------------
 	// CREATE_TEST_IMAGES
-	test_img_0 := &gf_images_core.GF_image{
-		Id_str: "test_img_0",
+	test_img_0 := &gf_images_core.GFimage{
+		IDstr: "test_img_0",
 		T_str:  "img",
 		Flows_names_lst: []string{"flow_0"},
 	}
-	gf_err = gf_images_core.DB__put_image(test_img_0, ctx, runtime_sys)
-	if gf_err != nil {
+	gfErr = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
+	if gfErr != nil {
 		p_test.Fail()
 	}
 
