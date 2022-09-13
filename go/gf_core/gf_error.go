@@ -115,23 +115,48 @@ func Panic__check_and_handle(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func ErrorCreate_with_hook(p_user_msg_str string,
+func ErrorCreateWithHook(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
+	pSkipStackFramesNumInt int,
 	p_hook_fun           func(*GFerror) map[string]interface{},
 	pRuntimeSys          *RuntimeSys) *GFerror {
 
-	gfErr := ErrorCreate(p_user_msg_str,
+	gfErr := ErrorCreateWithStackSkip(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
+		3,
 		pRuntimeSys)
 
 	p_hook_fun(gfErr)
 	return gfErr
+}
+
+//-------------------------------------------------
+func ErrorCreateWithStackSkip(p_user_msg_str string,
+	p_error_type_str     string,
+	p_error_data_map     map[string]interface{},
+	p_error              error,
+	p_subsystem_name_str string,
+	pSkipStackFramesNumInt int,
+	pRuntimeSys          *RuntimeSys) *GFerror {
+	
+	error_defs_map := error__get_defs()
+	
+	gf_err := ErrorCreate_with_defs(p_user_msg_str,
+		p_error_type_str,
+		p_error_data_map,
+		p_error,
+		p_subsystem_name_str,
+		error_defs_map,
+		pSkipStackFramesNumInt,
+		pRuntimeSys)
+
+	return gf_err
 }
 
 //-------------------------------------------------
@@ -154,7 +179,7 @@ func ErrorCreate(p_user_msg_str string,
 		// IMPORTANT!! - ErrorCreate_with_defs() is 2 stack levels away from the caller
 		//               of ErrorCreate() so its important to account for that to get 
 		//               the proper caller information.
-		2, // p_skip_stack_frames_num_int
+		2, // pSkipStackFramesNumInt
 		pRuntimeSys)
 
 	return gf_err
@@ -171,7 +196,7 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
 	//               we would get info on this function, not its caller which is where
 	//               the error occured.
-	p_skip_stack_frames_num_int int,
+	pSkipStackFramesNumInt int,
 
 	pRuntimeSys *RuntimeSys) *GFerror {
 
@@ -187,7 +212,7 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 	// skip_stack_frames_num_int := 1
 
 	// https://golang.org/pkg/runtime/#Caller
-	program_counter, file_str, line_num_int,_ := runtime.Caller(p_skip_stack_frames_num_int)
+	program_counter, file_str, line_num_int,_ := runtime.Caller(pSkipStackFramesNumInt)
 
 	// FuncForPC - returns a *Func describing the function that contains the given program counter address
 	function        := runtime.FuncForPC(program_counter)

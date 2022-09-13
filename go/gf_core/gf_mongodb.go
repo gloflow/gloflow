@@ -563,11 +563,18 @@ func MongoHandleError(p_user_msg_str string,
 	p_subsystem_name_str string,
 	pRuntimeSys          *RuntimeSys) *GFerror {
 
-	gfErr := ErrorCreate_with_hook(p_user_msg_str,
+	// stack/callgraph distance of this call to ErrorCreateWithHook from
+	// error stack fetching and storage, so provide this level explicitly here
+	// so that gf_error can pick the proper place to report as the function that
+	// originated this mongo error (caller of MongoHandleError)
+	skipStackFramesNumInt := 4
+
+	gfErr := ErrorCreateWithHook(p_user_msg_str,
 		p_error_type_str,
 		p_error_data_map,
 		p_error,
 		p_subsystem_name_str,
+		skipStackFramesNumInt,
 		func(p_gf_err *GF_error) map[string]interface{} {
 
 			gf_error_str := fmt.Sprint(p_gf_err)
