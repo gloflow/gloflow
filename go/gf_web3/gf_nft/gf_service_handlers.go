@@ -62,11 +62,6 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 
-
-				
-
-
-
 				//---------------------
 				// INPUT
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
@@ -79,19 +74,16 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				}
 
 				//---------------------
-				// INDEX
-				nftsExternLst, gfErr := pipelineIndexAddress(input,
+				// START INDEXING
+				pipelineIndexAddress(input,
 					pConfig,
 					pImagesJobsMngrCh,
 					pCtx,
 					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-
-				outputMap := map[string]interface{}{
-					"nfts_lst": nftsExternLst,
-				}
+				
+				//---------------------
+				
+				outputMap := map[string]interface{}{}
 				return outputMap, nil
 			}
 

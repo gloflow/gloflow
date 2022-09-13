@@ -39,6 +39,7 @@ func TindexAddress(pAddressStr string,
 	fmt.Println("====================================")
 	fmt.Println("test NFT INDEX ADDRESS")
 
+	// this initiates the indexing process, does not return any data on its own
 	urlStr := fmt.Sprintf("http://localhost:%d/v1/web3/nft/index_address", pTestPortInt)
 	fmt.Println("URL", urlStr)
 	
@@ -70,9 +71,7 @@ func TindexAddress(pAddressStr string,
 	
 
 
-	responseDataMap := bodyMap["data"].(map[string]interface{})
-	nftsLst := responseDataMap["nfts_lst"].([]interface{})
-	assert.True(pTest, len(nftsLst) > 0, "list of nft's that were returned is empty")
+	// responseDataMap := bodyMap["data"].(map[string]interface{})
 
 
 }

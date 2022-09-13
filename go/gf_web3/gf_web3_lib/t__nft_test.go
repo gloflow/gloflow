@@ -64,7 +64,7 @@ func TestNFT(pTest *testing.T) {
 		pTest)
 
 	// give indexer time to index this address
-	time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 
 	//--------------------
 	// NFT_GET_BY_OWNER

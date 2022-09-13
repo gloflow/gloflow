@@ -72,12 +72,11 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 	// GET_ALL_PAGES
 	nftsParsedLst := []*GFnftAlchemy{}
 
-	offsetInt := 0
-	limitInt := 50
+	var pageKeyStr *string
 	for ;; {
-		nftsParsedPageLst, gfErr := AlchemyQueryByOwnerAddress(pOwnerAddressStr,
-			offsetInt,
-			limitInt,
+
+		nftsParsedPageLst, newPageKeyStr, gfErr := AlchemyQueryByOwnerAddress(pOwnerAddressStr,
+			pageKeyStr,
 			pAPIkeyStr,
 			pChainStr,
 			pCtx,
@@ -88,8 +87,16 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 
 		nftsParsedLst = append(nftsParsedLst, nftsParsedPageLst...)
 
-		offsetInt += limitInt
-		break
+		// more pages left
+		if newPageKeyStr != nil {
+			pageKeyStr = newPageKeyStr
+			continue
+
+		} else {
+
+			// last page, exit loop
+			break
+		}
 	}
 
 	//---------------------
@@ -99,12 +106,11 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 
 //-------------------------------------------------
 func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
-	pOffsetInt  int,
-	pLimitInt   int,
+	pPageKeyStr *string,
 	pAPIkeyStr  string,
 	pChainStr   string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, *string, *gf_core.GFerror) {
 
 	//---------------------
 	// HTTP_AGENT
@@ -127,11 +133,22 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 	qsMap := map[string]string{
 		"owner": pOwnerAddressStr,
 	}
+
+	// user acquires a alchemy page key if there are more pages of data
+	// left to fetch. it is returned in the response for that collection of data.
+	if pPageKeyStr != nil {
+		qsMap["pageKey"] = *pPageKeyStr
+	}
+
 	qsLst := []string{}
 	for k, v := range qsMap {
 		qsLst = append(qsLst, fmt.Sprintf("%s=%s", k, v))
 	}
-	qsStr  := strings.Join(qsLst, "&")
+	qsStr := strings.Join(qsLst, "&")
+
+
+	// endpoint supported on Ethereum/Polygon/Flow chains
+	// https://docs.alchemy.com/reference/getnfts
 	urlStr := fmt.Sprintf("https://%s.g.alchemy.com/v2/%s/getNFTs?%s",
 		alchemyChainStr,
 		pAPIkeyStr,
@@ -147,12 +164,10 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 			map[string]interface{}{
 				"extern_service_str": "alchemy",
 				"owner_address_str":  pOwnerAddressStr,
-				"offset_int":  pOffsetInt,
-				"limit_int":   pLimitInt,
-				"url_str":     urlStr,
+				"url_str":            urlStr,
 			},
 			errs[0], "gf_nft_extern_services", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
 	}
 
 	bodyMap := map[string]interface{}{}
@@ -162,12 +177,10 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 			map[string]interface{}{
 				"extern_service_str": "alchemy",
 				"owner_address_str":  pOwnerAddressStr,
-				"offset_int":  pOffsetInt,
-				"limit_int":   pLimitInt,
-				"url_str":     urlStr,
+				"url_str":            urlStr,
 			},
 			err, "gf_nft_extern_services", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
 	}
 
 	spew.Dump(bodyMap)
@@ -229,5 +242,10 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 		nftsParsedPageLst = append(nftsParsedPageLst, gfNFT)
 	}
 
-	return nftsParsedPageLst, nil
+	var pageKeyStr string
+	if returnedPageKeyStr, ok := bodyMap["pageKey"]; ok {
+		pageKeyStr = returnedPageKeyStr.(string)
+	}
+
+	return nftsParsedPageLst, &pageKeyStr, nil
 }

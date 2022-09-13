@@ -56,27 +56,27 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
 	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	if pInput.FetcherNameStr == "alchemy" {
 		
 		serviceSourceStr := "alchemy"
-		nftsLst, gfErr := indexAddress(pInput.AddressStr,
-			serviceSourceStr,
-			pConfig,
-			pJobsMngrCh,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
 
-		nftsExternLst := getNFTexternForm(nftsLst)
 
-		return nftsExternLst, nil
+		// start indexing asynchronously in a new goroutine
+		go func() {
+
+			_, gfErr := indexAddress(pInput.AddressStr,
+				serviceSourceStr,
+				pConfig,
+				pJobsMngrCh,
+				pCtx,
+				pRuntimeSys)
+			if gfErr != nil {
+				return
+			}
+		}()
 	}
-
-	return nil, nil
 }
 
 //-------------------------------------------------
