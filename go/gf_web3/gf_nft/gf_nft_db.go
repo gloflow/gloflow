@@ -186,7 +186,8 @@ func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 	}
 
 	// DB_INSERT_BULK
-	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
+	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst,
+		recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"contract_addresses_lst": contractAddressesLst,

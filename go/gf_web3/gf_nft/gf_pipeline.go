@@ -66,11 +66,13 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 		// start indexing asynchronously in a new goroutine
 		go func() {
 
+			ctxBackground := context.Background()
+
 			_, gfErr := indexAddress(pInput.AddressStr,
 				serviceSourceStr,
 				pConfig,
 				pJobsMngrCh,
-				pCtx,
+				ctxBackground,
 				pRuntimeSys)
 			if gfErr != nil {
 				return

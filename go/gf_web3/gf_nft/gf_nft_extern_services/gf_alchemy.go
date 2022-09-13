@@ -72,7 +72,7 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 	// GET_ALL_PAGES
 	nftsParsedLst := []*GFnftAlchemy{}
 
-	var pageKeyStr *string
+	var pageKeyStr string
 	for ;; {
 
 		nftsParsedPageLst, newPageKeyStr, gfErr := AlchemyQueryByOwnerAddress(pOwnerAddressStr,
@@ -88,7 +88,7 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 		nftsParsedLst = append(nftsParsedLst, nftsParsedPageLst...)
 
 		// more pages left
-		if newPageKeyStr != nil {
+		if newPageKeyStr != "" {
 			pageKeyStr = newPageKeyStr
 			continue
 
@@ -106,11 +106,11 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 
 //-------------------------------------------------
 func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
-	pPageKeyStr *string,
+	pPageKeyStr string,
 	pAPIkeyStr  string,
 	pChainStr   string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, *string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftAlchemy, string, *gf_core.GFerror) {
 
 	//---------------------
 	// HTTP_AGENT
@@ -136,8 +136,8 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 
 	// user acquires a alchemy page key if there are more pages of data
 	// left to fetch. it is returned in the response for that collection of data.
-	if pPageKeyStr != nil {
-		qsMap["pageKey"] = *pPageKeyStr
+	if pPageKeyStr != "" {
+		qsMap["pageKey"] = pPageKeyStr
 	}
 
 	qsLst := []string{}
@@ -167,7 +167,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 				"url_str":            urlStr,
 			},
 			errs[0], "gf_nft_extern_services", pRuntimeSys)
-		return nil, nil, gfErr
+		return nil, "", gfErr
 	}
 
 	bodyMap := map[string]interface{}{}
@@ -180,7 +180,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 				"url_str":            urlStr,
 			},
 			err, "gf_nft_extern_services", pRuntimeSys)
-		return nil, nil, gfErr
+		return nil, "", gfErr
 	}
 
 	spew.Dump(bodyMap)
@@ -247,5 +247,5 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 		pageKeyStr = returnedPageKeyStr.(string)
 	}
 
-	return nftsParsedPageLst, &pageKeyStr, nil
+	return nftsParsedPageLst, pageKeyStr, nil
 }
