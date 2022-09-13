@@ -30,6 +30,10 @@ func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 		[]string{"t", "tags_lst",},
 	}
 	
-	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "data_symphony", pRuntimeSys)
+	indexesNamesLst := []string{
+		"by_type_and_tags",
+	}
+
+	gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, indexesNamesLst, "data_symphony", pRuntimeSys)
 	return gfErr
 }

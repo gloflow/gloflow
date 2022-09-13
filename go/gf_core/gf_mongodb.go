@@ -48,36 +48,36 @@ import (
 // RUN - CamelCase name, for use by external projects.
 
 func MongoTXrun(p_tx_fun func() *GF_error,
-	p_meta_map     map[string]interface{}, // data describing the DB write op
+	pMetaMap       map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
-	p_ctx          context.Context,
-	p_runtime_sys  *RuntimeSys) (mongo.Session, *GF_error) {
+	pCtx           context.Context,
+	pRuntimeSys    *RuntimeSys) (mongo.Session, *GF_error) {
 	
 	return Mongo__tx_run(p_tx_fun,
-		p_meta_map,
+		pMetaMap,
 		p_mongo_client,
-		p_ctx,
-		p_runtime_sys)
+		pCtx,
+		pRuntimeSys)
 }
 
 //-------------------------------------------------
 // RUN
 func Mongo__tx_run(p_tx_fun func() *GF_error,
-	p_meta_map     map[string]interface{}, // data describing the DB write op
+	pMetaMap       map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
-	p_ctx          context.Context,
-	p_runtime_sys  *RuntimeSys) (mongo.Session, *GF_error) {
+	pCtx           context.Context,
+	pRuntimeSys    *RuntimeSys) (mongo.Session, *GF_error) {
 	
 	// TX_INIT
 	txSession, txOptions, gf_err := Mongo__tx_init(p_mongo_client,
-		p_meta_map,
-		p_runtime_sys)
+		pMetaMap,
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
 	// TX_RUN
-	err := mongo.WithSession(p_ctx, txSession, func(pDBsessionCtx mongo.SessionContext) error {
+	err := mongo.WithSession(pCtx, txSession, func(pDBsessionCtx mongo.SessionContext) error {
 
 		// TX_START
 		if err := txSession.StartTransaction(txOptions); err != nil {
@@ -101,18 +101,18 @@ func Mongo__tx_run(p_tx_fun func() *GF_error,
 
 	if err != nil {
 
-		if err_abort := txSession.AbortTransaction(p_ctx); err_abort != nil {
+		if err_abort := txSession.AbortTransaction(pCtx); err_abort != nil {
             gf_err := MongoHandleError("failed to execute Mongodb session",
 				"mongodb_session_abort_error",
-				p_meta_map,
-				err, "gf_core", p_runtime_sys)
+				pMetaMap,
+				err, "gf_core", pRuntimeSys)
 			return nil, gf_err
         }
 
 		gf_err := MongoHandleError("failed to execute Mongodb session",
 			"mongodb_session_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return nil, gf_err		
 	}
 
@@ -122,8 +122,8 @@ func Mongo__tx_run(p_tx_fun func() *GF_error,
 //-------------------------------------------------
 // INIT
 func Mongo__tx_init(p_mongo_client *mongo.Client,
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_runtime_sys *RuntimeSys) (mongo.Session, *options.TransactionOptions, *GF_error) {
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	pRuntimeSys *RuntimeSys) (mongo.Session, *options.TransactionOptions, *GF_error) {
 
 
 
@@ -136,8 +136,8 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
     if err != nil {
 		gf_err := MongoHandleError("failed to start a Mongo session",
 			"mongodb_start_session_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return nil, nil, gf_err		
     }
 
@@ -149,29 +149,29 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
 //-------------------------------------------------
 // MONGO_COUNT
 func MongoCount(p_query bson.M,
-	p_meta_map    map[string]interface{},
-	p_coll        *mongo.Collection,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (int64, *GF_error) {
+	pMetaMap    map[string]interface{},
+	p_coll      *mongo.Collection,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) (int64, *GF_error) {
 
-	return Mongo__count(p_query, p_meta_map, p_coll, p_ctx, p_runtime_sys)
+	return Mongo__count(p_query, pMetaMap, p_coll, pCtx, pRuntimeSys)
 }
 
 func Mongo__count(p_query bson.M,
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_coll        *mongo.Collection,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (int64, *GF_error) {
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	p_coll      *mongo.Collection,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) (int64, *GF_error) {
 
 	// FIX!! - externalize this max_time value to some config.
 	opts := options.Count().SetMaxTime(5 * time.Second)
 
-	count_int, err := p_coll.CountDocuments(p_ctx, p_query, opts)
+	count_int, err := p_coll.CountDocuments(pCtx, p_query, opts)
 	if err != nil {
 		gf_err := MongoHandleError("failed to count number of particular docs in DB",
 			"mongodb_count_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return 0, gf_err
 	}
 	return count_int, nil
@@ -181,26 +181,26 @@ func Mongo__count(p_query bson.M,
 // MONGO_FIND_LATEST
 func MongoFindLatest(p_query bson.M,
 	p_time_field_name_str string,
-	p_meta_map            map[string]interface{}, // data describing the DB write op
+	pMetaMap              map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
-	p_ctx                 context.Context,
-	p_runtime_sys         *RuntimeSys) (map[string]interface{}, *GF_error) {
+	pCtx                  context.Context,
+	pRuntimeSys           *RuntimeSys) (map[string]interface{}, *GF_error) {
 
 	return Mongo__find_latest(p_query,
 		p_time_field_name_str,
-		p_meta_map,
+		pMetaMap,
 		p_coll,
-		p_ctx,
-		p_runtime_sys)
+		pCtx,
+		pRuntimeSys)
 }
 
 // MONGO_FIND_LATEST
 func Mongo__find_latest(p_query bson.M,
 	p_time_field_name_str string,
-	p_meta_map            map[string]interface{}, // data describing the DB write op
+	pMetaMap              map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
-	p_ctx                 context.Context,
-	p_runtime_sys         *RuntimeSys) (map[string]interface{}, *GF_error) {
+	pCtx                  context.Context,
+	pRuntimeSys           *RuntimeSys) (map[string]interface{}, *GF_error) {
 	
 
 	find_opts := options.Find()
@@ -209,10 +209,10 @@ func Mongo__find_latest(p_query bson.M,
 	
 	cursor, gf_err := Mongo__find(p_query,
 		find_opts,
-		p_meta_map,
+		pMetaMap,
 		p_coll,
-		p_ctx,
-		p_runtime_sys)
+		pCtx,
+		pRuntimeSys)
 
 	if gf_err != nil {
 		return nil, gf_err
@@ -224,12 +224,12 @@ func Mongo__find_latest(p_query bson.M,
 	}
 
 	var records_lst []map[string]interface{}
-	err := cursor.All(p_ctx, &records_lst)
+	err := cursor.All(pCtx, &records_lst)
 	if err != nil {
 		gf_err := MongoHandleError("failed to load DB results from DB cursor",
 			"mongodb_cursor_all",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return nil, gf_err
 	}
 	
@@ -242,29 +242,29 @@ func Mongo__find_latest(p_query bson.M,
 //-------------------------------------------------
 // FIND
 func MongoFind(p_query bson.M,
-	p_opts        *options.FindOptions,
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_coll        *mongo.Collection,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (*mongo.Cursor, *GF_error) {
+	p_opts      *options.FindOptions,
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	p_coll      *mongo.Collection,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) (*mongo.Cursor, *GF_error) {
 
 	return Mongo__find(p_query,
 		p_opts,
-		p_meta_map,
+		pMetaMap,
 		p_coll,
-		p_ctx,
-		p_runtime_sys)
+		pCtx,
+		pRuntimeSys)
 }
 
 // FIND
 func Mongo__find(p_query bson.M,
-	p_opts        *options.FindOptions,
-	p_meta_map    map[string]interface{}, // data describing the DB write op
-	p_coll        *mongo.Collection,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (*mongo.Cursor, *GF_error) {
+	p_opts      *options.FindOptions,
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	p_coll      *mongo.Collection,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) (*mongo.Cursor, *GF_error) {
 
-	cur, err := p_coll.Find(p_ctx, p_query, p_opts)
+	cur, err := p_coll.Find(pCtx, p_query, p_opts)
 	if err != nil {
 		
 		// NO_DOCUMENTS
@@ -274,28 +274,28 @@ func Mongo__find(p_query bson.M,
 
 		gf_err := MongoHandleError("failed to find records in DB",
 			"mongodb_find_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return nil, gf_err
 	}
 
-	// defer cur.Close(p_ctx)
+	// defer cur.Close(pCtx)
 	return cur, nil
 }
 
 //-------------------------------------------------
 func MongoDelete(p_query bson.M,
-	p_coll_name_str string,
-	p_meta_map      map[string]interface{}, // data describing the DB write op
-	p_ctx           context.Context,
-	p_runtime_sys   *RuntimeSys) *GFerror {
+	pCollNameStr string,
+	pMetaMap     map[string]interface{}, // data describing the DB write op
+	pCtx         context.Context,
+	pRuntimeSys  *RuntimeSys) *GFerror {
 
-	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).DeleteMany(p_ctx, p_query)
+	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).DeleteMany(pCtx, p_query)
 	if err != nil {
 		gf_err := MongoHandleError("failed to delete documents in the DB",
 			"mongodb_delete_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		return gf_err
 	}
 	return nil
@@ -401,18 +401,18 @@ func MongoInsert(pRecord interface{},
 }
 
 func Mongo__insert(p_record interface{},
-	p_coll_name_str string,
-	p_meta_map      map[string]interface{}, // data describing the DB write op 
-	p_ctx           context.Context,
-	p_runtime_sys   *RuntimeSys) *GF_error {
+	pCollNameStr string,
+	pMetaMap     map[string]interface{}, // data describing the DB write op 
+	pCtx         context.Context,
+	pRuntimeSys  *RuntimeSys) *GF_error {
 
-	_, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).InsertOne(p_ctx, p_record)
+	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).InsertOne(pCtx, p_record)
 	if err != nil {
-		p_meta_map["coll_name_str"] = p_coll_name_str
+		pMetaMap["coll_name_str"] = pCollNameStr
 		gfErr := MongoHandleError("failed to insert a new record into the DB",
 			"mongodb_insert_error",
-			p_meta_map,
-			err, "gf_core", p_runtime_sys)
+			pMetaMap,
+			err, "gf_core", pRuntimeSys)
 		
 		return gfErr
 	}
@@ -421,25 +421,33 @@ func Mongo__insert(p_record interface{},
 
 //-------------------------------------------------
 // ENSURE_INDEX
-func MongoEnsureIndex(p_indexes_keys_lst [][]string, 
-	p_coll_name_str string,
-	p_runtime_sys   *RuntimeSys) ([]string, *GF_error) {
+func MongoEnsureIndex(pIndexesKeysLst [][]string, 
+	pIndexesNamesLst []string,
+	pCollNameStr     string,
+	pRuntimeSys      *RuntimeSys) *GFerror {
 
 	models := []mongo.IndexModel{}
-	for _, indexKeysLst := range p_indexes_keys_lst {
+	for i, indexKeysLst := range pIndexesKeysLst {
 		
-		keys_bson := bson.D{}
+		keysBson := bson.D{}
 		for _, k := range indexKeysLst {
-			keys_bson = append(keys_bson, bson.E{k, 1})
+			keysBson = append(keysBson, bson.E{k, 1})
 		}
 
+		indexOptions := options.Index().
+			SetUnique(false).    // index must necessarily contain only a single document per Key
+			SetBackground(true). // other connections will be allowed to proceed using the collection without the index while it's being built
+			SetSparse(true)      // only documents containing the provided Key fields will be included in the index
+
+		indexNameStr := pIndexesNamesLst[i]
+		if indexNameStr != "" {
+			indexOptions.SetName(indexNameStr)
+		}
+		
 		model := mongo.IndexModel{
 		
-			Keys:    keys_bson, // bson.D{{"name", 1}, {"email", 1}},
-			Options: options.Index().
-				SetUnique(false).    // index must necessarily contain only a single document per Key
-				SetBackground(true). // other connections will be allowed to proceed using the collection without the index while it's being built
-				SetSparse(true),     // only documents containing the provided Key fields will be included in the index
+			Keys:    keysBson, // bson.D{{"name", 1}, {"email", 1}},
+			Options: indexOptions,
 		}
 
 		models = append(models, model)
@@ -449,68 +457,50 @@ func MongoEnsureIndex(p_indexes_keys_lst [][]string,
 	ctx := context.Background()
 	opts := options.CreateIndexes().SetMaxTime(600 * time.Second)
 
-	indexes_names_lst, err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).Indexes().CreateMany(ctx, models, opts)
+	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).Indexes().CreateMany(ctx, models, opts)
 	if err != nil {
-		if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
-			return []string{}, nil
+
+		errStr := fmt.Sprint(err)
+
+		// index exists already
+		if strings.Contains(errStr, "duplicate key error index") || 
+			strings.Contains(errStr, "existing index has the same name as the requested index") {
+			return nil
+
 		} else {
 			gfErr := MongoHandleError(fmt.Sprintf("failed to create db indexes on fields"), 
 				"mongodb_ensure_index_error",
-				map[string]interface{}{"indexes_keys_lst": p_indexes_keys_lst,},
-				err, "gf_core", p_runtime_sys)
-			return nil, gfErr
+				map[string]interface{}{
+					"indexes_keys_lst":  pIndexesKeysLst,
+					"indexes_names_lst": pIndexesNamesLst,
+				},
+				err, "gf_core", pRuntimeSys)
+			return gfErr
 		}
 	}
 
-	return indexes_names_lst, nil
-
-	/*gf_errs_lst := []*Gf_error{}
-	for _, index_keys_lst := range p_indexes_keys_lst {
-		
-		doc_type__index := mgo.Index{
-			Key:        index_keys_lst, 
-			Unique:     false, // index must necessarily contain only a single document per Key
-			DropDups:   false, // documents with the same key as a previously indexed one will be dropped rather than an error returned.
-			Background: true,  // other connections will be allowed to proceed using the collection without the index while it's being built
-			Sparse:     true,  // only documents containing the provided Key fields will be included in the index
-		}
-		
-		if p_runtime_sys.Mongo_db.Collection(p_coll_name_str) != nil {
-			err := p_runtime_sys.Mongo_db.Collection(p_coll_name_str).EnsureIndex(doc_type__index)
-			if err != nil {
-				if strings.Contains(fmt.Sprint(err), "duplicate key error index") {
-					continue // ignore, index already exists
-				} else {
-					gf_err := MongoHandleError(fmt.Sprintf("failed to create db index on fields - %s", index_keys_lst), 
-						"mongodb_ensure_index_error", nil, err, "gf_core", p_runtime_sys)
-					gf_errs_lst = append(gf_errs_lst, gf_err)
-				}
-			}
-		} else {
-			fmt.Printf("mongodb collection %s doesnt exist\n", p_coll_name_str)
-		}
-	}*/
+	return nil
 }
 
 //--------------------------------------------------------------------
 // COLLECTIONS
 //--------------------------------------------------------------------
-func Mongo__coll_exists(p_coll_name_str string,
-	p_ctx         context.Context,
-	p_runtime_sys *RuntimeSys) (bool, *GFerror) {
+func Mongo__coll_exists(pCollNameStr string,
+	pCtx        context.Context,
+	pRuntimeSys *RuntimeSys) (bool, *GFerror) {
 
-	coll_names_lst, err := p_runtime_sys.Mongo_db.ListCollectionNames(p_ctx, bson.D{})
+	coll_names_lst, err := pRuntimeSys.Mongo_db.ListCollectionNames(pCtx, bson.D{})
 	if err != nil {
 		gfErr := ErrorCreate("failed to get a list of all collection names to check if the given collection exists",
 			"mongodb_get_collection_names_error",
 			map[string]interface{}{
-				"coll_name_str": p_coll_name_str,
-			}, err, "gf_core", p_runtime_sys)
+				"coll_name_str": pCollNameStr,
+			}, err, "gf_core", pRuntimeSys)
 		return false, gfErr
 	}
 
 	for _, name_str := range coll_names_lst {
-		if name_str == p_coll_name_str {
+		if name_str == pCollNameStr {
 			return true, nil
 		}
 	}
@@ -524,7 +514,7 @@ func Mongo__coll_exists(p_coll_name_str string,
 func Mongo__connect_new(p_mongo_server_url_str string,
 	p_db_name_str       string,
 	p_tls_custom_config *tls.Config,
-	p_runtime_sys       *RuntimeSys) (*mongo.Database, *mongo.Client, *GF_error) {
+	pRuntimeSys         *RuntimeSys) (*mongo.Database, *mongo.Client, *GF_error) {
 
 	connect_timeout_in_sec_int := 3
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
@@ -543,7 +533,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 			"mongodb_connect_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
-			}, err, "gf_core", p_runtime_sys)
+			}, err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
 
@@ -555,7 +545,7 @@ func Mongo__connect_new(p_mongo_server_url_str string,
 			"mongodb_ping_error",
 			map[string]interface{}{
 				// "mongo_server_url_str": p_mongo_server_url_str,
-			}, err, "gf_core", p_runtime_sys)
+			}, err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
 
@@ -571,7 +561,7 @@ func MongoHandleError(p_user_msg_str string,
 	p_error_data_map     map[string]interface{},
 	p_error              error,
 	p_subsystem_name_str string,
-	p_runtime_sys        *RuntimeSys) *GFerror {
+	pRuntimeSys          *RuntimeSys) *GFerror {
 
 	gfErr := ErrorCreate_with_hook(p_user_msg_str,
 		p_error_type_str,
@@ -602,7 +592,7 @@ func MongoHandleError(p_user_msg_str string,
 
 			return nil
 		},
-		p_runtime_sys)
+		pRuntimeSys)
 	return gfErr
 }
 
@@ -613,7 +603,7 @@ func Mongo__start(p_mongodb_bin_path_str string,
 	p_mongodb_data_dir_path_str string,
 	p_mongodb_log_file_path_str string,
 	p_sudo_bool                 bool,
-	pLogFun                   func(string, string)) error {
+	pLogFun                     func(string, string)) error {
 	pLogFun("FUN_ENTER", "gf_mongodb.Mongo__start()")
 	pLogFun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
 	pLogFun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)

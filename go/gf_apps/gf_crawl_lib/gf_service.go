@@ -96,7 +96,7 @@ func Init(pConfig *GFcrawlerConfig,
 
 	//--------------
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
-	db_index__init(runtime, pRuntimeSys)
+	dbIndexInit(pRuntimeSys)
 	
 	/*crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(pConfig.Crawl_config_file_path_str,
 		pRuntimeSys)

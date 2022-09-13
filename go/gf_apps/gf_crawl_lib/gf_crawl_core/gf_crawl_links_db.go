@@ -30,18 +30,31 @@ import (
 )
 
 //--------------------------------------------------
-func Link__db_index__init(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_db.Link__db_index__init()")
+func LinkDBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	indexesKeysLst := [][]string{
 		[]string{"t", "crawler_name_str"}, // all stat queries first match on "t"
 		[]string{"t", "id_str"},
+		[]string{"t", "name_str"},
 		[]string{"t", "hash_str"},
+		[]string{"t", "count_int"},
 		[]string{"t", "hash_str", "valid_for_crawl_bool", "fetched_bool", "error_type_str", "error_id_str"}, // Link__get_unresolved()
 		[]string{"t", "hash_str", "valid_for_crawl_bool"}, // Link__mark_as_resolved()
+		[]string{"t", "origin_page_url_str"},
 	}
 
-	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "gf_crawl", pRuntimeSys)
+	indexesNamesLst := []string{
+		"by_type_crawler_name",
+		"by_type_and_id",
+		"by_type_and_name",
+		"by_type_and_hash",
+		"by_type_and_count",
+		"by_type_and_hash_and_valid_for_crawl_and_fetched_and_error_type_and_error_id",
+		"by_type_and_hash_and_valid_for_crawl",
+		"by_type_and_origin_page_url",
+	}
+
+	gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, indexesNamesLst, "gf_crawl", pRuntimeSys)
 	return gfErr
 }
 

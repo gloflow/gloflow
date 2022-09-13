@@ -24,18 +24,24 @@ import (
 )
 
 //--------------------------------------------------
-func DB_index__init(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	indexes_keys_lst := [][]string{
+	indexesKeysLst := [][]string{
 		[]string{"t", }, // all stat queries first match on "t"
 		[]string{"t", "origin_page_url_str"},
 		[]string{"t", "name_str"},
 		[]string{"t", "count_int"},
 	}
 
-	_, gf_err := gf_core.MongoEnsureIndex(indexes_keys_lst, "data_symphony", p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	indexesNamesLst := []string{
+		"by_type",
+		"by_type_and_origin_page_url",
+		"by_type_and_name",
+		"by_type_and_count",
+	}
+	gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, indexesNamesLst, "data_symphony", pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil

@@ -41,8 +41,20 @@ func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 		[]string{"t", "flow_name_str",},
 		[]string{"t", "flows_names_lst",},
+		[]string{"t", "flow_name_str", "flows_names_lst"},
+		[]string{"flows_names_lst",},
 	}
 	
-	_, gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, "data_symphony", pRuntimeSys)
+	indexesNamesLst := []string{
+		"by_type",
+		"by_type_and_flow_name_and_origin_url",
+		"by_type_and_flows_names_and_origin_url",
+		"by_type_and_flow_name",
+		"by_type_and_flows_names",
+		"by_type_and_flow_name_and_flows_names",
+		"by_flows_names",
+	}
+
+	gfErr := gf_core.MongoEnsureIndex(indexesKeysLst, indexesNamesLst, "data_symphony", pRuntimeSys)
 	return gfErr
 }

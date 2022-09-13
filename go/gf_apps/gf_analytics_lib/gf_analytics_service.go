@@ -56,15 +56,15 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func Init_service(pServiceInfo *GF_service_info,
-	p_http_mux    *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	p_http_mux  *http.ServeMux,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-----------------
 	// ELASTICSEARCH
 	var esearch_client *elastic.Client
 	var gf_err         *gf_core.Gf_error
 	if pServiceInfo.Run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, p_runtime_sys)
+		esearch_client, gf_err = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
 		if gf_err != nil {
 			panic(gf_err.Error)
 		}
@@ -75,19 +75,19 @@ func Init_service(pServiceInfo *GF_service_info,
 	// TEMPLATES_DIR
 	/*templates_dir_path_str := "./templates"
 	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-		p_runtime_sys.LogFun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
+		pRuntimeSys.LogFun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
 		panic(1)
 	}*/
 
-	init_handlers(pServiceInfo.Templates_paths_map, p_http_mux, p_runtime_sys)
+	init_handlers(pServiceInfo.Templates_paths_map, p_http_mux, pRuntimeSys)
 
 	//------------------------
 	// GF_DOMAINS
-	gf_domains_lib.DB_index__init(p_runtime_sys)
-	gf_domains_lib.Init_domains_aggregation(p_runtime_sys)
+	gf_domains_lib.DBindexInit(pRuntimeSys)
+	gf_domains_lib.Init_domains_aggregation(pRuntimeSys)
 	gf_err = gf_domains_lib.Init_handlers(pServiceInfo.Templates_paths_map,
 		p_http_mux,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -113,7 +113,7 @@ func Init_service(pServiceInfo *GF_service_info,
 		pServiceInfo.AWS_token_str,
 		esearch_client,
 		p_http_mux,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//------------------------
 	// GF_STATS
@@ -121,7 +121,7 @@ func Init_service(pServiceInfo *GF_service_info,
 	stats_url_base_str    := "/a/stats"
 	py_stats_dir_path_str := pServiceInfo.Py_stats_dirs_lst[0]
 
-	gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, p_runtime_sys)
+	gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, pRuntimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -129,7 +129,7 @@ func Init_service(pServiceInfo *GF_service_info,
 	//------------------------
 	// STATIC FILES SERVING
 	static_files__url_base_str := "/a"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, p_runtime_sys)
+	gf_core.HTTP__init_static_serving(static_files__url_base_str, pRuntimeSys)
 
 	//------------------------
 
@@ -137,7 +137,7 @@ func Init_service(pServiceInfo *GF_service_info,
 
 //-------------------------------------------------
 func Run_service(p_service_info *GF_service_info,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 	
 	//------------------------
 	// INIT
@@ -145,18 +145,18 @@ func Run_service(p_service_info *GF_service_info,
 
 	Init_service(p_service_info,
 		http_mux,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//------------------------
 
-	p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	p_runtime_sys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
-	p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	pRuntimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	
 	err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
 	if err != nil {
 		msg_str := "cant start listening on port - "+p_service_info.Port_str
-		p_runtime_sys.LogFun("ERROR", msg_str)
+		pRuntimeSys.LogFun("ERROR", msg_str)
 		panic(err)
 	}
 }
