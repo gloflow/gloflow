@@ -336,7 +336,7 @@ func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op 
 	pCtx         context.Context,
-	pRuntimeSys  *RuntimeSys) *GFerror {
+	pRuntimeSys  *RuntimeSys) (int64, *GFerror) {
 
 	models := []mongo.WriteModel{}
 	for i, filterDocByFieldsMap := range pFilterDocsByFieldsLst {
@@ -369,14 +369,15 @@ func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 			"mongodb_write_bulk_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return gf_err
+		return 0, gf_err
 	}
 
 	if r.MatchedCount != 0 {
 		fmt.Println("matched and replaced an existing document")
 	}
 
-	return nil
+	insertedNewDocsInt := r.InsertedCount
+	return insertedNewDocsInt, nil
 }
 
 //-------------------------------------------------

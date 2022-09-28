@@ -113,6 +113,7 @@ func DBgetByOwner(pAddressStr string,
 
 //-------------------------------------------------
 func DBcreateBulkNFTs(pNFTsLst []*GFnft,
+	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -141,7 +142,7 @@ func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 
 
 	// DB_INSERT_BULK
-	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
+	insertedNewDocsInt, gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"contract_addresses_lst": contractAddressesLst,
@@ -153,12 +154,17 @@ func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 		return gfErr
 	}
 
+	// METRICS
+	if pMetrics != nil {
+		pMetrics.NftDBinsertsCount.Add(float64(insertedNewDocsInt))
+	}
 
 	return nil
 }
 
 //-------------------------------------------------
 func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
+	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -186,7 +192,7 @@ func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 	}
 
 	// DB_INSERT_BULK
-	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst,
+	insertedNewDocsInt, gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst,
 		recordsLst,
 		collNameStr,
 		map[string]interface{}{
@@ -197,6 +203,11 @@ func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
+	}
+
+	// METRICS
+	if pMetrics != nil {
+		pMetrics.NftAlchemyDBinsertsCount.Add(float64(insertedNewDocsInt))
 	}
 
 	return nil

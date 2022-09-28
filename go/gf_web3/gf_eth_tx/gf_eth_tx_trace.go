@@ -58,9 +58,9 @@ type GF_eth__tx_trace_opcode struct {
 //-------------------------------------------------
 func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	p_worker_inspector_host_port_str string,
-	p_ctx                            context.Context,
+	pCtx                             context.Context,
 	p_metrics                        *gf_eth_core.GF_metrics,
-	p_runtime                        *gf_eth_core.GF_runtime) (*gf_core.GF_error, []*gf_core.GF_error) {
+	p_runtime                        *gf_eth_core.GF_runtime) (*gf_core.GF_error, []*gf_core.GFerror) {
 
 
 	// IMPORTANT!! - these are "secondary" errors, that are not the primary one that causes the
@@ -79,7 +79,7 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 		// GET_TRACE - WORKER_INSPECTOR
 		gf_tx_trace, gf_err := Trace__get_from_worker_inspector(tx_hash_str,
 			p_worker_inspector_host_port_str,
-			p_ctx,
+			pCtx,
 			p_runtime.RuntimeSys)
 
 		if gf_err != nil {
@@ -94,12 +94,12 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	}
 
 	// DB_WRITE_BULK
-	gf_err := Trace__db__write_bulk(txs_traces_lst,
-		p_ctx,
+	gfErr := Trace__db__write_bulk(txs_traces_lst,
+		pCtx,
 		p_metrics,
 		p_runtime)
-	if gf_err != nil {
-		return gf_err, gf_errs__get_tx_trace_lst
+	if gfErr != nil {
+		return gfErr, gf_errs__get_tx_trace_lst
 	}
 
 	return nil, gf_errs__get_tx_trace_lst
@@ -107,9 +107,9 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 
 //-------------------------------------------------
 func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
-	p_ctx     context.Context,
+	pCtx      context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	coll_name_str := "gf_eth_txs_traces"
 
@@ -126,15 +126,15 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 		txsHashesLst = append(txsHashesLst, tx.Tx_hash_str)
 	}
 
-	gf_err := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
+	_, gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		coll_name_str,
 		map[string]interface{}{
 			"txs_hashes_lst":     txsHashesLst,
 			"caller_err_msg_str": "failed to bulk insert Eth txs_traces into DB",
 		},
-		p_ctx, p_runtime.RuntimeSys)
-	if gf_err != nil {
-		return gf_err
+		pCtx, p_runtime.RuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
@@ -143,7 +143,7 @@ func Trace__db__write_bulk(p_txs_traces_lst []*GF_eth__tx_trace,
 //-------------------------------------------------
 func Trace__plot(p_tx_id_hex_str string,
 	p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
-	p_ctx          context.Context,
+	pCtx           context.Context,
 	p_py_plugins   *gf_eth_core.GF_py_plugins,
 	p_metrics      *gf_eth_core.GF_metrics,
 	p_runtime      *gf_eth_core.GF_runtime) (string, *gf_core.GF_error) {
@@ -152,13 +152,13 @@ func Trace__plot(p_tx_id_hex_str string,
 
 	//-----------------------
 	// WORKER_INSPECTOR__HOST_PORT
-	host_port_str      := p_get_hosts_fn(p_ctx, p_runtime)[0]
+	host_port_str      := p_get_hosts_fn(pCtx, p_runtime)[0]
 	start_time__unix_f := float64(time.Now().UnixNano()) / 1000000000.0
 
 	// GET_TRACE
 	gf_tx_trace, gf_err := Trace__get_from_worker_inspector(p_tx_id_hex_str,
 		host_port_str,
-		p_ctx,
+		pCtx,
 		p_runtime.RuntimeSys)
 
 	end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -202,7 +202,7 @@ func Trace__plot(p_tx_id_hex_str string,
 // GET_FROM_WORKER_INSPECTOR
 func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
-	p_ctx           context.Context,
+	pCtx            context.Context,
 	p_RuntimeSys   *gf_core.RuntimeSys) (*GF_eth__tx_trace, *gf_core.GF_error) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
@@ -212,7 +212,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	//-----------------------
 	// SPAN
 	span_name_str      := fmt.Sprintf("worker_inspector__get_tx_trace:%s", p_host_port_str)
-	span__get_tx_trace := sentry.StartSpan(p_ctx, span_name_str)
+	span__get_tx_trace := sentry.StartSpan(pCtx, span_name_str)
 	
 	// adding tracing ID as a header, to allow for distributed tracing, correlating transactions
 	// across services.
@@ -220,7 +220,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
 		
 	// GF_RPC_CLIENT
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_RuntimeSys)
+	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, pCtx, p_RuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -311,8 +311,8 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 //-------------------------------------------------
 func Trace__get(p_tx_hash_str string,
 	p_eth_rpc_host_str string,
-	p_ctx              context.Context,
-	p_RuntimeSys      *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pCtx               context.Context,
+	p_RuntimeSys       *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
 	// IMPORTANT!! - transaction tracing is not exposed as a function in the golang ehtclient, as explained
 	//               by the authors, because it is a geth specific function and ethclient is suppose to be a 
@@ -333,7 +333,7 @@ func Trace__get(p_tx_hash_str string,
 		map[string]interface{}{
 			"tx_hash_str": p_tx_hash_str,
 		},
-		p_ctx,
+		pCtx,
 		p_RuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err

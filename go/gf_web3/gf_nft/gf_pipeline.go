@@ -55,6 +55,7 @@ type GFgetInput struct {
 func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
 	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
@@ -72,6 +73,7 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 				serviceSourceStr,
 				pConfig,
 				pJobsMngrCh,
+				pMetrics,
 				ctxBackground,
 				pRuntimeSys)
 			if gfErr != nil {

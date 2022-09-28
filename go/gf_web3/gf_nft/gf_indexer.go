@@ -14,6 +14,7 @@ func indexAddress(pAddressStr string,
 	pServiceSourceStr string,
 	pConfig           *gf_eth_core.GF_config,
 	pJobsMngrCh       chan gf_images_jobs_core.JobMsg,
+	pMetrics          *GFmetrics,
 	pCtx              context.Context,
 	pRuntimeSys       *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
@@ -48,6 +49,7 @@ func indexAddress(pAddressStr string,
 
 		// DB - persist alchemy records
 		gfErr = DBcreateBulkAlchemyNFTs(nftsAlchemyLst,
+			pMetrics,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -57,6 +59,7 @@ func indexAddress(pAddressStr string,
 
 		// create NFT records from Alchemy NFT records
 		nftsLst, gfErr := createFromAlchemy(nftsAlchemyLst,
+			pMetrics,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {

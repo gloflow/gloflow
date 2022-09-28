@@ -39,17 +39,20 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 
 	//---------------------
 	// METRICS
+
+	metrics := MetricsCreate()
+
 	handlersEndpointsLst := []string{
 		"/v1/web3/nft/index_address",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_nft", handlersEndpointsLst)
+	metricsForHandlers := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_nft", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
 		Mux:                pHTTPmux,
-		Metrics:            metrics,
+		Metrics:            metricsForHandlers,
 		Store_run_bool:     true,
 		Sentry_hub:         nil,
 		// Auth_login_url_str: pAuthLoginURLstr,
@@ -78,6 +81,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 				pipelineIndexAddress(input,
 					pConfig,
 					pImagesJobsMngrCh,
+					metrics,
 					pCtx,
 					pRuntimeSys)
 				

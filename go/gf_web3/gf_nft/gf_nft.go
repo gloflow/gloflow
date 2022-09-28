@@ -120,6 +120,7 @@ func get(pTokenIDstr string,
 //---------------------------------------------------
 // CREATE_FOR_ALCHEMY
 func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
+	pMetrics    *GFmetrics,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
@@ -160,6 +161,7 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 
 	// DB
 	gfErr := DBcreateBulkNFTs(NFTsLst,
+		pMetrics,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

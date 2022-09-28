@@ -73,7 +73,7 @@ func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	}
 
 	collNameStr := "gf_eth_blocks"
-	gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
+	_, gfErr := gf_core.MongoUpsertBulk(filterDocsByFieldsLst, recordsLst,
 		collNameStr,
 		map[string]interface{}{
 			"blocks_nums_lst":    blocksNumsLst,
