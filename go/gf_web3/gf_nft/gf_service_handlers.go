@@ -46,7 +46,7 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		"/v1/web3/nft/index_address",
 	}
 	metricsGroupNameStr := "main"
-	metricsForHandlers := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_monitor_nft", handlersEndpointsLst)
+	metricsForHandlers := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_web3_nft", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
