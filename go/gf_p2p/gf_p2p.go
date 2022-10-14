@@ -29,8 +29,6 @@ import (
 	"bufio"
 	"sync"
 	"log"
-	"flag"
-	"strings"
 	
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
@@ -44,8 +42,8 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 
 	dht "github.com/libp2p/go-libp2p-kad-dht"
-	drouting "github.com/libp2p/go-libp2p/p2p/discovery/routing"
-	dutil "github.com/libp2p/go-libp2p/p2p/discovery/util"
+	discovery_routing "github.com/libp2p/go-libp2p/p2p/discovery/routing"
+	discovery_utils "github.com/libp2p/go-libp2p/p2p/discovery/util"
 	multiaddr "github.com/multiformats/go-multiaddr"
 )
 
@@ -54,61 +52,7 @@ type GFp2pPeerPingFun func() ping.Result
 type GFp2pPeerInitFun func(peer.ID) GFp2pPeerPingFun
 type GFp2pAddrLst []multiaddr.Multiaddr
 
-type GFp2pConfig struct {
-	RendezvousString string
-	BootstrapPeers   GFp2pAddrLst
-	ListenAddresses  GFp2pAddrLst
-	ProtocolID       string
-}
-
 var logger = log.Default()
-
-//-------------------------------------------------
-func ParseFlags() (GFp2pConfig, error) {
-	config := GFp2pConfig{}
-
-	flag.StringVar(&config.RendezvousString, "rendezvous", "meet me here",
-		"unique string to identify group of nodes. share this with node operators to connect to GF network")
-
-	flag.Var(&config.BootstrapPeers, "peer", "Adds a peer multiaddress to the bootstrap list")
-	flag.Var(&config.ListenAddresses, "listen", "Adds a multiaddress to the listen list")
-	flag.StringVar(&config.ProtocolID, "pid", "/chat/1.1.0", "Sets a protocol id for stream headers")
-	flag.Parse()
-
-	if len(config.BootstrapPeers) == 0 {
-		config.BootstrapPeers = dht.DefaultBootstrapPeers
-	}
-
-	return config, nil
-}
-
-func (al *GFp2pAddrLst) String() string {
-	strs := make([]string, len(*al))
-	for i, addr := range *al {
-		strs[i] = addr.String()
-	}
-	return strings.Join(strs, ",")
-}
-
-func (al *GFp2pAddrLst) Set(value string) error {
-	addr, err := multiaddr.NewMultiaddr(value)
-	if err != nil {
-		return err
-	}
-	*al = append(*al, addr)
-	return nil
-}
-
-func StringsToAddrs(addrStrings []string) (maddrs []multiaddr.Multiaddr, err error) {
-	for _, addrString := range addrStrings {
-		addr, err := multiaddr.NewMultiaddr(addrString)
-		if err != nil {
-			return maddrs, err
-		}
-		maddrs = append(maddrs, addr)
-	}
-	return
-}
 
 //-------------------------------------------------
 func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
@@ -213,6 +157,8 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 	if err != nil {
 		panic(err)
 	}
+	config.RendezvousSymbolStr = "gloflow_testnet"
+	config.ProtocolIDstr       = "/gf/general/0.0.1"
 
 	initPeerDiscovery(node, config)
 	InitStreamHandler(node)
@@ -225,13 +171,14 @@ func initPeerDiscovery(pNode host.Host,
 	pConfig GFp2pConfig) {
 
 	// CONFIG
-	bootstrapPeers   := pConfig.BootstrapPeers
-	randezvousString := pConfig.RendezvousString
-	protocolID       := pConfig.ProtocolID
+	bootstrapPeers      := pConfig.BootstrapPeers
+	randezvousSymbolStr := pConfig.RendezvousSymbolStr
+	protocolIDstr       := pConfig.ProtocolIDstr
 
 
+	peersNamespaceStr := randezvousSymbolStr
 
-	// Start a DHT, for use in peer discovery. We can't just make a new DHT
+	// start a DHT, for use in peer discovery. We can't just make a new DHT
 	// client because we want each peer to maintain its own local copy of the
 	// DHT, so that the bootstrapping node of the DHT can go down without
 	// inhibiting future peer discovery.
@@ -252,11 +199,8 @@ func initPeerDiscovery(pNode host.Host,
 
 
 
-	// Let's connect to the bootstrap nodes first. They will tell us about the
-	// other nodes in the network.
+	// connect to the bootstrap nodes first, to receive info about other nodes in the network
 	var wg sync.WaitGroup
-
-	
 
 	for _, peerAddr := range bootstrapPeers {
 
@@ -265,10 +209,11 @@ func initPeerDiscovery(pNode host.Host,
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+
 			if err := pNode.Connect(ctx, *peerinfo); err != nil {
 				logger.Print(err)
 			} else {
-				logger.Print("Connection established with bootstrap node:", *peerinfo)
+				logger.Print("connection established with bootstrap node:", *peerinfo)
 			}
 		}()
 	}
@@ -279,46 +224,49 @@ func initPeerDiscovery(pNode host.Host,
 	//----------------
 	// ANNOUNCING RANDEZVOUS
 
-	logger.Print("Announcing ourselves...")
-	routingDiscovery := drouting.NewRoutingDiscovery(kademliaDHT)
+	logger.Print("announcing peer...")
+	routingDiscovery := discovery_routing.NewRoutingDiscovery(kademliaDHT)
 
 	// makes this node announce that it can provide a value for the given key,
 	// key being the "randezvous string"
 	
-	dutil.Advertise(ctx, routingDiscovery, randezvousString)
+	discovery_utils.Advertise(ctx, routingDiscovery, peersNamespaceStr)
 
-	logger.Print("Successfully announced!")
+	logger.Print("peer announced...")
 
 	//----------------
 	// look for others peers who have announced
-	logger.Print("Searching for other peers...")
+	logger.Print("searching for other peers...")
 
-	peerChan, err := routingDiscovery.FindPeers(ctx, randezvousString)
+	
+	peersCh, err := routingDiscovery.FindPeers(ctx, peersNamespaceStr)
 	if err != nil {
 		panic(err)
 	}
 
-	for peer := range peerChan {
+	for peerAddrInfo := range peersCh {
 		
-		if peer.ID == pNode.ID() {
+		// skip peer if its this node
+		if peerAddrInfo.ID == pNode.ID() {
 			continue
 		}
-		logger.Print("Found peer:", peer)
 
-		logger.Print("Connecting to:", peer)
-		stream, err := pNode.NewStream(ctx, peer.ID, protocol.ID(protocolID))
+		logger.Print("peer discovered:", peerAddrInfo)
+
+		logger.Print("connecting to peer:", peerAddrInfo)
+		stream, err := pNode.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
 
 		if err != nil {
-			logger.Print("Connection failed:", err)
+			logger.Print("connection failed:", err)
 			continue
 		} else {
 			rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
 
-			go writeData(rw)
-			go readData(rw)
+			go writeDataToStream(rw)
+			go readDataFromStream(rw)
 		}
 
-		logger.Print("Connected to:", peer)
+		logger.Print("connected to peer:", peerAddrInfo)
 	}
 
 	select {}
@@ -331,12 +279,11 @@ func InitStreamHandler(pNode host.Host) {
 	streamHandlerFun := func(pStream network.Stream) {
 
 		// create a buffer stream for non blocking read and write
+		// stream will stay open until you close it (or the other side closes it)
 		rw := bufio.NewReadWriter(bufio.NewReader(pStream), bufio.NewWriter(pStream))
 	
-		go readData(rw)
-		go writeData(rw)
-	
-		// 'stream' will stay open until you close it (or the other side closes it).
+		go readDataFromStream(rw)
+		go writeDataToStream(rw)
 	}
 
 	//-------------------------------------------------
@@ -344,29 +291,26 @@ func InitStreamHandler(pNode host.Host) {
 }
 
 //-------------------------------------------------
-func readData(pReadWriter *bufio.ReadWriter) {
+func readDataFromStream(pReadWriter *bufio.ReadWriter) {
 
 	for {
-		str, err := pReadWriter.ReadString('\n')
+		lineStr, err := pReadWriter.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading from buffer")
+			fmt.Println("error reading line from buffer")
 			panic(err)
 		}
 
-		if str == "" {
+		if lineStr == "" {
 			return
 		}
-		if str != "\n" {
-
-			// Green console colour: 	\x1b[32m
-			// Reset console colour: 	\x1b[0m
-			fmt.Printf("\x1b[32m%s\x1b[0m> ", str)
+		if lineStr != "\n" {
+			fmt.Printf("\x1b[32m%s\x1b[0m> ", lineStr)
 		}
 	}
 }
 
 //-------------------------------------------------
-func writeData(pReadWriter *bufio.ReadWriter) {
+func writeDataToStream(pReadWriter *bufio.ReadWriter) {
 	
 	stdReader := bufio.NewReader(os.Stdin)
 
@@ -375,18 +319,18 @@ func writeData(pReadWriter *bufio.ReadWriter) {
 
 		sendData, err := stdReader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading from stdin")
+			fmt.Println("error reading from stdin")
 			panic(err)
 		}
 
 		_, err = pReadWriter.WriteString(fmt.Sprintf("%s\n", sendData))
 		if err != nil {
-			fmt.Println("Error writing to buffer")
+			fmt.Println("error writing to buffer")
 			panic(err)
 		}
 		err = pReadWriter.Flush()
 		if err != nil {
-			fmt.Println("Error flushing buffer")
+			fmt.Println("error flushing buffer")
 			panic(err)
 		}
 	}
