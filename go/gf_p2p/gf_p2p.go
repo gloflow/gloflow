@@ -29,7 +29,10 @@ import (
 	"bufio"
 	"sync"
 	"log"
-	
+	"strings"
+	"github.com/fatih/color"
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
@@ -56,6 +59,8 @@ var logger = log.Default()
 
 //-------------------------------------------------
 func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
+
+	blue := color.New(color.FgBlue).Add(color.BgWhite).SprintFunc()
 
 	//----------------
 	// KEYPAIR
@@ -115,7 +120,7 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 	// defer node.Close()
 
 	fmt.Printf("node Listen addresses: %s\n", node.Addrs())
-	fmt.Printf("node hosts ID is %s\n", node.ID())
+	fmt.Printf("node hosts ID is %s\n", blue(node.ID()))
 
 	peerInfo := peer.AddrInfo{
 		ID:    node.ID(),
@@ -160,8 +165,9 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 	config.RendezvousSymbolStr = "gloflow_testnet"
 	config.ProtocolIDstr       = "/gf/general/0.0.1"
 
+	InitStreamHandler(node, config)
 	initPeerDiscovery(node, config)
-	InitStreamHandler(node)
+	
 
 	return node, GFp2pPeerInitFun(pingInitPeerFun)
 }
@@ -169,6 +175,10 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 //-------------------------------------------------
 func initPeerDiscovery(pNode host.Host,
 	pConfig GFp2pConfig) {
+
+	yellow := color.New(color.FgYellow).SprintFunc()
+	green  := color.New(color.FgGreen).SprintFunc()
+	greenAndWhiteBg := color.New(color.FgGreen).Add(color.BgWhite).SprintFunc()
 
 	// CONFIG
 	bootstrapPeers      := pConfig.BootstrapPeers
@@ -235,45 +245,99 @@ func initPeerDiscovery(pNode host.Host,
 	logger.Print("peer announced...")
 
 	//----------------
-	// look for others peers who have announced
-	logger.Print("searching for other peers...")
-
+	// look for others peers who have announced (continuously)
 	
-	peersCh, err := routingDiscovery.FindPeers(ctx, peersNamespaceStr)
-	if err != nil {
-		panic(err)
-	}
+	go func() {
 
-	for peerAddrInfo := range peersCh {
+		logger.Print(fmt.Sprintf("%s:", yellow("searching for other peers")))
+
+		ctx := context.Background()
 		
-		// skip peer if its this node
-		if peerAddrInfo.ID == pNode.ID() {
-			continue
+		type GFp2pPeersFailedToDial struct {
+			addrLst     []multiaddr.Multiaddr
+			attemptsInt int64
 		}
+		type GFp2pPeersConnected struct {
 
-		logger.Print("peer discovered:", peerAddrInfo)
-
-		logger.Print("connecting to peer:", peerAddrInfo)
-		stream, err := pNode.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
-
-		if err != nil {
-			logger.Print("connection failed:", err)
-			continue
-		} else {
-			rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
-
-			go writeDataToStream(rw)
-			go readDataFromStream(rw)
 		}
+		peersFailToDialMap := map[peer.ID]*GFp2pPeersFailedToDial{}
+		peersConnectedMap  := map[peer.ID]*GFp2pPeersConnected{}
+		
+		for {
+			peersCh, err := routingDiscovery.FindPeers(ctx, peersNamespaceStr)
+			if err != nil {
+				panic(err)
+			}
 
-		logger.Print("connected to peer:", peerAddrInfo)
-	}
+			for peerAddrInfo := range peersCh {
+				
+				// skip peer if its this node
+				if peerAddrInfo.ID == pNode.ID() {
+					continue
+				}
+
+				// if discovered peer has no addresses then skip it
+				if len(peerAddrInfo.Addrs) == 0 {
+					continue
+				}
+
+				// peer is already connected to, so skip it
+				if _, ok := peersConnectedMap[peerAddrInfo.ID]; ok {
+					continue
+				}
+
+				logger.Print(fmt.Sprintf("%s:", green("new peer discovered")), peerAddrInfo)
+
+				stream, err := pNode.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
+
+				if err != nil {
+
+					// register all peers that this peer failed to connect with.
+					// on the next try it will still be attempted to connect to that peer
+					if strings.HasPrefix(fmt.Sprint(err), "failed to dial") {
+
+						if attempt, ok := peersFailToDialMap[peerAddrInfo.ID]; ok {
+							attempt.attemptsInt++
+						} else {
+							logger.Print("peer connection (first attempt) failed:", err)
+
+							peersFailToDialMap[peerAddrInfo.ID] = &GFp2pPeersFailedToDial{
+								addrLst:     peerAddrInfo.Addrs,
+								attemptsInt: 1,
+							}
+						}
+					}
+
+
+					fmt.Println(err, strings.HasPrefix(fmt.Sprint(err), "failed to dial"))
+					
+					continue
+				}
+
+				// success
+				rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
+				go writeDataToStream(rw)
+				go readDataFromStream(rw)
+
+				peersConnectedMap[peerAddrInfo.ID] = &GFp2pPeersConnected{}
+				logger.Print(fmt.Sprintf("%s:", greenAndWhiteBg("connected to peer")), peerAddrInfo)
+
+			}
+
+			spew.Dump(peersFailToDialMap)
+			spew.Dump(peersConnectedMap)
+
+			// sleep and then try to discover peers again
+			time.Sleep(10 * time.Second)
+		}
+	}()
 
 	select {}
 }
 
 //-------------------------------------------------
-func InitStreamHandler(pNode host.Host) {
+func InitStreamHandler(pNode host.Host,
+	pConfig GFp2pConfig) {
 
 	//-------------------------------------------------
 	streamHandlerFun := func(pStream network.Stream) {
@@ -287,7 +351,7 @@ func InitStreamHandler(pNode host.Host) {
 	}
 
 	//-------------------------------------------------
-	pNode.SetStreamHandler("/gf/0.0.1", streamHandlerFun)
+	pNode.SetStreamHandler(protocol.ID(pConfig.ProtocolIDstr), streamHandlerFun)
 }
 
 //-------------------------------------------------
