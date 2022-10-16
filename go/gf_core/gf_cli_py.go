@@ -75,11 +75,11 @@ func cliPyParseOutput(pStdoutLst []string,
 		if strings.HasPrefix(l_str, pStdoutPrefixStr) {
 
 			// remove the stdout prefix of the Py program stdout
-			output_str := strings.Replace(l_str, pStdoutPrefixStr, "", 1)
+			outputStr := strings.Replace(l_str, pStdoutPrefixStr, "", 1)
 
 			// JSON_DECODE
 			var outputMap map[string]interface{}
-			err := json.Unmarshal([]byte(output_str), &outputMap)
+			err := json.Unmarshal([]byte(outputStr), &outputMap)
 
 			if err != nil {
 				gfErr := ErrorCreate("failed to parse json output in py program stdout",

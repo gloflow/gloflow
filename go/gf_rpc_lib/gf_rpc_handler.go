@@ -57,13 +57,13 @@ type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map
 // HTTP
 func Create_handler__http(p_path_str string,
 	p_handler_fun  handler_http,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	Create_handler__http_with_metrics(p_path_str,
 		p_handler_fun,
 		nil,
 		false,
-		p_runtime_sys)
+		pRuntimeSys)
 }
 
 //-------------------------------------------------
@@ -72,7 +72,7 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 	p_path_str        string,
 	p_handler_fun     handler_http,
 	p_handler_runtime *GF_rpc_handler_runtime,
-	p_runtime_sys     *gf_core.RuntimeSys) {
+	pRuntimeSys       *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(p_auth_bool,
 		p_path_str,
@@ -81,7 +81,7 @@ func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authenticati
 		p_handler_runtime.Store_run_bool,
 		p_handler_runtime.Sentry_hub,
 		&p_handler_runtime.Auth_login_url_str,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	p_handler_runtime.Mux.HandleFunc(p_path_str, handler_fun)
 }
@@ -94,7 +94,7 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
 	p_sentry_hub  *sentry.Hub,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	pRuntimeSys   *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
@@ -103,7 +103,7 @@ func CreateHandlerHTTPwithMux(p_path_str string,
 		pStoreRunBool,
 		p_sentry_hub,
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	p_mux.HandleFunc(p_path_str, handler_fun)
 }
@@ -114,7 +114,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 	p_handler_fun handler_http,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	pRuntimeSys   *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(false, // p_auth_bool
 		p_path_str,
@@ -123,7 +123,7 @@ func Create_handler__http_with_metrics(p_path_str string,
 		pStoreRunBool,
 		nil,
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	http.HandleFunc(p_path_str, handler_fun)
 }

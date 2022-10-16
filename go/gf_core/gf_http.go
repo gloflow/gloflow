@@ -85,25 +85,20 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 func HTTPgetInput(pReq *http.Request,
 	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
 
-	handlerURLpathStr := pReq.URL.Path
-
-	var i map[string]interface{}
 	bodyBytesLst, _ := ioutil.ReadAll(pReq.Body)
 
 	// parse body bytes only if they're larger than 0
 	if len(bodyBytesLst) > 0 {
-		err := json.Unmarshal(bodyBytesLst, &i)
 
-		if err != nil {
-			gfErr := ErrorCreate("failed to parse json http input",
-				"json_decode_error",
-				map[string]interface{}{"handler_url_path_str": handlerURLpathStr,},
-				err, "gf_core", pRuntimeSys)
+		i, gfErr := ParseJSONfromByteList(bodyBytesLst, pRuntimeSys)
+		if gfErr != nil {
 			return nil, gfErr
 		}
+
+		return i, nil
 	}
 
-	return i, nil
+	return nil, nil
 }
 
 //---------------------------------------------------
