@@ -48,6 +48,8 @@ import (
 	discovery_routing "github.com/libp2p/go-libp2p/p2p/discovery/routing"
 	discovery_utils "github.com/libp2p/go-libp2p/p2p/discovery/util"
 	multiaddr "github.com/multiformats/go-multiaddr"
+
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
@@ -58,7 +60,8 @@ type GFp2pAddrLst []multiaddr.Multiaddr
 var logger = log.Default()
 
 //-------------------------------------------------
-func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
+func Init(pPortInt int,
+	pRuntimeSys *gf_core.RuntimeSys) (host.Host, GFp2pPeerInitFun) {
 
 	blue := color.New(color.FgBlue).Add(color.BgWhite).SprintFunc()
 
@@ -165,8 +168,8 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 	config.RendezvousSymbolStr = "gloflow_testnet"
 	config.ProtocolIDstr       = "/gf/general/0.0.1"
 
-	InitStreamHandler(node, config)
-	initPeerDiscovery(node, config)
+	InitStreamHandler(node, config, pRuntimeSys)
+	initPeerDiscovery(node, config, pRuntimeSys)
 	
 
 	return node, GFp2pPeerInitFun(pingInitPeerFun)
@@ -174,7 +177,8 @@ func Init(pPortInt int) (host.Host, GFp2pPeerInitFun) {
 
 //-------------------------------------------------
 func initPeerDiscovery(pNode host.Host,
-	pConfig GFp2pConfig) {
+	pConfig GFp2pConfig,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	green  := color.New(color.FgGreen).SprintFunc()
@@ -316,8 +320,8 @@ func initPeerDiscovery(pNode host.Host,
 
 				// success
 				rw := bufio.NewReadWriter(bufio.NewReader(stream), bufio.NewWriter(stream))
-				go writeDataToStream(rw)
-				go readDataFromStream(rw)
+				go writeDataToStream(rw, pRuntimeSys)
+				go readDataFromStream(rw, pRuntimeSys)
 
 				peersConnectedMap[peerAddrInfo.ID] = &GFp2pPeersConnected{}
 				logger.Print(fmt.Sprintf("%s:", greenAndWhiteBg("connected to peer")), peerAddrInfo)
@@ -337,7 +341,8 @@ func initPeerDiscovery(pNode host.Host,
 
 //-------------------------------------------------
 func InitStreamHandler(pNode host.Host,
-	pConfig GFp2pConfig) {
+	pConfig     GFp2pConfig,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-------------------------------------------------
 	streamHandlerFun := func(pStream network.Stream) {
@@ -346,8 +351,8 @@ func InitStreamHandler(pNode host.Host,
 		// stream will stay open until you close it (or the other side closes it)
 		rw := bufio.NewReadWriter(bufio.NewReader(pStream), bufio.NewWriter(pStream))
 	
-		go readDataFromStream(rw)
-		go writeDataToStream(rw)
+		go readDataFromStream(rw, pRuntimeSys)
+		go writeDataToStream(rw, pRuntimeSys)
 	}
 
 	//-------------------------------------------------
@@ -355,10 +360,12 @@ func InitStreamHandler(pNode host.Host,
 }
 
 //-------------------------------------------------
-func readDataFromStream(pReadWriter *bufio.ReadWriter) {
+func readDataFromStream(pReadWriter *bufio.ReadWriter,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	for {
 		lineStr, err := pReadWriter.ReadString('\n')
+
 		if err != nil {
 			fmt.Println("error reading line from buffer")
 			panic(err)
@@ -370,24 +377,29 @@ func readDataFromStream(pReadWriter *bufio.ReadWriter) {
 		if lineStr != "\n" {
 			fmt.Printf("\x1b[32m%s\x1b[0m> ", lineStr)
 		}
+
+		// PARSE
+		msgMap, gfErr := gf_core.ParseJSONfromString(lineStr, pRuntimeSys)
+		if gfErr != nil {
+
+		}
+
+
+		fmt.Println(msgMap)
 	}
 }
 
 //-------------------------------------------------
-func writeDataToStream(pReadWriter *bufio.ReadWriter) {
+func writeDataToStream(pReadWriter *bufio.ReadWriter,
+	pRuntimeSys *gf_core.RuntimeSys) {
 	
-	stdReader := bufio.NewReader(os.Stdin)
+	msgMap := map[string]interface{}{}
 
 	for {
-		fmt.Print("> ")
 
-		sendData, err := stdReader.ReadString('\n')
-		if err != nil {
-			fmt.Println("error reading from stdin")
-			panic(err)
-		}
-
-		_, err = pReadWriter.WriteString(fmt.Sprintf("%s\n", sendData))
+		msgBytesLst := gf_core.EncodeJSONfromMap(msgMap)
+		
+		_, err := pReadWriter.Write(msgBytesLst)
 		if err != nil {
 			fmt.Println("error writing to buffer")
 			panic(err)

@@ -25,6 +25,7 @@ import (
 	"context"
 	multiaddr "github.com/multiformats/go-multiaddr"
 	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_p2p"
 )
 
@@ -34,10 +35,15 @@ func main() {
 
 	portInt := 0 // start on a random port
 
+	// RUNTIME
+	logFun, _ := gf_core.InitLogs()
+	runtimeSys := &gf_core.RuntimeSys{
+		Service_name_str: "gf_p2p_tester",
+		LogFun:          logFun,
+	}
 
 
-
-	node, pingInitPeerFun := gf_p2p.Init(portInt)
+	node, pingInitPeerFun := gf_p2p.Init(portInt, runtimeSys)
 
 	if len(os.Args) > 1 {
 
