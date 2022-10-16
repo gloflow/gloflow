@@ -137,14 +137,14 @@ func cluster__init_handlers(p_crawl_config_file_path_str string,
 		//------------------
 		// OUTPUT
 		
-		r_map := map[string]interface{}{
+		rMap := map[string]interface{}{
 			"status_str":    "OK",
 			"worker_id_str": worker.Id_str,
 		}
 
-		r_lst,_ := json.Marshal(r_map)
-		r_str   := string(r_lst)
-		fmt.Fprint(p_resp, r_str)
+
+		rByteLst := gf_core.EncodeJSONfromMap(rMap)
+		fmt.Fprint(p_resp, string(rByteLst))
 
 		//------------------
 	})

@@ -38,106 +38,106 @@ import (
 )
 
 //-------------------------------------------------
-func Client__request_sse(p_url_str string,
-	p_resp_data_ch chan(map[string]interface{}),
-	p_headers_map  map[string]string,
-	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GF_error {
+func Client__request_sse(pURLstr string,
+	pRespDataCh chan(map[string]interface{}),
+	pHeadersMap map[string]string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-----------------------
 	// FETCH_URL
 
-	user_agent_str := "gf_rpc_client"
-	gf_http_fetch, gf_err := gf_core.HTTPfetchURL(p_url_str,
-		p_headers_map,
-		user_agent_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	userAgentStr := "gf_rpc_client"
+	gf_http_fetch, gfErr := gf_core.HTTPfetchURL(pURLstr,
+		pHeadersMap,
+		userAgentStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//-----------------------
 
-	http_resp   := gf_http_fetch.Resp
-	resp_reader := bufio.NewReader(http_resp.Body)
+	httpResp   := gf_http_fetch.Resp
+	respReader := bufio.NewReader(httpResp.Body)
 
 	for {
 
-		line_lst, err := resp_reader.ReadBytes('\n')
+		lineLst, err := respReader.ReadBytes('\n')
 		if err != nil {
 			
-			gf_err := gf_core.ErrorCreate("failed to read a line in body reasponse stream for client http sse connection",
+			gfErr := gf_core.ErrorCreate("failed to read a line in body reasponse stream for client http sse connection",
 				"io_reader_error",
-				map[string]interface{}{"url_str": p_url_str,},
-				nil, "gf_rpc_lib", p_runtime_sys)
-			return gf_err
+				map[string]interface{}{"url_str": pURLstr,},
+				nil, "gf_rpc_lib", pRuntimeSys)
+			return gfErr
 		}
 
-		line_str := string(line_lst)
+		lineStr := string(lineLst)
 
 		// filter out keep-alive new lines
-		if line_str != "" && strings.HasPrefix(line_str, "data: ") {
+		if lineStr != "" && strings.HasPrefix(lineStr, "data: ") {
 
 
-			msg_str := strings.Replace(line_str, "data: ", "", 1)
+			msg_str := strings.Replace(lineStr, "data: ", "", 1)
 
 			log.WithFields(log.Fields{"event": msg_str,}).Info("GF_RPC_CLIENT - SSE event")
 
-			msg_map := map[string]interface{}{}
-			err     := json.Unmarshal([]byte(msg_str), &msg_map)
+			msgMap := map[string]interface{}{}
+			err     := json.Unmarshal([]byte(msg_str), &msgMap)
 			if err != nil {
-				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
+				gfErr := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					map[string]interface{}{
-						"url_str":  p_url_str,
-						"line_str": line_str,
+						"url_str":  pURLstr,
+						"line_str": lineStr,
 					},
-					err, "gf_rpc_lib", p_runtime_sys)
-				return gf_err
+					err, "gf_rpc_lib", pRuntimeSys)
+				return gfErr
 			}
 
 			//-------------------
 			// STATUS
-			if _, ok := msg_map["status_str"]; !ok {
-				gf_err := gf_core.ErrorCreate("sse message json doesnt container key status_str",
+			if _, ok := msgMap["status_str"]; !ok {
+				gfErr := gf_core.ErrorCreate("sse message json doesnt container key status_str",
 					"verify__missing_key_error",
 					map[string]interface{}{
-						"url_str":  p_url_str,
-						"line_str": line_str,
+						"url_str":  pURLstr,
+						"line_str": lineStr,
 					},
-					nil, "gf_rpc_lib", p_runtime_sys)
-				return gf_err
+					nil, "gf_rpc_lib", pRuntimeSys)
+				return gfErr
 			}
-			status_str := msg_map["status_str"].(string)
+			statusStr := msgMap["status_str"].(string)
 
-			if !(status_str == "ok" || status_str == "error" || status_str == "complete") {
-				gf_err := gf_core.ErrorCreate("sse message json status_str key is not of value ok|complete|error",
+			if !(statusStr == "ok" || statusStr == "error" || statusStr == "complete") {
+				gfErr := gf_core.ErrorCreate("sse message json status_str key is not of value ok|complete|error",
 					"verify__invalid_key_value_error",
 					map[string]interface{}{
-						"status_str": status_str,
-						"url_str":    p_url_str,
-						"line_str":   line_str,
+						"status_str": statusStr,
+						"url_str":    pURLstr,
+						"line_str":   lineStr,
 					},
-					nil, "gf_rpc_lib", p_runtime_sys)
-				return gf_err
+					nil, "gf_rpc_lib", pRuntimeSys)
+				return gfErr
 			}
 
 			//-------------------
 			// DATA
-			if _, ok := msg_map["data_map"]; !ok {
-				gf_err := gf_core.ErrorCreate("sse message json doesnt container key data_map",
+			if _, ok := msgMap["data_map"]; !ok {
+				gfErr := gf_core.ErrorCreate("sse message json doesnt container key data_map",
 					"verify__missing_key_error",
-					map[string]interface{}{"msg_map": msg_map,},
-					nil, "gf_rpc_lib", p_runtime_sys)
-				return gf_err
+					map[string]interface{}{"msg_map": msgMap,},
+					nil, "gf_rpc_lib", pRuntimeSys)
+				return gfErr
 			}
 			
-			data_map := msg_map["data_map"].(map[string]interface{})
+			dataMap := msgMap["data_map"].(map[string]interface{})
 			
 			//-------------------
 
-			p_resp_data_ch <- data_map
+			pRespDataCh <- dataMap
 		}
 	}
 	
@@ -146,9 +146,9 @@ func Client__request_sse(p_url_str string,
 
 //-------------------------------------------------
 func Client__request(pURLstr string,
-	p_headers_map map[string]string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
+	pHeadersMap map[string]string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
 	yellow   := color.New(color.FgYellow).SprintFunc()
 	yellowBg := color.New(color.FgBlack, color.BgYellow).SprintFunc()
@@ -158,44 +158,44 @@ func Client__request(pURLstr string,
 
 	//-----------------------
 	// FETCH_URL
-	user_agent_str := "gf_rpc_client"
+	userAgentStr := "gf_rpc_client"
 	HTTPfetch, gfErr := gf_core.HTTPfetchURL(pURLstr,
-		p_headers_map,
-		user_agent_str,
-		p_ctx,
-		p_runtime_sys)
+		pHeadersMap,
+		userAgentStr,
+		pCtx,
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//-----------------------
 	// JSON_DECODE
-	body_bytes_lst, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
+	bodyBytesLst, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
 
-	var resp_map map[string]interface{}
-	err := json.Unmarshal(body_bytes_lst, &resp_map)
+	var respMap map[string]interface{}
+	err := json.Unmarshal(bodyBytesLst, &respMap)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
 			map[string]interface{}{"url_str": pURLstr,},
-			err, "gf_rpc_lib", p_runtime_sys)
+			err, "gf_rpc_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
 	//-----------------------
 
-	r_status_str := resp_map["status"].(string)
+	rStatusStr := respMap["status"].(string)
 
-	if r_status_str == "OK" {
-		data_map := resp_map["data"].(map[string]interface{})
+	if rStatusStr == "OK" {
+		dataMap := respMap["data"].(map[string]interface{})
 
-		return data_map, nil
+		return dataMap, nil
 	} else {
 
 		gfErr := gf_core.ErrorCreate(fmt.Sprintf("received a non-OK response from GF HTTP REST API"), 
 			"http_client_gf_status_error",
 			map[string]interface{}{"url_str": pURLstr,},
-			nil, "gf_rpc_lib", p_runtime_sys)
+			nil, "gf_rpc_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 

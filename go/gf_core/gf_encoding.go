@@ -29,6 +29,12 @@ import (
 )
 
 //---------------------------------------------------
+func EncodeJSONfromMap(pInputMap map[string]interface{}) []byte {
+	outputLst, _ := json.Marshal(pInputMap)
+	return outputLst
+}
+
+//---------------------------------------------------
 func ParseJSONfromByteList(pBytesLst []byte,
 	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
 
