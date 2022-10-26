@@ -48,6 +48,9 @@ import (
 	discovery_routing "github.com/libp2p/go-libp2p/p2p/discovery/routing"
 	discovery_utils "github.com/libp2p/go-libp2p/p2p/discovery/util"
 	multiaddr "github.com/multiformats/go-multiaddr"
+	datastore "github.com/ipfs/go-datastore"
+	datastore_sync "github.com/ipfs/go-datastore/sync"
+	routed_host "github.com/libp2p/go-libp2p/p2p/host/routed"
 
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -122,6 +125,8 @@ func Init(pPortInt int,
 	}
 	// defer node.Close()
 
+	// node.Peerstore() - get the peerstore of the current p2p host
+
 	fmt.Printf("node Listen addresses: %s\n", node.Addrs())
 	fmt.Printf("node hosts ID is %s\n", blue(node.ID()))
 
@@ -175,6 +180,11 @@ func Init(pPortInt int,
 	return node, GFp2pPeerInitFun(pingInitPeerFun)
 }
 
+/*type blankValidator struct{}
+
+func (blankValidator) Validate(_ string, _ []byte) error        { return nil }
+func (blankValidator) Select(_ string, _ [][]byte) (int, error) { return 0, nil }*/
+
 //-------------------------------------------------
 func initPeerDiscovery(pNode host.Host,
 	pConfig GFp2pConfig,
@@ -197,20 +207,14 @@ func initPeerDiscovery(pNode host.Host,
 	// DHT, so that the bootstrapping node of the DHT can go down without
 	// inhibiting future peer discovery.
 	ctx := context.Background()
-	kademliaDHT, err := dht.New(ctx, pNode)
+	
+	// DHT
+	dht, err := initDHT(pNode, ctx)
 	if err != nil {
 		panic(err)
 	}
 
-
-
-	// bootstrap the DHT. In the default configuration, this spawns a Background
-	// thread that will refresh the peer table every five minutes.
-	logger.Print("Bootstrapping the DHT")
-	if err = kademliaDHT.Bootstrap(ctx); err != nil {
-		panic(err)
-	}
-
+	routedHost := routed_host.Wrap(pNode, dht)
 
 
 	// connect to the bootstrap nodes first, to receive info about other nodes in the network
@@ -239,7 +243,7 @@ func initPeerDiscovery(pNode host.Host,
 	// ANNOUNCING RANDEZVOUS
 
 	logger.Print("announcing peer...")
-	routingDiscovery := discovery_routing.NewRoutingDiscovery(kademliaDHT)
+	routingDiscovery := discovery_routing.NewRoutingDiscovery(dht)
 
 	// makes this node announce that it can provide a value for the given key,
 	// key being the "randezvous string"
@@ -247,6 +251,8 @@ func initPeerDiscovery(pNode host.Host,
 	discovery_utils.Advertise(ctx, routingDiscovery, peersNamespaceStr)
 
 	logger.Print("peer announced...")
+
+	fmt.Printf("DHT mode: %s\n", dht.Mode())
 
 	//----------------
 	// look for others peers who have announced (continuously)
@@ -268,6 +274,8 @@ func initPeerDiscovery(pNode host.Host,
 		peersConnectedMap  := map[peer.ID]*GFp2pPeersConnected{}
 		
 		for {
+
+			// FindPeers() - provides us with all the peers that have been discovered at the rendezvous-point
 			peersCh, err := routingDiscovery.FindPeers(ctx, peersNamespaceStr)
 			if err != nil {
 				panic(err)
@@ -292,7 +300,7 @@ func initPeerDiscovery(pNode host.Host,
 
 				logger.Print(fmt.Sprintf("%s:", green("new peer discovered")), peerAddrInfo)
 
-				stream, err := pNode.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
+				stream, err := routedHost.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
 
 				if err != nil {
 
@@ -331,12 +339,67 @@ func initPeerDiscovery(pNode host.Host,
 			spew.Dump(peersFailToDialMap)
 			spew.Dump(peersConnectedMap)
 
+			//-----------------
+			// TEST DHT READ/WRITE
+
+			val, err := dht.GetValue(ctx, "/gf/0.0.1/key1")
+			if err != nil {
+				fmt.Printf("NOO VALUE FOR KEY in DHT - %s\n", err)
+			} else {
+				fmt.Printf("DHT key %s\n", string(val))
+			}
+
+			dht.PutValue(ctx, "/gf/0.0.1/key1", []byte("key_value1"))
+
+			//-----------------
+
 			// sleep and then try to discover peers again
 			time.Sleep(10 * time.Second)
 		}
 	}()
 
 	select {}
+}
+
+//-------------------------------------------------
+func initDHT(pNode host.Host,
+	pCtx context.Context) (*dht.IpfsDHT, error) {
+	
+
+	var options []dht.Option
+	options = append(options, dht.Mode(dht.ModeServer))
+
+
+	/*baseOpts := []dht.Option{
+		dht.ProtocolPrefix(protocol.ID(pConfig.ProtocolIDstr)),
+		dht.NamespacedValidator("v", blankValidator{}),
+		// DisableAutoRefresh(),
+	}*/
+
+	// Construct a datastore (needed by the DHT). This is just a simple, in-memory thread-safe datastore.
+	dstore := datastore_sync.MutexWrap(datastore.NewMapDatastore())
+	options = append(options, dstore)
+
+	// https://github.com/libp2p/go-libp2p-kad-dht/blob/master/dht.go
+	dht := dht.NewDHT(pCtx, pNode, options...)
+
+
+	// someKeyStr := "something"
+	// _, err := dht.GetClosestPeers(ctx, someKeyStr)
+
+	// tells the DHT to get into a bootstrapped state satisfying the IpfsRouter interface.
+	// in the default configuration, this spawns a Background
+	// thread that will refresh the peer table every five minutes.
+	logger.Print("Bootstrapping the DHT")
+	if err := dht.Bootstrap(pCtx); err != nil {
+		return nil, err
+	}
+
+	dht.Mode(1)
+
+	fmt.Printf("DHT mode: %s\n", dht.Mode())
+	
+	return dht, nil
 }
 
 //-------------------------------------------------
@@ -384,8 +447,15 @@ func readDataFromStream(pReadWriter *bufio.ReadWriter,
 
 		}
 
+		//----------------
+		// PROTOCOL
+		gfErr = handleIncomingMsg(msgMap, pRuntimeSys)
+		if gfErr != nil {
 
-		fmt.Println(msgMap)
+		}
+
+		//----------------
+
 	}
 }
 
