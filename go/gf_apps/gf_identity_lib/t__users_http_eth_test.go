@@ -43,7 +43,7 @@ func Test__users_http_eth(pTest *testing.T) {
 
 	//---------------------------------
 	// GENERATE_WALLET
-	private_key_hex_str, public_key_hex_str, address_str, err := gf_crypto.Eth_generate_keys()
+	privateKeyHexStr, publicKeyHexStr, addressStr, err := gf_crypto.EthGenerateKeys()
 	if err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -53,7 +53,7 @@ func Test__users_http_eth(pTest *testing.T) {
 	// TEST_PREFLIGHT_HTTP
 	
 	data_map := map[string]string{
-		"user_address_eth_str": address_str,
+		"user_address_eth_str": addressStr,
 	}
 	data_bytes_lst, _ := json.Marshal(data_map)
 	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/eth/preflight", test_port_int)
@@ -94,7 +94,7 @@ func Test__users_http_eth(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-	signature_str, err := gf_crypto.Eth_sign_data(nonce_val_str, private_key_hex_str)
+	signature_str, err := gf_crypto.Eth_sign_data(nonce_val_str, privateKeyHexStr)
 	if err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -102,15 +102,15 @@ func Test__users_http_eth(pTest *testing.T) {
 
 	fmt.Println("====================================")
 	fmt.Println("user create inputs:")
-	fmt.Println("address",   address_str, len(address_str))
-	fmt.Println("priv key",  private_key_hex_str, len(private_key_hex_str))
-	fmt.Println("pub key",   public_key_hex_str, len(public_key_hex_str))
+	fmt.Println("address",   addressStr, len(addressStr))
+	fmt.Println("priv key",  privateKeyHexStr, len(privateKeyHexStr))
+	fmt.Println("pub key",   publicKeyHexStr, len(publicKeyHexStr))
 	fmt.Println("signature", signature_str, len(signature_str))
 	fmt.Println("nonce",     nonce_val_str)
 
 	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/create", test_port_int)
 	data_map = map[string]string{
-		"user_address_eth_str": address_str,
+		"user_address_eth_str": addressStr,
 		"auth_signature_str":   signature_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)
@@ -150,12 +150,12 @@ func Test__users_http_eth(pTest *testing.T) {
 
 	fmt.Println("====================================")
 	fmt.Println("user login inputs:")
-	fmt.Println("address",   address_str, len(address_str))
+	fmt.Println("address",   addressStr, len(addressStr))
 	fmt.Println("signature", signature_str, len(signature_str))
 
 	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", test_port_int)
 	data_map = map[string]string{
-		"user_address_eth_str": address_str,
+		"user_address_eth_str": addressStr,
 		"auth_signature_str":   signature_str,
 	}
 	data_bytes_lst, _ = json.Marshal(data_map)

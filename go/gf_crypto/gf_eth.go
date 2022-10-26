@@ -29,50 +29,50 @@ import (
 )
 
 //-------------------------------------------------
-func Eth_generate_keys() (string, string, string, error) {
+func EthGenerateKeys() (string, string, string, error) {
 
     //---------------------------
 	// PRIVATE_KEY_GENERATE
-	private_key, err := crypto.GenerateKey()
+	privateKey, err := crypto.GenerateKey()
     if err != nil {
         return "", "", "", err
     }
 
-    private_key_bytes_lst := crypto.FromECDSA(private_key)
+    privateKeyBytesLst := crypto.FromECDSA(privateKey)
 
     // generate private_key hex, and remove the "0x" prefix
-    private_key_hex_str := hexutil.Encode(private_key_bytes_lst) // 0xfad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19
+    privateKeyHexStr := hexutil.Encode(privateKeyBytesLst) // 0xfad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19
 
     //---------------------------
     // PUBLIC_KEY_GENERATE
-    public_key := private_key.Public()
-    public_key_ECDSA, ok := public_key.(*ecdsa.PublicKey)
+    publicKey := privateKey.Public()
+    publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
     if !ok {
         return "", "", "", err
     }
 
-    public_key_bytes_lst := crypto.FromECDSAPub(public_key_ECDSA)
-    public_key_hex_str   := hexutil.Encode(public_key_bytes_lst)
+    publicKeyBytesLst := crypto.FromECDSAPub(publicKeyECDSA)
+    publicKeyHexStr   := hexutil.Encode(publicKeyBytesLst)
 
     // [4:] - removing the first 4 bytes:
     //  - first 2  - "0x"
     //  - second 2 - "04" - this is a prefix to indicate an uncompressed public key ("03" is for a compressed one)
-    // fmt.Println(hexutil.Encode(public_key_bytes_lst)[4:])
+    // fmt.Println(hexutil.Encode(publicKeyBytesLst)[4:])
 
     //---------------------------
     // ADDRESS_GENERATE - from public_key
 
     // PubkeyToAddress() - helper method, gives the same result as the bellow
     //                     derivation using Keccak256 hash approach.
-    // address_hex_str := crypto.PubkeyToAddress(*public_key_ECDSA).Hex()
+    // addressHexStr := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
 
     hash := sha3.NewLegacyKeccak256()
-    hash.Write(public_key_bytes_lst[1:])
+    hash.Write(publicKeyBytesLst[1:])
     // take the last 40 chars (20 bytes) of the pub_key hash, and get a hex of that
-    address_hex_str := hexutil.Encode(hash.Sum(nil)[12:]) // 0x96216849c49358b10257cb55b28ea603c874b05e
+    addressHexStr := hexutil.Encode(hash.Sum(nil)[12:]) // 0x96216849c49358b10257cb55b28ea603c874b05e
 
     //---------------------------
-	return private_key_hex_str, public_key_hex_str, address_hex_str, nil
+	return privateKeyHexStr, publicKeyHexStr, addressHexStr, nil
 }
 
 //-------------------------------------------------
