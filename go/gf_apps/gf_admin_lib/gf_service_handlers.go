@@ -69,7 +69,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 
 	//---------------------
 	// rpcHandlerRuntime
-	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                p_http_mux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
@@ -219,7 +219,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	// HEALHTZ - admin has its own healthz because its started separately from other apps services
 	//           on a different port, and registeres separate handlers (on a separate mux).
 
-	rpcHandlerRuntimeHealth := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntimeHealth := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:            p_http_mux,
 		Metrics:        metrics,
 		Store_run_bool: false,
@@ -245,13 +245,13 @@ func templatesLoad(p_templates_paths_map map[string]string,
 	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
 	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]
 
-	l_tmpl, l_subtemplates_names_lst, gfErr := gf_core.Templates__load(loginTemplateFilepathStr,
+	l_tmpl, l_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(loginTemplateFilepathStr,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	d_tmpl, d_subtemplates_names_lst, gfErr := gf_core.Templates__load(dashboardTemplateFilepathStr,
+	d_tmpl, d_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(dashboardTemplateFilepathStr,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

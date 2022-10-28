@@ -31,16 +31,13 @@ type gf_templates struct {
 	flows_browser__subtemplates_names_lst []string
 }
 //-------------------------------------------------
-func tmpl__load(p_templates_paths_map map[string]string, // p_templates_dir_path_str string, 
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GF_error) {
+func tmplLoad(pTemplatesPathsMap map[string]string, // p_templates_dir_path_str string, 
+	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
 
-	
-	main_template_filepath_str := p_templates_paths_map["gf_images_flows_browser"] // "gf_images_flows_browser.html"
-	// main_template_dir_str      := filepath.Dir(main_template_filepath_str) // main_template_filepath_str
-	// templates_dir_path_str := fmt.Sprintf("%s/gf_images_flows_browser", p_templates_dir_path_str)
+	main_template_filepath_str := pTemplatesPathsMap["gf_images_flows_browser"]
 
-	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

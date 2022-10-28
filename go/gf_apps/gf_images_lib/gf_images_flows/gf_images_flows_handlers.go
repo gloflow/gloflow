@@ -38,7 +38,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// TEMPLATES
-	gf_templates, gfErr := tmpl__load(pTemplatesPathsMap, pRuntimeSys)
+	templates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -58,7 +58,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
@@ -287,8 +287,8 @@ func InitHandlers(pAuthLoginURLstr string,
 				template_rendered_str, gf_err := flows__render_initial_page(flow_name_str,
 					6,  // p_initial_pages_num_int int,
 					10, // p_page_size_int int,
-					gf_templates.flows_browser__tmpl,
-					gf_templates.flows_browser__subtemplates_names_lst,
+					templates.flows_browser__tmpl,
+					templates.flows_browser__subtemplates_names_lst,
 					p_ctx,
 					pRuntimeSys)
 				if gf_err != nil {

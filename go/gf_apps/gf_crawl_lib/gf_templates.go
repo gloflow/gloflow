@@ -39,7 +39,7 @@ func tmpl__load(p_templates_paths_map map[string]string,
 	main_template_filepath_str := p_templates_paths_map["gf_crawl_dashboard"] // ["gf_crawl_dashboard.html"]
 	// templates_dir_path_str := fmt.Sprintf("%s/gf_crawl_dashboard", p_templates_dir_path_str)
 
-	dashboard__tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+	dashboard__tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

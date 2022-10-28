@@ -46,7 +46,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,

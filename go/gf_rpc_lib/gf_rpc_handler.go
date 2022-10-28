@@ -36,7 +36,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_rpc_handler_runtime struct {
+type GFrpcHandlerRuntime struct {
 	Mux                *http.ServeMux
 	Metrics            *GF_metrics
 	Store_run_bool     bool
@@ -56,8 +56,8 @@ type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map
 //-------------------------------------------------
 // HTTP
 func Create_handler__http(p_path_str string,
-	p_handler_fun  handler_http,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	p_handler_fun handler_http,
+	pRuntimeSys   *gf_core.RuntimeSys) {
 
 	Create_handler__http_with_metrics(p_path_str,
 		p_handler_fun,
@@ -71,7 +71,7 @@ func Create_handler__http(p_path_str string,
 func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authentication or not
 	p_path_str        string,
 	p_handler_fun     handler_http,
-	p_handler_runtime *GF_rpc_handler_runtime,
+	p_handler_runtime *GFrpcHandlerRuntime,
 	pRuntimeSys       *gf_core.RuntimeSys) {
 
 	handler_fun := getHandler(p_auth_bool,

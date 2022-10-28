@@ -36,7 +36,7 @@ func tmpl__load(p_templates_paths_map map[string]string,
 
 	main_template_filepath_str := p_templates_paths_map["gf_landing_page"]
 
-	tmpl, subtemplates_names_lst, gf_err := gf_core.Templates__load(main_template_filepath_str,
+	tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

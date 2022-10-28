@@ -40,18 +40,14 @@ func tmpl__load(p_templates_paths_map map[string]string,
 
 	post__main_template_filepath_str          := p_templates_paths_map["gf_post"]
 	posts_browser__main_template_filepath_str := p_templates_paths_map["gf_posts_browser"]
-	// post__templates_dir_path_str          := fmt.Sprintf("%s/gf_post", p_templates_dir_path_str)
-	// posts_browser__templates_dir_path_str := fmt.Sprintf("%s/gf_posts_browser", p_templates_dir_path_str)
 	
-	post__tmpl, post__subtmpl_lst, gf_err := gf_core.Templates__load(post__main_template_filepath_str,
-		// post__templates_dir_path_str,
+	post__tmpl, post__subtmpl_lst, gf_err := gf_core.TemplatesLoad(post__main_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 	
-	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.Templates__load(posts_browser__main_template_filepath_str,
-		// posts_browser__templates_dir_path_str,
+	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.TemplatesLoad(posts_browser__main_template_filepath_str,
 		p_runtime_sys)
 	if gf_err != nil {
 		return nil, gf_err

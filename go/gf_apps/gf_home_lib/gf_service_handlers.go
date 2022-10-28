@@ -62,7 +62,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpcHandlerRuntime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                pHTTPmux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
@@ -174,7 +174,7 @@ func templatesLoad(pTemplatesPathsMap map[string]string,
 	mainTemplateFilepathStr := pTemplatesPathsMap["gf_home_main"]
 
 	// MAIN
-	tmpl, subtemplatesNamesLst, gfErr := gf_core.Templates__load(mainTemplateFilepathStr,
+	tmpl, subtemplatesNamesLst, gfErr := gf_core.TemplatesLoad(mainTemplateFilepathStr,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr

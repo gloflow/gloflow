@@ -47,7 +47,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpc_handler_runtime := &gf_rpc_lib.GF_rpc_handler_runtime {
+	rpc_handler_runtime := &gf_rpc_lib.GFrpcHandlerRuntime {
 		Mux:                p_http_mux,
 		Metrics:            metrics,
 		Store_run_bool:     true,
