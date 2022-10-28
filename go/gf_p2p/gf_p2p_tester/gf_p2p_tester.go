@@ -23,6 +23,7 @@ import (
 	"os"
 	"fmt"
 	"context"
+	"net/http"
 	multiaddr "github.com/multiformats/go-multiaddr"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -42,6 +43,14 @@ func main() {
 		LogFun:          logFun,
 	}
 
+
+	// HTTP_MUX
+	gfHTTPmux := http.NewServeMux()
+
+	initService(gfHTTPmux, runtimeSys)
+	
+
+	//---------------------
 
 	node, pingInitPeerFun := gf_p2p.Init(portInt, runtimeSys)
 

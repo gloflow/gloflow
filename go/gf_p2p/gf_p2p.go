@@ -339,6 +339,20 @@ func initPeerDiscovery(pNode host.Host,
 			spew.Dump(peersFailToDialMap)
 			spew.Dump(peersConnectedMap)
 
+			fmt.Printf("peers in peerstore #%d \n", len(pNode.Peerstore().Peers()))
+			spew.Dump(pNode.Peerstore().Peers())
+
+			// find self
+			fmt.Printf("looking for self\n")
+			selfAddr := dht.FindLocal(pNode.ID())
+			spew.Dump(selfAddr)
+
+			// routing_table diversity stats
+			fmt.Printf("diversity stats\n")
+			stats := dht.GetRoutingTableDiversityStats()
+			spew.Dump(stats)
+
+
 			//-----------------
 			// TEST DHT READ/WRITE
 
@@ -365,23 +379,24 @@ func initPeerDiscovery(pNode host.Host,
 func initDHT(pNode host.Host,
 	pCtx context.Context) (*dht.IpfsDHT, error) {
 	
-
-	var options []dht.Option
-	options = append(options, dht.Mode(dht.ModeServer))
-
-
-	/*baseOpts := []dht.Option{
+	/*optionsLst := []dht.Option{
 		dht.ProtocolPrefix(protocol.ID(pConfig.ProtocolIDstr)),
 		dht.NamespacedValidator("v", blankValidator{}),
+		
+		// start the node in Server mode
+		// dht.Mode(dht.ModeServer),
+
 		// DisableAutoRefresh(),
 	}*/
 
 	// Construct a datastore (needed by the DHT). This is just a simple, in-memory thread-safe datastore.
 	dstore := datastore_sync.MutexWrap(datastore.NewMapDatastore())
-	options = append(options, dstore)
 
 	// https://github.com/libp2p/go-libp2p-kad-dht/blob/master/dht.go
-	dht := dht.NewDHT(pCtx, pNode, options...)
+	// NewDHT creates a new DHT object with the given peer as the 'local' host.
+	// IpfsDHT's initialized with this function will respond to DHT requests,
+	// whereas IpfsDHT's initialized with NewDHTClient will not.
+	dht := dht.NewDHT(pCtx, pNode, dstore)
 
 
 	// someKeyStr := "something"
@@ -394,8 +409,6 @@ func initDHT(pNode host.Host,
 	if err := dht.Bootstrap(pCtx); err != nil {
 		return nil, err
 	}
-
-	dht.Mode(1)
 
 	fmt.Printf("DHT mode: %s\n", dht.Mode())
 	
