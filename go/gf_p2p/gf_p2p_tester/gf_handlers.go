@@ -60,7 +60,7 @@ func viewInit(pHTTPmux *http.ServeMux,
 	//-------------------------------------------------
 	// P2P_STATUS
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/p2p/status",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 

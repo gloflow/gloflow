@@ -22,14 +22,15 @@ package main
 import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
-func initService(pHTTPmux *http.ServeMux,
+func initService(pPortInt int,
+	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
-	//---------------------
-	// VIEW
+	
 	templatesPathsMap := map[string]string{
 		"gf_p2p_status": "./web/templates/gf_p2p_status.html",
 	}
@@ -40,5 +41,11 @@ func initService(pHTTPmux *http.ServeMux,
 	if gfErr != nil {
 		
 	}
+
+
+
+
+	// SERVER_INIT - blocking
+	gf_rpc_lib.ServerInitWithMux(pPortInt, pHTTPmux)
 
 }

@@ -28,13 +28,14 @@ import (
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_p2p"
+	
 )
 
 //-------------------------------------------------
 func main() {
 
 
-	portInt := 0 // start on a random port
+	portP2Pint := 0 // start on a random port
 
 	// RUNTIME
 	logFun, _ := gf_core.InitLogs()
@@ -44,15 +45,12 @@ func main() {
 	}
 
 
-	// HTTP_MUX
-	gfHTTPmux := http.NewServeMux()
-
-	initService(gfHTTPmux, runtimeSys)
+	
 	
 
-	//---------------------
+	
 
-	node, pingInitPeerFun := gf_p2p.Init(portInt, runtimeSys)
+	node, pingInitPeerFun := gf_p2p.Init(portP2Pint, runtimeSys)
 
 	if len(os.Args) > 1 {
 
@@ -89,6 +87,14 @@ func main() {
 	}
 
 
+	//---------------------
+	// HTTP_SERVICE
+	gfHTTPmux := http.NewServeMux()
+
+	portStatusServiceInt := 3000
+	initService(portStatusServiceInt, gfHTTPmux, runtimeSys)
+
+	//---------------------
 	
 
 }
