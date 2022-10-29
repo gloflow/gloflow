@@ -37,9 +37,9 @@ import (
 
 //-------------------------------------------------
 type SSE_data_update_ch   chan interface{}
-type SSE_data_err_ch      chan gf_core.GF_error
+type SSE_data_err_ch      chan gf_core.GFerror
 type SSE_data_complete_ch chan bool
-type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Request) (SSE_data_update_ch, SSE_data_err_ch, SSE_data_complete_ch, *gf_core.GF_error)
+type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Request) (SSE_data_update_ch, SSE_data_err_ch, SSE_data_complete_ch, *gf_core.GFerror)
 
 //-------------------------------------------------
 func SSE_create_handler__http(p_path_str string,
@@ -48,7 +48,7 @@ func SSE_create_handler__http(p_path_str string,
 	p_runtime_sys    *gf_core.RuntimeSys) {
 
 	Create_handler__http_with_metrics(p_path_str,
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -174,7 +174,7 @@ func SSE_create_handler__http(p_path_str string,
 
 //-------------------------------------------------
 func SSE_client__parse_response(p_body_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	// p_runtime_sys.LogFun("FUN_ENTER", "gf_rpc_sse.SSE_client__parse_response()")
 
 	data_items_lst := []map[string]interface{}{}

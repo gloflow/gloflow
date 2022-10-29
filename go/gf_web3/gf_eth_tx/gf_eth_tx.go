@@ -98,7 +98,7 @@ func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 	p_abis_defs_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx           context.Context,
 	p_metrics       *gf_eth_core.GF_metrics,
-	p_runtime       *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime       *gf_eth_core.GF_runtime) *gf_core.GFerror {
 	
 
 
@@ -151,7 +151,7 @@ func Load(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_py_plugins     *gf_eth_core.GF_py_plugins,
-	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GFerror) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
@@ -436,7 +436,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 	p_abis_map map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx      context.Context,
 	p_metrics  *gf_eth_core.GF_metrics,
-	p_runtime  *gf_eth_core.GF_runtime) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime  *gf_eth_core.GF_runtime) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 
 
@@ -507,7 +507,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 func Get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) ([]*GF_eth__log, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) ([]*GF_eth__log, *gf_core.GFerror) {
 
 
 	

@@ -33,10 +33,10 @@ import (
 
 //------------------------------------------------
 func init_handlers__users(pHTTPmux *http.ServeMux,
-	pServiceInfo         *GF_service_info,
-	pIdentityServiceInfo *gf_identity_lib.GF_service_info,
+	pServiceInfo         *GFserviceInfo,
+	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
 	pLocalHub            *sentry.Hub,
-	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -64,7 +64,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// DELETE
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/delete",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -119,7 +119,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// GET_ALL
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -159,7 +159,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// GET_ALL_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all_invite_list",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -199,7 +199,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// ADD_TO_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/add_to_invite_list",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -250,7 +250,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// REMOVE_FROM_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/remove_from_invite_list",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -301,7 +301,7 @@ func init_handlers__users(pHTTPmux *http.ServeMux,
 	// RESEND_CONFIRM_EMAIL
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/resend_confirm_email",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 

@@ -33,7 +33,7 @@ import (
 //-------------------------------------------------
 func DBgetFlowsIDs(pFlowsNamesLst []string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
 
 	flowsIDsLst := []gf_core.GF_ID{}
 	for _, flowNameStr := range pFlowsNamesLst {
@@ -49,7 +49,7 @@ func DBgetFlowsIDs(pFlowsNamesLst []string,
 //---------------------------------------------------
 func DBgetID(pFlowNameStr string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
 	collNameStr := "gf_flows"
 	findOpts := options.FindOne()
@@ -81,7 +81,7 @@ func DBgetID(pFlowNameStr string,
 //---------------------------------------------------
 // GET_ALL
 func DBgetAll(p_ctx context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	pipeline := mongo.Pipeline{
 		{
@@ -138,7 +138,7 @@ func DBgetAll(p_ctx context.Context,
 //---------------------------------------------------
 func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 	p_image_gf_id_str gf_images_core.Gf_image_id,
-	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
 	
 	ctx := context.Background()
@@ -171,7 +171,7 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 func flows_db__get_pages_total_num(p_flow_name_str string,
 	p_page_size_int int,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.RuntimeSys) (int64, *gf_core.GF_error) {
+	p_runtime_sys   *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
 
 
 
@@ -200,7 +200,7 @@ func flows_db__get_page(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
 	p_ctx                       context.Context,
-	p_runtime_sys               *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
+	p_runtime_sys               *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
 
 	find_opts := options.Find()
@@ -253,7 +253,7 @@ func flows_db__get_page(p_flow_name_str string,
 func flows_db__images_exist(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
-	p_runtime_sys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	//------------------------
 	var query_map bson.M

@@ -51,7 +51,7 @@ type GF_rpc_handler_run struct {
 	End_time__unix_f   float64 `bson:"end_time__unix_f"`
 }
 
-type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GF_error)
+type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GFerror)
 
 //-------------------------------------------------
 // HTTP
@@ -286,7 +286,7 @@ func getHandler(p_auth_bool bool,
 func Store_rpc_handler_run(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
-	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// dont store a run if there is no DB initialized
 	if pRuntimeSys.Mongo_db == nil {

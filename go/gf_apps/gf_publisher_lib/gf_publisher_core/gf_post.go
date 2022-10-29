@@ -63,7 +63,7 @@ type Gf_post_note struct {
 }
 
 //------------------------------------------------
-func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.Gf_error) {
+func Create_new_post(p_post_info_map map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post.Create_new_post()")
 	p_runtime_sys.LogFun("INFO",      "p_post_info_map - "+fmt.Sprint(p_post_info_map))
 

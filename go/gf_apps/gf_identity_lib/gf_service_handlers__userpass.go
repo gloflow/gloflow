@@ -32,8 +32,8 @@ import (
 
 //------------------------------------------------
 func initHandlersUserpass(pHTTPmux *http.ServeMux,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -58,7 +58,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 	// USERS_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/login",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -126,7 +126,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 	// NO_AUTH - unauthenticated users are able to create new users, and do not get logged in automatically on success
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/userpass/create",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 

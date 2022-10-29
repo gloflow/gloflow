@@ -103,7 +103,7 @@ func InitService(p_templates_paths_map map[string]string,
 	// STATIC FILES SERVING
 	url_base_str       := "/tags"
 	local_dir_path_str := "./static"
-	gf_core.HTTP__init_static_serving_with_mux(url_base_str,
+	gf_core.HTTPinitStaticServingWithMux(url_base_str,
 		local_dir_path_str,
 		p_http_mux,
 		pRuntimeSys)

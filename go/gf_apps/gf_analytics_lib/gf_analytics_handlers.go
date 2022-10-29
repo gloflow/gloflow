@@ -33,7 +33,7 @@ import (
 //-------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
 
 	//---------------------
@@ -56,7 +56,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// USER_EVENT
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/ue",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 
 			// CORS - preflight request
@@ -123,7 +123,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 	//--------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/dashboard",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			
 		if p_req.Method == "GET" {
 

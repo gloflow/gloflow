@@ -27,7 +27,7 @@ import (
 //-------------------------------------------------
 func Eth_favorites__tx_add(p_tx_id_hex_str string,
 	p_ctx     context.Context,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_runtime *GF_runtime) *gf_core.GFerror {
 
 	
 	

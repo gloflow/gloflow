@@ -44,8 +44,8 @@ type gf_templates struct {
 //------------------------------------------------
 func init_handlers(pTemplatesPathsMap map[string]string,
 	p_http_mux              *http.ServeMux,
-	p_service_info          *GF_service_info,
-	p_identity_service_info *gf_identity_lib.GF_service_info,
+	p_service_info          *GFserviceInfo,
+	p_identity_service_info *gf_identity_lib.GFserviceInfo,
 	p_local_hub             *sentry.Hub,
 	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -81,7 +81,7 @@ func init_handlers(pTemplatesPathsMap map[string]string,
 	// ADMIN_LOGIN_UI
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/login_ui",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 

@@ -38,13 +38,13 @@ type GFserviceInfo struct {
 func InitService(pTemplatesPathsMap map[string]string,
 	pServiceInfo *GFserviceInfo,
 	pHTTPmux     *http.ServeMux,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// STATIC FILES SERVING
 	staticFilesURLbaseStr := "/v1/home"
 	localDirPathStr       := "./static"
-	gf_core.HTTP__init_static_serving_with_mux(staticFilesURLbaseStr,
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
 		localDirPathStr,
 		pHTTPmux,
 		pRuntimeSys)

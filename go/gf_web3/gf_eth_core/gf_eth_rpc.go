@@ -41,7 +41,7 @@ func Eth_rpc__call(p_input_json_str string,
 	p_eth_node_host_str string,
 	p_error_data_map    map[string]interface{},
 	p_ctx               context.Context,
-	p_runtime_sys       *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys       *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	
 
 	eth_http_port_int := 8545
@@ -114,7 +114,7 @@ func Eth_rpc__call(p_input_json_str string,
 // INIT
 func Eth_rpc__init(p_host_str string,
 	p_geth_port_int int,
-	p_runtime_sys   *gf_core.RuntimeSys) (*ethclient.Client, *gf_core.GF_error) {
+	p_runtime_sys   *gf_core.RuntimeSys) (*ethclient.Client, *gf_core.GFerror) {
 
 	
 

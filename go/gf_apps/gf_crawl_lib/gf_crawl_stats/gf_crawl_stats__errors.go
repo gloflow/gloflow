@@ -39,7 +39,7 @@ type Gf_stat__error_type struct {
 }
 
 //-------------------------------------------------
-func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__errors.stats__errors()")
 
 

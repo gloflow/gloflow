@@ -30,7 +30,7 @@ import (
 func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
 
@@ -81,7 +81,7 @@ func render_objects_with_tag(p_tag_str string,
 	p_page_index_int         int,
 	p_page_size_int          int,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
 
 	//-----------------------------

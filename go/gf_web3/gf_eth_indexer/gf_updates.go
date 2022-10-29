@@ -35,7 +35,7 @@ type GF_job_update struct {
 	Txs_num_indexed_int   uint64 `json:"txs_num_indexed_int"`
 }
 type GF_job_updates_ch  chan(GF_job_update)
-type GF_job_err_ch      chan(gf_core.GF_error)
+type GF_job_err_ch      chan(gf_core.GFerror)
 type GF_job_complete_ch chan(bool)
 
 
@@ -68,7 +68,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 	go func() {
 
 		//-------------------------------------------------
-		complete_job_with_error_fn := func(p_gf_err *gf_core.GF_error) {
+		complete_job_with_error_fn := func(p_gf_err *gf_core.GFerror) {
 			consumer__job_err_ch <- *p_gf_err
 		}
 
@@ -129,7 +129,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 	p_ctx        context.Context,
 	p_sqs_client *sqs.Client,
-	p_runtime    *gf_eth_core.GF_runtime) (*gf_aws.GF_SQS_queue, *gf_core.GF_error) {
+	p_runtime    *gf_eth_core.GF_runtime) (*gf_aws.GF_SQS_queue, *gf_core.GFerror) {
 
 	queue_name_str := updates__get_queue_name(p_job_id_str)
 	

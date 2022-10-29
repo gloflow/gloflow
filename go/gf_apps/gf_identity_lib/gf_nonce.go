@@ -48,7 +48,7 @@ type GF_user_nonce struct {
 func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
 	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx                  context.Context,
-	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GF_error) {
+	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GFerror) {
 
 	//------------------------
 	// mark all existing nonces (if there are any) for this user_address_eth
@@ -79,7 +79,7 @@ func nonce__create(p_nonce_val_str GF_user_nonce_val,
 	p_user_id_str          gf_core.GF_ID,
 	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx                  context.Context,
-	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GF_error) {
+	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GFerror) {
 
 	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
 	unique_vals_for_id_lst := []string{string(p_nonce_val_str), }
@@ -107,7 +107,7 @@ func nonce__create(p_nonce_val_str GF_user_nonce_val,
 //---------------------------------------------------
 func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	_, err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").UpdateMany(p_ctx, bson.M{
 			"address_eth_str": p_user_address_eth_str,
@@ -133,7 +133,7 @@ func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_addre
 //---------------------------------------------------
 func db__nonce__create(p_nonce *GF_user_nonce,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	coll_name_str := "gf_users_nonces"
 	gf_err := gf_core.Mongo__insert(p_nonce,
@@ -155,7 +155,7 @@ func db__nonce__create(p_nonce *GF_user_nonce,
 //---------------------------------------------------
 func db__nonce__get(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_user_nonce_val, bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (GF_user_nonce_val, bool, *gf_core.GFerror) {
 	
 	user_nonce := &GF_user_nonce{}
 	err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").FindOne(p_ctx, bson.M{

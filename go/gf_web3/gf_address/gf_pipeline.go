@@ -51,7 +51,7 @@ func pipelineGetAll(pInput *GFgetAllInput,
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -100,7 +100,7 @@ func pipelineAdd(pInput *GFaddInput,
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

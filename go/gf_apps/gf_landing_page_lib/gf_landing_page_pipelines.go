@@ -33,7 +33,7 @@ func Pipeline__render_landing_page(p_imgs__max_random_cursor_position_int int, /
 	p_tmpl                      *template.Template,
 	p_subtemplates_names_lst    []string,
 	pResp                       io.Writer,
-	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-------------------
 	// FEATURED_IMAGES - two random groups of images are fetched

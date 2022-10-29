@@ -78,7 +78,7 @@ func Run(pConfig *GF_config,
 	fmt.Printf("(%s), dir (%s)\n", user.Username, user.HomeDir)
 
 	// VALIDATOR
-	validator := gf_core.Validate__init()
+	validator := gf_core.ValidateInit()
 	pRuntimeSys.Validator = validator
 
 	// HTTP_MUX
@@ -88,14 +88,14 @@ func Run(pConfig *GF_config,
 	// GF_LANDING_PAGE
 	// landing_page goes first, its handlers, because it contains the root path handler ("/")
 	// and that should match first.
-	gf_landing_page_lib.Init_service(pConfig.Templates_paths_map,
+	gf_landing_page_lib.InitService(pConfig.Templates_paths_map,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
 	//-------------
 	// GF_IDENTITY
 
-	gf_identity__service_info := &gf_identity_lib.GF_service_info{
+	gf_identity__service_info := &gf_identity_lib.GFserviceInfo{
 		Name_str:                       "gf_identity",
 		Domain_base_str:                pConfig.Domain_base_str,
 		AuthLoginURLstr:                "/landing/main", // on email confirm redirect user to this
@@ -125,7 +125,7 @@ func Run(pConfig *GF_config,
 
 		adminHTTPmux := http.NewServeMux()
 
-		admin_service_info := &gf_admin_lib.GF_service_info{
+		admin_service_info := &gf_admin_lib.GFserviceInfo{
 			Name_str:                                "gf_admin",
 			Admin_email_str:                         pConfig.Admin_email_str,
 			Enable_events_app_bool:                  true,
@@ -137,7 +137,7 @@ func Run(pConfig *GF_config,
 		// IMPORTANT!! - since admin is listening on its own port, and likely its own domain
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
-		admin_identity__service_info := &gf_identity_lib.GF_service_info{
+		admin_identity__service_info := &gf_identity_lib.GFserviceInfo{
 			Name_str:                        "gf_admin_identity",
 			Domain_base_str:                 pConfig.Domain_admin_base_str,
 			Admin_mfa_secret_key_base32_str: pConfig.Admin_mfa_secret_key_base32_str,
@@ -229,7 +229,7 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_ANALYTICS
 	
-	gf_analytics__service_info := &gf_analytics_lib.GF_service_info{
+	gf_analytics__service_info := &gf_analytics_lib.GFserviceInfo{
 
 		Crawl__config_file_path_str:      pConfig.Crawl__config_file_path_str,
 		Crawl__cluster_node_type_str:     pConfig.Crawl__cluster_node_type_str,
@@ -249,7 +249,7 @@ func Run(pConfig *GF_config,
 		// IMAGES_STORAGE
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 	}
-	gf_analytics_lib.Init_service(gf_analytics__service_info,
+	gf_analytics_lib.InitService(gf_analytics__service_info,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
@@ -268,7 +268,7 @@ func Run(pConfig *GF_config,
 		Templates_dir_paths_map: pConfig.Templates_paths_map,
 	}
 	
-	gf_publisher_lib.Init_service(gfSoloHTTPmux,
+	gf_publisher_lib.InitService(gfSoloHTTPmux,
 		gf_images_runtime_info,
 		pRuntimeSys)
 

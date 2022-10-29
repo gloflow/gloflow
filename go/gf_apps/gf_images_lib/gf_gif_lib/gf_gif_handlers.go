@@ -27,13 +27,13 @@ import (
 )
 //-------------------------------------------------
 func Gif__init_handlers(p_mux *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_gif.Flows__init_handlers()")
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------
 	// GIF_GET_INFO
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/gif/get_info",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 		
 			if p_req.Method == "GET" {
 

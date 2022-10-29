@@ -48,7 +48,7 @@ type Browser__ai_classify__job_run_result struct {
 }
 
 //-------------------------------------------------
-func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_calc.Process__browser_image_calc_result()")
 
 	for _, m := range p_browser_jobs_runs_results_lst {

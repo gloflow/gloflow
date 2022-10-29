@@ -47,7 +47,7 @@ type GF_login_attempt struct {
 func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
 	pUserTypeStr string,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GFerror) {
 	
 	// GET
 	// get a preexisting login_attempt if one exists and hasnt expired for this user.
@@ -81,7 +81,7 @@ func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
 func loginAttempCreate(pUserNameStr gf_identity_core.GFuserName,
 	pUserTypeStr string,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GFerror) {
 
 	userIdentifierStr := string(pUserNameStr)
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
@@ -108,7 +108,7 @@ func loginAttempCreate(pUserNameStr gf_identity_core.GFuserName,
 // GET_IF_VALID
 func loginAttemptGetIfValid(pUserNameStr gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GFerror) {
 
 	login_attempt_max_age_seconds_f := 5*60.0
 	

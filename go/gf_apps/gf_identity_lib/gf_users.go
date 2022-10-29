@@ -95,13 +95,13 @@ type GF_user__output_get struct {
 //---------------------------------------------------
 // PIPELINE__UPDATE
 func users__pipeline__update(pInput *GF_user__input_update,
-	pServiceInfo *GF_service_info,
+	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user__output_update, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user__output_update, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -139,11 +139,11 @@ func users__pipeline__update(pInput *GF_user__input_update,
 // PIPELINE__GET
 func usersPipelineGet(pInput *GF_user__input_get,
 	pCtx         context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GF_user__output_get, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_user__output_get, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

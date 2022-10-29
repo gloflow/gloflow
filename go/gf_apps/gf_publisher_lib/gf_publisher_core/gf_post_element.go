@@ -147,7 +147,7 @@ func get_first_image_post_element(p_post *Gf_post, p_runtime_sys *gf_core.Runtim
 //---------------------------------------------------
 func Get_post_elements_of_type(p_post *Gf_post,
 	p_type_str    string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*Gf_post_element, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*Gf_post_element, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_element.Get_post_elements_of_type()")
 	
 	gf_err := Verify_post_element_type(p_type_str, p_runtime_sys)

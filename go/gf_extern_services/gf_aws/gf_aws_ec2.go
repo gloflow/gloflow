@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------------------
 func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*ec2.Instance, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*ec2.Instance, *gf_core.GFerror) {
 
 
 	svc := ec2.New(session.New())

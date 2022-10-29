@@ -29,7 +29,7 @@ import (
 //------------------------------------------------
 func init_handlers(p_templates_paths_map map[string]string,
 	pHTTPmux    *http.ServeMux,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
@@ -52,7 +52,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	// MAIN
 
 	//------------------------------------------------
-	landingMainHandlerFun := func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+	landingMainHandlerFun := func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 		if p_req.Method == "GET" {
 

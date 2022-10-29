@@ -43,7 +43,7 @@ type GF_eth__contract_new struct {
 func Enrich(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	// sometimes no ABI's are fetched from the DB
 	if p_gf_abi != nil {
@@ -65,7 +65,7 @@ func Get_via_rpc(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__contract_new, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__contract_new, *gf_core.GFerror) {
 
 	code_bytes_lst, gf_err := Get_code(p_contract_addr_str,
 		p_block_num_int,
@@ -99,7 +99,7 @@ func Get_code(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) ([]byte, *gf_core.GF_error) {
+	p_runtime_sys    *gf_core.RuntimeSys) ([]byte, *gf_core.GFerror) {
 
 	contract_addr := eth_common.HexToAddress(p_contract_addr_str)
 

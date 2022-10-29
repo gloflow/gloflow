@@ -72,7 +72,7 @@ func GetSessionTTL() (int, int64) {
 func HTTPgetUserStdInput(pCtx context.Context,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
-	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GFerror) {
 
 	inputMap, gfErr := gf_core.HTTPgetInput(p_req, pRuntimeSys)
 	if gfErr != nil {
@@ -116,7 +116,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 //---------------------------------------------------
 func Http__get_user_address_eth_input(p_req *http.Request,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_user_address_eth, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (GF_user_address_eth, *gf_core.GFerror) {
 
 	query_args_map := p_req.URL.Query()
 	if values_lst, ok := query_args_map["addr_eth"]; ok {
@@ -133,7 +133,7 @@ func Http__get_user_address_eth_input(p_req *http.Request,
 
 //---------------------------------------------------
 func Http__get_user_update_input(p_req *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_update, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_update, *gf_core.GFerror) {
 
 	handler_url_path_str := p_req.URL.Path
 	input             := GF_user__http_input_update{}
@@ -153,7 +153,7 @@ func Http__get_user_update_input(p_req *http.Request,
 
 //---------------------------------------------------
 func Http__get_email_confirm_input(p_req *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_email_confirm, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_email_confirm, *gf_core.GFerror) {
 
 	var user_name_str         string
 	var confirmation_code_str string

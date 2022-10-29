@@ -64,7 +64,7 @@ func Fetch__url(p_url_str string,
 	p_cycle_run_id_str string,
 	p_crawler_name_str string,
 	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_url_fetch, string, *gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_url_fetch, string, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.Fetch__url()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
@@ -231,7 +231,7 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 	p_media_domain_str          string,
 	p_s3_bucket_name_str        string,
 	p_runtime                   *GFcrawlerRuntime,
-	p_runtime_sys               *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys               *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.Fetch__parse_result()")
 
 	//----------------
@@ -276,9 +276,9 @@ func fetch__error(p_error_type_str string,
 	p_url_str          string,
 	p_link             *GFcrawlerPageOutgoingLink,
 	p_crawler_name_str string,
-	p_gf_err           *gf_core.Gf_error,
+	p_gf_err           *gf_core.GFerror,
 	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.Gf_error) {
+	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.fetch__error()")
 
 	crawler_error,ce_err := Create_error_and_event(p_error_type_str,
@@ -306,7 +306,7 @@ func fetch__error(p_error_type_str string,
 func fetch__mark_as_failed(p_error *Gf_crawler_error,
 	p_fetch       *Gf_crawler_url_fetch,
 	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.fetch__mark_as_failed()")
 
 	ctx := context.Background()

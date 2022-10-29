@@ -29,22 +29,22 @@ import (
 )
 
 //-------------------------------------------------
-func Validate__init() *validator.Validate {
+func ValidateInit() *validator.Validate {
 	validator := validator.New()
 	return validator
 }
 
 //-------------------------------------------------
-func Validate_struct(p_target interface{},
+func ValidateStruct(pTarget interface{},
 	pRuntimeSys *RuntimeSys) *GFerror {
 
-	err := pRuntimeSys.Validator.Struct(p_target)
+	err := pRuntimeSys.Validator.Struct(pTarget)
 	if err != nil {
-		gf_err := ErrorCreate("failed to validate target struct", 
+		gfEerr := ErrorCreate("failed to validate target struct", 
 			"verify__invalid_input_struct_error",
-			map[string]interface{}{"target": p_target,},
+			map[string]interface{}{"target": pTarget,},
 			err, "gf_core", pRuntimeSys)
-		return gf_err
+		return gfEerr
 	}
 	return nil
 }

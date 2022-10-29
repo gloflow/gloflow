@@ -58,7 +58,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/create",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -103,7 +103,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/bookmarks/get",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			//------------------
 			// INPUT
@@ -159,7 +159,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/create",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if p_req.Method == "POST" {
 
 				//------------
@@ -192,7 +192,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// GET_NOTES
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/notes/get",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -219,7 +219,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// ADD_TAGS
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/create",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -253,7 +253,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// GET_OBJECTS_WITH_TAG
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/tags/objects",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.Gf_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 

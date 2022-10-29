@@ -35,7 +35,7 @@ type GF_metrics struct {
 }
 
 //-------------------------------------------------
-func metrics__init(p_port_int int) (*GF_metrics, *gf_core.Gf_error) {
+func metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 
 	//---------------------------

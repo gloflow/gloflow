@@ -52,7 +52,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	// GET__FAVORITES_TX_ADD
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/favorites/tx/add",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			spanRoot := sentry.StartSpan(p_ctx, "http__master__favorites_tx_add", sentry.ContinueFromRequest(p_req))
 			defer spanRoot.Finish()
@@ -95,7 +95,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	// GET__TX_TRACE_PLOT
 	
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/tx/trace/plot",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			spanRoot := sentry.StartSpan(p_ctx, "http__master__get_tx_trace_plot", sentry.ContinueFromRequest(p_req))
 			defer spanRoot.Finish()
@@ -142,7 +142,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	// GET__BLOCK
 
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/block",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			spanRoot := sentry.StartSpan(p_ctx, "http__master__get_block")
 			ctx        := spanRoot.Context()
@@ -203,7 +203,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	//---------------------
 	// GET__MINER
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/miner",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// INPUT
 			miner_addr_str, gfErr := gf_eth_core.Http__get_arg__miner_addr(p_resp, p_req, pRuntime.RuntimeSys)
@@ -225,7 +225,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 	//---------------------
 	// GET__PEERS
 	gf_rpc_lib.Create_handler__http("/gfethm/v1/peers",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// METRICS
 			if p_metrics != nil {

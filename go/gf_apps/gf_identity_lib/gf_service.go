@@ -27,7 +27,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
+type GFserviceInfo struct {
 	
 	// name of this service, in case multiple are spawned
 	Name_str string
@@ -72,8 +72,8 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func InitService(pHTTPmux *http.ServeMux,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// HANDLERS
@@ -83,7 +83,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
-	gfErr = init_handlers__eth(pHTTPmux, pServiceInfo, pRuntimeSys)
+	gfErr = initHandlersEth(pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

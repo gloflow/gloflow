@@ -458,7 +458,7 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.GFs3Info,
-	p_runtime_sys                     *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys                     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------
 	// PROCESS_GIF

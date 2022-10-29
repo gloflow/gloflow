@@ -39,9 +39,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_error = Gf_error
-type GFerror  = GF_error
-type Gf_error struct {
+type GFerror struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"`
 	Id_str               string                 `bson:"id_str"` 
 	T_str                string                 `bson:"t"`                    // "gf_error"
@@ -228,7 +226,7 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 
 	//--------------------
 
-	gf_error := GF_error{
+	gf_error := GFerror{
 		Id_str:               id_str,
 		T_str:                "gf_error",
 		Creation_unix_time_f: creation_unix_time_f,

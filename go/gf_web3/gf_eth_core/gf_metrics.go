@@ -60,7 +60,7 @@ type GF_metrics struct {
 
 //-------------------------------------------------
 // INIT
-func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GF_error) {
+func Metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 
 	//---------------------------

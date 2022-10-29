@@ -68,7 +68,7 @@ func Verify(pRequestedOpStr string,
 	pTargetResourceIDstr gf_core.GF_ID,
 	pUserIDstr           gf_core.GF_ID,
 	pCtx                 context.Context,
-	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// GET_POLICIES
 	policiesLst, gfErr := DBgetPolicies(pTargetResourceIDstr, pCtx, pRuntimeSys)
@@ -193,7 +193,7 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) (*GFpolicyUpdateOutput, *gf_core.GF_error) {
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFpolicyUpdateOutput, *gf_core.GFerror) {
 
 	output := &GFpolicyUpdateOutput{}
 
@@ -233,7 +233,7 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 func PipelineCreate(pTargetResourceIDstr gf_core.GF_ID,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	IDstr             := createID(pTargetResourceIDstr, creationUNIXtimeF)

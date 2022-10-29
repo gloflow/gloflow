@@ -34,7 +34,7 @@ func verify__auth_signature__all_methods(p_signature_str gf_identity_core.GF_aut
 	p_nonce_str        GF_user_nonce_val,
 	p_user_address_eth gf_identity_core.GF_user_address_eth,
 	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	p_runtime_sys      *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	
 	// first attempt - try to verify using the data_header
@@ -80,7 +80,7 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	p_user_address_eth          gf_identity_core.GF_user_address_eth,
 	p_validate_data_header_bool bool,
 	p_ctx                       context.Context,
-	p_runtime_sys               *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	p_runtime_sys               *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
 	var final_data_str string
 	if p_validate_data_header_bool {

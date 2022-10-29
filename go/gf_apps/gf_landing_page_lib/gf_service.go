@@ -26,7 +26,7 @@ import (
 )
 
 //-------------------------------------------------
-func Init_service(p_templates_paths_map map[string]string,
+func InitService(p_templates_paths_map map[string]string,
 	p_http_mux    *http.ServeMux,
 	p_runtime_sys *gf_core.RuntimeSys) {
 
@@ -34,7 +34,7 @@ func Init_service(p_templates_paths_map map[string]string,
 	// STATIC FILES SERVING
 	static_files__url_base_str := "/landing"
 	local_dir_path_str         := "./static"
-	gf_core.HTTP__init_static_serving_with_mux(static_files__url_base_str,
+	gf_core.HTTPinitStaticServingWithMux(static_files__url_base_str,
 		local_dir_path_str,
 		p_http_mux,
 		p_runtime_sys)
@@ -83,7 +83,7 @@ func Run_service(p_port_str string,
 
 	http_mux := http.NewServeMux()
 
-	Init_service(templates_dir_paths_map, http_mux, runtime_sys)
+	InitService(templates_dir_paths_map, http_mux, runtime_sys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 

@@ -24,10 +24,10 @@ import (
 )
 
 //-------------------------------------------------
-func Get_query_funs(p_runtime_sys *gf_core.RuntimeSys) map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+func Get_query_funs(p_runtime_sys *gf_core.RuntimeSys) map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats.Init()")
 
-	stats_funs_map := map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+	stats_funs_map := map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 		"crawler_fetches_by_url":  stats__crawler_fetches_by_url,
 		"crawler_fetches_by_days": stats__crawler_fetches_by_days,
 		"crawled_links_domains":   stats__crawled_links_domains,

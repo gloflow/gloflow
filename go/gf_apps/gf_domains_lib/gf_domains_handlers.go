@@ -30,7 +30,7 @@ import (
 //-------------------------------------------------
 func Init_handlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
@@ -45,7 +45,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// DOMAIN_BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/domains/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 				

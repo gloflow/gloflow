@@ -40,7 +40,7 @@ func gif_db__create(p_image_source_url_str string,
 	p_img_height_int            int,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
-	p_runtime_sys               *gf_core.RuntimeSys) (*GFgif, *gf_core.Gf_error) {
+	p_runtime_sys               *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__create()")
 
 	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)

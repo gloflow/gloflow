@@ -109,8 +109,8 @@ type JobUpdateMsg struct {
 //------------------------
 // JOBS_LIFECYCLE
 type GF_jobs_lifecycle_callbacks struct {
-	Job_type__transform_imgs__fun func() *gf_core.GF_error
-	Job_type__uploaded_imgs__fun  func() *gf_core.GF_error
+	Job_type__transform_imgs__fun func() *gf_core.GFerror
+	Job_type__uploaded_imgs__fun  func() *gf_core.GFerror
 }
 
 //------------------------

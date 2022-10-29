@@ -36,7 +36,7 @@ import (
 func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_templates_paths_map map[string]string,
 	p_mux                 *http.ServeMux,
-	p_runtime_sys         *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys         *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
 
 	//---------------------
@@ -50,7 +50,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// GET_POST
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -128,7 +128,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// POST_CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -165,7 +165,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// POST_STATUS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/status",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,
@@ -176,7 +176,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/update",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,
@@ -187,7 +187,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/delete",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -219,7 +219,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// POSTS_BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 				
@@ -257,7 +257,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser_page",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -327,7 +327,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	//---------------------
 	// POSTS_ELEMENTS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts_elements/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,

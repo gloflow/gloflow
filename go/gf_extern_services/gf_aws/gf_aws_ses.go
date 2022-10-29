@@ -34,7 +34,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
     p_subject_str        string,
 	p_html_body_str      string,
 	p_text_body_str      string,
-    p_runtime_sys        *gf_core.RuntimeSys) *gf_core.GF_error {
+    p_runtime_sys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
     svc := ses.New(session.New())
 
@@ -109,7 +109,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
 // used for sending emails from that address.
 // not used frequently
 func AWS_SES__verify_address(p_recipiend_address_str string,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	svc := ses.New(session.New())
 

@@ -87,13 +87,13 @@ func TestStartService(pPortInt int,
 
 		HTTPmux := http.NewServeMux()
 
-		serviceInfo := &GF_service_info{
+		serviceInfo := &GFserviceInfo{
 
 			// IMPORTANT!! - durring testing dont send emails
 			Enable_email_bool: false,
 		}
 		InitService(HTTPmux, serviceInfo, pRuntimeSys)
-		gf_rpc_lib.Server__init_with_mux(pPortInt, HTTPmux)
+		gf_rpc_lib.ServerInitWithMux(pPortInt, HTTPmux)
 	}()
 	time.Sleep(2*time.Second) // let server startup
 }
@@ -109,7 +109,7 @@ func T__init() *gf_core.RuntimeSys {
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_identity_tests",
 		LogFun:           logFun,
-		Validator:        gf_core.Validate__init(),
+		Validator:        gf_core.ValidateInit(),
 	}
 
 

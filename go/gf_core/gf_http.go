@@ -209,7 +209,7 @@ func HTTPfetchURL(pURLstr string,
 func HTTPputFile(p_target_url_str string,
 	p_file_path_str string,
 	pHeadersMap     map[string]string,
-	pRuntimeSys     *RuntimeSys) (*http.Response, *GF_error) {
+	pRuntimeSys     *RuntimeSys) (*http.Response, *GFerror) {
 
 
 
@@ -291,7 +291,7 @@ func HTTPputFile(p_target_url_str string,
 }
 
 //-------------------------------------------------
-func HTTP__init_static_serving_with_mux(p_url_base_str string,
+func HTTPinitStaticServingWithMux(p_url_base_str string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
 	pRuntimeSys        *RuntimeSys) {
@@ -302,14 +302,14 @@ func HTTP__init_static_serving_with_mux(p_url_base_str string,
 	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	p_mux.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		HTTP__serve_file(p_local_dir_path_str,
+		HTTPserveFile(p_local_dir_path_str,
 			url_str,
 			p_req, p_resp, pRuntimeSys)
 	})
 }
 
 //-------------------------------------------------
-func HTTP__init_static_serving(p_url_base_str string,
+func HTTPinitStaticServing(p_url_base_str string,
 	pRuntimeSys *RuntimeSys) {
 	
 	local_dir_str := fmt.Sprintf("./static")
@@ -320,7 +320,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		HTTP__serve_file(local_dir_str,
+		HTTPserveFile(local_dir_str,
 			url_str,
 			p_req, p_resp, pRuntimeSys)
 
@@ -344,7 +344,7 @@ func HTTP__init_static_serving(p_url_base_str string,
 }
 
 //-------------------------------------------------
-func HTTP__serve_file(p_local_dir_str string,
+func HTTPserveFile(p_local_dir_str string,
 	p_url_str     string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter,
@@ -368,9 +368,8 @@ func HTTP__serve_file(p_local_dir_str string,
 }
 
 //-------------------------------------------------
-func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
+func HTTPserializeCookies(p_cookies_lst []*http.Cookie,
 	pRuntimeSys *RuntimeSys) string {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__serialize_cookies()")
 
 	buffer := bytes.NewBufferString("")
 	for _, cookie := range p_cookies_lst {
@@ -382,9 +381,8 @@ func HTTP__serialize_cookies(p_cookies_lst []*http.Cookie,
 }
 
 //-------------------------------------------------
-func HTTP__init_sse(p_resp http.ResponseWriter,
-	pRuntimeSys *RuntimeSys) (http.Flusher, *GF_error) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__init_sse()")
+func HTTPinitSSE(p_resp http.ResponseWriter,
+	pRuntimeSys *RuntimeSys) (http.Flusher, *GFerror) {
 
 	flusher, ok := p_resp.(http.Flusher)
 	if !ok {
@@ -416,9 +414,8 @@ func HTTP__init_sse(p_resp http.ResponseWriter,
 }
 
 //-------------------------------------------------
-func HTTP__get_streaming_response(pURLstr string,
-	pRuntimeSys *RuntimeSys) (*[]map[string]interface{}, *GF_error) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_http_utils.HTTP__get_streaming_response()")
+func HTTPgetStreamingResponse(pURLstr string,
+	pRuntimeSys *RuntimeSys) (*[]map[string]interface{}, *GFerror) {
 
 
 	req,err := http.NewRequest("GET", pURLstr, nil)

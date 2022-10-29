@@ -67,7 +67,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// GET_IMAGE
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/images/get",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 				//-----------------
@@ -116,7 +116,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	// GET_IMAGE_URL
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/d/",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
 				//-----------------
@@ -167,7 +167,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_init",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 
@@ -244,7 +244,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//               this is done mainly to save on bandwidth and avoid one extra hop.
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_complete",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -312,7 +312,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/c",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -354,7 +354,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//         otherwise service is going to get marked as unhealthy
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v1/healthz",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		pHTTPmux,

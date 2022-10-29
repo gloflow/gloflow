@@ -50,7 +50,7 @@ type GF_login_attempt__update_op struct {
 // USER
 //---------------------------------------------------
 func DBuserGetAll(pCtx context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]*GFuser, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFuser, *gf_core.GFerror) {
 
 	collNameStr := "gf_users"
 
@@ -94,7 +94,7 @@ func DBuserGetAll(pCtx context.Context,
 // CREATE_USER
 func db__user__create(p_user *GFuser,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	coll_name_str := "gf_users"
 
@@ -120,7 +120,7 @@ func db__user__create(p_user *GFuser,
 func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
 	p_update_op   *GF_user__update_op,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// FIELDS
@@ -187,7 +187,7 @@ func db__user__update(p_user_id_str gf_core.GF_ID, // p_user_address_eth_str GF_
 // GET_BY_ID
 func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GFuser, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
 	find_opts := options.FindOne()
 	
@@ -214,7 +214,7 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 // GET_BY_USERNAME
 func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
 	find_opts := options.FindOne()
 	
@@ -242,7 +242,7 @@ func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 // GET_BY_ETH_ADDR
 func db__user__get_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GFuser, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
 	find_opts := options.FindOne()
 	
@@ -298,7 +298,7 @@ func db__user__exists_by_username(pUserNameStr gf_identity_core.GFuserName,
 // EXISTS_BY_ETH_ADDR
 func db__user__exists_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	count_int, gf_err := gf_core.Mongo__count(bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
@@ -326,7 +326,7 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_use
 // this is done only once.
 func db__user__email_is_confirmed(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	find_opts := options.FindOne()
 	find_opts.Projection = map[string]interface{}{
@@ -359,7 +359,7 @@ func db__user__email_is_confirmed(p_user_name_str gf_identity_core.GFuserName,
 // INVITE_LIST
 //---------------------------------------------------
 func db__user__get_all_in_invite_list(p_ctx context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	coll_name_str := "gf_users_invite_list"
 
@@ -401,7 +401,7 @@ func db__user__get_all_in_invite_list(p_ctx context.Context,
 // ADD_TO_INVITE_LIST
 func DBuserAddToInviteList(p_user_email_str string,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -429,7 +429,7 @@ func DBuserAddToInviteList(p_user_email_str string,
 //---------------------------------------------------
 func DBuserRemoveFromInviteList(pUserEmailStr string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	coll_name_str := "gf_users_invite_list"
 	fieldsTargets := bson.M{
@@ -458,7 +458,7 @@ func DBuserRemoveFromInviteList(pUserEmailStr string,
 // CHECK_IN_INVITE_LIST_BY_EMAIL
 func db__user__check_in_invitelist_by_email(pUserEmailStr string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
 	collNameStr := "gf_users_invite_list"
 	countInt, gfErr := gf_core.Mongo__count(bson.M{
@@ -488,7 +488,7 @@ func db__user__check_in_invitelist_by_email(pUserEmailStr string,
 // CREATE_CREDS
 func db__user_creds__create(p_user_creds *GFuserCreds,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr := "gf_users_creds"
 
@@ -511,7 +511,7 @@ func db__user_creds__create(p_user_creds *GFuserCreds,
 //---------------------------------------------------
 func db__user_creds__get_pass_hash(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (string, string, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, string, *gf_core.GFerror) {
 
 	collNameStr := "gf_users_creds"
 	
@@ -552,7 +552,7 @@ func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 	p_user_id_str      gf_core.GF_ID,
 	p_confirm_code_str string,
 	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys      *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr        := "gf_users_email_confirm"
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -583,7 +583,7 @@ func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 // GET__EMAIL_CONFIRM_CODE
 func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (string, float64, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (string, float64, *gf_core.GFerror) {
 
 	collNameStr := "gf_users_email_confirm"
 
@@ -620,7 +620,7 @@ func db__user_email_confirm__get_code(p_user_name_str gf_identity_core.GFuserNam
 //---------------------------------------------------
 func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 
 	collNameStr := "gf_users"
@@ -657,7 +657,7 @@ func db__user__get_email_confirmed_by_username(p_user_name_str gf_identity_core.
 //---------------------------------------------------
 func db__login_attempt__create(p_login_attempt *GF_login_attempt,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	collNameStr := "gf_login_attempt"
@@ -681,7 +681,7 @@ func db__login_attempt__create(p_login_attempt *GF_login_attempt,
 //---------------------------------------------------
 func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserName,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_login_attempt, *gf_core.GFerror) {
 
 	collNameStr := "gf_login_attempt"
 
@@ -731,7 +731,7 @@ func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserN
 func db__login_attempt__update(p_login_attempt_id_str *gf_core.GF_ID,
 	pUpdateOp     *GF_login_attempt__update_op,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	fieldsTargets := bson.M{}
 

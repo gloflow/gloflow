@@ -45,7 +45,7 @@ type Gf_stat__crawled_gifs struct {
 }
 
 //-------------------------------------------------
-func stats__gifs_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+func stats__gifs_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__gifs_by_days()")
 
 
@@ -61,7 +61,7 @@ func stats__gifs_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interfac
 }
 
 //-------------------------------------------------
-func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__images.stats__gifs()")
 
 
@@ -216,7 +216,7 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 }
 
 //-------------------------------------------------
-func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.Gf_error) {
+func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__crawled_images_domains()")
 
 

@@ -83,13 +83,13 @@ type GF_user_auth_userpass__output_create struct {
 //---------------------------------------------------
 // PIPELINE__LOGIN
 func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
-	pServiceInfo *GF_service_info,
+	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -157,9 +157,9 @@ func usersAuthUserpassPipelineLogin(pInput *GF_user_auth_userpass__input_login,
 
 //---------------------------------------------------
 func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input_login_finalize,
-	pServiceInfo *GF_service_info,
+	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_login_finalize, *gf_core.GFerror) {
 
 	output := &GF_user_auth_userpass__output_login_finalize{}
 	userNameStr := gf_identity_core.GFuserName(pInput.UserNameStr)
@@ -214,13 +214,13 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GF_user_auth_userpass__input
 //---------------------------------------------------
 // PIPELINE__CREATE_REGULAR
 func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpass__input_create,
-	p_service_info *GF_service_info,
+	p_service_info *GFserviceInfo,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_create_regular, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(p_input, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -307,13 +307,13 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 //---------------------------------------------------
 // PIPELINE__CREATE
 func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_create,
-	pServiceInfo *GF_service_info,
+	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_create, *gf_core.GF_error) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user_auth_userpass__output_create, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gf_err := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -436,9 +436,9 @@ func users_auth_userpass__pipeline__create(pInput *GF_user_auth_userpass__input_
 //---------------------------------------------------
 func users_auth_userpass__verify_pass(pUserNameStr gf_identity_core.GFuserName,
 	pPassStr       string,
-	p_service_info *GF_service_info,
+	p_service_info *GFserviceInfo,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.RuntimeSys) (bool, *gf_core.GF_error) {
+	pRuntimeSys    *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 
 	// GET_PASS_AND_SALT

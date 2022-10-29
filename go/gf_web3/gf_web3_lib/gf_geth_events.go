@@ -175,7 +175,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 func event__process(p_event_map map[string]interface{},
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 
 

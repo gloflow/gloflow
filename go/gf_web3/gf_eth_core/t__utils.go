@@ -49,7 +49,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	}
 
 	// VALIDATOR
-	validator := gf_core.Validate__init()
+	validator := gf_core.ValidateInit()
 	runtimeSys.Validator = validator
 
 	// HTTP_PROXY

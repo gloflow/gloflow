@@ -31,7 +31,7 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.post__render_template()")
 	
 	template_post_elements_lst, gf_err := package_post_elements_infos(p_post, p_runtime_sys)
@@ -113,7 +113,7 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 
 //--------------------------------------------------
 func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.package_post_elements_infos()")
 
 	template_post_elements_lst := []map[string]interface{}{}
@@ -170,7 +170,7 @@ func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
 
 //--------------------------------------------------
 func get_image_post_elements_FBOpenGraph_info(p_post *gf_publisher_core.Gf_post,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]string, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]string, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
 	image_post_elements_lst, gf_err := gf_publisher_core.Get_post_elements_of_type(p_post, "image", p_runtime_sys)

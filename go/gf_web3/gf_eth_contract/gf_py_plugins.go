@@ -31,7 +31,7 @@ import (
 //-------------------------------------------------
 func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
 	pPluginsInfo *gf_eth_core.GF_py_plugins,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", pPluginsInfo.Base_dir_path_str)

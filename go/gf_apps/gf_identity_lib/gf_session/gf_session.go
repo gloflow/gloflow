@@ -68,7 +68,7 @@ func SetOnReq(pSessionDataStr string,
 //---------------------------------------------------
 func Validate(pReq *http.Request,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 	
 	for _, cookie := range pReq.Cookies() {
 		if (cookie.Name == "gf_sess_data") {
@@ -99,7 +99,7 @@ func ValidateOrRedirectToLogin(pReq *http.Request,
 	pResp            http.ResponseWriter,
 	pAuthLoginURLstr *string,
 	pCtx             context.Context,
-	pRuntimeSys      *gf_core.RuntimeSys) (bool, string, *gf_core.GF_error) {
+	pRuntimeSys      *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
 	validBool, userIdentifierStr, gfErr := Validate(pReq, pCtx, pRuntimeSys)
 	if gfErr != nil {

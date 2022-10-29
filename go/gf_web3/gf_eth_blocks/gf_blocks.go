@@ -94,7 +94,7 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 	// p_abis_defs_map       map[string]*GF_eth__abi,
 	// p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GF_error {
+	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GFerror {
 
 	gf_eth_indexer.Client__index_block_range(p_block_start_uint,
 		p_block_end_uint,
@@ -109,7 +109,7 @@ func Index__pipeline(p_block_uint uint64,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) (uint64, *gf_core.GF_error) {
+	p_runtime             *gf_eth_core.GF_runtime) (uint64, *gf_core.GFerror) {
 
 
 	//---------------------
@@ -206,7 +206,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) (map[string]*GF_eth__block__int, map[string]*gf_eth_core.GF_eth__miner__int, *gf_core.GF_error) {
+	p_runtime             *gf_eth_core.GF_runtime) (map[string]*GF_eth__block__int, map[string]*gf_eth_core.GF_eth__miner__int, *gf_core.GFerror) {
 
 
 	//---------------------
@@ -232,7 +232,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 	defer span.Finish()
 
 	block_from_workers_map   := map[string]*GF_eth__block__int{}
-	gf_errs_from_workers_map := map[string]*gf_core.GF_error{}
+	gf_errs_from_workers_map := map[string]*gf_core.GFerror{}
 
 	for _, host_port_str := range workers_inspectors_hosts_lst {
 
@@ -329,7 +329,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 func Get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GF_error) {
+	p_runtime_sys   *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
 
 
 
@@ -383,7 +383,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
 
 	//------------------
 	/*
@@ -545,7 +545,7 @@ func Get__txs_pipeline(p_block *types.Block,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GFerror) {
 
 
 
@@ -557,7 +557,7 @@ func Get__txs_pipeline(p_block *types.Block,
 
 
 	txs_lst     := make([]*gf_eth_tx.GF_eth__tx, len(p_block.Transactions()))
-	gf_errs_lst := make([]*gf_core.GF_error,     len(p_block.Transactions()))
+	gf_errs_lst := make([]*gf_core.GFerror,     len(p_block.Transactions()))
 	for i, tx := range p_block.Transactions() {
 		tx_index_int := uint(i)
 

@@ -32,7 +32,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
+type GFserviceInfo struct {
 	Port_str string
 
 	Crawl__config_file_path_str      string
@@ -55,14 +55,14 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
-func Init_service(pServiceInfo *GF_service_info,
+func InitService(pServiceInfo *GFserviceInfo,
 	p_http_mux  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-----------------
 	// ELASTICSEARCH
 	var esearch_client *elastic.Client
-	var gf_err         *gf_core.Gf_error
+	var gf_err         *gf_core.GFerror
 	if pServiceInfo.Run_indexer_bool {
 		esearch_client, gf_err = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
 		if gf_err != nil {
@@ -72,13 +72,6 @@ func Init_service(pServiceInfo *GF_service_info,
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
 
 	//-----------------
-	// TEMPLATES_DIR
-	/*templates_dir_path_str := "./templates"
-	if _, err := os.Stat(templates_dir_path_str); os.IsNotExist(err) {
-		pRuntimeSys.LogFun("ERROR", fmt.Sprintf("templates dir doesnt exist - %s", templates_dir_path_str))
-		panic(1)
-	}*/
-
 	init_handlers(pServiceInfo.Templates_paths_map, p_http_mux, pRuntimeSys)
 
 	//------------------------
@@ -129,33 +122,33 @@ func Init_service(pServiceInfo *GF_service_info,
 	//------------------------
 	// STATIC FILES SERVING
 	static_files__url_base_str := "/a"
-	gf_core.HTTP__init_static_serving(static_files__url_base_str, pRuntimeSys)
+	gf_core.HTTPinitStaticServing(static_files__url_base_str, pRuntimeSys)
 
 	//------------------------
 
 }
 
 //-------------------------------------------------
-func Run_service(p_service_info *GF_service_info,
+func Run_service(pServiceInfo *GFserviceInfo,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	
 	//------------------------
 	// INIT
 	http_mux := http.NewServeMux()
 
-	Init_service(p_service_info,
+	InitService(pServiceInfo,
 		http_mux,
 		pRuntimeSys)
 	
 	//------------------------
 
 	pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	pRuntimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	pRuntimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+pServiceInfo.Port_str)
 	pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	
-	err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
+	err := http.ListenAndServe(":"+pServiceInfo.Port_str, nil)
 	if err != nil {
-		msg_str := "cant start listening on port - "+p_service_info.Port_str
+		msg_str := "cant start listening on port - "+pServiceInfo.Port_str
 		pRuntimeSys.LogFun("ERROR", msg_str)
 		panic(err)
 	}
@@ -193,7 +186,7 @@ func Run_service(p_service_info *GF_service_info,
 	run_indexer_bool := cli_args_map["run_indexer_bool"].(bool)
 
 	var esearch_client *elastic.Client
-	var gf_err         *gf_core.Gf_error
+	var gf_err         *gf_core.GFerror
 	if run_indexer_bool {
 		esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
 		if gf_err != nil {

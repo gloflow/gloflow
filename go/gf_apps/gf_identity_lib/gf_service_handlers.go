@@ -34,8 +34,8 @@ import (
 //------------------------------------------------
 func initHandlers(p_auth_login_url_str string,
 	pHTTPmux     *http.ServeMux,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -66,7 +66,7 @@ func initHandlers(p_auth_login_url_str string,
 	// POLICY_UPDATE
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/policy/update",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -119,7 +119,7 @@ func initHandlers(p_auth_login_url_str string,
 	// EMAIL_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/email_confirm",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 
@@ -210,7 +210,7 @@ func initHandlers(p_auth_login_url_str string,
 	// MFA_CONFIRM
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/mfa_confirm",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -287,7 +287,7 @@ func initHandlers(p_auth_login_url_str string,
 	// AUTH - only logged in users can update their own details
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/update",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -310,7 +310,7 @@ func initHandlers(p_auth_login_url_str string,
 				}
 				
 				// VALIDATE
-				gfErr = gf_core.Validate_struct(input, pRuntimeSys)
+				gfErr = gf_core.ValidateStruct(input, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -337,7 +337,7 @@ func initHandlers(p_auth_login_url_str string,
 	// USERS_GET_ME
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -374,7 +374,7 @@ func initHandlers(p_auth_login_url_str string,
 	//---------------------
 	// REGISTER_INVITE_EMAIL
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/register_invite_email",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			
 			

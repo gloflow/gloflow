@@ -27,7 +27,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_service_info struct {
+type GFserviceInfo struct {
 
 	Name_str string
 
@@ -46,8 +46,8 @@ type GF_service_info struct {
 
 //-------------------------------------------------
 func InitNewService(pTemplatesPathsMap map[string]string,
-	pServiceInfo         *GF_service_info,
-	pIdentityServiceInfo *gf_identity_lib.GF_service_info,
+	pServiceInfo         *GFserviceInfo,
+	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
 	pHTTPmux             *http.ServeMux,
 	pLocalHub            *sentry.Hub,
 	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -57,7 +57,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	staticFilesURLbaseStr := "/v1/admin"
 	localDirPathStr       := "./static"
 
-	gf_core.HTTP__init_static_serving_with_mux(staticFilesURLbaseStr,
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
 		localDirPathStr,
 		pHTTPmux,
 		pRuntimeSys)

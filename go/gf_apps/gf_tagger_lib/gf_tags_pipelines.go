@@ -112,7 +112,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	p_resp                   io.Writer,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
 
 	//----------------

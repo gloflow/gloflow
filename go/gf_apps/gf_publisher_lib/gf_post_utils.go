@@ -30,7 +30,7 @@ import (
 //------------------------------------------
 func Add_tags_to_post_in_db(p_post_title_str string,
 	p_tags_lst    []string,
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_utils.Add_tags_to_post_in_db()")
 	
 	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)

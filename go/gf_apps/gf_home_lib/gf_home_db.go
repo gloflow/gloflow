@@ -84,7 +84,7 @@ func DBcreateHomeViz(pHomeViz *GFhomeViz,
 // GET_HOME_VIZ
 func DBgetHomeViz(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GFerror) {
 
 	
 	collNameStr := "gf_home_viz"

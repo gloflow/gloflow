@@ -60,14 +60,14 @@ func Trace__get_and_persist_bulk(p_tx_hashes_lst []string,
 	p_worker_inspector_host_port_str string,
 	pCtx                             context.Context,
 	p_metrics                        *gf_eth_core.GF_metrics,
-	p_runtime                        *gf_eth_core.GF_runtime) (*gf_core.GF_error, []*gf_core.GFerror) {
+	p_runtime                        *gf_eth_core.GF_runtime) (*gf_core.GFerror, []*gf_core.GFerror) {
 
 
 	// IMPORTANT!! - these are "secondary" errors, that are not the primary one that causes the
 	//               function to fail and return. these secondary errors are from getting
 	//               traces from worker_inspector, and are considered recoverable and the iteration
 	//               over all TX's continues.
-	gf_errs__get_tx_trace_lst := []*gf_core.GF_error{}
+	gf_errs__get_tx_trace_lst := []*gf_core.GFerror{}
 
 	txs_traces_lst := []*GF_eth__tx_trace{}
 	for _, tx_hash_str := range p_tx_hashes_lst {
@@ -146,7 +146,7 @@ func Trace__plot(p_tx_id_hex_str string,
 	pCtx           context.Context,
 	p_py_plugins   *gf_eth_core.GF_py_plugins,
 	p_metrics      *gf_eth_core.GF_metrics,
-	p_runtime      *gf_eth_core.GF_runtime) (string, *gf_core.GF_error) {
+	p_runtime      *gf_eth_core.GF_runtime) (string, *gf_core.GFerror) {
 
 
 
@@ -203,7 +203,7 @@ func Trace__plot(p_tx_id_hex_str string,
 func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	p_host_port_str string,
 	pCtx            context.Context,
-	p_RuntimeSys   *gf_core.RuntimeSys) (*GF_eth__tx_trace, *gf_core.GF_error) {
+	p_RuntimeSys   *gf_core.RuntimeSys) (*GF_eth__tx_trace, *gf_core.GFerror) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/tx/trace?tx=%s",
 	p_host_port_str,

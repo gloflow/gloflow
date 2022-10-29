@@ -90,7 +90,7 @@ func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
 //------------------------------------------
 func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
 	p_elements_num_to_get_int int, // 5
-	pRuntimeSys             *gf_core.RuntimeSys) ([]*Gf_featured_post, *gf_core.Gf_error) {
+	pRuntimeSys             *gf_core.RuntimeSys) ([]*Gf_featured_post, *gf_core.GFerror) {
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point

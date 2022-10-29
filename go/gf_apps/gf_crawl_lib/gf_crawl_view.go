@@ -29,7 +29,7 @@ import (
 func dashboard__render_template(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_view.dashboard__render_template()")
 
 	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)

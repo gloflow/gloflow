@@ -40,7 +40,7 @@ type gfTemplates struct {
 func initHandlers(pTemplatesPathsMap map[string]string,
 	pAuthLoginURLstr string,
 	pHTTPmux         *http.ServeMux,
-	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//---------------------
 	// TEMPLATES
@@ -73,7 +73,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIZ_GET
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/get",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "GET" {
 
 				//---------------------
@@ -104,7 +104,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIZ_UPDATE
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/viz/update",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			if pReq.Method == "POST" {
 
 				//---------------------
@@ -138,7 +138,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// VIEW
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/home/view",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 
 			if pReq.Method == "GET" {
@@ -169,7 +169,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 func templatesLoad(pTemplatesPathsMap map[string]string,
-	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.Gf_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
 
 	mainTemplateFilepathStr := pTemplatesPathsMap["gf_home_main"]
 

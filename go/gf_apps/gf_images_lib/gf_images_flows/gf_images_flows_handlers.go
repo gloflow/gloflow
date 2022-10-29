@@ -71,7 +71,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// GET_ALL_FLOWS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/flows/all",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 				all_flows_names_lst, gf_err := pipelineGetAll(pCtx, pRuntimeSys)
@@ -99,7 +99,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// ADD_IMAGE
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/images/flows/add_img",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
@@ -159,7 +159,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	// DEPRECATED!! - switch to using the v1/auth based add_img handler
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/add_img",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -218,7 +218,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/imgs_exist",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 				
@@ -269,7 +269,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -312,7 +312,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	// GET_BROWSER_PAGE (slice of posts data series)
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser_page",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
 

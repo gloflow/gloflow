@@ -220,7 +220,7 @@ func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
 
 //---------------------------------------------------
 func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 
 	ctx := context.Background()
 

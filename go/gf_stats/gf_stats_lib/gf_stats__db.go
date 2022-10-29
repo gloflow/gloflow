@@ -38,7 +38,7 @@ type Stat_db_coll struct {
 //-------------------------------------------------
 func Db_stats__coll(p_coll_name_str string,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*Stat_db_coll, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (*Stat_db_coll, *gf_core.GFerror) {
 
 	db   := p_runtime_sys.Mongo_db
 	coll := db.Collection(p_coll_name_str)

@@ -38,7 +38,7 @@ type GF_eth__abi struct {
 //-------------------------------------------------
 func Eth_abi__get_defs(p_ctx context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (map[string]*GF_eth__abi, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (map[string]*GF_eth__abi, *gf_core.GFerror) {
 
 
 
@@ -63,7 +63,7 @@ func Eth_abi__get_defs(p_ctx context.Context,
 func Eth_abi__get(p_gf_abi *GF_eth__abi,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (*abi.ABI, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (*abi.ABI, *gf_core.GFerror) {
 
 	//---------------------
 	/*// VALIDATE
@@ -106,7 +106,7 @@ func Eth_abi__get(p_gf_abi *GF_eth__abi,
 func Eth_abi__db__get(p_abi_type_str string,
 	p_ctx     context.Context,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__abi, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__abi, *gf_core.GFerror) {
 
 
 

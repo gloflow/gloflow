@@ -43,13 +43,13 @@ type GF_indexer_cmd struct {
 	Block_start_uint uint64
 	Block_end_uint   uint64
 	Response_ch      chan(GF_indexer_job_id)
-	Response_err_ch  chan(gf_core.GF_error)
+	Response_err_ch  chan(gf_core.GFerror)
 }
 
 //-------------------------------------------------
 func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) (GF_indexer_ch, GF_job_update_new_consumer_ch, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) (GF_indexer_ch, GF_job_update_new_consumer_ch, *gf_core.GFerror) {
 	
 		
 	// AWS_CLIENT
@@ -164,7 +164,7 @@ func job_run(p_job_id_str GF_indexer_job_id,
 	p_ctx                 context.Context,
 	p_sqs_client          *sqs.Client,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) *gf_core.GF_error {
+	p_runtime             *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	job_updates_ch  := make(GF_job_updates_ch, 10)
 	job_complete_ch := make(GF_job_complete_ch, 1)
@@ -257,9 +257,9 @@ func index__range(p_block_start_uint uint64,
 	p_job_complete_ch     GF_job_complete_ch,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GF_error {
+	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GFerror {
 
-	gf_errs_lst := []*gf_core.GF_error{}
+	gf_errs_lst := []*gf_core.GFerror{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
 
 		block_uint := b

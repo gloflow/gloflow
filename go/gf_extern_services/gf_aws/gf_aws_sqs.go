@@ -40,7 +40,7 @@ type GF_SQS_queue struct {
 
 //-------------------------------------------------------------
 // INIT
-func SQS_init(p_runtime_sys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GF_error) {
+func SQS_init(p_runtime_sys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GFerror) {
 
 
     cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -71,7 +71,7 @@ func SQS_init(p_runtime_sys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GF_error
 func SQS_get_queue_info(p_sqs_queue_name_str string,
     p_sqs_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GF_error) {
+    p_runtime_sys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GFerror) {
 
 
     sqs_queue_url_str, gf_err := SQS_queue_get_url(p_sqs_queue_name_str,
@@ -93,7 +93,7 @@ func SQS_get_queue_info(p_sqs_queue_name_str string,
 func SQS_queue_get_url(p_sqs_queue_name_str string,
     p_sqs_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GF_error) {
+    p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
     result, err := p_sqs_client.GetQueueUrl(p_ctx, &sqs.GetQueueUrlInput{
         QueueName: aws.String(p_sqs_queue_name_str),
@@ -116,7 +116,7 @@ func SQS_queue_get_url(p_sqs_queue_name_str string,
 func SQS_queue_create(p_sqs_queue_name_str string,
     p_sqs_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GF_error) {
+    p_runtime_sys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GFerror) {
 
     
 
@@ -157,7 +157,7 @@ func SQS_queue_create(p_sqs_queue_name_str string,
 func SQS_queue_delete(p_sqs_queue_name_str string,
     p_aws_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+    p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 
@@ -168,7 +168,7 @@ func SQS_queue_delete(p_sqs_queue_name_str string,
 func SQS_msg_pull(p_queue_info *GF_SQS_queue,
     p_aws_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GF_error) {
+    p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
     log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - pull message from queue")
 
@@ -264,7 +264,7 @@ func SQS_msg_push(p_msg interface{},
     p_queue_info  *GF_SQS_queue,
     p_aws_client  *sqs.Client,
     p_ctx         context.Context,
-    p_runtime_sys *gf_core.RuntimeSys) *gf_core.GF_error {
+    p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
     
     log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - push message to queue")

@@ -78,7 +78,7 @@ func Eth_peers__init_continuous_metrics(p_metrics *GF_metrics,
 
 //-------------------------------------------------
 func Eth_peers__db__get_count(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group_counts, *gf_core.GF_error) {
+	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group_counts, *gf_core.GFerror) {
 
 	coll_name_str := "gf_eth_peers"
 	coll := p_runtime.RuntimeSys.Mongo_db.Collection(coll_name_str)
@@ -136,7 +136,7 @@ func Eth_peers__db__get_count(p_metrics *GF_metrics,
 //-------------------------------------------------
 // GET_PIPELINE
 func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
-	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group, *gf_core.GF_error) {
+	p_runtime *GF_runtime) ([]*GF_eth_peer__db_aggregate__name_group, *gf_core.GFerror) {
 
 
 
@@ -244,7 +244,7 @@ func Eth_peers__db__get_pipeline(p_metrics *GF_metrics,
 func Eth_peers__db__write(p_peer_new_lifecycle *GF_eth_peer__new_lifecycle,
 	p_ctx     context.Context,
 	p_metrics *GF_metrics,
-	p_runtime *GF_runtime) *gf_core.GF_error {
+	p_runtime *GF_runtime) *gf_core.GFerror {
 
 
 

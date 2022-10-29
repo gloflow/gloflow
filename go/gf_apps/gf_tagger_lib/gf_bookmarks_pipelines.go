@@ -152,7 +152,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	//------------------------
 	// VALIDATE
 
-	gfErr := gf_core.Validate_struct(p_input, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(p_input, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

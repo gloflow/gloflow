@@ -56,7 +56,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 		gf_img := page_img__pinfo.page_img
 
 		var is_nsfv_bool bool
-		var gf_err       *gf_core.Gf_error
+		var gf_err       *gf_core.GFerror
 
 		//--------------
 		// GIF
@@ -124,7 +124,7 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 
 func image__is_nsfv__gif(p_img_gif_path_str string,
 	p_img_gif_origin_url_str string,
-	p_runtime_sys            *gf_core.RuntimeSys) (bool, *gf_core.Gf_error) {
+	p_runtime_sys            *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	//p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_images_nsfv.image__is_nsfv__gif()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
@@ -187,7 +187,7 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 
 //--------------------------------------------------
 func image__is_nsfv(p_img_path_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	is_nude_bool,err := nude.IsNude(p_img_path_str)
 	if err != nil {
@@ -203,7 +203,7 @@ func image__is_nsfv(p_img_path_str string,
 
 //--------------------------------------------------
 func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":      "crawler_page_img",

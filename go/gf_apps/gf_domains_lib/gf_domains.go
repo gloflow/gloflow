@@ -69,7 +69,7 @@ func Init_domains_aggregation(p_runtime_sys *gf_core.RuntimeSys) {
 }
 
 //--------------------------------------------------
-func Discover_domains_in_db(p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+func Discover_domains_in_db(p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.Discover_domains_in_db()")
 
 	// ADD!! - issue the posts/images queries in parallel via their own go-routines
@@ -161,7 +161,7 @@ func accumulate_domains(p_posts_domains_lst []Gf_domain_posts,
 
 //--------------------------------------------------
 func db__persist_domains(p_domains_map map[string]Gf_domain,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	// p_runtime_sys.LogFun("FUN_ENTER","gf_domains.db__persist_domains()")
 
 	// cyan   := color.New(color.FgCyan).SprintFunc()
@@ -202,7 +202,7 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 }
 
 //--------------------------------------------------
-func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.Gf_error) {
+func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.db__get_domains()")
 
 	ctx := context.Background()

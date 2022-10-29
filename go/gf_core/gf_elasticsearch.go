@@ -63,7 +63,7 @@ func (p_retrier *Gf_elasticsearch_retrier) Retry(p_ctx context.Context,
 }
 
 //-------------------------------------------------
-func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elastic.Client, *Gf_error) {
+func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elastic.Client, *GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
 
 	// es_host_str := "127.0.0.1:9200"

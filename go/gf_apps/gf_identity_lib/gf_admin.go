@@ -85,8 +85,8 @@ type GFadminUserDeleteInput struct {
 // PIPELINE_DELETE_USER
 func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
 	pCtx         context.Context,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	deletedBool := true
@@ -111,12 +111,12 @@ func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
 //------------------------------------------------
 func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 	pCtx         context.Context,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -141,8 +141,8 @@ func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 
 //------------------------------------------------
 func AdminPipelineGetAllUsers(pCtx context.Context,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) ([]*GFadminUserViewOutput, *gf_core.GF_error) {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) ([]*GFadminUserViewOutput, *gf_core.GFerror) {
 
 	// DB
 	usersLst, gfErr := DBuserGetAll(pCtx, pRuntimeSys)
@@ -177,8 +177,8 @@ func AdminPipelineGetAllUsers(pCtx context.Context,
 
 //------------------------------------------------
 func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
-	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_service_info *GFserviceInfo,
+	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	// DB
 	db_invite_list_lst, gf_err := db__user__get_all_in_invite_list(p_ctx, p_runtime_sys)
@@ -201,12 +201,12 @@ func Admin__pipeline__get_all_invite_list(p_ctx context.Context,
 //------------------------------------------------
 func AdminPipelineUserAddToInviteList(pInput *GF_admin__input_add_to_invite_list,
 	pCtx         context.Context,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -244,12 +244,12 @@ func AdminPipelineUserAddToInviteList(pInput *GF_admin__input_add_to_invite_list
 //------------------------------------------------
 func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListInput,
 	pCtx         context.Context,
-	pServiceInfo *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GF_error {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -295,12 +295,12 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 func Admin__pipeline__login(pInput *GF_admin__input_login,
 	pCtx           context.Context,
 	p_local_hub    *sentry.Hub,
-	p_service_info *GF_service_info,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_admin__output_login, *gf_core.GF_error) {
+	p_service_info *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) (*GF_admin__output_login, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
-	gfErr := gf_core.Validate_struct(pInput, pRuntimeSys)
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -524,9 +524,9 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 
 //---------------------------------------------------
 func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
-	p_service_info *GF_service_info,
+	p_service_info *GFserviceInfo,
 	p_ctx          context.Context,
-	p_runtime_sys  *gf_core.RuntimeSys) (*GF_admin__output_create_admin, *gf_core.GF_error) {
+	p_runtime_sys  *gf_core.RuntimeSys) (*GF_admin__output_create_admin, *gf_core.GFerror) {
 
 	//------------------------
 	// PIPELINE
@@ -563,7 +563,7 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 //---------------------------------------------------
 func AdminIs(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GF_error {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	userNameStr, gfErr := gf_identity_core.DBgetUserNameByID(pUserIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {

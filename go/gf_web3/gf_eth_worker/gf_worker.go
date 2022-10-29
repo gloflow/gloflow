@@ -38,7 +38,7 @@ type worker_inspector__get_hosts_ch chan chan []string
 type Get_worker_hosts_fn            func(context.Context, *gf_eth_core.GF_runtime) []string
 
 //-------------------------------------------------
-func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *gf_eth_core.GF_runtime) []string, chan *gf_core.GF_error) {
+func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *gf_eth_core.GF_runtime) []string, chan *gf_core.GFerror) {
 
 	// FIX!! - move this out of this function, into an ENV var or some kind of config
 	worker_inspector_port_int := uint(9000)
@@ -52,7 +52,7 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 
 	get_hosts_ch        := make(worker_inspector__get_hosts_ch, 100) // client requests for hosts are received on this channel
 	new_instances_ch    := make(chan []*ec2.Instance, 10)            // new instances discovered are sent to this channel
-	discovery_errors_ch := make(chan *gf_core.GF_error, 100)         // errors durring instance discovery are sent to this channel
+	discovery_errors_ch := make(chan *gf_core.GFerror, 100)          // errors durring instance discovery are sent to this channel
 
 	//-------------------------------------------------
 	// MAIN

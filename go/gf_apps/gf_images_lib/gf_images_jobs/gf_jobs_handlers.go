@@ -44,7 +44,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 	//---------------------
 	// START_JOB
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/jobs/start",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -128,7 +128,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 	// DEPRECATED!! - use the new event streaming method general to GF,
 	//                not this specific one for image jobs.
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/jobs/status",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 				

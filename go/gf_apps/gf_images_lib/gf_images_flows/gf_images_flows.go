@@ -69,7 +69,7 @@ type GFimageExistsCheck struct {
 
 //-------------------------------------------------
 func pipelineGetAll(pCtx context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	resultsLst, gfErr := DBgetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
@@ -94,7 +94,7 @@ func pipelineGetAll(pCtx context.Context,
 func pipelineGetPage(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GF_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GFerror) {
 
 	//--------------------
 	// INPUT
@@ -161,7 +161,7 @@ func pipelineGetPage(p_req *http.Request,
 func flowsImagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
-	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GF_error) {
+	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	existing_images_lst, gf_err := flows_db__images_exist(pImagesExternURLsLst,
 		pFlowNameStr,
@@ -213,7 +213,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pJobsMngrCh            chan gf_images_jobs_core.JobMsg,
 	pUserIDstr             gf_core.GF_ID,
 	pCtx                   context.Context,
-	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GF_error) {
+	pRuntimeSys            *gf_core.RuntimeSys) (*string, *string, gf_images_core.GF_image_id, *gf_core.GFerror) {
 
 	//-------------------------
 	// POLICY_VERIFY - raises error if policy rejects the op

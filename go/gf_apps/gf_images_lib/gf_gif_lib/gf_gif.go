@@ -351,7 +351,7 @@ func storePreviewFrames(p_local_file_path_src string,
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
-	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GF_error) {
+	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()

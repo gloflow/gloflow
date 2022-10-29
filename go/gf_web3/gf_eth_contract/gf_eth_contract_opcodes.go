@@ -111,7 +111,7 @@ type gf_eth_opcode struct {
 
 //-------------------------------------------------
 func Eth_contract__get_opcodes(p_bytecode_hex_str string,
-	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__opcode, *gf_core.GF_error) {
+	p_runtime *gf_eth_core.GF_runtime) ([]*GF_eth__opcode, *gf_core.GFerror) {
 
 	// HEX_DECODE
 	code_bytes_lst, err := hex.DecodeString(p_bytecode_hex_str)

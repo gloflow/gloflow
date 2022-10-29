@@ -32,7 +32,7 @@ import (
 //-------------------------------------------------
 func batch__init_handlers(p_stats_url_base_str string,
 	p_py_stats_dir_path_str string,
-	p_runtime_sys           *gf_core.RuntimeSys) *gf_core.Gf_error {
+	p_runtime_sys           *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats_batch.batch__init_handlers()")
 
 	stats_list_lst, gf_err := batch__get_stats_list(p_py_stats_dir_path_str, p_runtime_sys)
@@ -69,7 +69,7 @@ func batch__init_handlers(p_stats_url_base_str string,
 
 //-------------------------------------------------
 func batch__get_stats_list(p_py_stats_dir_path_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.Gf_error) {
+	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats_batch.batch__get_stats_list()")
 
 	files_lst, err := ioutil.ReadDir(p_py_stats_dir_path_str)

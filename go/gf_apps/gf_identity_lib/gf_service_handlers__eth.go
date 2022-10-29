@@ -31,9 +31,9 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__eth(p_http_mux *http.ServeMux,
-	p_service_info *GF_service_info,
-	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GF_error {
+func initHandlersEth(p_http_mux *http.ServeMux,
+	p_service_info *GFserviceInfo,
+	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
@@ -59,7 +59,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	// USERS_PREFLIGHT
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/preflight",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -97,7 +97,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	// USERS_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/login",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 
@@ -147,7 +147,7 @@ func init_handlers__eth(p_http_mux *http.ServeMux,
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GF_error) {
+		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "POST" {
 

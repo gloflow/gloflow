@@ -179,7 +179,7 @@ func events__init_handlers(p_sse_url_str string,
 		p_register_consumer_ch <- register_consumer_msg
 		events_consumer_ch := <- register_consumer__response_ch
 
-		flusher,gf_err := gf_core.HTTP__init_sse(p_resp, p_runtime_sys)
+		flusher,gf_err := gf_core.HTTPinitSSE(p_resp, p_runtime_sys)
 		if gf_err != nil {
 			return
 		}
