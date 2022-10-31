@@ -43,6 +43,17 @@ func initService(pPortInt int,
 	}
 
 
+	//------------------------
+	// STATIC FILES SERVING
+	staticFilesURLbaseStr := "/v1/p2p/web"
+	localDirPathStr       := "./web"
+
+	gf_core.HTTPinitStaticServingWithMux(staticFilesURLbaseStr,
+		localDirPathStr,
+		pHTTPmux,
+		pRuntimeSys)
+
+	//------------------------
 
 
 	// SERVER_INIT - blocking

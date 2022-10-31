@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"os"
-	"fmt"
-	"context"
+	// "os"
+	// "fmt"
+	// "context"
 	"net/http"
-	multiaddr "github.com/multiformats/go-multiaddr"
-	"github.com/libp2p/go-libp2p/core/peer"
+	// multiaddr "github.com/multiformats/go-multiaddr"
+	// "github.com/libp2p/go-libp2p/core/peer"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_p2p"
 	
@@ -49,10 +49,11 @@ func main() {
 	
 
 	
+	go func() {
+		_, _ = gf_p2p.Init(portP2Pint, runtimeSys)
+	}()
 
-	node, pingInitPeerFun := gf_p2p.Init(portP2Pint, runtimeSys)
-
-	if len(os.Args) > 1 {
+	/*if len(os.Args) > 1 {
 
 		// if a remote peer has been passed on the command line, connect to it
 		// and send it 5 ping messages
@@ -84,7 +85,7 @@ func main() {
 
 	} else {
 		defer gf_p2p.InitShutdownOnSignal(node)
-	}
+	}*/
 
 
 	//---------------------
