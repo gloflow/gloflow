@@ -59,7 +59,7 @@ func Test__main(p_test *testing.T) {
 		Validator:        gf_core.Validate__init(),
 	}
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
+	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
 	if gf_err != nil {
 		panic(-1)
 	}

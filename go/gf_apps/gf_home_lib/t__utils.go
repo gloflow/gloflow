@@ -45,7 +45,7 @@ func Tinit() *gf_core.RuntimeSys {
 
 
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_url_str,
+	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str,
 		test__mongodb_db_name_str,
 		nil,
 		runtimeSys)

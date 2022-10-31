@@ -303,7 +303,7 @@ func Store_rpc_handler_run(p_handler_url_str string,
 	ctx           := context.Background()
 	coll_name_str := "gf_rpc_handler_run"
 
-	gf_err := gf_core.Mongo__insert(run,
+	gf_err := gf_core.MongoInsert(run,
 		coll_name_str,
 		map[string]interface{}{
 			"handler_url_str":    p_handler_url_str,

@@ -29,11 +29,11 @@ import (
 )
 
 //-------------------------------------------------
-func TemplatesLoad(p_main_template_filepath_str string,
-	p_runtime_sys *RuntimeSys) (*template.Template, []string, *GFerror) {
+func TemplatesLoad(pMainTemplateFilepathStr string,
+	pRuntimeSys *RuntimeSys) (*template.Template, []string, *GFerror) {
 
-	template_filename_str := filepath.Base(p_main_template_filepath_str)
-	template_dir_path_str := filepath.Dir(p_main_template_filepath_str)
+	template_filename_str := filepath.Base(pMainTemplateFilepathStr)
+	template_dir_path_str := filepath.Dir(pMainTemplateFilepathStr)
 
 	//---------------------
 	// SUB_TEMPLATES - templates that are imported into the main template
@@ -49,7 +49,7 @@ func TemplatesLoad(p_main_template_filepath_str string,
 			gf_err := ErrorCreate("failed to parse a template",
 				"dir_list_error",
 				map[string]interface{}{"subtemplates_dir_path_str": subtemplates_dir_path_str,},
-				err, "gf_core", p_runtime_sys)
+				err, "gf_core", pRuntimeSys)
 			return nil, nil, gf_err
 		}
 
@@ -64,15 +64,15 @@ func TemplatesLoad(p_main_template_filepath_str string,
 
 	//---------------------
 	// TEMPLATES
-	templates_paths_lst := append([]string{p_main_template_filepath_str,}, subtemplates_file_paths_lst...)
+	templatesPathsLst := append([]string{pMainTemplateFilepathStr,}, subtemplates_file_paths_lst...)
 
 	// IMPORTANT!! - load several template files into a single template name
-	main__tmpl, err := template.New(template_filename_str).ParseFiles(templates_paths_lst...)
+	main__tmpl, err := template.New(template_filename_str).ParseFiles(templatesPathsLst...)
 	if err != nil {
 		gf_err := ErrorCreate("failed to parse a template",
 			"template_create_error",
-			map[string]interface{}{"main_template_filepath_str": p_main_template_filepath_str,},
-			err, "gf_core", p_runtime_sys)
+			map[string]interface{}{"main_template_filepath_str": pMainTemplateFilepathStr,},
+			err, "gf_core", pRuntimeSys)
 		return nil, nil, gf_err
 	}
 	

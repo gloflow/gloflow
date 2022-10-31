@@ -55,7 +55,7 @@ func DBuserGetAll(pCtx context.Context,
 	collNameStr := "gf_users"
 
 	findOpts := options.Find()
-	cursor, gfErr := gf_core.Mongo__find(bson.M{
+	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"deleted_bool":  false,
 		},
 		findOpts,
@@ -98,7 +98,7 @@ func db__user__create(p_user *GFuser,
 
 	coll_name_str := "gf_users"
 
-	gf_err := gf_core.Mongo__insert(p_user,
+	gf_err := gf_core.MongoInsert(p_user,
 		coll_name_str,
 		map[string]interface{}{
 			"user_id_str":        p_user.Id_str,
@@ -274,7 +274,7 @@ func db__user__exists_by_username(pUserNameStr gf_identity_core.GFuserName,
 
 	collNameStr := "gf_users"
 
-	countInt, gfErr := gf_core.Mongo__count(bson.M{
+	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
 		},
@@ -300,7 +300,7 @@ func db__user__exists_by_eth_addr(p_user_address_eth_str gf_identity_core.GF_use
 	p_ctx         context.Context,
 	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-	count_int, gf_err := gf_core.Mongo__count(bson.M{
+	count_int, gf_err := gf_core.MongoCount(bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{p_user_address_eth_str, }},
 			"deleted_bool":      false,
 		},
@@ -364,7 +364,7 @@ func db__user__get_all_in_invite_list(p_ctx context.Context,
 	coll_name_str := "gf_users_invite_list"
 
 	find_opts := options.Find()
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"deleted_bool":  false,
 		},
 		find_opts,
@@ -411,7 +411,7 @@ func DBuserAddToInviteList(p_user_email_str string,
 		"creation_unix_time_f": creation_unix_time_f,
 		"deleted_bool":         false,
 	}
-	gf_err := gf_core.Mongo__insert(user_invite_map,
+	gf_err := gf_core.MongoInsert(user_invite_map,
 		coll_name_str,
 		map[string]interface{}{
 			"user_email_str":     p_user_email_str,
@@ -461,7 +461,7 @@ func db__user__check_in_invitelist_by_email(pUserEmailStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
 	collNameStr := "gf_users_invite_list"
-	countInt, gfErr := gf_core.Mongo__count(bson.M{
+	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"user_email_str": pUserEmailStr,
 			"deleted_bool":   false,
 		},
@@ -492,7 +492,7 @@ func db__user_creds__create(p_user_creds *GFuserCreds,
 
 	collNameStr := "gf_users_creds"
 
-	gf_err := gf_core.Mongo__insert(p_user_creds,
+	gf_err := gf_core.MongoInsert(p_user_creds,
 		collNameStr,
 		map[string]interface{}{
 			"user_id_str":        p_user_creds.User_id_str,
@@ -564,7 +564,7 @@ func db__user_email_confirm__create(p_user_name_str gf_identity_core.GFuserName,
 		"creation_unix_time_f": creation_unix_time_f,
 	}
 
-	gf_err := gf_core.Mongo__insert(email_confirm_map,
+	gf_err := gf_core.MongoInsert(email_confirm_map,
 		collNameStr,
 		map[string]interface{}{
 			"user_id_str":        p_user_id_str,
@@ -661,7 +661,7 @@ func db__login_attempt__create(p_login_attempt *GF_login_attempt,
 
 
 	collNameStr := "gf_login_attempt"
-	gf_err := gf_core.Mongo__insert(p_login_attempt,
+	gf_err := gf_core.MongoInsert(p_login_attempt,
 		collNameStr,
 		map[string]interface{}{
 			"login_attempt_id_str": p_login_attempt.Id_str,
@@ -686,7 +686,7 @@ func db__login_attempt__get_by_username(p_user_name_str gf_identity_core.GFuserN
 	collNameStr := "gf_login_attempt"
 
 	findOpts := options.Find()
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"user_name_str": string(p_user_name_str),
 			"deleted_bool":  false,
 		},

@@ -116,7 +116,7 @@ func Fetch__url(p_url_str string,
 
 	ctx           := context.Background()
 	coll_name_str := "gf_crawl"
-	gf_err        := gf_core.Mongo__insert(fetch,
+	gf_err        := gf_core.MongoInsert(fetch,
 		coll_name_str,
 		map[string]interface{}{
 			"url_str":            p_url_str,

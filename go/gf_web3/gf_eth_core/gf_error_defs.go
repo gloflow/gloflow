@@ -24,56 +24,56 @@ import (
 )
 
 //-------------------------------------------------
-type Error_def struct {
-	Descr_str string
+type ErrorDef struct {
+	DescrStr string
 }
 
 //-------------------------------------------------
-func Error__get_defs() map[string]gf_core.Error_def {
+func ErrorGetDefs() map[string]gf_core.ErrorDef {
 
-	error_defs_map := map[string]gf_core.Error_def{
+	errorDefs_map := map[string]gf_core.ErrorDef{
 
 		//---------------
 		// ETH_CONTRACT
-		"eth_contract__not_supported_type": gf_core.Error_def{
-			Descr_str: "eth contract type encountered is not supported",
+		"eth_contract__not_supported_type": gf_core.ErrorDef{
+			DescrStr: "eth contract type encountered is not supported",
 		},
-		"eth_contract__abi_not_loadable": gf_core.Error_def{
-			Descr_str: "eth contract ABI cant be parsed from JSON to ABI struct",
+		"eth_contract__abi_not_loadable": gf_core.ErrorDef{
+			DescrStr: "eth contract ABI cant be parsed from JSON to ABI struct",
 		},
-		"eth_tx_log__decode": gf_core.Error_def{
-			Descr_str: "eth transaction log failed to be decoded with a given ABI",
+		"eth_tx_log__decode": gf_core.ErrorDef{
+			DescrStr: "eth transaction log failed to be decoded with a given ABI",
 		},
-		"eth_contract__disassemble": gf_core.Error_def{
-			Descr_str: "eth failed to diassemble contract bytecode",
+		"eth_contract__disassemble": gf_core.ErrorDef{
+			DescrStr: "eth failed to diassemble contract bytecode",
 		},
 
 		//---------------
 		// ETH_RPC
-		"eth_rpc__dial": gf_core.Error_def{
-			Descr_str: "failed to get Dial/Connect to Ethereum RPC-JSON API",
+		"eth_rpc__dial": gf_core.ErrorDef{
+			DescrStr: "failed to get Dial/Connect to Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_header": gf_core.Error_def{
-			Descr_str: "failed to get Header via Ethereum RPC-JSON API",
+		"eth_rpc__get_header": gf_core.ErrorDef{
+			DescrStr: "failed to get Header via Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_block": gf_core.Error_def{
-			Descr_str: "failed to get Block via Ethereum RPC-JSON API",
+		"eth_rpc__get_block": gf_core.ErrorDef{
+			DescrStr: "failed to get Block via Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_tx": gf_core.Error_def{
-			Descr_str: "failed to get Transaction via Ethereum RPC-JSON API",
+		"eth_rpc__get_tx": gf_core.ErrorDef{
+			DescrStr: "failed to get Transaction via Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_tx_receipt": gf_core.Error_def{
-			Descr_str: "failed to get Transaction Receipt via Ethereum RPC-JSON API",
+		"eth_rpc__get_tx_receipt": gf_core.ErrorDef{
+			DescrStr: "failed to get Transaction Receipt via Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_tx_sender": gf_core.Error_def{
-			Descr_str: "failed to get Transaction Sender via Ethereum RPC-JSON API",
+		"eth_rpc__get_tx_sender": gf_core.ErrorDef{
+			DescrStr: "failed to get Transaction Sender via Ethereum RPC-JSON API",
 		},
-		"eth_rpc__get_contract_code": gf_core.Error_def{
-			Descr_str: "failed to Contract code via Ethereum RPC-JSON API",
+		"eth_rpc__get_contract_code": gf_core.ErrorDef{
+			DescrStr: "failed to Contract code via Ethereum RPC-JSON API",
 		},
 
 		//---------------
 		
 	}
-	return error_defs_map
+	return errorDefs_map
 }

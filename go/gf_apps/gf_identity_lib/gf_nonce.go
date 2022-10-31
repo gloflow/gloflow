@@ -59,7 +59,7 @@ func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
 	}
 
 	//------------------------
-	nonce_val_str := fmt.Sprintf("gloflow:%s", gf_core.Str_random())
+	nonce_val_str := fmt.Sprintf("gloflow:%s", gf_core.StrRandom())
 
 	// CREATE
 	nonce, gf_err := nonce__create(GF_user_nonce_val(nonce_val_str),
@@ -84,7 +84,7 @@ func nonce__create(p_nonce_val_str GF_user_nonce_val,
 	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
 	unique_vals_for_id_lst := []string{string(p_nonce_val_str), }
 
-	id_str := gf_core.ID__create(unique_vals_for_id_lst, creation_unix_time_f)
+	id_str := gf_core.IDcreate(unique_vals_for_id_lst, creation_unix_time_f)
 	
 	nonce := &GF_user_nonce{
 		V_str:                "0",
@@ -136,7 +136,7 @@ func db__nonce__create(p_nonce *GF_user_nonce,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	coll_name_str := "gf_users_nonces"
-	gf_err := gf_core.Mongo__insert(p_nonce,
+	gf_err := gf_core.MongoInsert(p_nonce,
 		coll_name_str,
 		map[string]interface{}{
 			"user_id_str":        p_nonce.User_id_str,

@@ -32,7 +32,7 @@ import (
 )
 
 //------------------------------------------------
-func init_handlers__users(pHTTPmux *http.ServeMux,
+func initHandlersUsers(pHTTPmux *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
 	pLocalHub            *sentry.Hub,

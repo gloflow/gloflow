@@ -60,7 +60,7 @@ func DB__create_post(p_post *Gf_post,
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err        := gf_core.Mongo__insert(p_post,
+	gf_err        := gf_core.MongoInsert(p_post,
 		coll_name_str,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to create a post into the DB",
@@ -163,7 +163,7 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 	
-	cursor, gf_err := gf_core.Mongo__find(bson.M{"t": "post"},
+	cursor, gf_err := gf_core.MongoFind(bson.M{"t": "post"},
 		find_opts,
 		map[string]interface{}{
 			"cursor_start_position_int": p_cursor_start_position_int,
@@ -222,7 +222,7 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 	find_opts.SetSkip(int64(p_cursor_position_int))
     find_opts.SetLimit(int64(p_posts_num_to_get_int))
 	
-	cursor, gf_err := gf_core.Mongo__find(bson.M{"t": "post"},
+	cursor, gf_err := gf_core.MongoFind(bson.M{"t": "post"},
 		find_opts,
 		map[string]interface{}{
 			"cursor_start_position_int": p_cursor_position_int,

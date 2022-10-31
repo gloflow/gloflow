@@ -175,7 +175,7 @@ func flows_db__get_pages_total_num(p_flow_name_str string,
 
 
 
-	imgs_in_flow__count_int, gf_err := gf_core.Mongo__count(bson.M{
+	imgs_in_flow__count_int, gf_err := gf_core.MongoCount(bson.M{
 			"t":             "img",
 			"flow_name_str": p_flow_name_str,
 		},
@@ -208,7 +208,7 @@ func flows_db__get_page(p_flow_name_str string,
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 	
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"t":   "img",
 			"$or": []bson.M{
 
@@ -305,7 +305,7 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 	findOpts := options.Find()
 	findOpts.SetProjection(projectionMap)
 
-	cursor, gfErr := gf_core.Mongo__find(query_map,
+	cursor, gfErr := gf_core.MongoFind(query_map,
 		findOpts,
 		map[string]interface{}{
 			"images_extern_urls_lst": p_images_extern_urls_lst,

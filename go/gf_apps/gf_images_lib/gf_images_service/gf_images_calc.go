@@ -77,7 +77,7 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 
 		ctx           := context.Background()
 		coll_name_str := p_runtime_sys.Mongo_coll.Name()
-		gf_err        := gf_core.Mongo__insert(browser_job_result,
+		gf_err        := gf_core.MongoInsert(browser_job_result,
 			coll_name_str,
 			map[string]interface{}{"image_id_str": image_id_str,},
 			ctx,

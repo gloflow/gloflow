@@ -25,394 +25,394 @@ SOFTWARE.
 package gf_core
 
 //-------------------------------------------------
-type Error_def struct {
-	Descr_str string
+type ErrorDef struct {
+	DescrStr string
 }
 
 //-------------------------------------------------
-func error__get_defs() map[string]Error_def {
+func errorGetDefs() map[string]ErrorDef {
 
-	error_defs_map := map[string]Error_def{
-
-		//---------------
-		"panic_error": Error_def{
-			Descr_str: "a golang panic was caught with recover()",
-		},
-
-		"generic_error": Error_def{
-			Descr_str: "generic error occured, check error info for more details",
-		},
+	errorDefsMap := map[string]ErrorDef{
 
 		//---------------
-		"int_parse_error": Error_def{
-			Descr_str: "failed to parse an integer string",
+		"panic_error": ErrorDef{
+			DescrStr: "a golang panic was caught with recover()",
 		},
-		"url_parse_error": Error_def{
-			Descr_str: "failed to parse a url with url.Parse()",
+
+		"generic_error": ErrorDef{
+			DescrStr: "generic error occured, check error info for more details",
 		},
-		"url_unescape_error": Error_def{
-			Descr_str: "failed to unescape a url with url.QueryUnescape()",
+
+		//---------------
+		"int_parse_error": ErrorDef{
+			DescrStr: "failed to parse an integer string",
 		},
-		"io_reader_error": Error_def{
-			Descr_str: "failed to read bytes using a reader",
+		"url_parse_error": ErrorDef{
+			DescrStr: "failed to parse a url with url.Parse()",
+		},
+		"url_unescape_error": ErrorDef{
+			DescrStr: "failed to unescape a url with url.QueryUnescape()",
+		},
+		"io_reader_error": ErrorDef{
+			DescrStr: "failed to read bytes using a reader",
 		},
 
 		//---------------
 		// IDENTITY
-		"policy__op_denied": Error_def{
-			Descr_str: "access policy has denied the operation",
+		"policy__op_denied": ErrorDef{
+			DescrStr: "access policy has denied the operation",
 		},
 
 		//---------------
 		// DATA_VERIFICATION
-		"verify__invalid_value_error": Error_def{
-			Descr_str: "data failed verification, not an expected value",
+		"verify__invalid_value_error": ErrorDef{
+			DescrStr: "data failed verification, not an expected value",
 		},
-		"verify__value_not_integer_error": Error_def{
-			Descr_str: "data failed verification, the supplied value is not an integer",
+		"verify__value_not_integer_error": ErrorDef{
+			DescrStr: "data failed verification, the supplied value is not an integer",
 		},
-		"verify__value_too_many_error": Error_def{
-			Descr_str: "data failed verification, the supplied too many values",
+		"verify__value_too_many_error": ErrorDef{
+			DescrStr: "data failed verification, the supplied too many values",
 		},
-		"verify__missing_key_error": Error_def{
-			Descr_str: "data failed verification, the needed key is missing",
+		"verify__missing_key_error": ErrorDef{
+			DescrStr: "data failed verification, the needed key is missing",
 		},
-		"verify__invalid_key_value_error": Error_def{
-			Descr_str: "data failed verification, the key does not have the expected value",
+		"verify__invalid_key_value_error": ErrorDef{
+			DescrStr: "data failed verification, the key does not have the expected value",
 		},
-		"verify__input_data_missing_in_req_error": Error_def{
-			Descr_str: "data failed verification, input is missing in request",
+		"verify__input_data_missing_in_req_error": ErrorDef{
+			DescrStr: "data failed verification, input is missing in request",
 		},
 
 		// length
-		"verify__string_too_short_error": Error_def{
-			Descr_str: "data failed verification, the string is too short",
+		"verify__string_too_short_error": ErrorDef{
+			DescrStr: "data failed verification, the string is too short",
 		},
-		"verify__string_too_long_error": Error_def{
-			Descr_str: "data failed verification, the string is too long",
+		"verify__string_too_long_error": ErrorDef{
+			DescrStr: "data failed verification, the string is too long",
 		},
-		"verify__string_not_correct_length_error": Error_def{
-			Descr_str: "data failed verification, the string is too long",
+		"verify__string_not_correct_length_error": ErrorDef{
+			DescrStr: "data failed verification, the string is too long",
 		},
 
-		"verify__invalid_image_extension_error": Error_def{
-			Descr_str: "an unsupported image file extension was encountered",
+		"verify__invalid_image_extension_error": ErrorDef{
+			DescrStr: "an unsupported image file extension was encountered",
 		},
-		"verify__invalid_query_string_encoding_error": Error_def{
-			Descr_str: "string is not a valid query-string encoding",
+		"verify__invalid_query_string_encoding_error": ErrorDef{
+			DescrStr: "string is not a valid query-string encoding",
 		},
-		"verify__invalid_image_nsfv_error": Error_def{
-			Descr_str: "image NSFV verification failed",
+		"verify__invalid_image_nsfv_error": ErrorDef{
+			DescrStr: "image NSFV verification failed",
 		},
 
 		// VALIDATOR - used primarily when validating using validator lib,
 		//             where struct tags contain directives on how to validate individual fields.
-		"verify__invalid_input_struct_error": Error_def{
-			Descr_str: "input struct is invalid",
+		"verify__invalid_input_struct_error": ErrorDef{
+			DescrStr: "input struct is invalid",
 		},
 
-		"verify__sess_data_missing_in_req": Error_def{
-			Descr_str: "session data missing in http request",
+		"verify__sess_data_missing_in_req": ErrorDef{
+			DescrStr: "session data missing in http request",
 		},
 		
 		//---------------
 		// FILESYSTEM
-		"file_open_error": Error_def{
-			Descr_str: "os.Create() failed to create a file - package (os)",
+		"file_open_error": ErrorDef{
+			DescrStr: "os.Create() failed to create a file - package (os)",
 		},
-		"file_create_error": Error_def{
-			Descr_str: "os.Open() failed to open a file - package (os)",
+		"file_create_error": ErrorDef{
+			DescrStr: "os.Open() failed to open a file - package (os)",
 		},
-		"file_read_error": Error_def{
-			Descr_str: "f.Read()/ioutil.ReadFile() failed to read file - package (os/ioutil)",
+		"file_read_error": ErrorDef{
+			DescrStr: "f.Read()/ioutil.ReadFile() failed to read file - package (os/ioutil)",
 		},
-		"file_remove_error": Error_def{
-			Descr_str: "os.Remove() failed to remove a file - package (os)",
+		"file_remove_error": ErrorDef{
+			DescrStr: "os.Remove() failed to remove a file - package (os)",
 		},
-		"file_write_error": Error_def{
-			Descr_str: "f.Write() failed to write to a file - package (os)",
+		"file_write_error": ErrorDef{
+			DescrStr: "f.Write() failed to write to a file - package (os)",
 		},
-		"file_sync_error": Error_def{
-			Descr_str: "f.Sync() failed to sync a file to the FS - package (os)",
+		"file_sync_error": ErrorDef{
+			DescrStr: "f.Sync() failed to sync a file to the FS - package (os)",
 		},
-		"file_missing_error": Error_def{
-			Descr_str: "file doesnt exist in the FS",
+		"file_missing_error": ErrorDef{
+			DescrStr: "file doesnt exist in the FS",
 		},
-		"file_buffer_copy_error": Error_def{
-			Descr_str: "using a file as a source/target of a buffer copy failed - (io.Copy(),etc.)",
+		"file_buffer_copy_error": ErrorDef{
+			DescrStr: "using a file as a source/target of a buffer copy failed - (io.Copy(),etc.)",
 		},
-		"file_stat_error": Error_def{
-			Descr_str: "getting info on a file via a stat() system call (golang API or CLI) failed - (os.Stat())",
+		"file_stat_error": ErrorDef{
+			DescrStr: "getting info on a file via a stat() system call (golang API or CLI) failed - (os.Stat())",
 		},
-		"dir_list_error": Error_def{
-			Descr_str: "failed to list contents of a dir in the FS",
+		"dir_list_error": ErrorDef{
+			DescrStr: "failed to list contents of a dir in the FS",
 		},
 
 		//---------------
 		// CLI
-		"cli_run_error": Error_def{
-			Descr_str: "failed to run a CLI command from Go",
+		"cli_run_error": ErrorDef{
+			DescrStr: "failed to run a CLI command from Go",
 		},
 
 		//---------------
 		// ENCODE/DECODE
 		// JSON
-		"json_decode_error": Error_def{
-			Descr_str: "json.Unmarshal() failed to parse byte array - package (encoding/json)",
+		"json_decode_error": ErrorDef{
+			DescrStr: "json.Unmarshal() failed to parse byte array - package (encoding/json)",
 		},
-		"json_encode_error": Error_def{
-			Descr_str: "json.Marshal() failed to parse byte array - package (encoding/json)",
+		"json_encode_error": ErrorDef{
+			DescrStr: "json.Marshal() failed to parse byte array - package (encoding/json)",
 		},
 		// YAML
-		"yaml_decode_error": Error_def{
-			Descr_str: "yaml.Unmarshal() failed to parse byte array - package (gopkg.in/yaml.v2)",
+		"yaml_decode_error": ErrorDef{
+			DescrStr: "yaml.Unmarshal() failed to parse byte array - package (gopkg.in/yaml.v2)",
 		},
 		// BASE64
-		"base64_decoding_error": Error_def{
-			Descr_str: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
+		"base64_decoding_error": ErrorDef{
+			DescrStr: "base64.StdEncoding.DecodeString() failed - package (encoding/base64)",
 		},
 		// HEX
-		"decode_hex": Error_def{
-			Descr_str: "failed to decode hex string",
+		"decode_hex": ErrorDef{
+			DescrStr: "failed to decode hex string",
 		},
 		// MAPSTRUCT
-		"mapstruct_decode": Error_def{
-			Descr_str: "failed to decode a map into a struct using mapstructure lib",
+		"mapstruct_decode": ErrorDef{
+			DescrStr: "failed to decode a map into a struct using mapstructure lib",
 		},
 
 		//---------------
 		// HTTP
-		"http_client_req_error": Error_def{
-			Descr_str:"failed to execute a http_client request",
+		"http_client_req_error": ErrorDef{
+			DescrStr:"failed to execute a http_client request",
 		},
-		"http_client_req_status_error": Error_def{
-			Descr_str:"http_client received a non 2xx/3xx HTTP status code",
+		"http_client_req_status_error": ErrorDef{
+			DescrStr:"http_client received a non 2xx/3xx HTTP status code",
 		},
-		"http_server_flusher_not_supported_error": Error_def{
-			Descr_str:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
+		"http_server_flusher_not_supported_error": ErrorDef{
+			DescrStr:"http_server not supporting http.Flusher (probably for SSE support,etc.)",
 		},
-		"http_client_gf_status_error": Error_def{
-			Descr_str:"http_client received a non-OK GF error",
+		"http_client_gf_status_error": ErrorDef{
+			DescrStr:"http_client received a non-OK GF error",
 		},
 		
 		//---------------
 		// WEBSOCKETS
-		"ws_connection_init_error": Error_def{
-			Descr_str: "websocket client failed to connect to a url",
+		"ws_connection_init_error": ErrorDef{
+			DescrStr: "websocket client failed to connect to a url",
 		},
 		
 		//---------------
 		// IMAGES
-		"image_decoding_error": Error_def{
-			Descr_str: "image.Decode() failed to decode image data - package (image)",
+		"image_decoding_error": ErrorDef{
+			DescrStr: "image.Decode() failed to decode image data - package (image)",
 		},
-		"image_decoding_config_error": Error_def{
-			Descr_str: "image.DecodeConfig() failed to decode image data - package (image,image/png,image/jpeg,etc.)",
+		"image_decoding_config_error": ErrorDef{
+			DescrStr: "image.DecodeConfig() failed to decode image data - package (image,image/png,image/jpeg,etc.)",
 		},
-		"jpeg_decoding_error": Error_def{
-			Descr_str: "jpeg.Decode() failed to decode image data - package (image/jpeg)",
+		"jpeg_decoding_error": ErrorDef{
+			DescrStr: "jpeg.Decode() failed to decode image data - package (image/jpeg)",
 		},
-		"png_decoding_error": Error_def{
-			Descr_str: "png.Decode() failed to decode image data - package (image/png)",
+		"png_decoding_error": ErrorDef{
+			DescrStr: "png.Decode() failed to decode image data - package (image/png)",
 		},
-		"png_encoding_error": Error_def{
-			Descr_str: "png.Encode() failed to encode image data - package (image/png)",
+		"png_encoding_error": ErrorDef{
+			DescrStr: "png.Encode() failed to encode image data - package (image/png)",
 		},
-		"gif_decoding_frames_error": Error_def{
-			Descr_str: "gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
+		"gif_decoding_frames_error": ErrorDef{
+			DescrStr: "gif.DecodeAll() failed to decode GIF frames - package (image/gif)",
 		},
 
 		//---------------
 		// MONGODB
-		"mongodb_connect_error": Error_def{
-			Descr_str: "failed to connect to a mongodb host - package (go.mongodb.org/mongo-driver)",
+		"mongodb_connect_error": ErrorDef{
+			DescrStr: "failed to connect to a mongodb host - package (go.mongodb.org/mongo-driver)",
 		},
-		"mongodb_ping_error": Error_def{
-			Descr_str: "failed to ping a mongodb host - package (go.mongodb.org/mongo-driver)",
+		"mongodb_ping_error": ErrorDef{
+			DescrStr: "failed to ping a mongodb host - package (go.mongodb.org/mongo-driver)",
 		},		
-		"mongodb_find_error": Error_def{
-			Descr_str:"c.Find() failed to find a mongodb document",
+		"mongodb_find_error": ErrorDef{
+			DescrStr:"c.Find() failed to find a mongodb document",
 		},
-		"mongodb_count_error": Error_def{
-			Descr_str:"Count of documents failed in mongodb",
+		"mongodb_count_error": ErrorDef{
+			DescrStr:"Count of documents failed in mongodb",
 		},
-		"mongodb_not_found_error": Error_def{
-			Descr_str:"target document not found in mongodb",
+		"mongodb_not_found_error": ErrorDef{
+			DescrStr:"target document not found in mongodb",
 		},
-		"mongodb_insert_error": Error_def{
-			Descr_str:"failed to insert/create new mongodb document",
+		"mongodb_insert_error": ErrorDef{
+			DescrStr:"failed to insert/create new mongodb document",
 		},
-		"mongodb_write_bulk_error": Error_def{
-			Descr_str:"failed to bulk write new mongodb documents",
+		"mongodb_write_bulk_error": ErrorDef{
+			DescrStr:"failed to bulk write new mongodb documents",
 		},
-		"mongodb_update_error": Error_def{
-			Descr_str:"failed to update a mongodb document",
+		"mongodb_update_error": ErrorDef{
+			DescrStr:"failed to update a mongodb document",
 		},
-		"mongodb_delete_error": Error_def{
-			Descr_str:"failed to delete a mongodb document",
+		"mongodb_delete_error": ErrorDef{
+			DescrStr:"failed to delete a mongodb document",
 		},
-		"mongodb_aggregation_error": Error_def{
-			Descr_str:"failed to run a aggregation pipeline in mongodb",
+		"mongodb_aggregation_error": ErrorDef{
+			DescrStr:"failed to run a aggregation pipeline in mongodb",
 		},
-		"mongodb_ensure_index_error": Error_def{
-			Descr_str:"c.EnsureIndex() failed to create a mongodb index",
+		"mongodb_ensure_index_error": ErrorDef{
+			DescrStr:"c.EnsureIndex() failed to create a mongodb index",
 		},
-		"mongodb_cursor_decode": Error_def{
-			Descr_str:"failed to decode value from the mongodb results Cursor",
+		"mongodb_cursor_decode": ErrorDef{
+			DescrStr:"failed to decode value from the mongodb results Cursor",
 		},
-		"mongodb_cursor_all": Error_def{
-			Descr_str:"failed to get all values from the mongodb results Cursor",
+		"mongodb_cursor_all": ErrorDef{
+			DescrStr:"failed to get all values from the mongodb results Cursor",
 		},
-		"mongodb_session_error": Error_def{
-			Descr_str:"failed to execute mongodb session",
+		"mongodb_session_error": ErrorDef{
+			DescrStr:"failed to execute mongodb session",
 		},
-		"mongodb_start_session_error": Error_def{
-			Descr_str:"failed to start a new mongodb session",
+		"mongodb_start_session_error": ErrorDef{
+			DescrStr:"failed to start a new mongodb session",
 		},
-		"mongodb_session_abort_error": Error_def{
-			Descr_str:"failed to abort a mongodb session",
+		"mongodb_session_abort_error": ErrorDef{
+			DescrStr:"failed to abort a mongodb session",
 		},
-		"mongodb_get_collection_names_error": Error_def{
-			Descr_str:"failed to get all mongodb collection names",
+		"mongodb_get_collection_names_error": ErrorDef{
+			DescrStr:"failed to get all mongodb collection names",
 		},
 		
 		//---------------
 		// ELASTICSEARCH
-		"elasticsearch_get_client": Error_def{
-			Descr_str:"c.NewClient() failed to get elasticsearch client - package (elastic)",
+		"elasticsearch_get_client": ErrorDef{
+			DescrStr:"c.NewClient() failed to get elasticsearch client - package (elastic)",
 		},
-		"elasticsearch_ping": Error_def{
-			Descr_str:"c.Ping() failed to ping elasticsearch server from client - package (elastic)",
+		"elasticsearch_ping": ErrorDef{
+			DescrStr:"c.Ping() failed to ping elasticsearch server from client - package (elastic)",
 		},
-		"elasticsearch_add_to_index": Error_def{
-			Descr_str:"c.Index() failed to add a record to the index - package (elastic)",
+		"elasticsearch_add_to_index": ErrorDef{
+			DescrStr:"c.Index() failed to add a record to the index - package (elastic)",
 		},
-		"elasticsearch_query_index": Error_def{
-			Descr_str:"c.Search() failed issue a query - package (elastic)",
+		"elasticsearch_query_index": ErrorDef{
+			DescrStr:"c.Search() failed issue a query - package (elastic)",
 		},
 
 		//---------------
 		// TEMPLATES
-		"template_create_error": Error_def{
-			Descr_str:"template.New() failed to create/load a template - package (text/template)",
+		"template_create_error": ErrorDef{
+			DescrStr:"template.New() failed to create/load a template - package (text/template)",
 		},
-		"template_render_error": Error_def{
-			Descr_str:"template.Execute() failed to render a template - package (text/template)",
+		"template_render_error": ErrorDef{
+			DescrStr:"template.Execute() failed to render a template - package (text/template)",
 		},
 		
 		//---------------
 		// AWS
-		"aws_general_error": Error_def{
-			Descr_str: "AWS general error",
+		"aws_general_error": ErrorDef{
+			DescrStr: "AWS general error",
 		},
-		"aws_session_create": Error_def{
-			Descr_str: "AWS failed to create new API session",
+		"aws_session_create": ErrorDef{
+			DescrStr: "AWS failed to create new API session",
 		},
-		"aws_client_v2_create": Error_def{
-			Descr_str: "AWS failed to create new API V2 client",
+		"aws_client_v2_create": ErrorDef{
+			DescrStr: "AWS failed to create new API V2 client",
 		},
 
 		// EC2
-		"aws_ec2_instances_describe_error": Error_def{
-			Descr_str: "failed to describe EC2 instances",
+		"aws_ec2_instances_describe_error": ErrorDef{
+			DescrStr: "failed to describe EC2 instances",
 		},
 		
 		// ECS
-		"aws_ecs_service_update_error": Error_def{
-			Descr_str: "failed to update an AWS ECS service",
+		"aws_ecs_service_update_error": ErrorDef{
+			DescrStr: "failed to update an AWS ECS service",
 		},
 
 		// SECRETS_MNGR
-		"aws_secretsmngr_create_secret_value_error": Error_def{
-			Descr_str: "failed to create secret in AWS SECRETS_MANAGER service",
+		"aws_secretsmngr_create_secret_value_error": ErrorDef{
+			DescrStr: "failed to create secret in AWS SECRETS_MANAGER service",
 		},
-		"aws_secretsmngr_get_secret_value_error": Error_def{
-			Descr_str: "failed to get secret value from AWS SECRETS_MANAGER service",
+		"aws_secretsmngr_get_secret_value_error": ErrorDef{
+			DescrStr: "failed to get secret value from AWS SECRETS_MANAGER service",
 		},
 		
 		// SQS
-		"aws_sqs_queue_create_error": Error_def{
-			Descr_str: "failed to create SQS queue",
+		"aws_sqs_queue_create_error": ErrorDef{
+			DescrStr: "failed to create SQS queue",
 		},
-		"aws_sqs_queue_get_url_error": Error_def{
-			Descr_str: "failed to get a URL of a SQS queue",
+		"aws_sqs_queue_get_url_error": ErrorDef{
+			DescrStr: "failed to get a URL of a SQS queue",
 		},
-		"aws_sqs_queue_send_msg_error": Error_def{
-			Descr_str: "failed to send a message to a SQS queue",
+		"aws_sqs_queue_send_msg_error": ErrorDef{
+			DescrStr: "failed to send a message to a SQS queue",
 		},
-		"aws_sqs_queue_receive_msg_error": Error_def{
-			Descr_str: "failed to receive a message from a SQS queue",
+		"aws_sqs_queue_receive_msg_error": ErrorDef{
+			DescrStr: "failed to receive a message from a SQS queue",
 		},
-		"aws_sqs_queue_delete_msg_error": Error_def{
-			Descr_str: "failed to delete a message from a SQS queue",
+		"aws_sqs_queue_delete_msg_error": ErrorDef{
+			DescrStr: "failed to delete a message from a SQS queue",
 		},
 
 		// SES
-		"aws_ses_service_send_message_error": Error_def{
-			Descr_str: "failed to send an email message via SES",
+		"aws_ses_service_send_message_error": ErrorDef{
+			DescrStr: "failed to send an email message via SES",
 		},
-		"aws_ses_service_verify_address_error": Error_def{
-			Descr_str: "failed to verify email address via SES",
+		"aws_ses_service_verify_address_error": ErrorDef{
+			DescrStr: "failed to verify email address via SES",
 		},
 
 		//---------------
 		// S3
-		"s3_credentials_error": Error_def{
-			Descr_str: "S3 credentials operation failed",
+		"s3_credentials_error": ErrorDef{
+			DescrStr: "S3 credentials operation failed",
 		},
-		"s3_file_upload_error": Error_def{
-			Descr_str: "failed to upload a file to S3 bucket",
+		"s3_file_upload_error": ErrorDef{
+			DescrStr: "failed to upload a file to S3 bucket",
 		},
-		"s3_file_upload_url_presign_error": Error_def{
-			Descr_str: "failed to get a presigned URL for uploading a file to S3 bucket",
+		"s3_file_upload_url_presign_error": ErrorDef{
+			DescrStr: "failed to get a presigned URL for uploading a file to S3 bucket",
 		},
-		"s3_file_copy_error": Error_def{
-			Descr_str: "failed to copy a file within S3",
+		"s3_file_copy_error": ErrorDef{
+			DescrStr: "failed to copy a file within S3",
 		},
-		"s3_file_download_error": Error_def{
-			Descr_str: "failed to download a file from S3 to a local FS",
+		"s3_file_download_error": ErrorDef{
+			DescrStr: "failed to download a file from S3 to a local FS",
 		},
 
 		//---------------
 		// HTML_PARSING
-		"html_parse_error": Error_def{
-			Descr_str: "parsing of a HTML document failed",
+		"html_parse_error": ErrorDef{
+			DescrStr: "parsing of a HTML document failed",
 		},
 
 		//---------------
 		// LIBRARY_ERROR
-		"library_error": Error_def{
-			Descr_str: "third-party library has failed",
+		"library_error": ErrorDef{
+			DescrStr: "third-party library has failed",
 		},
 
 		//---------------
 		// CRYPTO
-		"crypto_jwt_sign_token_error": Error_def{
-			Descr_str: "failed to crypto-sign JWT token",
+		"crypto_jwt_sign_token_error": ErrorDef{
+			DescrStr: "failed to crypto-sign JWT token",
 		},
-		"crypto_jwt_verify_token_error": Error_def{
-			Descr_str: "failed to crypto-verify JWT token",
+		"crypto_jwt_verify_token_error": ErrorDef{
+			DescrStr: "failed to crypto-verify JWT token",
 		},
-		"crypto_jwt_verify_token_invalid_error": Error_def{
-			Descr_str: "JWT token is invalid",
+		"crypto_jwt_verify_token_invalid_error": ErrorDef{
+			DescrStr: "JWT token is invalid",
 		},
-		"crypto_jwt_parse_token_error": Error_def{
-			Descr_str: "JWT token failed to parse",
+		"crypto_jwt_parse_token_error": ErrorDef{
+			DescrStr: "JWT token failed to parse",
 		},
-		"crypto_ec_recover_pubkey": Error_def{
-			Descr_str: "failed to recovery Pubkey fro signature",
+		"crypto_ec_recover_pubkey": ErrorDef{
+			DescrStr: "failed to recovery Pubkey fro signature",
 		},
-		"crypto_hex_decode": Error_def{
-			Descr_str: "failed to decodes a hex string with 0x prefix",
+		"crypto_hex_decode": ErrorDef{
+			DescrStr: "failed to decodes a hex string with 0x prefix",
 		},
-		"crypto_cert_ca_parse": Error_def{
-			Descr_str: "failed to parse cert CA",
+		"crypto_cert_ca_parse": ErrorDef{
+			DescrStr: "failed to parse cert CA",
 		},
-		"crypto_signature_eth_last_byte_invalid_value": Error_def{
-			Descr_str: "last byte of an ethereum signature does not have the proper V value",
+		"crypto_signature_eth_last_byte_invalid_value": ErrorDef{
+			DescrStr: "last byte of an ethereum signature does not have the proper V value",
 		},
 
 		//---------------
 	}
-	return error_defs_map
+	return errorDefsMap
 }

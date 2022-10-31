@@ -464,7 +464,7 @@ func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 
 	ctx           := context.Background()
 	collNameStr := "gf_images__jobs_running" // pRuntimeSys.Mongo_coll.Name()
-	gfErr        := gf_core.Mongo__insert(p_running_job,
+	gfErr        := gf_core.MongoInsert(p_running_job,
 		collNameStr,
 		map[string]interface{}{
 			"running_job_id_str": p_running_job.Id_str,

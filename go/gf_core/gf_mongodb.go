@@ -45,31 +45,15 @@ import (
 //-------------------------------------------------
 // TRANSACTIONS
 //-------------------------------------------------
-// RUN - CamelCase name, for use by external projects.
-
+// RUN
 func MongoTXrun(p_tx_fun func() *GFerror,
 	pMetaMap       map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
 	pCtx           context.Context,
 	pRuntimeSys    *RuntimeSys) (mongo.Session, *GFerror) {
 	
-	return Mongo__tx_run(p_tx_fun,
-		pMetaMap,
-		p_mongo_client,
-		pCtx,
-		pRuntimeSys)
-}
-
-//-------------------------------------------------
-// RUN
-func Mongo__tx_run(p_tx_fun func() *GFerror,
-	pMetaMap       map[string]interface{}, // data describing the DB write op
-	p_mongo_client *mongo.Client,
-	pCtx           context.Context,
-	pRuntimeSys    *RuntimeSys) (mongo.Session, *GFerror) {
-	
 	// TX_INIT
-	txSession, txOptions, gf_err := Mongo__tx_init(p_mongo_client,
+	txSession, txOptions, gf_err := MongoTXinit(p_mongo_client,
 		pMetaMap,
 		pRuntimeSys)
 	if gf_err != nil {
@@ -121,7 +105,7 @@ func Mongo__tx_run(p_tx_fun func() *GFerror,
 
 //-------------------------------------------------
 // INIT
-func Mongo__tx_init(p_mongo_client *mongo.Client,
+func MongoTXinit(p_mongo_client *mongo.Client,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pRuntimeSys *RuntimeSys) (mongo.Session, *options.TransactionOptions, *GFerror) {
 
@@ -148,16 +132,7 @@ func Mongo__tx_init(p_mongo_client *mongo.Client,
 // OPS
 //-------------------------------------------------
 // MONGO_COUNT
-func MongoCount(p_query bson.M,
-	pMetaMap    map[string]interface{},
-	p_coll      *mongo.Collection,
-	pCtx        context.Context,
-	pRuntimeSys *RuntimeSys) (int64, *GFerror) {
-
-	return Mongo__count(p_query, pMetaMap, p_coll, pCtx, pRuntimeSys)
-}
-
-func Mongo__count(p_query bson.M,
+func MongoCount(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	p_coll      *mongo.Collection,
 	pCtx        context.Context,
@@ -166,7 +141,7 @@ func Mongo__count(p_query bson.M,
 	// FIX!! - externalize this max_time value to some config.
 	opts := options.Count().SetMaxTime(5 * time.Second)
 
-	count_int, err := p_coll.CountDocuments(pCtx, p_query, opts)
+	count_int, err := p_coll.CountDocuments(pCtx, pQuery, opts)
 	if err != nil {
 		gf_err := MongoHandleError("failed to count number of particular docs in DB",
 			"mongodb_count_error",
@@ -179,23 +154,7 @@ func Mongo__count(p_query bson.M,
 
 //-------------------------------------------------
 // MONGO_FIND_LATEST
-func MongoFindLatest(p_query bson.M,
-	p_time_field_name_str string,
-	pMetaMap              map[string]interface{}, // data describing the DB write op
-	p_coll                *mongo.Collection,
-	pCtx                  context.Context,
-	pRuntimeSys           *RuntimeSys) (map[string]interface{}, *GFerror) {
-
-	return Mongo__find_latest(p_query,
-		p_time_field_name_str,
-		pMetaMap,
-		p_coll,
-		pCtx,
-		pRuntimeSys)
-}
-
-// MONGO_FIND_LATEST
-func Mongo__find_latest(p_query bson.M,
+func MongoFindLatest(pQuery bson.M,
 	p_time_field_name_str string,
 	pMetaMap              map[string]interface{}, // data describing the DB write op
 	p_coll                *mongo.Collection,
@@ -207,7 +166,7 @@ func Mongo__find_latest(p_query bson.M,
 	find_opts.SetSort(map[string]interface{}{p_time_field_name_str: -1})
 	find_opts.SetLimit(1)
 	
-	cursor, gf_err := Mongo__find(p_query,
+	cursor, gf_err := MongoFind(pQuery,
 		find_opts,
 		pMetaMap,
 		p_coll,
@@ -241,30 +200,14 @@ func Mongo__find_latest(p_query bson.M,
 
 //-------------------------------------------------
 // FIND
-func MongoFind(p_query bson.M,
+func MongoFind(pQuery bson.M,
 	p_opts      *options.FindOptions,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	p_coll      *mongo.Collection,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) (*mongo.Cursor, *GFerror) {
 
-	return Mongo__find(p_query,
-		p_opts,
-		pMetaMap,
-		p_coll,
-		pCtx,
-		pRuntimeSys)
-}
-
-// FIND
-func Mongo__find(p_query bson.M,
-	p_opts      *options.FindOptions,
-	pMetaMap    map[string]interface{}, // data describing the DB write op
-	p_coll      *mongo.Collection,
-	pCtx        context.Context,
-	pRuntimeSys *RuntimeSys) (*mongo.Cursor, *GFerror) {
-
-	cur, err := p_coll.Find(pCtx, p_query, p_opts)
+	cur, err := p_coll.Find(pCtx, pQuery, p_opts)
 	if err != nil {
 		
 		// NO_DOCUMENTS
@@ -284,13 +227,13 @@ func Mongo__find(p_query bson.M,
 }
 
 //-------------------------------------------------
-func MongoDelete(p_query bson.M,
+func MongoDelete(pQuery bson.M,
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op
 	pCtx         context.Context,
 	pRuntimeSys  *RuntimeSys) *GFerror {
 
-	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).DeleteMany(pCtx, p_query)
+	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).DeleteMany(pCtx, pQuery)
 	if err != nil {
 		gf_err := MongoHandleError("failed to delete documents in the DB",
 			"mongodb_delete_error",
@@ -382,26 +325,7 @@ func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 
 //-------------------------------------------------
 // INSERT
-
-func MongoInsert(pRecord interface{},
-	pCollNameStr string,
-	pMetaMap     map[string]interface{}, // data describing the DB write op 
-	pCtx         context.Context,
-	pRuntimeSys  *RuntimeSys) *GFerror {
-
-	gfErr := Mongo__insert(pRecord,
-		pCollNameStr,
-		pMetaMap,
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	return nil
-}
-
-func Mongo__insert(p_record interface{},
+func MongoInsert(p_record interface{},
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op 
 	pCtx         context.Context,
@@ -486,7 +410,7 @@ func MongoEnsureIndex(pIndexesKeysLst [][]string,
 //--------------------------------------------------------------------
 // COLLECTIONS
 //--------------------------------------------------------------------
-func Mongo__coll_exists(pCollNameStr string,
+func MongoCollExists(pCollNameStr string,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) (bool, *GFerror) {
 
@@ -512,7 +436,7 @@ func Mongo__coll_exists(pCollNameStr string,
 // UTILS
 //--------------------------------------------------------------------
 // CONNECT_NEW
-func Mongo__connect_new(p_mongo_server_url_str string,
+func MongoConnectNew(p_mongo_server_url_str string,
 	p_db_name_str       string,
 	p_tls_custom_config *tls.Config,
 	pRuntimeSys         *RuntimeSys) (*mongo.Database, *mongo.Client, *GFerror) {
@@ -606,15 +530,14 @@ func MongoHandleError(p_user_msg_str string,
 
 //--------------------------------------------------------------------
 // START
-func Mongo__start(p_mongodb_bin_path_str string,
+func MongoStart(p_mongodb_bin_path_str string,
 	p_mongodb_port_str          int,
 	p_mongodb_data_dir_path_str string,
 	p_mongodb_log_file_path_str string,
 	p_sudo_bool                 bool,
 	pLogFun                     func(string, string)) error {
-	pLogFun("FUN_ENTER", "gf_mongodb.Mongo__start()")
-	pLogFun("INFO",      "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
-	pLogFun("INFO",      "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
+	pLogFun("INFO", "p_mongodb_data_dir_path_str - "+p_mongodb_data_dir_path_str)
+	pLogFun("INFO", "p_mongodb_log_file_path_str - "+p_mongodb_log_file_path_str)
 
 	if _, err := os.Stat(p_mongodb_log_file_path_str); os.IsNotExist(err) {
 		pLogFun("ERROR", fmt.Sprintf("supplied log_file path is not a file - %s", p_mongodb_log_file_path_str))
@@ -656,69 +579,3 @@ func Mongo__start(p_mongodb_bin_path_str string,
 
 	return nil
 }
-
-//--------------------------------------------------------------------
-/*func Mongo__connect(p_mongodb_host_str string,
-	p_mongodb_db_name_str string,
-	pLogFun             func(string, string)) *mgo.Database {
-	pLogFun("FUN_ENTER", "gf_mongodb.Mongo__connect()")
-	pLogFun("INFO",      fmt.Sprintf("p_mongodb_host_str    - %s", p_mongodb_host_str))
-	pLogFun("INFO",      fmt.Sprintf("p_mongodb_db_name_str - %s", p_mongodb_db_name_str))
-	
-	session, err := mgo.DialWithTimeout(p_mongodb_host_str, time.Second * 90)
-	if err != nil {
-		panic(err)
-	}
-
-	//--------------------
-	// IMPORTANT!! - writes are waited for to confirm them.
-	// 	   			 in unsafe mode writes are fire-and-forget with no error checking. 
-	//               this mode is faster, since no confirmation is expected.
-	session.SetSafe(&mgo.Safe{})
-
-	// Monotonic consistency - will read from a slave if possible, for better load distribution.
-	//                         once the first write happens the connection is switched to the master.
-	session.SetMode(mgo.Monotonic, true)
-
-	//--------------------
-
-	db := session.DB(p_mongodb_db_name_str)
-	return db
-}*/
-
-/*//--------------------------------------------------------------------
-func Mongo__get_rs_members_info(p_mongodb_primary_host_str string,
-	pLogFun func(string, string)) ([]map[string]interface{}, error) {
-	// pLogFun("FUN_ENTER", "gf_mongodb.Mongo__get_rs_members_info()")
-	// pLogFun("INFO",      p_mongodb_primary_host_str)
-
-	mongo_client__cmd_str := fmt.Sprintf("mongo --host %s --quiet --eval 'JSON.stringify(rs.status())'", p_mongodb_primary_host_str)
-
-	out, err := exec.Command("sh", "-c",mongo_client__cmd_str).Output()
-
-	//---------------
-	// JSON
-	var i map[string]interface{}
-    err = json.Unmarshal([]byte(out), &i)
-    if err != nil {
-    	return nil, err
-	}
-	
-    //---------------
-
-	rs_members_lst := i["members"].([]map[string]interface{})
-	var rs_members_info_lst []map[string]interface{}
-
-	for _, m := range rs_members_lst {
-
-		member_info_map := map[string]interface{} {
-			"host_port_str": m["name"].(string),
-			"state_str":     m["stateStr"].(string),
-			"uptime_int":    m["uptime"].(int),
-		}
-
-		rs_members_info_lst = append(rs_members_info_lst, member_info_map)
-	}
-
-	return rs_members_info_lst, nil
-}*/

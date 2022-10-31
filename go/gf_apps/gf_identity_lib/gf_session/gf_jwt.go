@@ -60,7 +60,7 @@ func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	// JWT_GENERATE
-	jwt_secret_key_val_str := GF_jwt_secret_key_val(gf_core.Str_random())
+	jwt_secret_key_val_str := GF_jwt_secret_key_val(gf_core.StrRandom())
 	jwt_token_val, gf_err := jwtGenerate(p_user_identifier_str,
 		jwt_secret_key_val_str,
 		creation_unix_time_f,
@@ -136,7 +136,7 @@ func jwtGenerateID(pUserIdentifierStr string,
 	fields_for_id_lst := []string{
 		pUserIdentifierStr,
 	}
-	gf_id_str := gf_core.ID__create(fields_for_id_lst,
+	gf_id_str := gf_core.IDcreate(fields_for_id_lst,
 		p_creation_unix_time_f)
 	return gf_id_str
 }
@@ -214,7 +214,7 @@ func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
 
 	coll_name_str := "gf_auth_jwt"
 
-	gf_err := gf_core.Mongo__insert(p_jwt_secret_key,
+	gf_err := gf_core.MongoInsert(p_jwt_secret_key,
 		coll_name_str,
 		map[string]interface{}{
 			"id_str":              p_jwt_secret_key.Id_str,
@@ -238,7 +238,7 @@ func db__jwt_secret_key__get(p_user_identifier_str string,
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
 	
-	db_cursor, gf_err := gf_core.Mongo__find(bson.M{
+	db_cursor, gf_err := gf_core.MongoFind(bson.M{
 			"user_identifier_str": string(p_user_identifier_str),
 			"deleted_bool":        false,
 		},

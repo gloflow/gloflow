@@ -75,10 +75,10 @@ func User_event__parse_input(p_req *http.Request,
 	//--------------------
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to parse json http input for user_event",
+		gfErr := gf_core.ErrorCreate("failed to parse json http input for user_event",
 			"json_unmarshal_error",
 			nil, err, "gf_analytics", p_runtime_sys)
-		return nil, "", gf_err
+		return nil, "", gfErr
 	}
 	return &input, session_id_str, nil
 }
@@ -111,24 +111,24 @@ func User_event__create(p_input *Gf_user_event_input,
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err        := gf_core.Mongo__insert(gf_user_event,
+	gfErr         := gf_core.MongoInsert(gf_user_event,
 		coll_name_str,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to insert a user_event into the DB",
 		},
 		ctx,
 		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	/*err := p_runtime_sys.Mongodb_coll.Insert(gf_user_event)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to insert a user_event in mongodb",
+		gfErr := gf_core.MongoHandleError("failed to insert a user_event in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{},
 			err, "gf_analytics", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}*/
 		
 	return nil

@@ -139,7 +139,7 @@ func DownloadFile(pImageURLstr string,
 
 		ctx := context.Background()
 		collNameStr := pRuntimeSys.Mongo_coll.Name()
-		gfErr := gf_core.Mongo__insert(fetch_error,
+		gfErr := gf_core.MongoInsert(fetch_error,
 			collNameStr,
 			map[string]interface{}{
 				"image_url_str":             pImageURLstr,

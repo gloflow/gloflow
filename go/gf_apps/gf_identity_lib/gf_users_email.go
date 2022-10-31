@@ -196,7 +196,7 @@ func usersEmailGetConfirmationCode(p_user_name_str gf_identity_core.GFuserName,
 
 //---------------------------------------------------
 func users_email__generate_confirmation_code() string {
-	c_str := fmt.Sprintf("%s:%s", gf_core.Str_random(), gf_core.Str_random())
+	c_str := fmt.Sprintf("%s:%s", gf_core.StrRandom(), gf_core.StrRandom())
 	return c_str
 }
 

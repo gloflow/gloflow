@@ -58,10 +58,10 @@ type GFerror struct {
 }
 
 //-------------------------------------------------
-func Panic__check_and_handle(p_user_msg_str string,
+func Panic__check_and_handle(pUserMsgStr string,
 	p_panic_data_map     map[string]interface{},
 	p_oncomplete_fn      func(),
-	p_subsystem_name_str string,
+	pSubsystemNameStr string,
 	pRuntimeSys          *RuntimeSys) {
 
 	// call to recover stops the unwinding and returns the argument passed to panic
@@ -87,7 +87,7 @@ func Panic__check_and_handle(p_user_msg_str string,
 			sentry.WithScope(func(scope *sentry.Scope) {
 
 				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.Names_prefix_str), pRuntimeSys.Service_name_str)
-				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), p_subsystem_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), pSubsystemNameStr)
 				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.Names_prefix_str), "panic_error")
 
 				for k, v := range p_panic_data_map {
@@ -113,20 +113,20 @@ func Panic__check_and_handle(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func ErrorCreateWithHook(p_user_msg_str string,
-	p_error_type_str     string,
-	p_error_data_map     map[string]interface{},
-	p_error              error,
-	p_subsystem_name_str string,
+func ErrorCreateWithHook(pUserMsgStr string,
+	pErrorTypeStr          string,
+	pErrorDataMap          map[string]interface{},
+	pError                 error,
+	pSubsystemNameStr      string,
 	pSkipStackFramesNumInt int,
-	p_hook_fun           func(*GFerror) map[string]interface{},
-	pRuntimeSys          *RuntimeSys) *GFerror {
+	p_hook_fun             func(*GFerror) map[string]interface{},
+	pRuntimeSys            *RuntimeSys) *GFerror {
 
-	gfErr := ErrorCreateWithStackSkip(p_user_msg_str,
-		p_error_type_str,
-		p_error_data_map,
-		p_error,
-		p_subsystem_name_str,
+	gfErr := ErrorCreateWithStackSkip(pUserMsgStr,
+		pErrorTypeStr,
+		pErrorDataMap,
+		pError,
+		pSubsystemNameStr,
 		3,
 		pRuntimeSys)
 
@@ -135,21 +135,21 @@ func ErrorCreateWithHook(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func ErrorCreateWithStackSkip(p_user_msg_str string,
-	p_error_type_str     string,
-	p_error_data_map     map[string]interface{},
-	p_error              error,
-	p_subsystem_name_str string,
+func ErrorCreateWithStackSkip(pUserMsgStr string,
+	pErrorTypeStr          string,
+	pErrorDataMap          map[string]interface{},
+	pError                 error,
+	pSubsystemNameStr      string,
 	pSkipStackFramesNumInt int,
-	pRuntimeSys          *RuntimeSys) *GFerror {
+	pRuntimeSys            *RuntimeSys) *GFerror {
 	
-	error_defs_map := error__get_defs()
+	error_defs_map := errorGetDefs()
 	
-	gf_err := ErrorCreate_with_defs(p_user_msg_str,
-		p_error_type_str,
-		p_error_data_map,
-		p_error,
-		p_subsystem_name_str,
+	gf_err := ErrorCreateWithDefs(pUserMsgStr,
+		pErrorTypeStr,
+		pErrorDataMap,
+		pError,
+		pSubsystemNameStr,
 		error_defs_map,
 		pSkipStackFramesNumInt,
 		pRuntimeSys)
@@ -158,23 +158,23 @@ func ErrorCreateWithStackSkip(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func ErrorCreate(p_user_msg_str string,
-	p_error_type_str     string,
-	p_error_data_map     map[string]interface{},
-	p_error              error,
-	p_subsystem_name_str string,
-	pRuntimeSys          *RuntimeSys) *GFerror {
+func ErrorCreate(pUserMsgStr string,
+	pErrorTypeStr     string,
+	pErrorDataMap     map[string]interface{},
+	pError            error,
+	pSubsystemNameStr string,
+	pRuntimeSys       *RuntimeSys) *GFerror {
 
-	error_defs_map := error__get_defs()
+	error_defs_map := errorGetDefs()
 	
-	gf_err := ErrorCreate_with_defs(p_user_msg_str,
-		p_error_type_str,
-		p_error_data_map,
-		p_error,
-		p_subsystem_name_str,
+	gf_err := ErrorCreateWithDefs(pUserMsgStr,
+		pErrorTypeStr,
+		pErrorDataMap,
+		pError,
+		pSubsystemNameStr,
 		error_defs_map,
 
-		// IMPORTANT!! - ErrorCreate_with_defs() is 2 stack levels away from the caller
+		// IMPORTANT!! - ErrorCreateWithDefs() is 2 stack levels away from the caller
 		//               of ErrorCreate() so its important to account for that to get 
 		//               the proper caller information.
 		2, // pSkipStackFramesNumInt
@@ -184,12 +184,12 @@ func ErrorCreate(p_user_msg_str string,
 }
 
 //-------------------------------------------------
-func ErrorCreate_with_defs(p_user_msg_str string,
-	p_error_type_str     string,
-	p_error_data_map     map[string]interface{},
-	p_error              error,
-	p_subsystem_name_str string,
-	p_err_defs_map       map[string]Error_def,
+func ErrorCreateWithDefs(pUserMsgStr string,
+	pErrorTypeStr     string,
+	pErrorDataMap     map[string]interface{},
+	pError            error,
+	pSubsystemNameStr string,
+	pErrDefsMap       map[string]ErrorDef,
 
 	// IMPORTANT!! - number of stack frames to skip before recording. without skipping 
 	//               we would get info on this function, not its caller which is where
@@ -201,8 +201,8 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 	
 
 	creation_unix_time_f := float64(time.Now().UnixNano()) / 1000000000.0
-	id_str               := fmt.Sprintf("%s:%f", p_error_type_str, creation_unix_time_f)
-	stack_trace_str      := string(debug.Stack())
+	idStr                := fmt.Sprintf("%s:%f", pErrorTypeStr, creation_unix_time_f)
+	stackTraceStr        := string(debug.Stack())
 
 	// // IMPORTANT!! - number of stack frames to skip before recording. without skipping 
 	// //               we would get info on this function, not its caller which is where
@@ -210,36 +210,36 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 	// skip_stack_frames_num_int := 1
 
 	// https://golang.org/pkg/runtime/#Caller
-	program_counter, file_str, line_num_int,_ := runtime.Caller(pSkipStackFramesNumInt)
+	programCounter, fileStr, line_num_int,_ := runtime.Caller(pSkipStackFramesNumInt)
 
 	// FuncForPC - returns a *Func describing the function that contains the given program counter address
-	function        := runtime.FuncForPC(program_counter)
+	function        := runtime.FuncForPC(programCounter)
 	functionNameStr := function.Name()
 
 	//--------------------
 	// ERROR_DEF
 
-	errorDef, ok := p_err_defs_map[p_error_type_str]
+	errorDef, ok := pErrDefsMap[pErrorTypeStr]
 	if !ok {
-		panic(fmt.Sprintf("unknown gf_error type encountered - %s", p_error_type_str))
+		panic(fmt.Sprintf("unknown gf_error type encountered - %s", pErrorTypeStr))
 	}
 
 	//--------------------
 
-	gf_error := GFerror{
-		Id_str:               id_str,
+	gfErr := GFerror{
+		Id_str:               idStr,
 		T_str:                "gf_error",
 		Creation_unix_time_f: creation_unix_time_f,
-		Type_str:             p_error_type_str,
-		User_msg_str:         p_user_msg_str,
-		Data_map:             p_error_data_map,
-		Descr_str:            errorDef.Descr_str,
-		Error:                p_error,
+		Type_str:             pErrorTypeStr,
+		User_msg_str:         pUserMsgStr,
+		Data_map:             pErrorDataMap,
+		Descr_str:            errorDef.DescrStr,
+		Error:                pError,
 		Service_name_str:     pRuntimeSys.Service_name_str,
-		Subsystem_name_str:   p_subsystem_name_str,
-		Stack_trace_str:      stack_trace_str,
+		Subsystem_name_str:   pSubsystemNameStr,
+		Stack_trace_str:      stackTraceStr,
 		Function_name_str:    functionNameStr,
-		File_str:             file_str,
+		File_str:             fileStr,
 		Line_num_int:         line_num_int,
 	}
 
@@ -251,28 +251,27 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 
 	//--------------------
 	// VIEW
-	// fmt.Printf("\n\n  %s ------------- %s\n\n\n", red("FAILED FUNCTION CALL"), yellow(function_name_str))
 
 	fmt.Printf("GF_ERROR:\n")
-	fmt.Printf("file           - %s\n", yellowBg(gf_error.File_str))
-	fmt.Printf("line_num       - %s\n", yellowBg(gf_error.Line_num_int))
-	fmt.Printf("user_msg       - %s\n", yellowBg(gf_error.User_msg_str))
-	fmt.Printf("id             - %s\n", yellow(gf_error.Id_str))
-	fmt.Printf("type           - %s\n", yellow(gf_error.Type_str))
-	fmt.Printf("service_name   - %s\n", yellow(gf_error.Service_name_str))
-	fmt.Printf("subsystem_name - %s\n", yellow(gf_error.Subsystem_name_str))
-	fmt.Printf("function_name  - %s\n", yellow(gf_error.Function_name_str))
-	fmt.Printf("data           - %s\n", yellow(gf_error.Data_map))
-	fmt.Printf("error          - %s\n", red(p_error))
-	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gf_error.Stack_trace_str))
+	fmt.Printf("file           - %s\n", yellowBg(gfErr.File_str))
+	fmt.Printf("line_num       - %s\n", yellowBg(gfErr.Line_num_int))
+	fmt.Printf("user_msg       - %s\n", yellowBg(gfErr.User_msg_str))
+	fmt.Printf("id             - %s\n", yellow(gfErr.Id_str))
+	fmt.Printf("type           - %s\n", yellow(gfErr.Type_str))
+	fmt.Printf("service_name   - %s\n", yellow(gfErr.Service_name_str))
+	fmt.Printf("subsystem_name - %s\n", yellow(gfErr.Subsystem_name_str))
+	fmt.Printf("function_name  - %s\n", yellow(gfErr.Function_name_str))
+	fmt.Printf("data           - %s\n", yellow(gfErr.Data_map))
+	fmt.Printf("error          - %s\n", red(pError))
+	fmt.Printf("%s:\n%s\n", cyan("STACK TRACE"), green(gfErr.Stack_trace_str))
 
 	fmt.Printf("\n\n")
 
-	var names_prefix_str string
+	var namesPrefixStr string
 	if pRuntimeSys.Names_prefix_str != "" {
-		names_prefix_str = pRuntimeSys.Names_prefix_str
+		namesPrefixStr = pRuntimeSys.Names_prefix_str
 	} else {
-		names_prefix_str = "gf"
+		namesPrefixStr = "gf"
 	}
 
 	//--------------------
@@ -280,9 +279,9 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 	if pRuntimeSys.Errors_send_to_mongodb_bool {
 		
 		ctx := context.Background()
-		errs_db_coll_name_str := fmt.Sprintf("%s_errors", names_prefix_str)
+		errsDBcollNameStr := fmt.Sprintf("%s_errors", namesPrefixStr)
 
-		_, err := pRuntimeSys.Mongo_db.Collection(errs_db_coll_name_str).InsertOne(ctx, gf_error)
+		_, err := pRuntimeSys.Mongo_db.Collection(errsDBcollNameStr).InsertOne(ctx, gfErr)
 		if err != nil {
 
 		}
@@ -300,26 +299,25 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 
+			scope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.Service_name_str)
+			scope.SetTag(fmt.Sprintf("%s_error.subsystem_name", namesPrefixStr), gfErr.Subsystem_name_str)
+			scope.SetTag(fmt.Sprintf("%s_error.type",           namesPrefixStr), gfErr.Type_str)
 
-			scope.SetTag(fmt.Sprintf("%s_error.service_name",   names_prefix_str), gf_error.Service_name_str)
-			scope.SetTag(fmt.Sprintf("%s_error.subsystem_name", names_prefix_str), gf_error.Subsystem_name_str)
-			scope.SetTag(fmt.Sprintf("%s_error.type",           names_prefix_str), gf_error.Type_str)
-
-			for k, v := range gf_error.Data_map {
-				scope.SetTag(fmt.Sprintf("%s_error.%s", names_prefix_str, k),
+			for k, v := range gfErr.Data_map {
+				scope.SetTag(fmt.Sprintf("%s_error.%s", namesPrefixStr, k),
 					fmt.Sprint(v))
 			}
 
 			// scope.SetLevel(sentry.LevelWarning);
 
-			if p_error != nil {
-				sentry.CaptureException(p_error)
+			if pError != nil {
+				sentry.CaptureException(pError)
 			} else {
 
 				// IMPORTANT!! - in case the GF_error doesnt have a correspoting
 				//               golang error. this is for GF error conditions that are 
 				//               not caused by a golang error.
-				err := errors.New(fmt.Sprintf("%s error - %s", strings.ToUpper(names_prefix_str), gf_error.Type_str))
+				err := errors.New(fmt.Sprintf("%s error - %s", strings.ToUpper(namesPrefixStr), gfErr.Type_str))
 				sentry.CaptureException(err)
 			}
 		})
@@ -336,7 +334,7 @@ func ErrorCreate_with_defs(p_user_msg_str string,
 
 	//--------------------
 
-	return &gf_error
+	return &gfErr
 }
 
 //-------------------------------------------------

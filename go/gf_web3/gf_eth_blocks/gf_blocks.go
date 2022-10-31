@@ -413,8 +413,8 @@ func Get__pipeline(p_block_num_uint uint64,
 
 	header, err := pEthRPCclient.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to get block Header by number, from eth json-rpc API",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
@@ -468,8 +468,8 @@ func Get__pipeline(p_block_num_uint uint64,
 	block, err := pEthRPCclient.BlockByNumber(span__get_block.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to get block by number, from eth json-rpc API",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_uint,},
 			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
@@ -521,7 +521,7 @@ func Get__pipeline(p_block_num_uint uint64,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str     := gf_core.Hash_val_sha256(gf_block)
+	db_id_hex_str     := gf_core.HashValSha256(gf_block)
 	creationTimeUNIXf := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)

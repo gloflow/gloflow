@@ -130,8 +130,8 @@ func Eth_contract__get_opcodes(p_bytecode_hex_str string,
 	// DISASSEMBLE
 	output_lst, err := eth_asm.Disassemble(code_bytes_lst)
 	if err != nil {
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to disassemble contract hex bytecode",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to disassemble contract hex bytecode",
 			"eth_contract__disassemble",
 			map[string]interface{}{
 				"bytecode_hex_str": p_bytecode_hex_str,

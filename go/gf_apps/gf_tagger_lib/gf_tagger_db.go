@@ -150,7 +150,7 @@ func db__get_posts_with_tag(p_tag_str string,
 	find_opts.SetSkip(int64(p_page_index_int))
     find_opts.SetLimit(int64(p_page_size_int))
 
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"t":        "post",
 			"tags_lst": bson.M{"$in": []string{p_tag_str,}},
 		},

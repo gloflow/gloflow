@@ -220,7 +220,7 @@ func verify_post_element(p_post_element_info_map map[string]interface{},
 		// FIX!! - new versions of post_element_info_map format use extern_url_str
 		//         instead of url_str. so when all post"s in the DB are updated to this format
 		//         remove p_post_element_info_map has_key "url_str" check from this assert
-		if !(gf_core.Map_has_key(p_post_element_info_map,"url_str") || gf_core.Map_has_key(p_post_element_info_map,"extern_url_str")) {
+		if !(gf_core.MapHasKey(p_post_element_info_map,"url_str") || gf_core.MapHasKey(p_post_element_info_map,"extern_url_str")) {
 		
 			gf_err := gf_core.ErrorCreate("p_post_element_info_map doesnt contain url_str|extern_url_str",
 				"verify__missing_key_error",

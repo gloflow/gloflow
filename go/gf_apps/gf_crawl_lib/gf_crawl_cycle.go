@@ -150,7 +150,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 
 	ctx           := context.Background()
 	coll_name_str := "gf_crawl"
-	gfErr         = gf_core.Mongo__insert(cycle_run,
+	gfErr         = gf_core.MongoInsert(cycle_run,
 		coll_name_str,
 		map[string]interface{}{
 			"cycle_run__id_str":  cycle_run__id_str,

@@ -108,7 +108,7 @@ func RuntimeGet(p_config *GF_config,
 	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
 	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
-	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+	mongodb_db, _, gf_err := gf_core.MongoConnectNew(mongodb_url_str,
 		p_config.Mongodb_db_name_str,
 		nil,
 		p_runtime_sys)

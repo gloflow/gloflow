@@ -291,7 +291,7 @@ func HTTPputFile(p_target_url_str string,
 }
 
 //-------------------------------------------------
-func HTTPinitStaticServingWithMux(p_url_base_str string,
+func HTTPinitStaticServingWithMux(pURLbaseStr string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
 	pRuntimeSys        *RuntimeSys) {
@@ -299,17 +299,17 @@ func HTTPinitStaticServingWithMux(p_url_base_str string,
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
 	//               if the spec here ends with "/"
-	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
-	p_mux.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+	urlStr := fmt.Sprintf("%s/static/", pURLbaseStr)
+	p_mux.HandleFunc(urlStr, func(pResp http.ResponseWriter, pReq *http.Request) {
 
 		HTTPserveFile(p_local_dir_path_str,
-			url_str,
-			p_req, p_resp, pRuntimeSys)
+			urlStr,
+			pReq, pResp, pRuntimeSys)
 	})
 }
 
 //-------------------------------------------------
-func HTTPinitStaticServing(p_url_base_str string,
+func HTTPinitStaticServing(pURLbaseStr string,
 	pRuntimeSys *RuntimeSys) {
 	
 	local_dir_str := fmt.Sprintf("./static")
@@ -317,15 +317,15 @@ func HTTPinitStaticServing(p_url_base_str string,
 	// IMPORTANT!! - trailing "/" in this url spec is important, since the desired urls that should
 	//               match this are /*/static/some_further_text, and those will only match
 	//               if the spec here ends with "/"
-	url_str := fmt.Sprintf("%s/static/", p_url_base_str)
-	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
+	urlStr := fmt.Sprintf("%s/static/", pURLbaseStr)
+	http.HandleFunc(urlStr, func(pResp http.ResponseWriter, pReq *http.Request) {
 
 		HTTPserveFile(local_dir_str,
-			url_str,
-			p_req, p_resp, pRuntimeSys)
+			urlStr,
+			pReq, pResp, pRuntimeSys)
 
-		/*if p_req.Method == "GET" {
-			path_str := p_req.URL.Path
+		/*if pReq.Method == "GET" {
+			path_str := pReq.URL.Path
 
 			//remove url_base
 			file_path_str      := strings.Replace(path_str, url_str, "", 1) // "1" - just replace one occurance
@@ -333,80 +333,80 @@ func HTTPinitStaticServing(p_url_base_str string,
 			file_mime_type_str := mime.TypeByExtension(file_ext_str)
 			local_path_str     := fmt.Sprintf("./static/%s", file_path_str)
 
-			p_resp.Header().Set("Content-Type", file_mime_type_str)
+			pResp.Header().Set("Content-Type", file_mime_type_str)
 
 			pRuntimeSys.LogFun("INFO", "file_path_str  - "+file_path_str)
 			pRuntimeSys.LogFun("INFO", "local_path_str - "+local_path_str)
 
-		    http.ServeFile(p_resp, p_req, local_path_str)
+		    http.ServeFile(pResp, pReq, local_path_str)
 		}*/
 	})
 }
 
 //-------------------------------------------------
-func HTTPserveFile(p_local_dir_str string,
-	p_url_str     string,
-	p_req         *http.Request,
-	p_resp        http.ResponseWriter,
+func HTTPserveFile(pLocalDirStr string,
+	pURLstr     string,
+	pReq        *http.Request,
+	pResp       http.ResponseWriter,
 	pRuntimeSys *RuntimeSys) {
 
-	if p_req.Method == "GET" {
-		path_str := p_req.URL.Path
+	if pReq.Method == "GET" {
+		path_str := pReq.URL.Path
 
 		// remove url_base
-		file_path_str      := strings.Replace(path_str, p_url_str, "", 1) // "1" - just replace one occurance
-		file_ext_str       := filepath.Ext(file_path_str)
-		file_mime_type_str := mime.TypeByExtension(file_ext_str)
-		local_path_str     := fmt.Sprintf("%s/%s", p_local_dir_str, file_path_str)
+		filePathStr     := strings.Replace(path_str, pURLstr, "", 1) // "1" - just replace one occurance
+		fileExtStr      := filepath.Ext(filePathStr)
+		fileMimeTypeStr := mime.TypeByExtension(fileExtStr)
+		localPathStr    := fmt.Sprintf("%s/%s", pLocalDirStr, filePathStr)
 
-		p_resp.Header().Set("Content-Type", file_mime_type_str)
+		pResp.Header().Set("Content-Type", fileMimeTypeStr)
 
-		pRuntimeSys.LogFun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", file_path_str, local_path_str))
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", filePathStr, localPathStr))
 
-		http.ServeFile(p_resp, p_req, local_path_str)
+		http.ServeFile(pResp, pReq, localPathStr)
 	}
 }
 
 //-------------------------------------------------
-func HTTPserializeCookies(p_cookies_lst []*http.Cookie,
+func HTTPserializeCookies(pCookiesLst []*http.Cookie,
 	pRuntimeSys *RuntimeSys) string {
 
 	buffer := bytes.NewBufferString("")
-	for _, cookie := range p_cookies_lst {
-		cookie_str := cookie.Raw
-		buffer.WriteString("; "+cookie_str)
+	for _, cookie := range pCookiesLst {
+		cookieStr := cookie.Raw
+		buffer.WriteString("; "+cookieStr)
 	}
-	cookies_str := buffer.String()
-	return cookies_str
+	cookiesStr := buffer.String()
+	return cookiesStr
 }
 
 //-------------------------------------------------
-func HTTPinitSSE(p_resp http.ResponseWriter,
+func HTTPinitSSE(pResp http.ResponseWriter,
 	pRuntimeSys *RuntimeSys) (http.Flusher, *GFerror) {
 
-	flusher, ok := p_resp.(http.Flusher)
+	flusher, ok := pResp.(http.Flusher)
 	if !ok {
-		err_msg_str := "GF - SSE streaming not supported by this server"
-		http.Error(p_resp, err_msg_str, http.StatusInternalServerError)
+		errMsgStr := "GF - SSE streaming not supported by this server"
+		http.Error(pResp, errMsgStr, http.StatusInternalServerError)
 
-		gf_err := ErrorCreate(err_msg_str,
+		gfErr := ErrorCreate(errMsgStr,
 			"http_server_flusher_not_supported_error",
 			nil, nil, "gf_core", pRuntimeSys)
 
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	// IMPORTANT!! - listening for the closing of the http connections
-	notify := p_resp.(http.CloseNotifier).CloseNotify()
+	notify := pResp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
 		pRuntimeSys.LogFun("INFO", "HTTP SSE CONNECTION CLOSED")
 	}()
 
-	p_resp.Header().Set("Content-Type",                "text/event-stream")
-	p_resp.Header().Set("Cache-Control",               "no-cache")
-	p_resp.Header().Set("Connection",                  "keep-alive")
-	p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
+	pResp.Header().Set("Content-Type",                "text/event-stream")
+	pResp.Header().Set("Cache-Control",               "no-cache")
+	pResp.Header().Set("Connection",                  "keep-alive")
+	pResp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
 	flusher.Flush()
 
@@ -424,48 +424,43 @@ func HTTPgetStreamingResponse(pURLstr string,
 	client   := &http.Client{}
     resp,err := client.Do(req)
     if err != nil {
-    	gf_err := ErrorCreate("http get_streaming_response failed to execute HTTP request to fetch a url",
+    	gfErr := ErrorCreate("http get_streaming_response failed to execute HTTP request to fetch a url",
 			"http_client_req_error",
 			map[string]interface{}{"url_str": pURLstr,},
 			err, "gf_core", pRuntimeSys)
-    	return nil,gf_err
+    	return nil, gfErr
     }
 
-	// resp, err := http.Get(pURLstr)
-	// if err != nil {
-	//	return nil,err
-	// }
-
-	data_lst := []map[string]interface{}{}
-	reader   := bufio.NewReader(resp.Body)
+	dataLst := []map[string]interface{}{}
+	reader  := bufio.NewReader(resp.Body)
 	for {
-	    line_lst, err := reader.ReadBytes('\n')
+	    lineLst, err := reader.ReadBytes('\n')
 	    if err != nil {
-	    	gf_err := ErrorCreate("failed to read a line of SSE streaming response from a server url",
+	    	gfErr := ErrorCreate("failed to read a line of SSE streaming response from a server url",
 				"io_reader_error",
 				map[string]interface{}{"url_str": pURLstr,},
 				err, "gf_core", pRuntimeSys)
-	    	return nil,gf_err
+	    	return nil, gfErr
 	    }
 	    
-	    line_str := string(line_lst)
+	    line_str := string(lineLst)
 
 	    if strings.HasPrefix(line_str,"data: ") {
 	    	clean_line_str := strings.Replace(line_str, "data: ", "", 1)
 
-	    	data_map := map[string]interface{}{}
-	    	err      := json.Unmarshal([]byte(clean_line_str), &data_map)
+	    	dataMap := map[string]interface{}{}
+	    	err     := json.Unmarshal([]byte(clean_line_str), &dataMap)
 
 	    	if err != nil {
-	    		gf_err := ErrorCreate("http get_streaming_response failed to parse JSON response",
+	    		gfErr := ErrorCreate("http get_streaming_response failed to parse JSON response",
 					"json_decode_error",
 					map[string]interface{}{"url_str": pURLstr,},
 					err, "gf_core", pRuntimeSys)
-	    		return nil, gf_err
+	    		return nil, gfErr
 	    	}
 
-	    	data_lst = append(data_lst, data_map)
+	    	dataLst = append(dataLst, dataMap)
 	    }
 	}
-	return &data_lst, nil
+	return &dataLst, nil
 }

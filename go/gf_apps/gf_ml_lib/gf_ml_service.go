@@ -68,7 +68,7 @@ func Run_service(p_service_info *GF_service_info,
 		LogFun:           pLogFun,
 	}
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(p_service_info.Mongodb_host_str,
+	mongo_db, _, gf_err := gf_core.MongoConnectNew(p_service_info.Mongodb_host_str,
 		p_service_info.Mongodb_db_name_str,
 		nil,
 		runtimeSys)

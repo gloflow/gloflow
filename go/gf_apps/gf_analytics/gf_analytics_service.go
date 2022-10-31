@@ -54,7 +54,7 @@ func main() {
 		LogFun:           logFun,
 	}
 
-	mongo_db, gf_err := gf_core.Mongo__connect_new(mongodb_host_str, mongodb_db_name_str, runtime_sys)
+	mongo_db, gf_err := gf_core.MongoConnectNew(mongodb_host_str, mongodb_db_name_str, runtime_sys)
 	if gf_err != nil {
 		panic(-1)
 	}

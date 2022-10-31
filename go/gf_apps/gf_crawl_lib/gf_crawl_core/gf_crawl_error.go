@@ -109,7 +109,7 @@ func create_error(p_type_str string,
 
 		ctx           := context.Background()
 		coll_name_str := "gf_crawl"
-		gf_err        := gf_core.Mongo__insert(crawl_err,
+		gf_err        := gf_core.MongoInsert(crawl_err,
 			coll_name_str,
 			map[string]interface{}{
 				"type_str":           p_type_str,

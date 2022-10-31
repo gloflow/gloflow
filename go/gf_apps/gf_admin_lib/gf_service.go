@@ -76,7 +76,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	//------------------------
 	// ADMIN_HANDLERS
 	
-	gfErr = init_handlers(pTemplatesPathsMap,
+	gfErr = initHandlers(pTemplatesPathsMap,
 		pHTTPmux,
 		pServiceInfo,
 		pIdentityServiceInfo,
@@ -86,7 +86,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 		return gfErr
 	}
 
-	gfErr = init_handlers__users(pHTTPmux,
+	gfErr = initHandlersUsers(pHTTPmux,
 		pServiceInfo,
 		pIdentityServiceInfo,
 		pLocalHub,

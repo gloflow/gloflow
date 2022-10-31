@@ -199,7 +199,7 @@ func Run_service(pHTTPmux *http.ServeMux,
 		LogFun:           pLogFun,
 	}
 
-	mongoDB, _, gfErr := gf_core.Mongo__connect_new(pServiceInfo.Mongodb_host_str,
+	mongoDB, _, gfErr := gf_core.MongoConnectNew(pServiceInfo.Mongodb_host_str,
 		pServiceInfo.Mongodb_db_name_str,
 		nil,
 		runtimeSys)

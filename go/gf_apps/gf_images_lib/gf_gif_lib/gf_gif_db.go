@@ -88,7 +88,7 @@ func gif_db__create(p_image_source_url_str string,
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err         = gf_core.Mongo__insert(gif,
+	gf_err         = gf_core.MongoInsert(gif,
 		coll_name_str,
 		map[string]interface{}{
 			"image_source_url_str":      p_image_source_url_str,
@@ -220,7 +220,7 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 
-	cursor, gfErr := gf_core.Mongo__find(bson.M{
+	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":                      "gif",
 			"valid_bool":             true,
 			"preview_frames_num_int": bson.M{"$gte": 0},

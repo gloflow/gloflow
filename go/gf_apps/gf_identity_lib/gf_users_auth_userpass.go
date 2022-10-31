@@ -494,12 +494,12 @@ func users_auth_userpass__get_pass_hash(pPassStr string,
 	pPassSaltStr string) string {
 
 	saltedPassStr := fmt.Sprintf("%s:%s", pPassSaltStr, pPassStr)
-	passHashStr   := gf_core.Hash_val_sha256(saltedPassStr)
+	passHashStr   := gf_core.HashValSha256(saltedPassStr)
 	return passHashStr
 }
 
 //---------------------------------------------------
 func users_auth_userpass__get_pass_salt() string {
-	randStr := gf_core.Str_random()
+	randStr := gf_core.StrRandom()
 	return randStr
 }

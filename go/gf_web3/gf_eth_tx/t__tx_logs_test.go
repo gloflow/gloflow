@@ -63,7 +63,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 	abis_map       := t__get_abis()
 	coll_name_str := "gf_web3_meta__contracts_abi"
 	for _, gf_abi := range abis_map {
-		gf_err := gf_core.Mongo__insert(gf_abi, coll_name_str,
+		gf_err := gf_core.MongoInsert(gf_abi, coll_name_str,
 			map[string]interface{}{
 				"caller_err_msg_str": "failed to insert contract ABI record into DB in gf_eth_monitor test t__tx_logs_test",
 			},

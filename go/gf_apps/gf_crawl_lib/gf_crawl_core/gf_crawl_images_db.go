@@ -75,7 +75,7 @@ func Image__db_create(p_img *Gf_crawler_page_image,
 			// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
 			ctx           := context.Background()
 			coll_name_str := "gf_crawl"
-			gfErr         := gf_core.Mongo__insert(p_img,
+			gfErr         := gf_core.MongoInsert(p_img,
 				coll_name_str,
 				map[string]interface{}{
 					"img_ref_url_str":             p_img.Url_str,
@@ -154,7 +154,7 @@ func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
 			// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
 			ctx           := context.Background()
 			coll_name_str := "gf_crawl"
-			gf_err        := gf_core.Mongo__insert(p_img_ref,
+			gf_err        := gf_core.MongoInsert(p_img_ref,
 				coll_name_str,
 				map[string]interface{}{
 					"img_ref_url_str":             p_img_ref.Url_str,

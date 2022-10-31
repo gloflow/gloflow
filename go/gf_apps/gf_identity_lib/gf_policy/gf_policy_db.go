@@ -143,7 +143,7 @@ func DBexistsByID(pPolicyIDstr gf_core.GF_ID,
 
 	collNameStr := "gf_policies"
 
-	countInt, gfErr := gf_core.Mongo__count(bson.M{
+	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"id_str":       pPolicyIDstr,
 			"deleted_bool": false,
 		},

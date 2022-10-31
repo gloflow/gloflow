@@ -74,7 +74,7 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 		LogFun:           logFun,
 	}
 
-	mongo_db, _, gf_err := gf_core.Mongo__connect_new(test__mongodb_host_str,
+	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_host_str,
 		test__mongodb_db_name_str,
 		nil,
 		runtimeSys)

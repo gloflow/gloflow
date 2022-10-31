@@ -27,7 +27,7 @@ import (
 )
 
 //-------------------------------------------------------------
-func Str_random() string {
+func StrRandom() string {
 	rand_with_seed := rand.New(rand.NewSource(time.Now().UnixNano()))
 	rand_int := rand_with_seed.Int()
 	rand_str := fmt.Sprintf("%d", rand_int)
@@ -35,7 +35,7 @@ func Str_random() string {
 }
 
 //-------------------------------------------------------------
-func Hash_val_sha256(p_val interface{}) string {
+func HashValSha256(p_val interface{}) string {
 
 	h := sha256.New()
 	h.Write([]byte(fmt.Sprintf("%v", p_val)))
@@ -44,7 +44,7 @@ func Hash_val_sha256(p_val interface{}) string {
 }
 
 //-------------------------------------------------------------
-func Str_in_lst(p_str string, p_lst []string) bool {
+func StrInLst(p_str string, p_lst []string) bool {
 	for _,s := range p_lst {
 		if p_str == s {
 			return true
@@ -54,7 +54,7 @@ func Str_in_lst(p_str string, p_lst []string) bool {
 }
 
 //-------------------------------------------------------------
-func Map_has_key(p_map interface{}, p_key_str string) bool {
+func MapHasKey(p_map interface{}, p_key_str string) bool {
 
 	if _,ok := p_map.(map[string]interface{}); ok {
 		_,ok := p_map.(map[string]interface{})[p_key_str]

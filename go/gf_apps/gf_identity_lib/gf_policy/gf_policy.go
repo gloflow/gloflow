@@ -263,7 +263,7 @@ func createID(pTargetResourceIDstr gf_core.GF_ID,
 		string(pTargetResourceIDstr),
 		fmt.Sprintf("%f", pCreationUNIXtimeF),
 	}
-	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
 		pCreationUNIXtimeF)
 
 	return gfIDstr

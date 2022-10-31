@@ -102,7 +102,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 	// DB
 	ctx           := context.Background()
 	coll_name_str := "gf_crawl"
-	gf_err        := gf_core.Mongo__insert(allocator,
+	gf_err        := gf_core.MongoInsert(allocator,
 		coll_name_str,
 		map[string]interface{}{
 			"crawler_name_str":   p_crawler_name_str,
@@ -160,7 +160,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
     find_opts.SetLimit(int64(p_block_size_int))
 	find_opts.SetProjection(bson.M{"id_str": 1})
 
-	cursor, gf_err := gf_core.Mongo__find(bson.M{
+	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"t":                    "crawler_page_outgoing_link",
 			"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
 			"valid_for_crawl_bool": true,
@@ -249,7 +249,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 
 	// DB
 	coll_name_str := "gf_crawl"
-	gf_err         = gf_core.Mongo__insert(block,
+	gf_err         = gf_core.MongoInsert(block,
 		coll_name_str,
 		map[string]interface{}{
 			"allocator_id_str":   p_alloc_id_str,

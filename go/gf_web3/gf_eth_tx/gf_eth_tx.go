@@ -192,8 +192,8 @@ func Load(p_tx *eth_types.Transaction,
 
 	if err != nil {
 
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{
 				"block_num":   p_block_num_int,
@@ -252,8 +252,8 @@ func Load(p_tx *eth_types.Transaction,
 
 	tx, _, err := p_eth_rpc_client.TransactionByHash(span__get_tx.Context(), tx_hash)
 	if err != nil {
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
@@ -281,8 +281,8 @@ func Load(p_tx *eth_types.Transaction,
 
 	sender_addr, err := p_eth_rpc_client.TransactionSender(p_ctx, tx, p_block_hash, p_tx_index_int)
 	if err != nil {
-		error_defs_map := gf_eth_core.Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to get transaction via json-rpc in gf_eth_monitor",
+		error_defs_map := gf_eth_core.ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
@@ -404,7 +404,7 @@ func Load(p_tx *eth_types.Transaction,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := fmt.Sprintf("0x%s", gf_core.Hash_val_sha256(gf_tx))
+	db_id_hex_str         := fmt.Sprintf("0x%s", gf_core.HashValSha256(gf_tx))
 	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 
@@ -475,8 +475,8 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 		// UnpackIntoMap - unpacks a log into the provided map[string]interface{}.
 		err := abi.UnpackIntoMap(event_map, "Transfer", log_bytes_lst)
 		if err != nil {
-			error_defs_map := gf_eth_core.Error__get_defs()
-			gf_err := gf_core.ErrorCreate_with_defs("failed to decode a Tx Log",
+			error_defs_map := gf_eth_core.ErrorGetDefs()
+			gf_err := gf_core.ErrorCreateWithDefs("failed to decode a Tx Log",
 				"eth_tx_log__decode",
 				map[string]interface{}{
 					"address_str":  l.Address_str,

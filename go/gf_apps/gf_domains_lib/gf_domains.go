@@ -215,7 +215,7 @@ func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.G
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"count_int": -1}) // descending - true - sort the highest count first
 
-	cursor, gf_err := gf_core.Mongo__find(q,
+	cursor, gf_err := gf_core.MongoFind(q,
 		find_opts,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to DB fetch all domains",

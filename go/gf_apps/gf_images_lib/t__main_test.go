@@ -86,7 +86,7 @@ func Test__main(p_test *testing.T) {
 	//-----------------
 	// MONGODB
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
-	mongodbDB, _, gfErr := gf_core.Mongo__connect_new(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
+	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
 		p_test.Fail()

@@ -83,7 +83,7 @@ func cluster__register_worker(p_ext_worker_name_str string,
 
 	ctx           := context.Background()
 	coll_name_str := "gf_crawl"
-	gf_err        := gf_core.Mongo__insert(worker,
+	gf_err        := gf_core.MongoInsert(worker,
 		coll_name_str,
 		map[string]interface{}{
 			"ext_worker_name_str": p_ext_worker_name_str,

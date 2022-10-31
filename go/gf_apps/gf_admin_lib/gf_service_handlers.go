@@ -42,7 +42,7 @@ type gf_templates struct {
 }
 
 //------------------------------------------------
-func init_handlers(pTemplatesPathsMap map[string]string,
+func initHandlers(pTemplatesPathsMap map[string]string,
 	p_http_mux              *http.ServeMux,
 	p_service_info          *GFserviceInfo,
 	p_identity_service_info *gf_identity_lib.GFserviceInfo,

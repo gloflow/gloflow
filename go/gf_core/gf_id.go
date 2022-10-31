@@ -31,7 +31,7 @@ type GF_ID string
 //---------------------------------------------------
 // CREATES_ID
 
-func ID__create(p_unique_vals_for_id_lst []string,
+func IDcreate(p_unique_vals_for_id_lst []string,
 	p_unix_time_f float64) GF_ID {
 	
 	h := md5.New()

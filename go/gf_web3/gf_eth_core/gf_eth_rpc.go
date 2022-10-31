@@ -131,8 +131,8 @@ func Eth_rpc__init(p_host_str string,
 			"err":       err}).Fatal("failed to connect json-rpc connect to Eth node")
 		
 			
-		error_defs_map := Error__get_defs()
-		gf_err := gf_core.ErrorCreate_with_defs("failed to connect to Eth rpc-json API in gf_eth_monitor",
+		error_defs_map := ErrorGetDefs()
+		gf_err := gf_core.ErrorCreateWithDefs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},
 			err, "gf_eth_core", error_defs_map, 1, p_runtime_sys)

@@ -142,7 +142,7 @@ func Index__query(p_term_str string,
 	}
 
 	coll_name_str := "gf_crawl"
-	gf_err        := gf_core.Mongo__insert(query_run,
+	gf_err        := gf_core.MongoInsert(query_run,
 		coll_name_str,
 		map[string]interface{}{
 			"term_str":           p_term_str,

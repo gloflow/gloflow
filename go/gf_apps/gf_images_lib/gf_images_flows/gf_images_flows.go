@@ -187,7 +187,7 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 
 		ctx           := context.Background()
 		coll_name_str := "gf_flows_img_exists_check" // p_runtime_sys.Mongo_coll.Name()
-		_              = gf_core.Mongo__insert(check,
+		_              = gf_core.MongoInsert(check,
 			coll_name_str,
 			map[string]interface{}{
 				"images_extern_urls_lst": pImagesExternURLsLst,
@@ -348,7 +348,7 @@ func flowsCreate(pFlowNameStr string,
 
 	// DB
 	coll_name_str := pRuntimeSys.Mongo_coll.Name()
-	gfErr := gf_core.Mongo__insert(flow,
+	gfErr := gf_core.MongoInsert(flow,
 		coll_name_str,
 		map[string]interface{}{
 			"images_flow_name_str": pFlowNameStr,

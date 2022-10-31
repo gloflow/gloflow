@@ -212,7 +212,7 @@ func link__db_create(p_link *GFcrawlerPageOutgoingLink,
 
 		ctx           := context.Background()
 		coll_name_str := "gf_crawl"
-		gf_err        := gf_core.Mongo__insert(p_link,
+		gf_err        := gf_core.MongoInsert(p_link,
 			coll_name_str,
 			map[string]interface{}{
 				"link_a_href_str":    p_link.A_href_str,

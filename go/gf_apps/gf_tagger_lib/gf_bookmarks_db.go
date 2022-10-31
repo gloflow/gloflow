@@ -34,7 +34,7 @@ func db__bookmark__create(p_bookmark *GF_bookmark,
 
 	coll_name_str := "gf_bookmarks"
 
-	gf_err := gf_core.Mongo__insert(p_bookmark,
+	gf_err := gf_core.MongoInsert(p_bookmark,
 		coll_name_str,
 		map[string]interface{}{
 			"url_str":            p_bookmark.Url_str,
@@ -94,7 +94,7 @@ func db__bookmark__get_all(p_user_id_str gf_core.GF_ID,
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
 	
-	db_cursor, gf_err := gf_core.Mongo__find(bson.M{
+	db_cursor, gf_err := gf_core.MongoFind(bson.M{
 			"user_id_str":  p_user_id_str,
 			"deleted_bool": false,
 		},

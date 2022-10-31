@@ -179,7 +179,7 @@ func createID(pUserIdentifierStr string,
 	fieldsForIDlst := []string{
 		pUserIdentifierStr,
 	}
-	gfIDstr := gf_core.ID__create(fieldsForIDlst,
+	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
 		pCreationUNIXtimeF)
 
 	return gfIDstr

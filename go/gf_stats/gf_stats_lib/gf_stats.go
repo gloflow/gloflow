@@ -194,7 +194,7 @@ func Stat_run__create(p_stat_name_str string,
 
 	ctx := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err := gf_core.Mongo__insert(run,
+	gf_err := gf_core.MongoInsert(run,
 		coll_name_str,
 		map[string]interface{}{
 			"stat_name_str":      p_stat_name_str,

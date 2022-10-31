@@ -136,7 +136,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	collNameStr := "data_symphony"
 	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
 
-	cursor, gfErr := gf_core.Mongo__find(bson.M{
+	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":                    "img",
 			"creation_unix_time_f": bson.M{"$exists": true,},
 			"flows_names_lst":      bson.M{"$in": []string{p_flow_name_str},},

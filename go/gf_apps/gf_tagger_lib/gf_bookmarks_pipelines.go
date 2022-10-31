@@ -166,7 +166,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 		p_input.Url_str,
 		string(userIDstr),
 	}
-	IDstr := gf_core.ID__create(unique_vals_for_id_lst,
+	IDstr := gf_core.IDcreate(unique_vals_for_id_lst,
 		creation_unix_time_f)
 	
 	bookmark := &GF_bookmark{

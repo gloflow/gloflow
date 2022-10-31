@@ -361,7 +361,7 @@ func RuntimeGet(pConfig_path_str string,
 	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
 	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
 
-	mongodb_db, _, gf_err := gf_core.Mongo__connect_new(mongodb_url_str,
+	mongodb_db, _, gf_err := gf_core.MongoConnectNew(mongodb_url_str,
 		config.Mongodb_db_name_str,
 		nil,
 		runtimeSys)

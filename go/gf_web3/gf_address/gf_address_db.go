@@ -100,7 +100,7 @@ func DBexists(pAddressStr string,
 
 	collNameStr := "gf_web3_addresses"
 
-	countInt, gfErr := gf_core.Mongo__count(bson.M{
+	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"address_str":    pAddressStr,
 			"chain_name_str": pChainStr,
 			"deleted_bool":   false,

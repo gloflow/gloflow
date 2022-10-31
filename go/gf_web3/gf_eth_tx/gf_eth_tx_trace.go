@@ -287,7 +287,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	// IMPORTANT!! - its critical for the hashing of TX struct to get signature be done before the
 	//               creation_time__unix_f attribute is set, since that always changes and would affect the hash.
 	//               
-	db_id_hex_str         := gf_core.Hash_val_sha256(gf_tx_trace)
+	db_id_hex_str         := gf_core.HashValSha256(gf_tx_trace)
 	creation_time__unix_f := float64(time.Now().UnixNano()) / 1_000_000_000.0
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
@@ -354,7 +354,7 @@ func Trace__init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 	//---------------------
 	// COLL_EXISTS_CHECK - if collection doesnt exist (yet) in the DB then dont
 	//                     begin collection metrics on it (it will cause errors).
-	coll_exists_bool, gf_err := gf_core.Mongo__coll_exists(coll_name_str, ctx, p_runtime.RuntimeSys)
+	coll_exists_bool, gf_err := gf_core.MongoCollExists(coll_name_str, ctx, p_runtime.RuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}

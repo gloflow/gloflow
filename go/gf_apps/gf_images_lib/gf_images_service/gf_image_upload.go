@@ -202,7 +202,7 @@ func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
 	
 	ctx         := context.Background()
 	collNameStr := "gf_images_upload_info"
-	gfErr       := gf_core.Mongo__insert(pUploadInfo,
+	gfErr       := gf_core.MongoInsert(pUploadInfo,
 		collNameStr,
 		map[string]interface{}{
 			"upload_image_id_str": pUploadInfo.UploadImageIDstr,
@@ -255,7 +255,7 @@ func Upload_db__put_image_upload_info(pImageUploadInfo *GFimageUploadInfo,
 
 	ctx         := context.Background()
 	collNameStr := pRuntimeSys.Mongo_coll.Name()
-	gfErr       := gf_core.Mongo__insert(pImageUploadInfo,
+	gfErr       := gf_core.MongoInsert(pImageUploadInfo,
 		collNameStr,
 		map[string]interface{}{
 			"upload_gf_image_id_str": pImageUploadInfo.UploadImageIDstr,
