@@ -19,16 +19,11 @@ USER gf
 #------------
 # DIRS
 RUN mkdir -p /home/gf/logs
-RUN mkdir -p /home/gf/config
-RUN mkdir -p /home/gf/web/templates
-
-#------------
-# WEB
-ADD web/templates web/templates
 
 #------------
 # MAIN
-ADD ./gf_p2p_tester gf_p2p_tester
+ADD ./go/gf_p2p/gf_p2p_tester/gf_p2p_tester /home/gf/
+ADD ./go/gf_p2p/gf_p2p_tester/web           /home/gf/
 
 #------------
 CMD ["/home/gf/gf_p2p_tester"]
