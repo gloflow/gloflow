@@ -3,10 +3,10 @@ name: gf_p2p_tester_dev
 on:
   push:
     branches: [ master ]
-  paths:
-    - './go/gf_core'
-    - './go/gf_rpc_lib'
-    - './go/gf_p2p'
+    paths:
+      - './go/gf_core'
+      - './go/gf_rpc_lib'
+      - './go/gf_p2p'
 
 env:
   ENV: dev
