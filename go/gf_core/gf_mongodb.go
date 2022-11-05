@@ -134,14 +134,14 @@ func MongoTXinit(p_mongo_client *mongo.Client,
 // MONGO_COUNT
 func MongoCount(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
-	p_coll      *mongo.Collection,
+	pColl      *mongo.Collection,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) (int64, *GFerror) {
 
 	// FIX!! - externalize this max_time value to some config.
 	opts := options.Count().SetMaxTime(5 * time.Second)
 
-	count_int, err := p_coll.CountDocuments(pCtx, pQuery, opts)
+	count_int, err := pColl.CountDocuments(pCtx, pQuery, opts)
 	if err != nil {
 		gf_err := MongoHandleError("failed to count number of particular docs in DB",
 			"mongodb_count_error",
@@ -155,21 +155,21 @@ func MongoCount(pQuery bson.M,
 //-------------------------------------------------
 // MONGO_FIND_LATEST
 func MongoFindLatest(pQuery bson.M,
-	p_time_field_name_str string,
-	pMetaMap              map[string]interface{}, // data describing the DB write op
-	p_coll                *mongo.Collection,
-	pCtx                  context.Context,
-	pRuntimeSys           *RuntimeSys) (map[string]interface{}, *GFerror) {
+	pTimeFieldNameStr string,
+	pMetaMap          map[string]interface{}, // data describing the DB write op
+	pColl             *mongo.Collection,
+	pCtx              context.Context,
+	pRuntimeSys       *RuntimeSys) (map[string]interface{}, *GFerror) {
 	
 
 	find_opts := options.Find()
-	find_opts.SetSort(map[string]interface{}{p_time_field_name_str: -1})
+	find_opts.SetSort(map[string]interface{}{pTimeFieldNameStr: -1})
 	find_opts.SetLimit(1)
 	
 	cursor, gf_err := MongoFind(pQuery,
 		find_opts,
 		pMetaMap,
-		p_coll,
+		pColl,
 		pCtx,
 		pRuntimeSys)
 
@@ -201,13 +201,13 @@ func MongoFindLatest(pQuery bson.M,
 //-------------------------------------------------
 // FIND
 func MongoFind(pQuery bson.M,
-	p_opts      *options.FindOptions,
+	pOpts      *options.FindOptions,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
-	p_coll      *mongo.Collection,
+	pColl       *mongo.Collection,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) (*mongo.Cursor, *GFerror) {
 
-	cur, err := p_coll.Find(pCtx, pQuery, p_opts)
+	cur, err := pColl.Find(pCtx, pQuery, pOpts)
 	if err != nil {
 		
 		// NO_DOCUMENTS

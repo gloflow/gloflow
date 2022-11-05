@@ -29,21 +29,21 @@ import (
 )
 
 //-------------------------------------------------------------
-func AWS_ECR__update_service(p_service_name_str string,
-	p_cluster_name_str         string,
-	p_healthy_percent__min_int int,
-	p_runtime_sys              *gf_core.RuntimeSys) *gf_core.GFerror {
+func ECSupdateService(pServiceNameStr string,
+	pClusterNameStr       string,
+	pHealthyPercentMinInt int,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	fmt.Printf("AWS ECS UPDATE_SERVICE - %s\n", p_service_name_str)
+	fmt.Printf("AWS ECS UPDATE_SERVICE - %s\n", pServiceNameStr)
 
 	svc := ecs.New(session.New())
 	
 	input := &ecs.UpdateServiceInput{
-		Service: aws.String(p_service_name_str),
-		Cluster: aws.String(p_cluster_name_str),
+		Service: aws.String(pServiceNameStr),
+		Cluster: aws.String(pClusterNameStr),
 		
 		DeploymentConfiguration: &ecs.DeploymentConfiguration{
-			MinimumHealthyPercent: aws.Int64(int64(p_healthy_percent__min_int)),
+			MinimumHealthyPercent: aws.Int64(int64(pHealthyPercentMinInt)),
 		},
 
 		// IMPORTANT!! - for "dev" cluster only, when the same tagged container image
@@ -95,8 +95,8 @@ func AWS_ECR__update_service(p_service_name_str string,
 
 		gf_err := gf_core.ErrorCreate("failed to update AWS ECS service",
 			"aws_ecs_service_update_error",
-			map[string]interface{}{"service_name_str": p_service_name_str,},
-			err, "gf_aws", p_runtime_sys)
+			map[string]interface{}{"service_name_str": pServiceNameStr,},
+			err, "gf_aws", pRuntimeSys)
 		return gf_err
 	}
 
