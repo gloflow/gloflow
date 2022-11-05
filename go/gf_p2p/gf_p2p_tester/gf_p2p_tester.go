@@ -38,45 +38,23 @@ func main() {
 	logFun, _ := gf_core.InitLogs()
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_p2p_tester",
-		LogFun:          logFun,
+		LogFun:           logFun,
 	}
 
-	//---------------------
-	// P2P_PORT
-	var p2pPortInt int
-	p2pPortStr, ok := os.LookupEnv("GF_P2P_PORT")
-	if ok {
-		var err error
-		p2pPortInt, err = strconv.Atoi(p2pPortStr)
-		if err != nil {
-			panic(err)
-		}	
-	} else {
-		// start on a random port
-		p2pPortInt = 0
-	}
 	
-	//---------------------
-	// HTP_PORT
-	var httpPortInt int
-	httpPortStr, ok := os.LookupEnv("GF_HTTP_PORT")
-	if ok {
-		var err error
-		httpPortInt, err = strconv.Atoi(httpPortStr)
-		if err != nil {
-			panic(err)
-		}	
-	} else {
-		// start on a random port
-		p2pPortInt = 3000
-	}
-	
-	//---------------------
+	p2pPortInt, httpPortInt := getConfig()
 	
 	go func() {
 		_, _ = gf_p2p.Init(p2pPortInt, runtimeSys)
 	}()
 
+	//---------------------
+	// HTTP_SERVICE
+	gfHTTPmux := http.NewServeMux()
+	initService(httpPortInt, gfHTTPmux, runtimeSys)
+
+	//---------------------
+	
 	/*if len(os.Args) > 1 {
 
 		// if a remote peer has been passed on the command line, connect to it
@@ -110,14 +88,42 @@ func main() {
 	} else {
 		defer gf_p2p.InitShutdownOnSignal(node)
 	}*/
+}
 
-
-	//---------------------
-	// HTTP_SERVICE
-	gfHTTPmux := http.NewServeMux()
-	initService(httpPortInt, gfHTTPmux, runtimeSys)
+//-------------------------------------------------
+func getConfig() (int, int) {
 
 	//---------------------
+	// P2P_PORT
+	var p2pPortInt int
+	p2pPortStr, ok := os.LookupEnv("GF_P2P_PORT")
+	if ok {
+		var err error
+		p2pPortInt, err = strconv.Atoi(p2pPortStr)
+		if err != nil {
+			panic(err)
+		}	
+	} else {
+		// start on a random port
+		p2pPortInt = 0
+	}
 	
+	//---------------------
+	// HTP_PORT
+	var httpPortInt int
+	httpPortStr, ok := os.LookupEnv("GF_HTTP_PORT")
+	if ok {
+		var err error
+		httpPortInt, err = strconv.Atoi(httpPortStr)
+		if err != nil {
+			panic(err)
+		}	
+	} else {
+		// start on a random port
+		httpPortInt = 3000
+	}
+	
+	//---------------------
 
+	return p2pPortInt, httpPortInt
 }
