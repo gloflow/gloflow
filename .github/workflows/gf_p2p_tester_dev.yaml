@@ -1,4 +1,4 @@
-  name: gf_p2p_tester_dev
+name: gf_p2p_tester_dev
 on:
   push:
     branches: [ master ]
