@@ -1,4 +1,4 @@
-name: gf_p2p_tester_dev
+  name: gf_p2p_tester_dev
 on:
   push:
     branches: [ master ]
@@ -15,59 +15,57 @@ env:
 
 jobs:
   build_container:
-
     runs-on: ubuntu-latest
-
     steps:
 
-    #-------------------------------
-    # GIT_CHECKOUT
-    - uses: actions/checkout@v2
-    
-    #-------------------------------
-    # INITIALIZE_PYTHON3
-    - name: initialize python3
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v2
+      
+      #-------------------------------
+      # INITIALIZE_PYTHON3
+      - name: initialize python3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    #-------------------------------
-    # GO_BUILD
+      #-------------------------------
+      # GO_BUILD
 
-    - name: setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: ‘1.19.2’
-    
-    - name: install dependencies
-      run: |
-        go version
-        go get -d ./...
-        
-    - name: golang build
-      run: |
-        cd go/gf_p2p/gf_p2p_tester
-        go build 
+      - name: setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ‘1.19.2’
+      
+      - name: install dependencies
+        run: |
+          go version
+          go get -d ./...
+          
+      - name: golang build
+        run: |
+          cd go/gf_p2p/gf_p2p_tester
+          go build 
 
-    #-------------------------------
-    # CONTAINER_BUILD
-    - name: build container
-      run: |
-        docker build --file go/gf_p2p/gf_p2p_tester/Dockerfile --tag ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
-        docker images
+      #-------------------------------
+      # CONTAINER_BUILD
+      - name: build container
+        run: |
+          docker build --file go/gf_p2p/gf_p2p_tester/Dockerfile --tag ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
+          docker images
 
-    #-------------------------------
-    # DOCKER_LOGIN
-    - name: login to Dockerhub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #-------------------------------
+      # DOCKER_LOGIN
+      - name: login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    #-------------------------------
-    # CONTAINER_PUBLISH
-    - name: publish container to dockerhub
-      run: |
-        docker push ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
+      #-------------------------------
+      # CONTAINER_PUBLISH
+      - name: publish container to dockerhub
+        run: |
+          docker push ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
 
-    #-------------------------------
+      #-------------------------------
