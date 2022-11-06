@@ -118,7 +118,7 @@ func query__init_handlers(p_stats_url_base_str string,
 				gf_rpc_lib.Error__in_handler(url_str, "stat run failed", gf_err, p_resp, p_runtime_sys)
 				return
 			}
-			gf_rpc_lib.Http_respond(query_fun_result, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.HTTPrespond(query_fun_result, "OK", p_resp, p_runtime_sys)
 
 			//--------------------------
 
