@@ -27,26 +27,26 @@ sys.path.append("%s/../meta"%(modd_str))
 import gf_meta
 import gf_web_meta
 
-sys.path.append("%s/utils"%(modd_str))
+sys.path.append("%s/../py/gf_ops/utils"%(modd_str))
 import gf_build_go
 import gf_build_rust
 import gf_build_changes
 import gf_log
 
-sys.path.append("%s/tests"%(modd_str))
+sys.path.append("%s/../py/gf_ops/tests"%(modd_str))
 import gf_tests
+
+sys.path.append("%s/../py/gf_ops/web"%(modd_str))
+import gf_web__build
+
+sys.path.append("%s/../py/gf_ops/containers"%(modd_str))
+import gf_containers
+
+sys.path.append("%s/../py/gf_ops/gf_builder"%(modd_str))
+import gf_builder_ops
 
 sys.path.append("%s/../py/gf_aws"%(modd_str))
 import gf_aws_s3
-
-sys.path.append("%s/web"%(modd_str))
-import gf_web__build
-
-sys.path.append("%s/containers"%(modd_str))
-import gf_containers
-
-sys.path.append("%s/gf_builder"%(modd_str))
-import gf_builder_ops
 
 #--------------------------------------------------
 def main():
@@ -298,6 +298,11 @@ def main():
 		gf_build_changes.view_changed_apps(changed_apps_map, "web")
 	
 	#-------------
+	elif run_str == "notify_completion":
+
+		True
+		
+	#-------------
 	# # GF_BUILDER__CONTAINER_BUILD
 	# elif run_str == "gf_builder__cont_build":
 	# 	dockerhub_user_str = args_map["dockerhub_user"]
@@ -328,6 +333,7 @@ def parse_args():
 - '''+fg('yellow')+'publish_containers'+attr(0)+'''  - publish app Docker containers
 - '''+fg('yellow')+'test'+attr(0)+'''                - run app code tests
 - '''+fg('yellow')+'list_changed_apps'+attr(0)+'''   - list all apps (and files) that have changed from last to the last-1 commit (for monorepo CI)
+- '''+fg('yellow')+'notify_completion'+attr(0)+'''   - notify remote HTTP endpoint of build completion
 
 		''')
 		

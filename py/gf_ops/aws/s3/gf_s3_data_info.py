@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import boto3
 from colored import fg,bg,attr
 
-sys.path.append("%s/../../../py/gf_aws"%(modd_str))
+sys.path.append("%s/../../../gf_aws"%(modd_str))
 import gf_aws_s3
 
 #---------------------------------------------------

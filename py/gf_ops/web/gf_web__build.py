@@ -22,7 +22,7 @@ import os
 from colored import fg, bg, attr
 from bs4 import BeautifulSoup
 
-sys.path.append("%s/../../py/gf_core"%(modd_str))
+sys.path.append("%s/../../gf_core"%(modd_str))
 import gf_core_cli
 
 #--------------------------------------------------

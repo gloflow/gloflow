@@ -22,7 +22,7 @@ sys.path.append("%s/../containers"%(modd_str))
 import gf_os_docker
 import gf_containers
 
-sys.path.append("%s/../meta"%(modd_str))
+sys.path.append("%s/../../meta"%(modd_str))
 import gf_meta
 
 #---------------------------------------------------

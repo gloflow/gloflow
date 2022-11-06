@@ -25,7 +25,7 @@ import delegator
 sys.path.append('%s/../meta'%(modd_str))
 import gf_meta
 
-sys.path.append('%s/aws/s3'%(modd_str))
+sys.path.append('%s/../py/gf_ops/aws/s3'%(modd_str))
 import gf_s3_data_info
 
 sys.path.append('%s/../py/gf_aws'%(modd_str))

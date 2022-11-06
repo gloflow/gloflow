@@ -29,7 +29,7 @@ def run(p_app_name_str,
     p_app_meta_map,
     p_aws_s3_creds_map,
     p_exit_on_fail_bool         = False,
-    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str))):
+    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../../rust/build"%(modd_str))):
     assert isinstance(p_test_name_str,    str)
     assert isinstance(p_app_meta_map,     dict)
     assert isinstance(p_aws_s3_creds_map, dict)
