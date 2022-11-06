@@ -266,7 +266,7 @@ func getHandler(p_auth_bool bool,
 		// IMPORTANT!! - currently testing if dataMap != nil because routes that render templates
 		//               (render html into body) should not also return a JSON map
 		if outputDataMap != nil {
-			Http_respond(outputDataMap, "OK", pResp, pRuntimeSys)
+			HTTPrespond(outputDataMap, "OK", pResp, pRuntimeSys)
 		}
 
 		//------------------

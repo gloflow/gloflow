@@ -32,7 +32,7 @@ import (
 )
 
 //-------------------------------------------------
-func Http_respond(p_data interface{},
+func HTTPrespond(p_data interface{},
 	p_status_str string,
 	p_resp       http.ResponseWriter,
 	pRuntimeSys  *gf_core.RuntimeSys) {
@@ -68,7 +68,7 @@ func Error__in_handler(p_handler_url_path_str string,
 		dataMap["error"] = p_gf_err.Error
 	}
 
-	Http_respond(dataMap, statusStr, p_resp, p_runtime_sys)
+	HTTPrespond(dataMap, statusStr, p_resp, p_runtime_sys)
 }
 
 //-------------------------------------------------

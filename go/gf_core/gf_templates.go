@@ -32,13 +32,13 @@ import (
 func TemplatesLoad(pMainTemplateFilepathStr string,
 	pRuntimeSys *RuntimeSys) (*template.Template, []string, *GFerror) {
 
-	template_filename_str := filepath.Base(pMainTemplateFilepathStr)
-	template_dir_path_str := filepath.Dir(pMainTemplateFilepathStr)
+	templateFilenameStr := filepath.Base(pMainTemplateFilepathStr)
+	templateDirPathStr := filepath.Dir(pMainTemplateFilepathStr)
 
 	//---------------------
 	// SUB_TEMPLATES - templates that are imported into the main template
-	subtemplates_dir_path_str   := fmt.Sprintf("%s/subtemplates", template_dir_path_str)
-	subtemplates_names_lst      := []string{}
+	subtemplates_dir_path_str   := fmt.Sprintf("%s/subtemplates", templateDirPathStr)
+	subtemplatesNamesLst        := []string{}
 	subtemplates_file_paths_lst := []string{}
 
 	// load subtemplates if the subtemplates/ dir exists
@@ -46,17 +46,17 @@ func TemplatesLoad(pMainTemplateFilepathStr string,
 
 		files_lst, err := ioutil.ReadDir(subtemplates_dir_path_str)
 		if err != nil {
-			gf_err := ErrorCreate("failed to parse a template",
+			gfErr := ErrorCreate("failed to parse a template",
 				"dir_list_error",
 				map[string]interface{}{"subtemplates_dir_path_str": subtemplates_dir_path_str,},
 				err, "gf_core", pRuntimeSys)
-			return nil, nil, gf_err
+			return nil, nil, gfErr
 		}
 
 		for _, f := range files_lst {
 			filename_str := f.Name()
 			if strings.HasSuffix(filename_str, ".html") {
-				subtemplates_names_lst      = append(subtemplates_names_lst, strings.Split(filename_str, ".")[0])
+				subtemplatesNamesLst        = append(subtemplatesNamesLst, strings.Split(filename_str, ".")[0])
 				subtemplates_file_paths_lst = append(subtemplates_file_paths_lst, fmt.Sprintf("%s/%s", subtemplates_dir_path_str, filename_str))
 			}
 		}
@@ -67,16 +67,16 @@ func TemplatesLoad(pMainTemplateFilepathStr string,
 	templatesPathsLst := append([]string{pMainTemplateFilepathStr,}, subtemplates_file_paths_lst...)
 
 	// IMPORTANT!! - load several template files into a single template name
-	main__tmpl, err := template.New(template_filename_str).ParseFiles(templatesPathsLst...)
+	mainTmpl, err := template.New(templateFilenameStr).ParseFiles(templatesPathsLst...)
 	if err != nil {
-		gf_err := ErrorCreate("failed to parse a template",
+		gfErr := ErrorCreate("failed to parse a template",
 			"template_create_error",
 			map[string]interface{}{"main_template_filepath_str": pMainTemplateFilepathStr,},
 			err, "gf_core", pRuntimeSys)
-		return nil, nil, gf_err
+		return nil, nil, gfErr
 	}
 	
 	//---------------------
 
-	return main__tmpl, subtemplates_names_lst, nil
+	return mainTmpl, subtemplatesNamesLst, nil
 }
