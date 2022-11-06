@@ -16,24 +16,16 @@ env:
   IMAGE_TAG: latest
 
 jobs:
-  build_container:
+
+  #--------------------------------------------------------------------
+  # BUILD
+  build:
     runs-on: ubuntu-latest
     steps:
 
       #-------------------------------
       # GIT_CHECKOUT
       - uses: actions/checkout@v2
-      
-      #-------------------------------
-      # INITIALIZE_PYTHON3
-      - name: initialize python3
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: install python3 dependencies for cli__build.py
-        run: |
-          pip3 install -r requirements.txt
 
       #-------------------------------
       # GO_BUILD
@@ -75,6 +67,30 @@ jobs:
           docker push ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
 
       #-------------------------------
+  
+  #--------------------------------------------------------------------
+  # NOTIFY_COMPLETION
+  notify_completion:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      #-------------------------------
+      # GIT_CHECKOUT
+      - uses: actions/checkout@v2
+      
+      #-------------------------------
+      # INITIALIZE_PYTHON3
+      - name: initialize python3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: install python3 dependencies for cli__build.py
+        run: |
+          pip3 install -r requirements.txt
+
+      #-------------------------------
       # NOTIFY_COMPLETION
       - name: notify completion via HTTP
         env:
@@ -83,3 +99,5 @@ jobs:
           python3 ops/cli__build.py -run=notify_completion -app=gf_p2p_tester
 
       #-------------------------------
+
+  #--------------------------------------------------------------------
