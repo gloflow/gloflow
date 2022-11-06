@@ -23,7 +23,7 @@ RUN mkdir -p /home/gf/logs
 #------------
 # MAIN
 ADD ./go/gf_p2p/gf_p2p_tester/gf_p2p_tester /home/gf/
-ADD ./go/gf_p2p/gf_p2p_tester/web           /home/gf/
+ADD ./go/gf_p2p/gf_p2p_tester/web           /home/gf/web
 
 #------------
 CMD ["/home/gf/gf_p2p_tester"]
