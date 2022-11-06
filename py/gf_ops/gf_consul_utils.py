@@ -20,9 +20,6 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
 import subprocess
 
-# sys.path.append("%s/../gf_core"%(modd_str))
-# import gf_core_cli
-
 #-------------------------------------------------------------
 # SERVICES__CATALOG
 def services__catalog(p_auth_token_str,

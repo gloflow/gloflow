@@ -24,7 +24,7 @@ import base64
 from colored import fg, bg, attr
 import delegator
 
-sys.path.append("%s/../../py/gf_core"%(modd_str))
+sys.path.append("%s/../../gf_core"%(modd_str))
 import gf_core_cli
 
 #---------------------------------------------------

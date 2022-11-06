@@ -21,7 +21,7 @@ modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 import subprocess
 from colored import fg, bg, attr
 
-sys.path.append("%s/../../py/gf_core"%(modd_str))
+sys.path.append("%s/../../gf_core"%(modd_str))
 import gf_core_cli
 
 import gf_os_docker

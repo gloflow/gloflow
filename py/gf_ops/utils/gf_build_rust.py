@@ -34,7 +34,7 @@ import gf_core_cli
 # RUN_IN_CONTAINER
 def run_in_cont():
 
-    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()
     cmd_lst = [
         "sudo", "docker", "run",
         "--rm", # remove after exit 
