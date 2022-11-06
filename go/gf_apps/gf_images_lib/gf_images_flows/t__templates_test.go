@@ -52,7 +52,7 @@ func Test__templates(p_test *testing.T) {
 		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
 	}
 	
-	gf_templates, gf_err := tmpl__load(templates_paths_map, runtime_sys)
+	gf_templates, gf_err := tmplLoad(templates_paths_map, runtime_sys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -74,7 +74,7 @@ func Test__templates(p_test *testing.T) {
 
 	flow_name_str      := "test_flow" 
 	flow_pages_num_int := int64(6)
-	template_rendered_str, gf_err := flows__render_template(flow_name_str,
+	template_rendered_str, gf_err := renderTemplate(flow_name_str,
 		images_pages_lst,
 		flow_pages_num_int,
 		gf_templates.flows_browser__tmpl,
