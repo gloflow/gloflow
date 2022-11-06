@@ -71,3 +71,11 @@ jobs:
           docker push ${{ env.CONTAINER_IMAGE }}:${{ env.IMAGE_TAG }}
 
       #-------------------------------
+      # NOTIFY_COMPLETION
+      - name: notify completion via HTTP
+        env:
+          GF_NOTIFY_COMPLETION_URL: ${{ secrets.GF_NOTIFY_COMPLETION_URL }}
+        run: |
+          python3 ops/cli__build.py -run=notify_completion -app=gf_p2p_tester
+
+      #-------------------------------

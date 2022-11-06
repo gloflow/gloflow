@@ -32,6 +32,7 @@ import gf_build_go
 import gf_build_rust
 import gf_build_changes
 import gf_log
+import gf_notify_completion
 
 sys.path.append("%s/../py/gf_ops/tests"%(modd_str))
 import gf_tests
@@ -57,8 +58,8 @@ def main():
 	
 	build_meta_map        = gf_meta.get()["build_info_map"]
 	apps_changes_deps_map = gf_meta.get()["apps_changes_deps_map"]
-	args_map   = parse_args()
-	run_str    = args_map["run"]
+	args_map = parse_args()
+	run_str  = args_map["run"]
 
 	app_name_str = args_map["app"]
 	assert app_name_str in build_meta_map.keys()
@@ -257,17 +258,6 @@ def main():
 		git_commit_hash_str = None
 		if "DRONE_COMMIT" in os.environ.keys():
 			git_commit_hash_str = os.environ["DRONE_COMMIT"]
-
-		# # GF_BUILDER
-		# if app_name_str.startswith("gf_builder"):
-		#
-		# 	gf_builder_ops.cont__publish(app_name_str,
-		# 		app_build_meta_map,
-		# 		dockerhub_user_str,
-		# 		dockerhub_pass_str,
-		# 		gf_log.log_fun,
-		# 		p_docker_sudo_bool = docker_sudo_bool)
-		# else:
 			
 		gf_builder_ops.cont__publish(app_name_str,
 			app_build_meta_map,
@@ -298,19 +288,14 @@ def main():
 		gf_build_changes.view_changed_apps(changed_apps_map, "web")
 	
 	#-------------
+	# NOTIFY_COMPLETION
 	elif run_str == "notify_completion":
 
-		True
+		notify_completion_url_str = args_map["notify_completion_url"]
+		assert not notify_completion_url_str == None
 		
-	#-------------
-	# # GF_BUILDER__CONTAINER_BUILD
-	# elif run_str == "gf_builder__cont_build":
-	# 	dockerhub_user_str = args_map["dockerhub_user"]
-	# 	docker_sudo_bool   = args_map["docker_sudo"]
-	#
-	# 	gf_builder_ops.cont__build(dockerhub_user_str,
-	# 		gf_log.log_fun,
-	# 		p_docker_sudo_bool = docker_sudo_bool)
+		gf_notify_completion.run(notify_completion_url_str,
+			p_app_name_str=app_name_str)
 	
 	#-------------
 	else:
@@ -350,6 +335,8 @@ def parse_args():
 - '''+fg('yellow')+'gf_analytics'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_lib'+attr(0)+'''
 - '''+fg('yellow')+'gf_crawl_core'+attr(0)+'''
+- '''+fg('yellow')+'gf_p2p_tester'+attr(0)+'''
+
 
 - '''+fg('yellow')+'gf_images_jobs'+attr(0)+'''
 - '''+fg('yellow')+'gf_ml_worker'+attr(0)+'''
@@ -425,7 +412,8 @@ def parse_args():
 	# DOCKERHUB_PASS
 	gf_dockerhub_pass_str = os.environ.get("GF_DOCKERHUB_P", None)
 
-
+	# NOTIFY_COMPLETION_URL
+	notify_completion_url_str = os.environ.get("GF_NOTIFY_COMPLETION_URL", None)
 
 	local_dev_bool = False
 	if args_namespace.local_dev == "true":
@@ -444,7 +432,8 @@ def parse_args():
 		"build_outof_cont": args_namespace.build_outof_cont,
 		"fetch_deps":       fetch_deps_bool,
 		"page_name":        args_namespace.page_name,
-		"local_dev":        local_dev_bool
+		"local_dev":        local_dev_bool,
+		"notify_completion_url": notify_completion_url_str,
 	}
 	return args_map
 

@@ -135,6 +135,13 @@ def get():
             },
             
             #------------------------
+            # GF_P2P_TESTER
+            "gf_p2p_tester": {
+                "type_str":    "main_go",
+                "version_str": "latest",
+            },
+
+            #------------------------
             # GF_ML_WORKER
             "gf_ml_worker": {
                 "type_str":             "main_py",
@@ -270,6 +277,7 @@ def get():
 
             #-------------
             # GF_BUILDER
+            # DEPRECATED!! - is it?
             "gf_builder": {
                 "type_str":            "custom",
                 "version_str":         "latest",
