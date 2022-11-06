@@ -9,3 +9,4 @@ delegator-py
 Pillow
 numpy
 matplotlib
+requests
