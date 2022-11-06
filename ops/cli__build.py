@@ -52,7 +52,7 @@ import gf_aws_s3
 def main():
 	
 	print("")
-	print("                              %sGLOFLOW BUILD TOOL%s"%(fg("green"), attr(0)))
+	print('                   -------------  %sBUILD%s %sGLOFLOW%s  -------------'%(bg('dark_orange_3a'), attr(0), bg('cyan'), attr(0)))
 	print("")
 	
 	build_meta_map        = gf_meta.get()["build_info_map"]

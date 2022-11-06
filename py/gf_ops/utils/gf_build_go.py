@@ -33,7 +33,7 @@ def run_in_cont(p_name_str,
     p_local_dev_bool = False):
     assert isinstance(p_local_dev_bool, bool)
 
-    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../gloflow').strip()
+    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()
 
     cmd_lst = [
         "sudo", "docker", "run",
@@ -68,7 +68,7 @@ def run(p_name_str,
     p_go_output_path_str,
     p_static_bool       = False,
     p_exit_on_fail_bool = True,
-    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../rust/build"%(modd_str)),
+    p_dynamic_libs_dir_path_str = os.path.abspath("%s/../../../rust/build"%(modd_str)),
     p_go_get_bool = False):
     assert isinstance(p_static_bool, bool)
     
@@ -95,8 +95,8 @@ def run(p_name_str,
     def get_libs_for_linking():
 
         # RUST_DYNAMIC_LIBS
-        dynamic_libs_dir_path_str    = os.path.abspath(f"{modd_str}/../../rust/build")
-        tf_dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../rust/build/tf_lib/lib")
+        dynamic_libs_dir_path_str    = os.path.abspath(f"{modd_str}/../../../rust/build")
+        tf_dynamic_libs_dir_path_str = os.path.abspath(f"{modd_str}/../../../rust/build/tf_lib/lib")
 
         print(f"dynamic libs dir - {fg('green')}{dynamic_libs_dir_path_str}{attr(0)}")
         gf_core_cli.run(f"ls -al {dynamic_libs_dir_path_str}")
