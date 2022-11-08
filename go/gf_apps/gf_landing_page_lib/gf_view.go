@@ -35,13 +35,13 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_view.render_template()")
 	
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 	
 	type tmpl_data struct {
 		Featured_posts_lst  []*Gf_featured_post
 		Featured_imgs_0_lst []*GF_featured_img
 		Featured_imgs_1_lst []*GF_featured_img
-		Sys_release_info    gf_core.Sys_release_info
+		Sys_release_info    gf_core.SysReleaseInfo
 		Is_subtmpl_def      func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 

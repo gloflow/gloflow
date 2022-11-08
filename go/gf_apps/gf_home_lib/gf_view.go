@@ -30,10 +30,10 @@ func viewRenderTemplateDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	sysReleaseInfo := gf_core.Get_sys_relese_info(pRuntimeSys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmplData struct {
-		Sys_release_info gf_core.Sys_release_info
+		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 

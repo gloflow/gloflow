@@ -20,21 +20,25 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 //-------------------------------------------------
-type Sys_release_info struct {
+type SysReleaseInfo struct {
 	Name_str        string
 	Version_str     string
     Description_str string
-    Git_commit_str  string //indicates this is usually pasted in by CI systems
+    Git_commit_str  string // indicates this is usually pasted in by CI systems
 }
 
 //-------------------------------------------------
-func Get_sys_relese_info(p_runtime_sys *RuntimeSys) Sys_release_info {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_sys_release_info.Get_sys_relese_info()")
+func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
 
-	r := Sys_release_info{
+	r := SysReleaseInfo{
 		Name_str:        "precious",
-		Version_str:     "0.8.0.0", // currently deployed version
+		Version_str:     "0.10.0.0", // currently deployed version
         Description_str: `
+0.10.0 (nation_genesis):
+    - added first version of a user system (gf_identity)
+    - adding first version of p2p system based on libp2p
+    - initial version of gf_home, personal control panel for users
+    - gf_admin added, for admin login and control of a particular GF server/node
 0.9.0 (solo_learner):
     - new gf_solo service has been introduced, that compiles all other services into a single binary.
     - first additions of ML functionality. Addition of Rust code for collage composition and efficient building of .tfrecords

@@ -32,10 +32,10 @@ func dashboard__render_template(p_tmpl *template.Template,
 	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_view.dashboard__render_template()")
 
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 
 	type tmpl_data struct {
-		Sys_release_info gf_core.Sys_release_info
+		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 

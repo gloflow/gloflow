@@ -31,18 +31,18 @@ func view__render_template_login(p_mfa_confirm_bool bool,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 	
 	type tmpl_data struct {
 		MFA_confirm_bool bool
-		Sys_release_info gf_core.Sys_release_info
+		SysReleaseInfo   gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := p_tmpl.Execute(buff, tmpl_data{
 		MFA_confirm_bool: p_mfa_confirm_bool,
-		Sys_release_info: sys_release_info,
+		SysReleaseInfo:   sys_release_info,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
@@ -75,10 +75,10 @@ func view__render_template_dashboard(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 	
 	type tmpl_data struct {
-		Sys_release_info gf_core.Sys_release_info
+		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 

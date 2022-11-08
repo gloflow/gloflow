@@ -73,11 +73,11 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 		pages_lst = append(pages_lst, page_posts_lst)
 	}
 
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 	
 	type tmpl_data struct {
 		Posts_pages_lst  [][]map[string]interface{}
-		Sys_release_info gf_core.Sys_release_info
+		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 

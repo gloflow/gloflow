@@ -102,7 +102,7 @@ func renderTemplate(p_flow_name_str string,
 	p_subtemplates_names_lst []string,
 	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	sys_release_info := gf_core.Get_sys_relese_info(pRuntimeSys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 	//-------------------------
 	images_pages_lst := [][]map[string]interface{}{}
 	for _, images_page_lst := range p_images_pages_lst {
@@ -143,7 +143,7 @@ func renderTemplate(p_flow_name_str string,
 		Flow_name_str      string
 		Images_pages_lst   [][]map[string]interface{}
 		Flow_pages_num_int int64
-		Sys_release_info   gf_core.Sys_release_info
+		Sys_release_info   gf_core.SysReleaseInfo
 		Is_subtmpl_def     func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
 

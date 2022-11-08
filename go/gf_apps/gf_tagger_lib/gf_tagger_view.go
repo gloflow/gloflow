@@ -32,11 +32,11 @@ func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 
 	type tmpl_data struct {
 		Bookmarks_lst    []*GF_bookmark
-		Sys_release_info gf_core.Sys_release_info
+		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 	
@@ -133,7 +133,7 @@ func render_objects_with_tag(p_tag_str string,
 		Posts_with_tag_num_int int64
 		Images_with_tag_int    int64
 		Posts_with_tag_lst     []map[string]interface{}
-		Sys_release_info       gf_core.Sys_release_info
+		Sys_release_info       gf_core.SysReleaseInfo
 		Is_subtmpl_def         func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
@@ -143,7 +143,7 @@ func render_objects_with_tag(p_tag_str string,
 		return gf_err
 	}
 	
-	sys_release_info := gf_core.Get_sys_relese_info(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
 
 	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
