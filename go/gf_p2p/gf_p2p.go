@@ -69,12 +69,14 @@ func Init(pPortInt int,
 	// CONFIG
 	config := getConfig()
 	
-	// STATUS_SERVER
-	statusServerCh := statusServer(config, pRuntimeSys)
+	
 
-	go func() {
-		InitLibp2p(config, pPortInt, pRuntimeSys)
-	}()
+	// INIT_LIBP2P
+	node := InitLibp2p(config, pPortInt, pRuntimeSys)
+
+	
+	// STATUS_SERVER
+	statusServerCh := statusServer(node, config, pRuntimeSys)
 
 	return statusServerCh
 }
@@ -82,7 +84,7 @@ func Init(pPortInt int,
 //-------------------------------------------------
 func InitLibp2p(pConfig GFp2pConfig,
 	pPortInt    int,
-	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys *gf_core.RuntimeSys) host.Host {
 
 	blue := color.New(color.FgBlue).Add(color.BgWhite).SprintFunc()
 
@@ -163,7 +165,6 @@ func InitLibp2p(pConfig GFp2pConfig,
 	pingService := &ping.PingService{Host: node}
 	node.SetStreamHandler(ping.ID, pingService.PingHandler)
 	
-
 	//-------------------------------------------------
 	/*pingInitPeerFun := func(pPeerID peer.ID) GFp2pPeerPingFun {
 
@@ -180,17 +181,11 @@ func InitLibp2p(pConfig GFp2pConfig,
 
 	//----------------
 
-
-	
-
-
-	
-
 	InitStreamHandler(node, pConfig, pRuntimeSys)
 	initPeerDiscovery(node, pConfig, pRuntimeSys)
 	
 
-	// return node, GFp2pPeerInitFun(pingInitPeerFun)
+	return node
 }
 
 /*type blankValidator struct{}
@@ -318,7 +313,6 @@ func initPeerDiscovery(pNode host.Host,
 				logger.Print(fmt.Sprintf("%s:", green("new peer discovered")), peerAddrInfo)
 
 				stream, err := routedHost.NewStream(ctx, peerAddrInfo.ID, protocol.ID(protocolIDstr))
-
 				if err != nil {
 
 					// register all peers that this peer failed to connect with.
@@ -336,7 +330,6 @@ func initPeerDiscovery(pNode host.Host,
 							}
 						}
 					}
-
 
 					fmt.Println(err, strings.HasPrefix(fmt.Sprint(err), "failed to dial"))
 					
@@ -357,7 +350,7 @@ func initPeerDiscovery(pNode host.Host,
 			// spew.Dump(peersConnectedMap)
 
 			fmt.Printf("peers in peerstore #%d \n", len(pNode.Peerstore().Peers()))
-			spew.Dump(pNode.Peerstore().Peers())
+
 
 			// find self
 			fmt.Printf("looking for self\n")

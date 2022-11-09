@@ -21,6 +21,7 @@ package gf_p2p
 
 import (
 	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -34,6 +35,8 @@ type GFp2pStatus struct {
 	ProtocolIDstr       string
 
 	BootstrapPeers []GFp2pPeerInfo
+	PeersNumberInt int
+	PeersIDsLst    []string
 }
 
 type GFp2pStatusServerCh chan GFp2pGetStatusMsg
@@ -42,7 +45,8 @@ type GFp2pGetStatusMsg struct {
 }
 
 //-------------------------------------------------
-func statusServer(pConfig GFp2pConfig,
+func statusServer(pNode host.Host,
+	pConfig     GFp2pConfig,
 	pRuntimeSys *gf_core.RuntimeSys) GFp2pStatusServerCh {
 	
 	statusMngrCh := make(chan GFp2pGetStatusMsg, 10)
@@ -50,7 +54,9 @@ func statusServer(pConfig GFp2pConfig,
 		for {
 			select {
 			case getStatusMsg := <-statusMngrCh:
-				status := getStatus(pConfig)
+
+				status := getStatus(pNode,
+					pConfig)
 				getStatusMsg.responseCh <- *status
 			}
 		}
@@ -71,15 +77,28 @@ func GetStatusFromServer(pStatusServerCh GFp2pStatusServerCh) GFp2pStatus {
 }
 
 //-------------------------------------------------
-func getStatus(pConfig GFp2pConfig) *GFp2pStatus {
+func getStatus(pNode host.Host,
+	pConfig GFp2pConfig) *GFp2pStatus {
 
-	bootstrapPeers      := pConfig.BootstrapPeers
+	bootstrapPeers           := pConfig.BootstrapPeers
 	bootstrapPeersSerialized := serializePeersInfo(bootstrapPeers)
+
+	peers := pNode.Peerstore().Peers()
+	peersNumberInt := len(peers)
+	
+	peerstorePeerIDsLst := []string{}
+	for _, peerID := range peers {
+		peerstorePeerIDsLst = append(peerstorePeerIDsLst, string(peerID))
+	}
 
 	status := &GFp2pStatus{
 		RendezvousSymbolStr: pConfig.RendezvousSymbolStr,
 		ProtocolIDstr:       pConfig.ProtocolIDstr,
 		BootstrapPeers:      bootstrapPeersSerialized,
+
+
+		PeersNumberInt: peersNumberInt,
+		PeersIDsLst:    peerstorePeerIDsLst,
 	}
 	return status
 }

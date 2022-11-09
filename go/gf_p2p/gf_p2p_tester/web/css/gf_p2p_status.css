@@ -8,7 +8,6 @@ body {
 
 	background-color: #d7d7d7;
 }
-
 #main_title {
 	padding: 6px;
 	padding-bottom: 3px;
@@ -32,6 +31,8 @@ body {
 	width: 30%;
 }
 
+/*--------------------------------------------------------------*/
+/* bootstrap_peers */
 #libp2p_bootstrap_peers {
 	font-size: 12px;
 	background-color: #939393;
@@ -41,3 +42,20 @@ body {
 	background-color: gray;
 	margin-bottom: 2px;
 }
+
+/*--------------------------------------------------------------*/
+/* peerstore */
+
+
+#libp2p_peerstore {
+	font-size: 12px;
+	background-color: #e4bd83;
+	padding: 5px;
+}
+#libp2p_peerstore #peers .peer {
+	background-color: #e4bd83;
+	margin-bottom: 2px;
+}
+
+
+/*--------------------------------------------------------------*/

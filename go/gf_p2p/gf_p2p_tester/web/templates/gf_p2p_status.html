@@ -32,6 +32,18 @@
             </div>
         </div>
 
+        <div id="libp2p_peerstore">
+            <div id="title">libp2p peerstore</div>
+            <div id="peers_num">peers number <span>{{ .P2pStatus.PeersNumberInt }}</span></div>
+            <div id="peers">
+                {{- range .P2pStatus.PeersIDsLst }}
+                <div class="peer">
+                    <div class="peer_id">peer ID <span>{{ . }}</span></div>
+                </div>
+                {{- end }}
+            </div>
+        </div>
+
     </div>
 
     {{- /*-----------------------------------------------------*/}}
