@@ -42,7 +42,7 @@ jobs:
       
       - name: add git commit hash
         run: |
-          sed -i 's/GF_COMMIT_SHA/${{ env.GITHUB_SHA }}/g' go/gf_core/gf_sys_release_info.go
+          sed -i 's/GF_COMMIT_SHA/${{ github.sha }}/g' go/gf_core/gf_sys_release_info.go
           
       - name: golang build
         run: |

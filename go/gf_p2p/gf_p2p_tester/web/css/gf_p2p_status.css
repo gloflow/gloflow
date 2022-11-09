@@ -8,3 +8,36 @@ body {
 
 	background-color: #d7d7d7;
 }
+
+#main_title {
+	padding: 6px;
+	padding-bottom: 3px;
+	color: gray;
+	font-size: 13px;
+}
+#libp2p_rendezvous_symbol {
+	background-color: #7dc1ea;
+	width: 30%;
+	padding: 4px;
+	padding-bottom: 1px;
+}
+#libp2p_protocol_id {
+	background-color: #7dc1ea;
+	width: 30%;
+	padding: 4px;
+	padding-bottom: 1px;
+}
+#libp2p_rendezvous_symbol {
+	background-color: #7dc1ea;
+	width: 30%;
+}
+
+#libp2p_bootstrap_peers {
+	font-size: 12px;
+	background-color: #939393;
+	padding: 5px;
+}
+#libp2p_bootstrap_peers #peers .peer {
+	background-color: gray;
+	margin-bottom: 2px;
+}
