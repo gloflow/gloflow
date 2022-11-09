@@ -22,14 +22,14 @@ package main
 import (
 	"context"
 	"net/http"
-	"bytes"
-	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_p2p"
 )
 
 //-------------------------------------------------
-func viewInit(pHTTPmux *http.ServeMux,
+func initHandlers(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
+	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -65,7 +65,11 @@ func viewInit(pHTTPmux *http.ServeMux,
 			if pReq.Method == "GET" {
 
 
-				templateRenderedStr, gfErr := viewStatusRender(templates.p2pStatus)
+				p2pStatus := gf_p2p.GetStatusFromServer(pStatusServerCh)
+
+				templateRenderedStr, gfErr := viewRenderStatus(p2pStatus,
+					templates.p2pStatus,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -80,31 +84,5 @@ func viewInit(pHTTPmux *http.ServeMux,
 
 	//-------------------------------------------------
 
-
-
 	return nil
-
-	
-
-
-}
-
-//-------------------------------------------------
-func viewStatusRender(pTmpl *template.Template) (string, *gf_core.GFerror) {
-
-	type tmplData struct {
-
-	}
-
-	buff := new(bytes.Buffer)
-	err := pTmpl.Execute(buff, tmplData{
-		
-
-	
-	})
-	if err != nil {
-
-	}
-	templateRenderedStr := buff.String()
-	return templateRenderedStr, nil
 }

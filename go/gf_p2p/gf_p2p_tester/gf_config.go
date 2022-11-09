@@ -1,6 +1,6 @@
 /*
 GloFlow application and media management/publishing platform
-Copyright (C) 2019 Ivan Trajkovic
+Copyright (C) 2022 Ivan Trajkovic
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,30 +20,44 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	// "fmt"
-	"text/template"
-	"github.com/gloflow/gloflow/go/gf_core"
+	"os"
+	"strconv"
 )
 
 //-------------------------------------------------
-type gfTemplates struct {
-	p2pStatus *template.Template
-}
-//-------------------------------------------------
-func tmplLoad(pTemplatesPathsMap map[string]string, // p_templates_dir_path_str string, 
-	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
+func getConfig() (int, int) {
 
+	//---------------------
+	// P2P_PORT
+	var p2pPortInt int
+	p2pPortStr, ok := os.LookupEnv("GF_P2P_PORT")
+	if ok {
+		var err error
+		p2pPortInt, err = strconv.Atoi(p2pPortStr)
+		if err != nil {
+			panic(err)
+		}	
+	} else {
+		// start on a random port
+		p2pPortInt = 0
+	}
 	
-	statusFilepathStr := pTemplatesPathsMap["gf_p2p_status"]
-
-	p2pStatusTmpl, _, gfErr := gf_core.TemplatesLoad(statusFilepathStr,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
+	//---------------------
+	// HTP_PORT
+	var httpPortInt int
+	httpPortStr, ok := os.LookupEnv("GF_HTTP_PORT")
+	if ok {
+		var err error
+		httpPortInt, err = strconv.Atoi(httpPortStr)
+		if err != nil {
+			panic(err)
+		}	
+	} else {
+		// start on a random port
+		httpPortInt = 3000
 	}
+	
+	//---------------------
 
-	templates := &gfTemplates{
-		p2pStatus: p2pStatusTmpl,
-	}
-	return templates, nil
+	return p2pPortInt, httpPortInt
 }

@@ -35,6 +35,19 @@ type GFp2pConfig struct {
 }
 
 //-------------------------------------------------
+func getConfig() GFp2pConfig {
+
+	config, err := ParseFlags()
+	if err != nil {
+		panic(err)
+	}
+	config.RendezvousSymbolStr = "gloflow_testnet"
+	config.ProtocolIDstr       = "/gf/general/0.0.1"
+
+	return config
+}
+
+//-------------------------------------------------
 func ParseFlags() (GFp2pConfig, error) {
 	config := GFp2pConfig{}
 

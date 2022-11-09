@@ -20,10 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"os"
-	// "fmt"
-	// "context"
-	"strconv"
 	"net/http"
 	// multiaddr "github.com/multiformats/go-multiaddr"
 	// "github.com/libp2p/go-libp2p/core/peer"
@@ -41,17 +37,22 @@ func main() {
 		LogFun:           logFun,
 	}
 
-	
+	//---------------------
+	// CONFIG
 	p2pPortInt, httpPortInt := getConfig()
-	
-	go func() {
-		_, _ = gf_p2p.Init(p2pPortInt, runtimeSys)
-	}()
+
+	//---------------------
+	// P2P_INIT
+	statusServerCh := gf_p2p.Init(p2pPortInt, runtimeSys)
 
 	//---------------------
 	// HTTP_SERVICE
 	gfHTTPmux := http.NewServeMux()
-	initService(httpPortInt, gfHTTPmux, runtimeSys)
+	
+	initService(statusServerCh,
+		httpPortInt,
+		gfHTTPmux,
+		runtimeSys)
 
 	//---------------------
 	
@@ -88,42 +89,4 @@ func main() {
 	} else {
 		defer gf_p2p.InitShutdownOnSignal(node)
 	}*/
-}
-
-//-------------------------------------------------
-func getConfig() (int, int) {
-
-	//---------------------
-	// P2P_PORT
-	var p2pPortInt int
-	p2pPortStr, ok := os.LookupEnv("GF_P2P_PORT")
-	if ok {
-		var err error
-		p2pPortInt, err = strconv.Atoi(p2pPortStr)
-		if err != nil {
-			panic(err)
-		}	
-	} else {
-		// start on a random port
-		p2pPortInt = 0
-	}
-	
-	//---------------------
-	// HTP_PORT
-	var httpPortInt int
-	httpPortStr, ok := os.LookupEnv("GF_HTTP_PORT")
-	if ok {
-		var err error
-		httpPortInt, err = strconv.Atoi(httpPortStr)
-		if err != nil {
-			panic(err)
-		}	
-	} else {
-		// start on a random port
-		httpPortInt = 3000
-	}
-	
-	//---------------------
-
-	return p2pPortInt, httpPortInt
 }

@@ -64,7 +64,25 @@ var logger = log.Default()
 
 //-------------------------------------------------
 func Init(pPortInt int,
-	pRuntimeSys *gf_core.RuntimeSys) (host.Host, GFp2pPeerInitFun) {
+	pRuntimeSys *gf_core.RuntimeSys) GFp2pStatusServerCh {
+
+	// CONFIG
+	config := getConfig()
+	
+	// STATUS_SERVER
+	statusServerCh := statusServer(config, pRuntimeSys)
+
+	go func() {
+		InitLibp2p(config, pPortInt, pRuntimeSys)
+	}()
+
+	return statusServerCh
+}
+
+//-------------------------------------------------
+func InitLibp2p(pConfig GFp2pConfig,
+	pPortInt    int,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	blue := color.New(color.FgBlue).Add(color.BgWhite).SprintFunc()
 
@@ -147,7 +165,7 @@ func Init(pPortInt int,
 	
 
 	//-------------------------------------------------
-	pingInitPeerFun := func(pPeerID peer.ID) GFp2pPeerPingFun {
+	/*pingInitPeerFun := func(pPeerID peer.ID) GFp2pPeerPingFun {
 
 		pingCh := pingService.Ping(context.Background(), pPeerID)
 		pingPeerFun := func() ping.Result {
@@ -156,7 +174,7 @@ func Init(pPortInt int,
 		}
 
 		return GFp2pPeerPingFun(pingPeerFun)
-	}
+	}*/
 
 	//-------------------------------------------------
 
@@ -166,18 +184,13 @@ func Init(pPortInt int,
 	
 
 
-	config, err := ParseFlags()
-	if err != nil {
-		panic(err)
-	}
-	config.RendezvousSymbolStr = "gloflow_testnet"
-	config.ProtocolIDstr       = "/gf/general/0.0.1"
-
-	InitStreamHandler(node, config, pRuntimeSys)
-	initPeerDiscovery(node, config, pRuntimeSys)
 	
 
-	return node, GFp2pPeerInitFun(pingInitPeerFun)
+	InitStreamHandler(node, pConfig, pRuntimeSys)
+	initPeerDiscovery(node, pConfig, pRuntimeSys)
+	
+
+	// return node, GFp2pPeerInitFun(pingInitPeerFun)
 }
 
 /*type blankValidator struct{}
@@ -187,7 +200,7 @@ func (blankValidator) Select(_ string, _ [][]byte) (int, error) { return 0, nil 
 
 //-------------------------------------------------
 func initPeerDiscovery(pNode host.Host,
-	pConfig GFp2pConfig,
+	pConfig     GFp2pConfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -219,6 +232,10 @@ func initPeerDiscovery(pNode host.Host,
 
 	// connect to the bootstrap nodes first, to receive info about other nodes in the network
 	var wg sync.WaitGroup
+
+
+
+	
 
 	for _, peerAddr := range bootstrapPeers {
 
@@ -336,8 +353,8 @@ func initPeerDiscovery(pNode host.Host,
 
 			}
 
-			spew.Dump(peersFailToDialMap)
-			spew.Dump(peersConnectedMap)
+			// spew.Dump(peersFailToDialMap)
+			// spew.Dump(peersConnectedMap)
 
 			fmt.Printf("peers in peerstore #%d \n", len(pNode.Peerstore().Peers()))
 			spew.Dump(pNode.Peerstore().Peers())

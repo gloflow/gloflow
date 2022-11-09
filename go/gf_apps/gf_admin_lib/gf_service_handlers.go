@@ -237,31 +237,3 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	
 	return nil
 }
-
-//-------------------------------------------------
-func templatesLoad(p_templates_paths_map map[string]string,
-	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
-
-	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
-	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]
-
-	l_tmpl, l_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(loginTemplateFilepathStr,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	d_tmpl, d_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(dashboardTemplateFilepathStr,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	templates := &gf_templates{
-		login__tmpl:                   l_tmpl,
-		login__subtemplates_names_lst: l_subtemplates_names_lst,
-		dashboard__tmpl:                   d_tmpl,
-		dashboard__subtemplates_names_lst: d_subtemplates_names_lst,
-	}
-	return templates, nil
-}

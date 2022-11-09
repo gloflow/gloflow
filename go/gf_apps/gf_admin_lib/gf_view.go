@@ -75,7 +75,7 @@ func view__render_template_dashboard(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
 	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(p_runtime_sys)
 	
 	type tmpl_data struct {
 		Sys_release_info gf_core.SysReleaseInfo
@@ -84,7 +84,7 @@ func view__render_template_dashboard(p_tmpl *template.Template,
 
 	buff := new(bytes.Buffer)
 	err := p_tmpl.Execute(buff, tmpl_data{
-		Sys_release_info: sys_release_info,
+		Sys_release_info: sysReleaseInfo,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
@@ -110,4 +110,32 @@ func view__render_template_dashboard(p_tmpl *template.Template,
 
 	template_rendered_str := buff.String()
 	return template_rendered_str, nil
+}
+
+//-------------------------------------------------
+func templatesLoad(p_templates_paths_map map[string]string,
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
+
+	loginTemplateFilepathStr     := p_templates_paths_map["gf_admin_login"]
+	dashboardTemplateFilepathStr := p_templates_paths_map["gf_admin_dashboard"]
+
+	l_tmpl, l_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(loginTemplateFilepathStr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	d_tmpl, d_subtemplates_names_lst, gfErr := gf_core.TemplatesLoad(dashboardTemplateFilepathStr,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	templates := &gf_templates{
+		login__tmpl:                   l_tmpl,
+		login__subtemplates_names_lst: l_subtemplates_names_lst,
+		dashboard__tmpl:                   d_tmpl,
+		dashboard__subtemplates_names_lst: d_subtemplates_names_lst,
+	}
+	return templates, nil
 }

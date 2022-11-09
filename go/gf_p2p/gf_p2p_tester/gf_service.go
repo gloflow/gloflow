@@ -23,25 +23,29 @@ import (
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_p2p"
 )
 
 //-------------------------------------------------
-func initService(pPortInt int,
+func initService(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
+	pPortInt    int,
 	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
-
+	
 	
 	templatesPathsMap := map[string]string{
 		"gf_p2p_status": "./web/templates/gf_p2p_status.html",
 	}
 	
-	gfErr := viewInit(pHTTPmux,
+	//------------------------
+	// HANDLERS
+	gfErr := initHandlers(pStatusServerCh,
+		pHTTPmux,
 		templatesPathsMap,
 		pRuntimeSys)
 	if gfErr != nil {
-		
+		panic(gfErr.Error)
 	}
-
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -54,9 +58,8 @@ func initService(pPortInt int,
 		pRuntimeSys)
 
 	//------------------------
-
-
 	// SERVER_INIT - blocking
 	gf_rpc_lib.ServerInitWithMux(pPortInt, pHTTPmux)
 
+	//------------------------
 }
