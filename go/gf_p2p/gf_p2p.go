@@ -381,8 +381,6 @@ func initPeerDiscovery(pNode host.Host,
 			time.Sleep(10 * time.Second)
 		}
 	}()
-
-	select {}
 }
 
 //-------------------------------------------------
