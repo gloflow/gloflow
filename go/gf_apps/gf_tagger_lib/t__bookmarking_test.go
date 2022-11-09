@@ -56,7 +56,7 @@ func Test__main(p_test *testing.T) {
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger_tests",
 		LogFun:           logFun,
-		Validator:        gf_core.Validate__init(),
+		Validator:        gf_core.ValidateInit(),
 	}
 
 	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
