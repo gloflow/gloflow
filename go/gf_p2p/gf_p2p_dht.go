@@ -24,8 +24,8 @@ import (
 	"context"
 	"github.com/libp2p/go-libp2p/core/host"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
-	datastore "github.com/ipfs/go-datastore"
-	datastore_sync "github.com/ipfs/go-datastore/sync"
+	// datastore "github.com/ipfs/go-datastore"
+	// datastore_sync "github.com/ipfs/go-datastore/sync"
 )
 
 //-------------------------------------------------
@@ -46,25 +46,29 @@ func dhtTest(pDHT *dht.IpfsDHT,
 func dhtInit(pNode host.Host,
 	pCtx context.Context) (*dht.IpfsDHT, error) {
 	
-	/*optionsLst := []dht.Option{
-		dht.ProtocolPrefix(protocol.ID(pConfig.ProtocolIDstr)),
-		dht.NamespacedValidator("v", blankValidator{}),
+	optionsLst := []dht.Option{
+		// dht.ProtocolPrefix(protocol.ID(pConfig.ProtocolIDstr)),
+		// dht.NamespacedValidator("v", blankValidator{}),
 		
 		// start the node in Server mode
-		// dht.Mode(dht.ModeServer),
+		dht.Mode(dht.ModeServer),
 
 		// DisableAutoRefresh(),
-	}*/
+	}
 
 	// Construct a datastore (needed by the DHT). This is just a simple, in-memory thread-safe datastore.
-	dstore := datastore_sync.MutexWrap(datastore.NewMapDatastore())
+	// dstore := datastore_sync.MutexWrap(datastore.NewMapDatastore())
 
-	// https://github.com/libp2p/go-libp2p-kad-dht/blob/master/dht.go
+	/*// https://github.com/libp2p/go-libp2p-kad-dht/blob/master/dht.go
 	// NewDHT creates a new DHT object with the given peer as the 'local' host.
 	// IpfsDHT's initialized with this function will respond to DHT requests,
 	// whereas IpfsDHT's initialized with NewDHTClient will not.
-	dht := dht.NewDHT(pCtx, pNode, dstore)
+	dht := dht.NewDHT(pCtx, pNode, dstore)*/
 
+	dht, err := dht.New(pCtx, pNode, optionsLst...)
+	if err != nil {
+		return nil, err
+	}
 
 	// someKeyStr := "something"
 	// _, err := dht.GetClosestPeers(ctx, someKeyStr)

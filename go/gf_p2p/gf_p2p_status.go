@@ -107,7 +107,7 @@ func getStatus(pNode host.Host,
 
 	// dht mode
 	dhtModeInt := int(pDHT.Mode())
-	var dhtModeStr string
+	dhtModeStr := "not_set"
 	switch dhtModeInt {
 	case int(dht.ModeClient):
 		dhtModeStr = "client"
