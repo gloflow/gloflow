@@ -45,6 +45,7 @@ type GFp2pStatus struct {
 
 	// DHT
 	DHTmodeInt int
+	DHTmodeStr string
 }
 
 type GFp2pStatusServerCh chan GFp2pGetStatusMsg
@@ -104,9 +105,16 @@ func getStatus(pNode host.Host,
 	}
 
 
-
+	// dht mode
 	dhtModeInt := int(pDHT.Mode())
-	
+	var dhtModeStr string
+	switch dhtModeInt {
+	case int(dht.ModeClient):
+		dhtModeStr = "client"
+	case int(dht.ModeServer):
+		dhtModeStr = "server"
+	}
+
 	// routing_table diversity stats
 	fmt.Printf("diversity stats\n")
 
@@ -126,6 +134,7 @@ func getStatus(pNode host.Host,
 
 		// DHT
 		DHTmodeInt: dhtModeInt,
+		DHTmodeStr: dhtModeStr,
 	}
 	return status
 }
