@@ -26,21 +26,9 @@ import (
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	// datastore "github.com/ipfs/go-datastore"
 	// datastore_sync "github.com/ipfs/go-datastore/sync"
+
+	// "github.com/davecgh/go-spew/spew"
 )
-
-//-------------------------------------------------
-func dhtTest(pDHT *dht.IpfsDHT,
-	pCtx context.Context) {
-
-	val, err := pDHT.GetValue(pCtx, "/gf/0.0.1/key1")
-	if err != nil {
-		fmt.Printf("NOO VALUE FOR KEY in DHT - %s\n", err)
-	} else {
-		fmt.Printf("DHT key %s\n", string(val))
-	}
-
-	pDHT.PutValue(pCtx, "/gf/0.0.1/key1", []byte("key_value1"))
-}
 
 //-------------------------------------------------
 func dhtInit(pNode host.Host,
@@ -84,4 +72,49 @@ func dhtInit(pNode host.Host,
 	fmt.Printf("DHT mode: %s\n", dht.Mode())
 	
 	return dht, nil
+}
+
+//-------------------------------------------------
+// GET
+func dhtGet(pKeyStr string,
+	pDHT *dht.IpfsDHT,
+	pCtx context.Context) (string, error) {
+	
+	val, err := pDHT.GetValue(pCtx, pKeyStr)
+	if err != nil {
+		return "", err
+	}
+
+	valStr := string(val)
+	return valStr, nil
+}
+
+//-------------------------------------------------
+// PUT
+func dhtPut(pKeyStr string,
+	pValStr string,
+	pDHT    *dht.IpfsDHT,
+	pCtx    context.Context) error {
+
+	err := pDHT.PutValue(pCtx, "/gf/0.0.1/key_test_1", []byte("key_value1"))
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
+//-------------------------------------------------
+func dhtFindSelf(pNode host.Host,
+	pDHT *dht.IpfsDHT) (string, []string) {
+
+	// find self
+	fmt.Printf("looking for self\n")
+
+	// :peer.AddrInfo
+	selfAddrInfo := pDHT.FindLocal(pNode.ID())
+	
+	selfPeerIDstr, selfAddrsSerializedLst :=  serializeAddrInfo(selfAddrInfo)
+
+	return selfPeerIDstr, selfAddrsSerializedLst
 }
