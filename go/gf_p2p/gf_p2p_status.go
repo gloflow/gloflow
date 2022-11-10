@@ -21,7 +21,7 @@ package gf_p2p
 
 import (
 	"fmt"
-	"github.com/libp2p/go-libp2p/core/peer"
+	"context"
 	"github.com/libp2p/go-libp2p/core/host"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -30,10 +30,7 @@ import (
 )
 
 //-------------------------------------------------
-type GFp2pPeerInfo struct {
-	IDstr         string
-	MultiaddrsLst []string
-}
+
 type GFp2pStatus struct {
 	RendezvousSymbolStr string
 	ProtocolIDstr       string
@@ -46,6 +43,12 @@ type GFp2pStatus struct {
 	// DHT
 	DHTmodeInt int
 	DHTmodeStr string
+	DHTtestKeyStr string
+	DHTtestValStr string
+
+	// SELF
+	SelfPeerIDstr          string
+	SelfAddrsSerializedLst []string
 }
 
 type GFp2pStatusServerCh chan GFp2pGetStatusMsg
@@ -61,13 +64,17 @@ func statusServer(pNode host.Host,
 	
 	statusMngrCh := make(chan GFp2pGetStatusMsg, 10)
 	go func() {
+
+		ctx := context.Background()
+
 		for {
 			select {
 			case getStatusMsg := <-statusMngrCh:
 
 				status := getStatus(pNode,
 					pDHT,
-					pConfig)
+					pConfig,
+					ctx)
 
 				getStatusMsg.responseCh <- *status
 			}
@@ -91,11 +98,15 @@ func GetStatusFromServer(pStatusServerCh GFp2pStatusServerCh) GFp2pStatus {
 //-------------------------------------------------
 func getStatus(pNode host.Host,
 	pDHT    *dht.IpfsDHT,
-	pConfig GFp2pConfig) *GFp2pStatus {
+	pConfig GFp2pConfig,
+	pCtx    context.Context) *GFp2pStatus {
 
+	//----------------
+	// PEERS
 	bootstrapPeers           := pConfig.BootstrapPeers
 	bootstrapPeersSerialized := serializePeersInfo(bootstrapPeers)
 
+	// get the peerstore of the current p2p host
 	peers := pNode.Peerstore().Peers()
 	peersNumberInt := len(peers)
 	
@@ -104,6 +115,8 @@ func getStatus(pNode host.Host,
 		peerstorePeerIDsLst = append(peerstorePeerIDsLst, string(peerID))
 	}
 
+	//----------------
+	// DHT
 
 	// dht mode
 	dhtModeInt := int(pDHT.Mode())
@@ -115,13 +128,32 @@ func getStatus(pNode host.Host,
 		dhtModeStr = "server"
 	}
 
-	// routing_table diversity stats
-	fmt.Printf("diversity stats\n")
-
+	// dh routing-table diversity stats
 	// :[]peerdiversity.CplDiversityStats
 	stats := pDHT.GetRoutingTableDiversityStats()
 	spew.Dump(stats)
 
+	//----------------
+	// DHT READ/WRITE
+
+	dhtTestKeyStr := "/gf/0.0.1/key_test_1"
+
+	err := dhtPut(dhtTestKeyStr, "test_val_1", pDHT, pCtx)
+	if err != nil {
+
+	}
+
+	dhtTestValStr, err := dhtGet("/gf/0.0.1/key_test_1", pDHT, pCtx)
+	if err != nil {
+		dhtTestValStr = fmt.Sprint(err)
+	}
+
+	//----------------
+	// DHT FIND_SELF
+
+	selfPeerIDstr, selfAddrsSerializedLst := dhtFindSelf(pNode, pDHT)
+
+	//----------------
 
 	status := &GFp2pStatus{
 		RendezvousSymbolStr: pConfig.RendezvousSymbolStr,
@@ -135,32 +167,12 @@ func getStatus(pNode host.Host,
 		// DHT
 		DHTmodeInt: dhtModeInt,
 		DHTmodeStr: dhtModeStr,
+		DHTtestKeyStr: dhtTestKeyStr,
+		DHTtestValStr: dhtTestValStr,
+
+		// SELF
+		SelfPeerIDstr:          selfPeerIDstr,
+		SelfAddrsSerializedLst: selfAddrsSerializedLst,
 	}
 	return status
 }
-
-//-------------------------------------------------
-func serializePeersInfo(pPeersInfoLst GFp2pAddrLst) []GFp2pPeerInfo {
-
-	peersLst := []GFp2pPeerInfo{}
-	for _, peerAddr := range pPeersInfoLst {
-
-		peerInfo, _  := peer.AddrInfoFromP2pAddr(peerAddr)
-		peerID       := peerInfo.ID
-		peerAddrsLst := peerInfo.Addrs
-
-		peerAddrsSerialized := []string{}
-		for _, a := range peerAddrsLst {
-			peerAddrsSerialized = append(peerAddrsSerialized, a.String())
-		}
-		gfPeerInfo := GFp2pPeerInfo{
-			IDstr:         string(peerID),
-			MultiaddrsLst: peerAddrsSerialized,
-		}
-
-		peersLst = append(peersLst, gfPeerInfo)
-	}
-	return peersLst
-}
-
-

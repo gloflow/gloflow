@@ -38,7 +38,6 @@ import (
 	"github.com/libp2p/go-libp2p/core/protocol"
 	"github.com/libp2p/go-libp2p/p2p/net/connmgr"
 	"github.com/libp2p/go-libp2p/p2p/security/tls"
-
 	"github.com/libp2p/go-libp2p/p2p/protocol/ping"
 	"github.com/libp2p/go-libp2p/core/peer"
 
@@ -49,8 +48,7 @@ import (
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 
 	"github.com/gloflow/gloflow/go/gf_core"
-
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -136,8 +134,6 @@ func InitLibp2p(pConfig GFp2pConfig,
 	}
 	// defer node.Close()
 
-	// node.Peerstore() - get the peerstore of the current p2p host
-
 	fmt.Printf("node Listen addresses: %s\n", node.Addrs())
 	fmt.Printf("node hosts ID is %s\n", blue(node.ID()))
 
@@ -204,20 +200,11 @@ func initPeerDiscovery(pNode host.Host,
 	randezvousSymbolStr := pConfig.RendezvousSymbolStr
 	protocolIDstr       := pConfig.ProtocolIDstr
 
-
 	peersNamespaceStr := randezvousSymbolStr
-
-	
-
 	routedHost := routed_host.Wrap(pNode, pDHT)
-
 
 	// connect to the bootstrap nodes first, to receive info about other nodes in the network
 	var wg sync.WaitGroup
-
-
-
-	
 
 	for _, peerAddr := range bootstrapPeers {
 
@@ -236,8 +223,6 @@ func initPeerDiscovery(pNode host.Host,
 	}
 	wg.Wait()
 
-
-
 	//----------------
 	// ANNOUNCING RANDEZVOUS
 
@@ -246,7 +231,6 @@ func initPeerDiscovery(pNode host.Host,
 
 	// makes this node announce that it can provide a value for the given key,
 	// key being the "randezvous string"
-	
 	discovery_utils.Advertise(pCtx, routingDiscovery, peersNamespaceStr)
 
 	logger.Print("peer announced...")
@@ -274,7 +258,8 @@ func initPeerDiscovery(pNode host.Host,
 		
 		for {
 
-			// FindPeers() - provides us with all the peers that have been discovered at the rendezvous-point
+			// FindPeers() - provides us with all the peers that have 
+			//               been discovered at the rendezvous-point.
 			peersCh, err := routingDiscovery.FindPeers(ctx, peersNamespaceStr)
 			if err != nil {
 				panic(err)
@@ -330,29 +315,7 @@ func initPeerDiscovery(pNode host.Host,
 
 				peersConnectedMap[peerAddrInfo.ID] = &GFp2pPeersConnected{}
 				logger.Print(fmt.Sprintf("%s:", greenAndWhiteBg("connected to peer")), peerAddrInfo)
-
 			}
-
-			// spew.Dump(peersFailToDialMap)
-			// spew.Dump(peersConnectedMap)
-
-			fmt.Printf("peers in peerstore #%d \n", len(pNode.Peerstore().Peers()))
-
-
-			// find self
-			fmt.Printf("looking for self\n")
-			selfAddr := pDHT.FindLocal(pNode.ID())
-			spew.Dump(selfAddr)
-
-			
-
-
-			//-----------------
-			// TEST DHT READ/WRITE
-
-			dhtTest(pDHT, ctx)
-
-			//-----------------
 
 			// sleep and then try to discover peers again
 			time.Sleep(10 * time.Second)

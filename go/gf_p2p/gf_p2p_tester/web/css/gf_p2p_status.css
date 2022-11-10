@@ -21,18 +21,30 @@ body {
 	width: 30%;
 	padding: 4px;
 	padding-bottom: 1px;
+	font-size: 10px;
+}
+#libp2p_rendezvous_symbol span {
+	font-size: 16px;
 }
 #libp2p_protocol_id {
 	background-color: #6eaad0;
 	width: 30%;
 	padding: 4px;
 	padding-bottom: 1px;
+	font-size: 10px;
+}
+#libp2p_protocol_id span {
+	font-size: 16px;
 }
 #libp2p_dht_mode {
 	background-color: #6499ba;
 	width: 30%;
 	padding: 4px;
 	padding-bottom: 1px;
+	font-size: 10px;
+}
+#libp2p_dht_mode span {
+	font-size: 16px;
 }
 
 /*--------------------------------------------------------------*/
