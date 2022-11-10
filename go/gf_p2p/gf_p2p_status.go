@@ -38,9 +38,13 @@ type GFp2pStatus struct {
 	RendezvousSymbolStr string
 	ProtocolIDstr       string
 
+	// PEERS
 	BootstrapPeers []GFp2pPeerInfo
 	PeersNumberInt int
 	PeersIDsLst    []string
+
+	// DHT
+	DHTmodeInt int
 }
 
 type GFp2pStatusServerCh chan GFp2pGetStatusMsg
@@ -101,8 +105,12 @@ func getStatus(pNode host.Host,
 
 
 
+	dhtModeInt := int(pDHT.Mode())
+	
 	// routing_table diversity stats
 	fmt.Printf("diversity stats\n")
+
+	// :[]peerdiversity.CplDiversityStats
 	stats := pDHT.GetRoutingTableDiversityStats()
 	spew.Dump(stats)
 
@@ -112,9 +120,12 @@ func getStatus(pNode host.Host,
 		ProtocolIDstr:       pConfig.ProtocolIDstr,
 		BootstrapPeers:      bootstrapPeersSerialized,
 
-
+		// PEERS
 		PeersNumberInt: peersNumberInt,
 		PeersIDsLst:    peerstorePeerIDsLst,
+
+		// DHT
+		DHTmodeInt: dhtModeInt,
 	}
 	return status
 }

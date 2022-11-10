@@ -40,13 +40,13 @@ func viewRenderStatus(pP2pStatus gf_p2p.GFp2pStatus,
 
 	type tmplData struct {
 		SysReleaseInfo gf_core.SysReleaseInfo
-		P2pStatus      gf_p2p.GFp2pStatus
+		P2Pstatus      gf_p2p.GFp2pStatus
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTmpl.Execute(buff, tmplData{
 		SysReleaseInfo: sysReleaseInfo,
-		P2pStatus:      pP2pStatus,
+		P2Pstatus:      pP2pStatus,
 	})
 	if err != nil {
 
