@@ -33,7 +33,6 @@ import (
 	"github.com/fatih/color"
 	
 	"github.com/libp2p/go-libp2p"
-	"github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/protocol"
@@ -68,12 +67,9 @@ func Init(pPortInt int,
 	// CONFIG
 	config := getConfig()
 	
-	
-
 	// INIT_LIBP2P
 	node, dht := InitLibp2p(config, pPortInt, pRuntimeSys)
 
-	
 	// STATUS_SERVER
 	statusServerCh := statusServer(node, dht, config, pRuntimeSys)
 
@@ -90,14 +86,8 @@ func InitLibp2p(pConfig GFp2pConfig,
 	ctx := context.Background()
 
 	//----------------
-	// KEYPAIR
-	priv, _, err := crypto.GenerateKeyPair(
-		crypto.Ed25519, // Select your key type. Ed25519 are nice short
-		-1,             // Select key length when possible (i.e. RSA).
-	)
-	if err != nil {
-		panic(err)
-	}
+	// KEYS
+	privateKey := loadKeys()
 
 	//----------------
 	// CONNECTION_MANAGER
@@ -116,7 +106,7 @@ func InitLibp2p(pConfig GFp2pConfig,
 	// https://github.com/libp2p/go-libp2p/blob/master/options.go
 
 	// configures libp2p to use the given private key to identify itself
-	identityOption := libp2p.Identity(priv)
+	identityOption := libp2p.Identity(privateKey)
 
 	// listen addresses
 	addressOption := libp2p.ListenAddrStrings(
