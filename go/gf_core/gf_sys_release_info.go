@@ -31,7 +31,7 @@ type SysReleaseInfo struct {
 func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
 
 	r := SysReleaseInfo{
-		Name_str:        "precious",
+		Name_str:        "nation_genesis",
 		Version_str:     "0.10.0.0", // currently deployed version
         Description_str: `
 0.10.0 (nation_genesis):
