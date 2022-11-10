@@ -20,9 +20,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_p2p
 
 import (
+	"fmt"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/host"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/gloflow/gloflow/go/gf_core"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -46,6 +50,7 @@ type GFp2pGetStatusMsg struct {
 
 //-------------------------------------------------
 func statusServer(pNode host.Host,
+	pDHT        *dht.IpfsDHT,
 	pConfig     GFp2pConfig,
 	pRuntimeSys *gf_core.RuntimeSys) GFp2pStatusServerCh {
 	
@@ -56,7 +61,9 @@ func statusServer(pNode host.Host,
 			case getStatusMsg := <-statusMngrCh:
 
 				status := getStatus(pNode,
+					pDHT,
 					pConfig)
+
 				getStatusMsg.responseCh <- *status
 			}
 		}
@@ -78,6 +85,7 @@ func GetStatusFromServer(pStatusServerCh GFp2pStatusServerCh) GFp2pStatus {
 
 //-------------------------------------------------
 func getStatus(pNode host.Host,
+	pDHT    *dht.IpfsDHT,
 	pConfig GFp2pConfig) *GFp2pStatus {
 
 	bootstrapPeers           := pConfig.BootstrapPeers
@@ -90,6 +98,14 @@ func getStatus(pNode host.Host,
 	for _, peerID := range peers {
 		peerstorePeerIDsLst = append(peerstorePeerIDsLst, string(peerID))
 	}
+
+
+
+	// routing_table diversity stats
+	fmt.Printf("diversity stats\n")
+	stats := pDHT.GetRoutingTableDiversityStats()
+	spew.Dump(stats)
+
 
 	status := &GFp2pStatus{
 		RendezvousSymbolStr: pConfig.RendezvousSymbolStr,

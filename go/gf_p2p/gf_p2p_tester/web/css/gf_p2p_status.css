@@ -46,7 +46,6 @@ body {
 /*--------------------------------------------------------------*/
 /* peerstore */
 
-
 #libp2p_peerstore {
 	font-size: 12px;
 	background-color: #e4bd83;
@@ -55,7 +54,7 @@ body {
 #libp2p_peerstore #peers .peer {
 	background-color: #e4bd83;
 	margin-bottom: 2px;
+	font-size: 8px;
 }
-
 
 /*--------------------------------------------------------------*/
