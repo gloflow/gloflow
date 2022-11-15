@@ -30,7 +30,6 @@ import (
 )
 
 //-------------------------------------------------
-
 type GFp2pStatus struct {
 	RendezvousSymbolStr string
 	ProtocolIDstr       string
