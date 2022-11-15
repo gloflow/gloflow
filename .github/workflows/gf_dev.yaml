@@ -230,7 +230,7 @@ jobs:
   #--------------------------------------------------------------------
   # BUILD_CONTAINERS
   build-and-publish-containers:
-    needs: [build-web, generate-go]
+    needs: [build-web, build-go]
     runs-on: ubuntu-latest
     container:
       image: glofloworg/gf_builder_go_ubuntu:latest
