@@ -3,7 +3,7 @@ on:
   push:
     branches: [ master ]
     paths:
-      - ".github/**"
+      - ".github/workflows/gf_p2p_tester_dev.yaml"
       - 'go/gf_core/**'
       - 'go/gf_extern_services/**'
       - 'go/gf_rpc_lib/**'
@@ -62,7 +62,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_GF_P2P_TESTER }}
 
       #-------------------------------
       # CONTAINER_PUBLISH
