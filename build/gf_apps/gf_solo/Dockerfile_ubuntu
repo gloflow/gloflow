@@ -119,7 +119,5 @@ RUN chown -R gf .
 #------------
 USER gf
 
-ENTRYPOINT ["/home/gf/gf_solo"]
-
-# default arguments
-CMD ["start", "service"]
+# ENTRYPOINT ["/home/gf/gf_solo"]
+CMD ["/home/gf/gf_solo", "start", "service"]
