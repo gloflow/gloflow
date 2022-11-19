@@ -182,7 +182,7 @@ def run(p_name_str,
     else:
         print(f"{fg('yellow')}DYNAMIC LINKING{attr(0)} --")
 
-        c_str = f"{LD_paths_str} go build -o {p_go_output_path_str}"
+        c_str = f"{LD_paths_str} go build -buildvcs=false -o {p_go_output_path_str}"
 
     #-----------------------------
     
