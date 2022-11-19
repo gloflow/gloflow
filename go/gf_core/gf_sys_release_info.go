@@ -28,6 +28,8 @@ type SysReleaseInfo struct {
     Git_commit_str  string // indicates this is usually pasted in by CI systems
 }
 
+var GitCommitSHAstr = "GF_COMMIT_SHA"
+
 //-------------------------------------------------
 
 func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
@@ -90,9 +92,8 @@ func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
     first introduction of a Chrome browser extension, for creating posts only (by adding images to them), no image flows.
     (~2010)`,
                     
-        // IMPORTANT!! - in CI systems (Drone at the moment) this line is searched for
-        //               and the git commit hash is pasted in.
-        Git_commit_str: "GF_COMMIT_SHA",
+        // IMPORTANT!! - in CI systems this line is searched for and the git commit hash is pasted in.
+        Git_commit_str: GitCommitSHAstr,
 	}
 
 	return r

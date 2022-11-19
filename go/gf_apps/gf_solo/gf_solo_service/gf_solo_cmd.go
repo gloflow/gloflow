@@ -293,8 +293,32 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	}
 
 	//--------------------
+	// INFO
+	cmdInfo := &cobra.Command{
+		Use:   "info",
+		Short: "get info on the gf_solo program",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+		},
+	}
+
+	// START_SERVICE
+	cmdInfoGitCommitSHA := &cobra.Command{
+		Use:   "git_commit_sha",
+		Short: "get git commit sha",
+		Long:  "get git commit sha that was used to build this binary",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+			fmt.Println(gf_core.GitCommitSHAstr)
+		},
+	}
+
+	//--------------------
 	cmdStart.AddCommand(cmdStartService)
+	cmdInfo.AddCommand(cmdInfoGitCommitSHA)
+
 	cmdBase.AddCommand(cmdStart)
+	cmdBase.AddCommand(cmdInfo)
 
 	return cmdBase
 }
