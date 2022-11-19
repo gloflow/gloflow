@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 //-------------------------------------------------
+
 type SysReleaseInfo struct {
 	Name_str        string
 	Version_str     string
@@ -28,6 +29,7 @@ type SysReleaseInfo struct {
 }
 
 //-------------------------------------------------
+
 func GetSysReleseInfo(pRuntimeSys *RuntimeSys) SysReleaseInfo {
 
 	r := SysReleaseInfo{

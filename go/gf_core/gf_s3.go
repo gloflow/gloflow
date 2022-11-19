@@ -35,6 +35,7 @@ import (
 )
 
 //---------------------------------------------------
+
 type GFs3Info struct {
 	Client   *s3.S3
 	Uploader *s3manager.Uploader
@@ -42,6 +43,7 @@ type GFs3Info struct {
 }
 
 //---------------------------------------------------
+
 func S3getFile(pTargetFileS3pathStr string,
 	pTargetFileLocalPathStr string,
 	pS3bucketNameStr        string,
@@ -85,6 +87,7 @@ func S3getFile(pTargetFileS3pathStr string,
 
 //---------------------------------------------------
 // S3_INIT
+
 func S3init(p_aws_access_key_id_str string,
 	p_aws_secret_access_key_str string,
 	p_token_str                 string,
@@ -135,6 +138,7 @@ func S3init(p_aws_access_key_id_str string,
 
 //---------------------------------------------------
 // S3__GENERATE_PRESIGNED_URL
+
 func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 	pS3bucketNameStr string,
 	pS3info          *GFs3Info,
@@ -166,6 +170,7 @@ func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 
 //---------------------------------------------------
 // S3__UPLOAD_FILE
+
 func S3uploadFile(p_target_file__local_path_str string,
 	p_target_file__s3_path_str string,
 	p_s3_bucket_name_str       string,
@@ -231,6 +236,7 @@ func S3uploadFile(p_target_file__local_path_str string,
 
 //---------------------------------------------------
 // S3__COPY_FILE
+ 
 func S3copyFile(p_source_bucket_str string,
 	p_source_file__s3_path_str string,
 	p_target_bucket_name_str   string,

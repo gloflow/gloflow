@@ -46,6 +46,7 @@ import (
 // TRANSACTIONS
 //-------------------------------------------------
 // RUN
+
 func MongoTXrun(p_tx_fun func() *GFerror,
 	pMetaMap       map[string]interface{}, // data describing the DB write op
 	p_mongo_client *mongo.Client,
@@ -105,6 +106,7 @@ func MongoTXrun(p_tx_fun func() *GFerror,
 
 //-------------------------------------------------
 // INIT
+
 func MongoTXinit(p_mongo_client *mongo.Client,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pRuntimeSys *RuntimeSys) (mongo.Session, *options.TransactionOptions, *GFerror) {
@@ -132,6 +134,7 @@ func MongoTXinit(p_mongo_client *mongo.Client,
 // OPS
 //-------------------------------------------------
 // MONGO_COUNT
+
 func MongoCount(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pColl      *mongo.Collection,
@@ -154,6 +157,7 @@ func MongoCount(pQuery bson.M,
 
 //-------------------------------------------------
 // MONGO_FIND_LATEST
+
 func MongoFindLatest(pQuery bson.M,
 	pTimeFieldNameStr string,
 	pMetaMap          map[string]interface{}, // data describing the DB write op
@@ -200,6 +204,7 @@ func MongoFindLatest(pQuery bson.M,
 
 //-------------------------------------------------
 // FIND
+
 func MongoFind(pQuery bson.M,
 	pOpts      *options.FindOptions,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
@@ -227,6 +232,7 @@ func MongoFind(pQuery bson.M,
 }
 
 //-------------------------------------------------
+
 func MongoDelete(pQuery bson.M,
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op
@@ -246,6 +252,7 @@ func MongoDelete(pQuery bson.M,
 
 //-------------------------------------------------
 // UPSERT
+
 func MongoUpsert(pQuery bson.M,
 	pRecord     interface{},
 	pMetaMap    map[string]interface{}, // data describing the DB write op
@@ -274,6 +281,7 @@ func MongoUpsert(pQuery bson.M,
 
 //-------------------------------------------------
 // UPSERT_BULK
+
 func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 	pRecordsLst  []interface{},
 	pCollNameStr string,
@@ -325,6 +333,7 @@ func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 
 //-------------------------------------------------
 // INSERT
+
 func MongoInsert(p_record interface{},
 	pCollNameStr string,
 	pMetaMap     map[string]interface{}, // data describing the DB write op 
@@ -346,6 +355,7 @@ func MongoInsert(p_record interface{},
 
 //-------------------------------------------------
 // ENSURE_INDEX
+
 func MongoEnsureIndex(pIndexesKeysLst [][]string, 
 	pIndexesNamesLst []string,
 	pCollNameStr     string,
@@ -410,6 +420,7 @@ func MongoEnsureIndex(pIndexesKeysLst [][]string,
 //--------------------------------------------------------------------
 // COLLECTIONS
 //--------------------------------------------------------------------
+
 func MongoCollExists(pCollNameStr string,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) (bool, *GFerror) {
@@ -436,6 +447,7 @@ func MongoCollExists(pCollNameStr string,
 // UTILS
 //--------------------------------------------------------------------
 // CONNECT_NEW
+
 func MongoConnectNew(p_mongo_server_url_str string,
 	p_db_name_str       string,
 	p_tls_custom_config *tls.Config,
@@ -481,6 +493,7 @@ func MongoConnectNew(p_mongo_server_url_str string,
 
 //--------------------------------------------------------------------
 // HANDLE_ERROR
+
 func MongoHandleError(p_user_msg_str string,
 	p_error_type_str     string,
 	p_error_data_map     map[string]interface{},
@@ -530,6 +543,7 @@ func MongoHandleError(p_user_msg_str string,
 
 //--------------------------------------------------------------------
 // START
+
 func MongoStart(p_mongodb_bin_path_str string,
 	p_mongodb_port_str          int,
 	p_mongodb_data_dir_path_str string,

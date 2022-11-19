@@ -27,6 +27,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 //-------------------------------------------------
+
 func InitLogs() (func(string, string), func(string, string, string, map[string]interface{})) {
 
 	

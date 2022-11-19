@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func CLIpyRun(pPyPathStr string,
 	pArgsLst         []string,
 	pInputStdinStr   *string,
@@ -65,6 +66,7 @@ func CLIpyRun(pPyPathStr string,
 }
 
 //-------------------------------------------------
+
 func cliPyParseOutput(pStdoutLst []string,
 	pStdoutPrefixStr string,
 	pRuntimeSys      *RuntimeSys) ([]map[string]interface{}, *GFerror) {

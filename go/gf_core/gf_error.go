@@ -39,6 +39,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFerror struct {
 	Id                   bson.ObjectId          `bson:"_id,omitempty"`
 	Id_str               string                 `bson:"id_str"` 
@@ -58,6 +59,7 @@ type GFerror struct {
 }
 
 //-------------------------------------------------
+
 func Panic__check_and_handle(pUserMsgStr string,
 	p_panic_data_map     map[string]interface{},
 	p_oncomplete_fn      func(),
@@ -113,6 +115,7 @@ func Panic__check_and_handle(pUserMsgStr string,
 }
 
 //-------------------------------------------------
+
 func ErrorCreateWithHook(pUserMsgStr string,
 	pErrorTypeStr          string,
 	pErrorDataMap          map[string]interface{},
@@ -135,6 +138,7 @@ func ErrorCreateWithHook(pUserMsgStr string,
 }
 
 //-------------------------------------------------
+
 func ErrorCreateWithStackSkip(pUserMsgStr string,
 	pErrorTypeStr          string,
 	pErrorDataMap          map[string]interface{},
@@ -158,6 +162,7 @@ func ErrorCreateWithStackSkip(pUserMsgStr string,
 }
 
 //-------------------------------------------------
+
 func ErrorCreate(pUserMsgStr string,
 	pErrorTypeStr     string,
 	pErrorDataMap     map[string]interface{},
@@ -184,6 +189,7 @@ func ErrorCreate(pUserMsgStr string,
 }
 
 //-------------------------------------------------
+
 func ErrorCreateWithDefs(pUserMsgStr string,
 	pErrorTypeStr     string,
 	pErrorDataMap     map[string]interface{},
@@ -338,6 +344,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 }
 
 //-------------------------------------------------
+
 func Error__init_sentry(p_sentry_endpoint_str string,
 	p_transactions__to_trace_map map[string]bool,
 	p_sample_rate_f              float64) error {

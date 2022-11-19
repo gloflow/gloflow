@@ -29,12 +29,14 @@ import (
 )
 
 //-------------------------------------------------
+
 func ValidateInit() *validator.Validate {
 	validator := validator.New()
 	return validator
 }
 
 //-------------------------------------------------
+
 func ValidateStruct(pTarget interface{},
 	pRuntimeSys *RuntimeSys) *GFerror {
 

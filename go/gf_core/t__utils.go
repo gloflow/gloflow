@@ -24,6 +24,7 @@ import (
 )
 
 //---------------------------------------------------
+
 type Gf_s3_test_info struct {
 	Gf_s3_info                *GFs3Info
 	Aws_access_key_id_str     string
@@ -32,6 +33,7 @@ type Gf_s3_test_info struct {
 }
 
 //---------------------------------------------------
+
 func T__get_s3_info(p_runtime_sys *RuntimeSys) *Gf_s3_test_info {
 
 	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")

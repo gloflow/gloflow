@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_CLI_cmd_info struct {
 	Cmd_lst          []string
 	Stdin_data_str   *string // data to be passed via stdin
@@ -38,6 +39,7 @@ type GF_CLI_cmd_info struct {
 
 //-------------------------------------------------
 // RUN_STANDARD
+
 func CLIrunStandard(pCmdLst []string,
 	p_env_vars_map map[string]string,
 	pRuntimeSys    *RuntimeSys) ([]string, []string, *GFerror) {
@@ -54,6 +56,7 @@ func CLIrunStandard(pCmdLst []string,
 
 //-------------------------------------------------
 // RUN
+
 func CLIrun(pCmdInfo *GF_CLI_cmd_info,
 	pRuntimeSys *RuntimeSys) ([]string, []string, *GFerror) {
 
@@ -70,6 +73,7 @@ func CLIrun(pCmdInfo *GF_CLI_cmd_info,
 }
 
 //-------------------------------------------------
+
 func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 	pWaitForCompletionBool bool,
 	pRuntimeSys            *RuntimeSys) (chan string, chan string, *GFerror) {
@@ -202,6 +206,7 @@ func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
 }
 
 //-------------------------------------------------
+
 func consumeOutputs(pStdoutCh chan string, pStderrCh chan string) ([]string, []string) {
 	stdoutLst := []string{}
 	stderrLst := []string{}
@@ -227,6 +232,7 @@ func consumeOutputs(pStdoutCh chan string, pStderrCh chan string) ([]string, []s
 }
 
 //-------------------------------------------------
+
 func CLIprompt() {
 
 

@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------
 // RUNTIME_SYS
-// type RuntimeSys = Runtime_sys
+
 type RuntimeSys struct {
 	Service_name_str string
 	LogFun           func(string, string)
@@ -62,6 +62,7 @@ type RuntimeSys struct {
 
 //-------------------------------------------------
 // PLUGINS
+
 type ExternalPlugins struct {
 
 	//---------------------------

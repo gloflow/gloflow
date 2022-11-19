@@ -24,6 +24,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func FileCopy(pSourceFileLocalPathStr string,
 	pTargetFileLocalPathStr string,
 	pRuntimeSys             *RuntimeSys) *GFerror {

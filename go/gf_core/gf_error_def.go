@@ -25,11 +25,13 @@ SOFTWARE.
 package gf_core
 
 //-------------------------------------------------
+
 type ErrorDef struct {
 	DescrStr string
 }
 
 //-------------------------------------------------
+
 func errorGetDefs() map[string]ErrorDef {
 
 	errorDefsMap := map[string]ErrorDef{

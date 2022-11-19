@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFmetrics struct {
 
 	// ERRORS_COUNTER - number of GF errors that were thrown
@@ -36,6 +37,7 @@ type GFmetrics struct {
 
 //-------------------------------------------------
 // INIT
+
 func MetricsInit(p_metrics_endpoint_str string, // "/metrics"
 	pPortInt int) *GFmetrics {
 	

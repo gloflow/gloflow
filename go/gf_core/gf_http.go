@@ -35,7 +35,9 @@ import (
 )
 
 //---------------------------------------------------
+
 type GF_http_fetch = Gf_http_fetch
+
 type Gf_http_fetch struct {
 	Url_str          string            `bson:"url_str"`
 	Status_code_int  int               `bson:"status_code_int"`
@@ -46,6 +48,7 @@ type Gf_http_fetch struct {
 }
 
 //---------------------------------------------------
+
 func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	pHeadersMap   map[string]string,
 	pUserAgentStr string,
@@ -82,6 +85,7 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 }
 
 //---------------------------------------------------
+
 func HTTPgetInput(pReq *http.Request,
 	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
 
@@ -102,6 +106,7 @@ func HTTPgetInput(pReq *http.Request,
 }
 
 //---------------------------------------------------
+
 func HTTPfetchURL(pURLstr string,
 	pHeadersMap   map[string]string,
 	pUserAgentStr string,
@@ -206,6 +211,7 @@ func HTTPfetchURL(pURLstr string,
 
 //---------------------------------------------------
 // PUT_FILE
+
 func HTTPputFile(p_target_url_str string,
 	p_file_path_str string,
 	pHeadersMap     map[string]string,
@@ -291,6 +297,7 @@ func HTTPputFile(p_target_url_str string,
 }
 
 //-------------------------------------------------
+
 func HTTPinitStaticServingWithMux(pURLbaseStr string,
 	p_local_dir_path_str string,
 	p_mux                *http.ServeMux,
@@ -309,6 +316,7 @@ func HTTPinitStaticServingWithMux(pURLbaseStr string,
 }
 
 //-------------------------------------------------
+
 func HTTPinitStaticServing(pURLbaseStr string,
 	pRuntimeSys *RuntimeSys) {
 	
@@ -344,6 +352,7 @@ func HTTPinitStaticServing(pURLbaseStr string,
 }
 
 //-------------------------------------------------
+
 func HTTPserveFile(pLocalDirStr string,
 	pURLstr     string,
 	pReq        *http.Request,
@@ -368,6 +377,7 @@ func HTTPserveFile(pLocalDirStr string,
 }
 
 //-------------------------------------------------
+
 func HTTPserializeCookies(pCookiesLst []*http.Cookie,
 	pRuntimeSys *RuntimeSys) string {
 
@@ -381,6 +391,7 @@ func HTTPserializeCookies(pCookiesLst []*http.Cookie,
 }
 
 //-------------------------------------------------
+
 func HTTPinitSSE(pResp http.ResponseWriter,
 	pRuntimeSys *RuntimeSys) (http.Flusher, *GFerror) {
 
@@ -414,6 +425,7 @@ func HTTPinitSSE(pResp http.ResponseWriter,
 }
 
 //-------------------------------------------------
+
 func HTTPgetStreamingResponse(pURLstr string,
 	pRuntimeSys *RuntimeSys) (*[]map[string]interface{}, *GFerror) {
 

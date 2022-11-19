@@ -24,6 +24,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func IPFSinit(pIPFSnodeHostStr string,
 	pRuntimeSys *RuntimeSys) (*ipfs.Shell, *GFerror) {
 

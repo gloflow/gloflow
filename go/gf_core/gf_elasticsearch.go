@@ -31,6 +31,7 @@ import (
 
 //-------------------------------------------------
 // ELASTICSEARCH_CONNECTION_RETRY
+
 type Gf_elasticsearch_retrier struct {
 	backoff elastic.Backoff
 }
@@ -63,6 +64,7 @@ func (p_retrier *Gf_elasticsearch_retrier) Retry(p_ctx context.Context,
 }
 
 //-------------------------------------------------
+
 func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elastic.Client, *GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
 

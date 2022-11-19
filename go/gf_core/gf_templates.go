@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func TemplatesLoad(pMainTemplateFilepathStr string,
 	pRuntimeSys *RuntimeSys) (*template.Template, []string, *GFerror) {
 

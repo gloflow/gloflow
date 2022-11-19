@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 func StrRandom() string {
 	rand_with_seed := rand.New(rand.NewSource(time.Now().UnixNano()))
 	rand_int := rand_with_seed.Int()
@@ -35,6 +36,7 @@ func StrRandom() string {
 }
 
 //-------------------------------------------------------------
+
 func HashValSha256(p_val interface{}) string {
 
 	h := sha256.New()
@@ -44,6 +46,7 @@ func HashValSha256(p_val interface{}) string {
 }
 
 //-------------------------------------------------------------
+
 func StrInLst(p_str string, p_lst []string) bool {
 	for _,s := range p_lst {
 		if p_str == s {
@@ -54,6 +57,7 @@ func StrInLst(p_str string, p_lst []string) bool {
 }
 
 //-------------------------------------------------------------
+
 func MapHasKey(p_map interface{}, p_key_str string) bool {
 
 	if _,ok := p_map.(map[string]interface{}); ok {
