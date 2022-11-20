@@ -34,6 +34,7 @@ import (
 )
 
 //--------------------------------------------------
+
 func gif_db__create(p_image_source_url_str string,
 	p_image_origin_page_url_str string,
 	p_img_width_int             int,
@@ -105,6 +106,7 @@ func gif_db__create(p_image_source_url_str string,
 }
 
 //--------------------------------------------------
+
 func gif_db__delete(p_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
@@ -129,6 +131,7 @@ func gif_db__delete(p_id_str string,
 }
 
 //--------------------------------------------------
+
 func gif_db__get_by_img_id(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_img_id()")
@@ -170,6 +173,7 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 }
 
 //--------------------------------------------------
+
 func gif_db__get_by_origin_url(p_origin_url_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
@@ -208,6 +212,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 }
 
 //--------------------------------------------------
+
 func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 	p_elements_num_int int,                // 50
 	p_runtime_sys      *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
@@ -262,6 +267,7 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 }
 
 //--------------------------------------------------
+
 func gif_db__update_image_id(p_gif_id_str string,
 	p_image_id_str gf_images_core.GFimageID,
 	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GFerror {

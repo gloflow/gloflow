@@ -31,6 +31,7 @@ import (
 )
 
 //--------------------------------------------------
+
 // TEMPORARY - only used for a little while, until all GIF format images are also 
 //             created in their GIF record form. new versions of crawler and chrome_ext 
 //             logic has proper creation of both image and gif DB records, but old
@@ -315,6 +316,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 }
 
 //--------------------------------------------------
+
 func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
@@ -453,6 +455,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 }
 
 //--------------------------------------------------
+
 func migrate__rebuild_gif(p_old_gif *GFgif,
 	p_images_store_local_dir_path_str string,
 	p_media_domain_str                string,
@@ -531,6 +534,7 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 }
 
 //--------------------------------------------------
+
 func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.GFimageID,
 	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	var flows_names_lst []string

@@ -31,8 +31,9 @@ import (
 )
 
 //-------------------------------------------------
-type Client_job_image_output struct {
-	Image_id_str                      gf_images_core.Gf_image_id
+
+type ClientJobImageOutput struct {
+	Image_id_str                      gf_images_core.GFimageID
 	Image_source_url_str              string
 	Thumbnail_small_relative_url_str  string
 	Thumbnail_medium_relative_url_str string
@@ -46,140 +47,141 @@ type Client_job_image_output struct {
 //                                        was found. this is valid for gf_chrome_ext image sources.
 //                                        its not relevant for direct image uploads from clients.
 
-func Client__dispatch_process_extern_images(p_input_images_urls_lst []string,
-	p_input_images_origin_pages_urls_lst  []string,
-	p_client_type_str                     string,
-	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.RuntimeSys) (string, []*Client_job_image_output, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.Client__dispatch_process_extern_images()")
+func ClientDispatchProcessExternImages(pInputImagesURLsLst []string,
+	pInputImagesOriginPagesURLsLst []string,
+	pClientTypeStr                 string,
+	pTargetImageServiceHostPortStr string,
+	pRuntimeSys                    *gf_core.RuntimeSys) (string, []*ClientJobImageOutput, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_http_client.ClientDispatchProcessExternImages()")
 
-	running_job_id_str, images_outputs_lst, gf_err := client__start_job(p_input_images_urls_lst,
-		p_input_images_origin_pages_urls_lst,
-		p_client_type_str,
-		p_target__image_service_host_port_str,
-		p_runtime_sys)
+	runningJobIDstr, imagesOutputsLst, gfErr := clientStartJob(pInputImagesURLsLst,
+		pInputImagesOriginPagesURLsLst,
+		pClientTypeStr,
+		pTargetImageServiceHostPortStr,
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return "", nil, gf_err
+	if gfErr != nil {
+		return "", nil, gfErr
 	}
 
-	return running_job_id_str, images_outputs_lst, nil
+	return runningJobIDstr, imagesOutputsLst, nil
 }
 
 //-------------------------------------------------
-func client__start_job(p_input_images_urls_lst []string,
-	p_input_images_origin_pages_urls_lst  []string,
-	p_client_type_str                     string,
-	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.RuntimeSys) (string, []*Client_job_image_output, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_images_http_client.client__start_job()")
+
+func clientStartJob(pInputImagesURLsLst []string,
+	pInputImagesOriginPagesURLsLst []string,
+	pClientTypeStr                 string,
+	pTargetImageServiceHostPortStr string,
+	pRuntimeSys                    *gf_core.RuntimeSys) (string, []*ClientJobImageOutput, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_http_client.clientStartJob()")
 
 	//------------------
 	// HTTP REQUEST
 
-	p_runtime_sys.LogFun("INFO","p_target__image_service_host_port_str - "+p_target__image_service_host_port_str)
+	pRuntimeSys.LogFun("INFO", "target_image_service_host_port - "+pTargetImageServiceHostPortStr)
 
-	url_str  := fmt.Sprintf("http://%s/images/jobs/start", p_target__image_service_host_port_str)
-	data_map := map[string]string{
+	urlStr  := fmt.Sprintf("http://%s/images/jobs/start", pTargetImageServiceHostPortStr)
+	dataMap := map[string]string{
 		"job_type_str":    "process_extern_image",
-		"client_type_str": p_client_type_str,
-		"imgs_urls_str":   strings.Join(p_input_images_urls_lst, ","),
+		"client_type_str": pClientTypeStr,
+		"imgs_urls_str":   strings.Join(pInputImagesURLsLst, ","),
 
 		// imgs_origin_pages_urls_str - urls of pages (html or some other resource) where the image image_url
 		//                              was found. this is valid for gf_chrome_ext image sources.
 		//                              its not relevant for direct image uploads from clients.
-		"imgs_origin_pages_urls_str": strings.Join(p_input_images_origin_pages_urls_lst, ","),
+		"imgs_origin_pages_urls_str": strings.Join(pInputImagesOriginPagesURLsLst, ","),
 	}
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.LogFun("INFO", "")
-	p_runtime_sys.LogFun("INFO", cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
-	p_runtime_sys.LogFun("INFO", yellow(p_input_images_urls_lst))
-    p_runtime_sys.LogFun("INFO", "")
+	pRuntimeSys.LogFun("INFO", "")
+	pRuntimeSys.LogFun("INFO", cyan("       --- CLIENT__START_JOB")+yellow(" ----------->>>>>>"))
+	pRuntimeSys.LogFun("INFO", yellow(pInputImagesURLsLst))
+    pRuntimeSys.LogFun("INFO", "")
 
     fmt.Println("")
-	spew.Dump(data_map)
+	spew.Dump(dataMap)
 
 	fmt.Println("")
 	fmt.Println("")
 	fmt.Println("")
 
 	// FIX!! - REMOVE THIS!! - instead use gf_rpc_client function
-	data_lst, _  := json.Marshal(data_map)
+	dataLst, _  := json.Marshal(dataMap)
 	_, body, errs := gorequest.New().
-		Post(url_str).
+		Post(urlStr).
 		Set("accept", "application/json").
-		Send(string(data_lst)).
+		Send(string(dataLst)).
 		End()
 
-	if errs != nil {
-		err    := errs[0] //FIX!! - use all errors in some way, just in case
-		gf_err := gf_core.ErrorCreate("gf_images_client start_job HTTP REST API request failed",
+	if len(errs) > 0 {
+		err   := errs[0] // FIX!! - use all errors in some way, just in case
+		gfErr := gf_core.ErrorCreate("gf_images_client start_job HTTP REST API request failed",
 			"http_client_req_error",
 			map[string]interface{}{
-				"url_str": url_str,
+				"url_str": urlStr,
 			},
-			err, "gf_images_lib", p_runtime_sys)
-		return "", nil, gf_err
+			err, "gf_images_lib", pRuntimeSys)
+		return "", nil, gfErr
 	}
 
 	fmt.Println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
-	fmt.Println(fmt.Sprintf("images_service %s RESPONSE", url_str))
-	p_runtime_sys.LogFun("INFO", fmt.Sprint(body))
+	fmt.Println(fmt.Sprintf("images_service %s RESPONSE", urlStr))
+	pRuntimeSys.LogFun("INFO", fmt.Sprint(body))
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ------------------- ++++++++++++++++")
 
 	//------------------
 
-	r_map := map[string]interface{}{}
-	j_err := json.Unmarshal([]byte(body), &r_map)
-	if j_err != nil {
-		gf_err := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_images_client start_job HTTP REST API - %s", url_str), 
+	rMap := map[string]interface{}{}
+	jErr := json.Unmarshal([]byte(body), &rMap)
+	if jErr != nil {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_images_client start_job HTTP REST API - %s", urlStr), 
 			"json_unmarshal_error",
 			map[string]interface{}{
-				"url_str": url_str,
+				"url_str": urlStr,
 				"body":    body,
 			},
-			j_err, "gf_images_lib", p_runtime_sys)
-		return "", nil, gf_err
+			jErr, "gf_images_lib", pRuntimeSys)
+		return "", nil, gfErr
 	}
 
-	r_status_str := r_map["status_str"].(string)
+	r_status_str := rMap["status_str"].(string)
 	if r_status_str != "OK" {
-		gf_err := gf_core.ErrorCreate(fmt.Sprintf("received a non-OK response from gf_images_client start_job HTTP REST API - %s", url_str),
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("received a non-OK response from gf_images_client start_job HTTP REST API - %s", urlStr),
 			"http_client_gf_status_error",
 			map[string]interface{}{
-				"url_str": url_str,
+				"url_str": urlStr,
 				"body":    body,
 			},
-			nil, "gf_images_lib", p_runtime_sys)
-		return "", nil, gf_err
+			nil, "gf_images_lib", pRuntimeSys)
+		return "", nil, gfErr
 	}
 
-	r_data_map := r_map["data"].(map[string]interface{})
+	r_data_map := rMap["data"].(map[string]interface{})
 
 	//-----------------
 	// RUNNING_JOB_ID
 
 	if _, ok := r_data_map["running_job_id_str"]; !ok {
-		err_usr_msg := fmt.Sprintf("%s response didnt return 'running_job_id_str'", url_str)
-		gf_err := gf_core.ErrorCreate(err_usr_msg,
+		err_usr_msg := fmt.Sprintf("%s response didnt return 'running_job_id_str'", urlStr)
+		gfErr := gf_core.ErrorCreate(err_usr_msg,
 			"verify__missing_key_error",
-			map[string]interface{}{"r_map": r_map,},
-			nil, "gf_images_lib", p_runtime_sys)
-		return "", nil, gf_err
+			map[string]interface{}{"r_map": rMap,},
+			nil, "gf_images_lib", pRuntimeSys)
+		return "", nil, gfErr
 	}
 
-	running_job_id_str := r_data_map["running_job_id_str"].(string)
+	runningJobIDstr := r_data_map["running_job_id_str"].(string)
 
 	//-----------------
 	// JUB_RESULT_IMAGES
-	job_expected_outputs_untyped_lst := r_data_map["job_expected_outputs_lst"].([]interface{})
-	images_outputs_lst               := []*Client_job_image_output{}
+	jobExpectedOutputsUntypedLst := r_data_map["job_expected_outputs_lst"].([]interface{})
+	imagesOutputsLst             := []*ClientJobImageOutput{}
 
-	for _, o := range job_expected_outputs_untyped_lst {
-		image_output := &Client_job_image_output{
+	for _, o := range jobExpectedOutputsUntypedLst {
+		imageOutput := &ClientJobImageOutput{
 			Image_id_str:                      gf_images_core.Gf_image_id(o.(map[string]interface{})["image_id_str"].(string)),
 			Image_source_url_str:              o.(map[string]interface{})["image_source_url_str"].(string),
 			Thumbnail_small_relative_url_str:  o.(map[string]interface{})["thumbnail_small_relative_url_str"].(string),
@@ -188,43 +190,44 @@ func client__start_job(p_input_images_urls_lst []string,
 			// Fetch_ok_bool                    :fetch_ok_bool,
 			// Transform_ok_bool                :transform_ok_bool,
 		}
-		images_outputs_lst = append(images_outputs_lst, image_output)
+		imagesOutputsLst = append(imagesOutputsLst, imageOutput)
 	}
 	
 	//-----------------
 
-	return running_job_id_str, images_outputs_lst, nil
+	return runningJobIDstr, imagesOutputsLst, nil
 }
 
 //-------------------------------------------------
-func client__get_status(p_running_job_id_str string,
-	p_target__image_service_host_port_str string,
-	p_runtime_sys                         *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.client__get_status()")
 
-	url_str := fmt.Sprintf("http://%s/images/jobs/status", p_target__image_service_host_port_str)
+func clientGetStatus(pRunningJobIDstr string,
+	pTargetImageServiceHostPortStr string,
+	pRuntimeSys                    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_http_client.clientGetStatus()")
+
+	url_str := fmt.Sprintf("http://%s/images/jobs/status", pTargetImageServiceHostPortStr)
 
 	_, body, errs := gorequest.New().
 		Get(url_str).
 		Set("accept", "text/event-stream").
-		Query(fmt.Sprintf(`running_job_id_str=%s`, p_running_job_id_str)).
+		Query(fmt.Sprintf(`running_job_id_str=%s`, pRunningJobIDstr)).
 		End()
 
-	if errs != nil {
+	if len(errs) > 0 {
 		err := errs[0]
-		gf_err := gf_core.ErrorCreate("failed make a client HTTP request to /images/jobs/status",
+		gfErr := gf_core.ErrorCreate("failed make a client HTTP request to /images/jobs/status",
 			"http_client_req_error",
 			map[string]interface{}{
-				"running_job_id_str":                  p_running_job_id_str,
-				"target__image_service_host_port_str": p_target__image_service_host_port_str,
+				"running_job_id_str":                  pRunningJobIDstr,
+				"target__image_service_host_port_str": pTargetImageServiceHostPortStr,
 			},
-			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_images_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	update_items_lst,gf_err := client__parse_sse_response(body, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	update_items_lst,gfErr := clientParseSSEresponse(body, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return update_items_lst, nil
@@ -232,16 +235,17 @@ func client__get_status(p_running_job_id_str string,
 
 //-------------------------------------------------
 // SSE
-func client__parse_sse_response(p_body_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_http_client.client__parse_sse_response()")
+
+func clientParseSSEresponse(pBodyStr string,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_http_client.clientParseSSEresponse()")
 
 	data_items_lst := []map[string]interface{}{}
 
-	for _, line_str := range strings.Split(p_body_str, `\n`) {
+	for _, line_str := range strings.Split(pBodyStr, `\n`) {
 
-		p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
-		p_runtime_sys.LogFun("INFO", line_str)
+		pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
+		pRuntimeSys.LogFun("INFO", line_str)
 
 		// filter out keep-alive new lines
 		if line_str != "" && strings.HasPrefix(line_str, "data: ") {
@@ -253,54 +257,54 @@ func client__parse_sse_response(p_body_str string,
 
 			if err != nil {
 
-				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
+				gfErr := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					map[string]interface{}{"line_str": line_str,},
-					err, "gf_images_lib", p_runtime_sys)
+					err, "gf_images_lib", pRuntimeSys)
 
-				return nil, gf_err
+				return nil, gfErr
 			}
 
 			//-------------------
 			// STATUS
 			if _,ok := msg_map["status_str"]; !ok {
 				err_usr_msg := "sse message json doesnt container key status_str"
-				gf_err      := gf_core.ErrorCreate(err_usr_msg,
+				gfErr       := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
-					nil, "gf_images_lib", p_runtime_sys)
-				return nil, gf_err
+					nil, "gf_images_lib", pRuntimeSys)
+				return nil, gfErr
 			}
 			status_str := msg_map["status_str"].(string)
 
 			if !(status_str == "ok" || status_str == "error") {
 
 				err_usr_msg := "sse message json status_str key is not of value ok|error"
-				gf_err      := gf_core.ErrorCreate(err_usr_msg,
+				gfErr      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__invalid_key_value_error",
 					map[string]interface{}{
 						"status_str": status_str,
 						"msg_map":    msg_map,
 					},
-					nil, "gf_images_lib", p_runtime_sys)
-				return nil, gf_err
+					nil, "gf_images_lib", pRuntimeSys)
+				return nil, gfErr
 			}
 
 			//-------------------
 			// DATA
 			if _,ok := msg_map["data_map"]; !ok {
 				err_usr_msg := "sse message json doesnt container key data_map"
-				gf_err      := gf_core.ErrorCreate(err_usr_msg,
+				gfErr      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
-					nil, "gf_images_lib", p_runtime_sys)
-				return nil, gf_err
+					nil, "gf_images_lib", pRuntimeSys)
+				return nil, gfErr
 			}
 			
-			data_map := msg_map["data_map"].(map[string]interface{})
+			dataMap := msg_map["data_map"].(map[string]interface{})
 			
 			//-------------------
-			data_items_lst = append(data_items_lst, data_map)
+			data_items_lst = append(data_items_lst, dataMap)
 		}
 	}
 	return data_items_lst, nil

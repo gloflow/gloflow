@@ -38,6 +38,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_edited_image struct {
 	Id                   primitive.ObjectID       `bson:"_id,omitempty"`
 	Id_str               string                   `bson:"id_str"` 
@@ -67,6 +68,7 @@ type GFeditedImageProcessingInfo struct {
 }
 
 //-------------------------------------------------
+
 func save_edited_image__pipeline(p_handler_url_path_str string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter, 
@@ -125,6 +127,7 @@ func save_edited_image__pipeline(p_handler_url_path_str string,
 }
 
 //-------------------------------------------------
+
 func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 	p_image_base64_data_str string,
 	pRuntimeSys             *gf_core.RuntimeSys) (*GFeditedImageProcessingInfo, *gf_core.GFerror) {
@@ -221,6 +224,7 @@ func saveEditedImage(p_source_image_id_str gf_images_core.GFimageID,
 }
 
 //-------------------------------------------------
+
 func createImage(p_new_title_str string,
 	p_images_flows_names_lst []string,
 	pProcessingInfo          *GFeditedImageProcessingInfo,

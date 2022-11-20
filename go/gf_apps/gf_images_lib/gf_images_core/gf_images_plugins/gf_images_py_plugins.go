@@ -27,6 +27,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func RunPyImagePlugins(pImageLocalFilePathStr string,
 	pPluginsPyDirPathStr string,
 	pMetrics             *GFmetrics,

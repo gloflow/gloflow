@@ -35,6 +35,7 @@ import (
 
 
 //------------------------------------------------
+
 func ImageGetFilepathFromID(pImageIDstr GFimageID,
 	pImageFormatStr string) string {
 	imageFileNameStr := fmt.Sprintf("%s.%s", pImageIDstr, pImageFormatStr)
@@ -42,9 +43,9 @@ func ImageGetFilepathFromID(pImageIDstr GFimageID,
 }
 
 //------------------------------------------------
+
 // returns the URL of a particular image path,
 // this URL is where the image can be fetched from directly.
-
 func ImageGetPublicURL(pImageFilePathStr string,
 	pMediaDomainStr string,
 	pRuntimeSys     *gf_core.RuntimeSys) string {
@@ -59,6 +60,7 @@ func ImageGetPublicURL(pImageFilePathStr string,
 
 //---------------------------------------------------
 // LOAD_FILE
+
 func ImageLoadFile(pImageLocalFilePathStr string,
 	pNormalizedExtStr string,
 	pRuntimeSys       *gf_core.RuntimeSys) (image.Image, *gf_core.GFerror) {
@@ -110,6 +112,7 @@ func ImageLoadFile(pImageLocalFilePathStr string,
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
+
 func GetImageOriginalFilenameFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_utils.Get_image_original_filename_from_url()")
@@ -129,6 +132,7 @@ func GetImageOriginalFilenameFromURL(pImageURLstr string,
 }
 
 //---------------------------------------------------
+
 func CreateImageFilePathFromURL(pImageIDstr GFimageID,
 	pImageURLstr                string,
 	pImagesStoreLocalDirPathStr string,
@@ -159,6 +163,7 @@ func CreateImageFilePathFromURL(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
+
 func GetImageTitleFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string,*gf_core.GFerror) {
 	
@@ -178,6 +183,7 @@ func GetImageTitleFromURL(pImageURLstr string,
 }
 
 //---------------------------------------------------
+
 func GetImageDimensionsFromImage(pImg image.Image,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int) {
 
@@ -188,6 +194,7 @@ func GetImageDimensionsFromImage(pImg image.Image,
 }
 
 //---------------------------------------------------
+
 func GetImageDimensionsFromFilepath(pImageLocalFilePathStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
@@ -219,6 +226,7 @@ func GetImageDimensionsFromFilepath(pImageLocalFilePathStr string,
 }
 
 //---------------------------------------------------
+
 func GetImageDimensionsFromFile(pFile io.Reader,
 	pImageExtStr string,
 	pRuntimeSys  *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
@@ -272,6 +280,7 @@ func GetImageDimensionsFromFile(pFile io.Reader,
 }
 
 //---------------------------------------------------
+
 func GetImageLargerDimension(pImage image.Image,
 	pRuntimeSys *gf_core.RuntimeSys) (int, string) {
 
@@ -285,6 +294,7 @@ func GetImageLargerDimension(pImage image.Image,
 }
 
 //---------------------------------------------------
+
 func GetImageExtFromURL(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
@@ -324,7 +334,8 @@ func GetImageExtFromURL(pImageURLstr string,
 	return normalizedExtStr, nil
 }
 
-//---------------------------------------------------	
+//---------------------------------------------------
+
 func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) bool {
 	
 	supportedFileFormatsLst := []string{
@@ -351,6 +362,7 @@ func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) bool {
 }
 
 //---------------------------------------------------
+
 func NormalizeImageFormat(pFormatStr string) string {
 
 	var normalizedFormatStr string

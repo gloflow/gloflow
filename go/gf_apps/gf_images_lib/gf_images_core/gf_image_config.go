@@ -26,6 +26,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFserviceInfo struct {
 	Port_str                             string
 	Mongodb_host_str                     string
@@ -55,6 +56,7 @@ type GFserviceInfo struct {
 }
 
 //-------------------------------------------------
+
 type GFconfig struct {
 
 	ImagesStoreLocalDirPathStr           string `yaml:"store_local_dir_path"`
@@ -96,6 +98,7 @@ type GFconfig struct {
 }
 
 //-------------------------------------------------
+
 func ConfigGetS3bucketForFlow(pFlowNameStr string,
 	pConfig *GFconfig) string {
 
@@ -109,6 +112,7 @@ func ConfigGetS3bucketForFlow(pFlowNameStr string,
 }
 
 //-------------------------------------------------
+
 func ConfigGet(pConfigPathStr string,
 	pUseNewStorageEngineBool bool,
 	pIPFSnodeHostStr         string,

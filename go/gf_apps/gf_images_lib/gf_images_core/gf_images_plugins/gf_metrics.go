@@ -24,11 +24,13 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFmetrics struct {
 	PyPluginsExecDurationGauge prometheus.Gauge
 }
 
 //-------------------------------------------------
+
 func MetricsCreate(pNamespaceStr string) *GFmetrics {
 
 	// PY_PLUGINS_EXEC_DURATION__GAUGE

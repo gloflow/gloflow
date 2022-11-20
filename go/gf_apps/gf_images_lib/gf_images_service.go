@@ -37,6 +37,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_images_core.GFserviceInfo,
 	pConfig      *gf_images_core.GFconfig,
@@ -150,15 +151,16 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
+
 // Run_service runs/starts the gf_images service in the same process as where its being called.
 // An HTTP servr is started and listens on a supplied port.
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
-func Run_service(pHTTPmux *http.ServeMux,
+func RunService(pHTTPmux *http.ServeMux,
 	pServiceInfo   *gf_images_core.GFserviceInfo,
 	p_init_done_ch chan bool,
 	pLogFun      func(string, string)) {
-	pLogFun("FUN_ENTER", "gf_images_service.Run_service()")
+	pLogFun("FUN_ENTER", "gf_images_service.RunService()")
 
 	pLogFun("INFO", "")
 	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_IMAGES SERVICE")

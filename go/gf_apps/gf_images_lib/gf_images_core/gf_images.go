@@ -28,6 +28,7 @@ import (
 )
 
 //---------------------------------------------------
+
 type GFimage  = Gf_image
 type GF_image = Gf_image
 type Gf_image struct {
@@ -128,6 +129,7 @@ type GFimageNewInfo struct {
 }
 
 //---------------------------------------------------
+
 func ImageCreateNew(pImageInfo *GFimageNewInfo,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {

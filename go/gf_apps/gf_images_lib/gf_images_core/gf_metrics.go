@@ -25,11 +25,13 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFmetrics struct {
 	PyPluginsMetrics *gf_images_plugins.GFmetrics
 }
 
 //-------------------------------------------------
+
 func MetricsCreate(pNamespaceStr string) *GFmetrics {
 
 	pyPluginsMetrics := gf_images_plugins.MetricsCreate(pNamespaceStr)

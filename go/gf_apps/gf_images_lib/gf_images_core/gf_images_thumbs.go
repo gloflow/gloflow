@@ -28,6 +28,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func CreateThumbnails(pImage image.Image,
 	pImageIDstr                      GFimageID,
 	pImageFormatStr                  string,
@@ -109,6 +110,7 @@ func CreateThumbnails(pImage image.Image,
 }
 
 //---------------------------------------------------
+
 func StoreThumbnails(pImageThumbs *GFimageThumbs,
 	pStorage    *gf_images_storage.GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -174,6 +176,7 @@ func StoreThumbnails(pImageThumbs *GFimageThumbs,
 }
 
 //---------------------------------------------------
+
 func ThumbsGetSizeInPx(pThumbSizeInPxInt int,
 	pOriginalLargerDimensionInPxInt int,
 	pOriginalLargerDimensionNameStr string) (int, int) {

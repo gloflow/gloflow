@@ -32,6 +32,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Image_fetch__error struct {
 	Id                   primitive.ObjectID `json:"-"                    bson:"_id,omitempty"`
 	Id_str               string        `json:"id_str"               bson:"id_str"` 
@@ -42,6 +43,7 @@ type Image_fetch__error struct {
 }
 
 //---------------------------------------------------
+
 func FetcherGetExternImage(pImageURLstr string,
 	pImagesStoreLocalDirPathStr string,
 	pRandomTimeDelayBool        bool,
@@ -97,12 +99,14 @@ func FetcherGetExternImage(pImageURLstr string,
 }
 
 //---------------------------------------------------
+
 func analytics__log_image_fetch(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
 }
 
 //---------------------------------------------------
+
 func DownloadFile(pImageURLstr string,
 	p_local_image_file_path_str string,
 	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -201,6 +205,7 @@ func DownloadFile(pImageURLstr string,
 }
 
 //---------------------------------------------------
+
 func GetHTTPreqConfig() (map[string]string, string) {
 	headersMap   := map[string]string{}
 	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"

@@ -33,10 +33,10 @@ import (
 )
 
 //-------------------------------------------------
+
 // pImageOriginPageURLstr - urls of pages (html or some other resource) where the image image_url
 //                          was found. this is valid for gf_chrome_ext image sources.
 //                          its not relevant for direct image uploads from clients.
-
 func TransformImage(pImageIDstr GFimageID,
 	pImageClientTypeStr                   string,
 	pImagesFlowsNamesLst                  []string,
@@ -103,6 +103,7 @@ func TransformImage(pImageIDstr GFimageID,
 
 //---------------------------------------------------
 // V2
+
 func TransformProcessImageV2(pImageLocalFilePathStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -125,6 +126,7 @@ func TransformProcessImageV2(pImageLocalFilePathStr string,
 }
 
 //---------------------------------------------------
+
 func TransformProcessImage(pImageIDstr GFimageID,
 	pImageClientTypeStr                string,
 	pImagesFlowsNamesLst               []string,
@@ -224,6 +226,7 @@ func TransformProcessImage(pImageIDstr GFimageID,
 //---------------------------------------------------
 // OPS
 //---------------------------------------------------
+
 func resizeImage(pImg image.Image,
 	pImageOutputPathStr string,
 	pWidthPxInt         int,

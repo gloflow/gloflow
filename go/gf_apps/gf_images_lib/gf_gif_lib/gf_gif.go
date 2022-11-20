@@ -38,6 +38,7 @@ import (
 )
 
 //--------------------------------------------------
+
 type GFgif struct {
 	Id                         primitive.ObjectID `json:"-"                     bson:"_id,omitempty"`
 	Id_str                     string        `json:"id_str"                     bson:"id_str"` 
@@ -72,6 +73,7 @@ type GFgif struct {
 }
 
 //--------------------------------------------------
+
 func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_image_source_url_str                        string,
 	p_image_origin_page_url_str                   string,
@@ -127,6 +129,7 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 }
 
 //--------------------------------------------------
+
 func Process(p_gf_image_id_str gf_images_core.Gf_image_id,   
 	p_image_source_url_str                        string,   
 	p_image_origin_page_url_str                   string,
@@ -290,6 +293,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 }
 
 //--------------------------------------------------
+
 func storePreviewFrames(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_media_domain_str           string, 
@@ -348,6 +352,7 @@ func storePreviewFrames(p_local_file_path_src string,
 }
 
 //--------------------------------------------------
+
 func Gif__frames__save_to_fs(p_local_file_path_src string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
@@ -471,6 +476,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 }
 
 //--------------------------------------------------
+
 func getDimensions(p_local_file_path_src string,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
@@ -531,6 +537,7 @@ func getDimensions(p_local_file_path_src string,
 }
 
 //--------------------------------------------------
+
 func gif__get_hash(p_image_local_file_path_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.gif__get_hash()")

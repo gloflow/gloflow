@@ -27,6 +27,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func S3getImage(pImageS3filePathStr string,
 	pTargetFileLocalPathStr string,
 	pS3bucketNameStr string,
@@ -47,6 +48,7 @@ func S3getImage(pImageS3filePathStr string,
 
 //---------------------------------------------------
 // DEPRECATED!!
+
 func S3storeImage(p_image_local_file_path_str string,
 	pImageThumbs     *GFimageThumbs,
 	pS3bucketNameStr string,
@@ -106,6 +108,7 @@ func S3storeImage(p_image_local_file_path_str string,
 
 //---------------------------------------------------
 // DEPRECATED!!
+
 func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 	pS3bucketNameStr string,
 	pS3info          *gf_core.GFs3Info,
@@ -156,6 +159,7 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 // Original image is the full-size file that was initially acquired, whether fetched from an external source
 // or uploaded via API by other programs or by users via UI's).
 // As input it requires a Gf_image struct.
+
 func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) string {
 	
@@ -167,6 +171,7 @@ func S3__get_image_original_file_s3_filepath(p_image *GFimage,
 }
 
 //---------------------------------------------------
+
 func S3getImageFilepath(pImageIDstr GFimageID,
 	pImageFormatStr string,
 	pRuntimeSys     *gf_core.RuntimeSys) string {
@@ -177,6 +182,7 @@ func S3getImageFilepath(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
+
 func S3__get_image_thumbs_s3_filepaths(p_image *GFimage,
 	pRuntimeSys *gf_core.RuntimeSys) (string, string, string) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_s3.S3__get_image_thumbs_s3_filepaths()")

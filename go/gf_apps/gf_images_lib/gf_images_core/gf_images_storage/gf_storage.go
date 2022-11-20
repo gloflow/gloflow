@@ -28,6 +28,7 @@ import (
 //---------------------------------------------------
 // OP_DEFs
 //---------------------------------------------------
+
 type GFgetOpDef struct {
 	ImageSourceFilePathStr      string
 	ImageTargetLocalFilePathStr string
@@ -55,6 +56,7 @@ type GFgeneratePresignedURLopDef struct {
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
+
 type GFimageStorage struct {
 	TypeStr string // "local" | "s3" | "ipfs"
 	Local   *GFstorageLocal
@@ -100,6 +102,7 @@ type GFimageStorageConfig struct {
 
 //---------------------------------------------------
 // INIT
+
 func Init(pConfig *GFimageStorageConfig,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageStorage, *gf_core.GFerror) {
 
@@ -161,6 +164,7 @@ func Init(pConfig *GFimageStorageConfig,
 
 //---------------------------------------------------
 // FILE_PUT
+
 func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -200,6 +204,7 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 
 //---------------------------------------------------
 // FILE_COPY
+
 func FileCopy(pOpDef *GFcopyOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -239,6 +244,7 @@ func FileCopy(pOpDef *GFcopyOpDef,
 
 //---------------------------------------------------
 // FILE_GET
+
 func FileGet(pOpDef *GFgetOpDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -279,6 +285,7 @@ func FileGet(pOpDef *GFgetOpDef,
 }
 
 //---------------------------------------------------
+
 func FileGeneratePresignedURL(pOpDef *GFgeneratePresignedURLopDef,
 	pStorage    *GFimageStorage,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {

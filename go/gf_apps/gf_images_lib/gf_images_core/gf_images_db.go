@@ -31,6 +31,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func DBputImage(pImage *GF_image,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -54,6 +55,7 @@ func DBputImage(pImage *GF_image,
 }
 
 //---------------------------------------------------
+
 func DBgetImage(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
@@ -88,6 +90,7 @@ func DBgetImage(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
+
 func DBimageExists(pImageIDstr GFimageID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
@@ -112,6 +115,7 @@ func DBimageExists(pImageIDstr GFimageID,
 }
 
 //---------------------------------------------------
+
 func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 2000
 	p_flow_name_str                  string,
