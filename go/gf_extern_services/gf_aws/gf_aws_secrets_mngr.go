@@ -35,29 +35,28 @@ import (
 )
 
 //-------------------------------------------------------------
-func AWS_SECMNGR__create_secret(p_secret_name_str string,
-	p_data_map        map[string]interface{},
-	p_description_str string,
-	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	data_str, err := json.Marshal(p_data_map)
+func AWSsecretsMngrCreateSecret(pSecretNameStr string,
+	pDataMap        map[string]interface{},
+	pDescriptionStr string,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	dataStr, err := json.Marshal(pDataMap)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to JSON encode AWS secret",
+		gfErr := gf_core.ErrorCreate("failed to JSON encode AWS secret",
 			"json_encode_error",
-			map[string]interface{}{"secret_name_str": p_secret_name_str,},
-			err, "gf_aws", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"secret_name_str": pSecretNameStr,},
+			err, "gf_aws", pRuntimeSys)
+		return gfErr
 	}
 	
-
 	svc   := secretsmanager.New(session.New())
 	input := &secretsmanager.CreateSecretInput{
-		Description:  aws.String(p_description_str),
-		Name:         aws.String(p_secret_name_str),
-		SecretString: aws.String(string(data_str)),
+		Description:  aws.String(pDescriptionStr),
+		Name:         aws.String(pSecretNameStr),
+		SecretString: aws.String(string(dataStr)),
 	}
 	
-
 	_, err = svc.CreateSecret(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
@@ -87,23 +86,24 @@ func AWS_SECMNGR__create_secret(p_secret_name_str string,
 			}
 		}
 
-		gf_err := gf_core.ErrorCreate("failed to create AWS secret",
+		gfErr := gf_core.ErrorCreate("failed to create AWS secret",
 			"aws_secretsmngr_create_secret_value_error",
-			map[string]interface{}{"secrets_name": p_secret_name_str,},
-			err, "gf_aws", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"secrets_name_str": pSecretNameStr,},
+			err, "gf_aws", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
 }
 
 //-------------------------------------------------------------
-func AWS_SECMNGR__get_secret(p_secret_name_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+
+func AWSsecretsMngrGetSecret(pSecretNameStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
 	svc   := secretsmanager.New(session.New())
 	input := &secretsmanager.GetSecretValueInput{
-		SecretId:     aws.String(p_secret_name_str),
+		SecretId: aws.String(pSecretNameStr),
 		// VersionStage: aws.String("AWSPREVIOUS"),
 	}
 
@@ -126,39 +126,28 @@ func AWS_SECMNGR__get_secret(p_secret_name_str string,
 			}
 		}
 		
-		gf_err := gf_core.ErrorCreate("failed to get AWS secret",
+		gfErr := gf_core.ErrorCreate("failed to get AWS secret",
 			"aws_secretsmngr_get_secret_value_error",
-			map[string]interface{}{"secrets_name": p_secret_name_str,},
-			err, "gf_aws", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"secrets_name_str": pSecretNameStr,},
+			err, "gf_aws", pRuntimeSys)
+		return nil, gfErr
 	}
 
-
-	value_str := *result.SecretString
-
-
-
+	valueStr := *result.SecretString
 
 	//--------------
-	var s_map map[string]interface{}
-	err = json.Unmarshal([]byte(value_str), &s_map)
+	var sMap map[string]interface{}
+	err = json.Unmarshal([]byte(valueStr), &sMap)
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to JSON parse AWS secret",
+		gfErr := gf_core.ErrorCreate("failed to JSON parse AWS secret",
 			"json_decode_error",
-			map[string]interface{}{"secret_name_str": p_secret_name_str,},
-			err, "gf_aws", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"secret_name_str": pSecretNameStr,},
+			err, "gf_aws", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	//--------------
 
-
-
-
-
-
-	return s_map, nil
-
-
+	return sMap, nil
 }
