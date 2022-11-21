@@ -20,7 +20,7 @@ func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
 	pWorkflowIDorFileNameStr string,
 	pBranchNameStr           string,
 	pGithubBearerTokenStr    string,
-	pRuntimeSys              *gf_core.RuntimeSys) {
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// https://docs.github.com/en/rest/actions/workflows#create-a-workflow-dispatch-event
 	urlStr := fmt.Sprintf("https://api.github.com/repos/%s/actions/workflows/%s/dispatches",
@@ -48,22 +48,23 @@ func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
 				"branch_name_str":              pBranchNameStr,
 				"url_str":                      urlStr,
 			},
-			err, "gf_ops_lib", pRuntimeSys)
-		return "", nil, gfErr
+			err, "gf_github", pRuntimeSys)
+		return gfErr
 	}
 
 	rMap := map[string]interface{}{}
 	err  := json.Unmarshal([]byte(body), &rMap)
 	if err != nil {
-		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_images_client start_job HTTP REST API - %s", url_str), 
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github actions via REST API"), 
 			"json_unmarshal_error",
 			map[string]interface{}{
-				"url_str": url_str,
+				"url_str": urlStr,
 				"body":    body,
 			},
-			j_err, "gf_images_lib", pRuntimeSys)
-		return "", nil, gfErr
+			err, "gf_github", pRuntimeSys)
+		return gfErr
 	}
+	return nil
 }
 
 //--------------------------------------------------------------------
@@ -84,7 +85,7 @@ func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 			map[string]interface{}{
 				"url_str": urlStr,
 			},
-			err, "gf_ops_lib", pRuntimeSys)
+			err, "gf_github", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -97,7 +98,7 @@ func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 				"url_str": urlStr,
 				"body":    body,
 			},
-			err, "gf_ops_lib", pRuntimeSys)
+			err, "gf_github", pRuntimeSys)
 		return nil, gfErr
 	}
 
