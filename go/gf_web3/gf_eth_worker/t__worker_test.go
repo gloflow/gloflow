@@ -61,12 +61,12 @@ func Test__worker(p_test *testing.T) {
 
 	//--------------------
 	// GET_BLOCK__FROM_WORKER_INSPECTOR
-	gf_block, gf_err := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
+	gf_block, gfErr := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
 		host_port_str,
 		ctx,
 		runtime_sys)
 
-	if gf_err != nil {
+	if gfErr != nil {
 		p_test.Fail()
 	}
 
@@ -77,20 +77,20 @@ func Test__worker(p_test *testing.T) {
 
 
 	abi_type_str := "erc20"
-	abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, ctx, nil, runtime)
-	if gf_err != nil {
+	abis_lst, gfErr := Eth_contract__db__get_abi(abi_type_str, ctx, nil, runtime)
+	if gfErr != nil {
 		p_test.Fail()
 	}
 	abis_map := map[string]*GF_eth__abi{
 		"erc20": abis_lst[0],
 	}
 
-	gf_err = eth_tx__enrich_from_block(gf_block,
+	gfErr = eth_tx__enrich_from_block(gf_block,
 		abis_map,
 		ctx,
 		nil,
 		runtime)
-	if gf_err != nil {
+	if gfErr != nil {
 		p_test.Fail()
 	}
 

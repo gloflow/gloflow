@@ -49,10 +49,10 @@ func Test__plugins(pTest *testing.T) {
 	plugins_info := &GF_py_plugins{
 		Base_dir_path_str: "./../../py/plugins",
 	}
-	gf_err := py__run_plugin__get_contract_info(new_contract_addr_str,
+	gfErr := py__run_plugin__get_contract_info(new_contract_addr_str,
 		plugins_info,
 		runtime_sys)
-	if gf_err != nil {
+	if gfErr != nil {
 		pTest.Fail()
 	}
 

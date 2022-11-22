@@ -77,8 +77,8 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			txs_count_int, txs_traces_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
-			if gf_err != nil {
+			txs_count_int, txs_traces_count_int, gfErr := DB__get_count(p_metrics, p_runtime)
+			if gfErr != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
 			}
@@ -125,9 +125,9 @@ func Enrich_from_block(p_blocks_txs_lst []*GF_eth__tx,
 
 
 
-			gf_err := gf_eth_contract.Enrich(gf_abi, p_ctx, p_metrics, p_runtime)
-			if gf_err != nil {
-				return gf_err
+			gfErr := gf_eth_contract.Enrich(gf_abi, p_ctx, p_metrics, p_runtime)
+			if gfErr != nil {
+				return gfErr
 			}
 		}
 
@@ -193,14 +193,14 @@ func Load(p_tx *eth_types.Transaction,
 	if err != nil {
 
 		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to get transaction recepit via json-rpc  in gf_eth_monitor",
 			"eth_rpc__get_tx_receipt",
 			map[string]interface{}{
 				"block_num":   p_block_num_int,
 				"tx_hash_hex": tx_hash_hex_str,
 			},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	span__get_tx_receipt.Finish()
 
@@ -253,11 +253,11 @@ func Load(p_tx *eth_types.Transaction,
 	tx, _, err := p_eth_rpc_client.TransactionByHash(span__get_tx.Context(), tx_hash)
 	if err != nil {
 		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	span__get_tx.Finish()
@@ -267,12 +267,12 @@ func Load(p_tx *eth_types.Transaction,
 	span__parse_tx_logs := sentry.StartSpan(p_ctx, "eth_rpc__parse_tx_logs")
 	defer span__parse_tx_logs.Finish() // in case a panic happens before the main .Finish() for this span
 
-	logs, gf_err := Get_logs(tx_receipt,
+	logs, gfErr := Get_logs(tx_receipt,
 		span__parse_tx_logs.Context(),
 		p_eth_rpc_client,
 		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	span__parse_tx_logs.Finish()
 
@@ -282,11 +282,11 @@ func Load(p_tx *eth_types.Transaction,
 	sender_addr, err := p_eth_rpc_client.TransactionSender(p_ctx, tx, p_block_hash, p_tx_index_int)
 	if err != nil {
 		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
 			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	sender_addr_str := strings.ToLower(sender_addr.Hex())
@@ -312,13 +312,13 @@ func Load(p_tx *eth_types.Transaction,
 		// NEW_CONTRACT_CODE
 
 		block_num_int := tx_receipt.BlockNumber.Uint64()
-		contract, gf_err := gf_eth_contract.Get_via_rpc(new_contract_addr_str,
+		contract, gfErr := gf_eth_contract.Get_via_rpc(new_contract_addr_str,
 			block_num_int,
 			span__get_new_contract.Context(),
 			p_eth_rpc_client,
 			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		contract__new = contract
@@ -329,11 +329,11 @@ func Load(p_tx *eth_types.Transaction,
 
 		/*// PY_PLUGIN - get info on a new contract
 
-		gf_err = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
+		gfErr = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
 			p_py_plugins,
 			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}*/
 
 
@@ -414,11 +414,11 @@ func Load(p_tx *eth_types.Transaction,
 
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to decode Tx struct hash hex signature to create Mongodb ObjectID",
+		gfErr := gf_core.ErrorCreate("failed to decode Tx struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"tx_hash_hex_str": tx_hash_hex_str, },
 			err, "gf_eth_monitor_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}*/
 
 	gf_tx.DB_id                 = db_id_hex_str // obj_id_str
@@ -441,12 +441,12 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 
 
 	gf_abi := p_abis_map["erc20"]
-	abi, gf_err := gf_eth_contract.Eth_abi__get(gf_abi,
+	abi, gfErr := gf_eth_contract.Eth_abi__get(gf_abi,
 		p_ctx,
 		p_metrics,
 		p_runtime)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 
@@ -476,14 +476,14 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 		err := abi.UnpackIntoMap(event_map, "Transfer", log_bytes_lst)
 		if err != nil {
 			error_defs_map := gf_eth_core.ErrorGetDefs()
-			gf_err := gf_core.ErrorCreateWithDefs("failed to decode a Tx Log",
+			gfErr := gf_core.ErrorCreateWithDefs("failed to decode a Tx Log",
 				"eth_tx_log__decode",
 				map[string]interface{}{
 					"address_str":  l.Address_str,
 					"data_hex_str": l.Data_hex_str,
 				},
 				err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime.RuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 		
 		spew.Dump(log_bytes_lst)

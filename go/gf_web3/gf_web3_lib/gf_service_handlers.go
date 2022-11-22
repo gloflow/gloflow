@@ -103,16 +103,16 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			//------------------
 			// INPUT
 
-			txHexStr, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.RuntimeSys)
+			txHexStr, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, pRuntime.RuntimeSys)
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
 			span__pipeline := sentry.StartSpan(spanRoot.Context(), "tx_trace_plot")
 
-			plot_svg_str, gf_err := gf_eth_tx.Trace__plot(txHexStr,
+			plot_svg_str, gfErr := gf_eth_tx.Trace__plot(txHexStr,
 				p_get_hosts_fn,
 				span__pipeline.Context(),
 				pRuntime.Py_plugins,
@@ -121,8 +121,8 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			
 			span__pipeline.Finish()
 			
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------

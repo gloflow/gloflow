@@ -52,13 +52,13 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 	tx_trace_byte_str    := string(tx_trace_byte_lst)
 
 	// PY_RUN
-	outputs_lst, gf_err := gf_core.CLIpyRun(py_path_str,
+	outputs_lst, gfErr := gf_core.CLIpyRun(py_path_str,
 		args_lst,
 		&tx_trace_byte_str,
 		stdout_prefix_str,
 		p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	if gfErr != nil {
+		return "", gfErr
 	}
 
 	svg_str := outputs_lst[0]["svg_str"].(string)

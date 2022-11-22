@@ -47,8 +47,8 @@ func Client__index_block_range(p_block_start_uint uint64,
 	select {
 	case job_id_str := <- response_ch:
 		return job_id_str, nil
-	case gf_err := <- response_err_ch:
-		return GF_indexer_job_id(""), &gf_err
+	case gfErr := <- response_err_ch:
+		return GF_indexer_job_id(""), &gfErr
 	}
 
 	return GF_indexer_job_id(""), nil
@@ -91,9 +91,9 @@ func Client_http__index_block_range(p_block_start_uint uint64,
 	headers_map := map[string]string{}
 
 	// GF_RPC_CLIENT
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return GF_indexer_job_id(""), gf_err
+	data_map, gfErr := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
+	if gfErr != nil {
+		return GF_indexer_job_id(""), gfErr
 	}
 
 	job_id_str := GF_indexer_job_id(data_map["job_id_str"].(string))
@@ -120,12 +120,12 @@ func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 		
 		// p_job_updates_ch - channel to which to send SSE events as 
 		//                    they're received over HTTP.
-		gf_err := gf_rpc_lib.Client__request_sse(url_str,
+		gfErr := gf_rpc_lib.Client__request_sse(url_str,
 			p_job_updates_ch,
 			headers_map,
 			p_ctx,
 			p_runtime_sys)
-		if gf_err != nil {
+		if gfErr != nil {
 
 			// FIX!! - notify the caller of Client_http__index_job_updates() 
 			//         via another error channel that SSE client failed.

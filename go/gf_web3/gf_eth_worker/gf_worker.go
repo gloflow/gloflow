@@ -106,9 +106,9 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 
 			aws_instances_all_lst := []*ec2.Instance{}
 			for _, instance_tags_lst := range target_instances_tags_lst {
-				aws_instances_lst, gf_err := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime.RuntimeSys)
-				if gf_err != nil {
-					discovery_errors_ch <- gf_err
+				aws_instances_lst, gfErr := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime.RuntimeSys)
+				if gfErr != nil {
+					discovery_errors_ch <- gfErr
 
 					// SLEEP - sleep after error as well
 					// time.Sleep(update_period_sec)

@@ -76,12 +76,12 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 
 		// GET_QUEUE
 		queue_name_str := updates__get_queue_name(p_job_id_str)
-		queue_info, gf_err := gf_aws.SQS_get_queue_info(queue_name_str,
+		queue_info, gfErr := gf_aws.SQS_get_queue_info(queue_name_str,
 			p_aws_client,
 			p_ctx,
 			p_runtime.RuntimeSys)
-		if gf_err != nil {
-			complete_job_with_error_fn(gf_err)
+		if gfErr != nil {
+			complete_job_with_error_fn(gfErr)
 			return	
 		}
 
@@ -89,18 +89,18 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 		for {
 
 			// SQS_MSG_PULL
-			msg_map, gf_err := gf_aws.SQS_msg_pull(queue_info,
+			msg_map, gfErr := gf_aws.SQS_msg_pull(queue_info,
 				p_aws_client,
 				p_ctx,
 				p_runtime.RuntimeSys)
 
-			if gf_err != nil {
+			if gfErr != nil {
 
 				// IMPORTANT!! - fail job if a certain number of errors
 				//               is encountered. to avoid cases where only a few messages
 				//               happen in a queue where there are a lot of updates.
 				if errs_num_int < 3 {
-					complete_job_with_error_fn(gf_err)
+					complete_job_with_error_fn(gfErr)
 					return
 				}
 
@@ -134,12 +134,12 @@ func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 	queue_name_str := updates__get_queue_name(p_job_id_str)
 	
 	// QUEUE_CREATE
-	queue, gf_err := gf_aws.SQS_queue_create(queue_name_str,
+	queue, gfErr := gf_aws.SQS_queue_create(queue_name_str,
 		p_sqs_client,
 		p_ctx,
 		p_runtime.RuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	spew.Dump(queue)

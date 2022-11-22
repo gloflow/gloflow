@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
 	pPluginsInfo *gf_eth_core.GF_py_plugins,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -41,13 +42,13 @@ func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
 	stdout_prefix_str := "GF_OUT:"
 
 	// PY_RUN
-	outputs_lst, gf_err := gf_core.CLIpyRun(py_path_str,
+	outputs_lst, gfErr := gf_core.CLIpyRun(py_path_str,
 		args_lst,
 		nil,
 		stdout_prefix_str,
 		pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 

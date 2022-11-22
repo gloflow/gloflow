@@ -146,8 +146,8 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		//---------------------------
 		// EVENT__PROCESS
-		gf_err := event__process(event_map, p_ctx, p_metrics, p_runtime)
-		if gf_err != nil {
+		gfErr := event__process(event_map, p_ctx, p_metrics, p_runtime)
+		if gfErr != nil {
 			// attempt to process remaining messages
 			continue
 		}
@@ -205,9 +205,9 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		gf_err := gf_eth_core.Eth_peers__db__write(peer__new_lifecycle, p_ctx, p_metrics, p_runtime)
-		if gf_err != nil {
-			return gf_err
+		gfErr := gf_eth_core.Eth_peers__db__write(peer__new_lifecycle, p_ctx, p_metrics, p_runtime)
+		if gfErr != nil {
+			return gfErr
 		}
 	}
 

@@ -51,11 +51,11 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 		// METRICS
 		if p_metrics != nil {p_metrics.Errs_num__counter.Inc()}
 
-		gf_err := gf_core.MongoHandleError("failed to find Miner with gives address in DB",
+		gfErr := gf_core.MongoHandleError("failed to find Miner with gives address in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"miner_addr_str": miner_address_lower_str,},
 			err, "gf_eth_core", p_runtime.RuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	defer cur.Close(p_ctx)
 
@@ -66,12 +66,12 @@ func Eth_miners__db__get_info(p_miner_address_str string,
 		var miner GF_eth__miner__int
 		err := cur.Decode(&miner)
 		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to decode mongodb result of query to get Miners",
+			gfErr := gf_core.MongoHandleError("failed to decode mongodb result of query to get Miners",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
 				err, "gf_eth_core", p_runtime.RuntimeSys)
 				
-			return nil, gf_err
+			return nil, gfErr
 		}
 	
 		miners_map[miner.Name_str] = &miner

@@ -98,9 +98,9 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	// METRICS
 	port_metrics_int := 9110
 
-	metrics, gf_err := gf_eth_core.Metrics__init(port_metrics_int)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	metrics, gfErr := gf_eth_core.Metrics__init(port_metrics_int)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	
@@ -135,20 +135,20 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	//-------------
 	// INDEXER
 
-	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gf_err := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gfErr := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//-------------
 	// HANDLERS
-	gf_err = InitHandlers(get_hosts_fn,
+	gfErr = InitHandlers(get_hosts_fn,
 		indexer_cmds_ch,
 		indexer_job_updates_new_consumer_ch,
 		metrics,
 		p_runtime)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//-------------

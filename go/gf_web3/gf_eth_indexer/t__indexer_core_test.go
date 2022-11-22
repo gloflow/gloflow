@@ -42,8 +42,8 @@ func Test__indexer_core(pTest *testing.T) {
 	}
 	
 	// ABI_DEFS
-	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(ctx, nil, runtime)
-	if gf_err != nil {
+	abis_defs_map, gfErr := gf_eth_contract.Eth_abi__get_defs(ctx, nil, runtime)
+	if gfErr != nil {
 		pTest.FailNow()
 	}
 

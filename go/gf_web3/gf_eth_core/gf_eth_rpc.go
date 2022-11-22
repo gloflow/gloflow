@@ -65,11 +65,11 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.ErrorCreate("failed to construct HTTP POST request using JSON input",
+		gfErr := gf_core.ErrorCreate("failed to construct HTTP POST request using JSON input",
 			"http_client_req_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	req.Header.Set("Content-Type", "application/json")
 	
@@ -80,11 +80,11 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.ErrorCreate("failed to execute HTTP POST request to eth_rpc API",
+		gfErr := gf_core.ErrorCreate("failed to execute HTTP POST request to eth_rpc API",
 			"http_client_req_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//-----------------------
@@ -98,11 +98,11 @@ func Eth_rpc__call(p_input_json_str string,
 		for k, v := range p_error_data_map {
 			error_data_map[k] = v
 		}
-		gf_err := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from gf_rpc_client"), 
 			"json_decode_error",
 			error_data_map,
 			err, "gf_eth_core", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	
 	//-----------------------
@@ -132,11 +132,11 @@ func Eth_rpc__init(p_host_str string,
 		
 			
 		error_defs_map := ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to connect to Eth rpc-json API in gf_eth_monitor",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to connect to Eth rpc-json API in gf_eth_monitor",
 			"eth_rpc__dial",
 			map[string]interface{}{"host": p_host_str,},
 			err, "gf_eth_core", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
     }
 
 	log.WithFields(log.Fields{"host": p_host_str, "port": p_geth_port_int}).Info("Connected to Ethereum node")

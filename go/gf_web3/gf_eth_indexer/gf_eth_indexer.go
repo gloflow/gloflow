@@ -53,9 +53,9 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	
 		
 	// AWS_CLIENT
-	sqs_client, gf_err := gf_aws.SQS_init(p_runtime.RuntimeSys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	sqs_client, gfErr := gf_aws.SQS_init(p_runtime.RuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	// incoming commands to begin indexing jobs
@@ -102,15 +102,15 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 					span__root := sentry.StartSpan(ctx, "indexer_job")
 					defer span__root.Finish()
 
-					gf_err := job_run(job_id_str,
+					gfErr := job_run(job_id_str,
 						cmd,
 						p_get_worker_hosts_fn,
 						span__root.Context(),
 						sqs_client,
 						p_metrics,
 						p_runtime)
-					if gf_err != nil {
-						cmd.Response_err_ch <- *gf_err
+					if gfErr != nil {
+						cmd.Response_err_ch <- *gfErr
 						return
 					}
 
@@ -174,9 +174,9 @@ func job_run(p_job_id_str GF_indexer_job_id,
 
 	//----------------------------
 	// ABI_DEFS
-	abis_defs_map, gf_err := gf_eth_contract.Eth_abi__get_defs(p_ctx, p_metrics, p_runtime)
-	if gf_err != nil {
-		return gf_err
+	abis_defs_map, gfErr := gf_eth_contract.Eth_abi__get_defs(p_ctx, p_metrics, p_runtime)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//----------------------------
@@ -184,19 +184,19 @@ func job_run(p_job_id_str GF_indexer_job_id,
 
 
 	
-	gf_sqs_queue, gf_err := Updates__init_stream(p_job_id_str,
+	gf_sqs_queue, gfErr := Updates__init_stream(p_job_id_str,
 		p_ctx,
 		p_sqs_client,
 		p_runtime)
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	// process indexing job in separate go-routine so that updates/completion
 	// messages can be processed in parallel.
 	go func() {
 		// PERSIST_RANGE
-		gf_errs_lst := index__range(p_cmd.Block_start_uint,
+		gfErrsLst := index__range(p_cmd.Block_start_uint,
 			p_cmd.Block_end_uint,
 			p_get_worker_hosts_fn,
 			abis_defs_map,
@@ -207,7 +207,7 @@ func job_run(p_job_id_str GF_indexer_job_id,
 			p_metrics,
 			p_runtime)
 		
-		if len(gf_errs_lst) > 0 {
+		if len(gfErrsLst) > 0 {
 
 		}
 	}()
@@ -219,23 +219,23 @@ func job_run(p_job_id_str GF_indexer_job_id,
 			select {
 			case update_msg := <- job_updates_ch:
 				
-				gf_err := gf_aws.SQS_msg_push(interface{}(update_msg),
+				gfErr := gf_aws.SQS_msg_push(interface{}(update_msg),
 					gf_sqs_queue,
 					p_sqs_client,
 					p_ctx,
 					p_runtime.RuntimeSys)
-				if gf_err != nil {
+				if gfErr != nil {
 
 				}
 
 			case complete_bool := <- job_complete_ch:
 
 				if complete_bool {
-					gf_err := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
+					gfErr := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
 						p_sqs_client,
 						p_ctx,
 						p_runtime.RuntimeSys)
-					if gf_err != nil {
+					if gfErr != nil {
 						break
 					}
 				}
@@ -259,19 +259,19 @@ func index__range(p_block_start_uint uint64,
 	p_metrics             *gf_eth_core.GF_metrics,
 	p_runtime             *gf_eth_core.GF_runtime) []*gf_core.GFerror {
 
-	gf_errs_lst := []*gf_core.GFerror{}
+	gfErrsLst := []*gf_core.GFerror{}
 	for b := p_block_start_uint; b <= p_block_end_uint; b++ {
 
 		block_uint := b
 
-		txs_num_int, gf_err := gf_eth_blocks.Index__pipeline(block_uint,
+		txs_num_int, gfErr := gf_eth_blocks.Index__pipeline(block_uint,
 			p_get_worker_hosts_fn,
 			p_abis_defs_map,
 			p_ctx,
 			p_metrics,
 			p_runtime)
-		if gf_err != nil {
-			gf_errs_lst = append(gf_errs_lst, gf_err)
+		if gfErr != nil {
+			gfErrsLst = append(gfErrsLst, gfErr)
 			continue // continue processing subsequent blocks
 		}
 
@@ -289,5 +289,5 @@ func index__range(p_block_start_uint uint64,
 		p_job_complete_ch <- true
 	}
 	
-	return gf_errs_lst
+	return gfErrsLst
 }
