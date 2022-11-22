@@ -30,12 +30,13 @@ import (
 
 //--------------------------------------------------
 // STAGE
+
 func imagesS3stageStoreImages(pCrawlerNameStr string,
 	pPageImagesPipelineInfosLst []*gf_page_img__pipeline_info,
-	pOriginPageURLstr               string,
-	pS3bucketNameStr                string,
-	pRuntime                        *GFcrawlerRuntime,
-	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pOriginPageURLstr           string,
+	pS3bucketNameStr            string,
+	pRuntime                    *GFcrawlerRuntime,
+	pRuntimeSys                 *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - s3_store_images")
@@ -75,7 +76,7 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 			if gfErr != nil {
 				t := "image_s3_upload__failed"
 				m := "failed s3 uploading of image with img_url_str - "+pageImagePipelineInfo.page_img.Url_str
-				Create_error_and_event(t, m, 
+				CreateErrorAndEvent(t, m, 
 					map[string]interface{}{"origin_page_url_str": pOriginPageURLstr,},
 					pageImagePipelineInfo.page_img.Url_str,
 					pCrawlerNameStr,
@@ -92,7 +93,8 @@ func imagesS3stageStoreImages(pCrawlerNameStr string,
 }
 
 //--------------------------------------------------
-func imageS3upload(pImage *Gf_crawler_page_image,
+
+func imageS3upload(pImage *GFcrawlerPageImage,
 	pLocalImageFilePathStr string,
 	pImageThumbs           *gf_images_core.GFimageThumbs,
 	pS3bucketNameStr       string,
@@ -102,13 +104,13 @@ func imageS3upload(pImage *Gf_crawler_page_image,
 	cyan   := color.New(color.FgCyan, color.BgWhite).SprintFunc()
 	yellow := color.New(color.FgYellow, color.BgBlack).SprintFunc()
 	fmt.Printf("\n%s GF_CRAWL_PAGE_IMG TO S3 - id[%s] - local_file[%s]\n\n", cyan("UPLOADING"),
-		yellow(pImage.Id_str),
+		yellow(pImage.IDstr),
 		yellow(pLocalImageFilePathStr))
 
 	gfErr := gf_images_core.S3storeImage(pLocalImageFilePathStr,
 		pImageThumbs,
 		pS3bucketNameStr,
-		pRuntime.S3_info,
+		pRuntime.S3info,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -120,8 +122,10 @@ func imageS3upload(pImage *Gf_crawler_page_image,
 }
 
 //--------------------------------------------------
-// UPDATE_DB - FLAG CRAWLER_PAGE_IMG AS PERSISTED ON S3
-func imageS3dbFlagAsUploaded(pImage *Gf_crawler_page_image,
+// UPDATE_DB
+
+// flag crawler page image as persisted on s3
+func imageS3dbFlagAsUploaded(pImage *GFcrawlerPageImage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()

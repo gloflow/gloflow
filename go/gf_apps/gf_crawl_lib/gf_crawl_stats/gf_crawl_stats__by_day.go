@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_stats__objs_by_days struct {
 	Obj_type_str                     string                           `json:"obj_type_str"                     bson:"obj_type_str"`
 	Counts_by_day__sorted_lst        []int                            `json:"counts_by_day__sorted_lst"        bson:"counts_by_day__sorted_lst"`        //global count of fetches per day
@@ -44,10 +45,11 @@ type Gf_domain_counts_for_all_days struct {
 }
 
 //-------------------------------------------------
+
 func stats__objs_by_days(p_match_query_map map[string]interface{},
 	p_obj_type_str string,
-	p_runtime_sys  *gf_core.RuntimeSys) (*Gf_stats__objs_by_days, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
+	pRuntimeSys  *gf_core.RuntimeSys) (*Gf_stats__objs_by_days, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_stats__by_day.stats__objs_by_days()")
 
 	type Domain_objs__stat struct {
 		Domain_str         string    `bson:"_id"`
@@ -88,7 +90,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		},
 	}
 
-	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		// bson.M{"$match":bson.M{
 		// 		"t":p_obj_type_str, //"crawler_url_fetch",
 		// 	},
@@ -115,13 +117,13 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -133,7 +135,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 			"mongodb_aggregation_error",
 			map[string]interface{}{"obj_type_str": p_obj_type_str,},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}*/
 
@@ -146,7 +148,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count objects by days",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_crawl_stats", p_runtime_sys)
+				err, "gf_crawl_stats", pRuntimeSys)
 			return nil, gf_err
 		}
 	
@@ -261,7 +263,7 @@ func stats__objs_by_days(p_match_query_map map[string]interface{},
 
 	//----------------------
 	// SORT
-	sort__domains_counts(domains__counts_for_all_days_lst, p_runtime_sys)
+	sort__domains_counts(domains__counts_for_all_days_lst, pRuntimeSys)
 
 	//------------------
 	// ACCUMULATE LIST OF GLOBAL FETCH COUNTS PER DAY
@@ -294,7 +296,7 @@ func (d_lst domains_counts) Less(i, j int) bool {
 	return d_lst[i].Total_count_int > d_lst[j].Total_count_int
 }
 
-func sort__domains_counts(p_domains__counts_for_all_days_lst []*Gf_domain_counts_for_all_days, p_runtime_sys *gf_core.RuntimeSys) {
+func sort__domains_counts(p_domains__counts_for_all_days_lst []*Gf_domain_counts_for_all_days, pRuntimeSys *gf_core.RuntimeSys) {
 	/*//------------------
 	//SORT
 	func (s domains_counts) Len() int {

@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_stat__crawled_url_fetches struct {
 	Url_str         string    `bson:"_id"             json:"url_str"`
 	Count_int       int       `bson:"count_int"       json:"count_int"`
@@ -34,10 +35,11 @@ type Gf_stat__crawled_url_fetches struct {
 }
 
 //-------------------------------------------------
-func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_days()")
 
-	stats__fetches_by_days, gf_err := stats__objs_by_days(map[string]interface{}{}, "crawler_url_fetch", p_runtime_sys)
+func stats__crawler_fetches_by_days(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_days()")
+
+	stats__fetches_by_days, gf_err := stats__objs_by_days(map[string]interface{}{}, "crawler_url_fetch", pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -49,8 +51,9 @@ func stats__crawler_fetches_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[stri
 }
 
 //-------------------------------------------------
-func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
+
+func stats__crawler_fetches_by_url(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_stats__fetches.stats__crawler_fetches_by_url()")
 
 
 	ctx := context.Background()
@@ -81,7 +84,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	}
 
 
-	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match": bson.M{
 				"t":     "crawler_url_fetch",
 			},
@@ -110,13 +113,13 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -127,7 +130,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 			"mongodb_aggregation_error",
-			nil, err, "gf_crawl_stats", p_runtime_sys)
+			nil, err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}*/
 	
@@ -140,7 +143,7 @@ func stats__crawler_fetches_by_url(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to group all crawler_url_fetch's",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_crawl_stats", p_runtime_sys)
+				err, "gf_crawl_stats", pRuntimeSys)
 			return nil, gf_err
 		}
 		results_lst = append(results_lst, r)

@@ -29,13 +29,14 @@ import (
 )
 
 //--------------------------------------------------
-func images__stage__download_images(p_crawler_name_str string,
+
+func images__stage__download_images(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst   []*gf_page_img__pipeline_info,
 	p_images_store_local_dir_path_str string,
 	p_origin_page_url_str             string,
-	p_runtime                         *GFcrawlerRuntime,
-	p_runtime_sys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_images_download.images__stage__download_images")
+	pRuntime                          *GFcrawlerRuntime,
+	pRuntimeSys                       *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_download.images__stage__download_images")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - download_images")
@@ -70,16 +71,16 @@ func images__stage__download_images(p_crawler_name_str string,
 
 		local_image_file_path_str, gf_err := imageDownload(page_img__pinfo.page_img,
 			p_images_store_local_dir_path_str,
-			p_runtime_sys)
+			pRuntimeSys)
 		
 		if gf_err != nil {
 			t := "image_download__failed"
 			m := "failed downloading of image with URL - "+page_img__pinfo.page_img.Url_str
-			Create_error_and_event(t, m,
+			CreateErrorAndEvent(t, m,
 				map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, 
 				page_img__pinfo.page_img.Url_str,
-				p_crawler_name_str,
-				gf_err, p_runtime, p_runtime_sys)
+				pCrawlerNameStr,
+				gf_err, pRuntime, pRuntimeSys)
 
 			page_img__pinfo.gf_error = gf_err
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
@@ -93,7 +94,7 @@ func images__stage__download_images(p_crawler_name_str string,
 
 		//------------------
 		// SEND_EVENT
-		if p_runtime.Events_ctx != nil {
+		if pRuntime.EventsCtx != nil {
 			events_id_str  := "crawler_events"
 			event_type_str := "image_download__http_request__done"
 			msg_str        := "completed downloading an image over HTTP"
@@ -103,12 +104,12 @@ func images__stage__download_images(p_crawler_name_str string,
 				"end_time_f":   end_time_f,
 			}
 
-			gf_events.Events__send_event(events_id_str,
+			gf_events.EventsSendEvent(events_id_str,
 				event_type_str, // p_type_str
 				msg_str,        // p_msg_str
 				data_map,
-				p_runtime.Events_ctx,
-				p_runtime_sys)
+				pRuntime.EventsCtx,
+				pRuntimeSys)
 		}
 		//------------------
 	}
@@ -117,14 +118,15 @@ func images__stage__download_images(p_crawler_name_str string,
 }
 
 //--------------------------------------------------
-func imageDownload(pImage *Gf_crawler_page_image,
+
+func imageDownload(pImage *GFcrawlerPageImage,
 	p_images_store_local_dir_path_str string,
-	p_runtime_sys                     *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys                     *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.LogFun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("DOWNLOAD_IMAGE"))
+	pRuntimeSys.LogFun("INFO", cyan("       >>>>>>>>>>>>> ----------------------------- ")+yellow("DOWNLOAD_IMAGE"))
 
 	//-------------------
 	// DOWNLOAD
@@ -136,19 +138,19 @@ func imageDownload(pImage *Gf_crawler_page_image,
 		//               since they're all in the same page, and are expected to be downloaded 
 		//               by the users browser in rapid succession, so no need to simulate user delay
 		false, // p_random_time_delay_bool
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
 	//-------------------
 	// DB_UPDATE
-	gfErr = image__db_mark_as_downloaded(pImage, p_runtime_sys)
+	gfErr = image__db_mark_as_downloaded(pImage, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	gfErr = image__db_set_gf_image_id(imageIDstr, pImage, p_runtime_sys)
+	gfErr = image__db_set_gf_image_id(imageIDstr, pImage, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
@@ -156,7 +158,7 @@ func imageDownload(pImage *Gf_crawler_page_image,
 	//-------------------
 
 	pImage.Downloaded_bool = true
-	pImage.Gf_image_id_str = imageIDstr
+	pImage.GFimageIDstr = imageIDstr
 
 	return localImageFilePathStr, nil
 }

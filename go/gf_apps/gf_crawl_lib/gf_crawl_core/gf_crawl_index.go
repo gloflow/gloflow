@@ -29,6 +29,7 @@ import (
 )
 
 //--------------------------------------------------
+
 type Gf_index__query_run struct {
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string        `bson:"id_str"`
@@ -41,16 +42,17 @@ type Gf_index__query_run struct {
 }
 
 //--------------------------------------------------
-func index__get_stats(p_runtime *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime.Esearch_client.IndexStats("gf_crawl_pages")
+
+func index__get_stats(pRuntime *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntime.EsearchClient.IndexStats("gf_crawl_pages")
 }
 
 //--------------------------------------------------
-func Index__query(p_term_str string,
-	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_index.Index__query()")
+
+func IndexQuery(p_term_str string,
+	pRuntime     *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
 	// ADD!! - use termquery result relevance
@@ -63,7 +65,7 @@ func Index__query(p_term_str string,
 
 	ctx := context.Background()
 
-	query_result,err := p_runtime.Esearch_client.Search().
+	query_result,err := pRuntime.EsearchClient.Search().
 	    Index(index_name_str).                                   // search in index "twitter"
 	    Query(term_query).                                       // specify the query
 	    Highlight(elastic.NewHighlight().Field(field_name_str)). // result HIGHLIGHTING
@@ -80,7 +82,7 @@ func Index__query(p_term_str string,
 				"index_name_str": index_name_str,
 				"field_name_str": field_name_str,
 			},
-			err, "gf_crawl_lib", p_runtime_sys)
+			err, "gf_crawl_lib", pRuntimeSys)
 		return gf_err
 	}
 
@@ -150,53 +152,41 @@ func Index__query(p_term_str string,
 			"caller_err_msg_str": "failed to insert a index__query_run into the DB for a elasticsearch index query",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
-
-	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(query_run)
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to insert a index__query_run into mongodb for a elasticsearch index query",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"term_str":       p_term_str,
-				"total_hits_int": total_hits_int,
-			},
-			err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
-	}*/
 
 	return nil
 }
 
 //--------------------------------------------------
-func index__add_to__of_url_fetch(p_url_fetch *Gf_crawler_url_fetch,
-	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_index.index__add_to__of_url_fetch()")
 
-	index_name_str     := "gf_crawl_pages"
-	es_record_type_str := "crawl_page"
-	ctx                := context.Background()
+func indexAddToOfURLfetch(pURLfetch *GFcrawlerURLfetch,
+	pRuntime    *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	_, err := p_runtime.Esearch_client.Index().
-		Index(index_name_str).
-		Type(es_record_type_str).
-		BodyJson(p_url_fetch).
+	indexNameStr    := "gf_crawl_pages"
+	esRecordTypeStr := "crawl_page"
+	ctx             := context.Background()
+
+	_, err := pRuntime.EsearchClient.Index().
+		Index(indexNameStr).
+		Type(esRecordTypeStr).
+		BodyJson(pURLfetch).
 		// Refresh(true). //refresh this index after completing this Index() operation
 		Do(ctx)
 	if err != nil {
-		err_msg_str := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", es_record_type_str, index_name_str)
-		gf_err := gf_core.ErrorCreate(err_msg_str,
+		errMsgStr := fmt.Sprintf("failed to add/index a url_fetch record (es type - %s) to the elasticsearch index - %s", esRecordTypeStr, indexNameStr)
+		gfErr := gf_core.ErrorCreate(errMsgStr,
 			"elasticsearch_add_to_index",
 			map[string]interface{}{
-				"url_fetch_url_str":  p_url_fetch.Url_str,
-				"index_name_str":     index_name_str,
-				"es_record_type_str": es_record_type_str,
+				"url_fetch_url_str":  pURLfetch.Url_str,
+				"index_name_str":     indexNameStr,
+				"es_record_type_str": esRecordTypeStr,
 			},
-			err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
+			err, "gf_crawl_core", pRuntimeSys)
+		return gfErr
 	}
 	return nil
 }

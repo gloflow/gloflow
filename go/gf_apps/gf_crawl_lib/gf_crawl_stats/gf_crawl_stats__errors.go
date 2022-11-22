@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_stat__errors struct {
 	Crawler_name_str string                `bson:"_id"              json:"crawler_name_str"`
 	Errors_types_lst []Gf_stat__error_type `bson:"errors_types_lst" json:"errors_types_lst"`
@@ -39,8 +40,9 @@ type Gf_stat__error_type struct {
 }
 
 //-------------------------------------------------
-func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__errors.stats__errors()")
+
+func stats__errors(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_stats__errors.stats__errors()")
 
 
 	ctx := context.Background()
@@ -72,7 +74,7 @@ func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *
 		},
 	}
 
-	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
 				"t": "crawler_error",
 			},
@@ -105,13 +107,13 @@ func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *
 	})*/
 
 
-	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -123,7 +125,7 @@ func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
 			"mongodb_aggregation_error",
-			nil, err, "gf_crawl_stats", p_runtime_sys)
+			nil, err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}*/
 	
@@ -136,7 +138,7 @@ func stats__errors(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to count/get_info of crawler_error's by crawler_name",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_crawl_stats", p_runtime_sys)
+				err, "gf_crawl_stats", pRuntimeSys)
 			return nil, gf_err
 		}
 	

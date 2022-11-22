@@ -29,14 +29,13 @@ import (
 )
 
 //--------------------------------------------------
-func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
+
+func RunCrawlerCycle(pCrawler gf_crawl_core.GFcrawlerDef,
 	pImagesLocalDirPathStr string,
 	pMediaDomainStr        string,
 	pS3bucketNameStr       string,
-	p_runtime              *gf_crawl_core.GFcrawlerRuntime,
+	pRuntime               *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_cycle.Run_crawler_cycle()")
-	pRuntimeSys.LogFun("INFO",      "pS3bucketNameStr - "+pS3bucketNameStr)
 
 	yellow := color.New(color.FgYellow).SprintFunc()
 	black  := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
@@ -50,7 +49,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	// IMPORTANT!! - get unresolved links to pages on the domain to which the crawler belongs.
 	//               so if the a page contains links to domains external to the domain to which the 
 	//               crawler belongs, it wont get fetched/parsed here
-	unresolved_link, gfErr := gf_crawl_core.Link__db_get_unresolved(p_crawler.Name_str, pRuntimeSys)
+	unresolved_link, gfErr := gf_crawl_core.LinkDBgetUnresolved(pCrawler.NameStr, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -58,10 +57,10 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	// // IMPORTANT!! - no unresolved links were found, this is a valid possible state. 
 	// //               do nothing, because further bellow unresolved_link is tested for == nil and then
 	// //               crawlenrs start_url is used - hence the empty IF block.
-	// if gf_err != nil && fmt.Sprint(gf_err.Type_str) == "mongodb_not_found_error" {
+	// if gfErr != nil && fmt.Sprint(gfErr.Type_str) == "mongodb_not_found_error" {
 
-	// } else if gf_err != nil {
-	// 	return gf_err
+	// } else if gfErr != nil {
+	// 	return gfErr
 	// }
 	
 	var url_str string
@@ -84,7 +83,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 		//               instances running on other nodes should not load this link of importing as well, 
 		//               to avoid duplicate work/data
 		start_time_f := float64(time.Now().UnixNano())/1000000000.0
-		gfErr       := gf_crawl_core.Link__db_mark_import_in_progress(true, start_time_f, unresolved_link, p_runtime, pRuntimeSys)
+		gfErr       := gf_crawl_core.Link__db_mark_import_in_progress(true, start_time_f, unresolved_link, pRuntime, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -92,9 +91,9 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 		//----------------------
 	} else {
 
-		// IMPORTANT!! - if all links were resolved, then start at the initial Crawler Start_url_str
+		// IMPORTANT!! - if all links were resolved, then start at the initial Crawler StartURLstr
 		//               and begin a new sweep of crawling the domain
-		url_str = p_crawler.Start_url_str
+		url_str = pCrawler.StartURLstr
 		fmt.Println("INFO",black(">>>>>>>>>>>>>>>>> UNRESOLVED_LINK NOT FOUND - using start_url - ")+yellow(url_str))
 	}
 	
@@ -107,11 +106,11 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	
 	//-------------------
 	// STAGE - FETCH THE LINK
-	url_fetch, domain_str, gfErr := gf_crawl_core.Fetch__url(url_str,
+	url_fetch, domain_str, gfErr := gf_crawl_core.FetchURL(url_str,
 		unresolved_link,
 		cycle_run__id_str,
-		p_crawler.Name_str,
-		p_runtime,
+		pCrawler.NameStr,
+		pRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -119,14 +118,14 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 
 	//-------------------
 	// STAGE - PARSE THE FETCHED PAGE
-	gfErr = gf_crawl_core.Fetch__parse_result(url_fetch,
+	gfErr = gf_crawl_core.FetchParseResult(url_fetch,
 		cycle_run__id_str,
-		p_crawler.Name_str,
+		pCrawler.NameStr,
 		pImagesLocalDirPathStr,
 
 		pMediaDomainStr,
 		pS3bucketNameStr,
-		p_runtime,
+		pRuntime,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -137,11 +136,11 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
 
-	cycle_run := &Gf_crawler_cycle_run{
+	cycle_run := &GFcrawlerCycleRun{
 		Id_str:               cycle_run__id_str,
 		T_str:                "crawler_cycle_run",
 		Creation_unix_time_f: cycle_run__creation_unix_time_f,
-		Crawler_name_str:     p_crawler.Name_str,
+		Crawler_name_str:     pCrawler.NameStr,
 		Target_domain_str:    domain_str,
 		Target_url_str:       url_str,
 		Start_time_f:         start_time_f,
@@ -154,7 +153,7 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 		coll_name_str,
 		map[string]interface{}{
 			"cycle_run__id_str":  cycle_run__id_str,
-			"crawler_name_str":   p_crawler.Name_str,
+			"crawler_name_str":   pCrawler.NameStr,
 			"domain_str":         domain_str,
 			"caller_err_msg_str": "failed to insert a Crawler_cycle_run into the DB",
 		},
@@ -164,24 +163,11 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 		return gfErr
 	}
 
-	/*err := pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(cycle_run)
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to insert a Crawler_cycle_run in mongodb",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"cycle_run__id_str": cycle_run__id_str,
-				"crawler_name_str":  p_crawler.Name_str,
-				"domain_str":        domain_str,
-			},
-			err, "gf_crawl_lib", pRuntimeSys)
-		return gf_err
-	}*/
-
 	//-------------------
 	// LINK MARK AS RESOLVED
 
 	// IMPORTANT!! - unresolved_link is nil if no links are present in DB or if all links have been resolved, 
-	//              in which case the p_crawler.Start_url_str was used
+	//              in which case the pCrawler.StartURLstr was used
 	if unresolved_link != nil {
 		gfErr = gf_crawl_core.Link__db_mark_as_resolved(unresolved_link,
 			url_fetch.Id_str,
@@ -193,14 +179,14 @@ func Run_crawler_cycle(p_crawler gf_crawl_core.GFcrawlerDef,
 	}
 
 	//-------------------
-	// unresolved_link - is nil if p_crawler.Start_url_str is used
+	// unresolved_link - is nil if pCrawler.StartURLstr is used
 	if unresolved_link != nil {
 
 		// IMPORTANT!! - mark the link as no longer import_in_progress
 		gfErr := gf_crawl_core.Link__db_mark_import_in_progress(false, //p_status_bool
 			end_time_f,
 			unresolved_link,
-			p_runtime,
+			pRuntime,
 			pRuntimeSys)
 		if gfErr != nil {
 			return gfErr

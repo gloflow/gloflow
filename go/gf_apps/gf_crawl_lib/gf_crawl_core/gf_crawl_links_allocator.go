@@ -30,6 +30,7 @@ import (
 )
 
 //--------------------------------------------------
+
 type Gf_crawl_link_alloc struct {
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string         `bson:"id_str"`
@@ -53,10 +54,11 @@ type Gf_crawl_link_alloc_block struct {
 }
 
 //--------------------------------------------------
-func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
 
-	allocator, gf_err := Link_alloc__create(p_crawler_name_str, p_runtime_sys)
+func LinkAllocInit(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__init()")
+
+	allocator, gf_err := LinkAllocCreate(pCrawlerNameStr, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -64,7 +66,7 @@ func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.RuntimeS
 	go func() {
 		for ;; {
 
-			gf_err := Link_alloc__run(allocator, p_runtime_sys)
+			gf_err := LinkAllocRun(allocator, pRuntimeSys)
 			if gf_err != nil {
 
 			}
@@ -79,13 +81,14 @@ func Link_alloc__init(p_crawler_name_str string, p_runtime_sys *gf_core.RuntimeS
 }
 
 //--------------------------------------------------
-func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.RuntimeSys) (*Gf_crawl_link_alloc, *gf_core.GFerror) {
+
+func LinkAllocCreate(pCrawlerNameStr string, pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawl_link_alloc, *gf_core.GFerror) {
 
 	block_size_int     := 100
 	sleep_time_sec_int := 60*20 // 20min
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("gf_crawl_link_alloc:%s:%f", p_crawler_name_str, creation_unix_time_f)
+	id_str               := fmt.Sprintf("gf_crawl_link_alloc:%s:%f", pCrawlerNameStr, creation_unix_time_f)
 
 	// IMPORTANT!! - there can be multiple allocators operating in a single cluster. potentially they can have different allocations strategies,
 	//               or may have different limitations on the range of values for various filters used by allocation function.
@@ -93,7 +96,7 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 		Id_str:                    id_str,
 		T_str:                     "crawler_link_alloc", 
 		Creation_unix_time_f:      creation_unix_time_f, 
-		Crawler_name_str:          p_crawler_name_str,
+		Crawler_name_str:          pCrawlerNameStr,
 		Block_size_int:            block_size_int,
 		Sleep_time_sec_int:        sleep_time_sec_int,
 		Current_link_block_id_str: "",
@@ -105,36 +108,26 @@ func Link_alloc__create(p_crawler_name_str string, p_runtime_sys *gf_core.Runtim
 	gf_err        := gf_core.MongoInsert(allocator,
 		coll_name_str,
 		map[string]interface{}{
-			"crawler_name_str":   p_crawler_name_str,
+			"crawler_name_str":   pCrawlerNameStr,
 			"caller_err_msg_str": "failed to insert a crawl_link_alloc into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
-
-	/*err := p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(allocator)
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to insert a crawl_link_alloc in mongodb",
-			"mongodb_insert_error",
-			map[string]interface{}{
-				"crawler_name_str": p_crawler_name_str,
-			},
-			err, "gf_crawl_core", p_runtime_sys)
-		return nil, gf_err
-	}*/
 	
 	return allocator, nil
 }
 
 //--------------------------------------------------
-func Link_alloc__run(p_alloc *Gf_crawl_link_alloc, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+func LinkAllocRun(p_alloc *Gf_crawl_link_alloc, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	alloc_run_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	//BLOCK
-	new_block, gf_err := Link_alloc__create_links_block(p_alloc.Id_str, p_alloc.Crawler_name_str, p_alloc.Block_size_int, p_runtime_sys)
+	new_block, gf_err := Link_alloc__create_links_block(p_alloc.Id_str, p_alloc.Crawler_name_str, p_alloc.Block_size_int, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -146,11 +139,12 @@ func Link_alloc__run(p_alloc *Gf_crawl_link_alloc, p_runtime_sys *gf_core.Runtim
 }
 
 //--------------------------------------------------
+
 func Link_alloc__create_links_block(p_alloc_id_str string,
-	p_crawler_name_str string,
-	p_block_size_int   int,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
+	pCrawlerNameStr  string,
+	p_block_size_int int,
+	pRuntimeSys      *gf_core.RuntimeSys) (*Gf_crawl_link_alloc_block, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links_allocator.Link_alloc__create_links_block()")
 
 
 	ctx := context.Background()
@@ -162,7 +156,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 
 	cursor, gf_err := gf_core.MongoFind(bson.M{
 			"t":                    "crawler_page_outgoing_link",
-			"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
+			"crawler_name_str":     pCrawlerNameStr, //get links that were discovered by this crawler
 			"valid_for_crawl_bool": true,
 			"fetched_bool":         false,
 
@@ -174,13 +168,13 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		},
 		find_opts,
 		map[string]interface{}{
-			"crawler_name_str":   p_crawler_name_str,
+			"crawler_name_str":   pCrawlerNameStr,
 			"block_size_int":     p_block_size_int,
 			"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 		},
-		p_runtime_sys.Mongo_db.Collection("gf_crawl"),
+		pRuntimeSys.Mongo_db.Collection("gf_crawl"),
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	if gf_err != nil {
 		return nil, gf_err
@@ -192,17 +186,17 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
 			"mongodb_cursor_all",
 			map[string]interface{}{
-				"crawler_name_str":   p_crawler_name_str,
+				"crawler_name_str":   pCrawlerNameStr,
 				"block_size_int":     p_block_size_int,
 				"caller_err_msg_str": "failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 			},
-			err, "gf_crawl_core", p_runtime_sys)
+			err, "gf_crawl_core", pRuntimeSys)
 		return nil, gf_err
 	}
 
-	/*query := p_runtime_sys.Mongodb_db.C("gf_crawl").Find(bson.M{
+	/*query := pRuntimeSys.Mongodb_db.C("gf_crawl").Find(bson.M{
 		"t":                    "crawler_page_outgoing_link",
-		"crawler_name_str":     p_crawler_name_str, //get links that were discovered by this crawler
+		"crawler_name_str":     pCrawlerNameStr, //get links that were discovered by this crawler
 		"valid_for_crawl_bool": true,
 		"fetched_bool":         false,
 
@@ -226,10 +220,10 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 		gf_err := gf_core.ErrorCreate("failed to get a block of crawler_page_outgoing_links, to allocate for crawling",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"crawler_name_str": p_crawler_name_str,
+				"crawler_name_str": pCrawlerNameStr,
 				"block_size_int":   p_block_size_int,
 			},
-			err, "gf_crawl_core", p_runtime_sys)
+			err, "gf_crawl_core", pRuntimeSys)
 		return nil, gf_err
 	}*/
 
@@ -237,7 +231,7 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 	// CREATE_LINK_ALLOCATOR_BLOCK
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("gf_crawl_link_alloc_block:%s:%f", p_crawler_name_str, creation_unix_time_f)
+	id_str               := fmt.Sprintf("gf_crawl_link_alloc_block:%s:%f", pCrawlerNameStr, creation_unix_time_f)
 
 	block := &Gf_crawl_link_alloc_block{
 		Id_str:                   id_str,
@@ -256,19 +250,19 @@ func Link_alloc__create_links_block(p_alloc_id_str string,
 			"caller_err_msg_str": "failed to insert a crawl_link_alloc_block into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 
-	/*err = p_runtime_sys.Mongodb_db.C("gf_crawl").Insert(block)
+	/*err = pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(block)
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to insert a crawl_link_alloc_block in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{
 				"allocator_id_str": p_alloc_id_str,
 			},
-			err, "gf_crawl_core", p_runtime_sys)
+			err, "gf_crawl_core", pRuntimeSys)
 		return nil, gf_err
 	}*/
 	

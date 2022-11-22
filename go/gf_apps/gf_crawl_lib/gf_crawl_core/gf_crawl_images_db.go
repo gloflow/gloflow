@@ -29,181 +29,125 @@ import (
 )
 
 //--------------------------------------------------
-func Image__db_create(p_img *Gf_crawler_page_image,
-	p_runtime   *GFcrawlerRuntime,
+
+func ImageDBcreate(p_img *GFcrawlerPageImage,
+	pRuntime   *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	// pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.Image__db_create()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	//------------
-	// MASTER
-	if p_runtime.Cluster_node_type_str == "master" {
+	ctx := context.Background()
+	c, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx, bson.M{
+		"t":        "crawler_page_img",
+		"hash_str": p_img.Hash_str,
+	})
 
-		ctx := context.Background()
-		c, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx, bson.M{
-			"t":        "crawler_page_img",
-			"hash_str": p_img.Hash_str,
-		})
-	
-		/*c, err := pRuntimeSys.Mongodb_db.C("gf_crawl").Find(bson.M{
-				"t":        "crawler_page_img",
-				"hash_str": p_img.Hash_str,
-			}).Count()*/
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to count the number of crawler_page_img's in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"img_ref_url_str":             p_img.Url_str,
+				"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
+			},
+			err, "gf_crawl_core", pRuntimeSys)
+		return false, gfErr
+	}
 
-		if err != nil {
-			gfErr := gf_core.MongoHandleError("failed to count the number of crawler_page_img's in the DB",
-				"mongodb_find_error",
-				map[string]interface{}{
-					"img_ref_url_str":             p_img.Url_str,
-					"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
-				},
-				err, "gf_crawl_core", pRuntimeSys)
+	// crawler_page_img already exists, from previous crawls, so ignore it
+	var exists_bool bool
+	if c > 0 {
+		pRuntimeSys.LogFun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
+		
+		exists_bool = true
+		return exists_bool, nil
+	} else {
+			
+		// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
+		ctx           := context.Background()
+		coll_name_str := "gf_crawl"
+		gfErr         := gf_core.MongoInsert(p_img,
+			coll_name_str,
+			map[string]interface{}{
+				"img_ref_url_str":             p_img.Url_str,
+				"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
+				"caller_err_msg_str":          "failed to insert a crawler_page_img into the DB",
+			},
+			ctx,
+			pRuntimeSys)
+		if gfErr != nil {
 			return false, gfErr
 		}
 
-		// crawler_page_img already exists, from previous crawls, so ignore it
-		var exists_bool bool
-		if c > 0 {
-			pRuntimeSys.LogFun("INFO", yellow(">>>>>>>> - DB PAGE_IMAGE ALREADY EXISTS >-- ")+cyan(p_img.Url_str))
-			
-			exists_bool = true
-			return exists_bool, nil
-		} else {
-				
-			// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
-			ctx           := context.Background()
-			coll_name_str := "gf_crawl"
-			gfErr         := gf_core.MongoInsert(p_img,
-				coll_name_str,
-				map[string]interface{}{
-					"img_ref_url_str":             p_img.Url_str,
-					"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
-					"caller_err_msg_str":          "failed to insert a crawler_page_img into the DB",
-				},
-				ctx,
-				pRuntimeSys)
-			if gfErr != nil {
-				return false, gfErr
-			}
-
-			/*err = pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(p_img)
-			if err != nil {
-				gfErr := gf_core.MongoHandleError("failed to insert a crawler_page_img in mongodb",
-					"mongodb_insert_error",
-					map[string]interface{}{
-						"img_ref_url_str":             p_img.Url_str,
-						"img_ref_origin_page_url_str": p_img.Origin_page_url_str,
-					},
-					err, "gf_crawl_core", pRuntimeSys)
-				return false, gfErr
-			}*/
-
-			exists_bool = false
-			return exists_bool, nil
-		}
+		exists_bool = false
+		return exists_bool, nil
 	}
-	//------------
-	// WORKER
-	if p_runtime.Cluster_node_type_str == "worker" {
-
-		// ADD!! - issue a HTTP request for this data to a remote 'master' node
-	}
-	
-	//------------
 
 	return false, nil
 }
 
 //--------------------------------------------------
-func Image__db_create_ref(p_img_ref *Gf_crawler_page_image_ref,
-	p_runtime   *GFcrawlerRuntime,
+
+func ImageDBcreateRef(p_img_ref *GFcrawlerPageImageRef,
+	pRuntime    *GFcrawlerRuntime,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	//pLogFun("FUN_ENTER", "gf_crawl_images_db.Image__db_create_ref()")
 
-	if p_runtime.Cluster_node_type_str == "master" {
 
-		ctx := context.Background()
-		c, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx, bson.M{
-			"t":        "crawler_page_img_ref",
-			"hash_str": p_img_ref.Hash_str,
-		})
+	ctx := context.Background()
+	c, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").CountDocuments(ctx, bson.M{
+		"t":        "crawler_page_img_ref",
+		"hash_str": p_img_ref.Hash_str,
+	})
 
-		/*c, err := pRuntimeSys.Mongodb_db.C("gf_crawl").Find(bson.M{
-				"t":        "crawler_page_img_ref",
-				"hash_str": p_img_ref.Hash_str,
-			}).Count()*/
+	if err != nil {
+		gf_err := gf_core.MongoHandleError("failed to count the number of crawler_page_img_ref's in mongodb",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"img_ref_url_str":             p_img_ref.Url_str,
+				"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
+			},
+			err, "gf_crawl_core", pRuntimeSys)
+		return gf_err
+	}
 
-		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to count the number of crawler_page_img_ref's in mongodb",
-				"mongodb_find_error",
-				map[string]interface{}{
-					"img_ref_url_str":             p_img_ref.Url_str,
-					"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
-				},
-				err, "gf_crawl_core", pRuntimeSys)
+	// crawler_page_img already exists, from previous crawls, so ignore it
+	if c > 0 {
+		return nil
+	} else {
+			
+		// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
+		ctx           := context.Background()
+		coll_name_str := "gf_crawl"
+		gf_err        := gf_core.MongoInsert(p_img_ref,
+			coll_name_str,
+			map[string]interface{}{
+				"img_ref_url_str":             p_img_ref.Url_str,
+				"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
+				"caller_err_msg_str":          "failed to insert a crawler_page_img_ref into the DB",
+			},
+			ctx,
+			pRuntimeSys)
+		if gf_err != nil {
 			return gf_err
 		}
-
-		// crawler_page_img already exists, from previous crawls, so ignore it
-		if c > 0 {
-			return nil
-		} else {
-				
-			// IMPORTANT!! - only insert the crawler_page_img if it doesnt exist in the DB already
-			ctx           := context.Background()
-			coll_name_str := "gf_crawl"
-			gf_err        := gf_core.MongoInsert(p_img_ref,
-				coll_name_str,
-				map[string]interface{}{
-					"img_ref_url_str":             p_img_ref.Url_str,
-					"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
-					"caller_err_msg_str":          "failed to insert a crawler_page_img_ref into the DB",
-				},
-				ctx,
-				pRuntimeSys)
-			if gf_err != nil {
-				return gf_err
-			}
-
-			/*err = pRuntimeSys.Mongodb_db.C("gf_crawl").Insert(p_img_ref)
-			if err != nil {
-				gf_err := gf_core.MongoHandleError("failed to insert a crawler_page_img_ref in mongodb",
-					"mongodb_insert_error",
-					map[string]interface{}{
-						"img_ref_url_str":             p_img_ref.Url_str,
-						"img_ref_origin_page_url_str": p_img_ref.Origin_page_url_str,
-					},
-					err, "gf_crawl_core", pRuntimeSys)
-				return gf_err
-			}*/
-		}
-	} else {
-
 	}
 
 	return nil
 }
 
 //--------------------------------------------------
-func image__db_get(p_id_str Gf_crawler_page_image_id,
-	p_runtime     *GFcrawlerRuntime,
-	pRuntimeSys *gf_core.RuntimeSys) (*Gf_crawler_page_image, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_get()")
 
-	var img Gf_crawler_page_image
+func imageDBget(p_id_str GFcrawlerPageImageID,
+	pRuntime     *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFcrawlerPageImage, *gf_core.GFerror) {
+
+	var img GFcrawlerPageImage
 	ctx := context.Background()
 
 	err := pRuntimeSys.Mongo_db.Collection("gf_crawl").FindOne(ctx, bson.M{
 			"t":      "crawler_page_img",
 			"id_str": p_id_str,
 		}).Decode(&img)
-
-	/*err := pRuntimeSys.Mongodb_db.C("gf_crawl").Find(bson.M{
-			"t":      "crawler_page_img",
-			"id_str": p_id_str,
-		}).One(&img)*/
 
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to get crawler_page_img by ID from mongodb",
@@ -217,11 +161,10 @@ func image__db_get(p_id_str Gf_crawler_page_image_id,
 }
 
 //-------------------------------------------------
-func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recent_images, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.Images__db_get_recent()")
+
+func ImagesDBgetRecent(pRuntimeSys *gf_core.RuntimeSys) ([]GFcrawlerRecentImages, *gf_core.GFerror) {
 
 	ctx := context.Background()
-
 	pipeline := mongo.Pipeline{
 		{
 			{"$match", bson.M{"t": "crawler_page_img"}},
@@ -287,7 +230,7 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 		return nil, gf_err
 	}*/
 	
-	results_lst := []Gf_crawler__recent_images{}
+	results_lst := []GFcrawlerRecentImages{}
 	err          = cursor.All(ctx, &results_lst)
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get recent_images (crawler_page_img) by domain",
@@ -301,7 +244,8 @@ func Images__db_get_recent(pRuntimeSys *gf_core.RuntimeSys) ([]Gf_crawler__recen
 }
 
 //--------------------------------------------------
-func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+func image__db_mark_as_downloaded(p_image *GFcrawlerPageImage, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_mark_as_downloaded()")
 
 	ctx := context.Background()
@@ -330,8 +274,9 @@ func image__db_mark_as_downloaded(p_image *Gf_crawler_page_image, pRuntimeSys *g
 }
 
 //--------------------------------------------------
-func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
-	p_image       *Gf_crawler_page_image,
+
+func image__db_set_gf_image_id(pGFimageIDstr gf_images_core.GFimageID,
+	pImage      *GFcrawlerPageImage,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_set_gf_image_id()")
 
@@ -344,15 +289,15 @@ func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 			//               be the id_str of the p_image (with the same hash_str) that was written to the DB. 
 			//               (it might be an old p_image from previous crawler runs. to conserve DB space the crawler
 			//               system doesnt write duplicate crawler_page_img's to the DB. 
-			"hash_str": p_image.Hash_str,
+			"hash_str": pImage.Hash_str,
 		},
 		bson.M{
-			"$set": bson.M{"image_id_str": p_gf_image_id_str},
+			"$set": bson.M{"image_id_str": pGFimageIDstr},
 		})
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img downloaded flag by its hash",
 			"mongodb_update_error",
-			map[string]interface{}{"image_hash_str": p_image.Hash_str,},
+			map[string]interface{}{"image_hash_str": pImage.Hash_str,},
 			err, "gf_crawl_core", pRuntimeSys)
 		return gf_err
 	}
@@ -361,24 +306,25 @@ func image__db_set_gf_image_id(p_gf_image_id_str gf_images_core.Gf_image_id,
 }
 
 //--------------------------------------------------
-func image__db_update_after_process(p_page_img *Gf_crawler_page_image,
-	p_gf_image_id_str gf_images_core.Gf_image_id,
-	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+
+func image__db_update_after_process(pPageImg *GFcrawlerPageImage,
+	pGFimageIDstr gf_images_core.GFimageID,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_db.image__db_update_after_process()")
 
 	ctx := context.Background()
 
-	p_page_img.Valid_for_usage_bool = true
-	p_page_img.Gf_image_id_str      = p_gf_image_id_str
+	pPageImg.Valid_for_usage_bool = true
+	pPageImg.GFimageIDstr         = pGFimageIDstr
 	
 	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"t":      "crawler_page_img",
-			"id_str": p_page_img.Id_str,
+			"id_str": pPageImg.IDstr,
 		},
 		bson.M{"$set": bson.M{
 				// IMPORTANT!! - gf_image has been created for this page_image, and so the appropriate
 				//               image_id_str needs to be set in the page_image DB record
-				"image_id_str": p_gf_image_id_str,
+				"image_id_str": pGFimageIDstr,
 
 				// IMPORTANT!! - image has been transformed, and is ready to be used further
 				//               by other apps/services, either for display, or further calculation
@@ -390,8 +336,8 @@ func image__db_update_after_process(p_page_img *Gf_crawler_page_image,
 		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img valid_for_usage flag and its image_id (Gf_image) by its ID",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"id_str":          p_page_img.Id_str,
-				"gf_image_id_str": p_gf_image_id_str,
+				"id_str":          pPageImg.IDstr,
+				"gf_image_id_str": pGFimageIDstr,
 			}, err, "gf_crawl_core", pRuntimeSys)
 		return gf_err
 	}

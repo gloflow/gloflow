@@ -26,28 +26,28 @@ import (
 )
 
 //--------------------------------------------------
-func image__cleanup(p_img_local_file_path_str string,
-	p_img_thumbs  *gf_images_core.GFimageThumbs,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_images_utils.image__cleanup()")
 
-	files_to_remove_lst := []string{
-		p_img_local_file_path_str,
+func imageCleanup(pImgLocalFilePathStr string,
+	pImgThumbs  *gf_images_core.GFimageThumbs,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	filesToRemoveLst := []string{
+		pImgLocalFilePathStr,
 	}
 
-	if p_img_thumbs != nil {
-		files_to_remove_lst = append(files_to_remove_lst, p_img_thumbs.Small_local_file_path_str)
-		files_to_remove_lst = append(files_to_remove_lst, p_img_thumbs.Medium_local_file_path_str)
-		files_to_remove_lst = append(files_to_remove_lst, p_img_thumbs.Large_local_file_path_str)
+	if pImgThumbs != nil {
+		filesToRemoveLst = append(filesToRemoveLst, pImgThumbs.Small_local_file_path_str)
+		filesToRemoveLst = append(filesToRemoveLst, pImgThumbs.Medium_local_file_path_str)
+		filesToRemoveLst = append(filesToRemoveLst, pImgThumbs.Large_local_file_path_str)
 	}
 	
-	for _, f_str := range files_to_remove_lst {
-		err := os.Remove(f_str)
+	for _, fStr := range filesToRemoveLst {
+		err := os.Remove(fStr)
 		if err != nil {
 			gf_err := gf_core.ErrorCreate("failed to cleanup a crawled image files",
 				"file_remove_error",
-				map[string]interface{}{"file_str": f_str,},
-				err, "gf_crawl_core", p_runtime_sys)
+				map[string]interface{}{"file_str": fStr,},
+				err, "gf_crawl_core", pRuntimeSys)
 			return gf_err
 		}
 	}

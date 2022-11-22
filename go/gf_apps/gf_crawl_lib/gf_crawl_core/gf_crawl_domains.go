@@ -24,9 +24,10 @@ import (
 )
 
 //--------------------------------------------------
-func get_domains_blacklist(pRuntimeSys *gf_core.RuntimeSys) map[string]bool {
 
-	domains_map := map[string]bool{
+func getDomainsBlacklist(pRuntimeSys *gf_core.RuntimeSys) map[string]bool {
+
+	domainsMap := map[string]bool{
 		"facebook.com":     false,
 		"l.facebook.com":   false,
 		"twitter.com":      false,
@@ -42,5 +43,5 @@ func get_domains_blacklist(pRuntimeSys *gf_core.RuntimeSys) map[string]bool {
 		"youtube.com":      false,
 		"ffffound.com":     false,
 	}
-	return domains_map
+	return domainsMap
 }

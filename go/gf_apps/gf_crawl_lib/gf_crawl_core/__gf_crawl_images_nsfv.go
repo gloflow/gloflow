@@ -30,12 +30,13 @@ import (
 )
 
 //--------------------------------------------------
-func images__stage__determine_are_nsfv(p_crawler_name_str string,
+
+func images__stage__determine_are_nsfv(pCrawlerNameStr string,
 	p_page_imgs__pipeline_infos_lst []*gf_page_img__pipeline_info,
 	p_origin_page_url_str           string,
-	p_runtime                       *Gf_crawler_runtime,
-	p_runtime_sys                   *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_images_nsfv.images__stage__determine_are_nsfv")
+	pRuntime                        *Gf_crawler_runtime,
+	pRuntimeSys                     *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_nsfv.images__stage__determine_are_nsfv")
 
 	fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -------------------------")
 	fmt.Println("IMAGES__GET_IN_PAGE    - STAGE - determine_are_nsfv")
@@ -56,22 +57,22 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 		gf_img := page_img__pinfo.page_img
 
 		var is_nsfv_bool bool
-		var gf_err       *gf_core.GFerror
+		var gfErr        *gf_core.GFerror
 
 		//--------------
 		// GIF
 		if gf_img.Img_ext_str == "gif" {
 
-			is_nsfv_bool,gf_err = image__is_nsfv__gif(page_img__pinfo.local_file_path_str, gf_img.Url_str, p_runtime_sys)
-			if gf_err != nil {
-				p_runtime_sys.LogFun("ERROR", "failed to do nudity-detection/filtering in GIF - "+gf_img.Url_str+" - "+fmt.Sprint(gf_err))
+			is_nsfv_bool, gfErr = image__is_nsfv__gif(page_img__pinfo.local_file_path_str, gf_img.Url_str, pRuntimeSys)
+			if gfErr != nil {
+				pRuntimeSys.LogFun("ERROR", "failed to do nudity-detection/filtering in GIF - "+gf_img.Url_str+" - "+fmt.Sprint(gfErr))
 
 				t:="gif_is_nsfv_test__failed"
 				m:="failed nsfv testing of GIF with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
-					gf_err, p_runtime, p_runtime_sys)
+				CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, pCrawlerNameStr,
+					gfErr, pRuntime, pRuntimeSys)
 
-				page_img__pinfo.gf_error = gf_err
+				page_img__pinfo.gf_error = gfErr
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 
@@ -80,16 +81,16 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 		} else {
 
 			//IMPORTANT!! - if image has nudity it is flagged as not valid
-			is_nsfv_bool,gf_err = image__is_nsfv(page_img__pinfo.local_file_path_str, p_runtime_sys)
-			if gf_err != nil {
-				p_runtime_sys.LogFun("ERROR","failed to do nudity-detection/filtering in image - "+gf_img.Url_str+" - "+fmt.Sprint(gf_err))
+			is_nsfv_bool, gfErr = image__is_nsfv(page_img__pinfo.local_file_path_str, pRuntimeSys)
+			if gfErr != nil {
+				pRuntimeSys.LogFun("ERROR","failed to do nudity-detection/filtering in image - "+gf_img.Url_str+" - "+fmt.Sprint(gfErr))
 
 				t:="image_is_nsfv_test__failed"
 				m:="failed nsfv testing of image with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
-					gf_err, p_runtime, p_runtime_sys)
+				CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, pCrawlerNameStr,
+					gfErr, pRuntime, pRuntimeSys)
 
-				page_img__pinfo.gf_error = gf_err
+				page_img__pinfo.gf_error = gfErr
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
@@ -101,15 +102,15 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 
 		//IMPORTANT!! - if image is flagged as NSFV its flag in the DB is updated
 		if is_nsfv_bool {
-			gf_err = image__flag_as_nsfv(gf_img,p_runtime_sys)
-			if gf_err != nil {
+			gfErr = image__flag_as_nsfv(gf_img,pRuntimeSys)
+			if gfErr != nil {
 				
 				t:="image_mark_as_nsfv__failed"
 				m:="failed nsfv marking (in DB) of image with img_url_str - "+gf_img.Url_str
-				Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, p_crawler_name_str,
-					gf_err, p_runtime, p_runtime_sys)
+				CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, gf_img.Url_str, pCrawlerNameStr,
+					gfErr, pRuntime, pRuntimeSys)
 
-				page_img__pinfo.gf_error = gf_err
+				page_img__pinfo.gf_error = gfErr
 				continue //IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 			}
 		}
@@ -124,8 +125,8 @@ func images__stage__determine_are_nsfv(p_crawler_name_str string,
 
 func image__is_nsfv__gif(p_img_gif_path_str string,
 	p_img_gif_origin_url_str string,
-	p_runtime_sys            *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	//p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_images_nsfv.image__is_nsfv__gif()")
+	pRuntimeSys            *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	//pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_images_nsfv.image__is_nsfv__gif()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
 	green := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
@@ -141,12 +142,12 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 	fmt.Println("INFO", green(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>------------------------------------------------"))
 
 	frames_images_dir_path_str := "./"
-	new_files_names_lst, gf_err := gf_gif_lib.Gif__frames__save_to_fs(p_img_gif_path_str,
+	new_files_names_lst, gfErr := gf_gif_lib.Gif__frames__save_to_fs(p_img_gif_path_str,
 		frames_images_dir_path_str,
 		0, //p_frames_num_to_get_int //IMPORTANT!! - if its 0 it gets all frames
-		p_runtime_sys)
-	if gf_err != nil {
-		return false,gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
 	}
 
 	//-------------------------
@@ -164,10 +165,10 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 	//-------------------------
 	// IMPORTANT!! - run NSFV detection on each GIF frame, and for the first one that fails the test
 	//               use it as a signal to mark the whole GIF as NSFV
-	for _,frame_image_file_path_str := range new_files_names_lst {
-		is_nsfv_bool,gf_err := image__is_nsfv(frame_image_file_path_str, p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+	for _, frame_image_file_path_str := range new_files_names_lst {
+		is_nsfv_bool, gfErr := image__is_nsfv(frame_image_file_path_str, pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 
 		//-----------------
@@ -186,26 +187,28 @@ func image__is_nsfv__gif(p_img_gif_path_str string,
 }
 
 //--------------------------------------------------
+
 func image__is_nsfv(p_img_path_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	is_nude_bool,err := nude.IsNude(p_img_path_str)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to classify image as NSFV or not, using the 'nude' package",
+		gfErr := gf_core.ErrorCreate("failed to classify image as NSFV or not, using the 'nude' package",
 			"verify__invalid_image_nsfv_error",
 			map[string]interface{}{"img_path_str":p_img_path_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return true, gf_err
+			err, "gf_crawl_core", pRuntimeSys)
+		return true, gfErr
 	}
-	p_runtime_sys.LogFun("INFO","image is_nude - "+fmt.Sprint(is_nude_bool))
+	pRuntimeSys.LogFun("INFO","image is_nude - "+fmt.Sprint(is_nude_bool))
 	return is_nude_bool, nil
 }
 
 //--------------------------------------------------
-func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	err := p_runtime_sys.Mongodb_db.C("gf_crawl").Update(bson.M{
+func image__flag_as_nsfv(p_image *GFcrawlerPageImage,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	err := pRuntimeSys.Mongodb_db.C("gf_crawl").Update(bson.M{
 			"t":      "crawler_page_img",
 			"id_str": p_image.Id_str,
 		},
@@ -213,11 +216,11 @@ func image__flag_as_nsfv(p_image *Gf_crawler_page_image,
 			"$set":bson.M{"nsfv_bool":true},
 		})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update an crawler_page_img NSFV flag by its ID",
+		gfErr := gf_core.MongoHandleError("failed to update an crawler_page_img NSFV flag by its ID",
 			"mongodb_update_error",
 			map[string]interface{}{"image_id_str": p_image.Id_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
+			err, "gf_crawl_core", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil

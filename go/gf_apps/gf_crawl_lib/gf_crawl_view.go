@@ -26,13 +26,14 @@ import (
 )
 
 //--------------------------------------------------
+
 func dashboard__render_template(p_tmpl *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_view.dashboard__render_template()")
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_view.dashboard__render_template()")
 
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	type tmpl_data struct {
 		Sys_release_info gf_core.SysReleaseInfo
@@ -56,11 +57,11 @@ func dashboard__render_template(p_tmpl *template.Template,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the domains_browser template",
+		gfErr := gf_core.ErrorCreate("failed to render the domains_browser template",
             "template_render_error",
             map[string]interface{}{},
-            err, "gf_crawl_lib", p_runtime_sys)
-		return gf_err
+            err, "gf_crawl_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil

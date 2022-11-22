@@ -32,12 +32,12 @@ import (
 )
 
 //--------------------------------------------------
+
 // adds an image already crawled from an external source URL to some named list of flows in the gf_images app/system.
 // to do this it adds the flow_name to the gf_image DB record, and then copies the discovered image file from
 // gf_crawlers file_storage (S3/IPFS) to gf_images service file_storage (S3/IPFS).
 // at the moment this is called directly in the gf_crawl HTTP handler.
-
-func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
+func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 	pFlowsNamesLst                []string,
 	pMediaDomainStr               string,
 	pCrawledImagesS3bucketNameStr string,
@@ -55,13 +55,13 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 	fmt.Printf("crawler_page_image_id_str - %s\n", pCrawlerPageImageIDstr)
 	fmt.Printf("flows_names               - %s\n", fmt.Sprint(pFlowsNamesLst))
 
-	// DB - get gf_crawler_page_image from the DB
-	pageImage, gfErr := image__db_get(pCrawlerPageImageIDstr, pRuntime, pRuntimeSys)
+	// DB - get GFcrawlerPageImage from the DB
+	pageImage, gfErr := imageDBget(pCrawlerPageImageIDstr, pRuntime, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
-	imageIDstr := pageImage.Gf_image_id_str
+	imageIDstr := pageImage.GFimageIDstr
 	imagesS3bucketUploadCompleteBool := false
 
 	//--------------------------
@@ -99,7 +99,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 		gfErr = gf_images_core.S3storeImage(localImageFilePathStr,
 			gf_image_thumbs,
 			pImagesS3bucketNameStr,
-			pRuntime.S3_info,
+			pRuntime.S3info,
 			pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
@@ -113,7 +113,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 		//-------------------
 		//CLEANUP
 
-		gfErr = image__cleanup(localImageFilePathStr, gf_image_thumbs, pRuntimeSys)
+		gfErr = imageCleanup(localImageFilePathStr, gf_image_thumbs, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -186,7 +186,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr Gf_crawler_page_image_id,
 				S3pathStr,
 				pImagesS3bucketNameStr, // p_target_bucket_name_str,
 				S3pathStr,              // p_target_file__s3_path_str
-				pRuntime.S3_info,
+				pRuntime.S3info,
 				pRuntimeSys)
 			if gfErr != nil {
 				return gfErr

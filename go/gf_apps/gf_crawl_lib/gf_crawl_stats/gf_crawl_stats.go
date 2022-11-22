@@ -24,8 +24,8 @@ import (
 )
 
 //-------------------------------------------------
-func Get_query_funs(p_runtime_sys *gf_core.RuntimeSys) map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats.Init()")
+
+func Get_query_funs(pRuntimeSys *gf_core.RuntimeSys) map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
 	stats_funs_map := map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 		"crawler_fetches_by_url":  stats__crawler_fetches_by_url,

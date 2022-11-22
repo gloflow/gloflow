@@ -31,6 +31,7 @@ import (
 )
 
 //---------------------------------------------------
+
 type gf_test_config struct {
 	test__crawler_name_str                  string
 	test__cycle_run_id_str                  string
@@ -47,6 +48,7 @@ var runtime_sys *gf_core.RuntimeSys
 var crawler_runtime *Gf_crawler_runtime
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	runtime_sys, crawler_runtime = T__init()
 	if runtime_sys == nil || crawler_runtime == nil {
@@ -57,6 +59,7 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
+
 func Test__img_add_to_flow(p_test *testing.T) {
 
 	// cyan := color.New(color.FgCyan).SprintFunc()
@@ -127,7 +130,7 @@ func Test__img_add_to_flow(p_test *testing.T) {
 	}
 
 	assert.Equal(p_test, test__crawled_image.Gf_image_id_str, test__gf_image_id_str,
-		"gf_image ID (which was created manually) of a test image is not equal to the test Gf_crawler_page_image created with gf_crawl_core function")
+		"gf_image ID (which was created manually) of a test image is not equal to the test GFcrawlerPageImage created with gf_crawl_core function")
 	
 	//------------------
 	// TEST - PIPELINE_STAGE__S3_STORE_IMAGES
@@ -168,14 +171,15 @@ func Test__img_add_to_flow(p_test *testing.T) {
 }
 
 //---------------------------------------------------
+
 func t__images__stage__process_images(p_test *testing.T,
 	p_test__gf_image_id_str              gf_images_core.Gf_image_id,
-	p_test__crawled_image                *Gf_crawler_page_image,
-	p_test__crawled_image_ref            *Gf_crawler_page_image_ref,
+	p_test__crawled_image                *GFcrawlerPageImage,
+	p_test__crawled_image_ref            *GFcrawlerPageImageRef,
 	p_test__local_gf_image_file_path_str string,
 	p_test_config                        *gf_test_config,
 	p_crawler_runtime                    *Gf_crawler_runtime, 
-	p_runtime_sys                        *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
+	pRuntimeSys                        *gf_core.RuntimeSys) []*gf_page_img__pipeline_info {
 
 	//-------------------
 	//PIPELINE_STAGE__PROCESS_IMAGES - apply image transformations, create thumbnails, etc.
@@ -220,7 +224,7 @@ func t__images__stage__process_images(p_test *testing.T,
 		p_test_config.test__origin_page_url_str,
 		p_test_config.test__crawled_images_s3_bucket_name_str,
 		p_crawler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	fmt.Println("   STAGE_COMPLETE --------------")
 
@@ -245,19 +249,20 @@ func t__images__stage__process_images(p_test *testing.T,
 }
 
 //---------------------------------------------------
+
 func t__images__stage__s3_store_images(p_test *testing.T,
 	p_page_imgs__pinfos_with_thumbs_lst []*gf_page_img__pipeline_info,
-	p_test__crawled_image               *Gf_crawler_page_image,
+	p_test__crawled_image               *GFcrawlerPageImage,
 	p_test_config                       *gf_test_config,
 	p_crawler_runtime                   *Gf_crawler_runtime, 
-	p_runtime_sys                       *gf_core.RuntimeSys) {
+	pRuntimeSys                       *gf_core.RuntimeSys) {
 
 	page_imgs__pinfos_with_s3_lst := images_s3__stage__store_images(p_test_config.test__crawler_name_str,
 		p_page_imgs__pinfos_with_thumbs_lst,
 		p_test_config.test__origin_page_url_str,
 		p_test_config.test__crawled_images_s3_bucket_name_str,
 		p_crawler_runtime,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//CHECK!! - Downloaded_bool flag doesnt seem to be set at this point, so Im setting it here 
 	//          directly for consistency. check if it makes sense for this flag to be set someplace

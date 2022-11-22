@@ -11,8 +11,8 @@
 
 
 
-#default crawler. can be overwritten to create other crawlers
-#by default URL discovery starts here, and major linked domains are found and further crawled
+# default crawler. can be overwritten to create other crawlers
+# by default URL discovery starts here, and major linked domains are found and further crawled
 crawlers-defs:
 - name: gloflow
   start-url: http://gloflow.com

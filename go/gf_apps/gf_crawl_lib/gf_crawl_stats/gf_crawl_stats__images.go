@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_stat__crawled_images_domain struct {
 	Domain_str              string    `bson:"_id"                     json:"domain_str"`
 	Imgs_count_int          int       `bson:"imgs_count_int"          json:"imgs_count_int"`
@@ -45,11 +46,12 @@ type Gf_stat__crawled_gifs struct {
 }
 
 //-------------------------------------------------
-func stats__gifs_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__gifs_by_days()")
+
+func stats__gifs_by_days(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__gifs_by_days()")
 
 
-	stats__gifs_by_days, gf_err := stats__objs_by_days(map[string]interface{}{"img_ext_str": "gif",}, "crawler_page_img", p_runtime_sys)
+	stats__gifs_by_days, gf_err := stats__objs_by_days(map[string]interface{}{"img_ext_str": "gif",}, "crawler_page_img", pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -61,8 +63,9 @@ func stats__gifs_by_days(p_runtime_sys *gf_core.RuntimeSys) (map[string]interfac
 }
 
 //-------------------------------------------------
-func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_stats__images.stats__gifs()")
+
+func stats__gifs(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_stats__images.stats__gifs()")
 
 
 	ctx := context.Background()
@@ -112,7 +115,7 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 	}
 
 
-	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match"  :bson.M{
 				"t":          "crawler_page_img",
 				"img_ext_str":"gif",
@@ -171,13 +174,13 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get GIF's (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -188,7 +191,7 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get GIF's (crawler_page_img) by domain",
 			"mongodb_aggregation_error",
-			nil, err, "gf_crawl_stats", p_runtime_sys)
+			nil, err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}*/
 
@@ -201,7 +204,7 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get GIF's (crawler_page_img) by domain",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_crawl_stats", p_runtime_sys)
+				err, "gf_crawl_stats", pRuntimeSys)
 			return nil, gf_err
 		}
 	
@@ -216,8 +219,9 @@ func stats__gifs(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf
 }
 
 //-------------------------------------------------
-func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__crawled_images_domains()")
+
+func stats__crawled_images_domains(pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_stats__images.stats__crawled_images_domains()")
 
 
 	ctx := context.Background()
@@ -257,7 +261,7 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	}
 
 
-	/*pipe := p_runtime_sys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_db.Collection("gf_crawl").Pipe([]bson.M{
 		bson.M{"$match":bson.M{
 				"t": "crawler_page_img",
 			},
@@ -297,13 +301,13 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 		},
 	})*/
 
-	cursor, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawler_page_imgs by domain",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_crawl_stats", p_runtime_sys)
+			err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -314,7 +318,7 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawler_page_imgs by domain",
 			"mongodb_aggregation_error",
-			nil, err, "gf_crawl_stats", p_runtime_sys)
+			nil, err, "gf_crawl_stats", pRuntimeSys)
 		return nil, gf_err
 	}*/
 
@@ -328,7 +332,7 @@ func stats__crawled_images_domains(p_runtime_sys *gf_core.RuntimeSys) (map[strin
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get crawler_page_imgs by domain",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_crawl_stats", p_runtime_sys)
+				err, "gf_crawl_stats", pRuntimeSys)
 			return nil, gf_err
 		}
 	

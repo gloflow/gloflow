@@ -27,27 +27,29 @@ import (
 )
 
 //--------------------------------------------------
+
 type GFcrawlConfig struct {
-	Crawlers_defs_lst []GFcrawlerDef `yaml:"crawlers-defs"`
+	CrawlersDefsLst []GFcrawlerDef `yaml:"crawlers-defs"`
 }
 
 type GFcrawlerDef struct {
-	Name_str      string `yaml:"name"`
-	Start_url_str string `yaml:"start-url"`
+	NameStr     string `yaml:"name"`
+	StartURLstr string `yaml:"start-url"`
 }
 
 //--------------------------------------------------
-func Get_all_crawlers(pCrawlConfigFilePathStr string,
+
+func GetAllCrawlers(pCrawlConfigFilePathStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (map[string]GFcrawlerDef, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_config.Get_all_crawlers()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_config.GetAllCrawlers()")
 
 	// no config file found, so use hard-coded crawler definitions
 	if _, err := os.Stat(pCrawlConfigFilePathStr); os.IsNotExist(err) {
 
 		crawlersMap := map[string]GFcrawlerDef{
 			"gloflow.com": GFcrawlerDef{
-				Name_str:      "gloflow.com",
-				Start_url_str: "http://gloflow.com/",
+				NameStr:     "gloflow.com",
+				StartURLstr: "http://gloflow.com/",
 			},
 		}
 		return crawlersMap, nil
@@ -78,8 +80,8 @@ func Get_all_crawlers(pCrawlConfigFilePathStr string,
 
 		// index crawler_defs by name
 		crawlersMap := map[string]GFcrawlerDef{}
-		for _, crawlerDef := range crawlConfig.Crawlers_defs_lst {
-			crawlersMap[crawlerDef.Name_str] = crawlerDef
+		for _, crawlerDef := range crawlConfig.CrawlersDefsLst {
+			crawlersMap[crawlerDef.NameStr] = crawlerDef
 		}
 		return crawlersMap, nil
 	}

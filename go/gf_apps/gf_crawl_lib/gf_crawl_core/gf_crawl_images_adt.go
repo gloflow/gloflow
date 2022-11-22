@@ -32,42 +32,43 @@ import (
 )
 
 //---------------------------------------------------
-type Gf_crawler_page_image_id string
-type Gf_crawler_page_image struct {
-	Id                         primitive.ObjectID       `bson:"_id,omitempty"`
-	Id_str                     Gf_crawler_page_image_id `bson:"id_str"`
-	T_str                      string                   `bson:"t"`                          //"crawler_page_img"
-	Creation_unix_time_f       float64                  `bson:"creation_unix_time_f"`
-	Crawler_name_str           string                   `bson:"crawler_name_str"`           //name of the crawler that discovered this image
-	Cycle_run_id_str           string                   `bson:"cycle_run_id_str"`
-	Img_ext_str                string                   `bson:"img_ext_str"`                //jpg|gif|png
-	Url_str                    string                   `bson:"url_str"`
-	Domain_str                 string                   `bson:"domain_str"`                 //domain of the url_str
-	Origin_page_url_str        string                   `bson:"origin_page_url_str"`        //page url from whos html this element was extracted
-	Origin_page_url_domain_str string                   `bson:"origin_page_url_domain_str"` //domain of the origin_page_url_str //NEW_FIELD!! a lot of records dont have this field
 
-	//IMPORTANT!! - this is unique for the image src encountered. this way the same data links are not entered in duplicates, 
-	//              and using the hash the DB can qucikly be checked for existence of record
+type GFcrawlerPageImageID string
+type GFcrawlerPageImage struct {
+	Id                         primitive.ObjectID       `bson:"_id,omitempty"`
+	IDstr                      GFcrawlerPageImageID     `bson:"id_str"`
+	T_str                      string                   `bson:"t"`                          // "crawler_page_img"
+	Creation_unix_time_f       float64                  `bson:"creation_unix_time_f"`
+	Crawler_name_str           string                   `bson:"crawler_name_str"`           // name of the crawler that discovered this image
+	Cycle_run_id_str           string                   `bson:"cycle_run_id_str"`
+	Img_ext_str                string                   `bson:"img_ext_str"`                // jpg|gif|png
+	Url_str                    string                   `bson:"url_str"`
+	Domain_str                 string                   `bson:"domain_str"`                 // domain of the url_str
+	Origin_page_url_str        string                   `bson:"origin_page_url_str"`        // page url from whos html this element was extracted
+	Origin_page_url_domain_str string                   `bson:"origin_page_url_domain_str"` // domain of the origin_page_url_str // NEW_FIELD!! a lot of records dont have this field
+
+	// IMPORTANT!! - this is unique for the image src encountered. this way the same data links are not entered in duplicates, 
+	//               and using the hash the DB can qucikly be checked for existence of record
 	Hash_str                   string        `bson:"hash_str"`
 
-	//IMPORTANT!! - indicates if the image was fetched from the remote server,
-	//              and has been stored on S3 and ready for usage by other services. 
+	// IMPORTANT!! - indicates if the image was fetched from the remote server,
+	//               and has been stored on S3 and ready for usage by other services. 
 	Downloaded_bool            bool          `bson:"downloaded_bool"`
 
-	//IMPORTANT!! - the usage was determined to be useful for internal applications,
-	//              they're not page elements, or other small unimportant parts.
-	//              if it is valid for usage then a gf_image for this image should be 
-	//              found in the db
-	Valid_for_usage_bool       bool                        `bson:"valid_for_usage_bool"`
-	S3_stored_bool             bool                        `bson:"s3_stored_bool"` //if persisting to s3 succeeded
-	Nsfv_bool                  bool                        `bson:"nsfv_bool"`      //NSFV (not safe for viewing/nudity) flag for the image 
-	Gf_image_id_str            gf_images_core.Gf_image_id `bson:"image_id_str"` //id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
+	// IMPORTANT!! - the usage was determined to be useful for internal applications,
+	//               they're not page elements, or other small unimportant parts.
+	//               if it is valid for usage then a gf_image for this image should be 
+	//               found in the db
+	Valid_for_usage_bool       bool                     `bson:"valid_for_usage_bool"`
+	S3_stored_bool             bool                     `bson:"s3_stored_bool"` // if persisting to s3 succeeded
+	Nsfv_bool                  bool                     `bson:"nsfv_bool"`      // NSFV (not safe for viewing/nudity) flag for the image 
+	GFimageIDstr               gf_images_core.GFimageID `bson:"image_id_str"`   // id of the gf_image for this corresponding crawler_page_img //FIX!! - should be "gf_image_id_str"
 }
 	
 // IMPORTANT!! - reference to an image, on a particular page. 
 //               the same image, with the same Url_str can appear on multiple pages, and this 
 //               struct tracks that, one record per reference
-type Gf_crawler_page_image_ref struct {
+type GFcrawlerPageImageRef struct {
 	Id                         primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str                     string        `bson:"id_str"`
 	T_str                      string        `bson:"t"`                          //"crawler_page_img_ref"
@@ -79,12 +80,12 @@ type Gf_crawler_page_image_ref struct {
 	Origin_page_url_str        string        `bson:"origin_page_url_str"`        //page url from whos html this element was extracted
 	Origin_page_url_domain_str string        `bson:"origin_page_url_domain_str"` //NEW_FIELD!! a lot of records dont have this field
 
-	//IMPORTANT!! - this is unique for the image src encountered. this way the same data links are not entered in duplicates, 
-	//              and using the hash the DB can qucikly be checked for existence of record
+	// IMPORTANT!! - this is unique for the image src encountered. this way the same data links are not entered in duplicates, 
+	//               and using the hash the DB can qucikly be checked for existence of record
 	Hash_str                   string        `bson:"hash_str"`
 }
 
-type Gf_crawler__recent_images struct {
+type GFcrawlerRecentImages struct {
 	Domain_str               string    `bson:"_id"                      json:"domain_str"`
 	Imgs_count_int           int       `bson:"imgs_count_int"           json:"imgs_count_int"`
 	Crawler_page_img_ids_lst []string  `bson:"crawler_page_img_ids_lst" json:"crawler_page_img_ids_lst"`
@@ -95,13 +96,13 @@ type Gf_crawler__recent_images struct {
 }
 
 //---------------------------------------------------
-func images_adt__prepare_and_create(p_crawler_name_str string,
-	p_cycle_run_id_str    string,
+
+func imagesADTprepareAndCreate(pCrawlerNameStr string,
+	pCycleRunIDstr        string,
 	p_img_src_url_str     string,
 	p_origin_page_url_str string,
-	p_runtime             *GFcrawlerRuntime,
-	pRuntimeSys           *gf_core.RuntimeSys) (*Gf_crawler_page_image, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_images_adt.images_adt__prepare_and_create()")
+	pRuntime              *GFcrawlerRuntime,
+	pRuntimeSys           *gf_core.RuntimeSys) (*GFcrawlerPageImage, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -109,24 +110,24 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	//------------------
 	// DOMAINS
 
-	img_src_domain_str, origin_page_url_domain_str, gfErr := gf_crawl_utils.Get_domain(p_img_src_url_str, p_origin_page_url_str, pRuntimeSys)
+	imgSrcDomainStr, origin_page_url_domain_str, gfErr := gf_crawl_utils.GetDomain(p_img_src_url_str, p_origin_page_url_str, pRuntimeSys)
 	if gfErr != nil {
 		t := "images_in_page__get_domain__failed"
 		m := "failed to get domain of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
-			gfErr, p_runtime, pRuntimeSys)
+		CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, pCrawlerNameStr,
+			gfErr, pRuntime, pRuntimeSys)
 		return nil, gfErr
 	}
 
 	//-------------
 	// COMPLETE_A_HREF
 	
-	complete_img_src_url_str, gfErr := gf_crawl_utils.Complete_url(p_img_src_url_str, img_src_domain_str, pRuntimeSys)
+	complete_img_src_url_str, gfErr := gf_crawl_utils.CompleteURL(p_img_src_url_str, imgSrcDomainStr, pRuntimeSys)
 	if gfErr != nil {
 		t:="complete_url__failed"
 		m:="failed to complete_url of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
-			gfErr, p_runtime, pRuntimeSys)
+		CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, pCrawlerNameStr,
+			gfErr, pRuntime, pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -137,19 +138,19 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 	if gfErr != nil {
 		t:="images_in_page__get_img_extension__failed"
 		m:="failed to get file extension of image with img_src - "+p_img_src_url_str
-		Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, p_crawler_name_str,
-			gfErr, p_runtime, pRuntimeSys)
+		CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str":p_origin_page_url_str,}, p_img_src_url_str, pCrawlerNameStr,
+			gfErr, pRuntime, pRuntimeSys)
 		return nil, gfErr
 	}
 
 	//-------------
-	pRuntimeSys.LogFun("INFO",">>>>> "+cyan("img")+" -- "+yellow(img_src_domain_str)+" ------ "+yellow(fmt.Sprint(complete_img_src_url_str)))
+	pRuntimeSys.LogFun("INFO",">>>>> "+cyan("img")+" -- "+yellow(imgSrcDomainStr)+" ------ "+yellow(fmt.Sprint(complete_img_src_url_str)))
 
-	img := images_adt__create(p_crawler_name_str,
-		p_cycle_run_id_str,
+	img := imagesADTcreate(pCrawlerNameStr,
+		pCycleRunIDstr,
 		complete_img_src_url_str,
 		img_ext_str,
-		img_src_domain_str,
+		imgSrcDomainStr,
 		p_origin_page_url_str,
 		origin_page_url_domain_str,
 		pRuntimeSys)
@@ -157,22 +158,23 @@ func images_adt__prepare_and_create(p_crawler_name_str string,
 }
 
 //---------------------------------------------------
-func images_adt__create_id() (Gf_crawler_page_image_id, float64) {
+
+func imagesADTcreateID() (GFcrawlerPageImageID, float64) {
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("crawler_page_img:%f", creation_unix_time_f)
-	return Gf_crawler_page_image_id(id_str), creation_unix_time_f
+	return GFcrawlerPageImageID(id_str), creation_unix_time_f
 }
 
 //---------------------------------------------------
-func images_adt__create(p_crawler_name_str string,
-	p_cycle_run_id_str           string,
+
+func imagesADTcreate(pCrawlerNameStr string,
+	pCycleRunIDstr               string,
 	p_img_src_url_str            string,
 	p_img_ext_str                string,
-	p_img_src_domain_str         string,
+	p_imgSrcDomainStr            string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.RuntimeSys) *Gf_crawler_page_image {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_images_adt.images_adt__create()")
+	pRuntimeSys                  *gf_core.RuntimeSys) *GFcrawlerPageImage {
 
 	
 	// HASH
@@ -181,16 +183,16 @@ func images_adt__create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	id_str, creation_unix_time_f := images_adt__create_id()
-	img := &Gf_crawler_page_image{
-		Id_str:                     id_str,
+	id_str, creation_unix_time_f := imagesADTcreateID()
+	img := &GFcrawlerPageImage{
+		IDstr:                      id_str,
 		T_str:                      "crawler_page_img",
 		Creation_unix_time_f:       creation_unix_time_f,
-		Crawler_name_str:           p_crawler_name_str,
-		Cycle_run_id_str:           p_cycle_run_id_str,
+		Crawler_name_str:           pCrawlerNameStr,
+		Cycle_run_id_str:           pCycleRunIDstr,
 		Img_ext_str:                p_img_ext_str,
 		Url_str:                    p_img_src_url_str,
-		Domain_str:                 p_img_src_domain_str,
+		Domain_str:                 p_imgSrcDomainStr,
 		Origin_page_url_str:        p_origin_page_url_str,
 		Origin_page_url_domain_str: p_origin_page_url_domain_str,
 		Hash_str:                   hash_str,
@@ -202,14 +204,14 @@ func images_adt__create(p_crawler_name_str string,
 }
 
 //---------------------------------------------------
-func images_adt__ref_create(p_crawler_name_str string,
-	p_cycle_run_id_str           string,
+
+func imagesADTrefCreate(pCrawlerNameStr string,
+	pCycleRunIDstr               string,
 	p_image_url_str              string,
 	p_image_url_domain_str       string,
 	p_origin_page_url_str        string,
 	p_origin_page_url_domain_str string,
-	p_runtime_sys                *gf_core.RuntimeSys) *Gf_crawler_page_image_ref {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_images_adt.images_adt__ref_create()")
+	pRuntimeSys                  *gf_core.RuntimeSys) *GFcrawlerPageImageRef {
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	ref_id_str           := fmt.Sprintf("img_ref:%f", creation_unix_time_f)
@@ -222,14 +224,14 @@ func images_adt__ref_create(p_crawler_name_str string,
 	hash.Write([]byte(to_hash_str))
 	hash_str := hex.EncodeToString(hash.Sum(nil))
 
-	gf_img_ref := &Gf_crawler_page_image_ref{
+	gf_img_ref := &GFcrawlerPageImageRef{
 		Id_str:                     ref_id_str,
 		T_str:                      "crawler_page_img_ref",
 		Creation_unix_time_f:       creation_unix_time_f,
-		Crawler_name_str:           p_crawler_name_str,
-		Cycle_run_id_str:           p_cycle_run_id_str,
+		Crawler_name_str:           pCrawlerNameStr,
+		Cycle_run_id_str:           pCycleRunIDstr,
 		Url_str:                    p_image_url_str,        // complete_img_src_str,
-		Domain_str:                 p_image_url_domain_str, // img_src_domain_str,
+		Domain_str:                 p_image_url_domain_str, // imgSrcDomainStr,
 		Origin_page_url_str:        p_origin_page_url_str,
 		Origin_page_url_domain_str: p_origin_page_url_domain_str,
 		Hash_str:                   hash_str,

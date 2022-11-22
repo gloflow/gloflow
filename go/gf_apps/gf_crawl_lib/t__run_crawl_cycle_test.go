@@ -31,6 +31,7 @@ var runtime_sys *gf_core.RuntimeSys
 var crawler_runtime *gf_crawl_core.Gf_crawler_runtime
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	runtime_sys, crawler_runtime = gf_crawl_core.T__init()
 	if runtime_sys == nil || crawler_runtime == nil {
@@ -41,6 +42,7 @@ func TestMain(m *testing.M) {
 }
 
 //-------------------------------------------------
+
 func Test__run_crawl_cycle(p_test *testing.T) {
 
 	test__crawled_images_s3_bucket_name_str := "gf--test--discovered--img"
@@ -56,18 +58,19 @@ func Test__run_crawl_cycle(p_test *testing.T) {
 }
 
 //---------------------------------------------------
+
 func test__run_crawl_cycle(p_test *testing.T,
 	p_test__crawler_images_local_dir_path_str string,
 	p_test__crawled_images_s3_bucket_name_str string,
 	p_test__crawl_config_file_path_str        string,
-	p_runtime                                 *gf_crawl_core.Gf_crawler_runtime,
-	p_runtime_sys                             *gf_core.RuntimeSys) {
+	pRuntime                                 *gf_crawl_core.Gf_crawler_runtime,
+	pRuntimeSys                             *gf_core.RuntimeSys) {
 
-	crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(p_test__crawl_config_file_path_str, p_runtime_sys)
-	if gf_err != nil {
+	crawlers_map, gfErr := gf_crawl_core.Get_all_crawlers(p_test__crawl_config_file_path_str, pRuntimeSys)
+	if gfErr != nil {
 		p_test.Errorf("failed to get all crawler definitions from config file [%s]",
 			p_test__crawl_config_file_path_str)
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 		return
 	}
 	
@@ -75,17 +78,17 @@ func test__run_crawl_cycle(p_test *testing.T,
 
 	crawler := crawlers_map["gloflow"]
 
-	gf_err = Run_crawler_cycle(crawler,
+	gfErr = RunCrawlerCycle(crawler,
 		p_test__crawler_images_local_dir_path_str,
 		p_test__crawled_images_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
+		pRuntime,
+		pRuntimeSys)
 	
-	if gf_err != nil {
+	if gfErr != nil {
 		p_test.Errorf("failed to run a crawler_cycle [%s], images_local_dir [%s] and s3 bucket [%s]",
 			crawler.Name_str,
 			p_test__crawler_images_local_dir_path_str,
 			p_test__crawled_images_s3_bucket_name_str)
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 	}
 }

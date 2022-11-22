@@ -35,17 +35,18 @@ import (
 
 //--------------------------------------------------
 // ELASTIC_SEARCH - INDEXED
-type Gf_crawler_url_fetch struct {
+
+type GFcrawlerURLfetch struct {
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               string             `bson:"id_str"               json:"id_str"`
-	T_str                string             `bson:"t"                    json:"t"` //"crawler_url_fetch"
+	T_str                string             `bson:"t"                    json:"t"` // "crawler_url_fetch"
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f" json:"creation_unix_time_f"`
 	Cycle_run_id_str     string             `bson:"cycle_run_id_str"     json:"cycle_run_id_str"`
 	Domain_str           string             `bson:"domain_str"           json:"domain_str"`
 	Url_str              string             `bson:"url_str"              json:"url_str"`
 	Start_time_f         float64            `bson:"start_time_f"         json:"-"`
 	End_time_f           float64            `bson:"end_time_f"           json:"-"`
-	Page_text_str        string             `bson:"page_text_str"        json:"page_text_str"` //full text of the page html - indexed in ES
+	Page_text_str        string             `bson:"page_text_str"        json:"page_text_str"` // full text of the page html - indexed in ES
 	goquery_doc          *goquery.Document  `bson:"-"                    json:"-"`
 
 	//-------------------
@@ -59,52 +60,51 @@ type Gf_crawler_url_fetch struct {
 //--------------------------------------------------
 // FETCH_URL
 
-func Fetch__url(p_url_str string,
-	p_link             *GFcrawlerPageOutgoingLink,
-	p_cycle_run_id_str string,
-	p_crawler_name_str string,
-	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_url_fetch, string, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.Fetch__url()")
+func FetchURL(pURLstr string,
+	pLink           *GFcrawlerPageOutgoingLink,
+	pCycleRunIDstr  string,
+	pCrawlerNameStr string,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFcrawlerURLfetch, string, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
 
-	p_runtime_sys.LogFun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-	p_runtime_sys.LogFun("INFO", "FETCHING >> - "+yellow(p_url_str))
-	p_runtime_sys.LogFun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	pRuntimeSys.LogFun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+	pRuntimeSys.LogFun("INFO", "FETCHING >> - "+yellow(pURLstr))
+	pRuntimeSys.LogFun("INFO", cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
 
 	start_time_f := float64(time.Now().UnixNano())/1000000000.0
 
 	//-------------------
-	url, err := url.Parse(p_url_str)
+	url, err := url.Parse(pURLstr)
 	if err != nil {
 		t := "fetcher_parse_url__failed"
-		m := fmt.Sprintf("failed to parse url for fetch - %s", p_url_str)
+		m := fmt.Sprintf("failed to parse url for fetch - %s", pURLstr)
 
-		gf_err := gf_core.ErrorCreate(m,
+		gfErr := gf_core.ErrorCreate(m,
 			"url_parse_error",
-			map[string]interface{}{"url_str": p_url_str,},
-			err, "gf_crawl_core", p_runtime_sys)
+			map[string]interface{}{"url_str": pURLstr,},
+			err, "gf_crawl_core", pRuntimeSys)
 
-		_, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
+		_, fe_gf_err := fetchError(t, m, pURLstr, pLink, pCrawlerNameStr, gfErr, pRuntime, pRuntimeSys)
 		if fe_gf_err != nil {
 			return nil, "", fe_gf_err
 		}
 
-		return nil, "", gf_err
+		return nil, "", gfErr
 	}
 
 	domain_str           := url.Host
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := "crawler_fetch__"+fmt.Sprint(creation_unix_time_f)
-	fetch                := &Gf_crawler_url_fetch{
+	fetch                := &GFcrawlerURLfetch{
 		Id_str:               id_str,
 		T_str:                "crawler_url_fetch",
 		Creation_unix_time_f: creation_unix_time_f,
-		Cycle_run_id_str:     p_cycle_run_id_str,
+		Cycle_run_id_str:     pCycleRunIDstr,
 		Domain_str:           domain_str,
-		Url_str:              p_url_str,
+		Url_str:              pURLstr,
 		Start_time_f:         start_time_f,
 		// End_time_f           : end_time_f,
 		// Page_text_str        : doc.Text(),
@@ -112,63 +112,45 @@ func Fetch__url(p_url_str string,
 	}
 
 	t := "fetch_record_persist__failed"
-	m := fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
+	m := fmt.Sprintf("failed to DB persist GFcrawlerURLfetch struct of fetch for url - %s", pURLstr)
 
 	ctx           := context.Background()
 	coll_name_str := "gf_crawl"
-	gf_err        := gf_core.MongoInsert(fetch,
+	gfErr         := gf_core.MongoInsert(fetch,
 		coll_name_str,
 		map[string]interface{}{
-			"url_str":            p_url_str,
+			"url_str":            pURLstr,
 			"caller_err_msg_str": m,
 		},
 		ctx,
-		p_runtime_sys)
-	if gf_err != nil {
+		pRuntimeSys)
+	if gfErr != nil {
 		
-		_, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
-		if fe_gf_err != nil {
-			return nil, "", fe_gf_err
+		_, feGFerr := fetchError(t, m, pURLstr, pLink, pCrawlerNameStr, gfErr, pRuntime, pRuntimeSys)
+		if feGFerr != nil {
+			return nil, "", feGFerr
 		}
 
-		return nil, "", gf_err
+		return nil, "", gfErr
 	}
-
-	/*err = p_runtime_sys.Mongo_db.C("gf_crawl").Insert(fetch)
-	if err != nil {
-		t := "fetch_record_persist__failed"
-		m := fmt.Sprintf("failed to DB persist Gf_crawler_url_fetch struct of fetch for url - %s", p_url_str)
-		
-		gf_err := gf_core.MongoHandleError(m,
-			"mongodb_insert_error",
-			map[string]interface{}{"url_str":p_url_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-
-		_, fe_gf_err := fetch__error(t,m,p_url_str,p_link,p_crawler_name_str,gf_err,p_runtime,p_runtime_sys)
-		if fe_gf_err != nil {
-			return nil, "", fe_gf_err
-		}
-
-		return nil, "", gf_err
-	}*/
 	
 	//-------------------
 	// HTTP REQUEST
 
-	doc, gf_err := gf_crawl_utils.Get__html_doc_over_http(p_url_str, p_runtime_sys)
+	doc, gfErr := gf_crawl_utils.Get__html_doc_over_http(pURLstr, pRuntimeSys)
 
-	if gf_err != nil {
+	if gfErr != nil {
 		t := "fetch_url__failed"
-		m := fmt.Sprintf("failed to HTTP fetch url - %s - err - %s", p_url_str, fmt.Sprint(gf_err.Error))
+		m := fmt.Sprintf("failed to HTTP fetch url - %s - err - %s", pURLstr, fmt.Sprint(gfErr.Error))
 		
-		crawler_error, fe_gf_err := fetch__error(t, m, p_url_str, p_link, p_crawler_name_str, gf_err, p_runtime, p_runtime_sys)
-		if fe_gf_err != nil {
-			return nil, "", fe_gf_err
+		crawler_error, feGFerr := fetchError(t, m, pURLstr, pLink, pCrawlerNameStr, gfErr, pRuntime, pRuntimeSys)
+		if feGFerr != nil {
+			return nil, "", feGFerr
 		}
 
-		fetch__mark_as_failed(crawler_error, fetch, p_runtime, p_runtime_sys)
+		fetchMarkAsFailed(crawler_error, fetch, pRuntime, pRuntimeSys)
 
-		return nil, "", gf_err
+		return nil, "", gfErr
 	}
 
 	end_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -178,7 +160,7 @@ func Fetch__url(p_url_str string,
 	fetch.End_time_f    = end_time_f
 	fetch.Page_text_str = doc.Text()
 	fetch.goquery_doc   = doc
-	_, err = p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
+	_, err = pRuntimeSys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
 			"id_str": fetch.Id_str,
 			"t":      "crawler_url_fetch",
 		},
@@ -188,31 +170,31 @@ func Fetch__url(p_url_str string,
 		}})
 		
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to to update fetch record with end_time and page_text",
+		gfErr := gf_core.MongoHandleError("failed to to update fetch record with end_time and page_text",
 			"mongodb_update_error",
 			map[string]interface{}{"fetch_id_str":fetch.Id_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return nil, "", gf_err
+			err, "gf_crawl_core", pRuntimeSys)
+		return nil, "", gfErr
 	}
 
 	//-------------
 	// SEND_EVENT
-	if p_runtime.Events_ctx != nil {
+	if pRuntime.EventsCtx != nil {
 		events_id_str  := "crawler_events"
 		event_type_str := "fetch__http_request__done"
 		msg_str        := "completed fetching a document over HTTP"
 		data_map       := map[string]interface{}{
-			"url_str":      p_url_str,
+			"url_str":      pURLstr,
 			"start_time_f": start_time_f,
 			"end_time_f":   end_time_f,
 		}
 
-		gf_events.Events__send_event(events_id_str,
+		gf_events.EventsSendEvent(events_id_str,
 			event_type_str, // p_type_str
 			msg_str,        // p_msg_str
 			data_map,
-			p_runtime.Events_ctx,
-			p_runtime_sys)
+			pRuntime.EventsCtx,
+			pRuntimeSys)
 	}
 
 	//-------------
@@ -223,45 +205,44 @@ func Fetch__url(p_url_str string,
 //--------------------------------------------------
 // FETCH__PARSE_RESULT
 
-func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
-	p_cycle_run_id_str          string,
-	p_crawler_name_str          string,
-	p_images_local_dir_path_str string,
+func FetchParseResult(pURLfetch *GFcrawlerURLfetch,
+	pCycleRunIDstr         string,
+	pCrawlerNameStr        string,
+	pImagesLocalDirPathStr string,
 
-	p_media_domain_str          string,
-	p_s3_bucket_name_str        string,
-	p_runtime                   *GFcrawlerRuntime,
-	p_runtime_sys               *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.Fetch__parse_result()")
+	pMediaDomainStr        string,
+	pS3bucketNameStr       string,
+	pRuntime               *GFcrawlerRuntime,
+	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------
 	// GET LINKS
-	Links__get_outgoing_in_page(p_url_fetch,
-		p_cycle_run_id_str,
-		p_crawler_name_str,
-		p_runtime,
-		p_runtime_sys)
+	LinksGetOutgoingInPage(pURLfetch,
+		pCycleRunIDstr,
+		pCrawlerNameStr,
+		pRuntime,
+		pRuntimeSys)
 
 	//----------------
 	// GET IMAGES
-	images_pipe__from_html(p_url_fetch,
-		p_cycle_run_id_str,
-		p_crawler_name_str,
-		p_images_local_dir_path_str,
+	imagesPipeFromHTML(pURLfetch,
+		pCycleRunIDstr,
+		pCrawlerNameStr,
+		pImagesLocalDirPathStr,
 
-		p_media_domain_str,
-		p_s3_bucket_name_str,
-		p_runtime,
-		p_runtime_sys)
+		pMediaDomainStr,
+		pS3bucketNameStr,
+		pRuntime,
+		pRuntimeSys)
 
 	//----------------
 	// INDEX URL_FETCH
 
 	// IMPORTANT!! - index only if the indexer is initialized
-	if p_runtime.Esearch_client != nil {
-		gf_err := index__add_to__of_url_fetch(p_url_fetch, p_runtime, p_runtime_sys)
-		if gf_err != nil {
-			return gf_err
+	if pRuntime.EsearchClient != nil {
+		gfErr := indexAddToOfURLfetch(pURLfetch, pRuntime, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 	}
 
@@ -271,29 +252,29 @@ func Fetch__parse_result(p_url_fetch *Gf_crawler_url_fetch,
 }
 
 //--------------------------------------------------
-func fetch__error(p_error_type_str string,
-	p_error_msg_str    string,
-	p_url_str          string,
-	p_link             *GFcrawlerPageOutgoingLink,
-	p_crawler_name_str string,
-	p_gf_err           *gf_core.GFerror,
-	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.fetch__error()")
 
-	crawler_error,ce_err := Create_error_and_event(p_error_type_str,
+func fetchError(p_error_type_str string,
+	p_error_msg_str string,
+	pURLstr         string,
+	pLink           *GFcrawlerPageOutgoingLink,
+	pCrawlerNameStr string,
+	pGFerr          *gf_core.GFerror,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFcrawlerError, *gf_core.GFerror) {
+
+	crawler_error, ce_err := CreateErrorAndEvent(p_error_type_str,
 		p_error_msg_str,
-		map[string]interface{}{}, p_url_str, p_crawler_name_str,
-		p_gf_err,
-		p_runtime,
-		p_runtime_sys)
+		map[string]interface{}{}, pURLstr, pCrawlerNameStr,
+		pGFerr,
+		pRuntime,
+		pRuntimeSys)
 	if ce_err != nil {
 		return nil, ce_err
 	}
 
-	if p_link != nil {
+	if pLink != nil {
 		// IMPORTANT!! - mark link as failed, so that it is not repeatedly tried
-		lm_err := link__db_mark_as_failed(crawler_error, p_link, p_runtime, p_runtime_sys)
+		lm_err := link__db_mark_as_failed(crawler_error, pLink, pRuntime, pRuntimeSys)
 		if lm_err != nil {
 			return nil, lm_err
 		}
@@ -303,32 +284,32 @@ func fetch__error(p_error_type_str string,
 }
 
 //--------------------------------------------------
-func fetch__mark_as_failed(p_error *Gf_crawler_error,
-	p_fetch       *Gf_crawler_url_fetch,
-	p_runtime     *GFcrawlerRuntime,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_crawl_fetch.fetch__mark_as_failed()")
+
+func fetchMarkAsFailed(pError *GFcrawlerError,
+	pFetch      *GFcrawlerURLfetch,
+	pRuntime    *GFcrawlerRuntime,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
 
-	p_fetch.Error_id_str   = p_error.Id_str
-	p_fetch.Error_type_str = p_error.Type_str
+	pFetch.Error_id_str   = pError.IDstr
+	pFetch.Error_type_str = pError.TypeStr
 
-	_, err := p_runtime_sys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
-			"id_str": p_fetch.Id_str,
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_crawl").UpdateMany(ctx, bson.M{
+			"id_str": pFetch.Id_str,
 			"t":      "crawler_url_fetch",
 		},
 		bson.M{"$set": bson.M{
-				"error_id_str":   p_error.Id_str,
-				"error_type_str": p_error.Type_str,
+				"error_id_str":   pError.IDstr,
+				"error_type_str": pError.TypeStr,
 			},
 		})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to mark a crawler_url_fetch as failed in mongodb",
+		gfErr := gf_core.MongoHandleError("failed to mark a crawler_url_fetch as failed in mongodb",
 			"mongodb_update_error",
-			map[string]interface{}{"fetch_id_str": p_fetch.Id_str,},
-			err, "gf_crawl_core", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"fetch_id_str": pFetch.Id_str,},
+			err, "gf_crawl_core", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil

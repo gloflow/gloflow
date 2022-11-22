@@ -31,10 +31,9 @@ import (
 )
 
 //--------------------------------------------------
+
 func Get__html_doc_over_http(pURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) (*goquery.Document, *gf_core.GFerror) {
-
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_utils.Get__html_doc_over_http()")
 
 	//-----------------------
 	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
@@ -84,11 +83,11 @@ func Get__html_doc_over_http(pURLstr string,
 }
 
 //--------------------------------------------------
-func Crawler_sleep(p_crawler_name_str string,
+
+func CrawlerSleep(pCrawlerNameStr string,
 	p_cycle_index_int int,
 	p_rand            *rand.Rand,
 	pRuntimeSys       *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_utils.Crawler_sleep()")
 
 	black  := color.New(color.FgBlack).Add(color.BgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -117,7 +116,7 @@ func Crawler_sleep(p_crawler_name_str string,
 	sleep_length    := time.Second * time.Duration(wait_random_sec)
 
 	fmt.Println("INFO", black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-	fmt.Println("INFO", black(">>>    SLEEPING CRAWLER >>> ")+yellow(p_crawler_name_str)+black(" - for min - "+fmt.Sprint(wait_random_min)))
+	fmt.Println("INFO", black(">>>    SLEEPING CRAWLER >>> ")+yellow(pCrawlerNameStr)+black(" - for min - "+fmt.Sprint(wait_random_min)))
 	fmt.Println("INFO", black(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
 
 	time.Sleep(sleep_length)

@@ -29,109 +29,97 @@ import (
 )
 
 //--------------------------------------------------
-type Gf_crawler_error struct {
-	Id                   primitive.ObjectID     `bson:"_id,omitempty"    json:"-"`
-	Id_str               string                 `bson:"id_str"           json:"id_str"`
-	T_str                string                 `bson:"t"                json:"t"` //"crawler_error"
-	Creation_unix_time_f float64                `bson:"creation_unix_time_f"`
-	Type_str             string                 `bson:"type_str"         json:"type_str"`
-	Msg_str              string                 `bson:"msg_str"          json:"msg_str"` 
-	Data_map             map[string]interface{} `bson:"data_map"         json:"data_map"` //if an error is related to a particular URL, it is noted here.
-	Gf_error_id_str      string                 `bson:"gf_error_id_str"  json:"gf_error_id_str"`
-	Crawler_name_str     string                 `bson:"crawler_name_str" json:"crawler_name_str"`
-	Url_str              string                 `bson:"url_str"          json:"url_str"`
+
+type GFcrawlerError struct {
+	Id                primitive.ObjectID     `bson:"_id,omitempty"    json:"-"`
+	IDstr             string                 `bson:"id_str"           json:"id_str"`
+	Tstr              string                 `bson:"t"                json:"t"` //"crawler_error"
+	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
+	TypeStr           string                 `bson:"type_str"         json:"type_str"`
+	MsgStr            string                 `bson:"msg_str"          json:"msg_str"` 
+	DataMap           map[string]interface{} `bson:"data_map"         json:"data_map"` //if an error is related to a particular URL, it is noted here.
+	GFerrorIDstr      string                 `bson:"gf_error_id_str"  json:"gf_error_id_str"`
+	CrawlerNameStr    string                 `bson:"crawler_name_str" json:"crawler_name_str"`
+	URLstr            string                 `bson:"url_str"          json:"url_str"`
 }
 
 //--------------------------------------------------
-func Create_error_and_event(p_error_type_str string,
-	p_error_msg_str    string,
-	p_error_data_map   map[string]interface{},
-	p_error_url_str    string,
-	p_crawler_name_str string,
-	p_gf_err           *gf_core.GFerror,
-	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_error.Create_error_and_event()")
 
-	if p_runtime.Events_ctx != nil {
-		events_id_str  := "crawler_events"
-		event_type_str := "error"
+func CreateErrorAndEvent(pErrorTypeStr string,
+	pErrorMsgStr    string,
+	pErrorDataMap   map[string]interface{},
+	pErrorURLstr    string,
+	pCrawlerNameStr string,
+	pGFerr          *gf_core.GFerror,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFcrawlerError, *gf_core.GFerror) {
 
-		gf_events.Events__send_event(events_id_str,
-			event_type_str,   // p_type_str
-			p_error_msg_str,  // p_msg_str
-			p_error_data_map, // p_data_map
-			p_runtime.Events_ctx,
-			p_runtime_sys)
+	if pRuntime.EventsCtx != nil {
+		eventsIDstr  := "crawler_events"
+		eventTypeStr := "error"
+
+		gf_events.EventsSendEvent(eventsIDstr,
+			eventTypeStr,   // p_type_str
+			pErrorMsgStr,   // pMsgStr
+			pErrorDataMap,  // p_data_map
+			pRuntime.EventsCtx,
+			pRuntimeSys)
 	}
 
-	crawl_err, gf_err := create_error(p_error_type_str,
-		p_error_msg_str,
-		p_error_data_map,
-		p_error_url_str,
-		p_crawler_name_str,
-		p_gf_err,
-		p_runtime,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	crawlErr, gfErr := createError(pErrorTypeStr,
+		pErrorMsgStr,
+		pErrorDataMap,
+		pErrorURLstr,
+		pCrawlerNameStr,
+		pGFerr,
+		pRuntime,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	return crawl_err, nil
+	return crawlErr, nil
 }
 
 //--------------------------------------------------
-func create_error(p_type_str string,
-	p_msg_str          string,
-	p_data_map         map[string]interface{},
-	p_url_str          string,
-	p_crawler_name_str string,
-	p_gf_err           *gf_core.GFerror,
-	p_runtime          *GFcrawlerRuntime,
-	p_runtime_sys      *gf_core.RuntimeSys) (*Gf_crawler_error, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_crawl_error.create_error()")
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := "crawl_error:"+fmt.Sprint(creation_unix_time_f)
-	crawl_err            := &Gf_crawler_error{
-		Id_str:               id_str,
-		T_str:                "crawler_error",
-		Creation_unix_time_f: creation_unix_time_f,
-		Type_str:             p_type_str,
-		Msg_str:              p_msg_str,
-		Data_map:             p_data_map,
-		Gf_error_id_str:      p_gf_err.Id_str,
-		Crawler_name_str:     p_crawler_name_str,
-		Url_str:              p_url_str,
+func createError(pTypeStr string,
+	pMsgStr         string,
+	pDataMap        map[string]interface{},
+	pURLstr         string,
+	pCrawlerNameStr string,
+	pGFerr          *gf_core.GFerror,
+	pRuntime        *GFcrawlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) (*GFcrawlerError, *gf_core.GFerror) {
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	IDstr             := fmt.Sprintf("crawl_error:%s", fmt.Sprint(creationUNIXtimeF))
+	crawlErr          := &GFcrawlerError{
+		IDstr:             IDstr,
+		Tstr:              "crawler_error",
+		CreationUNIXtimeF: creationUNIXtimeF,
+		TypeStr:           pTypeStr,
+		MsgStr:            pMsgStr,
+		DataMap:           pDataMap,
+		GFerrorIDstr:      pGFerr.Id_str,
+		CrawlerNameStr:    pCrawlerNameStr,
+		URLstr:            pURLstr,
 	}
 
-	if p_runtime.Cluster_node_type_str == "master" {
-
-		ctx           := context.Background()
-		coll_name_str := "gf_crawl"
-		gf_err        := gf_core.MongoInsert(crawl_err,
-			coll_name_str,
-			map[string]interface{}{
-				"type_str":           p_type_str,
-				"crawler_name_str":   p_crawler_name_str,
-				"caller_err_msg_str": "failed to insert the crawler_error into the DB",
-			},
-			ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
-		}
-		/*err := p_runtime_sys.Mongo_db.C("gf_crawl").Insert(crawl_err)
-		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to persist a crawler_error",
-				"mongodb_insert_error",
-				map[string]interface{}{
-					"type_str":         p_type_str,
-					"crawler_name_str": p_crawler_name_str,
-				},
-				err, "gf_crawl_core", p_runtime_sys)
-			return nil, gf_err
-		}*/
+	ctx         := context.Background()
+	collNameStr := "gf_crawl"
+	gfErr := gf_core.MongoInsert(crawlErr,
+		collNameStr,
+		map[string]interface{}{
+			"type_str":           pTypeStr,
+			"crawler_name_str":   pCrawlerNameStr,
+			"caller_err_msg_str": "failed to insert the crawler_error into the DB",
+		},
+		ctx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
-	return crawl_err, nil
+
+	return crawlErr, nil
 }

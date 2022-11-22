@@ -33,25 +33,26 @@ import (
 )
 
 //--------------------------------------------------
+
 type GFcrawlerPageOutgoingLink struct {
 	Id                    primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str                string        `bson:"id_str"`
-	T_str                 string        `bson:"t"`                    //"crawler_page_outgoing_link"
-	Creation_unix_time_f  float64       `bson:"creation_unix_time_f"`
-	Crawler_name_str      string        `bson:"crawler_name_str"`     //name of the crawler that discovered this link
+	IDstr                 string        `bson:"id_str"`
+	T_str                 string        `bson:"t"`                    // "crawler_page_outgoing_link"
+	CreationUNIXtimeF     float64       `bson:"creation_unix_time_f"`
+	Crawler_name_str      string        `bson:"crawler_name_str"`     // name of the crawler that discovered this link
 	Cycle_run_id_str      string        `bson:"cycle_run_id_str"`
 	A_href_str            string        `bson:"a_href_str"`
 	Domain_str            string        `bson:"domain_str"`
-	Origin_url_str        string        `bson:"origin_url_str"`       //page url from whos html this element was extracted
+	Origin_url_str        string        `bson:"origin_url_str"`       // page url from whos html this element was extracted
 	Origin_url_domain_str string        `bson:"origin_url_domain_str"`
 
 	// IMPORTANT!! - this is a hash of the . it 
 	Hash_str string `bson:"hash_str"`
 
 
-	Valid_for_crawl_bool  bool          `bson:"valid_for_crawl_bool"`  //if the link should be crawled, or if it should be ignored
-	Images_processed_bool bool          `bson:"images_processed_bool"` //if all the images in the page have been downloaded/transformed/stored-in-s3
-	Fetched_bool          bool          `bson:"fetched_bool"`          //indicator if the link has been fetched (its html downloaded and parsed)
+	Valid_for_crawl_bool  bool          `bson:"valid_for_crawl_bool"`  // if the link should be crawled, or if it should be ignored
+	Images_processed_bool bool          `bson:"images_processed_bool"` // if all the images in the page have been downloaded/transformed/stored-in-s3
+	Fetched_bool          bool          `bson:"fetched_bool"`          // indicator if the link has been fetched (its html downloaded and parsed)
 	Fetch_last_id_str     string        `bson:"fetch_last_id_str"`
 	Fetch_last_time_f     float64       `bson:"fetch_last_time_f"`
 
@@ -59,7 +60,7 @@ type GFcrawlerPageOutgoingLink struct {
 	// IMPORTANT!! - indicates if this link hasis currently being processed by some 
 	//               crawler master/worker in the cluster
 	Import__in_progress_bool bool       `bson:"import__in_progress_bool"`
-	Import__start_time_f     float64    `bson:"import__start_time_f"` //when has the "in_progress" flag been set. for detecting interrupted/incomplete imports
+	Import__start_time_f     float64    `bson:"import__start_time_f"` // when has the "in_progress" flag been set. for detecting interrupted/incomplete imports
 	
 	//-------------------
 	// IMPORTANT!! - last error that occured/interupted processing of this link
@@ -70,7 +71,8 @@ type GFcrawlerPageOutgoingLink struct {
 }
 
 //--------------------------------------------------
-func link__create(pURLstr string,
+
+func linkCreate(pURLstr string,
 	pOriginURLstr   string,
 	pCycleRunIDstr  string,
 	pCrawlerNameStr string,
@@ -78,24 +80,24 @@ func link__create(pURLstr string,
 
 	//-------------
 	// DOMAIN
-	domain_str, origin_url_domain_str, gf_err := gf_crawl_utils.Get_domain(pURLstr, pOriginURLstr, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	domainStr, originURLdomainStr, gfErr := gf_crawl_utils.GetDomain(pURLstr, pOriginURLstr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//-------------
 	// COMPLETE_A_HREF - handle urls that are relative (dont contain the domain component), 
 	//                   and complete them to get the full url
 	
-	complete_a_href_str, gf_err := gf_crawl_utils.Complete_url(pURLstr, domain_str, pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	completeAhrefStr, gfErr := gf_crawl_utils.CompleteURL(pURLstr, domainStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
 	//-------------
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	id_str               := fmt.Sprintf("outgoing_link:%f", creation_unix_time_f)
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	idStr             := fmt.Sprintf("outgoing_link:%f", creationUNIXtimeF)
 
 	//-------------
 	// HASH
@@ -105,22 +107,22 @@ func link__create(pURLstr string,
 	hash := md5.New()
 	hash.Write([]byte(pOriginURLstr))
 	hash.Write([]byte(pURLstr))
-	hash_str := hex.EncodeToString(hash.Sum(nil))
+	hashStr := hex.EncodeToString(hash.Sum(nil))
 
 	//-------------
 
-	link__valid_for_crawl_bool := link__verify_for_crawl(pURLstr, domain_str, pRuntimeSys)
+	link__valid_for_crawl_bool := linkVerifyForCrawl(pURLstr, domainStr, pRuntimeSys)
 	link := &GFcrawlerPageOutgoingLink{
-		Id_str:                id_str,
+		IDstr:                 idStr,
 		T_str:                 "crawler_page_outgoing_link",
-		Creation_unix_time_f:  creation_unix_time_f,
+		CreationUNIXtimeF:     creationUNIXtimeF,
 		Crawler_name_str:      pCrawlerNameStr,
 		Cycle_run_id_str:      pCycleRunIDstr,
-		A_href_str:            complete_a_href_str,
-		Domain_str:            domain_str,
+		A_href_str:            completeAhrefStr,
+		Domain_str:            domainStr,
 		Origin_url_str:        pOriginURLstr,
-		Origin_url_domain_str: origin_url_domain_str,
-		Hash_str:              hash_str,
+		Origin_url_domain_str: originURLdomainStr,
+		Hash_str:              hashStr,
 		Valid_for_crawl_bool:  link__valid_for_crawl_bool,
 		Fetched_bool:          false,
 		Images_processed_bool: false,
@@ -130,12 +132,13 @@ func link__create(pURLstr string,
 }
 
 //--------------------------------------------------
-func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
+
+func LinksGetOutgoingInPage(pURLfetch *GFcrawlerURLfetch,
 	pCycleRunIDstr  string,
 	pCrawlerNameStr string,
 	pRuntime        *GFcrawlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links.Links__get_outgoing_in_page()")
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_crawl_links.LinksGetOutgoingInPage()")
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -145,7 +148,7 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 	fmt.Println("INFO","GET__PAGE_LINKS - "+blue(pURLfetch.Url_str))
 	fmt.Println("INFO",cyan(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ---------------------------------------"))
 
-	crawled_links_lst := []*GFcrawlerPageOutgoingLink{}
+	crawledLinksLst := []*GFcrawlerPageOutgoingLink{}
 
 	pURLfetch.goquery_doc.Find("a").Each(func(p_i int, p_elem *goquery.Selection) {
 
@@ -182,7 +185,7 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 		//-------------
 		// CREATE_LINK
 
-		link,gf_err := link__create(a_href_str,
+		link,gf_err := linkCreate(a_href_str,
 			origin_url_str,
 			pCycleRunIDstr,
 			pCrawlerNameStr,
@@ -190,26 +193,26 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 		if gf_err != nil {
 			t := "link__complete_url__failed"
 			m := "failed completing the url of a_href_str - "+a_href_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, a_href_str, pCrawlerNameStr,
+			CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, a_href_str, pCrawlerNameStr,
 				gf_err, pRuntime, pRuntimeSys)
 			return
 		}
 
 		//-------------
 
-		crawled_links_lst = append(crawled_links_lst, link)
+		crawledLinksLst = append(crawledLinksLst, link)
 	})
 
 	//--------------
 	// STAGE - PERSIST ALL LINKS
-	for _, link := range crawled_links_lst {
+	for _, link := range crawledLinksLst {
 
-		gf_err := link__db_create(link, pRuntimeSys)
-		if gf_err != nil {
+		gfErr := linkDBcreate(link, pRuntimeSys)
+		if gfErr != nil {
 			t := "link__db_create__failed"
 			m := "failed creating link in the DB - "+link.A_href_str
-			Create_error_and_event(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, link.A_href_str, pCrawlerNameStr,
-				gf_err, pRuntime, pRuntimeSys)
+			CreateErrorAndEvent(t, m, map[string]interface{}{"origin_page_url_str": pURLfetch.Url_str,}, link.A_href_str, pCrawlerNameStr,
+				gfErr, pRuntime, pRuntimeSys)
 			return
 		}
 	}
@@ -218,16 +221,16 @@ func Links__get_outgoing_in_page(pURLfetch *Gf_crawler_url_fetch,
 }
 
 //--------------------------------------------------
-func link__verify_for_crawl(pURLstr string,
-	p_domain_str  string,
-	pRuntimeSys *gf_core.RuntimeSys) bool {
-	// pRuntimeSys.LogFun("FUN_ENTER","gf_crawl_links.link__verify_for_crawl()")
 
-	blacklisted_domains_map := get_domains_blacklist(pRuntimeSys)
+func linkVerifyForCrawl(pURLstr string,
+	pDomainStr  string,
+	pRuntimeSys *gf_core.RuntimeSys) bool {
+
+	blacklistedDomainsMap := getDomainsBlacklist(pRuntimeSys)
 
 	// dont crawl these mainstream sites
-	if val_bool,ok := blacklisted_domains_map[p_domain_str]; ok {
-		return val_bool
+	if valBool, ok := blacklistedDomainsMap[pDomainStr]; ok {
+		return valBool
 	}
 
 	// unknown domains are whitelisted for crawling

@@ -34,6 +34,7 @@ import (
 
 //-------------------------------------------------
 // INIT
+
 func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
@@ -62,8 +63,6 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 	if test__es_host_env_str != "" {
 		test__es_host_str = test__es_host_env_str
 	}
-
-	test__cluster_node_type_str := "master"
 
 	//-------------
 
@@ -100,27 +99,27 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 	//-------------
 
 	crawlerRuntime := &GFcrawlerRuntime{
-		Events_ctx:            nil,
-		Esearch_client:        esearch_client,
-		S3_info:               s3_test_info.Gf_s3_info,
-		Cluster_node_type_str: test__cluster_node_type_str,
+		EventsCtx:     nil,
+		EsearchClient: esearch_client,
+		S3info:        s3_test_info.Gf_s3_info,
 	}
 
 	return runtimeSys, crawlerRuntime
 }
 
 //---------------------------------------------------
+
 func t__create_test_image_ADTs(p_test *testing.T,
 	pTestCrawlerNameStr    string,
 	pTestCycleRunIDstr    string,
 	p_test__img_src_url_str     string,
 	p_test__origin_page_url_str string,
 	pCrawlerRuntime             *GFcrawlerRuntime,
-	pRuntimeSys                 *gf_core.RuntimeSys) (*Gf_crawler_page_image, *Gf_crawler_page_image_ref) {
+	pRuntimeSys                 *gf_core.RuntimeSys) (*GFcrawlerPageImage, *GFcrawlerPageImageRef) {
 
 	//-------------------
 	// CRAWLED_IMAGE_CREATE
-	testCrawledImage, gfErr := images_adt__prepare_and_create(pTestCrawlerNameStr,
+	testCrawledImage, gfErr := imagesADTprepareAndCreate(pTestCrawlerNameStr,
 		pTestCycleRunIDstr,
 		p_test__img_src_url_str,
 		p_test__origin_page_url_str,
@@ -133,7 +132,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 	}
 
 	// DB - CRAWLED_IMAGE_PERSIST
-	existsBool, gfErr := Image__db_create(testCrawledImage, pCrawlerRuntime, pRuntimeSys)
+	existsBool, gfErr := ImageDBcreate(testCrawledImage, pCrawlerRuntime, pRuntimeSys)
 	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_adt with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
 		panic(gfErr.Error)
@@ -144,7 +143,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 
 	//-------------------
 	// CRAWLED_IMAGE_REF_CREATE
-	testCrawledImageRef := images_adt__ref_create(pTestCrawlerNameStr,
+	testCrawledImageRef := imagesADTrefCreate(pTestCrawlerNameStr,
 		pTestCycleRunIDstr,
 		testCrawledImage.Url_str,                    // p_image_url_str
 		testCrawledImage.Domain_str,                 // p_image_url_domain_str
@@ -153,7 +152,7 @@ func t__create_test_image_ADTs(p_test *testing.T,
 		pRuntimeSys)
 
 	// DB - CRAWLED_IMAGE_REF_PERSIST
-	gfErr = Image__db_create_ref(testCrawledImageRef, pCrawlerRuntime, pRuntimeSys)
+	gfErr = ImageDBcreateRef(testCrawledImageRef, pCrawlerRuntime, pRuntimeSys)
 	if gfErr != nil {
 		p_test.Errorf("failed to DB persist image_ref for image with URL [%s] and origin_page URL [%s]", p_test__img_src_url_str, p_test__origin_page_url_str)
 		panic(gfErr.Error)
@@ -166,10 +165,12 @@ func t__create_test_image_ADTs(p_test *testing.T,
 }
 
 //-------------------------------------------------
-// given some human readable (or arbitrarily named) local image file, create a new image file with the same content, that is named
-// according to the gf_images image file naming scheme. here for testing this is done manually via this function, but in the gf_crawl pipeline
-// this is done by calling the native gf_image functions that create this gf_images based name.
 
+// given some human readable (or arbitrarily named) local image file,
+// create a new image file with the same content, that is named
+// according to the gf_images image file naming scheme. here for
+// testing this is done manually via this function, but in the gf_crawl pipeline
+// this is done by calling the native gf_image functions that create this gf_images based name.
 func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	p_test__img_src_url_str           string,
 	p_test__local_image_file_path_str string,
@@ -201,6 +202,7 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 }
 
 //-------------------------------------------------
+
 func t__cleanup__test_page_imgs(p_test__crawler_name_str string, pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "t__utils.t__cleanup__test_page_imgs()")
 
