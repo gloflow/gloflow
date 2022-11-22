@@ -52,18 +52,6 @@ func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
 		return gfErr
 	}
 
-	rMap := map[string]interface{}{}
-	err  := json.Unmarshal([]byte(body), &rMap)
-	if err != nil {
-		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github actions via REST API"), 
-			"json_unmarshal_error",
-			map[string]interface{}{
-				"url_str": urlStr,
-				"body":    body,
-			},
-			err, "gf_github", pRuntimeSys)
-		return gfErr
-	}
 	return nil
 }
 
