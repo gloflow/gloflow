@@ -35,18 +35,18 @@ import (
 
 //--------------------------------------------------
 
-func gif_db__create(p_image_source_url_str string,
+func gifDBcreate(p_image_source_url_str string,
 	p_image_origin_page_url_str string,
 	p_img_width_int             int,
 	p_img_height_int            int,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
 	p_runtime_sys               *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__create()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBcreate()")
 
-	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	img_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
@@ -56,14 +56,14 @@ func gif_db__create(p_image_source_url_str string,
 	//--------------
 	origin_page_url, err := url.Parse(p_image_origin_page_url_str)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to parse GIF's origin_page url when creating a DB record",
+		gfErr := gf_core.ErrorCreate("failed to parse GIF's origin_page url when creating a DB record",
 			"url_parse_error",
 			map[string]interface{}{
 				"image_source_url_str":      p_image_source_url_str,
 				"image_origin_page_url_str": p_image_origin_page_url_str,
 			},
 			err, "gf_gif_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//--------------
@@ -82,14 +82,14 @@ func gif_db__create(p_image_source_url_str string,
 		Width_int:                  p_img_width_int,
 		Height_int:                 p_img_height_int,
 		Preview_frames_num_int:     p_frames_num_int,
-		Preview_frames_s3_urls_lst: p_frames_s3_urls_lst,
+		PreviewFramesS3urlsLst:     p_frames_s3_urls_lst,
 		Tags_lst:                   []string{},
 	}
 
 
 	ctx           := context.Background()
 	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err         = gf_core.MongoInsert(gif,
+	gfErr         = gf_core.MongoInsert(gif,
 		coll_name_str,
 		map[string]interface{}{
 			"image_source_url_str":      p_image_source_url_str,
@@ -98,8 +98,8 @@ func gif_db__create(p_image_source_url_str string,
 		},
 		ctx,
 		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return gif, nil
@@ -107,9 +107,9 @@ func gif_db__create(p_image_source_url_str string,
 
 //--------------------------------------------------
 
-func gif_db__delete(p_id_str string,
+func gifDBdelete(p_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__delete()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBdelete()")
 
 	ctx := context.Background()
 	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
@@ -121,20 +121,20 @@ func gif_db__delete(p_id_str string,
 		})
 	
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to mark a GIF as deleted in mongodb",
+		gfErr := gf_core.MongoHandleError("failed to mark a GIF as deleted in mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"gif_id_str": p_id_str,},
 			err, "gf_gif_lib", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}
 	return nil
 }
 
 //--------------------------------------------------
 
-func gif_db__get_by_img_id(p_gf_img_id_str string,
+func gifDBgetByImgID(p_gf_img_id_str string,
 	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_img_id()")
+	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBgetByImgID()")
 
 
 	ctx := context.Background()
@@ -152,19 +152,19 @@ func gif_db__get_by_img_id(p_gf_img_id_str string,
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
 	if err == mongo.ErrNoDocuments {
-		gf_err := gf_core.MongoHandleError("GIF with gf_img_id_str not found",
+		gfErr := gf_core.MongoHandleError("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
 			err, "gf_gif_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("GIF with gf_img_id_str failed the DB find operation",
+		gfErr := gf_core.MongoHandleError("GIF with gf_img_id_str failed the DB find operation",
 			"mongodb_find_error",
 			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
 			err, "gf_gif_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	spew.Dump(gif)
@@ -193,19 +193,19 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 	// FIX!! - a record not being found in the DB is possible valid state. it should be considered
 	//         if this should not return an error but instead just a "nil" value for the record.
 	if err == mongo.ErrNoDocuments {
-		gf_err := gf_core.MongoHandleError("GIF with origin_url_str not found",
+		gfErr := gf_core.MongoHandleError("GIF with origin_url_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"origin_url_str": p_origin_url_str,},
 			err, "gf_gif_lib", p_runtime_sys)
-		return nil,gf_err
+		return nil,gfErr
 	}
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("GIF with origin_url_str failed the DB find operation",
+		gfErr := gf_core.MongoHandleError("GIF with origin_url_str failed the DB find operation",
 			"mongodb_find_error",
 			map[string]interface{}{"origin_url_str": p_origin_url_str,},
 			err, "gf_gif_lib", p_runtime_sys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	return &gif, nil
@@ -280,14 +280,14 @@ func gif_db__update_image_id(p_gif_id_str string,
 		bson.M{"$set": bson.M{"gf_image_id_str": p_image_id_str,},})
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to mark a GIF's gf_image_id_str in mongodb",
+		gfErr := gf_core.MongoHandleError("failed to mark a GIF's gf_image_id_str in mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"gif_id_str":   p_gif_id_str,
 				"image_id_str": p_image_id_str,
 			},
 			err, "gf_gif_lib", p_runtime_sys)
-		return gf_err
+		return gfErr
 	}
 	return nil
 }

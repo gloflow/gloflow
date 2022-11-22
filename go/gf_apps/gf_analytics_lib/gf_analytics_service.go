@@ -62,11 +62,11 @@ func InitService(pServiceInfo *GFserviceInfo,
 	//-----------------
 	// ELASTICSEARCH
 	var esearch_client *elastic.Client
-	var gf_err         *gf_core.GFerror
+	var gfErr          *gf_core.GFerror
 	if pServiceInfo.Run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
-		if gf_err != nil {
-			panic(gf_err.Error)
+		esearch_client, gfErr = gf_core.Elastic__get_client(pServiceInfo.Elasticsearch_host_str, pRuntimeSys)
+		if gfErr != nil {
+			panic(gfErr.Error)
 		}
 	}
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
@@ -78,11 +78,11 @@ func InitService(pServiceInfo *GFserviceInfo,
 	// GF_DOMAINS
 	gf_domains_lib.DBindexInit(pRuntimeSys)
 	gf_domains_lib.Init_domains_aggregation(pRuntimeSys)
-	gf_err = gf_domains_lib.Init_handlers(pServiceInfo.Templates_paths_map,
+	gfErr = gf_domains_lib.Init_handlers(pServiceInfo.Templates_paths_map,
 		p_http_mux,
 		pRuntimeSys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//------------------------
@@ -114,9 +114,9 @@ func InitService(pServiceInfo *GFserviceInfo,
 	stats_url_base_str    := "/a/stats"
 	py_stats_dir_path_str := pServiceInfo.Py_stats_dirs_lst[0]
 
-	gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, pRuntimeSys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	gfErr = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	//------------------------
@@ -186,11 +186,11 @@ func Run_service(pServiceInfo *GFserviceInfo,
 	run_indexer_bool := cli_args_map["run_indexer_bool"].(bool)
 
 	var esearch_client *elastic.Client
-	var gf_err         *gf_core.GFerror
+	var gfErr         *gf_core.GFerror
 	if run_indexer_bool {
-		esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
-		if gf_err != nil {
-			panic(gf_err.Error)
+		esearch_client, gfErr = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
+		if gfErr != nil {
+			panic(gfErr.Error)
 		}
 	}
 
@@ -210,7 +210,7 @@ func Run_service(pServiceInfo *GFserviceInfo,
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 
-			all_crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(crawl_config_file_path_str, runtime_sys)
+			all_crawlers_map, gfErr := gf_crawl_core.Get_all_crawlers(crawl_config_file_path_str, runtime_sys)
 			crawler                  := all_crawlers_map[crawler_name_str]
 
 
@@ -223,9 +223,9 @@ func Run_service(pServiceInfo *GFserviceInfo,
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
-			s3_info, gf_err           := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			s3_info, gfErr           := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 			//-------------
@@ -254,9 +254,9 @@ func Run_service(pServiceInfo *GFserviceInfo,
 		// DISCOVER DOMAINS IN DB
 
 		case "discover_domains_in_db":
-			gf_err := gf_domains_lib.Discover_domains_in_db(runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			gfErr := gf_domains_lib.Discover_domains_in_db(runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 		//-----------------------------
@@ -284,9 +284,9 @@ func Run_service(pServiceInfo *GFserviceInfo,
 			// GF_DOMAINS
 			gf_domains_lib.DB_index__init(runtime_sys)
 			gf_domains_lib.Init_domains_aggregation(runtime_sys)
-			gf_err := gf_domains_lib.Init_handlers(templates_dir_path_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			gfErr := gf_domains_lib.Init_handlers(templates_dir_path_str, runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 			//------------------------
@@ -308,9 +308,9 @@ func Run_service(pServiceInfo *GFserviceInfo,
 			stats_url_base_str    := "/a/stats"
 			py_stats_dir_path_str := py_stats_dirs_lst[0]
 
-			gf_err = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			gfErr = gf_stats_apps.Init(stats_url_base_str, py_stats_dir_path_str, runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 			//------------------------

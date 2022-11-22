@@ -27,9 +27,9 @@ import (
 )
 //-------------------------------------------------
 
-func Gif__init_handlers(p_mux *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif.Flows__init_handlers()")
+func Gif__init_handlers(pMux *http.ServeMux,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------
 	// GIF_GET_INFO
@@ -43,35 +43,33 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 
 				qs_map := p_req.URL.Query()
 
-				var origin_url_str string
+				var originURLstr string
 				if a_lst, ok := qs_map["orig_url"]; ok {
-					origin_url_str = a_lst[0]
+					originURLstr = a_lst[0]
 				}
 
-				var gf_img_id_str string
+				var imgIDstr string
 				if a_lst, ok := qs_map["gfimg_id"]; ok {
-					gf_img_id_str = a_lst[0]
+					imgIDstr = a_lst[0]
 				}
 				
 				//--------------------------
-				var gfGIF *GFgif
+				var gif *GFgif
 				var gfErr *gf_core.GFerror
 
 				// BY_ORIGIN_URL
-				if origin_url_str != "" {
-					p_runtime_sys.LogFun("INFO","origin_url_str - "+origin_url_str)
+				if originURLstr != "" {
 
-					gfGIF, gfErr = gif_db__get_by_origin_url(origin_url_str, p_runtime_sys)
+					gif, gfErr = gif_db__get_by_origin_url(originURLstr, pRuntimeSys)
 
 					if gfErr != nil {
 						return nil, gfErr
 					}
 
 				// BY_GF_IMG_ID
-				} else if gf_img_id_str != "" {
-					p_runtime_sys.LogFun("INFO","gf_img_id_str - "+gf_img_id_str)
+				} else if imgIDstr != "" {
 
-					gfGIF, gfErr = gif_db__get_by_img_id(gf_img_id_str,p_runtime_sys)
+					gif, gfErr = gifDBgetByImgID(imgIDstr,pRuntimeSys)
 
 					if gfErr != nil {
 						return nil, gfErr
@@ -80,20 +78,20 @@ func Gif__init_handlers(p_mux *http.ServeMux,
 
 				//------------------
 				// OUTPUT
-				output_map := map[string]interface{}{
-					"gif_map":gfGIF,
+				outputMap := map[string]interface{}{
+					"gif_map": gif,
 				}
-				return output_map, nil
+				return outputMap, nil
 				
 				//------------------
 			}
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//-------------------------------------------------
 	

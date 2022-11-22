@@ -29,74 +29,77 @@ import (
 
 //-------------------------------------------------
 
-type Events__register_producer_msg struct {
-	Events_id_str string
+type EventsRegisterProducerMsg struct {
+	EventsIDstr string
 }
 
-type Events__register_consumer_msg struct {
-	Events_id_str string
+type EventsRegisterConsumerMsg struct {
+	EventsIDstr string
 
 	// IMPORTANT!! - channel on which the events_consumer is expecting to receive new 
 	//               events produced by the events producer,once consumers registration 
-	//               (by processing the Events__register_consumer_msg message) is complete.
-	Response_ch   chan chan Event__msg 
+	//               (by processing the EventsRegisterConsumerMsg message) is complete.
+	ResponseCh chan chan EventMsg 
 }
 
-type Event__msg struct {
-	Events_id_str string                 `json:"events_id_str"`
-	Type_str      string                 `json:"type_str"`
-	Msg_str       string                 `json:"msg_str"`
-	Data_map      map[string]interface{} `json:"meta_map"`
+type EventMsg struct {
+	EventsIDstr string                  `json:"events_id_str"`
+	TypeStr     string                 `json:"type_str"`
+	MsgStr      string                 `json:"msg_str"`
+	DataMap     map[string]interface{} `json:"meta_map"`
 }
 
-type Events_ctx struct {
-	Register_producer_ch chan Events__register_producer_msg
-	Register_consumer_ch chan Events__register_consumer_msg
-	Events_broker_ch     chan Event__msg
+type EventsCtx struct {
+	RegisterProducerCh chan EventsRegisterProducerMsg
+	RegisterConsumerCh chan EventsRegisterConsumerMsg
+	EventsBrokerCh     chan EventMsg
 }
 
 //-------------------------------------------------
-func Events__send_event(p_events_id_str string,
-	p_type_str    string,
-	p_msg_str     string,
-	p_data_map    map[string]interface{},
-	p_events_ctx  *Events_ctx,
-	p_runtime_sys *gf_core.RuntimeSys) {
 
-	e := Event__msg{
-		Events_id_str: p_events_id_str,
-		Type_str:      p_type_str,
-		Msg_str:       p_msg_str,
-		Data_map:      p_data_map,
+func EventsSendEvent(pEventsIDstr string,
+	pTypeStr    string,
+	pMsgStr     string,
+	pDataMap    map[string]interface{},
+	pEventsCtx  *EventsCtx,
+	pRuntimeSys *gf_core.RuntimeSys) {
+
+	e := EventMsg{
+		EventsIDstr: pEventsIDstr,
+		TypeStr:     pTypeStr,
+		MsgStr:      pMsgStr,
+		DataMap:     pDataMap,
 	}
-	p_events_ctx.Events_broker_ch <- e
+	pEventsCtx.EventsBrokerCh <- e
 }
 
 //-------------------------------------------------
-func Events__register_producer(p_events_id_str string,
-	p_events_ctx  *Events_ctx,
-	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.Events__register_producer()")
 
-	register_producer_msg := Events__register_producer_msg{
-		Events_id_str: p_events_id_str,
+func EventsRegisterProducer(pEventsIDstr string,
+	pEventsCtx  *EventsCtx,
+	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.EventsRegisterProducer()")
+
+	registerProducerMsg := EventsRegisterProducerMsg{
+		EventsIDstr: pEventsIDstr,
 	}
 
-	p_events_ctx.Register_producer_ch <- register_producer_msg
+	pEventsCtx.RegisterProducerCh <- registerProducerMsg
 }
 
 //-------------------------------------------------
-func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.RuntimeSys) *Events_ctx {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.Events__init()")
+
+func EventsInit(pSSEurlStr string, pRuntimeSys *gf_core.RuntimeSys) *EventsCtx {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.EventsInit()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
 
-	register_producer_ch := make(chan Events__register_producer_msg, 50)
-	register_consumer_ch := make(chan Events__register_consumer_msg, 50)
-	events_broker_ch     := make(chan Event__msg,                    500)
+	register_producer_ch := make(chan EventsRegisterProducerMsg, 50)
+	register_consumer_ch := make(chan EventsRegisterConsumerMsg, 50)
+	events_broker_ch     := make(chan EventMsg,                  500)
 
-	events_consumers_map := map[string][]chan Event__msg{}
+	events_consumers_map := map[string][]chan EventMsg{}
 	go func() {
 		for ;; {
 
@@ -105,22 +108,22 @@ func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.RuntimeSys) *Even
 				//-----------------
 				// REGISTER EVENTS_PRODUCER
 				case register_producer_msg := <- register_producer_ch:
-					events_id_str                      := register_producer_msg.Events_id_str
-					events_consumers_map[events_id_str] = make([]chan Event__msg,0)
+					events_id_str                      := register_producer_msg.EventsIDstr
+					events_consumers_map[events_id_str] = make([]chan EventMsg, 0)
 
 				//-----------------
 				// REGISTER EVENTS_CONSUMER
 				case register_consumer_msg := <- register_consumer_ch:
-					events_id_str                      := register_consumer_msg.Events_id_str
-					consumer_ch                        := make(chan Event__msg,50)
+					events_id_str                      := register_consumer_msg.EventsIDstr
+					consumer_ch                        := make(chan EventMsg, 50)
 					events_consumers_map[events_id_str] = append(events_consumers_map[events_id_str], consumer_ch)
 				
-					register_consumer_msg.Response_ch <- consumer_ch
+					register_consumer_msg.ResponseCh <- consumer_ch
 
 				//-----------------
 				// EVENT_MSG RELAY
 				case event_msg := <- events_broker_ch:
-					events_id_str := event_msg.Events_id_str
+					events_id_str := event_msg.EventsIDstr
 
 					// IMPORTANT!! - check that this events_id_str has consumers registered for it.
 					//               if yes, then get a list of all consumers for this events_id_str,
@@ -137,49 +140,48 @@ func Events__init(p_sse_url_str string, p_runtime_sys *gf_core.RuntimeSys) *Even
 		}
 	}()
 
-	ctx := &Events_ctx{
-		Register_producer_ch: register_producer_ch,
-		Register_consumer_ch: register_consumer_ch,
-		Events_broker_ch:     events_broker_ch,
+	ctx := &EventsCtx{
+		RegisterProducerCh: register_producer_ch,
+		RegisterConsumerCh: register_consumer_ch,
+		EventsBrokerCh:     events_broker_ch,
 	}
 
-	events__init_handlers(p_sse_url_str,
+	eventsInitHandlers(pSSEurlStr,
 		register_consumer_ch,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	return ctx
 }
 
 //-------------------------------------------------
-func events__init_handlers(p_sse_url_str string,
-	p_register_consumer_ch chan<- Events__register_consumer_msg,
-	p_events_ctx           *Events_ctx,
-	p_runtime_sys          *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_ext_events.events__init_handlers()")
+
+func eventsInitHandlers(pSSEurlStr string,
+	p_register_consumer_ch chan<- EventsRegisterConsumerMsg,
+	pEventsCtx             *EventsCtx,
+	pRuntimeSys            *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_ext_events.eventsInitHandlers()")
 
 	// yellow := color.New(color.FgYellow).SprintFunc()
 	// black  := color.New(color.FgBlack).Add(color.BgYellow).SprintFunc()
 
 
 	// IMPORTANT!! - new event_consumers (clients) register via this HTTP handler
-	http.HandleFunc(p_sse_url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
-		p_runtime_sys.LogFun("INFO", "INCOMING HTTP REQUEST -- "+p_sse_url_str+" ----------")
+	http.HandleFunc(pSSEurlStr, func(p_resp http.ResponseWriter, p_req *http.Request) {
+		pRuntimeSys.LogFun("INFO", "INCOMING HTTP REQUEST -- "+pSSEurlStr+" ----------")
 
-		// start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
+		eventsIDstr := p_req.URL.Query()["events_id"][0]
+		pRuntimeSys.LogFun("INFO", "events_id_str - "+eventsIDstr)
 
-		events_id_str := p_req.URL.Query()["events_id"][0]
-		p_runtime_sys.LogFun("INFO", "events_id_str - "+events_id_str)
-
-		register_consumer__response_ch := make(chan chan Event__msg)
-		register_consumer_msg          := Events__register_consumer_msg{
-			Events_id_str: events_id_str,
-			Response_ch:   register_consumer__response_ch,
+		register_consumer__response_ch := make(chan chan EventMsg)
+		register_consumer_msg          := EventsRegisterConsumerMsg{
+			EventsIDstr: eventsIDstr,
+			ResponseCh:  register_consumer__response_ch,
 		}
 
 		p_register_consumer_ch <- register_consumer_msg
-		events_consumer_ch := <- register_consumer__response_ch
+		eventsConsumerCh := <- register_consumer__response_ch
 
-		flusher,gf_err := gf_core.HTTPinitSSE(p_resp, p_runtime_sys)
+		flusher, gf_err := gf_core.HTTPinitSSE(p_resp, pRuntimeSys)
 		if gf_err != nil {
 			return
 		}
@@ -187,59 +189,47 @@ func events__init_handlers(p_sse_url_str string,
 		//-------------
 		// SEND_EVENT
 
-		event_type_str := "connection_confirmation"
-		msg_str        := "client has successfully connected to a SSE stream"
-		data_map       := map[string]interface{}{}
+		eventTypeStr := "connection_confirmation"
+		msgStr       := "client has successfully connected to a SSE stream"
+		dataMap      := map[string]interface{}{}
 
-		Events__send_event(events_id_str,
-			event_type_str, // p_type_str
-			msg_str,        // p_msg_str
-			data_map,
-			p_events_ctx,
-			p_runtime_sys)
+		EventsSendEvent(eventsIDstr,
+			eventTypeStr, // pTypeStr
+			msgStr,       // pMsgStr
+			dataMap,
+			pEventsCtx,
+			pRuntimeSys)
 
 		//-------------
 
 		for ;; {
 
-			event_msg,more_bool := <- events_consumer_ch
-			// pLogFun("INFO",black("EVENTS >> EVENTS_CONSUMER <- EVENTS_BROKER msg")+" > "+yellow(event_msg.Type_str))
+			eventMsg, moreBool := <- eventsConsumerCh
 
 			// channel is not closed, and there are more messages to be received/processed
-			if more_bool {
-				events__stream_msg(event_msg, p_resp, p_runtime_sys)
+			if moreBool {
+				streamMsg(eventMsg, p_resp, pRuntimeSys)
 				flusher.Flush()
 			} else {
 				// send this last received message
-				events__stream_msg(event_msg, p_resp, p_runtime_sys)
+				streamMsg(eventMsg, p_resp, pRuntimeSys)
 				flusher.Flush()
 				break
 			}
 		}
-
-		//end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
-
-		/*//FIX!! - gf_rpc_lib imports gf_core, which causes a import cycle,
-		//        and fails compilation.
-		go func() {
-			gf_rpc_lib.Store_rpc_handler_run(p_sse_url_str,
-								start_time__unix_f,
-								end_time__unix_f,
-								p_mongodb_coll,
-								pLogFun)
-		}()*/
 	})
 }
 
 //-------------------------------------------------
-func events__stream_msg(p_event_msg Event__msg,
-	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.RuntimeSys) {
+
+func streamMsg(p_event_msg EventMsg,
+	p_resp      http.ResponseWriter,
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 
 	unix_f       := float64(time.Now().UnixNano())/1000000000.0
 	event_id_str := fmt.Sprint(unix_f)
-	fmt.Fprintf(p_resp, "id: %s\n",event_id_str)
+	fmt.Fprintf(p_resp, "id: %s\n", event_id_str)
 
 	event_msg_lst,_ := json.Marshal(p_event_msg)
 	fmt.Fprintf(p_resp, "data: %s\n\n", event_msg_lst)

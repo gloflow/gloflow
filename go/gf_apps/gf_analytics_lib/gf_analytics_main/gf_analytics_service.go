@@ -54,8 +54,8 @@ func main() {
 		LogFun:           logFun,
 	}
 
-	mongo_db, gf_err := gf_core.MongoConnectNew(mongodb_host_str, mongodb_db_name_str, runtime_sys)
-	if gf_err != nil {
+	mongo_db, gfErr := gf_core.MongoConnectNew(mongodb_host_str, mongodb_db_name_str, runtime_sys)
+	if gfErr != nil {
 		panic(-1)
 	}
 	runtime_sys.mongo_db   = mongo_db
@@ -75,7 +75,7 @@ func main() {
 			cluster_node_type_str             := cli_args_map["cluster_node_type_str"].(string)
 			crawler_images_local_dir_path_str := cli_args_map["crawler_images_local_dir_path_str"].(string)
 
-			all_crawlers_map, gf_err := gf_crawl_core.Get_all_crawlers(crawl_config_file_path_str, runtime_sys)
+			all_crawlers_map, gfErr := gf_crawl_core.Get_all_crawlers(crawl_config_file_path_str, runtime_sys)
 			crawler                  := all_crawlers_map[crawler_name_str]
 
 
@@ -88,18 +88,18 @@ func main() {
 			aws_access_key_id_str     := cli_args_map["aws_access_key_id_str"].(string)
 			aws_secret_access_key_str := cli_args_map["aws_secret_access_key_str"].(string)
 			aws_token_str             := cli_args_map["aws_token_str"].(string)
-			s3_info, gf_err           := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			s3_info, gfErr           := gf_core.S3__init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 			//-------------
 			// ELASTICSEARCH
 			var esearch_client *elastic.Client
 			if run_indexer_bool {
-				esearch_client, gf_err = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
-				if gf_err != nil {
-					panic(gf_err.Error)
+				esearch_client, gfErr = gf_core.Elastic__get_client(elasticsearch_host_str, runtime_sys)
+				if gfErr != nil {
+					panic(gfErr.Error)
 				}
 			}
 			fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
@@ -129,9 +129,9 @@ func main() {
 		// DISCOVER DOMAINS IN DB
 
 		case "discover_domains_in_db":
-			gf_err := gf_domains_lib.Discover_domains_in_db(runtime_sys)
-			if gf_err != nil {
-				panic(gf_err.Error)
+			gfErr := gf_domains_lib.Discover_domains_in_db(runtime_sys)
+			if gfErr != nil {
+				panic(gfErr.Error)
 			}
 
 		//-----------------------------

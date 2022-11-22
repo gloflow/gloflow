@@ -39,9 +39,9 @@ func init_handlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gf_templates, gfErr := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//---------------------
@@ -88,11 +88,11 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//-----------------
 				// INPUT
-				input, session_id_str, gf_err := gf_events.User_event__parse_input(p_req, p_resp, p_runtime_sys)
-				if gf_err != nil {
+				input, session_id_str, gfErr := gf_events.User_event__parse_input(p_req, p_resp, p_runtime_sys)
+				if gfErr != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
-					return nil, gf_err
+					return nil, gfErr
 				}
 				
 				//-----------------
@@ -106,9 +106,9 @@ func init_handlers(p_templates_paths_map map[string]string,
 					Os_ver_str:       os_version_str,
 				}
 
-				gf_err = gf_events.User_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = gf_events.User_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//-----------------
@@ -129,9 +129,9 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			//---------------------
 			// SESSION_VALIDATE
-			valid_bool, _, gf_err := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+			valid_bool, _, gfErr := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			if !valid_bool {
@@ -142,12 +142,12 @@ func init_handlers(p_templates_paths_map map[string]string,
 			
 			//--------------------
 			// RENDER TEMPLATE
-			gf_err = dashboard__render_template(gf_templates.dashboard__tmpl,
+			gfErr = dashboard__render_template(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
 				p_resp,
 				p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 		}
 		return nil, nil

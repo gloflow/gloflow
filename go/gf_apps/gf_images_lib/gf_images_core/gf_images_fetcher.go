@@ -33,7 +33,7 @@ import (
 
 //-------------------------------------------------
 
-type Image_fetch__error struct {
+type ImageFetchError struct {
 	Id                   primitive.ObjectID `json:"-"                    bson:"_id,omitempty"`
 	Id_str               string        `json:"id_str"               bson:"id_str"` 
 	T_str                string        `json:"-"                    bson:"t"` // img_fetch_error
@@ -133,7 +133,7 @@ func DownloadFile(pImageURLstr string,
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 		id_str               := "image_fetch_error__"+fmt.Sprint(creation_unix_time_f)
 
-		fetch_error := &Image_fetch__error{
+		fetch_error := &ImageFetchError{
 			Id_str:               id_str,
 			T_str:                "img_fetch_error",
 			Creation_unix_time_f: creation_unix_time_f,
@@ -148,7 +148,7 @@ func DownloadFile(pImageURLstr string,
 			map[string]interface{}{
 				"image_url_str":             pImageURLstr,
 				"local_image_file_path_str": p_local_image_file_path_str,
-				"caller_err_msg_str":        "failed to insert a Image_fetch__error into the DB",
+				"caller_err_msg_str":        "failed to insert a image fetch error into the DB",
 			},
 			ctx,
 			pRuntimeSys)

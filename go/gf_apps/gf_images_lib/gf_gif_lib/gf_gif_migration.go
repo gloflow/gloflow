@@ -278,7 +278,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 			//-----------------------
 			// FETCH_FIRST_PREVIEW_FRAME
-			frame_url_str := old_gif.Preview_frames_s3_urls_lst[0]
+			frame_url_str := old_gif.PreviewFramesS3urlsLst[0]
 			headers_map    = map[string]string{}
 			user_agent_str = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
 			fpf__gf_http_fetch, gf_err := gf_core.HTTPfetchURL(frame_url_str,
@@ -527,7 +527,7 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 
 	//----------------
 	// DELETE_OLD_GIF - the one that was rebuilt
-	gif_db__delete(p_old_gif.Id_str, p_runtime_sys)
+	gifDBdelete(p_old_gif.Id_str, p_runtime_sys)
 	
 	//----------------
 	return nil

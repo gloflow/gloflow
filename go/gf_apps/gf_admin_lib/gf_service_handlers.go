@@ -52,9 +52,9 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	gf_templates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//---------------------
@@ -114,13 +114,13 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 
-				templateRenderedStr, gf_err := Pipeline__render_login(mfaConfirmBool,
+				templateRenderedStr, gfErr := Pipeline__render_login(mfaConfirmBool,
 					gf_templates.login__tmpl,
 					gf_templates.dashboard__subtemplates_names_lst,
 					pCtx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				pResp.Write([]byte(templateRenderedStr))
@@ -145,9 +145,9 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				//---------------------
 				// INPUT
 				
-				inputMap, gf_err := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				var userNameStr gf_identity_core.GFuserName
@@ -168,13 +168,13 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 
-				output, gf_err := gf_identity_lib.Admin__pipeline__login(input,
+				output, gfErr := gf_identity_lib.Admin__pipeline__login(input,
 					pCtx,
 					p_local_hub,
 					p_identity_service_info,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				output_map := map[string]interface{}{

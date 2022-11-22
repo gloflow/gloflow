@@ -59,11 +59,11 @@ func view__render_template_login(p_mfa_confirm_bool bool,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the admin login template",
+		gfErr := gf_core.ErrorCreate("failed to render the admin login template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_admin", p_runtime_sys)
-		return "", gf_err
+		return "", gfErr
 	}
 
 	template_rendered_str := buff.String()
@@ -101,11 +101,11 @@ func view__render_template_dashboard(p_tmpl *template.Template,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the admin dashboard template",
+		gfErr := gf_core.ErrorCreate("failed to render the admin dashboard template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_admin", p_runtime_sys)
-		return "", gf_err
+		return "", gfErr
 	}
 
 	template_rendered_str := buff.String()

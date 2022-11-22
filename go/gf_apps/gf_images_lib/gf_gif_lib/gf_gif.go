@@ -66,7 +66,7 @@ type GFgif struct {
 	Width_int                  int           `json:"width_int"                  bson:"width_int"`
 	Height_int                 int           `json:"height_int"                 bson:"height_int"`
 	Preview_frames_num_int     int           `json:"preview_frames_num_int"     bson:"preview_frames_num_int"`
-	Preview_frames_s3_urls_lst []string      `json:"preview_frames_s3_urls_lst" bson:"preview_frames_s3_urls_lst"`
+	PreviewFramesS3urlsLst     []string      `json:"previewFramesS3urlsLst" bson:"previewFramesS3urlsLst"`
 	Tags_lst                   []string      `json:"tags_lst"                   bson:"tags_lst"`
 	Hash_str                   string        `json:"hash_str"                   bson:"hash_str"`
 	Gf_image_id_str            gf_images_core.GF_image_id `json:"gf_image_id_str" bson:"gf_image_id_str"`
@@ -87,7 +87,7 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
-	gif, local_image_file_path_str, gf_err := Process(p_gf_image_id_str,
+	gif, local_image_file_path_str, gfErr := Process(p_gf_image_id_str,
 		p_image_source_url_str,
 		p_image_origin_page_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
@@ -100,25 +100,25 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 		pCtx,
 		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	//-----------------------
 	// SAVE_IMAGE TO FS (S3)
 
-	img_title_str, gf_err := gf_images_core.GetImageTitleFromURL(p_image_source_url_str,pRuntimeSys)
-	if gf_err != nil {
-		return nil,gf_err
+	img_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str,pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	s3_target_file_path_str := fmt.Sprintf("gifs/%s.gif", img_title_str)
-	s3_resp_str, s_gf_err    := gf_core.S3uploadFile(local_image_file_path_str, //p_target_file__local_path_str string,
+	s3_resp_str, gfErr      := gf_core.S3uploadFile(local_image_file_path_str, //p_target_file__local_path_str string,
 		s3_target_file_path_str,
 		p_s3_bucket_name_str,
 		pS3info,
 		pRuntimeSys)
-	if s_gf_err != nil {
-		return nil, s_gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	fmt.Println(s3_resp_str)
@@ -161,7 +161,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	//               (to save on bandwidth and download the full GIF only when the 
 	//               user explicitly wants to view the full version)
 
-	frames_num_int, frames_s3_urls_lst, varGFerr, frames_gf_errs_lst := storePreviewFrames(local_image_file_path_str,
+	frames_num_int, frames_s3_urls_lst, varGFerr, framesGFerrsLst := storePreviewFrames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_media_domain_str,
 		p_s3_bucket_name_str,
@@ -172,12 +172,12 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	}
 
 
-	for _, frame_gf_err := range frames_gf_errs_lst {
-		if frame_gf_err != nil {
+	for _, frameGFerr := range framesGFerrsLst {
+		if frameGFerr != nil {
 
 			// FIX!! - return all errors to the user, to know exactly which frames failed, 
 			//         even though most likely all frames failed.
-			return nil, "", frame_gf_err
+			return nil, "", frameGFerr
 		}
 	}
 
@@ -190,7 +190,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 	//-----------------------
 	// GIF_OBJ_CREATE
-	gif, gfErr := gif_db__create(p_image_source_url_str,
+	gif, gfErr := gifDBcreate(p_image_source_url_str,
 		p_image_origin_page_url_str,
 		img_width_int,
 		img_height_int,
@@ -224,7 +224,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 			return nil, "", gfErr
 		}
 
-		gif_first_frame_str := gif.Preview_frames_s3_urls_lst[0]
+		gif_first_frame_str := gif.PreviewFramesS3urlsLst[0]
 
 		//-----------------------
 		// DEPRECATED!! - remove this, Image_new_info should be used only, and should be validated directly, 
@@ -294,7 +294,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 //--------------------------------------------------
 
-func storePreviewFrames(p_local_file_path_src string,
+func storePreviewFrames(pLocalFilePathSrc string,
 	p_frames_images_dir_path_str string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
@@ -302,8 +302,8 @@ func storePreviewFrames(p_local_file_path_src string,
 	pRuntimeSys                  *gf_core.RuntimeSys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
-	max_num__of_preview_frames_int       := 10
-	frames_images_file_paths_lst, gfErr := Gif__frames__save_to_fs(p_local_file_path_src, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
+	max_num__of_preview_frames_int      := 10
+	frames_images_file_paths_lst, gfErr := Gif__frames__save_to_fs(pLocalFilePathSrc, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
 	if gfErr != nil {
 		return 0, nil, gfErr, nil
 	}
@@ -315,8 +315,8 @@ func storePreviewFrames(p_local_file_path_src string,
 	// ADD!! - make thumbnails out of individual frames - to reduce/standardize their size
 	//-----------------------
 	// SAVE_IMAGES TO FS (S3)
-	preview_frames_s3_urls_lst := []string{}
-	gf_errors_lst              := make([]*gf_core.GFerror, len(frames_images_file_paths_lst))
+	previewFramesS3urlsLst := []string{}
+	gfErrorsLst            := make([]*gf_core.GFerror, len(frames_images_file_paths_lst))
 	for i, frameImageFilePathStr := range frames_images_file_paths_lst {
 
 		frameImageFileNameStr  := filepath.Base(frameImageFilePathStr)
@@ -332,7 +332,7 @@ func storePreviewFrames(p_local_file_path_src string,
 
 		if gfErr != nil {
 			pRuntimeSys.LogFun("ERROR","GIF FRAME S3_UPLOAD ERROR >>> "+fmt.Sprint(gfErr.Error))
-			gf_errors_lst[i] = gfErr
+			gfErrorsLst[i] = gfErr
 		}
 
 		fmt.Println(s3_response_str)
@@ -343,17 +343,17 @@ func storePreviewFrames(p_local_file_path_src string,
 			p_media_domain_str, // p_s3_bucket_name_str,
 			pRuntimeSys)
 
-		preview_frames_s3_urls_lst = append(preview_frames_s3_urls_lst, imageURLstr)
+		previewFramesS3urlsLst = append(previewFramesS3urlsLst, imageURLstr)
 	}
 
 	//-----------------------
 
-	return previewFramesNumInt, preview_frames_s3_urls_lst, nil, gf_errors_lst
+	return previewFramesNumInt, previewFramesS3urlsLst, nil, gfErrorsLst
 }
 
 //--------------------------------------------------
 
-func Gif__frames__save_to_fs(p_local_file_path_src string,
+func Gif__frames__save_to_fs(pLocalFilePathSrc string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
 	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
@@ -364,23 +364,23 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 	pRuntimeSys.LogFun("INFO", "")
 	pRuntimeSys.LogFun("INFO", cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
-	pRuntimeSys.LogFun("INFO", black(p_local_file_path_src))
+	pRuntimeSys.LogFun("INFO", black(pLocalFilePathSrc))
 	pRuntimeSys.LogFun("INFO", "")
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gfErr := getDimensions(p_local_file_path_src, pRuntimeSys)
+	img_width_int, img_height_int, gfErr := getDimensions(pLocalFilePathSrc, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//---------------------
 
-	file, err := os.Open(p_local_file_path_src)
+	file, err := os.Open(pLocalFilePathSrc)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("OS failed to open a GIF file to then save its frames as individual files",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
@@ -392,7 +392,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		if r := recover(); r != nil {
 			_ = gf_core.ErrorCreate("Gif__frames__save_to_fs() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+				map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
@@ -402,7 +402,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 	if gif_err != nil {
 		gfErr := gf_core.ErrorCreate("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
@@ -418,7 +418,7 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 		image.ZP,
 		draw.Src)
 
-	source_file_name_str := filepath.Base(p_local_file_path_src)
+	source_file_name_str := filepath.Base(pLocalFilePathSrc)
 	new_files_names_lst  := []string{}
 
 	// IMPORTANT!! - save GIF frames to .png files on local filesystem
@@ -477,14 +477,14 @@ func Gif__frames__save_to_fs(p_local_file_path_src string,
 
 //--------------------------------------------------
 
-func getDimensions(p_local_file_path_src string,
+func getDimensions(pLocalFilePathSrc string,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
-	file, err := os.Open(p_local_file_path_src)
+	file, err := os.Open(pLocalFilePathSrc)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("OS failed to open a file to get image dimensions",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 			err, "gf_gif_lib", pRuntimeSys)
 		return 0, 0, gfErr
 	}
@@ -496,7 +496,7 @@ func getDimensions(p_local_file_path_src string,
 		if r := recover(); r != nil {
 			_ = gf_core.ErrorCreate("getDimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+				map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
@@ -506,7 +506,7 @@ func getDimensions(p_local_file_path_src string,
 	if gif_err != nil {
 		gfErr := gf_core.ErrorCreate("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src": p_local_file_path_src,},
+			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
 		return 0, 0, gfErr
 	}

@@ -294,7 +294,7 @@ func users_auth_userpass__pipeline__create_regular(p_input *GF_user_auth_userpas
 			"user_name_str":   p_input.User_name_str,
 			"domain_base_str": p_service_info.Domain_base_str,
 		}
-		gf_events.Emit_app(GF_EVENT_APP__USER_CREATE_REGULAR,
+		gf_events.EmitApp(GF_EVENT_APP__USER_CREATE_REGULAR,
 			event_meta,
 			pRuntimeSys)
 	}

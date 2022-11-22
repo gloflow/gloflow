@@ -34,6 +34,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Gf_user_event_input struct {
 	Type_str string                 `json:"type_str"`
 	Data_map map[string]interface{} `json:"d"`
@@ -60,6 +61,7 @@ type Gf_user_event struct {
 }
 
 //-------------------------------------------------
+
 func User_event__parse_input(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.RuntimeSys) (*Gf_user_event_input, string, *gf_core.GFerror) {
@@ -84,6 +86,7 @@ func User_event__parse_input(p_req *http.Request,
 }
 
 //-------------------------------------------------
+
 func User_event__create(p_input *Gf_user_event_input,
 	p_session_id_str string,
 	p_gf_req_ctx     *GF_user_event_req_ctx,
@@ -135,6 +138,7 @@ func User_event__create(p_input *Gf_user_event_input,
 }
 
 //-------------------------------------------------
+
 func session__get_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.RuntimeSys) string {
@@ -150,6 +154,7 @@ func session__get_id_cookie(p_req *http.Request,
 }
 
 //-------------------------------------------------
+
 func session__create_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_runtime_sys *gf_core.RuntimeSys) string {

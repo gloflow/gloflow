@@ -166,23 +166,23 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				gf_err = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//---------------------
 
-				invite_list_lst, gf_err := gf_identity_lib.Admin__pipeline__get_all_invite_list(pCtx,
+				invite_list_lst, gfErr := gf_identity_lib.Admin__pipeline__get_all_invite_list(pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				output_map := map[string]interface{}{

@@ -233,7 +233,7 @@ func AdminPipelineUserAddToInviteList(pInput *GF_admin__input_add_to_invite_list
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
-		gf_events.Emit_app(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
+		gf_events.EmitApp(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
 			eventMetaMap,
 			pRuntimeSys)
 	}
@@ -276,7 +276,7 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
-		gf_events.Emit_app(GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
+		gf_events.EmitApp(GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
 			eventMetaMap,
 			pRuntimeSys)
 	}
@@ -476,7 +476,7 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 					"user_name_str":   pInput.User_name_str,
 					"domain_base_str": p_service_info.Domain_base_str,
 				}
-				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
+				gf_events.EmitApp(GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					event_meta,
 					pRuntimeSys)
 			}
@@ -508,7 +508,7 @@ func Admin__pipeline__login(pInput *GF_admin__input_login,
 					"user_name_str":   pInput.User_name_str,
 					"domain_base_str": p_service_info.Domain_base_str,
 				}
-				gf_events.Emit_app(GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
+				gf_events.EmitApp(GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					event_meta,
 					pRuntimeSys)
 			}
@@ -547,7 +547,7 @@ func admin__pipeline__create_admin(p_input *GF_user_auth_userpass__input_create,
 			"user_type_str":   p_input.UserTypeStr,
 			"domain_base_str": p_service_info.Domain_base_str,
 		}
-		gf_events.Emit_app(GF_EVENT_APP__ADMIN_CREATE,
+		gf_events.EmitApp(GF_EVENT_APP__ADMIN_CREATE,
 			event_meta,
 			p_runtime_sys)
 	}
