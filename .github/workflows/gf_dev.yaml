@@ -267,7 +267,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: go_build_artifacts
-          path: /home/gf/build/gf_apps/gf_solo/gf_solo
+          path: /home/gf/build/gf_apps/gf_solo/
 
       #-------------------------------
       # DOWNLOAD_WEB_ARTIFACTS
