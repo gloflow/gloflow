@@ -32,7 +32,7 @@ func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
 	}
 	dataLst, _  := json.Marshal(dataMap)
 
-	_, body, errs := gorequest.New().
+	_, _, errs := gorequest.New().
 		Post(urlStr).
 		Set("accept", "application/vnd.github+json").
 		Set("authorization", fmt.Sprintf("Bearer %s", pGithubBearerTokenStr)).
