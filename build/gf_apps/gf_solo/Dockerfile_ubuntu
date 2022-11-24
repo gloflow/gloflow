@@ -105,11 +105,16 @@ ADD ./config/gf_images_config.yaml config/gf_images_config.yaml
 ADD ./config/gf_solo.yaml          config/gf_solo.yaml
 
 #------------
+# PERMISSIONS
 
-# IMPORTANT!! - no matter which user ran the container build command, set the ownership of all files in /home/gf
-#               to user "gf" so that gf_solo access them.
+# IMPORTANT!! - excplicitly set the ownership of all files in /home/gf to user/group "gf"
 USER root
 RUN chown -R gf .
+RUN chgrp -R gf .
+
+# IMPORTANT!! - certain CI pipelines (github actions) dont preserve file permissions of 
+#               uploaded/downloaded artifacts from previous jobs/stages
+RUN chmod u+x gf_solo
 
 #------------
 USER gf
