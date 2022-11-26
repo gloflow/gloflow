@@ -9,14 +9,119 @@ import (
 )
 
 //--------------------------------------------------------------------
-// GITHUB_ACTIONS_RUN_WORKFLOW
+
+type GFissue struct {
+	TitleStr  string
+	BodyStr   string
+	UrlStr    string
+	NumberInt int
+	StateStr  string
+	Labels    []GFissueLabel
+	MilestoneTitleStr string
+	MilestoneUrlStr   string
+}
+
+type GFissueLabel struct {
+	NameStr     string
+	ColorHexStr string
+}
+
+//--------------------------------------------------------------------
+// GET_ISSUES
+
+// get a github issue associated with a particular repository
+func GetIssues(pRepoOwnerAndNameStr string,
+	pGithubBearerTokenStr string,
+	pRuntimeSys           *gf_core.RuntimeSys) ([]GFissue, *gf_core.GFerror) {
+
+	// https://docs.github.com/en/rest/issues/issues#list-repository-issues
+	urlStr := fmt.Sprintf("/repos/%s/issues", pRepoOwnerAndNameStr)
+
+	_, body, errs := gorequest.New().
+		Post(urlStr).
+		Set("accept", "application/vnd.github+json").
+		Set("authorization", fmt.Sprintf("Bearer %s", pGithubBearerTokenStr)).
+		// Send(string(dataLst)).
+		End()
+	if len(errs) > 0 {
+		err   := errs[0]
+		gfErr := gf_core.ErrorCreate("failed to get repository issues in github via REST API",
+			"http_client_req_error",
+			map[string]interface{}{
+				"repo_owner_and_name_str": pRepoOwnerAndNameStr,
+				"url_str":                 urlStr,
+			},
+			err, "gf_github", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	rLst := []interface{}{}
+	err := json.Unmarshal([]byte(body), &rLst)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("failed to parse json response from github HTTP REST API"), 
+			"json_unmarshal_error",
+			map[string]interface{}{
+				"url_str": urlStr,
+				"body":    body,
+			},
+			err, "gf_github", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	// spew.Dump(rLst)
+
+	gfIssuesLst := []GFissue{}
+	for _, issue := range rLst {
+
+		issueMap := issue.(map[string]interface{})
+		urlStr := issueMap["url"].(string)
+		numberInt := issueMap["number"].(int)
+		stateStr := issueMap["state"].(string)
+		titleStr := issueMap["title"].(string)
+		bodyStr := issueMap["body"].(string)
+
+		gfIssueLabelsLst := []GFissueLabel{}
+		for _, label := range issueMap["labels"].([]interface{}) {
+			labelMap      := label.(map[string]interface{})
+			labelNameStr  := labelMap["name"].(string)
+			labelColorStr := labelMap["color"].(string)
+
+			gfIssueLabel := GFissueLabel{
+				NameStr:     labelNameStr,
+				ColorHexStr: labelColorStr,
+			}
+			gfIssueLabelsLst = append(gfIssueLabelsLst, gfIssueLabel)
+		}
+
+		milestoneMap      := issueMap["milestone"].(map[string]interface{})
+		milestoneTitleStr := milestoneMap["title"].(string)
+		milestoneUrlStr   := milestoneMap["url"].(string)
+
+		gfIssue := GFissue{
+			TitleStr:          titleStr,
+			BodyStr:           bodyStr,
+			UrlStr:            urlStr,
+			NumberInt:         numberInt,
+			StateStr:          stateStr,
+			Labels:            gfIssueLabelsLst,
+			MilestoneTitleStr: milestoneTitleStr,
+			MilestoneUrlStr:   milestoneUrlStr,
+		}
+		gfIssuesLst = append(gfIssuesLst, gfIssue)
+	}
+
+	return gfIssuesLst, nil
+}
+
+//--------------------------------------------------------------------
+// RUN_ACTIONS_WORKFLOW
 
 // Run a Github Actions workflow on a target repository and branch.
 // Workflow must be marked in github_actions to be runnable by "workflow_dispatch" events
 // (in the "on" section)
 // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
 // pWorkflowIDorFileNameStr - is either a workflow ID or a workflow definition file (*.yaml)
-func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
+func RunActionsWorkflow(pRepoOwnerAndNameStr string,
 	pWorkflowIDorFileNameStr string,
 	pBranchNameStr           string,
 	pGithubBearerTokenStr    string,
@@ -56,6 +161,8 @@ func ActionsRunWorkflow(pRepoOwnerAndNameStr string,
 }
 
 //--------------------------------------------------------------------
+// GET_IPS
+
 // Get IP's from which github servers are expected to send requests.
 func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 
