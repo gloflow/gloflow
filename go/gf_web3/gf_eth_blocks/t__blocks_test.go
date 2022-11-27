@@ -38,8 +38,8 @@ func Test__blocks(pTest *testing.T) {
 
 	fmt.Println("TEST__BLOCKS ==============================================")
 	
-	ctx           := context.Background()
-	host_port_str := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
+	ctx         := context.Background()
+	hostPortStr := os.Getenv("GF_TEST_WORKER_INSPECTOR_HOST_PORT")
 	runtime, metrics, err := gf_eth_core.TgetRuntime()
 	if err != nil {
 		pTest.FailNow()
@@ -52,7 +52,7 @@ func Test__blocks(pTest *testing.T) {
 	block_end_uint   := uint64(2_000_100)
 
 	get_worker_hosts_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
-		return []string{host_port_str, }
+		return []string{hostPortStr, }
 	}
 
 	// ABI_DEFS

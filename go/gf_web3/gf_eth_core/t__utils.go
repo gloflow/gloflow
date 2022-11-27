@@ -74,8 +74,8 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	
 
 	// SENTRY
-	sentry_endpoint_uri_str := "https://702b507d193d45029674fbf98bcedaaf@o502595.ingest.sentry.io/5590469"
-	Sentry__init(sentry_endpoint_uri_str)
+	sentryEndpointURIstr := "https://702b507d193d45029674fbf98bcedaaf@o502595.ingest.sentry.io/5590469"
+	Sentry__init(sentryEndpointURIstr)
 
 
 	return runtime, nil, nil

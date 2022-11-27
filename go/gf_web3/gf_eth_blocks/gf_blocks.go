@@ -118,7 +118,7 @@ func Index__pipeline(p_block_uint uint64,
 	// GET_BLOCK_FROM_WORKER
 	// gets the same block from all the workers that it gets, and the resulting maps
 	// are key-ed by worker_host.
-	block_from_workers_map, _, gfErr := Get_from_workers__pipeline(p_block_uint,
+	block_from_workers_map, gfErr := Get_from_workers__pipeline(p_block_uint,
 		p_get_worker_hosts_fn,
 		p_abis_defs_map,
 		p_ctx,
@@ -209,7 +209,7 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
 	p_ctx                 context.Context,
 	p_metrics             *gf_eth_core.GF_metrics,
-	p_runtime             *gf_eth_core.GF_runtime) (map[string]*GF_eth__block__int, map[string]*gf_eth_core.GF_eth__miner__int, *gf_core.GFerror) {
+	p_runtime             *gf_eth_core.GF_runtime) (map[string]*GF_eth__block__int, *gf_core.GFerror) {
 
 
 	//---------------------
@@ -300,31 +300,8 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 	span.Finish()
 
 	//---------------------
-	// GET_MINERS - that own this address, potentially multiple records for the same address
 
-	// get coinbase address from the block comming from the first worker_inspector
-	var block_miner_addr_hex_str string
-	for _, gf_block := range block_from_workers_map {
-		
-		// if worker failed to return a block, it will be set to nil, so go to the 
-		// next one from which a coinbase could be acquired.
-		if gf_block != nil {
-			block_miner_addr_hex_str = gf_block.Coinbase_addr_str
-			break
-		}
-	}
-
-	miners_map, gfErr := gf_eth_core.Eth_miners__db__get_info(block_miner_addr_hex_str,
-		p_metrics,
-		p_ctx,
-		p_runtime)
-	if gfErr != nil {
-		return nil, nil, gfErr
-	}
-
-	//---------------------
-
-	return block_from_workers_map, miners_map, nil
+	return block_from_workers_map, nil
 }
 
 //-------------------------------------------------
