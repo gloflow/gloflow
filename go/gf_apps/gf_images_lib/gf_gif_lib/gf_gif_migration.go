@@ -36,11 +36,10 @@ import (
 //             created in their GIF record form. new versions of crawler and chrome_ext 
 //             logic has proper creation of both image and gif DB records, but old
 //             image only DB records need to be processed
-func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
+func InitImgToGIFmigration(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.GFs3Info,
-	p_runtime_sys        *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_migration.Init_img_to_gif_migration()")
+	pRuntimeSys        *gf_core.RuntimeSys) {
 
 	gf_domain_str := "gloflow.com"
 	fmt.Println(gf_domain_str)
@@ -137,12 +136,12 @@ func Init_img_to_gif_migration(p_images_store_local_dir_path_str string,
 // FIX_GIF_URLS - try to fetch first frame image of a GIF, and if fails
 //                regenerate GIF preview frames.
 
-func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
+func migrateFixGIFurls(p_images_store_local_dir_path_str string,
 	p_gf_domain_str      string,
 	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.GFs3Info,
-	p_runtime_sys        *gf_core.RuntimeSys) {
+	pRuntimeSys        *gf_core.RuntimeSys) {
 	
 	go func() {
 
@@ -171,7 +170,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				},
 			}
 
-			/*pipe := p_runtime_sys.Mongo_coll.Pipe([]bson.M{
+			/*pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
 				bson.M{"$match": bson.M{
 						"t":   "gif",
 						"$or": []bson.M{
@@ -189,12 +188,12 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				},
 			})*/
 
-			cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+			cursor, err := pRuntimeSys.Mongo_coll.Aggregate(ctx, pipeline)
 			if err != nil {
 				_ = gf_core.MongoHandleError("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
 					"mongodb_aggregation_error",
 					nil,
-					err, "gf_gif_lib", p_runtime_sys)
+					err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}
 			defer cursor.Close(ctx)
@@ -203,7 +202,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			err := pipe.One(&old_gif)
 			if err != nil {
 				_ = gf_core.MongoHandleError("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
-					"mongodb_aggregation_error", nil, err, "gf_gif_lib", p_runtime_sys)
+					"mongodb_aggregation_error", nil, err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}*/
 			
@@ -215,7 +214,7 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 				_ = gf_core.MongoHandleError("failed to run FIX_GIF_URLS migration aggregation_pipeline to get a single GIF",
 					"mongodb_cursor_decode",
 					nil,
-					err, "gf_gif_lib", p_runtime_sys)
+					err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}
 
@@ -230,11 +229,11 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			gif__full_gf_url_str  := fmt.Sprintf("http://%s%s",p_gf_domain_str,old_gif.Gf_url_str)
 			headers_map           := map[string]string{}
 			user_agent_str        := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			gf_http_fetch, gf_err := gf_core.HTTPfetchURL(gif__full_gf_url_str,
+			gf_http_fetch, gfErr := gf_core.HTTPfetchURL(gif__full_gf_url_str,
 				headers_map,
 				user_agent_str,
 				context.Background(),
-				p_runtime_sys)
+				pRuntimeSys)
 
 			// IMPORTANT!! - http response body must be closed, regardless of if its used or not (by goland docs)
 			defer gf_http_fetch.Resp.Body.Close()
@@ -242,20 +241,20 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			// IMPORTANT!! - common error for malformed url's is:
 			//               "parse /images/d/gif/%!!(MISSING)s(*string=0xc4201f4040).gif: invalid URL escape "%!!(MISSING)s""
 			//               so for them GIF's are rebuilt as well.
-			if gf_err !=nil && strings.HasPrefix(fmt.Sprint(gf_err.Error),"parse") {
+			if gfErr !=nil && strings.HasPrefix(fmt.Sprint(gfErr.Error),"parse") {
 
-				rg__gf_err := migrate__rebuild_gif(&old_gif,
+				rg__gfErr := migrateRebuildGIF(&old_gif,
 					p_images_store_local_dir_path_str,
 					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
-					p_runtime_sys)
-				if rg__gf_err != nil {
+					pRuntimeSys)
+				if rg__gfErr != nil {
 					continue
 				}
 			}
 
-			if gf_err != nil {
+			if gfErr != nil {
 				continue
 			}
 
@@ -265,13 +264,13 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			if !(gf_http_fetch.Status_code_int >= 200 && gf_http_fetch.Status_code_int < 400) {
 
 				// REBUILD_GIF
-				rg__gf_err := migrate__rebuild_gif(&old_gif,
+				rg__gfErr := migrateRebuildGIF(&old_gif,
 					p_images_store_local_dir_path_str,
 					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
-					p_runtime_sys)
-				if rg__gf_err != nil {
+					pRuntimeSys)
+				if rg__gfErr != nil {
 					continue
 				}
 			}
@@ -281,29 +280,29 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 			frame_url_str := old_gif.PreviewFramesS3urlsLst[0]
 			headers_map    = map[string]string{}
 			user_agent_str = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-			fpf__gf_http_fetch, gf_err := gf_core.HTTPfetchURL(frame_url_str,
+			fpf__gf_http_fetch, gfErr := gf_core.HTTPfetchURL(frame_url_str,
 				headers_map,
 				user_agent_str,
 				context.Background(),
-				p_runtime_sys)
+				pRuntimeSys)
 			
 			// IMPORTANT!! - common error for malformed url's is:
 			//               "parse /images/d/gif/%!!(MISSING)s(*string=0xc4201f4040).gif: invalid URL escape "%!!(MISSING)s""
 			//               so for them GIF's are rebuilt as well.
-			if gf_err != nil && strings.HasPrefix(fmt.Sprint(gf_err.Error),"parse") {
+			if gfErr != nil && strings.HasPrefix(fmt.Sprint(gfErr.Error),"parse") {
 
-				rg__gf_err := migrate__rebuild_gif(&old_gif,
+				rg__gfErr := migrateRebuildGIF(&old_gif,
 					p_images_store_local_dir_path_str,
 					p_media_domain_str,
 					p_s3_bucket_name_str,
 					p_s3_info,
-					p_runtime_sys)
-				if rg__gf_err != nil {
+					pRuntimeSys)
+				if rg__gfErr != nil {
 					continue
 				}
 			}
 
-			if gf_err != nil {
+			if gfErr != nil {
 				continue
 			}
 
@@ -317,11 +316,11 @@ func migrate__fix_gif_urls(p_images_store_local_dir_path_str string,
 
 //--------------------------------------------------
 
-func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
+func migrateCreateGIFsFromImages(p_images_store_local_dir_path_str string,
 	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
 	p_s3_info            *gf_core.GFs3Info,
-	p_runtime_sys        *gf_core.RuntimeSys) {
+	pRuntimeSys        *gf_core.RuntimeSys) {
 
 	//--------------------------------------------------
 	// CREATE_GIFS_FROM_IMAGES - for all 'img' DB objects with format 'gif', process it 
@@ -353,7 +352,7 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				},
 			}
 
-			/*pipe := p_runtime_sys.Mongo_coll.Pipe([]bson.M{
+			/*pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
 				bson.M{"$match":bson.M{
 						"t":          "img",
 						"format_str": "gif",
@@ -365,12 +364,12 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				},
 			})*/
 
-			cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+			cursor, err := pRuntimeSys.Mongo_coll.Aggregate(ctx, pipeline)
 			if err != nil {
 				_ = gf_core.MongoHandleError("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
 					"mongodb_aggregation_error",
 					nil,
-					err, "gf_gif_lib", p_runtime_sys)
+					err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}
 			defer cursor.Close(ctx)
@@ -379,26 +378,26 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 			err := pipe.One(&img)
 			if err != nil {
 				_ = gf_core.MongoHandleError("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
-					"mongodb_aggregation_error", nil, err, "gf_gif_lib", p_runtime_sys)
+					"mongodb_aggregation_error", nil, err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}*/
 
 			cursor.Next(ctx)
 
-			var img gf_images_core.Gf_image
+			var img gf_images_core.GFimage
 			err = cursor.Decode(&img)
 			if err != nil {
 				_ = gf_core.MongoHandleError("failed to run CREATE_GIFS_FROM_IMAGES migration aggregation_pipeline to get a single GIF",
 					"mongodb_cursor_decode",
 					nil,
-					err, "gf_gif_lib", p_runtime_sys)
+					err, "gf_gif_lib", pRuntimeSys)
 				continue
 			}
 
 			//---------------------
 
 			var gif GFgif
-			err = p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+			err = pRuntimeSys.Mongo_coll.FindOne(ctx, bson.M{
 				"t":                   "gif",
 				"origin_url_str":      img.Origin_url_str,
 				"title_str":           bson.M{"$exists": 1,}, // IMPORTANT!! - new field added
@@ -420,15 +419,15 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 				//               p_create_new_db_img_bool is set to 'false'.
 				image_client_type_str := ""
 
-				flows_names_lst, gf_err := migrate__get_flows_names(img.IDstr, p_runtime_sys)
-				if gf_err != nil {
+				flows_names_lst, gfErr := migrateGetFlowsNames(img.IDstr, pRuntimeSys)
+				if gfErr != nil {
 					continue
 				}
 
 				ctx := context.Background()
 
 				// IMPORTANT!! - image is re-fetched and GIF is processed in full
-				_, _, gf_err = Process("", // p_gf_image_id_str
+				_, _, gfErr = Process("", // p_gf_image_id_str
 					img.Origin_url_str,    // p_image_source_url_str,
 					img.Origin_page_url_str,
 					p_images_store_local_dir_path_str,
@@ -439,9 +438,9 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 					p_s3_bucket_name_str,
 					p_s3_info,
 					ctx,
-					p_runtime_sys)
+					pRuntimeSys)
 
-				if gf_err != nil {
+				if gfErr != nil {
 					continue
 				}
 				continue
@@ -456,12 +455,12 @@ func migrate__create_gifs_from_images(p_images_store_local_dir_path_str string,
 
 //--------------------------------------------------
 
-func migrate__rebuild_gif(p_old_gif *GFgif,
+func migrateRebuildGIF(p_old_gif *GFgif,
 	p_images_store_local_dir_path_str string,
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
 	p_s3_info                         *gf_core.GFs3Info,
-	p_runtime_sys                     *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys                       *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------
 	// PROCESS_GIF
@@ -470,14 +469,14 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 	//               p_create_new_db_img_bool is set to 'false'.
 	image_client_type_str := ""
 
-	flows_names_lst, gf_err := migrate__get_flows_names(p_old_gif.Gf_image_id_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	flows_names_lst, gfErr := migrateGetFlowsNames(p_old_gif.Gf_image_id_str, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	ctx := context.Background()
 
-	new_gif, gf_err := ProcessAndUpload("", // p_gf_image_id_str
+	new_gif, gfErr := ProcessAndUpload("", // p_gf_image_id_str
 		p_old_gif.Origin_url_str,            // p_image_source_url_str
 		p_old_gif.Origin_page_url_str,       // p_image_origin_page_url_str
 		p_images_store_local_dir_path_str,
@@ -488,17 +487,17 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 		p_s3_bucket_name_str,
 		p_s3_info,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 		
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//----------------
 	// UPDATE_GIF_TO_OLD_CREATION_TIME - so that when sorted lists of GIFs from the DB are fetched
 	//                                   these newly created GIFs are returned in proper positon.
 
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": new_gif.Id_str,
 		},
@@ -506,7 +505,7 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 			"$set": bson.M{"creation_unix_time_f": p_old_gif.Creation_unix_time_f},
 		})
 
-	/*err := p_runtime_sys.Mongo_coll.Update(bson.M{
+	/*err := pRuntimeSys.Mongo_coll.Update(bson.M{
 			"t":      "gif",
 			"id_str": new_gif.Id_str,
 		},
@@ -515,19 +514,19 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 		})*/
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a new migrated GIF with an old creation_unix_time_f (of the old GIF) in mongodb",
+		gfErr := gf_core.MongoHandleError("failed to update a new migrated GIF with an old creation_unix_time_f (of the old GIF) in mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"old_gif_id_str":p_old_gif.Id_str,
 				"new_gif_id_str":new_gif.Id_str,
 			},
-			err, "gf_gif_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_gif_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	//----------------
 	// DELETE_OLD_GIF - the one that was rebuilt
-	gifDBdelete(p_old_gif.Id_str, p_runtime_sys)
+	gifDBdelete(p_old_gif.Id_str, pRuntimeSys)
 	
 	//----------------
 	return nil
@@ -535,8 +534,8 @@ func migrate__rebuild_gif(p_old_gif *GFgif,
 
 //--------------------------------------------------
 
-func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.GFimageID,
-	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+func migrateGetFlowsNames(p_gif__gf_image_id_str gf_images_core.GFimageID,
+	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	var flows_names_lst []string
 
 	// IMPORTANT!! - GIF is not linked to a particular GF_Image
@@ -544,16 +543,16 @@ func migrate__get_flows_names(p_gif__gf_image_id_str gf_images_core.GFimageID,
 
 		ctx := context.Background()
 		var gf_img gf_images_core.GFimage
-		err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).Decode(&gf_img)
+		err := pRuntimeSys.Mongo_coll.FindOne(ctx, bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).Decode(&gf_img)
 
-		// err := p_runtime_sys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
+		// err := pRuntimeSys.Mongo_coll.Find(bson.M{"t": "img", "id_str": p_gif__gf_image_id_str,}).One(&gf_img)
 		
 		if err != nil {
-			gf_err := gf_core.ErrorCreate("failed to find images with GIF id_str",
+			gfErr := gf_core.ErrorCreate("failed to find images with GIF id_str",
 				"mongodb_find_error",
 				map[string]interface{}{"gif__gf_image_id_str": p_gif__gf_image_id_str,},
-				err, "gf_gif_lib", p_runtime_sys)
-			return nil, gf_err
+				err, "gf_gif_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 
 		// IMPORTANT!! - gf_img.Flows_names_lst is a new field, allowing images to belong to multiple

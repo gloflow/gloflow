@@ -26,6 +26,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFmetrics struct {
 	Cmd__start_job_local_imgs__count     prometheus.Counter
 	Cmd__start_job_transform_imgs__count prometheus.Counter
@@ -34,6 +35,7 @@ type GFmetrics struct {
 }
 
 //-------------------------------------------------
+
 func MetricsCreate() *GFmetrics {
 
 	// CMD__START_JOB_LOCAL_IMAGES__COUNT

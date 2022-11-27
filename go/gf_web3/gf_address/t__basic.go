@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func TaddAddress(pAddressStr string,
 	pTypeStr     string,
 	pChainStr    string,
@@ -73,6 +74,7 @@ func TaddAddress(pAddressStr string,
 }
 
 //-------------------------------------------------
+
 func TgetAllAddresses(pTypeStr string,
 	pChainStr    string,
 	pHTTPagent   *gorequest.SuperAgent,

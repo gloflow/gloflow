@@ -34,7 +34,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
     p_subject_str        string,
 	p_html_body_str      string,
 	p_text_body_str      string,
-    p_runtime_sys        *gf_core.RuntimeSys) *gf_core.GFerror {
+    pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
     svc := ses.New(session.New())
 
@@ -98,7 +98,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
 				"sender_address_str":    p_sender_address_str,
 				"subject_str":           p_subject_str,
 			},
-			err, "gf_aws", p_runtime_sys)
+			err, "gf_aws", pRuntimeSys)
         return gf_err
     }
     return nil
@@ -109,7 +109,7 @@ func AWS_SES__send_message(p_recipiend_address_str string,
 // used for sending emails from that address.
 // not used frequently
 func AWS_SES__verify_address(p_recipiend_address_str string,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	svc := ses.New(session.New())
 
@@ -134,7 +134,7 @@ func AWS_SES__verify_address(p_recipiend_address_str string,
 		gf_err := gf_core.ErrorCreate("failed to verify AWS SES address",
 			"aws_ses_service_verify_address_error",
 			map[string]interface{}{"recipiend_address_str": p_recipiend_address_str,},
-			err, "gf_aws", p_runtime_sys)
+			err, "gf_aws", pRuntimeSys)
         return gf_err
     }
 

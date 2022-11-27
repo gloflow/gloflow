@@ -31,156 +31,157 @@ import (
 )
 
 //------------------------------------------------
+
 func initHandlersEth(p_http_mux *http.ServeMux,
-	p_service_info *GFserviceInfo,
-	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pServiceInfo *GFserviceInfo,
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/v1/identity/eth/preflight",
 		"/v1/identity/eth/login",
 		"/v1/identity/eth/create",
 	}
 	metricsGroupNameStr := "eth"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, p_service_info.Name_str, handlers_endpoints_lst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
-	rpc_handler_runtime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                p_http_mux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: "/landing/main",
+	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
+		Mux:             p_http_mux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: "/landing/main",
 	}
 
 	//---------------------
 	// USERS_PREFLIGHT
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/preflight",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				_, _, user_address_eth_str, gf_err := gf_identity_core.HTTPgetUserStdInput(pCtx, p_req, p_resp, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				_, _, userAddressETHstr, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				input :=&GF_user_auth_eth__input_preflight{
-					User_address_eth_str: user_address_eth_str,
+				input :=&GFuserAuthETHinputPreflight{
+					UserAddressETHstr: userAddressETHstr,
 				}
 
 				//---------------------
 
-				output, gf_err := users_auth_eth__pipeline__preflight(input, pCtx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				output, gfErr := usersAuthETHpipelinePreflight(input, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"user_exists_bool": output.User_exists_bool,
-					"nonce_val_str":    output.Nonce_val_str,
+				outputMap := map[string]interface{}{
+					"user_exists_bool": output.UserExistsBool,
+					"nonce_val_str":    output.NonceValStr,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// USERS_LOGIN
 	// NO_AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/login",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				input_map, _, user_address_eth_str, gf_err := gf_identity_core.HTTPgetUserStdInput(p_ctx, p_req, p_resp, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, _, userAddressETHstr, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
-				auth_signature_str := gf_identity_core.GF_auth_signature(input_map["auth_signature_str"].(string))
+				authSignatureStr := gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string))
 
-				input :=&GF_user_auth_eth__input_login{
-					User_address_eth_str: user_address_eth_str,
-					Auth_signature_str:   auth_signature_str,
+				input :=&GFuserAuthETHinputLogin{
+					UserAddressETHstr: userAddressETHstr,
+					AuthSignatureStr:  authSignatureStr,
 				}
 
 				//---------------------
 				// LOGIN
-				output, gf_err := users_auth_eth__pipeline__login(input, p_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				output, gfErr := usersAuthETHpipelineLogin(input, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				sessionDataStr        := string(output.JWT_token_val)
+				sessionDataStr        := string(output.JWTtokenVal)
 				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-				gf_session.SetOnReq(sessionDataStr, p_resp, sessionTTLhoursInt)
+				gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 				//---------------------
 
-				output_map := map[string]interface{}{
-					"auth_signature_valid_bool": output.Auth_signature_valid_bool,
-					"nonce_exists_bool":         output.Nonce_exists_bool,
-					"user_id_str":               output.User_id_str,
+				outputMap := map[string]interface{}{
+					"auth_signature_valid_bool": output.AuthSignatureValidBool,
+					"nonce_exists_bool":         output.NonceExistsBool,
+					"user_id_str":               output.UserIDstr,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	// USERS_CREATE
 	// NO_AUTH - unauthenticated users are able to create new users
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/eth/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
-				input_map, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				input :=&GF_user_auth_eth__input_create{
-					UserTypeStr:          "standard",
-					User_address_eth_str: gf_identity_core.GF_user_address_eth(input_map["user_address_eth_str"].(string)),
-					Auth_signature_str:   gf_identity_core.GF_auth_signature(input_map["auth_signature_str"].(string)),
+				input :=&GFuserAuthETHinputCreate{
+					UserTypeStr:       "standard",
+					UserAddressETHstr: gf_identity_core.GFuserAddressETH(inputMap["user_address_eth_str"].(string)),
+					AuthSignatureStr:  gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string)),
 				}
 				
 				//---------------------
-				output, gf_err := users_auth_eth__pipeline__create(input, p_ctx, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				output, gfErr := usersAuthETHpipelineCreate(input, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"auth_signature_valid_bool": output.Auth_signature_valid_bool,
-					"nonce_exists_bool":         output.Nonce_exists_bool,
+				outputMap := map[string]interface{}{
+					"auth_signature_valid_bool": output.AuthSignatureValidBool,
+					"nonce_exists_bool":         output.NonceExistsBool,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 
 			return nil, nil
 		},
-		rpc_handler_runtime,
-		p_runtime_sys)
+		rpcHandlerRuntime,
+		pRuntimeSys)
 
 	//---------------------
 	return nil

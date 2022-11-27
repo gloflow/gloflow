@@ -24,6 +24,7 @@ import (
 )
 
 //--------------------------------------------------
+
 func DBindexInit(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	indexesKeysLst := [][]string{

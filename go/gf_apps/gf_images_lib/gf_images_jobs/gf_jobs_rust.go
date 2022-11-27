@@ -35,7 +35,7 @@ import "C"
 // "#include" - points to the C header files to use to load C definitions
 //              used in this file in Go.
 
-func run_job_rust() {
+func runJobRust() {
 
 
 

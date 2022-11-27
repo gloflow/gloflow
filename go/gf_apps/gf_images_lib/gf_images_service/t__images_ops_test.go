@@ -35,6 +35,7 @@ var logFun func(string, string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.InitLogs()
 	cli_args_map = gf_images_core.CLI__parse_args(logFun)
@@ -43,6 +44,7 @@ func TestMain(m *testing.M) {
 }
 
 //-------------------------------------------------
+
 func Test__basic_image_ops(p_test *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{

@@ -29,22 +29,24 @@ import (
 )
 
 //------------------------------------------------
-type GF_user__http_input_update struct {
-	Screen_name_str       *string  `json:"screen_name_str" validate:"min=3,max=50"`
-	Email_str             *string  `json:"email_str"       validate:"min=6,max=50"`
-	Description_str       *string  `json:"description_str" validate:"min=1,max=2000"`
 
-	Profile_image_url_str *string `json:"profile_image_url_str" validate:"min=1,max=100"` // FIX!! - validation
-	Banner_image_url_str  *string `json:"banner_image_url_str"  validate:"min=1,max=100"` // FIX!! - validation
+type GFuserHTTPinputUpdate struct {
+	ScreenNameStr       *string  `json:"screen_name_str" validate:"min=3,max=50"`
+	EmailStr            *string  `json:"email_str"       validate:"min=6,max=50"`
+	DescriptionStr      *string  `json:"description_str" validate:"min=1,max=2000"`
+
+	ProfileImageURLstr *string `json:"profile_image_url_str" validate:"min=1,max=100"` // FIX!! - validation
+	BannerImageURLstr  *string `json:"banner_image_url_str"  validate:"min=1,max=100"` // FIX!! - validation
 }
 
-type GF_user__http_input_email_confirm struct {
-	User_name_str    GFuserName `validate:"required,min=3,max=50"`
-	Confirm_code_str string     `validate:"required,min=10,max=20"`
+type GFuserHTTPinputEmailConfirm struct {
+	UserNameStr    GFuserName `validate:"required,min=3,max=50"`
+	ConfirmCodeStr string     `validate:"required,min=10,max=20"`
 }
 
 //---------------------------------------------------
 // GET_USER_NAME_FROM_CTX
+
 func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 	
 	userID := pCtx.Value("gf_user_id")
@@ -60,6 +62,7 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 }
 
 //---------------------------------------------------
+
 func GetSessionTTL() (int, int64) {
 	sessionTTLhoursInt   := 24 * 30 // 1 month
 	sessionTTLsecondsInt := int64(60*60*24*7)
@@ -69,14 +72,14 @@ func GetSessionTTL() (int, int64) {
 //---------------------------------------------------
 // HTTP
 //---------------------------------------------------
-func HTTPgetUserStdInput(pCtx context.Context,
-	p_req         *http.Request,
-	p_resp        http.ResponseWriter,
-	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, gf_core.GF_ID, GF_user_address_eth, *gf_core.GFerror) {
 
-	inputMap, gfErr := gf_core.HTTPgetInput(p_req, pRuntimeSys)
+func HTTPgetUserStdInput(pCtx context.Context,
+	pReq        *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, gf_core.GF_ID, GFuserAddressETH, *gf_core.GFerror) {
+
+	inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 	if gfErr != nil {
-		return nil, "", GF_user_address_eth(""), gfErr
+		return nil, "", GFuserAddressETH(""), gfErr
 	}
 	
 	// user-name is supplied if the traditional auth system is used, and not web3/eth
@@ -87,7 +90,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 
 		// logged in users are added to context by gf_rpc, not supplied explicitly
 		// via http request input (as they are for unauthenticated requests).
-		userIDfromCtxStr, ok := GetUserIDfromCtx(pCtx) // p_ctx.Value("gf_user_name").(string)
+		userIDfromCtxStr, ok := GetUserIDfromCtx(pCtx) // pCtx.Value("gf_user_name").(string)
 		if ok {
 			userIDstr = userIDfromCtxStr
 		}
@@ -97,8 +100,8 @@ func HTTPgetUserStdInput(pCtx context.Context,
 
 	// users eth address is used if the user picks that method instead of traditional
 	var userAddressETHstr string;
-	if input_user_address_eth_str, ok := inputMap["user_address_eth_str"].(string); ok {
-		userAddressETHstr = input_user_address_eth_str
+	if inputUserAddressETHstr, ok := inputMap["user_address_eth_str"].(string); ok {
+		userAddressETHstr = inputUserAddressETHstr
 	}
 
 	// one of the these values has to be supplied, they cant both be missing
@@ -106,83 +109,86 @@ func HTTPgetUserStdInput(pCtx context.Context,
 		gfErr := gf_core.MongoHandleError("user_name_str or user_address_eth_str arguments are missing from request",
 			"verify__input_data_missing_in_req_error",
 			map[string]interface{}{},
-			nil, "gf_identity_lib", pRuntimeSys)
-		return nil, "", GF_user_address_eth(""), gfErr
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, "", GFuserAddressETH(""), gfErr
 	}
 
-	return inputMap, userIDstr, GF_user_address_eth(userAddressETHstr), nil
+	return inputMap, userIDstr, GFuserAddressETH(userAddressETHstr), nil
 }
 
 //---------------------------------------------------
-func Http__get_user_address_eth_input(p_req *http.Request,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_user_address_eth, *gf_core.GFerror) {
 
-	query_args_map := p_req.URL.Query()
-	if values_lst, ok := query_args_map["addr_eth"]; ok {
-		return GF_user_address_eth(values_lst[0]), nil
+func HTTPgetUserAddressETHinput(pReq *http.Request,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (GFuserAddressETH, *gf_core.GFerror) {
+
+	queryArgsMap := pReq.URL.Query()
+	if valuesLst, ok := queryArgsMap["addr_eth"]; ok {
+		return GFuserAddressETH(valuesLst[0]), nil
 	} else {
-		gf_err := gf_core.ErrorCreate("incoming http request is missing the addr_eth query-string arg",
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the addr_eth query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return GF_user_address_eth(""), gf_err
+			nil, "gf_identity_core", pRuntimeSys)
+		return GFuserAddressETH(""), gfErr
 	}
-	return GF_user_address_eth(""), nil
+	return GFuserAddressETH(""), nil
 }
 
 //---------------------------------------------------
-func Http__get_user_update_input(p_req *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_update, *gf_core.GFerror) {
 
-	handler_url_path_str := p_req.URL.Path
-	input             := GF_user__http_input_update{}
-	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
-	err               := json.Unmarshal(body_bytes_lst, &input)
+func HTTPgetUserUpdateInput(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserHTTPinputUpdate, *gf_core.GFerror) {
+
+	handlerURLpathStr := pReq.URL.Path
+	input             := GFuserHTTPinputUpdate{}
+	bodyBytesLst, _   := ioutil.ReadAll(pReq.Body)
+	err               := json.Unmarshal(bodyBytesLst, &input)
 		
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to parse json http input for user update",
+		gfErr := gf_core.ErrorCreate("failed to parse json http input for user update",
 			"json_decode_error",
-			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-			err, "gf_identity_lib", p_runtime_sys)
-		return nil, gf_err
+			map[string]interface{}{"handler_url_path_str": handlerURLpathStr,},
+			err, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return &input, nil
 }
 
 //---------------------------------------------------
-func Http__get_email_confirm_input(p_req *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user__http_input_email_confirm, *gf_core.GFerror) {
 
-	var user_name_str         string
-	var confirmation_code_str string
+func HTTPgetEmailConfirmInput(pReq *http.Request,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserHTTPinputEmailConfirm, *gf_core.GFerror) {
 
-	query_args_map := p_req.URL.Query()
+	var userNameStr         string
+	var confirmationCodeStr string
+
+	queryArgsMap := pReq.URL.Query()
 	
-	if values_lst, ok := query_args_map["u"]; ok {
-		user_name_str = values_lst[0]
+	if valuesLst, ok := queryArgsMap["u"]; ok {
+		userNameStr = valuesLst[0]
 	} else {
-		gf_err := gf_core.ErrorCreate("incoming http request is missing the email user_name query-string arg",
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the email user_name query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	if values_lst, ok := query_args_map["c"]; ok {
-		confirmation_code_str = values_lst[0]
+	if valuesLst, ok := queryArgsMap["c"]; ok {
+		confirmationCodeStr = valuesLst[0]
 	} else {
-		gf_err := gf_core.ErrorCreate("incoming http request is missing the email confirmation_code query-string arg",
+		gfErr := gf_core.ErrorCreate("incoming http request is missing the email confirmation_code query-string arg",
 			"verify__missing_key_error",
 			map[string]interface{}{},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_identity_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	input := &GF_user__http_input_email_confirm{
-		User_name_str:    GFuserName(user_name_str),
-		Confirm_code_str: confirmation_code_str,
+	input := &GFuserHTTPinputEmailConfirm{
+		UserNameStr:    GFuserName(userNameStr),
+		ConfirmCodeStr: confirmationCodeStr,
 	}
 
 	return input, nil

@@ -27,6 +27,7 @@ import (
 
 //------------------------------------------------
 // RENDER_DASHBOARD
+
 func PipelineRenderDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pCtx                  context.Context,
@@ -43,6 +44,7 @@ func PipelineRenderDashboard(pTmpl *template.Template,
 }
 
 //---------------------------------------------------
+
 func homeVizCreateID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 

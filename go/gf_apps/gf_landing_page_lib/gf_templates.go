@@ -25,19 +25,21 @@ import (
 )
 
 //-------------------------------------------------
+
 type gf_templates struct {
 	tmpl                   *template.Template
 	subtemplates_names_lst []string
 }
 
 //-------------------------------------------------
+
 func tmpl__load(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
 
 	main_template_filepath_str := p_templates_paths_map["gf_landing_page"]
 
 	tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

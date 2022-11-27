@@ -29,19 +29,21 @@ import (
 )
 
 //-------------------------------------------------
-type Job_Error struct {
+
+type JobError struct {
 	Type_str             string `bson:"type_str"`  //"fetcher_error"|"transformer_error"
 	Error_str            string `bson:"error_str"` //serialization of the golang error
 	Image_source_url_str string `bson:"image_source_url_str"`
 }
 
 //-------------------------------------------------
-func jobErrorSend(p_job_error_type_str string,
+
+func jobErrorSend(pJobErrorTypeStr string,
 	pGFerr             *gf_core.GFerror,
 	pImageSourceURLstr string,
 	pImageIDstr        gf_images_core.GFimageID,
 	pJobIDstr          string,
-	p_job_updates_ch   chan JobUpdateMsg,
+	pJobUpdatesCh      chan JobUpdateMsg,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	pRuntimeSys.LogFun("ERROR", fmt.Sprintf("fetching image failed - %s - %s", pImageSourceURLstr, pGFerr.Error))
@@ -56,12 +58,12 @@ func jobErrorSend(p_job_error_type_str string,
 		Err_str:              error_str,
 	}
 
-	p_job_updates_ch <- update_msg
+	pJobUpdatesCh <- update_msg
 
 	//-------------------------------------------------
 	go func() {
 		_ = jobErrorPersist(pJobIDstr,
-			p_job_error_type_str,
+			pJobErrorTypeStr,
 			error_str,
 			pImageSourceURLstr,
 			pRuntimeSys)
@@ -72,15 +74,16 @@ func jobErrorSend(p_job_error_type_str string,
 }
 
 //-------------------------------------------------
+
 func jobErrorPersist(pJobIDstr string,
-	p_error_type_str   string,
-	p_error_str        string,
+	pErrorTypeStr      string,
+	pErrorStr          string,
 	pImageSourceURLstr string,
 	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	job_error := Job_Error{
-		Type_str:             p_error_type_str,
-		Error_str:            p_error_str,
+	jobError := JobError{
+		Type_str:             pErrorTypeStr,
+		Error_str:            pErrorStr,
 		Image_source_url_str: pImageSourceURLstr,
 	}
 
@@ -90,20 +93,20 @@ func jobErrorPersist(pJobIDstr string,
 			"id_str": pJobIDstr,
 		},
 		bson.M{
-			"$push": bson.M{"errors_lst": job_error,},
+			"$push": bson.M{"errors_lst": jobError,},
 		})
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update img_running_job type document in mongodb, to add a job error",
+		gfErr := gf_core.MongoHandleError("failed to update img_running_job type document in mongodb, to add a job error",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"job_id_str":           pJobIDstr,
-				"error_type_str":       p_error_type_str,
-				"error_str":            p_error_str,
+				"error_type_str":       pErrorTypeStr,
+				"error_str":            pErrorStr,
 				"image_source_url_str": pImageSourceURLstr,
 			},
 			err, "gf_images_jobs", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil

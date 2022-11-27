@@ -96,18 +96,19 @@ import (
 }*/
 
 //---------------------------------------------------
-type Gf_domain_posts struct {
+
+type GFdomainPosts struct {
 	Name_str  string `bson:"name_str"`
 	Count_int int    `bson:"count_int"`
 }
 
 //---------------------------------------------------
-func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_posts, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains__posts.Get_domains_posts__mongo()")
+
+func GetDomainsPostsDB(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainPosts, *gf_core.GFerror) {
 
 	// cyan   := color.New(color.FgCyan).SprintFunc()
 	// yellow := color.New(color.FgYellow).SprintFunc()
-	// p_runtime_sys.LogFun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
+	// pRuntimeSys.LogFun("INFO",cyan("AGGREGATE POSTS DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
 	ctx := context.Background()
 	pipeline := mongo.Pipeline{
@@ -143,7 +144,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 		},
 	}
 
-	/*pipe := p_runtime_sys.Mongo_coll.Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
 
 		bson.M{"$match": bson.M{"t": "post",},},
 
@@ -175,13 +176,13 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 		},
 	})*/
 	
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(ctx, pipeline)
 	if err != nil {
 
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_domains_lib", p_runtime_sys)
+			err, "gf_domains_lib", pRuntimeSys)
 		return nil, gf_err
 	}
 	defer cursor.Close(ctx)
@@ -196,7 +197,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 	if err != nil {
 		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 			"mongodb_aggregation_error",
-			nil, err, "gf_domains_lib", p_runtime_sys)
+			nil, err, "gf_domains_lib", pRuntimeSys)
 		return nil, gf_err
 	}*/
 	
@@ -209,7 +210,7 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains posts",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_domains_lib", p_runtime_sys)
+				err, "gf_domains_lib", pRuntimeSys)
 			return nil, gf_err
 		}
 	
@@ -219,38 +220,38 @@ func Get_domains_posts__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_po
 	//---------------
 	// IMPORTANT!! - application level join. move this to Db with the apporpriate "domain_str" field
 
-	parsed_domains_map := map[string]int{}
-	for _,r := range results_lst {
+	parsedDomainsMap := map[string]int{}
+	for _, r := range results_lst {
 
 		u,err := url.Parse(r.Post_extern_url_str)
 		if err != nil {
 			continue
 		}
-		domain_str := u.Host
+		domainStr := u.Host
 
 
-		if _,ok := parsed_domains_map[domain_str]; ok {
-			parsed_domains_map[domain_str] += 1
+		if _, ok := parsedDomainsMap[domainStr]; ok {
+			parsedDomainsMap[domainStr] += 1
 		} else {
-			parsed_domains_map[domain_str] = 1
+			parsedDomainsMap[domainStr] = 1
 		}
 	}
 
 	//---------------
-	domain_posts_lst := []Gf_domain_posts{}
-	for domain_str, count_int := range parsed_domains_map {
+	domainPostsLst := []GFdomainPosts{}
+	for domainStr, countInt := range parsedDomainsMap {
 
-		domain_posts := Gf_domain_posts{
-			Name_str:  domain_str,
-			Count_int: count_int,
+		domainPosts := GFdomainPosts{
+			Name_str:  domainStr,
+			Count_int: countInt,
 		}
-		domain_posts_lst = append(domain_posts_lst, domain_posts)
+		domainPostsLst = append(domainPostsLst, domainPosts)
 	}
 
-	// p_runtime_sys.LogFun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domain_posts_lst))))
+	// pRuntimeSys.LogFun("INFO", yellow(">>>>>>>> DOMAIN_POSTS FOUND - ")+cyan(fmt.Sprint(len(domainPostsLst))))
 	//---------------
 
-	return domain_posts_lst, nil
+	return domainPostsLst, nil
 
 	/*mongo console query - for testing
 	db.posts.aggregate(

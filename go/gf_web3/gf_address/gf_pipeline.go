@@ -26,6 +26,7 @@ import(
 )
 
 //-------------------------------------------------
+
 type GFgetAllInput struct {
 	UserIDstr gf_core.GF_ID
 	TypeStr   string 
@@ -45,6 +46,7 @@ type GFaddInput struct {
 
 //-------------------------------------------------
 // PIPELINE_GET_ALL
+
 func pipelineGetAll(pInput *GFgetAllInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFgetAllOutput, *gf_core.GFerror) {
@@ -94,6 +96,7 @@ func pipelineGetAll(pInput *GFgetAllInput,
 
 //-------------------------------------------------
 // PIPELINE_ADD
+
 func pipelineAdd(pInput *GFaddInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {

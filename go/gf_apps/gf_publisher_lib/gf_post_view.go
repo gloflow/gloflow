@@ -27,26 +27,26 @@ import (
 )
 
 //--------------------------------------------------
-func post__render_template(p_post *gf_publisher_core.Gf_post,
+
+func post__render_template(p_post *gf_publisher_core.GFpost,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.post__render_template()")
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	template_post_elements_lst, gf_err := package_post_elements_infos(p_post, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	template_post_elements_lst, gfErr := package_post_elements_infos(p_post, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	image_post_elements_og_info_lst, gf_err := get_image_post_elements_FBOpenGraph_info(p_post, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	image_post_elements_og_info_lst, gfErr := getImagePostElementsFBOpenGraphInfo(p_post, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	post_tags_lst := []string{}
-	for _, tag_str := range p_post.Tags_lst {
-		post_tags_lst = append(post_tags_lst,tag_str)
+	for _, tag_str := range p_post.TagsLst {
+		post_tags_lst = append(post_tags_lst, tag_str)
 	}
 
 	type tmpl_data struct {
@@ -74,14 +74,14 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 	final String template_str = p_template.renderString(template_info_map)
 	return template_str;*/
 
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Post_title_str:                  p_post.Title_str,
+		Post_title_str:                  p_post.TitleStr,
 		Post_tags_lst:                   post_tags_lst,
-		Post_description_str:            p_post.Description_str,
-		Post_poster_user_name_str:       p_post.Poster_user_name_str,
-		Post_thumbnail_url_str:          p_post.Thumbnail_url_str,
+		Post_description_str:            p_post.DescriptionStr,
+		Post_poster_user_name_str:       p_post.PosterUserNameStr,
+		Post_thumbnail_url_str:          p_post.ThumbnailURLstr,
 		Post_elements_lst:               template_post_elements_lst,
 		Image_post_elements_og_info_lst: image_post_elements_og_info_lst,
 		Sys_release_info:                sys_release_info,
@@ -101,44 +101,43 @@ func post__render_template(p_post *gf_publisher_core.Gf_post,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the post template",
+		gfErr := gf_core.ErrorCreate("failed to render the post template",
 			"template_render_error",
 			map[string]interface{}{},
-			err, "gf_publisher_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_publisher_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
 }
 
 //--------------------------------------------------
-func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.package_post_elements_infos()")
+
+func package_post_elements_infos(p_post *gf_publisher_core.GFpost,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	template_post_elements_lst := []map[string]interface{}{}
 
-	for _, post_element := range p_post.Post_elements_lst {
+	for _, postElement := range p_post.PostElementsLst {
 
-		p_runtime_sys.LogFun("INFO","post_element.Type_str - "+post_element.Type_str)
-		gf_err := gf_publisher_core.Verify_post_element_type(post_element.Type_str, p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		gfErr := gf_publisher_core.Verify_post_element_type(postElement.TypeStr, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		post_element_tags_lst := []string{}
-		for _, tag_str := range post_element.Tags_lst {
-			post_element_tags_lst = append(post_element_tags_lst,tag_str)
+		for _, tag_str := range postElement.TagsLst {
+			post_element_tags_lst = append(post_element_tags_lst, tag_str)
 		}
 
-		switch post_element.Type_str {
+		switch postElement.TypeStr {
 			case "link":
 				post_element_map := map[string]interface{}{
 					"post_element_type__video_bool": false, //for mustache template conditionals
 					"post_element_type__image_bool": false,
 					"post_element_type__link_bool":  true,
-					"post_element_description_str":  post_element.Description_str,
-					"post_element_extern_url_str":   post_element.Extern_url_str,
+					"post_element_description_str":  postElement.DescriptionStr,
+					"post_element_extern_url_str":   postElement.ExternURLstr,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
 				continue
@@ -147,8 +146,8 @@ func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
 					"post_element_type__video_bool":             false, //for mustache template conditionals
 					"post_element_type__image_bool":             true,
 					"post_element_type__link_bool":              false,
-					"post_element_img_thumbnail_medium_url_str": post_element.Img_thumbnail_medium_url_str,
-					"post_element_img_thumbnail_large_url_str":  post_element.Img_thumbnail_large_url_str,
+					"post_element_img_thumbnail_medium_url_str": postElement.ImgThumbnailMediumURLstr,
+					"post_element_img_thumbnail_large_url_str":  postElement.ImgThumbnailLargeURLstr,
 					"tags_lst":                                  post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
@@ -158,7 +157,7 @@ func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
 					"post_element_type__video_bool": true, //for mustache template conditionals
 					"post_element_type__image_bool": false,
 					"post_element_type__link_bool":  false,
-					"post_element_extern_url_str":   post_element.Extern_url_str,
+					"post_element_extern_url_str":   postElement.ExternURLstr,
 					"tags_lst":                      post_element_tags_lst,
 				}
 				template_post_elements_lst = append(template_post_elements_lst, post_element_map)
@@ -169,34 +168,32 @@ func package_post_elements_infos(p_post *gf_publisher_core.Gf_post,
 }
 
 //--------------------------------------------------
-func get_image_post_elements_FBOpenGraph_info(p_post *gf_publisher_core.Gf_post,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]string, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_view.get_image_post_elements_FBOpenGraph_info()")
 
-	image_post_elements_lst, gf_err := gf_publisher_core.Get_post_elements_of_type(p_post, "image", p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+func getImagePostElementsFBOpenGraphInfo(pPost *gf_publisher_core.GFpost,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]string, *gf_core.GFerror) {
+
+	imagePostElementsLst, gfErr := gf_publisher_core.Get_post_elements_of_type(pPost, "image", pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	var top_image_post_elements_lst []*gf_publisher_core.Gf_post_element
-	if len(image_post_elements_lst) > 5 {
-
-		// getRange() - returns an Iterable<String>
-		top_image_post_elements_lst = image_post_elements_lst[:5] //new List.from(image_post_elements_lst.getRange(0,5))
+	var topImagePostElementsLst []*gf_publisher_core.GFpostElement
+	if len(imagePostElementsLst) > 5 {
+		topImagePostElementsLst = imagePostElementsLst[:5]
 	} else { 
-		top_image_post_elements_lst = image_post_elements_lst
+		topImagePostElementsLst = imagePostElementsLst
 	}
 
 	//---------------------
-	og_info_lst := []map[string]string{}
-	for _, post_element := range top_image_post_elements_lst {
+	ogInfoLst := []map[string]string{}
+	for _, postElement := range topImagePostElementsLst {
 		d := map[string]string{
-			"img_thumbnail_medium_absolute_url_str": post_element.Img_thumbnail_medium_url_str,
+			"img_thumbnail_medium_absolute_url_str": postElement.ImgThumbnailMediumURLstr,
 		}
-		og_info_lst = append(og_info_lst, d)
+		ogInfoLst = append(ogInfoLst, d)
 	}
 	
 	//---------------------
 
-	return og_info_lst,nil
+	return ogInfoLst,nil
 }

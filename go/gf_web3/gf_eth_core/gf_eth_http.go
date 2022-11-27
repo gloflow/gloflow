@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------
 func Http__get_arg__acc_address_hex(p_req *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	qs_map := p_req.URL.Query()
 
@@ -52,7 +52,7 @@ func Http__get_arg__acc_address_hex(p_req *http.Request,
 //-------------------------------------------------
 func Http__get_arg__block_range(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (uint64, uint64, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (uint64, uint64, *gf_core.GFerror) {
 
 	qs_map := p_req.URL.Query()
 
@@ -68,7 +68,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("suplied block range is not composed of start/end block number",
 				"verify__invalid_value_error",
 				map[string]interface{}{"block_range_str": block_range_str,},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return 0, 0, gfErr
 		}
 		
@@ -77,7 +77,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("suplied block_start is not an integer",
 				"int_parse_error",
 				map[string]interface{}{"block_start_str": range_lst[0],},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return 0, 0, gfErr
 		}
 
@@ -86,7 +86,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("suplied block_end is not an integer",
 				"int_parse_error",
 				map[string]interface{}{"block_end_str": range_lst[1],},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return 0, 0, gfErr
 		}
 
@@ -100,7 +100,7 @@ func Http__get_arg__block_range(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	qs_map := p_req.URL.Query()
 
@@ -115,7 +115,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("supplied transaction ID is not 66 chars long",
 				"verify__string_not_correct_length_error",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return "", gfErr
 		}
 
@@ -124,7 +124,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("supplied transaction ID is not prefixed with '0x'",
 				"verify__invalid_value_error",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return "", gfErr
 		}
 
@@ -135,7 +135,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("supplied transaction ID is not a hex string",
 				"decode_hex",
 				map[string]interface{}{"tx_hex_str": tx_hex_str,},
-				nil, "gf_eth_monitor_lib", p_runtime_sys)
+				nil, "gf_eth_monitor_lib", pRuntimeSys)
 			return "", gfErr
 		}
 
@@ -146,7 +146,7 @@ func Http__get_arg__tx_id_hex(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__block_num(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (uint64, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (uint64, *gf_core.GFerror) {
 	
 	qs_map := p_req.URL.Query()
 	
@@ -160,7 +160,7 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 			gfErr := gf_core.ErrorCreate("failed to parse input querystring arg as a an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"block_num": block_num_str,},
-				err, "gf_eth_monitor_lib", p_runtime_sys)
+				err, "gf_eth_monitor_lib", pRuntimeSys)
 			return 0, gfErr
 		}
 		block_num_int = uint64(i)
@@ -172,7 +172,7 @@ func Http__get_arg__block_num(p_resp http.ResponseWriter,
 //-------------------------------------------------
 func Http__get_arg__miner_addr(p_resp http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	miner_addr_str := ""
 	

@@ -36,6 +36,7 @@ import (
 )
 
 //---------------------------------------------------
+
 // GF_image_upload_info struct represents a single image upload sequence.
 // It is both stored in the DB and returned to the initiating client in JSON form.
 // It contains the ID of the future gf_image that will be created in the system to represent
@@ -53,6 +54,7 @@ type GFimageUploadInfo struct {
 }
 
 //---------------------------------------------------
+
 // UploadInit initializes an file upload process.
 // This will create a pre-signed S3 URL for the caller of this function to use
 // for uploading of content to GF.
@@ -158,7 +160,8 @@ func UploadInit(pImageNameStr string,
 }
 
 //---------------------------------------------------
-// UploadComplete completes the image file upload sequence.
+
+// completes the image file upload sequence.
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
 func UploadComplete(pUploadImageIDstr gf_images_core.GF_image_id,
@@ -167,7 +170,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GF_image_id,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
 	// DB
-	uploadInfo, gfErr := Upload_db__get_info(pUploadImageIDstr, pRuntimeSys)
+	uploadInfo, gfErr := UploadDBgetInfo(pUploadImageIDstr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -197,6 +200,7 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GF_image_id,
 //---------------------------------------------------
 // DB
 //---------------------------------------------------
+
 func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -219,7 +223,8 @@ func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
 }
 
 //---------------------------------------------------
-func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
+
+func UploadDBgetInfo(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 
 	ctx := context.Background()
@@ -250,7 +255,8 @@ func Upload_db__get_info(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
 }
 
 //---------------------------------------------------
-func Upload_db__put_image_upload_info(pImageUploadInfo *GFimageUploadInfo,
+
+func UploadDBputImageUploadInfo(pImageUploadInfo *GFimageUploadInfo,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx         := context.Background()

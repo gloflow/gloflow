@@ -64,7 +64,7 @@ type Gf_user_event struct {
 
 func User_event__parse_input(p_req *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.RuntimeSys) (*Gf_user_event_input, string, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*Gf_user_event_input, string, *gf_core.GFerror) {
 
 	//--------------------
 	input             := Gf_user_event_input{}
@@ -72,14 +72,14 @@ func User_event__parse_input(p_req *http.Request,
 	err               := json.Unmarshal(body_bytes_lst, &input)
 	
 	//--------------------
-	session_id_str := session__get_id_cookie(p_req, p_resp, p_runtime_sys)
+	session_id_str := session__get_id_cookie(p_req, p_resp, pRuntimeSys)
 
 	//--------------------
 
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to parse json http input for user_event",
 			"json_unmarshal_error",
-			nil, err, "gf_analytics", p_runtime_sys)
+			nil, err, "gf_analytics", pRuntimeSys)
 		return nil, "", gfErr
 	}
 	return &input, session_id_str, nil
@@ -90,7 +90,7 @@ func User_event__parse_input(p_req *http.Request,
 func User_event__create(p_input *Gf_user_event_input,
 	p_session_id_str string,
 	p_gf_req_ctx     *GF_user_event_req_ctx,
-	p_runtime_sys    *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	creation_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 	//--------------------
@@ -113,24 +113,24 @@ func User_event__create(p_input *Gf_user_event_input,
 	}
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
 	gfErr         := gf_core.MongoInsert(gf_user_event,
 		coll_name_str,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to insert a user_event into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
-	/*err := p_runtime_sys.Mongodb_coll.Insert(gf_user_event)
+	/*err := pRuntimeSys.Mongodb_coll.Insert(gf_user_event)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to insert a user_event in mongodb",
 			"mongodb_insert_error",
 			map[string]interface{}{},
-			err, "gf_analytics", p_runtime_sys)
+			err, "gf_analytics", pRuntimeSys)
 		return gfErr
 	}*/
 		
@@ -141,11 +141,11 @@ func User_event__create(p_input *Gf_user_event_input,
 
 func session__get_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.RuntimeSys) string {
+	pRuntimeSys *gf_core.RuntimeSys) string {
 
 	cookie, _ := p_req.Cookie("gf")  
 	if cookie == nil {
-		session_id_str := session__create_id_cookie(p_req, p_resp, p_runtime_sys)
+		session_id_str := session__create_id_cookie(p_req, p_resp, pRuntimeSys)
 		return session_id_str
 	} else {
 		session_id_str := cookie.Value
@@ -157,13 +157,13 @@ func session__get_id_cookie(p_req *http.Request,
 
 func session__create_id_cookie(p_req *http.Request,
 	p_resp        http.ResponseWriter,
-	p_runtime_sys *gf_core.RuntimeSys) string {
+	pRuntimeSys *gf_core.RuntimeSys) string {
 
 	current_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 	ip_str               := p_req.RemoteAddr
 	session_id_str       := fmt.Sprintf("%f_%s", current_time__unix_f, ip_str)
 
-	p_runtime_sys.LogFun("INFO", "session_id_str - "+session_id_str)
+	pRuntimeSys.LogFun("INFO", "session_id_str - "+session_id_str)
 
 	new_cookie := http.Cookie{Name:"gf", Value:session_id_str}
 	http.SetCookie(p_resp, &new_cookie)

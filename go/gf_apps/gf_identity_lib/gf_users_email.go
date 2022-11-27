@@ -29,6 +29,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func usersEmailPipelineVerify(pEmailAddressStr string,
 	pUserNameStr   gf_identity_core.GFuserName,
 	pUserIDstr     gf_core.GF_ID,
@@ -39,10 +40,10 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 	//------------------------
 	// EMAIL_CONFIRM
 
-	confirmCodeStr := users_email__generate_confirmation_code()
+	confirmCodeStr := usersEmailGenerateConfirmationCode()
 
 	// DB
-	gfErr := db__user_email_confirm__create(pUserNameStr,
+	gfErr := dbUserEmailConfirmCreate(pUserNameStr,
 		pUserIDstr,
 		confirmCodeStr,
 		pCtx,
@@ -75,11 +76,12 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 }
 
 //---------------------------------------------------
-func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_email_confirm,
+
+func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConfirm,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
-	dbConfirmCodeStr, expiredBool, gfErr := usersEmailGetConfirmationCode(pInput.User_name_str,
+	dbConfirmCodeStr, expiredBool, gfErr := usersEmailGetConfirmationCode(pInput.UserNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -91,10 +93,10 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 	}
 
 	// confirm_code is correct
-	if pInput.Confirm_code_str == dbConfirmCodeStr {
+	if pInput.ConfirmCodeStr == dbConfirmCodeStr {
 		
 		// GET_USER_ID
-		userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(pInput.User_name_str,
+		userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(pInput.UserNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -104,18 +106,18 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 		//------------------------
 		// initial user email confirmation. only for new users.
 		// user confirmed their email as valid.
-		userEmailConfirmedBool, gfErr := db__user__email_is_confirmed(pInput.User_name_str, pCtx, pRuntimeSys)
+		userEmailConfirmedBool, gfErr := dbUserEmailIsConfirmed(pInput.UserNameStr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return false, "", gfErr
 		}
 
 		if !userEmailConfirmedBool {
-			updateOp := &GF_user__update_op{
-				Email_confirmed_bool: true,
+			updateOp := &GFuserUpdateOp{
+				EmailConfirmedBool: true,
 			}
 	
 			// UPDATE_USER - mark user as email_confirmed
-			gfErr = db__user__update(userIDstr,
+			gfErr = dbUserUpdate(userIDstr,
 				updateOp,
 				pCtx,
 				pRuntimeSys)
@@ -132,8 +134,8 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
-		var loginAttempt *GF_login_attempt
-		loginAttempt, gfErr = loginAttemptGetIfValid(gf_identity_core.GFuserName(pInput.User_name_str),
+		var loginAttempt *GFloginAttempt
+		loginAttempt, gfErr = loginAttemptGetIfValid(gf_identity_core.GFuserName(pInput.UserNameStr),
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -145,8 +147,8 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 		}
 
 		loginEmailConfirmedBool := true
-		updateOp := &GF_login_attempt__update_op{Email_confirmed_bool: &loginEmailConfirmedBool}
-		gfErr = db__login_attempt__update(&loginAttempt.Id_str,
+		updateOp := &GFloginAttemptUpdateOp{EmailConfirmedBool: &loginEmailConfirmedBool}
+		gfErr = dbLoginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)
@@ -165,50 +167,51 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GF_user__http_input_emai
 }
 
 //---------------------------------------------------
-func usersEmailGetConfirmationCode(p_user_name_str gf_identity_core.GFuserName,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
 
-	expired_bool := false
+func usersEmailGetConfirmationCode(pUserNameStr gf_identity_core.GFuserName,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
 
-	confirm_code_str, confirm_code_creation_time_f, gf_err := db__user_email_confirm__get_code(p_user_name_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return "", expired_bool, gf_err
+	expiredBool := false
+
+	confirmCodeStr, confirmCodeCreationTimeF, gfErr := dbUserEmailConfirmGetCode(pUserNameStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", expiredBool, gfErr
 	}
 
 	//------------------------
 	// check confirm_code didnt expire
-	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	confirm_code_age_time_f := current_unix_time_f - confirm_code_creation_time_f
+	currentUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	confirmCodeAgeTimeF := currentUNIXtimeF - confirmCodeCreationTimeF
 
 	// check if older than 5min
-	if (5.0 < confirm_code_age_time_f/60) {
-		expired_bool = true
-		return "", expired_bool, nil
+	if (5.0 < confirmCodeAgeTimeF / 60) {
+		expiredBool = true
+		return "", expiredBool, nil
 	}
 
 	//------------------------
 
-	return confirm_code_str, expired_bool, nil
+	return confirmCodeStr, expiredBool, nil
 }
 
 //---------------------------------------------------
-func users_email__generate_confirmation_code() string {
-	c_str := fmt.Sprintf("%s:%s", gf_core.StrRandom(), gf_core.StrRandom())
-	return c_str
+
+func usersEmailGenerateConfirmationCode() string {
+	cStr := fmt.Sprintf("%s:%s", gf_core.StrRandom(), gf_core.StrRandom())
+	return cStr
 }
 
 //---------------------------------------------------
+
 func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 	pConfirmCodeStr string,
-	pDomainStr       string) (string, string, string) {
+	pDomainStr      string) (string, string, string) {
 
-	subject_str := fmt.Sprintf("%s - confirm your email", pDomainStr)
+	subjectStr := fmt.Sprintf("%s - confirm your email", pDomainStr)
 	
-
-
 	welcomeMsgStr := fmt.Sprintf(`
 		<div id="welcome_message" style="
 			margin-left: 10px;
@@ -234,7 +237,7 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 		pUserNameStr,
 		pConfirmCodeStr)
 
-	html_str := fmt.Sprintf(`
+	htmlStr := fmt.Sprintf(`
 		<div>
 			<style>
 				body {
@@ -285,7 +288,7 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 		welcomeMsgStr,
 		confirmBtnStr)
 
-	text_str := fmt.Sprintf(`
+	textStr := fmt.Sprintf(`
 		Welcome to %s!
 		There is no spoon. ...it is only yourself.
 
@@ -296,5 +299,5 @@ func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
 		pDomainStr,
 		pConfirmCodeStr)
 
-	return subject_str, html_str, text_str
+	return subjectStr, htmlStr, textStr
 }

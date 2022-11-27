@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Stat_db_coll struct {
 	Docs_count_int             int64
 	Size_bytes_int             int64
@@ -36,11 +37,12 @@ type Stat_db_coll struct {
 }
 
 //-------------------------------------------------
+
 func Db_stats__coll(p_coll_name_str string,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*Stat_db_coll, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*Stat_db_coll, *gf_core.GFerror) {
 
-	db   := p_runtime_sys.Mongo_db
+	db   := pRuntimeSys.Mongo_db
 	coll := db.Collection(p_coll_name_str)
 
 
@@ -52,7 +54,7 @@ func Db_stats__coll(p_coll_name_str string,
 		gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to DB count records in collection - %s", p_coll_name_str),
 			"mongodb_count_error",
 			map[string]interface{}{},
-			err, "gf_stats_lib", p_runtime_sys)
+			err, "gf_stats_lib", pRuntimeSys)
 		return nil, gf_err
 	}
 
@@ -70,7 +72,7 @@ func Db_stats__coll(p_coll_name_str string,
 		gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to DB decode collStats for collection - %s", p_coll_name_str),
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
-			err, "gf_stats_lib", p_runtime_sys)
+			err, "gf_stats_lib", pRuntimeSys)
 		return nil, gf_err
 	}
 

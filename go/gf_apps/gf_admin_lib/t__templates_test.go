@@ -32,6 +32,7 @@ var logFun func(string,string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _    = gf_core.InitLogs()
 	cli_args_map = gf_images_core.CLI__parse_args(logFun)
@@ -40,7 +41,8 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
-func Test__templates(p_test *testing.T) {
+
+func Test__templates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_admin_test",
@@ -55,14 +57,14 @@ func Test__templates(p_test *testing.T) {
 	
 	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
-	templateRenderedStr, gfErr := view__render_template_dashboard(templates.dashboard__tmpl,
+	templateRenderedStr, gfErr := viewRenderTemplateDashboard(templates.dashboard__tmpl,
 		templates.dashboard__subtemplates_names_lst,
 		runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	fmt.Println(templateRenderedStr)

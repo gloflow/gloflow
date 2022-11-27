@@ -26,6 +26,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 
 	logFun, _  = gf_core.InitLogs()

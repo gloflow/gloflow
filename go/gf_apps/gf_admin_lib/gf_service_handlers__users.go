@@ -32,6 +32,7 @@ import (
 )
 
 //------------------------------------------------
+
 func initHandlersUsers(pHTTPmux *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
@@ -40,7 +41,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/v1/admin/users/delete",
 		"/v1/admin/users/get_all",
 		"/v1/admin/users/get_all_invite_list",
@@ -48,30 +49,30 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 		"/v1/admin/users/resend_confirm_email",
 	}
 	metricsGroupNameStr := "users"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_admin", handlers_endpoints_lst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_admin", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         pLocalHub,
-		Auth_login_url_str: "/v1/admin/login_ui",
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       pLocalHub,
+		AuthLoginURLstr: "/v1/admin/login_ui",
 	}
 
 	//---------------------
 	// DELETE
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/delete",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -119,14 +120,14 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 	// GET_ALL
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -159,14 +160,14 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 	// GET_ALL_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/get_all_invite_list",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 				
-				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				_, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -178,17 +179,17 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 
 				//---------------------
 
-				invite_list_lst, gfErr := gf_identity_lib.Admin__pipeline__get_all_invite_list(pCtx,
+				inviteListLst, gfErr := gf_identity_lib.AdminPipelineGetAllInviteList(pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"invite_list_lst": invite_list_lst,
+				outputMap := map[string]interface{}{
+					"invite_list_lst": inviteListLst,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 			return nil, nil
 		},
@@ -199,14 +200,14 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 	// ADD_TO_INVITE_LIST
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/users/add_to_invite_list",
-		func(pCtx context.Context, p_resp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, p_resp, pRuntimeSys)
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -221,7 +222,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input := &gf_identity_lib.GF_admin__input_add_to_invite_list{
+				input := &gf_identity_lib.GFadminInputAddToInviteList{
 					AdminUserIDstr: adminUserIDstr,
 					EmailStr:       emailStr,
 				}
@@ -257,7 +258,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				inputMap, adminUserIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -308,7 +309,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 				//---------------------
 				// INPUT
 				
-				inputMap, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pResp, pRuntimeSys)
+				inputMap, userIDstr, _, gfErr := gf_identity_core.HTTPgetUserStdInput(pCtx, pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

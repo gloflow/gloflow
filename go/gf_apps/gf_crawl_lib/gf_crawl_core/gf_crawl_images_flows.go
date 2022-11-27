@@ -125,7 +125,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 
 	// IMPORTANT!! - for each flow_name add that name to the target gf_image DB record.
 	for _, flowNameStr := range pFlowsNamesLst {
-		gfErr := gf_images_flows.Flows_db__add_flow_name_to_image(flowNameStr, imageIDstr, pRuntimeSys)
+		gfErr := gf_images_flows.DBaddFlowNameToImage(flowNameStr, imageIDstr, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
@@ -155,8 +155,8 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 		figure out if fixing this is going to break already added images (images added to a flow here from crawled images), 
 		since they're all named by ID now (which is a bug)*/
 
-		originalFileS3pathStr                              := gf_images_core.S3__get_image_original_file_s3_filepath(gfImage, pRuntimeSys)
-		tSmallS3pathStr, tMediumS3pathStr, tLargeS3pathStr := gf_images_core.S3__get_image_thumbs_s3_filepaths(gfImage, pRuntimeSys)
+		originalFileS3pathStr                              := gf_images_core.S3getImageOriginalFileS3filepath(gfImage, pRuntimeSys)
+		tSmallS3pathStr, tMediumS3pathStr, tLargeS3pathStr := gf_images_core.S3getImageThumbsS3filepaths(gfImage, pRuntimeSys)
 
 		fmt.Printf("original_file_s3_path_str - %s\n", originalFileS3pathStr)
 		fmt.Printf("t_small_s3_path_str       - %s\n", tSmallS3pathStr)

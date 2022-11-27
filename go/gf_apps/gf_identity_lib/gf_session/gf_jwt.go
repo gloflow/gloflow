@@ -33,68 +33,71 @@ import (
 )
 
 //---------------------------------------------------
-type GF_jwt_token_val      string
-type GF_jwt_secret_key_val string
-type GF_jwt_secret_key struct {
+
+type GFjwtTokenVal     string
+type GFjwtSecretKeyVal string
+type GFjwtSecretKey struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               gf_core.GF_ID      `bson:"id_str"`
 	Deleted_bool         bool               `bson:"deleted_bool"`
 	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	Val                 GF_jwt_secret_key_val `bson:"val_str"`
-	User_identifier_str string                `bson:"user_identifier_str"`
+	Val                 GFjwtSecretKeyVal   `bson:"val_str"`
+	UserIdentifierStr   string              `bson:"user_identifier_str"`
 }
 
-type GF_jwt_claims struct {
-	User_identifier_str string `json:"user_identifier_str"`
+type GFjwtClaims struct {
+	UserIdentifierStr string `json:"user_identifier_str"`
 	jwt.StandardClaims
 }
 
 //---------------------------------------------------
 // PIPELINE__GENERATE
-func JWT__pipeline__generate(p_user_identifier_str string, // p_user_address_eth GF_user_address_eth,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_jwt_token_val, *gf_core.GFerror) {
 
-	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
+func JWTpipelineGenerate(pUserIdentifierStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (GFjwtTokenVal, *gf_core.GFerror) {
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	// JWT_GENERATE
-	jwt_secret_key_val_str := GF_jwt_secret_key_val(gf_core.StrRandom())
-	jwt_token_val, gf_err := jwtGenerate(p_user_identifier_str,
-		jwt_secret_key_val_str,
-		creation_unix_time_f,
-		p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	jwtSecretKeyValStr := GFjwtSecretKeyVal(gf_core.StrRandom())
+	jwtTokenVal, gfErr := jwtGenerate(pUserIdentifierStr,
+		jwtSecretKeyValStr,
+		creationUNIXtimeF,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 
-	jwt_id := jwtGenerateID(p_user_identifier_str, creation_unix_time_f)
-	jwt_secret_key := &GF_jwt_secret_key{
+	jwtID := jwtGenerateID(pUserIdentifierStr, creationUNIXtimeF)
+	jwtSecretKey := &GFjwtSecretKey{
 		V_str:                "0",
-		Id_str:               jwt_id,
+		Id_str:               jwtID,
 		Deleted_bool:         false,
-		Creation_unix_time_f: creation_unix_time_f,
-		Val:                  jwt_secret_key_val_str,
-		User_identifier_str:  p_user_identifier_str,
+		Creation_unix_time_f: creationUNIXtimeF,
+		Val:                  jwtSecretKeyValStr,
+		UserIdentifierStr:  pUserIdentifierStr,
 		// User_address_eth: p_user_address_eth,
 	}
 
 	// DB_CREATE__SECRET_KEY
-	gf_err = db__jwt_secret_key__create(jwt_secret_key, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	gfErr = dbJWTsecretKeyCreate(jwtSecretKey, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 
-	return jwt_token_val, nil
+	return jwtTokenVal, nil
 }
 
 //---------------------------------------------------
 // GENERATE
-func jwtGenerate(pUserIdentifierStr string, // p_user_address_eth GF_user_address_eth,
-	pJWTsecretKeyVal GF_jwt_secret_key_val,
-	pCreationUNIXtimeF   float64,
-	pRuntimeSys          *gf_core.RuntimeSys) (GF_jwt_token_val, *gf_core.GFerror) {
+
+func jwtGenerate(pUserIdentifierStr string,
+	pJWTsecretKeyVal   GFjwtSecretKeyVal,
+	pCreationUNIXtimeF float64,
+	pRuntimeSys        *gf_core.RuntimeSys) (GFjwtTokenVal, *gf_core.GFerror) {
 
 
 	issuerStr := "gf"
@@ -102,7 +105,7 @@ func jwtGenerate(pUserIdentifierStr string, // p_user_address_eth GF_user_addres
 	expirationUNIXtimeInt := int64(pCreationUNIXtimeF) + jwtTokenTTLsecInt
 
 	// CLAIMS
-	claims := GF_jwt_claims{
+	claims := GFjwtClaims{
 		pUserIdentifierStr,
 		jwt.StandardClaims{
 			ExpiresAt: expirationUNIXtimeInt,
@@ -111,166 +114,169 @@ func jwtGenerate(pUserIdentifierStr string, // p_user_address_eth GF_user_addres
 	}
 
 	// NEW_TOKEN
-	jwt_token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// SIGNING - to be able to verify using the same secret_key that in the future
 	//           a received token is valid and unchanged.
-	jwt_token_val_str, err := jwt_token.SignedString([]byte(pJWTsecretKeyVal))
+	jwtTokenValStr, err := jwtToken.SignedString([]byte(pJWTsecretKeyVal))
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to to update user info",
+		gfErr := gf_core.ErrorCreate("failed to to update user info",
 			"crypto_jwt_sign_token_error",
 			map[string]interface{}{
 				"user_identifier_str": pUserIdentifierStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
-		return GF_jwt_token_val(""), gf_err
+			err, "gf_session", pRuntimeSys)
+		return GFjwtTokenVal(""), gfErr
 	}
 
-	return GF_jwt_token_val(jwt_token_val_str), nil
+	return GFjwtTokenVal(jwtTokenValStr), nil
 }
 
 //---------------------------------------------------
+
 func jwtGenerateID(pUserIdentifierStr string,
-	p_creation_unix_time_f float64) gf_core.GF_ID {
+	pCreationUNIXtimeF float64) gf_core.GF_ID {
 	
 	fields_for_id_lst := []string{
 		pUserIdentifierStr,
 	}
 	gf_id_str := gf_core.IDcreate(fields_for_id_lst,
-		p_creation_unix_time_f)
+		pCreationUNIXtimeF)
 	return gf_id_str
 }
 
 //---------------------------------------------------
-func jwt__pipeline__validate(p_jwt_token_val GF_jwt_token_val,
-	p_ctx         context .Context,
-	p_runtime_sys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+func jwtPipelineValidate(pJWTtokenVal GFjwtTokenVal,
+	pCtx        context .Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	// VALIDATE
-	valid_bool, user_identifier_str, gf_err := JWTvalidate(p_jwt_token_val,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return "", gf_err
+	validBool, userIdentifierStr, gfErr := JWTvalidate(pJWTtokenVal,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
 	}
 
-	if !valid_bool {
-		gf_err := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
+	if !validBool {
+		gfErr := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
 			"crypto_jwt_verify_token_invalid_error",
 			map[string]interface{}{
-				"jwt_token_val_str": p_jwt_token_val,
+				"jwt_token_val_str": pJWTtokenVal,
 			},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return "", gf_err
+			nil, "gf_session", pRuntimeSys)
+		return "", gfErr
 	}
 
-	return user_identifier_str, nil
+	return userIdentifierStr, nil
 }
 
 //---------------------------------------------------
 // VALIDATE
-func JWTvalidate(p_jwt_token_val GF_jwt_token_val,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
-	claims := &GF_jwt_claims{}
-	jwt_token, err := jwt.ParseWithClaims(string(p_jwt_token_val),
+func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
+	pCtx         context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+
+	claims := &GFjwtClaims{}
+	jwtToken, err := jwt.ParseWithClaims(string(pJWTtokenVal),
 		claims,
-		func(p_jwt_token *jwt.Token) (interface{}, error) {
+		func(pJWTtoken *jwt.Token) (interface{}, error) {
 
-			user_identifier_str := p_jwt_token.Claims.(*GF_jwt_claims).User_identifier_str
+			userIdentifierStr := pJWTtoken.Claims.(*GFjwtClaims).UserIdentifierStr
 
 			// DB_GET
-			jwt_secret_key, gf_err := db__jwt_secret_key__get(user_identifier_str, p_ctx, p_runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err.Error
+			jwtSecretKey, gfErr := dbJWTsecretKeyGet(userIdentifierStr, pCtx, pRuntimeSys)
+			if gfErr != nil {
+				return nil, gfErr.Error
 			}
 
-			return []byte(jwt_secret_key.Val), nil
+			return []byte(jwtSecretKey.Val), nil
 		})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to verify a JWT token",
+		gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
 			"crypto_jwt_verify_token_error",
 			map[string]interface{}{
-				"jwt_token_val_str": p_jwt_token_val,
+				"jwt_token_val_str": pJWTtokenVal,
 			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return false, "", gf_err
+			err, "gf_session", pRuntimeSys)
+		return false, "", gfErr
 	}
 
-	valid_bool          := jwt_token.Valid
-	user_identifier_str := jwt_token.Claims.(*GF_jwt_claims).User_identifier_str
+	validBool         := jwtToken.Valid
+	userIdentifierStr := jwtToken.Claims.(*GFjwtClaims).UserIdentifierStr
 	
-	return valid_bool, user_identifier_str, nil
+	return validBool, userIdentifierStr, nil
 }
 
 //---------------------------------------------------
 // DB
 //---------------------------------------------------
-func db__jwt_secret_key__create(p_jwt_secret_key *GF_jwt_secret_key,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	coll_name_str := "gf_auth_jwt"
+func dbJWTsecretKeyCreate(pJWTsecretKey *GFjwtSecretKey,
+	pCtx         context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	gf_err := gf_core.MongoInsert(p_jwt_secret_key,
-		coll_name_str,
+	collNameStr := "gf_auth_jwt"
+
+	gfErr := gf_core.MongoInsert(pJWTsecretKey,
+		collNameStr,
 		map[string]interface{}{
-			"id_str":              p_jwt_secret_key.Id_str,
-			"user_identifier_str": p_jwt_secret_key.User_identifier_str,
+			"id_str":              pJWTsecretKey.Id_str,
+			"user_identifier_str": pJWTsecretKey.UserIdentifierStr,
 			"caller_err_msg_str":  "failed to create jwt_secret_key for a user in a DB",
 		},
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil
 }
 
 //---------------------------------------------------
-func db__jwt_secret_key__get(p_user_identifier_str string,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_jwt_secret_key, *gf_core.GFerror) {
 
-	find_opts := options.Find()
-	find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
+func dbJWTsecretKeyGet(pUserIdentifierStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtSecretKey, *gf_core.GFerror) {
+
+	findOpts := options.Find()
+	findOpts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
 	
-	db_cursor, gf_err := gf_core.MongoFind(bson.M{
-			"user_identifier_str": string(p_user_identifier_str),
+	dbCursor, gfErr := gf_core.MongoFind(bson.M{
+			"user_identifier_str": string(pUserIdentifierStr),
 			"deleted_bool":        false,
 		},
-		find_opts,
+		findOpts,
 		map[string]interface{}{
-			"user_identifier_str": p_user_identifier_str,
+			"user_identifier_str": pUserIdentifierStr,
 			"caller_err_msg_str":  "failed to get jwt_secret_key for a user from DB",
 		},
-		p_runtime_sys.Mongo_db.Collection("gf_auth_jwt"),
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys.Mongo_db.Collection("gf_auth_jwt"),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 
 
-	var jwt_secret_keys_lst []*GF_jwt_secret_key
-	err := db_cursor.All(p_ctx, &jwt_secret_keys_lst)
+	var jwtSecretKeysLst []*GFjwtSecretKey
+	err := dbCursor.All(pCtx, &jwtSecretKeysLst)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get DB results of query to get latest JWT key ",
+		gfErr := gf_core.MongoHandleError("failed to get DB results of query to get latest JWT key ",
 			"mongodb_cursor_all",
 			map[string]interface{}{
-				"user_identifier_str": p_user_identifier_str,
+				"user_identifier_str": pUserIdentifierStr,
 			},
-			err, "gf_tagger_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_session", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	
-	jwt_secret_key := jwt_secret_keys_lst[0]
-	
+	jwtSecretKey := jwtSecretKeysLst[0]
 
-	return jwt_secret_key, nil
+	return jwtSecretKey, nil
 }

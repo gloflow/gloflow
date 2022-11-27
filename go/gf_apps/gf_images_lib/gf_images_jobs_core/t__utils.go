@@ -26,6 +26,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func TgetJobsMngr(pImagesStoreLocalDirPathStr string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	pVideoStoreLocalDirPathStr            string,

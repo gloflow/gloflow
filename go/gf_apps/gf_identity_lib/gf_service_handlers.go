@@ -32,7 +32,8 @@ import (
 )
 
 //------------------------------------------------
-func initHandlers(p_auth_login_url_str string,
+
+func initHandlers(pAuthLoginURLstr string,
 	pHTTPmux     *http.ServeMux,
 	pServiceInfo *GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -48,16 +49,16 @@ func initHandlers(p_auth_login_url_str string,
 		"/v1/identity/register_invite_email",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.Name_str, handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: p_auth_login_url_str,
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: pAuthLoginURLstr,
 	}
 
 	//---------------------
@@ -125,7 +126,7 @@ func initHandlers(p_auth_login_url_str string,
 
 				//---------------------
 				// INPUT
-				httpInput, gfErr := gf_identity_core.Http__get_email_confirm_input(pReq, pRuntimeSys)
+				httpInput, gfErr := gf_identity_core.HTTPgetEmailConfirmInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -141,7 +142,7 @@ func initHandlers(p_auth_login_url_str string,
 
 				if confirmedBool {
 
-					userNameStr := httpInput.User_name_str
+					userNameStr := httpInput.UserNameStr
 
 					// for admins the login process has not completed yet after email confirmation
 					if userNameStr == "admin" {
@@ -149,7 +150,7 @@ func initHandlers(p_auth_login_url_str string,
 						// redirect user to login page
 						// "email_confirmed=1" - signals to the UI that email has been confirmed
 						URLredirectStr := fmt.Sprintf("%s?email_confirmed=1&user_name=%s",
-							rpcHandlerRuntime.Auth_login_url_str,
+							rpcHandlerRuntime.AuthLoginURLstr,
 							userNameStr)
 
 						// REDIRECT
@@ -165,15 +166,15 @@ func initHandlers(p_auth_login_url_str string,
 						//---------------------
 						// LOGIN_FINALIZE
 
-						loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
+						loginFinalizeInput := &GFuserAuthUserpassInputLoginFinalize{
 							UserNameStr: userNameStr,
 						}
-						loginFinalizeOutput, gf_err := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
+						loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
 							pServiceInfo,
 							pCtx,
 							pRuntimeSys)
-						if gf_err != nil {
-							return nil, gf_err
+						if gfErr != nil {
+							return nil, gfErr
 						}
 
 						//---------------------					
@@ -227,39 +228,39 @@ func initHandlers(p_auth_login_url_str string,
 					userNameStr = gf_identity_core.GFuserName(inputUserNameStr)
 				}
 
-				var extern_htop_value_str string
-				if input_extern_htop_value_str, ok := inputMap["mfa_val_str"].(string); ok {
-					extern_htop_value_str = input_extern_htop_value_str
+				var externHtopValueStr string
+				if inputExternHtopValueStr, ok := inputMap["mfa_val_str"].(string); ok {
+					externHtopValueStr = inputExternHtopValueStr
 				}
 
-				input := &GF_user_auth_mfa__input_confirm{
-					UserNameStr:           userNameStr,
-					Extern_htop_value_str: extern_htop_value_str,
-					Secret_key_base32_str: pServiceInfo.Admin_mfa_secret_key_base32_str,
+				input := &GFuserAuthMFAinputConfirm{
+					UserNameStr:        userNameStr,
+					ExternHtopValueStr: externHtopValueStr,
+					SecretKeyBase32str: pServiceInfo.AdminMFAsecretKeyBase32str,
 				}
 				
 				//---------------------
 				
-				validBool, gf_err := mfaPipelineConfirm(input,
+				validBool, gfErr := mfaPipelineConfirm(input,
 					pCtx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				if validBool {
 					//---------------------
 					// LOGIN_FINALIZE
 
-					loginFinalizeInput := &GF_user_auth_userpass__input_login_finalize{
+					loginFinalizeInput := &GFuserAuthUserpassInputLoginFinalize{
 						UserNameStr: userNameStr,
 					}
-					loginFinalizeOutput, gf_err := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
+					loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
 						pServiceInfo,
 						pCtx,
 						pRuntimeSys)
-					if gf_err != nil {
-						return nil, gf_err
+					if gfErr != nil {
+						return nil, gfErr
 					}
 
 					//---------------------					
@@ -287,26 +288,26 @@ func initHandlers(p_auth_login_url_str string,
 	// AUTH - only logged in users can update their own details
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/update",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//---------------------
 				// INPUT
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				HTTPinput, gfErr := gf_identity_core.Http__get_user_update_input(p_req, pRuntimeSys)
+				HTTPinput, gfErr := gf_identity_core.HTTPgetUserUpdateInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				input := &GF_user__input_update{
-					UserIDstr:             userIDstr,
-					Email_str:             HTTPinput.Email_str,
-					Description_str:       HTTPinput.Description_str,
-					Profile_image_url_str: HTTPinput.Profile_image_url_str,
-					Banner_image_url_str:  HTTPinput.Banner_image_url_str,
+				input := &GFuserInputUpdate{
+					UserIDstr:          userIDstr,
+					EmailStr:           HTTPinput.EmailStr,
+					DescriptionStr:     HTTPinput.DescriptionStr,
+					ProfileImageURLstr: HTTPinput.ProfileImageURLstr,
+					BannerImageURLstr:  HTTPinput.BannerImageURLstr,
 				}
 				
 				// VALIDATE
@@ -317,7 +318,7 @@ func initHandlers(p_auth_login_url_str string,
 				
 				//---------------------
 
-				_, gfErr = users__pipeline__update(input,
+				_, gfErr = usersPipelineUpdate(input,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
@@ -337,34 +338,34 @@ func initHandlers(p_auth_login_url_str string,
 	// USERS_GET_ME
 	// AUTH
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/identity/me",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//---------------------
 				// INPUT
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				input := &GF_user__input_get{
+				input := &GFuserInputGet{
 					UserIDstr: userIDstr,
 				}
 
 				//---------------------
 
-				output, gf_err := usersPipelineGet(input, pCtx, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				output, gfErr := usersPipelineGet(input, pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"user_name_str":         output.User_name_str,
-					"email_str":             output.Email_str,
-					"description_str":       output.Description_str,
-					"profile_image_url_str": output.Profile_image_url_str,
-					"banner_image_url_str":  output.Banner_image_url_str,
+				outputMap := map[string]interface{}{
+					"user_name_str":         output.UserNameStr,
+					"email_str":             output.EmailStr,
+					"description_str":       output.DescriptionStr,
+					"profile_image_url_str": output.ProfileImageURLstr,
+					"banner_image_url_str":  output.BannerImageURLstr,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 			return nil, nil
 		},
@@ -376,8 +377,6 @@ func initHandlers(p_auth_login_url_str string,
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/register_invite_email",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			
-			
 			dataMap := map[string]interface{}{}
 			return dataMap, nil
 		},

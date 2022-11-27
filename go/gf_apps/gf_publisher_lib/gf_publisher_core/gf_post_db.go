@@ -30,23 +30,23 @@ import (
 )
 
 //---------------------------------------------------
-func DB__get_post(p_post_title_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (*Gf_post, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_post()")
+
+func DBgetPost(p_post_title_str string,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFpost, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
-	var post Gf_post
-	err := p_runtime_sys.Mongo_coll.FindOne(ctx,
+	var post GFpost
+	err := pRuntimeSys.Mongo_coll.FindOne(ctx,
 		bson.M{"t": "post", "title_str": p_post_title_str}).Decode(&post)
 
-	// err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t":"post", "title_str": p_post_title_str}).One(&post)
+	// err := pRuntimeSys.Mongodb_coll.Find(bson.M{"t":"post", "title_str": p_post_title_str}).One(&post)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get a post from the DB",
+		gfErr := gf_core.MongoHandleError("failed to get a post from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return &post, nil
@@ -54,31 +54,31 @@ func DB__get_post(p_post_title_str string,
 
 //---------------------------------------------------
 // CREATE
-func DB__create_post(p_post *Gf_post,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__create_post()")
+
+func DBcreatePost(p_post *GFpost,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err        := gf_core.MongoInsert(p_post,
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
+	gfErr        := gf_core.MongoInsert(p_post,
 		coll_name_str,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to create a post into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
-	/*err := p_runtime_sys.Mongodb_coll.Insert(p_post) // writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
+	/*err := pRuntimeSys.Mongodb_coll.Insert(p_post) // writeConcern: mongo.WriteConcern.ACKNOWLEDGED);
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to create a post in the DB",
+		gfErr := gf_core.MongoHandleError("failed to create a post in the DB",
 			"mongodb_insert_error",
 			map[string]interface{}{},
-			err, "gf_publisher_core", p_runtime_sys)
-		return gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return gfErr
 	}*/
 
 	return nil
@@ -86,22 +86,22 @@ func DB__create_post(p_post *Gf_post,
 
 //---------------------------------------------------
 // UPDATE
-func DB__update_post(p_post *Gf_post, 
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__update_post()")
+
+func DBupdatePost(pPost *GFpost, 
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
-			"title_str": p_post.Title_str,
+			"title_str": pPost.TitleStr,
 		},
-		p_post)
+		pPost)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
+		gfErr := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
 			"mongodb_update_error",
-			map[string]interface{}{"post_title_str":p_post.Title_str,},
-			err, "gf_publisher_core", p_runtime_sys)
-		return gf_err
+			map[string]interface{}{"post_title_str":pPost.TitleStr,},
+			err, "gf_publisher_core", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
@@ -109,23 +109,23 @@ func DB__update_post(p_post *Gf_post,
 
 //---------------------------------------------------
 // DELETE
-func DB__mark_as_deleted_post(p_post_title_str string,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__mark_as_deleted_post()")
+
+func DBmarkAsDeletedPost(p_post_title_str string,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
 			"title_str": p_post_title_str,
 		},
 		bson.M{"$set": bson.M{"deleted_bool": true}})
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to mark as deleted a gf_post in a mongodb",
+		gfErr := gf_core.MongoHandleError("failed to mark as deleted a gf_post in a mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_core", p_runtime_sys)
-		return gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
@@ -133,27 +133,27 @@ func DB__mark_as_deleted_post(p_post_title_str string,
 
 //---------------------------------------------------
 // DELETE
-func DB___delete_post(p_post_title_str string, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__delete_post()")
+
+func DBdeletePost(p_post_title_str string, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.DeleteOne(ctx, bson.M{"title_str": p_post_title_str})
+	_, err := pRuntimeSys.Mongo_coll.DeleteOne(ctx, bson.M{"title_str": p_post_title_str})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
+		gfErr := gf_core.MongoHandleError("failed to update a gf_post in a mongodb",
 			"mongodb_delete_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_core", p_runtime_sys)
-		return gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return gfErr
 	}
 	return nil
 }
 
 //---------------------------------------------------
 // GET_POSTS_PAGE
-func DB__get_posts_page(p_cursor_start_position_int int, // 0
+
+func DBgetPostsPage(p_cursor_start_position_int int, // 0
 	p_elements_num_int int, // 50
-	p_runtime_sys      *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_posts_page()")
+	pRuntimeSys        *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
 	ctx := context.Background()
 	
@@ -163,39 +163,39 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 	
-	cursor, gf_err := gf_core.MongoFind(bson.M{"t": "post"},
+	cursor, gfErr := gf_core.MongoFind(bson.M{"t": "post"},
 		find_opts,
 		map[string]interface{}{
 			"cursor_start_position_int": p_cursor_start_position_int,
 			"elements_num_int":          p_elements_num_int,
 			"caller_err_msg_str":        "failed to get a posts page from the DB",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	posts_lst := []*Gf_post{}
+	posts_lst := []*GFpost{}
 	err := cursor.All(ctx, &posts_lst)
 
-	/*err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t": "post"}).
+	/*err := pRuntimeSys.Mongodb_coll.Find(bson.M{"t": "post"}).
 		Sort("-creation_datetime_str"). // descending:true
 		Skip(p_cursor_start_position_int).
 		Limit(p_elements_num_int).
 		All(&posts_lst)*/
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get a posts page from the DB",
+		gfErr := gf_core.MongoHandleError("failed to get a posts page from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"cursor_start_position_int": p_cursor_start_position_int,
 				"elements_num_int":          p_elements_num_int,
 			},
-			err, "gf_publisher_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return posts_lst, nil
@@ -203,10 +203,10 @@ func DB__get_posts_page(p_cursor_start_position_int int, // 0
 
 //---------------------------------------------------
 // REMOVE!! - is this a duplicate of DB__get_posts_page?
+
 func DB__get_posts_from_offset(p_cursor_position_int int,
 	p_posts_num_to_get_int int,
-	p_runtime_sys          *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__get_posts_from_offset()")
+	pRuntimeSys            *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
@@ -222,86 +222,86 @@ func DB__get_posts_from_offset(p_cursor_position_int int,
 	find_opts.SetSkip(int64(p_cursor_position_int))
     find_opts.SetLimit(int64(p_posts_num_to_get_int))
 	
-	cursor, gf_err := gf_core.MongoFind(bson.M{"t": "post"},
+	cursor, gfErr := gf_core.MongoFind(bson.M{"t": "post"},
 		find_opts,
 		map[string]interface{}{
 			"cursor_start_position_int": p_cursor_position_int,
 			"posts_num_to_get_int":      p_posts_num_to_get_int,
 			"caller_err_msg_str":        "failed to get a posts page from the DB",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	posts_lst := []*Gf_post{}
+	posts_lst := []*GFpost{}
 	err := cursor.All(ctx, &posts_lst)
 
 
-	/*err := p_runtime_sys.Mongodb_coll.Find(bson.M{"t": "post"}).
+	/*err := pRuntimeSys.Mongodb_coll.Find(bson.M{"t": "post"}).
 		Skip(p_cursor_position_int).
 		Limit(p_posts_num_to_get_int).
 		All(&posts_lst)*/
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get a posts page from the DB",
+		gfErr := gf_core.MongoHandleError("failed to get a posts page from the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"cursor_start_position_int": p_cursor_position_int,
 				"posts_num_to_get_int":      p_posts_num_to_get_int,
 			},
-			err, "gf_publisher_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return posts_lst, nil
 }
 
 //---------------------------------------------------
+
 func DB__get_random_posts_range(p_posts_num_to_get_int int, // 5
 	p_max_random_cursor_position_int int, // 500
-	p_runtime_sys                    *gf_core.RuntimeSys) ([]*Gf_post, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_post_db.DB__get_random_posts_range()")
+	pRuntimeSys                      *gf_core.RuntimeSys) ([]*GFpost, *gf_core.GFerror) {
 
 	rand.Seed(time.Now().Unix())
 	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) //new Random().nextInt(p_max_random_cursor_position_int)
-	p_runtime_sys.LogFun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
+	pRuntimeSys.LogFun("INFO","random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
-	posts_in_random_range_lst, gf_err := DB__get_posts_from_offset(random_cursor_position_int,
+	posts_in_random_range_lst, gfErr := DB__get_posts_from_offset(random_cursor_position_int,
 		p_posts_num_to_get_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return posts_in_random_range_lst, nil
 }
 
 //---------------------------------------------------
+
 func DB__check_post_exists(p_post_title_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_db.DB__check_post_exists()")
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
 	ctx := context.Background()
-	count_int, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{
+	count_int, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{
 		"t":         "post",
 		"title_str": p_post_title_str,
 	})
 
-	/*count_int,err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	/*count_int,err := pRuntimeSys.Mongodb_coll.Find(bson.M{
 			"t":         "post",
 			"title_str": p_post_title_str,
 		}).Count()*/
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to check if the post exists in DB",
+		gfErr := gf_core.MongoHandleError("failed to check if the post exists in DB",
 			"mongodb_find_error",
 			map[string]interface{}{"post_title_str": p_post_title_str,},
-			err, "gf_publisher_core", p_runtime_sys)
-		return false, gf_err
+			err, "gf_publisher_core", pRuntimeSys)
+		return false, gfErr
 	}
 	if count_int > 0 {
 		return true, nil

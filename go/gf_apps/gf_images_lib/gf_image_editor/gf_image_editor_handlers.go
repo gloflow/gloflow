@@ -38,7 +38,7 @@ func InitHandlers(pMux *http.ServeMux,
 			if p_req.Method == "POST" {
 
 				//-------------------
-				gfErr := save_edited_image__pipeline("/images/editor/save", p_req, p_resp,
+				gfErr := saveEditedImagePipeline("/images/editor/save", p_req, p_resp,
 					pCtx,
 					pRuntimeSys)
 

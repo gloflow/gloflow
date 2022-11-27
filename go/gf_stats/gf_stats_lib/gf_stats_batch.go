@@ -30,20 +30,21 @@ import (
 )
 
 //-------------------------------------------------
+
 func batch__init_handlers(p_stats_url_base_str string,
 	p_py_stats_dir_path_str string,
-	p_runtime_sys           *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats_batch.batch__init_handlers()")
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats_batch.batch__init_handlers()")
 
-	stats_list_lst, gf_err := batch__get_stats_list(p_py_stats_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	stats_list_lst, gfErr := batch__get_stats_list(p_py_stats_dir_path_str, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	url_str := fmt.Sprintf("%s/batch/list", p_stats_url_base_str)
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		p_runtime_sys.LogFun("INFO",fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------", p_stats_url_base_str))
+		pRuntimeSys.LogFun("INFO",fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------", p_stats_url_base_str))
 		if p_req.Method == "GET" {
 
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
@@ -53,13 +54,13 @@ func batch__init_handlers(p_stats_url_base_str string,
 				"stats_list_lst": stats_list_lst,
 			}
 
-			gf_rpc_lib.HTTPrespond(data_map, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.HTTPrespond(data_map, "OK", p_resp, pRuntimeSys)
 			//--------------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run(url_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				gf_rpc_lib.StoreRPChandlerRun(url_str, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()
 		}
 	})
@@ -68,17 +69,18 @@ func batch__init_handlers(p_stats_url_base_str string,
 }
 
 //-------------------------------------------------
+
 func batch__get_stats_list(p_py_stats_dir_path_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats_batch.batch__get_stats_list()")
+	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats_batch.batch__get_stats_list()")
 
 	files_lst, err := ioutil.ReadDir(p_py_stats_dir_path_str)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to list py_stats dir in order to get a list of batch py_stats",
+		gfErr := gf_core.ErrorCreate("failed to list py_stats dir in order to get a list of batch py_stats",
 			"dir_list_error",
 			map[string]interface{}{"py_stats_dir_path_str": p_py_stats_dir_path_str,},
-			err, "gf_stats_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_stats_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	py_stats__names_lst := []string{}

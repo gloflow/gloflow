@@ -32,7 +32,7 @@ import (
 //-------------------------------------------------------------
 
 func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*ec2.Instance, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*ec2.Instance, *gf_core.GFerror) {
 
 
 	svc := ec2.New(session.New())
@@ -71,7 +71,7 @@ func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
 		gf_err := gf_core.ErrorCreate("failed to describe ec2 instances with specified tags",
 			"aws_ec2_instances_describe_error",
 			map[string]interface{}{"tags_lst": p_tags_lst,},
-			err, "gf_aws", p_runtime_sys)
+			err, "gf_aws", pRuntimeSys)
 		return nil, gf_err
 	}
 

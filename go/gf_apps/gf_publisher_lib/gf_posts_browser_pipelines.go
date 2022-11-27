@@ -28,67 +28,66 @@ import (
 )
 
 //------------------------------------------------
+
 func Get_posts_page(p_page_index_int int,
 	p_page_elements_num_int int,
-	p_runtime_sys           *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_posts_browser_pipelines.Get_posts_page()")
+	pRuntimeSys             *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	cursor_start_position_int := p_page_index_int*p_page_elements_num_int
-	page_lst, gf_err          := gf_publisher_core.DB__get_posts_page(cursor_start_position_int, p_page_elements_num_int, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	page_lst, gfErr          := gf_publisher_core.DBgetPostsPage(cursor_start_position_int, p_page_elements_num_int, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	serialized_page_lst := []map[string]interface{}{}
 	for _, post := range page_lst {
-		post_map := map[string]interface{}{
-			"title_str":             post.Title_str,
-			"images_number_str":     len(post.Images_ids_lst),
-			"creation_datetime_str": post.Creation_datetime_str,
-			"thumbnail_url_str":     post.Thumbnail_url_str,
-			"tags_lst":              post.Tags_lst,
+		postMap := map[string]interface{}{
+			"title_str":             post.TitleStr,
+			"images_number_str":     len(post.ImagesIDsLst),
+			"creation_datetime_str": post.CreationDatetimeStr,
+			"thumbnail_url_str":     post.ThumbnailURLstr,
+			"tags_lst":              post.TagsLst,
 		}
-		serialized_page_lst = append(serialized_page_lst, post_map)
+		serialized_page_lst = append(serialized_page_lst, postMap)
 	}
 
 	return serialized_page_lst, nil
 }
 
 //------------------------------------------------
-//get initial pages - the pages that are rendered in the initial HTML template. 
-//                    subsequent pages are loaded as AJAX requests, via HTTP API. 
+// get initial pages - the pages that are rendered in the initial HTML template. 
+//                     subsequent pages are loaded as AJAX requests, via HTTP API. 
 
-func Render_initial_pages(p_response_format_str string,
+func RenderInitialPages(p_response_format_str string,
 	p_initial_pages_num_int  int, //6
 	p_page_size_int          int, //5
 	p_tmpl                   *template.Template,
 	p_subtempaltes_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_posts_browser_pipelines.Render_initial_pages()")
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	posts_pages_lst := [][]*gf_publisher_core.Gf_post{}
+	postsPagesLst := [][]*gf_publisher_core.GFpost{}
 
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
 		start_position_int := i*p_page_size_int
 		// int end_position_int   = start_position_int+p_page_size_int;
 
-		p_runtime_sys.LogFun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf(">>>>>>> start_position_int - %d - %d", start_position_int, p_page_size_int))
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		page_lst, gf_err := gf_publisher_core.DB__get_posts_page(start_position_int, p_page_size_int, p_runtime_sys)
-		if gf_err != nil {
-			return gf_err
+		pageLst, gfErr := gf_publisher_core.DBgetPostsPage(start_position_int, p_page_size_int, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 
-		posts_pages_lst = append(posts_pages_lst, page_lst)
+		postsPagesLst = append(postsPagesLst, pageLst)
 	}
 	
-	gf_err := posts_browser__render_template(posts_pages_lst, p_tmpl, p_subtempaltes_names_lst, p_page_size_int, p_resp, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := postsBrowserRenderTemplate(postsPagesLst, p_tmpl, p_subtempaltes_names_lst, p_page_size_int, p_resp, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	return nil

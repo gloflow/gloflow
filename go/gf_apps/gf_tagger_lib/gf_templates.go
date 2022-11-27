@@ -25,6 +25,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type gf_templates struct {
 	tag_objects__tmpl                   *template.Template
 	tag_objects__subtemplates_names_lst []string
@@ -34,12 +35,13 @@ type gf_templates struct {
 }
 
 //-------------------------------------------------
+
 func tmpl__load(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	main_template_filepath_str := p_templates_paths_map["gf_tag_objects"]
-	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str, p_runtime_sys)
+	tag_objects__tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -47,7 +49,7 @@ func tmpl__load(p_templates_paths_map map[string]string,
 
 
 	bookmarks_template_filepath_str := p_templates_paths_map["gf_bookmarks"]
-	bookmarks__tmpl, bookmarks_subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(bookmarks_template_filepath_str, p_runtime_sys)
+	bookmarks__tmpl, bookmarks_subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(bookmarks_template_filepath_str, pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

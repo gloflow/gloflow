@@ -36,31 +36,33 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFrpcHandlerRuntime struct {
-	Mux                *http.ServeMux
-	Metrics            *GF_metrics
-	Store_run_bool     bool
-	Sentry_hub         *sentry.Hub
-	Auth_login_url_str string // url redirected too if user not logged in and tries to access auth handler
+	Mux             *http.ServeMux
+	Metrics         *GF_metrics
+	StoreRunBool    bool
+	SentryHub       *sentry.Hub
+	AuthLoginURLstr string // url redirected too if user not logged in and tries to access auth handler
 }
 
-type GF_rpc_handler_run struct {
-	Class_str          string  `bson:"class_str"` // Rpc_Handler_Run
-	Handler_url_str    string  `bson:"handler_url_str"`
-	Start_time__unix_f float64 `bson:"start_time__unix_f"`
-	End_time__unix_f   float64 `bson:"end_time__unix_f"`
+type GFrpcHandlerRun struct {
+	ClassStr       string  `bson:"class_str"`
+	HandlerURLstr  string  `bson:"handler_url_str"`
+	StartTimeUNIXf float64 `bson:"start_time__unix_f"`
+	EndTimeUNIXf   float64 `bson:"end_time__unix_f"`
 }
 
 type handler_http func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GFerror)
 
 //-------------------------------------------------
 // HTTP
-func Create_handler__http(p_path_str string,
-	p_handler_fun handler_http,
-	pRuntimeSys   *gf_core.RuntimeSys) {
 
-	Create_handler__http_with_metrics(p_path_str,
-		p_handler_fun,
+func CreateHandlerHTTP(p_path_str string,
+	pHandlerFun handler_http,
+	pRuntimeSys *gf_core.RuntimeSys) {
+
+	CreateHandlerHTTPwithMetrics(p_path_str,
+		pHandlerFun,
 		nil,
 		false,
 		pRuntimeSys)
@@ -68,77 +70,81 @@ func Create_handler__http(p_path_str string,
 
 //-------------------------------------------------
 // HTTP_WITH_AUTH
-func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authentication or not
-	p_path_str        string,
-	p_handler_fun     handler_http,
-	p_handler_runtime *GFrpcHandlerRuntime,
-	pRuntimeSys       *gf_core.RuntimeSys) {
 
-	handler_fun := getHandler(p_auth_bool,
+func CreateHandlerHTTPwithAuth(p_auth_bool bool, // if handler uses authentication or not
+	p_path_str      string,
+	pHandlerFun     handler_http,
+	pHandlerRuntime *GFrpcHandlerRuntime,
+	pRuntimeSys     *gf_core.RuntimeSys) {
+
+	handlerFun := getHandler(p_auth_bool,
 		p_path_str,
-		p_handler_fun,
-		p_handler_runtime.Metrics,
-		p_handler_runtime.Store_run_bool,
-		p_handler_runtime.Sentry_hub,
-		&p_handler_runtime.Auth_login_url_str,
+		pHandlerFun,
+		pHandlerRuntime.Metrics,
+		pHandlerRuntime.StoreRunBool,
+		pHandlerRuntime.SentryHub,
+		&pHandlerRuntime.AuthLoginURLstr,
 		pRuntimeSys)
 
-	p_handler_runtime.Mux.HandleFunc(p_path_str, handler_fun)
+	pHandlerRuntime.Mux.HandleFunc(p_path_str, handlerFun)
 }
 
 //-------------------------------------------------
 // HTTP_WITH_MUX
+
 func CreateHandlerHTTPwithMux(p_path_str string,
-	p_handler_fun handler_http,
+	pHandlerFun handler_http,
 	p_mux         *http.ServeMux,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
-	p_sentry_hub  *sentry.Hub,
+	pSentryHub    *sentry.Hub,
 	pRuntimeSys   *gf_core.RuntimeSys) {
 
-	handler_fun := getHandler(false, // p_auth_bool
+	handlerFun := getHandler(false, // p_auth_bool
 		p_path_str,
-		p_handler_fun,
+		pHandlerFun,
 		pMetrics,
 		pStoreRunBool,
-		p_sentry_hub,
+		pSentryHub,
 		nil,
 		pRuntimeSys)
 
-	p_mux.HandleFunc(p_path_str, handler_fun)
+	p_mux.HandleFunc(p_path_str, handlerFun)
 }
 
 //-------------------------------------------------
 // HTTP_WITH_METRICS
-func Create_handler__http_with_metrics(p_path_str string,
-	p_handler_fun handler_http,
+
+func CreateHandlerHTTPwithMetrics(p_path_str string,
+	pHandlerFun handler_http,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
 	pRuntimeSys   *gf_core.RuntimeSys) {
 
-	handler_fun := getHandler(false, // p_auth_bool
+	handlerFun := getHandler(false, // p_auth_bool
 		p_path_str,
-		p_handler_fun,
+		pHandlerFun,
 		pMetrics,
 		pStoreRunBool,
 		nil,
 		nil,
 		pRuntimeSys)
 
-	http.HandleFunc(p_path_str, handler_fun)
+	http.HandleFunc(p_path_str, handlerFun)
 }
 
 //-------------------------------------------------
+
 func getHandler(p_auth_bool bool,
 	pPathStr         string,
-	p_handler_fun    handler_http,
+	pHandlerFun    handler_http,
 	pMetrics         *GF_metrics,
 	pStoreRunBool    bool,
 	pSentryHub       *sentry.Hub,
 	pAuthLoginURLstr *string,
 	pRuntimeSys      *gf_core.RuntimeSys) func(pResp http.ResponseWriter, pReq *http.Request) {
 
-	handler_fun := func(pResp http.ResponseWriter, pReq *http.Request) {
+	handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
 		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
@@ -161,7 +167,7 @@ func getHandler(p_auth_bool bool,
 				// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
 				//               and then proceed to process the panic as an error 
 				//               with gf_core.Panic__check_and_handle()
-				Error__in_handler(pathStr,
+				ErrorInHandler(pathStr,
 					fmt.Sprintf("handler %s failed unexpectedly", pathStr),
 					nil, pResp, pRuntimeSys)
 			},
@@ -215,7 +221,7 @@ func getHandler(p_auth_bool bool,
 				ctx,
 				pRuntimeSys)
 			if gfErr != nil {
-				Error__in_handler(pathStr,
+				ErrorInHandler(pathStr,
 					fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
 					nil, pResp, pRuntimeSys)
 				return
@@ -232,7 +238,7 @@ func getHandler(p_auth_bool bool,
 				// if a login_url is not defined then return error, otherwise redirect to this
 				// login_url   
 				if pAuthLoginURLstr == nil {
-					Error__in_handler(pathStr,
+					ErrorInHandler(pathStr,
 						fmt.Sprintf("user not authenticated to access handler %s", pathStr),
 						nil, pResp, pRuntimeSys)
 				}
@@ -246,7 +252,7 @@ func getHandler(p_auth_bool bool,
 
 		//------------------
 		// HANDLER
-		outputDataMap, gfErr := p_handler_fun(ctxAuth, pResp, pReq)
+		outputDataMap, gfErr := pHandlerFun(ctxAuth, pResp, pReq)
 
 		//------------------
 		// TRACE
@@ -255,7 +261,7 @@ func getHandler(p_auth_bool bool,
 		//------------------
 		// ERROR
 		if gfErr != nil {
-			Error__in_handler(pPathStr,
+			ErrorInHandler(pPathStr,
 				fmt.Sprintf("handler %s failed", pPathStr),
 				gfErr, pResp, pRuntimeSys)
 			return
@@ -275,15 +281,16 @@ func getHandler(p_auth_bool bool,
 
 		if pStoreRunBool {
 			go func() {
-				Store_rpc_handler_run(pPathStr, start_time__unix_f, end_time__unix_f, pRuntimeSys)
+				StoreRPChandlerRun(pPathStr, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()
 		}
 	}
-	return handler_fun
+	return handlerFun
 }
 
 //-------------------------------------------------
-func Store_rpc_handler_run(p_handler_url_str string,
+
+func StoreRPChandlerRun(p_handler_url_str string,
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
 	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -293,11 +300,11 @@ func Store_rpc_handler_run(p_handler_url_str string,
 		return nil
 	}
 
-	run := &GF_rpc_handler_run{
-		Class_str:          "rpc_handler_run",
-		Handler_url_str:    p_handler_url_str,
-		Start_time__unix_f: p_start_time__unix_f,
-		End_time__unix_f:   p_end_time__unix_f,
+	run := &GFrpcHandlerRun{
+		ClassStr:       "rpc_handler_run",
+		HandlerURLstr:  p_handler_url_str,
+		StartTimeUNIXf: p_start_time__unix_f,
+		EndTimeUNIXf:   p_end_time__unix_f,
 	}
 
 	ctx           := context.Background()

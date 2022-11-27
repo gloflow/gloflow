@@ -32,12 +32,8 @@ import (
 )
 
 //-------------------------------------------------
-func ServerInitWithMux(pPortInt int,
-	pMux *http.ServeMux) {
-	Server__init_with_mux(pPortInt, pMux)
-}
 
-func Server__init_with_mux(pPortInt int,
+func ServerInitWithMux(pPortInt int,
 	pMux *http.ServeMux) {
 
 	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
@@ -63,7 +59,8 @@ func Server__init_with_mux(pPortInt int,
 }
 
 //-------------------------------------------------
-func Server__init(pPortInt int) {
+
+func ServerInit(pPortInt int) {
 
 	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 

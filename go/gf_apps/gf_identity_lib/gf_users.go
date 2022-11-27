@@ -27,77 +27,78 @@ import (
 )
 
 //---------------------------------------------------
+
 type GFuser struct {
-	V_str                string             `bson:"v_str"` // schema_version
-	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               gf_core.GF_ID      `bson:"id_str"`
-	Deleted_bool         bool               `bson:"deleted_bool"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+	Vstr              string             `bson:"v_str"` // schema_version
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool       bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserTypeStr       string                      `bson:"user_type_str"`   // "admin" | "standard"
-	User_name_str     gf_identity_core.GFuserName `bson:"user_name_str"`   // set once at the creation of the user
-	Screen_name_str   string                      `bson:"screen_name_str"` // changable durring the lifetime of the user
+	UserTypeStr     string                      `bson:"user_type_str"`   // "admin" | "standard"
+	UserNameStr     gf_identity_core.GFuserName `bson:"user_name_str"`   // set once at the creation of the user
+	ScreenNameStr   string                      `bson:"screen_name_str"` // changable durring the lifetime of the user
 	
-	Description_str   string                                 `bson:"description_str"`
-	Addresses_eth_lst []gf_identity_core.GF_user_address_eth `bson:"addresses_eth_lst"`
+	DescriptionStr  string                              `bson:"description_str"`
+	AddressesETHlst []gf_identity_core.GFuserAddressETH `bson:"addresses_eth_lst"`
 
-	Email_str            string `bson:"email_str"`
-	Email_confirmed_bool bool   `bson:"email_confirmed_bool"` // one-time confirmation on user-creation to validate user
+	EmailStr           string `bson:"email_str"`
+	EmailConfirmedBool bool   `bson:"email_confirmed_bool"` // one-time confirmation on user-creation to validate user
 	
 	// IMAGES
-	Profile_image_url_str string `bson:"profile_image_url_str"`
-	Banner_image_url_str  string `bson:"banner_image_url_str"`
+	ProfileImageURLstr string `bson:"profile_image_url_str"`
+	BannerImageURLstr  string `bson:"banner_image_url_str"`
 }
 
 // ADD!! - provide logic/plugin for storing this record in some alternative store
 //         separate from the main DB
 type GFuserCreds struct {
-	V_str                string             `bson:"v_str"` // schema_version
-	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               gf_core.GF_ID      `bson:"id_str"`
-	Deleted_bool         bool               `bson:"deleted_bool"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+	Vstr              string             `bson:"v_str"` // schema_version
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool       bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	User_id_str   gf_core.GF_ID                `bson:"user_id_str"`
-	User_name_str gf_identity_core.GFuserName  `bson:"user_name_str"`
-	Pass_salt_str string                       `bson:"pass_salt_str"`
-	Pass_hash_str string                       `bson:"pass_hash_str"`
+	UserIDstr   gf_core.GF_ID                `bson:"user_id_str"`
+	UserNameStr gf_identity_core.GFuserName  `bson:"user_name_str"`
+	PassSaltStr string                       `bson:"pass_salt_str"`
+	PassHashStr string                       `bson:"pass_hash_str"`
 }
 
 // io_update
-type GF_user__input_update struct {
-	UserIDstr            gf_core.GF_ID                        `validate:"required"`                 // required - not updated, but for lookup
-	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
-	Screen_name_str      *string                              `validate:"omitempty,min=3,max=50"`   // optional
-	Email_str            *string                              `validate:"omitempty,email"`          // optional
-	Description_str      *string                              `validate:"omitempty,min=1,max=2000"` // optional
+type GFuserInputUpdate struct {
+	UserIDstr         gf_core.GF_ID                     `validate:"required"`                 // required - not updated, but for lookup
+	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"omitempty,eth_addr"`       // optional - add an Eth address to the user
+	ScreenNameStr     *string                           `validate:"omitempty,min=3,max=50"`   // optional
+	EmailStr          *string                           `validate:"omitempty,email"`          // optional
+	DescriptionStr    *string                           `validate:"omitempty,min=1,max=2000"` // optional
 
-	Profile_image_url_str *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
-	Banner_image_url_str  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
+	ProfileImageURLstr *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
+	BannerImageURLstr  *string `validate:"omitempty,min=1,max=100"` // optional // FIX!! - validation
 }
-type GF_user__output_update struct {
+type GFuserOutputUpdate struct {
 	
 }
 
-// io_get
-type GF_user__input_get struct {
+type GFuserInputGet struct {
 	UserIDstr gf_core.GF_ID
 }
 
-type GF_user__output_get struct {
-	User_name_str         gf_identity_core.GFuserName
-	Email_str             string
-	Description_str       string
-	Profile_image_url_str string
-	Banner_image_url_str  string
+type GFuserOutputGet struct {
+	UserNameStr        gf_identity_core.GFuserName
+	EmailStr           string
+	DescriptionStr     string
+	ProfileImageURLstr string
+	BannerImageURLstr  string
 }
 
 //---------------------------------------------------
 // PIPELINE__UPDATE
-func users__pipeline__update(pInput *GF_user__input_update,
+
+func usersPipelineUpdate(pInput *GFuserInputUpdate,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GF_user__output_update, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserOutputUpdate, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -113,13 +114,13 @@ func users__pipeline__update(pInput *GF_user__input_update,
 	}
 
 	// EMAIL
-	if pServiceInfo.Enable_email_bool {
-		if *pInput.Email_str != "" {
+	if pServiceInfo.EnableEmailBool {
+		if *pInput.EmailStr != "" {
 
-			gfErr = usersEmailPipelineVerify(*pInput.Email_str,
+			gfErr = usersEmailPipelineVerify(*pInput.EmailStr,
 				userNameStr,
 				pInput.UserIDstr,
-				pServiceInfo.Domain_base_str,
+				pServiceInfo.DomainBaseStr,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -130,16 +131,17 @@ func users__pipeline__update(pInput *GF_user__input_update,
 
 	//------------------------
 
-	output := &GF_user__output_update{}
+	output := &GFuserOutputUpdate{}
 
 	return output, nil
 }
 
 //---------------------------------------------------
 // PIPELINE__GET
-func usersPipelineGet(pInput *GF_user__input_get,
+
+func usersPipelineGet(pInput *GFuserInputGet,
 	pCtx         context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GF_user__output_get, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserOutputGet, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE
@@ -157,12 +159,12 @@ func usersPipelineGet(pInput *GF_user__input_get,
 		return nil, gfErr
 	}
 
-	output := &GF_user__output_get{
-		User_name_str:         user.User_name_str,
-		Email_str:             user.Email_str,
-		Description_str:       user.Description_str,
-		Profile_image_url_str: user.Profile_image_url_str,
-		Banner_image_url_str:  user.Banner_image_url_str,
+	output := &GFuserOutputGet{
+		UserNameStr:        user.UserNameStr,
+		EmailStr:           user.EmailStr,
+		DescriptionStr:     user.DescriptionStr,
+		ProfileImageURLstr: user.ProfileImageURLstr,
+		BannerImageURLstr:  user.BannerImageURLstr,
 	}
 
 	return output, nil

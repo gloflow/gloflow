@@ -28,6 +28,7 @@ import (
 
 //-------------------------------------------------
 // BLOCKS__DB__GET_COUNT
+
 func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 	pRuntime *gf_eth_core.GF_runtime) (int64, *gf_core.GFerror) {
 
@@ -54,6 +55,7 @@ func DB__get_count(pMetrics *gf_eth_core.GF_metrics,
 
 //-------------------------------------------------
 // BLOCKS__DB__WRITE_BULK
+
 func DB__write_bulk(p_gf_blocks_lst []*GF_eth__block__int,
 	pCtx     context.Context,
 	pMetrics *gf_eth_core.GF_metrics,

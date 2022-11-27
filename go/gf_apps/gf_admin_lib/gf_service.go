@@ -27,24 +27,26 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFserviceInfo struct {
 
-	Name_str string
+	NameStr string
 
 	// ADMIN_EMAIL - what the default admin email is (for auth)
-	Admin_email_str string
+	AdminEmailStr string
 
 	// EVENTS_APP - enable sending of app events from various functions
-	Enable_events_app_bool bool
+	EnableEventsAppBool bool
 
 	// enable storage of user_creds in a secret store
-	Enable_user_creds_in_secrets_store_bool bool
+	EnableUserCredsInSecretsStoreBool bool
 
 	// enable sending of emails for any function that needs it
-	Enable_email_bool bool
+	EnableEmailBool bool
 }
 
 //-------------------------------------------------
+
 func InitNewService(pTemplatesPathsMap map[string]string,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,

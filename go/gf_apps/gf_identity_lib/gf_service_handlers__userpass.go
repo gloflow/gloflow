@@ -31,6 +31,7 @@ import (
 )
 
 //------------------------------------------------
+
 func initHandlersUserpass(pHTTPmux *http.ServeMux,
 	pServiceInfo *GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -42,16 +43,16 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		"/v1/identity/userpass/create",
 	}
 	metricsGroupNameStr := "userpass"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.Name_str, handlersEndpointsLst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: "/landing/main",
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: "/landing/main",
 	}
 
 	//---------------------
@@ -84,10 +85,10 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					emailStr = valStr.(string)
 				}
 
-				input :=&GF_user_auth_userpass__input_login{
-					User_name_str: userNameStr,
-					Pass_str:      passStr,
-					Email_str:     emailStr,
+				input :=&GFuserAuthUserpassInputLogin{
+					UserNameStr: userNameStr,
+					PassStr:     passStr,
+					EmailStr:    emailStr,
 				}
 
 				//---------------------
@@ -102,16 +103,16 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				sessionDataStr        := string(output.JWT_token_val)
+				sessionDataStr        := string(output.JWTtokenVal)
 				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
 				gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
 
 				//---------------------
 
 				outputMap := map[string]interface{}{
-					"user_exists_bool": output.User_exists_bool,
-					"pass_valid_bool":  output.Pass_valid_bool,
-					"user_id_str":      output.User_id_str,
+					"user_exists_bool": output.UserExistsBool,
+					"pass_valid_bool":  output.PassValidBool,
+					"user_id_str":      output.UserIDstr,
 				}
 				return outputMap, nil
 			}
@@ -137,17 +138,15 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input :=&GF_user_auth_userpass__input_create{
-					User_name_str: gf_identity_core.GFuserName(inputMap["user_name_str"].(string)),
-					Pass_str:      inputMap["pass_str"].(string),
-					Email_str:     inputMap["email_str"].(string),
-					UserTypeStr:   "standard",
+				input :=&GFuserAuthUserpassInputCreate{
+					UserNameStr: gf_identity_core.GFuserName(inputMap["user_name_str"].(string)),
+					PassStr:     inputMap["pass_str"].(string),
+					EmailStr:    inputMap["email_str"].(string),
+					UserTypeStr: "standard",
 				}
 
-				
-
 				//---------------------
-				output, gfErr := users_auth_userpass__pipeline__create_regular(input,
+				output, gfErr := usersAuthUserpassPipelineCreateRegular(input,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
@@ -156,8 +155,8 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 				}
 
 				outputMap := map[string]interface{}{
-					"user_exists_bool":         output.User_exists_bool,
-					"user_in_invite_list_bool": output.User_in_invite_list_bool,
+					"user_exists_bool":         output.UserExistsBool,
+					"user_in_invite_list_bool": output.UserInInviteListBool,
 				}
 				return outputMap, nil
 			}

@@ -26,17 +26,17 @@ import (
 )
 
 //--------------------------------------------------
-func domains_browser__render_template(p_domains_lst []Gf_domain,
+
+func domainsBrowserRenderTemplate(p_domains_lst []GFdomain,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains_view.domains_browser__render_template()")
+	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	type tmpl_data struct {
-		Domains_lst      []Gf_domain
+		Domains_lst      []GFdomain
 		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool //used inside the main_template to check if the subtemplate is defined
 	}
@@ -62,7 +62,7 @@ func domains_browser__render_template(p_domains_lst []Gf_domain,
 		gf_err := gf_core.ErrorCreate("failed to render the domains_browser template",
             "template_render_error",
             map[string]interface{}{"domains_lst": p_domains_lst,},
-            err, "gf_domains_lib", p_runtime_sys)
+            err, "gf_domains_lib", pRuntimeSys)
 		return gf_err
 	}
 

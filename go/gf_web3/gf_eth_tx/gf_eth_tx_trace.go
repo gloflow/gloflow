@@ -220,7 +220,7 @@ func Trace__get_from_worker_inspector(p_tx_hash_str string,
 	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
 		
 	// GF_RPC_CLIENT
-	data_map, gfErr := gf_rpc_lib.Client__request(url_str, headers_map, pCtx, p_RuntimeSys)
+	data_map, gfErr := gf_rpc_lib.ClientRequest(url_str, headers_map, pCtx, p_RuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

@@ -100,7 +100,7 @@ func Sentry__init(p_sentry_endpoint_uri_str string) {
 
 //-------------------------------------------------
 func RuntimeGet(p_config *GF_config,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_runtime, error) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_runtime, error) {
 
 	//--------------------
 	// MONGODB
@@ -111,11 +111,11 @@ func RuntimeGet(p_config *GF_config,
 	mongodb_db, _, gfErr := gf_core.MongoConnectNew(mongodb_url_str,
 		p_config.Mongodb_db_name_str,
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr.Error
 	}
-	p_runtime_sys.Mongo_db = mongodb_db
+	pRuntimeSys.Mongo_db = mongodb_db
 
 	fmt.Printf("mongodb connected...\n")
 
@@ -135,7 +135,7 @@ func RuntimeGet(p_config *GF_config,
 	runtime := &GF_runtime{
 		Config:     p_config,
 		Py_plugins: plugins_info,
-		RuntimeSys: p_runtime_sys,
+		RuntimeSys: pRuntimeSys,
 		// Influxdb_client: influxdb_client,
 	}
 

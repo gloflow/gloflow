@@ -27,16 +27,17 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFserviceInfo struct {
 	
 	// name of this service, in case multiple are spawned
-	Name_str string
+	NameStr string
 
 	// DOMAIN - where this gf_solo instance is reachable on
-	Domain_base_str string
+	DomainBaseStr string
 
 	// ADMIN_MFA_SECRET_KEY_BASE32
-	Admin_mfa_secret_key_base32_str string
+	AdminMFAsecretKeyBase32str string
 
 	//------------------------
 	// AUTH
@@ -53,24 +54,25 @@ type GFserviceInfo struct {
 	// FEATURE_FLAGS
 
 	// EVENTS_APP - enable sending of app events from various functions
-	Enable_events_app_bool bool
+	EnableEventsAppBool bool
 
 	// enable storage of user_creds in a secret store
-	Enable_user_creds_in_secrets_store_bool bool
+	EnableUserCredsInSecretsStoreBool bool
 
 	// enable sending of emails for any function that needs it
-	Enable_email_bool bool
+	EnableEmailBool bool
 
 	// enable login only for users that have confirmed their email
-	Enable_email_require_confirm_for_login_bool bool
+	EnableEmailRequireConfirmForLoginBool bool
 
 	// enable login only for users that have confirmed their MFA code
-	Enable_mfa_require_confirm_for_login_bool bool
+	EnableMFArequireConfirmForLoginBool bool
 
 	//------------------------
 }
 
 //-------------------------------------------------
+
 func InitService(pHTTPmux *http.ServeMux,
 	pServiceInfo *GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -101,7 +103,8 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
-func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
+
+func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 
 	//-------------------
 	// MONGODB

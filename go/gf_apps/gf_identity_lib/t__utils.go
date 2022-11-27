@@ -32,10 +32,12 @@ import (
 )
 
 //-------------------------------------------------
+
 var logFun func(p_g string, p_m string)
 var cliArgsMap map[string]interface{}
 
 //-------------------------------------------------
+
 func TestCreateAndLoginNewUser(pTest *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,
@@ -79,6 +81,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 }
 
 //-------------------------------------------------
+
 func TestStartService(pPortInt int,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
@@ -90,7 +93,7 @@ func TestStartService(pPortInt int,
 		serviceInfo := &GFserviceInfo{
 
 			// IMPORTANT!! - durring testing dont send emails
-			Enable_email_bool: false,
+			EnableEmailBool: false,
 		}
 		InitService(HTTPmux, serviceInfo, pRuntimeSys)
 		gf_rpc_lib.ServerInitWithMux(pPortInt, HTTPmux)
@@ -99,6 +102,7 @@ func TestStartService(pPortInt int,
 }
 
 //-------------------------------------------------
+
 func T__init() *gf_core.RuntimeSys {
 
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
@@ -135,6 +139,7 @@ func T__init() *gf_core.RuntimeSys {
 }
 
 //-------------------------------------------------
+
 func TestDBcleanup(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	

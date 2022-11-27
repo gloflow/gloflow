@@ -28,6 +28,7 @@ import (
 
 //-------------------------------------------------
 // VERIFY_POLICY
+
 func flowsVerifyPolicy(pOpStr string,
 	pFlowsNamesLst []string,
 	pUserIDstr     gf_core.GF_ID,

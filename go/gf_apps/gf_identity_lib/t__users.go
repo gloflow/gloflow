@@ -31,6 +31,7 @@ import (
 
 //-------------------------------------------------
 // TEST_USER_HTTP_CREATE
+
 func TestUserHTTPcreate(pTestUserNameStr string,
 	pTestUserPassStr string,
 	pTestEmailStr    string,
@@ -86,6 +87,7 @@ func TestUserHTTPcreate(pTestUserNameStr string,
 }
 
 //-------------------------------------------------
+
 func TestUserHTTPlogin(pTestUserNameStr string,
 	pTestUserPassStr string,
 	pHTTPagent       *gorequest.SuperAgent,
@@ -112,18 +114,18 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 	}
 
 	// check if the login response sets a cookie for all future auth requests
-	auth_cookie_present_bool := false
+	authCookiePresentBool := false
 	for k, v := range resp.Header {
 		if (k == "Set-Cookie") {
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
 				if o == "gf_sess_data" {
-					auth_cookie_present_bool = true
+					authCookiePresentBool = true
 				}
 			}
 		}
 	}
-	assert.True(pTest, auth_cookie_present_bool,
+	assert.True(pTest, authCookiePresentBool,
 		"login response does not contain the expected 'gf_sess_data' cookie")
 
 	bodyMap := map[string]interface{}{}
@@ -134,34 +136,35 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user login http request failed")
 
-	user_exists_bool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
-	pass_valid_bool  := bodyMap["data"].(map[string]interface{})["pass_valid_bool"].(bool)
-	user_id_str      := bodyMap["data"].(map[string]interface{})["user_id_str"].(string)
+	userExistsBool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
+	passValidBool  := bodyMap["data"].(map[string]interface{})["pass_valid_bool"].(bool)
+	userIDstr      := bodyMap["data"].(map[string]interface{})["user_id_str"].(string)
 
-	assert.True(pTest, user_id_str != "", "user_id not set in the response")
+	assert.True(pTest, userIDstr != "", "user_id not set in the response")
 
 	fmt.Println("user login response:")
-	fmt.Println("user_exists_bool", user_exists_bool)
-	fmt.Println("pass_valid_bool",  pass_valid_bool)
-	fmt.Println("user_id_str",      user_id_str)
+	fmt.Println("user_exists_bool", userExistsBool)
+	fmt.Println("pass_valid_bool",  passValidBool)
+	fmt.Println("user_id_str",      userIDstr)
 }
 
 //-------------------------------------------------
+
 func test_user_http_update(p_test *testing.T,
-	p_http_agent    *gorequest.SuperAgent,
-	p_test_port_int int) {
+	pHTTPagent   *gorequest.SuperAgent,
+	pTestPortInt int) {
 
 	fmt.Println("====================================")
 	fmt.Println("test user UPDATE")
 
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/update", p_test_port_int)
-	data_map := map[string]string{
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update", pTestPortInt)
+	dataMap := map[string]string{
 		"user_name_str":   "new username",
 		"email_str":       "ivan@gloflow.com",
 		"description_str": "some new description",
 	}
-	data_bytes_lst, _ := json.Marshal(data_map)
-	_, body_str, errs := p_http_agent.Post(url_str).
+	data_bytes_lst, _ := json.Marshal(dataMap)
+	_, body_str, errs := pHTTPagent.Post(urlStr).
 		Send(string(data_bytes_lst)).
 		End()
 
@@ -183,12 +186,13 @@ func test_user_http_update(p_test *testing.T,
 
 //-------------------------------------------------
 // TEST_USER_GET_ME
+
 func test_user_http_get_me(p_test *testing.T,
-	p_http_agent    *gorequest.SuperAgent,
+	pHTTPagent    *gorequest.SuperAgent,
 	p_test_port_int int) {
 
 	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/me", p_test_port_int)
-	_, body_str, errs := p_http_agent.Get(url_str).
+	_, body_str, errs := pHTTPagent.Get(url_str).
 		End()
 
 	if len(errs) > 0 {

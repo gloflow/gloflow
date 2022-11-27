@@ -27,15 +27,16 @@ import (
 )
 
 //--------------------------------------------------
-func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
+
+func render_bookmarks(p_bookmarks_lst []*GFbookmark,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	type tmpl_data struct {
-		Bookmarks_lst    []*GF_bookmark
+		Bookmarks_lst    []*GFbookmark
 		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
@@ -65,7 +66,7 @@ func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 		gf_err := gf_core.ErrorCreate("failed to render the gf_bookmarks template",
 			"template_render_error",
 			map[string]interface{}{},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger", pRuntimeSys)
 		return "", gf_err
 	}
 
@@ -75,14 +76,15 @@ func render_bookmarks(p_bookmarks_lst []*GF_bookmark,
 }
 
 //--------------------------------------------------
+
 func render_objects_with_tag(p_tag_str string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_page_index_int         int,
 	p_page_size_int          int,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
+	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
 
 	//-----------------------------
 	// FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
@@ -93,7 +95,7 @@ func render_objects_with_tag(p_tag_str string,
 		"post", // p_object_type_str
 		p_page_index_int,
 		p_page_size_int,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -138,12 +140,12 @@ func render_objects_with_tag(p_tag_str string,
 	}
 
 	object_type_str                  := "post"
-	posts_with_tag_count_int, gf_err := db__get_objects_with_tag_count(p_tag_str, object_type_str, p_runtime_sys)
+	posts_with_tag_count_int, gf_err := db__get_objects_with_tag_count(p_tag_str, object_type_str, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
 	
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
@@ -170,7 +172,7 @@ func render_objects_with_tag(p_tag_str string,
 		gf_err := gf_core.ErrorCreate("failed to render the objects_with_tag template",
 			"template_render_error",
 			map[string]interface{}{"tag_str": p_tag_str,},
-			err, "gf_tagger", p_runtime_sys)
+			err, "gf_tagger", pRuntimeSys)
 		return gf_err
 	}
 

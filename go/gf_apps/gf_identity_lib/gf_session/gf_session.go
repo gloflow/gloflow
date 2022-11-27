@@ -66,6 +66,7 @@ func SetOnReq(pSessionDataStr string,
 }
 
 //---------------------------------------------------
+
 func Validate(pReq *http.Request,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
@@ -77,7 +78,7 @@ func Validate(pReq *http.Request,
 
 			//---------------------
 			// JWT_VALIDATE
-			userIdentifierStr, gfErr := jwt__pipeline__validate(GF_jwt_token_val(JWTtokenValStr),
+			userIdentifierStr, gfErr := jwtPipelineValidate(GFjwtTokenVal(JWTtokenValStr),
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -95,6 +96,7 @@ func Validate(pReq *http.Request,
 }
 
 //---------------------------------------------------
+
 func ValidateOrRedirectToLogin(pReq *http.Request,
 	pResp            http.ResponseWriter,
 	pAuthLoginURLstr *string,

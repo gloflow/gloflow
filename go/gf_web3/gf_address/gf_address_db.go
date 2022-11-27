@@ -28,6 +28,7 @@ import (
 
 //-------------------------------------------------
 // GET_ALL
+
 func DBgetAll(pAddressTypeStr string,
 	pAddressChainNameStr string,
 	pUserIDstr           gf_core.GF_ID,
@@ -70,6 +71,7 @@ func DBgetAll(pAddressTypeStr string,
 }
 
 //-------------------------------------------------
+
 func DBadd(pAddress *GFchainAddress,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -93,6 +95,7 @@ func DBadd(pAddress *GFchainAddress,
 
 //-------------------------------------------------
 // EXISTS
+
 func DBexists(pAddressStr string,
 	pChainStr   string,
 	pCtx        context.Context,
@@ -125,6 +128,7 @@ func DBexists(pAddressStr string,
 
 //-------------------------------------------------
 // ADD_TAG
+
 func DBaddTag(pTagsLst []string,
 	pAddressStr string,
 	pChainStr   string,

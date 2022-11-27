@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_metrics struct {
 	Handlers_counters_map map[string]prometheus.Counter
 
@@ -41,6 +42,7 @@ type GF_metrics struct {
 
 //-------------------------------------------------
 // CREATE_FOR_HANDLER
+
 func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	pServiceNameStr          string,
 	p_handlers_endpoints_lst []string) *GF_metrics {

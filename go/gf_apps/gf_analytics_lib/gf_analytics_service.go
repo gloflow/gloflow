@@ -32,6 +32,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFserviceInfo struct {
 	Port_str string
 
@@ -55,6 +56,7 @@ type GFserviceInfo struct {
 }
 
 //-------------------------------------------------
+
 func InitService(pServiceInfo *GFserviceInfo,
 	p_http_mux  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
@@ -72,13 +74,13 @@ func InitService(pServiceInfo *GFserviceInfo,
 	fmt.Println("ELASTIC_SEARCH_CLIENT >>> OK")
 
 	//-----------------
-	init_handlers(pServiceInfo.Templates_paths_map, p_http_mux, pRuntimeSys)
+	initHandlers(pServiceInfo.Templates_paths_map, p_http_mux, pRuntimeSys)
 
 	//------------------------
 	// GF_DOMAINS
 	gf_domains_lib.DBindexInit(pRuntimeSys)
-	gf_domains_lib.Init_domains_aggregation(pRuntimeSys)
-	gfErr = gf_domains_lib.Init_handlers(pServiceInfo.Templates_paths_map,
+	gf_domains_lib.InitDomainsAggregation(pRuntimeSys)
+	gfErr = gf_domains_lib.InitHandlers(pServiceInfo.Templates_paths_map,
 		p_http_mux,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -129,7 +131,8 @@ func InitService(pServiceInfo *GFserviceInfo,
 }
 
 //-------------------------------------------------
-func Run_service(pServiceInfo *GFserviceInfo,
+
+func RunService(pServiceInfo *GFserviceInfo,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	
 	//------------------------
@@ -155,6 +158,7 @@ func Run_service(pServiceInfo *GFserviceInfo,
 }
 
 //-------------------------------------------------
+
 /*func main() {
 	logFun, _ := gf_core.InitLogs()
 

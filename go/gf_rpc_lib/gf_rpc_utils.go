@@ -32,6 +32,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func HTTPrespond(p_data interface{},
 	p_status_str string,
 	p_resp       http.ResponseWriter,
@@ -47,11 +48,12 @@ func HTTPrespond(p_data interface{},
 }
 
 //-------------------------------------------------
-func Error__in_handler(p_handler_url_path_str string,
+
+func ErrorInHandler(p_handler_url_path_str string,
 	p_user_msg_str string,
 	p_gf_err       *gf_core.GFerror,
 	p_resp         http.ResponseWriter,
-	p_runtime_sys  *gf_core.RuntimeSys) {
+	pRuntimeSys  *gf_core.RuntimeSys) {
 
 	statusStr := "ERROR"
 	dataMap   := map[string]interface{}{
@@ -64,17 +66,17 @@ func Error__in_handler(p_handler_url_path_str string,
 	}
 
 	// DEBUG
-	if p_runtime_sys.Debug_bool {
+	if pRuntimeSys.Debug_bool {
 		dataMap["error"] = p_gf_err.Error
 	}
 
-	HTTPrespond(dataMap, statusStr, p_resp, p_runtime_sys)
+	HTTPrespond(dataMap, statusStr, p_resp, pRuntimeSys)
 }
 
 //-------------------------------------------------
-func Get_response_format(p_qs_map map[string][]string,
-	p_runtime_sys *gf_core.RuntimeSys) string {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_rpc_utils.Get_response_format()")
+
+func GetResponseFormat(p_qs_map map[string][]string,
+	pRuntimeSys *gf_core.RuntimeSys) string {
 
 	response_format_str := "html" // default - "h" - HTML
 	if f_lst, ok := p_qs_map["f"]; ok {
@@ -85,7 +87,8 @@ func Get_response_format(p_qs_map map[string][]string,
 }
 
 //-------------------------------------------------
-func Http_CORS_preflight_handle(p_req *http.Request,
+
+func HTTPcorsPreflightHandle(p_req *http.Request,
 	p_resp http.ResponseWriter) {
 	
 	// CORS - preflight request
@@ -101,7 +104,7 @@ func Http_CORS_preflight_handle(p_req *http.Request,
 func Get_http_input_to_struct(p_input_struct interface{},
 	p_resp        http.ResponseWriter,
 	p_req         *http.Request,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	handler_url_path_str := p_req.URL.Path
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
@@ -111,13 +114,13 @@ func Get_http_input_to_struct(p_input_struct interface{},
 		gf_err := gf_core.ErrorCreate("failed to parse json http input",
 			"json_decode_error",
 			map[string]interface{}{"handler_url_path_str": handler_url_path_str,},
-			err, "gf_rpc_lib", p_runtime_sys)
+			err, "gf_rpc_lib", pRuntimeSys)
 
 		Error__in_handler(handler_url_path_str,
 			fmt.Sprintf("failed parsing http-request input JSON in - %s", handler_url_path_str),
 			gf_err,
 			p_resp,
-			p_runtime_sys)
+			pRuntimeSys)
 		return gf_err
 	}
 

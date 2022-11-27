@@ -34,6 +34,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type JobsMngr chan JobMsg
 
 type GFjobRunning struct {
@@ -49,7 +50,7 @@ type GFjobRunning struct {
 	Images_extern_to_process_lst   []GF_image_extern_to_process   `bson:"images_to_process_lst"`
 	Images_uploaded_to_process_lst []GF_image_uploaded_to_process `bson:"images_uploaded_to_process_lst"`
 	
-	Errors_lst     []Job_Error       `bson:"errors_lst"`
+	Errors_lst     []JobError       `bson:"errors_lst"`
 	job_updates_ch chan JobUpdateMsg `bson:"-"`
 }
 
@@ -63,6 +64,7 @@ type GFjobRuntime struct {
 
 //------------------------
 // IMAGES_TO_PROCESS
+
 type GF_image_extern_to_process struct {
 	Source_url_str      string `bson:"source_url_str"` // FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
 	Origin_page_url_str string `bson:"origin_page_url_str"`
@@ -108,12 +110,14 @@ type JobUpdateMsg struct {
 
 //------------------------
 // JOBS_LIFECYCLE
+
 type GF_jobs_lifecycle_callbacks struct {
 	Job_type__transform_imgs__fun func() *gf_core.GFerror
 	Job_type__uploaded_imgs__fun  func() *gf_core.GFerror
 }
 
 //------------------------
+
 type job_status_val string
 const JOB_STATUS__FAILED         job_status_val = "failed"
 const JOB_STATUS__FAILED_PARTIAL job_status_val = "failed_partial"
@@ -126,6 +130,7 @@ const JOB_UPDATE_TYPE__COMPLETED job_update_type_val = "completed"
 
 //-------------------------------------------------
 // INIT
+
 func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	pVideoStoreLocalDirPathStr            string,
@@ -232,7 +237,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
 
 					//------------------------
 
@@ -322,7 +327,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
 
 					//------------------------
 					// LIFECYCLE_CALLBACK
@@ -396,7 +401,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 					} else {
 						jobStatusStr = JOB_STATUS__COMPLETED
 					}
-					_ = db__jobs_mngr__update_job_status(jobStatusStr, runningJob.Id_str, pRuntimeSys)
+					_ = dbJobsMngrUpdateJobStatus(jobStatusStr, runningJob.Id_str, pRuntimeSys)
 
 					//------------------------
 
@@ -430,6 +435,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 
 //-------------------------------------------------
 // CREATE_RUNNING_JOB
+
 func JobsMngrCreateRunningJob(p_client_type_str string,
 	p_job_updates_ch chan JobUpdateMsg,
 	pRuntimeSys      *gf_core.RuntimeSys) (*GFjobRunning, *gf_core.GFerror) {
@@ -437,7 +443,7 @@ func JobsMngrCreateRunningJob(p_client_type_str string,
 	job_start_time_f := float64(time.Now().UnixNano())/1000000000.0
 	job_id_str       := fmt.Sprintf("job:%f", job_start_time_f)
 
-	running_job := &GFjobRunning{
+	runningJob := &GFjobRunning{
 		Id_str:          job_id_str,
 		T_str:           "img_running_job",
 		Client_type_str: p_client_type_str,
@@ -447,28 +453,28 @@ func JobsMngrCreateRunningJob(p_client_type_str string,
 	}
 
 	// DB
-	gfErr := db__jobsMngrCreateRunningJob(running_job, pRuntimeSys)
+	gfErr := dbJobsMngrCreateRunningJob(runningJob, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	return running_job, nil
+	return runningJob, nil
 }
 
 //-------------------------------------------------
 // DB
 //-------------------------------------------------
-func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
+func dbJobsMngrCreateRunningJob(pRunningJob *GFjobRunning,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx           := context.Background()
 	collNameStr := "gf_images__jobs_running" // pRuntimeSys.Mongo_coll.Name()
-	gfErr        := gf_core.MongoInsert(p_running_job,
+	gfErr        := gf_core.MongoInsert(pRunningJob,
 		collNameStr,
 		map[string]interface{}{
-			"running_job_id_str": p_running_job.Id_str,
-			"client_type_str":    p_running_job.Client_type_str,
+			"running_job_id_str": pRunningJob.Id_str,
+			"client_type_str":    pRunningJob.Client_type_str,
 			"caller_err_msg_str": "failed to create a Running_job record into the DB",
 		},
 		ctx,
@@ -482,10 +488,10 @@ func db__jobsMngrCreateRunningJob(p_running_job *GFjobRunning,
 }
 
 //-------------------------------------------------
-func db__jobs_mngr__update_job_status(p_status_str job_status_val,
+
+func dbJobsMngrUpdateJobStatus(p_status_str job_status_val,
 	p_job_id_str  string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_jobs_mngr.db__jobs_mngr__update_job_status()")
 
 	if p_status_str != JOB_STATUS__COMPLETED && p_status_str != JOB_STATUS__FAILED {
 		// status values are not generated at runtime, but are static, so its ok to panic here since

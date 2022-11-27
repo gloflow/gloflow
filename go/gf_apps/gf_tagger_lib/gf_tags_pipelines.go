@@ -108,26 +108,27 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 }
 
 //---------------------------------------------------
+
 func tags__pipeline__get_objects(p_req *http.Request,
 	p_resp                   io.Writer,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_runtime_sys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
+	pRuntimeSys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
 
 	//----------------
 	// INPUT
 	qs_map := p_req.URL.Query()
 	var err error
 
-	// response_format_str - "json" | "html"
-	response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+	// responseFormatStr - "json" | "html"
+	responseFormatStr := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 
 	if _, ok := qs_map["otype"]; !ok {
 		gf_err := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
-			nil, "gf_tagger", p_runtime_sys)
+			nil, "gf_tagger", pRuntimeSys)
 		return nil, gf_err
 	}
 
@@ -135,7 +136,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		gf_err := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
-			nil, "gf_tagger", p_runtime_sys)
+			nil, "gf_tagger", pRuntimeSys)
 		return nil, gf_err
 	}
 
@@ -152,7 +153,7 @@ func tags__pipeline__get_objects(p_req *http.Request,
 			gf_err := gf_core.ErrorCreate("input pg_index not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
-				nil, "gf_tagger", p_runtime_sys)
+				nil, "gf_tagger", pRuntimeSys)
 			return nil, gf_err
 		}
 	}
@@ -166,25 +167,25 @@ func tags__pipeline__get_objects(p_req *http.Request,
 			gf_err := gf_core.ErrorCreate("input pg_size not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
-				nil, "gf_tagger", p_runtime_sys)
+				nil, "gf_tagger", pRuntimeSys)
 			return nil, gf_err
 		}
 	}
 
 	//----------------
 
-	switch response_format_str {
+	switch responseFormatStr {
 		//------------------
 		// HTML RENDERING
 		case "html":
-			p_runtime_sys.LogFun("INFO","HTML RESPONSE >>")
+			pRuntimeSys.LogFun("INFO","HTML RESPONSE >>")
 			gf_err := render_objects_with_tag(tag_str,
 				p_tmpl,
 				p_subtemplates_names_lst,
 				page_index_int,
 				page_size_int,
 				p_resp,
-				p_runtime_sys)
+				pRuntimeSys)
 			if gf_err != nil {
 				return nil, gf_err
 			}
@@ -192,12 +193,12 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		//------------------
 		// JSON EXPORT
 		case "json":
-			p_runtime_sys.LogFun("INFO","JSON RESPONSE >>")
+			pRuntimeSys.LogFun("INFO","JSON RESPONSE >>")
 			objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
 				object_type_str,
 				page_index_int,
 				page_size_int,
-				p_runtime_sys)
+				pRuntimeSys)
 			if gf_err != nil {
 				return nil, gf_err
 			}

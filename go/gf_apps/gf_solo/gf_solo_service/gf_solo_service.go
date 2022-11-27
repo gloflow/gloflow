@@ -95,23 +95,23 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_IDENTITY
 
-	gf_identity__service_info := &gf_identity_lib.GFserviceInfo{
-		Name_str:                       "gf_identity",
-		Domain_base_str:                pConfig.Domain_base_str,
-		AuthLoginURLstr:                "/landing/main", // on email confirm redirect user to this
-		AuthLoginSuccessRedirectURLstr: "/v1/home/main", // on login success redirecto to home
-		Enable_events_app_bool:                  true,
-		Enable_user_creds_in_secrets_store_bool: true,
-		Enable_email_bool:                       true,
-		Enable_email_require_confirm_for_login_bool: true,
+	gfIdentityServiceInfo := &gf_identity_lib.GFserviceInfo{
+		NameStr:                               "gf_identity",
+		DomainBaseStr:                         pConfig.Domain_base_str,
+		AuthLoginURLstr:                       "/landing/main", // on email confirm redirect user to this
+		AuthLoginSuccessRedirectURLstr:        "/v1/home/main", // on login success redirecto to home
+		EnableEventsAppBool:                   true,
+		EnableUserCredsInSecretsStoreBool:     true,
+		EnableEmailBool:                       true,
+		EnableEmailRequireConfirmForLoginBool: true,
 
 		// ADD!! - for now regular users are not required to MFA confirm for login.
 		//         there should be an option for users to be able to enable this
 		//         individually if they so desire.
-		Enable_mfa_require_confirm_for_login_bool: false,
+		EnableMFArequireConfirmForLoginBool: false,
 	}
 	gfErr := gf_identity_lib.InitService(gfSoloHTTPmux,
-		gf_identity__service_info,
+		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {
 		return
@@ -120,52 +120,52 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_ADMIN - its started in a separate goroutine and listening on a diff
 	//            port than the main service.
-	sentry_hub_clone := sentry.CurrentHub().Clone()
-	go func(p_local_hub *sentry.Hub) {
+	sentryHubClone := sentry.CurrentHub().Clone()
+	go func(pLocalHub *sentry.Hub) {
 
 		adminHTTPmux := http.NewServeMux()
 
-		admin_service_info := &gf_admin_lib.GFserviceInfo{
-			Name_str:                                "gf_admin",
-			Admin_email_str:                         pConfig.Admin_email_str,
-			Enable_events_app_bool:                  true,
-			Enable_user_creds_in_secrets_store_bool: true,
-			Enable_email_bool:                       true,
+		adminServiceInfo := &gf_admin_lib.GFserviceInfo{
+			NameStr:                           "gf_admin",
+			AdminEmailStr:                     pConfig.Admin_email_str,
+			EnableEventsAppBool:               true,
+			EnableUserCredsInSecretsStoreBool: true,
+			EnableEmailBool:                   true,
 		}
 
 
 		// IMPORTANT!! - since admin is listening on its own port, and likely its own domain
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
-		admin_identity__service_info := &gf_identity_lib.GFserviceInfo{
-			Name_str:                        "gf_admin_identity",
-			Domain_base_str:                 pConfig.Domain_admin_base_str,
-			Admin_mfa_secret_key_base32_str: pConfig.Admin_mfa_secret_key_base32_str,
-			AuthLoginURLstr:                 "/v1/admin/login_ui", // on email confirm redirect user to this
+		adminIdentityServiceInfo := &gf_identity_lib.GFserviceInfo{
+			NameStr:                    "gf_admin_identity",
+			DomainBaseStr:              pConfig.Domain_admin_base_str,
+			AdminMFAsecretKeyBase32str: pConfig.Admin_mfa_secret_key_base32_str,
+			AuthLoginURLstr:            "/v1/admin/login_ui", // on email confirm redirect user to this
 
 			// FEATURE_FLAGS
-			Enable_events_app_bool:                  true,
-			Enable_user_creds_in_secrets_store_bool: true,
-			Enable_email_bool:                       true,
-			Enable_email_require_confirm_for_login_bool: true,
-			Enable_mfa_require_confirm_for_login_bool:   true, // admins have to MFA confirm to login
+			EnableEventsAppBool:                   true,
+			EnableUserCredsInSecretsStoreBool:     true,
+			EnableEmailBool:                       true,
+			EnableEmailRequireConfirmForLoginBool: true,
+			EnableMFArequireConfirmForLoginBool:   true, // admins have to MFA confirm to login
 			
 		}
 
 		gfErr := gf_admin_lib.InitNewService(pConfig.Templates_paths_map,
-			admin_service_info,
-			admin_identity__service_info,
+			adminServiceInfo,
+			adminIdentityServiceInfo,
 			adminHTTPmux,
-			p_local_hub,
+			pLocalHub,
 			pRuntimeSys)
 		if gfErr != nil {
 			return
 		}
 
 		// SERVER_INIT - blocking
-		gf_rpc_lib.Server__init_with_mux(portAdminInt, adminHTTPmux)
+		gf_rpc_lib.ServerInitWithMux(portAdminInt, adminHTTPmux)
 
-	}(sentry_hub_clone)
+	}(sentryHubClone)
 
 	//-------------
 	// GF_HOME
@@ -204,6 +204,7 @@ func Run(pConfig *GF_config,
 		Media_domain_str:                     imagesConfig.Media_domain_str,
 		Images_main_s3_bucket_name_str:       imagesConfig.Main_s3_bucket_name_str,
 
+		// DEPRECATE!! - AWS creds are passed in via ENV vars
 		AWS_access_key_id_str:                pConfig.AWS_access_key_id_str,
 		AWS_secret_access_key_str:            pConfig.AWS_secret_access_key_str,
 		AWS_token_str:                        pConfig.AWS_token_str,
@@ -229,7 +230,7 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_ANALYTICS
 	
-	gf_analytics__service_info := &gf_analytics_lib.GFserviceInfo{
+	gfAnalyticsServiceInfo := &gf_analytics_lib.GFserviceInfo{
 
 		Crawl__config_file_path_str:      pConfig.Crawl__config_file_path_str,
 		Crawl__cluster_node_type_str:     pConfig.Crawl__cluster_node_type_str,
@@ -240,6 +241,7 @@ func Run(pConfig *GF_config,
 		Run_indexer_bool:       pConfig.Analytics__run_indexer_bool,
 		Elasticsearch_host_str: pConfig.Elasticsearch_host_str,
 
+		// DEPRECATE!! - AWS creds are passed in via ENV vars
 		AWS_access_key_id_str:     pConfig.AWS_access_key_id_str,
 		AWS_secret_access_key_str: pConfig.AWS_secret_access_key_str,
 		AWS_token_str:             pConfig.AWS_token_str,
@@ -249,7 +251,7 @@ func Run(pConfig *GF_config,
 		// IMAGES_STORAGE
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 	}
-	gf_analytics_lib.InitService(gf_analytics__service_info,
+	gf_analytics_lib.InitService(gfAnalyticsServiceInfo,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
@@ -261,15 +263,15 @@ func Run(pConfig *GF_config,
 	//         specifying gf_images host
 	//         is there because of the default distributed design that assumes
 	//         gf_publisher and gf_images run as separate processes.
-	gf_images_service_host_port_str := "127.0.0.1"
-	gf_images_runtime_info := &gf_publisher_lib.GF_images_extern_runtime_info{
+	gfImagesServiceHostPortStr := "127.0.0.1"
+	gfImagesRuntimeInfo := &gf_publisher_lib.GF_images_extern_runtime_info{
 		Jobs_mngr:               nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
-		Service_host_port_str:   gf_images_service_host_port_str,
+		Service_host_port_str:   gfImagesServiceHostPortStr,
 		Templates_dir_paths_map: pConfig.Templates_paths_map,
 	}
 	
 	gf_publisher_lib.InitService(gfSoloHTTPmux,
-		gf_images_runtime_info,
+		gfImagesRuntimeInfo,
 		pRuntimeSys)
 
 	//-------------
@@ -307,15 +309,15 @@ func Run(pConfig *GF_config,
 }
 
 //-------------------------------------------------
-func RuntimeGet(pConfig_path_str string,
-	p_external_plugins *gf_core.ExternalPlugins,
-	pLogFun            func(string, string)) (*gf_core.RuntimeSys, *GF_config, error) {
+func RuntimeGet(pConfigPathStr string,
+	pExternalPlugins *gf_core.ExternalPlugins,
+	pLogFun          func(string, string)) (*gf_core.RuntimeSys, *GF_config, error) {
 
 	// CONFIG
-	config_dir_path_str := path.Dir(pConfig_path_str)  // "./../config/"
-	config_name_str     := path.Base(pConfig_path_str) // "gf_solo"
+	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
+	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
 	
-	config, err := Config__init(config_dir_path_str, config_name_str)
+	config, err := Config__init(configDirPathStr, configNameStr)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("failed to load config")
@@ -326,14 +328,14 @@ func RuntimeGet(pConfig_path_str string,
 	// SENTRY - ERROR_REPORTING
 	if config.Sentry_endpoint_str != "" {
 
-		sentry_endpoint_str := config.Sentry_endpoint_str
-		sentry_samplerate_f := 1.0
-		sentry_trace_handlers_map := map[string]bool{
+		sentryEndpointStr := config.Sentry_endpoint_str
+		sentrySamplerateF := 1.0
+		sentryTraceHandlersMap := map[string]bool{
 			
 		}
-		err := gf_core.Error__init_sentry(sentry_endpoint_str,
-			sentry_trace_handlers_map,
-			sentry_samplerate_f)
+		err := gf_core.Error__init_sentry(sentryEndpointStr,
+			sentryTraceHandlersMap,
+			sentrySamplerateF)
 		if err != nil {
 			panic(err)
 		}
@@ -351,26 +353,26 @@ func RuntimeGet(pConfig_path_str string,
 		Errors_send_to_sentry_bool: true,
 
 		// EXTERNAL_PLUGINS
-		ExternalPlugins: p_external_plugins,
+		ExternalPlugins: pExternalPlugins,
 	}
 	
 	//--------------------
 	// MONGODB
-	mongodb_host_str := config.Mongodb_host_str
-	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
-	fmt.Printf("mongodb_host    - %s\n", mongodb_host_str)
+	mongodbHostStr := config.Mongodb_host_str
+	mongodbURLstr  := fmt.Sprintf("mongodb://%s", mongodbHostStr)
+	fmt.Printf("mongodb_host    - %s\n", mongodbHostStr)
 	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
 
-	mongodb_db, _, gf_err := gf_core.MongoConnectNew(mongodb_url_str,
+	mongodbDB, _, gfErr := gf_core.MongoConnectNew(mongodbURLstr,
 		config.Mongodb_db_name_str,
 		nil,
 		runtimeSys)
-	if gf_err != nil {
-		return nil, nil, gf_err.Error
+	if gfErr != nil {
+		return nil, nil, gfErr.Error
 	}
 
-	runtimeSys.Mongo_db   = mongodb_db
-	runtimeSys.Mongo_coll = mongodb_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongodbDB
+	runtimeSys.Mongo_coll = mongodbDB.Collection("data_symphony")
 	fmt.Printf("mongodb connected...\n")
 
 	//--------------------

@@ -26,7 +26,6 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
-	// "github.com/globalsign/mgo/bson"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -34,18 +33,17 @@ import (
 //IMPORTANT!! - this statistic used by the gf_domains GF app, directly by the end-user
 //              (not only by the admin user)
 
-type Gf_domain_images struct {
+type GFdomainImages struct {
 	Name_str            string         `bson:"_id"`
 	Count_int           int            `bson:"count_int"`           // total count of all subpages counts
 	Subpages_Counts_map map[string]int `bson:"subpages_counts_map"` // counts of individual sub-page urls that images come from
 }
 
-func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_images, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains__images.Get_domains_images__mongo()")
+func GetDomainsImagesDB(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages, *gf_core.GFerror) {
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
-	p_runtime_sys.LogFun("INFO",cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
+	pRuntimeSys.LogFun("INFO",cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
 
 
@@ -75,7 +73,7 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 	}
 
 
-	/*pipe := p_runtime_sys.Mongo_coll.Pipe([]bson.M{
+	/*pipe := pRuntimeSys.Mongo_coll.Pipe([]bson.M{
 		//-------------------
 		bson.M{"$match":bson.M{
 				"t":                   "img",
@@ -105,18 +103,18 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 		bson.M{"$sort": bson.M{"count_int": -1},},
 	})*/
 	
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(ctx, pipeline)
 	if err != nil {
 
-		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
+		gfErr := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_domains_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_domains_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 	defer cursor.Close(ctx)
 
-	type Images_Origin_Page struct {
+	type ImagesOriginPage struct {
 		Origin_page_url_str string `bson:"_id"`
 		Count_int           int    `bson:"count_int"`
 	}
@@ -125,26 +123,26 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 	err         := pipe.All(&results_lst)
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
+		gfErr := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 			"mongodb_aggregation_error",
-			nil, err, "gf_domains_lib", p_runtime_sys)
-		return nil, gf_err
+			nil, err, "gf_domains_lib", pRuntimeSys)
+		return nil, gfErr
 	}*/
 
-	results_lst := []Images_Origin_Page{}
+	resultsLst := []ImagesOriginPage{}
 	for cursor.Next(ctx) {
 
-		var r Images_Origin_Page
+		var r ImagesOriginPage
 		err := cursor.Decode(&r)
 		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
+			gfErr := gf_core.MongoHandleError("failed to run an aggregation pipeline to get domains images",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_domains_lib", p_runtime_sys)
-			return nil, gf_err
+				err, "gf_domains_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 	
-		results_lst = append(results_lst, r)
+		resultsLst = append(resultsLst, r)
 	}
 
 	//----------------------
@@ -153,12 +151,12 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 	// IMPORTANT!! - application-layer JOIN. starts with all unique origin_page_url_str's, 
 	//               and then indexes their info by the domain to which they belong.
 
-	domains_images_map := map[string]Gf_domain_images{}
-	for _, images_origin_page := range results_lst {
+	domainsImagesMap := map[string]GFdomainImages{}
+	for _, imagesOriginPage := range resultsLst {
 
-		origin_page_url := images_origin_page.Origin_page_url_str
+		originPageURLstr := imagesOriginPage.Origin_page_url_str
 
-		u, err := url.Parse(origin_page_url)
+		u, err := url.Parse(originPageURLstr)
 		if err != nil {
 			continue
 		}
@@ -169,40 +167,39 @@ func Get_domains_images__mongo(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain_i
 		// IMPORTANT!! - mongodb doesnt allow "." in the document keys. origin_page_url is a regular
 		//               url with ".". This is used as a key in the Domain_Images "Subpages_Counts_map"
 		//               member, and when stored in the mongodb they raise an error if not encoded.
-		origin_page_url_no_dots_str := strings.Replace(origin_page_url, ".", "+_=_+", -1)
+		origin_page_url_no_dots_str := strings.Replace(originPageURLstr, ".", "+_=_+", -1)
 
 		//--------------------
 
-		if domain_images,ok := domains_images_map[domain_str]; ok {
-			domain_images.Count_int                                        = domain_images.Count_int + images_origin_page.Count_int
-			domain_images.Subpages_Counts_map[origin_page_url_no_dots_str] = images_origin_page.Count_int
+		if domain_images, ok := domainsImagesMap[domain_str]; ok {
+			domain_images.Count_int                                        = domain_images.Count_int + imagesOriginPage.Count_int
+			domain_images.Subpages_Counts_map[origin_page_url_no_dots_str] = imagesOriginPage.Count_int
 		} else {
 
 			//--------------------
 			// domain_image - CREATE
 
-			new_domain_images := Gf_domain_images{
+			newDomainImages := GFdomainImages{
 				Name_str:            domain_str,
-				Count_int:           images_origin_page.Count_int,
+				Count_int:           imagesOriginPage.Count_int,
 				Subpages_Counts_map: map[string]int{
-					origin_page_url_no_dots_str: images_origin_page.Count_int,
+					origin_page_url_no_dots_str: imagesOriginPage.Count_int,
 				},
 			}
 
-			domains_images_map[domain_str] = new_domain_images
+			domainsImagesMap[domain_str] = newDomainImages
 
 			//--------------------
 		}
 	}
 
 	// serialize map 
-	domain_images_lst := []Gf_domain_images{}
-	for _, v := range domains_images_map {
-		domain_images_lst = append(domain_images_lst, v)
+	domainImagesLst := []GFdomainImages{}
+	for _, v := range domainsImagesMap {
+		domainImagesLst = append(domainImagesLst, v)
 	}
 
-	// p_runtime_sys.LogFun("INFO",yellow(">>>>>>>> DOMAIN_IMAGES FOUND - ")+cyan(fmt.Sprint(len(domain_images_lst))))
 	//----------------------
 
-	return domain_images_lst, nil
+	return domainImagesLst, nil
 }

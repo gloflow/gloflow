@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Stat_query_run__extern_result struct {
 	Query_run_id_str   string                 `json:"query_run_id_str"`
 	Stat_name_str      string                 `json:"stat_name_str"`
@@ -50,17 +51,18 @@ type Stat_query_run struct {
 }
 
 //-------------------------------------------------
+
 func Init(p_stats_url_base_str string,
 	p_py_stats_dir_path_str       string,
 	p_stats_query_funs_groups_lst []map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror),
-	p_runtime_sys                 *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.Init()")
+	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats.Init()")
 
 	//----------------
 	// BATCH__HANDLERS
-	gf_err := batch__init_handlers(p_stats_url_base_str, p_py_stats_dir_path_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfErr := batch__init_handlers(p_stats_url_base_str, p_py_stats_dir_path_str, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//----------------
@@ -81,30 +83,31 @@ func Init(p_stats_url_base_str string,
 			}
 		} 
 	}
-	query__init_handlers(p_stats_url_base_str, query_funs_map, p_runtime_sys)
+	query__init_handlers(p_stats_url_base_str, query_funs_map, pRuntimeSys)
 	//----------------
 
 	return nil
 }
 
 //-------------------------------------------------
+
 func query__init_handlers(p_stats_url_base_str string,
 	p_stats_query_funs_map map[string]func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror),
-	p_runtime_sys          *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.query__init_handlers()")
+	pRuntimeSys          *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats.query__init_handlers()")
 
 	url_str := p_stats_url_base_str+"/query"
 	http.HandleFunc(url_str, func(p_resp http.ResponseWriter, p_req *http.Request) {
 
-		p_runtime_sys.LogFun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
+		pRuntimeSys.LogFun("INFO", fmt.Sprintf("INCOMING HTTP REQUEST -- %s ----------",p_stats_url_base_str))
 		if p_req.Method == "POST" {
 			
 			start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			//--------------------------
 			// INPUT
-			i, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
-			if gf_err != nil {
+			i, gfErr := gf_core.HTTPgetInput(p_req, pRuntimeSys)
+			if gfErr != nil {
 				return
 			}
 
@@ -113,46 +116,47 @@ func query__init_handlers(p_stats_url_base_str string,
 			//--------------------------
 			// RUN_QUERY_FUNCTION
 			
-			query_fun_result, gf_err := query__run_fun(stat_name_str, p_stats_query_funs_map, p_runtime_sys)
-			if gf_err != nil {
-				gf_rpc_lib.Error__in_handler(url_str, "stat run failed", gf_err, p_resp, p_runtime_sys)
+			query_fun_result, gfErr := query__run_fun(stat_name_str, p_stats_query_funs_map, pRuntimeSys)
+			if gfErr != nil {
+				gf_rpc_lib.ErrorInHandler(url_str, "stat run failed", gfErr, p_resp, pRuntimeSys)
 				return
 			}
-			gf_rpc_lib.HTTPrespond(query_fun_result, "OK", p_resp, p_runtime_sys)
+			gf_rpc_lib.HTTPrespond(query_fun_result, "OK", p_resp, pRuntimeSys)
 
 			//--------------------------
 
 			end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 			go func() {
-				gf_rpc_lib.Store_rpc_handler_run(url_str, start_time__unix_f, end_time__unix_f, p_runtime_sys)
+				gf_rpc_lib.StoreRPChandlerRun(url_str, start_time__unix_f, end_time__unix_f, pRuntimeSys)
 			}()
 		}
 	});
 }
 
 //-------------------------------------------------
+
 func query__run_fun(p_stat_name_str string,
 	p_stats_query_funs_map map[string](func(*gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror)),
-	p_runtime_sys          *gf_core.RuntimeSys) (*Stat_query_run__extern_result, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_stats.query__run_fun()")
+	pRuntimeSys          *gf_core.RuntimeSys) (*Stat_query_run__extern_result, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_stats.query__run_fun()")
 
 	if stat_fun, ok := p_stats_query_funs_map[p_stat_name_str]; ok {
 
 		start_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 		run_id_str         := fmt.Sprintf("%f_%s", start_time__unix_f, p_stat_name_str)
 
-		result_data_map, gf_err := stat_fun(p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		result_data_map, gfErr := stat_fun(pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		end_time__unix_f := float64(time.Now().UnixNano())/1000000000.0
 
 
-		gf_err = Stat_run__create(p_stat_name_str, result_data_map, start_time__unix_f, end_time__unix_f, p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		gfErr = Stat_run__create(p_stat_name_str, result_data_map, start_time__unix_f, end_time__unix_f, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 		stat_result := &Stat_query_run__extern_result{
@@ -165,22 +169,23 @@ func query__run_fun(p_stat_name_str string,
 
 		return stat_result,nil	
 	} else {
-		gf_err := gf_core.ErrorCreate("failed to get random img range from the DB",
+		gfErr := gf_core.ErrorCreate("failed to get random img range from the DB",
 			"verify__invalid_key_value_error",
 			map[string]interface{}{"stat_name_str": p_stat_name_str,},
-			nil, "gf_stats_lib", p_runtime_sys)
-		return nil, gf_err
+			nil, "gf_stats_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return nil, nil
 }
 
 //-------------------------------------------------
+
 func Stat_run__create(p_stat_name_str string,
 	p_results_data_lst   map[string]interface{},
 	p_start_time__unix_f float64,
 	p_end_time__unix_f   float64,
-	p_runtime_sys        *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	id_str := fmt.Sprintf("stat_query_run:%f", float64(time.Now().UnixNano())/1000000000.0)
 	run    := &Stat_query_run{
@@ -193,26 +198,26 @@ func Stat_run__create(p_stat_name_str string,
 	}
 
 	ctx := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	gf_err := gf_core.MongoInsert(run,
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
+	gfErr := gf_core.MongoInsert(run,
 		coll_name_str,
 		map[string]interface{}{
 			"stat_name_str":      p_stat_name_str,
 			"caller_err_msg_str": "failed to persist a stat_run",
 		},
 		ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
-	/*err := p_runtime_sys.Mongo_coll.Insert(run)
+	/*err := pRuntimeSys.Mongo_coll.Insert(run)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to persist a stat_run",
+		gfErr := gf_core.MongoHandleError("failed to persist a stat_run",
 			"mongodb_insert_error",
 			map[string]interface{}{"stat_name_str": p_stat_name_str,},
-			err, "gf_stats_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_stats_lib", pRuntimeSys)
+		return gfErr
 	}*/
 
 	return nil

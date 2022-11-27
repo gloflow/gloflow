@@ -29,12 +29,14 @@ import (
 )
 
 //---------------------------------------------------
+
 type GFpolicyUpdateOp struct {
 	PublicViewBool *bool
 }
 
 //---------------------------------------------------
 // GET_BY_ID
+
 func DBgetPolicyByID(pPolicyIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFpolicy, *gf_core.GFerror) {
@@ -65,6 +67,7 @@ func DBgetPolicyByID(pPolicyIDstr gf_core.GF_ID,
 
 //---------------------------------------------------
 // GET
+
 func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFpolicy, *gf_core.GFerror) {
@@ -95,6 +98,7 @@ func DBgetPolicies(pTargetResourceIDstr gf_core.GF_ID,
 
 //---------------------------------------------------
 // CREATE
+
 func DBcreatePolicy(pPolicy *GFpolicy,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -104,6 +108,7 @@ func DBcreatePolicy(pPolicy *GFpolicy,
 
 //---------------------------------------------------
 // UPDATE
+
 func DBupdatePolicy(pPolicyIDstr gf_core.GF_ID,
 	pUpdateOp   *GFpolicyUpdateOp,
 	pCtx        context.Context,
@@ -137,6 +142,7 @@ func DBupdatePolicy(pPolicyIDstr gf_core.GF_ID,
 
 //---------------------------------------------------
 // EXISTS_BY_USERNAME
+
 func DBexistsByID(pPolicyIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {

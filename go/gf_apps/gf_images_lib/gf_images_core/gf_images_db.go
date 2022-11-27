@@ -32,7 +32,7 @@ import (
 
 //---------------------------------------------------
 
-func DBputImage(pImage *GF_image,
+func DBputImage(pImage *GFimage,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -116,17 +116,16 @@ func DBimageExists(pImageIDstr GFimageID,
 
 //---------------------------------------------------
 
-func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
-	p_max_random_cursor_position_int int, // 2000
-	p_flow_name_str                  string,
-	pRuntimeSys                    *gf_core.RuntimeSys) ([]*GF_image, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_db.DB__get_random_imgs_range()")
+func DBgetRandomImagesRange(pImgsNumToGetInt int, // 5
+	pMaxRandomCursorPositionInt int, // 2000
+	pFlowNameStr                string,
+	pRuntimeSys                 *gf_core.RuntimeSys) ([]*GFimage, *gf_core.GFerror) {
 
 	// reseed the random number source
 	rand.Seed(time.Now().UnixNano())
 	
-	random_cursor_position_int := rand.Intn(p_max_random_cursor_position_int) // new Random().nextInt(p_max_random_cursor_position_int)
-	pRuntimeSys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(p_imgs_num_to_get_int))
+	random_cursor_position_int := rand.Intn(pMaxRandomCursorPositionInt) // new Random().nextInt(pMaxRandomCursorPositionInt)
+	pRuntimeSys.LogFun("INFO", "imgs_num_to_get_int        - "+fmt.Sprint(pImgsNumToGetInt))
 	pRuntimeSys.LogFun("INFO", "random_cursor_position_int - "+fmt.Sprint(random_cursor_position_int))
 
 
@@ -135,7 +134,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 
 	find_opts := options.Find()
 	find_opts.SetSkip(int64(random_cursor_position_int))
-    find_opts.SetLimit(int64(p_imgs_num_to_get_int))
+    find_opts.SetLimit(int64(pImgsNumToGetInt))
 
 	collNameStr := "data_symphony"
 	coll := pRuntimeSys.Mongo_db.Collection(collNameStr)
@@ -143,7 +142,7 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":                    "img",
 			"creation_unix_time_f": bson.M{"$exists": true,},
-			"flows_names_lst":      bson.M{"$in": []string{p_flow_name_str},},
+			"flows_names_lst":      bson.M{"$in": []string{pFlowNameStr},},
 			//---------------------
 			// IMPORTANT!! - this is the new member that indicates which page url (if not directly uploaded) the
 			//               image came from. only use these images, since only they can be properly credited
@@ -154,9 +153,9 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 		},
 		find_opts,
 		map[string]interface{}{
-			"imgs_num_to_get_int":            p_imgs_num_to_get_int,
-			"max_random_cursor_position_int": p_max_random_cursor_position_int,
-			"flow_name_str":                  p_flow_name_str,
+			"imgs_num_to_get_int":            pImgsNumToGetInt,
+			"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
+			"flow_name_str":                  pFlowNameStr,
 			"caller_err_msg_str":             "failed to get random img range from the DB",
 		},
 		coll,
@@ -167,15 +166,15 @@ func DB__get_random_imgs_range(p_imgs_num_to_get_int int, // 5
 		return nil, gfErr
 	}
 	
-	var imgsLst []*Gf_image
+	var imgsLst []*GFimage
 	err := cursor.All(ctx, &imgsLst)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get Images",
 			"mongodb_cursor_all",
 			map[string]interface{}{
-				"imgs_num_to_get_int":            p_imgs_num_to_get_int,
-				"max_random_cursor_position_int": p_max_random_cursor_position_int,
-				"flow_name_str":                  p_flow_name_str,
+				"imgs_num_to_get_int":            pImgsNumToGetInt,
+				"max_random_cursor_position_int": pMaxRandomCursorPositionInt,
+				"flow_name_str":                  pFlowNameStr,
 			},
 			err, "gf_images_core", pRuntimeSys)
 		return nil, gfErr

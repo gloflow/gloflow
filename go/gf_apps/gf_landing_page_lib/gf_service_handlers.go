@@ -27,6 +27,7 @@ import (
 )
 
 //------------------------------------------------
+
 func init_handlers(p_templates_paths_map map[string]string,
 	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -59,7 +60,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			imgs__max_random_cursor_position_int  := 10000
 			posts__max_random_cursor_position_int := 2000
-			gfErr := Pipeline__render_landing_page(imgs__max_random_cursor_position_int,
+			gfErr := pipelineRenderLandingPage(imgs__max_random_cursor_position_int,
 				posts__max_random_cursor_position_int,
 				5,  // p_featured_posts_to_get_int
 				10, // p_featured_imgs_to_get_int

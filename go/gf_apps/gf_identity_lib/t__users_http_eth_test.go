@@ -34,6 +34,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func Test__users_http_eth(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -94,7 +95,7 @@ func Test__users_http_eth(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-	signature_str, err := gf_crypto.Eth_sign_data(nonce_val_str, privateKeyHexStr)
+	signature_str, err := gf_crypto.EthSignData(nonce_val_str, privateKeyHexStr)
 	if err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -225,6 +226,7 @@ func Test__users_http_eth(pTest *testing.T) {
 }
 
 //-------------------------------------------------
+
 func Test__users_eth_unit(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -232,53 +234,52 @@ func Test__users_eth_unit(pTest *testing.T) {
 	runtime_sys := T__init()
 
 	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
-	test_user_signature_str   := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
-	test_user_nonce_str       := "gf_test_message_to_sign"
+	testUserSignatureStr  := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
+	testUserNonceStr      := "gf_test_message_to_sign"
 	ctx := context.Background()
 
 	//------------------
 	// NONCE_CREATE
 
 	unexistingUserIDstr := gf_core.GF_ID("")
-	_, gf_err := nonce__create(GF_user_nonce_val(test_user_nonce_str),
+	_, gfErr := nonceCreate(GF_user_nonce_val(testUserNonceStr),
 		unexistingUserIDstr,
-		gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
+		gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 		ctx,
 		runtime_sys)
-	if gf_err != nil {
+	if gfErr != nil {
 		pTest.FailNow()
 	}
 
 	//------------------
 	// USER_CREATE
 	
-	input__create := &GF_user_auth_eth__input_create{
-		UserTypeStr:          "standard",
-		Auth_signature_str:   gf_identity_core.GF_auth_signature(test_user_signature_str),
-		User_address_eth_str: gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
-		// Nonce_val_str:   nonce.Val_str,
+	input__create := &GFuserAuthETHinputCreate{
+		UserTypeStr:       "standard",
+		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
+		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
 
-	output__create, gf_err := users_auth_eth__pipeline__create(input__create, ctx, runtime_sys)
-	if gf_err != nil {
+	outputCreate, gfErr := usersAuthETHpipelineCreate(input__create, ctx, runtime_sys)
+	if gfErr != nil {
 		pTest.FailNow()
 	}
 
-	spew.Dump(output__create)
+	spew.Dump(outputCreate)
 
-	assert.True(pTest, output__create.Auth_signature_valid_bool, "crypto signature supplied for user creation pipeline is invalid")
+	assert.True(pTest, outputCreate.AuthSignatureValidBool, "crypto signature supplied for user creation pipeline is invalid")
 
 	//------------------
-	input__login := &GF_user_auth_eth__input_login{
-		Auth_signature_str:   gf_identity_core.GF_auth_signature(test_user_signature_str),
-		User_address_eth_str: gf_identity_core.GF_user_address_eth(testUserAddressEthStr),
+	inputLogin := &GFuserAuthETHinputLogin{
+		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
+		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
-	output__login, gf_err := users_auth_eth__pipeline__login(input__login, ctx, runtime_sys)
-	if gf_err != nil {
+	outputLogin, gfErr := usersAuthETHpipelineLogin(inputLogin, ctx, runtime_sys)
+	if gfErr != nil {
 		pTest.FailNow()
 	}
 
-	spew.Dump(output__login)
+	spew.Dump(outputLogin)
 	
 	//------------------
 }

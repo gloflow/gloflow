@@ -31,15 +31,15 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_templates_paths_map map[string]string,
+
+func initHandlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_analytics_handlers.init_handlers()")
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gfErr := tmpl__load(p_templates_paths_map, p_runtime_sys)
+	gf_templates, gfErr := tmplLoad(p_templates_paths_map, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -60,7 +60,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 
 			// CORS - preflight request
-			gf_rpc_lib.Http_CORS_preflight_handle(p_req, p_resp)
+			gf_rpc_lib.HTTPcorsPreflightHandle(p_req, p_resp)
 			// if p_req.Method == "OPTIONS" {
 			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
 			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
@@ -88,7 +88,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 				//-----------------
 				// INPUT
-				input, session_id_str, gfErr := gf_events.User_event__parse_input(p_req, p_resp, p_runtime_sys)
+				input, session_id_str, gfErr := gf_events.User_event__parse_input(p_req, p_resp, pRuntimeSys)
 				if gfErr != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
@@ -106,7 +106,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 					Os_ver_str:       os_version_str,
 				}
 
-				gfErr = gf_events.User_event__create(input, session_id_str, gf_req_ctx, p_runtime_sys)
+				gfErr = gf_events.User_event__create(input, session_id_str, gf_req_ctx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -119,7 +119,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		metrics,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//--------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/dashboard",
@@ -129,7 +129,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 
 			//---------------------
 			// SESSION_VALIDATE
-			valid_bool, _, gfErr := gf_session.Validate(p_req, p_ctx, p_runtime_sys)
+			valid_bool, _, gfErr := gf_session.Validate(p_req, p_ctx, pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -142,10 +142,10 @@ func init_handlers(p_templates_paths_map map[string]string,
 			
 			//--------------------
 			// RENDER TEMPLATE
-			gfErr = dashboard__render_template(gf_templates.dashboard__tmpl,
+			gfErr = dashboardRenderTemplate(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
 				p_resp,
-				p_runtime_sys)
+				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -156,7 +156,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 	metrics,
 	true, // p_store_run_bool
 	nil,
-	p_runtime_sys)
+	pRuntimeSys)
 
 	//--------------
 	return nil

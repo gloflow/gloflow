@@ -26,6 +26,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type Browser__job_run_result struct {
 	Id                           primitive.ObjectID `bson:"_id,omitempty"`
 	T_str                        string        `bson:"t"`
@@ -38,6 +39,7 @@ type Browser__job_run_result struct {
 }
 
 //-------------------------------------------------
+
 type Browser__ai_classify__job_run_result struct {
 	Id                           primitive.ObjectID `bson:"_id,omitempty"`
 	T_str                        string        `bson:"t"`
@@ -48,8 +50,8 @@ type Browser__ai_classify__job_run_result struct {
 }
 
 //-------------------------------------------------
-func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[string]interface{}, p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_calc.Process__browser_image_calc_result()")
+
+func ProcessBrowserImageCalcResult(p_browser_jobs_runs_results_lst []map[string]interface{}, pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	for _, m := range p_browser_jobs_runs_results_lst {
 
@@ -76,25 +78,15 @@ func Process__browser_image_calc_result(p_browser_jobs_runs_results_lst []map[st
 		}
 
 		ctx           := context.Background()
-		coll_name_str := p_runtime_sys.Mongo_coll.Name()
+		coll_name_str := pRuntimeSys.Mongo_coll.Name()
 		gf_err        := gf_core.MongoInsert(browser_job_result,
 			coll_name_str,
 			map[string]interface{}{"image_id_str": image_id_str,},
 			ctx,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gf_err != nil {
 			return gf_err
 		}
-			
-		/*err := p_runtime_sys.Mongo_coll.Insert(browser_job_result)
-		if err != nil {
-
-			gf_err := gf_core.MongoHandleError("failed to insert a Browser__job_run_result in mongodb",
-				"mongodb_insert_error",
-				map[string]interface{}{"image_id_str": image_id_str,},
-				err, "gf_images_lib", p_runtime_sys)
-			return gf_err
-		}*/
 	}
 	return nil
 }

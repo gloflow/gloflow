@@ -65,11 +65,11 @@ func (p_retrier *Gf_elasticsearch_retrier) Retry(p_ctx context.Context,
 
 //-------------------------------------------------
 
-func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elastic.Client, *GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
+func Elastic__get_client(p_es_host_str string, pRuntimeSys *RuntimeSys) (*elastic.Client, *GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_elasticsearch.Elastic__get_client()")
 
 	// es_host_str := "127.0.0.1:9200"
-	p_runtime_sys.LogFun("INFO", fmt.Sprintf("es_host - %s", p_es_host_str))
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("es_host - %s", p_es_host_str))
 
 	url_str := fmt.Sprintf("http://%s", p_es_host_str)
 
@@ -80,7 +80,7 @@ func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elas
 		gf_err := ErrorCreate("failed to create an ElasticSearch client",
 			"elasticsearch_get_client",
 			map[string]interface{}{"es_host_str": p_es_host_str,},
-			err, "gf_core", p_runtime_sys)
+			err, "gf_core", pRuntimeSys)
 		return nil, gf_err	
 	}
 
@@ -92,7 +92,7 @@ func Elastic__get_client(p_es_host_str string, p_runtime_sys *RuntimeSys) (*elas
 		gf_err := ErrorCreate("failed to ping ElasticSearch server with a client",
 			"elasticsearch_ping",
 			map[string]interface{}{"ping_url_str": ping_url_str,},
-			err, "gf_core", p_runtime_sys)
+			err, "gf_core", pRuntimeSys)
 		return nil, gf_err	
 	}
 

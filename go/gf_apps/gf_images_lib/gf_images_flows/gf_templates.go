@@ -26,19 +26,22 @@ import (
 )
 
 //-------------------------------------------------
+
 type gf_templates struct {
 	flows_browser__tmpl                   *template.Template
 	flows_browser__subtemplates_names_lst []string
 }
+
 //-------------------------------------------------
+
 func tmplLoad(pTemplatesPathsMap map[string]string, // p_templates_dir_path_str string, 
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
 
 	main_template_filepath_str := pTemplatesPathsMap["gf_images_flows_browser"]
 
 	flows_browser__tmpl, subtemplates_names_lst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

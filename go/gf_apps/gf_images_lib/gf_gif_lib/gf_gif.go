@@ -254,7 +254,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 			//"dominant_color_hex_str":dominant_color_hex_str,
 		}
 
-		verified_image_info_map, gfErr := gf_images_core.Image__verify_image_info(gf_image_info_map, pRuntimeSys)
+		verified_image_info_map, gfErr := gf_images_core.VerifyImageInfo(gf_image_info_map, pRuntimeSys)
 		if gfErr != nil {
 			return nil, "", gfErr
 		}
@@ -284,7 +284,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 		}
 
 		// link the new gf_image DB record to the gf_gif DB record
-		gif_db__update_image_id(gif.Id_str, verified_gf_image_id_str, pRuntimeSys)
+		dbUpdateImageID(gif.Id_str, verified_gf_image_id_str, pRuntimeSys)
 	}
 
 	//-----------------------
@@ -303,7 +303,7 @@ func storePreviewFrames(pLocalFilePathSrc string,
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
 	max_num__of_preview_frames_int      := 10
-	frames_images_file_paths_lst, gfErr := Gif__frames__save_to_fs(pLocalFilePathSrc, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
+	frames_images_file_paths_lst, gfErr := gifFramesSaveToFS(pLocalFilePathSrc, p_frames_images_dir_path_str, max_num__of_preview_frames_int, pRuntimeSys)
 	if gfErr != nil {
 		return 0, nil, gfErr, nil
 	}
@@ -353,11 +353,10 @@ func storePreviewFrames(pLocalFilePathSrc string,
 
 //--------------------------------------------------
 
-func Gif__frames__save_to_fs(pLocalFilePathSrc string,
+func gifFramesSaveToFS(pLocalFilePathSrc string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
 	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Gif__frames__save_to_fs()")
 
 	cyan  := color.New(color.FgCyan).SprintFunc()
 	black := color.New(color.FgBlack).Add(color.BgWhite).SprintFunc()
@@ -538,9 +537,8 @@ func getDimensions(pLocalFilePathSrc string,
 
 //--------------------------------------------------
 
-func gif__get_hash(p_image_local_file_path_str string,
+func gifGetHash(p_image_local_file_path_str string,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.gif__get_hash()")
 
 	hash := sha256.New()
 

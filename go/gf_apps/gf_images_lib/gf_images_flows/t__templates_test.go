@@ -32,6 +32,7 @@ var logFun func(string,string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _    = gf_core.InitLogs()
 	cli_args_map = gf_images_core.CLI__parse_args(logFun)
@@ -40,19 +41,20 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
+
 func Test__templates(p_test *testing.T) {
 
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_flows_tests",
 		LogFun:           logFun,
 	}
 
 	// TEMPLATES
-	templates_paths_map := map[string]string{
+	templatesPathsMap := map[string]string{
 		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
 	}
 	
-	gf_templates, gf_err := tmplLoad(templates_paths_map, runtime_sys)
+	gf_templates, gf_err := tmplLoad(templatesPathsMap, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -79,7 +81,7 @@ func Test__templates(p_test *testing.T) {
 		flow_pages_num_int,
 		gf_templates.flows_browser__tmpl,
 		gf_templates.flows_browser__subtemplates_names_lst,
-		runtime_sys)
+		runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}

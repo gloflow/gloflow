@@ -34,6 +34,7 @@ import (
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_EXTERN_VIDEO
+
 func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 	pVideoSourceURLstr           string,
 	pOriginPageURLstr            string,
@@ -115,6 +116,7 @@ func pipelineProcessExternVideo(pVideoIDstr gf_images_core.GFimageID,
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_UPLOADED_IMAGE
+
 func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	pS3filePathStr               string,
 	pMetaMap                     map[string]interface{},
@@ -300,6 +302,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_EXTERN_IMAGE
+
 func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pImageSourceURLstr           string,
 	pOriginPageURLstr            string,
@@ -452,6 +455,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 
 //-------------------------------------------------
 // PIPELINE__PROCESS_LOCAL_IMAGE
+
 func pipelineProcessLocalImage(pFlowsNamesLst []string,
 	pS3info              *gf_core.GFs3Info,
 	pPluginsPyDirPathStr string,
@@ -464,6 +468,7 @@ func pipelineProcessLocalImage(pFlowsNamesLst []string,
 }
 
 //-------------------------------------------------
+
 func jobTransform(pImageIDstr gf_images_core.GFimageID,
 	pFlowsNamesLst               []string,
 	pImageSourceURLstr           string,

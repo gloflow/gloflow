@@ -39,22 +39,21 @@ type GFimagesClientResult struct {
 
 //---------------------------------------------------
 
-func process_external_images(p_post *gf_publisher_core.Gf_post,
+func processExternalImages(p_post *gf_publisher_core.GFpost,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_post_images.process_external_images()")
 
 	//-------------------	
 	// POST ELEMENTS IMAGES
 
 	post_elements_images_urls_lst              := []string{}
 	post_elements_images_origin_pages_urls_str := []string{}
-	post_elements_map                          := map[string]*gf_publisher_core.Gf_post_element{}
+	post_elements_map                          := map[string]*gf_publisher_core.GFpostElement{}
 
-	for _, post_element := range p_post.Post_elements_lst {
-		if post_element.Type_str == "image" {
-			imageURLstr                                := post_element.Extern_url_str
-			origin_page_url_str                        := post_element.Origin_page_url_str
+	for _, post_element := range p_post.PostElementsLst {
+		if post_element.TypeStr == "image" {
+			imageURLstr                                := post_element.ExternURLstr
+			origin_page_url_str                        := post_element.OriginPageURLstr
 			post_elements_images_urls_lst              = append(post_elements_images_urls_lst,              imageURLstr)
 			post_elements_images_origin_pages_urls_str = append(post_elements_images_origin_pages_urls_str, origin_page_url_str)
 			post_elements_map[imageURLstr]             = post_element
@@ -135,7 +134,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 	}*/
 
 	// IMPORTANT!! - list of all images in this post
-	p_post.Images_ids_lst = result.image_ids_lst
+	p_post.ImagesIDsLst = result.image_ids_lst
 
 	//----------------
 	/*// POST THUMBNAIL
@@ -144,13 +143,13 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 	firstPostElement      := post_elements_map[firstImageURLstr]
 	post_thumbnail_str      := firstPostElement.Img_thumbnail_small_url_str*/
 
-	p_post.Thumbnail_url_str = result.post_thumbnail_str
-	pRuntimeSys.LogFun("INFO", fmt.Sprintf("post_thumbnail_str - %s",result.post_thumbnail_str))
+	p_post.ThumbnailURLstr = result.post_thumbnail_str
+	pRuntimeSys.LogFun("INFO", fmt.Sprintf("post_thumbnail_str - %s", result.post_thumbnail_str))
 
 	//----------------
 	// persists the newly updated post (some of its post_elements have been updated
 	// in the initiation of image post_elements)
-	gfErr = gf_publisher_core.DB__update_post(p_post, pRuntimeSys)
+	gfErr = gf_publisher_core.DBupdatePost(p_post, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
@@ -162,7 +161,7 @@ func process_external_images(p_post *gf_publisher_core.Gf_post,
 
 //---------------------------------------------------
 
-func processExternalImagesViaHTTP(pPostElementsMap map[string]*gf_publisher_core.Gf_post_element,
+func processExternalImagesViaHTTP(pPostElementsMap map[string]*gf_publisher_core.GFpostElement,
 	pPostElementsImagesURLsLst            []string,
 	pPostElementsImagesOriginPagesURLsStr []string,
 	pImageJobClientTypeStr                string,
@@ -198,11 +197,11 @@ func processExternalImagesViaHTTP(pPostElementsMap map[string]*gf_publisher_core
 		//--------------------
 		// IMPORTANT!! - this is IMAGE_JOB EXPECTED_OUTPUT - these image url's will be resolved
 		//               at a later time when the job completes (job is a long-running process)
-		post_element                             := pPostElementsMap[output.Image_source_url_str]
-		post_element.Image_id_str                 = output.Image_id_str
-		post_element.Img_thumbnail_small_url_str  = output.Thumbnail_small_relative_url_str
-		post_element.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
-		post_element.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
+		post_element                         := pPostElementsMap[output.Image_source_url_str]
+		post_element.ImageIDstr               = output.Image_id_str
+		post_element.ImgThumbnailSmallURLstr  = output.Thumbnail_small_relative_url_str
+		post_element.ImgThumbnailMediumURLstr = output.Thumbnail_medium_relative_url_str
+		post_element.ImgThumbnailLargeURLstr  = output.Thumbnail_large_relative_url_str
 		imageIDsLst = append(imageIDsLst, output.Image_id_str)
 
 		//--------------------
@@ -213,7 +212,7 @@ func processExternalImagesViaHTTP(pPostElementsMap map[string]*gf_publisher_core
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
 	firstImageURLstr := outputsLst[0].Image_source_url_str
 	firstPostElement := pPostElementsMap[firstImageURLstr]
-	postThumbnailStr := firstPostElement.Img_thumbnail_small_url_str
+	postThumbnailStr := firstPostElement.ImgThumbnailSmallURLstr
 
 	//--------------------
 
@@ -228,7 +227,7 @@ func processExternalImagesViaHTTP(pPostElementsMap map[string]*gf_publisher_core
 
 //---------------------------------------------------
 
-func process_external_images__in_process(pPostElementsMap map[string]*gf_publisher_core.Gf_post_element,
+func process_external_images__in_process(pPostElementsMap map[string]*gf_publisher_core.GFpostElement,
 	pPostElementsImagesURLsLst            []string,
 	pPostElementsImagesOriginPagesURLsStr []string,
 	pImageJobClientTypeStr                string,
@@ -277,11 +276,11 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 		//--------------------
 		// IMPORTANT!! - this is IMAGE_JOB EXPECTED_OUTPUT - these image url's will be resolved
 		//               at a later time when the job completes (job is a long-running process)
-		postElement                             := pPostElementsMap[output.Image_source_url_str]
-		postElement.Image_id_str                 = output.Image_id_str
-		postElement.Img_thumbnail_small_url_str  = output.Thumbnail_small_relative_url_str
-		postElement.Img_thumbnail_medium_url_str = output.Thumbnail_medium_relative_url_str
-		postElement.Img_thumbnail_large_url_str  = output.Thumbnail_large_relative_url_str
+		postElement                         := pPostElementsMap[output.Image_source_url_str]
+		postElement.ImageIDstr               = output.Image_id_str
+		postElement.ImgThumbnailSmallURLstr  = output.Thumbnail_small_relative_url_str
+		postElement.ImgThumbnailMediumURLstr = output.Thumbnail_medium_relative_url_str
+		postElement.ImgThumbnailLargeURLstr  = output.Thumbnail_large_relative_url_str
 		imageIDsLst = append(imageIDsLst, output.Image_id_str)
 
 		//--------------------
@@ -291,7 +290,7 @@ func process_external_images__in_process(pPostElementsMap map[string]*gf_publish
 	// IMPORTANT!! - first image in the list of images supplied for the post, is also used as the post thumbnail
 	firstImageURIstr := outputsLst[0].Image_source_url_str
 	firstPostElement := pPostElementsMap[firstImageURIstr]
-	postThumbnailStr := firstPostElement.Img_thumbnail_small_url_str
+	postThumbnailStr := firstPostElement.ImgThumbnailSmallURLstr
 	
 	//--------------------
 

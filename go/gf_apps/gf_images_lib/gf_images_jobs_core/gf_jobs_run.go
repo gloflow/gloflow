@@ -30,6 +30,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
@@ -59,6 +60,7 @@ func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 }
 
 //-------------------------------------------------
+
 func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
@@ -103,6 +105,7 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 
 //-------------------------------------------------
 // RUN_JOB__EXTERN_IMAGES
+
 func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,

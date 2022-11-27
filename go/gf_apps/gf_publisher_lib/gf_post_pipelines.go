@@ -30,10 +30,10 @@ import (
 
 //------------------------------------------------
 // CREATE_POST
-func Pipeline__create_post(p_post_info_map map[string]interface{},
-	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.RuntimeSys) (*gf_publisher_core.Gf_post, string, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_post_pipelines.Pipeline__create_post()")
+
+func PipelineCreatePost(pPostInfoMap map[string]interface{},
+	pImagesRuntimeInfo *GF_images_extern_runtime_info,
+	pRuntimeSys        *gf_core.RuntimeSys) (*gf_publisher_core.GFpost, string, *gf_core.GFerror) {
 
 	//----------------------
 	// VERIFY INPUT
@@ -41,57 +41,56 @@ func Pipeline__create_post(p_post_info_map map[string]interface{},
 	max_description_chars_int := 1000
 	post_element_tag_max_int  := 20
 
-	p_runtime_sys.LogFun("INFO", "p_post_info_map - "+fmt.Sprint(p_post_info_map))
-	verified_post_info_map, gf_err := gf_publisher_core.Verify_external_post_info(p_post_info_map,
+	verified_post_info_map, gfErr := gf_publisher_core.Verify_external_post_info(pPostInfoMap,
 		max_title_chars_int,
 		max_description_chars_int,
 		post_element_tag_max_int,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, "", gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//----------------------
 	// CREATE POST
-	post, gf_err := gf_publisher_core.Create_new_post(verified_post_info_map, p_runtime_sys)
-	if gf_err != nil {
-		return nil, "", gf_err
+	post, gfErr := gf_publisher_core.CreateNewPost(verified_post_info_map, pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
-	p_runtime_sys.LogFun("INFO","post - "+fmt.Sprint(post))
+	pRuntimeSys.LogFun("INFO","post - "+fmt.Sprint(post))
 
 	//----------------------
 	// PERSIST POST
-	gf_err = gf_publisher_core.DB__create_post(post, p_runtime_sys)
-	if gf_err != nil {
-		return nil, "", gf_err
+	gfErr = gf_publisher_core.DBcreatePost(post, pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//----------------------
-	//IMAGES
-	//IMPORTANT - long-lasting image operation
-	images_job_id_str, img_gf_err := process_external_images(post, p_gf_images_runtime_info, p_runtime_sys)
-	if img_gf_err != nil {
-		return nil, "", img_gf_err
+	// IMAGES
+	// IMPORTANT - long-lasting image operation
+	imagesJobIDstr, gfErr := processExternalImages(post, pImagesRuntimeInfo, pRuntimeSys)
+	if gfErr != nil {
+		return nil, "", gfErr
 	}
 
 	//----------------------
 
-	return post, images_job_id_str, nil
+	return post, imagesJobIDstr, nil
 }
 
 //------------------------------------------------
-func Pipeline__get_post(p_post_title_str string,
-	p_response_format_str    string,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER","gf_post_pipelines.Pipeline__get_post()")
 
-	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+func PipelineGetPost(pPostTitleStr string,
+	p_response_format_str string,
+	p_tmpl                *template.Template,
+	pSubtemplatesNamesLst []string,
+	p_resp                io.Writer,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	post, gfErr := gf_publisher_core.DBgetPost(pPostTitleStr, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//------------------
@@ -101,13 +100,13 @@ func Pipeline__get_post(p_post_title_str string,
 	// so here a post_adt is modified in place. 
 	// this will over time correct/remove empty string tags, but the source cause of this
 	// (on post tagging/creation) is still there, so find that and fix it.
-	whole_tags_lst := []string{}
-	for _, tag_str := range post.Tags_lst {
-		if tag_str != "" {
-			whole_tags_lst = append(whole_tags_lst, tag_str)
+	wholeTagsLst := []string{}
+	for _, tagStr := range post.TagsLst {
+		if tagStr != "" {
+			wholeTagsLst = append(wholeTagsLst, tagStr)
 		}
 	}
-	post.Tags_lst = whole_tags_lst
+	post.TagsLst = wholeTagsLst
 	
 	//------------------
 
@@ -120,25 +119,25 @@ func Pipeline__get_post(p_post_title_str string,
 			// ADD!! - cache this result in redis, and server it from there
 			//         only re-generate the template every so often
 			//         or figure out some quick way to check if something changed
-			gf_err := post__render_template(post, p_tmpl, p_subtemplates_names_lst, p_resp, p_runtime_sys)
-			if gf_err != nil {
-				return gf_err
+			gfErr := post__render_template(post, p_tmpl, pSubtemplatesNamesLst, p_resp, pRuntimeSys)
+			if gfErr != nil {
+				return gfErr
 			}
 
 		//------------------
 		// JSON EXPORT
 		case "json":
 
-			post_byte_lst,err := json.Marshal(post)
+			postByteLst, err := json.Marshal(post)
 			if err != nil {
-				gf_err := gf_core.ErrorCreate("failed to serialize a Post into JSON form",
+				gfErr := gf_core.ErrorCreate("failed to serialize a Post into JSON form",
 					"json_marshal_error",
-					map[string]interface{}{"post_title_str": p_post_title_str,},
-					err, "gf_publisher_lib", p_runtime_sys)
-				return gf_err
+					map[string]interface{}{"post_title_str": pPostTitleStr,},
+					err, "gf_publisher_lib", pRuntimeSys)
+				return gfErr
 			}
-			post_str := string(post_byte_lst)
-			p_resp.Write([]byte(post_str))
+			postStr := string(postByteLst)
+			p_resp.Write([]byte(postStr))
 
 		//------------------
 	}

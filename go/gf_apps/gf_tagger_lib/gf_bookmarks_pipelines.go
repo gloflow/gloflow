@@ -32,7 +32,8 @@ import (
 )
 
 //---------------------------------------------------
-type GF_bookmark struct {
+
+type GFbookmark struct {
 	V_str                string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str               gf_core.GF_ID      `bson:"id_str"`
@@ -49,7 +50,7 @@ type GF_bookmark struct {
 	Screenshot_image_thumbnail_url_str string                      `bson:"screenshot_image_thumbnail_url_str"`
 }
 
-type GF_bookmark_extern struct {
+type GFbookmarkExtern struct {
 	Id_str               gf_core.GF_ID `json:"id_str"`
 	Creation_unix_time_f float64       `json:"creation_unix_time_f"`
 	Url_str              string        `json:"url_str"`
@@ -57,33 +58,31 @@ type GF_bookmark_extern struct {
 	Tags_lst             []string      `json:"tags_lst"`
 }
 
-// INPUT
-type GF_bookmark__input_create struct {
+type GFbookmarkInputCreate struct {
 	User_id_str     gf_core.GF_ID
 	Url_str         string   `mapstructure:"url_str"         validate:"required,min=5,max=400"`
 	Description_str string   `mapstructure:"description_str" validate:"min=1,max=600"`
 	Tags_lst        []string `mapstructure:"tags_lst"        validate:""`
 }
 
-// INPUT
-type GF_bookmark__input_get struct {
+type GFbookmarkInputGet struct {
 	Response_format_str string
 	User_id_str         gf_core.GF_ID
 }
 
-// OUTPUT
-type GF_bookmark__output_get struct {
-	Bookmarks_lst         []*GF_bookmark_extern
+type GFbookmarkOutputGet struct {
+	Bookmarks_lst         []*GFbookmarkExtern
 	Template_rendered_str string
 }
 
 //---------------------------------------------------
 // GET
-func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
+
+func bookmarksPipelineGet(p_input *GFbookmarkInputGet,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
-	pRuntimeSys              *gf_core.RuntimeSys) (*GF_bookmark__output_get, *gf_core.GFerror) {
+	pRuntimeSys              *gf_core.RuntimeSys) (*GFbookmarkOutputGet, *gf_core.GFerror) {
 
 
 
@@ -96,7 +95,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 	}
 
 
-	var output *GF_bookmark__output_get
+	var output *GFbookmarkOutputGet
 
 	//------------------------
 	// HTML
@@ -112,17 +111,17 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 		}
 
 
-		output = &GF_bookmark__output_get{
+		output = &GFbookmarkOutputGet{
 			Template_rendered_str: template_rendered_str,
 		}
 
 	//------------------------
 	// JSON
 	} else if p_input.Response_format_str == "json" {
-		bookmarks_small_lst := []*GF_bookmark_extern{}
+		bookmarks_small_lst := []*GFbookmarkExtern{}
 		for _, b := range bookmarks_lst {
 
-			bookmark_small := &GF_bookmark_extern{
+			bookmark_small := &GFbookmarkExtern{
 				Id_str:               b.Id_str,
 				Creation_unix_time_f: b.Creation_unix_time_f,
 				Url_str:              b.Url_str,
@@ -132,7 +131,7 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 			bookmarks_small_lst = append(bookmarks_small_lst, bookmark_small)
 		}
 
-		output = &GF_bookmark__output_get{
+		output = &GFbookmarkOutputGet{
 			Bookmarks_lst: bookmarks_small_lst,
 		}
 	}
@@ -144,7 +143,8 @@ func bookmarks__pipeline__get(p_input *GF_bookmark__input_get,
 
 //---------------------------------------------------
 // CREATE
-func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
+
+func bookmarksPipelineCreate(p_input *GFbookmarkInputCreate,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -169,7 +169,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 	IDstr := gf_core.IDcreate(unique_vals_for_id_lst,
 		creation_unix_time_f)
 	
-	bookmark := &GF_bookmark{
+	bookmark := &GFbookmark{
 		V_str:                "0",
 		Id_str:               IDstr,
 		Deleted_bool:         false,
@@ -197,7 +197,7 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 		go func() {
 
 			ctx := context.Background()
-			gfErr := bookmarks__pipeline__screenshot(p_input.Url_str,
+			gfErr := bookmarksPipelineScreenshot(p_input.Url_str,
 			 IDstr,
 				ctx,
 				pImagesJobsMngr,
@@ -215,7 +215,8 @@ func bookmarks__pipeline__create(p_input *GF_bookmark__input_create,
 //---------------------------------------------------
 // SCREENSHOTS
 //---------------------------------------------------
-func bookmarks__pipeline__screenshot(pURLstr string,
+
+func bookmarksPipelineScreenshot(pURLstr string,
 	pBookmarkIDstr  gf_core.GF_ID,
 	pCtx            context.Context,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
@@ -225,7 +226,7 @@ func bookmarks__pipeline__screenshot(pURLstr string,
 	// SCREENSHOT_CREATE
 	bookmark_local_image_name_str := fmt.Sprintf("%s.png", pBookmarkIDstr)
 
-	gfErr := bookmarks__screenshot_create(pURLstr,
+	gfErr := bookmarksScreenshotCreate(pURLstr,
 		bookmark_local_image_name_str,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -272,7 +273,8 @@ func bookmarks__pipeline__screenshot(pURLstr string,
 }
 
 //---------------------------------------------------
-func bookmarks__screenshot_create(pURLstr string,
+
+func bookmarksScreenshotCreate(pURLstr string,
 	pTargetLocalFilePathStr string,
 	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 

@@ -26,9 +26,10 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitService(p_templates_paths_map map[string]string,
 	p_http_mux    *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) {
+	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -37,11 +38,11 @@ func InitService(p_templates_paths_map map[string]string,
 	gf_core.HTTPinitStaticServingWithMux(static_files__url_base_str,
 		local_dir_path_str,
 		p_http_mux,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//------------------------
 	// HANDLERS
-	gf_err := init_handlers(p_templates_paths_map, p_http_mux, p_runtime_sys)
+	gf_err := init_handlers(p_templates_paths_map, p_http_mux, pRuntimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -50,6 +51,7 @@ func InitService(p_templates_paths_map map[string]string,
 }
 
 //-------------------------------------------------
+
 func Run_service(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,

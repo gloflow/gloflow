@@ -26,6 +26,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func main() {
 	logFun, _ := gf_core.InitLogs()
 
@@ -46,6 +47,7 @@ func main() {
 }
 
 //-------------------------------------------------
+
 func parse__cli_args(pLogFun func(string, string)) map[string]interface{} {
 	pLogFun("FUN_ENTER", "gf_landing_page_service.parse__cli_args()")
 

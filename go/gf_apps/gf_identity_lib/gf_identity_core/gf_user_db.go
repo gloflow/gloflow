@@ -27,6 +27,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (GFuserName, *gf_core.GFerror) {
@@ -59,7 +60,8 @@ func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 
 //---------------------------------------------------
 // GET_BASIC_INFO_BY_ETH_ADDR
-func DBgetBasicInfoByETHaddr(pUserAddressETHstr GF_user_address_eth,
+
+func DBgetBasicInfoByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
 
@@ -81,6 +83,7 @@ func DBgetBasicInfoByETHaddr(pUserAddressETHstr GF_user_address_eth,
 
 //---------------------------------------------------
 // GET_BASIC_INFO_BY_USERNAME
+
 func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
@@ -104,6 +107,7 @@ func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
 
 //---------------------------------------------------
 // DB_GET_USER_ID
+
 func DBgetUserID(pQuery bson.M,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pCtx        context.Context,

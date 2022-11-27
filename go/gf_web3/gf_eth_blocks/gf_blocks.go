@@ -42,6 +42,7 @@ import (
 //-------------------------------------------------
 // BLOCK__INTERNAL - internal representation of the block, with fields
 //                   that are not visible to the external public users.
+
 type GF_eth__block__int struct {
 	DB_id                 string    `mapstructure:"db_id"                 json:"db_id"                 bson:"_id"`
 	Creation_time__unix_f float64   `mapstructure:"creation_time__unix_f" json:"creation_time__unix_f" bson:"creation_time__unix_f"`
@@ -72,8 +73,8 @@ func Init_continuous_metrics(p_metrics *gf_eth_core.GF_metrics,
 		for {
 			//---------------------
 			// GET_BLOCKS_COUNTS
-			blocks_count_int, gf_err := DB__get_count(p_metrics, p_runtime)
-			if gf_err != nil {
+			blocks_count_int, gfErr := DB__get_count(p_metrics, p_runtime)
+			if gfErr != nil {
 				time.Sleep(60 * time.Second) // SLEEP
 				continue
 			}
@@ -100,10 +101,11 @@ func Eth_blocks__get_and_persist_bulk__pipeline(p_block_start_uint uint64,
 		p_block_end_uint,
 		p_runtime.Indexer_cmds_ch)
 
-	return gf_errs_lst
+	return gfErrs_lst
 }*/
 
 //-------------------------------------------------
+
 func Index__pipeline(p_block_uint uint64,
 	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
@@ -116,15 +118,15 @@ func Index__pipeline(p_block_uint uint64,
 	// GET_BLOCK_FROM_WORKER
 	// gets the same block from all the workers that it gets, and the resulting maps
 	// are key-ed by worker_host.
-	block_from_workers_map, _, gf_err := Get_from_workers__pipeline(p_block_uint,
+	block_from_workers_map, _, gfErr := Get_from_workers__pipeline(p_block_uint,
 		p_get_worker_hosts_fn,
 		p_abis_defs_map,
 		p_ctx,
 		p_metrics,
 		p_runtime)
 
-	if gf_err != nil {
-		return 0, gf_err
+	if gfErr != nil {
+		return 0, gfErr
 	}
 
 	// IMPORTANT!! - for now just get the block from the first worker_host,
@@ -138,12 +140,12 @@ func Index__pipeline(p_block_uint uint64,
 	//---------------------
 	// DB_WRITE_BULK__BLOCK
 
-	gf_err = DB__write_bulk([]*GF_eth__block__int{gf_block,},
+	gfErr = DB__write_bulk([]*GF_eth__block__int{gf_block,},
 		p_ctx,
 		p_metrics,
 		p_runtime)
-	if gf_err != nil {
-		return 0, gf_err
+	if gfErr != nil {
+		return 0, gfErr
 	}
 
 	// METRICS
@@ -161,12 +163,12 @@ func Index__pipeline(p_block_uint uint64,
 		//---------------------
 		// DB_WRITE_BULK__TXS
 
-		gf_err = gf_eth_tx.DB__write_bulk(gf_block.Txs_lst,
+		gfErr = gf_eth_tx.DB__write_bulk(gf_block.Txs_lst,
 			p_ctx,
 			p_metrics,
 			p_runtime)
-		if gf_err != nil {
-			return 0, gf_err
+		if gfErr != nil {
+			return 0, gfErr
 		}
 
 		// METRICS
@@ -186,13 +188,13 @@ func Index__pipeline(p_block_uint uint64,
 		worker_inspector_host_port_str := p_get_worker_hosts_fn(p_ctx, p_runtime)[0]
 
 		// DB_WRITE
-		gf_err, _ = gf_eth_tx.Trace__get_and_persist_bulk(tx_hashes_lst,
+		gfErr, _ = gf_eth_tx.Trace__get_and_persist_bulk(tx_hashes_lst,
 			worker_inspector_host_port_str,
 			p_ctx,
 			p_metrics,
 			p_runtime)
-		if gf_err != nil {
-			return 0, gf_err
+		if gfErr != nil {
+			return 0, gfErr
 		}
 
 		//---------------------
@@ -201,6 +203,7 @@ func Index__pipeline(p_block_uint uint64,
 }
 
 //-------------------------------------------------
+
 func Get_from_workers__pipeline(p_block_uint uint64,
 	p_get_worker_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
 	p_abis_defs_map       map[string]*gf_eth_contract.GF_eth__abi,
@@ -232,20 +235,20 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 	defer span.Finish()
 
 	block_from_workers_map   := map[string]*GF_eth__block__int{}
-	gf_errs_from_workers_map := map[string]*gf_core.GFerror{}
+	gfErrs_from_workers_map := map[string]*gf_core.GFerror{}
 
 	for _, host_port_str := range workers_inspectors_hosts_lst {
 
 		ctx := span.Context()
 
 		// GET_BLOCK__FROM_WORKER
-		gf_block, gf_err := Get_block__from_worker_inspector(p_block_uint,
+		gf_block, gfErr := Get_block__from_worker_inspector(p_block_uint,
 			host_port_str,
 			ctx,
 			p_runtime.RuntimeSys)
 
-		if gf_err != nil {
-			gf_errs_from_workers_map[host_port_str] = gf_err
+		if gfErr != nil {
+			gfErrs_from_workers_map[host_port_str] = gfErr
 			
 			// mark a block coming from this worker_inspector host as nil,
 			// and continue processing other hosts. 
@@ -261,9 +264,9 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 		// TEMPORARY!! - move getting of abis_map out of this function.
 		// DB_GET
 		abi_type_str := "erc20"
-		abis_lst, gf_err := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
-		if gf_err != nil {
-			return nil, nil, gf_err
+		abis_lst, gfErr := Eth_contract__db__get_abi(abi_type_str, p_ctx, p_metrics, p_runtime)
+		if gfErr != nil {
+			return nil, nil, gfErr
 		}
 
 		abis_map := map[string]*GF_eth__abi{
@@ -273,13 +276,13 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 		//---------------------*/
 
 		
-		gf_err = gf_eth_tx.Enrich_from_block(gf_block.Txs_lst,
+		gfErr = gf_eth_tx.Enrich_from_block(gf_block.Txs_lst,
 			p_abis_defs_map,
 			ctx,
 			p_metrics,
 			p_runtime)
-		if gf_err != nil {
-			gf_errs_from_workers_map[host_port_str] = gf_err
+		if gfErr != nil {
+			gfErrs_from_workers_map[host_port_str] = gfErr
 			
 			// mark a block coming from this worker_inspector host as nil,
 			// and continue processing other hosts. 
@@ -311,12 +314,12 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 		}
 	}
 
-	miners_map, gf_err := gf_eth_core.Eth_miners__db__get_info(block_miner_addr_hex_str,
+	miners_map, gfErr := gf_eth_core.Eth_miners__db__get_info(block_miner_addr_hex_str,
 		p_metrics,
 		p_ctx,
 		p_runtime)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	//---------------------
@@ -326,14 +329,15 @@ func Get_from_workers__pipeline(p_block_uint uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__FROM_WORKER_INSPECTOR
+
 func Get_block__from_worker_inspector(p_block_uint uint64,
 	p_host_port_str string,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
+	pRuntimeSys   *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
 
 
 
-	url_str := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?b=%d",
+	urlStr := fmt.Sprintf("http://%s/gfethm_worker_inspect/v1/blocks?b=%d",
 		p_host_port_str,
 		p_block_uint)
 
@@ -348,30 +352,30 @@ func Get_block__from_worker_inspector(p_block_uint uint64,
 	headers_map         := map[string]string{"sentry-trace": sentry_trace_id_str,}
 		
 	// GF_RPC_CLIENT
-	data_map, gf_err := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	dataMap, gfErr := gf_rpc_lib.ClientRequest(urlStr, headers_map, p_ctx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	span__get_blocks.Finish()
 
 	//-----------------------
 
-	block_map := data_map["block_map"].(map[string]interface{})
+	block_map := dataMap["block_map"].(map[string]interface{})
 
 
 	// DECODE_TO_STRUCT
 	var gf_block GF_eth__block__int
 	err := mapstructure.Decode(block_map, &gf_block)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to load response block_map into a GF_eth__block__int struct",
+		gfErr := gf_core.ErrorCreate("failed to load response block_map into a GF_eth__block__int struct",
 			"mapstruct__decode",
 			map[string]interface{}{
-				"url_str":   url_str,
+				"url_str":   urlStr,
 				"block_map": block_map,
 			},
-			err, "gf_eth_monitor_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_eth_monitor_core", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return &gf_block, nil
@@ -379,11 +383,12 @@ func Get_block__from_worker_inspector(p_block_uint uint64,
 
 //-------------------------------------------------
 // GET_BLOCK__PIPELINE
+
 func Get__pipeline(p_block_num_uint uint64,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GF_eth__block__int, *gf_core.GFerror) {
 
 	//------------------
 	/*
@@ -414,11 +419,11 @@ func Get__pipeline(p_block_num_uint uint64,
 	header, err := pEthRPCclient.HeaderByNumber(span__get_header.Context(), new(big.Int).SetUint64(p_block_num_uint))
 	if err != nil {
 		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to get block Header by number, from eth json-rpc API",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to get block Header by number, from eth json-rpc API",
 			"eth_rpc__get_header",
 			map[string]interface{}{"block_num": p_block_num_uint,},
-			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+			err, "gf_eth_monitor_lib", error_defs_map, 1, pRuntimeSys)
+		return nil, gfErr
 	}
 	fmt.Println(header)
 
@@ -469,11 +474,11 @@ func Get__pipeline(p_block_num_uint uint64,
 	if err != nil {
 
 		error_defs_map := gf_eth_core.ErrorGetDefs()
-		gf_err := gf_core.ErrorCreateWithDefs("failed to get block by number, from eth json-rpc API",
+		gfErr := gf_core.ErrorCreateWithDefs("failed to get block by number, from eth json-rpc API",
 			"eth_rpc__get_block",
 			map[string]interface{}{"block_num": p_block_num_uint,},
-			err, "gf_eth_monitor_lib", error_defs_map, 1, p_runtime_sys)
-		return nil, gf_err
+			err, "gf_eth_monitor_lib", error_defs_map, 1, pRuntimeSys)
+		return nil, gfErr
 	}
 
 	span__get_block.Finish()
@@ -488,7 +493,7 @@ func Get__pipeline(p_block_num_uint uint64,
 		pEthRPCclient,
 		span__get_txs.Context(),
 		p_py_plugins,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	span__get_txs.Finish()
 	
@@ -526,11 +531,11 @@ func Get__pipeline(p_block_num_uint uint64,
 	
 	/*obj_id_str, err := primitive.ObjectIDFromHex(db_id_hex_str)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to decode Block struct hash hex signature to create Mongodb ObjectID",
+		gfErr := gf_core.ErrorCreate("failed to decode Block struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"block_hash_hex_str": block_hash_hex_str, },
-			err, "gf_eth_monitor_core", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_eth_monitor_core", pRuntimeSys)
+		return nil, gfErr
 	}*/
 	gf_block.DB_id                 = db_id_hex_str // obj_id_str
 	gf_block.Creation_time__unix_f = creationTimeUNIXf
@@ -541,11 +546,12 @@ func Get__pipeline(p_block_num_uint uint64,
 }
 
 //-------------------------------------------------
+
 func Get__txs_pipeline(p_block *types.Block,
 	pEthRPCclient *ethclient.Client,
 	p_ctx         context.Context,
 	p_py_plugins  *gf_eth_core.GF_py_plugins,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_eth_tx.GF_eth__tx, []*gf_core.GFerror) {
 
 
 
@@ -557,7 +563,7 @@ func Get__txs_pipeline(p_block *types.Block,
 
 
 	txs_lst     := make([]*gf_eth_tx.GF_eth__tx, len(p_block.Transactions()))
-	gf_errs_lst := make([]*gf_core.GFerror,     len(p_block.Transactions()))
+	gfErrs_lst := make([]*gf_core.GFerror,     len(p_block.Transactions()))
 	for i, tx := range p_block.Transactions() {
 		tx_index_int := uint(i)
 
@@ -570,21 +576,21 @@ func Get__txs_pipeline(p_block *types.Block,
 			
 			defer wg.Done()
 
-			gf_tx, gf_err := gf_eth_tx.Load(p_tx,
+			gf_tx, gfErr := gf_eth_tx.Load(p_tx,
 				p_tx_index_int,
 				p_block.Hash(),
 				p_block.NumberU64(), // p_block_num_uint,
 				p_ctx,
 				pEthRPCclient,
 				p_py_plugins,
-				p_runtime_sys)
+				pRuntimeSys)
 
-			if gf_err != nil {
+			if gfErr != nil {
 
 				// if its an error continue processing the next transaction,
 				// and store nil for the current transaction.
 				// important that txs_lst has a length of the true number of txs.
-				gf_errs_lst[p_tx_index_int] = gf_err
+				gfErrs_lst[p_tx_index_int] = gfErr
 			}
 
 			txs_lst[p_tx_index_int] = gf_tx
@@ -594,7 +600,7 @@ func Get__txs_pipeline(p_block *types.Block,
 	
 	wg.Wait()
 
-	return txs_lst, gf_errs_lst
+	return txs_lst, gfErrs_lst
 
 
 

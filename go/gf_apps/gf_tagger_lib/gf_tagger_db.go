@@ -32,31 +32,32 @@ import (
 //---------------------------------------------------
 // VAR
 //---------------------------------------------------
-func db__get_objects_with_tag_count(p_tag_str string,
-	p_object_type_str string,
-	p_runtime_sys     *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_objects_with_tag_count()")
 
-	switch p_object_type_str {
+func db__get_objects_with_tag_count(pTagStr string,
+	pObjectTypeStr string,
+	pRuntimeSys    *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_objects_with_tag_count()")
+
+	switch pObjectTypeStr {
 		case "post":
 
 			ctx := context.Background()
-			count_int, err := p_runtime_sys.Mongo_coll.CountDocuments(ctx, bson.M{
+			countInt, err := pRuntimeSys.Mongo_coll.CountDocuments(ctx, bson.M{
 				"t":        "post",
-				"tags_lst": bson.M{"$in": []string{p_tag_str,}},
+				"tags_lst": bson.M{"$in": []string{pTagStr,}},
 			})
 
 			if err != nil {
-				gf_err := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", p_tag_str),
+				gfErr := gf_core.MongoHandleError(fmt.Sprintf("failed to count of posts with tag - %s in DB", pTagStr),
 					"mongodb_find_error",
 					map[string]interface{}{
-						"tag_str":         p_tag_str,
-						"object_type_str": p_object_type_str,
+						"tag_str":         pTagStr,
+						"object_type_str": pObjectTypeStr,
 					},
-					err, "gf_tagger_lib", p_runtime_sys)
-				return 0, gf_err
+					err, "gf_tagger_lib", pRuntimeSys)
+				return 0, gfErr
 			}
-			return count_int, nil
+			return countInt, nil
 	}
 	return 0, nil
 }
@@ -64,84 +65,80 @@ func db__get_objects_with_tag_count(p_tag_str string,
 //---------------------------------------------------
 // POSTS
 //---------------------------------------------------
-func db__get_post_notes(p_post_title_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*GF_note, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
 
-	post, gf_err := gf_publisher_core.DB__get_post(p_post_title_str, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+func db__get_post_notes(pPostTitleStr string,
+	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnote, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_post_notes()")
+
+	post, gfErr := gf_publisher_core.DBgetPost(pPostTitleStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	post_notes_lst := post.Notes_lst
-	notes_lst      := []*GF_note{}
-	for _,s := range post_notes_lst {
+	postNotesLst := post.NotesLst
+	notesLst     := []*GFnote{}
+	for _, s := range postNotesLst {
 
-		note := &GF_note{
-			User_id_str:           s.User_id_str,
-			Body_str:              s.Body_str,
-			Target_obj_id_str:     post.Title_str,
-			Target_obj_type_str:   "post",
-			Creation_datetime_str: s.Creation_datetime_str,
+		note := &GFnote{
+			UserIDstr:           s.UserIDstr,
+			BodyStr:             s.BodyStr,
+			TargetObjIDstr:      post.TitleStr,
+			TargetObjTypeStr:    "post",
+			CreationDatetimeStr: s.CreationDatetimeStr,
 		}
-		notes_lst = append(notes_lst,note)
+		notesLst = append(notesLst, note)
 	}
-	p_runtime_sys.LogFun("INFO", "got # notes - "+fmt.Sprint(len(notes_lst)))
-	return notes_lst, nil
+	pRuntimeSys.LogFun("INFO", "got # notes - "+fmt.Sprint(len(notesLst)))
+	return notesLst, nil
 }
 
 //---------------------------------------------------
-func db__add_post_note(p_note *GF_note,
-	p_post_title_str string,
-	p_runtime_sys    *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_db.db__add_post_note()")
+
+func db__add_post_note(pNote *GFnote,
+	pPostTitleStr string,
+	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//--------------------
-	post_note := &gf_publisher_core.Gf_post_note{
-		User_id_str:           p_note.User_id_str,
-		Body_str:              p_note.Body_str,
-		Creation_datetime_str: p_note.Creation_datetime_str,
+	postNote := &gf_publisher_core.GFpostNote{
+		UserIDstr:           pNote.UserIDstr,
+		BodyStr:             pNote.BodyStr,
+		CreationDatetimeStr: pNote.CreationDatetimeStr,
 	}
 
 	//--------------------
 	
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
-			"title_str": p_post_title_str,
+			"title_str": pPostTitleStr,
 		}, 
-		bson.M{"$push": bson.M{"notes_lst": post_note},
+		bson.M{"$push": bson.M{"notes_lst": postNote},
 	})
 	
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a gf_post in a mongodb with a new note in DB",
+		gfErr := gf_core.MongoHandleError("failed to update a gf_post in a mongodb with a new note in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"post_title_str": p_post_title_str,
-				"note":           p_note,
+				"post_title_str": pPostTitleStr,
+				"note":           pNote,
 			},
-			err, "gf_tagger_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
 	}
 	return nil
 }
 
 //---------------------------------------------------
-func db__get_posts_with_tag(p_tag_str string,
+
+func db__get_posts_with_tag(pTagStr string,
 	p_page_index_int int,
 	p_page_size_int  int,
-	p_runtime_sys    *gf_core.RuntimeSys) ([]*gf_publisher_core.Gf_post, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_db.db__get_posts_with_tag()")
-	p_runtime_sys.LogFun("INFO",      fmt.Sprintf("p_tag_str - %s", p_tag_str))
+	pRuntimeSys      *gf_core.RuntimeSys) ([]*gf_publisher_core.GFpost, *gf_core.GFerror) {
 
 	// FIX!! - potentially DOESNT SCALE. if there is a huge number of posts
 	//         with a tag, toList() will accumulate a large collection in memory. 
 	//         instead use a Stream-oriented way where results are streamed lazily
 	//         in some fashion
-		
-	
-
-
 
 	ctx := context.Background()
 
@@ -150,85 +147,86 @@ func db__get_posts_with_tag(p_tag_str string,
 	find_opts.SetSkip(int64(p_page_index_int))
     find_opts.SetLimit(int64(p_page_size_int))
 
-	cursor, gf_err := gf_core.MongoFind(bson.M{
+	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":        "post",
-			"tags_lst": bson.M{"$in": []string{p_tag_str,}},
+			"tags_lst": bson.M{"$in": []string{pTagStr,}},
 		},
 		find_opts,
 		map[string]interface{}{
-			"tag_str":            p_tag_str,
+			"tag_str":            pTagStr,
 			"page_index_int":     p_page_index_int,
 			"page_size_int":      p_page_size_int,
 			"caller_err_msg_str": fmt.Sprintf("failed to get posts with specified tag in DB"),
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	var posts_lst []*gf_publisher_core.Gf_post
+	var posts_lst []*gf_publisher_core.GFpost
 	err := cursor.All(ctx, &posts_lst)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get posts with specified tag in DB",
+		gfErr := gf_core.MongoHandleError("failed to get posts with specified tag in DB",
 			"mongodb_cursor_decode",
 			map[string]interface{}{
-				"tag_str":        p_tag_str,
+				"tag_str":        pTagStr,
 				"page_index_int": p_page_index_int,
 				"page_size_int":  p_page_size_int,
 			},
-			err, "gf_tagger_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_tagger_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	/*err := p_runtime_sys.Mongodb_coll.Find(bson.M{
+	/*err := pRuntimeSys.Mongodb_coll.Find(bson.M{
 			"t":        "post",
-			"tags_lst": bson.M{"$in": []string{p_tag_str,}},
+			"tags_lst": bson.M{"$in": []string{pTagStr,}},
 		}).
 		Sort("-creation_datetime"). // descending:true
 		Skip(p_page_index_int).
 		Limit(p_page_size_int).
 		All(&posts_lst)
 
-	if gf_err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get posts with specified tag",
+	if gfErr != nil {
+		gfErr := gf_core.MongoHandleError("failed to get posts with specified tag",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"tag_str":        p_tag_str,
+				"tag_str":        pTagStr,
 				"page_index_int": p_page_index_int,
 				"page_size_int":  p_page_size_int,
 			},
-			err, "gf_tagger", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_tagger", pRuntimeSys)
+		return nil, gfErr
 	}*/
 
 	return posts_lst, nil
 }
 
 //---------------------------------------------------
-func db__add_tags_to_post(p_post_title_str string,
-	p_tags_lst    []string,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_post()")
+
+func db__add_tags_to_post(pPostTitleStr string,
+	pTagsLst    []string,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_db.db__add_tags_to_post()")
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":         "post",
-			"title_str": p_post_title_str,
+			"title_str": pPostTitleStr,
 		},
-		bson.M{"$push": bson.M{"tags_lst": p_tags_lst},
+		bson.M{"$push": bson.M{"tags_lst": pTagsLst},
 	})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a gf_post with new tags in DB",
+		gfErr := gf_core.MongoHandleError("failed to update a gf_post with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"post_title_str": p_post_title_str,
-				"tags_lst":       p_tags_lst,
+				"post_title_str": pPostTitleStr,
+				"tags_lst":       pTagsLst,
 			},
-			err, "gf_tagger_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_tagger_lib", pRuntimeSys)
+		return gfErr
 	}
 	return nil
 }
@@ -236,6 +234,7 @@ func db__add_tags_to_post(p_post_title_str string,
 //---------------------------------------------------
 // IMAGES
 //---------------------------------------------------
+
 func db__add_tags_to_image(pImageIDstr string,
 	pTagsLst    []string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -248,14 +247,14 @@ func db__add_tags_to_image(pImageIDstr string,
 		bson.M{"$push": bson.M{"tags_lst": pTagsLst},
 	})
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
+		gfErr := gf_core.MongoHandleError("failed to update a gf_image with new tags in DB",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"image_id_str": pImageIDstr,
 				"tags_lst":     pTagsLst,
 			},
 			err, "gf_tagger_lib", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 	return nil
 }

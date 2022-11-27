@@ -31,7 +31,7 @@ import (
 func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 	p_tx_trace     *GF_eth__tx_trace,
 	p_plugins_info *gf_eth_core.GF_py_plugins,
-	p_runtime_sys  *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 
 	py_path_str := fmt.Sprintf("%s/gf_plugin__plot_tx_trace.py", p_plugins_info.Base_dir_path_str)
@@ -56,7 +56,7 @@ func py__run_plugin__plot_tx_trace(p_tx_id_str string,
 		args_lst,
 		&tx_trace_byte_str,
 		stdout_prefix_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}

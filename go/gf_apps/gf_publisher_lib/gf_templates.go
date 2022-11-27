@@ -34,21 +34,21 @@ type gf_templates struct {
 }
 
 //-------------------------------------------------
-func tmpl__load(p_templates_paths_map map[string]string,
-	p_runtime_sys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_templates.tmpl__load()")
+
+func tmplLoad(p_templates_paths_map map[string]string,
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_templates, *gf_core.GFerror) {
 
 	post__main_template_filepath_str          := p_templates_paths_map["gf_post"]
 	posts_browser__main_template_filepath_str := p_templates_paths_map["gf_posts_browser"]
 	
 	post__tmpl, post__subtmpl_lst, gf_err := gf_core.TemplatesLoad(post__main_template_filepath_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
 	
 	posts_browser__tmpl, posts_browser__subtmpl_lst, gf_err := gf_core.TemplatesLoad(posts_browser__main_template_filepath_str,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}

@@ -34,6 +34,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFconvNet struct {
 	g                  *G.ExprGraph
 	w0, w1, w2, w3, w4 *G.Node // weights
@@ -42,6 +43,7 @@ type GFconvNet struct {
 }
 
 //-------------------------------------------------
+
 func main() {
 
 

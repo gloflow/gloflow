@@ -51,11 +51,10 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metricsForHandlers,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		// Auth_login_url_str: pAuthLoginURLstr,
+		Mux:          pHTTPmux,
+		Metrics:      metricsForHandlers,
+		StoreRunBool: true,
+		SentryHub:    nil,
 	}
 
 	//---------------------

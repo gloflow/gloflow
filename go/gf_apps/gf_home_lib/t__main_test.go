@@ -36,6 +36,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 
 	logFun, _  = gf_core.InitLogs()
@@ -76,6 +77,7 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
+
 func TestHomeViz(pTest *testing.T) {
 
 	runtimeSys := Tinit()
@@ -149,6 +151,7 @@ func TestHomeViz(pTest *testing.T) {
 }
 
 //---------------------------------------------------
+
 func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{

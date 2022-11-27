@@ -33,49 +33,49 @@ import (
 )
 
 //-------------------------------------------------
-func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
+
+func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	p_templates_paths_map map[string]string,
 	p_mux                 *http.ServeMux,
-	p_runtime_sys         *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_publisher_handlers.init_handlers()")
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 	
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gf_templates, gfErr := tmplLoad(p_templates_paths_map, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//---------------------
 	// GET_POST
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//--------------------
 				// response_format_str - "j"(for json)|"h"(for html)
 
-				qs_map := p_req.URL.Query()
+				qs_map := pReq.URL.Query()
 
 				// response_format_str - "j"(for json)|"h"(for html)
-				response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+				response_format_str := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 
 				//--------------------
 				// POST_TITLE
 
-				url_str          := p_req.URL.Path
+				url_str          := pReq.URL.Path
 				url_elements_lst := strings.Split(url_str, "/")
 
 				// IMPORTANT!! - "!=3" - because /a/b splits into {"","a","b",}
 				if len(url_elements_lst) != 3 {
 					usr_msg_str := fmt.Sprintf("get_post url is not of proper format - %s", url_str)
-					gf_err      := gf_core.ErrorCreate(usr_msg_str,
+					gfErr       := gf_core.ErrorCreate(usr_msg_str,
 						"verify__invalid_value_error",
 						map[string]interface{}{"url_str":url_str,},
-						nil, "gf_publisher_lib", p_runtime_sys)
-					return nil, gf_err
+						nil, "gf_publisher_lib", pRuntimeSys)
+					return nil, gfErr
 				}
 
 				raw_post_title_str := url_elements_lst[2]
@@ -93,26 +93,26 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 				if err != nil {
 
 					usr_msg_str := fmt.Sprintf("post title cant be query_unescaped - %s", post_title_encoded_str)
-					gf_err      := gf_core.ErrorCreate(usr_msg_str,
+					gfErr      := gf_core.ErrorCreate(usr_msg_str,
 						"verify__invalid_query_string_encoding_error",
 						map[string]interface{}{"post_title_encoded_str": post_title_encoded_str,},
-						err, "gf_publisher_lib", p_runtime_sys)
+						err, "gf_publisher_lib", pRuntimeSys)
 
-					return nil, gf_err
+					return nil, gfErr
 				}
-				p_runtime_sys.LogFun("INFO", "post_title_str - "+post_title_str)
+				pRuntimeSys.LogFun("INFO", "post_title_str - "+post_title_str)
 
 				//--------------------
 
-				gf_err := Pipeline__get_post(post_title_str,
+				gfErr := PipelineGetPost(post_title_str,
 					response_format_str,
 					gf_templates.post__tmpl,
 					gf_templates.post__subtemplates_names_lst,
-					p_resp,
-					p_runtime_sys)
+					pesp,
+					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				return nil, nil
@@ -123,30 +123,30 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// POST_CREATE
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				post_info_map := i_map
 				
 				//------------
 
-				_, images_job_id_str, gf_err := Pipeline__create_post(post_info_map,
+				_, images_job_id_str, gfErr := PipelineCreatePost(post_info_map,
 					p_gf_images_runtime_info,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				output_map := map[string]interface{}{
@@ -160,50 +160,50 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 	// POST_STATUS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/status",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/update",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/delete",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_req, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				post_title_str := i_map["title_str"].(string)
 
 				//------------
 
-				gf_err = gf_publisher_core.DB__mark_as_deleted_post(post_title_str, p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = gf_publisher_core.DBmarkAsDeletedPost(post_title_str, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				return nil, nil
@@ -214,35 +214,35 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// POSTS_BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 				
 				//--------------------
 				// response_format_str - "json"|"html"
 
-				qs_map := p_req.URL.Query()
+				qs_map := pReq.URL.Query()
 
 				// response_format_str - "j"(for json)|"h"(for html)
-				response_format_str := gf_rpc_lib.Get_response_format(qs_map, p_runtime_sys)
+				response_format_str := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 				
 				//--------------------
 
-				gf_err := Render_initial_pages(response_format_str,
+				gfErr := RenderInitialPages(response_format_str,
 					6, // p_initial_pages_num_int int
 					5, // p_page_size_int
 					gf_templates.posts_browser__tmpl,
 					gf_templates.posts_browser__subtemplates_names_lst,
-					p_resp,
-					p_runtime_sys)
+					pesp,
+					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				return nil, nil
 			}
@@ -252,19 +252,19 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// GET_BROWSER_PAGE (slice of posts data series)
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts/browser_page",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//--------------------
 				// INPUT
 
-				qs_map := p_req.URL.Query()
+				qs_map := pReq.URL.Query()
 
 				page_index_int := 0 // default - "h" - HTML
 				var err error
@@ -275,11 +275,11 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 					if err != nil {
 					
 						usr_msg_str := "pg_index (page_index) is not an integer"
-						gf_err      := gf_core.ErrorCreate(usr_msg_str,
+						gfErr      := gf_core.ErrorCreate(usr_msg_str,
 							"verify__value_not_integer_error",
 							map[string]interface{}{"input_val": input_val,},
-							err, "gf_publisher_lib", p_runtime_sys)
-						return nil, gf_err
+							err, "gf_publisher_lib", pRuntimeSys)
+						return nil, gfErr
 					}
 				}
 
@@ -290,19 +290,19 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 					if err != nil {
 
 						usr_msg_str := "pg_size (page_size) is not an integer"
-						gf_err      := gf_core.ErrorCreate(usr_msg_str,
+						gfErr      := gf_core.ErrorCreate(usr_msg_str,
 							"verify__value_not_integer_error",
 							map[string]interface{}{"input_val": input_val,},
-							err, "gf_publisher_lib", p_runtime_sys)
-						return nil, gf_err
+							err, "gf_publisher_lib", pRuntimeSys)
+						return nil, gfErr
 					}
 				}
 
 				//--------------------
 				
-				serialized_pages_lst, gf_err := Get_posts_page(page_index_int, page_size_int, p_runtime_sys)
+				serialized_pages_lst, gfErr := Get_posts_page(page_index_int, page_size_int, pRuntimeSys)
 				if err != nil {
-					return nil, gf_err
+					return nil, gfErr
 				}
 
 				//------------
@@ -310,7 +310,7 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 
 				r_lst,_ := json.Marshal(serialized_pages_lst)
 				r_str   := string(r_lst)
-				fmt.Fprintf(p_resp,r_str)
+				fmt.Fprintf(pesp,r_str)
 
 				//------------
 
@@ -322,19 +322,19 @@ func init_handlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 	// POSTS_ELEMENTS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/posts_elements/create",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pesp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		p_mux,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	//---------------------
 

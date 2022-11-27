@@ -26,7 +26,8 @@ import (
 )
 
 //------------------------------------------------
-func Pipeline__render_landing_page(p_imgs__max_random_cursor_position_int int, // 500
+
+func pipelineRenderLandingPage(p_imgs__max_random_cursor_position_int int, // 500
 	p_posts__max_random_cursor_position_int int,
 	p_featured_posts_to_get_int int, // 5
 	p_featured_imgs_to_get_int  int, // 10
@@ -54,14 +55,14 @@ func Pipeline__render_landing_page(p_imgs__max_random_cursor_position_int int, /
 	}
 
 	//-------------------
-	featured_posts_lst, gfErr := getFeaturedPosts(p_posts__max_random_cursor_position_int,
+	featuredPostsLst, gfErr := getFeaturedPosts(p_posts__max_random_cursor_position_int,
 		p_featured_posts_to_get_int,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
-	gfErr = render_template(featured_posts_lst,
+	gfErr = renderTemplate(featuredPostsLst,
 		featured_imgs_0_lst,
 		featured_imgs_1_lst,
 		p_tmpl,

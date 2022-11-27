@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_images_extern_runtime_info struct {
 	Jobs_mngr               gf_images_jobs_core.JobsMngr
 	Service_host_port_str   string // "http://127.0.0.1:2060"
@@ -35,6 +36,7 @@ type GF_images_extern_runtime_info struct {
 }
 
 //-------------------------------------------------
+
 func InitService(pHTTPmux *http.ServeMux,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,
 	pRuntimeSys              *gf_core.RuntimeSys) {
@@ -50,7 +52,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	
 	//------------------------
 
-	err := init_handlers(p_gf_images_runtime_info,
+	err := initHandlers(p_gf_images_runtime_info,
 		p_gf_images_runtime_info.Templates_dir_paths_map,
 		pHTTPmux,
 		pRuntimeSys)
@@ -61,7 +63,8 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
-func Run_service(p_port_str string,
+
+func RunService(p_port_str string,
 	p_mongodb_host_str       string,
 	p_mongodb_db_name_str    string,
 	p_gf_images_runtime_info *GF_images_extern_runtime_info,

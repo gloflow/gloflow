@@ -41,10 +41,10 @@ func gifDBcreate(p_image_source_url_str string,
 	p_img_height_int            int,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
-	p_runtime_sys               *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBcreate()")
+	pRuntimeSys               *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBcreate()")
 
-	img_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, p_runtime_sys)
+	img_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -62,7 +62,7 @@ func gifDBcreate(p_image_source_url_str string,
 				"image_source_url_str":      p_image_source_url_str,
 				"image_origin_page_url_str": p_image_origin_page_url_str,
 			},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -88,7 +88,7 @@ func gifDBcreate(p_image_source_url_str string,
 
 
 	ctx           := context.Background()
-	coll_name_str := p_runtime_sys.Mongo_coll.Name()
+	coll_name_str := pRuntimeSys.Mongo_coll.Name()
 	gfErr         = gf_core.MongoInsert(gif,
 		coll_name_str,
 		map[string]interface{}{
@@ -97,7 +97,7 @@ func gifDBcreate(p_image_source_url_str string,
 			"caller_err_msg_str":        "failed to insert a GIF into the DB",
 		},
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -108,11 +108,11 @@ func gifDBcreate(p_image_source_url_str string,
 //--------------------------------------------------
 
 func gifDBdelete(p_id_str string,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBdelete()")
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBdelete()")
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": p_id_str,
 		},
@@ -124,7 +124,7 @@ func gifDBdelete(p_id_str string,
 		gfErr := gf_core.MongoHandleError("failed to mark a GIF as deleted in mongodb",
 			"mongodb_update_error",
 			map[string]interface{}{"gif_id_str": p_id_str,},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return gfErr
 	}
 	return nil
@@ -133,14 +133,14 @@ func gifDBdelete(p_id_str string,
 //--------------------------------------------------
 
 func gifDBgetByImgID(p_gf_img_id_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gifDBgetByImgID()")
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBgetByImgID()")
 
 
 	ctx := context.Background()
 
 	var gif GFgif
-	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+	err := pRuntimeSys.Mongo_coll.FindOne(ctx, bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
 			"gf_image_id_str":     p_gf_img_id_str,
@@ -155,7 +155,7 @@ func gifDBgetByImgID(p_gf_img_id_str string,
 		gfErr := gf_core.MongoHandleError("GIF with gf_img_id_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -163,7 +163,7 @@ func gifDBgetByImgID(p_gf_img_id_str string,
 		gfErr := gf_core.MongoHandleError("GIF with gf_img_id_str failed the DB find operation",
 			"mongodb_find_error",
 			map[string]interface{}{"gf_img_id_str": p_gf_img_id_str,},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -174,14 +174,13 @@ func gifDBgetByImgID(p_gf_img_id_str string,
 
 //--------------------------------------------------
 
-func gif_db__get_by_origin_url(p_origin_url_str string,
-	p_runtime_sys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_by_origin_url()")
+func dbGetByOriginURL(p_origin_url_str string,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
 	var gif GFgif
-	err := p_runtime_sys.Mongo_coll.FindOne(ctx, bson.M{
+	err := pRuntimeSys.Mongo_coll.FindOne(ctx, bson.M{
 			"t":                   "gif",
 			"deleted_bool":        false,
 			"origin_url_str":      p_origin_url_str,
@@ -196,7 +195,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 		gfErr := gf_core.MongoHandleError("GIF with origin_url_str not found",
 			"mongodb_not_found_error",
 			map[string]interface{}{"origin_url_str": p_origin_url_str,},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return nil,gfErr
 	}
 
@@ -204,7 +203,7 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 		gfErr := gf_core.MongoHandleError("GIF with origin_url_str failed the DB find operation",
 			"mongodb_find_error",
 			map[string]interface{}{"origin_url_str": p_origin_url_str,},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -213,10 +212,9 @@ func gif_db__get_by_origin_url(p_origin_url_str string,
 
 //--------------------------------------------------
 
-func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
+func dbGetPage(p_cursor_start_position_int int, // p_elements_num_int0
 	p_elements_num_int int,                // 50
-	p_runtime_sys      *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_gif_db.gif_db__get_page()")
+	pRuntimeSys      *gf_core.RuntimeSys) ([]GFgif, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
@@ -239,9 +237,9 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 			"elements_num_int":          p_elements_num_int,
 			"caller_err_msg_str":        "GIFs pages failed to be retreived",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	if gfErr != nil {
 		return nil, gfErr
@@ -256,7 +254,7 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 			gfErr := gf_core.MongoHandleError("failed to decode mongodb result of query to get GIFs",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_gif_lib", p_runtime_sys)
+				err, "gf_gif_lib", pRuntimeSys)
 
 			return nil, gfErr
 		}
@@ -268,12 +266,12 @@ func gif_db__get_page(p_cursor_start_position_int int, // p_elements_num_int0
 
 //--------------------------------------------------
 
-func gif_db__update_image_id(p_gif_id_str string,
+func dbUpdateImageID(p_gif_id_str string,
 	p_image_id_str gf_images_core.GFimageID,
-	p_runtime_sys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "gif",
 			"id_str": p_gif_id_str,
 		},
@@ -286,7 +284,7 @@ func gif_db__update_image_id(p_gif_id_str string,
 				"gif_id_str":   p_gif_id_str,
 				"image_id_str": p_image_id_str,
 			},
-			err, "gf_gif_lib", p_runtime_sys)
+			err, "gf_gif_lib", pRuntimeSys)
 		return gfErr
 	}
 	return nil

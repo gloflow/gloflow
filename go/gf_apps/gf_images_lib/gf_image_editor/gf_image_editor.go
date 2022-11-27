@@ -39,7 +39,7 @@ import (
 
 //-------------------------------------------------
 
-type Gf_edited_image struct {
+type GFeditedImage struct {
 	Id                   primitive.ObjectID       `bson:"_id,omitempty"`
 	Id_str               string                   `bson:"id_str"` 
 	T_str                string                   `bson:"t"` // "img_edited"
@@ -47,7 +47,7 @@ type Gf_edited_image struct {
 	Source_image_id_str  gf_images_core.GFimageID `bson:"source_image_id_str"`
 }
 
-type Gf_edited_image__save__http_input struct {
+type GFeditedImageSaveHTTPinput struct {
 	Title_str             string                   `json:"new_title_str"`         // title of the new edited_image
 	Source_image_id_str   gf_images_core.GFimageID `json:"source_image_id_str"`   // id of the gf_image that has modification applied to it
 	Source_flow_name_str  string                   `json:"source_flow_name_str"`  // which flow was the original image from
@@ -69,16 +69,15 @@ type GFeditedImageProcessingInfo struct {
 
 //-------------------------------------------------
 
-func save_edited_image__pipeline(p_handler_url_path_str string,
+func saveEditedImagePipeline(p_handler_url_path_str string,
 	p_req         *http.Request,
 	p_resp        http.ResponseWriter, 
 	pCtx          context.Context,
 	pRuntimeSys   *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_image_editor.save_edited_image__pipeline()")
 
 	//--------------------------
 	// INPUT
-	var input *Gf_edited_image__save__http_input
+	var input *GFeditedImageSaveHTTPinput
 	body_bytes_lst, _ := ioutil.ReadAll(p_req.Body)
 	err               := json.Unmarshal(body_bytes_lst, input)
 	if err != nil {

@@ -26,9 +26,10 @@ import (
 )
 
 //---------------------------------------------------
+
 func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GF_image_export, bool, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
 	// DB_EXISTS
 	exists_bool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
@@ -44,7 +45,7 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 			return nil, false, gfErr
 		}
 
-		gf_img_export := &gf_images_core.GF_image_export{
+		gf_img_export := &gf_images_core.GFimageExport{
 			Creation_unix_time_f:     gf_img.Creation_unix_time_f,
 			Title_str:                gf_img.Title_str,
 			Flows_names_lst:          gf_img.Flows_names_lst,
@@ -63,7 +64,8 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 }
 
 //---------------------------------------------------
-func TagsAddToImage(p_image *gf_images_core.GF_image,
+
+func TagsAddToImage(p_image *gf_images_core.GFimage,
 	p_tags_lst    []string,
 	pRuntimeSys *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_image.TagsAddToImage()")

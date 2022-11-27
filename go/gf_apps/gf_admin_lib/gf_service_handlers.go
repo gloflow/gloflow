@@ -34,25 +34,27 @@ import (
 )
 
 //------------------------------------------------
-type gf_templates struct {
-	login__tmpl                   *template.Template
-	login__subtemplates_names_lst []string
-	dashboard__tmpl                   *template.Template
-	dashboard__subtemplates_names_lst []string
+
+type gfTemplates struct {
+	loginTmpl                     *template.Template
+	loginSubtemplatesNamesLst     []string
+	dashboardTmpl                 *template.Template
+	dashboardSubtemplatesNamesLst []string
 }
 
 //------------------------------------------------
+
 func initHandlers(pTemplatesPathsMap map[string]string,
-	p_http_mux              *http.ServeMux,
-	p_service_info          *GFserviceInfo,
-	p_identity_service_info *gf_identity_lib.GFserviceInfo,
-	p_local_hub             *sentry.Hub,
-	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
+	pHTTPmux             *http.ServeMux,
+	pServiceInfo         *GFserviceInfo,
+	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
+	pLocalHub            *sentry.Hub,
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
+	gfTemplates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -70,11 +72,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// rpcHandlerRuntime
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                p_http_mux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         p_local_hub,
-		Auth_login_url_str: "/v1/admin/login_ui",
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       pLocalHub,
+		AuthLoginURLstr: "/v1/admin/login_ui",
 	}
 
 	//---------------------
@@ -114,9 +116,9 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 
-				templateRenderedStr, gfErr := Pipeline__render_login(mfaConfirmBool,
-					gf_templates.login__tmpl,
-					gf_templates.dashboard__subtemplates_names_lst,
+				templateRenderedStr, gfErr := PipelineRenderLogin(mfaConfirmBool,
+					gfTemplates.loginTmpl,
+					gfTemplates.dashboardSubtemplatesNamesLst,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -151,37 +153,37 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 				}
 
 				var userNameStr gf_identity_core.GFuserName
-				if val_str, ok := inputMap["user_name_str"]; ok {
-					userNameStr = gf_identity_core.GFuserName(val_str.(string))
+				if valStr, ok := inputMap["user_name_str"]; ok {
+					userNameStr = gf_identity_core.GFuserName(valStr.(string))
 				}
 
 				var passStr string
-				if val_str, ok := inputMap["pass_str"]; ok {
-					passStr = val_str.(string)
+				if valStr, ok := inputMap["pass_str"]; ok {
+					passStr = valStr.(string)
 				}
 
-				input := &gf_identity_lib.GF_admin__input_login{
-					User_name_str: userNameStr,
-					Pass_str:      passStr,
-					Email_str:     p_service_info.Admin_email_str,
+				input := &gf_identity_lib.GFadminInputLogin{
+					UserNameStr: userNameStr,
+					PassStr:     passStr,
+					EmailStr:    pServiceInfo.AdminEmailStr,
 				}
 
 				//---------------------
 
-				output, gfErr := gf_identity_lib.Admin__pipeline__login(input,
+				output, gfErr := gf_identity_lib.AdminPipelineLogin(input,
 					pCtx,
-					p_local_hub,
-					p_identity_service_info,
+					pLocalHub,
+					pIdentityServiceInfo,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				output_map := map[string]interface{}{
-					"user_exists_bool": output.User_exists_bool,
-					"pass_valid_bool":  output.Pass_valid_bool,
+				outputMap := map[string]interface{}{
+					"user_exists_bool": output.UserExistsBool,
+					"pass_valid_bool":  output.PassValidBool,
 				}
-				return output_map, nil
+				return outputMap, nil
 			}
 			return nil, nil
 		},
@@ -192,19 +194,19 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	// ADMIN_DASHBOARD
 	// AUTH - only logged in admins can use the dashboard
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(true, "/v1/admin/dashboard",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
-				templateRenderedStr, gfErr := Pipeline__render_dashboard(gf_templates.dashboard__tmpl,
-					gf_templates.dashboard__subtemplates_names_lst,
-					p_ctx,
+				templateRenderedStr, gfErr := PipelineRenderDashboard(gfTemplates.dashboardTmpl,
+					gfTemplates.dashboardSubtemplatesNamesLst,
+					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				p_resp.Write([]byte(templateRenderedStr))
+				pResp.Write([]byte(templateRenderedStr))
 			}
 
 			// IMPORTANT!! - this handler renders and writes template output to HTTP response, 
@@ -220,14 +222,14 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//           on a different port, and registeres separate handlers (on a separate mux).
 
 	rpcHandlerRuntimeHealth := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:            p_http_mux,
-		Metrics:        metrics,
-		Store_run_bool: false,
-		Sentry_hub:     p_local_hub,
+		Mux:          pHTTPmux,
+		Metrics:      metrics,
+		StoreRunBool: false,
+		SentryHub:    pLocalHub,
 	}
 
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/admin/healthz",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		rpcHandlerRuntimeHealth,

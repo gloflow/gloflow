@@ -28,6 +28,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func T__test_image_job__updates(pJobIDstr string,
 	pJobsMngr   gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) {

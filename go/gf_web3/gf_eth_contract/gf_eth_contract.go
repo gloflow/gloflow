@@ -65,13 +65,13 @@ func Get_via_rpc(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__contract_new, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) (*GF_eth__contract_new, *gf_core.GFerror) {
 
 	code_bytes_lst, gf_err := Get_code(p_contract_addr_str,
 		p_block_num_int,
 		p_ctx,
 		p_eth_rpc_client,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -99,7 +99,7 @@ func Get_code(p_contract_addr_str string,
 	p_block_num_int  uint64,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) ([]byte, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) ([]byte, *gf_core.GFerror) {
 
 	contract_addr := eth_common.HexToAddress(p_contract_addr_str)
 
@@ -113,7 +113,7 @@ func Get_code(p_contract_addr_str string,
 		gf_err := gf_core.ErrorCreateWithDefs("failed to get code at particular account address in target block",
 			"eth_rpc__get_contract_code",
 			map[string]interface{}{"contract_addr_str": p_contract_addr_str, "block_num_int": p_block_num_int,},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, pRuntimeSys)
 		return nil, gf_err
 	}
 

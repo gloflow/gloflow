@@ -27,9 +27,8 @@ import (
 )
 //-------------------------------------------------
 
-func Gif__init_handlers(pMux *http.ServeMux,
+func InitHandlers(pMux *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Flows__init_handlers()")
 
 	//-------------------------------------------------
 	// GIF_GET_INFO
@@ -60,7 +59,7 @@ func Gif__init_handlers(pMux *http.ServeMux,
 				// BY_ORIGIN_URL
 				if originURLstr != "" {
 
-					gif, gfErr = gif_db__get_by_origin_url(originURLstr, pRuntimeSys)
+					gif, gfErr = dbGetByOriginURL(originURLstr, pRuntimeSys)
 
 					if gfErr != nil {
 						return nil, gfErr

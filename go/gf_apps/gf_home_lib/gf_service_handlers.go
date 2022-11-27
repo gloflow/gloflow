@@ -31,12 +31,14 @@ import (
 )
 
 //------------------------------------------------
+
 type gfTemplates struct {
 	mainTmpl                 *template.Template
 	mainSubtemplatesNamesLst []string
 }
 
 //------------------------------------------------
+
 func initHandlers(pTemplatesPathsMap map[string]string,
 	pAuthLoginURLstr string,
 	pHTTPmux         *http.ServeMux,
@@ -63,11 +65,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: pAuthLoginURLstr,
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: pAuthLoginURLstr,
 	}
 
 	//---------------------

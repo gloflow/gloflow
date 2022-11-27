@@ -37,7 +37,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 	//---------------------
 	// GET__BLOCK_INDEX__JOB_UPDATES
 
-	gf_rpc_lib.SSE_create_handler__http("/gfethm/v1/block/index/job_updates",
+	gf_rpc_lib.CreateHandlerSSE("/gfethm/v1/block/index/job_updates",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (gf_rpc_lib.SSE_data_update_ch, gf_rpc_lib.SSE_data_err_ch, gf_rpc_lib.SSE_data_complete_ch, *gf_core.GFerror) {
 
 
@@ -88,7 +88,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 	//---------------------
 	// GET__BLOCK_INDEX
 
-	gf_rpc_lib.Create_handler__http("/gfethm/v1/block/index",
+	gf_rpc_lib.CreateHandlerHTTP("/gfethm/v1/block/index",
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			span__root := sentry.StartSpan(p_ctx, "http__master__block_index", sentry.ContinueFromRequest(p_req))

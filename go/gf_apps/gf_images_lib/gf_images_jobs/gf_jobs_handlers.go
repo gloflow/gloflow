@@ -36,10 +36,10 @@ import (
 )
 
 //-------------------------------------------------
-func Jobs_mngr__init_handlers(pMux *http.ServeMux,
+
+func InitHandlers(pMux *http.ServeMux,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_jobs_handlers.Jobs_mngr__init_handlers()")
 
 	//---------------------
 	// START_JOB
@@ -163,7 +163,7 @@ func Jobs_mngr__init_handlers(pMux *http.ServeMux,
 				flusher, ok := p_resp.(http.Flusher)
 				if !ok {
 					err_msg_str := "/images/jobs/status handler failed - SSE http streaming is not supported on the server"
-					gf_rpc_lib.Error__in_handler("/images/jobs/status", err_msg_str, nil, p_resp, pRuntimeSys)
+					gf_rpc_lib.ErrorInHandler("/images/jobs/status", err_msg_str, nil, p_resp, pRuntimeSys)
 					return nil, nil
 				}
 

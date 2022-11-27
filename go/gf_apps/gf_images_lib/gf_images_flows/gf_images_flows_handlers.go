@@ -30,6 +30,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitHandlers(pAuthLoginURLstr string,
 	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
@@ -45,7 +46,7 @@ func InitHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/v1/images/flows/all",
 		"/v1/images/flows/add_img",
 		"/images/flows/add_img",
@@ -54,16 +55,16 @@ func InitHandlers(pAuthLoginURLstr string,
 		"/images/flows/browser_page",
 	}
 	metricsGroupNameStr := "flows"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlers_endpoints_lst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_images", handlersEndpointsLst)
 
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: pAuthLoginURLstr,
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: pAuthLoginURLstr,
 	}
 
 	//---------------------
@@ -139,12 +140,12 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
+				dataMap := map[string]interface{}{
 					"images_job_id_str":                running_job_id_str,
 					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
 					"image_id_str":                     image_id_str,
 				}
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}
@@ -195,12 +196,12 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
+				dataMap := map[string]interface{}{
 					"images_job_id_str":                running_job_id_str,
 					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
 					"image_id_str":                     image_id_str,
 				}
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}
@@ -247,11 +248,11 @@ func InitHandlers(pAuthLoginURLstr string,
 				}
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
+				dataMap := map[string]interface{}{
 					"existing_images_lst": existing_images_lst,
 				}
 				
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}
@@ -269,7 +270,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
 
@@ -284,20 +285,20 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// RENDER_TEMPLATE
-				template_rendered_str, gf_err := flows__render_initial_page(flow_name_str,
+				templateRenderedStr, gfErr := renderInitialPage(flow_name_str,
 					6,  // p_initial_pages_num_int int,
 					10, // p_page_size_int int,
 					templates.flows_browser__tmpl,
 					templates.flows_browser__subtemplates_names_lst,
-					p_ctx,
+					pCtx,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
 				//------------------
 
-				p_resp.Write([]byte(template_rendered_str))
+				p_resp.Write([]byte(templateRenderedStr))
 			}
 
 			return nil, nil

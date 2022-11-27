@@ -80,7 +80,7 @@ func Client_http__index_block_range(p_block_start_uint uint64,
 	p_block_end_uint uint64,
 	p_host_port_str  string,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.RuntimeSys) (GF_indexer_job_id, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) (GF_indexer_job_id, *gf_core.GFerror) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index?br=%d-%d",
 		p_host_port_str,
@@ -91,7 +91,7 @@ func Client_http__index_block_range(p_block_start_uint uint64,
 	headers_map := map[string]string{}
 
 	// GF_RPC_CLIENT
-	data_map, gfErr := gf_rpc_lib.Client__request(url_str, headers_map, p_ctx, p_runtime_sys)
+	data_map, gfErr := gf_rpc_lib.ClientRequest(url_str, headers_map, p_ctx, pRuntimeSys)
 	if gfErr != nil {
 		return GF_indexer_job_id(""), gfErr
 	}
@@ -105,7 +105,7 @@ func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 	p_job_updates_ch chan(map[string]interface{}),
 	p_host_port_str  string,
 	p_ctx            context.Context,
-	p_runtime_sys    *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index/job_updates?job_id=%s",
 		p_host_port_str,
@@ -120,11 +120,11 @@ func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 		
 		// p_job_updates_ch - channel to which to send SSE events as 
 		//                    they're received over HTTP.
-		gfErr := gf_rpc_lib.Client__request_sse(url_str,
+		gfErr := gf_rpc_lib.ClientRequestSSE(url_str,
 			p_job_updates_ch,
 			headers_map,
 			p_ctx,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gfErr != nil {
 
 			// FIX!! - notify the caller of Client_http__index_job_updates() 

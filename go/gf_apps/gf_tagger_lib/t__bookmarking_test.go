@@ -30,10 +30,12 @@ import (
 )
 
 //---------------------------------------------------
+
 var logFun func(string,string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.InitLogs()
 	cli_args_map = CLI__parse_args(logFun)
@@ -42,6 +44,7 @@ func TestMain(m *testing.M) {
 }
 
 //-------------------------------------------------
+
 func Test__main(p_test *testing.T) {
 
 	fmt.Println(" TEST__BOOKMARKS_MAIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
@@ -72,9 +75,10 @@ func Test__main(p_test *testing.T) {
 }
 
 //-------------------------------------------------
+
 func test_bookmarking(p_test *testing.T,
-	p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "t__main_test.test_bookmarking()")
+	pRuntimeSys *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
 	ctx := context.Background()
 
@@ -92,7 +96,7 @@ func test_bookmarking(p_test *testing.T,
 	gf_err := bookmarks__pipeline__create(input__create,
 		nil, // p_images_jobs_mngr
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -108,7 +112,7 @@ func test_bookmarking(p_test *testing.T,
 		nil,
 		nil,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -126,7 +130,7 @@ func test_bookmarking(p_test *testing.T,
 		"gf_bookmarks":   "./../../../web/src/gf_apps/gf_tagger/templates/gf_bookmarks/gf_bookmarks.html",
 	}
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(templates_paths_map, p_runtime_sys)
+	gf_templates, gf_err := tmpl__load(templates_paths_map, pRuntimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -142,7 +146,7 @@ func test_bookmarking(p_test *testing.T,
 		gf_templates.bookmarks__tmpl,
 		gf_templates.bookmarks__subtemplates_names_lst,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}

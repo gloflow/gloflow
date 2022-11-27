@@ -33,19 +33,20 @@ import (
 )
 //--------------------------------------------------
 // ADD!! - creation_time
-type Gf_domain struct {
+
+type GFdomain struct {
 	Id            primitive.ObjectID `bson:"_id,omitempty"`
 	Id_str        string             `bson:"id_str"`
 	T_str         string             `bson:"t"` // "domain"
 	Name_str      string             `bson:"name_str"`
 	Count_int     int                `bson:"count_int"`
-	Domain_posts  Gf_domain_posts    `bson:"posts_domain"`
-	Domain_images Gf_domain_images   `bson:"images_domain"`
+	Domain_posts  GFdomainPosts      `bson:"posts_domain"`
+	Domain_images GFdomainImages     `bson:"images_domain"`
 }
 
 //--------------------------------------------------
-func Init_domains_aggregation(p_runtime_sys *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.Init_domains_aggregation()")
+
+func InitDomainsAggregation(pRuntimeSys *gf_core.RuntimeSys) {
 
 	go func() {
 		for ;; {
@@ -60,7 +61,7 @@ func Init_domains_aggregation(p_runtime_sys *gf_core.RuntimeSys) {
 
 			//--------------------
 			
-			gf_err := Discover_domains_in_db(p_runtime_sys)
+			gf_err := DiscoverDomainsInDB(pRuntimeSys)
 			if gf_err != nil {
 				continue
 			}
@@ -69,29 +70,30 @@ func Init_domains_aggregation(p_runtime_sys *gf_core.RuntimeSys) {
 }
 
 //--------------------------------------------------
-func Discover_domains_in_db(p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.Discover_domains_in_db()")
+
+func DiscoverDomainsInDB(pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// ADD!! - issue the posts/images queries in parallel via their own go-routines
 	//---------------
 	// POSTS
-	posts_domains_lst, gf_err := Get_domains_posts__mongo(p_runtime_sys)
+	posts_domains_lst, gf_err := GetDomainsPostsDB(pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
 
 	//---------------
 	// IMAGES
-	images_domains_lst, gf_err := Get_domains_images__mongo(p_runtime_sys)
+	images_domains_lst, gf_err := GetDomainsImagesDB(pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
 
 	//---------------
 	// APP_LEVEL_JOIN
-	domains_map := accumulate_domains(posts_domains_lst, images_domains_lst, p_runtime_sys)
+	domains_map := accumulateDomains(posts_domains_lst, images_domains_lst, pRuntimeSys)
+
 	// DB PERSIST
-	gf_err = db__persist_domains(domains_map, p_runtime_sys)
+	gf_err = dbPersistDomains(domains_map, pRuntimeSys)
 	if gf_err != nil {
 		return gf_err
 	}
@@ -102,67 +104,67 @@ func Discover_domains_in_db(p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror 
 }
 
 //--------------------------------------------------
-func accumulate_domains(p_posts_domains_lst []Gf_domain_posts,
-	p_images_domains_lst []Gf_domain_images,
-	p_runtime_sys        *gf_core.RuntimeSys) map[string]Gf_domain {
-	// p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.accumulate_domains()")
 
-	domains_map := map[string]Gf_domain{}
+func accumulateDomains(pPostsDomainsLst []GFdomainPosts,
+	pImagesDomainsLst []GFdomainImages,
+	pRuntimeSys       *gf_core.RuntimeSys) map[string]GFdomain {
+
+	domainsMap := map[string]GFdomain{}
 
 	//--------------------------------------------------
 	// POSTS DOMAINS
 	// IMPORTANT!! - these run first so they just create a Domain struct without checks
 
-	for _,domain_posts := range p_posts_domains_lst {
+	for _, domain_posts := range pPostsDomainsLst {
 
 		domain_name_str := domain_posts.Name_str
 
 		// IMPORTANT!! - no existing domain with this domain_str has been found
 		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 		id_str               := fmt.Sprintf("domain:%f", creation_unix_time_f)
-		new_domain           := Gf_domain{
+		new_domain           := GFdomain{
 			Id_str:       id_str,
 			T_str:        "domain",
 			Name_str:     domain_name_str,
 			Count_int:    domain_posts.Count_int,
 			Domain_posts: domain_posts,
 		}
-		domains_map[domain_name_str] = new_domain
+		domainsMap[domain_name_str] = new_domain
 	}
 
 	//--------------------------------------------------
 	// IMAGES DOMAINS
-	for _,images_domain := range p_images_domains_lst {
+	for _, imagesDomain := range pImagesDomainsLst {
 
-		domain_name_str := images_domain.Name_str
+		domainNameStr := imagesDomain.Name_str
 
-		if domain,ok := domains_map[domain_name_str]; ok {
-			domain.Domain_images = images_domain
-			domain.Count_int     = domain.Count_int + images_domain.Count_int
+		if domain,ok := domainsMap[domainNameStr]; ok {
+			domain.Domain_images = imagesDomain
+			domain.Count_int     = domain.Count_int + imagesDomain.Count_int
 		} else {
 			// IMPORTANT!! - no existing domain with this domain_str has been found
 			creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 			id_str               := fmt.Sprintf("domain:%f", creation_unix_time_f)
-			new_domain := Gf_domain{
+			new_domain := GFdomain{
 				Id_str:        id_str,
 				T_str:         "domain",
-				Name_str:      domain_name_str,
-				Count_int:     images_domain.Count_int,
-				Domain_images: images_domain,
+				Name_str:      domainNameStr,
+				Count_int:     imagesDomain.Count_int,
+				Domain_images: imagesDomain,
 			}
-			domains_map[domain_name_str] = new_domain
+			domainsMap[domainNameStr] = new_domain
 		}
 	}
 
 	//--------------------------------------------------
 
-	return domains_map
+	return domainsMap
 }
 
 //--------------------------------------------------
-func db__persist_domains(p_domains_map map[string]Gf_domain,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
-	// p_runtime_sys.LogFun("FUN_ENTER","gf_domains.db__persist_domains()")
+
+func dbPersistDomains(pDomainsMap map[string]GFdomain,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// cyan   := color.New(color.FgCyan).SprintFunc()
 	// yellow := color.New(color.FgYellow).SprintFunc()
@@ -171,9 +173,9 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 	ctx := context.Background()
 	
 	i := 0
-	for _, d := range p_domains_map {
+	for _, d := range pDomainsMap {
 
-		// p_runtime_sys.LogFun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
+		// pRuntimeSys.LogFun("INFO",yellow("persisting ")+white("domain")+yellow(" "+fmt.Sprint(i)+" >---------------- ")+cyan(d.Name_str))
 
 		// IMPORTANT!! -  finds a single document matching the provided selector document 
 		//                and modifies it according to the update document. If no document 
@@ -185,15 +187,15 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 			"t":        "domain",
 			"name_str": d.Name_str,
 		}
-		gf_err := gf_core.MongoUpsert(query,
+		gfErr := gf_core.MongoUpsert(query,
 			d,
 			map[string]interface{}{
 				"domain_name_str":    d.Name_str,
 				"caller_err_msg_str": "failed to persist a domain in mongodb",},
-			p_runtime_sys.Mongo_coll,
-			ctx, p_runtime_sys)
-		if gf_err != nil {
-			return gf_err
+			pRuntimeSys.Mongo_coll,
+			ctx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
 		}
 
 		i+=1
@@ -202,8 +204,8 @@ func db__persist_domains(p_domains_map map[string]Gf_domain,
 }
 
 //--------------------------------------------------
-func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_domains.db__get_domains()")
+
+func dbGetDomains(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomain, *gf_core.GFerror) {
 
 	ctx := context.Background()
 
@@ -215,64 +217,33 @@ func db__get_domains(p_runtime_sys *gf_core.RuntimeSys) ([]Gf_domain, *gf_core.G
 	find_opts := options.Find()
 	find_opts.SetSort(map[string]interface{}{"count_int": -1}) // descending - true - sort the highest count first
 
-	cursor, gf_err := gf_core.MongoFind(q,
+	cursor, gfErr := gf_core.MongoFind(q,
 		find_opts,
 		map[string]interface{}{
 			"caller_err_msg_str": "failed to DB fetch all domains",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	defer cursor.Close(ctx)
 
-
-
-
-
-	/*coll_name_str := p_runtime_sys.Mongo_coll.Name()
-	cursor, err      := p_runtime_sys.Mongo_db.Collection(coll_name_str).Find(ctx, q)
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get all domains",
-			"mongodb_find_error",
-			nil,
-			err, "gf_domains_lib", p_runtime_sys)
-		return nil, gf_err
-	}
-	defer cursor.Close(ctx)*/
-
-
-	results_lst := []Gf_domain{}
+	results_lst := []GFdomain{}
 	for cursor.Next(ctx) {
-		var domain Gf_domain
+		var domain GFdomain
 		err := cursor.Decode(&domain)
 		if err != nil {
-			gf_err := gf_core.MongoHandleError("failed to decode mongodb result of query to get domains",
+			gfErr := gf_core.MongoHandleError("failed to decode mongodb result of query to get domains",
 				"mongodb_cursor_decode",
 				map[string]interface{}{},
-				err, "gf_domains_lib", p_runtime_sys)
-			return nil, gf_err
+				err, "gf_domains_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 	
 		results_lst = append(results_lst, domain)
 	}
-
-
-	/*var results_lst []Gf_domain
-	err := p_runtime_sys.Mongo_coll.Find(bson.M{
-			"t":         "domain",
-			"count_int": bson.M{"$exists":true}, //"count_int" is a new required field, and we want those records, not the old ones
-		}).
-		Sort("-count_int").
-		All(&results_lst)
-	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get all domains",
-			"mongodb_find_error",
-			nil, err, "gf_domains_lib", p_runtime_sys)
-		return nil, gf_err
-	}*/
 
 	return results_lst, nil
 }

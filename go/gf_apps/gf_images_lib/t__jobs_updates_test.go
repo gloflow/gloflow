@@ -29,6 +29,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func Test__jobs_updates(p_test *testing.T) {
 
 	fmt.Println("TEST__JOBS_UPDATES ==============================================")
@@ -138,11 +139,12 @@ func Test__jobs_updates(p_test *testing.T) {
 }
 
 //---------------------------------------------------
+
 func test__job_updates__via_http(p_test__image_url_str string,
 	p_test__origin_page_url_str   string,
 	p_test__image_client_type_str string,
 	p_test_image_service_port_str string,
-	p_runtime_sys                 *gf_core.RuntimeSys) {
+	pRuntimeSys                 *gf_core.RuntimeSys) {
 	
 	test__input_images_urls_lst                    := []string{p_test__image_url_str,}
 	test__input_images_origin_pages_urls_lst       := []string{p_test__origin_page_url_str,}
@@ -151,7 +153,7 @@ func test__job_updates__via_http(p_test__image_url_str string,
 		test__input_images_origin_pages_urls_lst,
 		p_test__image_client_type_str,
 		test__image_service_host_port_str,
-		p_runtime_sys)
+		pRuntimeSys)
 
 	if gf_err != nil {
 		panic(gf_err.Error)
@@ -165,12 +167,13 @@ func test__job_updates__via_http(p_test__image_url_str string,
 }
 
 //---------------------------------------------------
+
 func test__job_updates__in_process(p_test__image_url_str string,
 	p_test__image_flows_names_lst []string,
 	p_test__image_client_type_str string,
 	p_test__origin_page_url_str   string,
 	p_jobs_mngr                   gf_images_jobs.Jobs_mngr,
-	p_runtime_sys                 *gf_core.RuntimeSys) {
+	pRuntimeSys                 *gf_core.RuntimeSys) {
 
 	images_to_process_lst := []gf_images_jobs.Gf_image_extern_to_process{
 		gf_images_jobs.Gf_image_extern_to_process{
@@ -183,7 +186,7 @@ func test__job_updates__in_process(p_test__image_url_str string,
 		images_to_process_lst,
 		p_test__image_flows_names_lst,
 		p_jobs_mngr,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -191,5 +194,5 @@ func test__job_updates__in_process(p_test__image_url_str string,
 	fmt.Println(running_job)
 	spew.Dump(output)
 
-	T__test_image_job__updates(running_job.Id_str, p_jobs_mngr, p_runtime_sys)
+	T__test_image_job__updates(running_job.Id_str, p_jobs_mngr, pRuntimeSys)
 }

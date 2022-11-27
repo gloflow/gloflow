@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFserviceInfo struct {
 
 	// AUTH_LOGIN_URL - url of the login page to which the system should
@@ -35,6 +36,7 @@ type GFserviceInfo struct {
 }
 
 //-------------------------------------------------
+
 func InitService(pTemplatesPathsMap map[string]string,
 	pServiceInfo *GFserviceInfo,
 	pHTTPmux     *http.ServeMux,
@@ -65,6 +67,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 }
 
 //-------------------------------------------------
+
 func CLIparseArgs(pLogFun func(string, string)) map[string]interface{} {
 
 	//-------------------

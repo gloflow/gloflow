@@ -35,6 +35,7 @@ var logFun func(string,string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.InitLogs()
 	cli_args_map = CLI__parse_args(logFun)
@@ -43,6 +44,7 @@ func TestMain(m *testing.M) {
 }
 
 //-------------------------------------------------
+
 func Test__main(p_test *testing.T) {
 
 	// MONGODB
@@ -124,10 +126,11 @@ func Test__main(p_test *testing.T) {
 }
 
 //-------------------------------------------------
+
 func test_posts_creation(p_test_post_info_map map[string]interface{},
 	p_gf_images_runtime_info *Gf_images_extern_runtime_info,
-	p_runtime_sys            *gf_core.RuntimeSys) {
-	p_runtime_sys.LogFun("FUN_ENTER", "t__main_test.test_posts_creation()")
+	pRuntimeSys            *gf_core.RuntimeSys) {
+	pRuntimeSys.LogFun("FUN_ENTER", "t__main_test.test_posts_creation()")
 
 	
 	
@@ -135,7 +138,7 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 	// CREATE_POST
 	gf_post, images_job_id_str, gf_err := Pipeline__create_post(p_test_post_info_map,
 		p_gf_images_runtime_info,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -148,7 +151,7 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 
 	gf_images_lib.T__test_image_job__updates(images_job_id_str,
 		p_gf_images_runtime_info.Jobs_mngr,
-		p_runtime_sys)
+		pRuntimeSys)
 
 
 }

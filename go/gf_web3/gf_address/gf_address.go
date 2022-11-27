@@ -25,6 +25,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFchainAddress struct {
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
@@ -48,6 +49,7 @@ type GFchainAddressExtern struct {
 }
 
 //---------------------------------------------------
+
 func createID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 

@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func main() {
 	logFun, _ := gf_core.InitLogs()
 
@@ -52,8 +53,8 @@ func main() {
 }
 
 //-------------------------------------------------
+
 func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
-	pLogFun("FUN_ENTER", "gf_tagger_service.CLI__parse_args()")
 
 	//-------------------
 	run__start_service_bool := flag.Bool("run__start_service", true,   "run the service daemon")
@@ -87,6 +88,7 @@ func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
 }
 
 //-------------------------------------------------
+
 func InitService(p_templates_paths_map map[string]string,
 	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
 	p_http_mux         *http.ServeMux,
@@ -122,6 +124,7 @@ func InitService(p_templates_paths_map map[string]string,
 }
 
 //-------------------------------------------------
+
 func Run_service__in_process(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,

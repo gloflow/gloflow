@@ -36,18 +36,20 @@ import (
 )
 
 //-------------------------------------------------
+
 type SSE_data_update_ch   chan interface{}
 type SSE_data_err_ch      chan gf_core.GFerror
 type SSE_data_complete_ch chan bool
 type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Request) (SSE_data_update_ch, SSE_data_err_ch, SSE_data_complete_ch, *gf_core.GFerror)
 
 //-------------------------------------------------
-func SSE_create_handler__http(p_path_str string,
+
+func CreateHandlerSSE(p_path_str string,
 	p_handler_fun    handler_http_sse,
 	p_store_run_bool bool,
-	p_runtime_sys    *gf_core.RuntimeSys) {
+	pRuntimeSys      *gf_core.RuntimeSys) {
 
-	Create_handler__http_with_metrics(p_path_str,
+	CreateHandlerHTTPwithMetrics(p_path_str,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if p_req.Method == "GET" {
@@ -75,14 +77,14 @@ func SSE_create_handler__http(p_path_str string,
 					gf_err := gf_core.ErrorCreate(err_msg_str, 
 						"http_server_flusher_not_supported_error",
 						map[string]interface{}{"path_str": p_path_str,},
-						nil, "gf_rpc_lib", p_runtime_sys)
+						nil, "gf_rpc_lib", pRuntimeSys)
 					return nil, gf_err
 				}
 
 				notify := p_resp.(http.CloseNotifier).CloseNotify()
 				go func() {
 					<- notify
-					p_runtime_sys.LogFun("ERROR", "HTTP connection just closed")
+					pRuntimeSys.LogFun("ERROR", "HTTP connection just closed")
 				}()
 
 				p_resp.Header().Set("Content-Type",                "text/event-stream")
@@ -169,20 +171,20 @@ func SSE_create_handler__http(p_path_str string,
 		},
 		nil,
 		p_store_run_bool,
-		p_runtime_sys)
+		pRuntimeSys)
 }
 
 //-------------------------------------------------
-func SSE_client__parse_response(p_body_str string,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	// p_runtime_sys.LogFun("FUN_ENTER", "gf_rpc_sse.SSE_client__parse_response()")
+
+func clientParseResponseSSE(p_body_str string,
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	data_items_lst := []map[string]interface{}{}
 
 	for _, line_str := range strings.Split(p_body_str, `\n`) {
 
-		p_runtime_sys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
-		p_runtime_sys.LogFun("INFO", line_str)
+		pRuntimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>")
+		pRuntimeSys.LogFun("INFO", line_str)
 
 		// filter out keep-alive new lines
 		if line_str != "" && strings.HasPrefix(line_str, "data: ") {
@@ -197,7 +199,7 @@ func SSE_client__parse_response(p_body_str string,
 				gf_err := gf_core.ErrorCreate("failed to parse JSON response line of the SSE stream (of even updates from a gf_images server)",
 					"json_unmarshal_error",
 					map[string]interface{}{"line_str": line_str,},
-					err, "gf_images_lib", p_runtime_sys)
+					err, "gf_images_lib", pRuntimeSys)
 
 				return nil, gf_err
 			}
@@ -209,7 +211,7 @@ func SSE_client__parse_response(p_body_str string,
 				gf_err      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
-					nil, "gf_images_lib", p_runtime_sys)
+					nil, "gf_images_lib", pRuntimeSys)
 				return nil, gf_err
 			}
 			status_str := msg_map["status_str"].(string)
@@ -223,7 +225,7 @@ func SSE_client__parse_response(p_body_str string,
 						"status_str": status_str,
 						"msg_map":    msg_map,
 					},
-					nil, "gf_images_lib", p_runtime_sys)
+					nil, "gf_images_lib", pRuntimeSys)
 				return nil, gf_err
 			}
 
@@ -234,7 +236,7 @@ func SSE_client__parse_response(p_body_str string,
 				gf_err      := gf_core.ErrorCreate(err_usr_msg,
 					"verify__missing_key_error",
 					map[string]interface{}{"msg_map": msg_map,},
-					nil, "gf_images_lib", p_runtime_sys)
+					nil, "gf_images_lib", pRuntimeSys)
 				return nil, gf_err
 			}
 			

@@ -31,14 +31,14 @@ import (
 )
 
 //-------------------------------------------------
-func flows__render_initial_page(p_flow_name_str string,
+
+func renderInitialPage(p_flow_name_str string,
 	p_initial_pages_num_int  int, // 6
 	p_page_size_int          int, // 5
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
 	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_flows_views.flows__render_initial_page()")
 
 	//---------------------
 	// GET_TEMPLATE_DATA
@@ -56,14 +56,14 @@ func flows__render_initial_page(p_flow_name_str string,
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		page_lst, gf_err := flows_db__get_page(p_flow_name_str,
+		page_lst, gfErr := dbGetPage(p_flow_name_str,
 			start_position_int, // p_cursor_start_position_int
 			p_page_size_int,    // p_elements_num_int
 			p_ctx,
 			pRuntimeSys)
 
-		if gf_err != nil {
-			return "", gf_err
+		if gfErr != nil {
+			return "", gfErr
 		}
 
 		//------------
@@ -72,35 +72,36 @@ func flows__render_initial_page(p_flow_name_str string,
 	}
 
 
-	flow_pages_num_int, gf_err := flows_db__get_pages_total_num(p_flow_name_str,
+	flow_pages_num_int, gfErr := dbGetPagesTotalNum(p_flow_name_str,
 		p_page_size_int,
 		p_ctx,
 		pRuntimeSys)
-	if gf_err != nil {
-		return "", gf_err
+	if gfErr != nil {
+		return "", gfErr
 	}
 
 	//---------------------
-	template_rendered_str, gf_err := renderTemplate(p_flow_name_str,
+	template_rendered_str, gfErr := renderTemplate(p_flow_name_str,
 		pages_lst,
 		flow_pages_num_int,
 		p_tmpl,
 		p_subtemplates_names_lst,
 		pRuntimeSys)
-	if gf_err != nil {
-		return "", gf_err
+	if gfErr != nil {
+		return "", gfErr
 	}
 
 	return template_rendered_str, nil
 }
 
 //-------------------------------------------------
+
 func renderTemplate(p_flow_name_str string,
-	p_images_pages_lst       [][]*gf_images_core.GF_image, // 2D list
+	p_images_pages_lst       [][]*gf_images_core.GFimage,
 	p_flow_pages_num_int     int64,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 	//-------------------------
@@ -169,11 +170,11 @@ func renderTemplate(p_flow_name_str string,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the images flow template",
+		gfErr := gf_core.ErrorCreate("failed to render the images flow template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_images_lib", pRuntimeSys)
-		return "", gf_err
+		return "", gfErr
 	}
 
 	templateRenderedStr := buff.String()

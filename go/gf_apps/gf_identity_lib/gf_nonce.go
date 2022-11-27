@@ -31,86 +31,90 @@ import (
 )
 
 //---------------------------------------------------
-type GF_user_nonce_val string
-type GF_user_nonce struct {
-	V_str                string             `bson:"v_str"` // schema_version
-	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               gf_core.GF_ID      `bson:"id_str"`
-	Deleted_bool         bool               `bson:"deleted_bool"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
 
-	User_id_str     gf_core.GF_ID                        `bson:"user_id_str"`
-	Address_eth_str gf_identity_core.GF_user_address_eth `bson:"address_eth_str"`
-	Val_str         GF_user_nonce_val                    `bson:"val_str"`
+type GFuserNonceVal string
+type GFuserNonce struct {
+	Vstr              string             `bson:"v_str"` // schema_version
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	IDstr             gf_core.GF_ID      `bson:"id_str"`
+	DeletedBool       bool               `bson:"deleted_bool"`
+	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
+
+	UserIDstr     gf_core.GF_ID                     `bson:"user_id_str"`
+	AddressETHstr gf_identity_core.GFuserAddressETH `bson:"address_eth_str"`
+	ValStr        GFuserNonceVal                    `bson:"val_str"`
 }
 
 //---------------------------------------------------
-func nonce__create_and_persist(p_user_id_str gf_core.GF_ID,
-	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
-	p_ctx                  context.Context,
-	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GFerror) {
+
+func nonceCreateAndPersist(pUserIDstr gf_core.GF_ID,
+	pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.RuntimeSys) (*GFuserNonce, *gf_core.GFerror) {
 
 	//------------------------
 	// mark all existing nonces (if there are any) for this user_address_eth
 	// as deleted
-	gf_err := db__nonce__delete_all(p_user_address_eth_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := dbNonceDeleteAll(pUserAddressETHstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
-	nonce_val_str := fmt.Sprintf("gloflow:%s", gf_core.StrRandom())
+	nonceValStr := fmt.Sprintf("gloflow:%s", gf_core.StrRandom())
 
 	// CREATE
-	nonce, gf_err := nonce__create(GF_user_nonce_val(nonce_val_str),
-		p_user_id_str,
-		p_user_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	nonce, gfErr := nonceCreate(GFuserNonceVal(nonceValStr),
+		pUserIDstr,
+		pUserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return nonce, nil
 }
 
 //---------------------------------------------------
-func nonce__create(p_nonce_val_str GF_user_nonce_val,
-	p_user_id_str          gf_core.GF_ID,
-	p_user_address_eth_str gf_identity_core.GF_user_address_eth,
-	p_ctx                  context.Context,
-	p_runtime_sys          *gf_core.RuntimeSys) (*GF_user_nonce, *gf_core.GFerror) {
 
-	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
-	unique_vals_for_id_lst := []string{string(p_nonce_val_str), }
+func nonceCreate(pNonceValStr GFuserNonceVal,
+	pUserIDstr         gf_core.GF_ID,
+	pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.RuntimeSys) (*GFuserNonce, *gf_core.GFerror) {
 
-	id_str := gf_core.IDcreate(unique_vals_for_id_lst, creation_unix_time_f)
+	creationUNIXtimeF  := float64(time.Now().UnixNano())/1000000000.0
+	uniqueValsForIDlst := []string{string(pNonceValStr), }
+
+	idStr := gf_core.IDcreate(uniqueValsForIDlst, creationUNIXtimeF)
 	
-	nonce := &GF_user_nonce{
-		V_str:                "0",
-		Id_str:               id_str,
-		Creation_unix_time_f: creation_unix_time_f,
-		User_id_str:          p_user_id_str,
-		Address_eth_str:      p_user_address_eth_str,
-		Val_str:              p_nonce_val_str,
+	nonce := &GFuserNonce{
+		Vstr:              "0",
+		IDstr:             idStr,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		UserIDstr:         pUserIDstr,
+		AddressETHstr:     pUserAddressETHstr,
+		ValStr:            pNonceValStr,
 	}
 
 	// DB
-	gf_err := db__nonce__create(nonce, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := dbNonceCreate(nonce, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	return nonce, nil
 }
 
 //---------------------------------------------------
-func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	_, err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").UpdateMany(p_ctx, bson.M{
-			"address_eth_str": p_user_address_eth_str,
+func dbNonceDeleteAll(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	_, err := pRuntimeSys.Mongo_db.Collection("gf_users_nonces").UpdateMany(pCtx, bson.M{
+			"address_eth_str": pUserAddressETHstr,
 			"deleted_bool":    false,
 		},
 		bson.M{"$set": bson.M{
@@ -118,66 +122,68 @@ func db__nonce__delete_all(p_user_address_eth_str gf_identity_core.GF_user_addre
 		}})
 		
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to mark all nonces for a user_address_eth as deleted",
+		gfErr := gf_core.MongoHandleError("failed to mark all nonces for a user_address_eth as deleted",
 			"mongodb_update_error",
 			map[string]interface{}{
-				"user_address_eth": p_user_address_eth_str,
+				"user_address_eth": pUserAddressETHstr,
 			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_identity_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
 }
 
 //---------------------------------------------------
-func db__nonce__create(p_nonce *GF_user_nonce,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	coll_name_str := "gf_users_nonces"
-	gf_err := gf_core.MongoInsert(p_nonce,
-		coll_name_str,
+func dbNonceCreate(pNonce *GFuserNonce,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	collNameStr := "gf_users_nonces"
+	gfErr := gf_core.MongoInsert(pNonce,
+		collNameStr,
 		map[string]interface{}{
-			"user_id_str":        p_nonce.User_id_str,
-			"address_eth_str":    p_nonce.Address_eth_str,
+			"user_id_str":        pNonce.UserIDstr,
+			"address_eth_str":    pNonce.AddressETHstr,
 			"caller_err_msg_str": "failed to insert GF_user_nonce into the DB",
 		},
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
 	return nil
 }
 
 //---------------------------------------------------
-func db__nonce__get(p_user_address_eth_str gf_identity_core.GF_user_address_eth,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (GF_user_nonce_val, bool, *gf_core.GFerror) {
+
+func dbNonceGet(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (GFuserNonceVal, bool, *gf_core.GFerror) {
 	
-	user_nonce := &GF_user_nonce{}
-	err := p_runtime_sys.Mongo_db.Collection("gf_users_nonces").FindOne(p_ctx, bson.M{
-			"address_eth_str": p_user_address_eth_str,
+	userNonce := &GFuserNonce{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users_nonces").FindOne(pCtx, bson.M{
+			"address_eth_str": pUserAddressETHstr,
 			"deleted_bool":    false,
-		}).Decode(&user_nonce)
+		}).Decode(&userNonce)
 		
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return GF_user_nonce_val(""), false, nil
+			return GFuserNonceVal(""), false, nil
 		}
 
-		gf_err := gf_core.MongoHandleError("failed to find user by address in the DB",
+		gfErr := gf_core.MongoHandleError("failed to find user by address in the DB",
 			"mongodb_find_error",
 			map[string]interface{}{
-				"user_address_eth_str": p_user_address_eth_str,
+				"user_address_eth_str": pUserAddressETHstr,
 			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return GF_user_nonce_val(""), false, gf_err
+			err, "gf_identity_lib", pRuntimeSys)
+		return GFuserNonceVal(""), false, gfErr
 	}
 
-	user_nonce_val_str := user_nonce.Val_str
+	userNonceValStr := userNonce.ValStr
 	
-	return user_nonce_val_str, true, nil
+	return userNonceValStr, true, nil
 }

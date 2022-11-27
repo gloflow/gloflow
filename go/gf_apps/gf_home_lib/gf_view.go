@@ -26,6 +26,7 @@ import (
 )
 
 //------------------------------------------------
+
 func viewRenderTemplateDashboard(pTmpl *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {

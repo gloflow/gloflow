@@ -30,9 +30,10 @@ import (
 )
 
 //---------------------------------------------------
+
 func Test__get_all(p_test *testing.T) {
 
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_flows_tests",
 		LogFun:           logFun,
 	}
@@ -41,14 +42,14 @@ func Test__get_all(p_test *testing.T) {
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	test__mongodb_db_name_str := "gf_tests"
-	mongodb_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
+	mongodb_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
 	if gf_err != nil {
 		fmt.Println(gf_err.Error)
 		p_test.Fail()
 	}
 	mongodb_coll := mongodb_db.Collection("data_symphony")
-	runtime_sys.Mongo_db   = mongodb_db
-	runtime_sys.Mongo_coll = mongodb_coll
+	runtimeSys.Mongo_db   = mongodb_db
+	runtimeSys.Mongo_coll = mongodb_coll
 	
 	//------------------
 	ctx := context.Background()
@@ -75,19 +76,19 @@ func Test__get_all(p_test *testing.T) {
 		T_str: "img",
 		Flows_names_lst: []string{"flow_1", "flow_2"},
 	}
-	gf_err = gf_images_core.DBputImage(test_img_0, ctx, runtime_sys)
+	gf_err = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
-	gf_err = gf_images_core.DBputImage(test_img_1, ctx, runtime_sys)
+	gf_err = gf_images_core.DBputImage(test_img_1, ctx, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
-	gf_err = gf_images_core.DBputImage(test_img_2, ctx, runtime_sys)
+	gf_err = gf_images_core.DBputImage(test_img_2, ctx, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
-	gf_err = gf_images_core.DBputImage(test_img_3, ctx, runtime_sys)
+	gf_err = gf_images_core.DBputImage(test_img_3, ctx, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}
@@ -95,7 +96,7 @@ func Test__get_all(p_test *testing.T) {
 	//------------------
 
 
-	all_flows_names_lst, gf_err := pipelineGetAll(ctx, runtime_sys)
+	all_flows_names_lst, gf_err := pipelineGetAll(ctx, runtimeSys)
 	if gf_err != nil {
 		p_test.Fail()
 	}

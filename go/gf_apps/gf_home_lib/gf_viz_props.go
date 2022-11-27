@@ -28,6 +28,7 @@ import (
 )
 
 //------------------------------------------------
+
 type GFhomeViz struct {
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
@@ -55,6 +56,7 @@ type GFvizPropsUpdateInput struct {
 
 //------------------------------------------------
 // VIZ_PROPS_UPDATE
+
 func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -108,6 +110,7 @@ func PipelineVizPropsUpdate(pInput *GFvizPropsUpdateInput,
 
 //------------------------------------------------
 // VIZ_PROPS_CREATE
+
 func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GFerror) {
@@ -138,6 +141,7 @@ func PipelineVizPropsCreate(pUserIDstr gf_core.GF_ID,
 
 //------------------------------------------------
 // VIZ_PROPS_GET
+
 func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFhomeViz, *gf_core.GFerror) {

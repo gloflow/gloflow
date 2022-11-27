@@ -68,6 +68,7 @@ type GFimageExistsCheck struct {
 // }
 
 //-------------------------------------------------
+
 func pipelineGetAll(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
@@ -91,10 +92,11 @@ func pipelineGetAll(pCtx context.Context,
 
 //-------------------------------------------------
 // GET_PAGE__PIPELINE
+
 func pipelineGetPage(p_req *http.Request,
 	p_resp        http.ResponseWriter,
 	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
 	//--------------------
 	// INPUT
@@ -113,11 +115,11 @@ func pipelineGetPage(p_req *http.Request,
 		page_index_int, err = strconv.Atoi(pg_index) // user supplied value
 		
 		if err != nil {
-			gf_err := gf_core.ErrorCreate("failed to parse integer pg_index query string arg",
+			gfErr := gf_core.ErrorCreate("failed to parse integer pg_index query string arg",
 				"int_parse_error",
 				map[string]interface{}{"pg_index": pg_index,},
-				err, "gf_images_lib", p_runtime_sys)
-			return nil, gf_err
+				err, "gf_images_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 	}
 
@@ -126,30 +128,30 @@ func pipelineGetPage(p_req *http.Request,
 		pg_size          := a_lst[0]
 		page_size_int,err = strconv.Atoi(pg_size) // user supplied value
 		if err != nil {
-			gf_err := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
+			gfErr := gf_core.ErrorCreate("failed to parse integer pg_size query string arg",
 				"int_parse_error",
 				map[string]interface{}{"pg_size": pg_size,},
-				err, "gf_images_lib", p_runtime_sys)
-			return nil, gf_err
+				err, "gf_images_lib", pRuntimeSys)
+			return nil, gfErr
 		}
 	}
 
-	p_runtime_sys.LogFun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
-	p_runtime_sys.LogFun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
-	p_runtime_sys.LogFun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
+	pRuntimeSys.LogFun("INFO",fmt.Sprintf("flow_name_str  - %s", flow_name_str))
+	pRuntimeSys.LogFun("INFO",fmt.Sprintf("page_index_int - %d", page_index_int))
+	pRuntimeSys.LogFun("INFO",fmt.Sprintf("page_size_int  - %d", page_size_int))
 
 	//--------------------
 
 	//--------------------
 	// GET_PAGES
 	cursor_start_position_int := page_index_int*page_size_int
-	pages_lst, gf_err := flows_db__get_page(flow_name_str,  // "general", //p_flow_name_str
+	pages_lst, gfErr := dbGetPage(flow_name_str,
 		cursor_start_position_int, // p_cursor_start_position_int
 		page_size_int,             // p_elements_num_int
 		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------
@@ -158,17 +160,18 @@ func pipelineGetPage(p_req *http.Request,
 
 //-------------------------------------------------
 // IMAGES_EXIST_CHECK
+
 func flowsImagesExistCheck(pImagesExternURLsLst []string,
 	pFlowNameStr   string,
 	pClientTypeStr string,
-	p_runtime_sys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
-	existing_images_lst, gf_err := flows_db__images_exist(pImagesExternURLsLst,
+	existing_images_lst, gfErr := dbImagesExist(pImagesExternURLsLst,
 		pFlowNameStr,
 		pClientTypeStr,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//-------------------------
@@ -186,7 +189,7 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 		}
 
 		ctx           := context.Background()
-		coll_name_str := "gf_flows_img_exists_check" // p_runtime_sys.Mongo_coll.Name()
+		coll_name_str := "gf_flows_img_exists_check" // pRuntimeSys.Mongo_coll.Name()
 		_              = gf_core.MongoInsert(check,
 			coll_name_str,
 			map[string]interface{}{
@@ -196,7 +199,7 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 				"caller_err_msg_str":     "failed to insert a img_exists_check into the DB",
 			},
 			ctx,
-			p_runtime_sys)
+			pRuntimeSys)
 	}()
 
 	//-------------------------
@@ -206,6 +209,7 @@ func flowsImagesExistCheck(pImagesExternURLsLst []string,
 
 //-------------------------------------------------
 // ADD_EXTERN_IMAGE_WITH_POLICY
+
 func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
@@ -242,6 +246,7 @@ func FlowsAddExternImageWithPolicy(pImageExternURLstr string,
 
 //-------------------------------------------------
 // ADD_EXTERN_IMAGES - BATCH
+
 func FlowsAddExternImages(pImagesExternURLsLst []string,
 	pImagesOriginPagesURLsStr []string,
 	pFlowsNamesLst            []string,
@@ -293,6 +298,7 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 
 //-------------------------------------------------
 // ADD_EXTERN_IMAGE
+
 func FlowsAddExternImage(pImageExternURLstr string,
 	pImageOriginPageURLstr string,
 	pFlowsNamesLst         []string,
@@ -330,6 +336,7 @@ func FlowsAddExternImage(pImageExternURLstr string,
 
 //-------------------------------------------------
 // CREATE
+
 func flowsCreate(pFlowNameStr string,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,

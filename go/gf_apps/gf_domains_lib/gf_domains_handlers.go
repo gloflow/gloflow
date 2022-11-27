@@ -28,16 +28,17 @@ import (
 )
 
 //-------------------------------------------------
-func Init_handlers(p_templates_paths_map map[string]string,
+
+func InitHandlers(p_templates_paths_map map[string]string,
 	p_mux         *http.ServeMux,
-	p_runtime_sys *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, p_runtime_sys)
-	if gf_err != nil {
-		return gf_err
+	gfTemplates, gfErr := tmplLoad(p_templates_paths_map, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 
 	//---------------------
@@ -60,20 +61,20 @@ func Init_handlers(p_templates_paths_map map[string]string,
 																pLogFun)*/
 				//--------------------
 				// GET DOMAINS FROM DB
-				domains_lst, gf_err := db__get_domains(p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+				domains_lst, gfErr := dbGetDomains(pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//--------------------
 				// RENDER TEMPLATE
-				gf_err = domains_browser__render_template(domains_lst,
-					gf_templates.domains_browser__tmpl,
-					gf_templates.domains_browser__subtemplates_names_lst,
+				gfErr = domainsBrowserRenderTemplate(domains_lst,
+					gfTemplates.domains_browser__tmpl,
+					gfTemplates.domains_browser__subtemplates_names_lst,
 					p_resp,
-					p_runtime_sys)
-				if gf_err != nil {
-					return nil, gf_err
+					pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				return nil, nil
 			}
@@ -83,7 +84,7 @@ func Init_handlers(p_templates_paths_map map[string]string,
 		nil,
 		true, // p_store_run_bool
 		nil,
-		p_runtime_sys)
+		pRuntimeSys)
 	
 	//---------------------
 

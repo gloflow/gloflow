@@ -31,38 +31,40 @@ import (
 )
 
 //-------------------------------------------------
-func Test__jwt(pTest *testing.T) {
+
+func TestJWT(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	runtimeSys := T__init()
 
-	test_jwt_main(pTest, runtimeSys)
+	testJWTmain(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
-func test_jwt_main(pTest *testing.T,
+
+func testJWTmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 
 	ctx := context.Background()
 
-	testUserAddressETH := gf_identity_core.GF_user_address_eth("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
+	testUserAddressETH := gf_identity_core.GFuserAddressETH("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
 
 	// JWT_GENERATE
 	userIdentifierStr := string(testUserAddressETH)
-	jwt_val, gf_err := gf_session.JWT__pipeline__generate(userIdentifierStr,
+	jwtVal, gfErr := gf_session.JWTpipelineGenerate(userIdentifierStr,
 		ctx,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		pTest.Fail()
 	}
 	
 	// JWT_VALIDATE
-	valid_bool, userIdentifierStr, gf_err := gf_session.JWTvalidate(jwt_val,
+	valid_bool, userIdentifierStr, gfErr := gf_session.JWTvalidate(jwtVal,
 		ctx,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		pTest.Fail()
 	}
 

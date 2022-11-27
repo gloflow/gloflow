@@ -30,41 +30,39 @@ import (
 )
 
 //---------------------------------------------------
-func verify__auth_signature__all_methods(p_signature_str gf_identity_core.GF_auth_signature,
-	p_nonce_str        GF_user_nonce_val,
-	p_user_address_eth gf_identity_core.GF_user_address_eth,
-	p_ctx              context.Context,
-	p_runtime_sys      *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
-	
+func verifyAuthSignatureAllMethods(pSignatureStr gf_identity_core.GFauthSignature,
+	pNonceStr       GFuserNonceVal,
+	pUserAddressETH gf_identity_core.GFuserAddressETH,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
 	// first attempt - try to verify using the data_header
-	valid_bool, gf_err := verify__auth_signature(p_signature_str,
-		string(p_nonce_str),
-		p_user_address_eth,
+	validBool, gfErr := verifyAuthSignature(pSignatureStr,
+		string(pNonceStr),
+		pUserAddressETH,
 		true,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return false, gf_err
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
 	}
 
-
-
-	if !valid_bool {
+	if !validBool {
 
 		// second attempt - dont validate using the data header
-		valid_bool, gf_err = verify__auth_signature(p_signature_str,
-			string(p_nonce_str),
-			p_user_address_eth,
+		validBool, gfErr = verifyAuthSignature(pSignatureStr,
+			string(pNonceStr),
+			pUserAddressETH,
 			false,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return false, gf_err
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, gfErr
 		}
 	}
 
-	return valid_bool, nil
+	return validBool, nil
 }
 
 //---------------------------------------------------
@@ -75,20 +73,20 @@ func verify__auth_signature__all_methods(p_signature_str gf_identity_core.GF_aut
 
 // https://goethereumbook.org/signature-verify/
 
-func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
-	p_data_str                  string,
-	p_user_address_eth          gf_identity_core.GF_user_address_eth,
-	p_validate_data_header_bool bool,
-	p_ctx                       context.Context,
-	p_runtime_sys               *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+func verifyAuthSignature(pSignatureStr gf_identity_core.GFauthSignature,
+	pDataStr                string,
+	pUserAddressETH         gf_identity_core.GFuserAddressETH,
+	pValidateDataHeaderBool bool,
+	pCtx                    context.Context,
+	pRuntimeSys             *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 	
-	var final_data_str string
-	if p_validate_data_header_bool {
-		final_data_str = fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s",
-			len(p_data_str),
-			p_data_str)
+	var finalDataStr string
+	if pValidateDataHeaderBool {
+		finalDataStr = fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s",
+			len(pDataStr),
+			pDataStr)
 	} else {
-		final_data_str = p_data_str
+		finalDataStr = pDataStr
 	}
 	
 
@@ -97,13 +95,13 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 
 
 	// decode signature from hex form
-	sig_decoded_bytes_lst, err := hexutil.Decode(string(p_signature_str))
+	sigDecodedBytesLst, err := hexutil.Decode(string(pSignatureStr))
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to hex-decode a signature supplied for validation",
+		gfErr := gf_core.ErrorCreate("failed to hex-decode a signature supplied for validation",
 			"crypto_hex_decode",
 			map[string]interface{}{},
-			err, "gf_identity_lib", p_runtime_sys)
-		return false, gf_err
+			err, "gf_identity_lib", pRuntimeSys)
+		return false, gfErr
 	}
 
 
@@ -124,15 +122,15 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	If you use the low level crypto library directly, 
 	you need to be aware of how generic ECC relates to Ethereum signatures.*/
 
-	sig_last_byte := sig_decoded_bytes_lst[64]
-	if sig_last_byte != 27 && sig_last_byte != 28 && sig_last_byte != 0 && sig_last_byte != 1 {
-		gf_err := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
+	sigLastByte := sigDecodedBytesLst[64]
+	if sigLastByte != 27 && sigLastByte != 28 && sigLastByte != 0 && sigLastByte != 1 {
+		gfErr := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
 			"crypto_signature_eth_last_byte_invalid_value",
 			map[string]interface{}{
-				"sig_last_byte": sig_last_byte,
+				"sig_last_byte": sigLastByte,
 			},
-			nil, "gf_identity_lib", p_runtime_sys)
-		return false, gf_err
+			nil, "gf_identity_lib", pRuntimeSys)
+		return false, gfErr
 	}
 
 	//------------------------
@@ -141,26 +139,26 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	// bring the last byte of the singature to 0|1.
 	// some wallets use 0|1 as recovery values (27/28 is a legacy value), so deduct
 	// 27 only if these legacy values are used.
-	if sig_decoded_bytes_lst[64] == 27 || sig_decoded_bytes_lst[64] == 28 {
-		sig_decoded_bytes_lst[64] -= 27
+	if sigDecodedBytesLst[64] == 27 || sigDecodedBytesLst[64] == 28 {
+		sigDecodedBytesLst[64] -= 27
 	}
 
 
 	// removing the last/recovery_id byte from the singature. used for verification.
-	sig_no_recovery_id_bytes_lst := []byte(sig_decoded_bytes_lst[:len(sig_decoded_bytes_lst)-1])
+	sig_no_recovery_id_bytes_lst := []byte(sigDecodedBytesLst[:len(sigDecodedBytesLst)-1])
 
 
 
-	data_hash := crypto.Keccak256Hash([]byte(final_data_str))
-	public_key_ECDSA, err := crypto.SigToPub(data_hash.Bytes(), sig_decoded_bytes_lst)
+	dataHash := crypto.Keccak256Hash([]byte(finalDataStr))
+	publicKeyECDSA, err := crypto.SigToPub(dataHash.Bytes(), sigDecodedBytesLst)
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
+		gfErr := gf_core.ErrorCreate("signature validation failed because the last byte (V value) of the signature is invalid",
 			"crypto_ec_recover_pubkey",
 			map[string]interface{}{
-				"sig_last_byte": sig_last_byte,
+				"sig_last_byte": sigLastByte,
 			},
-			err, "gf_identity_lib", p_runtime_sys)
-		return false, gf_err
+			err, "gf_identity_lib", pRuntimeSys)
+		return false, gfErr
 	}
 
 
@@ -175,29 +173,29 @@ func verify__auth_signature(p_signature_str gf_identity_core.GF_auth_signature,
 	// they start with the:
 	//		- prefix 03 (for negative y compressed public key)
 	//		- 04 (for uncompressed public key)
-	public_key_bytes_lst := crypto.CompressPubkey(public_key_ECDSA)
+	publicKeyBytesLst := crypto.CompressPubkey(publicKeyECDSA)
 
 	// generate an Ethereum address that corresponds to a given Public Key.
 	// secp256k1.CompressPubkey(pubkey.X, pubkey.Y)
-	user_address_eth_derived_str := crypto.PubkeyToAddress(*public_key_ECDSA).Hex()
+	userAddressETHderivedStr := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
 
 	//------------------------
 	// VALIDITY_CHECK_2
 	// compare addresses, suplied and derived (from pubkey), and if not the same
 	// return right away and declare signature as invalid.
-	if strings.ToLower(user_address_eth_derived_str) != strings.ToLower(string(p_user_address_eth)) {
+	if strings.ToLower(userAddressETHderivedStr) != strings.ToLower(string(pUserAddressETH)) {
 		fmt.Println("eth derived address and supplied eth address are not the same",
-			user_address_eth_derived_str,
-			string(p_user_address_eth))
+			userAddressETHderivedStr,
+			string(pUserAddressETH))
 		return false, nil
 	}
 
 	// VALIDITY_CHECK_3
-	valid_bool := crypto.VerifySignature(public_key_bytes_lst,
-		data_hash.Bytes(),
+	validBool := crypto.VerifySignature(publicKeyBytesLst,
+		dataHash.Bytes(),
 		sig_no_recovery_id_bytes_lst)
 
 	//------------------------
 
-	return valid_bool, nil
+	return validBool, nil
 }

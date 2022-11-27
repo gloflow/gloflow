@@ -26,21 +26,21 @@ import (
 )
 
 //------------------------------------------------
-func render_template(p_featured_posts_lst []*Gf_featured_post,
-	p_featured_imgs_0_lst    []*GF_featured_img,
-	p_featured_imgs_1_lst    []*GF_featured_img,
+
+func renderTemplate(p_featured_posts_lst []*GFfeaturedPost,
+	p_featured_imgs_0_lst    []*GFfeaturedImage,
+	p_featured_imgs_1_lst    []*GFfeaturedImage,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_view.render_template()")
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmpl_data struct {
-		Featured_posts_lst  []*Gf_featured_post
-		Featured_imgs_0_lst []*GF_featured_img
-		Featured_imgs_1_lst []*GF_featured_img
+		Featured_posts_lst  []*GFfeaturedPost
+		Featured_imgs_0_lst []*GFfeaturedImage
+		Featured_imgs_1_lst []*GFfeaturedImage
 		Sys_release_info    gf_core.SysReleaseInfo
 		Is_subtmpl_def      func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
@@ -69,7 +69,7 @@ func render_template(p_featured_posts_lst []*Gf_featured_post,
 		gf_err := gf_core.ErrorCreate("failed to render the landing_page template",
 			"template_render_error",
 			map[string]interface{}{},
-			err, "gf_landing_page", p_runtime_sys)
+			err, "gf_landing_page", pRuntimeSys)
 		return gf_err
 	}
 

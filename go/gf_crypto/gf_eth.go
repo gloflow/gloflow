@@ -76,7 +76,7 @@ func EthGenerateKeys() (string, string, string, error) {
 }
 
 //-------------------------------------------------
-func Eth_sign_data(p_data_to_sign_str string,
+func EthSignData(p_data_to_sign_str string,
 	p_private_key_hex_str string) (string, error) {
 
     // clearn private_key hex

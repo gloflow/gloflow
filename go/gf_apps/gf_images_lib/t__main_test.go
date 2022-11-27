@@ -29,6 +29,7 @@ import (
 )
 
 //---------------------------------------------------
+
 type Gf_test_image_data struct {
 	image_client_type_str            string
 	image_flows_names_lst            []string
@@ -45,6 +46,7 @@ var logFun func(string, string)
 var cli_args_map map[string]interface{}
 
 //---------------------------------------------------
+
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.InitLogs()
 	cli_args_map = gf_images_core.CLI__parse_args(logFun)
@@ -53,6 +55,7 @@ func TestMain(m *testing.M) {
 }
 
 //---------------------------------------------------
+
 func Test__main(p_test *testing.T) {
 
 	fmt.Println("TEST__MAIN ==============================================")
@@ -116,6 +119,7 @@ func Test__main(p_test *testing.T) {
 }
 
 //---------------------------------------------------
+
 func test__images_transformer(p_test_image_data *Gf_test_image_data,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
@@ -160,6 +164,7 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 }
 
 //---------------------------------------------------
+
 func test__images_ops(p_test_image_data *Gf_test_image_data,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
@@ -182,6 +187,7 @@ func test__images_ops(p_test_image_data *Gf_test_image_data,
 }
 
 //---------------------------------------------------
+
 func test__image_ops(p_test_image_data *Gf_test_image_data,
 	p_test__image_local_filepath_str string,
 	p_test__image_format_str         string,

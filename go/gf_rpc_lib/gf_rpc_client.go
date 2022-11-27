@@ -38,7 +38,8 @@ import (
 )
 
 //-------------------------------------------------
-func Client__request_sse(pURLstr string,
+
+func ClientRequestSSE(pURLstr string,
 	pRespDataCh chan(map[string]interface{}),
 	pHeadersMap map[string]string,
 	pCtx        context.Context,
@@ -145,7 +146,8 @@ func Client__request_sse(pURLstr string,
 }
 
 //-------------------------------------------------
-func Client__request(pURLstr string,
+
+func ClientRequest(pURLstr string,
 	pHeadersMap map[string]string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {

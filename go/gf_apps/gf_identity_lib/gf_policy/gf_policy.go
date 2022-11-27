@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFpolicy struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
 	IDstr             gf_core.GF_ID      `bson:"id_str"`
@@ -64,6 +65,7 @@ type GFpolicyUpdateOutput struct {
 
 //-------------------------------------------------
 // VERIFY
+
 func Verify(pRequestedOpStr string,
 	pTargetResourceIDstr gf_core.GF_ID,
 	pUserIDstr           gf_core.GF_ID,
@@ -107,6 +109,7 @@ func Verify(pRequestedOpStr string,
 
 //-------------------------------------------------
 // POLICY_SINGLE_VERIFY
+
 func policySingleVerify(pRequestedOpStr string,
 	pPolicy           *GFpolicy,
 	pCurrentUserIDstr gf_core.GF_ID,
@@ -188,6 +191,7 @@ func policySingleVerify(pRequestedOpStr string,
 }
 
 //-------------------------------------------------
+
 func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 	pPolicyIDstr    gf_core.GF_ID,
 	
@@ -230,6 +234,7 @@ func PipelineUpdate(pTargetResourceIDstr gf_core.GF_ID,
 
 //-------------------------------------------------
 // PIPELINE__CREATE
+
 func PipelineCreate(pTargetResourceIDstr gf_core.GF_ID,
 	pOwnerUserIDstr gf_core.GF_ID,
 	pCtx            context.Context,
@@ -256,6 +261,7 @@ func PipelineCreate(pTargetResourceIDstr gf_core.GF_ID,
 }
 
 //---------------------------------------------------
+
 func createID(pTargetResourceIDstr gf_core.GF_ID,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 //---------------------------------------------------
-type GFuserName          string
-type GF_auth_signature   string
-type GF_user_address_eth string
+
+type GFuserName       string
+type GFauthSignature  string
+type GFuserAddressETH string

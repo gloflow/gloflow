@@ -32,6 +32,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func InitHandlers(pAuthLoginURLstr string,
 	pHTTPmux        *http.ServeMux,
 	pJobsMngrCh     chan gf_images_jobs_core.JobMsg,
@@ -57,11 +58,11 @@ func InitHandlers(pAuthLoginURLstr string,
 	//---------------------
 	// rpcHandlerRuntime
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:                pHTTPmux,
-		Metrics:            metrics,
-		Store_run_bool:     true,
-		Sentry_hub:         nil,
-		Auth_login_url_str: pAuthLoginURLstr,
+		Mux:             pHTTPmux,
+		Metrics:         metrics,
+		StoreRunBool:    true,
+		SentryHub:       nil,
+		AuthLoginURLstr: pAuthLoginURLstr,
 	}
 
 	//---------------------
@@ -259,9 +260,9 @@ func InitHandlers(pAuthLoginURLstr string,
 				// INPUT
 				qs_map := p_req.URL.Query()
 
-				i_map, gf_err :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				i_map, gfErr :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
@@ -280,13 +281,13 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// COMPLETE
-				running_job, gf_err := UploadComplete(upload_gf_image_id_str,
+				running_job, gfErr := UploadComplete(upload_gf_image_id_str,
 					meta_map,
 					pJobsMngrCh,
 					pRuntimeSys)
 
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
@@ -318,9 +319,9 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				i_map, gfErr :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				browser_jobs_runs_results_lst      := i_map["jr"].([]interface{}) //map[string]interface{})
@@ -332,9 +333,9 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//--------------------------
 				// STORE BROWSER_IMAGE_CALC_RESULT
-				gf_err = Process__browser_image_calc_result(cast_browser_jobs_runs_results_lst, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				gfErr = ProcessBrowserImageCalcResult(cast_browser_jobs_runs_results_lst, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
 				//--------------------------

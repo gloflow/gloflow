@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func DBgetFlowsIDs(pFlowsNamesLst []string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]gf_core.GF_ID, *gf_core.GFerror) {
@@ -47,6 +48,7 @@ func DBgetFlowsIDs(pFlowsNamesLst []string,
 }
 
 //---------------------------------------------------
+
 func DBgetID(pFlowNameStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
@@ -80,8 +82,9 @@ func DBgetID(pFlowNameStr string,
 
 //---------------------------------------------------
 // GET_ALL
+
 func DBgetAll(p_ctx context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	pipeline := mongo.Pipeline{
 		{
@@ -112,37 +115,37 @@ func DBgetAll(p_ctx context.Context,
 			}},
 		},
 	}
-	cursor, err := p_runtime_sys.Mongo_coll.Aggregate(p_ctx, pipeline)
+	cursor, err := pRuntimeSys.Mongo_coll.Aggregate(p_ctx, pipeline)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to run DB aggregation to get all flows names",
+		gfErr := gf_core.MongoHandleError("failed to run DB aggregation to get all flows names",
 			"mongodb_aggregation_error",
 			map[string]interface{}{},
-			err, "gf_images_flows", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
 	}
 	defer cursor.Close(p_ctx)
 	
 	all_flows_lst := []map[string]interface{}{}
 	err = cursor.All(p_ctx, &all_flows_lst)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get mongodb results of query to get all flows names",
+		gfErr := gf_core.MongoHandleError("failed to get mongodb results of query to get all flows names",
 			"mongodb_cursor_all",
 			map[string]interface{}{},
-			err, "gf_images_flows", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_images_flows", pRuntimeSys)
+		return nil, gfErr
 	}
 	
 	return all_flows_lst, nil
 }
 
 //---------------------------------------------------
-func Flows_db__add_flow_name_to_image(p_flow_name_str string,
+
+func DBaddFlowNameToImage(p_flow_name_str string,
 	p_image_gf_id_str gf_images_core.Gf_image_id,
-	p_runtime_sys     *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.Flows_db__add_flow_name_to_image()")
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	ctx := context.Background()
-	_, err := p_runtime_sys.Mongo_coll.UpdateMany(ctx, bson.M{
+	_, err := pRuntimeSys.Mongo_coll.UpdateMany(ctx, bson.M{
 			"t":      "img",
 			"id_str": p_image_gf_id_str,	
 		},
@@ -154,28 +157,29 @@ func Flows_db__add_flow_name_to_image(p_flow_name_str string,
 			},
 		})
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to add a flow to an existing image DB record",
+		gfErr := gf_core.ErrorCreate("failed to add a flow to an existing image DB record",
 			"mongodb_update_error",
 			map[string]interface{}{
 				"flow_name_str":   p_flow_name_str,
 				"image_gf_id_str": p_image_gf_id_str,
 			},
-			err, "gf_images_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_images_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil
 }
 
 //---------------------------------------------------
-func flows_db__get_pages_total_num(p_flow_name_str string,
+
+func dbGetPagesTotalNum(p_flow_name_str string,
 	p_page_size_int int,
 	p_ctx           context.Context,
-	p_runtime_sys   *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
+	pRuntimeSys   *gf_core.RuntimeSys) (int64, *gf_core.GFerror) {
 
 
 
-	imgs_in_flow__count_int, gf_err := gf_core.MongoCount(bson.M{
+	imgs_in_flow__count_int, gfErr := gf_core.MongoCount(bson.M{
 			"t":             "img",
 			"flow_name_str": p_flow_name_str,
 		},
@@ -183,11 +187,11 @@ func flows_db__get_pages_total_num(p_flow_name_str string,
 			"flow_name_str":      p_flow_name_str,
 			"caller_err_msg_str": "failed to count the number of images in a flow",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return 0, gf_err
+		pRuntimeSys)
+	if gfErr != nil {
+		return 0, gfErr
 	}
 
 
@@ -196,19 +200,19 @@ func flows_db__get_pages_total_num(p_flow_name_str string,
 }
 
 //---------------------------------------------------
-func flows_db__get_page(p_flow_name_str string,
+
+func dbGetPage(p_flow_name_str string,
 	p_cursor_start_position_int int, // 0
 	p_elements_num_int          int, // 50
 	p_ctx                       context.Context,
-	p_runtime_sys               *gf_core.RuntimeSys) ([]*gf_images_core.GF_image, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_images_flows_db.flows_db__get_page()")
+	pRuntimeSys                 *gf_core.RuntimeSys) ([]*gf_images_core.GFimage, *gf_core.GFerror) {
 
 	find_opts := options.Find()
     find_opts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
 	find_opts.SetSkip(int64(p_cursor_start_position_int))
     find_opts.SetLimit(int64(p_elements_num_int))
 	
-	cursor, gf_err := gf_core.MongoFind(bson.M{
+	cursor, gfErr := gf_core.MongoFind(bson.M{
 			"t":   "img",
 			"$or": []bson.M{
 
@@ -228,32 +232,33 @@ func flows_db__get_page(p_flow_name_str string,
 			"elements_num_int":          p_elements_num_int,
 			"caller_err_msg_str":        "failed to get a page of images from a flow",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		p_ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
-	images_lst := []*gf_images_core.GF_image{}
+	images_lst := []*gf_images_core.GFimage{}
 	err        := cursor.All(p_ctx, &images_lst)
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get a page of images from a flow",
+		gfErr := gf_core.MongoHandleError("failed to get a page of images from a flow",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
-			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_images_lib", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	return images_lst, nil
 }
 
 //-------------------------------------------------
-func flows_db__images_exist(p_images_extern_urls_lst []string,
+
+func dbImagesExist(p_images_extern_urls_lst []string,
 	p_flow_name_str   string,
 	p_client_type_str string,
-	p_runtime_sys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 	
 	//------------------------
 	var query_map bson.M
@@ -313,9 +318,9 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 			"client_type_str":        p_client_type_str,
 			"caller_err_msg_str":     "failed to find images in flow when checking if images exist",
 		},
-		p_runtime_sys.Mongo_coll,
+		pRuntimeSys.Mongo_coll,
 		ctx,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -330,11 +335,11 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 				"flow_name_str":          p_flow_name_str,
 				"client_type_str":        p_client_type_str,
 			},
-			err, "gf_images_lib", p_runtime_sys)
+			err, "gf_images_lib", pRuntimeSys)
 		return nil, gfErr
 	}
 
-	/*err := p_runtime_sys.Mongodb_coll.Find(query_map).
+	/*err := pRuntimeSys.Mongodb_coll.Find(query_map).
 
 				// select which fields to include in the results
 				Select(bson.M{
@@ -346,15 +351,15 @@ func flows_db__images_exist(p_images_extern_urls_lst []string,
 				All(&existingImagesLst)
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
+		gfErr := gf_core.MongoHandleError("failed to find images in flow when checking if images exist",
 			"mongodb_find_error",
 			map[string]interface{}{
 				"images_extern_urls_lst": p_images_extern_urls_lst,
 				"flow_name_str":          p_flow_name_str,
 				"client_type_str":        p_client_type_str,
 			},
-			err, "gf_images_lib", p_runtime_sys)
-		return nil, gf_err
+			err, "gf_images_lib", pRuntimeSys)
+		return nil, gfErr
 	}*/
 
 	return existingImagesLst, nil

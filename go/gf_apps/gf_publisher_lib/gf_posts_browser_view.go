@@ -27,13 +27,13 @@ import (
 )
 
 //---------------------------------------------------
-func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_post, // list-of-lists
+
+func postsBrowserRenderTemplate(p_posts_pages_lst [][]*gf_publisher_core.GFpost, // list-of-lists
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_posts_page_size_int    int, // 5
 	p_resp                   io.Writer,
-	p_runtime_sys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_posts_browser_view.posts_browser__render_template()")
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	pages_lst := [][]map[string]interface{}{}
 	for _, posts_page_lst := range p_posts_pages_lst {
@@ -42,17 +42,17 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 		for _, post := range posts_page_lst {
 
 			post_info_map := map[string]interface{}{
-				"post_title_str":             post.Title_str,
-				"post_creation_datetime_str": post.Creation_datetime_str,
-				"post_thumbnail_url_str":     post.Thumbnail_url_str,
-				"images_number_int":          len(post.Images_ids_lst),
+				"post_title_str":             post.TitleStr,
+				"post_creation_datetime_str": post.CreationDatetimeStr,
+				"post_thumbnail_url_str":     post.ThumbnailURLstr,
+				"images_number_int":          len(post.ImagesIDsLst),
 			}
 
 			//---------------
 			// TAGS
-			if len(post.Tags_lst) > 0 {
+			if len(post.TagsLst) > 0 {
 				post_tags_lst := []string{}
-				for _, tag_str := range post.Tags_lst {
+				for _, tag_str := range post.TagsLst {
 
 					// IMPORTANT!! - some tags attached to posts are emtpy strings ""
 					if tag_str != "" {
@@ -73,7 +73,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 		pages_lst = append(pages_lst, page_posts_lst)
 	}
 
-	sys_release_info := gf_core.GetSysReleseInfo(p_runtime_sys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmpl_data struct {
 		Posts_pages_lst  [][]map[string]interface{}
@@ -83,7 +83,7 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 
 	err := p_tmpl.Execute(p_resp, tmpl_data{
 		Posts_pages_lst:  pages_lst,
-		Sys_release_info: sys_release_info,
+		Sys_release_info: sysReleaseInfo,
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
@@ -99,11 +99,11 @@ func posts_browser__render_template(p_posts_pages_lst [][]*gf_publisher_core.Gf_
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the posts browser template",
+		gfErr := gf_core.ErrorCreate("failed to render the posts browser template",
 			"template_render_error",
 			map[string]interface{}{},
-			err, "gf_publisher_lib", p_runtime_sys)
-		return gf_err
+			err, "gf_publisher_lib", pRuntimeSys)
+		return gfErr
 	}
 
 	return nil

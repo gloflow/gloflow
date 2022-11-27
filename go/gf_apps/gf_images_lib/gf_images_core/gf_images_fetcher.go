@@ -84,7 +84,7 @@ func FetcherGetExternImage(pImageURLstr string,
 	//--------------
 
 	// LOG
-	analytics__log_image_fetch(pImageURLstr, pRuntimeSys)
+	analyticsLogImageFetch(pImageURLstr, pRuntimeSys)
 	
 	// check if local file exists
 	if _, err := os.Stat(newImageLocalFilePathStr); os.IsNotExist(err) {
@@ -100,9 +100,8 @@ func FetcherGetExternImage(pImageURLstr string,
 
 //---------------------------------------------------
 
-func analytics__log_image_fetch(pImageURLstr string,
+func analyticsLogImageFetch(pImageURLstr string,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_fetcher.analytics__log_image_fetch()")
 }
 
 //---------------------------------------------------
@@ -110,7 +109,6 @@ func analytics__log_image_fetch(pImageURLstr string,
 func DownloadFile(pImageURLstr string,
 	p_local_image_file_path_str string,
 	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_fetcher.DownloadFile()")
 
 	//-----------------------
 	headersMap, userAgentStr := GetHTTPreqConfig()

@@ -26,17 +26,19 @@ import (
 )
 
 //-------------------------------------------------
-func Test__mfa(pTest *testing.T) {
+
+func TestMFA(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_MFA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	runtimeSys := T__init()
 
-	test_mfa_main(pTest, runtimeSys)
+	testMFAmain(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
-func test_mfa_main(pTest *testing.T,
+
+func testMFAmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 

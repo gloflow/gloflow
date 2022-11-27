@@ -29,9 +29,7 @@ import (
 
 //---------------------------------------------------
 
-type GFimage  = Gf_image
-type GF_image = Gf_image
-type Gf_image struct {
+type GFimage struct {
 
 	Id                   primitive.ObjectID `json:"-"               bson:"_id,omitempty"`
 	IDstr                GFimageID     `json:"id_str"               bson:"id_str"`
@@ -88,7 +86,7 @@ type Gf_image struct {
 	// Flow_name_str   string   `json:"flow_name_str"   bson:"flow_name_str"`
 }
 
-type GF_image_export struct {
+type GFimageExport struct {
 	Creation_unix_time_f     float64  `json:"creation_unix_time_f"`
 	Title_str                string   `json:"title_str"`
 	Flows_names_lst          []string `json:"flows_names_lst"`
@@ -132,10 +130,10 @@ type GFimageNewInfo struct {
 
 func ImageCreateNew(pImageInfo *GFimageNewInfo,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	image := &GF_image{
+	image := &GFimage{
 		IDstr:                          pImageInfo.IDstr,
 		T_str:                          "img",
 		Creation_unix_time_f:           creationUNIXtimeF,
@@ -170,11 +168,11 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 //---------------------------------------------------
 // DEPRECATED!! - use Image__create_new and its structured input
 
-func Image__create(pImageInfoMap map[string]interface{},
+func ImageCreate(pImageInfoMap map[string]interface{},
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GF_image, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFimage, *gf_core.GFerror) {
 	
-	newImageInfoMap, gfErr := Image__verify_image_info(pImageInfoMap, pRuntimeSys)
+	newImageInfoMap, gfErr := VerifyImageInfo(pImageInfoMap, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -183,7 +181,7 @@ func Image__create(pImageInfoMap map[string]interface{},
 	flows_names_lst := newImageInfoMap["flows_names_lst"].([]string)
 	gf_image_id_str := GFimageID(newImageInfoMap["id_str"].(string))
 
-	image := &GF_image{
+	image := &GFimage{
 		IDstr:                          gf_image_id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           float64(time.Now().UnixNano())/1000000000.0,

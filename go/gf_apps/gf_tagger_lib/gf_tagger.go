@@ -151,12 +151,13 @@ func addTagsToObject(pTagsStr string,
 }
 
 //---------------------------------------------------
+
 func get_objects_with_tags(p_tags_lst []string,
 	p_object_type_str string,
 	p_page_index_int  int,
 	p_page_size_int   int,
-	p_runtime_sys     *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
+	pRuntimeSys     *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
 		
 	objects_with_tags_map := map[string][]map[string]interface{}{}
 	for _, tag_str := range p_tags_lst {
@@ -164,7 +165,7 @@ func get_objects_with_tags(p_tags_lst []string,
 			p_object_type_str,
 			p_page_index_int,
 			p_page_size_int,
-			p_runtime_sys)
+			pRuntimeSys)
 
 		if gf_err != nil {
 			return nil, gf_err
@@ -175,13 +176,14 @@ func get_objects_with_tags(p_tags_lst []string,
 }
 
 //---------------------------------------------------
+
 func get_objects_with_tag(p_tag_str string,
 	p_object_type_str string,
 	p_page_index_int  int,
 	p_page_size_int   int,
-	p_runtime_sys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
-	p_runtime_sys.LogFun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
+	pRuntimeSys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
+	pRuntimeSys.LogFun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
 
 	//ADD!! - add support for tagging "image" p_object_type_str's
 	if p_object_type_str != "post" {
@@ -191,14 +193,14 @@ func get_objects_with_tag(p_tag_str string,
 				"tag_str":         p_tag_str,
 				"object_type_str": p_object_type_str,
 			},
-			nil, "gf_tagger", p_runtime_sys)
+			nil, "gf_tagger", pRuntimeSys)
 		return nil, gf_err
 	}
 	
 	posts_with_tag_lst, gf_err := db__get_posts_with_tag(p_tag_str,
 		p_page_index_int,
 		p_page_size_int,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gf_err != nil {
 		return nil, gf_err
 	}
@@ -207,11 +209,11 @@ func get_objects_with_tag(p_tag_str string,
 	min_posts_infos_lst := []map[string]interface{}{}
 	for _, post := range posts_with_tag_lst {
 		post_info_map := map[string]interface{}{
-			"title_str":               post.Title_str,
-			"tags_lst":                post.Tags_lst,
-			"url_str":                 fmt.Sprintf("/posts/%s", post.Title_str),
+			"title_str":               post.TitleStr,
+			"tags_lst":                post.TagsLst,
+			"url_str":                 fmt.Sprintf("/posts/%s", post.TitleStr),
 			"object_type_str":         p_object_type_str,
-			"thumbnail_small_url_str": post.Thumbnail_url_str,
+			"thumbnail_small_url_str": post.ThumbnailURLstr,
 		}
 		min_posts_infos_lst = append(min_posts_infos_lst,post_info_map)
 	}
@@ -221,11 +223,12 @@ func get_objects_with_tag(p_tag_str string,
 }
 
 //---------------------------------------------------
+
 func parse_tags(pTagsStr string,
 	p_max_tags_bulk_size_int        int, // 500
 	p_max_tag_characters_number_int int, // 20
-	p_runtime_sys                   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	p_runtime_sys.LogFun("FUN_ENTER", "gf_tagger.parse_tags()")
+	pRuntimeSys                   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.parse_tags()")
 	
 	tags_lst := strings.Split(pTagsStr," ")
 	//---------------------
@@ -236,7 +239,7 @@ func parse_tags(pTagsStr string,
 				"tags_lst":               tags_lst,
 				"max_tags_bulk_size_int": p_max_tags_bulk_size_int,
 			},
-			nil, "gf_tagger_lib", p_runtime_sys)
+			nil, "gf_tagger_lib", pRuntimeSys)
 		return nil, gf_err
 	}
 
@@ -249,7 +252,7 @@ func parse_tags(pTagsStr string,
 					"tag_str":                       tag_str,
 					"max_tag_characters_number_int": p_max_tag_characters_number_int,
 				},
-				nil, "gf_tagger_lib", p_runtime_sys)
+				nil, "gf_tagger_lib", pRuntimeSys)
 			return nil, gf_err
 		}
 	}

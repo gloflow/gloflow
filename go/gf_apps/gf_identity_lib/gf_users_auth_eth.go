@@ -28,90 +28,92 @@ import (
 )
 
 //---------------------------------------------------
+
 // io_preflight
-type GF_user_auth_eth__input_preflight struct {
-	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"omitempty,eth_addr"`
+type GFuserAuthETHinputPreflight struct {
+	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"omitempty,eth_addr"`
 }
-type GF_user_auth_eth__output_preflight struct {
-	User_exists_bool bool             
-	Nonce_val_str    GF_user_nonce_val
+type GFuserAuthETHoutputPreflight struct {
+	UserExistsBool bool             
+	NonceValStr    GFuserNonceVal
 }
 
 // io_login
-type GF_user_auth_eth__input_login struct {
-	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"required,eth_addr"`
-	Auth_signature_str   gf_identity_core.GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
+type GFuserAuthETHinputLogin struct {
+	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr  gf_identity_core.GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
-type GF_user_auth_eth__output_login struct {
-	Nonce_exists_bool         bool
-	Auth_signature_valid_bool bool
-	JWT_token_val             gf_session.GF_jwt_token_val
-	User_id_str               gf_core.GF_ID 
+type GFuserAuthETHoutputLogin struct {
+	NonceExistsBool        bool
+	AuthSignatureValidBool bool
+	JWTtokenVal            gf_session.GFjwtTokenVal
+	UserIDstr              gf_core.GF_ID 
 }
 
 // io_create
-type GF_user_auth_eth__input_create struct {
-	UserTypeStr          string                               `validate:"required"` // "admin" | "standard"
-	User_address_eth_str gf_identity_core.GF_user_address_eth `validate:"required,eth_addr"`
-	Auth_signature_str   gf_identity_core.GF_auth_signature   `validate:"required,len=132"` // singature length with "0x"
+type GFuserAuthETHinputCreate struct {
+	UserTypeStr       string                            `validate:"required"` // "admin" | "standard"
+	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr  gf_identity_core.GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
-type GF_user_auth_eth__output_create struct {
-	Nonce_exists_bool         bool
-	Auth_signature_valid_bool bool
+type GFuserAuthETHoutputCreate struct {
+	NonceExistsBool        bool
+	AuthSignatureValidBool bool
 }
 
 //---------------------------------------------------
-func users_auth_eth__pipeline__preflight(p_input *GF_user_auth_eth__input_preflight,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_preflight, *gf_core.GFerror) {
+
+func usersAuthETHpipelinePreflight(pInput *GFuserAuthETHinputPreflight,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputPreflight, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE
-	gf_err := gf_core.ValidateStruct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
 
-	output := &GF_user_auth_eth__output_preflight{}
+	output := &GFuserAuthETHoutputPreflight{}
 
-	exists_bool, gf_err := db__user__exists_by_eth_addr(p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	existsBool, gfErr := dbUserExistsByETHaddr(pInput.UserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// no user exists so create a new nonce
-	if !exists_bool {
+	if !existsBool {
 
 		// user doesnt exist yet so no user_id
-		user_id_str := gf_core.GF_ID("")
-		nonce, gf_err := nonce__create_and_persist(user_id_str,
-			p_input.User_address_eth_str,
-			p_ctx,
-			p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		userIDstr := gf_core.GF_ID("")
+		nonce, gfErr := nonceCreateAndPersist(userIDstr,
+			pInput.UserAddressETHstr,
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
-		output.User_exists_bool = false
-		output.Nonce_val_str    = nonce.Val_str
+		output.UserExistsBool = false
+		output.NonceValStr    = nonce.ValStr
 
 	// user exists
 	} else {
 
-		nonce_val_str, nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str, p_ctx, p_runtime_sys)
-		if gf_err != nil {
-			return nil, gf_err
+		nonceValStr, nonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
-		if !nonce_exists_bool {
+		if !nonceExistsBool {
 			// generate new nonce, because the old one has been invalidated?
 		} else {
-			output.User_exists_bool = true
-			output.Nonce_val_str    = nonce_val_str
+			output.UserExistsBool = true
+			output.NonceValStr    = nonceValStr
 		}
 	}
 
@@ -120,76 +122,77 @@ func users_auth_eth__pipeline__preflight(p_input *GF_user_auth_eth__input_prefli
 
 //---------------------------------------------------
 // PIPELINE__LOGIN
-func users_auth_eth__pipeline__login(p_input *GF_user_auth_eth__input_login,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_login, *gf_core.GFerror) {
+
+func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputLogin, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.ValidateStruct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
 
-	output := &GF_user_auth_eth__output_login{}
+	output := &GFuserAuthETHoutputLogin{}
 
 	//------------------------
-	user_nonce_val, user_nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
+	userNonceVal, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
 		
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
-	if !user_nonce_exists_bool {
-		output.Nonce_exists_bool = false
+	if !userNonceExistsBool {
+		output.NonceExistsBool = false
 		return output, nil
 	} else {
-		output.Nonce_exists_bool = true
+		output.NonceExistsBool = true
 	}
 
 	//------------------------
 	// VERIFY
 
-	signature_valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
-		user_nonce_val,
-		p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	signatureValidBool, gfErr := verifyAuthSignatureAllMethods(pInput.AuthSignatureStr,
+		userNonceVal,
+		pInput.UserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	if !signature_valid_bool {
-		output.Auth_signature_valid_bool = false
+	if !signatureValidBool {
+		output.AuthSignatureValidBool = false
 		return output, nil
 	} else {
-		output.Auth_signature_valid_bool = true
+		output.AuthSignatureValidBool = true
 	}
 
 	//------------------------
 	// USER_ID
 
-	user_id_str, gf_err := gf_identity_core.DBgetBasicInfoByETHaddr(p_input.User_address_eth_str,
-		p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByETHaddr(pInput.UserAddressETHstr,
+		pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	output.User_id_str = user_id_str
+	output.UserIDstr = userIDstr
 
 	//------------------------
 	// JWT
-	user_identifier_str := string(user_id_str)
-	jwt_token_val, gf_err := gf_session.JWT__pipeline__generate(user_identifier_str, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	userIdentifierStr := string(userIDstr)
+	jwtTokenVal, gfErr := gf_session.JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	output.JWT_token_val = jwt_token_val
+	output.JWTtokenVal = jwtTokenVal
 
 	//------------------------
 
@@ -198,79 +201,80 @@ func users_auth_eth__pipeline__login(p_input *GF_user_auth_eth__input_login,
 
 //---------------------------------------------------
 // PIPELINE__CREATE
-func users_auth_eth__pipeline__create(p_input *GF_user_auth_eth__input_create,
-	p_ctx         context.Context,
-	p_runtime_sys *gf_core.RuntimeSys) (*GF_user_auth_eth__output_create, *gf_core.GFerror) {
+
+func usersAuthETHpipelineCreate(pInput *GFuserAuthETHinputCreate,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputCreate, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
-	gf_err := gf_core.ValidateStruct(p_input, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr := gf_core.ValidateStruct(pInput, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------
 
-	output := &GF_user_auth_eth__output_create{}
+	output := &GFuserAuthETHoutputCreate{}
 	
 	//------------------------
 	// DB_NONCE_GET - get a nonce already generated in preflight for this user address,
 	//                for validating the recevied auth_signature
-	user_nonce_val_str, user_nonce_exists_bool, gf_err := db__nonce__get(p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	userNonceValStr, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	if !user_nonce_exists_bool {
-		output.Nonce_exists_bool = false
+	if !userNonceExistsBool {
+		output.NonceExistsBool = false
 		return output, nil
 	} else {
-		output.Nonce_exists_bool = true
+		output.NonceExistsBool = true
 	}
 
 	//------------------------
 	// VALIDATE
 
-	signature_valid_bool, gf_err := verify__auth_signature__all_methods(p_input.Auth_signature_str,
-		user_nonce_val_str,
-		p_input.User_address_eth_str,
-		p_ctx,
-		p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	signatureValidBool, gfErr := verifyAuthSignatureAllMethods(pInput.AuthSignatureStr,
+		userNonceValStr,
+		pInput.UserAddressETHstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 	
-	if signature_valid_bool {
-		output.Auth_signature_valid_bool = true
+	if signatureValidBool {
+		output.AuthSignatureValidBool = true
 	} else {
-		output.Auth_signature_valid_bool = false
+		output.AuthSignatureValidBool = false
 		return output, nil
 	}
 
 	//------------------------
 
-	creation_unix_time_f   := float64(time.Now().UnixNano())/1000000000.0
-	user_address_eth_str   := p_input.User_address_eth_str
-	user_addresses_eth_lst := []gf_identity_core.GF_user_address_eth{user_address_eth_str, }
+	creationUNIXtimeF   := float64(time.Now().UnixNano())/1000000000.0
+	userAddressETHstr   := pInput.UserAddressETHstr
+	userAddressesETHlst := []gf_identity_core.GFuserAddressETH{userAddressETHstr, }
 
-	user_identifier_str := string(user_address_eth_str)
-	user_id := usersCreateID(user_identifier_str, creation_unix_time_f)
+	userIdentifierStr := string(userAddressETHstr)
+	userID := usersCreateID(userIdentifierStr, creationUNIXtimeF)
 
 	user := &GFuser{
-		V_str:                "0",
-		Id_str:               user_id,
-		Creation_unix_time_f: creation_unix_time_f,
-		UserTypeStr:          p_input.UserTypeStr,
-		Addresses_eth_lst:    user_addresses_eth_lst,
+		Vstr:              "0",
+		IDstr:             userID,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		UserTypeStr:       pInput.UserTypeStr,
+		AddressesETHlst:   userAddressesETHlst,
 	}
 
 	//------------------------
 	// DB
-	gf_err = db__user__create(user, p_ctx, p_runtime_sys)
-	if gf_err != nil {
-		return nil, gf_err
+	gfErr = dbUserCreate(user, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	//------------------------

@@ -26,35 +26,37 @@ import (
 )
 
 //------------------------------------------------
-func Pipeline__render_login(p_mfa_confirm_bool bool,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	template_rendered_str, gfErr := view__render_template_login(p_mfa_confirm_bool,
-		p_tmpl,
-		p_subtemplates_names_lst,
-		p_runtime_sys)
+func PipelineRenderLogin(pMFAconfirmBool bool,
+	pTmpl                 *template.Template,
+	pSubtemplatesNamesLst []string,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	templateRenderedStr, gfErr := viewRenderTemplateLogin(pMFAconfirmBool,
+		pTmpl,
+		pSubtemplatesNamesLst,
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	return template_rendered_str, nil
+	return templateRenderedStr, nil
 }
 
 //------------------------------------------------
-func Pipeline__render_dashboard(p_tmpl *template.Template,
-	p_subtemplates_names_lst []string,
-	p_ctx                    context.Context,
-	p_runtime_sys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	template_rendered_str, gfErr := view__render_template_dashboard(p_tmpl,
-		p_subtemplates_names_lst,
-		p_runtime_sys)
+func PipelineRenderDashboard(pTmpl *template.Template,
+	pSubtemplatesNamesLst []string,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	templateRenderedStr, gfErr := viewRenderTemplateDashboard(pTmpl,
+		pSubtemplatesNamesLst,
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	return template_rendered_str, nil
+	return templateRenderedStr, nil
 }

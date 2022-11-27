@@ -28,6 +28,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_service_info struct {
 	Port_str                string
 	Mongodb_host_str        string
@@ -37,6 +38,7 @@ type GF_service_info struct {
 }
 
 //-------------------------------------------------
+
 func InitService(pHTTPmux *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
@@ -55,6 +57,7 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
+
 func Run_service(p_service_info *GF_service_info,
 	p_init_done_ch chan bool,
 	pLogFun        func(string, string)) {

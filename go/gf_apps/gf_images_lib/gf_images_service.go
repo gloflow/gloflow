@@ -102,7 +102,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// GIF
-	gfErr = gf_gif_lib.Gif__init_handlers(pHTTPmux, pRuntimeSys)
+	gfErr = gf_gif_lib.InitHandlers(pHTTPmux, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -120,7 +120,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	
 	//-------------
 	// JOBS_MANAGER
-	gf_images_jobs.Jobs_mngr__init_handlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
+	gf_images_jobs.InitHandlers(pHTTPmux, jobsMngrCh, pRuntimeSys)
 
 	//-------------
 	// HANDLERS

@@ -151,7 +151,7 @@ func Load(p_tx *eth_types.Transaction,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
 	p_py_plugins     *gf_eth_core.GF_py_plugins,
-	p_runtime_sys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) (*GF_eth__tx, *gf_core.GFerror) {
 
 	tx_hash         := p_tx.Hash() // :eth_common.Hash
 	tx_hash_hex_str := tx_hash.Hex()
@@ -199,7 +199,7 @@ func Load(p_tx *eth_types.Transaction,
 				"block_num":   p_block_num_int,
 				"tx_hash_hex": tx_hash_hex_str,
 			},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, pRuntimeSys)
 		return nil, gfErr
 	}
 	span__get_tx_receipt.Finish()
@@ -256,7 +256,7 @@ func Load(p_tx *eth_types.Transaction,
 		gfErr := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -270,7 +270,7 @@ func Load(p_tx *eth_types.Transaction,
 	logs, gfErr := Get_logs(tx_receipt,
 		span__parse_tx_logs.Context(),
 		p_eth_rpc_client,
-		p_runtime_sys)
+		pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -285,7 +285,7 @@ func Load(p_tx *eth_types.Transaction,
 		gfErr := gf_core.ErrorCreateWithDefs("failed to get transaction via json-rpc in gf_eth_monitor",
 			"eth_rpc__get_tx_sender",
 			map[string]interface{}{"tx_hash_hex": tx_hash_hex_str,},
-			err, "gf_eth_monitor_core", error_defs_map, 1, p_runtime_sys)
+			err, "gf_eth_monitor_core", error_defs_map, 1, pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -316,7 +316,7 @@ func Load(p_tx *eth_types.Transaction,
 			block_num_int,
 			span__get_new_contract.Context(),
 			p_eth_rpc_client,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -331,7 +331,7 @@ func Load(p_tx *eth_types.Transaction,
 
 		gfErr = gf_eth_contract.Py__run_plugin__get_contract_info(new_contract_addr_str,
 			p_py_plugins,
-			p_runtime_sys)
+			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}*/
@@ -417,7 +417,7 @@ func Load(p_tx *eth_types.Transaction,
 		gfErr := gf_core.ErrorCreate("failed to decode Tx struct hash hex signature to create Mongodb ObjectID",
 			"decode_hex",
 			map[string]interface{}{"tx_hash_hex_str": tx_hash_hex_str, },
-			err, "gf_eth_monitor_core", p_runtime_sys)
+			err, "gf_eth_monitor_core", pRuntimeSys)
 		return nil, gfErr
 	}*/
 
@@ -507,7 +507,7 @@ func Enrich_logs(p_tx_logs []*GF_eth__log,
 func Get_logs(p_tx_receipt *eth_types.Receipt,
 	p_ctx            context.Context,
 	p_eth_rpc_client *ethclient.Client,
-	p_runtime_sys    *gf_core.RuntimeSys) ([]*GF_eth__log, *gf_core.GFerror) {
+	pRuntimeSys    *gf_core.RuntimeSys) ([]*GF_eth__log, *gf_core.GFerror) {
 
 
 	
