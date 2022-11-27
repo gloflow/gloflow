@@ -47,18 +47,18 @@ func Tinit() *gf_core.RuntimeSys {
 
 
 
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str,
+	mongoDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str,
 		test__mongodb_db_name_str,
 		nil,
 		runtimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		panic(-1)
 	}
 
 
-	mongo_coll := mongo_db.Collection("data_symphony")
-	runtimeSys.Mongo_db   = mongo_db
-	runtimeSys.Mongo_coll = mongo_coll
+	mongoColl := mongoDB.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongoDB
+	runtimeSys.Mongo_coll = mongoColl
 
 
 

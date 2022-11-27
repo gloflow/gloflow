@@ -31,26 +31,10 @@ func TestMain(m *testing.M) {
 
 	logFun, _  = gf_core.InitLogs()
 	cliArgsMap = CLI__parse_args(logFun)
-
 	runtimeSys := T__init()
 
 	portInt := 2000
 	TestStartService(portInt, runtimeSys)
-
-	/*test_port_int := 2000
-	go func() {
-
-		HTTPmux := http.NewServeMux()
-
-		serviceInfo := &GF_service_info{
-
-			// IMPORTANT!! - durring testing dont send emails
-			Enable_email_bool: false,
-		}
-		InitService(HTTPmux, serviceInfo, runtime_sys)
-		gf_rpc_lib.Server__init_with_mux(test_port_int, HTTPmux)
-	}()
-	time.Sleep(2*time.Second) // let server startup*/
 
 	v := m.Run()
 	os.Exit(v)

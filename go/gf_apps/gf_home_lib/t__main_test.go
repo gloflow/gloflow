@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 			serviceInfo,
 			HTTPmux,
 			runtimeSys)
-		gf_rpc_lib.Server__init_with_mux(testPortInt, HTTPmux)
+		gf_rpc_lib.ServerInitWithMux(testPortInt, HTTPmux)
 	}()
 
 	// GF_IDENTITY_SERVICE
@@ -147,7 +147,6 @@ func TestHomeViz(pTest *testing.T) {
     }
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
-
 }
 
 //---------------------------------------------------

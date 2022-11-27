@@ -37,7 +37,6 @@ func TestJWT(pTest *testing.T) {
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	runtimeSys := T__init()
-
 	testJWTmain(pTest, runtimeSys)
 }
 
@@ -45,7 +44,6 @@ func TestJWT(pTest *testing.T) {
 
 func testJWTmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
-
 
 	ctx := context.Background()
 
@@ -68,10 +66,7 @@ func testJWTmain(pTest *testing.T,
 		pTest.Fail()
 	}
 
-
-
 	assert.True(pTest, valid_bool == true, "test JWT token is not valid, when it should be")
 	assert.True(pTest, userIdentifierStr == string(testUserAddressETH),
 		"test user_identifier extracted from JWT durring validation is the same as the input test eth address")
-	
 }

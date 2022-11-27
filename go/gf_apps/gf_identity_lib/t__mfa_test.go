@@ -41,9 +41,6 @@ func TestMFA(pTest *testing.T) {
 func testMFAmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
-
-
-
 	// CODE THATS ENTERED INTO GOOGLE AUTH MANUALLY HAS TO BE 
 	// BASE32 ENCODED
 	secretKeyBase32str := "aabbccddeeffgghh"
