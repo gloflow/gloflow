@@ -33,6 +33,11 @@ import (
 
 //-------------------------------------------------
 
+var logFun func(p_g string, p_m string)
+var cliArgsMap map[string]interface{}
+
+//-------------------------------------------------
+
 func TestCreateAndLoginNewUser(pTest *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,
@@ -98,12 +103,11 @@ func TestStartService(pPortInt int,
 
 //-------------------------------------------------
 
-func T__init() *gf_core.RuntimeSys {
+func Tinit() *gf_core.RuntimeSys {
 
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
-
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_identity_tests",
@@ -111,24 +115,17 @@ func T__init() *gf_core.RuntimeSys {
 		Validator:        gf_core.ValidateInit(),
 	}
 
-
-
-
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str,
+	mongoDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str,
 		test__mongodb_db_name_str,
 		nil,
 		runtimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		panic(-1)
 	}
 
-
-	mongo_coll := mongo_db.Collection("data_symphony")
-	runtimeSys.Mongo_db   = mongo_db
-	runtimeSys.Mongo_coll = mongo_coll
-
-
-
+	mongoColl := mongoDB.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongoDB
+	runtimeSys.Mongo_coll = mongoColl
 
 	return runtimeSys
 }

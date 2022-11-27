@@ -37,7 +37,7 @@ func Test__users_http_userpass(pTest *testing.T) {
 
 	testPortInt := 2000
 	ctx         := context.Background()
-	runtimeSys  := T__init()
+	runtimeSys  := Tinit()
 	HTTPagent   := gorequest.New()
 
 	testUserNameStr := "ivan_t"

@@ -231,7 +231,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtime_sys := T__init()
+	runtime_sys := Tinit()
 
 	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	testUserSignatureStr  := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
@@ -242,7 +242,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 	// NONCE_CREATE
 
 	unexistingUserIDstr := gf_core.GF_ID("")
-	_, gfErr := nonceCreate(GF_user_nonce_val(testUserNonceStr),
+	_, gfErr := nonceCreate(GFuserNonceVal(testUserNonceStr),
 		unexistingUserIDstr,
 		gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 		ctx,

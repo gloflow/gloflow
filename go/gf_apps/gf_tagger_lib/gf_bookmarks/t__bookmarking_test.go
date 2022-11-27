@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_tagger_lib
+package gf_bookmarks
 
 import (
 	"fmt"
@@ -26,66 +26,66 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
 
 var logFun func(string,string)
-var cli_args_map map[string]interface{}
+var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _ = gf_core.InitLogs()
-	cli_args_map = CLI__parse_args(logFun)
+	logFun, _  = gf_core.InitLogs()
+	cliArgsMap = gf_tagger_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
 
 //-------------------------------------------------
 
-func Test__main(p_test *testing.T) {
+func TestBookmarks(pTest *testing.T) {
 
 	fmt.Println(" TEST__BOOKMARKS_MAIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
-	test__mongodb_db_name_str := "gf_tests"
-	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
+	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	testMongodbDBnameStr := "gf_tests"
+	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
 	logFun, _ := gf_core.InitLogs()
 
 
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_tagger_tests",
 		LogFun:           logFun,
 		Validator:        gf_core.ValidateInit(),
 	}
 
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtime_sys)
-	if gf_err != nil {
+	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr, testMongodbDBnameStr, nil, runtimeSys)
+	if gfErr != nil {
 		panic(-1)
 	}
 
-	mongo_coll := mongo_db.Collection("data_symphony")
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_coll
+	mongoColl := mongoDB.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongoDB
+	runtimeSys.Mongo_coll = mongoColl
 
-	test_bookmarking(p_test, runtime_sys)
+	testBookmarkingFlow(pTest, runtimeSys)
 }
 
 //-------------------------------------------------
 
-func test_bookmarking(p_test *testing.T,
+func testBookmarkingFlow(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "t__main_test.test_bookmarking()")
 
 	ctx := context.Background()
 
 	test_user_id_str := gf_core.GF_ID("test_user")
 	//------------------
 	// CREATE
-	input__create := &GF_bookmark__input_create{
+	input__create := &GFbookmarkInputCreate{
 		User_id_str:     test_user_id_str,
 		Url_str:         "https://gloflow.com",
 		Description_str: "test bookmark",
@@ -93,67 +93,67 @@ func test_bookmarking(p_test *testing.T,
 			"test", "code", "art",
 		},
 	}
-	gf_err := bookmarks__pipeline__create(input__create,
+	gfErr := PipelineCreate(input__create,
 		nil, // p_images_jobs_mngr
 		ctx,
 		pRuntimeSys)
-	if gf_err != nil {
-		p_test.Fail()
+	if gfErr != nil {
+		pTest.Fail()
 	}
 
 	//------------------
 	// GET_ALL__JSON
 
-	input__get := &GF_bookmark__input_get{
+	input__get := &GFbookmarkInputGet{
 		Response_format_str: "json",
 		User_id_str:         test_user_id_str,
 	}
-	output, gf_err := bookmarks__pipeline__get(input__get,
+	output, gfErr := PipelineGet(input__get,
 		nil,
 		nil,
 		ctx,
 		pRuntimeSys)
-	if gf_err != nil {
-		p_test.Fail()
+	if gfErr != nil {
+		pTest.Fail()
 	}
 
 	spew.Dump(output.Bookmarks_lst)
-	assert.True(p_test, len(output.Bookmarks_lst) > 0, "no bookmarks were returned")
-	assert.True(p_test, output.Template_rendered_str == "", "bookmarks were rendered as a template, when it should be data-only")
+	assert.True(pTest, len(output.Bookmarks_lst) > 0, "no bookmarks were returned")
+	assert.True(pTest, output.Template_rendered_str == "", "bookmarks were rendered as a template, when it should be data-only")
 
 	//------------------
 
 
 
-	templates_paths_map := map[string]string{
-		"gf_tag_objects": "./../../../web/src/gf_apps/gf_tagger/templates/gf_tag_objects/gf_tag_objects.html",
-		"gf_bookmarks":   "./../../../web/src/gf_apps/gf_tagger/templates/gf_bookmarks/gf_bookmarks.html",
+	templatesPathsMap := map[string]string{
+		"gf_tag_objects": "./../../../../web/src/gf_apps/gf_tagger/templates/gf_tag_objects/gf_tag_objects.html",
+		"gf_bookmarks":   "./../../../../web/src/gf_apps/gf_tagger/templates/gf_bookmarks/gf_bookmarks.html",
 	}
 	// TEMPLATES
-	gf_templates, gf_err := tmpl__load(templates_paths_map, pRuntimeSys)
-	if gf_err != nil {
-		p_test.Fail()
+	gfTemplates, gfErr := gf_tagger_core.TemplatesLoad(templatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
 	}
 
 
 
 
-	input__get_html := &GF_bookmark__input_get{
+	inputGetHTML := &GFbookmarkInputGet{
 		Response_format_str: "html",
 		User_id_str:         test_user_id_str,
 	}
-	output_html, gf_err := bookmarks__pipeline__get(input__get_html,
-		gf_templates.bookmarks__tmpl,
-		gf_templates.bookmarks__subtemplates_names_lst,
+	outputHTML, gfErr := PipelineGet(inputGetHTML,
+		gfTemplates.Bookmarks,
+		gfTemplates.BookmarksSubtemplatesNamesLst,
 		ctx,
 		pRuntimeSys)
-	if gf_err != nil {
-		p_test.Fail()
+	if gfErr != nil {
+		pTest.Fail()
 	}
 
-	fmt.Println(output_html.Template_rendered_str)
-	assert.True(p_test, len(output_html.Bookmarks_lst) == 0, "bookmarks were returned when it should only be html template string")
-	assert.True(p_test, output_html.Template_rendered_str != "", "bookmarks were not rendered as a html template,")
+	fmt.Println(outputHTML.Template_rendered_str)
+	assert.True(pTest, len(outputHTML.Bookmarks_lst) == 0, "bookmarks were returned when it should only be html template string")
+	assert.True(pTest, outputHTML.Template_rendered_str != "", "bookmarks were not rendered as a html template,")
 
 	//------------------
 }

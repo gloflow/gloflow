@@ -31,7 +31,7 @@ func TestMFA(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_MFA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtimeSys := T__init()
+	runtimeSys := Tinit()
 
 	testMFAmain(pTest, runtimeSys)
 }

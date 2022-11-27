@@ -36,7 +36,7 @@ func TestJWT(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtimeSys := T__init()
+	runtimeSys := Tinit()
 	testJWTmain(pTest, runtimeSys)
 }
 
