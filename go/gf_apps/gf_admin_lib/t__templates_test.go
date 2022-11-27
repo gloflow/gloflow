@@ -60,8 +60,8 @@ func Test__templates(pTest *testing.T) {
 		pTest.Fail()
 	}
 
-	templateRenderedStr, gfErr := viewRenderTemplateDashboard(templates.dashboard__tmpl,
-		templates.dashboard__subtemplates_names_lst,
+	templateRenderedStr, gfErr := viewRenderTemplateDashboard(templates.dashboardTmpl,
+		templates.dashboardSubtemplatesNamesLst,
 		runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()

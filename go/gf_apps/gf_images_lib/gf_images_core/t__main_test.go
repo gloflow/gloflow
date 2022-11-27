@@ -39,15 +39,11 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 func TestImageTransform(pTest *testing.T) {
-	
-	
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_images_core_tests",
 		LogFun:           logFun,
 	}
-
-
 
 	testImageLocalFilePathStr       := "./../tests_data/test_image_03.jpeg"
 	testImageOutputLocalFilePathStr := "./../tests_data/transform/test_image_03_resized.jpeg"
@@ -62,18 +58,14 @@ func TestImageTransform(pTest *testing.T) {
 
 	largerDimensionPxInt, largerDimensionNameStr := GetImageLargerDimension(image, runtimeSys)
 	
-	
-
+ 
 	// RESIZE_IMAGE
-
 	thumbWidthPxInt, thumbHeightPxInt := ThumbsGetSizeInPx(testImageThumbSizePxInt,
 		largerDimensionPxInt,
 		largerDimensionNameStr)
 
-
 	fmt.Printf("larger dimension (px) - %d %s\n", largerDimensionPxInt, largerDimensionNameStr)
 	fmt.Printf("thumb size (px)       - %d %d\n", thumbWidthPxInt, thumbHeightPxInt)
-
 
 	gfErr = resizeImage(image,
 		testImageOutputLocalFilePathStr,
