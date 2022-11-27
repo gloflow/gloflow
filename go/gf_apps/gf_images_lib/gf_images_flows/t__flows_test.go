@@ -39,7 +39,7 @@ func Test__get_all(p_test *testing.T) {
 	}
 
 	// MONGODB
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	test__mongodb_db_name_str := "gf_tests"
 	mongodb_db, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)

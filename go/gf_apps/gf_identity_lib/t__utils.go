@@ -33,11 +33,6 @@ import (
 
 //-------------------------------------------------
 
-var logFun func(p_g string, p_m string)
-var cliArgsMap map[string]interface{}
-
-//-------------------------------------------------
-
 func TestCreateAndLoginNewUser(pTest *testing.T,
 	pHTTPagent              *gorequest.SuperAgent,
 	pIdentityServicePortInt int,

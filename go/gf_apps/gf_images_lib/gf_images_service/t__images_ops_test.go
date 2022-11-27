@@ -30,15 +30,16 @@ import (
 	// "github.com/davecgh/go-spew/spew"
 )
 
+//---------------------------------------------------
 
 var logFun func(string, string)
-var cli_args_map map[string]interface{}
+var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.InitLogs()
-	cli_args_map = gf_images_core.CLI__parse_args(logFun)
+	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
@@ -53,7 +54,7 @@ func Test__basic_image_ops(p_test *testing.T) {
 	}
 
 	// MONGODB
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	test__mongodb_db_name_str := "gf_tests"
 	
@@ -82,9 +83,4 @@ func Test__basic_image_ops(p_test *testing.T) {
 	}
 
 	//------------------
-
-
-
-
-
 }

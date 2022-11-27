@@ -30,6 +30,7 @@ import (
 //-------------------------------------------------
 
 func main() {
+	
 	logFun, _ := gf_core.InitLogs()
 
 	cli_args_map            := CLI__parse_args(logFun)

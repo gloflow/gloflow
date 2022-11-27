@@ -25,12 +25,17 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//-------------------------------------------------
+
+var logFun func(p_g string, p_m string)
+var cliArgsMap map[string]interface{}
+
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
 
 	logFun, _  = gf_core.InitLogs()
-	cliArgsMap = CLI__parse_args(logFun)
+	cliArgsMap = CLIparseArgs(logFun)
 	runtimeSys := T__init()
 
 	portInt := 2000
