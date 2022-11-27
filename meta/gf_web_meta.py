@@ -137,14 +137,6 @@ def get():
 		},
 
 		#-------------
-		# # IMPORTANT!! - not a page itself, instead its code being used by other pages, but its included here
-		# #               so that it gets built when pages for this app are built
-		# "gf_tagger_client": {
-		# 	"code_root_dir_str": "%s/../src/apps/gf_tagger/client/gf_tagger_client"%(modd_str),
-		# 	"target_deploy_dir": "%s/../bin/apps/gf_tagger/static"%(modd_str),
-		# }
-
-		#-------------
 	}
 
 

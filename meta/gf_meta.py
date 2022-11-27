@@ -118,7 +118,6 @@ def get():
                     # libtensorflow.so     - TensorFlow C lib
                     ("%s/../rust/build/gf_images_jobs_py.so"%(modd_str), "%s/../build/gf_apps/gf_solo/gf_ml_worker/py"%(modd_str)),
                     
-
                     #------------------------
                     # GF_ANALYTICS
                     

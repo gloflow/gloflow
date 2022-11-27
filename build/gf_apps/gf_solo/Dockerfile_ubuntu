@@ -109,12 +109,12 @@ ADD ./config/gf_solo.yaml          config/gf_solo.yaml
 
 # IMPORTANT!! - excplicitly set the ownership of all files in /home/gf to user/group "gf"
 USER root
-RUN chown -R gf .
-RUN chgrp -R gf .
+RUN chown -R gf /home/gf
+RUN chgrp -R gf /home/gf
 
 # IMPORTANT!! - certain CI pipelines (github actions) dont preserve file permissions of 
 #               uploaded/downloaded artifacts from previous jobs/stages
-RUN chmod u+x gf_solo
+RUN chmod u+x /home/gf/gf_solo
 
 #------------
 USER gf
