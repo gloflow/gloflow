@@ -26,6 +26,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_tagger_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_tagger_lib/gf_bookmarks"
 )
 
 //-------------------------------------------------
@@ -36,7 +38,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	// TEMPLATES
-	gf_templates, gfErr := tmpl__load(pTemplatesPathsMap, pRuntimeSys)
+	gfTemplates, gfErr := gf_tagger_core.TemplatesLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -70,7 +72,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 					return nil, gfErr
 				}
 
-				var input GFbookmarkInputCreate
+				var input gf_bookmarks.GFbookmarkInputCreate
 				err := mapstructure.Decode(inputMap, &input)
 				if err != nil {
 					gfErr := gf_core.ErrorCreate("failed to load http input into GFbookmarkInputCreate struct",
@@ -84,7 +86,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//------------------
 
-				gfErr = bookmarksPipelineCreate(&input,
+				gfErr = gf_bookmarks.PipelineCreate(&input,
 					pImagesJobsMngr,
 					pCtx,
 					pRuntimeSys)
@@ -115,16 +117,16 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			response_format_str := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 
 			
-			input := &GFbookmarkInputGet{
+			input := &gf_bookmarks.GFbookmarkInputGet{
 				Response_format_str: response_format_str,
 				User_id_str:         "anonymous",
 			}
 
 			//------------------
 
-			output, gfErr := bookmarksPipelineGet(input,
-				gf_templates.bookmarks__tmpl,
-				gf_templates.bookmarks__subtemplates_names_lst,
+			output, gfErr := gf_bookmarks.PipelineGet(input,
+				gfTemplates.Bookmarks,
+				gfTemplates.BookmarksSubtemplatesNamesLst,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
@@ -165,20 +167,20 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//------------
 				// INPUT
-				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				//------------
 	
-				gfErr = notesPipelineAdd(i_map, pRuntimeSys)
+				gfErr = notesPipelineAdd(iMap, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 				
-				data_map := map[string]interface{}{}
-				return data_map, nil
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
 			}
 
 			return nil, nil
@@ -197,13 +199,13 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			if pReq.Method == "GET" {
 
-				notes_lst, gfErr := notesPipelineGet(pReq, pRuntimeSys)
+				notesLst, gfErr := notesPipelineGet(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr 
 				}
 
-				data_map := map[string]interface{}{"notes_lst": notes_lst,}
-				return data_map, nil
+				dataMap := map[string]interface{}{"notes_lst": notesLst,}
+				return dataMap, nil
 			}
 
 			return nil, nil
@@ -258,9 +260,9 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 			if pReq.Method == "GET" {
 
-				objects_with_tag_lst, gfErr := tags__pipeline__get_objects(pReq, pResp, 
-					gf_templates.tag_objects__tmpl,
-					gf_templates.tag_objects__subtemplates_names_lst,
+				objectsWithTagLst, gfErr := tagsPipelineGetObjects(pReq, pResp, 
+					gfTemplates.TagObjects,
+					gfTemplates.TagObjectsSubtemplatesNamesLst,
 					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
@@ -268,10 +270,10 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				// if the response_format was HTML then objects_with_tag_lst is nil,
 				// in which case there is no json to send back
-				if objects_with_tag_lst != nil {
+				if objectsWithTagLst != nil {
 
-					data_map := map[string]interface{}{"objects_with_tag_lst": objects_with_tag_lst,}
-					return data_map, nil
+					dataMap := map[string]interface{}{"objects_with_tag_lst": objectsWithTagLst,}
+					return dataMap, nil
 				} else {
 					return nil, nil
 				}

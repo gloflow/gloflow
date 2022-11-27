@@ -21,87 +21,36 @@ package gf_tagger_lib
 
 import (
 	"io"
-	"bytes"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //--------------------------------------------------
 
-func render_bookmarks(p_bookmarks_lst []*GFbookmark,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-
-	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
-
-	type tmpl_data struct {
-		Bookmarks_lst    []*GFbookmark
-		Sys_release_info gf_core.SysReleaseInfo
-		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
-	}
-	
-
-	buff := new(bytes.Buffer)
-	err := p_tmpl.Execute(buff,
-		tmpl_data{
-			Bookmarks_lst:    p_bookmarks_lst,
-			Sys_release_info: sys_release_info,
-			//-------------------------------------------------
-			// IS_SUBTEMPLATE_DEFINED
-			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
-				for _, n := range p_subtemplates_names_lst {
-					if n == p_subtemplate_name_str {
-						return true
-					}
-				}
-				return false
-			},
-
-			//-------------------------------------------------
-		})
-
-	if err != nil {
-
-		gf_err := gf_core.ErrorCreate("failed to render the gf_bookmarks template",
-			"template_render_error",
-			map[string]interface{}{},
-			err, "gf_tagger", pRuntimeSys)
-		return "", gf_err
-	}
-
-
-	template_rendered_str := buff.String()
-	return template_rendered_str, nil	
-}
-
-//--------------------------------------------------
-
-func render_objects_with_tag(p_tag_str string,
+func renderObjectsWithTag(pTagStr string,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_page_index_int         int,
 	p_page_size_int          int,
 	p_resp                   io.Writer,
-	pRuntimeSys            *gf_core.RuntimeSys) *gf_core.GFerror {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger_view.render_objects_with_tag()");
+	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-----------------------------
 	// FIX!! - SCALABILITY!! - get tag info on "image" and "post" types is a very long
 	//                         operation, and should be done in some more efficient way,
 	//                         as in with a mongodb aggregation pipeline
 
-	objects_infos_lst, gf_err := get_objects_with_tag(p_tag_str,
-		"post", // p_object_type_str
+	objectsInfosLst, gfErr := getObjectsWithTag(pTagStr,
+		"post", // p_objectTypeStr
 		p_page_index_int,
 		p_page_size_int,
 		pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	if gfErr != nil {
+		return gfErr
 	}
 
 	posts_with_tag_lst := []map[string]interface{}{}
-	for _, p_object_info_map := range objects_infos_lst {
+	for _, p_object_info_map := range objectsInfosLst {
 
 		//----------------
 		var post_thumbnail_url_str string
@@ -139,21 +88,21 @@ func render_objects_with_tag(p_tag_str string,
 		Is_subtmpl_def         func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
-	object_type_str                  := "post"
-	posts_with_tag_count_int, gf_err := db__get_objects_with_tag_count(p_tag_str, object_type_str, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	objectTypeStr := "post"
+	posts_with_tag_count_int, gfErr := db__get_objects_with_tag_count(pTagStr, objectTypeStr, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
-	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 
 	err := p_tmpl.Execute(p_resp,
 		tmpl_data{
-			Tag_str:                p_tag_str,
+			Tag_str:                pTagStr,
 			Posts_with_tag_num_int: posts_with_tag_count_int,
 			Images_with_tag_int:    0, // FIX!! - image tagging is now implemented, and so counting images with tag occurance should be done ASAP. 
 			Posts_with_tag_lst:     posts_with_tag_lst,
-			Sys_release_info:       sys_release_info,
+			Sys_release_info:       sysReleaseInfo,
 			//-------------------------------------------------
 			// IS_SUBTEMPLATE_DEFINED
 			Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
@@ -169,11 +118,11 @@ func render_objects_with_tag(p_tag_str string,
 		})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the objects_with_tag template",
+		gfErr := gf_core.ErrorCreate("failed to render the objects_with_tag template",
 			"template_render_error",
-			map[string]interface{}{"tag_str": p_tag_str,},
+			map[string]interface{}{"tag_str": pTagStr,},
 			err, "gf_tagger", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil

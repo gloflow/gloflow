@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_tagger_lib
+package gf_bookmarks
 
 import (
 	"fmt"
@@ -78,7 +78,7 @@ type GFbookmarkOutputGet struct {
 //---------------------------------------------------
 // GET
 
-func bookmarksPipelineGet(p_input *GFbookmarkInputGet,
+func PipelineGet(p_input *GFbookmarkInputGet,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	p_ctx                    context.Context,
@@ -87,11 +87,11 @@ func bookmarksPipelineGet(p_input *GFbookmarkInputGet,
 
 
 	// DB
-	bookmarks_lst, gf_err := db__bookmark__get_all(p_input.User_id_str,
+	bookmarks_lst, gfErr := db__bookmark__get_all(p_input.User_id_str,
 		p_ctx,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 
@@ -102,12 +102,12 @@ func bookmarksPipelineGet(p_input *GFbookmarkInputGet,
 	if p_input.Response_format_str == "html" {
 		
 		// RENDER_TEMPLATE
-		template_rendered_str, gf_err := render_bookmarks(bookmarks_lst,
+		template_rendered_str, gfErr := renderBookmarks(bookmarks_lst,
 			p_tmpl,
 			p_subtemplates_names_lst,
 			pRuntimeSys)
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}
 
 
@@ -144,7 +144,7 @@ func bookmarksPipelineGet(p_input *GFbookmarkInputGet,
 //---------------------------------------------------
 // CREATE
 
-func bookmarksPipelineCreate(p_input *GFbookmarkInputCreate,
+func PipelineCreate(p_input *GFbookmarkInputCreate,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -197,7 +197,7 @@ func bookmarksPipelineCreate(p_input *GFbookmarkInputCreate,
 		go func() {
 
 			ctx := context.Background()
-			gfErr := bookmarksPipelineScreenshot(p_input.Url_str,
+			gfErr := pipelineScreenshot(p_input.Url_str,
 			 IDstr,
 				ctx,
 				pImagesJobsMngr,
@@ -216,7 +216,7 @@ func bookmarksPipelineCreate(p_input *GFbookmarkInputCreate,
 // SCREENSHOTS
 //---------------------------------------------------
 
-func bookmarksPipelineScreenshot(pURLstr string,
+func pipelineScreenshot(pURLstr string,
 	pBookmarkIDstr  gf_core.GF_ID,
 	pCtx            context.Context,
 	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
@@ -226,7 +226,7 @@ func bookmarksPipelineScreenshot(pURLstr string,
 	// SCREENSHOT_CREATE
 	bookmark_local_image_name_str := fmt.Sprintf("%s.png", pBookmarkIDstr)
 
-	gfErr := bookmarksScreenshotCreate(pURLstr,
+	gfErr := screenshotCreate(pURLstr,
 		bookmark_local_image_name_str,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -274,7 +274,7 @@ func bookmarksPipelineScreenshot(pURLstr string,
 
 //---------------------------------------------------
 
-func bookmarksScreenshotCreate(pURLstr string,
+func screenshotCreate(pURLstr string,
 	pTargetLocalFilePathStr string,
 	pRuntimeSys             *gf_core.RuntimeSys) *gf_core.GFerror {
 

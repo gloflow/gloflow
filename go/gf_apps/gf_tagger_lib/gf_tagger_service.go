@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_tagger_lib
 
 import (
-	"os"
-	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -29,71 +27,10 @@ import (
 
 //-------------------------------------------------
 
-func main() {
-	
-	logFun, _ := gf_core.InitLogs()
-
-	cli_args_map            := CLI__parse_args(logFun)
-	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)
-	port_str                := cli_args_map["port_str"].(string)
-	mongodb_host_str        := cli_args_map["mongodb_host_str"].(string)
-	mongodb_db_name_str     := cli_args_map["mongodb_db_name_str"].(string)
-
-	// START_SERVICE
-	if run__start_service_bool {
-
-		// init_done_ch := make(chan bool)
-
-		Run_service__in_process(port_str,
-			mongodb_host_str,
-			mongodb_db_name_str,
-			nil, // init_done_ch,
-			logFun)
-		// <-init_done_ch
-	}
-}
-
-//-------------------------------------------------
-
-func CLI__parse_args(pLogFun func(string, string)) map[string]interface{} {
-
-	//-------------------
-	run__start_service_bool := flag.Bool("run__start_service", true,   "run the service daemon")
-	port_str                := flag.String("port",             "3000", "port for the service to use")
-
-	// MONGODB
-	mongodb_host_str        := flag.String("mongodb_host",    "127.0.0.1", "host of mongodb to use")
-	mongodb_db_name_str     := flag.String("mongodb_db_name", "prod_db"  , "DB name to use")
-
-	// MONGODB_ENV
-	mongodb_host_env_str    := os.Getenv("GF_MONGODB_HOST")
-	mongodb_db_name_env_str := os.Getenv("GF_MONGODB_DB_NAME")
-
-	if mongodb_db_name_env_str != "" {
-		*mongodb_db_name_str = mongodb_db_name_env_str
-	}
-
-	if mongodb_host_env_str != "" {
-		*mongodb_host_str = mongodb_host_env_str
-	}
-
-	//-------------------
-	flag.Parse()
-
-	return map[string]interface{}{
-		"run__start_service_bool": *run__start_service_bool,
-		"port_str":                *port_str,
-		"mongodb_host_str":        *mongodb_host_str,
-		"mongodb_db_name_str":     *mongodb_db_name_str,
-	}
-}
-
-//-------------------------------------------------
-
-func InitService(p_templates_paths_map map[string]string,
-	p_images_jobs_mngr gf_images_jobs_core.JobsMngr,
-	p_http_mux         *http.ServeMux,
-	pRuntimeSys        *gf_core.RuntimeSys) {
+func InitService(pTemplatesPathsMap map[string]string,
+	pImagesJobsMngr gf_images_jobs_core.JobsMngr,
+	pHTTPmux        *http.ServeMux,
+	pRuntimeSys     *gf_core.RuntimeSys) {
 	
 	//------------------------
 	// DB_INDEXES
@@ -104,18 +41,18 @@ func InitService(p_templates_paths_map map[string]string,
 	
 	//------------------------
 	// STATIC FILES SERVING
-	url_base_str       := "/tags"
-	local_dir_path_str := "./static"
-	gf_core.HTTPinitStaticServingWithMux(url_base_str,
-		local_dir_path_str,
-		p_http_mux,
+	urlBaseStr      := "/tags"
+	localDirPathStr := "./static"
+	gf_core.HTTPinitStaticServingWithMux(urlBaseStr,
+		localDirPathStr,
+		pHTTPmux,
 		pRuntimeSys)
 
 	//------------------------
 	
-	gfErr = initHandlers(p_templates_paths_map,
-		p_images_jobs_mngr,
-		p_http_mux,
+	gfErr = initHandlers(pTemplatesPathsMap,
+		pImagesJobsMngr,
+		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
@@ -126,12 +63,11 @@ func InitService(p_templates_paths_map map[string]string,
 
 //-------------------------------------------------
 
-func Run_service__in_process(p_port_str string,
+func RunService(p_port_str string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
 	pLogFun               func(string, string)) {
-	pLogFun("FUN_ENTER", "gf_tagger_service.Run_service__in_process()")
 
 	pLogFun("INFO", "")
 	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")

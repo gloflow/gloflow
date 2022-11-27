@@ -109,12 +109,11 @@ func pipelineAdd(pInputDataMap map[string]interface{},
 
 //---------------------------------------------------
 
-func tags__pipeline__get_objects(p_req *http.Request,
+func tagsPipelineGetObjects(p_req *http.Request,
 	p_resp                   io.Writer,
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
 	pRuntimeSys            *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tags_pipelines.tags__pipeline__get_objects()")
 
 	//----------------
 	// INPUT
@@ -125,19 +124,19 @@ func tags__pipeline__get_objects(p_req *http.Request,
 	responseFormatStr := gf_rpc_lib.GetResponseFormat(qs_map, pRuntimeSys)
 
 	if _, ok := qs_map["otype"]; !ok {
-		gf_err := gf_core.ErrorCreate("input 'otype' not supplied",
+		gfErr := gf_core.ErrorCreate("input 'otype' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
-	if _,ok := qs_map["tag"]; !ok {
-		gf_err := gf_core.ErrorCreate("input 'tag' not supplied",
+	if _, ok := qs_map["tag"]; !ok {
+		gfErr := gf_core.ErrorCreate("input 'tag' not supplied",
 			"verify__missing_key_error",
 			map[string]interface{}{"qs_map":qs_map,},
 			nil, "gf_tagger", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	// TrimSpace() - Returns the string without any leading and trailing whitespace.
@@ -146,29 +145,29 @@ func tags__pipeline__get_objects(p_req *http.Request,
 
 	// PAGE_INDEX
 	page_index_int := 0
-	if a_lst,ok := qs_map["pg_index"]; ok {
+	if a_lst, ok := qs_map["pg_index"]; ok {
 		input_val          := a_lst[0]
 		page_index_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
-			gf_err := gf_core.ErrorCreate("input pg_index not an integer",
+			gfErr := gf_core.ErrorCreate("input pg_index not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 	}
 
 	// PAGE_SIZE
 	page_size_int := 10
-	if a_lst,ok := qs_map["pg_size"]; ok {
+	if a_lst, ok := qs_map["pg_size"]; ok {
 		input_val         := a_lst[0]
 		page_size_int, err = strconv.Atoi(input_val) //user supplied value
 		if err != nil {
-			gf_err := gf_core.ErrorCreate("input pg_size not an integer",
+			gfErr := gf_core.ErrorCreate("input pg_size not an integer",
 				"verify__value_not_integer_error",
 				map[string]interface{}{"input_val":input_val,},
 				nil, "gf_tagger", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 	}
 
@@ -179,34 +178,34 @@ func tags__pipeline__get_objects(p_req *http.Request,
 		// HTML RENDERING
 		case "html":
 			pRuntimeSys.LogFun("INFO","HTML RESPONSE >>")
-			gf_err := render_objects_with_tag(tag_str,
+			gfErr := renderObjectsWithTag(tag_str,
 				p_tmpl,
 				p_subtemplates_names_lst,
 				page_index_int,
 				page_size_int,
 				p_resp,
 				pRuntimeSys)
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 		//------------------
 		// JSON EXPORT
 		case "json":
 			pRuntimeSys.LogFun("INFO","JSON RESPONSE >>")
-			objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
+			objectsWithTagLst, gfErr := getObjectsWithTag(tag_str,
 				object_type_str,
 				page_index_int,
 				page_size_int,
 				pRuntimeSys)
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
-			// FIX!! - objects_with_tag_lst - have to be exported for external use, not just serialized
-			//                                from their internal representation
+			// FIX!! - objectsWithTagLst - have to be exported for external use, not just serialized
+			//                             from their internal representation
 
-			return objects_with_tag_lst, nil
+			return objectsWithTagLst, nil
 
 		//------------------
 	}

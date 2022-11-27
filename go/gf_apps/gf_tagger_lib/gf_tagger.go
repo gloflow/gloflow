@@ -58,9 +58,9 @@ func addTagsToObject(pTagsStr string,
 		return gfErr
 	}
 	
-	tagsLst, gfErr := parse_tags(pTagsStr,
-		500, // p_max_tags_bulk_size_int        int, // 500
-		20,  // p_max_tag_characters_number_int int, // 20	
+	tagsLst, gfErr := parseTags(pTagsStr,
+		500, // pMaxTagsBulkSizeInt        int, // 500
+		20,  // pMaxTagCharactersNumberInt int, // 20	
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
@@ -152,111 +152,107 @@ func addTagsToObject(pTagsStr string,
 
 //---------------------------------------------------
 
-func get_objects_with_tags(p_tags_lst []string,
-	p_object_type_str string,
-	p_page_index_int  int,
-	p_page_size_int   int,
-	pRuntimeSys     *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tags()")
+func getObjectsWithTags(pTagsLst []string,
+	pObjectTypeStr string,
+	pPageIndexInt  int,
+	pPageSizeInt   int,
+	pRuntimeSys    *gf_core.RuntimeSys) (map[string][]map[string]interface{}, *gf_core.GFerror) {
 		
-	objects_with_tags_map := map[string][]map[string]interface{}{}
-	for _, tag_str := range p_tags_lst {
-		objects_with_tag_lst, gf_err := get_objects_with_tag(tag_str,
-			p_object_type_str,
-			p_page_index_int,
-			p_page_size_int,
+	objectsWithTagsMap := map[string][]map[string]interface{}{}
+	for _, tagStr := range pTagsLst {
+		objectsWithTagLst, gfErr := getObjectsWithTag(tagStr,
+			pObjectTypeStr,
+			pPageIndexInt,
+			pPageSizeInt,
 			pRuntimeSys)
 
-		if gf_err != nil {
-			return nil, gf_err
+		if gfErr != nil {
+			return nil, gfErr
 		}
-		objects_with_tags_map[tag_str] = objects_with_tag_lst
+		objectsWithTagsMap[tagStr] = objectsWithTagLst
 	}
-	return objects_with_tags_map, nil
+	return objectsWithTagsMap, nil
 }
 
 //---------------------------------------------------
 
-func get_objects_with_tag(p_tag_str string,
-	p_object_type_str string,
-	p_page_index_int  int,
-	p_page_size_int   int,
-	pRuntimeSys     *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.get_objects_with_tag()")
-	pRuntimeSys.LogFun("INFO",      fmt.Sprintf("p_object_type_str - %s", p_object_type_str))
+func getObjectsWithTag(pTagStr string,
+	pObjectTypeStr string,
+	pPageIndexInt  int,
+	pPageSizeInt   int,
+	pRuntimeSys    *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
-	//ADD!! - add support for tagging "image" p_object_type_str's
-	if p_object_type_str != "post" {
-		gf_err := gf_core.ErrorCreate(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", p_tag_str, p_object_type_str),
+	// ADD!! - add support for tagging "image" pObjectTypeStr's
+	if pObjectTypeStr != "post" {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("trying to get objects with a tag (%s) for objects type thats not supported - %s", pTagStr, pObjectTypeStr),
 			"verify__invalid_value_error",
 			map[string]interface{}{
-				"tag_str":         p_tag_str,
-				"object_type_str": p_object_type_str,
+				"tag_str":         pTagStr,
+				"object_type_str": pObjectTypeStr,
 			},
 			nil, "gf_tagger", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	
-	posts_with_tag_lst, gf_err := db__get_posts_with_tag(p_tag_str,
-		p_page_index_int,
-		p_page_size_int,
+	postsWithTagLst, gfErr := db__get_posts_with_tag(pTagStr,
+		pPageIndexInt,
+		pPageSizeInt,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	//package up info of each post that was found with tag 
-	min_posts_infos_lst := []map[string]interface{}{}
-	for _, post := range posts_with_tag_lst {
-		post_info_map := map[string]interface{}{
+	// package up info of each post that was found with tag 
+	minPostsInfosLst := []map[string]interface{}{}
+	for _, post := range postsWithTagLst {
+		postInfoMap := map[string]interface{}{
 			"title_str":               post.TitleStr,
 			"tags_lst":                post.TagsLst,
 			"url_str":                 fmt.Sprintf("/posts/%s", post.TitleStr),
-			"object_type_str":         p_object_type_str,
+			"object_type_str":         pObjectTypeStr,
 			"thumbnail_small_url_str": post.ThumbnailURLstr,
 		}
-		min_posts_infos_lst = append(min_posts_infos_lst,post_info_map)
+		minPostsInfosLst = append(minPostsInfosLst, postInfoMap)
 	}
 
-	objects_infos_lst := min_posts_infos_lst
-	return objects_infos_lst, nil
+	objectsInfosLst := minPostsInfosLst
+	return objectsInfosLst, nil
 }
 
 //---------------------------------------------------
 
-func parse_tags(pTagsStr string,
-	p_max_tags_bulk_size_int        int, // 500
-	p_max_tag_characters_number_int int, // 20
-	pRuntimeSys                   *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_tagger.parse_tags()")
+func parseTags(pTagsStr string,
+	pMaxTagsBulkSizeInt        int, // 500
+	pMaxTagCharactersNumberInt int, // 20
+	pRuntimeSys                *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 	
-	tags_lst := strings.Split(pTagsStr," ")
+	tagsLst := strings.Split(pTagsStr," ")
 	//---------------------
-	if len(tags_lst) > p_max_tags_bulk_size_int {
-		gf_err := gf_core.ErrorCreate(fmt.Sprintf("too many tags supplied - max is %d", p_max_tags_bulk_size_int),
+	if len(tagsLst) > pMaxTagsBulkSizeInt {
+		gfErr := gf_core.ErrorCreate(fmt.Sprintf("too many tags supplied - max is %d", pMaxTagsBulkSizeInt),
 			"verify__value_too_many_error",
 			map[string]interface{}{
-				"tags_lst":               tags_lst,
-				"max_tags_bulk_size_int": p_max_tags_bulk_size_int,
+				"tags_lst":               tagsLst,
+				"max_tags_bulk_size_int": pMaxTagsBulkSizeInt,
 			},
 			nil, "gf_tagger_lib", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	//---------------------
-	for _, tag_str := range tags_lst {
-		if len(tag_str) > p_max_tag_characters_number_int {
-			gf_err := gf_core.ErrorCreate(fmt.Sprintf("tag (%s) is too long - max is (%d)", tag_str, p_max_tag_characters_number_int),
+	for _, tagStr := range tagsLst {
+		if len(tagStr) > pMaxTagCharactersNumberInt {
+			gfErr := gf_core.ErrorCreate(fmt.Sprintf("tag (%s) is too long - max is (%d)", tagStr, pMaxTagCharactersNumberInt),
 				"verify__string_too_long_error",
 				map[string]interface{}{
-					"tag_str":                       tag_str,
-					"max_tag_characters_number_int": p_max_tag_characters_number_int,
+					"tag_str":                       tagStr,
+					"max_tag_characters_number_int": pMaxTagCharactersNumberInt,
 				},
 				nil, "gf_tagger_lib", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
 		}
 	}
 	
 	//---------------------
-	return tags_lst, nil
+	return tagsLst, nil
 }
