@@ -109,7 +109,6 @@ def build_page(p_page_name_str,
 	p_build_copy_dir_str,
 	p_page_info_map,
 	p_log_fun):
-	# p_log_fun("FUN_ENTER", "gf_web__build.build_page()")
 	
 	print("")
 	p_log_fun("INFO", "%s>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>%s"%(fg("orange_red_1"), attr(0)))
@@ -271,8 +270,14 @@ def build_page(p_page_name_str,
 	#---------------------------------------------------
 
 	if "main_html_path_str" in p_page_info_map.keys():
+
 		process_scripts()
-		process_css()
+
+		#-----------------
+		# CSS
+		css_process_bool = p_page_info_map.get("css_process_bool", True)
+		if css_process_bool:
+			process_css()
 
 		#-----------------
 		# CREATE_FINAL_MODIFIED_HTML - create the html template file in the build dir that contains all 
