@@ -35,10 +35,10 @@ func GetIssues(pRepoOwnerAndNameStr string,
 	pRuntimeSys           *gf_core.RuntimeSys) ([]GFissue, *gf_core.GFerror) {
 
 	// https://docs.github.com/en/rest/issues/issues#list-repository-issues
-	urlStr := fmt.Sprintf("/repos/%s/issues", pRepoOwnerAndNameStr)
+	urlStr := fmt.Sprintf("https://api.github.com/repos/%s/issues", pRepoOwnerAndNameStr)
 
 	_, body, errs := gorequest.New().
-		Post(urlStr).
+		Get(urlStr).
 		Set("accept", "application/vnd.github+json").
 		Set("authorization", fmt.Sprintf("Bearer %s", pGithubBearerTokenStr)).
 		// Send(string(dataLst)).
@@ -54,6 +54,8 @@ func GetIssues(pRepoOwnerAndNameStr string,
 			err, "gf_github", pRuntimeSys)
 		return nil, gfErr
 	}
+
+	// fmt.Println(body)
 
 	rLst := []interface{}{}
 	err := json.Unmarshal([]byte(body), &rLst)
@@ -75,7 +77,7 @@ func GetIssues(pRepoOwnerAndNameStr string,
 
 		issueMap := issue.(map[string]interface{})
 		urlStr := issueMap["url"].(string)
-		numberInt := issueMap["number"].(int)
+		numberInt := int(issueMap["number"].(float64))
 		stateStr := issueMap["state"].(string)
 		titleStr := issueMap["title"].(string)
 		bodyStr := issueMap["body"].(string)
@@ -93,20 +95,26 @@ func GetIssues(pRepoOwnerAndNameStr string,
 			gfIssueLabelsLst = append(gfIssueLabelsLst, gfIssueLabel)
 		}
 
-		milestoneMap      := issueMap["milestone"].(map[string]interface{})
-		milestoneTitleStr := milestoneMap["title"].(string)
-		milestoneUrlStr   := milestoneMap["url"].(string)
+		
 
 		gfIssue := GFissue{
-			TitleStr:          titleStr,
-			BodyStr:           bodyStr,
-			UrlStr:            urlStr,
-			NumberInt:         numberInt,
-			StateStr:          stateStr,
-			Labels:            gfIssueLabelsLst,
-			MilestoneTitleStr: milestoneTitleStr,
-			MilestoneUrlStr:   milestoneUrlStr,
+			TitleStr:  titleStr,
+			BodyStr:   bodyStr,
+			UrlStr:    urlStr,
+			NumberInt: numberInt,
+			StateStr:  stateStr,
+			Labels:    gfIssueLabelsLst,
 		}
+
+		if issueMap["milestone"] != nil {
+			milestoneMap      := issueMap["milestone"].(map[string]interface{})
+			milestoneTitleStr := milestoneMap["title"].(string)
+			milestoneUrlStr   := milestoneMap["url"].(string)
+
+			gfIssue.MilestoneTitleStr = milestoneTitleStr
+			gfIssue.MilestoneUrlStr   = milestoneUrlStr
+		}
+
 		gfIssuesLst = append(gfIssuesLst, gfIssue)
 	}
 
