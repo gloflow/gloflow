@@ -29,6 +29,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_crawl_lib/gf_crawl_utils"
 )
@@ -83,7 +84,7 @@ func Init(pConfig *GFcrawlerConfig,
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
 
-	gf_s3_info, gfErr := gf_core.S3init(p_aws_access_key_id_str,
+	gf_s3_info, gfErr := gf_aws.S3init(p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
 		p_aws_token_str,
 		pRuntimeSys)

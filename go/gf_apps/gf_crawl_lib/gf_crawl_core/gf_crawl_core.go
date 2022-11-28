@@ -21,7 +21,7 @@ package gf_crawl_core
 
 import (
 	"github.com/olivere/elastic"
-	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_events"
 )
 
@@ -30,7 +30,7 @@ import (
 type GFcrawlerRuntime struct {
 	EventsCtx                     *gf_events.EventsCtx
 	EsearchClient                 *elastic.Client
-	S3info                        *gf_core.GFs3Info
+	S3info                        *gf_aws.GFs3Info
 	ImagesUseNewStorageEngineBool bool
 
 	PluginsPyDirPathStr string

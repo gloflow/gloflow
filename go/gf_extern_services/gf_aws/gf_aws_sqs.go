@@ -33,6 +33,7 @@ import (
 )
 
 //-------------------------------------------------------------
+
 type GF_SQS_queue struct {
 	Name_str    string
     AWS_url_str string
@@ -40,16 +41,17 @@ type GF_SQS_queue struct {
 
 //-------------------------------------------------------------
 // INIT
-func SQS_init(pRuntimeSys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GFerror) {
+
+func SQSinit(pRuntimeSys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GFerror) {
 
 
     cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to create AWS API session",
+		gfErr := gf_core.ErrorCreate("failed to create AWS API session",
 			"aws_client_v2_create",
 			map[string]interface{}{},
 			err, "gf_aws", pRuntimeSys)
-        return nil, gf_err
+        return nil, gfErr
 	}
 
 	client := sqs.NewFromConfig(cfg)
@@ -57,32 +59,33 @@ func SQS_init(pRuntimeSys *gf_core.RuntimeSys) (*sqs.Client, *gf_core.GFerror) {
 
     /*sess, err := session.NewSession()
     if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to create AWS API session",
+        gfErr := gf_core.ErrorCreate("failed to create AWS API session",
 			"aws_session_create",
 			map[string]interface{}{},
 			err, "gf_aws", pRuntimeSys)
-        return nil, gf_err
+        return nil, gfErr
     }
     svc := sqs.New(sess)
     return svc, nil*/
 }
 
 //-------------------------------------------------------------
-func SQS_get_queue_info(p_sqs_queue_name_str string,
-    p_sqs_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSgetQueueInfo(pSQSqueueNameStr string,
+    pSQSclient *sqs.Client,
+    pCtx        context.Context,
     pRuntimeSys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GFerror) {
 
 
-    sqs_queue_url_str, gf_err := SQS_queue_get_url(p_sqs_queue_name_str,
-        p_sqs_client,
-        p_ctx,
+    sqs_queue_url_str, gfErr := SQSqueueGetURL(pSQSqueueNameStr,
+        pSQSclient,
+        pCtx,
         pRuntimeSys)
-    if gf_err != nil {
-        return nil, gf_err
+    if gfErr != nil {
+        return nil, gfErr
     }
     queue_info := &GF_SQS_queue{
-        Name_str:    p_sqs_queue_name_str,
+        Name_str:    pSQSqueueNameStr,
         AWS_url_str: sqs_queue_url_str,
     }
     return queue_info, nil
@@ -90,22 +93,23 @@ func SQS_get_queue_info(p_sqs_queue_name_str string,
 
 //-------------------------------------------------------------
 // QUEUE_GET_URL
-func SQS_queue_get_url(p_sqs_queue_name_str string,
-    p_sqs_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSqueueGetURL(pSQSqueueNameStr string,
+    pSQSclient  *sqs.Client,
+    pCtx        context.Context,
     pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-    result, err := p_sqs_client.GetQueueUrl(p_ctx, &sqs.GetQueueUrlInput{
-        QueueName: aws.String(p_sqs_queue_name_str),
+    result, err := pSQSclient.GetQueueUrl(pCtx, &sqs.GetQueueUrlInput{
+        QueueName: aws.String(pSQSqueueNameStr),
     })
     if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to get AWS SQS queue URL",
+        gfErr := gf_core.ErrorCreate("failed to get AWS SQS queue URL",
 			"aws_sqs_queue_get_url_error",
 			map[string]interface{}{
-                "sqs_queue_name_str": p_sqs_queue_name_str,
+                "sqs_queue_name_str": pSQSqueueNameStr,
             },
 			err, "gf_aws", pRuntimeSys)
-        return "", gf_err
+        return "", gfErr
     }
     sqs_queue_url_str := *result.QueueUrl
     return sqs_queue_url_str, nil
@@ -113,39 +117,40 @@ func SQS_queue_get_url(p_sqs_queue_name_str string,
 
 //-------------------------------------------------------------
 // QUEUE_CREATE
-func SQS_queue_create(p_sqs_queue_name_str string,
-    p_sqs_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSqueueCreate(pSQSqueueNameStr string,
+    pSQSclient  *sqs.Client,
+    pCtx         context.Context,
     pRuntimeSys *gf_core.RuntimeSys) (*GF_SQS_queue, *gf_core.GFerror) {
 
     
 
-    log.WithFields(log.Fields{"name": p_sqs_queue_name_str,}).Info("AWS_SQS - creating new queue")
+    log.WithFields(log.Fields{"name": pSQSqueueNameStr,}).Info("AWS_SQS - creating new queue")
 
     // CREATE
-    _, err := p_sqs_client.CreateQueue(p_ctx, &sqs.CreateQueueInput{
-        QueueName: aws.String(p_sqs_queue_name_str),
+    _, err := pSQSclient.CreateQueue(pCtx, &sqs.CreateQueueInput{
+        QueueName: aws.String(pSQSqueueNameStr),
     })
     if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to create AWS SQS queue",
+        gfErr := gf_core.ErrorCreate("failed to create AWS SQS queue",
 			"aws_sqs_queue_create_error",
 			map[string]interface{}{
-                "sqs_queue_name_str": p_sqs_queue_name_str,
+                "sqs_queue_name_str": pSQSqueueNameStr,
             },
 			err, "gf_aws", pRuntimeSys)
-        return nil, gf_err
+        return nil, gfErr
     }
 
 
     // URL
-    queue_url_str, gf_err := SQS_queue_get_url(p_sqs_queue_name_str, p_sqs_client, p_ctx, pRuntimeSys)
-    if gf_err != nil {
-        return nil, gf_err
+    queue_url_str, gfErr := SQSqueueGetURL(pSQSqueueNameStr, pSQSclient, pCtx, pRuntimeSys)
+    if gfErr != nil {
+        return nil, gfErr
     }
 
 
     queue := &GF_SQS_queue{
-        Name_str:    p_sqs_queue_name_str,
+        Name_str:    pSQSqueueNameStr,
         AWS_url_str: queue_url_str,
     }
 
@@ -154,9 +159,10 @@ func SQS_queue_create(p_sqs_queue_name_str string,
 
 //-------------------------------------------------------------
 // QUEUE_DELETE
-func SQS_queue_delete(p_sqs_queue_name_str string,
-    p_aws_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSqueueDelete(pSQSqueueNameStr string,
+    pAWSclient  *sqs.Client,
+    pCtx        context.Context,
     pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
@@ -165,19 +171,20 @@ func SQS_queue_delete(p_sqs_queue_name_str string,
 }
 
 //-------------------------------------------------------------
-func SQS_msg_pull(p_queue_info *GF_SQS_queue,
-    p_aws_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSmsgPull(pQueueInfo *GF_SQS_queue,
+    pAWSclient  *sqs.Client,
+    pCtx        context.Context,
     pRuntimeSys *gf_core.RuntimeSys) (map[string]interface{}, *gf_core.GFerror) {
 
-    log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - pull message from queue")
+    log.WithFields(log.Fields{"name": pQueueInfo.Name_str,}).Info("AWS_SQS - pull message from queue")
 
     // Must be >= 0 and <= 20, if provided
     timeout_sec_int := 20
 
 	// SQS_RECEIVE_MESSAGE
-	result, err := p_aws_client.ReceiveMessage(p_ctx, &sqs.ReceiveMessageInput{
-		QueueUrl:       aws.String(p_queue_info.AWS_url_str),
+	result, err := pAWSclient.ReceiveMessage(pCtx, &sqs.ReceiveMessageInput{
+		QueueUrl:       aws.String(pQueueInfo.AWS_url_str),
 		AttributeNames: []types.QueueAttributeName{
 			"SentTimestamp",
 		},
@@ -193,14 +200,14 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
 		WaitTimeSeconds: int32(timeout_sec_int),
 	})
 	if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to receive a message from SQS queue durring msg_pull function",
+        gfErr := gf_core.ErrorCreate("failed to receive a message from SQS queue durring msg_pull function",
 			"aws_sqs_queue_receive_msg_error",
 			map[string]interface{}{
-                "sqs_queue_name_str": p_queue_info.Name_str,
-                "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                "sqs_queue_name_str": pQueueInfo.Name_str,
+                "sqs_queue_url_str":  pQueueInfo.AWS_url_str,
             },
 			err, "gf_aws", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
     
     // fmt.Println("*******************************************")
@@ -211,43 +218,43 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
         msg          := result.Messages[0]
         msg_body_str := *msg.Body
 
-        log.WithFields(log.Fields{"name": p_queue_info.Name_str, "msg_id": *msg.MessageId, "msg_body": msg_body_str}).Info("AWS_SQS - pull message from queue - OK")
+        log.WithFields(log.Fields{"name": pQueueInfo.Name_str, "msg_id": *msg.MessageId, "msg_body": msg_body_str}).Info("AWS_SQS - pull message from queue - OK")
 
         //--------------------------
         // DECODE_MESSAGE
         msg_map      := map[string]interface{}{}
         if err := json.Unmarshal([]byte(msg_body_str), &msg_map); err != nil {
-            gf_err := gf_core.ErrorCreate("failed to JSON decode a message body pulled from SQS",
+            gfErr := gf_core.ErrorCreate("failed to JSON decode a message body pulled from SQS",
                 "json_decode_error",
                 map[string]interface{}{
-                    "sqs_queue_name_str": p_queue_info.Name_str,
-                    "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                    "sqs_queue_name_str": pQueueInfo.Name_str,
+                    "sqs_queue_url_str":  pQueueInfo.AWS_url_str,
                 },
                 err, "gf_aws", pRuntimeSys)
-            return nil, gf_err
+            return nil, gfErr
         }
 
         //--------------------------
         // DELETE_MESSAGE
 
-        log.WithFields(log.Fields{"name": p_queue_info.Name_str, "msg_id": *msg.MessageId}).Info("AWS_SQS - delete message from queue")
+        log.WithFields(log.Fields{"name": pQueueInfo.Name_str, "msg_id": *msg.MessageId}).Info("AWS_SQS - delete message from queue")
 
         msg_receipt_handle := msg.ReceiptHandle
 
         // https://docs.aws.amazon.com/sdk-for-go/api/service/sqs/#SQS.DeleteMessage
-        _, err = p_aws_client.DeleteMessage(p_ctx, &sqs.DeleteMessageInput{
-            QueueUrl:      aws.String(p_queue_info.AWS_url_str),
+        _, err = pAWSclient.DeleteMessage(pCtx, &sqs.DeleteMessageInput{
+            QueueUrl:      aws.String(pQueueInfo.AWS_url_str),
             ReceiptHandle: msg_receipt_handle,
         })
         if err != nil {
-            gf_err := gf_core.ErrorCreate("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
+            gfErr := gf_core.ErrorCreate("failed to delete a message from SQS queue durring msg_pull function, after receiving it",
                 "aws_sqs_queue_delete_msg_error",
                 map[string]interface{}{
-                    "sqs_queue_name_str": p_queue_info.Name_str,
-                    "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                    "sqs_queue_name_str": pQueueInfo.Name_str,
+                    "sqs_queue_url_str":  pQueueInfo.AWS_url_str,
                 },
                 err, "gf_aws", pRuntimeSys)
-            return nil, gf_err
+            return nil, gfErr
         }
 
         //--------------------------
@@ -260,30 +267,31 @@ func SQS_msg_pull(p_queue_info *GF_SQS_queue,
 
 //-------------------------------------------------------------
 // MSG_PUSH
-func SQS_msg_push(p_msg interface{},
-    p_queue_info  *GF_SQS_queue,
-    p_aws_client  *sqs.Client,
-    p_ctx         context.Context,
+
+func SQSmsgPush(p_msg interface{},
+    pQueueInfo  *GF_SQS_queue,
+    pAWSclient  *sqs.Client,
+    pCtx         context.Context,
     pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
     
-    log.WithFields(log.Fields{"name": p_queue_info.Name_str,}).Info("AWS_SQS - push message to queue")
+    log.WithFields(log.Fields{"name": pQueueInfo.Name_str,}).Info("AWS_SQS - push message to queue")
 
     msg_data_JSON_encoded, err := json.Marshal(p_msg)
     if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to JSON encode a message to send to SQS queue",
+        gfErr := gf_core.ErrorCreate("failed to JSON encode a message to send to SQS queue",
 			"json_encode_error",
 			map[string]interface{}{
-                "sqs_queue_name_str": p_queue_info.Name_str,
-                "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                "sqs_queue_name_str": pQueueInfo.Name_str,
+                "sqs_queue_url_str":  pQueueInfo.AWS_url_str,
             },
 			err, "gf_aws", pRuntimeSys)
-        return gf_err
+        return gfErr
     }
 
-	_, err = p_aws_client.SendMessage(p_ctx, &sqs.SendMessageInput{
+	_, err = pAWSclient.SendMessage(pCtx, &sqs.SendMessageInput{
         MessageBody: aws.String(string(msg_data_JSON_encoded)),
-        QueueUrl:    aws.String(p_queue_info.AWS_url_str),
+        QueueUrl:    aws.String(pQueueInfo.AWS_url_str),
 
         // DelaySeconds: 10,
         /*MessageAttributes: map[string]types.MessageAttributeValue{
@@ -308,14 +316,14 @@ func SQS_msg_push(p_msg interface{},
     })
 
     if err != nil {
-        gf_err := gf_core.ErrorCreate("failed to send a message to SQS queue",
+        gfErr := gf_core.ErrorCreate("failed to send a message to SQS queue",
 			"aws_sqs_queue_send_msg_error",
 			map[string]interface{}{
-                "sqs_queue_name_str": p_queue_info.Name_str,
-                "sqs_queue_url_str":  p_queue_info.AWS_url_str,
+                "sqs_queue_name_str": pQueueInfo.Name_str,
+                "sqs_queue_url_str":  pQueueInfo.AWS_url_str,
             },
 			err, "gf_aws", pRuntimeSys)
-        return gf_err
+        return gfErr
     }
 
     // msg_id_str := *result.MessageId

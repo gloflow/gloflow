@@ -27,17 +27,17 @@ import (
 
 //------------------------------------------------
 
-func renderTemplate(p_featured_posts_lst []*GFfeaturedPost,
-	p_featured_imgs_0_lst    []*GFfeaturedImage,
-	p_featured_imgs_1_lst    []*GFfeaturedImage,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	p_resp                   io.Writer,
-	pRuntimeSys              *gf_core.RuntimeSys) *gf_core.GFerror {
+func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
+	p_featured_imgs_0_lst []*GFfeaturedImage,
+	p_featured_imgs_1_lst []*GFfeaturedImage,
+	pTemplate             *template.Template,
+	pSubtemplatesNamesLst []string,
+	pResp                 io.Writer,
+	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
-	type tmpl_data struct {
+	type tmplData struct {
 		Featured_posts_lst  []*GFfeaturedPost
 		Featured_imgs_0_lst []*GFfeaturedImage
 		Featured_imgs_1_lst []*GFfeaturedImage
@@ -45,16 +45,16 @@ func renderTemplate(p_featured_posts_lst []*GFfeaturedPost,
 		Is_subtmpl_def      func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := p_tmpl.Execute(p_resp, tmpl_data{
-		Featured_posts_lst:  p_featured_posts_lst,
+	err := pTemplate.Execute(pResp, tmplData{
+		Featured_posts_lst:  pFeaturedPostsLst,
 		Featured_imgs_0_lst: p_featured_imgs_0_lst,
 		Featured_imgs_1_lst: p_featured_imgs_1_lst,
-		Sys_release_info:    sys_release_info,
+		Sys_release_info:    sysReleaseInfo,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
-			for _, n := range p_subtemplates_names_lst {
+			for _, n := range pSubtemplatesNamesLst {
 				if n == p_subtemplate_name_str {
 					return true
 				}
@@ -66,11 +66,11 @@ func renderTemplate(p_featured_posts_lst []*GFfeaturedPost,
 	})
 
 	if err != nil {
-		gf_err := gf_core.ErrorCreate("failed to render the landing_page template",
+		gfErr := gf_core.ErrorCreate("failed to render the landing_page template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_landing_page", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 
 	return nil

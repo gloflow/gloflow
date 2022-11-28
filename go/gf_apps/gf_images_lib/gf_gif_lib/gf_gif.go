@@ -34,6 +34,7 @@ import (
 	"github.com/fatih/color"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -83,7 +84,7 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	p_create_new_db_img_bool                      bool,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
-	pS3info                                       *gf_core.GFs3Info,
+	pS3info                                       *gf_aws.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
@@ -112,7 +113,7 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	}
 
 	s3_target_file_path_str := fmt.Sprintf("gifs/%s.gif", img_title_str)
-	s3_resp_str, gfErr      := gf_core.S3uploadFile(local_image_file_path_str, //p_target_file__local_path_str string,
+	s3_resp_str, gfErr      := gf_aws.S3uploadFile(local_image_file_path_str, //p_target_file__local_path_str string,
 		s3_target_file_path_str,
 		p_s3_bucket_name_str,
 		pS3info,
@@ -139,7 +140,7 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 	p_create_new_db_img_bool                      bool,
 	p_media_domain_str                            string,
 	p_s3_bucket_name_str                          string,
-	pS3info                                       *gf_core.GFs3Info,
+	pS3info                                       *gf_aws.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, string, *gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.Process()")
@@ -298,7 +299,7 @@ func storePreviewFrames(pLocalFilePathSrc string,
 	p_frames_images_dir_path_str string,
 	p_media_domain_str           string, 
 	p_s3_bucket_name_str         string,
-	pS3info                      *gf_core.GFs3Info,
+	pS3info                      *gf_aws.GFs3Info,
 	pRuntimeSys                  *gf_core.RuntimeSys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.storePreviewFrames()")
 
@@ -324,7 +325,7 @@ func storePreviewFrames(pLocalFilePathSrc string,
 		targetFileLocalPathStr := frameImageFilePathStr
 
 		// UPLOAD
-		s3_response_str, gfErr := gf_core.S3uploadFile(targetFileLocalPathStr,
+		s3_response_str, gfErr := gf_aws.S3uploadFile(targetFileLocalPathStr,
 			targetFilePathStr,
 			p_s3_bucket_name_str,
 			pS3info,

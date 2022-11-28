@@ -27,6 +27,7 @@ import (
 	"path"
 	"path/filepath"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_video"
@@ -125,7 +126,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 	pFlowsNamesLst               []string,
 	// pSourceS3bucketNameStr       string, // S3_bucket to which the image was uploaded to
 	// pTargetS3bucketNameStr       string, // S3 bucket to which processed images are stored in after this pipeline processing
-	pS3info                      *gf_core.GFs3Info,
+	pS3info                      *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
@@ -230,7 +231,7 @@ func pipelineProcessUploadedImage(pImageIDstr gf_images_core.GFimageID,
 			// LEGACY
 
 			// S3_FILE_COPY
-			gfErr := gf_core.S3copyFile(pStorage.S3.UploadsSourceS3bucketNameStr, // pSourceS3bucketNameStr,
+			gfErr := gf_aws.S3copyFile(pStorage.S3.UploadsSourceS3bucketNameStr, // pSourceS3bucketNameStr,
 				pS3filePathStr,
 				pStorage.S3.UploadsTargetS3bucketNameStr, // pTargetS3bucketNameStr,
 				pS3filePathStr,
@@ -310,7 +311,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 	pImagesThumbsLocalDirPathStr string,
 	pFlowsNamesLst               []string,
 	pS3bucketNameStr             string,
-	pS3info                      *gf_core.GFs3Info,
+	pS3info                      *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr         string,
 	pStorage                     *gf_images_storage.GFimageStorage,
 	pJobRuntime                  *GFjobRuntime,
@@ -457,7 +458,7 @@ func pipelineProcessExternImage(pImageIDstr gf_images_core.GFimageID,
 // PIPELINE__PROCESS_LOCAL_IMAGE
 
 func pipelineProcessLocalImage(pFlowsNamesLst []string,
-	pS3info              *gf_core.GFs3Info,
+	pS3info              *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr string,
 	pStorage             *gf_images_storage.GFimageStorage,
 	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {

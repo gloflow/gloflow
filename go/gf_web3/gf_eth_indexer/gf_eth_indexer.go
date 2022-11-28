@@ -53,7 +53,7 @@ func Init(p_get_worker_hosts_fn gf_eth_worker.Get_worker_hosts_fn,
 	
 		
 	// AWS_CLIENT
-	sqs_client, gfErr := gf_aws.SQS_init(p_runtime.RuntimeSys)
+	sqs_client, gfErr := gf_aws.SQSinit(p_runtime.RuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr
 	}
@@ -219,7 +219,7 @@ func job_run(p_job_id_str GF_indexer_job_id,
 			select {
 			case update_msg := <- job_updates_ch:
 				
-				gfErr := gf_aws.SQS_msg_push(interface{}(update_msg),
+				gfErr := gf_aws.SQSmsgPush(interface{}(update_msg),
 					gf_sqs_queue,
 					p_sqs_client,
 					p_ctx,
@@ -231,7 +231,7 @@ func job_run(p_job_id_str GF_indexer_job_id,
 			case complete_bool := <- job_complete_ch:
 
 				if complete_bool {
-					gfErr := gf_aws.SQS_queue_delete(gf_sqs_queue.Name_str,
+					gfErr := gf_aws.SQSqueueDelete(gf_sqs_queue.Name_str,
 						p_sqs_client,
 						p_ctx,
 						p_runtime.RuntimeSys)

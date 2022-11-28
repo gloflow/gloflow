@@ -27,6 +27,7 @@ import (
 	"context"
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_flows"
 )
@@ -182,7 +183,7 @@ func FlowsAddExternImage(pCrawlerPageImageIDstr GFcrawlerPageImageID,
 
 			// source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", sourceCrawlS3bucketStr, s3_path_str))
 
-			gfErr := gf_core.S3copyFile(sourceCrawlS3bucketStr, // p_source_file__s3_path_str
+			gfErr := gf_aws.S3copyFile(sourceCrawlS3bucketStr, // p_source_file__s3_path_str
 				S3pathStr,
 				pImagesS3bucketNameStr, // p_target_bucket_name_str,
 				S3pathStr,              // p_target_file__s3_path_str

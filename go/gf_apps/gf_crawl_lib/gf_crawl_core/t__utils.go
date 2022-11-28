@@ -29,6 +29,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 )
 
@@ -94,14 +95,14 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
 	// S3
-	s3_test_info := gf_core.T__get_s3_info(runtimeSys)
+	s3testInfo := gf_aws.TgetS3info(runtimeSys)
 
 	//-------------
 
 	crawlerRuntime := &GFcrawlerRuntime{
 		EventsCtx:     nil,
 		EsearchClient: esearch_client,
-		S3info:        s3_test_info.Gf_s3_info,
+		S3info:        s3testInfo.GFs3Info,
 	}
 
 	return runtimeSys, crawlerRuntime

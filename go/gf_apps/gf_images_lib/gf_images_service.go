@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
@@ -50,7 +51,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// S3
-	s3Info, gfErr := gf_core.S3init(pServiceInfo.AWS_access_key_id_str,
+	s3Info, gfErr := gf_aws.S3init(pServiceInfo.AWS_access_key_id_str,
 		pServiceInfo.AWS_secret_access_key_str,
 		pServiceInfo.AWS_token_str,
 		pRuntimeSys)

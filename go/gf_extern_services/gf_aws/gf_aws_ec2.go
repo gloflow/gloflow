@@ -31,7 +31,7 @@ import (
 
 //-------------------------------------------------------------
 
-func AWS_EC2__describe_instances__by_tags(p_tags_lst []map[string]string,
+func EC2describeInstancesByTags(p_tags_lst []map[string]string,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*ec2.Instance, *gf_core.GFerror) {
 
 

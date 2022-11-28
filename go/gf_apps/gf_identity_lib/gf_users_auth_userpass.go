@@ -418,7 +418,7 @@ func usersAuthUserpassPipelineCreate(pInput *GFuserAuthUserpassInputCreate,
 
 		// this SES email verification is done only once for a new email address,
 		// so that SES allows sending to this email address.
-		gfErr = gf_aws.AWS_SES__verify_address(emailStr,
+		gfErr = gf_aws.SESverifyAddress(emailStr,
 			pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr

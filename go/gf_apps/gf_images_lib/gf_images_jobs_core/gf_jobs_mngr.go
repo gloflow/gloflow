@@ -28,6 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	// "github.com/davecgh/go-spew/spew"
@@ -138,7 +139,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	pLifecycleCallbacks                   *GF_jobs_lifecycle_callbacks,
 	pConfig                               *gf_images_core.GFconfig,
 	pImageStorage                         *gf_images_storage.GFimageStorage,
-	pS3info                               *gf_core.GFs3Info,
+	pS3info                               *gf_aws.GFs3Info,
 	pRuntimeSys                           *gf_core.RuntimeSys) JobsMngr {
 
 	jobsMngrCh := make(chan JobMsg, 100)

@@ -23,6 +23,7 @@ import (
 	"fmt"
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
 
 //---------------------------------------------------
@@ -72,7 +73,7 @@ type GFstorageLocal struct {
 }
 
 type GFstorageS3 struct {
-	Info                         *gf_core.GFs3Info
+	Info                         *gf_aws.GFs3Info
 	ThumbsS3bucketNameStr        string
 	UploadsSourceS3bucketNameStr string
 	UploadsTargetS3bucketNameStr string
@@ -128,7 +129,7 @@ func Init(pConfig *GFimageStorageConfig,
 		case "s3":
 
 			// get new S3 client, and get AWS creds from environment
-			S3info, gfErr := gf_core.S3init("", "", "", pRuntimeSys)
+			S3info, gfErr := gf_aws.S3init("", "", "", pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -188,7 +189,7 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 
 	// S3
 	case "s3":
-		_, gfErr := gf_core.S3uploadFile(pOpDef.ImageSourceLocalFilePathStr,
+		_, gfErr := gf_aws.S3uploadFile(pOpDef.ImageSourceLocalFilePathStr,
 			pOpDef.ImageTargetFilePathStr,
 			pOpDef.S3bucketNameStr,
 			pStorage.S3.Info,
@@ -228,7 +229,7 @@ func FileCopy(pOpDef *GFcopyOpDef,
 
 	// S3
 	case "s3":
-		gfErr := gf_core.S3copyFile(pOpDef.SourceFileS3bucketNameStr,
+		gfErr := gf_aws.S3copyFile(pOpDef.SourceFileS3bucketNameStr,
 			pOpDef.ImageSourceFilePathStr,
 			pOpDef.TargetFileS3bucketNameStr,
 			pOpDef.ImageTargetFilePathStr,
@@ -268,7 +269,7 @@ func FileGet(pOpDef *GFgetOpDef,
 	
 	// S3
 	case "s3":
-		gfErr := gf_core.S3getFile(pOpDef.ImageSourceFilePathStr,
+		gfErr := gf_aws.S3getFile(pOpDef.ImageSourceFilePathStr,
 			pOpDef.ImageTargetLocalFilePathStr,
 			pOpDef.S3bucketNameStr,
 			pStorage.S3.Info,
@@ -297,7 +298,7 @@ func FileGeneratePresignedURL(pOpDef *GFgeneratePresignedURLopDef,
 
 	// s3 is the only file storage for which generating presigned URL's makes sense
 	case "s3":
-		S3presignedURLstr, gfErr := gf_core.S3generatePresignedUploadURL( pOpDef.TargetFilePathStr,
+		S3presignedURLstr, gfErr := gf_aws.S3generatePresignedUploadURL( pOpDef.TargetFilePathStr,
 			pOpDef.TargetFileS3bucketNameStr,
 			pStorage.S3.Info,
 			pRuntimeSys)

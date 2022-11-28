@@ -76,7 +76,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 
 		// GET_QUEUE
 		queue_name_str := updates__get_queue_name(p_job_id_str)
-		queue_info, gfErr := gf_aws.SQS_get_queue_info(queue_name_str,
+		queue_info, gfErr := gf_aws.SQSgetQueueInfo(queue_name_str,
 			p_aws_client,
 			p_ctx,
 			p_runtime.RuntimeSys)
@@ -89,7 +89,7 @@ func Updates__consume_stream(p_job_id_str GF_indexer_job_id,
 		for {
 
 			// SQS_MSG_PULL
-			msg_map, gfErr := gf_aws.SQS_msg_pull(queue_info,
+			msg_map, gfErr := gf_aws.SQSmsgPull(queue_info,
 				p_aws_client,
 				p_ctx,
 				p_runtime.RuntimeSys)
@@ -134,7 +134,7 @@ func Updates__init_stream(p_job_id_str GF_indexer_job_id,
 	queue_name_str := updates__get_queue_name(p_job_id_str)
 	
 	// QUEUE_CREATE
-	queue, gfErr := gf_aws.SQS_queue_create(queue_name_str,
+	queue, gfErr := gf_aws.SQSqueueCreate(queue_name_str,
 		p_sqs_client,
 		p_ctx,
 		p_runtime.RuntimeSys)

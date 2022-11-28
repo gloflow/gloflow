@@ -59,7 +59,7 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 	// sender address
 	senderAddressStr := fmt.Sprintf("gf-email-confirm@%s", pDomainBaseStr)
 
-	gfErr = gf_aws.AWS_SES__send_message(pEmailAddressStr,
+	gfErr = gf_aws.SESsendMessage(pEmailAddressStr,
 		senderAddressStr,
 		msgSubjectStr,
 		msgBodyHTMLstr,

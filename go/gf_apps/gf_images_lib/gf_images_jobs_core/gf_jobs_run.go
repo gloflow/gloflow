@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_gif_lib"
@@ -35,7 +36,7 @@ func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
-	pS3info                               *gf_core.GFs3Info,
+	pS3info                               *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
@@ -67,7 +68,7 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 	pImagesThumbnailsStoreLocalDirPathStr string,
 	// p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
 	// p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
-	pS3info                               *gf_core.GFs3Info,
+	pS3info                               *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,
@@ -113,7 +114,7 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	pVideoStoreLocalDirPathStr            string,
 	pMediaDomainStr                       string,
 	pS3bucketNameStr                      string,
-	pS3info                               *gf_core.GFs3Info,
+	pS3info                               *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
 	pJobRuntime                           *GFjobRuntime,

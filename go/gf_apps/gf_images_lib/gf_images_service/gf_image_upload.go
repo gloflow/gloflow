@@ -28,6 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -63,7 +64,7 @@ func UploadInit(pImageNameStr string,
 	pFlowsNamesLst  []string,
 	pClientTypeStr  string,
 	pStorage        *gf_images_storage.GFimageStorage,
-	pS3info         *gf_core.GFs3Info,
+	pS3info         *gf_aws.GFs3Info,
 	pConfig         *gf_images_core.GFconfig,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
@@ -124,7 +125,7 @@ func UploadInit(pImageNameStr string,
 			S3bucketNameStr,
 			S3filePathStr))
 
-		presignedURLstr, gfErr = gf_core.S3generatePresignedUploadURL(S3filePathStr,
+		presignedURLstr, gfErr = gf_aws.S3generatePresignedUploadURL(S3filePathStr,
 			S3bucketNameStr,
 			pS3info,
 			pRuntimeSys)

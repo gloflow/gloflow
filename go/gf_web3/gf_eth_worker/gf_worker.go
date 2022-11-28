@@ -104,9 +104,9 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 	go func() {
 		for {
 
-			aws_instances_all_lst := []*ec2.Instance{}
+			awsInstancesAllLst := []*ec2.Instance{}
 			for _, instance_tags_lst := range target_instances_tags_lst {
-				aws_instances_lst, gfErr := gf_aws.AWS_EC2__describe_instances__by_tags(instance_tags_lst, p_runtime.RuntimeSys)
+				aws_instances_lst, gfErr := gf_aws.EC2describeInstancesByTags(instance_tags_lst, p_runtime.RuntimeSys)
 				if gfErr != nil {
 					discovery_errors_ch <- gfErr
 
@@ -115,14 +115,10 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 
 					continue
 				}
-
-				aws_instances_all_lst = append(aws_instances_all_lst, aws_instances_lst...)
+				awsInstancesAllLst = append(awsInstancesAllLst, aws_instances_lst...)
 			} 
 
-
-			
-
-			new_instances_ch <- aws_instances_all_lst
+			new_instances_ch <- awsInstancesAllLst
 			
 			// SLEEP
 			time.Sleep(update_period_sec)
@@ -131,14 +127,14 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 	
 	//-------------------------------------------------
 	// GET_WORKER_HOSTS__DYNAMIC_FN
-	get_worker_hosts__dynamic_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
+	get_worker_hosts__dynamic_fn := func(pCtx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
 
 
 		fmt.Println("=============")
-		fmt.Println(p_ctx)
+		fmt.Println(pCtx)
 
 		
-		span__get_worker_hosts := sentry.StartSpan(p_ctx, "get_worker_hosts")
+		span__get_worker_hosts := sentry.StartSpan(pCtx, "get_worker_hosts")
 		span__get_worker_hosts.SetTag("workers_aws_discovery", fmt.Sprint(p_runtime.Config.Workers_aws_discovery_bool))
 
 		var workers_inspectors_hosts_lst []string
@@ -171,7 +167,7 @@ func Discovery__init(p_runtime *gf_eth_core.GF_runtime) (func(context.Context, *
 
 	//-------------------------------------------------
 	// GET_WORKER_HOSTS__STATIC_FN
-	get_worker_hosts__static_fn := func(p_ctx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
+	get_worker_hosts__static_fn := func(pCtx context.Context, p_runtime *gf_eth_core.GF_runtime) []string {
 		worker_hosts_lst := strings.Split(p_runtime.Config.Workers_hosts_str, ",")
 		return worker_hosts_lst
 	}

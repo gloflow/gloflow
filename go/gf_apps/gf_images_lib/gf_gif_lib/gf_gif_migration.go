@@ -26,6 +26,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -38,8 +39,8 @@ import (
 //             image only DB records need to be processed
 func InitImgToGIFmigration(p_images_store_local_dir_path_str string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.RuntimeSys) {
+	p_s3_info            *gf_aws.GFs3Info,
+	pRuntimeSys          *gf_core.RuntimeSys) {
 
 	gf_domain_str := "gloflow.com"
 	fmt.Println(gf_domain_str)
@@ -140,8 +141,8 @@ func migrateFixGIFurls(p_images_store_local_dir_path_str string,
 	p_gf_domain_str      string,
 	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.RuntimeSys) {
+	p_s3_info            *gf_aws.GFs3Info,
+	pRuntimeSys          *gf_core.RuntimeSys) {
 	
 	go func() {
 
@@ -319,8 +320,8 @@ func migrateFixGIFurls(p_images_store_local_dir_path_str string,
 func migrateCreateGIFsFromImages(p_images_store_local_dir_path_str string,
 	p_media_domain_str   string,
 	p_s3_bucket_name_str string,
-	p_s3_info            *gf_core.GFs3Info,
-	pRuntimeSys        *gf_core.RuntimeSys) {
+	p_s3_info            *gf_aws.GFs3Info,
+	pRuntimeSys          *gf_core.RuntimeSys) {
 
 	//--------------------------------------------------
 	// CREATE_GIFS_FROM_IMAGES - for all 'img' DB objects with format 'gif', process it 
@@ -459,7 +460,7 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 	p_images_store_local_dir_path_str string,
 	p_media_domain_str                string,
 	p_s3_bucket_name_str              string,
-	p_s3_info                         *gf_core.GFs3Info,
+	p_s3_info                         *gf_aws.GFs3Info,
 	pRuntimeSys                       *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//----------------

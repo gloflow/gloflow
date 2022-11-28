@@ -17,43 +17,44 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_core
+package gf_aws
 
 import (
 	"os"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 
-type Gf_s3_test_info struct {
-	Gf_s3_info                *GFs3Info
-	Aws_access_key_id_str     string
-	Aws_secret_access_key_str string
-	Aws_token_str             string
+type GFs3TestInfo struct {
+	GFs3Info              *GFs3Info
+	AWSaccessKeyIDstr     string
+	AWSsecretAccessKeyStr string
+	AWStokenStr           string
 }
 
 //---------------------------------------------------
 
-func T__get_s3_info(pRuntimeSys *RuntimeSys) *Gf_s3_test_info {
+func TgetS3info(pRuntimeSys *gf_core.RuntimeSys) *GFs3TestInfo {
 
-	aws_access_key_id_str     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
-	aws_secret_access_key_str := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
-	aws_token_str             := os.Getenv("GF_AWS_TOKEN")
+	awsAccessKeyIDstr     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
+	awsSecretAccessKeyStr := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
+	awsTokenStr           := os.Getenv("GF_AWS_TOKEN")
 
-	if aws_access_key_id_str == "" || aws_secret_access_key_str == "" {
+	if awsAccessKeyIDstr == "" || awsSecretAccessKeyStr == "" {
 		panic("test AWS credentials were not supplied")
 	}
 	
-	gf_s3_info, gf_err := S3init(aws_access_key_id_str, aws_secret_access_key_str, aws_token_str, pRuntimeSys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	s3info, gfErr := S3init(awsAccessKeyIDstr, awsSecretAccessKeyStr, awsTokenStr, pRuntimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
-	gf_s3_test_info := &Gf_s3_test_info{
-		Gf_s3_info:                gf_s3_info,
-		Aws_access_key_id_str:     aws_access_key_id_str,
-		Aws_secret_access_key_str: aws_secret_access_key_str,
-		Aws_token_str:             aws_token_str,
+	s3testInfo := &GFs3TestInfo{
+		GFs3Info:              s3info,
+		AWSaccessKeyIDstr:     awsAccessKeyIDstr,
+		AWSsecretAccessKeyStr: awsSecretAccessKeyStr,
+		AWStokenStr:           awsTokenStr,
 	}
-	return gf_s3_test_info
+	return s3testInfo
 }
