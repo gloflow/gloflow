@@ -27,21 +27,30 @@ import (
 
 //------------------------------------------------
 
+type gfTemplates struct {
+	loginTmpl                     *template.Template
+	loginSubtemplatesNamesLst     []string
+	dashboardTmpl                 *template.Template
+	dashboardSubtemplatesNamesLst []string
+}
+
+//------------------------------------------------
+
 func viewRenderTemplateLogin(pMFAconfirmBool bool,
-	pTmpl                 *template.Template,
+	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
-	type tmplData struct {
+	type templateData struct {
 		MFA_confirm_bool bool
 		Sys_release_info gf_core.SysReleaseInfo
 		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
-	err := pTmpl.Execute(buff, tmplData{
+	err := pTemplate.Execute(buff, templateData{
 		MFA_confirm_bool: pMFAconfirmBool,
 		Sys_release_info: sysReleaseInfo,
 		
@@ -73,7 +82,7 @@ func viewRenderTemplateLogin(pMFAconfirmBool bool,
 
 //------------------------------------------------
 
-func viewRenderTemplateDashboard(pTmpl *template.Template,
+func viewRenderTemplateDashboard(pTemplate *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
@@ -85,7 +94,7 @@ func viewRenderTemplateDashboard(pTmpl *template.Template,
 	}
 
 	buff := new(bytes.Buffer)
-	err := pTmpl.Execute(buff, tmpl_data{
+	err := pTemplate.Execute(buff, tmpl_data{
 		Sys_release_info: sysReleaseInfo,
 		
 		//-------------------------------------------------

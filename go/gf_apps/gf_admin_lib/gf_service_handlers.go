@@ -23,7 +23,6 @@ import (
 	// "fmt"
 	"net/http"
 	"context"
-	"text/template"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -32,15 +31,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
-
-//------------------------------------------------
-
-type gfTemplates struct {
-	loginTmpl                     *template.Template
-	loginSubtemplatesNamesLst     []string
-	dashboardTmpl                 *template.Template
-	dashboardSubtemplatesNamesLst []string
-}
 
 //------------------------------------------------
 
