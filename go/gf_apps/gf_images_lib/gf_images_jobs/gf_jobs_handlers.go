@@ -118,7 +118,7 @@ func InitHandlers(pMux *http.ServeMux,
 		},
 		pMux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -212,7 +212,7 @@ func InitHandlers(pMux *http.ServeMux,
 		},
 		pMux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	

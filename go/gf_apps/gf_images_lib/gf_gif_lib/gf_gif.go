@@ -70,33 +70,33 @@ type GFgif struct {
 	PreviewFramesS3urlsLst     []string      `json:"previewFramesS3urlsLst" bson:"previewFramesS3urlsLst"`
 	Tags_lst                   []string      `json:"tags_lst"                   bson:"tags_lst"`
 	Hash_str                   string        `json:"hash_str"                   bson:"hash_str"`
-	Gf_image_id_str            gf_images_core.GF_image_id `json:"gf_image_id_str" bson:"gf_image_id_str"`
+	GFimageIDstr               gf_images_core.GFimageID `json:"gf_image_id_str" bson:"gf_image_id_str"`
 }
 
 //--------------------------------------------------
 
-func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
+func ProcessAndUpload(pImageIDstr gf_images_core.GFimageID,
 	p_image_source_url_str                        string,
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
 	p_image_client_type_str                       string, //what type of client is processing this gif
 	p_flows_names_lst                             []string,
 	p_create_new_db_img_bool                      bool,
-	p_media_domain_str                            string,
-	p_s3_bucket_name_str                          string,
+	pMediaDomainStr                               string,
+	pS3bucketNameStr                              string,
 	pS3info                                       *gf_aws.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
-	gif, local_image_file_path_str, gfErr := Process(p_gf_image_id_str,
+	gif, local_image_file_path_str, gfErr := Process(pImageIDstr,
 		p_image_source_url_str,
 		p_image_origin_page_url_str,
 		p_gif_download_and_frames__local_dir_path_str,
 		p_image_client_type_str,
 		p_flows_names_lst,
 		p_create_new_db_img_bool,
-		p_media_domain_str,
-		p_s3_bucket_name_str,
+		pMediaDomainStr,
+		pS3bucketNameStr,
 		pS3info,
 		pCtx,
 		pRuntimeSys)
@@ -113,9 +113,9 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 	}
 
 	s3_target_file_path_str := fmt.Sprintf("gifs/%s.gif", img_title_str)
-	s3_resp_str, gfErr      := gf_aws.S3uploadFile(local_image_file_path_str, //p_target_file__local_path_str string,
+	s3_resp_str, gfErr      := gf_aws.S3putFile(local_image_file_path_str, //p_target_file__local_path_str string,
 		s3_target_file_path_str,
-		p_s3_bucket_name_str,
+		pS3bucketNameStr,
 		pS3info,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -131,15 +131,15 @@ func ProcessAndUpload(p_gf_image_id_str gf_images_core.GF_image_id,
 
 //--------------------------------------------------
 
-func Process(p_gf_image_id_str gf_images_core.Gf_image_id,   
+func Process(pImageIDstr gf_images_core.Gf_image_id,   
 	p_image_source_url_str                        string,   
 	p_image_origin_page_url_str                   string,
 	p_gif_download_and_frames__local_dir_path_str string,
 	p_image_client_type_str                       string, //what type of client is processing this gif
 	p_flows_names_lst                             []string,
 	p_create_new_db_img_bool                      bool,
-	p_media_domain_str                            string,
-	p_s3_bucket_name_str                          string,
+	pMediaDomainStr                            string,
+	pS3bucketNameStr                          string,
 	pS3info                                       *gf_aws.GFs3Info,
 	pCtx                                          context.Context,
 	pRuntimeSys                                   *gf_core.RuntimeSys) (*GFgif, string, *gf_core.GFerror) {
@@ -164,8 +164,8 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 	frames_num_int, frames_s3_urls_lst, varGFerr, framesGFerrsLst := storePreviewFrames(local_image_file_path_str,
 		p_gif_download_and_frames__local_dir_path_str,
-		p_media_domain_str,
-		p_s3_bucket_name_str,
+		pMediaDomainStr,
+		pS3bucketNameStr,
 		pS3info,
 		pRuntimeSys)
 	if varGFerr != nil {
@@ -209,14 +209,14 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 		// IMAGE_ID
 		var gf_image_id_str gf_images_core.GFimageID
-		if p_gf_image_id_str == "" {
+		if pImageIDstr == "" {
 			new_image_id_str, gfErr := gf_images_core.CreateIDfromURL(p_image_source_url_str, pRuntimeSys)
 			if gfErr != nil {
 				return nil, "", gfErr
 			}
 			gf_image_id_str = new_image_id_str
 		} else {
-			gf_image_id_str = p_gf_image_id_str
+			gf_image_id_str = pImageIDstr
 		}
 
 		// IMAGE_TITLE
@@ -297,8 +297,8 @@ func Process(p_gf_image_id_str gf_images_core.Gf_image_id,
 
 func storePreviewFrames(pLocalFilePathSrc string,
 	p_frames_images_dir_path_str string,
-	p_media_domain_str           string, 
-	p_s3_bucket_name_str         string,
+	pMediaDomainStr           string, 
+	pS3bucketNameStr         string,
 	pS3info                      *gf_aws.GFs3Info,
 	pRuntimeSys                  *gf_core.RuntimeSys) (int, []string, *gf_core.GFerror, []*gf_core.GFerror) {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif.storePreviewFrames()")
@@ -325,9 +325,9 @@ func storePreviewFrames(pLocalFilePathSrc string,
 		targetFileLocalPathStr := frameImageFilePathStr
 
 		// UPLOAD
-		s3_response_str, gfErr := gf_aws.S3uploadFile(targetFileLocalPathStr,
+		s3_response_str, gfErr := gf_aws.S3putFile(targetFileLocalPathStr,
 			targetFilePathStr,
-			p_s3_bucket_name_str,
+			pS3bucketNameStr,
 			pS3info,
 			pRuntimeSys)
 
@@ -341,7 +341,7 @@ func storePreviewFrames(pLocalFilePathSrc string,
 		//-----------------------
 
 		imageURLstr := gf_images_core.ImageGetPublicURL(targetFilePathStr,
-			p_media_domain_str, // p_s3_bucket_name_str,
+			pMediaDomainStr, // pS3bucketNameStr,
 			pRuntimeSys)
 
 		previewFramesS3urlsLst = append(previewFramesS3urlsLst, imageURLstr)
@@ -455,7 +455,7 @@ func gifFramesSaveToFS(pLocalFilePathSrc string,
 			return nil, gfErr
 		}
 
-		err = png.Encode(file,overpaint_image)
+		err = png.Encode(file, overpaint_image)
 		if err != nil {
 			gfErr := gf_core.ErrorCreate("failed to encode png image_byte array while saving GIF frame to FS",
 				"png_encoding_error",

@@ -99,7 +99,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -153,7 +153,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -187,7 +187,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -212,7 +212,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -248,7 +248,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	
@@ -283,7 +283,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		},
 		pMux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 

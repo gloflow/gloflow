@@ -70,7 +70,7 @@ func initHandlers(pMediaDomainStr string,
 		},
 		pHTTPmux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -119,7 +119,7 @@ func initHandlers(pMediaDomainStr string,
 		},
 		pHTTPmux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -150,7 +150,7 @@ func initHandlers(pMediaDomainStr string,
 		},
 		pHTTPmux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -175,7 +175,7 @@ func initHandlers(pMediaDomainStr string,
 		},
 		pHTTPmux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	

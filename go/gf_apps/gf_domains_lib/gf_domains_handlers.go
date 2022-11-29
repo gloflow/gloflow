@@ -82,7 +82,7 @@ func InitHandlers(p_templates_paths_map map[string]string,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	

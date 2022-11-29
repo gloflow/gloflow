@@ -86,7 +86,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		landingMainHandlerFun,
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -94,7 +94,7 @@ func init_handlers(p_templates_paths_map map[string]string,
 		landingMainHandlerFun,
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 

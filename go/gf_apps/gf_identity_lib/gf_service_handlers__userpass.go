@@ -52,6 +52,8 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
+
+		// after successful login redirect users to landing page?
 		AuthLoginURLstr: "/landing/main",
 	}
 

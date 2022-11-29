@@ -40,7 +40,7 @@ func initHandlers(pHTTPmux *http.ServeMux,
 		},
 		pHTTPmux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 

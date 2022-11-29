@@ -93,7 +93,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		},
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil, 
 		pRuntimeSys)
 
@@ -210,7 +210,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		},
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -261,7 +261,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		},
 		pHTTPmux,
 		metrics,
-		false, // p_store_run_bool
+		false, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -305,7 +305,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		},
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -335,7 +335,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		},
 		pHTTPmux,
 		metrics,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 

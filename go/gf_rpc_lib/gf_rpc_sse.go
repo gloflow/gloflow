@@ -46,7 +46,7 @@ type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Reque
 
 func CreateHandlerSSE(p_path_str string,
 	p_handler_fun    handler_http_sse,
-	p_store_run_bool bool,
+	pStoreRunBool bool,
 	pRuntimeSys      *gf_core.RuntimeSys) {
 
 	CreateHandlerHTTPwithMetrics(p_path_str,
@@ -170,7 +170,7 @@ func CreateHandlerSSE(p_path_str string,
 			return nil, nil
 		},
 		nil,
-		p_store_run_bool,
+		pStoreRunBool,
 		pRuntimeSys)
 }
 

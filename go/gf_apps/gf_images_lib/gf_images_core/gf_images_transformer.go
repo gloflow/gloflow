@@ -245,16 +245,6 @@ func resizeImage(pImg image.Image,
 	}
 	defer out.Close()
 
-	/*out_png, err := os.Create(fmt.Sprintf("%s.png", pImageOutputPathStr))
-	if err != nil {
-		gfErr := gf_core.ErrorCreate("OS failed to create a file to save a resized image to FS",
-			"file_create_error",
-			map[string]interface{}{"image_output_path_str": pImageOutputPathStr,},
-			err, "gf_images_core", pRuntimeSys)
-		return gfErr
-	}
-	defer out.Close()*/
-
 	//--------------------------
 	// ADD!! - enable a way to set PNG format as a target.
 	//         for very precise vector type images there is significant accuracy loss

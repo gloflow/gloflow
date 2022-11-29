@@ -82,7 +82,7 @@ func Init_handlers(p_indexer_cmds_ch GF_indexer_ch,
 
 			return data_updates_ch, data_err_ch, data_complete_ch, nil
 		},
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		p_runtime.RuntimeSys)
 
 	//---------------------

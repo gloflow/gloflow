@@ -74,7 +74,7 @@ func init_handlers(p_metrics *GF_metrics,
 
 		},
 		metrics,
-		false, // true, // p_store_run_bool
+		false, // true, // pStoreRunBool
 		p_runtime.runtime_sys)
 
 	//---------------------
@@ -115,7 +115,7 @@ func init_handlers(p_metrics *GF_metrics,
 			return data_map, nil
 		},
 		metrics,
-		false, // true, // p_store_run_bool
+		false, // true, // pStoreRunBool
 		p_runtime.runtime_sys)
 
 	//---------------------
@@ -170,7 +170,7 @@ func init_handlers(p_metrics *GF_metrics,
 			return data_map, nil
 		},
 		metrics,
-		false, // true, // p_store_run_bool
+		false, // true, // pStoreRunBool
 		p_runtime.runtime_sys)
 
 	//---------------------

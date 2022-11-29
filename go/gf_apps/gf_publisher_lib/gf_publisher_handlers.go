@@ -121,7 +121,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -158,7 +158,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	
@@ -170,7 +170,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 	
@@ -181,7 +181,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -212,7 +212,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -250,7 +250,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -320,7 +320,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 
@@ -332,7 +332,7 @@ func initHandlers(p_gf_images_runtime_info *GF_images_extern_runtime_info,
 		},
 		p_mux,
 		nil,
-		true, // p_store_run_bool
+		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
 

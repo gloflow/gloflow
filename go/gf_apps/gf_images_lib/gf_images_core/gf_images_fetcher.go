@@ -174,26 +174,26 @@ func DownloadFile(pImageURLstr string,
 	// WRITE TO FILE
 	fmt.Printf("p_local_image_file_path_str - %s\n", p_local_image_file_path_str)
 
-	out, c_err := os.Create(p_local_image_file_path_str)
+	out, cErr := os.Create(p_local_image_file_path_str)
 	defer out.Close()
 
-	if c_err != nil {
+	if cErr != nil {
 		gfErr := gf_core.ErrorCreate("failed to create local file for fetched image",
 			"file_create_error",
 			map[string]interface{}{"local_image_file_path_str": p_local_image_file_path_str,},
-			c_err, "gf_images_core", pRuntimeSys)
+			cErr, "gf_images_core", pRuntimeSys)
 		return gfErr
 	}
 
-	_, cp_err := io.Copy(out, HTTPfetch.Resp.Body)
-	if cp_err != nil {
+	_, cpErr := io.Copy(out, HTTPfetch.Resp.Body)
+	if cpErr != nil {
 		gfErr := gf_core.ErrorCreate("failed to copy HTTP GET response Body buffer to a image file",
 			"file_buffer_copy_error",
 			map[string]interface{}{
 				"local_image_file_path_str": p_local_image_file_path_str,
 				"image_url_str":             pImageURLstr,
 			},
-			cp_err, "gf_images_core", pRuntimeSys)
+			cpErr, "gf_images_core", pRuntimeSys)
 		return gfErr
 	}
 	

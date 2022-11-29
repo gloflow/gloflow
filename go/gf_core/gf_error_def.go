@@ -120,10 +120,10 @@ func errorGetDefs() map[string]ErrorDef {
 		//---------------
 		// FILESYSTEM
 		"file_open_error": ErrorDef{
-			DescrStr: "os.Create() failed to create a file - package (os)",
+			DescrStr: "os.Open() failed to open a file - package (os)",
 		},
 		"file_create_error": ErrorDef{
-			DescrStr: "os.Open() failed to open a file - package (os)",
+			DescrStr: "os.Create() failed to create a file - package (os)",
 		},
 		"file_read_error": ErrorDef{
 			DescrStr: "f.Read()/ioutil.ReadFile() failed to read file - package (os/ioutil)",
