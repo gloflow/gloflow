@@ -75,7 +75,7 @@ func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
 		}
 
 		featured := &GFfeaturedImage{
-			Title_str:                      img.Title_str,
+			Title_str:                      img.TitleStr,
 			Image_url_str:                  img.Thumbnail_small_url_str,
 			Image_thumbnail_medium_url_str: img.Thumbnail_medium_url_str,
 			Image_origin_page_url_str:      img.Origin_page_url_str,

@@ -37,9 +37,9 @@ type GFimage struct {
 	Creation_unix_time_f float64       `json:"creation_unix_time_f" bson:"creation_unix_time_f"`
 	
 	//---------------
-	Client_type_str      string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
-	Title_str            string        `json:"title_str"            bson:"title_str"`
-	Flows_names_lst      []string      `json:"flows_names_lst"      bson:"flows_names_lst"` // image can bellong to multiple flows
+	ClientTypeStr        string        `json:"-"                    bson:"client_type_str"` // "gchrome_ext"|"gf_crawl_images"|"gf_image_editor"
+	TitleStr             string        `json:"title_str"            bson:"title_str"`
+	FlowsNamesLst        []string      `json:"flows_names_lst"      bson:"flows_names_lst"` // image can bellong to multiple flows
 
 	//---------------
 	// RESOLVED_SOURCE_URL
@@ -137,9 +137,9 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 		IDstr:                          pImageInfo.IDstr,
 		T_str:                          "img",
 		Creation_unix_time_f:           creationUNIXtimeF,
-		Client_type_str:                pImageInfo.Image_client_type_str,
-		Title_str:                      pImageInfo.Title_str,
-		Flows_names_lst:                pImageInfo.Flows_names_lst,
+		ClientTypeStr:                  pImageInfo.Image_client_type_str,
+		TitleStr:                       pImageInfo.Title_str,
+		FlowsNamesLst:                  pImageInfo.Flows_names_lst,
 		Origin_url_str:                 pImageInfo.Origin_url_str,
 		Origin_page_url_str:            pImageInfo.Origin_page_url_str,
 		Original_file_internal_uri_str: pImageInfo.Original_file_internal_uri_str,
@@ -185,9 +185,9 @@ func ImageCreate(pImageInfoMap map[string]interface{},
 		IDstr:                          gf_image_id_str,
 		T_str:                          "img",
 		Creation_unix_time_f:           float64(time.Now().UnixNano())/1000000000.0,
-		Client_type_str:                newImageInfoMap["image_client_type_str"].(string),
-		Title_str:                      title_str,
-		Flows_names_lst:                flows_names_lst,
+		ClientTypeStr:                  newImageInfoMap["image_client_type_str"].(string),
+		TitleStr:                       title_str,
+		FlowsNamesLst:                  flows_names_lst,
 		Origin_url_str:                 newImageInfoMap["origin_url_str"].(string),
 		Origin_page_url_str:            newImageInfoMap["origin_page_url_str"].(string),
 		Original_file_internal_uri_str: newImageInfoMap["original_file_internal_uri_str"].(string),

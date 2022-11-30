@@ -97,12 +97,12 @@ func InitImgToGIFmigration(p_images_store_local_dir_path_str string,
 	go func() {
 		for {
 
-			//get all images that dont have flows_names_lst
+			//get all images that dont have flowsNamesLst
 			var imgs_lst []gf_images_core.GF_Image
 			err := p_mongodb_coll.Find(bson.M{
 					"t":              "img",
 					"format_str":     "gif",
-					"flows_names_lst":bson.M{"$nin":[]string{"gifs",}},
+					"flowsNamesLst":bson.M{"$nin":[]string{"gifs",}},
 				}).All(&imgs_lst)
 
 			//all img's are migrated
@@ -114,7 +114,7 @@ func InitImgToGIFmigration(p_images_store_local_dir_path_str string,
 				continue
 			}
 
-			//update each one with flows_names_lst field, and add flow_name_str to that list
+			//update each one with flowsNamesLst field, and add flow_name_str to that list
 			for _,img := range imgs_lst {
 
 				err := p_mongodb_coll.Update(bson.M{
@@ -122,7 +122,7 @@ func InitImgToGIFmigration(p_images_store_local_dir_path_str string,
 						"id_str":    img.Id_str,
 						"format_str":"gif",
 					},
-					bson.M{"$push":bson.M{"flows_names_lst":"gifs",},})
+					bson.M{"$push":bson.M{"flowsNamesLst":"gifs",},})
 				if err != nil {
 					pLogFun("ERROR",fmt.Sprint(err))
 					continue
@@ -420,7 +420,7 @@ func migrateCreateGIFsFromImages(p_images_store_local_dir_path_str string,
 				//               p_create_new_db_img_bool is set to 'false'.
 				image_client_type_str := ""
 
-				flows_names_lst, gfErr := migrateGetFlowsNames(img.IDstr, pRuntimeSys)
+				flowsNamesLst, gfErr := migrateGetFlowsNames(img.IDstr, pRuntimeSys)
 				if gfErr != nil {
 					continue
 				}
@@ -433,7 +433,7 @@ func migrateCreateGIFsFromImages(p_images_store_local_dir_path_str string,
 					img.Origin_page_url_str,
 					p_images_store_local_dir_path_str,
 					image_client_type_str,
-					flows_names_lst,
+					flowsNamesLst,
 					false, // p_create_new_db_img_bool
 					p_media_domain_str,
 					p_s3_bucket_name_str,
@@ -470,7 +470,7 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 	//               p_create_new_db_img_bool is set to 'false'.
 	image_client_type_str := ""
 
-	flows_names_lst, gfErr := migrateGetFlowsNames(p_old_gif.Gf_image_id_str, pRuntimeSys)
+	flowsNamesLst, gfErr := migrateGetFlowsNames(p_old_gif.GFimageIDstr, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -482,7 +482,7 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 		p_old_gif.Origin_page_url_str,       // p_image_origin_page_url_str
 		p_images_store_local_dir_path_str,
 		image_client_type_str,
-		flows_names_lst,
+		flowsNamesLst,
 		false, // p_create_new_db_img_bool
 		p_media_domain_str,
 		p_s3_bucket_name_str,
@@ -505,14 +505,6 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 		bson.M{
 			"$set": bson.M{"creation_unix_time_f": p_old_gif.Creation_unix_time_f},
 		})
-
-	/*err := pRuntimeSys.Mongo_coll.Update(bson.M{
-			"t":      "gif",
-			"id_str": new_gif.Id_str,
-		},
-		bson.M{
-			"$set": bson.M{"creation_unix_time_f":p_old_gif.Creation_unix_time_f},
-		})*/
 
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to update a new migrated GIF with an old creation_unix_time_f (of the old GIF) in mongodb",
@@ -537,7 +529,7 @@ func migrateRebuildGIF(p_old_gif *GFgif,
 
 func migrateGetFlowsNames(p_gif__gf_image_id_str gf_images_core.GFimageID,
 	pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
-	var flows_names_lst []string
+	var flowsNamesLst []string
 
 	// IMPORTANT!! - GIF is not linked to a particular GF_Image
 	if p_gif__gf_image_id_str != "" {
@@ -556,31 +548,31 @@ func migrateGetFlowsNames(p_gif__gf_image_id_str gf_images_core.GFimageID,
 			return nil, gfErr
 		}
 
-		// IMPORTANT!! - gf_img.Flows_names_lst is a new field, allowing images to belong to multiple
+		// IMPORTANT!! - gf_img.FlowsNamesLst is a new field, allowing images to belong to multiple
 		//               flows. before there was only the Flow_name_str field.
-		//               so in the beginning most GF_Image's will not have "flows_names_lst" set in the DB,
+		//               so in the beginning most GF_Image's will not have "flowsNamesLst" set in the DB,
 		//               and will contain the default value when loaded by mgo (empty list)
-		if len(gf_img.Flows_names_lst) > 0 {
+		if len(gf_img.FlowsNamesLst) > 0 {
 
-			flows_names_lst = gf_img.Flows_names_lst
+			flowsNamesLst = gf_img.FlowsNamesLst
 
-			has_gif_flow_bool := false
-			for _,s := range flows_names_lst {
+			hasGIFflowBool := false
+			for _, s := range flowsNamesLst {
 				// flows list might contain "gifs" tag
 				if s == "gifs" {
-					has_gif_flow_bool = true
+					hasGIFflowBool = true
 				}
 			}
 			// only add "gifs" flow if it doesnt exist
-			if !has_gif_flow_bool {
-				flows_names_lst = append(flows_names_lst, "gifs")
+			if !hasGIFflowBool {
+				flowsNamesLst = append(flowsNamesLst, "gifs")
 			}
 		} else {
-			flows_names_lst = []string{"gifs",}
+			flowsNamesLst = []string{"gifs",}
 		}
 	} else {
-		flows_names_lst = []string{"gifs",}
+		flowsNamesLst = []string{"gifs",}
 	}
 
-	return flows_names_lst,nil
+	return flowsNamesLst,nil
 }

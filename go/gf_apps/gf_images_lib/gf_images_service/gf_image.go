@@ -47,8 +47,8 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 
 		gf_img_export := &gf_images_core.GFimageExport{
 			Creation_unix_time_f:     gf_img.Creation_unix_time_f,
-			Title_str:                gf_img.Title_str,
-			Flows_names_lst:          gf_img.Flows_names_lst,
+			Title_str:                gf_img.TitleStr,
+			Flows_names_lst:          gf_img.FlowsNamesLst,
 			Thumbnail_small_url_str:  gf_img.Thumbnail_small_url_str,
 			Thumbnail_medium_url_str: gf_img.Thumbnail_medium_url_str,
 			Thumbnail_large_url_str:  gf_img.Thumbnail_large_url_str,

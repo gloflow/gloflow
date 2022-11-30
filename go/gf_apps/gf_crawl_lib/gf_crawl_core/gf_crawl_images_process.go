@@ -63,7 +63,7 @@ func images__stage__process_images(pCrawlerNameStr string,
 
 		//----------------------------
 		// IMAGE_PROCESS
-		_, gf_image_thumbs, gf_err := imageProcess(page_img__pinfo.page_img,
+		_, gf_image_thumbs, gfErr := imageProcess(page_img__pinfo.page_img,
 			page_img__pinfo.gf_image_id_str, //pGFimageIDstr
 			page_img__pinfo.local_file_path_str,
 			p_images_store_local_dir_path_str,
@@ -74,13 +74,13 @@ func images__stage__process_images(pCrawlerNameStr string,
 			pRuntimeSys)
 		//----------------------------
 		
-		if gf_err != nil {
+		if gfErr != nil {
 			t := "image_process__failed"
 			m := "failed processing of image with img_url_str - "+page_img__pinfo.page_img.Url_str
 			CreateErrorAndEvent(t,m,map[string]interface{}{"origin_page_url_str": p_origin_page_url_str,}, page_img__pinfo.page_img.Url_str, pCrawlerNameStr,
-				gf_err, pRuntime, pRuntimeSys)
+				gfErr, pRuntime, pRuntimeSys)
 
-			page_img__pinfo.gf_error = gf_err
+			page_img__pinfo.gf_error = gfErr
 			continue // IMPORTANT!! - if an image processing fails, continue to the next image, dont abort
 		}
 
@@ -92,8 +92,8 @@ func images__stage__process_images(pCrawlerNameStr string,
 
 //--------------------------------------------------
 
-func imageProcess(p_page_img *GFcrawlerPageImage,
-	pGFimageIDstr                 gf_images_core.GFimageID,
+func imageProcess(pPageImg *GFcrawlerPageImage,
+	pGFimageIDstr                     gf_images_core.GFimageID,
 	p_local_image_file_path_str       string,
 	p_images_store_local_dir_path_str string,
 	pMediaDomainStr                   string,
@@ -108,7 +108,7 @@ func imageProcess(p_page_img *GFcrawlerPageImage,
 
 	//----------------------------
 	// GIF
-	if p_page_img.Img_ext_str == "gif" {
+	if pPageImg.Img_ext_str == "gif" {
 
 		image_client_type_str := "gf_crawl_images" 
 		image_flows_names_lst := []string{"discovered", "gifs",}
@@ -117,9 +117,9 @@ func imageProcess(p_page_img *GFcrawlerPageImage,
 
 		ctx := context.Background()
 
-		gf_gif, _, gf_err := gf_gif_lib.Process(pGFimageIDstr,
-			p_page_img.Url_str,
-			p_page_img.Origin_page_url_str,
+		gf_gif, _, gfErr := gf_gif_lib.Process(pGFimageIDstr,
+			pPageImg.Url_str,
+			pPageImg.Origin_page_url_str,
 			gif_download_and_frames__local_dir_path_str,
 			image_client_type_str,
 			image_flows_names_lst,
@@ -131,14 +131,14 @@ func imageProcess(p_page_img *GFcrawlerPageImage,
 			ctx,
 			pRuntimeSys)
 
-		if gf_err != nil {
-			return nil, nil, gf_err
+		if gfErr != nil {
+			return nil, nil, gfErr
 		}													
 
-		gf_image_id_str := gf_gif.Gf_image_id_str
-		gf_err           = image__db_update_after_process(p_page_img, gf_image_id_str, pRuntimeSys)
-		if gf_err != nil {
-			return nil, nil, gf_err
+		imageIDstr := gf_gif.GFimageIDstr
+		gfErr       = image__db_update_after_process(pPageImg, imageIDstr, pRuntimeSys)
+		if gfErr != nil {
+			return nil, nil, gfErr
 		}
 
 		return nil, nil, nil
@@ -148,7 +148,7 @@ func imageProcess(p_page_img *GFcrawlerPageImage,
 	} else {
 	
 		thumbnailsLocalDirPathStr := p_images_store_local_dir_path_str
-		gfImage, gfImageThumbs, gfErr := imageProcessBitmap(p_page_img,
+		gfImage, gfImageThumbs, gfErr := imageProcessBitmap(pPageImg,
 			pGFimageIDstr,
 			p_local_image_file_path_str,
 			thumbnailsLocalDirPathStr,
@@ -169,8 +169,8 @@ func imageProcess(p_page_img *GFcrawlerPageImage,
 		
 		//spew.Dump(gf_image)
 
-		gf_image_id_str := gfImage.IDstr
-		gfErr           = image__db_update_after_process(p_page_img, gf_image_id_str, pRuntimeSys)
+		imageIDstr := gfImage.IDstr
+		gfErr       = image__db_update_after_process(pPageImg, imageIDstr, pRuntimeSys)
 		if gfErr != nil {
 			return nil, nil, gfErr
 		}

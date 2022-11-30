@@ -149,14 +149,14 @@ func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 	fileEXTstr     := filepath.Ext(pTargetFileS3pathStr)
 	contentTypeStr := mime.TypeByExtension(fileEXTstr)
 
-	s3_put_object_params := &s3.PutObjectInput{
+	s3putObjectParams := &s3.PutObjectInput{
 		ACL:         aws.String("public-read"),
 		Bucket:      aws.String(pS3bucketNameStr),
 		Key:         aws.String(pTargetFileS3pathStr),
 		ContentType: aws.String(contentTypeStr),
 	}
 
-	req, _ := pS3info.Client.PutObjectRequest(s3_put_object_params)
+	req, _ := pS3info.Client.PutObjectRequest(s3putObjectParams)
 
 	// PRESIGN
 	presignedURLstr, err := req.Presign(time.Minute * 1)
@@ -172,62 +172,59 @@ func S3generatePresignedUploadURL(pTargetFileS3pathStr string,
 //---------------------------------------------------
 // S3__UPLOAD_FILE
 
-func S3uploadFile(p_target_file__local_path_str string,
-	p_target_file__s3_path_str string,
-	p_s3_bucket_name_str       string,
-	p_s3_info                  *GFs3Info,
-	pRuntimeSys                *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_s3.S3uploadFile()")
-	pRuntimeSys.LogFun("INFO",      "p_s3_bucket_name_str       - "+p_s3_bucket_name_str)
-	pRuntimeSys.LogFun("INFO",      "p_target_file__s3_path_str - "+p_target_file__s3_path_str)
+func S3putFile(pTargetFileLocalPathStr string,
+	pTargetFileS3pathStr string,
+	pS3bucketNameStr     string,
+	pS3info              *GFs3Info,
+	pRuntimeSys          *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//-----------------
-	file, fs_err := os.Open(p_target_file__local_path_str)
-	if fs_err != nil {
+	file, fsErr := os.Open(pTargetFileLocalPathStr)
+	if fsErr != nil {
 		gfErr := gf_core.ErrorCreate("failed to open a local file to upload it to S3",
 			"file_open_error",
 			map[string]interface{}{
-				"bucket_name_str":             p_s3_bucket_name_str,
-				"target_file__local_path_str": p_target_file__local_path_str,
-				"target_file__s3_path_str":    p_target_file__s3_path_str,
+				"bucket_name_str":             pS3bucketNameStr,
+				"target_file__local_path_str": pTargetFileLocalPathStr,
+				"target_file__s3_path_str":    pTargetFileS3pathStr,
 			},
-			fs_err, "gf_core", pRuntimeSys)
+			fsErr, "gf_core", pRuntimeSys)
 		return "", gfErr
 	}
 	defer file.Close()
 	
 	//-----------------
 
-	file_info,_   := file.Stat()
-	var size int64 = file_info.Size()
+	fileInfo, _  := file.Stat()
+	var size int64 = fileInfo.Size()
 
 	buffer := make([]byte, size)
 
 	// read file content to buffer
 	file.Read(buffer)
 
-	file_bytes := bytes.NewReader(buffer) // convert to io.ReadSeeker type
-	file_type  := http.DetectContentType(buffer)
+	fileBytes := bytes.NewReader(buffer) // convert to io.ReadSeeker type
+	fileType  := http.DetectContentType(buffer)
 
 	// Upload uploads an object to S3, intelligently buffering large files 
 	// into smaller chunks and sending them in parallel across multiple goroutines.
-	result, s3_err := p_s3_info.Uploader.Upload(&s3manager.UploadInput{
+	result, s3err := pS3info.Uploader.Upload(&s3manager.UploadInput{
 		ACL:         aws.String("public-read"),
-		Bucket:      aws.String(p_s3_bucket_name_str),
-		Key:         aws.String(p_target_file__s3_path_str),
-		ContentType: aws.String(file_type),
-		Body:        file_bytes,
+		Bucket:      aws.String(pS3bucketNameStr),
+		Key:         aws.String(pTargetFileS3pathStr),
+		ContentType: aws.String(fileType),
+		Body:        fileBytes,
 	})
 
-	if s3_err != nil {
+	if s3err != nil {
 		gfErr := gf_core.ErrorCreate("failed to upload a file to an S3 bucket",
 			"s3_file_upload_error",
 			map[string]interface{}{
-				"bucket_name_str":             p_s3_bucket_name_str,
-				"target_file__local_path_str": p_target_file__local_path_str,
-				"target_file__s3_path_str":    p_target_file__s3_path_str,
+				"bucket_name_str":             pS3bucketNameStr,
+				"target_file__local_path_str": pTargetFileLocalPathStr,
+				"target_file__s3_path_str":    pTargetFileS3pathStr,
 			},
-			s3_err, "gf_core", pRuntimeSys)
+			s3err, "gf_core", pRuntimeSys)
 		return "", gfErr
 	}
 
@@ -240,23 +237,23 @@ func S3uploadFile(p_target_file__local_path_str string,
  
 func S3copyFile(pSourceBucketStr string,
 	pSourceFileS3pathStr string,
-	p_target_bucket_name_str   string,
-	p_target_file__s3_path_str string,
-	pS3info                    *GFs3Info,
-	pRuntimeSys                *gf_core.RuntimeSys) *gf_core.GFerror {
+	pTargetBucketNameStr string,
+	pTargetFileS3pathStr string,
+	pS3info              *GFs3Info,
+	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	fmt.Printf("source_bucket        - %s\n", pSourceBucketStr)
 	fmt.Printf("source_file__s3_path - %s\n", pSourceFileS3pathStr)
-	fmt.Printf("target_bucket_name   - %s\n", p_target_bucket_name_str)
-	fmt.Printf("target_file__s3_path - %s\n", p_target_file__s3_path_str)
+	fmt.Printf("target_bucket_name   - %s\n", pTargetBucketNameStr)
+	fmt.Printf("target_file__s3_path - %s\n", pTargetFileS3pathStr)
 
 	source_bucket_and_file__s3_path_str := filepath.Clean(fmt.Sprintf("/%s/%s", pSourceBucketStr, pSourceFileS3pathStr))
 
 	svc   := s3.New(pS3info.Session)
 	input := &s3.CopyObjectInput{
 		CopySource: aws.String(source_bucket_and_file__s3_path_str),
-	    Bucket:     aws.String(p_target_bucket_name_str),
-	    Key:        aws.String(p_target_file__s3_path_str),
+	    Bucket:     aws.String(pTargetBucketNameStr),
+	    Key:        aws.String(pTargetFileS3pathStr),
 	}
 
 	result, err := svc.CopyObject(input)
@@ -265,8 +262,8 @@ func S3copyFile(pSourceBucketStr string,
 			"s3_file_copy_error",
 			map[string]interface{}{
 				"source_bucket_and_file__s3_path_str": source_bucket_and_file__s3_path_str,
-				"target_bucket_name_str":              p_target_bucket_name_str,
-				"target_file__s3_path_str":            p_target_file__s3_path_str,
+				"target_bucket_name_str":              pTargetBucketNameStr,
+				"target_file__s3_path_str":            pTargetFileS3pathStr,
 			},
 			err, "gf_core", pRuntimeSys)
 		return gfErr

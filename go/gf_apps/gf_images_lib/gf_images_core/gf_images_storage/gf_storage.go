@@ -189,7 +189,7 @@ func FilePutFromLocal(pOpDef *GFputFromLocalOpDef,
 
 	// S3
 	case "s3":
-		_, gfErr := gf_aws.S3uploadFile(pOpDef.ImageSourceLocalFilePathStr,
+		_, gfErr := gf_aws.S3putFile(pOpDef.ImageSourceLocalFilePathStr,
 			pOpDef.ImageTargetFilePathStr,
 			pOpDef.S3bucketNameStr,
 			pStorage.S3.Info,

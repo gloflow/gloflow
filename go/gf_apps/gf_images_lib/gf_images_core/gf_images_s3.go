@@ -50,7 +50,7 @@ func S3getImage(pImageS3filePathStr string,
 //---------------------------------------------------
 // DEPRECATED!!
 
-func S3storeImage(p_image_local_file_path_str string,
+func S3storeImage(pImageLocalFilePathStr string,
 	pImageThumbs     *GFimageThumbs,
 	pS3bucketNameStr string,
 	pS3info          *gf_aws.GFs3Info,
@@ -66,22 +66,22 @@ func S3storeImage(p_image_local_file_path_str string,
 	//         and instead should be the image ID with the file extension. 
 	//         it also makes it more difficult to find the image on S3 that is represented by an Gf_img given 
 	//         only the ID of that Gf_img
-	s3FileNameStr := path.Base(p_image_local_file_path_str)
+	s3FileNameStr := path.Base(pImageLocalFilePathStr)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/* for files acquired by the Fetcher images are already uploaded 
-	with their Gf_img ID as their filename. so here the p_image_local_file_path_str value is already 
+	with their Gf_img ID as their filename. so here the pImageLocalFilePathStr value is already 
 	the image ID.
 	
 	ADD!! - have an explicit p_target_s3FileNameStr argument, and dont derive it
-	        automatically from the the filename in p_image_local_file_path_str */
+	        automatically from the the filename in pImageLocalFilePathStr */
 
-	target_file__local_path_str := p_image_local_file_path_str
-	target_file__s3_path_str    := s3FileNameStr
-	s3_response_str, gfErr := gf_aws.S3uploadFile(target_file__local_path_str,
-		target_file__s3_path_str,
+	targetFileLocalPathStr := pImageLocalFilePathStr
+	targetFileS3pathStr    := s3FileNameStr
+	_, gfErr := gf_aws.S3putFile(targetFileLocalPathStr,
+		targetFileS3pathStr,
 		pS3bucketNameStr,
 		pS3info,
 		pRuntimeSys)
@@ -89,8 +89,6 @@ func S3storeImage(p_image_local_file_path_str string,
 	if gfErr != nil {
 		return gfErr
 	}
-
-	pRuntimeSys.LogFun("INFO", fmt.Sprintf("s3_response_str - %s", s3_response_str))
 	
 	//--------------------
 	// UPLOAD THUMBS
@@ -123,32 +121,32 @@ func S3storeThumbnails(pImageThumbs *GFimageThumbs,
 		// SMALL THUMB
 		small_t_path_str         := pImageThumbs.Small_local_file_path_str // thumbs_info_map["small__target_thumbnail_file_path_str"]
 		small_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(small_t_path_str))
-		s3_response_str, gfErr  := gf_aws.S3uploadFile(small_t_path_str, small_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
+		s3ResponseStr, gfErr  := gf_aws.S3putFile(small_t_path_str, small_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
-		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3ResponseStr - "+s3ResponseStr)
 
 		//--------------------
 		// MEDIUM THUMB
 		medium_t_path_str         := pImageThumbs.Medium_local_file_path_str // thumbs_info_map["medium__target_thumbnail_file_path_str"]
 		medium_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s", path.Base(medium_t_path_str))
 
-		s3_response_str, gfErr = gf_aws.S3uploadFile(medium_t_path_str, medium_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
+		s3ResponseStr, gfErr = gf_aws.S3putFile(medium_t_path_str, medium_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
-		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3ResponseStr - "+s3ResponseStr)
 
 		//--------------------
 		// LARGE THUMB
 		large_t_path_str         := pImageThumbs.Large_local_file_path_str // thumbs_info_map["large__target_thumbnail_file_path_str"]
 		large_t_s3_file_name_str := fmt.Sprintf("/thumbnails/%s",path.Base(large_t_path_str))
-		s3_response_str, gfErr   = gf_aws.S3uploadFile(large_t_path_str, large_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
+		s3ResponseStr, gfErr   = gf_aws.S3putFile(large_t_path_str, large_t_s3_file_name_str, pS3bucketNameStr, pS3info, pRuntimeSys)
 		if gfErr != nil {
 			return gfErr
 		}
-		pRuntimeSys.LogFun("INFO","s3_response_str - "+s3_response_str)
+		pRuntimeSys.LogFun("INFO","s3ResponseStr - "+s3ResponseStr)
 
 		//--------------------
 	}

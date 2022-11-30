@@ -96,29 +96,29 @@ func renderInitialPage(p_flow_name_str string,
 
 //-------------------------------------------------
 
-func renderTemplate(p_flow_name_str string,
-	p_images_pages_lst       [][]*gf_images_core.GFimage,
-	p_flow_pages_num_int     int64,
-	p_tmpl                   *template.Template,
-	p_subtemplates_names_lst []string,
-	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+func renderTemplate(pFlowNameStr string,
+	pImagesPagesLst       [][]*gf_images_core.GFimage,
+	pFlowPagesNumInt      int64,
+	pTemplate             *template.Template,
+	pSubtemplatesNamesLst []string,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	sys_release_info := gf_core.GetSysReleseInfo(pRuntimeSys)
+	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	//-------------------------
-	images_pages_lst := [][]map[string]interface{}{}
-	for _, images_page_lst := range p_images_pages_lst {
+	imagesPagesLst := [][]map[string]interface{}{}
+	for _, imagesPageLst := range pImagesPagesLst {
 
-		page_images_lst := []map[string]interface{}{}
-		for _, image := range images_page_lst {
+		pageImagesLst := []map[string]interface{}{}
+		for _, image := range imagesPageLst {
 
-			meta_json_bytes_lst, _ := json.Marshal(image.Meta_map)
-			meta_json_str          := string(meta_json_bytes_lst)
+			metaJSONbytesLst, _ := json.Marshal(image.Meta_map)
+			metaJSONstr         := string(metaJSONbytesLst)
 
-			image_info_map := map[string]interface{}{
+			imageInfoMap := map[string]interface{}{
 				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 				"id_str":                    image.IDstr,
-				"title_str":                 image.Title_str,
-				"meta_json_str":             meta_json_str,
+				"title_str":                 image.TitleStr,
+				"meta_json_str":             metaJSONstr,
 				"format_str":                image.Format_str,
 				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
@@ -127,15 +127,15 @@ func renderTemplate(p_flow_name_str string,
 			}
 
 			if len(image.Tags_lst) > 0 {
-				image_info_map["image_has_tags_bool"] = true
-				image_info_map["tags_lst"]            = image.Tags_lst
+				imageInfoMap["image_has_tags_bool"] = true
+				imageInfoMap["tags_lst"]            = image.Tags_lst
 			} else {
-				image_info_map["image_has_tags_bool"] = false
+				imageInfoMap["image_has_tags_bool"] = false
 			}
 
-			page_images_lst = append(page_images_lst, image_info_map)
+			pageImagesLst = append(pageImagesLst, imageInfoMap)
 		}
-		images_pages_lst = append(images_pages_lst, page_images_lst)
+		imagesPagesLst = append(imagesPagesLst, pageImagesLst)
 	}
 
 	//-------------------------
@@ -149,16 +149,16 @@ func renderTemplate(p_flow_name_str string,
 	}
 
 	buff := new(bytes.Buffer)
-	err := p_tmpl.Execute(buff, tmplData{
-		Flow_name_str:      p_flow_name_str,
-		Images_pages_lst:   images_pages_lst,
-		Flow_pages_num_int: p_flow_pages_num_int,
-		Sys_release_info:   sys_release_info,
+	err := pTemplate.Execute(buff, tmplData{
+		Flow_name_str:      pFlowNameStr,
+		Images_pages_lst:   imagesPagesLst,
+		Flow_pages_num_int: pFlowPagesNumInt,
+		Sys_release_info:   sysReleaseInfo,
 
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
 		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
-			for _, n := range p_subtemplates_names_lst {
+			for _, n := range pSubtemplatesNamesLst {
 				if n == p_subtemplate_name_str {
 					return true
 				}
