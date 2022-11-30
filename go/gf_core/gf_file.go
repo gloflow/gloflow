@@ -20,8 +20,41 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 import (
+	"os"
 	"io/ioutil"
 )
+
+
+//---------------------------------------------------
+
+func FileCreateWithContent(pContentStr string,
+	pFilePathStr string,
+	pRuntimeSys  *RuntimeSys) *GFerror {
+
+	f, err := os.Create(pFilePathStr)
+	defer f.Close()
+	
+	if err != nil {
+		gfErr := ErrorCreate("failed to create local file on host FS",
+			"file_create_error", 
+			map[string]interface{}{
+				"file_path_str": pFilePathStr,
+			}, err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+
+	_, err = f.WriteString(pContentStr)
+	if err != nil {
+		gfErr := ErrorCreate("failed to write content to a local file",
+			"file_write_error",
+			map[string]interface{}{"file_path_str": pFilePathStr,},
+			err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+
+	f.Sync()
+	return nil
+}
 
 //---------------------------------------------------
 
