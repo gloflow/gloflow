@@ -16,14 +16,61 @@ type GFissue struct {
 	UrlStr    string
 	NumberInt int
 	StateStr  string
-	Labels    []GFissueLabel
+	LabelsLst []GFissueLabel
 	MilestoneTitleStr string
 	MilestoneUrlStr   string
+	CreatedAtStr      string
 }
 
 type GFissueLabel struct {
 	NameStr     string
 	ColorHexStr string
+}
+
+type GFproject struct {
+	NameStr string
+	UrlStr string
+}
+
+//--------------------------------------------------------------------
+// GET_PROJECTS
+
+func GetProjects(pOrganizationStr string,
+	pGithubBearerTokenStr string,
+	pRuntimeSys           *gf_core.RuntimeSys) ([]GFproject, *gf_core.GFerror) {
+
+	// https://docs.github.com/en/rest/projects/projects?apiVersion=2022-11-28#list-organization-projects
+	urlStr := fmt.Sprintf("https://api.github.com/repos/%s/issues", pOrganizationStr)
+
+	_, body, errs := gorequest.New().
+		Get(urlStr).
+		Set("accept", "application/vnd.github+json").
+		Set("authorization", fmt.Sprintf("Bearer %s", pGithubBearerTokenStr)).
+		// Send(string(dataLst)).
+		End()
+
+
+
+	projectsLst := []GFproject{}
+
+
+	for _, project := range rLst {
+
+		projectMap := project.(map[string]interface{})
+		nameStr := projectMap["name"].(string)
+		urlStr := projectMap["html_url"].(string)
+
+
+
+		gfProject := GFproject{
+
+		}
+
+
+		projectsLst = append(projectsLst, gfProject)
+	}
+
+	return projectsLst, nil
 }
 
 //--------------------------------------------------------------------
@@ -55,7 +102,7 @@ func GetIssues(pRepoOwnerAndNameStr string,
 		return nil, gfErr
 	}
 
-	// fmt.Println(body)
+	fmt.Println(body)
 
 	rLst := []interface{}{}
 	err := json.Unmarshal([]byte(body), &rLst)
@@ -76,11 +123,12 @@ func GetIssues(pRepoOwnerAndNameStr string,
 	for _, issue := range rLst {
 
 		issueMap := issue.(map[string]interface{})
-		urlStr := issueMap["url"].(string)
+		urlStr := issueMap["html_url"].(string)
 		numberInt := int(issueMap["number"].(float64))
 		stateStr := issueMap["state"].(string)
 		titleStr := issueMap["title"].(string)
 		bodyStr := issueMap["body"].(string)
+		createdAtStr := issueMap["created_at"].(string)
 
 		gfIssueLabelsLst := []GFissueLabel{}
 		for _, label := range issueMap["labels"].([]interface{}) {
@@ -103,7 +151,8 @@ func GetIssues(pRepoOwnerAndNameStr string,
 			UrlStr:    urlStr,
 			NumberInt: numberInt,
 			StateStr:  stateStr,
-			Labels:    gfIssueLabelsLst,
+			LabelsLst: gfIssueLabelsLst,
+			CreatedAtStr: createdAtStr,
 		}
 
 		if issueMap["milestone"] != nil {
@@ -172,7 +221,7 @@ func RunActionsWorkflow(pRepoOwnerAndNameStr string,
 // GET_IPS
 
 // Get IP's from which github servers are expected to send requests.
-func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
+func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, []string, *gf_core.GFerror) {
 
 	urlStr := fmt.Sprintf("https://api.github.com/meta")
 
@@ -189,7 +238,7 @@ func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 				"url_str": urlStr,
 			},
 			err, "gf_github", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
 	}
 
 	rMap := map[string]interface{}{}
@@ -202,17 +251,23 @@ func GetIPs(pRuntimeSys *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
 				"body":    body,
 			},
 			err, "gf_github", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
 	}
 
 	// spew.Dump(rMap)
 
 	// ADD!! - return IP's of other services as well, not just Github Actions
 	githubActionsIPsUncastedLst := rMap["actions"].([]interface{})
+	githubWebHooksIPsUncastedLst := rMap["hooks"].([]interface{})
+	
 	githubActionsIPsLst := []string{}
+	githubWebHooksIPsLst := []string{}
 	for _, ip := range githubActionsIPsUncastedLst {
 		githubActionsIPsLst = append(githubActionsIPsLst, ip.(string))
 	}
+	for _, ip := range githubWebHooksIPsUncastedLst {
+		githubWebHooksIPsLst = append(githubWebHooksIPsLst, ip.(string))
+	}
 
-	return githubActionsIPsLst, nil
+	return githubActionsIPsLst, githubWebHooksIPsLst, nil
 }
