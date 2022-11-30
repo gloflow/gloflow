@@ -33,7 +33,7 @@ import (
 //------------------------------------------------
 
 func initHandlersEth(p_http_mux *http.ServeMux,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
@@ -71,13 +71,13 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input :=&GFuserAuthETHinputPreflight{
+				input :=&gf_identity_core.GFethInputPreflight{
 					UserAddressETHstr: userAddressETHstr,
 				}
 
 				//---------------------
 
-				output, gfErr := usersAuthETHpipelinePreflight(input, pCtx, pRuntimeSys)
+				output, gfErr := gf_identity_core.ETHpipelinePreflight(input, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -110,14 +110,14 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 				}
 				authSignatureStr := gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string))
 
-				input :=&GFuserAuthETHinputLogin{
+				input :=&gf_identity_core.GFethInputLogin{
 					UserAddressETHstr: userAddressETHstr,
 					AuthSignatureStr:  authSignatureStr,
 				}
 
 				//---------------------
 				// LOGIN
-				output, gfErr := usersAuthETHpipelineLogin(input, pCtx, pRuntimeSys)
+				output, gfErr := gf_identity_core.ETHpipelineLogin(input, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -159,14 +159,14 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input :=&GFuserAuthETHinputCreate{
+				input :=&gf_identity_core.GFethInputCreate{
 					UserTypeStr:       "standard",
 					UserAddressETHstr: gf_identity_core.GFuserAddressETH(inputMap["user_address_eth_str"].(string)),
 					AuthSignatureStr:  gf_identity_core.GFauthSignature(inputMap["auth_signature_str"].(string)),
 				}
 				
 				//---------------------
-				output, gfErr := usersAuthETHpipelineCreate(input, pCtx, pRuntimeSys)
+				output, gfErr := gf_identity_core.ETHpipelineCreate(input, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

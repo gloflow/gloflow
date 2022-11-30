@@ -17,21 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"fmt"
 	"context"
 	"time"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 )
 
 //---------------------------------------------------
 
-func usersEmailPipelineVerify(pEmailAddressStr string,
-	pUserNameStr   gf_identity_core.GFuserName,
+func UsersEmailPipelineVerify(pEmailAddressStr string,
+	pUserNameStr   GFuserName,
 	pUserIDstr     gf_core.GF_ID,
 	pDomainBaseStr string,
 	pCtx           context.Context,
@@ -77,7 +76,7 @@ func usersEmailPipelineVerify(pEmailAddressStr string,
 
 //---------------------------------------------------
 
-func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConfirm,
+func UsersEmailPipelineConfirm(pInput *GFuserHTTPinputEmailConfirm,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
@@ -96,7 +95,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConf
 	if pInput.ConfirmCodeStr == dbConfirmCodeStr {
 		
 		// GET_USER_ID
-		userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(pInput.UserNameStr,
+		userIDstr, gfErr := DBgetBasicInfoByUsername(pInput.UserNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -117,7 +116,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConf
 			}
 	
 			// UPDATE_USER - mark user as email_confirmed
-			gfErr = dbUserUpdate(userIDstr,
+			gfErr = DBuserUpdate(userIDstr,
 				updateOp,
 				pCtx,
 				pRuntimeSys)
@@ -135,7 +134,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConf
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
 		var loginAttempt *GFloginAttempt
-		loginAttempt, gfErr = loginAttemptGetIfValid(gf_identity_core.GFuserName(pInput.UserNameStr),
+		loginAttempt, gfErr = LoginAttemptGetIfValid(GFuserName(pInput.UserNameStr),
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -148,7 +147,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConf
 
 		loginEmailConfirmedBool := true
 		updateOp := &GFloginAttemptUpdateOp{EmailConfirmedBool: &loginEmailConfirmedBool}
-		gfErr = dbLoginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBloginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)
@@ -168,7 +167,7 @@ func usersEmailPipelineConfirm(pInput *gf_identity_core.GFuserHTTPinputEmailConf
 
 //---------------------------------------------------
 
-func usersEmailGetConfirmationCode(pUserNameStr gf_identity_core.GFuserName,
+func usersEmailGetConfirmationCode(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, bool, *gf_core.GFerror) {
 
@@ -206,7 +205,7 @@ func usersEmailGenerateConfirmationCode() string {
 
 //---------------------------------------------------
 
-func usersEmailGetConfirmMsgInfo(pUserNameStr gf_identity_core.GFuserName,
+func usersEmailGetConfirmMsgInfo(pUserNameStr GFuserName,
 	pConfirmCodeStr string,
 	pDomainStr      string) (string, string, string) {
 

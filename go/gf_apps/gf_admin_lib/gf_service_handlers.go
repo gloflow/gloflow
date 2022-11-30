@@ -37,7 +37,7 @@ import (
 func initHandlers(pTemplatesPathsMap map[string]string,
 	pHTTPmux             *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
-	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
+	pIdentityServiceInfo *gf_identity_core.GFserviceInfo,
 	pLocalHub            *sentry.Hub,
 	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
 

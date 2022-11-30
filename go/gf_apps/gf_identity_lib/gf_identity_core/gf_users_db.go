@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	// "fmt"
@@ -26,14 +26,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
 
 type GFuserUpdateOp struct {
 	DeletedBool        *bool // if nil dont update, else update to true/false
-	UserNameStr        gf_identity_core.GFuserName
+	UserNameStr        GFuserName
 	DescriptionStr     string
 	EmailStr           string
 	EmailConfirmedBool bool
@@ -122,7 +121,7 @@ func dbUserCreate(pUser *GFuser,
 //---------------------------------------------------
 // UPDATE
 
-func dbUserUpdate(pUserIDstr gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
+func DBuserUpdate(pUserIDstr gf_core.GF_ID, // p_user_address_eth_str GF_user_address_eth,
 	pUpdateOp   *GFuserUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -221,7 +220,7 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 //---------------------------------------------------
 // GET_BY_USERNAME
 
-func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
+func dbUserGetByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
@@ -250,7 +249,7 @@ func dbUserGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // GET_BY_ETH_ADDR
 
-func dbUserGetByETHaddr(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFuser, *gf_core.GFerror) {
 
@@ -279,7 +278,7 @@ func dbUserGetByETHaddr(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
 //---------------------------------------------------
 // EXISTS_BY_USERNAME
 
-func dbUserExistsByUsername(pUserNameStr gf_identity_core.GFuserName,
+func DBuserExistsByUsername(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -309,7 +308,7 @@ func dbUserExistsByUsername(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // EXISTS_BY_ETH_ADDR
 
-func dbUserExistsByETHaddr(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+func dbUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -339,7 +338,7 @@ func dbUserExistsByETHaddr(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
 
 // for initial user creation only, checks if the if the user confirmed their email.
 // this is done only once.
-func dbUserEmailIsConfirmed(pUserNameStr gf_identity_core.GFuserName,
+func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -370,11 +369,123 @@ func dbUserEmailIsConfirmed(pUserNameStr gf_identity_core.GFuserName,
 	return emailConfirmedBool, nil
 }
 
+
+//---------------------------------------------------
+
+func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (GFuserName, *gf_core.GFerror) {
+
+	findOpts := options.FindOne()
+	findOpts.Projection = map[string]interface{}{
+		"user_name_str": 1,
+	}
+	
+	userBasicInfoMap := map[string]interface{}{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+		bson.M{
+			"id_str":       string(pUserIDstr),
+			"deleted_bool": false,
+		},
+		findOpts).Decode(&userBasicInfoMap)
+
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get user basic_info in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{"user_id_str": pUserIDstr,},
+			err, "gf_identity_core", pRuntimeSys)
+		return GFuserName(""), gfErr
+	}
+
+	userNameStr := GFuserName(userBasicInfoMap["user_name_str"].(string))
+
+	return userNameStr, nil
+}
+
+//---------------------------------------------------
+// GET_BASIC_INFO_BY_ETH_ADDR
+
+func DBgetBasicInfoByETHaddr(pUserAddressETHstr GFuserAddressETH,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	userIDstr, gfErr := DBgetUserID(bson.M{
+			"addresses_eth_lst": bson.M{"$in": bson.A{pUserAddressETHstr, }},
+			"deleted_bool":      false,
+		},
+		map[string]interface{}{
+			"user_address_eth_str": pUserAddressETHstr,
+		},
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	return userIDstr, nil
+}
+
+//---------------------------------------------------
+// GET_BASIC_INFO_BY_USERNAME
+
+func DBgetBasicInfoByUsername(pUserNameStr GFuserName,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	userIDstr, gfErr := DBgetUserID(bson.M{
+			"user_name_str": pUserNameStr,
+			"deleted_bool":  false,
+		},
+		// meta_map
+		map[string]interface{}{
+			"user_name_str": pUserNameStr,
+		},
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+	
+	return userIDstr, nil
+}
+
+//---------------------------------------------------
+// DB_GET_USER_ID
+
+func DBgetUserID(pQuery bson.M,
+	pMetaMap    map[string]interface{}, // data describing the DB write op
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+
+	findOpts := options.FindOne()
+	findOpts.Projection = map[string]interface{}{
+		"id_str": 1,
+	}
+	
+	userBasicInfoMap := map[string]interface{}{}
+	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+		pQuery,
+		findOpts).Decode(&userBasicInfoMap)
+
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to get user basic_info in the DB",
+			"mongodb_find_error",
+			pMetaMap,
+			err, "gf_identity_core", pRuntimeSys)
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	userIDstr := gf_core.GF_ID(userBasicInfoMap["id_str"].(string))
+
+	return userIDstr, nil
+}
+
 //---------------------------------------------------
 // INVITE_LIST
 //---------------------------------------------------
 
-func dbUserGetAllInInviteList(pCtx context.Context,
+func DBuserGetAllInInviteList(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	collNameStr := "gf_users_invite_list"
@@ -530,7 +641,7 @@ func dbUserCredsCreate(pUserCreds *GFuserCreds,
 
 //---------------------------------------------------
 
-func dbUserCredsGetPassHash(pUserNameStr gf_identity_core.GFuserName,
+func dbUserCredsGetPassHash(pUserNameStr GFuserName,
 	pCtx         context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, string, *gf_core.GFerror) {
 
@@ -570,7 +681,7 @@ func dbUserCredsGetPassHash(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // CREATE__EMAIL_CONFIRM
 
-func dbUserEmailConfirmCreate(pUserNameStr gf_identity_core.GFuserName,
+func dbUserEmailConfirmCreate(pUserNameStr GFuserName,
 	pUserIDstr      gf_core.GF_ID,
 	pConfirmCodeStr string,
 	pCtx            context.Context,
@@ -604,8 +715,8 @@ func dbUserEmailConfirmCreate(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // GET__EMAIL_CONFIRM_CODE
 
-func dbUserEmailConfirmGetCode(pUserNameStr gf_identity_core.GFuserName,
-	pCtx         context.Context,
+func dbUserEmailConfirmGetCode(pUserNameStr GFuserName,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, float64, *gf_core.GFerror) {
 
 	collNameStr := "gf_users_email_confirm"
@@ -642,8 +753,8 @@ func dbUserEmailConfirmGetCode(pUserNameStr gf_identity_core.GFuserName,
 
 //---------------------------------------------------
 
-func dbUserGetEmailConfirmedByUsername(pUserNameStr gf_identity_core.GFuserName,
-	pCtx         context.Context,
+func dbUserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	collNameStr := "gf_users"
@@ -680,7 +791,7 @@ func dbUserGetEmailConfirmedByUsername(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 
 func dbLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
-	pCtx         context.Context,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr := "gf_login_attempt"
@@ -703,8 +814,8 @@ func dbLoginAttemptCreate(pLoginAttempt *GFloginAttempt,
 
 //---------------------------------------------------
 
-func dbLoginAttemptGetByUsername(pUserNameStr gf_identity_core.GFuserName,
-	pCtx         context.Context,
+func dbLoginAttemptGetByUsername(pUserNameStr GFuserName,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
 	collNameStr := "gf_login_attempt"
@@ -753,7 +864,7 @@ func dbLoginAttemptGetByUsername(pUserNameStr gf_identity_core.GFuserName,
 
 //---------------------------------------------------
 
-func dbLoginAttemptUpdate(pLoginAttemptIDstr *gf_core.GF_ID,
+func DBloginAttemptUpdate(pLoginAttemptIDstr *gf_core.GF_ID,
 	pUpdateOp   *GFloginAttemptUpdateOp,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {

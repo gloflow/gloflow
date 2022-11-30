@@ -24,59 +24,21 @@ import (
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
 //-------------------------------------------------
 
-type GFserviceInfo struct {
-	
-	// name of this service, in case multiple are spawned
-	NameStr string
 
-	// DOMAIN - where this gf_solo instance is reachable on
-	DomainBaseStr string
-
-	// ADMIN_MFA_SECRET_KEY_BASE32
-	AdminMFAsecretKeyBase32str string
-
-	//------------------------
-	// AUTH
-
-	// AUTH_LOGIN_URL - url of the login page to which the system should
-	//                  redirect users after certain operations
-	AuthLoginURLstr string
-
-	// AUTH_LOGIN_SUCCESS_REDIRECT_URL - url to redirect to when the user 
-	//                                   logs in successfuly. if ommited then dont redirect.
-	AuthLoginSuccessRedirectURLstr string
-
-	//------------------------
-	// FEATURE_FLAGS
-
-	// EVENTS_APP - enable sending of app events from various functions
-	EnableEventsAppBool bool
-
-	// enable storage of user_creds in a secret store
-	EnableUserCredsInSecretsStoreBool bool
-
-	// enable sending of emails for any function that needs it
-	EnableEmailBool bool
-
-	// enable login only for users that have confirmed their email
-	EnableEmailRequireConfirmForLoginBool bool
-
-	// enable login only for users that have confirmed their MFA code
-	EnableMFArequireConfirmForLoginBool bool
-
-	//------------------------
-}
 
 //-------------------------------------------------
 
 func InitService(pHTTPmux *http.ServeMux,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
+	
 	//------------------------
 	// HANDLERS
 	gfErr := initHandlers(pServiceInfo.AuthLoginURLstr,
@@ -85,12 +47,24 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
+	// ETH
 	gfErr = initHandlersEth(pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
+	// USERPASS
 	gfErr = initHandlersUserpass(pHTTPmux,
+		pServiceInfo,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	// AUTH0
+	auth0config := gf_auth0.Init()
+	initHandlersAuth0(pHTTPmux,
+		auth0config,
 		pServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {

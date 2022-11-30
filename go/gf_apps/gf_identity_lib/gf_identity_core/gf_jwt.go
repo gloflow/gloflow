@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_session
+package gf_identity_core
 
 import (
 	// "fmt"
@@ -29,7 +29,6 @@ import (
 	// "github.com/dgrijalva/jwt-go"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -37,11 +36,11 @@ import (
 type GFjwtTokenVal     string
 type GFjwtSecretKeyVal string
 type GFjwtSecretKey struct {
-	V_str                string             `bson:"v_str"` // schema_version
+	Vstr                 string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
-	Id_str               gf_core.GF_ID      `bson:"id_str"`
+	IDstr                gf_core.GF_ID      `bson:"id_str"`
 	Deleted_bool         bool               `bson:"deleted_bool"`
-	Creation_unix_time_f float64            `bson:"creation_unix_time_f"`
+	CreationUNIXtimeF    float64            `bson:"creation_unix_time_f"`
 
 	Val                 GFjwtSecretKeyVal   `bson:"val_str"`
 	UserIdentifierStr   string              `bson:"user_identifier_str"`
@@ -59,10 +58,19 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (GFjwtTokenVal, *gf_core.GFerror) {
 
+	//----------------------
+	// JWT_SECRET_KEY_GENERATE
+	jwtSecretKeyValStr, gfErr := JWTgenerateSecretSigningKey(pUserIdentifierStr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+
+	//----------------------
+	// JWT_GENERATE
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
-	// JWT_GENERATE
-	jwtSecretKeyValStr := GFjwtSecretKeyVal(gf_core.StrRandom())
 	jwtTokenVal, gfErr := jwtGenerate(pUserIdentifierStr,
 		jwtSecretKeyValStr,
 		creationUNIXtimeF,
@@ -71,24 +79,40 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 		return "", gfErr
 	}
 
+	//----------------------
+
+	return jwtTokenVal, nil
+}
+
+//---------------------------------------------------
+
+// generate and store in the DB the secret key thats used
+// to sign new JWT tokens
+func JWTgenerateSecretSigningKey(pUserIdentifierStr string,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (GFjwtSecretKeyVal, *gf_core.GFerror) {
+
+	jwtSecretKeyValStr := GFjwtSecretKeyVal(gf_core.StrRandom())
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	jwtID := jwtGenerateID(pUserIdentifierStr, creationUNIXtimeF)
+
 	jwtSecretKey := &GFjwtSecretKey{
-		V_str:                "0",
-		Id_str:               jwtID,
-		Deleted_bool:         false,
-		Creation_unix_time_f: creationUNIXtimeF,
-		Val:                  jwtSecretKeyValStr,
-		UserIdentifierStr:  pUserIdentifierStr,
-		// User_address_eth: p_user_address_eth,
+		Vstr:              "0",
+		IDstr:             jwtID,
+		Deleted_bool:      false,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		Val:               jwtSecretKeyValStr,
+		UserIdentifierStr: pUserIdentifierStr,
 	}
 
 	// DB_CREATE__SECRET_KEY
-	gfErr = dbJWTsecretKeyCreate(jwtSecretKey, pCtx, pRuntimeSys)
+	gfErr := dbJWTsecretKeyCreate(jwtSecretKey, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	return jwtTokenVal, nil
+	return jwtSecretKeyValStr, nil
 }
 
 //---------------------------------------------------
@@ -101,7 +125,7 @@ func jwtGenerate(pUserIdentifierStr string,
 
 
 	issuerStr := "gf"
-	_, jwtTokenTTLsecInt  := gf_identity_core.GetSessionTTL()
+	_, jwtTokenTTLsecInt  := GetSessionTTL()
 	expirationUNIXtimeInt := int64(pCreationUNIXtimeF) + jwtTokenTTLsecInt
 
 	// CLAIMS
@@ -147,7 +171,9 @@ func jwtGenerateID(pUserIdentifierStr string,
 
 //---------------------------------------------------
 
-func jwtPipelineValidate(pJWTtokenVal GFjwtTokenVal,
+// validate a supplied JWT token, and return a user identifier
+// stored in the JWT token
+func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pCtx        context .Context,
 	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
@@ -211,12 +237,16 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	return validBool, userIdentifierStr, nil
 }
 
+func JWTauth0Validate() {
+
+}
+
 //---------------------------------------------------
 // DB
 //---------------------------------------------------
 
 func dbJWTsecretKeyCreate(pJWTsecretKey *GFjwtSecretKey,
-	pCtx         context.Context,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	collNameStr := "gf_auth_jwt"
@@ -224,7 +254,7 @@ func dbJWTsecretKeyCreate(pJWTsecretKey *GFjwtSecretKey,
 	gfErr := gf_core.MongoInsert(pJWTsecretKey,
 		collNameStr,
 		map[string]interface{}{
-			"id_str":              pJWTsecretKey.Id_str,
+			"id_str":              pJWTsecretKey.IDstr,
 			"user_identifier_str": pJWTsecretKey.UserIdentifierStr,
 			"caller_err_msg_str":  "failed to create jwt_secret_key for a user in a DB",
 		},

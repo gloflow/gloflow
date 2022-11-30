@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -78,7 +79,7 @@ func Validate(pReq *http.Request,
 
 			//---------------------
 			// JWT_VALIDATE
-			userIdentifierStr, gfErr := jwtPipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+			userIdentifierStr, gfErr := gf_identity_core.JWTpipelineValidate(gf_identity_core.GFjwtTokenVal(JWTtokenValStr),
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {

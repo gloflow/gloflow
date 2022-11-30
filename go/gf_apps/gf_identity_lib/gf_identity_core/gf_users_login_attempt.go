@@ -17,14 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -36,8 +35,8 @@ type GFloginAttempt struct {
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserTypeStr        string                      `bson:"user_type_str"` // "regular"|"admin"
-	UserNameStr        gf_identity_core.GFuserName `bson:"user_name_str"`
+	UserTypeStr        string     `bson:"user_type_str"` // "regular"|"admin"
+	UserNameStr        GFuserName `bson:"user_name_str"`
 	
 	PassConfirmedBool  bool `bson:"pass_confirmed_bool"`
 	EmailConfirmedBool bool `bson:"email_confirmed_bool"`
@@ -46,7 +45,7 @@ type GFloginAttempt struct {
 
 //---------------------------------------------------
 
-func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
+func LoginAttemptGetOrCreate(pUserNameStr GFuserName,
 	pUserTypeStr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
@@ -55,7 +54,7 @@ func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
 	// get a preexisting login_attempt if one exists and hasnt expired for this user.
 	// if it has then a new one will have to be created.
 	var loginAttempt *GFloginAttempt
-	loginAttempt, gfErr := loginAttemptGetIfValid(pUserNameStr,
+	loginAttempt, gfErr := LoginAttemptGetIfValid(pUserNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -81,7 +80,7 @@ func loginAttemptGetOrCreate(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // CREATE
 
-func loginAttempCreate(pUserNameStr gf_identity_core.GFuserName,
+func loginAttempCreate(pUserNameStr GFuserName,
 	pUserTypeStr string,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
@@ -110,7 +109,7 @@ func loginAttempCreate(pUserNameStr gf_identity_core.GFuserName,
 //---------------------------------------------------
 // GET_IF_VALID
 
-func loginAttemptGetIfValid(pUserNameStr gf_identity_core.GFuserName,
+func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
@@ -140,7 +139,7 @@ func loginAttemptGetIfValid(pUserNameStr gf_identity_core.GFuserName,
 		// mark it as deleted
 		expiredBool := true
 		updateOp := &GFloginAttemptUpdateOp{DeletedBool: &expiredBool}
-		gfErr = dbLoginAttemptUpdate(&loginAttempt.IDstr,
+		gfErr = DBloginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)

@@ -31,6 +31,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_admin_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
@@ -95,7 +96,7 @@ func Run(pConfig *GF_config,
 	//-------------
 	// GF_IDENTITY
 
-	gfIdentityServiceInfo := &gf_identity_lib.GFserviceInfo{
+	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 		NameStr:                               "gf_identity",
 		DomainBaseStr:                         pConfig.Domain_base_str,
 		AuthLoginURLstr:                       "/landing/main", // on email confirm redirect user to this
@@ -137,7 +138,7 @@ func Run(pConfig *GF_config,
 		// IMPORTANT!! - since admin is listening on its own port, and likely its own domain
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
-		adminIdentityServiceInfo := &gf_identity_lib.GFserviceInfo{
+		adminIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 			NameStr:                    "gf_admin_identity",
 			DomainBaseStr:              pConfig.Domain_admin_base_str,
 			AdminMFAsecretKeyBase32str: pConfig.Admin_mfa_secret_key_base32_str,

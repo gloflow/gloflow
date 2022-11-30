@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"fmt"
@@ -27,7 +27,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -40,15 +39,15 @@ type GFuserNonce struct {
 	DeletedBool       bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF float64            `bson:"creation_unix_time_f"`
 
-	UserIDstr     gf_core.GF_ID                     `bson:"user_id_str"`
-	AddressETHstr gf_identity_core.GFuserAddressETH `bson:"address_eth_str"`
-	ValStr        GFuserNonceVal                    `bson:"val_str"`
+	UserIDstr     gf_core.GF_ID    `bson:"user_id_str"`
+	AddressETHstr GFuserAddressETH `bson:"address_eth_str"`
+	ValStr        GFuserNonceVal   `bson:"val_str"`
 }
 
 //---------------------------------------------------
 
 func nonceCreateAndPersist(pUserIDstr gf_core.GF_ID,
-	pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pUserAddressETHstr GFuserAddressETH,
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) (*GFuserNonce, *gf_core.GFerror) {
 
@@ -80,7 +79,7 @@ func nonceCreateAndPersist(pUserIDstr gf_core.GF_ID,
 
 func nonceCreate(pNonceValStr GFuserNonceVal,
 	pUserIDstr         gf_core.GF_ID,
-	pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+	pUserAddressETHstr GFuserAddressETH,
 	pCtx               context.Context,
 	pRuntimeSys        *gf_core.RuntimeSys) (*GFuserNonce, *gf_core.GFerror) {
 
@@ -109,7 +108,7 @@ func nonceCreate(pNonceValStr GFuserNonceVal,
 
 //---------------------------------------------------
 
-func dbNonceDeleteAll(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+func dbNonceDeleteAll(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -159,7 +158,7 @@ func dbNonceCreate(pNonce *GFuserNonce,
 
 //---------------------------------------------------
 
-func dbNonceGet(pUserAddressETHstr gf_identity_core.GFuserAddressETH,
+func dbNonceGet(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (GFuserNonceVal, bool, *gf_core.GFerror) {
 	

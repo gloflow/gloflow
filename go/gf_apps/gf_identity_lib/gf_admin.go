@@ -48,7 +48,7 @@ type GFadminOutputLogin struct {
 }
 
 type GFadminOutputCreateAdmin struct {
-	General *GFuserAuthUserpassOutputCreate
+	General *gf_identity_core.GFuserpassOutputCreate
 }
 
 type GFadminInputAddToInviteList struct {
@@ -88,16 +88,16 @@ type GFadminUserDeleteInput struct {
 
 func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
 	pCtx         context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	deletedBool := true
-	updateOp := &GFuserUpdateOp{
+	updateOp := &gf_identity_core.GFuserUpdateOp{
 		DeletedBool: &deletedBool,
 	}
 
 	// UPDATE_USER - mark user as email_confirmed
-	gfErr := dbUserUpdate(pInput.UserIDstr,
+	gfErr := gf_identity_core.DBuserUpdate(pInput.UserIDstr,
 		updateOp,
 		pCtx,
 		pRuntimeSys)
@@ -112,7 +112,7 @@ func AdminPipelineDeleteUser(pInput *GFadminUserDeleteInput,
 
 func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 	pCtx         context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 	
 	//------------------------
@@ -126,7 +126,7 @@ func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 
 	if pServiceInfo.EnableEmailBool {
 
-		gfErr = usersEmailPipelineVerify(pInput.EmailStr,
+		gfErr = gf_identity_core.UsersEmailPipelineVerify(pInput.EmailStr,
 			pInput.UserNameStr,
 			pInput.UserIDstr,
 			pServiceInfo.DomainBaseStr,
@@ -143,11 +143,11 @@ func AdminPipelineUserResendConfirmEmail(pInput *GFadminResendConfirmEmailInput,
 //------------------------------------------------
 
 func AdminPipelineGetAllUsers(pCtx context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) ([]*GFadminUserViewOutput, *gf_core.GFerror) {
 
 	// DB
-	usersLst, gfErr := DBuserGetAll(pCtx, pRuntimeSys)
+	usersLst, gfErr := gf_identity_core.DBuserGetAll(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -176,11 +176,11 @@ func AdminPipelineGetAllUsers(pCtx context.Context,
 //------------------------------------------------
 
 func AdminPipelineGetAllInviteList(pCtx context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) ([]map[string]interface{}, *gf_core.GFerror) {
 
 	// DB
-	dbInviteListLst, gfErr := dbUserGetAllInInviteList(pCtx, pRuntimeSys)
+	dbInviteListLst, gfErr := gf_identity_core.DBuserGetAllInInviteList(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -201,7 +201,7 @@ func AdminPipelineGetAllInviteList(pCtx context.Context,
 
 func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 	pCtx         context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
@@ -213,7 +213,7 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 
 	//------------------------
 
-	gfErr = DBuserAddToInviteList(pInput.EmailStr,
+	gfErr = gf_identity_core.DBuserAddToInviteList(pInput.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -233,7 +233,7 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
-		gf_events.EmitApp(GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
+		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_ADDED_USER_TO_INVITE_LIST,
 			eventMetaMap,
 			pRuntimeSys)
 	}
@@ -245,7 +245,7 @@ func AdminPipelineUserAddToInviteList(pInput *GFadminInputAddToInviteList,
 
 func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListInput,
 	pCtx         context.Context,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
@@ -257,7 +257,7 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 
 	//------------------------
 
-	gfErr = DBuserRemoveFromInviteList(pInput.EmailStr,
+	gfErr = gf_identity_core.DBuserRemoveFromInviteList(pInput.EmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -277,7 +277,7 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 			"user_name_str":              adminUserNameStr,
 			"email_added_to_invite_list": pInput.EmailStr,
 		}
-		gf_events.EmitApp(GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
+		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_REMOVED_USER_FROM_INVITE_LIST,
 			eventMetaMap,
 			pRuntimeSys)
 	}
@@ -296,7 +296,7 @@ func AdminPipelineUserRemoveFromInviteList(pInput *GFadminRemoveFromInviteListIn
 func AdminPipelineLogin(pInput *GFadminInputLogin,
 	pCtx         context.Context,
 	pLocalHub    *sentry.Hub,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFadminOutputLogin, *gf_core.GFerror) {
 	
 	//------------------------
@@ -314,7 +314,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 	//------------------------
 	// VERIFY
 
-	userExistsBool, gfErr := dbUserExistsByUsername(userNameStr,
+	userExistsBool, gfErr := gf_identity_core.DBuserExistsByUsername(userNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -341,7 +341,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			// if the admin user doesnt exist in the DB (most likely on first run of gloflow server),
 			// create one in the DB
 
-			inputCreate := &GFuserAuthUserpassInputCreate{
+			inputCreate := &gf_identity_core.GFuserpassInputCreate{
 				UserNameStr: userNameStr,
 				PassStr:     pInput.PassStr,
 				EmailStr:    pInput.EmailStr,
@@ -393,7 +393,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 	// LOGIN_ATTEMPT
 
 	userTypeStr := "admin"
-	loginAttempt, gfErr := loginAttemptGetOrCreate(userNameStr, userTypeStr, pCtx, pRuntimeSys)
+	loginAttempt, gfErr := gf_identity_core.LoginAttemptGetOrCreate(userNameStr, userTypeStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -440,7 +440,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 	// only verify password if the login_attempt didnt mark it yet as complete
 	if !loginAttempt.PassConfirmedBool {
 
-		passValidBool, gfErr := usersAuthUserpassVerifyPass(userNameStr,
+		passValidBool, gfErr := gf_identity_core.UserpassVerifyPass(userNameStr,
 			pInput.PassStr,
 			pServiceInfo,
 			pCtx,
@@ -459,8 +459,8 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 			// UPDATE_LOGIN_ATTEMPT
 			// if password is valid then update the login_attempt 
 			// to indicate that the password has been confirmed
-			updateOp := &GFloginAttemptUpdateOp{PassConfirmedBool: &passValidBool}
-			gfErr = dbLoginAttemptUpdate(&loginAttempt.IDstr,
+			updateOp := &gf_identity_core.GFloginAttemptUpdateOp{PassConfirmedBool: &passValidBool}
+			gfErr = gf_identity_core.DBloginAttemptUpdate(&loginAttempt.IDstr,
 				updateOp,
 				pCtx,
 				pRuntimeSys)
@@ -477,7 +477,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 					"user_name_str":   pInput.UserNameStr,
 					"domain_base_str": pServiceInfo.DomainBaseStr,
 				}
-				gf_events.EmitApp(GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
+				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_PASS_CONFIRMED,
 					eventMeta,
 					pRuntimeSys)
 			}
@@ -492,7 +492,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 		// has not yet been confirmed
 		if !loginAttempt.EmailConfirmedBool {
 
-			gfErr = usersEmailPipelineVerify(pInput.EmailStr,
+			gfErr = gf_identity_core.UsersEmailPipelineVerify(pInput.EmailStr,
 				userNameStr,
 				userID,
 				pServiceInfo.DomainBaseStr,
@@ -509,7 +509,7 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 					"user_name_str":   pInput.UserNameStr,
 					"domain_base_str": pServiceInfo.DomainBaseStr,
 				}
-				gf_events.EmitApp(GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
+				gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_LOGIN_EMAIL_VERIFICATION_SENT,
 					eventMeta,
 					pRuntimeSys)
 			}
@@ -525,14 +525,14 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 
 //---------------------------------------------------
 
-func adminPipelineCreateAdmin(pInput *GFuserAuthUserpassInputCreate,
-	pServiceInfo *GFserviceInfo,
+func adminPipelineCreateAdmin(pInput *gf_identity_core.GFuserpassInputCreate,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pCtx         context.Context,
 	pRuntimeSys  *gf_core.RuntimeSys) (*GFadminOutputCreateAdmin, *gf_core.GFerror) {
 
 	//------------------------
 	// PIPELINE
-	output, gfErr := usersAuthUserpassPipelineCreate(pInput,
+	output, gfErr := gf_identity_core.UserpassPipelineCreate(pInput,
 		pServiceInfo,
 		pCtx,
 		pRuntimeSys)
@@ -549,7 +549,7 @@ func adminPipelineCreateAdmin(pInput *GFuserAuthUserpassInputCreate,
 			"user_type_str":   pInput.UserTypeStr,
 			"domain_base_str": pServiceInfo.DomainBaseStr,
 		}
-		gf_events.EmitApp(GF_EVENT_APP__ADMIN_CREATE,
+		gf_events.EmitApp(gf_identity_core.GF_EVENT_APP__ADMIN_CREATE,
 			eventMeta,
 			pRuntimeSys)
 	}

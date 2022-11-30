@@ -58,8 +58,8 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
 		// if it has then a new one will have to be created.
-		var loginAttempt *GFloginAttempt
-		loginAttempt, gfErr = loginAttemptGetIfValid(pInput.UserNameStr,
+		var loginAttempt *gf_identity_core.GFloginAttempt
+		loginAttempt, gfErr = gf_identity_core.LoginAttemptGetIfValid(pInput.UserNameStr,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {
@@ -77,8 +77,8 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 		// if password is valid then update the login_attempt 
 		// to indicate that the password has been confirmed
 		mfaConfirmBool := true
-		updateOp := &GFloginAttemptUpdateOp{MFAconfirmedBool: &mfaConfirmBool}
-		gfErr = dbLoginAttemptUpdate(&loginAttempt.IDstr,
+		updateOp := &gf_identity_core.GFloginAttemptUpdateOp{MFAconfirmedBool: &mfaConfirmBool}
+		gfErr = gf_identity_core.DBloginAttemptUpdate(&loginAttempt.IDstr,
 			updateOp,
 			pCtx,
 			pRuntimeSys)

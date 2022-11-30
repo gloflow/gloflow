@@ -35,7 +35,7 @@ import (
 
 func initHandlers(pAuthLoginURLstr string,
 	pHTTPmux     *http.ServeMux,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
@@ -133,7 +133,7 @@ func initHandlers(pAuthLoginURLstr string,
 
 				//---------------------
 
-				confirmedBool, failMsgStr, gfErr := usersEmailPipelineConfirm(httpInput,
+				confirmedBool, failMsgStr, gfErr := gf_identity_core.UsersEmailPipelineConfirm(httpInput,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -166,10 +166,10 @@ func initHandlers(pAuthLoginURLstr string,
 						//---------------------
 						// LOGIN_FINALIZE
 
-						loginFinalizeInput := &GFuserAuthUserpassInputLoginFinalize{
+						loginFinalizeInput := &gf_identity_core.GFuserpassInputLoginFinalize{
 							UserNameStr: userNameStr,
 						}
-						loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
+						loginFinalizeOutput, gfErr := gf_identity_core.UserpassPipelineLoginFinalize(loginFinalizeInput,
 							pServiceInfo,
 							pCtx,
 							pRuntimeSys)
@@ -252,10 +252,10 @@ func initHandlers(pAuthLoginURLstr string,
 					//---------------------
 					// LOGIN_FINALIZE
 
-					loginFinalizeInput := &GFuserAuthUserpassInputLoginFinalize{
+					loginFinalizeInput := &gf_identity_core.GFuserpassInputLoginFinalize{
 						UserNameStr: userNameStr,
 					}
-					loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(loginFinalizeInput,
+					loginFinalizeOutput, gfErr := gf_identity_core.UserpassPipelineLoginFinalize(loginFinalizeInput,
 						pServiceInfo,
 						pCtx,
 						pRuntimeSys)
@@ -302,7 +302,7 @@ func initHandlers(pAuthLoginURLstr string,
 					return nil, gfErr
 				}
 
-				input := &GFuserInputUpdate{
+				input := &gf_identity_core.GFuserInputUpdate{
 					UserIDstr:          userIDstr,
 					EmailStr:           HTTPinput.EmailStr,
 					DescriptionStr:     HTTPinput.DescriptionStr,
@@ -318,7 +318,7 @@ func initHandlers(pAuthLoginURLstr string,
 				
 				//---------------------
 
-				_, gfErr = usersPipelineUpdate(input,
+				_, gfErr = gf_identity_core.UsersPipelineUpdate(input,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
@@ -347,13 +347,13 @@ func initHandlers(pAuthLoginURLstr string,
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				input := &GFuserInputGet{
+				input := &gf_identity_core.GFuserInputGet{
 					UserIDstr: userIDstr,
 				}
 
 				//---------------------
 
-				output, gfErr := usersPipelineGet(input, pCtx, pRuntimeSys)
+				output, gfErr := gf_identity_core.UsersPipelineGet(input, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

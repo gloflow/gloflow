@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"fmt"
@@ -26,14 +26,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //---------------------------------------------------
 
-func verifyAuthSignatureAllMethods(pSignatureStr gf_identity_core.GFauthSignature,
+func verifyAuthSignatureAllMethods(pSignatureStr GFauthSignature,
 	pNonceStr       GFuserNonceVal,
-	pUserAddressETH gf_identity_core.GFuserAddressETH,
+	pUserAddressETH GFuserAddressETH,
 	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
@@ -73,9 +72,9 @@ func verifyAuthSignatureAllMethods(pSignatureStr gf_identity_core.GFauthSignatur
 
 // https://goethereumbook.org/signature-verify/
 
-func verifyAuthSignature(pSignatureStr gf_identity_core.GFauthSignature,
+func verifyAuthSignature(pSignatureStr GFauthSignature,
 	pDataStr                string,
-	pUserAddressETH         gf_identity_core.GFuserAddressETH,
+	pUserAddressETH         GFuserAddressETH,
 	pValidateDataHeaderBool bool,
 	pCtx                    context.Context,
 	pRuntimeSys             *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {

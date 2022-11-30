@@ -33,7 +33,7 @@ import (
 //------------------------------------------------
 
 func initHandlersUserpass(pHTTPmux *http.ServeMux,
-	pServiceInfo *GFserviceInfo,
+	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
@@ -87,7 +87,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					emailStr = valStr.(string)
 				}
 
-				input :=&GFuserAuthUserpassInputLogin{
+				input :=&gf_identity_core.GFuserpassInputLogin{
 					UserNameStr: userNameStr,
 					PassStr:     passStr,
 					EmailStr:    emailStr,
@@ -95,7 +95,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 
 				//---------------------
 				// LOGIN
-				output, gfErr := usersAuthUserpassPipelineLogin(input, 
+				output, gfErr := gf_identity_core.UserpassPipelineLogin(input, 
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)
@@ -140,7 +140,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				input :=&GFuserAuthUserpassInputCreate{
+				input :=&gf_identity_core.GFuserpassInputCreate{
 					UserNameStr: gf_identity_core.GFuserName(inputMap["user_name_str"].(string)),
 					PassStr:     inputMap["pass_str"].(string),
 					EmailStr:    inputMap["email_str"].(string),
@@ -148,7 +148,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 				}
 
 				//---------------------
-				output, gfErr := usersAuthUserpassPipelineCreateRegular(input,
+				output, gfErr := gf_identity_core.UserpassPipelineCreateRegular(input,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)

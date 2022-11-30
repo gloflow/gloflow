@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"fmt"
@@ -26,18 +26,16 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
 // io_login
 
-type GFuserAuthUserpassInputLogin struct {
+type GFuserpassInputLogin struct {
 
 	// username is always required, with both pass and email login
-	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+	UserNameStr GFuserName `validate:"required,min=3,max=50"`
 
 	// pass is not provided if email-login is used
 	PassStr string `validate:"omitempty,min=8,max=50"`
@@ -45,48 +43,48 @@ type GFuserAuthUserpassInputLogin struct {
 	// for certain emails allow email-login
 	EmailStr string `validate:"omitempty,email"`
 }
-type GFuserAuthUserpassOutputLogin struct {
+type GFuserpassOutputLogin struct {
 	UserExistsBool     bool
 	EmailConfirmedBool bool
 	PassValidBool      bool
 	UserIDstr          gf_core.GF_ID 
-	JWTtokenVal        gf_session.GFjwtTokenVal
+	JWTtokenVal        GFjwtTokenVal
 }
 
 // io_login_finalize
-type GFuserAuthUserpassInputLoginFinalize struct {
-	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+type GFuserpassInputLoginFinalize struct {
+	UserNameStr GFuserName `validate:"required,min=3,max=50"`
 }
-type GFuserAuthUserpassOutputLoginFinalize struct {
+type GFuserpassOutputLoginFinalize struct {
 	EmailConfirmedBool bool
 	UserIDstr          gf_core.GF_ID 
-	JWTtokenVal        gf_session.GFjwtTokenVal
+	JWTtokenVal        GFjwtTokenVal
 }
 
 // io_create
-type GFuserAuthUserpassInputCreate struct {
-	UserNameStr gf_identity_core.GFuserName `validate:"required,min=3,max=50"`
+type GFuserpassInputCreate struct {
+	UserNameStr GFuserName `validate:"required,min=3,max=50"`
 	PassStr     string                      `validate:"required,min=8,max=50"`
 	EmailStr    string                      `validate:"required,email"`
 	UserTypeStr string                      `validate:"required"` // "admin"|"standard"
 }
-type GFuserAuthUserpassOutputCreateRegular struct {
+type GFserpassOutputCreateRegular struct {
 	UserExistsBool       bool
 	UserInInviteListBool bool
-	General              *GFuserAuthUserpassOutputCreate
+	General              *GFuserpassOutputCreate
 }
-type GFuserAuthUserpassOutputCreate struct {
-	UserNameStr gf_identity_core.GFuserName
+type GFuserpassOutputCreate struct {
+	UserNameStr GFuserName
 	UserIDstr   gf_core.GF_ID
 }
 
 //---------------------------------------------------
 // PIPELINE__LOGIN
 
-func usersAuthUserpassPipelineLogin(pInput *GFuserAuthUserpassInputLogin,
+func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserAuthUserpassOutputLogin, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserpassOutputLogin, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -97,12 +95,12 @@ func usersAuthUserpassPipelineLogin(pInput *GFuserAuthUserpassInputLogin,
 
 	//------------------------
 
-	output := &GFuserAuthUserpassOutputLogin{}
+	output := &GFuserpassOutputLogin{}
 
 	//------------------------
 	// VERIFY
 
-	userExistsBool, gfErr := dbUserExistsByUsername(gf_identity_core.GFuserName(pInput.UserNameStr),
+	userExistsBool, gfErr := DBuserExistsByUsername(GFuserName(pInput.UserNameStr),
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -119,7 +117,7 @@ func usersAuthUserpassPipelineLogin(pInput *GFuserAuthUserpassInputLogin,
 
 	//------------------------
 	// VERIFY_PASSWORD
-	passValidBool, gfErr := usersAuthUserpassVerifyPass(gf_identity_core.GFuserName(pInput.UserNameStr),
+	passValidBool, gfErr := UserpassVerifyPass(GFuserName(pInput.UserNameStr),
 		pInput.PassStr,
 		pServiceInfo,
 		pCtx,
@@ -137,10 +135,10 @@ func usersAuthUserpassPipelineLogin(pInput *GFuserAuthUserpassInputLogin,
 
 	//------------------------
 	// LOGIN_FINALIZE
-	input := &GFuserAuthUserpassInputLoginFinalize{
-		UserNameStr: gf_identity_core.GFuserName(pInput.UserNameStr),
+	input := &GFuserpassInputLoginFinalize{
+		UserNameStr: GFuserName(pInput.UserNameStr),
 	}
-	loginFinalizeOutput, gfErr := usersAuthUserpassPipelineLoginFinalize(input,
+	loginFinalizeOutput, gfErr := UserpassPipelineLoginFinalize(input,
 		pServiceInfo,
 		pCtx,
 		pRuntimeSys)
@@ -158,13 +156,13 @@ func usersAuthUserpassPipelineLogin(pInput *GFuserAuthUserpassInputLogin,
 
 //---------------------------------------------------
 
-func usersAuthUserpassPipelineLoginFinalize(pInput *GFuserAuthUserpassInputLoginFinalize,
+func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserAuthUserpassOutputLoginFinalize, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserpassOutputLoginFinalize, *gf_core.GFerror) {
 
-	output := &GFuserAuthUserpassOutputLoginFinalize{}
-	userNameStr := gf_identity_core.GFuserName(pInput.UserNameStr)
+	output := &GFuserpassOutputLoginFinalize{}
+	userNameStr := GFuserName(pInput.UserNameStr)
 
 	//------------------------
 	// VERIFY_EMAIL_CONFIRMED
@@ -190,7 +188,7 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GFuserAuthUserpassInputLogin
 	//------------------------
 	// USER_ID
 	
-	userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByUsername(userNameStr,
+	userIDstr, gfErr := DBgetBasicInfoByUsername(userNameStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -202,7 +200,7 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GFuserAuthUserpassInputLogin
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
-	JWTtokenVal, gfErr := gf_session.JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
+	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -216,10 +214,10 @@ func usersAuthUserpassPipelineLoginFinalize(pInput *GFuserAuthUserpassInputLogin
 //---------------------------------------------------
 // PIPELINE__CREATE_REGULAR
 
-func usersAuthUserpassPipelineCreateRegular(pInput *GFuserAuthUserpassInputCreate,
+func UserpassPipelineCreateRegular(pInput *GFuserpassInputCreate,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserAuthUserpassOutputCreateRegular, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFserpassOutputCreateRegular, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -230,12 +228,12 @@ func usersAuthUserpassPipelineCreateRegular(pInput *GFuserAuthUserpassInputCreat
 
 	//------------------------
 
-	outputRegular := &GFuserAuthUserpassOutputCreateRegular{}
+	outputRegular := &GFserpassOutputCreateRegular{}
 
 	//------------------------
 	// VALIDATE
 
-	userExistsBool, gfErr := dbUserExistsByUsername(pInput.UserNameStr, pCtx, pRuntimeSys)
+	userExistsBool, gfErr := DBuserExistsByUsername(pInput.UserNameStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -264,7 +262,7 @@ func usersAuthUserpassPipelineCreateRegular(pInput *GFuserAuthUserpassInputCreat
 
 	//------------------------
 	// PIPELINE
-	output, gfErr := usersAuthUserpassPipelineCreate(pInput,
+	output, gfErr := UserpassPipelineCreate(pInput,
 		pServiceInfo,
 		pCtx,
 		pRuntimeSys)
@@ -278,7 +276,7 @@ func usersAuthUserpassPipelineCreateRegular(pInput *GFuserAuthUserpassInputCreat
 	// EMAIL
 	if pServiceInfo.EnableEmailBool {
 
-		gfErr = usersEmailPipelineVerify(pInput.EmailStr,
+		gfErr = UsersEmailPipelineVerify(pInput.EmailStr,
 			pInput.UserNameStr,
 			output.UserIDstr,
 			pServiceInfo.DomainBaseStr,
@@ -310,10 +308,10 @@ func usersAuthUserpassPipelineCreateRegular(pInput *GFuserAuthUserpassInputCreat
 //---------------------------------------------------
 // PIPELINE__CREATE
 
-func usersAuthUserpassPipelineCreate(pInput *GFuserAuthUserpassInputCreate,
+func UserpassPipelineCreate(pInput *GFuserpassInputCreate,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserAuthUserpassOutputCreate, *gf_core.GFerror) {
+	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserpassOutputCreate, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -343,8 +341,8 @@ func usersAuthUserpassPipelineCreate(pInput *GFuserAuthUserpassInputCreate,
 	}
 
 	
-	passSaltStr := usersAuthUserpassGetPassSalt()
-	passHashStr := usersAuthUserpassGetPassHash(passStr, passSaltStr)
+	passSaltStr := userpassGetPassSalt()
+	passHashStr := userpassGetPassHash(passStr, passSaltStr)
 
 	credsCreationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	userCredsIDstr         := usersCreateID(userIdentifierStr, credsCreationUNIXtimeF)
@@ -427,7 +425,7 @@ func usersAuthUserpassPipelineCreate(pInput *GFuserAuthUserpassInputCreate,
 
 	//------------------------
 
-	output := &GFuserAuthUserpassOutputCreate{
+	output := &GFuserpassOutputCreate{
 		UserNameStr: userNameStr,
 		UserIDstr:   userIDstr,
 	}
@@ -439,7 +437,7 @@ func usersAuthUserpassPipelineCreate(pInput *GFuserAuthUserpassInputCreate,
 // PASS
 //---------------------------------------------------
 
-func usersAuthUserpassVerifyPass(pUserNameStr gf_identity_core.GFuserName,
+func UserpassVerifyPass(pUserNameStr GFuserName,
 	pPassStr     string,
 	pServiceInfo *GFserviceInfo,
 	pCtx         context.Context,
@@ -479,7 +477,7 @@ func usersAuthUserpassVerifyPass(pUserNameStr gf_identity_core.GFuserName,
 	}
 
 	// GENERATE_PASS_HASH
-	passHashExpectedStr := usersAuthUserpassGetPassHash(pPassStr, passSaltLoadedStr)
+	passHashExpectedStr := userpassGetPassHash(pPassStr, passSaltLoadedStr)
 
 
 	if (passHashLoadedStr == passHashExpectedStr) {
@@ -493,7 +491,7 @@ func usersAuthUserpassVerifyPass(pUserNameStr gf_identity_core.GFuserName,
 
 //---------------------------------------------------
 
-func usersAuthUserpassGetPassHash(pPassStr string,
+func userpassGetPassHash(pPassStr string,
 	pPassSaltStr string) string {
 
 	saltedPassStr := fmt.Sprintf("%s:%s", pPassSaltStr, pPassStr)
@@ -503,7 +501,7 @@ func usersAuthUserpassGetPassHash(pPassStr string,
 
 //---------------------------------------------------
 
-func usersAuthUserpassGetPassSalt() string {
+func userpassGetPassSalt() string {
 	randStr := gf_core.StrRandom()
 	return randStr
 }

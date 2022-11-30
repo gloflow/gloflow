@@ -17,55 +17,53 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity_core
 
 import (
 	"time"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //---------------------------------------------------
 
 // io_preflight
-type GFuserAuthETHinputPreflight struct {
-	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"omitempty,eth_addr"`
+type GFethInputPreflight struct {
+	UserAddressETHstr GFuserAddressETH `validate:"omitempty,eth_addr"`
 }
-type GFuserAuthETHoutputPreflight struct {
+type GFethOutputPreflight struct {
 	UserExistsBool bool             
 	NonceValStr    GFuserNonceVal
 }
 
 // io_login
-type GFuserAuthETHinputLogin struct {
-	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"required,eth_addr"`
-	AuthSignatureStr  gf_identity_core.GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
+type GFethInputLogin struct {
+	UserAddressETHstr GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr  GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
-type GFuserAuthETHoutputLogin struct {
+type GFethOutputLogin struct {
 	NonceExistsBool        bool
 	AuthSignatureValidBool bool
-	JWTtokenVal            gf_session.GFjwtTokenVal
+	JWTtokenVal            GFjwtTokenVal
 	UserIDstr              gf_core.GF_ID 
 }
 
 // io_create
-type GFuserAuthETHinputCreate struct {
+type GFethInputCreate struct {
 	UserTypeStr       string                            `validate:"required"` // "admin" | "standard"
-	UserAddressETHstr gf_identity_core.GFuserAddressETH `validate:"required,eth_addr"`
-	AuthSignatureStr  gf_identity_core.GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
+	UserAddressETHstr GFuserAddressETH `validate:"required,eth_addr"`
+	AuthSignatureStr  GFauthSignature  `validate:"required,len=132"` // singature length with "0x"
 }
-type GFuserAuthETHoutputCreate struct {
+type GFethOutputCreate struct {
 	NonceExistsBool        bool
 	AuthSignatureValidBool bool
 }
 
 //---------------------------------------------------
 
-func usersAuthETHpipelinePreflight(pInput *GFuserAuthETHinputPreflight,
+func ETHpipelinePreflight(pInput *GFethInputPreflight,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputPreflight, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFethOutputPreflight, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE
@@ -76,7 +74,7 @@ func usersAuthETHpipelinePreflight(pInput *GFuserAuthETHinputPreflight,
 
 	//------------------------
 
-	output := &GFuserAuthETHoutputPreflight{}
+	output := &GFethOutputPreflight{}
 
 	existsBool, gfErr := dbUserExistsByETHaddr(pInput.UserAddressETHstr,
 		pCtx,
@@ -123,9 +121,9 @@ func usersAuthETHpipelinePreflight(pInput *GFuserAuthETHinputPreflight,
 //---------------------------------------------------
 // PIPELINE__LOGIN
 
-func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
+func ETHpipelineLogin(pInput *GFethInputLogin,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputLogin, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFethOutputLogin, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -136,7 +134,7 @@ func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
 
 	//------------------------
 
-	output := &GFuserAuthETHoutputLogin{}
+	output := &GFethOutputLogin{}
 
 	//------------------------
 	userNonceVal, userNonceExistsBool, gfErr := dbNonceGet(pInput.UserAddressETHstr,
@@ -176,7 +174,7 @@ func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
 	//------------------------
 	// USER_ID
 
-	userIDstr, gfErr := gf_identity_core.DBgetBasicInfoByETHaddr(pInput.UserAddressETHstr,
+	userIDstr, gfErr := DBgetBasicInfoByETHaddr(pInput.UserAddressETHstr,
 		pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -187,7 +185,7 @@ func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
-	jwtTokenVal, gfErr := gf_session.JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
+	jwtTokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -202,9 +200,9 @@ func usersAuthETHpipelineLogin(pInput *GFuserAuthETHinputLogin,
 //---------------------------------------------------
 // PIPELINE__CREATE
 
-func usersAuthETHpipelineCreate(pInput *GFuserAuthETHinputCreate,
+func ETHpipelineCreate(pInput *GFethInputCreate,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFuserAuthETHoutputCreate, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFethOutputCreate, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -215,7 +213,7 @@ func usersAuthETHpipelineCreate(pInput *GFuserAuthETHinputCreate,
 
 	//------------------------
 
-	output := &GFuserAuthETHoutputCreate{}
+	output := &GFethOutputCreate{}
 	
 	//------------------------
 	// DB_NONCE_GET - get a nonce already generated in preflight for this user address,
@@ -257,7 +255,7 @@ func usersAuthETHpipelineCreate(pInput *GFuserAuthETHinputCreate,
 
 	creationUNIXtimeF   := float64(time.Now().UnixNano())/1000000000.0
 	userAddressETHstr   := pInput.UserAddressETHstr
-	userAddressesETHlst := []gf_identity_core.GFuserAddressETH{userAddressETHstr, }
+	userAddressesETHlst := []GFuserAddressETH{userAddressETHstr, }
 
 	userIdentifierStr := string(userAddressETHstr)
 	userID := usersCreateID(userIdentifierStr, creationUNIXtimeF)

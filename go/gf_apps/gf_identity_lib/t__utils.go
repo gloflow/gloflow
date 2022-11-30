@@ -29,6 +29,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -54,7 +55,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 	
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
-	gfErr := DBuserAddToInviteList(testEmailStr,
+	gfErr := gf_identity_core.DBuserAddToInviteList(testEmailStr,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -90,7 +91,7 @@ func TestStartService(pPortInt int,
 
 		HTTPmux := http.NewServeMux()
 
-		serviceInfo := &GFserviceInfo{
+		serviceInfo := &gf_identity_core.GFserviceInfo{
 
 			// IMPORTANT!! - durring testing dont send emails
 			EnableEmailBool: false,

@@ -24,6 +24,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -49,7 +50,7 @@ type GFserviceInfo struct {
 
 func InitNewService(pTemplatesPathsMap map[string]string,
 	pServiceInfo         *GFserviceInfo,
-	pIdentityServiceInfo *gf_identity_lib.GFserviceInfo,
+	pIdentityServiceInfo *gf_identity_core.GFserviceInfo,
 	pHTTPmux             *http.ServeMux,
 	pLocalHub            *sentry.Hub,
 	pRuntimeSys          *gf_core.RuntimeSys) *gf_core.GFerror {
