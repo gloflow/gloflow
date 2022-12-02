@@ -34,13 +34,13 @@ func Test__plugins(pTest *testing.T) {
 	
 	//--------------------
 	// RUNTIME_SYS
-	logFun, _   := gf_core.InitLogs()
-	runtime_sys := &gf_core.RuntimeSys{
+	logFun, _  := gf_core.InitLogs()
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_core__tests",
 		LogFun:           logFun,
 		
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+		ErrorsSendToSentryBool: true,
 	}
 
 	//--------------------
@@ -51,7 +51,7 @@ func Test__plugins(pTest *testing.T) {
 	}
 	gfErr := py__run_plugin__get_contract_info(new_contract_addr_str,
 		plugins_info,
-		runtime_sys)
+		runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}

@@ -45,7 +45,7 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 		LogFun:           logFun,
 		
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+		ErrorsSendToSentryBool: true,
 	}
 
 	// VALIDATOR

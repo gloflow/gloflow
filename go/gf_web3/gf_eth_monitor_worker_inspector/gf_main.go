@@ -37,7 +37,7 @@ type GF_runtime struct {
 	eth_rpc_host_str string
 	eth_rpc_client   *ethclient.Client
 	py_plugins       *gf_eth_core.GF_py_plugins
-	runtime_sys      *gf_core.RuntimeSys
+	runtimeSys       *gf_core.RuntimeSys
 }
 
 //-------------------------------------------------
@@ -90,7 +90,7 @@ func main() {
 	// ETH_CLIENT
 	eth_client, gf_err := gf_eth_core.Eth_rpc__init(geth__host_str,
 		geth__port_int,
-		runtime.runtime_sys)
+		runtime.runtimeSys)
 	if gf_err != nil {
 		panic(gf_err.Error)
 	}
@@ -120,12 +120,12 @@ func runtimeGet(p_eth_rpc_host_str string,
 
 	//--------------------
 	// RUNTIME_SYS
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_worker_inspector",
 		LogFun:           pLogFun,
 		
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+		ErrorsSendToSentryBool: true,
 	}
 
 	//--------------------
@@ -138,7 +138,7 @@ func runtimeGet(p_eth_rpc_host_str string,
 	// RUNTIME
 	runtime := &GF_runtime{
 		eth_rpc_host_str: p_eth_rpc_host_str,
-		runtime_sys:      runtime_sys,
+		runtimeSys:       runtimeSys,
 		py_plugins:       py_plugins,
 	}
 

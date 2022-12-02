@@ -33,7 +33,7 @@ import (
 //-------------------------------------------------
 
 type GF_metrics struct {
-	Handlers_counters_map map[string]prometheus.Counter
+	HandlersCountersMap map[string]prometheus.Counter
 
 	// AUTH_SESSION_INVALID - counter for when auth session validation fails when
 	//                        request is received and validated
@@ -44,24 +44,24 @@ type GF_metrics struct {
 // CREATE_FOR_HANDLER
 
 func MetricsCreateForHandlers(pMetricsGroupNameStr string,
-	pServiceNameStr          string,
-	p_handlers_endpoints_lst []string) *GF_metrics {
+	pServiceNameStr       string,
+	pHandlersEndpointsLst []string) *GF_metrics {
 	
 
-	handlers_counters_map := map[string]prometheus.Counter{}
-	for _, handler_endpoint_str := range p_handlers_endpoints_lst {
+	handlersCountersMap := map[string]prometheus.Counter{}
+	for _, handlerEndpointStr := range pHandlersEndpointsLst {
 
-		handler_endpoint_clean_str := strings.ReplaceAll(handler_endpoint_str, "/", "_")
-		name_str := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, handler_endpoint_clean_str)
+		handlerEndpointCleanStr := strings.ReplaceAll(handlerEndpointStr, "/", "_")
+		nameStr := fmt.Sprintf("gf_rpc__handler_reqs_num__%s_%s", pServiceNameStr, handlerEndpointCleanStr)
 		
-		handler__reqs_num__counter := prometheus.NewCounter(prometheus.CounterOpts{
-			Name: name_str,
+		handlerReqsNumCounter := prometheus.NewCounter(prometheus.CounterOpts{
+			Name: nameStr,
 			Help: "handler number of requests",
 		})
-		prometheus.MustRegister(handler__reqs_num__counter)
+		prometheus.MustRegister(handlerReqsNumCounter)
 
 
-		handlers_counters_map[handler_endpoint_str] = handler__reqs_num__counter
+		handlersCountersMap[handlerEndpointStr] = handlerReqsNumCounter
 	}
 
 
@@ -72,7 +72,7 @@ func MetricsCreateForHandlers(pMetricsGroupNameStr string,
 	prometheus.MustRegister(handlersAuthSessionInvalidCounter)
 
 	metrics := &GF_metrics{
-		Handlers_counters_map:             handlers_counters_map,
+		HandlersCountersMap:               handlersCountersMap,
 		HandlersAuthSessionInvalidCounter: handlersAuthSessionInvalidCounter,
 	}
 

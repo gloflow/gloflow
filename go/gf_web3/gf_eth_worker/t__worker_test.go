@@ -42,19 +42,19 @@ func Test__worker(p_test *testing.T) {
 	//--------------------
 	// RUNTIME_SYS
 	logFun, _   := gf_core.InitLogs()
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_core__tests",
 		LogFun:           logFun,
 		
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+		ErrorsSendToSentryBool: true,
 	}
 
 	config := &GF_config{
 		Mongodb_host_str:    "localhost:27017",
 		Mongodb_db_name_str: "gf_eth_monitor",
 	}
-	runtime, err := RuntimeGet(config, runtime_sys)
+	runtime, err := RuntimeGet(config, runtimeSys)
 	if err != nil {
 		p_test.Fail()
 	}
@@ -64,7 +64,7 @@ func Test__worker(p_test *testing.T) {
 	gf_block, gfErr := eth_blocks__get_block__from_worker_inspector(uint64(block_int),
 		host_port_str,
 		ctx,
-		runtime_sys)
+		runtimeSys)
 
 	if gfErr != nil {
 		p_test.Fail()

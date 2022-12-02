@@ -61,15 +61,15 @@ func runtimeGet(p_config_path_str string,
 	}
 
 	// RUNTIME_SYS
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor",
 		LogFun:           pLogFun,
 
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,	
+		ErrorsSendToSentryBool: true,	
 	}
 
-	runtime, err := gf_eth_core.RuntimeGet(config, runtime_sys)
+	runtime, err := gf_eth_core.RuntimeGet(config, runtimeSys)
 	if err != nil {
 		return nil, err
 	}
