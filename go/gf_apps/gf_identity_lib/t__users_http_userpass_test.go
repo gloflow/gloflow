@@ -32,9 +32,9 @@ import (
 
 //-------------------------------------------------
 
-func Test__users_http_userpass(pTest *testing.T) {
+func TesUsersHTTPuserpass(pTest *testing.T) {
 
-	fmt.Println(" TEST__IDENTITY_USERS_HTTP_USERPASS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println(" TEST_USERS_HTTP_USERPASS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 	testPortInt := 2000
 	ctx         := context.Background()
@@ -84,15 +84,15 @@ func Test__users_http_userpass(pTest *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user UPDATE")
 
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/update", testPortInt)
 	data_map := map[string]string{
 		"user_name_str":   "ivan_t_new",
 		"email_str":       "ivan_t_new@gloflow.com",
 		"description_str": "some new description",
 	}
-	data_bytes_lst, _ := json.Marshal(data_map)
-	_, body_str, errs := HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
+	dataBytesLst, _ := json.Marshal(data_map)
+	_, bodyStr, errs := HTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
 	if (len(errs) > 0) {
@@ -100,15 +100,15 @@ func Test__users_http_userpass(pTest *testing.T) {
 		pTest.FailNow()
 	}
 	
-	body_map := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
 	}
 
-	spew.Dump(body_map)
+	spew.Dump(bodyMap)
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user updating http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user updating http request failed")
 
 	//---------------------------------
 	// TEST_USER_GET_ME
@@ -116,9 +116,8 @@ func Test__users_http_userpass(pTest *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("test user GET ME")
 	
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/me", testPortInt)
-	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = HTTPagent.Get(url_str).
+	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/me", testPortInt)
+	_, bodyStr, errs = HTTPagent.Get(urlStr).
 		End()
 
 	if (len(errs) > 0) {
@@ -126,27 +125,27 @@ func Test__users_http_userpass(pTest *testing.T) {
 		pTest.FailNow()
 	}
 	
-	body_map = map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap = map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
         pTest.FailNow()
     }
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user get me http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user get me http request failed")
 
-	user_name_str         := body_map["data"].(map[string]interface{})["user_name_str"].(string)
-	email_str             := body_map["data"].(map[string]interface{})["email_str"].(string)
-	description_str       := body_map["data"].(map[string]interface{})["description_str"].(string)
-	profile_image_url_str := body_map["data"].(map[string]interface{})["profile_image_url_str"].(string)
-	banner_image_url_str  := body_map["data"].(map[string]interface{})["banner_image_url_str"].(string)
+	userNameStr        := bodyMap["data"].(map[string]interface{})["user_name_str"].(string)
+	emailStr           := bodyMap["data"].(map[string]interface{})["email_str"].(string)
+	descriptionStr     := bodyMap["data"].(map[string]interface{})["description_str"].(string)
+	profileImageURLstr := bodyMap["data"].(map[string]interface{})["profile_image_url_str"].(string)
+	bannerImageURLstr  := bodyMap["data"].(map[string]interface{})["banner_image_url_str"].(string)
 
 	fmt.Println("====================================")
 	fmt.Println("user login response:")
-	fmt.Println("user_name_str",         user_name_str)
-	fmt.Println("email_str",             email_str)
-	fmt.Println("description_str",       description_str)
-	fmt.Println("profile_image_url_str", profile_image_url_str)
-	fmt.Println("banner_image_url_str",  banner_image_url_str)
+	fmt.Println("user_name_str",         userNameStr)
+	fmt.Println("email_str",             emailStr)
+	fmt.Println("description_str",       descriptionStr)
+	fmt.Println("profile_image_url_str", profileImageURLstr)
+	fmt.Println("banner_image_url_str",  bannerImageURLstr)
 
 	//---------------------------------
 }

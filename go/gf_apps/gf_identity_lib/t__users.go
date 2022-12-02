@@ -150,7 +150,7 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 
 //-------------------------------------------------
 
-func test_user_http_update(p_test *testing.T,
+func testUserHTTPupdate(pTest *testing.T,
 	pHTTPagent   *gorequest.SuperAgent,
 	pTestPortInt int) {
 
@@ -170,52 +170,52 @@ func test_user_http_update(p_test *testing.T,
 
 	if len(errs) > 0 {
 		spew.Dump(errs)
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	body_map := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
 		fmt.Println(err)
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	spew.Dump(body_map)
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user updating http request failed")
+	assert.True(pTest, body_map["status"].(string) != "ERROR", "user updating http request failed")
 }
 
 //-------------------------------------------------
 // TEST_USER_GET_ME
 
-func test_user_http_get_me(p_test *testing.T,
-	pHTTPagent    *gorequest.SuperAgent,
-	p_test_port_int int) {
+func testUserHTTPgetMe(pTest *testing.T,
+	pHTTPagent   *gorequest.SuperAgent,
+	pTestPortInt int) {
 
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/me", p_test_port_int)
-	_, body_str, errs := pHTTPagent.Get(url_str).
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/me", pTestPortInt)
+	_, bodyStr, errs := pHTTPagent.Get(urlStr).
 		End()
 
 	if len(errs) > 0 {
 		spew.Dump(errs)
-		p_test.Fail()
+		pTest.Fail()
 	}
 	
-	body_map := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
-        p_test.Fail()
+        pTest.Fail()
     }
 
-	assert.True(p_test, body_map["status"].(string) != "ERROR", "user get me http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user get me http request failed")
 
-	user_name_str         := body_map["data"].(map[string]interface{})["user_name_str"].(string)
-	email_str             := body_map["data"].(map[string]interface{})["email_str"].(string)
-	description_str       := body_map["data"].(map[string]interface{})["description_str"].(string)
-	profile_image_url_str := body_map["data"].(map[string]interface{})["profile_image_url_str"].(string)
-	banner_image_url_str  := body_map["data"].(map[string]interface{})["banner_image_url_str"].(string)
+	user_name_str         := bodyMap["data"].(map[string]interface{})["user_name_str"].(string)
+	email_str             := bodyMap["data"].(map[string]interface{})["email_str"].(string)
+	description_str       := bodyMap["data"].(map[string]interface{})["description_str"].(string)
+	profile_image_url_str := bodyMap["data"].(map[string]interface{})["profile_image_url_str"].(string)
+	banner_image_url_str  := bodyMap["data"].(map[string]interface{})["banner_image_url_str"].(string)
 
 	fmt.Println("RESPONSE >>>>")
-	spew.Dump(body_map["data"])
+	spew.Dump(bodyMap["data"])
 	
 	fmt.Println("====================================")
 	fmt.Println("user me response:")

@@ -35,12 +35,12 @@ import (
 
 //-------------------------------------------------
 
-func Test__users_http_eth(pTest *testing.T) {
+func TestUsersHTTPeth(pTest *testing.T) {
 
-	fmt.Println(" TEST__IDENTITY_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println(" TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	test_port_int := 2000
-	HTTPagent     := gorequest.New()
+	testPortInt := 2000
+	HTTPagent   := gorequest.New()
 
 	//---------------------------------
 	// GENERATE_WALLET
@@ -53,49 +53,49 @@ func Test__users_http_eth(pTest *testing.T) {
 	//---------------------------------
 	// TEST_PREFLIGHT_HTTP
 	
-	data_map := map[string]string{
+	dataMap := map[string]string{
 		"user_address_eth_str": addressStr,
 	}
-	data_bytes_lst, _ := json.Marshal(data_map)
-	url_str := fmt.Sprintf("http://localhost:%d/v1/identity/eth/preflight", test_port_int)
-	_, body_str, errs := HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
+	dataBytesLst, _ := json.Marshal(dataMap)
+	urlStr := fmt.Sprintf("http://localhost:%d/v1/identity/eth/preflight", testPortInt)
+	_, bodyStr, errs := HTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
-	// spew.Dump(body_str)
+	// spew.Dump(bodyStr)
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
 		pTest.FailNow()
 	}
 
-	body_map := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
         pTest.FailNow()
     }
 
-	spew.Dump(body_map)
+	spew.Dump(bodyMap)
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user preflight http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user preflight http request failed")
 
-	nonce_val_str    := body_map["data"].(map[string]interface{})["nonce_val_str"].(string)
-	user_exists_bool := body_map["data"].(map[string]interface{})["user_exists_bool"].(bool)
+	nonceValStr    := bodyMap["data"].(map[string]interface{})["nonce_val_str"].(string)
+	userExistsBool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
 	
 	fmt.Println("====================================")
 	fmt.Println("preflight response:")
-	fmt.Println("nonce_val_str",    nonce_val_str)
-	fmt.Println("user_exists_bool", user_exists_bool)
+	fmt.Println("nonce_val_str",    nonceValStr)
+	fmt.Println("user_exists_bool", userExistsBool)
 
 	// we're testing user creation and the rest of the flow as well, so user shouldnt exist
-	if (user_exists_bool) {
+	if (userExistsBool) {
 		pTest.FailNow()
 	}
 	
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-	signature_str, err := gf_crypto.EthSignData(nonce_val_str, privateKeyHexStr)
+	signatureStr, err := gf_crypto.EthSignData(nonceValStr, privateKeyHexStr)
 	if err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -106,42 +106,42 @@ func Test__users_http_eth(pTest *testing.T) {
 	fmt.Println("address",   addressStr, len(addressStr))
 	fmt.Println("priv key",  privateKeyHexStr, len(privateKeyHexStr))
 	fmt.Println("pub key",   publicKeyHexStr, len(publicKeyHexStr))
-	fmt.Println("signature", signature_str, len(signature_str))
-	fmt.Println("nonce",     nonce_val_str)
+	fmt.Println("signature", signatureStr, len(signatureStr))
+	fmt.Println("nonce",     nonceValStr)
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/create", test_port_int)
-	data_map = map[string]string{
+	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/eth/create", testPortInt)
+	dataMap = map[string]string{
 		"user_address_eth_str": addressStr,
-		"auth_signature_str":   signature_str,
+		"auth_signature_str":   signatureStr,
 	}
-	data_bytes_lst, _ = json.Marshal(data_map)
-	_, body_str, errs = HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
+	dataBytesLst, _  = json.Marshal(dataMap)
+	_, bodyStr, errs = HTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
-	spew.Dump(body_str)
+	spew.Dump(bodyStr)
 
 	if (len(errs) > 0) {
 		fmt.Println(errs)
 		pTest.FailNow()
 	}
 
-	body_map = map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap = map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
         pTest.FailNow()
     }
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user create http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
 
-	nonce_exists_bool         := body_map["data"].(map[string]interface{})["nonce_exists_bool"].(bool)
-	auth_signature_valid_bool := body_map["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
+	nonceExistsBool        := bodyMap["data"].(map[string]interface{})["nonce_exists_bool"].(bool)
+	authSignatureValidBool := bodyMap["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
 
-	if (!nonce_exists_bool) {
+	if (!nonceExistsBool) {
 		fmt.Println("supplied nonce doesnt exist")
 		pTest.FailNow()
 	}
-	if (!auth_signature_valid_bool) {
+	if (!authSignatureValidBool) {
 		fmt.Println("signature is not valid")
 		pTest.FailNow()
 	}
@@ -152,16 +152,16 @@ func Test__users_http_eth(pTest *testing.T) {
 	fmt.Println("====================================")
 	fmt.Println("user login inputs:")
 	fmt.Println("address",   addressStr, len(addressStr))
-	fmt.Println("signature", signature_str, len(signature_str))
+	fmt.Println("signature", signatureStr, len(signatureStr))
 
-	url_str = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", test_port_int)
-	data_map = map[string]string{
+	urlStr = fmt.Sprintf("http://localhost:%d/v1/identity/eth/login", testPortInt)
+	dataMap = map[string]string{
 		"user_address_eth_str": addressStr,
-		"auth_signature_str":   signature_str,
+		"auth_signature_str":   signatureStr,
 	}
-	data_bytes_lst, _ = json.Marshal(data_map)
-	resp, body_str, errs := HTTPagent.Post(url_str).
-		Send(string(data_bytes_lst)).
+	dataBytesLst, _ = json.Marshal(dataMap)
+	resp, bodyStr, errs := HTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
 	if (len(errs) > 0) {
@@ -170,68 +170,68 @@ func Test__users_http_eth(pTest *testing.T) {
 	}
 
 	// check if the login response sets a cookie for all future auth requests
-	auth_cookie_present_bool := false
+	authCookiePresentBool := false
 	for k, v := range resp.Header {
 		if (k == "Set-Cookie") {
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
 				if o == "gf_sess_data" {
-					auth_cookie_present_bool = true
+					authCookiePresentBool = true
 				}
 			}
 		}
 	}
-	assert.True(pTest, auth_cookie_present_bool,
+	assert.True(pTest, authCookiePresentBool,
 		"login response does not contain the expected 'gf_sess_data' cookie")
 
-	body_map = map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap = map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
         pTest.FailNow()
     }
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user login http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user login http request failed")
 
-	nonce_exists_bool         = body_map["data"].(map[string]interface{})["nonce_exists_bool"].(bool)
-	auth_signature_valid_bool = body_map["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
-	user_id_str              := body_map["data"].(map[string]interface{})["user_id_str"].(string)
+	nonceExistsBool        = bodyMap["data"].(map[string]interface{})["nonce_exists_bool"].(bool)
+	authSignatureValidBool = bodyMap["data"].(map[string]interface{})["auth_signature_valid_bool"].(bool)
+	userIDstr             := bodyMap["data"].(map[string]interface{})["user_id_str"].(string)
 
 	fmt.Println("RESPONSE >>>>")
-	spew.Dump(body_map["data"])
+	spew.Dump(bodyMap["data"])
 
 	fmt.Println("====================================")
 	fmt.Println("user login response:")
-	fmt.Println("nonce_exists_bool",         nonce_exists_bool)
-	fmt.Println("auth_signature_valid_bool", auth_signature_valid_bool)
-	fmt.Println("user_id_str",               user_id_str)
+	fmt.Println("nonce_exists_bool",         nonceExistsBool)
+	fmt.Println("auth_signature_valid_bool", authSignatureValidBool)
+	fmt.Println("user_id_str",               userIDstr)
 
-	if (!nonce_exists_bool) {
+	if (!nonceExistsBool) {
 		fmt.Println("supplied nonce doesnt exist")
 		pTest.FailNow()
 	}
-	if (!auth_signature_valid_bool) {
+	if (!authSignatureValidBool) {
 		fmt.Println("signature is not valid")
 		pTest.FailNow()
 	}
 
 	//---------------------------------
 	// TEST_USER_HTTP_UPDATE
-	test_user_http_update(pTest, HTTPagent, test_port_int)
+	testUserHTTPupdate(pTest, HTTPagent, testPortInt)
 
 	//---------------------------------
 	// TEST_USER_HTTP_GET_ME
-	test_user_http_get_me(pTest, HTTPagent, test_port_int)
+	testUserHTTPgetMe(pTest, HTTPagent, testPortInt)
 
 	//---------------------------------
 }
 
 //-------------------------------------------------
 
-func Test__users_eth_unit(pTest *testing.T) {
+func TestUsersETHunit(pTest *testing.T) {
 
-	fmt.Println(" TEST__IDENTITY_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	fmt.Println(" TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtime_sys := Tinit()
+	runtimeSys := Tinit()
 
 	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	testUserSignatureStr  := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
@@ -246,7 +246,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 		unexistingUserIDstr,
 		gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 		ctx,
-		runtime_sys)
+		runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -254,13 +254,13 @@ func Test__users_eth_unit(pTest *testing.T) {
 	//------------------
 	// USER_CREATE
 	
-	input__create := &gf_identity_core.GFethInputCreate{
+	inputCreate := &gf_identity_core.GFethInputCreate{
 		UserTypeStr:       "standard",
 		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
 		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
 
-	outputCreate, gfErr := gf_identity_core.ETHpipelineCreate(input__create, ctx, runtime_sys)
+	outputCreate, gfErr := gf_identity_core.ETHpipelineCreate(inputCreate, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -274,7 +274,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
 		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
-	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin, ctx, runtime_sys)
+	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin, ctx, runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
