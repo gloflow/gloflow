@@ -350,6 +350,10 @@ func CheckImageFormat(pFormatStr string, pRuntimeSys *gf_core.RuntimeSys) bool {
 		"mp4",
 		"webm",
 		"flv",
+
+		// some images dont have an extension at all, but should not fail.
+		// for those the image format should be infered in other ways (mime type inference)
+		"",
 	}
 
 	supportedBool := false
