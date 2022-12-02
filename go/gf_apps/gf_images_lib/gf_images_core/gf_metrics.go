@@ -50,7 +50,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 			Name: "gf_images_client_upload__transfer_duration",
 			Help: "duration in seconds (client reported) for how long it takes for the image upload data transfer (in seconds)",
 		})
-	prometheus.MustRegister(imageUploadClientDurationGauge)
+	prometheus.MustRegister(imageUploadClientTransferDurationGauge)
 
 	
 
