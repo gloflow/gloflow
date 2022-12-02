@@ -43,7 +43,7 @@ type RuntimeSys struct {
 
 	// ERRORS
 	Errors_send_to_mongodb_bool bool // if errors should be persisted to Mongodb
-	Errors_send_to_sentry_bool  bool // if errors should be sent to Sentry service
+	ErrorsSendToSentryBool  bool // if errors should be sent to Sentry service
 
 	Names_prefix_str string
 

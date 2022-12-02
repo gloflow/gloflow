@@ -44,13 +44,13 @@ func InitHandlers(pMux *http.ServeMux,
 	//---------------------
 	// START_JOB
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/jobs/start",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//--------------------------
 				// INPUT
-				input_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				input_map, gf_err := gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gf_err != nil {
 					return nil, gf_err
 				}
@@ -128,19 +128,19 @@ func InitHandlers(pMux *http.ServeMux,
 	// DEPRECATED!! - use the new event streaming method general to GF,
 	//                not this specific one for image jobs.
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/jobs/status",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 				
 				//-------------------------
-				images_job_id_str := p_req.URL.Query().Get("images_job_id_str")
+				images_job_id_str := pReq.URL.Query().Get("images_job_id_str")
 				pRuntimeSys.LogFun("INFO", "images_job_id_str - "+images_job_id_str)
 
 				/*if _,ok := running_jobs_map[images_job_id_str]; !ok {
 					gf_rpc_lib.Error__in_handler("/images/jobs/status",
 									nil, //err,
 									"job with ID doesnt exist - "+images_job_id_str, //p_user_msg_str
-									p_resp,
+									pResp,
 									p_mongodb_coll,
 									pLogFun)
 					return
@@ -160,23 +160,23 @@ func InitHandlers(pMux *http.ServeMux,
 				// Go (this is written as of 1.0.3):
 				// https://code.google.com/p/go/source/detail?name=3292433291b2
 
-				flusher, ok := p_resp.(http.Flusher)
+				flusher, ok := pResp.(http.Flusher)
 				if !ok {
 					err_msg_str := "/images/jobs/status handler failed - SSE http streaming is not supported on the server"
-					gf_rpc_lib.ErrorInHandler("/images/jobs/status", err_msg_str, nil, p_resp, pRuntimeSys)
+					gf_rpc_lib.ErrorInHandler("/images/jobs/status", err_msg_str, nil, pResp, pRuntimeSys)
 					return nil, nil
 				}
 
-				notify := p_resp.(http.CloseNotifier).CloseNotify()
+				notify := pResp.(http.CloseNotifier).CloseNotify()
 				go func() {
 					<- notify
 					pRuntimeSys.LogFun("ERROR", "HTTP connection just closed")
 				}()
 
-				p_resp.Header().Set("Content-Type",                "text/event-stream")
-				p_resp.Header().Set("Cache-Control",               "no-cache")
-				p_resp.Header().Set("Connection",                  "keep-alive")
-				p_resp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
+				pResp.Header().Set("Content-Type",                "text/event-stream")
+				pResp.Header().Set("Cache-Control",               "no-cache")
+				pResp.Header().Set("Connection",                  "keep-alive")
+				pResp.Header().Set("Access-Control-Allow-Origin", "*") // CORS
 
 				for {
 
@@ -192,10 +192,10 @@ func InitHandlers(pMux *http.ServeMux,
 					sse_event__unix_time_str := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 					sse_event_id_str         := sse_event__unix_time_str
 
-					fmt.Fprintf(p_resp, "id: %s\n", sse_event_id_str)
+					fmt.Fprintf(pResp, "id: %s\n", sse_event_id_str)
 
 					job_update_lst, _ := json.Marshal(job_update)
-					fmt.Fprintf(p_resp, "data: %s\n\n", job_update_lst)
+					fmt.Fprintf(pResp, "data: %s\n\n", job_update_lst)
 
 					flusher.Flush()
 

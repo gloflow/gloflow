@@ -41,17 +41,16 @@ func gifDBcreate(p_image_source_url_str string,
 	p_img_height_int            int,
 	p_frames_num_int            int,
 	p_frames_s3_urls_lst        []string,
-	pRuntimeSys               *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_gif_db.gifDBcreate()")
+	pRuntimeSys                 *gf_core.RuntimeSys) (*GFgif, *gf_core.GFerror) {
 
-	img_title_str, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, pRuntimeSys)
+	imgTitleStr, gfErr := gf_images_core.GetImageTitleFromURL(p_image_source_url_str, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
 	id_str               := fmt.Sprintf("%f:gif",creation_unix_time_f)
-	gf_url_str           := fmt.Sprintf("/images/d/gifs/%s.gif",img_title_str)
+	gf_url_str           := fmt.Sprintf("/images/d/gifs/%s.gif", imgTitleStr)
 
 	//--------------
 	origin_page_url, err := url.Parse(p_image_origin_page_url_str)
@@ -74,7 +73,7 @@ func gifDBcreate(p_image_source_url_str string,
 		Creation_unix_time_f:       creation_unix_time_f,
 		Deleted_bool:               false,
 		Valid_bool:                 true,
-		Title_str:                  img_title_str,
+		Title_str:                  imgTitleStr,
 		Gf_url_str:                 gf_url_str,
 		Origin_url_str:             p_image_source_url_str,
 		Origin_page_url_str:        p_image_origin_page_url_str,

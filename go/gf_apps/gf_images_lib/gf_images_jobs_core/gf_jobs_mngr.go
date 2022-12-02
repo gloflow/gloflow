@@ -30,6 +30,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_storage"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -60,7 +61,7 @@ type GFjobRuntime struct {
 	job_client_type_str     string
 	job_updates_ch          chan JobUpdateMsg
 	useNewStorageEngineBool bool
-	metricsCore             *gf_images_core.GFmetrics
+	metricsPlugins          *gf_images_plugins.GFmetrics
 }
 
 //------------------------
@@ -148,9 +149,9 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 	//               service initialization time
 	go func() {
 		
+		//---------------------
 		// METRICS 
-		metrics := MetricsCreate()
-		metricsCore := gf_images_core.MetricsCreate("gf_images_jobs")
+		metrics := MetricsCreate("gf_images_jobs")
 
 		//---------------------
 		
@@ -214,7 +215,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str:     jobMsg.Client_type_str,
 						job_updates_ch:          jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsCore:             metricsCore,
+						metricsPlugins:          metrics.ImagesPluginsMetrics,
 					}
 
 					runJobErrsLst := runJobLocalImages(jobMsg.Images_local_to_process_lst,
@@ -303,7 +304,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsCore:             metricsCore,
+						metricsPlugins:          metrics.ImagesPluginsMetrics,
 					}
 
 					runJobErrsLst := runJobUploadedImages(jobMsg.Images_uploaded_to_process_lst,
@@ -375,7 +376,7 @@ func JobsMngrInit(pImagesStoreLocalDirPathStr string,
 						job_client_type_str: jobMsg.Client_type_str,
 						job_updates_ch:      jobMsg.Job_updates_ch,
 						useNewStorageEngineBool: pConfig.UseNewStorageEngineBool,
-						metricsCore:             metricsCore,
+						metricsPlugins:          metrics.ImagesPluginsMetrics,
 					}
 
 					runJobErrsLst := runJobExternImages(jobMsg.Images_extern_to_process_lst,

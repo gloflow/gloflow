@@ -38,7 +38,7 @@ type GFimageID   = GF_image_id
 // CREATES_ID
 
 func CreateIDfromURL(pImageURLstr string,
-	pRuntimeSys *gf_core.RuntimeSys) (GF_image_id, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (GFimageID, *gf_core.GFerror) {
 	
 	// urlparse() - used so that any possible url query parameters are not used in the 
 	//              os.path.basename() result
@@ -65,15 +65,14 @@ func CreateIDfromURL(pImageURLstr string,
 
 //---------------------------------------------------
 // CREATES_ID
-// p_image_type_str - :String - "jpeg"|"gif"|"png"
 
 func CreateImageID(pImageURIstr string,
 	pRuntimeSys *gf_core.RuntimeSys) GFimageID {
 	
 	h := md5.New()
 		
-	current_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-	h.Write([]byte(fmt.Sprint(current_unix_time_f)))
+	currentUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	h.Write([]byte(fmt.Sprint(currentUNIXtimeF)))
 	h.Write([]byte(pImageURIstr))
 
 	sum     := h.Sum(nil)

@@ -23,6 +23,7 @@ package gf_images_jobs_core
 import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
 )
 
 //-------------------------------------------------
@@ -32,14 +33,16 @@ type GFmetrics struct {
 	Cmd__start_job_transform_imgs__count prometheus.Counter
 	Cmd__start_job_uploaded_imgs__count  prometheus.Counter
 	Cmd__start_job_extern_imgs__count    prometheus.Counter
+	ImagesPluginsMetrics                 *gf_images_plugins.GFmetrics
 }
 
 //-------------------------------------------------
 
-func MetricsCreate() *GFmetrics {
+func MetricsCreate(pNamespaceStr string) *GFmetrics {
 
 	// CMD__START_JOB_LOCAL_IMAGES__COUNT
 	cmd__start_job_local_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: pNamespaceStr,
 		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_local_imgs__count"),
 		Help: "job command start_job_local_imgs #",
 	})
@@ -47,6 +50,7 @@ func MetricsCreate() *GFmetrics {
 
 	// CMD__START_JOB_LOCAL_IMAGES__COUNT
 	cmd__start_job_transform_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: pNamespaceStr,
 		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_transform_imgs__count"),
 		Help: "job command start_job_transform_imgs #",
 	})
@@ -54,6 +58,7 @@ func MetricsCreate() *GFmetrics {
 
 	// CMD__START_JOB_UPLOAD_IMGS__COUNT
 	cmd__start_job_uploaded_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: pNamespaceStr,
 		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_uploaded_imgs__count"),
 		Help: "job command start_job_uploaded_imgs #",
 	})
@@ -61,19 +66,21 @@ func MetricsCreate() *GFmetrics {
 
 	// CMD__START_JOB_EXTERN_IMGS__COUNT
 	cmd__start_job_extern_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
+		Namespace: pNamespaceStr,
 		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_extern_imgs__count__count"),
 		Help: "job command start_job_extern_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_extern_imgs__count)
 
-
-
+	// IMAGES_PLUGINS
+	imagesPluginsMetrics := gf_images_plugins.MetricsCreate(pNamespaceStr)
 
 	metrics := &GFmetrics{
 		Cmd__start_job_local_imgs__count:     cmd__start_job_local_imgs__count,
 		Cmd__start_job_transform_imgs__count: cmd__start_job_transform_imgs__count,
 		Cmd__start_job_uploaded_imgs__count:  cmd__start_job_uploaded_imgs__count,
 		Cmd__start_job_extern_imgs__count:    cmd__start_job_extern_imgs__count,
+		ImagesPluginsMetrics:                 imagesPluginsMetrics,
 	}
 	return metrics
 }

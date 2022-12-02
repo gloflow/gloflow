@@ -46,7 +46,7 @@ func TransformImage(pImageIDstr GFimageID,
 	pImageLocalFilePathStr                string,
 	pImagesStoreThumbnailsLocalDirPathStr string,
 	pPluginsPyDirPathStr                  string,
-	pMetrics                              *GFmetrics,
+	pPluginsMetrics                       *gf_images_plugins.GFmetrics,
 	pCtx                                  context.Context,
 	pRuntimeSys                           *gf_core.RuntimeSys) (*GFimage, *GFimageThumbs, *gf_core.GFerror) {
 
@@ -85,14 +85,9 @@ func TransformImage(pImageIDstr GFimageID,
 	// PY_PLUGINS
 	// runs the Py VM in a new process, spawned via a new go-routine
 	
-	var pyPluginsMetrics *gf_images_plugins.GFmetrics
-	if pMetrics != nil {
-		pyPluginsMetrics = pMetrics.PyPluginsMetrics
-	}
-	
 	gf_images_plugins.RunPyImagePlugins(pImageLocalFilePathStr,
 		pPluginsPyDirPathStr,
-		pyPluginsMetrics,
+		pPluginsMetrics,
 		pCtx,
 		pRuntimeSys)
 
@@ -154,17 +149,17 @@ func TransformProcessImage(pImageIDstr GFimageID,
 	//--------------------------
 	// CREATE THUMBNAILS
 
-	small_thumb_max_size_px_int  := 200
-	medium_thumb_max_size_px_int := 400
-	large_thumb_max_size_px_int  := 800
+	smallThumbMaxSizePxInt  := 200
+	mediumThumbMaxSizePxInt := 400
+	largeThumbMaxSizePxInt  := 800
 
 	gfImageThumbs, gfErr := CreateThumbnails(img,
 		pImageIDstr,
 		pNormalizedExtStr,
 		pImagesStoreThumbnailsLocalDirPathStr,
-		small_thumb_max_size_px_int,
-		medium_thumb_max_size_px_int,
-		large_thumb_max_size_px_int,
+		smallThumbMaxSizePxInt,
+		mediumThumbMaxSizePxInt,
+		largeThumbMaxSizePxInt,
 		pRuntimeSys)
 	if gfErr != nil {
 		return nil, nil, gfErr

@@ -351,7 +351,7 @@ func RuntimeGet(pConfigPathStr string,
 		LogFun:           pLogFun,
 
 		// SENTRY - enable it for error reporting
-		Errors_send_to_sentry_bool: true,
+		ErrorsSendToSentryBool: true,
 
 		// EXTERNAL_PLUGINS
 		ExternalPlugins: pExternalPlugins,

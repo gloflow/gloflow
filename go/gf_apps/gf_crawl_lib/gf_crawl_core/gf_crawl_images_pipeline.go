@@ -359,7 +359,7 @@ func images__stages__process_images(pCrawlerNameStr string,
 	//------------------
 	// STAGE - process images - resize for all thumbnail sizes
 
-	page_imgs__pinfos_with_thumbs_lst := images__stage__process_images(pCrawlerNameStr,
+	page_imgs__pinfos_with_thumbs_lst := imagesStageProcessImages(pCrawlerNameStr,
 		p_page_imgs__pipeline_infos_lst, // page_imgs__pinfos_with_nsfv_lst,
 		p_images_store_local_dir_path_str,
 		p_origin_page_url_str,

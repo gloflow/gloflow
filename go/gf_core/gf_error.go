@@ -60,25 +60,25 @@ type GFerror struct {
 
 //-------------------------------------------------
 
-func Panic__check_and_handle(pUserMsgStr string,
-	p_panic_data_map     map[string]interface{},
-	p_oncomplete_fn      func(),
+func PanicCheckAndHandle(pUserMsgStr string,
+	pPanicDataMap     map[string]interface{},
+	pOnCompleteFun    func(),
 	pSubsystemNameStr string,
-	pRuntimeSys          *RuntimeSys) {
+	pRuntimeSys       *RuntimeSys) {
 
 	// call to recover stops the unwinding and returns the argument passed to panic
 	// If the goroutine is not panicking, recover returns nil.
-	if panic_info := recover(); panic_info != nil {
+	if panicInfo := recover(); panicInfo != nil {
 
-		err := errors.New(fmt.Sprint(panic_info))
+		err := errors.New(fmt.Sprint(panicInfo))
 
 		fmt.Println("PANIC >>>>>")
-		spew.Dump(panic_info)
+		spew.Dump(panicInfo)
 		fmt.Println(err)
 
 		//--------------------
 		// SENTRY
-		if pRuntimeSys.Errors_send_to_sentry_bool {
+		if pRuntimeSys.ErrorsSendToSentryBool {
 			
 			/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 				scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
@@ -92,7 +92,7 @@ func Panic__check_and_handle(pUserMsgStr string,
 				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), pSubsystemNameStr)
 				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.Names_prefix_str), "panic_error")
 
-				for k, v := range p_panic_data_map {
+				for k, v := range pPanicDataMap {
 					scope.SetTag(fmt.Sprintf("%s_panic.%s", pRuntimeSys.Names_prefix_str, k),
 						fmt.Sprint(v))
 				}
@@ -108,8 +108,8 @@ func Panic__check_and_handle(pUserMsgStr string,
 
 		//--------------------
 
-		if p_oncomplete_fn != nil {
-			p_oncomplete_fn()
+		if pOnCompleteFun != nil {
+			pOnCompleteFun()
 		}
 	}
 }
@@ -295,7 +295,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	
 	//--------------------
 	// SENTRY
-	if pRuntimeSys.Errors_send_to_sentry_bool {
+	if pRuntimeSys.ErrorsSendToSentryBool {
 		
 		/*sentry.ConfigureScope(func(scope *sentry.Scope) {
 			scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)

@@ -41,6 +41,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	pMediaDomainStr string,
 	pStorage        *gf_images_storage.GFimageStorage,
 	pS3info         *gf_aws.GFs3Info,
+	pMetrics        *gf_images_core.GFmetrics,
 	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_handlers.init_handlers()")
 	
@@ -186,14 +187,14 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				// IMAGE_FORMAT
 				var imageFormatStr string
-				if a_lst, ok := qsMap["imgf"]; ok {
-					imageFormatStr = a_lst[0]
+				if aLst, ok := qsMap["imgf"]; ok {
+					imageFormatStr = aLst[0]
 				}
 
 				// IMAGE_NAME - name that the user has potentially assigned to the image
 				var imageNameStr string
-				if a_lst, ok := qsMap["imgn"]; ok {
-					imageNameStr = a_lst[0]
+				if aLst, ok := qsMap["imgn"]; ok {
+					imageNameStr = aLst[0]
 				}
 
 				// FLOWS_NAMES - names of flows to which this image should be added
@@ -204,9 +205,9 @@ func InitHandlers(pAuthLoginURLstr string,
 				}
 
 				// CLIENT_TYPE - type of client thats doing the upload
-				var client_type_str string
+				var clientTypeStr string
 				if aLst, ok := qsMap["ct"]; ok {
-					client_type_str = aLst[0]
+					clientTypeStr = aLst[0]
 				}
 
 				//------------------
@@ -214,10 +215,11 @@ func InitHandlers(pAuthLoginURLstr string,
 				uploadInfo, gfErr := UploadInit(imageNameStr,
 					imageFormatStr,
 					flowsNamesLst,
-					client_type_str,
+					clientTypeStr,
 					pStorage,
 					pS3info,
 					pImgConfig,
+					pCtx,
 					pRuntimeSys)
 
 				if gfErr != nil {
@@ -243,25 +245,25 @@ func InitHandlers(pAuthLoginURLstr string,
 
 	//---------------------
 	// UPLOAD_COMPLETE - client calls this to get the presigned URL to then upload the image to directly.
-	//               this is done mainly to save on bandwidth and avoid one extra hop.
+	//                   this is done mainly to save on bandwidth and avoid one extra hop.
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_complete",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//------------------
 				// CORS - in "simple" requests a CORS PREFLIGHT request is not necessary, 
 				//        and a CORS header needs to be set on the response of the GET request itself
 				//        (not on the preflight OPTIONS request).
 				//        "simple" requests are GET/HEAD/POST with standard form/text_plain content-types.
-				p_resp.Header().Set("Access-Control-Allow-Origin", "*")
+				pResp.Header().Set("Access-Control-Allow-Origin", "*")
 
 				//------------------
 				// INPUT
-				qs_map := p_req.URL.Query()
+				qsMap := pReq.URL.Query()
 
-				i_map, gfErr :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -269,22 +271,23 @@ func InitHandlers(pAuthLoginURLstr string,
 				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
 				//                      to know which ID to use for the new gf_image thats going to be constructed,
 				//                      and to know by which ID to query the DB for Gf_image_upload_info.
-				var upload_gf_image_id_str gf_images_core.GF_image_id
-				if a_lst, ok := qs_map["imgid"]; ok {
-					upload_gf_image_id_str = gf_images_core.GF_image_id(a_lst[0])
+				var uploadImageIDstr gf_images_core.GFimageID
+				if aLst, ok := qsMap["imgid"]; ok {
+					uploadImageIDstr = gf_images_core.GFimageID(aLst[0])
 				}
 				
 				// image metadata (optional)
-				var meta_map map[string]interface{}
-				if meta_map, ok := i_map["meta_map"]; ok {
-					meta_map = meta_map
+				var metaMap map[string]interface{}
+				if metaMap, ok := iMap["meta_map"]; ok {
+					metaMap = metaMap
 				}
 
 				//------------------
 				// COMPLETE
-				running_job, gfErr := UploadComplete(upload_gf_image_id_str,
-					meta_map,
+				runningJob, gfErr := UploadComplete(uploadImageIDstr,
+					metaMap,
 					pJobsMngrCh,
+					pCtx,
 					pRuntimeSys)
 
 				if gfErr != nil {
@@ -295,9 +298,76 @@ func InitHandlers(pAuthLoginURLstr string,
 				// OUTPUT
 				data_map := map[string]interface{}{}
 
-				if running_job != nil {
-					data_map["images_job_id_str"] = running_job.Id_str
+				if runningJob != nil {
+					data_map["images_job_id_str"] = runningJob.Id_str
 				}
+				return data_map, nil
+				
+				//------------------
+			}
+			return nil, nil
+		},
+		pHTTPmux,
+		metrics,
+		true, // pStoreRunBool
+		nil,
+		pRuntimeSys)
+
+	//---------------------
+	// UPLOAD_METRICS - client reports upload metrics from its own perspective
+	
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/upload_metrics",
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+			if pReq.Method == "POST" {
+
+				//------------------
+				// CORS - in "simple" requests a CORS PREFLIGHT request is not necessary, 
+				//        and a CORS header needs to be set on the response of the GET request itself
+				//        (not on the preflight OPTIONS request).
+				//        "simple" requests are GET/HEAD/POST with standard form/text_plain content-types.
+				pResp.Header().Set("Access-Control-Allow-Origin", "*")
+
+				//------------------
+				// INPUT
+				qsMap := pReq.URL.Query()
+
+				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				metricsDataMap := iMap
+
+				// UPLOAD_GF_IMAGE_ID - gf_image ID that was assigned to this uploaded image. it is used here
+				//                      to know which ID to use for the new gf_image thats going to be constructed,
+				//                      and to know by which ID to query the DB for Gf_image_upload_info.
+				var uploadImageIDstr gf_images_core.GF_image_id
+				if aLst, ok := qsMap["imgid"]; ok {
+					uploadImageIDstr = gf_images_core.GFimageID(aLst[0])
+				}
+				
+				// CLIENT_TYPE - type of client thats doing the upload
+				var clientTypeStr string
+				if aLst, ok := qsMap["ct"]; ok {
+					clientTypeStr = aLst[0]
+				}
+
+				//------------------
+				gfErr = UploadMetricsCreate(uploadImageIDstr,
+					clientTypeStr,
+					metricsDataMap,
+					pMetrics,
+					pCtx,
+					pRuntimeSys)
+
+				if gfErr != nil {
+					return nil, gfErr
+				}
+
+				//------------------
+				// OUTPUT
+				data_map := map[string]interface{}{}
 				return data_map, nil
 				
 				//------------------
@@ -314,18 +384,18 @@ func InitHandlers(pAuthLoginURLstr string,
 	// IMAGE_JOB_RESULT FROM CLIENT_BROWSER (distributed jobs run on client machines)
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/c",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//--------------------------
 				// INPUT
-				i_map, gfErr :=  gf_core.HTTPgetInput(p_req, pRuntimeSys)
+				iMap, gfErr :=  gf_core.HTTPgetInput(pReq, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				browser_jobs_runs_results_lst      := i_map["jr"].([]interface{}) //map[string]interface{})
+				browser_jobs_runs_results_lst      := iMap["jr"].([]interface{}) //map[string]interface{})
 				cast_browser_jobs_runs_results_lst := []map[string]interface{}{}
 				for _, r := range browser_jobs_runs_results_lst {
 					cast_browser_jobs_runs_results_lst = append(cast_browser_jobs_runs_results_lst,
@@ -356,7 +426,7 @@ func InitHandlers(pAuthLoginURLstr string,
 	//         otherwise service is going to get marked as unhealthy
 	
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/v1/healthz",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			return nil, nil
 		},
 		pHTTPmux,

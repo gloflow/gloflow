@@ -47,11 +47,20 @@ type GFimageUploadInfo struct {
 	Tstr              string                   `json:"-"                      bson:"t"` // "img_upload_info"
 	CreationUNIXtimeF float64                  `json:"creation_unix_time_f"   bson:"creation_unix_time_f"`
 	NameStr           string                   `json:"name_str"               bson:"name_str"`
-	UploadImageIDstr  gf_images_core.GFimageID `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
+	ImageIDstr        gf_images_core.GFimageID `json:"upload_gf_image_id_str" bson:"upload_gf_image_id_str"`
 	S3filePathStr     string                   `json:"-"                      bson:"s3_file_path_str"` // internal data, dont send to clients
 	FlowsNamesLst     []string                 `json:"flows_names_lst"        bson:"flows_names_lst"`
 	ClientTypeStr     string                   `json:"-"                      bson:"client_type_str"`  // internal data, dont send to clients
 	PresignedURLstr   string                   `json:"presigned_url_str"      bson:"presigned_url_str"`
+}
+
+type GFimageUploadMetrics struct {
+	Id                 primitive.ObjectID       `bson:"_id,omitempty"`
+	CreationUNIXtimeF  float64                  `bson:"creation_unix_time_f"`
+	ImageIDstr         gf_images_core.GFimageID `bson:"upload_gf_image_id_str"`
+	ClientTypeStr      string                   `bson:"client_type_str"`
+	UploadClientDurationSecF         float64    `bson:"upload_client_duration_sec_f"`
+	UploadClientTransferDurationSecF float64    `bson:"upload_client_transfer_duration_sec_f"`
 }
 
 //---------------------------------------------------
@@ -66,6 +75,7 @@ func UploadInit(pImageNameStr string,
 	pStorage        *gf_images_storage.GFimageStorage,
 	pS3info         *gf_aws.GFs3Info,
 	pConfig         *gf_images_core.GFconfig,
+	pCtx            context.Context,
 	pRuntimeSys     *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 	
 	//------------------
@@ -142,7 +152,7 @@ func UploadInit(pImageNameStr string,
 		Tstr:              "img_upload_info",
 		CreationUNIXtimeF: creationUNIXtimeF,
 		NameStr:           pImageNameStr,
-		UploadImageIDstr:  uploadImageIDstr,
+		ImageIDstr:        uploadImageIDstr,
 		S3filePathStr:     targetFilePathStr,
 		FlowsNamesLst:     pFlowsNamesLst,
 		ClientTypeStr:     pClientTypeStr,
@@ -151,7 +161,7 @@ func UploadInit(pImageNameStr string,
 
 	//------------------
 	// DB
-	gfErr = UploadDBputInfo(uploadInfo, pRuntimeSys)
+	gfErr = dbPutUploadInfo(uploadInfo, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -165,13 +175,14 @@ func UploadInit(pImageNameStr string,
 // completes the image file upload sequence.
 // It is run after the initialization stage, and after the client/caller conducts
 // the upload operation.
-func UploadComplete(pUploadImageIDstr gf_images_core.GF_image_id,
+func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 	pMetaMap    map[string]interface{},
 	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 	
 	// DB
-	uploadInfo, gfErr := UploadDBgetInfo(pUploadImageIDstr, pRuntimeSys)
+	uploadInfo, gfErr := dbGetUploadInfo(pUploadImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -199,21 +210,101 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GF_image_id,
 }
 
 //---------------------------------------------------
+
+func UploadMetricsCreate(pUploadImageIDstr gf_images_core.GFimageID,
+	pClientTypeStr  string,
+	pMetricsDataMap map[string]interface{},
+	pMetrics        *gf_images_core.GFmetrics,
+	pCtx            context.Context,
+	pRuntimeSys     *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	// VALIDATE
+	if _, ok := pMetricsDataMap["upload_client_duration_sec_f"]; !ok {
+		gfErr := gf_core.MongoHandleError("image upload metrics data is missing the 'upload_client_duration_sec_f' key",
+			"verify__missing_key_error",
+			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			nil, "gf_images_service", pRuntimeSys)
+		return gfErr
+	}
+
+	if _, ok := pMetricsDataMap["upload_client_transfer_duration_sec_f"]; !ok {
+		gfErr := gf_core.MongoHandleError("image upload metrics data is missing the 'upload_client_transfer_duration_sec_f' key",
+			"verify__missing_key_error",
+			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			nil, "gf_images_service", pRuntimeSys)
+		return gfErr
+	}
+
+	uploadClientDurationSecF := pMetricsDataMap["upload_client_duration_sec_f"].(float64)
+	uploadClientTransferDurationSecF := pMetricsDataMap["upload_client_transfer_duration_sec_f"].(float64)
+
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	metrics := &GFimageUploadMetrics {
+		CreationUNIXtimeF:  creationUNIXtimeF,
+		ImageIDstr:         pUploadImageIDstr,
+		ClientTypeStr:      pClientTypeStr,
+		UploadClientDurationSecF:         uploadClientDurationSecF,
+		UploadClientTransferDurationSecF: uploadClientTransferDurationSecF,
+	}
+
+	// DB
+	gfErr := dbUploadMetricsCreate(metrics,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+
+	if pMetrics != nil {
+		pMetrics.ImageUploadClientDurationGauge.Set(uploadClientDurationSecF)
+		pMetrics.ImageUploadClientTransferDurationGauge.Set(uploadClientTransferDurationSecF)
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
 // DB
 //---------------------------------------------------
 
-func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
+func dbUploadMetricsCreate(pUploadMetrics *GFimageUploadMetrics,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	collNameStr := "gf_images_upload_metrics"
+	gfErr       := gf_core.MongoInsert(pUploadMetrics,
+		collNameStr,
+		map[string]interface{}{
+			"upload_image_id_str": pUploadMetrics.ImageIDstr,
+			"caller_err_msg_str":  "failed to update/upsert image upload_info into the DB",
+		},
+		pCtx,
+		pRuntimeSys)
+	
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func dbPutUploadInfo(pUploadInfo *GFimageUploadInfo,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 	
-	ctx         := context.Background()
 	collNameStr := "gf_images_upload_info"
 	gfErr       := gf_core.MongoInsert(pUploadInfo,
 		collNameStr,
 		map[string]interface{}{
-			"upload_image_id_str": pUploadInfo.UploadImageIDstr,
+			"upload_image_id_str": pUploadInfo.ImageIDstr,
 			"caller_err_msg_str":  "failed to update/upsert image upload_info into the DB",
 		},
-		ctx,
+		pCtx,
 		pRuntimeSys)
 	
 	if gfErr != nil {
@@ -225,54 +316,31 @@ func UploadDBputInfo(pUploadInfo *GFimageUploadInfo,
 
 //---------------------------------------------------
 
-func UploadDBgetInfo(p_upload_gf_image_id_str gf_images_core.Gf_image_id,
+func dbGetUploadInfo(pUploadImageIDstr gf_images_core.GFimageID,
+	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFimageUploadInfo, *gf_core.GFerror) {
 
-	ctx := context.Background()
-
-	var upload_info GFimageUploadInfo
-	err := pRuntimeSys.Mongo_db.Collection("gf_images_upload_info").FindOne(ctx, bson.M{
+	var uploadInfo GFimageUploadInfo
+	err := pRuntimeSys.Mongo_db.Collection("gf_images_upload_info").FindOne(pCtx, bson.M{
 			"t":                      "img_upload_info",
-			"upload_gf_image_id_str": p_upload_gf_image_id_str,
-		}).Decode(&upload_info)
+			"upload_gf_image_id_str": pUploadImageIDstr,
+		}).Decode(&uploadInfo)
 
 	if err == mongo.ErrNoDocuments {
-		gf_err := gf_core.MongoHandleError("image_upload_info does not exist in mongodb",
+		gfErr := gf_core.MongoHandleError("image_upload_info does not exist in mongodb",
 			"mongodb_not_found_error",
-			map[string]interface{}{"upload_gf_image_id_str": p_upload_gf_image_id_str,},
-			err, "gf_images_lib", pRuntimeSys)
-		return nil, gf_err
+			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			err, "gf_images_service", pRuntimeSys)
+		return nil, gfErr
 	}
 
 	if err != nil {
-		gf_err := gf_core.MongoHandleError("failed to get image_upload_info from mongodb",
+		gfErr := gf_core.MongoHandleError("failed to get image_upload_info from mongodb",
 			"mongodb_find_error",
-			map[string]interface{}{"upload_gf_image_id_str": p_upload_gf_image_id_str,},
-			err, "gf_images_lib", pRuntimeSys)
-		return nil, gf_err
+			map[string]interface{}{"upload_gf_image_id_str": pUploadImageIDstr,},
+			err, "gf_images_service", pRuntimeSys)
+		return nil, gfErr
 	}
 
-	return &upload_info, nil
-}
-
-//---------------------------------------------------
-
-func UploadDBputImageUploadInfo(pImageUploadInfo *GFimageUploadInfo,
-	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
-
-	ctx         := context.Background()
-	collNameStr := pRuntimeSys.Mongo_coll.Name()
-	gfErr       := gf_core.MongoInsert(pImageUploadInfo,
-		collNameStr,
-		map[string]interface{}{
-			"upload_gf_image_id_str": pImageUploadInfo.UploadImageIDstr,
-			"caller_err_msg_str":     "failed to update/upsert image upload_info into the DB",
-		},
-		ctx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	return nil
+	return &uploadInfo, nil
 }

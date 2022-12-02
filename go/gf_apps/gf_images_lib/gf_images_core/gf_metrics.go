@@ -20,24 +20,43 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_core
 
 import (
-	// "github.com/prometheus/client_golang/prometheus"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core/gf_images_plugins"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 //-------------------------------------------------
 
 type GFmetrics struct {
-	PyPluginsMetrics *gf_images_plugins.GFmetrics
+	ImageUploadClientDurationGauge         prometheus.Gauge
+	ImageUploadClientTransferDurationGauge prometheus.Gauge
 }
 
 //-------------------------------------------------
 
 func MetricsCreate(pNamespaceStr string) *GFmetrics {
 
-	pyPluginsMetrics := gf_images_plugins.MetricsCreate(pNamespaceStr)
+	// IMAGE_UPLOAD_CLIENT_DURATION
+	imageUploadClientDurationGauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: pNamespaceStr,
+			Name: "gf_images_client_upload__duration",
+			Help: "duration in seconds (client reported) for how long it takes for the whole image upload process (in seconds)",
+		})
+	prometheus.MustRegister(imageUploadClientDurationGauge)
+
+	// IMAGE_UPLOAD_CLIENT_TRANSFER_DURATION
+	imageUploadClientTransferDurationGauge := prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: pNamespaceStr,
+			Name: "gf_images_client_upload__transfer_duration",
+			Help: "duration in seconds (client reported) for how long it takes for the image upload data transfer (in seconds)",
+		})
+	prometheus.MustRegister(imageUploadClientDurationGauge)
+
+	
 
 	metrics := &GFmetrics{
-		PyPluginsMetrics: pyPluginsMetrics,
+		ImageUploadClientDurationGauge:         imageUploadClientDurationGauge,
+		ImageUploadClientTransferDurationGauge: imageUploadClientTransferDurationGauge,
 	}
 	return metrics
 }

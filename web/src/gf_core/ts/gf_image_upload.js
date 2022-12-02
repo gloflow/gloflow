@@ -60,6 +60,7 @@ function gf_upload__init(p_flow_name_str,
 					gf_upload__view_img(img_data_str,
 						p_flow_name_str,
 
+						//-------------------------------------------------
 						// UPLOAD_ACTIVATE_FUN
 						(p_image_name_str,
 						p_flows_names_str,
@@ -76,6 +77,8 @@ function gf_upload__init(p_flow_name_str,
 									p_on_upload_fun(p_upload_gf_image_id_str);
 								});
 						});
+
+						//-------------------------------------------------
 				};
 
 				// reader.readAsBinaryString(blob);
@@ -253,6 +256,8 @@ function gf_upload__run(p_image_name_str,
 	p_on_complete_fun) {
 	console.log(`UPLOAD_IMAGE - ${p_image_name_str} - ${p_image_format_str}`);
 
+	const upload_start_f = performance.now();
+
 	// UPLOAD__SEND_INIT
 	gf_upload__send_init(p_image_name_str,
 		p_image_data_str,
@@ -264,13 +269,23 @@ function gf_upload__run(p_image_name_str,
 			// UPLOAD_TO_S3
 			gf_upload__s3_put(p_presigned_url_str,
 				p_image_data_str,
-				()=>{
+				(p_upload_transfer_duration_sec_f)=>{
 
 					// UPLOAD__SEND_COMPLETE
 					gf_upload__send_complete(p_upload_gf_image_id_str, 
 						p_target_full_host_str,
 						()=>{
-							p_on_complete_fun(p_upload_gf_image_id_str);
+
+							const upload_end_f = performance.now();
+							const upload_duration_sec_f = upload_end_f - upload_start_f;
+
+							gf_upload__send_metrics(upload_duration_sec_f,
+								p_upload_transfer_duration_sec_f,
+								p_upload_gf_image_id_str,
+								p_target_full_host_str,
+								()=>{
+									p_on_complete_fun(p_upload_gf_image_id_str);
+								});
 						});
 				});
 		});
@@ -285,7 +300,8 @@ function gf_upload__send_init(p_image_name_str,
 	p_on_complete_fun) {
 
 	// UPLOAD_INIT
-	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=browser`;
+	const client_type_str = "browser";
+	const url_str = `${p_target_full_host_str}/v1/images/upload_init?imgf=${p_image_format_str}&imgn=${p_image_name_str}&f=${p_flows_names_str}&ct=${client_type_str}`;
 	$.ajax({
 		method: "GET",
 		"url":  url_str,
@@ -317,6 +333,7 @@ function gf_upload__s3_put(p_presigned_url_str,
 
 	const image_data_clean_str = p_image_data_str.replace("data:image/png;base64,", "");
 	const image_data           = gf_base64_to_blob(image_data_clean_str, "image/png");
+	const upload_start_f = performance.now();
 
 	// AWS_S3
 	$.ajax({
@@ -335,7 +352,42 @@ function gf_upload__s3_put(p_presigned_url_str,
 		// jqeury is not to convert the image to form data
 		processData: false,
 		"success": ()=>{
+			const upload_end_f = performance.now();
+			const upload_transfer_duration_sec_f = upload_end_f - upload_start_f;
+			p_on_complete_fun(upload_transfer_duration_sec_f);
+		}
+	})
+}
+
+//-------------------------------------------------
+function gf_upload__send_metrics(p_upload_duration_sec_f,
+	p_upload_transfer_duration_sec_f,
+	p_upload_gf_image_id_str,
+	p_target_full_host_str,
+	p_on_complete_fun) {
+
+	const client_type_str = "browser";
+	const url_str = `${p_target_full_host_str}/v1/images/upload_metrics?imgid=${p_upload_gf_image_id_str}&ct=${client_type_str}`;
+
+	const data_map = {
+		"upload_client_duration_sec_f":          p_upload_duration_sec_f,
+		"upload_client_transfer_duration_sec_f": p_upload_transfer_duration_sec_f,
+	};
+	$.ajax({
+		type: "POST",
+		url:  url_str,
+		data: data_map,
+		//-------------------------------------------------
+		"success": (p_data_map) => {
+
+			console.log("upload metrics done...")
+			console.log(p_data_map);
 			p_on_complete_fun();
+		},
+
+		//-------------------------------------------------
+		error: (jqXHR, p_text_status_str)=>{
+
 		}
 	})
 }

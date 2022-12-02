@@ -493,7 +493,7 @@ func jobTransform(pImageIDstr gf_images_core.GFimageID,
 		pImageLocalFilePathStr,
 		pImagesThumbsLocalDirPathStr,
 		pPluginsPyDirPathStr,
-		pJobRuntime.metricsCore,
+		pJobRuntime.metricsPlugins,
 		ctx,
 		pRuntimeSys)
 

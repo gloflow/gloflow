@@ -47,13 +47,13 @@ func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 		
 		fmt.Println(imageToProcess)
 
-		gf_err := pipelineProcessLocalImage(pFlowsNamesLst,
+		gfErr := pipelineProcessLocalImage(pFlowsNamesLst,
 			pS3info,
 			pPluginsPyDirPathStr,
 			pStorage,
 			pRuntimeSys)
-		if gf_err != nil {
-			gfErrorsLst = append(gfErrorsLst, gf_err)
+		if gfErr != nil {
+			gfErrorsLst = append(gfErrorsLst, gfErr)
 		}
 	}
 

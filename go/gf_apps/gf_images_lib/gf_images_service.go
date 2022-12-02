@@ -45,6 +45,10 @@ func InitService(pHTTPmux *http.ServeMux,
 	pRuntimeSys  *gf_core.RuntimeSys) gf_images_jobs_core.JobsMngr {
 
 	//-------------
+	// METRICS
+	metrics := gf_images_core.MetricsCreate("gf_images_service")
+
+	//-------------
 	// DB_INDEXES
 	// IMPORTANT!! - make sure mongo has indexes build for relevant queries
 	gf_images_service.DBindexInit(pRuntimeSys)
@@ -132,6 +136,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		pServiceInfo.Media_domain_str,
 		imageStorage,
 		s3Info,
+		metrics,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
