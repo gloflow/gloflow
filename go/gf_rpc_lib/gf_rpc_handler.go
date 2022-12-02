@@ -29,8 +29,10 @@ import (
 	"net/http"
 	"context"
 	"time"
+	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
@@ -100,7 +102,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	}
 
 	// HANDLER_FUN
-	handlerFun := getHandler(pAuthBool,
+	appHandlerFun := getHandler(pAuthBool,
 		pPathStr,
 		pHandlerFun,
 		pHandlerRuntime.Metrics,
@@ -114,13 +116,40 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	if pHandlerRuntime.AuthSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 
 		if pAuthBool {
+
+			//-------------------------------------------------
+			auth0handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+
+				claims, ok := pReq.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+				if !ok {
+					http.Error(pResp, "failed to get validated claims", http.StatusInternalServerError)
+					return
+				}
+				
+				payload, err := json.Marshal(claims)
+				if err != nil {
+					http.Error(pResp, err.Error(), http.StatusInternalServerError)
+				}
+
+
+
+				fmt.Println(payload)
+
+			
+				appHandlerFun(pResp, pReq)
+
+				
+			}
+
+			//-------------------------------------------------
+
 			// this will automatically check the JWT supplied in each request
 			// to this handler, if Auth is turn on for this handler
-			pHandlerRuntime.Mux.Handle(pPathStr, jwtAuth0middleware.CheckJWT(http.HandlerFunc(handlerFun)))
+			pHandlerRuntime.Mux.Handle(pPathStr, jwtAuth0middleware.CheckJWT(http.HandlerFunc(auth0handlerFun)))
 		}
 
 	} else {
-		pHandlerRuntime.Mux.HandleFunc(pPathStr, handlerFun)
+		pHandlerRuntime.Mux.HandleFunc(pPathStr, appHandlerFun)
 	}
 	
 }
@@ -130,7 +159,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 func CreateHandlerHTTPwithMux(pPathStr string,
 	pHandlerFun   handlerHTTP,
-	p_mux         *http.ServeMux,
+	pMux          *http.ServeMux,
 	pMetrics      *GF_metrics,
 	pStoreRunBool bool,
 	pSentryHub    *sentry.Hub,
@@ -145,7 +174,7 @@ func CreateHandlerHTTPwithMux(pPathStr string,
 		nil,
 		pRuntimeSys)
 
-	p_mux.HandleFunc(pPathStr, handlerFun)
+	pMux.HandleFunc(pPathStr, handlerFun)
 }
 
 //-------------------------------------------------
@@ -190,19 +219,19 @@ func getHandler(pAuthBool bool,
 		// PANIC_HANDLING
 
 		// IMPORTANT!! - only defered functions are run when a panic initiates in a goroutine
-		//               as execution unwinds up the call-stack. in Panic__check_and_handle() 
+		//               as execution unwinds up the call-stack. in PanicCheckAndHandle() 
 		//               recover() is executed for check for panic conditions. if panic exists
 		//               it is treated as an error that gets processed, and the go routine exits.
 
-		user_msg__internal_str := "gf_rpc handler panicked"
-		defer gf_core.Panic__check_and_handle(user_msg__internal_str,
+		userMsgInternalStr := "gf_rpc handler panicked"
+		defer gf_core.PanicCheckAndHandle(userMsgInternalStr,
 			map[string]interface{}{"handler_path_str": pathStr},
 			// oncomplete_fn
 			func() {
 				
 				// IMPORTANT!! - if a panic occured, send a HTTP response to the client,
 				//               and then proceed to process the panic as an error 
-				//               with gf_core.Panic__check_and_handle()
+				//               with gf_core.PanicCheckAndHandle()
 				ErrorInHandler(pathStr,
 					fmt.Sprintf("handler %s failed unexpectedly", pathStr),
 					nil, pResp, pRuntimeSys)
@@ -213,7 +242,7 @@ func getHandler(pAuthBool bool,
 		// METRICS
 
 		if pMetrics != nil {
-			if counter, ok := pMetrics.Handlers_counters_map[pPathStr]; ok {
+			if counter, ok := pMetrics.HandlersCountersMap[pPathStr]; ok {
 				counter.Inc()
 			}
 		}
