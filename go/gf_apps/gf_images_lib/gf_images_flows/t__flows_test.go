@@ -59,22 +59,22 @@ func Test__get_all(p_test *testing.T) {
 	test_img_0 := &gf_images_core.GFimage{
 		IDstr: "test_img_0",
 		T_str: "img",
-		Flows_names_lst: []string{"flow_0"},
+		FlowsNamesLst: []string{"flow_0"},
 	}
 	test_img_1 := &gf_images_core.GFimage{
 		IDstr: "test_img_1",
 		T_str: "img",
-		Flows_names_lst: []string{"flow_0"},
+		FlowsNamesLst: []string{"flow_0"},
 	}
 	test_img_2 := &gf_images_core.GFimage{
 		IDstr: "test_img_2",
 		T_str: "img",
-		Flows_names_lst: []string{"flow_0", "flow_1"},
+		FlowsNamesLst: []string{"flow_0", "flow_1"},
 	}
 	test_img_3 := &gf_images_core.GFimage{
 		IDstr: "test_img_3",
 		T_str: "img",
-		Flows_names_lst: []string{"flow_1", "flow_2"},
+		FlowsNamesLst: []string{"flow_1", "flow_2"},
 	}
 	gfErr = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
 	if gfErr != nil {

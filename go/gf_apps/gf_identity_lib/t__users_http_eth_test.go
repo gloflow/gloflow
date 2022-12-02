@@ -242,7 +242,7 @@ func Test__users_eth_unit(pTest *testing.T) {
 	// NONCE_CREATE
 
 	unexistingUserIDstr := gf_core.GF_ID("")
-	_, gfErr := nonceCreate(GFuserNonceVal(testUserNonceStr),
+	_, gfErr := gf_identity_core.NonceCreate(gf_identity_core.GFuserNonceVal(testUserNonceStr),
 		unexistingUserIDstr,
 		gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 		ctx,
@@ -254,13 +254,13 @@ func Test__users_eth_unit(pTest *testing.T) {
 	//------------------
 	// USER_CREATE
 	
-	input__create := &GFuserAuthETHinputCreate{
+	input__create := &gf_identity_core.GFethInputCreate{
 		UserTypeStr:       "standard",
 		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
 		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
 
-	outputCreate, gfErr := usersAuthETHpipelineCreate(input__create, ctx, runtime_sys)
+	outputCreate, gfErr := gf_identity_core.ETHpipelineCreate(input__create, ctx, runtime_sys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}
@@ -270,11 +270,11 @@ func Test__users_eth_unit(pTest *testing.T) {
 	assert.True(pTest, outputCreate.AuthSignatureValidBool, "crypto signature supplied for user creation pipeline is invalid")
 
 	//------------------
-	inputLogin := &GFuserAuthETHinputLogin{
+	inputLogin := &gf_identity_core.GFethInputLogin{
 		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
 		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
-	outputLogin, gfErr := usersAuthETHpipelineLogin(inputLogin, ctx, runtime_sys)
+	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin, ctx, runtime_sys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}

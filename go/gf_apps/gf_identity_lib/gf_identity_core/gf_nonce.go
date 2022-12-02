@@ -63,7 +63,7 @@ func nonceCreateAndPersist(pUserIDstr gf_core.GF_ID,
 	nonceValStr := fmt.Sprintf("gloflow:%s", gf_core.StrRandom())
 
 	// CREATE
-	nonce, gfErr := nonceCreate(GFuserNonceVal(nonceValStr),
+	nonce, gfErr := NonceCreate(GFuserNonceVal(nonceValStr),
 		pUserIDstr,
 		pUserAddressETHstr,
 		pCtx,
@@ -77,7 +77,7 @@ func nonceCreateAndPersist(pUserIDstr gf_core.GF_ID,
 
 //---------------------------------------------------
 
-func nonceCreate(pNonceValStr GFuserNonceVal,
+func NonceCreate(pNonceValStr GFuserNonceVal,
 	pUserIDstr         gf_core.GF_ID,
 	pUserAddressETHstr GFuserAddressETH,
 	pCtx               context.Context,

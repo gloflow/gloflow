@@ -63,7 +63,7 @@ func Test__templates(p_test *testing.T) {
 		{
 			&gf_images_core.GFimage{
 				IDstr:      "some_test_id",
-				Title_str:  "some_test_img",
+				TitleStr:   "some_test_img",
 				Meta_map:   map[string]interface{}{"t_k": "val"},
 				Format_str: "jpg",
 				Thumbnail_small_url_str:  "url1",

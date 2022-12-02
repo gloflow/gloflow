@@ -75,7 +75,7 @@ func Test__basic_image_ops(p_test *testing.T) {
 	test_img_0 := &gf_images_core.GFimage{
 		IDstr: "test_img_0",
 		T_str:  "img",
-		Flows_names_lst: []string{"flow_0"},
+		FlowsNamesLst: []string{"flow_0"},
 	}
 	gfErr = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
 	if gfErr != nil {

@@ -26,6 +26,7 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -50,7 +51,7 @@ func Test__users_http_userpass(pTest *testing.T) {
 
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
-	gfErr := DBuserAddToInviteList(testEmailStr,
+	gfErr := gf_identity_core.DBuserAddToInviteList(testEmailStr,
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
