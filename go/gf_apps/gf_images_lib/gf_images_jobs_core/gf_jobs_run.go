@@ -32,7 +32,7 @@ import (
 
 //-------------------------------------------------
 
-func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
+func runJobLocalImages(pImagesToProcessLst []GFimageLocalToProcess,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
@@ -62,12 +62,10 @@ func runJobLocalImages(pImagesToProcessLst []GF_image_local_to_process,
 
 //-------------------------------------------------
 
-func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
+func runJobUploadedImages(pImagesToProcessLst []GFimageUploadedToProcess,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
-	// p_source_s3_bucket_name_str           string, // S3_bucket to which the image was uploaded to
-	// p_target_s3_bucket_name_str           string, // S3 bucket to which processed images are stored in after this pipeline processing
 	pS3info                               *gf_aws.GFs3Info,
 	pPluginsPyDirPathStr                  string,
 	pStorage                              *gf_images_storage.GFimageStorage,
@@ -79,9 +77,9 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 
 		fmt.Println(imageToProcess)
 
-		imageIDstr    := imageToProcess.GF_image_id_str
-		S3filePathStr := imageToProcess.S3_file_path_str
-		metaMap       := imageToProcess.Meta_map
+		imageIDstr    := imageToProcess.GFimageIDstr
+		S3filePathStr := imageToProcess.S3filePathStr
+		metaMap       := imageToProcess.MetaMap
 
 		gfErr := pipelineProcessUploadedImage(imageIDstr,
 			S3filePathStr,
@@ -89,8 +87,6 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 			pImagesStoreLocalDirPathStr,
 			pImagesThumbnailsStoreLocalDirPathStr,
 			pFlowsNamesLst,
-			// p_source_s3_bucket_name_str,
-			// p_target_s3_bucket_name_str,
 			pS3info,
 			pPluginsPyDirPathStr,
 			pStorage,
@@ -107,7 +103,7 @@ func runJobUploadedImages(pImagesToProcessLst []GF_image_uploaded_to_process,
 //-------------------------------------------------
 // RUN_JOB__EXTERN_IMAGES
 
-func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
+func runJobExternImages(pImagesToProcessLst []GFimageExternToProcess,
 	pFlowsNamesLst                        []string,
 	pImagesStoreLocalDirPathStr           string,
 	pImagesThumbnailsStoreLocalDirPathStr string,
@@ -126,8 +122,8 @@ func runJobExternImages(pImagesToProcessLst []GF_image_extern_to_process,
 	gfErrorsLst := []*gf_core.GFerror{}
 	for _, imageToProcess := range pImagesToProcessLst {
 
-		sourceURLstr     := imageToProcess.Source_url_str // FIX!! rename source_url_str to origin_url_str
-		originPageURLstr := imageToProcess.Origin_page_url_str
+		sourceURLstr     := imageToProcess.SourceURLstr // FIX!! rename source_url_str to origin_url_str
+		originPageURLstr := imageToProcess.OriginPageURLstr
 
 		//--------------
 		// GET_MIME_CONTENT_TYPE

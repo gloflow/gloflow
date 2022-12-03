@@ -45,29 +45,29 @@ type GFjobExpectedOutput struct {
 //-------------------------------------------------
 
 func RunLocalImgs(pClientTypeStr string,
-	pImagesToProcessLst []gf_images_jobs_core.GF_image_local_to_process,
+	pImagesToProcessLst []gf_images_jobs_core.GFimageLocalToProcess,
 	pFlowsNamesLst      []string,
 	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
 	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
 
-	job_cmd_str    := "start_job_local_imgs"
-	job_init_ch    := make(chan *gf_images_jobs_core.GFjobRunning)
-	job_updates_ch := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
+	jobCmdStr    := "start_job_local_imgs"
+	jobInitCh    := make(chan *gf_images_jobs_core.GFjobRunning)
+	jobUpdatesCh := make(chan gf_images_jobs_core.JobUpdateMsg, 10)
 	
-	job_msg := gf_images_jobs_core.JobMsg{
+	jobMsg := gf_images_jobs_core.JobMsg{
 		Client_type_str:             pClientTypeStr,
-		Cmd_str:                     job_cmd_str,
-		Job_init_ch:                 job_init_ch,
-		Job_updates_ch:              job_updates_ch,
+		Cmd_str:                     jobCmdStr,
+		Job_init_ch:                 jobInitCh,
+		Job_updates_ch:              jobUpdatesCh,
 		Images_local_to_process_lst: pImagesToProcessLst,
 		Flows_names_lst:             pFlowsNamesLst,
 	}
 
 	// SEND_MSG
-	pJobsMngrCh <- job_msg
+	pJobsMngrCh <- jobMsg
 
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
-	running_job := <- job_init_ch
+	runningJob := <- jobInitCh
 
 	//-----------------
 	// JOB_EXPECTED_OUTPUT - its "expected" because results are not available yet (and might not
@@ -75,25 +75,25 @@ func RunLocalImgs(pClientTypeStr string,
 	//                       values so that other parts of the system can initialize in parallel with the job 
 	//                       completing.
 
-	imgs_local_paths_lst := []string{}
-	for _, image_to_process := range pImagesToProcessLst {
-		imgs_local_paths_lst = append(imgs_local_paths_lst, image_to_process.Local_file_path_str)
+	imagesLocalPathsLst := []string{}
+	for _, imageToProcess := range pImagesToProcessLst {
+		imagesLocalPathsLst = append(imagesLocalPathsLst, imageToProcess.LocalFilePathStr)
 	}
 
-	job_expected_outputs_lst, gf_err := getJobExpectedOutput(imgs_local_paths_lst, pRuntimeSys)
-	if gf_err != nil {
-		return nil, nil, gf_err
+	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesLocalPathsLst, pRuntimeSys)
+	if gfErr != nil {
+		return nil, nil, gfErr
 	}
 
 	//-----------------
 
-	return running_job, job_expected_outputs_lst, nil
+	return runningJob, jobExpectedOutputsLst, nil
 }
 
 //-------------------------------------------------
 
 func RunUploadedImages(pClientTypeStr string,
-	pImagesToProcessLst []gf_images_jobs_core.GF_image_uploaded_to_process,
+	pImagesToProcessLst []gf_images_jobs_core.GFimageUploadedToProcess,
 	pFlowsNamesLst       []string,
 	pJobsMngrCh             gf_images_jobs_core.JobsMngr,
 	pRuntimeSys             *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
@@ -115,18 +115,16 @@ func RunUploadedImages(pClientTypeStr string,
 	pJobsMngrCh <- job_msg
 
 	// RECEIVE_MSG - get running_job info back from jobs_mngr
-	running_job := <- job_init_ch
-	
-	// spew.Dump(running_job)
+	runningJob := <- job_init_ch
 
-	return running_job, nil
+	return runningJob, nil
 }
 
 //-------------------------------------------------
 // RUN
 
 func RunExternImages(pClientTypeStr string,
-	pImagesExternToProcessLst []gf_images_jobs_core.GF_image_extern_to_process,
+	pImagesExternToProcessLst []gf_images_jobs_core.GFimageExternToProcess,
 	pFlowsNamesLst            []string,
 	pJobsMngrCh               gf_images_jobs_core.JobsMngr,
 	pRuntimeSys               *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, []*GFjobExpectedOutput, *gf_core.GFerror) {
@@ -160,8 +158,8 @@ func RunExternImages(pClientTypeStr string,
 	//                       completing.
 
 	imagesSourceURLsLst := []string{}
-	for _, image_to_process := range pImagesExternToProcessLst {
-		imagesSourceURLsLst = append(imagesSourceURLsLst, image_to_process.Source_url_str)
+	for _, imageToProcess := range pImagesExternToProcessLst {
+		imagesSourceURLsLst = append(imagesSourceURLsLst, imageToProcess.SourceURLstr)
 	}
 
 	jobExpectedOutputsLst, gfErr := getJobExpectedOutput(imagesSourceURLsLst, pRuntimeSys)
@@ -179,19 +177,19 @@ func GetJobUpdateCh(pJobIDstr string,
 	pJobsMngrCh gf_images_jobs_core.JobsMngr,
 	pRuntimeSys *gf_core.RuntimeSys) chan gf_images_jobs_core.JobUpdateMsg {
 
-	msg_response_ch := make(chan interface{})
-	defer close(msg_response_ch)
+	msgResponseCh := make(chan interface{})
+	defer close(msgResponseCh)
 
-	job_cmd_str := "get_job_update_ch"
-	job_msg     := gf_images_jobs_core.JobMsg{
+	jobCmdStr := "get_job_update_ch"
+	jobMsg     := gf_images_jobs_core.JobMsg{
 		Job_id_str:      pJobIDstr,
-		Cmd_str:         job_cmd_str,
-		Msg_response_ch: msg_response_ch,
+		Cmd_str:         jobCmdStr,
+		Msg_response_ch: msgResponseCh,
 	}
 
-	pJobsMngrCh <- job_msg
+	pJobsMngrCh <- jobMsg
 
-	response          := <-msg_response_ch
+	response          := <-msgResponseCh
 	job_updates_ch, _ := response.(chan gf_images_jobs_core.JobUpdateMsg)
 
 	return job_updates_ch

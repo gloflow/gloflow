@@ -187,11 +187,11 @@ func UploadComplete(pUploadImageIDstr gf_images_core.GFimageID,
 		return nil, gfErr
 	}
 	
-	imageToProcessLst := []gf_images_jobs_core.GF_image_uploaded_to_process{
+	imageToProcessLst := []gf_images_jobs_core.GFimageUploadedToProcess{
 		{
-			GF_image_id_str:  pUploadImageIDstr,
-			S3_file_path_str: uploadInfo.S3filePathStr,
-			Meta_map:         pMetaMap,
+			GFimageIDstr:  pUploadImageIDstr,
+			S3filePathStr: uploadInfo.S3filePathStr,
+			MetaMap:       pMetaMap,
 		},
 	}
 

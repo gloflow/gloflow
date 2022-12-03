@@ -50,67 +50,67 @@ func InitHandlers(pMux *http.ServeMux,
 
 				//--------------------------
 				// INPUT
-				input_map, gf_err := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				inputMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
-				pRuntimeSys.LogFun("INFO", "input_map - "+fmt.Sprint(input_map))
+				pRuntimeSys.LogFun("INFO", "input_map - "+fmt.Sprint(inputMap))
 
-				job_type_str                           := input_map["job_type_str"].(string)
-				clientTypeStr                          := input_map["client_type_str"].(string)
-				url_encoded_imgs_urls_str              := input_map["imgs_urls_str"].(string)
-				url_encoded_imgs_origin_pages_urls_str := input_map["imgs_origin_pages_urls_str"].(string)
+				job_type_str                       := inputMap["job_type_str"].(string)
+				clientTypeStr                      := inputMap["client_type_str"].(string)
+				urlEncodedImagesURLsStr            := inputMap["imgs_urls_str"].(string)
+				urlEncodedImagesOriginPagesURLsStr := inputMap["imgs_origin_pages_urls_str"].(string)
 
 				// ADD!! - accept this flows_names argument from http arguments, not hardcoded as is here
-				flows_names_lst := []string{"general",}
+				flowsNamesLst := []string{"general",}
 
 				pRuntimeSys.LogFun("INFO", fmt.Sprintf("job_type_str    - %s", job_type_str))
 				pRuntimeSys.LogFun("INFO", fmt.Sprintf("client_type_str - %s", clientTypeStr))
-				pRuntimeSys.LogFun("INFO", fmt.Sprintf("flows_names_lst - %s", flows_names_lst))
+				pRuntimeSys.LogFun("INFO", fmt.Sprintf("flows_names_lst - %s", flowsNamesLst))
 
 				//-------------------
 				// IMAGES_TO_PROCESS
 				
-				images_urls_str,_ := url.QueryUnescape(url_encoded_imgs_urls_str)
-				images_urls_lst   := strings.Split(images_urls_str, ",")
+				imagesURLsStr, _ := url.QueryUnescape(urlEncodedImagesURLsStr)
+				imagesURLsLst    := strings.Split(imagesURLsStr, ",")
 
-				imgs_origin_pages_urls_str,_ := url.QueryUnescape(url_encoded_imgs_origin_pages_urls_str)
-				imgs_origin_pages_urls_lst   := strings.Split(imgs_origin_pages_urls_str, ",")
+				imgs_origin_pages_urls_str, _ := url.QueryUnescape(urlEncodedImagesOriginPagesURLsStr)
+				imgs_origin_pages_urls_lst    := strings.Split(imgs_origin_pages_urls_str, ",")
 				
-				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_urls_str - "+url_encoded_imgs_urls_str)
-				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+url_encoded_imgs_origin_pages_urls_str)
+				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_urls_str - "+urlEncodedImagesURLsStr)
+				pRuntimeSys.LogFun("INFO", "url_encoded_imgs_origin_pages_urls_str - "+urlEncodedImagesOriginPagesURLsStr)
 
-				images_to_process_lst := []gf_images_jobs_core.GF_image_extern_to_process{}
-				for i, image_url_str := range images_urls_lst {
+				imagesToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{}
+				for i, imageURLstr := range imagesURLsLst {
 
-					image_origin_page_url_str := imgs_origin_pages_urls_lst[i]
+					imageOriginPageURLstr := imgs_origin_pages_urls_lst[i]
 
-					img_to_process := gf_images_jobs_core.GF_image_extern_to_process{
-						Source_url_str:      image_url_str,
-						Origin_page_url_str: image_origin_page_url_str,
+					img_to_process := gf_images_jobs_core.GFimageExternToProcess{
+						SourceURLstr:     imageURLstr,
+						OriginPageURLstr: imageOriginPageURLstr,
 					}
-					images_to_process_lst = append(images_to_process_lst, img_to_process)
+					imagesToProcessLst = append(imagesToProcessLst, img_to_process)
 				}
 
 				//-------------------
 
-				running_job, job_expected_outputs_lst, gf_err := gf_images_jobs_client.RunExternImages(clientTypeStr,
-					images_to_process_lst,
-					flows_names_lst,
+				runningJob, jobExpectedOutputsLst, gfErr := gf_images_jobs_client.RunExternImages(clientTypeStr,
+					imagesToProcessLst,
+					flowsNamesLst,
 					pJobsMngrCh,
 					pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				
 				//------------------
 				// OUTPUT
-				output_map := map[string]interface{}{
-					"running_job_id_str":       running_job.Id_str,
-					"job_expected_outputs_lst": job_expected_outputs_lst,
+				outputMap := map[string]interface{}{
+					"running_job_id_str":       runningJob.Id_str,
+					"job_expected_outputs_lst": jobExpectedOutputsLst,
 				}
-				return output_map, nil
+				return outputMap, nil
 
 				//------------------
 			}

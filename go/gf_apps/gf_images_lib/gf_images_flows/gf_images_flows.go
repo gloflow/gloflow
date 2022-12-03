@@ -255,15 +255,15 @@ func FlowsAddExternImages(pImagesExternURLsLst []string,
 	pRuntimeSys               *gf_core.RuntimeSys) (*string, []*string, []gf_images_core.GFimageID, *gf_core.GFerror) {
 
 	//------------------
-	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{}
+	imagesURLsToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{}
 	for i := 0; i < len(pImagesExternURLsLst); i++ {
 
 		imageExternURLstr := pImagesExternURLsLst[i]
 		imageOriginPageURLstr := pImagesOriginPagesURLsStr[i]
 		
-		image := gf_images_jobs_core.GF_image_extern_to_process{
-			Source_url_str:      imageExternURLstr,
-			Origin_page_url_str: imageOriginPageURLstr,
+		image := gf_images_jobs_core.GFimageExternToProcess{
+			SourceURLstr:     imageExternURLstr,
+			OriginPageURLstr: imageOriginPageURLstr,
 		}
 		imagesURLsToProcessLst = append(imagesURLsToProcessLst, image)
 	}
@@ -308,10 +308,10 @@ func FlowsAddExternImage(pImageExternURLstr string,
 	pRuntimeSys.LogFun("FUN_ENTER", "gf_images_flows.FlowsAddExternImage()")
 
 	//------------------
-	imagesURLsToProcessLst := []gf_images_jobs_core.GF_image_extern_to_process{
+	imagesURLsToProcessLst := []gf_images_jobs_core.GFimageExternToProcess{
 			{
-				Source_url_str:      pImageExternURLstr,
-				Origin_page_url_str: pImageOriginPageURLstr,
+				SourceURLstr:     pImageExternURLstr,
+				OriginPageURLstr: pImageOriginPageURLstr,
 			},
 		}
 	

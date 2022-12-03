@@ -236,9 +236,9 @@ func pipelineScreenshot(pURLstr string,
 
 	//-----------------
 	// GF_IMAGES_JOBS__RUN
-	images_to_process_lst := []gf_images_jobs_core.GF_image_local_to_process{
+	images_to_process_lst := []gf_images_jobs_core.GFimageLocalToProcess{
 		{
-			Local_file_path_str: bookmark_local_image_name_str,
+			LocalFilePathStr: bookmark_local_image_name_str,
 		},
 	}
 	client_type_str := "gf_tagger_bookmarks"

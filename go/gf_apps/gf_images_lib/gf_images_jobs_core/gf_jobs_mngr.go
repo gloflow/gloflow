@@ -49,8 +49,8 @@ type GFjobRunning struct {
 	End_time_f      float64       `bson:"end_time_f"`
 
 	// LEGACY!! - update "images_to_process_lst" to "images_extern_to_process_lst" in the DB (bson)
-	Images_extern_to_process_lst   []GF_image_extern_to_process   `bson:"images_to_process_lst"`
-	Images_uploaded_to_process_lst []GF_image_uploaded_to_process `bson:"images_uploaded_to_process_lst"`
+	Images_extern_to_process_lst   []GFimageExternToProcess   `bson:"images_to_process_lst"`
+	Images_uploaded_to_process_lst []GFimageUploadedToProcess `bson:"images_uploaded_to_process_lst"`
 	
 	Errors_lst     []JobError       `bson:"errors_lst"`
 	job_updates_ch chan JobUpdateMsg `bson:"-"`
@@ -67,19 +67,19 @@ type GFjobRuntime struct {
 //------------------------
 // IMAGES_TO_PROCESS
 
-type GF_image_extern_to_process struct {
-	Source_url_str      string `bson:"source_url_str"` // FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
-	Origin_page_url_str string `bson:"origin_page_url_str"`
+type GFimageExternToProcess struct {
+	SourceURLstr     string `bson:"source_url_str"` // FIX!! - rename this to Origin_url_str to be consistent with other origin_url naming
+	OriginPageURLstr string `bson:"origin_page_url_str"`
 }
 
-type GF_image_uploaded_to_process struct {
-	GF_image_id_str  gf_images_core.GFimageID
-	S3_file_path_str string                 // path to image in S3 in a bucket that it was originally uploaded to by client
-	Meta_map         map[string]interface{} // metadata user might include for this image
+type GFimageUploadedToProcess struct {
+	GFimageIDstr  gf_images_core.GFimageID
+	S3filePathStr string                 // path to image in S3 in a bucket that it was originally uploaded to by client
+	MetaMap       map[string]interface{} // metadata user might include for this image
 }
 
-type GF_image_local_to_process struct {
-	Local_file_path_str string
+type GFimageLocalToProcess struct {
+	LocalFilePathStr string
 }
 
 //------------------------
@@ -94,9 +94,9 @@ type JobMsg struct {
 	Job_updates_ch                 chan JobUpdateMsg  // used by jobs_mngr to send job_updates to
 	Msg_response_ch                chan interface{}     // DEPRECATED!! use a specific struct as a message format, interface{} too general.
 
-	Images_extern_to_process_lst   []GF_image_extern_to_process
-	Images_uploaded_to_process_lst []GF_image_uploaded_to_process
-	Images_local_to_process_lst    []GF_image_local_to_process
+	Images_extern_to_process_lst   []GFimageExternToProcess
+	Images_uploaded_to_process_lst []GFimageUploadedToProcess
+	Images_local_to_process_lst    []GFimageLocalToProcess
 
 	Flows_names_lst                []string
 }
