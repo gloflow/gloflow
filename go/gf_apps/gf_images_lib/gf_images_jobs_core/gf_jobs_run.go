@@ -129,7 +129,7 @@ func runJobExternImages(pImagesToProcessLst []GFimageExternToProcess,
 		// GET_MIME_CONTENT_TYPE
 		// determening mime types from file headers is more robust/reliable 
 		// than using file extensions for 
-		headersMap, userAgentStr := gf_images_core.GetHTTPreqConfig()
+		headersMap, userAgentStr := gf_core.HTTPgetReqConfig()
 		imageContentTypeStr, gfErr := gf_core.HTTPdetectMIMEtypeFromURL(sourceURLstr,
 			headersMap,
 			userAgentStr,

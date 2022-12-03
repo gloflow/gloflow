@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
-func Test__main(p_test *testing.T) {
+func TestMain(p_test *testing.T) {
 
 	fmt.Println("TEST__MAIN ==============================================")
 	
@@ -78,7 +78,6 @@ func Test__main(p_test *testing.T) {
 
 	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
-	
 
 	// RUNTIME
 	runtimeSys := &gf_core.RuntimeSys{

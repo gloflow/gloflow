@@ -111,7 +111,7 @@ func DownloadFile(pImageURLstr string,
 	pRuntimeSys               *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//-----------------------
-	headersMap, userAgentStr := GetHTTPreqConfig()
+	headersMap, userAgentStr := gf_core.HTTPgetReqConfig()
 	ctx := context.Background()
 
 	HTTPfetch, gfErr := gf_core.HTTPfetchURL(pImageURLstr, headersMap, userAgentStr, ctx, pRuntimeSys)
@@ -200,12 +200,4 @@ func DownloadFile(pImageURLstr string,
 	//--------------
 
 	return nil
-}
-
-//---------------------------------------------------
-
-func GetHTTPreqConfig() (map[string]string, string) {
-	headersMap   := map[string]string{}
-	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
-	return headersMap, userAgentStr
 }

@@ -37,7 +37,7 @@ func renderInitialPage(p_flow_name_str string,
 	p_page_size_int          int, // 5
 	p_tmpl                   *template.Template,
 	p_subtemplates_names_lst []string,
-	p_ctx                    context.Context,
+	pCtx                     context.Context,
 	pRuntimeSys              *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//---------------------
@@ -59,7 +59,7 @@ func renderInitialPage(p_flow_name_str string,
 		page_lst, gfErr := dbGetPage(p_flow_name_str,
 			start_position_int, // p_cursor_start_position_int
 			p_page_size_int,    // p_elements_num_int
-			p_ctx,
+			pCtx,
 			pRuntimeSys)
 
 		if gfErr != nil {
@@ -74,7 +74,7 @@ func renderInitialPage(p_flow_name_str string,
 
 	flow_pages_num_int, gfErr := dbGetPagesTotalNum(p_flow_name_str,
 		p_page_size_int,
-		p_ctx,
+		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr

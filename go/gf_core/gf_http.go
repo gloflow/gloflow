@@ -27,6 +27,7 @@ import (
 	"bufio"
 	"strings"
 	"context"
+	"io"
 	"io/ioutil"
 	"path/filepath"
 	"encoding/json"
@@ -204,23 +205,71 @@ func HTTPfetchURL(pURLstr string,
 }
 
 //---------------------------------------------------
+
+func HTTPgetFile(pTargetURLstr string,
+	pFileLocalPathStr string,
+	pCtx              context.Context,
+	pRuntimeSys       *RuntimeSys) *GFerror {
+	
+
+	//--------------
+	headersMap, userAgentStr := HTTPgetReqConfig()
+
+	HTTPfetch, gfErr := HTTPfetchURL(pTargetURLstr, headersMap, userAgentStr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+	defer HTTPfetch.Resp.Body.Close()
+
+	//--------------
+	// WRITE TO FILE
+	fmt.Printf("local file path - %s\n", pFileLocalPathStr)
+
+	out, err := os.Create(pFileLocalPathStr)
+	defer out.Close()
+
+	if err != nil {
+		gfErr := ErrorCreate("failed to create local file for fetched file",
+			"file_create_error",
+			map[string]interface{}{"file_local_path_str": pFileLocalPathStr,},
+			err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+
+	_, err = io.Copy(out, HTTPfetch.Resp.Body)
+	if err != nil {
+		gfErr := ErrorCreate("failed to copy HTTP GET response Body buffer to a file",
+			"file_buffer_copy_error",
+			map[string]interface{}{
+				"file_local_path_str": pFileLocalPathStr,
+				"target_url_str":      pTargetURLstr,
+			},
+			err, "gf_core", pRuntimeSys)
+		return gfErr
+	}
+
+	//--------------
+	return nil
+}
+
+//---------------------------------------------------
 // PUT_FILE
 
-func HTTPputFile(p_target_url_str string,
-	p_file_path_str string,
-	pHeadersMap     map[string]string,
-	pRuntimeSys     *RuntimeSys) (*http.Response, *GFerror) {
+func HTTPputFile(pTargetURLstr string,
+	pFilePathStr string,
+	pHeadersMap  map[string]string,
+	pRuntimeSys  *RuntimeSys) (*http.Response, *GFerror) {
 
 
 
 	// FILE_OPEN
-	f, err := os.Open(p_file_path_str)
+	f, err := os.Open(pFilePathStr)
 	if err != nil {
 		gfErr := ErrorCreate("failed to open a file on the local FS that is to be sent to AWS S3",
 			"file_open_error",
 			map[string]interface{}{
-				"target_url_str": p_target_url_str,
-				"file_path_str":  p_file_path_str,
+				"target_url_str": pTargetURLstr,
+				"file_path_str":  pFilePathStr,
 			},
 			err, "gf_core", pRuntimeSys)
 		return nil, gfErr
@@ -229,13 +278,13 @@ func HTTPputFile(p_target_url_str string,
 
 
 
-	req, err := http.NewRequest(http.MethodPut, p_target_url_str, buffer)
+	req, err := http.NewRequest(http.MethodPut, pTargetURLstr, buffer)
     if err != nil {
         gfErr := ErrorCreate("failed to create a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
-				"target_url_str": p_target_url_str,
-				"file_path_str":  p_file_path_str,
+				"target_url_str": pTargetURLstr,
+				"file_path_str":  pFilePathStr,
 			},
 			err, "gf_core", pRuntimeSys)
 		return nil, gfErr
@@ -248,13 +297,13 @@ func HTTPputFile(p_target_url_str string,
 
 
 	// FILE_SIZE
-	fi, err := os.Stat(p_file_path_str)
+	fi, err := os.Stat(pFilePathStr)
     if err != nil {
 		gfErr := ErrorCreate("failed to get file info via stat() to find out its size for uploading to S3 via HTTP PUT",
 			"file_stat_error",
 			map[string]interface{}{
-				"target_url_str": p_target_url_str,
-				"file_path_str":  p_file_path_str,
+				"target_url_str": pTargetURLstr,
+				"file_path_str":  pFilePathStr,
 			},
 			err, "gf_core", pRuntimeSys)
 		return nil, gfErr
@@ -269,14 +318,14 @@ func HTTPputFile(p_target_url_str string,
 
     client := http.Client{}
 
-	pRuntimeSys.LogFun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", p_target_url_str))
+	pRuntimeSys.LogFun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", pTargetURLstr))
     resp, err := client.Do(req)
     if err != nil {
 		gfErr := ErrorCreate("failed to execute a HTTP PUT request to upload file to S3",
 			"http_client_req_error",
 			map[string]interface{}{
-				"target_url_str": p_target_url_str,
-				"file_path_str":  p_file_path_str,
+				"target_url_str": pTargetURLstr,
+				"file_path_str":  pFilePathStr,
 			},
 			err, "gf_core", pRuntimeSys)
 		return nil, gfErr
@@ -469,4 +518,12 @@ func HTTPgetStreamingResponse(pURLstr string,
 	    }
 	}
 	return &dataLst, nil
+}
+
+//-------------------------------------------------
+
+func HTTPgetReqConfig() (map[string]string, string) {
+	headersMap   := map[string]string{}
+	userAgentStr := "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"
+	return headersMap, userAgentStr
 }

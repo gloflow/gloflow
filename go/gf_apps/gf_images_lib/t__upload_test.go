@@ -32,7 +32,7 @@ import (
 
 //---------------------------------------------------
 
-func Test__upload(p_test *testing.T) {
+func TestUpload(p_test *testing.T) {
 
 	fmt.Println("TEST__UPLOAD ==============================================")
 
