@@ -55,7 +55,7 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	pCtx          context.Context,
 	pRuntimeSys   *RuntimeSys) (string, *GFerror) {
 
-	
+	fmt.Println("detecting remote URL MIME type (fetching initial 512 bytes)...")
 
 	// fetch the first 512 bytes, which is all we need
 	// for determening MIME type.
@@ -71,15 +71,8 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	}
 	defer HTTPfetch.Resp.Body.Close()
 	
-
-
-
-
 	bodyBuffer, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
-
 	contentTypeStr := http.DetectContentType(bodyBuffer)
-
-
 
 	return contentTypeStr, nil
 }
@@ -113,6 +106,7 @@ func HTTPfetchURL(pURLstr string,
 	pCtx          context.Context,
 	pRuntimeSys   *RuntimeSys) (*GF_http_fetch, *GFerror) {
 
+	fmt.Printf("URL - %s\n", pURLstr)
 
 	// TIMEOUT
 	timeoutSec := time.Second * 60

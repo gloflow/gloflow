@@ -183,9 +183,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 		return nil, "", gfErr
 	}
 
-	spew.Dump(bodyMap)
-
-
+	// spew.Dump(bodyMap)
 
 	nftsLst := bodyMap["ownedNfts"].([]interface{})
 
@@ -236,7 +234,7 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 		}
 		gfNFT.MetadataAttributesLst = attributesLst
 	
-		fmt.Println(">>>>>>>>")
+		fmt.Println("ALCHEMY FETCHED NFT >>>>>>>>")
 		spew.Dump(gfNFT)
 
 		nftsParsedPageLst = append(nftsParsedPageLst, gfNFT)
