@@ -22,6 +22,8 @@ package gf_nft
 import (
 	"context"
 	"time"
+	"strings"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
@@ -124,6 +126,10 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnft, *gf_core.GFerror) {
 
+	// ADD!! - externalize this configuration, so that the user can configure which IPFS gateway
+	//         they want to use to download their NFT media assets from
+	IPFSgatewayBaseStr := "https://ipfs.io/ipfs"
+
 	NFTsLst := []*GFnft{}
 	for _, nftAlchemy := range pNFTsAlchemyLst {
 
@@ -133,6 +139,17 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 			nftAlchemy.ContractAddressStr,
 			nftAlchemy.TokenIDstr,},
 			creationTimeUNIXf)
+
+		//-------------------
+		// IMPORTANT!! - not using the Alchemy supplied nftAlchemy.MediaURIgatewayStr because 
+		//               often it is based on their own CDN which might have arbitrary firewall/cloudflare
+		//               rules which might interfere with media fetching.
+		//               instead the user should be able to control which IPFS gateway the NFT media assets
+		//               are fetched from.
+		nftIPFScidStr := strings.ReplaceAll(nftAlchemy.MediaURIrawStr, "ipfs://", "")
+		redirectedMediaURIgatewayStr := fmt.Sprintf("%s/%s", IPFSgatewayBaseStr, nftIPFScidStr)
+
+		//-------------------
 
 		nft := &GFnft{
 			Vstr:  "0",
@@ -151,7 +168,7 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 
 			// GATEWAY_URIs
 			TokenURIgatewayStr: nftAlchemy.TokenURIgatewayStr,
-			MediaURIgatewayStr: nftAlchemy.MediaURIgatewayStr,
+			MediaURIgatewayStr: redirectedMediaURIgatewayStr, // nftAlchemy.MediaURIgatewayStr,
 
 			AlchemyIDstr: nftAlchemy.IDstr,
 		}

@@ -45,8 +45,12 @@ func createAsImagesInFlows(pNFTsLst []*GFnft,
 
 	for _, nft := range pNFTsLst {
 
-		imagesExternURLsLst      = append(imagesExternURLsLst, strings.TrimSpace(nft.MediaURIgatewayStr))
-		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "")
+		nftMediaURLstr := strings.TrimSpace(nft.MediaURIgatewayStr)
+		imagesExternURLsLst = append(imagesExternURLsLst, nftMediaURLstr)
+
+		// imageOriginPageURL == "nft" used because this image is not coming from any origin page (not scraped or
+		// pinned from any html page), instead it belongs to an NFT.
+		imagesOriginPagesURLsStr = append(imagesOriginPagesURLsStr, "nft")
 	}
 
 	_, imagesThumbSmallRelativeURLlst, imagesIDsLst, gfErr := gf_images_flows.FlowsAddExternImages(imagesExternURLsLst,

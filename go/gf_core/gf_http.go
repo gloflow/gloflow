@@ -75,7 +75,8 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 
 	bodyBytesLst, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
 
-	fmt.Println("body bytes - ", bodyBytesLst)
+	// REMOVE!! - for debugging only
+	fmt.Println("body bytes - ", string(bodyBytesLst))
 
 	contentTypeStr := http.DetectContentType(bodyBytesLst)
 
