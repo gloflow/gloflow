@@ -46,7 +46,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// METRICS
-	metrics := gf_images_core.MetricsCreate("gf_images_service")
+	metrics := gf_images_core.MetricsCreate("gf_images")
 
 	//-------------
 	// DB_INDEXES

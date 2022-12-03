@@ -37,7 +37,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	pyPluginsExecDurationGauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: pNamespaceStr,
-			Name: "gf_images_py_plugins__exec_duration",
+			Name: "py_plugins__exec_duration",
 			Help: "duration in seconds for how long the Py plugin runs",
 		})
 	prometheus.MustRegister(pyPluginsExecDurationGauge)

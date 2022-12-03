@@ -43,7 +43,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	// CMD__START_JOB_LOCAL_IMAGES__COUNT
 	cmd__start_job_local_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: pNamespaceStr,
-		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_local_imgs__count"),
+		Name: fmt.Sprintf("cmd__start_job_local_imgs__count"),
 		Help: "job command start_job_local_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_local_imgs__count)
@@ -51,7 +51,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	// CMD__START_JOB_LOCAL_IMAGES__COUNT
 	cmd__start_job_transform_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: pNamespaceStr,
-		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_transform_imgs__count"),
+		Name: fmt.Sprintf("cmd__start_job_transform_imgs__count"),
 		Help: "job command start_job_transform_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_transform_imgs__count)
@@ -59,7 +59,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	// CMD__START_JOB_UPLOAD_IMGS__COUNT
 	cmd__start_job_uploaded_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: pNamespaceStr,
-		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_uploaded_imgs__count"),
+		Name: fmt.Sprintf("cmd__start_job_uploaded_imgs__count"),
 		Help: "job command start_job_uploaded_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_uploaded_imgs__count)
@@ -67,7 +67,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	// CMD__START_JOB_EXTERN_IMGS__COUNT
 	cmd__start_job_extern_imgs__count := prometheus.NewCounter(prometheus.CounterOpts{
 		Namespace: pNamespaceStr,
-		Name: fmt.Sprintf("gf_images_jobs__cmd__start_job_extern_imgs__count__count"),
+		Name: fmt.Sprintf("cmd__start_job_extern_imgs__count__count"),
 		Help: "job command start_job_extern_imgs #",
 	})
 	prometheus.MustRegister(cmd__start_job_extern_imgs__count)

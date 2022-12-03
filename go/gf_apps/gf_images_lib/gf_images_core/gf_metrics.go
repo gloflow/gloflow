@@ -38,7 +38,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	imageUploadClientDurationGauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: pNamespaceStr,
-			Name: "gf_images_client_upload__duration",
+			Name: "client_upload__duration",
 			Help: "duration in seconds (client reported) for how long it takes for the whole image upload process (in seconds)",
 		})
 	prometheus.MustRegister(imageUploadClientDurationGauge)
@@ -47,7 +47,7 @@ func MetricsCreate(pNamespaceStr string) *GFmetrics {
 	imageUploadClientTransferDurationGauge := prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: pNamespaceStr,
-			Name: "gf_images_client_upload__transfer_duration",
+			Name: "client_upload__transfer_duration",
 			Help: "duration in seconds (client reported) for how long it takes for the image upload data transfer (in seconds)",
 		})
 	prometheus.MustRegister(imageUploadClientTransferDurationGauge)
