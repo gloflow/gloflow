@@ -376,7 +376,7 @@ function gf_upload__send_metrics(p_upload_duration_sec_f,
 	$.ajax({
 		type: "POST",
 		url:  url_str,
-		data: data_map,
+		data: JSON.stringify(data_map),
 		//-------------------------------------------------
 		"success": (p_data_map) => {
 

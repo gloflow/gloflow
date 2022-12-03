@@ -149,7 +149,10 @@ function init(p_log_fun) {
 	const target_full_host_str = "";
 
 	gf_upload__init(upload_flow_name_str,
-		target_full_host_str);
+		target_full_host_str,
+		(p_upload_gf_image_id_str)=>{
+
+		});
 
 	//---------------------
 
