@@ -72,6 +72,9 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	}
 	defer HTTPfetch.Resp.Body.Close()
 	
+
+	fmt.Println(HTTPfetch.Resp.Body)
+	
 	bodyBuffer, _ := ioutil.ReadAll(HTTPfetch.Resp.Body)
 	contentTypeStr := http.DetectContentType(bodyBuffer)
 
