@@ -62,7 +62,7 @@ export async function init(p_log_fun) {
         }
 
         $(all_flows_container).find(`#${target_container_id_str}`).append(`
-            <div id="flow_info">
+            <div class="flow_info">
                 <div class="flow_imgs_count">${flow_imgs_count_int}</div>
                 <div class="flow_name">
                     <a href="${flow_url_str}">${flow_name_str}</a>

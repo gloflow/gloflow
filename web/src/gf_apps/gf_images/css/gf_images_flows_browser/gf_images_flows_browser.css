@@ -28,6 +28,9 @@ body {
     padding-right: 11px;
     font-size: 21px;
 	z-index: 10;
+
+	border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
 }
 
 /*small_view*/
@@ -117,24 +120,24 @@ body {
 
 #flows_picker {
 	position: fixed;
-	top: 46px;
+	top: 50px;
 	right: 0px;
 }
-#flows_picker #flow_info {
+#flows_picker .flow_info {
 	display: flex;
 	background-color: rgb(247 247 247);
 	margin-bottom: 4px;
     padding: 4px;
 }
 #flows_picker .flow_imgs_count {
-	color: black;
+	color: gray;
 }
 #flows_picker .flow_name {
 	padding-left: 5px;
 }
 #flows_picker .flow_name a {
 	text-decoration: none;
-    color: black;
+    color: gray;
 	font-weight: bold;
 }
 

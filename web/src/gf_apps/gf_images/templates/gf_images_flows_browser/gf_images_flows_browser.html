@@ -48,12 +48,13 @@
 					{{- /*IMAGE THUMBNAIL DATA*/}}
 					{{- /*REMOVE!! - IS THIS USED????*/}}
 					<div style='display:none'>
-						{{- /*this div is a data carrier, so it should not be visible*/}}
+						{{- /*this div is a data carrier, so it should not be visible.
+							REMOVE!! - add and read this data as data-img_thumb_small_url*/}}
 						<div class='thumb_small_url'>
 							{{- .thumbnail_small_url_str }}
 						</div>
 					</div>
-					<img src="{{.thumbnail_small_url_str}}" data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}" data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
+					<img src="{{.thumbnail_medium_url_str}}" data-img_thumb_medium_url="{{ .thumbnail_medium_url_str }}" data-img_thumb_large_url="{{ .thumbnail_large_url_str }}"></img>
 						
 					{{- /*------------------------------------------------------*/}}
 					{{- /*TAGS*/}}
