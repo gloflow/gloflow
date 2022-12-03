@@ -51,10 +51,10 @@ func initHandlers(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:            pHTTPmux,
-		Metrics:        metrics,
-		Store_run_bool: false,
-		Sentry_hub:     nil,
+		Mux:          pHTTPmux,
+		Metrics:      metrics,
+		StoreRunBool: false,
+		SentryHub:    nil,
 	}
 
 	//-------------------------------------------------
