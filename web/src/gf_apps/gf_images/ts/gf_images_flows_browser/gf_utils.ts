@@ -54,7 +54,7 @@ export function init_image_element(p_img__id_str :string,
 	var img_url_str;
 	switch (p_current_image_view_type_str) {
 		case "small_view":
-			img_url_str = p_img__thumbnail_small_url_str;
+			img_url_str = p_img__thumbnail_medium_url_str;
 			break;
 		case "medium_view":
 			img_url_str = p_img__thumbnail_medium_url_str;
