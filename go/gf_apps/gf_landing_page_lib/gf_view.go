@@ -28,8 +28,8 @@ import (
 //------------------------------------------------
 
 func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
-	p_featured_imgs_0_lst []*GFfeaturedImage,
-	p_featured_imgs_1_lst []*GFfeaturedImage,
+	pFeaturedImages0lst   []*GFfeaturedImage,
+	pFeaturedImages1lst   []*GFfeaturedImage,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
 	pResp                 io.Writer,
@@ -38,24 +38,24 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
 	type tmplData struct {
-		Featured_posts_lst  []*GFfeaturedPost
-		Featured_imgs_0_lst []*GFfeaturedImage
-		Featured_imgs_1_lst []*GFfeaturedImage
-		Sys_release_info    gf_core.SysReleaseInfo
-		Is_subtmpl_def      func(string) bool // used inside the main_template to check if the subtemplate is defined
+		FeaturedPostsLst   []*GFfeaturedPost
+		FeaturedImages0lst []*GFfeaturedImage
+		FeaturedImages1lst []*GFfeaturedImage
+		SysReleaseInfo     gf_core.SysReleaseInfo
+		IsSubtmplDef       func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	err := pTemplate.Execute(pResp, tmplData{
-		Featured_posts_lst:  pFeaturedPostsLst,
-		Featured_imgs_0_lst: p_featured_imgs_0_lst,
-		Featured_imgs_1_lst: p_featured_imgs_1_lst,
-		Sys_release_info:    sysReleaseInfo,
+		FeaturedPostsLst:   pFeaturedPostsLst,
+		FeaturedImages0lst: pFeaturedImages0lst,
+		FeaturedImages1lst: pFeaturedImages1lst,
+		SysReleaseInfo:     sysReleaseInfo,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED
-		Is_subtmpl_def: func(p_subtemplate_name_str string) bool {
+		IsSubtmplDef: func(pSubtemplateNameStr string) bool {
 			for _, n := range pSubtemplatesNamesLst {
-				if n == p_subtemplate_name_str {
+				if n == pSubtemplateNameStr {
 					return true
 				}
 			}

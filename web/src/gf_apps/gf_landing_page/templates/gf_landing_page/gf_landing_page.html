@@ -51,7 +51,7 @@
 			
 		</div>
 
-		{{- /*ABOUT SECTION*/}}
+		{{- /* ABOUT SECTION */}}
 		<div id="about_section" style="position: relative;">
             <div id="label" style="
                 background-color: #b5b5b5;
@@ -83,7 +83,7 @@
 	</div>
 	<div id="right_section">
 		{{- /*-----------------------------------------------------*/}}
-		{{- /*REGISTER*/}}
+		{{- /* REGISTER */ }}
 		<!-- <div id='register'>
 			<div id='register_email_button' class='button'>
 				<div class='button_title'>Get an Invite</div>
@@ -91,79 +91,79 @@
 		</div> -->
 		
 		{{- /*-----------------------------------------------------*/}}
-		{{- /*IMAGES*/}}
+		{{- /* IMAGES */ }}
 		<div id="images">
-			{{- /*BUTTON*/}}
+			{{- /* BUTTON */}}
 			<a id     = 'images_flows_button' 
 			   class  = 'button'
 			   target = '_blank' 
 			   href   = '/images/flows/browser?fname=general'>
 				Images
 			</a>
-			{{- /*IMAGES*/}}
+			{{- /* IMAGES */ }}
 			<div id='featured_images_0'>
-				{{- range .Featured_imgs_0_lst}}
+				{{- range .FeaturedImages0lst }}
 					<div class='image_info'>
-						<div class="image_title">{{.Title_str}}</div>
+						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">
-							<img class="image_resource" src="{{.Image_url_str}}" data-img_thumb_medium_url="{{.Image_thumbnail_medium_url_str}}" crossOrigin="anonymous"></img>
+							<img class="image_resource" src="{{ .ImageURLstr }}" data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}" crossOrigin="anonymous"></img>
 						</div>
 						<div class="origin_page_url">
-							<a href='{{.Image_origin_page_url_str}}' target="_blank">
-								{{- .Image_origin_page_url_host_str}}
+							<a href='{{ .ImageOriginPageURLstr }}' target="_blank">
+								{{- .ImageOriginPageURLhostStr}}
 							</a>
 						</div>
-						<div class="creation_time">{{.Creation_unix_time_str}}</div>
+						<div class="creation_time">{{ .CreationUNIXtimeStr }}</div>
 					</div>
 				{{ end }}
 			</div>
 
 			<div id='featured_images_1'>
-				{{- range .Featured_imgs_1_lst}}
+				{{- range .FeaturedImages1lst }}
 					<div class='image_info'>
-						<div class="image_title">{{.Title_str}}</div>
+						<div class="image_title">{{ .TitleStr }}</div>
 						
 						<div class="image">
-							<img class="image_resource" src="{{.Image_url_str}}" data-img_thumb_medium_url="{{.Image_thumbnail_medium_url_str}}" crossOrigin="anonymous"></img>
+							<img class="image_resource" src="{{ .ImageURLstr }}" data-img_thumb_medium_url="{{ .ImageThumbnailMediumURLstr }}" crossOrigin="anonymous"></img>
 						</div>
 						<div class="origin_page_url">
-							<a href='{{.Image_origin_page_url_str}}' target="_blank">
-								{{- .Image_origin_page_url_host_str}}
+							<a href='{{ .ImageOriginPageURLstr }}' target="_blank">
+								{{- .ImageOriginPageURLhostStr }}
 							</a>
 						</div>
-						<div class="creation_time">{{.Creation_unix_time_str}}</div>
+						<div class="creation_time">{{ .CreationUNIXtimeStr }}</div>
 					</div>
 				{{ end }}
 			</div>
 		</div>
 		{{- /*-----------------------------------------------------*/}}
-		{{- /*PUBLISHER_APP*/}}
+		{{- /* PUBLISHER_APP */ }}
 		<div id="posts">
-			{{- /*BUTTON*/}}
+			{{- /* BUTTON */ }}
 			<a id     = 'posts_browser_button' 
 			   class  = 'button'
 			   target = '_blank' 
 			   href   = '/posts/browser'>
 				Posts
 			</a>
-			{{- /*POSTS*/}}
+			{{- /* POSTS */}}
 			<div id='featured_posts'>
-				{{- range .Featured_posts_lst}}
+				{{- range .FeaturedPostsLst }}
 					<div class='post_info'>
-						<div class='post_title'>{{.Title_str}}</div>
+						<div class='post_title'>{{ .TitleStr }}</div>
 
-						{{- /*POST IMAGES NUMBER*/}}
+						{{- /* POST IMAGES NUMBER */}}
 						<div class='post_images_number'>
-							<div class='num'>{{.Images_number_int}}</div>
+							<div class='num'>{{ .ImagesNumberInt }}</div>
 							<div class='label'>images #</div>
 						</div>
 						
-						{{- /*POST IMAGE*/}}
+						{{- /* POST IMAGE */}}
 						<div class='post_image'>
 							<a target='_blank' 
-							   href  ="{{.Url_str}}">
-								<img class="image_resource" src="{{.Image_url_str}}" crossOrigin="anonymous"></img>
+							   href  ="{{ .URLstr }}">
+								<img class="image_resource" src="{{ .ImageURLstr }}" crossOrigin="anonymous"></img>
 							</a>
 						</div>
 					</div>
@@ -171,9 +171,9 @@
 			</div>
 		</div>
 		{{- /*-----------------------------------------------------*/}}
-		{{- /*DOMAINS*/}}
+		{{- /* DOMAINS */}}
 		<div id="domains">
-			{{- /*BUTTON*/}}
+			{{- /* BUTTON */}}
 			<a id     = 'domains_browser_button' 
 			   class  = 'button'
 			   target = '_blank' 
@@ -182,9 +182,9 @@
 			</a>
 		</div>
 		{{- /*-----------------------------------------------------*/}}
-		{{- /*BOOKMARKS*/}}
+		{{- /* BOOKMARKS */}}
 		<div id="bookmarks">
-			{{- /*BUTTON*/}}
+			{{- /* BUTTON */}}
 			<a id     = 'bookmarks_browser_button' 
 			   class  = 'button'
 			   target = '_blank' 
@@ -196,10 +196,10 @@
 	</div>
 	{{- /*------------------------------------------------------*/}}
 	<div id='sys_release_info'>
-		<div id='version'>v <span>{{- .Sys_release_info.Version_str }}</span></div>
-		<div id='name'>name <span>{{- .Sys_release_info.Name_str }}</span></div>
-		<div id='description'>description <span>{{- .Sys_release_info.Description_str }}</span></div>
-		<div id='git_commit'>Git commit <a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .Sys_release_info.Git_commit_str }}'>{{- .Sys_release_info.Git_commit_str }}</a></div>
+		<div id='version'>v <span>{{- .SysReleaseInfo.Version_str }}</span></div>
+		<div id='name'>name <span>{{- .SysReleaseInfo.Name_str }}</span></div>
+		<div id='description'>description <span>{{- .SysReleaseInfo.Description_str }}</span></div>
+		<div id='git_commit'>Git commit <a target="_blank" href='https://github.com/gloflow/gloflow/commit/{{- .SysReleaseInfo.Git_commit_str }}'>{{- .SysReleaseInfo.Git_commit_str }}</a></div>
 	</div>
 
 	{{- /*-----------------------------------------------------*/}}
@@ -222,7 +222,7 @@
 	
 	{{- /*-----------------------------------------------------*/}}
 	{{- /*SUBTEMPLATE*/}}
-	{{ if (call .Is_subtmpl_def "gf_footer")}}
+	{{ if (call .IsSubtmplDef "gf_footer")}}
 		{{ template "gf_footer" }}
 	{{ end }}
 	{{- /*------------------------------------------------------*/}}

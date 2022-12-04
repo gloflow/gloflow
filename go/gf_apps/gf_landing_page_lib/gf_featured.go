@@ -31,33 +31,33 @@ import (
 //------------------------------------------------
 
 type GFfeaturedPost struct {
-	Title_str            string
-	Image_url_str        string
-	Url_str              string
-	Images_number_int    int	
+	TitleStr        string
+	ImageURLstr     string
+	URLstr          string
+	ImagesNumberInt int	
 }
 
 type GFfeaturedImage struct {
-	Title_str                      string
-	Image_url_str                  string
-	Image_thumbnail_medium_url_str string
-	Image_origin_page_url_str      string // for each featured image this is the URL used in links
-	Image_origin_page_url_host_str string // this is displayed in the user UI for each featured image
-	Creation_unix_time_str         string
-	FlowNameStr                    string
+	TitleStr                   string
+	ImageURLstr                string
+	ImageThumbnailMediumURLstr string
+	ImageOriginPageURLstr      string // for each featured image this is the URL used in links
+	ImageOriginPageURLhostStr  string // this is displayed in the user UI for each featured image
+	CreationUNIXtimeStr        string
+	FlowNameStr                string
 }
 
 //------------------------------------------
 // IMAGES
 //------------------------------------------
 
-func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
-	p_elements_num_to_get_int int, // 5
-	pFlowNameStr              string,
-	pRuntimeSys               *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
+func getFeaturedImgs(pMaxRandomCursorPositionInt int, // 500
+	pElementsNumToGetInt int, // 5
+	pFlowNameStr         string,
+	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedImage, *gf_core.GFerror) {
 
-	imgs_lst, err := gf_images_core.DBgetRandomImagesRange(p_elements_num_to_get_int,
-		p_max_random_cursor_position_int,
+	imagesLst, err := gf_images_core.DBgetRandomImagesRange(pElementsNumToGetInt,
+		pMaxRandomCursorPositionInt,
 		pFlowNameStr,
 		pRuntimeSys)
 
@@ -65,90 +65,89 @@ func getFeaturedImgs(p_max_random_cursor_position_int int, // 500
 		return nil, err
 	}
 
-	featured_imgs_lst := []*GFfeaturedImage{}
-	for _, img := range imgs_lst {
+	featuredImagesLst := []*GFfeaturedImage{}
+	for _, image := range imagesLst {
 
-		// FIX!! - create a proper gf_er
-		origin_page_url, err := url.Parse(img.Origin_page_url_str)
+		// FIX!! - create a proper gfErr
+		originPageURL, err := url.Parse(image.Origin_page_url_str)
 		if err != nil {
 			continue
 		}
 
 		featured := &GFfeaturedImage{
-			Title_str:                      img.TitleStr,
-			Image_url_str:                  img.Thumbnail_small_url_str,
-			Image_thumbnail_medium_url_str: img.Thumbnail_medium_url_str,
-			Image_origin_page_url_str:      img.Origin_page_url_str,
-			Image_origin_page_url_host_str: origin_page_url.Host,
-			Creation_unix_time_str:         strconv.FormatFloat(img.Creation_unix_time_f, 'f', 6, 64),
+			TitleStr:                   image.TitleStr,
+			ImageURLstr:                image.Thumbnail_medium_url_str,
+			ImageThumbnailMediumURLstr: image.Thumbnail_medium_url_str,
+			ImageOriginPageURLstr:      image.Origin_page_url_str,
+			ImageOriginPageURLhostStr:  originPageURL.Host,
+			CreationUNIXtimeStr:        strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 		}
-		featured_imgs_lst = append(featured_imgs_lst, featured)
+		featuredImagesLst = append(featuredImagesLst, featured)
 	}
-	return featured_imgs_lst, nil
+	return featuredImagesLst, nil
 }
 
 //------------------------------------------
 // POSTS
 //------------------------------------------
 
-func getFeaturedPosts(p_max_random_cursor_position_int int, // 500
-	p_elements_num_to_get_int int, // 5
-	pRuntimeSys             *gf_core.RuntimeSys) ([]*GFfeaturedPost, *gf_core.GFerror) {
+func getFeaturedPosts(pMaxRandomCursorPositionInt int, // 500
+	pElementsNumToGetInt int, // 5
+	pRuntimeSys          *gf_core.RuntimeSys) ([]*GFfeaturedPost, *gf_core.GFerror) {
 
 	//gets posts starting in some random position (time wise), 
 	//and as many as specified after that random point
-	posts_lst, gf_err := gf_publisher_core.DB__get_random_posts_range(p_elements_num_to_get_int,
-		p_max_random_cursor_position_int,
+	postsLst, gfErr := gf_publisher_core.DB__get_random_posts_range(pElementsNumToGetInt,
+		pMaxRandomCursorPositionInt,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
-	featured_posts_lst := postsToFeatured(posts_lst, pRuntimeSys)
-	return featured_posts_lst, nil
+	featuredPostsLst := postsToFeatured(postsLst, pRuntimeSys)
+	return featuredPostsLst, nil
 }
 
 //------------------------------------------
 
-func postsToFeatured(p_posts_lst []*gf_publisher_core.GFpost, pRuntimeSys *gf_core.RuntimeSys) []*GFfeaturedPost {
+func postsToFeatured(pPostsLst []*gf_publisher_core.GFpost, pRuntimeSys *gf_core.RuntimeSys) []*GFfeaturedPost {
 
-	featured_posts_lst := []*GFfeaturedPost{}
-	for _, post := range p_posts_lst {
+	featuredPostsLst := []*GFfeaturedPost{}
+	for _, post := range pPostsLst {
 		featured          := postToFeatured(post, pRuntimeSys)
-		featured_posts_lst = append(featured_posts_lst, featured)
+		featuredPostsLst = append(featuredPostsLst, featured)
 	}
 
 	// CAUTION!! - in some cases image_src is null or "error", in which case it should not 
 	//             be included in the final output. This is due to past issues/bugs in the gf_image and 
 	//             gf_publisher.
-	featured_elements_with_no_errors_lst := []*GFfeaturedPost{}
-	for _, featured := range featured_posts_lst {
-		pRuntimeSys.LogFun("INFO", "featured.Image_url_str - "+featured.Image_url_str)
+	featuredElementsWithNoErrorsLst := []*GFfeaturedPost{}
+	for _, featured := range featuredPostsLst {
+		
+		pRuntimeSys.LogFun("INFO", "featured.Image_url_str - "+featured.ImageURLstr)
 
-		//
-		if featured.Image_url_str == "" || featured.Image_url_str == "error" {
-			err_msg_str := fmt.Sprintf("post with title [%s] has a image_src that is [%s]", featured.Title_str, featured.Image_url_str)
-			pRuntimeSys.LogFun("ERROR", err_msg_str)
+		if featured.ImageURLstr == "" || featured.ImageURLstr == "error" {
+			errMsgStr := fmt.Sprintf("post with title [%s] has a image_src that is [%s]", featured.TitleStr, featured.ImageURLstr)
+			pRuntimeSys.LogFun("ERROR", errMsgStr)
 		} else {
-			featured_elements_with_no_errors_lst = append(featured_elements_with_no_errors_lst, featured)
+			featuredElementsWithNoErrorsLst = append(featuredElementsWithNoErrorsLst, featured)
 		}
 	}
 
-	return featured_elements_with_no_errors_lst
+	return featuredElementsWithNoErrorsLst
 }
 
 //------------------------------------------
 
 func postToFeatured(pPost *gf_publisher_core.GFpost, pRuntimeSys *gf_core.RuntimeSys) *GFfeaturedPost {
-	pRuntimeSys.LogFun("FUN_ENTER","gf_featured.post_to_featured()")
 
 	postURLstr := fmt.Sprintf("/posts/%s", pPost.TitleStr)
 
 	featured := &GFfeaturedPost{
-		Title_str:         pPost.TitleStr,
-		Image_url_str:     pPost.ThumbnailURLstr,
-		Url_str:           postURLstr,
-		Images_number_int: len(pPost.ImagesIDsLst),
+		TitleStr:        pPost.TitleStr,
+		ImageURLstr:     pPost.ThumbnailURLstr,
+		URLstr:          postURLstr,
+		ImagesNumberInt: len(pPost.ImagesIDsLst),
 	}
 	return featured
 }
