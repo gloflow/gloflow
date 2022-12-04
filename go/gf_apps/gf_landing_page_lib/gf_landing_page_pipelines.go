@@ -20,58 +20,55 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_landing_page_lib
 
 import (
-	"io"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //------------------------------------------------
 
-func pipelineRenderLandingPage(p_imgs__max_random_cursor_position_int int, // 500
-	p_posts__max_random_cursor_position_int int,
-	p_featured_posts_to_get_int int, // 5
-	p_featured_imgs_to_get_int  int, // 10
-	p_tmpl                      *template.Template,
-	p_subtemplates_names_lst    []string,
-	pResp                       io.Writer,
-	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
+func pipelineRenderLandingPage(pImagesMaxRandomCursorPositionInt int, // 500
+	pPostsMaxRandomCursorPositionInt int,
+	pFeaturedPostsToGetInt  int, // 5
+	pFeaturedImagesToGetInt int, // 10
+	pTemplate               *template.Template,
+	pSubtemplatesNamesLst   []string,
+	pRuntimeSys             *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 	//-------------------
 	// FEATURED_IMAGES - two random groups of images are fetched
-	featured_imgs_0_lst, gfErr := getFeaturedImgs(p_imgs__max_random_cursor_position_int,
-		p_featured_imgs_to_get_int,
+	featuredImages0lst, gfErr := getFeaturedImgs(pImagesMaxRandomCursorPositionInt,
+		pFeaturedImagesToGetInt,
 		"general",
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
-	featured_imgs_1_lst, gfErr := getFeaturedImgs(p_imgs__max_random_cursor_position_int,
-		p_featured_imgs_to_get_int,
+	featuredImages1lst, gfErr := getFeaturedImgs(pImagesMaxRandomCursorPositionInt,
+		pFeaturedImagesToGetInt,
 		"general",
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
 	//-------------------
-	featuredPostsLst, gfErr := getFeaturedPosts(p_posts__max_random_cursor_position_int,
-		p_featured_posts_to_get_int,
+	featuredPostsLst, gfErr := getFeaturedPosts(pPostsMaxRandomCursorPositionInt,
+		pFeaturedPostsToGetInt,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
-	gfErr = renderTemplate(featuredPostsLst,
-		featured_imgs_0_lst,
-		featured_imgs_1_lst,
-		p_tmpl,
-		p_subtemplates_names_lst,
-		pResp,
+	templateRenderedStr, gfErr := renderTemplate(featuredPostsLst,
+		featuredImages0lst,
+		featuredImages1lst,
+		pTemplate,
+		pSubtemplatesNamesLst,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return "", gfErr
 	}
 
-	return nil
+	return templateRenderedStr, nil
 }

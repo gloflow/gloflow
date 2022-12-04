@@ -62,14 +62,14 @@ func renderBookmarks(pBookmarksLst []*GFbookmark,
 
 	if err != nil {
 
-		gf_err := gf_core.ErrorCreate("failed to render the gf_bookmarks template",
+		gfErr := gf_core.ErrorCreate("failed to render the gf_bookmarks template",
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_tagger", pRuntimeSys)
-		return "", gf_err
+		return "", gfErr
 	}
 
 
-	template_rendered_str := buff.String()
-	return template_rendered_str, nil	
+	templateRenderedStr := buff.String()
+	return templateRenderedStr, nil	
 }

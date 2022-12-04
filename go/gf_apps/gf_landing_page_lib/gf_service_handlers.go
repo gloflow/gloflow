@@ -28,50 +28,52 @@ import (
 
 //------------------------------------------------
 
-func init_handlers(p_templates_paths_map map[string]string,
+func init_handlers(pTemplatesPathsMap map[string]string,
 	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gf_err := tmpl__load(p_templates_paths_map, pRuntimeSys)
-	if gf_err != nil {
-		return gf_err
+	gfTemplates, gfErr := templatesLoad(pTemplatesPathsMap, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
 	}
 	
 	//---------------------
 	// METRICS
-	handlers_endpoints_lst := []string{
+	handlersEndpointsLst := []string{
 		"/",
 		"/landing/main",
 	}
 	metricsGroupNameStr := "main"
-	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_landing_page", handlers_endpoints_lst)
+	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, "gf_landing_page", handlersEndpointsLst)
 
 	//---------------------
 	// MAIN
 
 	//------------------------------------------------
-	landingMainHandlerFun := func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+	landingMainHandlerFun := func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-		if p_req.Method == "GET" {
+		if pReq.Method == "GET" {
 
 
-			imgs__max_random_cursor_position_int  := 10000
-			posts__max_random_cursor_position_int := 2000
-			gfErr := pipelineRenderLandingPage(imgs__max_random_cursor_position_int,
-				posts__max_random_cursor_position_int,
+			imagesMaxRandomCursorPositionInt := 10000
+			postsMaxRandomCursorPositionInt  := 2000
+
+			templateRenderedStr, gfErr := pipelineRenderLandingPage(imagesMaxRandomCursorPositionInt,
+				postsMaxRandomCursorPositionInt,
 				5,  // p_featured_posts_to_get_int
 				10, // p_featured_imgs_to_get_int
-				gf_templates.tmpl,
-				gf_templates.subtemplates_names_lst,
-				p_resp,
+				gfTemplates.template,
+				gfTemplates.subtemplatesNamesLst,
 				pRuntimeSys)
 
 			if gfErr != nil {
 				return nil, gfErr
 			}
+
+			pResp.Write([]byte(templateRenderedStr))
 		}
 		
 		// IMPORTANT!! - this handler renders and writes template output to HTTP response, 

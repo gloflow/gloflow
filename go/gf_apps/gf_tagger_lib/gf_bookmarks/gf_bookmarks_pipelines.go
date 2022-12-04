@@ -71,8 +71,8 @@ type GFbookmarkInputGet struct {
 }
 
 type GFbookmarkOutputGet struct {
-	Bookmarks_lst         []*GFbookmarkExtern
-	Template_rendered_str string
+	Bookmarks_lst       []*GFbookmarkExtern
+	TemplateRenderedStr string
 }
 
 //---------------------------------------------------
@@ -102,7 +102,7 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 	if p_input.Response_format_str == "html" {
 		
 		// RENDER_TEMPLATE
-		template_rendered_str, gfErr := renderBookmarks(bookmarks_lst,
+		templateRenderedStr, gfErr := renderBookmarks(bookmarks_lst,
 			p_tmpl,
 			p_subtemplates_names_lst,
 			pRuntimeSys)
@@ -112,7 +112,7 @@ func PipelineGet(p_input *GFbookmarkInputGet,
 
 
 		output = &GFbookmarkOutputGet{
-			Template_rendered_str: template_rendered_str,
+			TemplateRenderedStr: templateRenderedStr,
 		}
 
 	//------------------------

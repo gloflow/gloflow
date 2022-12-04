@@ -20,10 +20,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_landing_page_lib
 
 import (
-	"io"
+	"bytes"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
+
+//------------------------------------------------
+
+type gfTemplates struct {
+	template             *template.Template
+	subtemplatesNamesLst []string
+}
 
 //------------------------------------------------
 
@@ -32,8 +39,7 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 	pFeaturedImages1lst   []*GFfeaturedImage,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
-	pResp                 io.Writer,
-	pRuntimeSys           *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
@@ -45,7 +51,8 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 		IsSubtmplDef       func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
-	err := pTemplate.Execute(pResp, tmplData{
+	buff := new(bytes.Buffer)
+	err := pTemplate.Execute(buff, tmplData{
 		FeaturedPostsLst:   pFeaturedPostsLst,
 		FeaturedImages0lst: pFeaturedImages0lst,
 		FeaturedImages1lst: pFeaturedImages1lst,
@@ -70,8 +77,29 @@ func renderTemplate(pFeaturedPostsLst []*GFfeaturedPost,
 			"template_render_error",
 			map[string]interface{}{},
 			err, "gf_landing_page", pRuntimeSys)
-		return gfErr
+		return "", gfErr
 	}
 
-	return nil
+	templateRenderedStr := buff.String()
+	return templateRenderedStr, nil	
+}
+
+//-------------------------------------------------
+
+func templatesLoad(pTemplatesPathsMap map[string]string,
+	pRuntimeSys *gf_core.RuntimeSys) (*gfTemplates, *gf_core.GFerror) {
+
+	main_template_filepath_str := pTemplatesPathsMap["gf_landing_page"]
+
+	template, subtemplatesNamesLst, gf_err := gf_core.TemplatesLoad(main_template_filepath_str,
+		pRuntimeSys)
+	if gf_err != nil {
+		return nil, gf_err
+	}
+
+	gfTemplates := &gfTemplates{
+		template:             template,
+		subtemplatesNamesLst: subtemplatesNamesLst,
+	}
+	return gfTemplates, nil
 }

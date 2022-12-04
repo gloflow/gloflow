@@ -143,7 +143,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		
 			case "html":
 
-				pResp.Write([]byte(output.Template_rendered_str))
+				pResp.Write([]byte(output.TemplateRenderedStr))
 				return nil, nil
 			}
 
