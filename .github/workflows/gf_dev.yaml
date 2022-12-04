@@ -132,7 +132,7 @@ jobs:
       # GF_LANDING_PAGE
       - name: test gf_landing_page
         run: |
-          cd /home/gf/go/gf_apps/gf_landing_page
+          cd /home/gf/go/gf_apps/gf_landing_page_lib
           go test -v
 
       #-------------------------------
