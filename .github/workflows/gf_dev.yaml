@@ -133,7 +133,7 @@ jobs:
       - name: test gf_landing_page
         run: |
           cd /home/gf/go/gf_apps/gf_landing_page_lib
-          go test -v
+          go test -v -mongodb_host=mongo
 
       #-------------------------------
 
