@@ -25,38 +25,39 @@ import (
 )
 
 //-------------------------------------------------------------
-type GF_config struct {
+type GFconfig struct {
 
 	// DOMAIN - where this gf_solo instance is reachable on
-	Domain_base_str       string `mapstructure:"domain_base"`
-	Domain_admin_base_str string `mapstructure:"domain_admin_base"`
+	DomainBaseStr      string `mapstructure:"domain_base"`
+	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`
 	
 	// PORTS
-	Port_str         string `mapstructure:"port"`
-	Port_admin_str   string `mapstructure:"port_admin"`
-	Port_metrics_str string `mapstructure:"port_metrics"`
+	PortStr        string `mapstructure:"port"`
+	PortAdminStr   string `mapstructure:"port_admin"`
+	PortMetricsStr string `mapstructure:"port_metrics"`
 
 	// MONGODB - this is the dedicated mongodb DB
-	Mongodb_host_str    string `mapstructure:"mongodb_host"`
-	Mongodb_db_name_str string `mapstructure:"mongodb_db_name"`
+	MongoHostStr   string `mapstructure:"mongodb_host"`
+	MongoDBnameStr string `mapstructure:"mongodb_db_name"`
 
 	// ELASTICSEARCH
-	Elasticsearch_host_str string `mapstructure:"elasticsearch_host"`
+	ElasticsearchHostStr string `mapstructure:"elasticsearch_host"`
 
 	// SENTRY_ENDPOINT
-	Sentry_endpoint_str string `mapstructure:"sentry_endpoint"`
+	SentryEndpointStr string `mapstructure:"sentry_endpoint"`
 
 	// TEMPLATES
-	Templates_paths_map map[string]string `mapstructure:"templates_paths"`
+	TemplatesPathsMap map[string]string `mapstructure:"templates_paths"`
 
 	//--------------------
-	// ADMIN
-	Admin_mfa_secret_key_base32_str string `mapstructure:"admin_mfa_secret_key_base32"`
-	Admin_email_str                 string `mapstructure:"admin_email"`
+	// IDENTITY
+	AuthSubsystemTypeStr       string `mapstructure:auth_subsystem_type`
+	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
+	AdminEmailStr              string `mapstructure:"admin_email"`
 
 	//--------------------
 	// GF_IMAGES
-	Images__config_file_path_str string `mapstructure:"images__config_file_path"`
+	ImagesConfigFilePathStr string `mapstructure:"images__config_file_path"`
 
 	//--------------------
 	// GF_ANALYTICS
@@ -70,6 +71,8 @@ type GF_config struct {
 
 	//--------------------
 	// AWS
+	// DEPRECATED!? - should these be parsed from ENV vars always? and the AWS client
+	//                should acquire these creds on its own instead of getting them passed in directly.
 	AWS_access_key_id_str     string `mapstructure:"aws_access_key_id"`
 	AWS_secret_access_key_str string `mapstructure:"aws_secret_access_key"`
 	AWS_token_str             string `mapstructure:"aws_token"`
@@ -89,15 +92,15 @@ type GF_config struct {
 }
 
 //-------------------------------------------------------------
-func Config__init(p_config_dir_path_str string,
-	p_config_file_name_str string) (*GF_config, error) {
+func ConfigInit(pConfigDirPathStr string,
+	pConfigFileNameStr string) (*GFconfig, error) {
 
 
-	config_name_str := strings.Split(p_config_file_name_str, ".")[0] // viper expects just the file name, without extension
+	configNameStr := strings.Split(pConfigFileNameStr, ".")[0] // viper expects just the file name, without extension
 	
 	// FILE
-	viper.AddConfigPath(p_config_dir_path_str)
-	viper.SetConfigName(config_name_str)
+	viper.AddConfigPath(pConfigDirPathStr)
+	viper.SetConfigName(configNameStr)
 	
 	//--------------------
 	// ENV_PREFIX - "GF" becomes "GF_" - prefix expected in all recognized ENV vars.
@@ -119,7 +122,7 @@ func Config__init(p_config_dir_path_str string,
 	}
 
 	// CONFIG
-	config := &GF_config{}
+	config := &GFconfig{}
 	err = viper.Unmarshal(config)
 	if err != nil {
 		return nil, err

@@ -53,22 +53,30 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
+
+	switch pServiceInfo.AuthSubsystemTypeStr {
+
 	// USERPASS
-	gfErr = initHandlersUserpass(pHTTPmux,
-		pServiceInfo,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+		
+		gfErr = initHandlersUserpass(pHTTPmux,
+			pServiceInfo,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 
 	// AUTH0
-	auth0config := gf_auth0.Init()
-	initHandlersAuth0(pHTTPmux,
-		auth0config,
-		pServiceInfo,
-		pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
+		
+		auth0config := gf_auth0.Init()
+		initHandlersAuth0(pHTTPmux,
+			auth0config,
+			pServiceInfo,
+			pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 	}
 
 	//------------------------

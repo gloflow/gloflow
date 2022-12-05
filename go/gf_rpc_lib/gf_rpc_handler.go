@@ -60,11 +60,6 @@ type GFrpcHandlerRun struct {
 
 type handlerHTTP func(context.Context, http.ResponseWriter, *http.Request) (map[string]interface{}, *gf_core.GFerror)
 
-const (
-	GF_AUTH_SUBSYSTEM_TYPE__BUILTIN = "GF_AUTH_SUBSYSTEM_TYPE__BUILTIN"
-	GF_AUTH_SUBSYSTEM_TYPE__AUTH0   = "GF_AUTH_SUBSYSTEM_TYPE__AUTH0"
-)
-
 //-------------------------------------------------
 // HTTP
 
@@ -91,14 +86,15 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 	// AUTH0
 	var jwtAuth0middleware *jwtmiddleware.JWTMiddleware
-	if pHandlerRuntime.AuthSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
+	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 		
 		
 		jwtAuth0middleware = gf_identity_core.Auth0middlewareInit(pRuntimeSys)
 
 	} else {
 		// BUILTIN_AUTH
-		pHandlerRuntime.AuthSubsystemTypeStr = GF_AUTH_SUBSYSTEM_TYPE__BUILTIN
+		// set the builtin auth_subsystem type as the default value if another value is not set
+		pHandlerRuntime.AuthSubsystemTypeStr = gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN
 	}
 
 	// HANDLER_FUN
@@ -113,7 +109,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 
 	// AUTH0
-	if pHandlerRuntime.AuthSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
+	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 
 		if pAuthBool {
 

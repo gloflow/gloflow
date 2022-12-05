@@ -38,7 +38,7 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 	//---------------------
 	// METRICS
 	handlersEndpointsLst := []string{
-		"/v1/identity/auth0/",
+		"/v1/identity/auth0/login_callback",
 	}
 	metricsGroupNameStr := "auth0"
 	metrics := gf_rpc_lib.MetricsCreateForHandlers(metricsGroupNameStr, pServiceInfo.NameStr, handlersEndpointsLst)
@@ -56,7 +56,8 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 	}
 
 	//---------------------
-	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/",
+	// user redirected to this URL by Auth0 on successful login
+	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/login_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {

@@ -187,9 +187,27 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	}
 
 	//--------------------
+	// CLI_ARGUMENT - AUTH_SUBSYSTEM_TYPE
+	authSubsystemTypeDefaultStr := "builtin"
+	cmdBase.PersistentFlags().StringP("auth_subsystem_type", "", authSubsystemTypeDefaultStr,
+		"auth subsystem to use - builtin|auth0")
+	err = viper.BindPFlag("auth_subsystem_type", cmdBase.PersistentFlags().Lookup("auth_subsystem_type"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+
+	// ENV
+	err = viper.BindEnv("auth_subsystem_type", "GF_AUTH_SUBSYSTEM_TYPE")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
+
+	//--------------------
 	// CLI_ARGUMENT - ADMIN_MFA_SECRET_KEY_BASE32
-	admin_mfa_secret_key_base32_str := "aabbccddeeffgghh"
-	cmdBase.PersistentFlags().StringP("admin_mfa_secret_key_base32", "", admin_mfa_secret_key_base32_str,
+	adminMFAsecretKeyBase32defaultStr := "aabbccddeeffgghh"
+	cmdBase.PersistentFlags().StringP("admin_mfa_secret_key_base32", "", adminMFAsecretKeyBase32defaultStr,
 		"secret key used to verify mfa (totp/hotp), base32 encoded")
 	err = viper.BindPFlag("admin_mfa_secret_key_base32", cmdBase.PersistentFlags().Lookup("admin_mfa_secret_key_base32"))
 	if err != nil {
@@ -206,8 +224,8 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - ADMIN_EMAIL
-	admin_email__default_str := ""
-	cmdBase.PersistentFlags().StringP("admin_email", "", admin_email__default_str, "default email of the administrator to use")
+	adminEmailDefaultStr := ""
+	cmdBase.PersistentFlags().StringP("admin_email", "", adminEmailDefaultStr, "default email of the administrator to use")
 	err = viper.BindPFlag("admin_email", cmdBase.PersistentFlags().Lookup("admin_email"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")

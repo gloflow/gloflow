@@ -47,19 +47,19 @@ import (
 )
 
 //-------------------------------------------------
-func Run(pConfig *GF_config,
+func Run(pConfig *GFconfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	//-------------
 	// CONFIG
 	portMetricsInt := 9110
 
-	portInt, err := strconv.Atoi(pConfig.Port_str)
+	portInt, err := strconv.Atoi(pConfig.PortStr)
 	if err != nil {
 		panic(err)
 	}
 
-	portAdminInt, err := strconv.Atoi(pConfig.Port_admin_str)
+	portAdminInt, err := strconv.Atoi(pConfig.PortAdminStr)
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +89,7 @@ func Run(pConfig *GF_config,
 	// GF_LANDING_PAGE
 	// landing_page goes first, its handlers, because it contains the root path handler ("/")
 	// and that should match first.
-	gf_landing_page_lib.InitService(pConfig.Templates_paths_map,
+	gf_landing_page_lib.InitService(pConfig.TemplatesPathsMap,
 		gfSoloHTTPmux,
 		pRuntimeSys)
 
@@ -97,8 +97,11 @@ func Run(pConfig *GF_config,
 	// GF_IDENTITY
 
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
-		NameStr:                               "gf_identity",
-		DomainBaseStr:                         pConfig.Domain_base_str,
+		NameStr:       "gf_identity",
+		DomainBaseStr: pConfig.DomainBaseStr,
+
+		AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
+
 		AuthLoginURLstr:                       "/landing/main", // on email confirm redirect user to this
 		AuthLoginSuccessRedirectURLstr:        "/v1/home/main", // on login success redirecto to home
 		EnableEventsAppBool:                   true,
@@ -128,7 +131,7 @@ func Run(pConfig *GF_config,
 
 		adminServiceInfo := &gf_admin_lib.GFserviceInfo{
 			NameStr:                           "gf_admin",
-			AdminEmailStr:                     pConfig.Admin_email_str,
+			AdminEmailStr:                     pConfig.AdminEmailStr,
 			EnableEventsAppBool:               true,
 			EnableUserCredsInSecretsStoreBool: true,
 			EnableEmailBool:                   true,
@@ -139,9 +142,12 @@ func Run(pConfig *GF_config,
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
 		adminIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
-			NameStr:                    "gf_admin_identity",
-			DomainBaseStr:              pConfig.Domain_admin_base_str,
-			AdminMFAsecretKeyBase32str: pConfig.Admin_mfa_secret_key_base32_str,
+			NameStr:       "gf_admin_identity",
+			DomainBaseStr: pConfig.DomainAdminBaseStr,
+
+			AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
+
+			AdminMFAsecretKeyBase32str: pConfig.AdminMFAsecretKeyBase32str,
 			AuthLoginURLstr:            "/v1/admin/login_ui", // on email confirm redirect user to this
 
 			// FEATURE_FLAGS
@@ -153,7 +159,7 @@ func Run(pConfig *GF_config,
 			
 		}
 
-		gfErr := gf_admin_lib.InitNewService(pConfig.Templates_paths_map,
+		gfErr := gf_admin_lib.InitNewService(pConfig.TemplatesPathsMap,
 			adminServiceInfo,
 			adminIdentityServiceInfo,
 			adminHTTPmux,
@@ -175,7 +181,7 @@ func Run(pConfig *GF_config,
 		AuthLoginURLstr: "/landing/main", // if not logged in redirect users to this
 	}
 
-	gfErr = gf_home_lib.InitService(pConfig.Templates_paths_map,
+	gfErr = gf_home_lib.InitService(pConfig.TemplatesPathsMap,
 		homeServiceInfo,
 		gfSoloHTTPmux,
 		pRuntimeSys)
@@ -187,7 +193,7 @@ func Run(pConfig *GF_config,
 	// GF_IMAGES
 
 	// CONFIG
-	imagesConfig, gfErr := gf_images_core.ConfigGet(pConfig.Images__config_file_path_str,
+	imagesConfig, gfErr := gf_images_core.ConfigGet(pConfig.ImagesConfigFilePathStr,
 		pConfig.ImagesUseNewStorageEngineBool,
 		pConfig.IPFSnodeHostStr,
 		pRuntimeSys)
@@ -196,8 +202,8 @@ func Run(pConfig *GF_config,
 	}
 	
 	gfImagesServiceInfo := &gf_images_core.GFserviceInfo{
-		Mongodb_host_str:                     pConfig.Mongodb_host_str,
-		Mongodb_db_name_str:                  pConfig.Mongodb_db_name_str,
+		Mongodb_host_str:                     pConfig.MongoHostStr,
+		Mongodb_db_name_str:                  pConfig.MongoDBnameStr,
 
 		ImagesStoreLocalDirPathStr:           imagesConfig.ImagesStoreLocalDirPathStr,
 		ImagesThumbnailsStoreLocalDirPathStr: imagesConfig.ImagesThumbnailsStoreLocalDirPathStr,
@@ -210,7 +216,7 @@ func Run(pConfig *GF_config,
 		AWS_secret_access_key_str:            pConfig.AWS_secret_access_key_str,
 		AWS_token_str:                        pConfig.AWS_token_str,
 
-		Templates_paths_map: pConfig.Templates_paths_map,
+		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
@@ -240,14 +246,14 @@ func Run(pConfig *GF_config,
 		Media_domain_str:       imagesConfig.Media_domain_str,
 		Py_stats_dirs_lst:      pConfig.Analytics__py_stats_dirs_lst,
 		Run_indexer_bool:       pConfig.Analytics__run_indexer_bool,
-		Elasticsearch_host_str: pConfig.Elasticsearch_host_str,
+		Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 
 		// DEPRECATE!! - AWS creds are passed in via ENV vars
 		AWS_access_key_id_str:     pConfig.AWS_access_key_id_str,
 		AWS_secret_access_key_str: pConfig.AWS_secret_access_key_str,
 		AWS_token_str:             pConfig.AWS_token_str,
 
-		Templates_paths_map: pConfig.Templates_paths_map,
+		Templates_paths_map: pConfig.TemplatesPathsMap,
 
 		// IMAGES_STORAGE
 		ImagesUseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
@@ -268,7 +274,7 @@ func Run(pConfig *GF_config,
 	gfImagesRuntimeInfo := &gf_publisher_lib.GF_images_extern_runtime_info{
 		Jobs_mngr:               nil, // indicates not to send in-process messages to jobs_mngr goroutine, instead use HTTP REST API of gf_images
 		Service_host_port_str:   gfImagesServiceHostPortStr,
-		Templates_dir_paths_map: pConfig.Templates_paths_map,
+		Templates_dir_paths_map: pConfig.TemplatesPathsMap,
 	}
 	
 	gf_publisher_lib.InitService(gfSoloHTTPmux,
@@ -277,7 +283,7 @@ func Run(pConfig *GF_config,
 
 	//-------------
 	// GF_TAGGER
-	gf_tagger_lib.InitService(pConfig.Templates_paths_map,
+	gf_tagger_lib.InitService(pConfig.TemplatesPathsMap,
 		imagesJobsMngrCh,
 		gfSoloHTTPmux,
 		pRuntimeSys)
@@ -312,13 +318,13 @@ func Run(pConfig *GF_config,
 //-------------------------------------------------
 func RuntimeGet(pConfigPathStr string,
 	pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun          func(string, string)) (*gf_core.RuntimeSys, *GF_config, error) {
+	pLogFun          func(string, string)) (*gf_core.RuntimeSys, *GFconfig, error) {
 
 	// CONFIG
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"
 	
-	config, err := Config__init(configDirPathStr, configNameStr)
+	config, err := ConfigInit(configDirPathStr, configNameStr)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("failed to load config")
@@ -327,9 +333,9 @@ func RuntimeGet(pConfigPathStr string,
 
 	//--------------------
 	// SENTRY - ERROR_REPORTING
-	if config.Sentry_endpoint_str != "" {
+	if config.SentryEndpointStr != "" {
 
-		sentryEndpointStr := config.Sentry_endpoint_str
+		sentryEndpointStr := config.SentryEndpointStr
 		sentrySamplerateF := 1.0
 		sentryTraceHandlersMap := map[string]bool{
 			
@@ -359,13 +365,13 @@ func RuntimeGet(pConfigPathStr string,
 	
 	//--------------------
 	// MONGODB
-	mongodbHostStr := config.Mongodb_host_str
+	mongodbHostStr := config.MongoHostStr
 	mongodbURLstr  := fmt.Sprintf("mongodb://%s", mongodbHostStr)
 	fmt.Printf("mongodb_host    - %s\n", mongodbHostStr)
-	fmt.Printf("mongodb_db_name - %s\n", config.Mongodb_db_name_str)
+	fmt.Printf("mongodb_db_name - %s\n", config.MongoDBnameStr)
 
 	mongodbDB, _, gfErr := gf_core.MongoConnectNew(mongodbURLstr,
-		config.Mongodb_db_name_str,
+		config.MongoDBnameStr,
 		nil,
 		runtimeSys)
 	if gfErr != nil {

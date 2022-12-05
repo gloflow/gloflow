@@ -21,6 +21,13 @@ package gf_identity_core
 
 //---------------------------------------------------
 
+const (
+	GF_AUTH_SUBSYSTEM_TYPE__BUILTIN = "builtin"
+	GF_AUTH_SUBSYSTEM_TYPE__AUTH0   = "auth0"
+)
+
+//---------------------------------------------------
+
 type GFserviceInfo struct {
 	
 	// name of this service, in case multiple are spawned
@@ -29,6 +36,11 @@ type GFserviceInfo struct {
 	// DOMAIN - where this gf_solo instance is reachable on
 	DomainBaseStr string
 
+	//------------------------
+	// AUTH_SUBSYSTEM_TYPE - builtin | auth0
+	AuthSubsystemTypeStr string
+
+	//------------------------
 	// ADMIN_MFA_SECRET_KEY_BASE32
 	AdminMFAsecretKeyBase32str string
 
