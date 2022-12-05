@@ -28,9 +28,6 @@ body {
     padding-right: 11px;
     font-size: 21px;
 	z-index: 10;
-
-	border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
 }
 
 /*small_view*/
@@ -128,6 +125,9 @@ body {
 	background-color: rgb(247 247 247);
 	margin-bottom: 4px;
     padding: 4px;
+
+	border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
 }
 #flows_picker .flow_imgs_count {
 	color: gray;
