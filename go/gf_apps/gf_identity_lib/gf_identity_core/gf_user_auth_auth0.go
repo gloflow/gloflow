@@ -20,13 +20,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
+	"time"
 	"context"
 	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
 //---------------------------------------------------
+
+type GFauth0session struct {
+	IDstr             gf_core.GF_ID          `bson:"id_str"`
+	DeletedBool       bool                   `bson:"deleted_bool"`
+	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
+	AccessTokenStr    string                 `bson:"access_token_str"`
+	ProfileMap        map[string]interface{} `bson:"profile_map"`
+}
+
+type GFauth0inputLoginCallback struct {
+	CodeStr                     string
+	GFsessionIDauth0providedStr gf_core.GF_ID
+	GFsessionIDstr              gf_core.GF_ID
+}
+
+//---------------------------------------------------
+// USED AT ALL??
 
 func Auth0middlewareInit(pRuntimeSys *gf_core.RuntimeSys) *jwtmiddleware.JWTMiddleware {
 
@@ -58,4 +77,100 @@ func Auth0middlewareInit(pRuntimeSys *gf_core.RuntimeSys) *jwtmiddleware.JWTMidd
 
 	jwtAuth0middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
 	return jwtAuth0middleware
+}
+
+//---------------------------------------------------
+
+func Auth0loginPipeline(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (gf_core.GF_ID, *gf_core.GFerror) {
+
+	sessionIDstr := generateSessionID()
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	auth0session := &GFauth0session{
+		IDstr:             sessionIDstr,
+		CreationUNIXtimeF: creationUNIXtimeF,
+	}
+
+	//---------------------
+	// DB
+	gfErr := dbAuth0createNewSession(auth0session,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gf_core.GF_ID(""), gfErr
+	}
+
+	//---------------------
+
+	return sessionIDstr, nil
+}
+
+//---------------------------------------------------
+
+func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
+	pAuthenticator *gf_auth0.GFauthenticator,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	//---------------------
+	// check if the GF session ID stored in the users browsers cookie is the same 
+	// as the GF session ID (auth0 "state" arg) that was provided by Auth0.
+	if pInput.GFsessionIDauth0providedStr != pInput.GFsessionIDstr {
+		gfErr := gf_core.ErrorCreate("invalid 'state' input argument",
+			"verify__input_data_missing_in_req_error",
+			map[string]interface{}{},
+			nil, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+	
+	//---------------------
+	// exchange an authorization code for a token
+	token, err := pAuthenticator.Exchange(pCtx, pInput.CodeStr)
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to exchange an authorization code for a token",
+			"library_error",
+			map[string]interface{}{},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	//---------------------
+	// verify token
+	idToken, gfErr := gf_auth0.VerifyIDtoken(token,
+		pAuthenticator,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//---------------------
+	// this is provided by Auth0
+
+	accessTokenStr := token.AccessToken
+
+	var auth0profileMap map[string]interface{}
+	if err := idToken.Claims(&auth0profileMap); err != nil {
+		gfErr := gf_core.ErrorCreate("failed to verify ID Token",
+			"library_error",
+			map[string]interface{}{},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	//---------------------
+	// DB
+	gfErr = dbAuth0UpdateSession(pInput.GFsessionIDstr,
+		accessTokenStr,
+		auth0profileMap,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	//---------------------
+
+	return nil
 }

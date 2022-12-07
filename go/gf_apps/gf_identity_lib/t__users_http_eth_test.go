@@ -175,14 +175,14 @@ func TestUsersHTTPeth(pTest *testing.T) {
 		if (k == "Set-Cookie") {
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
-				if o == "gf_sess_data" {
+				if o == "gf_sess" {
 					authCookiePresentBool = true
 				}
 			}
 		}
 	}
 	assert.True(pTest, authCookiePresentBool,
-		"login response does not contain the expected 'gf_sess_data' cookie")
+		"login response does not contain the expected 'gf_sess' cookie")
 
 	bodyMap = map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {

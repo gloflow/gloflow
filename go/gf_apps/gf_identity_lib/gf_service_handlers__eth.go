@@ -53,6 +53,8 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
+
+		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
 	}
 
@@ -123,10 +125,9 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 				}
 
 				//---------------------
-				// SET_SESSION_ID - sets gf_sid cookie on all future requests
-				sessionDataStr        := string(output.JWTtokenVal)
-				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-				gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
+				// SET_SESSION_ID - sets gf_sess cookie on all future requests
+				jwtTokenValStr := string(output.JWTtokenVal)
+				gf_session.Create(jwtTokenValStr, pResp)
 
 				//---------------------
 

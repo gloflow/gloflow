@@ -177,11 +177,10 @@ func initHandlers(pAuthLoginURLstr string,
 							return nil, gfErr
 						}
 
-						//---------------------					
-						// SET_SESSION_ID - sets gf_sid cookie on all future requests
-						sessionDataStr        := string(loginFinalizeOutput.JWTtokenVal)
-						sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-						gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
+						//---------------------
+						// SET_SESSION_ID - sets gf_sess cookie on all future requests
+						jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
+						gf_session.Create(jwtTokenValStr, pResp)
 
 						//---------------------
 
@@ -263,11 +262,10 @@ func initHandlers(pAuthLoginURLstr string,
 						return nil, gfErr
 					}
 
-					//---------------------					
-					// SET_SESSION_ID - sets gf_sid cookie on all future requests
-					sessionDataStr        := string(loginFinalizeOutput.JWTtokenVal)
-					sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-					gf_session.SetOnReq(sessionDataStr, pResp, sessionTTLhoursInt)
+					//---------------------	
+					// SET_SESSION_ID - sets gf_sess cookie on all future requests
+					jwtTokenValStr := string(loginFinalizeOutput.JWTtokenVal)
+					gf_session.Create(jwtTokenValStr, pResp)
 
 					//---------------------
 				}

@@ -28,18 +28,111 @@ import (
 )
 
 //---------------------------------------------------
-// p_user_identifier_str - user ID or some other unique user identifier to be used
 
-func SetOnReq(pSessionDataStr string,
-	pResp        http.ResponseWriter,
-	pTTLhoursInt int) {
+func Create(pJWTtokenValStr string,
+	pResp http.ResponseWriter) {
+	
+	sessionDataStr        := pJWTtokenValStr
+	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
+
+	sessionCookieNameStr := "gf_sess"
+	SetOnReq(sessionCookieNameStr,
+		sessionDataStr,
+		pResp,
+		sessionTTLhoursInt)
+}
+
+//---------------------------------------------------
+
+func ValidateOrRedirectToLogin(pReq *http.Request,
+	pResp            http.ResponseWriter,
+	pAuthLoginURLstr *string,
+	pCtx             context.Context,
+	pRuntimeSys      *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+
+	validBool, userIdentifierStr, gfErr := Validate(pReq, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, "", gfErr
+	}
+
+	if !validBool {
+		if pAuthLoginURLstr != nil {
+
+			// redirect user to login url
+			http.Redirect(pResp,
+				pReq,
+				*pAuthLoginURLstr,
+				301)
+
+			return false, "", nil
+		} else {
+			return false, "", nil
+		}
+	}
+
+	return validBool, userIdentifierStr, nil
+}
+
+//---------------------------------------------------
+
+func Validate(pReq *http.Request,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	
+	cookieNameStr := "gf_sess"
+	cookieFoundBool, cookieValStr := GetFromReq(cookieNameStr, pReq)
+	
+	if !cookieFoundBool {
+
+		// gf_sess cookie was never found
+		return false, "", nil
+	}
+	
+	sessionDataStr := cookieValStr
+	JWTtokenValStr := sessionDataStr
+
+	//---------------------
+	// JWT_VALIDATE
+	userIdentifierStr, gfErr := gf_identity_core.JWTpipelineValidate(gf_identity_core.GFjwtTokenVal(JWTtokenValStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, "", gfErr
+	}
+
+	//---------------------
+
+	return true, userIdentifierStr, nil
+}
+
+//---------------------------------------------------
+// GET/SET FROM COOKIES
+//---------------------------------------------------
+
+func GetFromReq(pCookieNameStr string,
+	pReq *http.Request) (bool, string) {
+
+	for _, cookie := range pReq.Cookies() {
+		if (cookie.Name == pCookieNameStr) {
+			sessionDataStr := cookie.Value
+			return true, sessionDataStr
+		}
+	}
+	return false, ""
+}
+
+//---------------------------------------------------
+
+func SetOnReq(pSessionCookieNameStr string,
+	pSessionDataStr string,
+	pResp           http.ResponseWriter,
+	pTTLhoursInt    int) {
 
 	ttl    := time.Duration(pTTLhoursInt) * time.Hour
 	expire := time.Now().Add(ttl)
-	cookieNameStr := "gf_sess_data"
 	
 	cookie := http.Cookie{
-		Name:    cookieNameStr,
+		Name:    pSessionCookieNameStr,
 		Value:   pSessionDataStr,
 		Expires: expire,
 
@@ -64,66 +157,4 @@ func SetOnReq(pSessionDataStr string,
 		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(pResp, &cookie)
-}
-
-//---------------------------------------------------
-
-func Validate(pReq *http.Request,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
-	
-	for _, cookie := range pReq.Cookies() {
-		if (cookie.Name == "gf_sess_data") {
-			sessionDataStr := cookie.Value
-			JWTtokenValStr := sessionDataStr
-
-			//---------------------
-			// JWT_VALIDATE
-			userIdentifierStr, gfErr := gf_identity_core.JWTpipelineValidate(gf_identity_core.GFjwtTokenVal(JWTtokenValStr),
-				pCtx,
-				pRuntimeSys)
-			if gfErr != nil {
-				return false, "", gfErr
-			}
-
-			return true, userIdentifierStr, nil
-
-			//---------------------
-		}
-	}
-
-	// if this point is reached then gf_sess_data cookie was never found
-	return false, "", nil
-}
-
-//---------------------------------------------------
-
-func ValidateOrRedirectToLogin(pReq *http.Request,
-	pResp            http.ResponseWriter,
-	pAuthLoginURLstr *string,
-	pCtx             context.Context,
-	pRuntimeSys      *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
-
-	validBool, userIdentifierStr, gfErr := Validate(pReq, pCtx, pRuntimeSys)
-	if gfErr != nil {
-		return false, "", gfErr
-	}
-
-	if !validBool {
-
-		if pAuthLoginURLstr != nil {
-
-			// redirect user to login url
-			http.Redirect(pResp,
-				pReq,
-				*pAuthLoginURLstr,
-				301)
-
-			return false, "", nil
-		} else {
-			return false, "", nil
-		}
-	}
-
-	return validBool, userIdentifierStr, nil
 }

@@ -47,6 +47,63 @@ type GFloginAttemptUpdateOp struct {
 }
 
 //---------------------------------------------------
+// AUTH0
+//---------------------------------------------------
+
+func dbAuth0createNewSession(pAuth0session *GFauth0session,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	collNameStr := "gf_auth0_session"
+	gfErr := gf_core.MongoInsert(pAuth0session,
+		collNameStr,
+		map[string]interface{}{
+			"caller_err_msg_str": "failed to insert GFauth0session into the DB",
+		},
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	
+	return nil
+}
+
+//---------------------------------------------------
+
+func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
+	pAccessTokenStr  string,
+	pAuth0profileMap map[string]interface{},
+	pCtx             context.Context,
+	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
+
+	//------------------------
+	// FIELDS
+	fieldsTargets := bson.M{}
+	fieldsTargets["access_token_str"] = pAccessTokenStr
+	fieldsTargets["profile_map"]      = pAuth0profileMap
+
+	//------------------------
+	collNameStr := "gf_auth0_session"
+	_, err := pRuntimeSys.Mongo_db.Collection(collNameStr).UpdateMany(pCtx, bson.M{
+			"id_str":       pGFsessionIDstr,
+			"deleted_bool": false,
+		},
+		bson.M{"$set": fieldsTargets})
+		
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to to update user info",
+			"mongodb_update_error",
+			map[string]interface{}{},
+			err, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
 // USER
 //---------------------------------------------------
 
@@ -86,8 +143,6 @@ func DBuserGetAll(pCtx context.Context,
 		return nil, gfErr
 	}
 
-
-	
 	return usersLst, nil
 }
 

@@ -46,6 +46,7 @@ func verifyAuthSignatureAllMethods(pSignatureStr GFauthSignature,
 	if gfErr != nil {
 		return false, gfErr
 	}
+	fmt.Println("first method validation result - ", validBool)
 
 	if !validBool {
 
@@ -60,6 +61,7 @@ func verifyAuthSignatureAllMethods(pSignatureStr GFauthSignature,
 			return false, gfErr
 		}
 	}
+	fmt.Println("second method validation result - ", validBool)
 
 	return validBool, nil
 }

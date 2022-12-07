@@ -73,14 +73,14 @@ func TestUserHTTPcreate(pTestUserNameStr string,
 	
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user create http request failed")
 
-	user_exists_bool         := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
-	user_in_invite_list_bool := bodyMap["data"].(map[string]interface{})["user_in_invite_list_bool"].(bool)
+	userExistsBool       := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
+	userInInviteListBool := bodyMap["data"].(map[string]interface{})["user_in_invite_list_bool"].(bool)
 
-	if (user_exists_bool) {
+	if (userExistsBool) {
 		fmt.Println("supplied user already exists and cant be created")
 		pTest.FailNow()
 	}
-	if (!user_in_invite_list_bool) {
+	if (!userInInviteListBool) {
 		fmt.Println("supplied user is not in the invite list")
 		pTest.FailNow()
 	}
@@ -119,14 +119,14 @@ func TestUserHTTPlogin(pTestUserNameStr string,
 		if (k == "Set-Cookie") {
 			for _, vv := range v {
 				o := strings.Split(vv, "=")[0]
-				if o == "gf_sess_data" {
+				if o == "gf_sess" {
 					authCookiePresentBool = true
 				}
 			}
 		}
 	}
 	assert.True(pTest, authCookiePresentBool,
-		"login response does not contain the expected 'gf_sess_data' cookie")
+		"login response does not contain the expected 'gf_sess' cookie")
 
 	bodyMap := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
@@ -163,9 +163,9 @@ func testUserHTTPupdate(pTest *testing.T,
 		"email_str":       "ivan@gloflow.com",
 		"description_str": "some new description",
 	}
-	data_bytes_lst, _ := json.Marshal(dataMap)
-	_, body_str, errs := pHTTPagent.Post(urlStr).
-		Send(string(data_bytes_lst)).
+	dataBytesLst, _ := json.Marshal(dataMap)
+	_, bodyStr, errs := pHTTPagent.Post(urlStr).
+		Send(string(dataBytesLst)).
 		End()
 
 	if len(errs) > 0 {
@@ -173,15 +173,15 @@ func testUserHTTPupdate(pTest *testing.T,
 		pTest.Fail()
 	}
 
-	body_map := map[string]interface{}{}
-	if err := json.Unmarshal([]byte(body_str), &body_map); err != nil {
+	bodyMap := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(bodyStr), &bodyMap); err != nil {
 		fmt.Println(err)
 		pTest.Fail()
 	}
 
-	spew.Dump(body_map)
+	spew.Dump(bodyMap)
 
-	assert.True(pTest, body_map["status"].(string) != "ERROR", "user updating http request failed")
+	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user updating http request failed")
 }
 
 //-------------------------------------------------
@@ -208,20 +208,20 @@ func testUserHTTPgetMe(pTest *testing.T,
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user get me http request failed")
 
-	user_name_str         := bodyMap["data"].(map[string]interface{})["user_name_str"].(string)
-	email_str             := bodyMap["data"].(map[string]interface{})["email_str"].(string)
-	description_str       := bodyMap["data"].(map[string]interface{})["description_str"].(string)
-	profile_image_url_str := bodyMap["data"].(map[string]interface{})["profile_image_url_str"].(string)
-	banner_image_url_str  := bodyMap["data"].(map[string]interface{})["banner_image_url_str"].(string)
+	userNameStr        := bodyMap["data"].(map[string]interface{})["user_name_str"].(string)
+	emailStr           := bodyMap["data"].(map[string]interface{})["email_str"].(string)
+	descriptionStr     := bodyMap["data"].(map[string]interface{})["description_str"].(string)
+	profileImageURLstr := bodyMap["data"].(map[string]interface{})["profile_image_url_str"].(string)
+	bannerImageURLstr  := bodyMap["data"].(map[string]interface{})["banner_image_url_str"].(string)
 
 	fmt.Println("RESPONSE >>>>")
 	spew.Dump(bodyMap["data"])
 	
 	fmt.Println("====================================")
 	fmt.Println("user me response:")
-	fmt.Println("user_name_str",         user_name_str)
-	fmt.Println("email_str",             email_str)
-	fmt.Println("description_str",       description_str)
-	fmt.Println("profile_image_url_str", profile_image_url_str)
-	fmt.Println("banner_image_url_str",  banner_image_url_str)
+	fmt.Println("user_name_str",         userNameStr)
+	fmt.Println("email_str",             emailStr)
+	fmt.Println("description_str",       descriptionStr)
+	fmt.Println("profile_image_url_str", profileImageURLstr)
+	fmt.Println("banner_image_url_str",  bannerImageURLstr)
 }

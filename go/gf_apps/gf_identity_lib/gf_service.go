@@ -69,8 +69,13 @@ func InitService(pHTTPmux *http.ServeMux,
 	// AUTH0
 	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 		
-		auth0config := gf_auth0.Init()
+		auth0authenticator, auth0config, gfErr := gf_auth0.Init(pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
+
 		initHandlersAuth0(pHTTPmux,
+			auth0authenticator,
 			auth0config,
 			pServiceInfo,
 			pRuntimeSys)
