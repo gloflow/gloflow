@@ -45,24 +45,6 @@ def run__view_realtime(p_cmd_lst,
 
 	return p
 
-#-------------------------------------------------------------
-def read_process_std_stream(p_std_stream,
-	p_view_type_str,
-	p_view_color_str):
-
-	for line in iter(p_std_stream.readline, b''):
-		
-		header_color_str = fg(p_view_color_str)
-		line_str         = line.strip().decode("utf-8")
-
-		# ERROR
-		if "ERROR" in line_str or "error" in line_str:
-			print("%s%s:%s%s%s%s"%(header_color_str, p_view_type_str, attr(0), bg("red"), line_str, attr(0)))
-		else:
-			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
-
-	p_std_stream.close()
-
 #---------------------------------------------------
 # RUN
 def run(p_cmd_str,
@@ -89,16 +71,11 @@ def run(p_cmd_str,
 	t_e = threading.Thread(target=read_process_std_stream, args=(p.stderr, "stderr", "yellow"))
 	t_e.start()
 
-	# for line in iter(p.stdout.readline, b''):	
-	# 	line_str = line.strip().decode("utf-8")
-	# 	print(line_str)
-	#
-	# for line in iter(p.stderr.readline, b''):	
-	# 	line_str = line.strip().decode("utf-8")
-	# 	print(line_str)
-
-	# p.communicate()
 	p.wait()
+	
+	# wait for stdout/stderr printing threads to complete as well before returning from this function
+	t_o.join()
+	t_e.join()
 
 	if p_exit_on_fail_bool:
 		if not p.returncode == 0:
@@ -107,6 +84,23 @@ def run(p_cmd_str,
 			exit(p.returncode)
 
 	return "", "", p.returncode
+
+#-------------------------------------------------------------
+def read_process_std_stream(p_std_stream,
+	p_view_type_str,
+	p_view_color_str):
+
+	for line in iter(p_std_stream.readline, b''):
+		
+		header_color_str = fg(p_view_color_str)
+		line_str         = line.strip().decode("utf-8")
+
+		if "ERROR" in line_str or "error" in line_str:
+			print("%s%s:%s%s%s%s"%(header_color_str, p_view_type_str, attr(0), bg("red"), line_str, attr(0)))
+		else:
+			print("%s%s:%s%s"%(header_color_str, p_view_type_str, attr(0), line_str))
+
+	p_std_stream.close()
 
 #---------------------------------------------------
 # DEPRECATED!! - move all users over to run()
