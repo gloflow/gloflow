@@ -97,7 +97,7 @@ func TestStartService(pPortInt int,
 			EnableEmailBool: false,
 		}
 		InitService(HTTPmux, serviceInfo, pRuntimeSys)
-		gf_rpc_lib.ServerInitWithMux(pPortInt, HTTPmux)
+		gf_rpc_lib.ServerInitWithMux("gf_identity_test", pPortInt, HTTPmux)
 	}()
 	time.Sleep(2*time.Second) // let server startup
 }

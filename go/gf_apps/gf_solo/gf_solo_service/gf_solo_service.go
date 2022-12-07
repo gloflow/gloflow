@@ -142,7 +142,7 @@ func Run(pConfig *GFconfig,
 		//               we want further isolation from main app handlers by
 		//               instantiating gf_identity handlers dedicated to admin.
 		adminIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
-			NameStr:       "gf_admin_identity",
+			NameStr:       "gf_identity_admin",
 			DomainBaseStr: pConfig.DomainAdminBaseStr,
 
 			AuthSubsystemTypeStr: pConfig.AuthSubsystemTypeStr,
@@ -170,7 +170,7 @@ func Run(pConfig *GFconfig,
 		}
 
 		// SERVER_INIT - blocking
-		gf_rpc_lib.ServerInitWithMux(portAdminInt, adminHTTPmux)
+		gf_rpc_lib.ServerInitWithMux("gf_solo_admin", portAdminInt, adminHTTPmux)
 
 	}(sentryHubClone)
 
@@ -310,7 +310,7 @@ func Run(pConfig *GFconfig,
 	
 	//-------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.ServerInitWithMux(portInt, gfSoloHTTPmux)
+	gf_rpc_lib.ServerInitWithMux("gf_solo", portInt, gfSoloHTTPmux)
 
 	//-------------
 }

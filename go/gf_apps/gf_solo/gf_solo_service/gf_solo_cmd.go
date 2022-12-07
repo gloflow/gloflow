@@ -185,7 +185,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 		fmt.Println("failed to bind ENV var to Viper config")
 		panic(err)
 	}
-
+	
 	//--------------------
 	// CLI_ARGUMENT - AUTH_SUBSYSTEM_TYPE
 	authSubsystemTypeDefaultStr := "builtin"

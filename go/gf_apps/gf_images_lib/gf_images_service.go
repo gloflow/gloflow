@@ -246,5 +246,5 @@ func RunService(pHTTPmux *http.ServeMux,
 	}
 
 	// SERVER_INIT - blocking
-	gf_rpc_lib.ServerInitWithMux(portInt, pHTTPmux)
+	gf_rpc_lib.ServerInitWithMux("gf_images", portInt, pHTTPmux)
 }

@@ -33,10 +33,11 @@ import (
 
 //-------------------------------------------------
 
-func ServerInitWithMux(pPortInt int,
-	pMux *http.ServeMux) {
+func ServerInitWithMux(pServerNameStr string,
+	pPortInt int,
+	pMux     *http.ServeMux) {
 
-	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
+	log.WithFields(log.Fields{"name": pServerNameStr, "port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 	
 	// IMPORTANT!! - wrap mux with Sentry.
 	//               without this handler contexts are not initialized properly
@@ -60,9 +61,10 @@ func ServerInitWithMux(pPortInt int,
 
 //-------------------------------------------------
 
-func ServerInit(pPortInt int) {
+func ServerInit(pServerNameStr string,
+	pPortInt int) {
 
-	log.WithFields(log.Fields{"port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
+	log.WithFields(log.Fields{"name": pServerNameStr, "port": pPortInt,}).Info("STARTING HTTP SERVER >>>>>>>>>>>")
 
 	sentryHandler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
 	err           := http.ListenAndServe(fmt.Sprintf(":%d", pPortInt), sentryHandler)
