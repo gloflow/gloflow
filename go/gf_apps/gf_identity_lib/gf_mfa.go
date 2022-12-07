@@ -57,7 +57,8 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 	if pInput.ExternHtopValueStr == htopValueStr {
 
 		// get a preexisting login_attempt if one exists and hasnt expired for this user.
-		// if it has then a new one will have to be created.
+		// if it has then the user will have to restart the login flow
+		// (which will create a new login_attempt).
 		var loginAttempt *gf_identity_core.GFloginAttempt
 		loginAttempt, gfErr = gf_identity_core.LoginAttemptGetIfValid(pInput.UserNameStr,
 			pCtx,
@@ -88,6 +89,7 @@ func mfaPipelineConfirm(pInput *GFuserAuthMFAinputConfirm,
 
 		//------------------------
 		return true, nil
+		
 	} else {
 		return false, nil
 	}

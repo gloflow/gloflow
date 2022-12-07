@@ -397,42 +397,6 @@ func AdminPipelineLogin(pInput *GFadminInputLogin,
 	if gfErr != nil {
 		return nil, gfErr
 	}
-
-	/*// get a preexisting login_attempt if one exists and hasnt expired for this user.
-	// if it has then a new one will have to be created.
-	var login_attempt *GFloginAttempt
-	login_attempt, gfErr = login_attempt__get_if_valid(userNameStr,
-		pCtx,
-		pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	if login_attempt == nil {
-
-		//------------------------
-		// CREATE_LOGIN_ATTEMPT
-
-		user_identifier_str  := string(pInput.User_name_str)
-		creation_unix_time_f := float64(time.Now().UnixNano())/1000000000.0
-		login_attempt_id_str := usersCreateID(user_identifier_str, creation_unix_time_f)
-
-		login_attempt = &GFloginAttempt{
-			V_str:                "0",
-			Id_str:               login_attempt_id_str,
-			Creation_unix_time_f: creation_unix_time_f,
-			User_type_str:        "admin",
-			User_name_str:        userNameStr,
-		}
-		gfErr := db__login_attempt__create(login_attempt,
-			pCtx,
-			pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr
-		}
-
-		//------------------------
-	}*/
 	
 	//------------------------
 	// VERIFY_PASSWORD

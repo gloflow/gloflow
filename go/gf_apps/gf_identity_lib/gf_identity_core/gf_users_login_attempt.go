@@ -113,7 +113,7 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
-	loginAttemptMaxAgeSeconds_f := 5*60.0
+	loginAttemptMaxAgeSecondsF := 5*60.0
 	
 	var loginAttempt *GFloginAttempt
 	loginAttempt, gfErr := dbLoginAttemptGetByUsername(pUserNameStr,
@@ -134,7 +134,7 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 
 
 	// login_attempt has expired
-	if ageF > loginAttemptMaxAgeSeconds_f {
+	if ageF > loginAttemptMaxAgeSecondsF {
 
 		// mark it as deleted
 		expiredBool := true
