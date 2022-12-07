@@ -72,20 +72,20 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// GET_ALL_FLOWS
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/images/flows/all",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
-				all_flows_names_lst, gf_err := pipelineGetAll(pCtx, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+			if pReq.Method == "GET" {
+				allFlowsNamesLst, gfErr := pipelineGetAll(pCtx, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{
-					"all_flows_lst": all_flows_names_lst,
+				dataMap := map[string]interface{}{
+					"all_flows_lst": allFlowsNamesLst,
 				}
-				return data_map, nil
+				return dataMap, nil
 
 				//------------------
 			}
@@ -109,41 +109,41 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				userIDstr, _ := gf_identity_core.GetUserIDfromCtx(pCtx)
 
-				i_map, gf_err := gf_core.HTTPgetInput(pReq, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				imageExternURLstr         := i_map["image_extern_url_str"].(string)
-				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
-				client_type_str           := i_map["client_type_str"].(string)
+				imageExternURLstr     := iMap["image_extern_url_str"].(string)
+				imageOriginPageURLstr := iMap["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
+				clientTypeStr         := iMap["client_type_str"].(string)
 
 				flowsNamesLst := []string{}
-				for _, s := range i_map["flows_names_lst"].([]interface{}) {
+				for _, s := range iMap["flows_names_lst"].([]interface{}) {
 					flowsNamesLst = append(flowsNamesLst, s.(string))
 				}
 
 				//--------------------------
 
-				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImageWithPolicy(imageExternURLstr,
-					image_origin_page_url_str,
+				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImageWithPolicy(imageExternURLstr,
+					imageOriginPageURLstr,
 					flowsNamesLst,
-					client_type_str,
+					clientTypeStr,
 					pJobsMngrCh,
 					userIDstr,
 					pCtx,
 					pRuntimeSys)
 
-				if n_gf_err != nil {
-					return nil, n_gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					"images_job_id_str":                running_job_id_str,
-					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
-					"image_id_str":                     image_id_str,
+					"images_job_id_str":                runningJobIDstr,
+					"thumbnail_small_relative_url_str": thumbnailSmallRelativeURLstr,
+					"image_id_str":                     imageIDstr,
 				}
 				return dataMap, nil
 
@@ -160,46 +160,46 @@ func InitHandlers(pAuthLoginURLstr string,
 	// DEPRECATED!! - switch to using the v1/auth based add_img handler
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/add_img",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(p_ctx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				iMap, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
-				image_extern_url_str      := i_map["image_extern_url_str"].(string)
-				image_origin_page_url_str := i_map["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
-				client_type_str           := i_map["client_type_str"].(string)
+				imageExternURLstr     := iMap["image_extern_url_str"].(string)
+				imageOriginPageURLstr := iMap["image_origin_page_url_str"].(string) // if image is from a page, the url of the page
+				clientTypeStr         := iMap["client_type_str"].(string)
 
 				// flow_name_str := "general" //i["flow_name_str"].(string) // DEPRECATED
-				flows_names_lst := []string{}
-				for _, s := range i_map["flows_names_lst"].([]interface{}) {
-					flows_names_lst = append(flows_names_lst, s.(string))
+				flowsNamesLst := []string{}
+				for _, s := range iMap["flows_names_lst"].([]interface{}) {
+					flowsNamesLst = append(flowsNamesLst, s.(string))
 				}
 
 				//--------------------------
 
-				running_job_id_str, thumb_small_relative_url_str, image_id_str, n_gf_err := FlowsAddExternImage(image_extern_url_str,
-					image_origin_page_url_str,
-					flows_names_lst,
-					client_type_str,
+				runningJobIDstr, thumbnailSmallRelativeURLstr, imageIDstr, gfErr := FlowsAddExternImage(imageExternURLstr,
+					imageOriginPageURLstr,
+					flowsNamesLst,
+					clientTypeStr,
 					pJobsMngrCh,
 					pRuntimeSys)
 
-				if n_gf_err != nil {
-					return nil, n_gf_err
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				//------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
-					"images_job_id_str":                running_job_id_str,
-					"thumbnail_small_relative_url_str": thumb_small_relative_url_str,
-					"image_id_str":                     image_id_str,
+					"images_job_id_str":                runningJobIDstr,
+					"thumbnail_small_relative_url_str": thumbnailSmallRelativeURLstr,
+					"image_id_str":                     imageIDstr,
 				}
 				return dataMap, nil
 
@@ -219,15 +219,15 @@ func InitHandlers(pAuthLoginURLstr string,
 	//                          if the image url has already been fetched/transformed and gf_image exists for it
 
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/imgs_exist",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(p_ctx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 				
 				//--------------------------
 				// INPUT
-				i_map, gf_err := gf_core.HTTPgetInput(p_req, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				i_map, gfErr := gf_core.HTTPgetInput(pReq, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 
 				images_extern_urls__untyped_lst := i_map["images_extern_urls_lst"].([]interface{})
@@ -242,9 +242,9 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//--------------------------
 					
-				existing_images_lst, gf_err := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
-				if gf_err != nil {
-					return nil, gf_err
+				existing_images_lst, gfErr := flowsImagesExistCheck(images_extern_urls_lst, flow_name_str, client_type_str, pRuntimeSys)
+				if gfErr != nil {
+					return nil, gfErr
 				}
 				//------------------
 				// OUTPUT
@@ -270,22 +270,22 @@ func InitHandlers(pAuthLoginURLstr string,
 	//-------------------------------------------------
 	// BROWSER
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/images/flows/browser",
-		func(pCtx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
-			if p_req.Method == "GET" {
+			if pReq.Method == "GET" {
 
 				//------------------
 				// INPUT
-				qs_map := p_req.URL.Query()
+				qsMap := pReq.URL.Query()
 
-				flow_name_str := "general"
-				if a_lst, ok := qs_map["fname"]; ok {
-					flow_name_str = a_lst[0]
+				flowNameStr := "general"
+				if aLst, ok := qsMap["fname"]; ok {
+					flowNameStr = aLst[0]
 				}
 
 				//------------------
 				// RENDER_TEMPLATE
-				templateRenderedStr, gfErr := renderInitialPage(flow_name_str,
+				templateRenderedStr, gfErr := renderInitialPage(flowNameStr,
 					6,  // p_initial_pages_num_int int,
 					10, // p_page_size_int int,
 					templates.flows_browser__tmpl,
@@ -298,7 +298,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				
 				//------------------
 
-				p_resp.Write([]byte(templateRenderedStr))
+				pResp.Write([]byte(templateRenderedStr))
 			}
 
 			return nil, nil

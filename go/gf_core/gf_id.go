@@ -32,20 +32,20 @@ type GF_ID string
 //---------------------------------------------------
 // CREATES_ID
 
-func IDcreate(p_unique_vals_for_id_lst []string,
-	p_unix_time_f float64) GF_ID {
+func IDcreate(pUniqueValsForIDlst []string,
+	pUNIXtimeF float64) GF_ID {
 	
 	h := md5.New()
 
-	h.Write([]byte(fmt.Sprint(p_unix_time_f)))
+	h.Write([]byte(fmt.Sprint(pUNIXtimeF)))
 
-	for _, v := range p_unique_vals_for_id_lst {
+	for _, v := range pUniqueValsForIDlst {
 		h.Write([]byte(v))
 	}
 
-	sum     := h.Sum(nil)
-	hex_str := hex.EncodeToString(sum)
+	sum    := h.Sum(nil)
+	hexStr := hex.EncodeToString(sum)
 	
-	gf_id_str := GF_ID(hex_str)
-	return gf_id_str
+	gfIDstr := GF_ID(hexStr)
+	return gfIDstr
 }
