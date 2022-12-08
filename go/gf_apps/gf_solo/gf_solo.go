@@ -27,6 +27,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func main() {
 
 	logFun, _ := gf_core.InitLogs()
@@ -37,8 +38,7 @@ func main() {
 
 	}
 
-
-	cmdBase := gf_solo_service.Cmds_init(externalPlugins, logFun)
+	cmdBase := gf_solo_service.CmdsInit(externalPlugins, logFun)
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

@@ -27,9 +27,13 @@ import (
 )
 
 //-------------------------------------------------
-func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
+
+func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 	pLogFun func(string, string)) *cobra.Command {
 
+	var cliConfigPathStr string
+
+	//--------------------
 	// BASE
 	cmdBase := &cobra.Command{
 		Use:   "gf_solo",
@@ -41,20 +45,76 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	}
 
 	//--------------------
+	// START
+	cmdStart := &cobra.Command{
+		Use:   "start",
+		Short: "start some service or function",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+		},
+	}
+
+	//--------------------
+	// START_SERVICE
+	cmdStartService := &cobra.Command{
+		Use:   "service",
+		Short: "start the gf_solo service",
+		Long:  "start the gf_solo service",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun)
+			if err != nil {
+				panic(err)
+			}
+
+			// RUN_SERVICE
+			Run(config, runtimeSys)			
+		},
+	}
+
+	//--------------------
+	// INFO
+	cmdInfo := &cobra.Command{
+		Use:   "info",
+		Short: "get info on the gf_solo program",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+		},
+	}
+
+	//--------------------
+	// START_SERVICE
+	cmdInfoGitCommitSHA := &cobra.Command{
+		Use:   "git_commit_sha",
+		Short: "get git commit sha",
+		Long:  "get git commit sha that was used to build this binary",
+		Run:   func(pCmd *cobra.Command, pArgs []string) {
+
+			// this command just prints the Git commit SHA hash to stdout,
+			// for other programs to read.
+			fmt.Println(gf_core.GitCommitSHAstr)
+		},
+	}
+
+	//--------------------
+	
+	cmdBase.AddCommand(cmdStart)
+	cmdStart.AddCommand(cmdStartService)
+
+	cmdBase.AddCommand(cmdInfo)
+	cmdInfo.AddCommand(cmdInfoGitCommitSHA)
+
+	//--------------------
 	// CLI_ARGUMENT - CONFIG
-	cli_config_path__default_str := "./config/gf_solo"
-	var cliConfigPathStr string
-	cmdBase.PersistentFlags().StringVarP(&cliConfigPathStr, "config", "", cli_config_path__default_str,
+	cliConfigPathDefaultStr := "./config/gf_solo"
+	cmdBase.PersistentFlags().StringVarP(&cliConfigPathStr, "config", "", cliConfigPathDefaultStr,
 		"config file path on the local FS")
 
 	//--------------------
 	// CLI_ARGUMENT - PORT
-
-	// Cobra CLI argument
 	cmdBase.PersistentFlags().StringP("port", "p", "port for the main service",
 		"port on which to listen for HTTP traffic")
 
-	// Bind Cobra CLI argument to a Viper configuration (for default value)
 	err := viper.BindPFlag("port", cmdBase.PersistentFlags().Lookup("port"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -70,12 +130,9 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - PORT_ADMIN
-
-	// Cobra CLI argument
 	cmdBase.PersistentFlags().StringP("port_admin", "a", "port for the admin service",
 		"port on which to listen for HTTP admin traffic")
 	
-	// Bind Cobra CLI argument to a Viper configuration (for default value)
 	err = viper.BindPFlag("port_admin", cmdBase.PersistentFlags().Lookup("port_admin"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -91,7 +148,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - PORT__METRICS
-	cmdBase.PersistentFlags().StringP("port_metrics", "", "METRICS PORT NUMBER",
+	cmdBase.PersistentFlags().String("port_metrics", "METRICS PORT NUMBER",
 		"port on which to listen for metrics HTTP traffic")
 	err = viper.BindPFlag("port_metrics", cmdBase.PersistentFlags().Lookup("port_metrics"))
 	if err != nil {
@@ -124,7 +181,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - MONGODB_DB_NAME
-	cmdBase.PersistentFlags().StringP("mongodb_db_name", "", "MONGODB HOST", "mongodb db name to which to connect") // Cobra CLI argument
+	cmdBase.PersistentFlags().String("mongodb_db_name", "MONGODB HOST", "mongodb db name to which to connect") // Cobra CLI argument
 	err = viper.BindPFlag("mongodb_db_name", cmdBase.PersistentFlags().Lookup("mongodb_db_name"))                 // Bind Cobra CLI argument to a Viper configuration (for default value)
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -140,7 +197,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - SENTRY_ENDPOINT
-	cmdBase.PersistentFlags().StringP("sentry_endpoint", "", "SENTRY ENDPOINT", "Sentry endpoint to send errors to")
+	cmdBase.PersistentFlags().String("sentry_endpoint", "SENTRY ENDPOINT", "Sentry endpoint to send errors to")
 	err = viper.BindPFlag("sentry_endpoint", cmdBase.PersistentFlags().Lookup("sentry_endpoint"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -156,7 +213,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - AWS_ACCESS_KEY_ID
-	cmdBase.PersistentFlags().StringP("aws_access_key_id", "", "AWS ACCESS_KEY_ID", "AWS access_key_id")
+	cmdBase.PersistentFlags().String("aws_access_key_id", "AWS ACCESS_KEY_ID", "AWS access_key_id")
 	err = viper.BindPFlag("aws_access_key_id", cmdBase.PersistentFlags().Lookup("aws_access_key_id"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -172,7 +229,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - AWS_SECRET_ACCESS_KEY
-	cmdBase.PersistentFlags().StringP("aws_secret_access_key", "", "AWS SECRET_ACCESS_KEY", "AWS secret_access_key")
+	cmdBase.PersistentFlags().String("aws_secret_access_key", "AWS SECRET_ACCESS_KEY", "AWS secret_access_key")
 	err = viper.BindPFlag("aws_secret_access_key", cmdBase.PersistentFlags().Lookup("aws_secret_access_key"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -189,7 +246,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	//--------------------
 	// CLI_ARGUMENT - AUTH_SUBSYSTEM_TYPE
 	authSubsystemTypeDefaultStr := "builtin"
-	cmdBase.PersistentFlags().StringP("auth_subsystem_type", "", authSubsystemTypeDefaultStr,
+	cmdBase.PersistentFlags().String("auth_subsystem_type", authSubsystemTypeDefaultStr,
 		"auth subsystem to use - builtin|auth0")
 	err = viper.BindPFlag("auth_subsystem_type", cmdBase.PersistentFlags().Lookup("auth_subsystem_type"))
 	if err != nil {
@@ -207,7 +264,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	//--------------------
 	// CLI_ARGUMENT - ADMIN_MFA_SECRET_KEY_BASE32
 	adminMFAsecretKeyBase32defaultStr := "aabbccddeeffgghh"
-	cmdBase.PersistentFlags().StringP("admin_mfa_secret_key_base32", "", adminMFAsecretKeyBase32defaultStr,
+	cmdBase.PersistentFlags().String("admin_mfa_secret_key_base32", adminMFAsecretKeyBase32defaultStr,
 		"secret key used to verify mfa (totp/hotp), base32 encoded")
 	err = viper.BindPFlag("admin_mfa_secret_key_base32", cmdBase.PersistentFlags().Lookup("admin_mfa_secret_key_base32"))
 	if err != nil {
@@ -225,7 +282,7 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	//--------------------
 	// CLI_ARGUMENT - ADMIN_EMAIL
 	adminEmailDefaultStr := ""
-	cmdBase.PersistentFlags().StringP("admin_email", "", adminEmailDefaultStr, "default email of the administrator to use")
+	cmdBase.PersistentFlags().String("admin_email", adminEmailDefaultStr, "default email of the administrator to use")
 	err = viper.BindPFlag("admin_email", cmdBase.PersistentFlags().Lookup("admin_email"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
@@ -284,59 +341,6 @@ func Cmds_init(pExternalPlugins *gf_core.ExternalPlugins,
 	}
 
 	//--------------------
-	// START
-	cmdStart := &cobra.Command{
-		Use:   "start",
-		Short: "start some service or function",
-		Run:   func(pCmd *cobra.Command, pArgs []string) {
-
-		},
-	}
-
-	// START_SERVICE
-	cmdStartService := &cobra.Command{
-		Use:   "service",
-		Short: "start the gf_solo service",
-		Long:  "start the gf_solo service",
-		Run:   func(pCmd *cobra.Command, pArgs []string) {
-
-			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun)
-			if err != nil {
-				panic(err)
-			}
-
-			// RUN_SERVICE
-			Run(config, runtimeSys)			
-		},
-	}
-
-	//--------------------
-	// INFO
-	cmdInfo := &cobra.Command{
-		Use:   "info",
-		Short: "get info on the gf_solo program",
-		Run:   func(pCmd *cobra.Command, pArgs []string) {
-
-		},
-	}
-
-	// START_SERVICE
-	cmdInfoGitCommitSHA := &cobra.Command{
-		Use:   "git_commit_sha",
-		Short: "get git commit sha",
-		Long:  "get git commit sha that was used to build this binary",
-		Run:   func(pCmd *cobra.Command, pArgs []string) {
-
-			fmt.Println(gf_core.GitCommitSHAstr)
-		},
-	}
-
-	//--------------------
-	cmdStart.AddCommand(cmdStartService)
-	cmdInfo.AddCommand(cmdInfoGitCommitSHA)
-
-	cmdBase.AddCommand(cmdStart)
-	cmdBase.AddCommand(cmdInfo)
 
 	return cmdBase
 }
