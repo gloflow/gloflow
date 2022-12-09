@@ -345,47 +345,39 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 //-------------------------------------------------
 
-func Error__init_sentry(p_sentry_endpoint_str string,
-	p_transactions__to_trace_map map[string]bool,
-	p_sample_rate_f              float64) error {
+func ErrorInitSentry(pSentryEndpointStr string,
+	pTransactionsTracingRateMap map[string]float64,
+	pSampleRateDefaultF         float64) error {
 
 	fmt.Println("INIT SENTRY")
 
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: p_sentry_endpoint_str,
+		Dsn: pSentryEndpointStr,
 
 		// Enable printing of SDK debug messages.
 		// Useful when getting started or trying to figure something out.
 		Debug: true,
 
+		//--------------------
 		// TRACING
-		// TracesSampleRate: p_sample_rate_f, // 1.0,
 
-		TracesSampler: sentry.TracesSamplerFunc(func(p_ctx sentry.SamplingContext) sentry.Sampled {
+		EnableTracing: true,
+		TracesSampler: sentry.TracesSampler(func(pCtx sentry.SamplingContext) float64 {
 
-			
-			hub                  := sentry.GetHubFromContext(p_ctx.Span.Context())
-			transaction_name_str := hub.Scope().Transaction()
+			hub                := sentry.GetHubFromContext(pCtx.Span.Context())
+			transactionNameStr := hub.Scope().Transaction()
+			// fmt.Printf("SENTRY TX - %s\n", transactionNameStr)
 
-			// fmt.Printf("SENTRY TX - %s\n", transaction_name_str)
-
-			// exclude traces of all transactions that are not for expected handlers
-			if _, ok := p_transactions__to_trace_map[transaction_name_str]; !ok {
-				
-				// EXCLUDE
-				// fmt.Println("SENTRY TX EXCLUDE")
-				return sentry.SampledFalse
+			if sampleRateF, ok := pTransactionsTracingRateMap[transactionNameStr]; ok {
+				return sampleRateF
 			}
 
-			// INCLUDE
-			return sentry.SampledTrue // sentry.UniformTracesSampler(p_sample_rate_f).Sample(p_ctx)
-
-			// // Sample all other transactions for testing. On
-			// // production, use TracesSampleRate with a rate adequate
-			// // for your traffic, or use the SamplingContext to
-			// // customize sampling per-transaction.
-			// return sentry.SampledTrue
+			// if no specific sampling rate for this transaction was defined, use the default rate
+			return pSampleRateDefaultF
 		}),
+		// TracesSampleRate: pSampleRateDefaultF, // 1.0,
+
+		//--------------------
 	})
 	if err != nil {
 		return err

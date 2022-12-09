@@ -76,21 +76,22 @@ type GF_config struct {
 }
 
 //-------------------------------------------------
-func Sentry__init(p_sentry_endpoint_uri_str string) {
+
+func SentryInit(pSentryEndpointURIstr string) {
 
 	//-------------
 	// SENTRY
-	sentry_samplerate_f := 1.0
-	sentry_trace_handlers_map := map[string]bool{
-		"GET /gfethm/v1/block/index":   true,
-		"GET /gfethm/v1/tx/trace/plot": true,
-		"GET /gfethm/v1/block":         true,
-		"GET /gfethm/v1/miner":         true,
-		"GET /gfethm/v1/peers":         true,
+	sentrySampleRateDefaultF := 0.5
+	sentryTracingRateForHandlersMap := map[string]float64{
+		"GET /gfethm/v1/block/index":   1.0,
+		"GET /gfethm/v1/tx/trace/plot": 1.0,
+		"GET /gfethm/v1/block":         1.0,
+		"GET /gfethm/v1/miner":         1.0,
+		"GET /gfethm/v1/peers":         1.0,
 	}
-	err := gf_core.Error__init_sentry(p_sentry_endpoint_uri_str,
-		sentry_trace_handlers_map,
-		sentry_samplerate_f)
+	err := gf_core.ErrorInitSentry(pSentryEndpointURIstr,
+		sentryTracingRateForHandlersMap,
+		sentrySampleRateDefaultF)
 	if err != nil {
 		panic(err)
 	}
@@ -99,17 +100,18 @@ func Sentry__init(p_sentry_endpoint_uri_str string) {
 }
 
 //-------------------------------------------------
-func RuntimeGet(p_config *GF_config,
+
+func RuntimeGet(pConfig *GF_config,
 	pRuntimeSys *gf_core.RuntimeSys) (*GF_runtime, error) {
 
 	//--------------------
 	// MONGODB
-	mongodb_host_str := p_config.Mongodb_host_str
+	mongodb_host_str := pConfig.Mongodb_host_str
 	mongodb_url_str  := fmt.Sprintf("mongodb://%s", mongodb_host_str)
 	fmt.Printf("mongodb_host - %s\n", mongodb_host_str)
 
 	mongodb_db, _, gfErr := gf_core.MongoConnectNew(mongodb_url_str,
-		p_config.Mongodb_db_name_str,
+		pConfig.Mongodb_db_name_str,
 		nil,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -121,19 +123,19 @@ func RuntimeGet(p_config *GF_config,
 
 	//--------------------
 	// // INFLUXDB
-	// influxdb_host_str := p_config.Influxdb_host_str
+	// influxdb_host_str := pConfig.Influxdb_host_str
 	// influxdb_client   := influxdb__init(influxdb_host_str)
 	// fmt.Printf("influxdb connected...\n")
 
 	// PY_PLUGINS
 	plugins_info := &GF_py_plugins{
-		Base_dir_path_str: p_config.Py_plugins_dir_path_str,
+		Base_dir_path_str: pConfig.Py_plugins_dir_path_str,
 	}
 
 	//--------------------
 	// RUNTIME
 	runtime := &GF_runtime{
-		Config:     p_config,
+		Config:     pConfig,
 		Py_plugins: plugins_info,
 		RuntimeSys: pRuntimeSys,
 		// Influxdb_client: influxdb_client,
@@ -144,6 +146,7 @@ func RuntimeGet(p_config *GF_config,
 }
 
 //-------------------------------------------------
+
 /*// INFLUXDB
 func influxdb__init(p_influxdb_host_str string) *influxdb2.Client {
 

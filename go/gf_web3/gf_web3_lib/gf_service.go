@@ -92,7 +92,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	defer sentry.Flush(2 * time.Second)*/
 
 	sentry_endpoint_uri_str := p_runtime.Config.Sentry_endpoint_str
-	gf_eth_core.Sentry__init(sentry_endpoint_uri_str)
+	gf_eth_core.SentryInit(sentry_endpoint_uri_str)
 
 	//-------------
 	// METRICS

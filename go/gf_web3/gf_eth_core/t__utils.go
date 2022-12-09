@@ -74,8 +74,11 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	
 
 	// SENTRY
+	
+	// FIX!! - load this from ENV var
 	sentryEndpointURIstr := "https://702b507d193d45029674fbf98bcedaaf@o502595.ingest.sentry.io/5590469"
-	Sentry__init(sentryEndpointURIstr)
+
+	SentryInit(sentryEndpointURIstr)
 
 
 	return runtime, nil, nil

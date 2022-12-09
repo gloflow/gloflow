@@ -341,13 +341,13 @@ func RuntimeGet(pConfigPathStr string,
 	if config.SentryEndpointStr != "" {
 
 		sentryEndpointStr := config.SentryEndpointStr
-		sentrySamplerateF := 1.0
-		sentryTraceHandlersMap := map[string]bool{
+		sentrySampleRateDefaultF := 1.0
+		sentryTracingRateForHandlersMap := map[string]float64{
 			
 		}
-		err := gf_core.Error__init_sentry(sentryEndpointStr,
-			sentryTraceHandlersMap,
-			sentrySamplerateF)
+		err := gf_core.ErrorInitSentry(sentryEndpointStr,
+			sentryTracingRateForHandlersMap,
+			sentrySampleRateDefaultF)
 		if err != nil {
 			panic(err)
 		}
