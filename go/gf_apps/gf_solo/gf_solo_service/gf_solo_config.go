@@ -51,7 +51,7 @@ type GFconfig struct {
 
 	//--------------------
 	// IDENTITY
-	AuthSubsystemTypeStr       string `mapstructure:auth_subsystem_type`
+	AuthSubsystemTypeStr       string `mapstructure:"auth_subsystem_type"`
 	AdminMFAsecretKeyBase32str string `mapstructure:"admin_mfa_secret_key_base32"`
 	AdminEmailStr              string `mapstructure:"admin_email"`
 
@@ -62,12 +62,12 @@ type GFconfig struct {
 	//--------------------
 	// GF_ANALYTICS
 
-	Analytics__py_stats_dirs_lst []string `mapstructure:"analytics__py_stats_dirs"`
-	Analytics__run_indexer_bool  bool     `mapstructure:"analytics__run_indexer"`
+	AnalyticsPyStatsDirsLst []string `mapstructure:"analytics__py_stats_dirs"`
+	AnalyticsRunIndexerBool bool     `mapstructure:"analytics__run_indexer"`
 
-	Crawl__config_file_path_str      string `mapstructure:"crawl__config_file_path"`
-	Crawl__cluster_node_type_str     string `mapstructure:"crawl__cluster_node_type"`
-	Crawl__images_local_dir_path_str string `mapstructure:"crawl__images_local_dir_path"`
+	CrawlConfigFilePathStr     string `mapstructure:"crawl__config_file_path"`
+	CrawlClusterNodeTypeStr    string `mapstructure:"crawl__cluster_node_type"`
+	CrawlImagesLocalDirPathStr string `mapstructure:"crawl__images_local_dir_path"`
 
 	//--------------------
 	// AWS

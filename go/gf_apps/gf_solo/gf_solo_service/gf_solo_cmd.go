@@ -56,7 +56,8 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// START_SERVICE
-	cmdStartService := &cobra.Command{
+	var cmdStartService *cobra.Command
+	cmdStartService = &cobra.Command{
 		Use:   "service",
 		Short: "start the gf_solo service",
 		Long:  "start the gf_solo service",
@@ -104,6 +105,10 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 	cmdBase.AddCommand(cmdInfo)
 	cmdInfo.AddCommand(cmdInfoGitCommitSHA)
 
+
+
+
+
 	//--------------------
 	// CLI_ARGUMENT - CONFIG
 	cliConfigPathDefaultStr := "./config/gf_solo"
@@ -112,7 +117,8 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - PORT
-	cmdBase.PersistentFlags().StringP("port", "p", "port for the main service",
+	portDefaultStr := "1900"
+	cmdBase.PersistentFlags().StringP("port", "p", portDefaultStr,
 		"port on which to listen for HTTP traffic")
 
 	err := viper.BindPFlag("port", cmdBase.PersistentFlags().Lookup("port"))
@@ -130,7 +136,8 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 
 	//--------------------
 	// CLI_ARGUMENT - PORT_ADMIN
-	cmdBase.PersistentFlags().StringP("port_admin", "a", "port for the admin service",
+	portAdminDefaultStr := "1901"
+	cmdBase.PersistentFlags().StringP("port_admin", "a", portAdminDefaultStr,
 		"port on which to listen for HTTP admin traffic")
 	
 	err = viper.BindPFlag("port_admin", cmdBase.PersistentFlags().Lookup("port_admin"))

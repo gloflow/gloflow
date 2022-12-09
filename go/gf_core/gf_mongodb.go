@@ -47,18 +47,18 @@ import (
 //-------------------------------------------------
 // RUN
 
-func MongoTXrun(p_tx_fun func() *GFerror,
-	pMetaMap       map[string]interface{}, // data describing the DB write op
-	p_mongo_client *mongo.Client,
-	pCtx           context.Context,
-	pRuntimeSys    *RuntimeSys) (mongo.Session, *GFerror) {
+func MongoTXrun(pTXfun func() *GFerror,
+	pMetaMap     map[string]interface{}, // data describing the DB write op
+	pMongoClient *mongo.Client,
+	pCtx         context.Context,
+	pRuntimeSys  *RuntimeSys) (mongo.Session, *GFerror) {
 	
 	// TX_INIT
-	txSession, txOptions, gf_err := MongoTXinit(p_mongo_client,
+	txSession, txOptions, gfErr := MongoTXinit(pMongoClient,
 		pMetaMap,
 		pRuntimeSys)
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// TX_RUN
@@ -70,9 +70,9 @@ func MongoTXrun(p_tx_fun func() *GFerror,
         }
 
 		// DB_TX_FUN
-		gf_err := p_tx_fun()
-		if gf_err != nil {
-			return gf_err.Error
+		gfErr := pTXfun()
+		if gfErr != nil {
+			return gfErr.Error
 		}
 
 		// TX_COMMIT
@@ -86,19 +86,19 @@ func MongoTXrun(p_tx_fun func() *GFerror,
 
 	if err != nil {
 
-		if err_abort := txSession.AbortTransaction(pCtx); err_abort != nil {
-            gf_err := MongoHandleError("failed to execute Mongodb session",
+		if errAbort := txSession.AbortTransaction(pCtx); errAbort != nil {
+            gfErr := MongoHandleError("failed to execute Mongodb session",
 				"mongodb_session_abort_error",
 				pMetaMap,
 				err, "gf_core", pRuntimeSys)
-			return nil, gf_err
+			return nil, gfErr
         }
 
-		gf_err := MongoHandleError("failed to execute Mongodb session",
+		gfErr := MongoHandleError("failed to execute Mongodb session",
 			"mongodb_session_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return nil, gf_err		
+		return nil, gfErr		
 	}
 
 	return txSession, nil
@@ -107,7 +107,7 @@ func MongoTXrun(p_tx_fun func() *GFerror,
 //-------------------------------------------------
 // INIT
 
-func MongoTXinit(p_mongo_client *mongo.Client,
+func MongoTXinit(pMongoClient *mongo.Client,
 	pMetaMap    map[string]interface{}, // data describing the DB write op
 	pRuntimeSys *RuntimeSys) (mongo.Session, *options.TransactionOptions, *GFerror) {
 
@@ -116,18 +116,18 @@ func MongoTXinit(p_mongo_client *mongo.Client,
 	wc := writeconcern.New(writeconcern.WMajority())
     rc := readconcern.Snapshot()
 
-    tx_options := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+    txOptions := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
 
-    session, err := p_mongo_client.StartSession()
+    session, err := pMongoClient.StartSession()
     if err != nil {
-		gf_err := MongoHandleError("failed to start a Mongo session",
+		gfErr := MongoHandleError("failed to start a Mongo session",
 			"mongodb_start_session_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return nil, nil, gf_err		
+		return nil, nil, gfErr		
     }
 
-	return session, tx_options, nil
+	return session, txOptions, nil
 }
 
 //-------------------------------------------------
@@ -146,11 +146,11 @@ func MongoCount(pQuery bson.M,
 
 	count_int, err := pColl.CountDocuments(pCtx, pQuery, opts)
 	if err != nil {
-		gf_err := MongoHandleError("failed to count number of particular docs in DB",
+		gfErr := MongoHandleError("failed to count number of particular docs in DB",
 			"mongodb_count_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return 0, gf_err
+		return 0, gfErr
 	}
 	return count_int, nil
 }
@@ -170,15 +170,15 @@ func MongoFindLatest(pQuery bson.M,
 	find_opts.SetSort(map[string]interface{}{pTimeFieldNameStr: -1})
 	find_opts.SetLimit(1)
 	
-	cursor, gf_err := MongoFind(pQuery,
+	cursor, gfErr := MongoFind(pQuery,
 		find_opts,
 		pMetaMap,
 		pColl,
 		pCtx,
 		pRuntimeSys)
 
-	if gf_err != nil {
-		return nil, gf_err
+	if gfErr != nil {
+		return nil, gfErr
 	}
 
 	// no result
@@ -189,11 +189,11 @@ func MongoFindLatest(pQuery bson.M,
 	var records_lst []map[string]interface{}
 	err := cursor.All(pCtx, &records_lst)
 	if err != nil {
-		gf_err := MongoHandleError("failed to load DB results from DB cursor",
+		gfErr := MongoHandleError("failed to load DB results from DB cursor",
 			"mongodb_cursor_all",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 	
 	// get latest key
@@ -220,11 +220,11 @@ func MongoFind(pQuery bson.M,
 			return nil, nil
 		}
 
-		gf_err := MongoHandleError("failed to find records in DB",
+		gfErr := MongoHandleError("failed to find records in DB",
 			"mongodb_find_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return nil, gf_err
+		return nil, gfErr
 	}
 
 	// defer cur.Close(pCtx)
@@ -241,11 +241,11 @@ func MongoDelete(pQuery bson.M,
 
 	_, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).DeleteMany(pCtx, pQuery)
 	if err != nil {
-		gf_err := MongoHandleError("failed to delete documents in the DB",
+		gfErr := MongoHandleError("failed to delete documents in the DB",
 			"mongodb_delete_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return gf_err
+		return gfErr
 	}
 	return nil
 }
@@ -316,11 +316,11 @@ func MongoUpsertBulk(pFilterDocsByFieldsLst []map[string]string,
 
 	r, err := pRuntimeSys.Mongo_db.Collection(pCollNameStr).BulkWrite(pCtx, models, opts)
 	if err != nil {
-		gf_err := MongoHandleError("failed to bulk write new documents into the DB",
+		gfErr := MongoHandleError("failed to bulk write new documents into the DB",
 			"mongodb_write_bulk_error",
 			pMetaMap,
 			err, "gf_core", pRuntimeSys)
-		return 0, gf_err
+		return 0, gfErr
 	}
 
 	if r.MatchedCount != 0 {
@@ -503,7 +503,7 @@ func MongoHandleError(p_user_msg_str string,
 
 	// stack/callgraph distance of this call to ErrorCreateWithHook from
 	// error stack fetching and storage, so provide this level explicitly here
-	// so that gf_error can pick the proper place to report as the function that
+	// so that gfError can pick the proper place to report as the function that
 	// originated this mongo error (caller of MongoHandleError)
 	skipStackFramesNumInt := 4
 
@@ -513,15 +513,15 @@ func MongoHandleError(p_user_msg_str string,
 		p_error,
 		p_subsystem_name_str,
 		skipStackFramesNumInt,
-		func(p_gf_err *GFerror) map[string]interface{} {
+		func(p_gfErr *GFerror) map[string]interface{} {
 
-			gf_error_str := fmt.Sprint(p_gf_err)
+			gfError_str := fmt.Sprint(p_gfErr)
 
 			// IMPORTANT!! - "mgo" had behavior where after the connection was reset by mongod server,
 			//               it (mgo) wouldnt reconnect to that server. so this hack is applied where the entire service
 			//               is restarted so that a fresh DB connection is established
 			
-			if strings.Contains(gf_error_str, "connection reset by peer") {
+			if strings.Contains(gfError_str, "connection reset by peer") {
 				os.Exit(1)
 			}
 
@@ -531,7 +531,7 @@ func MongoHandleError(p_user_msg_str string,
 			//               that might be in the middle of queries.
 			//               conservative approach is taken here and error recovery is not attempted, instead the whole service
 			//               is restarted. 
-			if gf_error_str == "EOF" || gf_error_str == "Closed explicitly" {
+			if gfError_str == "EOF" || gfError_str == "Closed explicitly" {
 				os.Exit(1)
 			}
 

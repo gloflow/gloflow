@@ -43,13 +43,19 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
+
 func Run(pConfig *GFconfig,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
+	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
+	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
+
+	fmt.Printf("%s%s\n", yellow("GF_SOLO"), green("==============="))
+	
 	//-------------
 	// CONFIG
 	portMetricsInt := 9110
@@ -64,12 +70,7 @@ func Run(pConfig *GFconfig,
 		panic(err)
 	}
 
-	//-------------
-	
-	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
-	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
-
-	fmt.Printf("%s%s\n", yellow("GF_SOLO"), green("==============="))
+	spew.Dump(pConfig)
 
 	//-------------
 	user, err := user.Current()
@@ -95,6 +96,8 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// GF_IDENTITY
+
+	
 
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 		NameStr:       "gf_identity",
@@ -239,13 +242,13 @@ func Run(pConfig *GFconfig,
 	
 	gfAnalyticsServiceInfo := &gf_analytics_lib.GFserviceInfo{
 
-		Crawl__config_file_path_str:      pConfig.Crawl__config_file_path_str,
-		Crawl__cluster_node_type_str:     pConfig.Crawl__cluster_node_type_str,
-		Crawl__images_local_dir_path_str: pConfig.Crawl__images_local_dir_path_str,
+		Crawl__config_file_path_str:      pConfig.CrawlConfigFilePathStr,
+		Crawl__cluster_node_type_str:     pConfig.CrawlClusterNodeTypeStr,
+		Crawl__images_local_dir_path_str: pConfig.CrawlImagesLocalDirPathStr,
 
 		Media_domain_str:       imagesConfig.Media_domain_str,
-		Py_stats_dirs_lst:      pConfig.Analytics__py_stats_dirs_lst,
-		Run_indexer_bool:       pConfig.Analytics__run_indexer_bool,
+		Py_stats_dirs_lst:      pConfig.AnalyticsPyStatsDirsLst,
+		Run_indexer_bool:       pConfig.AnalyticsRunIndexerBool,
 		Elasticsearch_host_str: pConfig.ElasticsearchHostStr,
 
 		// DEPRECATE!! - AWS creds are passed in via ENV vars
@@ -316,10 +319,12 @@ func Run(pConfig *GFconfig,
 }
 
 //-------------------------------------------------
+
 func RuntimeGet(pConfigPathStr string,
 	pExternalPlugins *gf_core.ExternalPlugins,
 	pLogFun          func(string, string)) (*gf_core.RuntimeSys, *GFconfig, error) {
 
+	//--------------------
 	// CONFIG
 	configDirPathStr := path.Dir(pConfigPathStr)  // "./../config/"
 	configNameStr    := path.Base(pConfigPathStr) // "gf_solo"

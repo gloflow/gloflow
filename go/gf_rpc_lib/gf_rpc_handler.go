@@ -208,8 +208,9 @@ func getHandler(pAuthBool bool,
 	handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
 		startTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
-
 		pathStr := pReq.URL.Path
+
+		fmt.Printf("------------------> HTTP REQ - %f - %s\n", startTimeUNIXf, pPathStr)
 
 		//------------------
 		// PANIC_HANDLING
@@ -245,7 +246,6 @@ func getHandler(pAuthBool bool,
 
 		//------------------
 		ctx := pReq.Context()
-		fmt.Println("CTX >>>", ctx, pSentryHub)
 
 		// FIX!! - when creating additional http servers outside the default global
 		//         http server and default global Sentry context, the clone sentry hub

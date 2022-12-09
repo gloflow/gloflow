@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 import (
+	"os"
 	"fmt"
 	"strings"
 	"os/exec"
@@ -29,7 +30,7 @@ import (
 
 //-------------------------------------------------
 
-type GF_CLI_cmd_info struct {
+type GFcliCmdInfo struct {
 	Cmd_lst          []string
 	Stdin_data_str   *string // data to be passed via stdin
 	Env_vars_map     map[string]string
@@ -44,7 +45,7 @@ func CLIrunStandard(pCmdLst []string,
 	p_env_vars_map map[string]string,
 	pRuntimeSys    *RuntimeSys) ([]string, []string, *GFerror) {
 
-	cliInfo := &GF_CLI_cmd_info{
+	cliInfo := &GFcliCmdInfo{
 		Cmd_lst:          pCmdLst,
 		Env_vars_map:     p_env_vars_map,
 		Dir_str:          "",
@@ -57,7 +58,7 @@ func CLIrunStandard(pCmdLst []string,
 //-------------------------------------------------
 // RUN
 
-func CLIrun(pCmdInfo *GF_CLI_cmd_info,
+func CLIrun(pCmdInfo *GFcliCmdInfo,
 	pRuntimeSys *RuntimeSys) ([]string, []string, *GFerror) {
 
 	stdoutCh, stderrCh, gfErr := CLIrunCore(pCmdInfo,
@@ -74,7 +75,7 @@ func CLIrun(pCmdInfo *GF_CLI_cmd_info,
 
 //-------------------------------------------------
 
-func CLIrunCore(pCmdInfo *GF_CLI_cmd_info,
+func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 	pWaitForCompletionBool bool,
 	pRuntimeSys            *RuntimeSys) (chan string, chan string, *GFerror) {
 
@@ -233,11 +234,27 @@ func consumeOutputs(pStdoutCh chan string, pStderrCh chan string) ([]string, []s
 
 //-------------------------------------------------
 
-func CLIprompt() {
+// prompt the user for a confirmation to proceed or not
+func CLIprompt(pMsgStr string, pRuntimeSys *RuntimeSys) (bool, *GFerror) {
 
-
-
-
-
+	reader := bufio.NewReader(os.Stdin)
 	
+	fmt.Printf("%s [y/n]: ", pMsgStr)
+	textStr, _   := reader.ReadString('\n')
+	textCleanStr := strings.TrimSuffix(textStr, "\n")
+
+	if textCleanStr == "y" {
+		return true, nil
+
+	} else if textCleanStr == "n" {
+		return false, nil
+
+	} else {
+		gfErr := ErrorCreate("invalid confirmation input added by user (y|n) accepted",
+			"generic_error",
+			map[string]interface{}{"text_str": textCleanStr,},
+			nil, "gf_core", pRuntimeSys)
+		return false, gfErr
+	}
+	return false, nil
 }
