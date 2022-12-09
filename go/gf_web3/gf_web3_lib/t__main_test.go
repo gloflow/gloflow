@@ -75,7 +75,7 @@ func TestMain(m *testing.M) {
 			jobsMngr,
 			runtime.RuntimeSys)
 			
-		gf_rpc_lib.ServerInitWithMux(testWeb3MonitorServicePortInt, HTTPmux)
+		gf_rpc_lib.ServerInitWithMux("gf_web3_test", testWeb3MonitorServicePortInt, HTTPmux)
 	}()
 
 	// GF_IDENTITY_SERVICE

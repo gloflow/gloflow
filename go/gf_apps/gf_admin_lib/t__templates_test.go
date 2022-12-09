@@ -29,20 +29,20 @@ import (
 )
 
 var logFun func(string,string)
-var cli_args_map map[string]interface{}
+var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _    = gf_core.InitLogs()
-	cli_args_map = gf_images_core.CLIparseArgs(logFun)
+	logFun, _  = gf_core.InitLogs()
+	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
 
 //---------------------------------------------------
 
-func Test__templates(pTest *testing.T) {
+func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_admin_test",

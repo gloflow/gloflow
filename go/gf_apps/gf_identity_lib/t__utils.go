@@ -93,6 +93,8 @@ func TestStartService(pPortInt int,
 
 		serviceInfo := &gf_identity_core.GFserviceInfo{
 
+			AuthSubsystemTypeStr: "builtin",
+			
 			// IMPORTANT!! - durring testing dont send emails
 			EnableEmailBool: false,
 		}

@@ -119,7 +119,7 @@ func testBookmarkingFlow(pTest *testing.T,
 
 	spew.Dump(output.Bookmarks_lst)
 	assert.True(pTest, len(output.Bookmarks_lst) > 0, "no bookmarks were returned")
-	assert.True(pTest, output.Template_rendered_str == "", "bookmarks were rendered as a template, when it should be data-only")
+	assert.True(pTest, output.TemplateRenderedStr == "", "bookmarks were rendered as a template, when it should be data-only")
 
 	//------------------
 
@@ -151,9 +151,9 @@ func testBookmarkingFlow(pTest *testing.T,
 		pTest.Fail()
 	}
 
-	fmt.Println(outputHTML.Template_rendered_str)
+	fmt.Println(outputHTML.TemplateRenderedStr)
 	assert.True(pTest, len(outputHTML.Bookmarks_lst) == 0, "bookmarks were returned when it should only be html template string")
-	assert.True(pTest, outputHTML.Template_rendered_str != "", "bookmarks were not rendered as a html template,")
+	assert.True(pTest, outputHTML.TemplateRenderedStr != "", "bookmarks were not rendered as a html template,")
 
 	//------------------
 }

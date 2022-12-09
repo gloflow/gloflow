@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 			serviceInfo,
 			HTTPmux,
 			runtimeSys)
-		gf_rpc_lib.ServerInitWithMux(testPortInt, HTTPmux)
+		gf_rpc_lib.ServerInitWithMux("gf_home_test", testPortInt, HTTPmux)
 	}()
 
 	// GF_IDENTITY_SERVICE
