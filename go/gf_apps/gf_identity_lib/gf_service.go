@@ -21,16 +21,13 @@ package gf_identity_lib
 
 import (
 	"os"
+	"fmt"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
-
-//-------------------------------------------------
-
-
 
 //-------------------------------------------------
 
@@ -53,6 +50,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
+	fmt.Println("Auth subsystem - ", pServiceInfo.AuthSubsystemTypeStr)
 
 	switch pServiceInfo.AuthSubsystemTypeStr {
 

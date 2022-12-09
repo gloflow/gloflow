@@ -113,8 +113,6 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFloginAttempt, *gf_core.GFerror) {
 
-	loginAttemptMaxAgeSecondsF := 5*60.0
-	
 	var loginAttempt *GFloginAttempt
 	loginAttempt, gfErr := dbLoginAttemptGetByUsername(pUserNameStr,
 		pCtx,
@@ -127,15 +125,12 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 		return nil, nil
 	}
 
+	if loginAttemptCheckAgeIsValid(loginAttempt.CreationUNIXtimeF) {
+		return loginAttempt, nil
 
-	// get the age of the login_attempt
-	currentUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
-	ageF             := currentUNIXtimeF - loginAttempt.CreationUNIXtimeF
+	} else {
 
-
-	// login_attempt has expired
-	if ageF > loginAttemptMaxAgeSecondsF {
-
+		// login_attempt has expired
 		// mark it as deleted
 		expiredBool := true
 		updateOp := &GFloginAttemptUpdateOp{DeletedBool: &expiredBool}
@@ -148,9 +143,21 @@ func LoginAttemptGetIfValid(pUserNameStr GFuserName,
 		}
 
 		return nil, nil
-	} else {
-		return loginAttempt, nil
 	}
 
 	return nil, nil
+}
+
+//---------------------------------------------------
+
+func loginAttemptCheckAgeIsValid(pLoginInitiationUNIXtimeF float64) bool {
+
+	loginAttemptMaxAgeSecondsF := 10*60.0 // 10min
+	currentUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	ageF             := currentUNIXtimeF - pLoginInitiationUNIXtimeF
+
+	if ageF > loginAttemptMaxAgeSecondsF {
+		return false
+	}
+	return true
 }

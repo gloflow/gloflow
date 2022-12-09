@@ -54,10 +54,10 @@ type GFauthenticator struct {
 
 func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_core.GFerror) {
 
+	fmt.Println("INITIALIZING AUTH0")
+
 	config := loadConfig()
 	
-
-
 	provider, err := oidc.NewProvider(
 		context.Background(),
 		fmt.Sprintf("https://%s/", config.Auth0domainStr),
@@ -132,6 +132,9 @@ func loadConfig() *GFconfig {
 	auth0clientSecretStr := os.Getenv("AUTH0_CLIENT_SECRET")
 	auth0apiAudienceStr  := os.Getenv("AUTH0_AUDIENCE")
 	auth0callbackURLstr  := os.Getenv("AUTH0_CALLBACK_URL")
+
+	fmt.Println("auth0 domain       - ", auth0domainStr)
+	fmt.Println("auth0 callback URL - ", auth0callbackURLstr)
 
 	config := &GFconfig{
 		Auth0domainStr:       auth0domainStr,

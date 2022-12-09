@@ -22,11 +22,11 @@ package gf_identity_lib
 import (
 	"net/http"
 	"context"
+	"encoding/base64"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //------------------------------------------------
@@ -70,22 +70,14 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 				if gfErr != nil {
 					return nil, gfErr
 				}
-
-				// IMPORTANT!! - Auth0 expects the "state" variable name
-				gfAuth0sessionCookieNameStr := "state"
-				gfAuth0sessionCookieValStr  := string(sessionIDstr)
-				sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
-
-				gf_session.SetOnReq(gfAuth0sessionCookieNameStr,
-					gfAuth0sessionCookieValStr,
-					pResp,
-					sessionTTLhoursInt)
 				
 				//------------------
 				// HTTP_REDIRECT - redirect user to Auth0 login url
+				auth0appStateBase64str := base64.StdEncoding.EncodeToString([]byte(string(sessionIDstr)))
+
 				http.Redirect(pResp,
 					pReq,
-					pAuthenticator.AuthCodeURL(string(sessionIDstr)),
+					pAuthenticator.AuthCodeURL(auth0appStateBase64str),
 					301)
 
 				//------------------
@@ -123,27 +115,13 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 					nil, "gf_identity_lib", pRuntimeSys)
 				return nil, gfErr
 			}
-			gfSessionIDauth0providedStr := gf_core.GF_ID(qsMap["state"][0])
-
-
-			// this is cookie state set on the users browser by the GF auth0 login handler
-			// /v1/identity/auth0/login before the user got redirected to Auth0's Login screen
-			gfSessionIDcookieNameStr       := "state"
-			cookieExistsBool, cookieValStr := gf_session.GetFromReq(gfSessionIDcookieNameStr, pReq)
-			if !cookieExistsBool {
-				gfErr := gf_core.ErrorCreate("auth0 login callback request is missing the 'state' cookie argument",
-					"verify__input_data_missing_in_req_error",
-					map[string]interface{}{},
-					nil, "gf_identity_lib", pRuntimeSys)
-				return nil, gfErr
-			}
-
-			gfSessionIDstr := gf_core.GF_ID(cookieValStr)
+			auth0providedStateBase64str := qsMap["state"][0]
+			auth0providedStateStr, _ := base64.StdEncoding.DecodeString(auth0providedStateBase64str)
+			gfSessionIDauth0providedStr := gf_core.GF_ID(auth0providedStateStr)
 
 			input := &gf_identity_core.GFauth0inputLoginCallback{
 				CodeStr:                     codeStr,
 				GFsessionIDauth0providedStr: gfSessionIDauth0providedStr,
-				GFsessionIDstr:              gfSessionIDstr,
 			}
 
 			//------------------
@@ -161,9 +139,11 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page
+			
+			homeUrlStr := "/v1/home/view"
 			http.Redirect(pResp,
 				pReq,
-				"/landing/main",
+				homeUrlStr,
 				301)
 			
 			//------------------

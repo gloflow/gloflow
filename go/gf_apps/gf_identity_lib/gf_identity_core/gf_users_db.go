@@ -72,15 +72,48 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 
 //---------------------------------------------------
 
+
+func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFauth0session, *gf_core.GFerror) {
+
+	findOpts := options.FindOne()
+	
+	session := GFauth0session{}
+	collNameStr := "gf_auth0_session"
+
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
+			"id_str":       pGFsessionIDstr,
+			"deleted_bool": false,
+		},
+		findOpts).Decode(&session)
+
+	if err != nil {
+		gfErr := gf_core.MongoHandleError("failed to find Auth0 session by ID in the DB",
+			"mongodb_find_error",
+			map[string]interface{}{
+				"auth0_session_id_str": pGFsessionIDstr,
+			},
+			err, "gf_identity_lib", pRuntimeSys)
+		return nil, gfErr
+	}
+
+	return &session, nil
+}
+
+//---------------------------------------------------
+
 func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
-	pAccessTokenStr  string,
-	pAuth0profileMap map[string]interface{},
-	pCtx             context.Context,
-	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
+	pLoginCompleteBool bool,
+	pAccessTokenStr    string,
+	pAuth0profileMap   map[string]interface{},
+	pCtx               context.Context,
+	pRuntimeSys        *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//------------------------
 	// FIELDS
 	fieldsTargets := bson.M{}
+	fieldsTargets["login_complete_bool"] = pLoginCompleteBool
 	fieldsTargets["access_token_str"] = pAccessTokenStr
 	fieldsTargets["profile_map"]      = pAuth0profileMap
 
@@ -93,9 +126,11 @@ func dbAuth0UpdateSession(pGFsessionIDstr gf_core.GF_ID,
 		bson.M{"$set": fieldsTargets})
 		
 	if err != nil {
-		gfErr := gf_core.MongoHandleError("failed to to update user info",
+		gfErr := gf_core.MongoHandleError("failed to to update Auth0 session in the DB",
 			"mongodb_update_error",
-			map[string]interface{}{},
+			map[string]interface{}{
+				"id_str": pGFsessionIDstr,
+			},
 			err, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
@@ -253,7 +288,8 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 	findOpts := options.FindOne()
 	
 	user := GFuser{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx, bson.M{
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
 			"id_str":       pUserIDstr,
 			"deleted_bool": false,
 		},
@@ -282,7 +318,8 @@ func dbUserGetByUsername(pUserNameStr GFuserName,
 	findOpts := options.FindOne()
 	
 	user := GFuser{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx, bson.M{
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
 		},
@@ -311,7 +348,8 @@ func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	findOpts := options.FindOne()
 	
 	user := GFuser{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx, bson.M{
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx, bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{pUserAddressETHstr, }},
 			"deleted_bool":      false,
 		},
@@ -338,7 +376,6 @@ func DBuserExistsByUsername(pUserNameStr GFuserName,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	collNameStr := "gf_users"
-
 	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
@@ -367,6 +404,7 @@ func dbUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
+	collNameStr := "gf_users"
 	countInt, gfErr := gf_core.MongoCount(bson.M{
 			"addresses_eth_lst": bson.M{"$in": bson.A{pUserAddressETHstr, }},
 			"deleted_bool":      false,
@@ -375,7 +413,7 @@ func dbUserExistsByETHaddr(pUserAddressETHstr GFuserAddressETH,
 			"user_address_eth_str": pUserAddressETHstr,
 			"caller_err_msg":       "failed to check if there is a user in the DB with a given address",
 		},
-		pRuntimeSys.Mongo_db.Collection("gf_users"),
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -397,13 +435,15 @@ func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
+	
 	findOpts := options.FindOne()
 	findOpts.Projection = map[string]interface{}{
 		"email_confirmed_bool": 1,
 	}
 	
 	userMap := map[string]interface{}{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
 		bson.M{
 			"user_name_str": pUserNameStr,
 			"deleted_bool":  false,
@@ -437,7 +477,8 @@ func DBgetUserNameByID(pUserIDstr gf_core.GF_ID,
 	}
 	
 	userBasicInfoMap := map[string]interface{}{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
 		bson.M{
 			"id_str":       string(pUserIDstr),
 			"deleted_bool": false,
@@ -519,7 +560,8 @@ func DBgetUserID(pQuery bson.M,
 	}
 	
 	userBasicInfoMap := map[string]interface{}{}
-	err := pRuntimeSys.Mongo_db.Collection("gf_users").FindOne(pCtx,
+	collNameStr := "gf_users"
+	err := pRuntimeSys.Mongo_db.Collection(collNameStr).FindOne(pCtx,
 		pQuery,
 		findOpts).Decode(&userBasicInfoMap)
 

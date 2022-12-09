@@ -20,12 +20,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
+	"fmt"
 	"time"
 	"context"
+	"strings"
 	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -34,6 +37,12 @@ type GFauth0session struct {
 	IDstr             gf_core.GF_ID          `bson:"id_str"`
 	DeletedBool       bool                   `bson:"deleted_bool"`
 	CreationUNIXtimeF float64                `bson:"creation_unix_time_f"`
+
+	// marked as true once the login completes (once Auth0 initial auth returns the user to the GF system).
+	// if the login_callback handler is called and this login_complete is already marked as true,
+	// the http transaction will be immediatelly aborted.
+	LoginCompleteBool bool                   `bson:"login_complete_bool"`
+
 	AccessTokenStr    string                 `bson:"access_token_str"`
 	ProfileMap        map[string]interface{} `bson:"profile_map"`
 }
@@ -41,7 +50,6 @@ type GFauth0session struct {
 type GFauth0inputLoginCallback struct {
 	CodeStr                     string
 	GFsessionIDauth0providedStr gf_core.GF_ID
-	GFsessionIDstr              gf_core.GF_ID
 }
 
 //---------------------------------------------------
@@ -113,17 +121,37 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
 	
+	sessionIDstr := pInput.GFsessionIDauth0providedStr
+
 	//---------------------
-	// check if the GF session ID stored in the users browsers cookie is the same 
-	// as the GF session ID (auth0 "state" arg) that was provided by Auth0.
-	if pInput.GFsessionIDauth0providedStr != pInput.GFsessionIDstr {
-		gfErr := gf_core.ErrorCreate("invalid 'state' input argument",
-			"verify__input_data_missing_in_req_error",
+	// verify that the sessionID (auth0 "state") corresponds to an registered session
+	// created in the previously called login handler, and that a login with that session 
+	// has not already been completed
+
+	auth0session, gfErr := dbAuth0GetSession(sessionIDstr,
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	if auth0session.LoginCompleteBool {
+		gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, it has already been used by the user to login",
+			"verify__invalid_value_error",
 			map[string]interface{}{},
 			nil, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
 	
+
+	if !loginAttemptCheckAgeIsValid(auth0session.CreationUNIXtimeF) {
+		gfErr := gf_core.ErrorCreate("'state' input argument supplied is invalid, too long has passed since it was created and it has expired",
+			"verify__invalid_value_error",
+			map[string]interface{}{},
+			nil, "gf_identity_core", pRuntimeSys)
+		return gfErr
+	}
+
 	//---------------------
 	// exchange an authorization code for a token
 	token, err := pAuthenticator.Exchange(pCtx, pInput.CodeStr)
@@ -159,9 +187,34 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
+
+	fmt.Println("USER PROFILE:")
+	spew.Dump(auth0profileMap)
+
+	// GOOGLE
+	if strings.HasPrefix(auth0profileMap["sub"].(string), "google-oauth2") {
+		googleProfile := &GFgoogleUserProfile {
+			NameStr:       auth0profileMap["name"].(string),
+			GivenNameStr:  auth0profileMap["given_name"].(string),
+			FamilyNameStr: auth0profileMap["family_name"].(string),
+			NicknameStr:   auth0profileMap["nickname"].(string),
+			LocaleStr:     auth0profileMap["locale"].(string),
+			UpdatedAtStr:  auth0profileMap["updated_at"].(string),
+			PictureURLstr: auth0profileMap["picture"].(string),
+		}
+
+		spew.Dump(googleProfile)
+	}
+
+
+	// mark the session as successfuly logged in, so that the login_callback handler
+	// cant be invoked again
+	loginCompleteBool := true
+
 	//---------------------
 	// DB
-	gfErr = dbAuth0UpdateSession(pInput.GFsessionIDstr,
+	gfErr = dbAuth0UpdateSession(sessionIDstr,
+		loginCompleteBool,
 		accessTokenStr,
 		auth0profileMap,
 		pCtx,
