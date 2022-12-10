@@ -32,12 +32,12 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	pRuntimeSys *gf_core.RuntimeSys) (*gf_images_core.GFimageExport, bool, *gf_core.GFerror) {
 
 	// DB_EXISTS
-	exists_bool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
+	existsBool, gfErr := gf_images_core.DBimageExists(pImageIDstr, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, false, gfErr
 	}
 
-	if exists_bool {
+	if existsBool {
 
 		// DB_GET
 		gf_img, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
@@ -65,20 +65,19 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 
 //---------------------------------------------------
 
-func TagsAddToImage(p_image *gf_images_core.GFimage,
-	p_tags_lst    []string,
+func TagsAddToImage(pImage *gf_images_core.GFimage,
+	pTagsLst    []string,
 	pRuntimeSys *gf_core.RuntimeSys) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_image.TagsAddToImage()")
 	
-	if len(p_tags_lst) > 0 {
+	if len(pTagsLst) > 0 {
 
 		//add all new tags with the current tags associated with an image,
 		//with possible duplicates existing
-		p_image.Tags_lst = append(p_image.Tags_lst, p_tags_lst...)
+		pImage.Tags_lst = append(pImage.Tags_lst, pTagsLst...)
 
 		//-----------
 		set := map[string]bool{}
-		for _, t_str := range p_image.Tags_lst {
+		for _, t_str := range pImage.Tags_lst {
 			set[t_str] = true
 		}
 
@@ -89,7 +88,7 @@ func TagsAddToImage(p_image *gf_images_core.GFimage,
 		}
 
 		//eliminate duplicates from the list
-		p_image.Tags_lst = list_no_duplicates_lst
+		pImage.Tags_lst = list_no_duplicates_lst
 		
 		//-----------
 	}

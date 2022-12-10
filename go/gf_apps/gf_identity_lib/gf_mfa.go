@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"bytes"
 	"strings"
@@ -107,7 +107,8 @@ func TOTPgenerateValue(pSecretKeyStr string,
 	// accounted for between multiple parties.
 	intervalInt := time.Now().UTC().Unix() / 30
 
-	fmt.Println("interval", intervalInt)
+	pRuntimeSys.LogNewFun("DEBUG", "TOTP value generated", map[string]interface{}{"interval_int": intervalInt,})
+	
 	tokenStr, gfErr  := HOTPgenerateValue(pSecretKeyStr,
 		intervalInt,
 		pRuntimeSys)

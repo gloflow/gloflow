@@ -32,7 +32,7 @@ import (
 
 //-------------------------------------------------
 
-func renderInitialPage(p_flow_name_str string,
+func renderInitialPage(pFlowNameStr string,
 	p_initial_pages_num_int  int, // 6
 	p_page_size_int          int, // 5
 	p_tmpl                   *template.Template,
@@ -43,7 +43,7 @@ func renderInitialPage(p_flow_name_str string,
 	//---------------------
 	// GET_TEMPLATE_DATA
 
-	pages_lst := [][]*gf_images_core.GFimage{}
+	pagesLst := [][]*gf_images_core.GFimage{}
 
 	for i:=0; i < p_initial_pages_num_int; i++ {
 
@@ -56,7 +56,7 @@ func renderInitialPage(p_flow_name_str string,
 
 		// initial page might be larger then subsequent pages, that are requested 
 		// dynamically by the front-end
-		page_lst, gfErr := dbGetPage(p_flow_name_str,
+		page_lst, gfErr := dbGetPage(pFlowNameStr,
 			start_position_int, // p_cursor_start_position_int
 			p_page_size_int,    // p_elements_num_int
 			pCtx,
@@ -68,11 +68,11 @@ func renderInitialPage(p_flow_name_str string,
 
 		//------------
 
-		pages_lst = append(pages_lst, page_lst)
+		pagesLst = append(pagesLst, page_lst)
 	}
 
 
-	flow_pages_num_int, gfErr := dbGetPagesTotalNum(p_flow_name_str,
+	flowPagesNumInt, gfErr := dbGetPagesTotalNum(pFlowNameStr,
 		p_page_size_int,
 		pCtx,
 		pRuntimeSys)
@@ -81,9 +81,9 @@ func renderInitialPage(p_flow_name_str string,
 	}
 
 	//---------------------
-	template_rendered_str, gfErr := renderTemplate(p_flow_name_str,
-		pages_lst,
-		flow_pages_num_int,
+	templateRenderedStr, gfErr := renderTemplate(pFlowNameStr,
+		pagesLst,
+		flowPagesNumInt,
 		p_tmpl,
 		p_subtemplates_names_lst,
 		pRuntimeSys)
@@ -91,7 +91,7 @@ func renderInitialPage(p_flow_name_str string,
 		return "", gfErr
 	}
 
-	return template_rendered_str, nil
+	return templateRenderedStr, nil
 }
 
 //-------------------------------------------------

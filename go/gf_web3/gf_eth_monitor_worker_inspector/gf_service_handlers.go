@@ -59,10 +59,10 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// INPUT
 
-			account_address_hex_str, gf_err := gf_eth_core.Http__get_arg__acc_address_hex(p_req, p_runtime.runtime_sys)
+			account_address_hex_str, gfErr := gf_eth_core.Http__get_arg__acc_address_hex(p_req, p_runtime.runtime_sys)
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
@@ -88,31 +88,31 @@ func init_handlers(p_metrics *GF_metrics,
 
 			//------------------
 			// INPUT
-			tx_hex_str, gf_err := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.runtime_sys)
+			tx_hex_str, gfErr := gf_eth_core.Http__get_arg__tx_id_hex(p_resp, p_req, p_runtime.runtime_sys)
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
 			// GET_TRACE
-			trace_map, gf_err := gf_eth_tx.Trace__get(tx_hex_str,
+			trace_map, gfErr := gf_eth_tx.Trace__get(tx_hex_str,
 				p_runtime.eth_rpc_host_str,
 				span__root.Context(),
 				p_runtime.runtime_sys)
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 			
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{
+			dataMap := map[string]interface{}{
 				"trace_map": trace_map,
 			}
 
 			//------------------
 
-			return data_map, nil
+			return dataMap, nil
 		},
 		metrics,
 		false, // true, // pStoreRunBool
@@ -135,10 +135,10 @@ func init_handlers(p_metrics *GF_metrics,
 			//------------------
 			// INPUT
 
-			block_num_int, gf_err := gf_eth_core.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
+			block_num_int, gfErr := gf_eth_core.Http__get_arg__block_num(p_resp, p_req, p_runtime.runtime_sys)
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
@@ -147,7 +147,7 @@ func init_handlers(p_metrics *GF_metrics,
 			span__pipeline := sentry.StartSpan(span__root.Context(), "eth_rpc__get_block__pipeline")
 			defer span__pipeline.Finish() // in case a panic happens before the main .Finish() for this span
 
-			gf_block, gf_err := gf_eth_blocks.Get__pipeline(block_num_int,
+			gf_block, gfErr := gf_eth_blocks.Get__pipeline(block_num_int,
 				p_runtime.eth_rpc_client,
 				span__pipeline.Context(),
 				p_runtime.py_plugins,
@@ -155,19 +155,19 @@ func init_handlers(p_metrics *GF_metrics,
 
 			span__pipeline.Finish()
 
-			if gf_err != nil {
-				return nil, gf_err
+			if gfErr != nil {
+				return nil, gfErr
 			}
 
 			//------------------
 			// OUTPUT
-			data_map := map[string]interface{}{
+			dataMap := map[string]interface{}{
 				"block_map": gf_block, // spew.Sdump(),
 			}
 
 			//------------------
 
-			return data_map, nil
+			return dataMap, nil
 		},
 		metrics,
 		false, // true, // pStoreRunBool

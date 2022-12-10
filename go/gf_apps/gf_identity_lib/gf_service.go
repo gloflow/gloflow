@@ -21,7 +21,7 @@ package gf_identity_lib
 
 import (
 	"os"
-	"fmt"
+	// "fmt"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -35,6 +35,9 @@ func InitService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
+	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
+		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
+	})
 	
 	//------------------------
 	// HANDLERS
@@ -49,9 +52,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	if gfErr != nil {
 		return gfErr
 	}
-
-	fmt.Println("Auth subsystem - ", pServiceInfo.AuthSubsystemTypeStr)
-
+	
 	switch pServiceInfo.AuthSubsystemTypeStr {
 
 	// USERPASS

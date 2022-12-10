@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
@@ -157,6 +157,15 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 		pRuntimeSys)
 
 	//---------------------
+
+
+	//---------------------
+	//---------------------
+	// FINISH!! - logout handler
+	//---------------------
+	//---------------------
+
+
 	// user redirected to this URL by Auth0 on successful logout
 	gf_rpc_lib.CreateHandlerHTTPwithAuth(false, "/v1/identity/auth0/logout_callback",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {

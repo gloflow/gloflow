@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_home_lib
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -156,7 +156,7 @@ func PipelineVizPropsGet(pUserIDstr gf_core.GF_ID,
 	var homeViz *GFhomeViz
 	if homeVizExisting == nil {
 
-		fmt.Println("no home_viz found for user, creating new...")
+		pRuntimeSys.LogNewFun("DEBUG", "no home_viz found for user, creating new...", nil)
 
 		// CREATE
 		homeVizNew, gfErr := PipelineVizPropsCreate(pUserIDstr,

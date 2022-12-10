@@ -20,12 +20,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"context"
 	"strings"
-	"github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
+	// "github.com/auth0/go-jwt-middleware/v2"
+	// "github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	"github.com/davecgh/go-spew/spew"
@@ -50,41 +50,6 @@ type GFauth0session struct {
 type GFauth0inputLoginCallback struct {
 	CodeStr                     string
 	GFsessionIDauth0providedStr gf_core.GF_ID
-}
-
-//---------------------------------------------------
-// USED AT ALL??
-
-func Auth0middlewareInit(pRuntimeSys *gf_core.RuntimeSys) *jwtmiddleware.JWTMiddleware {
-
-	//-------------------------------------------------
-	keyGenerateFun := func(pCtx context.Context) (interface{}, error) {
-		
-		userIdentifierStr := ""
-		jwtSecretKeyValStr, gfErr := JWTgenerateSecretSigningKey(userIdentifierStr, pCtx, pRuntimeSys)
-		if gfErr != nil {
-			return nil, gfErr.Error
-		}
-
-		return []byte(string(jwtSecretKeyValStr)), nil
-	}
-
-	//-------------------------------------------------
-
-	apiAudienceStr := ""
-	jwtValidator, err := validator.New(
-		keyGenerateFun,
-		validator.HS256,
-		"https://<issuer-url>/",
-		[]string{apiAudienceStr,},
-	)
-	if err != nil {
-		panic(err)
-	}
-
-
-	jwtAuth0middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
-	return jwtAuth0middleware
 }
 
 //---------------------------------------------------
@@ -163,10 +128,10 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "Auth0 received Oauth2 bearer token",
-		map[string]interface{}{
-			"oauth2_bearer_token": spew.Sdump(oauth2bearerToken),
-		})
+	pRuntimeSys.LogNewFun("DEBUG", "Auth0 received Oauth2 bearer token", nil)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(oauth2bearerToken)
+	}
 
 	//---------------------
 	// verify token
@@ -193,10 +158,11 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from openID id_token", map[string]interface{}{
-		"profile": spew.Sdump(profileMap),
-	})
-	
+	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from openID id_token", nil)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(profileMap)
+	}
+
 	// GOOGLE
 	// check if the "subject" name starts with google prefix
 	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {

@@ -20,10 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_images_service
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 	"context"
-	// "github.com/globalsign/mgo/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -131,9 +130,10 @@ func UploadInit(pImageNameStr string,
 
 		S3bucketNameStr := pConfig.Uploaded_images_s3_bucket_str // "gf--uploaded--img"
 
-		pRuntimeSys.LogFun("INFO", fmt.Sprintf("S3 generating presigned_url - bucket (%s) - file (%s)",
-			S3bucketNameStr,
-			S3filePathStr))
+		pRuntimeSys.LogNewFun("DEBUG", "S3 generating presigned url", map[string]interface{}{
+			"s3_bucket_name_str": S3bucketNameStr,
+			"s3_file_path_str":   S3filePathStr,
+		})
 
 		presignedURLstr, gfErr = gf_aws.S3generatePresignedUploadURL(S3filePathStr,
 			S3bucketNameStr,
@@ -144,7 +144,8 @@ func UploadInit(pImageNameStr string,
 		}
 	}
 
-	pRuntimeSys.LogFun("INFO", fmt.Sprintf("S3 presigned URL - %s", presignedURLstr))
+	pRuntimeSys.LogNewFun("DEBUG", "S3 presigned URL generated", map[string]interface{}{
+		"presigned_url_str": presignedURLstr,})
 	
 	//------------------
 	

@@ -296,12 +296,12 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{}
+				dataMap := map[string]interface{}{}
 
 				if runningJob != nil {
-					data_map["images_job_id_str"] = runningJob.Id_str
+					dataMap["images_job_id_str"] = runningJob.Id_str
 				}
-				return data_map, nil
+				return dataMap, nil
 				
 				//------------------
 			}
@@ -367,8 +367,8 @@ func InitHandlers(pAuthLoginURLstr string,
 
 				//------------------
 				// OUTPUT
-				data_map := map[string]interface{}{}
-				return data_map, nil
+				dataMap := map[string]interface{}{}
+				return dataMap, nil
 				
 				//------------------
 			}

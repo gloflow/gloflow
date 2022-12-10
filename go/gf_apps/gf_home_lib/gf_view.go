@@ -27,7 +27,7 @@ import (
 
 //------------------------------------------------
 
-func viewRenderTemplateDashboard(pTmpl *template.Template,
+func viewRenderTemplateDashboard(pTemplate *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys            *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
@@ -39,7 +39,7 @@ func viewRenderTemplateDashboard(pTmpl *template.Template,
 	}
 
 	buff := new(bytes.Buffer)
-	err := pTmpl.Execute(buff, tmplData{
+	err := pTemplate.Execute(buff, tmplData{
 		Sys_release_info: sysReleaseInfo,
 		
 		//-------------------------------------------------

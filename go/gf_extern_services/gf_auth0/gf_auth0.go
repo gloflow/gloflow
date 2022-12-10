@@ -26,7 +26,7 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------------------
@@ -55,9 +55,9 @@ type GFauthenticator struct {
 
 func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_core.GFerror) {
 
-	fmt.Println("INITIALIZING AUTH0")
+	pRuntimeSys.LogNewFun("INFO", "initializing Auth0...", nil)
 
-	config := loadConfig()
+	config := loadConfig(pRuntimeSys)
 	
 	provider, err := oidc.NewProvider(
 		context.Background(),
@@ -109,7 +109,7 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "raw id_token", map[string]interface{}{
-		"raw_id_token": spew.Sdump(rawOpenIDtokenStr),
+		"raw_id_token": rawOpenIDtokenStr,
 	})
 
 	oidcConfig := &oidc.Config{
@@ -135,7 +135,7 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 //-------------------------------------------------------------
 
 // load Auth0 config, mostly from ENV vars
-func loadConfig() *GFconfig {
+func loadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 
 	auth0domainStr       := os.Getenv("AUTH0_DOMAIN")
 	auth0clientIDstr     := os.Getenv("AUTH0_CLIENT_ID")
@@ -143,8 +143,10 @@ func loadConfig() *GFconfig {
 	auth0apiAudienceStr  := os.Getenv("AUTH0_AUDIENCE")
 	auth0callbackURLstr  := os.Getenv("AUTH0_CALLBACK_URL")
 
-	fmt.Println("auth0 domain       - ", auth0domainStr)
-	fmt.Println("auth0 callback URL - ", auth0callbackURLstr)
+	pRuntimeSys.LogNewFun("INFO", "auth0 config loaded", map[string]interface{}{
+		"auth0_domain_str":             auth0domainStr,
+		"auth0_login_callback_url_str": auth0callbackURLstr,
+	})
 
 	config := &GFconfig{
 		Auth0domainStr:       auth0domainStr,
