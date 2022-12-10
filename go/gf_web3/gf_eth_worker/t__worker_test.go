@@ -41,7 +41,7 @@ func Test__worker(p_test *testing.T) {
 
 	//--------------------
 	// RUNTIME_SYS
-	logFun, _   := gf_core.InitLogs()
+	logFun, _   := gf_core.LogsInit()
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_eth_monitor_core__tests",
 		LogFun:           logFun,

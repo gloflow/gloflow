@@ -34,11 +34,11 @@ type GFlogFun func(string, string, map[string]interface{})
 
 //-------------------------------------------------
 
-func InitLogs() (func(string, string), GFlogFun) {
-	return InitLogsNew(true)
+func LogsInit() (func(string, string), GFlogFun) {
+	return LogsInitNew(true)
 }
 
-func InitLogsNew(pLogrusBool bool) (func(string, string), GFlogFun) {
+func LogsInitNew(pLogrusBool bool) (func(string, string), GFlogFun) {
 
 	//--------------------
 	// LOGRUS_INIT
@@ -92,6 +92,7 @@ func InitLogsNew(pLogrusBool bool) (func(string, string), GFlogFun) {
 	red    := color.New(color.FgRed).SprintFunc()
 	
 	//-------------------------------------------------
+	// DEPRECATED!! - when all logging is migrated to logNewFun delete this function.
 	logFun := func(pGroupStr string, pMsgStr string) {
 		timeStr := strconv.FormatFloat(float64(time.Now().UnixNano())/1000000000.0, 'f', 10, 64)
 
@@ -116,12 +117,6 @@ func InitLogsNew(pLogrusBool bool) (func(string, string), GFlogFun) {
 			}
 			// contextLogger := logrus.WithFields(logFields)
 		}
-
-		// function that returns true if log level argument is one of the values
-		// trace, debug, info, warning, error, fatal, panic
-		// logLevelValidBool := log.IsLevelValid(pLevelStr)
-
-
 
 		switch pLevelStr {
 
@@ -148,9 +143,15 @@ func InitLogsNew(pLogrusBool bool) (func(string, string), GFlogFun) {
 		case "FATAL":
 			logrus.WithFields(logFields).Fatal(pMsgStr)
 		}
-		
 	}
 
 	//-------------------------------------------------
 	return logFun, logNewFun
+}
+
+//-------------------------------------------------
+
+func LogsIsDebugEnabled() bool {
+	level, _ := logrus.ParseLevel("debug")
+	return logrus.IsLevelEnabled(level)
 }

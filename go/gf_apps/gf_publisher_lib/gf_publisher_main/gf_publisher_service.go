@@ -27,7 +27,7 @@ import (
 //-------------------------------------------------
 
 func main() {
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 	cli_args_map            := gf_publisher_lib.CLI__parse_args(logFun)
 	run__start_service_bool := cli_args_map["run__start_service_bool"].(bool)

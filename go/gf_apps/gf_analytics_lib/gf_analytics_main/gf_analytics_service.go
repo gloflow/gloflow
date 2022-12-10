@@ -33,7 +33,7 @@ import (
 //-------------------------------------------------
 
 func main() {
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 	cli_args_map        := CLI__parse_args(logFun)
 	run_str             := cli_args_map["run_str"].(string)

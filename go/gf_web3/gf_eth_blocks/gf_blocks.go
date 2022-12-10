@@ -496,7 +496,6 @@ func Get__pipeline(p_block_num_uint uint64,
 		Txs_hashes_lst: txs_hashes_lst,
 
 		Time_uint: block.Time(),
-		// Block: spew.Sdump(block),
 	}
 
 	//------------------

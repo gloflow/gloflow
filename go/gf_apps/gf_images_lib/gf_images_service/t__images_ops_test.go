@@ -38,7 +38,7 @@ var cliArgsMap map[string]interface{}
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _ = gf_core.InitLogs()
+	logFun, _ = gf_core.LogsInit()
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)

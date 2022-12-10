@@ -40,7 +40,7 @@ func Test__get_tx_logs(p_test *testing.T) {
 
 	//--------------------
 	// RUNTIME_SYS
-	logFun, _   := gf_core.InitLogs()
+	logFun, _   := gf_core.LogsInit()
 	runtime_sys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_web3_monitor_core__tests",
 		LogFun:           logFun,

@@ -67,7 +67,7 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
 
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_crawl_tests",

@@ -29,7 +29,7 @@ import (
 //-------------------------------------------------
 
 func main() {
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 	// REMOVE!! - "_str"/"_bool" postfixes from the CLI args, the names that are used on the CLI
 	cli_args_map            := gf_images_core.CLI__parse_args(logFun)

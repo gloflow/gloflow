@@ -28,7 +28,7 @@ import (
 
 func main() {
 
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 	cliArgsMap              := gf_tagger_core.CLIparseArgs(logFun)
 	run__start_service_bool := cliArgsMap["run__start_service_bool"].(bool)

@@ -54,7 +54,7 @@ func main() {
 	sentry_endpoint_str          := os.Getenv("GF_SENTRY_ENDPOINT")
 	py_plugins_base_dir_path_str := os.Getenv("GF_PY_PLUGINS_BASE_DIR_PATH")
 
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 	runtime, err := runtimeGet(geth__host_str, py_plugins_base_dir_path_str, logFun)
 	if err != nil {
 		panic(err)

@@ -30,7 +30,7 @@ import (
 
 func main() {
 
-	logFun, logNewFun := gf_core.InitLogs()
+	logFun, logNewFun := gf_core.LogsInit()
 	log.SetOutput(os.Stdout)
 
 

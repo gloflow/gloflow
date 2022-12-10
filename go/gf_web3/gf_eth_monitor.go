@@ -35,7 +35,7 @@ import (
 //-------------------------------------------------
 func main() {
 
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 	log.SetOutput(os.Stdout)
 
 	cmd__base := cmds_init(logFun)

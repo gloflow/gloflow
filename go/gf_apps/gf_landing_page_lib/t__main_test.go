@@ -37,7 +37,7 @@ var cliArgsMap map[string]interface{}
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _  = gf_core.InitLogs()
+	logFun, _  = gf_core.LogsInit()
 	cliArgsMap = gf_tagger_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -53,7 +53,7 @@ func TestBookmarks(pTest *testing.T) {
 	testMongodbDBnameStr := "gf_tests"
 	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
-	logFun, _ := gf_core.InitLogs()
+	logFun, _ := gf_core.LogsInit()
 
 
 	runtimeSys := &gf_core.RuntimeSys{

@@ -35,7 +35,7 @@ func Test__main(p_test *testing.T) {
 	test__mongodb_host_str    := "127.0.0.1"
 	test__mongodb_db_name_str := "test_db"
 
-	logFun, logNewFun := gf_core.InitLogs()
+	logFun, logNewFun := gf_core.LogsInit()
 	mongo_db     := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, logFun)
 	mongodb_coll := mongo_db.C("data_symphony")
 
