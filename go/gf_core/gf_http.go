@@ -56,7 +56,9 @@ func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	pCtx          context.Context,
 	pRuntimeSys   *RuntimeSys) (string, *GFerror) {
 
-	fmt.Println("detecting remote URL MIME type (fetching initial 512 bytes)...")
+	pRuntimeSys.LogNewFun("DEBUG", "detecting remote URL MIME type (fetching initial 512 bytes)...", map[string]interface{}{
+		"url_str": pURLstr,
+	})
 
 	// fetch the first 512 bytes, which is all we need
 	// for determening MIME type.
@@ -112,7 +114,9 @@ func HTTPfetchURL(pURLstr string,
 	pCtx          context.Context,
 	pRuntimeSys   *RuntimeSys) (*GF_http_fetch, *GFerror) {
 
-	fmt.Printf("URL - %s\n", pURLstr)
+	pRuntimeSys.LogNewFun("INFO", "fetching URL", map[string]interface{}{
+		"url_str": pURLstr,
+	})
 
 	// TIMEOUT
 	timeoutSec := time.Second * 60
@@ -173,7 +177,6 @@ func HTTPfetchURL(pURLstr string,
 	// EXECUTE
 	resp, err := client.Do(req)
 	
-	
 	respUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 
 	if err != nil {
@@ -187,10 +190,9 @@ func HTTPfetchURL(pURLstr string,
 	statusCodeInt := resp.StatusCode
 	headersMap    := resp.Header
 
-
-
-	fmt.Println(fmt.Sprintf("http response status_code - %d", statusCodeInt))
-
+	pRuntimeSys.LogNewFun("DEBUG", "http response received ", map[string]interface{}{
+		"status_code_int": statusCodeInt,
+	})
 
 	respHeadersMap := map[string]string{}
 	for k, v := range headersMap {
@@ -323,7 +325,10 @@ func HTTPputFile(pTargetURLstr string,
 
     client := http.Client{}
 
-	pRuntimeSys.LogFun("FUN_ENTER", fmt.Sprintf("ISSUING HTTP PUT REQUEST - %s", pTargetURLstr))
+	pRuntimeSys.LogNewFun("INFO", "issuing HTTP PUT request", map[string]interface{}{
+		"target_url_str": pTargetURLstr,
+	})
+
     resp, err := client.Do(req)
     if err != nil {
 		gfErr := ErrorCreate("failed to execute a HTTP PUT request to upload file to S3",
@@ -418,7 +423,10 @@ func HTTPserveFile(pLocalDirStr string,
 
 		pResp.Header().Set("Content-Type", fileMimeTypeStr)
 
-		pRuntimeSys.LogFun("INFO", fmt.Sprintf("file_path[%s] - local_path[%s] ", filePathStr, localPathStr))
+		pRuntimeSys.LogNewFun("DEBUG", "serving static file", map[string]interface{}{
+			"file_url_path_str":   filePathStr,
+			"file_local_path_str": localPathStr,
+		})
 
 		http.ServeFile(pResp, pReq, localPathStr)
 	}
@@ -459,7 +467,7 @@ func HTTPinitSSE(pResp http.ResponseWriter,
 	notify := pResp.(http.CloseNotifier).CloseNotify()
 	go func() {
 		<- notify
-		pRuntimeSys.LogFun("INFO", "HTTP SSE CONNECTION CLOSED")
+		pRuntimeSys.LogNewFun("DEBUG", "HTTP SSE connection closed", nil)
 	}()
 
 	pResp.Header().Set("Content-Type",                "text/event-stream")

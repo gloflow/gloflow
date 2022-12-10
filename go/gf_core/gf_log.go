@@ -20,28 +20,72 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_core
 
 import (
+	"os"
 	"fmt"
 	"time"
 	"strconv"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 )
+
 //-------------------------------------------------
 
-func InitLogs() (func(string, string), func(string, string, string, map[string]interface{})) {
+type GFlogFun func(string, string, map[string]interface{})
 
-	
-	log := logrus.New()
-	
-	// log to stdout instead of the default stderr
-	// log.SetOutput(os.Stdout)
-	// log.SetLevel(log.ErrorLevel)
-	
-	// Log as JSON instead of the default ASCII formatter.
-	// log.SetFormatter(&log.JSONFormatter{})
+//-------------------------------------------------
 
-	// adds the caller as 'method' to the output
-	// log.SetReportCaller(true)
+func InitLogs() (func(string, string), GFlogFun) {
+	return InitLogsNew(true)
+}
+
+func InitLogsNew(pLogrusBool bool) (func(string, string), GFlogFun) {
+
+	//--------------------
+	// LOGRUS_INIT
+
+	if pLogrusBool {
+
+		//--------------------
+		// LOG_LEVEL
+
+		logLevelStr := os.Getenv("GF_LOG_LEVEL")
+		logLevelDefaultStr := "info"
+		if logLevelStr == "" {
+			logLevelStr = logLevelDefaultStr
+		}
+
+		fmt.Printf("log level - %s\n", logLevelStr)
+		
+		level, err := logrus.ParseLevel(logLevelStr)
+		if err != nil {
+			fmt.Println(err)
+			panic("log level is not valid, has to be : trace, debug, info, warning, error, fatal, panic")
+		}
+
+		// set loging severity level, and above. 
+		// the level that was set will include that level and all severities higher than that
+		logrus.SetLevel(level)
+		
+		//--------------------
+
+		// log := logrus.New()
+		
+		// log to stdout instead of the default stderr
+		logrus.SetOutput(os.Stdout)
+
+		// Log as JSON instead of the default ASCII formatter.
+		// log.SetFormatter(&log.JSONFormatter{})
+
+		logrus.SetFormatter(&logrus.TextFormatter{
+			// DisableColors: true,
+			FullTimestamp: true,
+		})
+
+		// adds the caller function as 'method' to the output
+		// log.SetReportCaller(true)
+	}
+
+	//--------------------
 
 	green  := color.New(color.FgGreen).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
@@ -61,24 +105,50 @@ func InitLogs() (func(string, string), func(string, string, string, map[string]i
 	}
 
 	//-------------------------------------------------
-	logNewFun := func(pMsgStr string, pGroupStr string, pLevelStr string, pMetaMap map[string]interface{}) {
+	// IMPORTANT!! - migrate all loging to this function
+
+	logNewFun := func(pLevelStr string, pMsgStr string, pMetaMap map[string]interface{}) {
+
+		logFields := logrus.Fields{}
 		if pMetaMap != nil {
-			logFields := logrus.Fields{}
 			for k, v := range pMetaMap {
 				logFields[k] = v
 			}
-
-			contextLogger := log.WithFields(logFields)
-
-			switch pLevelStr {
-			case "INFO":
-				contextLogger.Info(pMsgStr)
-			case "WARNING":
-				contextLogger.Warn(pMsgStr)
-			case "ERROR":
-				contextLogger.Error(pMsgStr)
-			}
+			// contextLogger := logrus.WithFields(logFields)
 		}
+
+		// function that returns true if log level argument is one of the values
+		// trace, debug, info, warning, error, fatal, panic
+		// logLevelValidBool := log.IsLevelValid(pLevelStr)
+
+
+
+		switch pLevelStr {
+
+		// very low-level logs
+		case "TRACE":
+			logrus.WithFields(logFields).Trace(pMsgStr)
+
+		// debugging logs for devs or troubleshooting
+		case "DEBUG":
+			logrus.WithFields(logFields).Debug(pMsgStr)
+
+		// informative logs for general observation
+		case "INFO":
+			logrus.WithFields(logFields).Info(pMsgStr)
+			
+		case "WARNING":
+			logrus.WithFields(logFields).Warn(pMsgStr)
+
+		// failure occured, but the process is not exiting
+		case "ERROR":
+			logrus.WithFields(logFields).Error(pMsgStr)
+
+		// process will exit after this log
+		case "FATAL":
+			logrus.WithFields(logFields).Fatal(pMsgStr)
+		}
+		
 	}
 
 	//-------------------------------------------------

@@ -35,7 +35,7 @@ import (
 type RuntimeSys struct {
 	Service_name_str string
 	LogFun           func(string, string)
-	LogNewFun        func(pMsgStr string, pGroupStr string, pLevelStr string, pMetaMap map[string]interface{})
+	LogNewFun        GFlogFun
 
 	Mongo_db         *mongo.Database
 	Mongo_coll       *mongo.Collection // main mongodb collection to use when none is specified

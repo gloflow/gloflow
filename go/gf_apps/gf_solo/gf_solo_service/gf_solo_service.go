@@ -54,7 +54,7 @@ func Run(pConfig *GFconfig,
 	yellow := color.New(color.BgYellow).Add(color.FgBlack).SprintFunc()
 	green  := color.New(color.BgGreen).Add(color.FgBlack).SprintFunc()
 
-	fmt.Printf("%s%s\n", yellow("GF_SOLO"), green("==============="))
+	pRuntimeSys.LogNewFun("INFO", fmt.Sprintf("%s%s\n", yellow("GF_SOLO"), green("===============")), nil)
 	
 	//-------------
 	// CONFIG
@@ -322,7 +322,8 @@ func Run(pConfig *GFconfig,
 
 func RuntimeGet(pConfigPathStr string,
 	pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun          func(string, string)) (*gf_core.RuntimeSys, *GFconfig, error) {
+	pLogFun          func(string, string),
+	pLogNewFun       gf_core.GFlogFun) (*gf_core.RuntimeSys, *GFconfig, error) {
 
 	//--------------------
 	// CONFIG
@@ -360,6 +361,7 @@ func RuntimeGet(pConfigPathStr string,
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_solo",
 		LogFun:           pLogFun,
+		LogNewFun:        pLogNewFun,
 
 		// SENTRY - enable it for error reporting
 		ErrorsSendToSentryBool: true,

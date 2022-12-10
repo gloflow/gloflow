@@ -29,7 +29,8 @@ import (
 //-------------------------------------------------
 
 func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun func(string, string)) *cobra.Command {
+	pLogFun    func(string, string),
+	pLogNewFun gf_core.GFlogFun) *cobra.Command {
 
 	var cliConfigPathStr string
 
@@ -63,7 +64,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 		Long:  "start the gf_solo service",
 		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
-			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun)
+			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun, pLogNewFun)
 			if err != nil {
 				panic(err)
 			}
