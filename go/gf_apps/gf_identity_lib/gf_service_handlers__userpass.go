@@ -52,7 +52,9 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
-
+		
+		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
+		
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
 	}

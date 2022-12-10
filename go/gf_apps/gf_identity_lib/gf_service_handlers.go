@@ -58,6 +58,7 @@ func initHandlers(pAuthLoginURLstr string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
+		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		AuthLoginURLstr: pAuthLoginURLstr,
 	}
 

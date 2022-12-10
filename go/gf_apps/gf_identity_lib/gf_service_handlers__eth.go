@@ -54,6 +54,8 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 		StoreRunBool:    true,
 		SentryHub:       nil,
 
+		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
+		
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
 	}

@@ -29,10 +29,10 @@ import (
 	"net/http"
 	"context"
 	"time"
-	"encoding/json"
+	// "encoding/json"
 	"github.com/getsentry/sentry-go"
-	"github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
+	// "github.com/auth0/go-jwt-middleware/v2"
+	// "github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
@@ -83,14 +83,9 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	pHandlerRuntime *GFrpcHandlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
 
-
 	// AUTH0
-	var jwtAuth0middleware *jwtmiddleware.JWTMiddleware
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 		
-		
-		jwtAuth0middleware = gf_identity_core.Auth0middlewareInit(pRuntimeSys)
-
 	} else {
 		// BUILTIN_AUTH
 		// set the builtin auth_subsystem type as the default value if another value is not set
@@ -107,47 +102,89 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 		&pHandlerRuntime.AuthLoginURLstr,
 		pRuntimeSys)
 
+	
+	switch pHandlerRuntime.AuthSubsystemTypeStr {
 
+	//------------------
+	// BUILTIN
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+
+		if pAuthBool {
+
+			//-------------------------------------------------
+			builtinHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+				
+				ctx := pReq.Context()
+				pathStr := pReq.URL.Path
+
+				// SESSION_VALIDATE
+				validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
+					pResp,
+					&pHandlerRuntime.AuthLoginURLstr,
+					ctx,
+					pRuntimeSys)
+				if gfErr != nil {
+					ErrorInHandler(pathStr,
+						fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),
+						nil, pResp, pRuntimeSys)
+					return
+				}
+
+				// SESSION_NOT_VALID
+				if !validBool {
+
+					// METRICS
+					if pHandlerRuntime.Metrics != nil {
+						pHandlerRuntime.Metrics.HandlersAuthSessionInvalidCounter.Inc()
+					}
+
+					// if a login_url is not defined then return error, otherwise redirect to this login_url   
+					if pHandlerRuntime.AuthLoginURLstr == "" {
+						ErrorInHandler(pathStr,
+							fmt.Sprintf("user not authenticated to access handler %s", pathStr),
+							nil, pResp, pRuntimeSys)
+					}
+					return
+				}
+
+				ctxAuth := context.WithValue(ctx, "gf_user_id", userIdentifierStr)
+
+
+				appHandlerFun(pResp, pReq.WithContext(ctxAuth))
+			}
+
+			//-------------------------------------------------
+
+			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(builtinHandlerFun))
+
+		} else {
+			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
+		}
+
+	//------------------
 	// AUTH0
-	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
 
 		if pAuthBool {
 
 			//-------------------------------------------------
 			auth0handlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 
-				claims, ok := pReq.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-				if !ok {
-					http.Error(pResp, "failed to get validated claims", http.StatusInternalServerError)
-					return
-				}
 				
-				payload, err := json.Marshal(claims)
-				if err != nil {
-					http.Error(pResp, err.Error(), http.StatusInternalServerError)
-				}
-
-
-
-				fmt.Println(payload)
-
 			
 				appHandlerFun(pResp, pReq)
-
-				
 			}
 
 			//-------------------------------------------------
 
-			// this will automatically check the JWT supplied in each request
-			// to this handler, if Auth is turn on for this handler
-			pHandlerRuntime.Mux.Handle(pPathStr, jwtAuth0middleware.CheckJWT(http.HandlerFunc(auth0handlerFun)))
-		}
+			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(auth0handlerFun))
 
-	} else {
-		pHandlerRuntime.Mux.HandleFunc(pPathStr, appHandlerFun)
+		} else {
+			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))
+		}
 	}
-	
+
+	//------------------
 }
 
 //-------------------------------------------------
@@ -210,7 +247,7 @@ func getHandler(pAuthBool bool,
 		startTimeUNIXf := float64(time.Now().UnixNano())/1000000000.0
 		pathStr := pReq.URL.Path
 
-		fmt.Printf("------------------> HTTP REQ - %f - %s\n", startTimeUNIXf, pPathStr)
+		pRuntimeSys.LogNewFun("INFO", "------------------> HTTP REQ", map[string]interface{}{"path_str": pPathStr})
 
 		//------------------
 		// PANIC_HANDLING
@@ -269,7 +306,7 @@ func getHandler(pAuthBool bool,
 
 		ctxRoot := spanRoot.Context()
 
-		//------------------
+		/*//------------------
 		// AUTH
 
 		var ctxAuth context.Context
@@ -309,11 +346,11 @@ func getHandler(pAuthBool bool,
 			ctxAuth = context.WithValue(ctxRoot, "gf_user_id", userIdentifierStr)
 		} else {
 			ctxAuth = ctxRoot
-		}
+		}*/
 
 		//------------------
 		// HANDLER
-		outputDataMap, gfErr := pHandlerFun(ctxAuth, pResp, pReq)
+		outputDataMap, gfErr := pHandlerFun(ctxRoot, pResp, pReq)
 
 		//------------------
 		// TRACE
