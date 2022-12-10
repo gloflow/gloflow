@@ -37,7 +37,8 @@ import (
 
 func TestUsersHTTPeth(pTest *testing.T) {
 
-	fmt.Println(" TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys := Tinit()
+	runtimeSys.LogNewFun("INFO", "TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
 	testPortInt := 2000
 	HTTPagent   := gorequest.New()
@@ -46,9 +47,11 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	// GENERATE_WALLET
 	privateKeyHexStr, publicKeyHexStr, addressStr, err := gf_crypto.EthGenerateKeys()
 	if err != nil {
-		fmt.Println(err)
+		runtimeSys.LogNewFun("DEBUG", "wallet generation failed", map[string]interface{}{"err": err,})
 		pTest.FailNow()
 	}
+
+	runtimeSys.LogNewFun("DEBUG", "wallet generation done...", nil)
 
 	//---------------------------------
 	// TEST_PREFLIGHT_HTTP
@@ -62,10 +65,10 @@ func TestUsersHTTPeth(pTest *testing.T) {
 		Send(string(dataBytesLst)).
 		End()
 
-	// spew.Dump(bodyStr)
+	runtimeSys.LogNewFun("DEBUG", "eth preflight HTTP request done...", map[string]interface{}{"body": bodyStr,})
 
 	if (len(errs) > 0) {
-		fmt.Println(errs)
+		runtimeSys.LogNewFun("DEBUG", "eth preflight HTTP failed", map[string]interface{}{"errs": errs,})
 		pTest.FailNow()
 	}
 
@@ -75,17 +78,20 @@ func TestUsersHTTPeth(pTest *testing.T) {
         pTest.FailNow()
     }
 
-	spew.Dump(bodyMap)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(bodyMap)
+	}
 
 	assert.True(pTest, bodyMap["status"].(string) != "ERROR", "user preflight http request failed")
 
 	nonceValStr    := bodyMap["data"].(map[string]interface{})["nonce_val_str"].(string)
 	userExistsBool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
 	
-	fmt.Println("====================================")
-	fmt.Println("preflight response:")
-	fmt.Println("nonce_val_str",    nonceValStr)
-	fmt.Println("user_exists_bool", userExistsBool)
+	runtimeSys.LogNewFun("DEBUG", "eth preflight response", map[string]interface{}{
+		"nonce_val_str":    nonceValStr,
+		"user_exists_bool": userExistsBool,
+	})
+
 
 	// we're testing user creation and the rest of the flow as well, so user shouldnt exist
 	if (userExistsBool) {
@@ -229,9 +235,8 @@ func TestUsersHTTPeth(pTest *testing.T) {
 
 func TestUsersETHunit(pTest *testing.T) {
 
-	fmt.Println(" TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
 	runtimeSys := Tinit()
+	runtimeSys.LogNewFun("INFO", "TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
 	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	testUserSignatureStr  := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"

@@ -30,11 +30,13 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
 
 var logFun func(p_g string, p_m string)
+var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
 //-------------------------------------------------
@@ -98,6 +100,8 @@ func TestStartService(pPortInt int,
 			// IMPORTANT!! - durring testing dont send emails
 			EnableEmailBool: false,
 		}
+
+		spew.Dump(serviceInfo)
 		InitService(HTTPmux, serviceInfo, pRuntimeSys)
 		gf_rpc_lib.ServerInitWithMux("gf_identity_test", pPortInt, HTTPmux)
 	}()
@@ -108,18 +112,19 @@ func TestStartService(pPortInt int,
 
 func Tinit() *gf_core.RuntimeSys {
 
-	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	test__mongodb_db_name_str := "gf_tests"
-	test__mongodb_url_str := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
+	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	testMongodbDBnameStr := "gf_tests"
+	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
 	runtimeSys := &gf_core.RuntimeSys{
 		Service_name_str: "gf_identity_tests",
 		LogFun:           logFun,
+		LogNewFun:        logNewFun,
 		Validator:        gf_core.ValidateInit(),
 	}
 
-	mongoDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str,
-		test__mongodb_db_name_str,
+	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr,
+		testMongodbDBnameStr,
 		nil,
 		runtimeSys)
 	if gfErr != nil {

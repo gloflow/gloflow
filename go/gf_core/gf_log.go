@@ -35,10 +35,13 @@ type GFlogFun func(string, string, map[string]interface{})
 //-------------------------------------------------
 
 func LogsInit() (func(string, string), GFlogFun) {
-	return LogsInitNew(true)
+	return LogsInitNew(true, "")
 }
 
-func LogsInitNew(pLogrusBool bool) (func(string, string), GFlogFun) {
+// pLogLevelStr - allows for explicit programmatic setting of log_level.
+//                if this is set to "" then the ENV var is checked.
+//                if this is also not set then the default "info" level is used.
+func LogsInitNew(pLogrusBool bool, pLogLevelStr string) (func(string, string), GFlogFun) {
 
 	//--------------------
 	// LOGRUS_INIT
@@ -48,10 +51,16 @@ func LogsInitNew(pLogrusBool bool) (func(string, string), GFlogFun) {
 		//--------------------
 		// LOG_LEVEL
 
-		logLevelStr := os.Getenv("GF_LOG_LEVEL")
+		var logLevelStr string
 		logLevelDefaultStr := "info"
-		if logLevelStr == "" {
-			logLevelStr = logLevelDefaultStr
+
+		if pLogLevelStr != "" {
+			logLevelStr = pLogLevelStr
+		} else {
+			logLevelENVstr := os.Getenv("GF_LOG_LEVEL")
+			if logLevelENVstr == "" {
+				logLevelStr = logLevelDefaultStr
+			}
 		}
 
 		fmt.Printf("log level - %s\n", logLevelStr)

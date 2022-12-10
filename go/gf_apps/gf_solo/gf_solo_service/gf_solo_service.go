@@ -43,7 +43,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -69,9 +69,11 @@ func Run(pConfig *GFconfig,
 	if err != nil {
 		panic(err)
 	}
-
-	spew.Dump(pConfig)
-
+	
+	pRuntimeSys.LogNewFun("DEBUG", "gf_solo service config", nil)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(pConfig)
+	}
 	//-------------
 	user, err := user.Current()
 	if err != nil {
@@ -96,8 +98,6 @@ func Run(pConfig *GFconfig,
 
 	//-------------
 	// GF_IDENTITY
-
-	
 
 	gfIdentityServiceInfo := &gf_identity_core.GFserviceInfo{
 		NameStr:       "gf_identity",
