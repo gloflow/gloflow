@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //-------------------------------------------------
 extract__main(log_fun)
+
 //-------------------------------------------------
 function log_fun(p_g,p_m) {
 	var msg_str = p_g+':'+p_m
@@ -33,6 +34,7 @@ function log_fun(p_g,p_m) {
 			break;
 	}
 }
+
 //---------------------------------------------------
 function extract__main(p_log_fun) {
 	p_log_fun('FUN_ENTER','extract.extract__main()');
@@ -48,6 +50,7 @@ function extract__main(p_log_fun) {
 			}
 		});
 }
+
 //---------------------------------------------------
 /*IMPORTANT!! - this script is run in all frames of the particular page.
 it may get run in advertising iframes as well, so potentially 10's of these scripts
@@ -70,10 +73,11 @@ function handle_msg(p_request_type_str, p_log_fun) {
 		case 'get_page_img_infos':
 			const new_page_img_infos_lst = get_images_info(p_log_fun);
 			const msg_map = {
-				'page_img_infos_lst':new_page_img_infos_lst
+				'page_img_infos_lst': new_page_img_infos_lst
 			};
 			send_to_bg_page(msg_map, (p_resp)=>{});
 			break;
+
 		//-------------
 		//GET PAGE VIDEO INFOS
 
@@ -84,9 +88,11 @@ function handle_msg(p_request_type_str, p_log_fun) {
 			};
 			send_to_bg_page(msg_map,(p_resp)=>{});
 			break;
+
 		//-------------
 	}
 }
+
 //---------------------------------------------------
 function send_to_bg_page(p_msg_map, p_on_complete_fun) {
 	p_log_fun('FUN_ENTER','exctract.send_to_bg_page()');
@@ -96,6 +102,7 @@ function send_to_bg_page(p_msg_map, p_on_complete_fun) {
 			p_on_complete_fun(p_resp);
 		});
 }
+
 //---------------------------------------------------
 //ADD!! - detect you tube embeds in other non-youtube.com pages
 //        via the <embed> tag
@@ -205,6 +212,7 @@ function get_videos_info(p_log_fun) {
 
 	return videos_info_lst;
 }
+
 //---------------------------------------------------
 //->:List<:Dict()>(img_infos_lst)
 function get_images_info(p_log_fun) {
@@ -215,7 +223,7 @@ function get_images_info(p_log_fun) {
 
 	//---------------------------------------------------
 	function get_image_info(p_jq_element) {
-		p_log_fun('FUN_ENTER','extract.get_images_info().get_image_info()')
+		p_log_fun('FUN_ENTER', 'extract.get_images_info().get_image_info()')
 		
 		//".src" instead of ".attr('src')" - gets the fully resolved url (including the host)
 		//                                   and not just the value thats stored in the "src" html attr
@@ -240,7 +248,7 @@ function get_images_info(p_log_fun) {
 	//---------------------------------------------------
 
 	const img_infos_lst = [];
-	$('img').each((p_i,p_element) => {
+	$('img').each((p_i, p_element) => {
 		const img_info_map = get_image_info(p_element);
 		
 		if (img_info_map['img_width']  > min_image_dimension && img_info_map['img_height'] > min_image_dimension) {

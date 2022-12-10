@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 main(log_fun);
+
 //-------------------------------------------------
 function log_fun(p_g,p_m) {
 	const msg_str = p_g+':'+p_m;
@@ -32,9 +33,10 @@ function log_fun(p_g,p_m) {
 			break;
 	}
 }
+
 //---------------------------------------------------
 function main(p_log_fun) {
-	p_log_fun('FUN_ENTER','background_page.main()');
+	p_log_fun('FUN_ENTER', 'background_page.main()');
 	
 	const ctx_map = {
 		'selected_elements_map':{},
@@ -64,6 +66,7 @@ function main(p_log_fun) {
 				handle_content_script_msg(p_request.type_str, p_send_response_fun, p_request);
 				break;
 		}
+
 		//---------------------------------------------------	
 		function handle_popup_selected_elements(p_msg_type_str, p_request) {
 			switch(p_msg_type_str) {
@@ -90,6 +93,7 @@ function main(p_log_fun) {
 					break;
 			}
 		}
+
 		//---------------------------------------------------	
 		function handle_popup_msg(p_msg_type_str, p_request) {
 			switch (p_msg_type_str) {
@@ -126,6 +130,7 @@ function main(p_log_fun) {
 					break;
 			}
 		}
+
 		//---------------------------------------------------
 		function handle_content_script_msg(p_msg_type_str, p_send_response_fun, p_request) {
 			switch (p_msg_type_str) {
@@ -164,6 +169,7 @@ function main(p_log_fun) {
 					break;
 			}
 		}
+
 		//---------------------------------------------------	
 	}
 	//---------------------------------------------------
@@ -208,6 +214,7 @@ function get__selected_elements(p_ctx_map, p_on_complete_fun, p_log_fun) {
 
 	p_on_complete_fun(selected_elements_map);
 }
+
 //---------------------------------------------------
 function add_element_to_post(p_element_info_map, p_ctx_map, p_on_complete_fun, p_log_fun) {
 	p_log_fun('FUN_ENTER','background_page.add_element_to_post()');
@@ -248,6 +255,7 @@ function add_element_to_post(p_element_info_map, p_ctx_map, p_on_complete_fun, p
 			false;
 	}
 }
+
 //---------------------------------------------------
 function remove_element_from_post(p_element_info_map, p_ctx_map, p_log_fun) {
 	p_log_fun('FUN_ENTER','background_page.remove_element_from_post()');

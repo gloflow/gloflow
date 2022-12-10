@@ -252,14 +252,13 @@ function check_images_exist_in_system(p_page_images_infos_lst, p_log_fun) {
 }
 
 //---------------------------------------------------
-//HUD
+// HUD
 //---------------------------------------------------
 function init_image_hud(p_image_id_str,
 	p_image_in_page_element,
 	p_image_info_map,
 	p_gf_container_element,
 	p_log_fun) {
-	//p_log_fun('FUN_ENTER','display_page_info.init_image_hud()');
 
 	const full_img_src_str = p_image_info_map['full_img_src_str'];
 
@@ -393,8 +392,8 @@ function init_image_hud(p_image_id_str,
 			image_flows_names_lst.push(...flows_names_filtered_lst);
 		}
 
-		//const image_flows_names_lst = ["general"];
-		const gf_host_str           = $(p_gf_container_element).find("input#gf_host").val();
+		const gf_host_str = $(p_gf_container_element).find("input#gf_host").val();
+
 		add_image_to_flow(full_img_src_str,
 			image_flows_names_lst,
 			gf_host_str,
