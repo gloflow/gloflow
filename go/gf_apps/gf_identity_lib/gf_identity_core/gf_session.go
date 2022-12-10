@@ -21,9 +21,122 @@ package gf_identity_core
 
 import (
 	"time"
+	"net/http"
+	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//---------------------------------------------------
+
+func Validate(pReq *http.Request,
+	pAuthSubsystemTypeStr string,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	
+	cookieNameStr := "gf_sess"
+	cookieFoundBool, sessionDataStr := GetFromReq(cookieNameStr, pReq)
+	
+	if !cookieFoundBool {
+
+		// gf_sess cookie was never found
+		return false, "", nil
+	}
+
+	var userIdentifierStr string
+	switch pAuthSubsystemTypeStr {
+	
+	//---------------------
+	// BUILTIN
+	case GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+		JWTtokenValStr := sessionDataStr
+
+		
+		// JWT_VALIDATE
+		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+			pCtx,
+			pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
+
+		userIdentifierStr = JWTuserIdentifierStr
+
+	//---------------------
+	// AUTH0
+	case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
+		sessionIDstr := gf_core.GF_ID(sessionDataStr)
+
+		validBool, gfErr := Auth0validateSession(sessionIDstr, pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return false, "", gfErr
+		}
+
+		if !validBool {
+			return false, "", nil
+		}
+		
+	//---------------------
+	}
+
+	return true, userIdentifierStr, nil
+}
+
+//---------------------------------------------------
+// GET/SET FROM COOKIES
+//---------------------------------------------------
+
+func GetFromReq(pCookieNameStr string,
+	pReq *http.Request) (bool, string) {
+
+	for _, cookie := range pReq.Cookies() {
+		if (cookie.Name == pCookieNameStr) {
+			sessionDataStr := cookie.Value
+			return true, sessionDataStr
+		}
+	}
+	return false, ""
+}
+
+//---------------------------------------------------
+
+func SetOnReq(pSessionCookieNameStr string,
+	pSessionDataStr string,
+	pResp           http.ResponseWriter,
+	pTTLhoursInt    int) {
+
+	ttl    := time.Duration(pTTLhoursInt) * time.Hour
+	expire := time.Now().Add(ttl)
+	
+	cookie := http.Cookie{
+		Name:    pSessionCookieNameStr,
+		Value:   pSessionDataStr,
+		Expires: expire,
+
+		// IMPORTANT!! - session cookie should be set for all paths
+		//               on the same domain, not just the /v1/identity/...
+		//               paths, because session is verified on all of them
+		Path: "/", 
+		
+		// ADD!! - ability to specify multiple domains that the session is
+		//         set for in case the GF services and API endpoints are spread
+		//         across multiple domains.
+		// Domain: "", 
+		
+		// IMPORTANT!! - make cookie http_only, disabling browser js context
+		//               from being able to read its value
+		HttpOnly: true,
+
+		// SameSite allows a server to define a cookie attribute making it impossible for
+		// the browser to send this cookie along with cross-site requests. The main
+		// goal is to mitigate the risk of cross-origin information leakage, and provide
+		// some protection against cross-site request forgery attacks.
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(pResp, &cookie)
+}
+
+//---------------------------------------------------
+// VAR
 //---------------------------------------------------
 
 func generateSessionID() gf_core.GF_ID {

@@ -47,7 +47,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		return gfErr
 	}
 
-	// ETH
+	// ETH - these handlers are always enabled, whether builtin or auth0 auth subsystem is activated
 	gfErr = initHandlersEth(pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr

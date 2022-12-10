@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //------------------------------------------------
@@ -134,13 +135,20 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 			// ADD!! - create login attempt record in the DB
 
 			//------------------
-			gfErr := gf_identity_core.Auth0loginCallbackPipeline(input,
+			output, gfErr := gf_identity_core.Auth0loginCallbackPipeline(input,
 				pAuthenticator,
 				pCtx,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
+
+			sessionIDstr := output.SessionIDstr
+
+			//---------------------
+			// SET_SESSION_ID - sets gf_sess cookie on all future requests
+			sessionDataStr := string(sessionIDstr)
+			gf_session.Create(sessionDataStr, pResp)
 
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page

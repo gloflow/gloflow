@@ -33,6 +33,11 @@ type GFserviceInfo struct {
 
 	NameStr string
 
+	//------------------------
+	// AUTH_SUBSYSTEM_TYPE - builtin | auth0
+	AuthSubsystemTypeStr string
+	
+	//------------------------
 	// ADMIN_EMAIL - what the default admin email is (for auth)
 	AdminEmailStr string
 

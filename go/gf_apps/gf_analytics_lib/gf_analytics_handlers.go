@@ -27,19 +27,18 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 )
 
 //-------------------------------------------------
 
-func initHandlers(p_templates_paths_map map[string]string,
-	p_mux         *http.ServeMux,
+func initHandlers(pTemplatesPathsMap map[string]string,
+	pMux        *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
 	// TEMPLATES
 
-	gf_templates, gfErr := tmplLoad(p_templates_paths_map, pRuntimeSys)
+	gf_templates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
@@ -56,24 +55,19 @@ func initHandlers(p_templates_paths_map map[string]string,
 	//---------------------
 	// USER_EVENT
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/ue",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// CORS - preflight request
-			gf_rpc_lib.HTTPcorsPreflightHandle(p_req, p_resp)
-			// if p_req.Method == "OPTIONS" {
-			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "*")
-			// 	p_resp.Header().Set("Access-Control-Allow-Origin", "Origin, X-Requested-With, Content-Type, Accept")
-			// }
+			gf_rpc_lib.HTTPcorsPreflightHandle(pReq, pResp)
 
-			if p_req.Method == "POST" {
+			if pReq.Method == "POST" {
 
-				ip_str       := p_req.RemoteAddr
+				ip_str       := pReq.RemoteAddr
 				clean_ip_str := strings.Split(ip_str,":")[0]
 				
 				//-----------------
 				// BROWSER INFORMATION
-				user_agent_str := p_req.UserAgent()
+				user_agent_str := pReq.UserAgent()
 				user_agent     := uaparser.Parse(user_agent_str)
 
 				var browser_name_str string
@@ -88,7 +82,7 @@ func initHandlers(p_templates_paths_map map[string]string,
 
 				//-----------------
 				// INPUT
-				input, session_id_str, gfErr := gf_events.User_event__parse_input(p_req, p_resp, pRuntimeSys)
+				input, sessionIDstr, gfErr := gf_events.User_event__parse_input(pReq, pResp, pRuntimeSys)
 				if gfErr != nil {
 					//IMPORTANT!! - this is a special case handler, we dont want it to return any standard JSON responses,
 					//              this handler should be fire-and-forget from the users/clients perspective.
@@ -97,7 +91,7 @@ func initHandlers(p_templates_paths_map map[string]string,
 				
 				//-----------------
 							
-				gf_req_ctx := &gf_events.GF_user_event_req_ctx {
+				gfReqCtx := &gf_events.GF_user_event_req_ctx {
 					User_ip_str:      clean_ip_str,
 					User_agent_str:   user_agent_str,
 					Browser_name_str: browser_name_str,
@@ -106,7 +100,7 @@ func initHandlers(p_templates_paths_map map[string]string,
 					Os_ver_str:       os_version_str,
 				}
 
-				gfErr = gf_events.User_event__create(input, session_id_str, gf_req_ctx, pRuntimeSys)
+				gfErr = gf_events.User_event__create(input, sessionIDstr, gfReqCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
@@ -115,7 +109,7 @@ func initHandlers(p_templates_paths_map map[string]string,
 			}
 			return nil, nil
 		},
-		p_mux,
+		pMux,
 		metrics,
 		true, // pStoreRunBool
 		nil,
@@ -123,28 +117,15 @@ func initHandlers(p_templates_paths_map map[string]string,
 
 	//--------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/dashboard",
-		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 			
-		if p_req.Method == "GET" {
-
-			//---------------------
-			// SESSION_VALIDATE
-			valid_bool, _, gfErr := gf_session.Validate(p_req, p_ctx, pRuntimeSys)
-			if gfErr != nil {
-				return nil, gfErr
-			}
-
-			if !valid_bool {
-				return nil, nil
-			}
-
-			//---------------------
+		if pReq.Method == "GET" {
 			
 			//--------------------
 			// RENDER TEMPLATE
 			gfErr = dashboardRenderTemplate(gf_templates.dashboard__tmpl,
 				gf_templates.dashboard__subtemplates_names_lst,
-				p_resp,
+				pResp,
 				pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
@@ -152,7 +133,7 @@ func initHandlers(p_templates_paths_map map[string]string,
 		}
 		return nil, nil
 	},
-	p_mux,
+	pMux,
 	metrics,
 	true, // pStoreRunBool
 	nil,

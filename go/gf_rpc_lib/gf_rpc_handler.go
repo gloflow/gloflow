@@ -120,9 +120,11 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				// SESSION_VALIDATE
 				validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 					pResp,
+					pHandlerRuntime.AuthSubsystemTypeStr,
 					&pHandlerRuntime.AuthLoginURLstr,
 					ctx,
 					pRuntimeSys)
+
 				if gfErr != nil {
 					ErrorInHandler(pathStr,
 						fmt.Sprintf("handler %s failed to execute/validate a auth session", pathStr),

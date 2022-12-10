@@ -27,7 +27,6 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -66,6 +65,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       pLocalHub,
+		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		AuthLoginURLstr: "/v1/admin/login_ui",
 	}
 
@@ -78,7 +78,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			if pReq.Method == "GET" {
 
 				//---------------------
-				validBool, _, gfErr := gf_session.Validate(pReq, pCtx, pRuntimeSys)
+				validBool, _, gfErr := gf_identity_core.Validate(pReq, rpcHandlerRuntime.AuthSubsystemTypeStr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

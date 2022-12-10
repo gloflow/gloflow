@@ -39,7 +39,7 @@ type GFjwtSecretKey struct {
 	Vstr                 string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	IDstr                gf_core.GF_ID      `bson:"id_str"`
-	Deleted_bool         bool               `bson:"deleted_bool"`
+	DeletedBool          bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF    float64            `bson:"creation_unix_time_f"`
 
 	Val                 GFjwtSecretKeyVal   `bson:"val_str"`
@@ -100,7 +100,7 @@ func JWTgenerateSecretSigningKey(pUserIdentifierStr string,
 	jwtSecretKey := &GFjwtSecretKey{
 		Vstr:              "0",
 		IDstr:             jwtID,
-		Deleted_bool:      false,
+		DeletedBool:       false,
 		CreationUNIXtimeF: creationUNIXtimeF,
 		Val:               jwtSecretKeyValStr,
 		UserIdentifierStr: pUserIdentifierStr,

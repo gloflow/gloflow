@@ -51,6 +51,30 @@ type GFauth0inputLoginCallback struct {
 	CodeStr                     string
 	GFsessionIDauth0providedStr gf_core.GF_ID
 }
+type GFauth0outputLoginCallback struct {
+	SessionIDstr gf_core.GF_ID
+}
+
+//---------------------------------------------------
+
+func Auth0validateSession(pSessionIDstr gf_core.GF_ID,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+
+	session, gfErr := dbAuth0GetSession(pSessionIDstr, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	if !session.LoginCompleteBool {
+		return false, nil
+	}
+
+
+
+	return true, nil
+}
 
 //---------------------------------------------------
 
@@ -84,7 +108,7 @@ func Auth0loginPipeline(pCtx context.Context,
 func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	pAuthenticator *gf_auth0.GFauthenticator,
 	pCtx           context.Context,
-	pRuntimeSys    *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys    *gf_core.RuntimeSys) (*GFauth0outputLoginCallback, *gf_core.GFerror) {
 	
 	sessionIDstr := pInput.GFsessionIDauth0providedStr
 
@@ -97,7 +121,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 	if auth0session.LoginCompleteBool {
@@ -105,7 +129,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			"verify__invalid_value_error",
 			map[string]interface{}{},
 			nil, "gf_identity_core", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 	
 
@@ -114,7 +138,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			"verify__invalid_value_error",
 			map[string]interface{}{},
 			nil, "gf_identity_core", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 	
 	//---------------------
@@ -125,7 +149,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			"library_error",
 			map[string]interface{}{},
 			err, "gf_identity_core", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "Auth0 received Oauth2 bearer token", nil)
@@ -140,7 +164,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "Auth0 verified openID ID token", nil)
@@ -155,7 +179,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			"library_error",
 			map[string]interface{}{},
 			err, "gf_identity_core", pRuntimeSys)
-		return gfErr
+		return nil, gfErr
 	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from openID id_token", nil)
@@ -176,7 +200,10 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			PictureURLstr: profileMap["picture"].(string),
 		}
 
-		spew.Dump(googleProfile)
+		pRuntimeSys.LogNewFun("DEBUG", "google user profile loaded...", nil)
+		if gf_core.LogsIsDebugEnabled() {
+			spew.Dump(googleProfile)
+		}
 	}
 
 	// mark the session as successfuly logged in, so that the login_callback handler
@@ -192,10 +219,13 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 	//---------------------
 
-	return nil
+	output := &GFauth0outputLoginCallback{
+		SessionIDstr: sessionIDstr,
+	}
+	return output, nil
 }
