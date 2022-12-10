@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_lib
 
 import (
+	"fmt"
 	"net/http"
 	"context"
 	"encoding/base64"
@@ -104,8 +105,10 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 					nil, "gf_identity_lib", pRuntimeSys)
 				return nil, gfErr
 			}
+
+			// 45 char length string
 			codeStr := qsMap["code"][0]
-			
+
 			// "state" arg - this is the session ID set by GF handler initially via a cookie,
 			//               and Auth0 enforces the "state" symbol name.
 			if _, ok := qsMap["state"]; !ok {

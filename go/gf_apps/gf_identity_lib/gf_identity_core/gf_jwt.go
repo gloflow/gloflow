@@ -237,10 +237,6 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	return validBool, userIdentifierStr, nil
 }
 
-func JWTauth0Validate() {
-
-}
-
 //---------------------------------------------------
 // DB
 //---------------------------------------------------

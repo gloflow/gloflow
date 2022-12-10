@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
-	"fmt"
+	// "fmt"
 	"context"
 	"net/http"
 	"io/ioutil"
@@ -88,7 +88,7 @@ func HTTPgetUserStdInput(pCtx context.Context,
 		}
 	}
 
-	fmt.Println("user ID:", userIDstr)
+	pRuntimeSys.LogNewFun("DEBUG", "getting HTTP user std input", map[string]interface{}{"user_id_str": userIDstr,})
 
 	// users eth address is used if the user picks that method instead of traditional
 	var userAddressETHstr string;

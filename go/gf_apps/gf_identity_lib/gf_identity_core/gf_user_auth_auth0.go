@@ -151,10 +151,10 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 			nil, "gf_identity_core", pRuntimeSys)
 		return gfErr
 	}
-
+	
 	//---------------------
-	// exchange an authorization code for a token
-	token, err := pAuthenticator.Exchange(pCtx, pInput.CodeStr)
+	// exchange an authorization code for a token.
+	oauth2bearerToken, err := pAuthenticator.Exchange(pCtx, pInput.CodeStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to exchange an authorization code for a token",
 			"library_error",
@@ -163,9 +163,14 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
+	pRuntimeSys.LogNewFun("DEBUG", "Auth0 received Oauth2 bearer token",
+		map[string]interface{}{
+			"oauth2_bearer_token": spew.Sdump(oauth2bearerToken),
+		})
+
 	//---------------------
 	// verify token
-	idToken, gfErr := gf_auth0.VerifyIDtoken(token,
+	idToken, gfErr := gf_auth0.VerifyIDtoken(oauth2bearerToken,
 		pAuthenticator,
 		pCtx,
 		pRuntimeSys)
@@ -173,13 +178,14 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
+	pRuntimeSys.LogNewFun("DEBUG", "Auth0 verified openID ID token", nil)
+
 	//---------------------
-	// this is provided by Auth0
 
-	accessTokenStr := token.AccessToken
+	accessTokenStr := oauth2bearerToken.AccessToken
 
-	var auth0profileMap map[string]interface{}
-	if err := idToken.Claims(&auth0profileMap); err != nil {
+	var profileMap map[string]interface{}
+	if err := idToken.Claims(&profileMap); err != nil {
 		gfErr := gf_core.ErrorCreate("failed to verify ID Token",
 			"library_error",
 			map[string]interface{}{},
@@ -187,25 +193,25 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return gfErr
 	}
 
-
-	fmt.Println("USER PROFILE:")
-	spew.Dump(auth0profileMap)
-
+	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from openID id_token", map[string]interface{}{
+		"profile": spew.Sdump(profileMap),
+	})
+	
 	// GOOGLE
-	if strings.HasPrefix(auth0profileMap["sub"].(string), "google-oauth2") {
+	// check if the "subject" name starts with google prefix
+	if strings.HasPrefix(profileMap["sub"].(string), "google-oauth2") {
 		googleProfile := &GFgoogleUserProfile {
-			NameStr:       auth0profileMap["name"].(string),
-			GivenNameStr:  auth0profileMap["given_name"].(string),
-			FamilyNameStr: auth0profileMap["family_name"].(string),
-			NicknameStr:   auth0profileMap["nickname"].(string),
-			LocaleStr:     auth0profileMap["locale"].(string),
-			UpdatedAtStr:  auth0profileMap["updated_at"].(string),
-			PictureURLstr: auth0profileMap["picture"].(string),
+			NameStr:       profileMap["name"].(string),
+			GivenNameStr:  profileMap["given_name"].(string),
+			FamilyNameStr: profileMap["family_name"].(string),
+			NicknameStr:   profileMap["nickname"].(string),
+			LocaleStr:     profileMap["locale"].(string),
+			UpdatedAtStr:  profileMap["updated_at"].(string),
+			PictureURLstr: profileMap["picture"].(string),
 		}
 
 		spew.Dump(googleProfile)
 	}
-
 
 	// mark the session as successfuly logged in, so that the login_callback handler
 	// cant be invoked again
@@ -216,7 +222,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 	gfErr = dbAuth0UpdateSession(sessionIDstr,
 		loginCompleteBool,
 		accessTokenStr,
-		auth0profileMap,
+		profileMap,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {

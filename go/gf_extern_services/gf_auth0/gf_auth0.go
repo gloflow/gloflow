@@ -26,6 +26,7 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------------------
@@ -90,12 +91,15 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 //-------------------------------------------------------------
 
 // verifies that an Oauth2 token is a valid *oidc.IDToken.
-func VerifyIDtoken(pOauthToken *oauth2.Token,
+func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 	pAuthenticator *GFauthenticator,
 	pCtx           context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (*oidc.IDToken, *gf_core.GFerror) {
 
-	rawIDtoken, ok := pOauthToken.Extra("id_token").(string)
+	pRuntimeSys.LogNewFun("DEBUG", "verifying OpenID id_token...", nil)
+
+	// not making a network request, gets id_token from pOauth2bearerToken.raw.id_token
+	rawOpenIDtokenStr, ok := pOauth2bearerToken.Extra("id_token").(string)
 	if !ok {
 		gfErr := gf_core.ErrorCreate("failed to get an id_token from oauth2 Token in auth0 flow",
 			"library_error",
@@ -104,13 +108,17 @@ func VerifyIDtoken(pOauthToken *oauth2.Token,
 		return nil, gfErr
 	}
 
+	pRuntimeSys.LogNewFun("DEBUG", "raw id_token", map[string]interface{}{
+		"raw_id_token": spew.Sdump(rawOpenIDtokenStr),
+	})
+
 	oidcConfig := &oidc.Config{
 		ClientID: pAuthenticator.ClientID,
 	}
 
 	// https://auth0.com/docs/authenticate/protocols/openid-connect-protocol
 	// https://openid.net/connect/
-	idToken, err := pAuthenticator.Verifier(oidcConfig).Verify(pCtx, rawIDtoken)
+	idToken, err := pAuthenticator.Verifier(oidcConfig).Verify(pCtx, rawOpenIDtokenStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to verify raw ID token in auth0 flow",
 			"library_error",
@@ -118,6 +126,8 @@ func VerifyIDtoken(pOauthToken *oauth2.Token,
 			err, "gf_auth0", pRuntimeSys)
 		return nil, gfErr
 	}
+
+
 
 	return idToken, nil
 }

@@ -46,7 +46,7 @@ func verifyAuthSignatureAllMethods(pSignatureStr GFauthSignature,
 	if gfErr != nil {
 		return false, gfErr
 	}
-	fmt.Println("first method validation result - ", validBool)
+	pRuntimeSys.LogNewFun("DEBUG", "first eth method validation", map[string]interface{}{"valid_bool": validBool,})
 
 	if !validBool {
 
@@ -61,7 +61,7 @@ func verifyAuthSignatureAllMethods(pSignatureStr GFauthSignature,
 			return false, gfErr
 		}
 	}
-	fmt.Println("second method validation result - ", validBool)
+	pRuntimeSys.LogNewFun("DEBUG", "second eth method validation", map[string]interface{}{"valid_bool": validBool,})
 
 	return validBool, nil
 }
