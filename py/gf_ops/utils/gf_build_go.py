@@ -110,7 +110,7 @@ def run(p_name_str,
     def get_libs_for_linking():
 
         print("--------------------")
-        print("LIBS_LINKIN\n")
+        print("LIBS_LINKING\n")
 
         # RUST_DYNAMIC_LIBS
         dynamic_libs_dir_path_str    = os.path.abspath(f"{modd_str}/../../../rust/build")
