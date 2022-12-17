@@ -99,7 +99,7 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 	pRuntimeSys.LogNewFun("DEBUG", "verifying OpenID id_token...", nil)
 
 	// not making a network request, gets id_token from pOauth2bearerToken.raw.id_token
-	rawOpenIDtokenStr, ok := pOauth2bearerToken.Extra("id_token").(string)
+	IDtokenEncodedStr, ok := pOauth2bearerToken.Extra("id_token").(string)
 	if !ok {
 		gfErr := gf_core.ErrorCreate("failed to get an id_token from oauth2 Token in auth0 flow",
 			"library_error",
@@ -108,8 +108,8 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 		return nil, gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "raw id_token", map[string]interface{}{
-		"raw_id_token": rawOpenIDtokenStr,
+	pRuntimeSys.LogNewFun("DEBUG", "encoded id token", map[string]interface{}{
+		"id_token_encoded_str": IDtokenEncodedStr,
 	})
 
 	oidcConfig := &oidc.Config{
@@ -118,7 +118,7 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 
 	// https://auth0.com/docs/authenticate/protocols/openid-connect-protocol
 	// https://openid.net/connect/
-	idToken, err := pAuthenticator.Verifier(oidcConfig).Verify(pCtx, rawOpenIDtokenStr)
+	idToken, err := pAuthenticator.Verifier(oidcConfig).Verify(pCtx, IDtokenEncodedStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to verify raw ID token in auth0 flow",
 			"library_error",
@@ -126,8 +126,6 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 			err, "gf_auth0", pRuntimeSys)
 		return nil, gfErr
 	}
-
-
 
 	return idToken, nil
 }
