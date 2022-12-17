@@ -30,7 +30,7 @@ import (
 
 //-------------------------------------------------
 
-func CmdsInit() *cobra.Command {
+func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 
 	var cliConfigPathStr string
 
@@ -66,13 +66,8 @@ func CmdsInit() *cobra.Command {
 
 			logFun, logNewFun := gf_core.LogsInit()
 			log.SetOutput(os.Stdout)
-
-
-			externalPlugins := &gf_core.ExternalPlugins{
-
-			}
 			
-			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, externalPlugins, logFun, logNewFun)
+			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, logFun, logNewFun)
 			if err != nil {
 				panic(err)
 			}
