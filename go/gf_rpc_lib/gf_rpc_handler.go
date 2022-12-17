@@ -34,8 +34,8 @@ import (
 	// "github.com/auth0/go-jwt-middleware/v2"
 	// "github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 	// "github.com/davecgh/go-spew/spew"
 )
 

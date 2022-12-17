@@ -23,8 +23,8 @@ import (
 	"net/http"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -73,7 +73,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	//------------------------
 	// IDENTITY_HANDLERS
 
-	gfErr := gf_identity_lib.InitService(pHTTPmux,
+	gfErr := gf_identity.InitService(pHTTPmux,
 		pIdentityServiceInfo,
 		pRuntimeSys)
 

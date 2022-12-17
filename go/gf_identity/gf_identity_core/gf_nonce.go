@@ -126,7 +126,7 @@ func dbNonceDeleteAll(pUserAddressETHstr GFuserAddressETH,
 			map[string]interface{}{
 				"user_address_eth": pUserAddressETHstr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return gfErr
 	}
 
@@ -178,7 +178,7 @@ func dbNonceGet(pUserAddressETHstr GFuserAddressETH,
 			map[string]interface{}{
 				"user_address_eth_str": pUserAddressETHstr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return GFuserNonceVal(""), false, gfErr
 	}
 

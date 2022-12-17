@@ -26,7 +26,7 @@ import (
 	"context"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft"
 )
 
@@ -48,7 +48,7 @@ func TestNFT(pTest *testing.T) {
 	ctx       := context.Background()
 
 	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity_lib.TestCreateAndLoginNewUser(pTest,
+	gf_identity.TestCreateAndLoginNewUser(pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,

@@ -94,7 +94,7 @@ func dbAuth0GetSession(pGFsessionIDstr gf_core.GF_ID,
 			map[string]interface{}{
 				"auth0_session_id_str": pGFsessionIDstr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -174,7 +174,7 @@ func DBuserGetAll(pCtx context.Context,
 		gfErr := gf_core.MongoHandleError("failed to get all users records from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -271,7 +271,7 @@ func DBuserUpdate(pUserIDstr gf_core.GF_ID, // p_user_address_eth_str GF_user_ad
 				"user_name_str":   pUpdateOp.UserNameStr,
 				"description_str": pUpdateOp.DescriptionStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return gfErr
 	}
 
@@ -301,7 +301,7 @@ func dbUserGetByID(pUserIDstr gf_core.GF_ID,
 			map[string]interface{}{
 				"user_id_str": pUserIDstr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -331,7 +331,7 @@ func dbUserGetByUsername(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": pUserNameStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -361,7 +361,7 @@ func dbUserGetByETHaddr(pUserAddressETHstr GFuserAddressETH,
 			map[string]interface{}{
 				"user_address_eth_str": pUserAddressETHstr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -456,7 +456,7 @@ func dbUserEmailIsConfirmed(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": pUserNameStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return false, gfErr
 	}
 
@@ -614,7 +614,7 @@ func DBuserGetAllInInviteList(pCtx context.Context,
 		gfErr := gf_core.MongoHandleError("failed to get all records in invite_list from cursor",
 			"mongodb_cursor_decode",
 			map[string]interface{}{},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -674,7 +674,7 @@ func DBuserRemoveFromInviteList(pUserEmailStr string,
 			map[string]interface{}{
 				"user_email_str": pUserEmailStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return gfErr
 	}
 	return nil
@@ -763,7 +763,7 @@ func dbUserCredsGetPassHash(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": pUserNameStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return "", "", gfErr
 	}
 
@@ -838,7 +838,7 @@ func dbUserEmailConfirmGetCode(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": string(pUserNameStr),
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return "", 0.0, gfErr
 	}
 
@@ -874,7 +874,7 @@ func dbUserGetEmailConfirmedByUsername(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": string(pUserNameStr),
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return false, gfErr
 	}
 
@@ -948,7 +948,7 @@ func dbLoginAttemptGetByUsername(pUserNameStr GFuserName,
 			map[string]interface{}{
 				"user_name_str": string(pUserNameStr),
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return nil, gfErr
 	}
 
@@ -993,7 +993,7 @@ func DBloginAttemptUpdate(pLoginAttemptIDstr *gf_core.GF_ID,
 			map[string]interface{}{
 				"login_attempt_id_str": string(*pLoginAttemptIDstr),
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return gfErr
 	}
 

@@ -17,25 +17,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity
 
 import (
-	"os"
+	"fmt"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
-//---------------------------------------------------
+//-------------------------------------------------
 
-func TestMain(m *testing.M) {
+func TestMFA(pTest *testing.T) {
 
-	logFun, logNewFun = gf_core.LogsInitNew(true, "debug")
-	cliArgsMap = CLIparseArgs(logFun)
+	fmt.Println(" TEST__IDENTITY_MFA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+
 	runtimeSys := Tinit()
 
-	portInt := 2000
-	TestStartService(portInt, runtimeSys)
+	testMFAmain(pTest, runtimeSys)
+}
 
-	v := m.Run()
-	os.Exit(v)
+//-------------------------------------------------
+
+func testMFAmain(pTest *testing.T,
+	pRuntimeSys *gf_core.RuntimeSys) {
+
+	// CODE THATS ENTERED INTO GOOGLE AUTH MANUALLY HAS TO BE 
+	// BASE32 ENCODED
+	secretKeyBase32str := "aabbccddeeffgghh"
+	tokenStr, gfErr := TOTPgenerateValue(secretKeyBase32str, pRuntimeSys)
+	if gfErr != nil {
+		pTest.FailNow()
+	}
+
+	fmt.Println("TOTP token - ", tokenStr)
 }

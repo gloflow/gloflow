@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity
 
 import (
 	// "fmt"
@@ -27,8 +27,8 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_session"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_session"
 )
 
 //------------------------------------------------
@@ -105,7 +105,7 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 				gfErr := gf_core.ErrorCreate("auth0 login callback request is missing the 'code' qs argument",
 					"verify__input_data_missing_in_req_error",
 					map[string]interface{}{},
-					nil, "gf_identity_lib", pRuntimeSys)
+					nil, "gf_identity", pRuntimeSys)
 				return nil, gfErr
 			}
 
@@ -118,7 +118,7 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 				gfErr := gf_core.ErrorCreate("auth0 login callback request is missing the 'state' qs argument",
 					"verify__input_data_missing_in_req_error",
 					map[string]interface{}{},
-					nil, "gf_identity_lib", pRuntimeSys)
+					nil, "gf_identity", pRuntimeSys)
 				return nil, gfErr
 			}
 			auth0providedStateBase64str := qsMap["state"][0]

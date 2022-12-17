@@ -157,8 +157,12 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		spew.Dump(oauth2bearerToken)
 	}
 
+	accessTokenStr := oauth2bearerToken.AccessToken
+
 	//---------------------
-	// verify token
+	// verify token - get ID token
+	// https://auth0.com/docs/secure/tokens/id-tokens
+	// ID token is used to get user profile information.
 	idToken, gfErr := gf_auth0.VerifyIDtoken(oauth2bearerToken,
 		pAuthenticator,
 		pCtx,
@@ -167,14 +171,14 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return nil, gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "Auth0 verified openID ID token", nil)
+	JWTtoken := idToken
+
+	pRuntimeSys.LogNewFun("DEBUG", "Auth0 verified openID ID_token/JWT", nil)
 
 	//---------------------
 
-	accessTokenStr := oauth2bearerToken.AccessToken
-
 	var profileMap map[string]interface{}
-	if err := idToken.Claims(&profileMap); err != nil {
+	if err := JWTtoken.Claims(&profileMap); err != nil {
 		gfErr := gf_core.ErrorCreate("failed to verify ID Token",
 			"library_error",
 			map[string]interface{}{},
@@ -182,7 +186,7 @@ func Auth0loginCallbackPipeline(pInput *GFauth0inputLoginCallback,
 		return nil, gfErr
 	}
 
-	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from openID id_token", nil)
+	pRuntimeSys.LogNewFun("DEBUG", "parsed user profile from JWT token", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(profileMap)
 	}

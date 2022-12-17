@@ -30,8 +30,8 @@ import (
 	"github.com/fatih/color"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_admin_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_home_lib"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib"
@@ -118,7 +118,7 @@ func Run(pConfig *GFconfig,
 		//         individually if they so desire.
 		EnableMFArequireConfirmForLoginBool: false,
 	}
-	gfErr := gf_identity_lib.InitService(gfSoloHTTPmux,
+	gfErr := gf_identity.InitService(gfSoloHTTPmux,
 		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {

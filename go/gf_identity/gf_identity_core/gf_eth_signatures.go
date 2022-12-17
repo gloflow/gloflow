@@ -101,7 +101,7 @@ func verifyAuthSignature(pSignatureStr GFauthSignature,
 		gfErr := gf_core.ErrorCreate("failed to hex-decode a signature supplied for validation",
 			"crypto_hex_decode",
 			map[string]interface{}{},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return false, gfErr
 	}
 
@@ -130,7 +130,7 @@ func verifyAuthSignature(pSignatureStr GFauthSignature,
 			map[string]interface{}{
 				"sig_last_byte": sigLastByte,
 			},
-			nil, "gf_identity_lib", pRuntimeSys)
+			nil, "gf_identity", pRuntimeSys)
 		return false, gfErr
 	}
 
@@ -158,7 +158,7 @@ func verifyAuthSignature(pSignatureStr GFauthSignature,
 			map[string]interface{}{
 				"sig_last_byte": sigLastByte,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return false, gfErr
 	}
 

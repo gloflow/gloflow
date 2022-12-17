@@ -31,7 +31,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -66,7 +66,7 @@ func TestMain(m *testing.M) {
 	testIdentityServicePortInt := 2001
 	go func() {
 
-		gf_identity_lib.TestStartService(testIdentityServicePortInt,
+		gf_identity.TestStartService(testIdentityServicePortInt,
 			runtimeSys)
 	}()
 
@@ -90,7 +90,7 @@ func TestHomeViz(pTest *testing.T) {
 	
 	
 	// CREATE_AND_LOGIN_NEW_USER
-	gf_identity_lib.TestCreateAndLoginNewUser(pTest,
+	gf_identity.TestCreateAndLoginNewUser(pTest,
 		HTTPagent,
 		testIdentityServicePortInt,
 		ctx,
@@ -98,11 +98,11 @@ func TestHomeViz(pTest *testing.T) {
 
 	/*//---------------------------------
 	// CLEANUP
-	gf_identity_lib.TestDBcleanup(ctx, runtimeSys)
+	gf_identity.TestDBcleanup(ctx, runtimeSys)
 	
 	//---------------------------------
 	// ADD_TO_INVITE_LIST
-	gfErr := gf_identity_lib.DBuserAddToInviteList(testEmailStr,
+	gfErr := gf_identity.DBuserAddToInviteList(testEmailStr,
 		ctx,
 		runtimeSys)
 	if gfErr != nil {
@@ -112,14 +112,14 @@ func TestHomeViz(pTest *testing.T) {
 
 	//---------------------------------
 	// GF_IDENTITY_INIT
-	gf_identity_lib.TestUserHTTPcreate(testUserNameStr,
+	gf_identity.TestUserHTTPcreate(testUserNameStr,
 		testUserPassStr,
 		testEmailStr,
 		HTTPagent,
 		testIdentityServicePortInt,
 		pTest)
 
-	gf_identity_lib.TestUserHTTPlogin(testUserNameStr,
+	gf_identity.TestUserHTTPlogin(testUserNameStr,
 		testUserPassStr,
 		HTTPagent,
 		testIdentityServicePortInt,

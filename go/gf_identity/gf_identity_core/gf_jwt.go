@@ -42,8 +42,8 @@ type GFjwtSecretKey struct {
 	DeletedBool          bool               `bson:"deleted_bool"`
 	CreationUNIXtimeF    float64            `bson:"creation_unix_time_f"`
 
-	Val                 GFjwtSecretKeyVal   `bson:"val_str"`
-	UserIdentifierStr   string              `bson:"user_identifier_str"`
+	Val                  GFjwtSecretKeyVal   `bson:"val_str"`
+	UserIdentifierStr    string              `bson:"user_identifier_str"`
 }
 
 type GFjwtClaims struct {

@@ -26,8 +26,8 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -87,18 +87,18 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					userNameStr = valStr.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 				
 				//---------------------
 
-				input := &gf_identity_lib.GFadminUserDeleteInput{
+				input := &gf_identity.GFadminUserDeleteInput{
 					UserIDstr:   gf_core.GF_ID(userIDstr),
 					UserNameStr: gf_identity_core.GFuserName(userNameStr),
 				}
-				gfErr = gf_identity_lib.AdminPipelineDeleteUser(input,
+				gfErr = gf_identity.AdminPipelineDeleteUser(input,
 					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
@@ -132,14 +132,14 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				//---------------------
 
-				usersLst, gfErr := gf_identity_lib.AdminPipelineGetAllUsers(pCtx,
+				usersLst, gfErr := gf_identity.AdminPipelineGetAllUsers(pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -172,14 +172,14 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					return nil, gfErr
 				}
 
-				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
 				//---------------------
 
-				inviteListLst, gfErr := gf_identity_lib.AdminPipelineGetAllInviteList(pCtx,
+				inviteListLst, gfErr := gf_identity.AdminPipelineGetAllInviteList(pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
 				if gfErr != nil {
@@ -217,19 +217,19 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				input := &gf_identity_lib.GFadminInputAddToInviteList{
+				input := &gf_identity.GFadminInputAddToInviteList{
 					AdminUserIDstr: adminUserIDstr,
 					EmailStr:       emailStr,
 				}
 
 				//---------------------
 
-				gfErr = gf_identity_lib.AdminPipelineUserAddToInviteList(input,
+				gfErr = gf_identity.AdminPipelineUserAddToInviteList(input,
 					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
@@ -268,19 +268,19 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(adminUserIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				input := &gf_identity_lib.GFadminRemoveFromInviteListInput{
+				input := &gf_identity.GFadminRemoveFromInviteListInput{
 					AdminUserIDstr: adminUserIDstr,
 					EmailStr:       emailStr,
 				}
 
 				//---------------------
 
-				gfErr = gf_identity_lib.AdminPipelineUserRemoveFromInviteList(input,
+				gfErr = gf_identity.AdminPipelineUserRemoveFromInviteList(input,
 					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)
@@ -329,12 +329,12 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 					emailStr = valStr.(string)
 				}
 
-				gfErr = gf_identity_lib.AdminIs(userIDstr, pCtx, pRuntimeSys)
+				gfErr = gf_identity.AdminIs(userIDstr, pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}
 
-				input := &gf_identity_lib.GFadminResendConfirmEmailInput{
+				input := &gf_identity.GFadminResendConfirmEmailInput{
 					UserIDstr:   targetUserIDstr,
 					UserNameStr: targetUserNameStr,
 					EmailStr:    emailStr,
@@ -342,7 +342,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 
 				//---------------------
 
-				gfErr = gf_identity_lib.AdminPipelineUserResendConfirmEmail(input,
+				gfErr = gf_identity.AdminPipelineUserResendConfirmEmail(input,
 					pCtx,
 					pIdentityServiceInfo,
 					pRuntimeSys)

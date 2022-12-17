@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity
 
 import (
 	// "fmt"
@@ -31,7 +31,7 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //------------------------------------------------
@@ -145,7 +145,7 @@ func HOTPgenerateValue(pSecretKeyBase32str string,
 			map[string]interface{}{
 				"time_interval_int": pTimeIntervalInt,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return "", gfErr
 	}
 
@@ -187,7 +187,7 @@ func HOTPgenerateValue(pSecretKeyBase32str string,
 			map[string]interface{}{
 				"time_interval_int": pTimeIntervalInt,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_identity", pRuntimeSys)
 		return "", gfErr
 	}
 

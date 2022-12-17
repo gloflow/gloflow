@@ -26,8 +26,8 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	// "github.com/davecgh/go-spew/spew"
 )
 
@@ -152,7 +152,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 					passStr = valStr.(string)
 				}
 
-				input := &gf_identity_lib.GFadminInputLogin{
+				input := &gf_identity.GFadminInputLogin{
 					UserNameStr: userNameStr,
 					PassStr:     passStr,
 					EmailStr:    pServiceInfo.AdminEmailStr,
@@ -160,7 +160,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 
-				output, gfErr := gf_identity_lib.AdminPipelineLogin(input,
+				output, gfErr := gf_identity.AdminPipelineLogin(input,
 					pCtx,
 					pLocalHub,
 					pIdentityServiceInfo,

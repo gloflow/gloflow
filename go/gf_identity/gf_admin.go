@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package gf_identity_lib
+package gf_identity
 
 import (
 	"context"
 	"github.com/getsentry/sentry-go"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_events"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib/gf_identity_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //---------------------------------------------------
@@ -543,7 +543,7 @@ func AdminIs(pUserIDstr gf_core.GF_ID,
 			map[string]interface{}{
 				"user_name_str": userNameStr,
 			},
-			nil, "gf_identity_lib", pRuntimeSys)
+			nil, "gf_identity", pRuntimeSys)
 		return gfErr
 	}
 	return nil

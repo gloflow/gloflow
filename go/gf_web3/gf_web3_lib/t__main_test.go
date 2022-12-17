@@ -27,7 +27,7 @@ import (
 	"net/http"
 	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_identity_lib"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 )
@@ -82,7 +82,7 @@ func TestMain(m *testing.M) {
 	testIdentityServicePortInt := 2001
 	go func() {
 
-		gf_identity_lib.TestStartService(testIdentityServicePortInt,
+		gf_identity.TestStartService(testIdentityServicePortInt,
 			runtime.RuntimeSys)
 	}()
 
