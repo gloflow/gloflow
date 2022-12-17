@@ -20,9 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
-	"os"
-	log "github.com/sirupsen/logrus"
-	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_solo/gf_solo_service"
 )
 
@@ -30,15 +27,7 @@ import (
 
 func main() {
 
-	logFun, logNewFun := gf_core.LogsInit()
-	log.SetOutput(os.Stdout)
-
-
-	externalPlugins := &gf_core.ExternalPlugins{
-
-	}
-
-	cmdBase := gf_solo_service.CmdsInit(externalPlugins, logFun, logNewFun)
+	cmdBase := gf_solo_service.CmdsInit()
 	err := cmdBase.Execute()
 	if err != nil {
 		panic(err)

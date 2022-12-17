@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_solo_service
 
 import (
+	"os"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -28,9 +30,7 @@ import (
 
 //-------------------------------------------------
 
-func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
-	pLogFun    func(string, string),
-	pLogNewFun gf_core.GFlogFun) *cobra.Command {
+func CmdsInit() *cobra.Command {
 
 	var cliConfigPathStr string
 
@@ -64,7 +64,15 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins,
 		Long:  "start the gf_solo service",
 		Run:   func(pCmd *cobra.Command, pArgs []string) {
 
-			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, pExternalPlugins, pLogFun, pLogNewFun)
+			logFun, logNewFun := gf_core.LogsInit()
+			log.SetOutput(os.Stdout)
+
+
+			externalPlugins := &gf_core.ExternalPlugins{
+
+			}
+			
+			runtimeSys, config, err := RuntimeGet(cliConfigPathStr, externalPlugins, logFun, logNewFun)
 			if err != nil {
 				panic(err)
 			}
