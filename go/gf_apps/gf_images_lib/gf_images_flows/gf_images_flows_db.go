@@ -72,7 +72,7 @@ func DBgetID(pFlowNameStr string,
 			map[string]interface{}{
 				"flow_name_str": pFlowNameStr,
 			},
-			err, "gf_identity_lib", pRuntimeSys)
+			err, "gf_images_flows", pRuntimeSys)
 		return "", gfErr
 	}
 	flowIDstr := gf_core.GF_ID(flowBasicInfoMap["id_str"].(gf_core.GF_ID))

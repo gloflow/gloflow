@@ -43,9 +43,8 @@ func GetDomainsImagesDB(pRuntimeSys *gf_core.RuntimeSys) ([]GFdomainImages, *gf_
 
 	cyan   := color.New(color.FgCyan).SprintFunc()
 	yellow := color.New(color.FgYellow).SprintFunc()
-	pRuntimeSys.LogFun("INFO",cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"))
 
-
+	pRuntimeSys.LogNewFun("DEBUG", cyan("AGGREGATE IMAGES DOMAINS ")+yellow(">>>>>>>>>>>>>>>"), nil)
 
 	ctx := context.Background()
 	pipeline := mongo.Pipeline{

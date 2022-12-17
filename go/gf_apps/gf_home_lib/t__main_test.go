@@ -39,7 +39,7 @@ import (
 
 func TestMain(m *testing.M) {
 
-	logFun, _  = gf_core.LogsInit()
+	logFun, logNewFun = gf_core.LogsInit()
 	cliArgsMap = CLIparseArgs(logFun)
 
 	runtimeSys := Tinit()
