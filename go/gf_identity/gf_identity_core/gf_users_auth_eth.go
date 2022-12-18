@@ -190,7 +190,7 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 		return nil, gfErr
 	}
 
-	output.JWTtokenVal = jwtTokenVal
+	output.JWTtokenVal = *jwtTokenVal
 
 	//------------------------
 

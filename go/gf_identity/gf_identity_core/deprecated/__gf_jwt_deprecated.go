@@ -1,3 +1,5 @@
+//go:build exclude
+
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2021 Ivan Trajkovic
@@ -158,12 +160,12 @@ func jwtGenerate(pUserIdentifierStr string,
 func jwtGenerateID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 	
-	fields_for_id_lst := []string{
+	fieldsForIDlst := []string{
 		pUserIdentifierStr,
 	}
-	gf_id_str := gf_core.IDcreate(fields_for_id_lst,
+	gfIDstr := gf_core.IDcreate(fieldsForIDlst,
 		pCreationUNIXtimeF)
-	return gf_id_str
+	return gfIDstr
 }
 
 //---------------------------------------------------

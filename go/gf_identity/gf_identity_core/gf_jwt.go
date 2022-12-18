@@ -52,17 +52,14 @@ type GFjwtClaims struct {
 }
 
 //---------------------------------------------------
-// GENERATE - ASYMETRIC
+// GENERATE
 //---------------------------------------------------
 
-func JWTnewPipelineGenerate(pUserIdentifierStr string,
+func JWTpipelineGenerate(pUserIdentifierStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 
-
-
-
-	privKey, gfErr := jwtNewGetSigningPrivKey(pCtx, pRuntimeSys)
+	privKey, gfErr := jwtGetSigningPrivKey(pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
@@ -72,7 +69,7 @@ func JWTnewPipelineGenerate(pUserIdentifierStr string,
 
 	//----------------------
 	// JWT_GENERATE
-	tokenValStr, gfErr := jwtNewGenerate(pUserIdentifierStr,
+	tokenValStr, gfErr := jwtGenerate(pUserIdentifierStr,
 		signKey,
 		pCtx,
 		pRuntimeSys)
@@ -87,7 +84,7 @@ func JWTnewPipelineGenerate(pUserIdentifierStr string,
 
 //---------------------------------------------------
 
-func jwtNewGenerate(pUserIdentifierStr string,
+func jwtGenerate(pUserIdentifierStr string,
 	pSignKey    *rsa.PrivateKey,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
@@ -134,35 +131,70 @@ func jwtNewGenerate(pUserIdentifierStr string,
 
 // used only by users that self-host and dont use a dedicated secret store.
 // instead they store all data in the DB for max simplicity of hosting.
-func JWTnewGenerateSigningSecretIfAbsent(pCtx context.Context,
+func JWTgenerateSigningSecretIfAbsent(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
-	
+	// if a secrets "get" callback is specified we're making an assumption
+	// that the user has setup some sort of secrets store, and that there is a
+	// JWT signing secret in there that can be used...
+	// therefore there's no need to create it in the DB from scratch.
+	// ADD!! - have a more robust was (flag) for checking if there is a 
+	//         secret store setup for JWT secret fetching.
 	if pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
 
 	} else {
-		
-
-		privKeyPEMstr := gf_core.CryptoGeneratePrivKeyAsPEM()
-
-
-		fmt.Println(privKeyPEMstr)
+	
+		gfErr := JWTgenerateSigningSecret(pCtx, pRuntimeSys)
+		if gfErr != nil {
+			return gfErr
+		}
 	}
-	
-
-	
-	
-
-
-
-
 
 	return nil
 }
 
 //---------------------------------------------------
 
-func jwtNewGetSigningPrivKey(pCtx context.Context,
+// generate and store in the DB the secret key thats used
+// to sign new JWT tokens. this is only done if the user is self-hosting
+// and doesnt have want to use a secrets store where they place the secret 
+// separatelly from GF (and GF only fetches it from the secret store).
+// this is also done only once on startup when that secret is detected
+// not to exist.
+func JWTgenerateSigningSecret(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+
+
+	privKeyPEMstr := gf_core.CryptoGeneratePrivKeyAsPEM()
+
+
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	fieldsForIDlst := []string{
+		"jwt_secret",
+	}
+	IDstr := gf_core.IDcreate(fieldsForIDlst,
+		creationUNIXtimeF)
+
+	jwtSecret := &GFjwtSecret{
+		Vstr:              "0",
+		IDstr:             IDstr,
+		DeletedBool:       false,
+		CreationUNIXtimeF: creationUNIXtimeF,
+		Val:               GFjwtSecretKeyPEMval(privKeyPEMstr),
+	}
+
+	// DB_CREATE__SECRET_KEY
+	gfErr := dbJWTcreateSigningSecret(jwtSecret, pCtx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
+	return nil
+}
+
+//---------------------------------------------------
+
+func jwtGetSigningPrivKey(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*rsa.PrivateKey, *gf_core.GFerror) {
 
 	var jwtSigningSecretPEMvalStr string
@@ -185,7 +217,7 @@ func jwtNewGetSigningPrivKey(pCtx context.Context,
 	} else {
 
 		// DB
-		jwtSigningSecretPEMvalFromDBstr, gfErr := dbJWTnewGetSigningSecret(pCtx, pRuntimeSys)
+		jwtSigningSecretPEMvalFromDBstr, gfErr := dbJWTgetSigningSecret(pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, gfErr
 		}
@@ -193,11 +225,7 @@ func jwtNewGetSigningPrivKey(pCtx context.Context,
 		jwtSigningSecretPEMvalStr = string(jwtSigningSecretPEMvalFromDBstr.Val)
 	}
 
-
-
-
-
-
+	// parse PEM
 	privKey, gfErr := gf_core.CryptoParsePrivKeyFromPEM(jwtSigningSecretPEMvalStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -207,12 +235,63 @@ func jwtNewGetSigningPrivKey(pCtx context.Context,
 }
 
 //---------------------------------------------------
+// VALIDATE
+//---------------------------------------------------
+
+func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
+	pCtx        context .Context,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+
+	return "", nil
+}
+
+func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
+	pPubKey     *rsa.PublicKey,
+	pCtx        context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+
+	jwtToken, err := jwt.Parse(string(pJWTtokenVal), func(pToken *jwt.Token) (interface{}, error) {
+
+		return pPubKey, nil
+	})
+
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to verify a JWT token",
+			"crypto_jwt_verify_token_error",
+			map[string]interface{}{
+				"jwt_token_val_str": pJWTtokenVal,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return false, "", gfErr
+	}
+
+	validBool         := jwtToken.Valid
+	userIdentifierStr := jwtToken.Claims.(*GFjwtClaims).UserIdentifierStr
+
+	return validBool, userIdentifierStr, nil
+}
+
+//---------------------------------------------------
 // DB
 //---------------------------------------------------
 
-func dbJWTnewCreateSigningSecret(pJWTsecret *GFjwtSecret,
+func dbJWTcreateSigningSecret(pJWTsecret *GFjwtSecret,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	collNameStr := "gf_auth_jwt_secret"
+
+	gfErr := gf_core.MongoInsert(pJWTsecret,
+		collNameStr,
+		map[string]interface{}{
+			"id_str":             pJWTsecret.IDstr,
+			"caller_err_msg_str": "failed to create jwt_secret_key in the DB",
+		},
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
 
 	return nil
 }
@@ -221,7 +300,7 @@ func dbJWTnewCreateSigningSecret(pJWTsecret *GFjwtSecret,
 
 // there should be only one valid (non-deleted) jwt signing secret in the DB,
 // used for all users.
-func dbJWTnewGetSigningSecret(pCtx context.Context,
+func dbJWTgetSigningSecret(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtSecret, *gf_core.GFerror) {
 
 	findOpts := options.FindOne()
@@ -248,7 +327,7 @@ func dbJWTnewGetSigningSecret(pCtx context.Context,
 
 // check if a JWT signing secret exists in a DB, when a secrets-storage
 // backend is not being used (by users that self-host and use the DB for everything).
-func dbJWTnewExistsSigningSecret(pCtx context.Context,
+func dbJWTexistsSigningSecret(pCtx context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
 
 	collNameStr := "gf_auth_jwt_secret"

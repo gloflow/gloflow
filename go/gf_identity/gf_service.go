@@ -43,7 +43,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
 	//                      placed it independently.
 	ctx := context.Background()
-	gfErr := gf_identity_core.JWTnewGenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
+	gfErr := gf_identity_core.JWTgenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}

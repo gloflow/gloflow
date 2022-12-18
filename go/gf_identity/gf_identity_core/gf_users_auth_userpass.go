@@ -205,7 +205,7 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 		return nil, gfErr
 	}
 
-	output.JWTtokenVal = JWTtokenVal
+	output.JWTtokenVal = *JWTtokenVal
 
 	//------------------------
 	return output, nil
