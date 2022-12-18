@@ -67,8 +67,8 @@ func Run_service(p_service_info *GF_service_info,
 	// RUNTIME_SYS
 	
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_ml",
-		LogFun:           pLogFun,
+		ServiceNameStr: "gf_ml",
+		LogFun:         pLogFun,
 	}
 
 	mongo_db, _, gf_err := gf_core.MongoConnectNew(p_service_info.Mongodb_host_str,

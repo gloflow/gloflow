@@ -165,7 +165,7 @@ func InitService(pHTTPmux *http.ServeMux,
 func RunService(pHTTPmux *http.ServeMux,
 	pServiceInfo   *gf_images_core.GFserviceInfo,
 	p_init_done_ch chan bool,
-	pLogFun      func(string, string)) {
+	pLogFun        func(string, string)) {
 	pLogFun("FUN_ENTER", "gf_images_service.RunService()")
 
 	pLogFun("INFO", "")
@@ -203,8 +203,8 @@ func RunService(pHTTPmux *http.ServeMux,
 	// RUNTIME_SYS
 	
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images",
-		LogFun:           pLogFun,
+		ServiceNameStr: "gf_images",
+		LogFun:         pLogFun,
 	}
 
 	mongoDB, _, gfErr := gf_core.MongoConnectNew(pServiceInfo.Mongodb_host_str,

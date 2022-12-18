@@ -50,7 +50,7 @@ type GFerror struct {
 	Data_map             map[string]interface{} `bson:"data_map"`
 	Descr_str            string                 `bson:"descr_str"`
 	Error                error                  `bson:"error"`
-	Service_name_str     string                 `bson:"service_name_str"`
+	ServiceNameStr       string                 `bson:"service_name_str"`
 	Subsystem_name_str   string                 `bson:"subsystem_name_str"`   // major portion of functionality, a particular package, or a logical group of functions
 	Stack_trace_str      string                 `bson:"stack_trace_str"`
 	Function_name_str    string                 `bson:"func_name_str"`
@@ -81,14 +81,14 @@ func PanicCheckAndHandle(pUserMsgStr string,
 		if pRuntimeSys.ErrorsSendToSentryBool {
 			
 			/*sentry.ConfigureScope(func(scope *sentry.Scope) {
-				scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
+				scope.SetExtra("gf_error.service_name",   gf_error.ServiceNameStr)
 				scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
 				scope.SetExtra("gf_error.type",           gf_error.Type_str)
 			})*/
 
 			sentry.WithScope(func(scope *sentry.Scope) {
 
-				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.Names_prefix_str), pRuntimeSys.Service_name_str)
+				scope.SetTag(fmt.Sprintf("%s_panic.service_name",   pRuntimeSys.Names_prefix_str), pRuntimeSys.ServiceNameStr)
 				scope.SetTag(fmt.Sprintf("%s_panic.subsystem_name", pRuntimeSys.Names_prefix_str), pSubsystemNameStr)
 				scope.SetTag(fmt.Sprintf("%s_panic.type",           pRuntimeSys.Names_prefix_str), "panic_error")
 
@@ -241,7 +241,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 		Data_map:             pErrorDataMap,
 		Descr_str:            errorDef.DescrStr,
 		Error:                pError,
-		Service_name_str:     pRuntimeSys.Service_name_str,
+		ServiceNameStr:       pRuntimeSys.ServiceNameStr,
 		Subsystem_name_str:   pSubsystemNameStr,
 		Stack_trace_str:      stackTraceStr,
 		Function_name_str:    functionNameStr,
@@ -264,7 +264,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	fmt.Printf("user_msg       - %s\n", yellowBg(gfErr.User_msg_str))
 	fmt.Printf("id             - %s\n", yellow(gfErr.Id_str))
 	fmt.Printf("type           - %s\n", yellow(gfErr.Type_str))
-	fmt.Printf("service_name   - %s\n", yellow(gfErr.Service_name_str))
+	fmt.Printf("service_name   - %s\n", yellow(gfErr.ServiceNameStr))
 	fmt.Printf("subsystem_name - %s\n", yellow(gfErr.Subsystem_name_str))
 	fmt.Printf("function_name  - %s\n", yellow(gfErr.Function_name_str))
 	fmt.Printf("data           - %s\n", yellow(gfErr.Data_map))
@@ -298,14 +298,14 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	if pRuntimeSys.ErrorsSendToSentryBool {
 		
 		/*sentry.ConfigureScope(func(scope *sentry.Scope) {
-			scope.SetExtra("gf_error.service_name",   gf_error.Service_name_str)
+			scope.SetExtra("gf_error.service_name",   gf_error.ServiceNameStr)
 			scope.SetExtra("gf_error.subsystem_name", gf_error.Subsystem_name_str)
 			scope.SetExtra("gf_error.type",           gf_error.Type_str)
 		})*/
 
 		sentry.WithScope(func(scope *sentry.Scope) {
 
-			scope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.Service_name_str)
+			scope.SetTag(fmt.Sprintf("%s_error.service_name",   namesPrefixStr), gfErr.ServiceNameStr)
 			scope.SetTag(fmt.Sprintf("%s_error.subsystem_name", namesPrefixStr), gfErr.Subsystem_name_str)
 			scope.SetTag(fmt.Sprintf("%s_error.type",           namesPrefixStr), gfErr.Type_str)
 

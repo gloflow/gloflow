@@ -63,7 +63,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 
 //-------------------------------------------------
 
-func RunService(p_port_str string,
+func RunService(pPortStr string,
 	p_mongodb_host_str    string,
 	p_mongodb_db_name_str string,
 	p_init_done_ch        chan bool,
@@ -73,17 +73,17 @@ func RunService(p_port_str string,
 	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_TAGGER SERVICE")
 	pLogFun("INFO", "")
 	
-	runtime_sys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_tagger",
-		LogFun:           pLogFun,
+	runtimeSys := &gf_core.RuntimeSys{
+		ServiceNameStr: "gf_tagger",
+		LogFun:         pLogFun,
 	}
 
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)
-	if gf_err != nil {
+	mongo_db, _, gfErr := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtimeSys)
+	if gfErr != nil {
 		panic(-1)
 	}
-	runtime_sys.Mongo_db   = mongo_db 
-	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongo_db 
+	runtimeSys.Mongo_coll = mongo_db.Collection("data_symphony")
 
 	//----------------------
 	http_mux := http.NewServeMux()
@@ -100,7 +100,7 @@ func RunService(p_port_str string,
 	InitService(templates_dir_paths_map,
 		jobs_mngr,
 		http_mux,
-		runtime_sys)
+		runtimeSys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
@@ -111,11 +111,11 @@ func RunService(p_port_str string,
 	//----------------------
 
 	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	pLogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_port_str)
+	pLogFun("INFO", "STARTING HTTP SERVER - PORT - "+pPortStr)
 	pLogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	err := http.ListenAndServe(":"+p_port_str, nil)
+	err := http.ListenAndServe(":"+pPortStr, nil)
 	if err != nil {
-		msg_str := "cant start listening on port - "+p_port_str
+		msg_str := "cant start listening on port - "+pPortStr
 		pLogFun("ERROR", msg_str)
 		panic(msg_str)
 	}

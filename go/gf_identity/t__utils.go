@@ -117,10 +117,10 @@ func Tinit() *gf_core.RuntimeSys {
 	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_identity_tests",
-		LogFun:           logFun,
-		LogNewFun:        logNewFun,
-		Validator:        gf_core.ValidateInit(),
+		ServiceNameStr: "gf_identity_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
+		Validator:      gf_core.ValidateInit(),
 	}
 
 	mongoDB, _, gfErr := gf_core.MongoConnectNew(testMongodbURLstr,

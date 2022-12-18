@@ -67,18 +67,19 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 
 	//-------------
 
-	logFun, _ := gf_core.LogsInit()
+	logFun, logNewFun := gf_core.LogsInit()
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_crawl_tests",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_crawl_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
 	}
 
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(test__mongodb_host_str,
+	mongo_db, _, gfErr := gf_core.MongoConnectNew(test__mongodb_host_str,
 		test__mongodb_db_name_str,
 		nil,
 		runtimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		panic("failed to get Mongodb client in test initialization")
 		return nil, nil
 	}
@@ -87,8 +88,8 @@ func T__init() (*gf_core.RuntimeSys, *GFcrawlerRuntime) {
 	
 	//-------------
 	// ELASTICSEARCH
-	esearch_client, gf_err := gf_core.Elastic__get_client(test__es_host_str, runtimeSys)
-	if gf_err != nil {
+	esearch_client, gfErr := gf_core.Elastic__get_client(test__es_host_str, runtimeSys)
+	if gfErr != nil {
 		panic("failed to get ElasticSearch client in test initialization")
 		return nil, nil
 	}
@@ -181,12 +182,12 @@ func t__create_test_gf_image_named_image_file(p_test *testing.T,
 	test__local_image_dir_path_str := filepath.Dir(p_test__local_image_file_path_str)
 
 	// IMPORTANT!! - creates a new gf_image ID from the image URL
-	test__local_gf_image_file_path_str, gf_image_id_str, gf_err := gf_images_core.CreateImageFilePathFromURL("", p_test__img_src_url_str,
+	test__local_gf_image_file_path_str, gf_image_id_str, gfErr := gf_images_core.CreateImageFilePathFromURL("", p_test__img_src_url_str,
 		test__local_image_dir_path_str,
 		pRuntimeSys)
-	if gf_err != nil {
+	if gfErr != nil {
 		p_test.Errorf(fmt.Sprintf("failed to create a gf_image local file path from URL [%s]", p_test__img_src_url_str))
-		panic(gf_err.Error)
+		panic(gfErr.Error)
 		return "", ""
 	}
 

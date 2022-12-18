@@ -111,8 +111,8 @@ func RunService(p_port_str string,
     pLogFun("INFO",logo_str)
 	
 	runtime_sys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_publisher",
-		LogFun:           pLogFun,
+		ServiceNameStr: "gf_publisher",
+		LogFun:         pLogFun,
 	}
 
 	mongo_db, _, gf_err   := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)

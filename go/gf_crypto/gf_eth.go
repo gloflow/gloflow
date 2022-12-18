@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 func EthGenerateKeys() (string, string, string, error) {
 
     //---------------------------
@@ -76,35 +77,36 @@ func EthGenerateKeys() (string, string, string, error) {
 }
 
 //-------------------------------------------------
-func EthSignData(p_data_to_sign_str string,
-	p_private_key_hex_str string) (string, error) {
 
-    // clearn private_key hex
-    var private_key_hex_clean_str string;
-    if (strings.HasPrefix(p_private_key_hex_str, "0x")) {
-        private_key_hex_clean_str = strings.TrimPrefix(p_private_key_hex_str, "0x")
+func EthSignData(pDataToSignStr string,
+	pPrivateKeyHexStr string) (string, error) {
+
+    // clean private_key hex
+    var privateKeyHexCleanStr string;
+    if (strings.HasPrefix(pPrivateKeyHexStr, "0x")) {
+        privateKeyHexCleanStr = strings.TrimPrefix(pPrivateKeyHexStr, "0x")
     } else {
-        private_key_hex_clean_str = p_private_key_hex_str
+        privateKeyHexCleanStr = pPrivateKeyHexStr
     }
 
     // parse private_key hex
-	private_key, err := crypto.HexToECDSA(private_key_hex_clean_str)
+	privateKey, err := crypto.HexToECDSA(privateKeyHexCleanStr)
     if err != nil {
         return "", err
     }
 
-	data_to_sign_bytes_lst := []byte(p_data_to_sign_str)
-	data_to_sign_hash := crypto.Keccak256Hash(data_to_sign_bytes_lst)
+	dataToSignBytesLst := []byte(pDataToSignStr)
+	dataToSignHash := crypto.Keccak256Hash(dataToSignBytesLst)
 
     //---------------------------
     // SIGN
-	signature, err := crypto.Sign(data_to_sign_hash.Bytes(), private_key)
+	signature, err := crypto.Sign(dataToSignHash.Bytes(), privateKey)
 	if err != nil {
 		return "", err
 	}
 
-	signature_hex_str := hexutil.Encode(signature)
+	signatureHexStr := hexutil.Encode(signature)
 
     //---------------------------
-	return signature_hex_str, err
+	return signatureHexStr, err
 }

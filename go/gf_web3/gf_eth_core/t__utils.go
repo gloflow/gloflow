@@ -41,9 +41,9 @@ func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	// RUNTIME_SYS
 	logFun, logNewFun  := gf_core.LogsInit()
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_web3_monitor_test",
-		LogFun:           logFun,
-		LogNewFun:        logNewFun,
+		ServiceNameStr: "gf_web3_monitor_test",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
 		
 		// SENTRY - enable it for error reporting
 		ErrorsSendToSentryBool: true,
