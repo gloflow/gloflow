@@ -140,7 +140,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	cmdBase.PersistentFlags().StringP("port", "p", portDefaultStr,
 		"port on which to listen for HTTP traffic")
 
-	err := viper.BindPFlag("port", cmdBase.PersistentFlags().Lookup("port"))
+	err = viper.BindPFlag("port", cmdBase.PersistentFlags().Lookup("port"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")
 		panic(err)

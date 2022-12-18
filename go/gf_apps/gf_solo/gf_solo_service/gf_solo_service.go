@@ -361,9 +361,9 @@ func RuntimeGet(pConfigPathStr string,
 	// RUNTIME_SYS
 	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_solo",
-		EnvStr: 
-		LogFun:           pLogFun,
-		LogNewFun:        pLogNewFun,
+		EnvStr:         config.EnvStr,
+		LogFun:         pLogFun,
+		LogNewFun:      pLogNewFun,
 
 		// SENTRY - enable it for error reporting
 		ErrorsSendToSentryBool: true,
