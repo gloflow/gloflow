@@ -1,3 +1,7 @@
+
+# ENVIRONMENT
+env: dev
+
 # PORTS
 port:         1900
 port_admin:   1901

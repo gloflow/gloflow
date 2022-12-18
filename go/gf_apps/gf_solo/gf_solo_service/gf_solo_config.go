@@ -27,6 +27,9 @@ import (
 //-------------------------------------------------------------
 type GFconfig struct {
 
+	// ENVIRONMENT
+	EnvStr string `mapstructure:"env"`
+
 	// DOMAIN - where this gf_solo instance is reachable on
 	DomainBaseStr      string `mapstructure:"domain_base"`
 	DomainAdminBaseStr string `mapstructure:"domain_admin_base"`

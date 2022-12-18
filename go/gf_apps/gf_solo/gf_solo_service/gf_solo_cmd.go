@@ -109,15 +109,30 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	cmdBase.AddCommand(cmdInfo)
 	cmdInfo.AddCommand(cmdInfoGitCommitSHA)
 
-
-
-
-
 	//--------------------
 	// CLI_ARGUMENT - CONFIG
 	cliConfigPathDefaultStr := "./config/gf_solo"
 	cmdBase.PersistentFlags().StringVarP(&cliConfigPathStr, "config", "", cliConfigPathDefaultStr,
 		"config file path on the local FS")
+
+	//--------------------
+	// CLI_ARGUMENT - ENVIRONMENT
+	environmentDefaultStr := "dev"
+	cmdBase.PersistentFlags().StringP("env", "e", environmentDefaultStr,
+		"environment in which its running")
+
+	err := viper.BindPFlag("env", cmdBase.PersistentFlags().Lookup("env"))
+	if err != nil {
+		fmt.Println("failed to bind CLI arg to Viper config")
+		panic(err)
+	}
+	
+	// ENV
+	err = viper.BindEnv("env", "GF_ENV")
+	if err != nil {
+		fmt.Println("failed to bind ENV var to Viper config")
+		panic(err)
+	}
 
 	//--------------------
 	// CLI_ARGUMENT - PORT

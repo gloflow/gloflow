@@ -33,7 +33,9 @@ import (
 // RUNTIME_SYS
 
 type RuntimeSys struct {
-	Service_name_str string
+	ServiceNameStr string
+	EnvStr         string
+	
 	LogFun           func(string, string)
 	LogNewFun        GFlogFun
 
