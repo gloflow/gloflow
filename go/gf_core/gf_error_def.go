@@ -414,6 +414,14 @@ func errorGetDefs() map[string]ErrorDef {
 			DescrStr: "last byte of an ethereum signature does not have the proper V value",
 		},
 
+		// PEM
+		"crypto_pem_decode": ErrorDef{
+			DescrStr: "failed to decode a PEM (private key cryptographic info)",
+		},
+		"crypto_x509_parse": ErrorDef{
+			DescrStr: "failed to parse x509 info",
+		},
+
 		//---------------
 	}
 	return errorDefsMap

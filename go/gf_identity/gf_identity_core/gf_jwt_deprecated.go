@@ -26,16 +26,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	// "github.com/dgrijalva/jwt-go"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //---------------------------------------------------
 
-type GFjwtTokenVal     string
-type GFjwtSecretKeyVal string
-type GFjwtSecretKey struct {
+// DEPRECATED!!
+type GFjwtSecretKeyForUser struct {
 	Vstr                 string             `bson:"v_str"` // schema_version
 	Id                   primitive.ObjectID `bson:"_id,omitempty"`
 	IDstr                gf_core.GF_ID      `bson:"id_str"`
@@ -46,13 +44,11 @@ type GFjwtSecretKey struct {
 	UserIdentifierStr    string              `bson:"user_identifier_str"`
 }
 
-type GFjwtClaims struct {
-	UserIdentifierStr string `json:"user_identifier_str"`
-	jwt.StandardClaims
-}
-
+//---------------------------------------------------
+// GENERATE - SYMETRIC
 //---------------------------------------------------
 // PIPELINE__GENERATE
+// DEPRECATED!!
 
 func JWTpipelineGenerate(pUserIdentifierStr string,
 	pCtx        context.Context,
@@ -85,6 +81,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 }
 
 //---------------------------------------------------
+// DEPRECATED!!
 
 // generate and store in the DB the secret key thats used
 // to sign new JWT tokens
@@ -97,7 +94,7 @@ func JWTgenerateSecretSigningKey(pUserIdentifierStr string,
 	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
 	jwtID := jwtGenerateID(pUserIdentifierStr, creationUNIXtimeF)
 
-	jwtSecretKey := &GFjwtSecretKey{
+	jwtSecretKey := &GFjwtSecretKeyForUser{
 		Vstr:              "0",
 		IDstr:             jwtID,
 		DeletedBool:       false,
@@ -107,7 +104,7 @@ func JWTgenerateSecretSigningKey(pUserIdentifierStr string,
 	}
 
 	// DB_CREATE__SECRET_KEY
-	gfErr := dbJWTsecretKeyCreate(jwtSecretKey, pCtx, pRuntimeSys)
+	gfErr := dbJWTsecretKeyCreateForUser(jwtSecretKey, pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
@@ -144,12 +141,12 @@ func jwtGenerate(pUserIdentifierStr string,
 	//           a received token is valid and unchanged.
 	jwtTokenValStr, err := jwtToken.SignedString([]byte(pJWTsecretKeyVal))
 	if err != nil {
-		gfErr := gf_core.ErrorCreate("failed to to update user info",
+		gfErr := gf_core.ErrorCreate("failed to sign JWT token for user",
 			"crypto_jwt_sign_token_error",
 			map[string]interface{}{
 				"user_identifier_str": pUserIdentifierStr,
 			},
-			err, "gf_session", pRuntimeSys)
+			err, "gf_identity_core", pRuntimeSys)
 		return GFjwtTokenVal(""), gfErr
 	}
 
@@ -169,6 +166,8 @@ func jwtGenerateID(pUserIdentifierStr string,
 	return gf_id_str
 }
 
+//---------------------------------------------------
+// VALIDATE
 //---------------------------------------------------
 
 // validate a supplied JWT token, and return a user identifier
@@ -191,7 +190,7 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 			map[string]interface{}{
 				"jwt_token_val_str": pJWTtokenVal,
 			},
-			nil, "gf_session", pRuntimeSys)
+			nil, "gf_identity_core", pRuntimeSys)
 		return "", gfErr
 	}
 
@@ -200,6 +199,7 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 
 //---------------------------------------------------
 // VALIDATE
+// DEPRECATED!!
 
 func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pCtx         context.Context,
@@ -213,7 +213,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 			userIdentifierStr := pJWTtoken.Claims.(*GFjwtClaims).UserIdentifierStr
 
 			// DB_GET
-			jwtSecretKey, gfErr := dbJWTsecretKeyGet(userIdentifierStr, pCtx, pRuntimeSys)
+			jwtSecretKey, gfErr := dbJWTsecretKeyGetForUser(userIdentifierStr, pCtx, pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr.Error
 			}
@@ -227,7 +227,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 			map[string]interface{}{
 				"jwt_token_val_str": pJWTtokenVal,
 			},
-			err, "gf_session", pRuntimeSys)
+			err, "gf_identity_core", pRuntimeSys)
 		return false, "", gfErr
 	}
 
@@ -240,8 +240,38 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 //---------------------------------------------------
 // DB
 //---------------------------------------------------
+// DEPRECATED!!
 
-func dbJWTsecretKeyCreate(pJWTsecretKey *GFjwtSecretKey,
+// check if a JWT signing secret exists in a DB, when a secrets-storage
+// backend is not being used (by users that self-host and use the DB for everything).
+func dbJWTsigningSecretExists(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) (bool, *gf_core.GFerror) {
+
+	collNameStr := "gf_auth_jwt_secret"
+	countInt, gfErr := gf_core.MongoCount(bson.M{
+			"deleted_bool":  false,
+		},
+		map[string]interface{}{
+			"caller_err_msg": "failed to check if there is a JWT signing secret in the DB",
+		},
+		pRuntimeSys.Mongo_db.Collection(collNameStr),
+		pCtx,
+		pRuntimeSys)
+	if gfErr != nil {
+		return false, gfErr
+	}
+
+	if countInt > 0 {
+		return true, nil
+	}
+	return false, nil
+}
+
+//---------------------------------------------------
+// DEPRECATED!! - single secret used to sign all JWTs for all users now.
+
+// create JWT signing secret_key, unique per user
+func dbJWTsecretKeyCreateForUser(pJWTsecretKey *GFjwtSecretKeyForUser,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -264,10 +294,12 @@ func dbJWTsecretKeyCreate(pJWTsecretKey *GFjwtSecretKey,
 }
 
 //---------------------------------------------------
+// DEPRECATED!!
 
-func dbJWTsecretKeyGet(pUserIdentifierStr string,
+// get JWT signing secret_key, unique per user
+func dbJWTsecretKeyGetForUser(pUserIdentifierStr string,
 	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtSecretKey, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtSecretKeyForUser, *gf_core.GFerror) {
 
 	findOpts := options.Find()
 	findOpts.SetSort(map[string]interface{}{"creation_unix_time_f": -1}) // descending - true - sort the latest items first
@@ -290,7 +322,7 @@ func dbJWTsecretKeyGet(pUserIdentifierStr string,
 
 
 
-	var jwtSecretKeysLst []*GFjwtSecretKey
+	var jwtSecretKeysLst []*GFjwtSecretKeyForUser
 	err := dbCursor.All(pCtx, &jwtSecretKeysLst)
 	if err != nil {
 		gfErr := gf_core.MongoHandleError("failed to get DB results of query to get latest JWT key ",
@@ -298,7 +330,7 @@ func dbJWTsecretKeyGet(pUserIdentifierStr string,
 			map[string]interface{}{
 				"user_identifier_str": pUserIdentifierStr,
 			},
-			err, "gf_session", pRuntimeSys)
+			err, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
 	}
 

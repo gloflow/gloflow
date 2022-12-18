@@ -21,7 +21,7 @@ package gf_identity
 
 import (
 	"os"
-	// "fmt"
+	"context"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -38,10 +38,19 @@ func InitService(pHTTPmux *http.ServeMux,
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
 		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
 	})
-	
+
+	//------------------------
+	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
+	//                      placed it independently.
+	ctx := context.Background()
+	gfErr := gf_identity_core.JWTnewGenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
+	if gfErr != nil {
+		return gfErr
+	}
+
 	//------------------------
 	// HANDLERS
-	gfErr := initHandlers(pServiceInfo.AuthLoginURLstr,
+	gfErr = initHandlers(pServiceInfo.AuthLoginURLstr,
 		pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
