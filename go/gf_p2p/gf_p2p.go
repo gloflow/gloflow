@@ -127,6 +127,15 @@ func InitLibp2p(pConfig GFp2pConfig,
 		
 		// disable built-in ping protocol
 		libp2p.Ping(false),
+
+		// libp2p.NATPortMap(),
+		// libp2p.ChainOptions(
+		// 	libp2p.Transport(ws.New),
+		// 	libp2p.Transport(quic.NewTransport),
+		// ),
+		// libp2p.EnableRelay(),
+		// libp2p.EnableAutoRelay(),
+		// libp2p.EnableRelayService(),
 	)
 
 	if err != nil {

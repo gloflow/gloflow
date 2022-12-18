@@ -40,6 +40,7 @@ func dhtInit(pNode host.Host,
 		
 		// start the node in Server mode
 		dht.Mode(dht.ModeServer),
+		// dht.Mode(dht.ModeAuto),
 
 		// DisableAutoRefresh(),
 	}
