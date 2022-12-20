@@ -82,9 +82,10 @@ type GFuserpassOutputCreate struct {
 // PIPELINE__LOGIN
 
 func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
-	pServiceInfo *GFserviceInfo,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserpassOutputLogin, *gf_core.GFerror) {
+	pKeyServerInfo *GFkeyServerInfo,
+	pServiceInfo   *GFserviceInfo,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) (*GFuserpassOutputLogin, *gf_core.GFerror) {
 
 	//------------------------
 	// VALIDATE_INPUT
@@ -139,6 +140,7 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 		UserNameStr: GFuserName(pInput.UserNameStr),
 	}
 	loginFinalizeOutput, gfErr := UserpassPipelineLoginFinalize(input,
+		pKeyServerInfo,
 		pServiceInfo,
 		pCtx,
 		pRuntimeSys)
@@ -157,9 +159,10 @@ func UserpassPipelineLogin(pInput *GFuserpassInputLogin,
 //---------------------------------------------------
 
 func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
-	pServiceInfo *GFserviceInfo,
-	pCtx         context.Context,
-	pRuntimeSys  *gf_core.RuntimeSys) (*GFuserpassOutputLoginFinalize, *gf_core.GFerror) {
+	pKeyServerInfo *GFkeyServerInfo,
+	pServiceInfo   *GFserviceInfo,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) (*GFuserpassOutputLoginFinalize, *gf_core.GFerror) {
 
 	output := &GFuserpassOutputLoginFinalize{}
 	userNameStr := GFuserName(pInput.UserNameStr)
@@ -200,7 +203,8 @@ func UserpassPipelineLoginFinalize(pInput *GFuserpassInputLoginFinalize,
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
-	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
+	JWTtokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr, pKeyServerInfo,
+		pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

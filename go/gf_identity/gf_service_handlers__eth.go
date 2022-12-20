@@ -32,7 +32,8 @@ import (
 
 //------------------------------------------------
 
-func initHandlersEth(p_http_mux *http.ServeMux,
+func initHandlersEth(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux     *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -49,7 +50,7 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:             p_http_mux,
+		Mux:             pHTTPmux,
 		Metrics:         metrics,
 		StoreRunBool:    true,
 		SentryHub:       nil,
@@ -58,6 +59,7 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 		
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------
@@ -121,7 +123,9 @@ func initHandlersEth(p_http_mux *http.ServeMux,
 
 				//---------------------
 				// LOGIN
-				output, gfErr := gf_identity_core.ETHpipelineLogin(input, pCtx, pRuntimeSys)
+				output, gfErr := gf_identity_core.ETHpipelineLogin(input,
+					pKeyServer,
+					pCtx, pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

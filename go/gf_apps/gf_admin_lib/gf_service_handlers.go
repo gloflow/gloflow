@@ -34,6 +34,7 @@ import (
 //------------------------------------------------
 
 func initHandlers(pTemplatesPathsMap map[string]string,
+	pKeyServerInfo       *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux             *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_core.GFserviceInfo,
@@ -78,7 +79,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 			if pReq.Method == "GET" {
 
 				//---------------------
-				validBool, _, gfErr := gf_identity_core.Validate(pReq, rpcHandlerRuntime.AuthSubsystemTypeStr, pCtx, pRuntimeSys)
+				validBool, _, gfErr := gf_identity_core.Validate(pReq,
+					pKeyServerInfo,
+					rpcHandlerRuntime.AuthSubsystemTypeStr,
+					pCtx,
+					pRuntimeSys)
 				if gfErr != nil {
 					return nil, gfErr
 				}

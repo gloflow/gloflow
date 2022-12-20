@@ -29,9 +29,10 @@ import (
 //---------------------------------------------------
 
 func Validate(pReq *http.Request,
-	pAuthSubsystemTypeStr string,
-	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	pKeyServerInfo         *GFkeyServerInfo,
+	pAuthSubsystemTypeStr  string,
+	pCtx                   context.Context,
+	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 	
 	cookieNameStr := "gf_sess"
 	cookieFoundBool, sessionDataStr := GetFromReq(cookieNameStr, pReq)
@@ -48,11 +49,12 @@ func Validate(pReq *http.Request,
 	//---------------------
 	// BUILTIN
 	case GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+		
 		JWTtokenValStr := sessionDataStr
 
-		
 		// JWT_VALIDATE
 		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+			pKeyServerInfo,
 			pCtx,
 			pRuntimeSys)
 		if gfErr != nil {

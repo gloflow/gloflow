@@ -122,8 +122,9 @@ func ETHpipelinePreflight(pInput *GFethInputPreflight,
 // PIPELINE__LOGIN
 
 func ETHpipelineLogin(pInput *GFethInputLogin,
-	pCtx        context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) (*GFethOutputLogin, *gf_core.GFerror) {
+	pKeyServerInfo *GFkeyServerInfo,
+	pCtx           context.Context,
+	pRuntimeSys    *gf_core.RuntimeSys) (*GFethOutputLogin, *gf_core.GFerror) {
 	
 	//------------------------
 	// VALIDATE_INPUT
@@ -185,7 +186,9 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
-	jwtTokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr, pCtx, pRuntimeSys)
+	jwtTokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr,
+		pKeyServerInfo,
+		pCtx, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

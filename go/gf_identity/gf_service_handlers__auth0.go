@@ -33,7 +33,8 @@ import (
 
 //------------------------------------------------
 
-func initHandlersAuth0(pHTTPmux *http.ServeMux,
+func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux       *http.ServeMux,
 	pAuthenticator *gf_auth0.GFauthenticator,
 	pConfig        *gf_auth0.GFconfig,
 	pServiceInfo   *gf_identity_core.GFserviceInfo,
@@ -61,6 +62,7 @@ func initHandlersAuth0(pHTTPmux *http.ServeMux,
 		
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

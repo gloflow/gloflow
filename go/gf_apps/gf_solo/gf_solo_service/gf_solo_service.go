@@ -118,7 +118,7 @@ func Run(pConfig *GFconfig,
 		//         individually if they so desire.
 		EnableMFArequireConfirmForLoginBool: false,
 	}
-	gfErr := gf_identity.InitService(gfSoloHTTPmux,
+	_, gfErr := gf_identity.InitService(gfSoloHTTPmux,
 		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {

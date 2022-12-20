@@ -26,7 +26,6 @@ SOFTWARE.
 package gf_core
 
 import (
-	"fmt"
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/pem"
@@ -35,20 +34,22 @@ import (
 
 //-------------------------------------------------
 
-func CryptoGeneratePrivKeyAsPEM() string {
+// generate new RSA private/public key-pair (4096 bit) and encoded it into
+// the PEM format and return as two separate strings.
+func CryptoGenerateKeysAsPEM() (string, string) {
 
-	privKey, pubKey := CryptoGenerateKeyPair()
+	pubKey, privKey := CryptoGenerateKeys()
+	pubKeyPEMstr, privKeyPEMstr := CryptoConvertKeysToPEM(privKey, pubKey)
 
-	fmt.Println(pubKey)
-
-	privKeyPEMstr := CryptoConvertPrivKeyToPEM(privKey)
-
-	return privKeyPEMstr
+	return pubKeyPEMstr, privKeyPEMstr 
 }
 
-func CryptoGenerateKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
+//-------------------------------------------------
+
+// generate RSA private/public keys (4096 bit)
+func CryptoGenerateKeys() (*rsa.PublicKey, *rsa.PrivateKey) {
     privkey, _ := rsa.GenerateKey(rand.Reader, 4096)
-    return privkey, &privkey.PublicKey
+    return &privkey.PublicKey, privkey 
 }
 
 //-------------------------------------------------
@@ -56,36 +57,75 @@ func CryptoGenerateKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
 //-------------------------------------------------
 
 // parse a private key from a PEM string
-func CryptoParsePrivKeyFromPEM(pPrivKeyPEMstr string,
-	pRuntimeSys *RuntimeSys) (*rsa.PrivateKey, *GFerror) {
-
+func CryptoParseKeysFromPEM(pPublicKeyPEMstr string,
+	pPrivateKeyPEMstr string,
+	pRuntimeSys       *RuntimeSys) (*rsa.PublicKey, *rsa.PrivateKey, *GFerror) {
+	
+	//------------------------
 	// find the next PEM formatted block (certificate, private key etc) in the input
-    block, _ := pem.Decode([]byte(pPrivKeyPEMstr))
-    if block == nil {
+    pubBlock, _ := pem.Decode([]byte(pPublicKeyPEMstr))
+    if pubBlock == nil {
+		gfErr := ErrorCreate("failed to parse a PEM block from a string, containing a public key",
+			"crypto_pem_decode",
+			map[string]interface{}{},
+			nil, "gf_core", pRuntimeSys)
+		return nil, nil, gfErr
+    }
+
+    publicKey, err := x509.ParsePKCS1PublicKey(pubBlock.Bytes)
+    if err != nil {
+        gfErr := ErrorCreate("failed to parse a x509 formated public-key from a PEM block",
+			"crypto_x509_parse",
+			map[string]interface{}{},
+			err, "gf_core", pRuntimeSys)
+		return nil, nil, gfErr
+    }
+
+	//------------------------
+	// find the next PEM formatted block (certificate, private key etc) in the input
+    privBlock, _ := pem.Decode([]byte(pPrivateKeyPEMstr))
+    if privBlock == nil {
 		gfErr := ErrorCreate("failed to parse a PEM block from a string, containing a private key",
 			"crypto_pem_decode",
 			map[string]interface{}{},
 			nil, "gf_core", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
     }
 
-    priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+    privateKey, err := x509.ParsePKCS1PrivateKey(privBlock.Bytes)
     if err != nil {
         gfErr := ErrorCreate("failed to parse a x509 formated private-key from a PEM block",
 			"crypto_x509_parse",
 			map[string]interface{}{},
 			err, "gf_core", pRuntimeSys)
-		return nil, gfErr
+		return nil, nil, gfErr
     }
 
-    return priv, nil
+	//------------------------
+
+    return publicKey, privateKey, nil
 }
 
 //-------------------------------------------------
 
-func CryptoConvertPrivKeyToPEM(pPrivKey *rsa.PrivateKey) string {
+func CryptoConvertKeysToPEM(pPrivateKey *rsa.PrivateKey,
+	pPublicKey *rsa.PublicKey) (string, string) {
 
-	privKeyBytesLst := x509.MarshalPKCS1PrivateKey(pPrivKey)
+	//------------------------
+	// PUBLIC_KEY
+	pubKeyBytesLst := x509.MarshalPKCS1PublicKey(pPublicKey)
+	pubKeyPEM := pem.EncodeToMemory(
+			&pem.Block{
+					Type:  "RSA PUBLIC KEY",
+					Bytes: pubKeyBytesLst,
+			},
+	)
+
+	pubKeyPEMstr := string(pubKeyPEM)
+
+	//------------------------
+	// PRIVATE_KEY
+	privKeyBytesLst := x509.MarshalPKCS1PrivateKey(pPrivateKey)
 	privKeyPEM := pem.EncodeToMemory(
 			&pem.Block{
 					Type:  "RSA PRIVATE KEY",
@@ -94,7 +134,9 @@ func CryptoConvertPrivKeyToPEM(pPrivKey *rsa.PrivateKey) string {
 	)
 
 	privKeyPEMstr := string(privKeyPEM)
-	return privKeyPEMstr
+
+	//------------------------
+	return pubKeyPEMstr, privKeyPEMstr
 }
 
 //-------------------------------------------------

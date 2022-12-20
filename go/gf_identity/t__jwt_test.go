@@ -45,8 +45,17 @@ func testJWTmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	ctx := context.Background()
-
 	testUserAddressETH := gf_identity_core.GFuserAddressETH("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
+
+	//------------------------
+	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
+	//                      placed it independently.
+	gfErr := gf_identity_core.JWTgenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	//------------------------
 
 	// JWT_GENERATE
 	userIdentifierStr := string(testUserAddressETH)

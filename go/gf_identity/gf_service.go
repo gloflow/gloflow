@@ -21,7 +21,6 @@ package gf_identity
 
 import (
 	"os"
-	"context"
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -33,33 +32,32 @@ import (
 
 func InitService(pHTTPmux *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
-	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
+	pRuntimeSys  *gf_core.RuntimeSys) (*gf_identity_core.GFkeyServerInfo, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
 		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
 	})
 
 	//------------------------
-	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
-	//                      placed it independently.
-	ctx := context.Background()
-	gfErr := gf_identity_core.JWTgenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
+	// KEYS_SERVER
+	keyServerInfo, gfErr := gf_identity_core.KSinit(pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
-
+	
 	//------------------------
 	// HANDLERS
 	gfErr = initHandlers(pServiceInfo.AuthLoginURLstr,
+		keyServerInfo,
 		pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 
 	// ETH - these handlers are always enabled, whether builtin or auth0 auth subsystem is activated
-	gfErr = initHandlersEth(pHTTPmux, pServiceInfo, pRuntimeSys)
+	gfErr = initHandlersEth(keyServerInfo, pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
-		return gfErr
+		return nil, gfErr
 	}
 	
 	switch pServiceInfo.AuthSubsystemTypeStr {
@@ -67,11 +65,12 @@ func InitService(pHTTPmux *http.ServeMux,
 	// USERPASS
 	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
 		
-		gfErr = initHandlersUserpass(pHTTPmux,
+		gfErr = initHandlersUserpass(keyServerInfo,
+			pHTTPmux,
 			pServiceInfo,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
 	// AUTH0
@@ -79,22 +78,23 @@ func InitService(pHTTPmux *http.ServeMux,
 		
 		auth0authenticator, auth0config, gfErr := gf_auth0.Init(pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 
-		initHandlersAuth0(pHTTPmux,
+		initHandlersAuth0(keyServerInfo,
+			pHTTPmux,
 			auth0authenticator,
 			auth0config,
 			pServiceInfo,
 			pRuntimeSys)
 		if gfErr != nil {
-			return gfErr
+			return nil, gfErr
 		}
 	}
 
 	//------------------------
 
-	return nil
+	return keyServerInfo, nil
 }
 
 //-------------------------------------------------

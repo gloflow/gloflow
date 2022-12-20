@@ -32,7 +32,8 @@ import (
 
 //------------------------------------------------
 
-func initHandlersUserpass(pHTTPmux *http.ServeMux,
+func initHandlersUserpass(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux     *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
@@ -57,6 +58,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 		
 		// url redirected too if user not logged in and tries to access auth handler
 		AuthLoginURLstr: "/landing/main",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------
@@ -98,6 +100,7 @@ func initHandlersUserpass(pHTTPmux *http.ServeMux,
 				//---------------------
 				// LOGIN
 				output, gfErr := gf_identity_core.UserpassPipelineLogin(input, 
+					pKeyServer,
 					pServiceInfo,
 					pCtx,
 					pRuntimeSys)

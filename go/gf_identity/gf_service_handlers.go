@@ -34,6 +34,7 @@ import (
 //------------------------------------------------
 
 func initHandlers(pAuthLoginURLstr string,
+	pKeyServer   *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux     *http.ServeMux,
 	pServiceInfo *gf_identity_core.GFserviceInfo,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -59,7 +60,8 @@ func initHandlers(pAuthLoginURLstr string,
 		StoreRunBool:    true,
 		SentryHub:       nil,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
-		AuthLoginURLstr: pAuthLoginURLstr,
+		AuthLoginURLstr:      pAuthLoginURLstr,
+		AuthKeyServer:        pKeyServer,
 	}
 
 	//---------------------
@@ -171,6 +173,7 @@ func initHandlers(pAuthLoginURLstr string,
 							UserNameStr: userNameStr,
 						}
 						loginFinalizeOutput, gfErr := gf_identity_core.UserpassPipelineLoginFinalize(loginFinalizeInput,
+							pKeyServer,
 							pServiceInfo,
 							pCtx,
 							pRuntimeSys)
@@ -256,6 +259,7 @@ func initHandlers(pAuthLoginURLstr string,
 						UserNameStr: userNameStr,
 					}
 					loginFinalizeOutput, gfErr := gf_identity_core.UserpassPipelineLoginFinalize(loginFinalizeInput,
+						pKeyServer,
 						pServiceInfo,
 						pCtx,
 						pRuntimeSys)

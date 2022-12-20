@@ -29,7 +29,6 @@ import (
 	"net/http"
 	"context"
 	"time"
-	// "encoding/json"
 	"github.com/getsentry/sentry-go"
 	// "github.com/auth0/go-jwt-middleware/v2"
 	// "github.com/auth0/go-jwt-middleware/v2/validator"
@@ -49,6 +48,7 @@ type GFrpcHandlerRuntime struct {
 
 	AuthSubsystemTypeStr string
 	AuthLoginURLstr      string // url redirected too if user not logged in and tries to access auth handler
+	AuthKeyServer        *gf_identity_core.GFkeyServerInfo
 }
 
 type GFrpcHandlerRun struct {
@@ -82,6 +82,11 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	pHandlerFun     handlerHTTP,
 	pHandlerRuntime *GFrpcHandlerRuntime,
 	pRuntimeSys     *gf_core.RuntimeSys) {
+
+	// check auth key_server has been initialized and passed to the handler runtime
+	if pHandlerRuntime.AuthKeyServer == nil {
+		panic("Auth key_server has to be defined!")
+	}
 
 	// AUTH0
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
@@ -120,6 +125,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 				// SESSION_VALIDATE
 				validBool, userIdentifierStr, gfErr := gf_session.ValidateOrRedirectToLogin(pReq,
 					pResp,
+					pHandlerRuntime.AuthKeyServer,
 					pHandlerRuntime.AuthSubsystemTypeStr,
 					&pHandlerRuntime.AuthLoginURLstr,
 					ctx,

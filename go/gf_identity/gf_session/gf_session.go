@@ -43,13 +43,19 @@ func Create(pSessionDataStr string,
 //---------------------------------------------------
 
 func ValidateOrRedirectToLogin(pReq *http.Request,
-	pResp                 http.ResponseWriter,
-	pAuthSubsystemTypeStr string,
-	pAuthLoginURLstr      *string,
-	pCtx                  context.Context,
-	pRuntimeSys           *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
+	pResp                  http.ResponseWriter,
+	pKeyServerInfo         *gf_identity_core.GFkeyServerInfo,
+	pAuthSubsystemTypeStr  string,
+	pAuthLoginURLstr       *string,
+	pCtx                   context.Context,
+	pRuntimeSys            *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
-	validBool, userIdentifierStr, gfErr := gf_identity_core.Validate(pReq, pAuthSubsystemTypeStr, pCtx, pRuntimeSys)
+	validBool, userIdentifierStr, gfErr := gf_identity_core.Validate(pReq,
+		pKeyServerInfo,
+		pAuthSubsystemTypeStr,
+		pCtx,
+		pRuntimeSys)
+
 	if gfErr != nil {
 		return false, "", gfErr
 	}
