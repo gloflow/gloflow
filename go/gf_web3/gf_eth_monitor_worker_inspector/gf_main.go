@@ -33,6 +33,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_runtime struct {
 	eth_rpc_host_str string
 	eth_rpc_client   *ethclient.Client
@@ -41,6 +42,7 @@ type GF_runtime struct {
 }
 
 //-------------------------------------------------
+
 func main() {
 	
 	// log to stdout instead of the default stderr
@@ -114,6 +116,7 @@ func main() {
 }
 
 //-------------------------------------------------
+
 func runtimeGet(p_eth_rpc_host_str string,
 	p_py_plugins_base_dir_path_str string,
 	pLogFun                        func(string, string)) (*GF_runtime, error) {

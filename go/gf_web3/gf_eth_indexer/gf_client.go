@@ -28,26 +28,27 @@ import (
 
 //-------------------------------------------------
 // CLIENT__INDEX_BLOCK_RANGE
-func Client__index_block_range(p_block_start_uint uint64,
-	p_block_end_uint  uint64,
-	p_indexer_cmds_ch chan(GF_indexer_cmd)) (GF_indexer_job_id, *gf_core.GFerror) {
 
-	response_ch     := make(chan GF_indexer_job_id, 1)
-	response_err_ch := make(chan gf_core.GFerror, 1)
+func Client__index_block_range(pBlockStartInt uint64,
+	pBlockEndInt   uint64,
+	pIndexerCmdsCh chan(GF_indexer_cmd)) (GF_indexer_job_id, *gf_core.GFerror) {
+
+	responseCh    := make(chan GF_indexer_job_id, 1)
+	responseErrCh := make(chan gf_core.GFerror, 1)
 	
 	cmd := GF_indexer_cmd{
-		Block_start_uint: p_block_start_uint,
-		Block_end_uint:   p_block_end_uint,
-		Response_ch:      response_ch,
-		Response_err_ch:  response_err_ch,
+		Block_start_uint: pBlockStartInt,
+		Block_end_uint:   pBlockEndInt,
+		Response_ch:      responseCh,
+		Response_err_ch:  responseErrCh,
 	}
 
-	p_indexer_cmds_ch <- cmd
+	pIndexerCmdsCh <- cmd
 
 	select {
-	case job_id_str := <- response_ch:
+	case job_id_str := <- responseCh:
 		return job_id_str, nil
-	case gfErr := <- response_err_ch:
+	case gfErr := <- responseErrCh:
 		return GF_indexer_job_id(""), &gfErr
 	}
 
@@ -56,6 +57,7 @@ func Client__index_block_range(p_block_start_uint uint64,
 
 //-------------------------------------------------
 // CLIENT__NEW_CONSUMER
+
 func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 	p_indexer_job_updates_new_consumer_ch GF_job_update_new_consumer_ch,
 	p_ctx                                 context.Context) (GF_job_updates_ch, GF_job_err_ch, GF_job_complete_ch) {
@@ -76,16 +78,17 @@ func Client__new_consumer(p_job_id_str GF_indexer_job_id,
 //-------------------------------------------------
 // HTTP
 //-------------------------------------------------
-func Client_http__index_block_range(p_block_start_uint uint64,
-	p_block_end_uint uint64,
+
+func Client_http__index_block_range(pBlockStartInt uint64,
+	pBlockEndInt uint64,
 	p_host_port_str  string,
 	p_ctx            context.Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (GF_indexer_job_id, *gf_core.GFerror) {
 
 	url_str := fmt.Sprintf("http://%s/gfethm/v1/block/index?br=%d-%d",
 		p_host_port_str,
-		p_block_start_uint,
-		p_block_end_uint)
+		pBlockStartInt,
+		pBlockEndInt)
 
 
 	headers_map := map[string]string{}
@@ -101,6 +104,7 @@ func Client_http__index_block_range(p_block_start_uint uint64,
 }
 
 //-------------------------------------------------
+
 func Client_http__index_job_updates(p_job_id_str GF_indexer_job_id,
 	p_job_updates_ch chan(map[string]interface{}),
 	p_host_port_str  string,

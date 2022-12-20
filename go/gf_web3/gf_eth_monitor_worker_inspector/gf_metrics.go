@@ -30,11 +30,13 @@ import (
 )
 
 //-------------------------------------------------
+
 type GF_metrics struct {
 	counter__http_req_num__get_blocks prometheus.Counter
 }
 
 //-------------------------------------------------
+
 func metrics__init(p_port_int int) (*GF_metrics, *gf_core.GFerror) {
 
 

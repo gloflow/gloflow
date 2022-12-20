@@ -28,7 +28,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_crypto"
+	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -45,7 +45,7 @@ func TestUsersHTTPeth(pTest *testing.T) {
 
 	//---------------------------------
 	// GENERATE_WALLET
-	privateKeyHexStr, publicKeyHexStr, addressStr, err := gf_crypto.EthGenerateKeys()
+	privateKeyHexStr, publicKeyHexStr, addressStr, err := gf_eth_core.EthGenerateKeys()
 	if err != nil {
 		runtimeSys.LogNewFun("DEBUG", "wallet generation failed", map[string]interface{}{"err": err,})
 		pTest.FailNow()
