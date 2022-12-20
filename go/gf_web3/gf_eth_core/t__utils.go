@@ -21,10 +21,25 @@ package gf_eth_core
 
 import (
 	"os"
+	"fmt"
+	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
+//-------------------------------------------------
+
+func TestGenAddress(pTest *testing.T) {
+	
+
+	privateKeyHexStr, publicKeyHexStr, addressHexStr, _ := EthGenerateKeys()
+
+	fmt.Printf("private key hex - %s\n", privateKeyHexStr)
+	fmt.Printf("public key hex  - %s\n", publicKeyHexStr)
+	fmt.Printf("address hex     - %s\n", addressHexStr)
+}
+
 //---------------------------------------------------
+
 func TgetRuntime() (*GF_runtime, *GF_metrics, error) {
 	
 	//-----------------------
