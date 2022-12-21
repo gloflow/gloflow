@@ -87,7 +87,7 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	nonceValStr    := bodyMap["data"].(map[string]interface{})["nonce_val_str"].(string)
 	userExistsBool := bodyMap["data"].(map[string]interface{})["user_exists_bool"].(bool)
 	
-	runtimeSys.LogNewFun("DEBUG", "eth preflight response", map[string]interface{}{
+	runtimeSys.LogNewFun("DEBUG", "eth preflight response...", map[string]interface{}{
 		"nonce_val_str":    nonceValStr,
 		"user_exists_bool": userExistsBool,
 	})
@@ -101,7 +101,7 @@ func TestUsersHTTPeth(pTest *testing.T) {
 	//---------------------------------
 	// TEST_USER_CREATE_HTTP
 
-	signatureStr, err := gf_crypto.EthSignData(nonceValStr, privateKeyHexStr)
+	signatureStr, err := gf_eth_core.EthSignData(nonceValStr, privateKeyHexStr)
 	if err != nil {
 		fmt.Println(err)
 		pTest.FailNow()
@@ -238,16 +238,24 @@ func TestUsersETHunit(pTest *testing.T) {
 	runtimeSys := Tinit()
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
+	
 	testUserAddressEthStr := "0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97"
 	testUserSignatureStr  := "0x07c582de2c6fb11310495815c993fa978540f0c0cdc89fd51e6fe3b8db62e913168d9706f32409f949608bcfd372d41cbea6eb75869afe2f189738b7fb764ef91c"
 	testUserNonceStr      := "gf_test_message_to_sign"
 	ctx := context.Background()
 
+	//------------------------
+	// KEY_SERVER
+	keyServerInfo, gfErr := gf_identity_core.KSinit(runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
 	//------------------
 	// NONCE_CREATE
 
 	unexistingUserIDstr := gf_core.GF_ID("")
-	_, gfErr := gf_identity_core.NonceCreate(gf_identity_core.GFuserNonceVal(testUserNonceStr),
+	_, gfErr = gf_identity_core.NonceCreate(gf_identity_core.GFuserNonceVal(testUserNonceStr),
 		unexistingUserIDstr,
 		gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 		ctx,
@@ -279,7 +287,10 @@ func TestUsersETHunit(pTest *testing.T) {
 		AuthSignatureStr:  gf_identity_core.GFauthSignature(testUserSignatureStr),
 		UserAddressETHstr: gf_identity_core.GFuserAddressETH(testUserAddressEthStr),
 	}
-	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin, ctx, runtimeSys)
+	outputLogin, gfErr := gf_identity_core.ETHpipelineLogin(inputLogin,
+		keyServerInfo,
+		ctx,
+		runtimeSys)
 	if gfErr != nil {
 		pTest.FailNow()
 	}

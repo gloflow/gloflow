@@ -25,16 +25,12 @@ import (
 	"crypto/rsa"
 	"github.com/golang-jwt/jwt"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
 
 type GFjwtTokenVal string
-
-type GFjwtClaims struct {
-	UserIdentifierStr string `json:"user_identifier_str"`
-	jwt.StandardClaims
-}
 
 //---------------------------------------------------
 // GENERATE
@@ -83,23 +79,52 @@ func jwtGenerate(pUserIdentifierStr string,
 	creationUNIXtimeF     := float64(time.Now().UnixNano())/1000000000.0
 	expirationUNIXtimeInt := int64(creationUNIXtimeF) + jwtTokenTTLsecInt
 
-
+	//----------------------
 	// CLAIMS
-	claims := GFjwtClaims{
-		pUserIdentifierStr,
-		jwt.StandardClaims{
-			ExpiresAt: expirationUNIXtimeInt,
-			Issuer:    issuerStr, 
-		},
+
+	/*
+	type StandardClaims struct {
+		Audience  string `json:"aud,omitempty"`
+		ExpiresAt int64  `json:"exp,omitempty"`
+		Id        string `json:"jti,omitempty"`
+		IssuedAt  int64  `json:"iat,omitempty"`
+		Issuer    string `json:"iss,omitempty"`
+		NotBefore int64  `json:"nbf,omitempty"`
+		Subject   string `json:"sub,omitempty"`
+	}
+	*/
+	claimsMap := map[string]interface{}{
+
+		//----------------------
+		// standard claims
+		"aud": "",                     // audience
+		"exp": expirationUNIXtimeInt,  // expires_at
+		"jti": "",                     // id
+		"iat": int(creationUNIXtimeF), // issued_at
+		"iss": issuerStr,              // issuer
+		"nbf": int(creationUNIXtimeF), // not_before
+		"sub": "",                     // subject
+
+		//----------------------
+		// GF claims
+		"user_identifier_str": pUserIdentifierStr,
+		
+		//----------------------
 	}
 
 	// claims := token.Claims.(jwt.MapClaims)
 	// claims["exp"] = time.Now().Add(10 * time.Minute)
 	// claims["authorized"] = true
 	// claims["user"] = "username"
+	
+	pRuntimeSys.LogNewFun("DEBUG", "claims create for new generated JWT", nil)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(claimsMap)
+	}
 
+	//----------------------
 
-	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), claims)
+	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), jwt.MapClaims(claimsMap))
 	jwtTokenSignedStr, err := jwtToken.SignedString(pSignKey)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to sign JWT token for user",
@@ -124,6 +149,8 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	pKeyServerInfo *GFkeyServerInfo,
 	pCtx           context .Context,
 	pRuntimeSys    *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	
+	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", nil)
 
 	// KEY_SERVER
 	publicKey, gfErr := ksClientJWTgetValidationKey(pKeyServerInfo, pRuntimeSys)
@@ -139,7 +166,6 @@ func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
 	if gfErr != nil {
 		return "", gfErr
 	}
-
 
 	if !validBool {
 		gfErr := gf_core.ErrorCreate("JWT token supplied for validation is invalid",
@@ -161,6 +187,7 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (bool, string, *gf_core.GFerror) {
 
+	// token validation
 	jwtToken, err := jwt.Parse(string(pJWTtokenVal), func(pToken *jwt.Token) (interface{}, error) {
 
 		return pPublicKey, nil
@@ -176,8 +203,25 @@ func JWTvalidate(pJWTtokenVal GFjwtTokenVal,
 		return false, "", gfErr
 	}
 
-	validBool         := jwtToken.Valid
-	userIdentifierStr := jwtToken.Claims.(*GFjwtClaims).UserIdentifierStr
+	pRuntimeSys.LogNewFun("DEBUG", "token validation has been executed...", nil)
+	if gf_core.LogsIsDebugEnabled() {
+		spew.Dump(jwtToken)
+	}
+
+	validBool := jwtToken.Valid
+	var userIdentifierStr string
+
+	if userIdentifierClaimStr, ok := jwtToken.Claims.(jwt.MapClaims)["user_identifier_str"]; ok {
+		userIdentifierStr = userIdentifierClaimStr.(string)
+	} else {
+		gfErr := gf_core.ErrorCreate("validated JWT token is missing an expected 'user_identifier_str' claim",
+			"crypto_jwt_verify_token_error",
+			map[string]interface{}{
+				"jwt_token_val_str": pJWTtokenVal,
+			},
+			err, "gf_identity_core", pRuntimeSys)
+		return false, "", gfErr
+	}
 
 	pRuntimeSys.LogNewFun("DEBUG", "validated JWT token", map[string]interface{}{"valid_bool": validBool,})
 

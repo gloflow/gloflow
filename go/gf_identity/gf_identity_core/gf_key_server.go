@@ -106,12 +106,18 @@ func KSinit(pRuntimeSys *gf_core.RuntimeSys) (*GFkeyServerInfo, *gf_core.GFerror
 	getJWTsigningKeyCh := make(chan GFjwtSigningKeyResponseCh, 10)
 
 	go func() {
-		select {
-		case validationKeyResponseCh := <- getJWTvalidationKeyCh:
-			validationKeyResponseCh <- publicKey
+		for {
+			select {
+			case validationKeyResponseCh := <- getJWTvalidationKeyCh:
 
-		case signingKeyResponseCh := <- getJWTsigningKeyCh:
-			signingKeyResponseCh <- privateKey
+				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT validation key", nil)
+				validationKeyResponseCh <- publicKey
+
+			case signingKeyResponseCh := <- getJWTsigningKeyCh:
+
+				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT signing key", nil)
+				signingKeyResponseCh <- privateKey
+			}
 		}
 	}()
 
@@ -135,7 +141,8 @@ func ksJWTgetKeysPipeline(pCtx context.Context,
 	// therefore there's no need to create it in the DB from scratch.
 	// ADD!! - have a more robust was (flag) for checking if there is a 
 	//         secret store setup for JWT secret fetching.
-	if pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
+	if pRuntimeSys.ExternalPlugins != nil && 
+		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
 
 	} else {
 		
@@ -227,7 +234,8 @@ func ksJWTgetKeysFromStore(pCtx context.Context,
 	var jwtPublicKeyPEMvalStr string  // for JWT Validation
 
 	// SECRETS_STORE
-	if pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
+	if pRuntimeSys.ExternalPlugins != nil &&
+		pRuntimeSys.ExternalPlugins.SecretGetCallback != nil {
 
 		secretNameStr := fmt.Sprintf("gf_jwt_keypair_%s", pRuntimeSys.EnvStr)
 

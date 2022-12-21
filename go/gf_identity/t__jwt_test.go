@@ -48,9 +48,8 @@ func testJWTmain(pTest *testing.T,
 	testUserAddressETH := gf_identity_core.GFuserAddressETH("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
 
 	//------------------------
-	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
-	//                      placed it independently.
-	gfErr := gf_identity_core.JWTgenerateSigningSecretIfAbsent(ctx, pRuntimeSys)
+	// KEY_SERVER
+	keyServerInfo, gfErr := gf_identity_core.KSinit(pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
@@ -60,6 +59,7 @@ func testJWTmain(pTest *testing.T,
 	// JWT_GENERATE
 	userIdentifierStr := string(testUserAddressETH)
 	jwtVal, gfErr := gf_identity_core.JWTpipelineGenerate(userIdentifierStr,
+		keyServerInfo,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -67,14 +67,14 @@ func testJWTmain(pTest *testing.T,
 	}
 	
 	// JWT_VALIDATE
-	validBool, userIdentifierStr, gfErr := gf_identity_core.JWTvalidate(jwtVal,
+	userIdentifierStr, gfErr = gf_identity_core.JWTpipelineValidate(*jwtVal,
+		keyServerInfo,
 		ctx,
 		pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
 
-	assert.True(pTest, validBool == true, "test JWT token is not valid, when it should be")
 	assert.True(pTest, userIdentifierStr == string(testUserAddressETH),
 		"test user_identifier extracted from JWT durring validation is the same as the input test eth address")
 }
