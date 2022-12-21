@@ -124,9 +124,9 @@ jobs:
           go test -v -mongodb_host=mongo
 
       # GF_TAGGER
-      - name: test gf_tagger
+      - name: test gf_bookmarks
         run: |
-          cd /home/gf/go/gf_apps/gf_tagger_lib
+          cd /home/gf/go/gf_apps/gf_tagger_lib/gf_bookmarks
           go test -v -mongodb_host=mongo
       
       # GF_LANDING_PAGE

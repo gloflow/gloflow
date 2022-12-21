@@ -73,7 +73,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	//------------------------
 	// IDENTITY_HANDLERS
 
-	keyServerInfo, gfErr := gf_identity.InitService(pHTTPmux,
+	keyServer, gfErr := gf_identity.InitService(pHTTPmux,
 		pIdentityServiceInfo,
 		pRuntimeSys)
 
@@ -85,7 +85,7 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 	// ADMIN_HANDLERS
 	
 	gfErr = initHandlers(pTemplatesPathsMap,
-		keyServerInfo,
+		keyServer,
 		pHTTPmux,
 		pServiceInfo,
 		pIdentityServiceInfo,
@@ -95,7 +95,8 @@ func InitNewService(pTemplatesPathsMap map[string]string,
 		return gfErr
 	}
 
-	gfErr = initHandlersUsers(pHTTPmux,
+	gfErr = initHandlersUsers(keyServer,
+		pHTTPmux,
 		pServiceInfo,
 		pIdentityServiceInfo,
 		pLocalHub,

@@ -41,6 +41,7 @@ type gfTemplates struct {
 
 func initHandlers(pTemplatesPathsMap map[string]string,
 	pAuthLoginURLstr string,
+	pKeyServer       *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux         *http.ServeMux,
 	pRuntimeSys      *gf_core.RuntimeSys) *gf_core.GFerror {
 	
@@ -70,6 +71,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		StoreRunBool:    true,
 		SentryHub:       nil,
 		AuthLoginURLstr: pAuthLoginURLstr,
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

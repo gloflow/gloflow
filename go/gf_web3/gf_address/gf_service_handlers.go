@@ -29,7 +29,8 @@ import (
 
 //-------------------------------------------------
 
-func InitHandlers(pHTTPmux *http.ServeMux,
+func InitHandlers(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux    *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
@@ -44,10 +45,14 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// RPC_HANDLER_RUNTIME
 	rpcHandlerRuntime := &gf_rpc_lib.GFrpcHandlerRuntime {
-		Mux:          pHTTPmux,
-		Metrics:      metrics,
-		StoreRunBool: true,
-		SentryHub:    nil,
+		Mux:           pHTTPmux,
+		Metrics:       metrics,
+		StoreRunBool:  true,
+		SentryHub:     nil,
+
+		// url redirected too if user not logged in and tries to access auth handler
+		AuthLoginURLstr: "/landing/main",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

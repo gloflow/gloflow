@@ -118,7 +118,7 @@ func Run(pConfig *GFconfig,
 		//         individually if they so desire.
 		EnableMFArequireConfirmForLoginBool: false,
 	}
-	_, gfErr := gf_identity.InitService(gfSoloHTTPmux,
+	keyServer, gfErr := gf_identity.InitService(gfSoloHTTPmux,
 		gfIdentityServiceInfo,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -302,7 +302,8 @@ func Run(pConfig *GFconfig,
 	web3Config := &gf_eth_core.GF_config{
 		AlchemyAPIkeyStr: pConfig.AlchemyAPIkeyStr,
 	}
-	gf_web3_lib.InitService(gfSoloHTTPmux,
+	gf_web3_lib.InitService(keyServer,
+		gfSoloHTTPmux,
 		web3Config,
 		imagesJobsMngrCh,
 		pRuntimeSys)

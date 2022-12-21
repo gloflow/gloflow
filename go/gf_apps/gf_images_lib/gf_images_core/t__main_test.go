@@ -41,8 +41,8 @@ func TestMain(m *testing.M) {
 func TestImageTransform(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_core_tests",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_images_core_tests",
+		LogFun:         logFun,
 	}
 
 	testImageLocalFilePathStr       := "./../tests_data/test_image_03.jpeg"

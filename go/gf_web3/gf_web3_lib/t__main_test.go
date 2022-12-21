@@ -21,11 +21,9 @@ package gf_web3_lib
 
 import (
 	"os"
-	// "fmt"
 	"time"
 	"testing"
 	"net/http"
-	// "github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_identity"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
@@ -46,12 +44,16 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	// GF_IDENTITY_SERVICE
+	testIdentityServicePortInt := 2001
+	keyServer := gf_identity.TestStartService(testIdentityServicePortInt,
+		runtime.RuntimeSys)
+
 	// GF_WEB3_MONITOR_SERVICE
 	testWeb3MonitorServicePortInt := 2000
 	go func() {
 
 		HTTPmux := http.NewServeMux()
-
 
 		//------------------------
 		// IMAGES_JOBS_MNGR
@@ -69,8 +71,8 @@ func TestMain(m *testing.M) {
 			AlchemyAPIkeyStr: os.Getenv("GF_ALCHEMY_SERVICE_ACC__API_KEY"),
 		}
 
-		
-		InitService(HTTPmux,
+		InitService(keyServer,
+			HTTPmux,
 			config,
 			jobsMngr,
 			runtime.RuntimeSys)
@@ -78,13 +80,7 @@ func TestMain(m *testing.M) {
 		gf_rpc_lib.ServerInitWithMux("gf_web3_test", testWeb3MonitorServicePortInt, HTTPmux)
 	}()
 
-	// GF_IDENTITY_SERVICE
-	testIdentityServicePortInt := 2001
-	go func() {
-
-		gf_identity.TestStartService(testIdentityServicePortInt,
-			runtime.RuntimeSys)
-	}()
+	
 
 	time.Sleep(2*time.Second) // let services startup
 

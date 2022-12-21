@@ -21,13 +21,12 @@ package gf_web3_lib
 
 import (
 	"fmt"
-	// "time"
 	"context"
 	"net/http"
 	log "github.com/sirupsen/logrus"
-	// "github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_blocks"
@@ -39,14 +38,16 @@ import (
 )
 
 //-------------------------------------------------
-func InitService(pHTTPmux *http.ServeMux,
+func InitService(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux          *http.ServeMux,
 	pConfig           *gf_eth_core.GF_config,
 	pImagesJobsMngrCh chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys       *gf_core.RuntimeSys) {
 
 	//-------------
 	// ADDRESS
-	gfErr := gf_address.InitHandlers(pHTTPmux,
+	gfErr := gf_address.InitHandlers(pKeyServer,
+		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
@@ -54,7 +55,8 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// NFT
-	gfErr = gf_nft.InitHandlers(pHTTPmux,
+	gfErr = gf_nft.InitHandlers(pKeyServer,
+		pHTTPmux,
 		pConfig,
 		pImagesJobsMngrCh,
 		pRuntimeSys)
@@ -66,11 +68,11 @@ func InitService(pHTTPmux *http.ServeMux,
 }
 
 //-------------------------------------------------
-func Run_service(p_runtime *gf_eth_core.GF_runtime) {
+func RunService(pRuntime *gf_eth_core.GF_runtime) {
 
 	//-------------
 	/*// SENTRY
-	sentry_endpoint_str := p_runtime.Config.Sentry_endpoint_str
+	sentry_endpoint_str := pRuntime.Config.Sentry_endpoint_str
 	sentry_samplerate_f := 1.0
 	sentry_trace_handlers_map := map[string]bool{
 		"GET /gfethm/v1/block/index":   true,
@@ -91,7 +93,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 
 	defer sentry.Flush(2 * time.Second)*/
 
-	sentry_endpoint_uri_str := p_runtime.Config.Sentry_endpoint_str
+	sentry_endpoint_uri_str := pRuntime.Config.Sentry_endpoint_str
 	gf_eth_core.SentryInit(sentry_endpoint_uri_str)
 
 	//-------------
@@ -104,18 +106,18 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	}
 
 	
-	gf_eth_blocks.Init_continuous_metrics(metrics, p_runtime)
-	gf_eth_tx.Init_continuous_metrics(metrics, p_runtime)
+	gf_eth_blocks.Init_continuous_metrics(metrics, pRuntime)
+	gf_eth_tx.Init_continuous_metrics(metrics, pRuntime)
 
 	// causing errors
-	// gf_eth_core.Eth_tx_trace__init_continuous_metrics(metrics, p_runtime)
+	// gf_eth_core.Eth_tx_trace__init_continuous_metrics(metrics, pRuntime)
 	
-	gf_eth_core.Eth_peers__init_continuous_metrics(metrics, p_runtime)
+	gf_eth_core.Eth_peers__init_continuous_metrics(metrics, pRuntime)
 
 	//-------------
 	// QUEUE
-	if p_runtime.Config.Events_consume_bool {
-		queue_name_str  := p_runtime.Config.AWS_SQS_queue_str
+	if pRuntime.Config.Events_consume_bool {
+		queue_name_str  := pRuntime.Config.AWS_SQS_queue_str
 		queue_info, err := Event__init_queue(queue_name_str, metrics)
 		if err != nil {
 			fmt.Println("failed to initialize event queue")
@@ -125,17 +127,17 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 		// QUEUE_START_CONSUMING
 
 		ctx := context.Background()
-		event__start_sqs_consumer(queue_info, ctx, metrics, p_runtime)
+		eventStartSQSconsumer(queue_info, ctx, metrics, pRuntime)
 	}
 
 	//-------------
 	// WORKER_DISCOVERY
-	get_hosts_fn, _ := gf_eth_worker.Discovery__init(p_runtime)
+	get_hosts_fn, _ := gf_eth_worker.Discovery__init(pRuntime)
 	
 	//-------------
 	// INDEXER
 
-	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gfErr := gf_eth_indexer.Init(get_hosts_fn, metrics, p_runtime)
+	indexer_cmds_ch, indexer_job_updates_new_consumer_ch, gfErr := gf_eth_indexer.Init(get_hosts_fn, metrics, pRuntime)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -146,7 +148,7 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 		indexer_cmds_ch,
 		indexer_job_updates_new_consumer_ch,
 		metrics,
-		p_runtime)
+		pRuntime)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -156,9 +158,9 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 	gf_eth_core.Metrics__init_server(port_metrics_int)
 
 	//-------------
-	port_str := p_runtime.Config.Port_str
+	port_str := pRuntime.Config.Port_str
 
-	// p_runtime.runtimeSys.LogFun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
+	// pRuntime.runtimeSys.LogFun("INFO", fmt.Sprintf("STARTING HTTP SERVER - PORT - %s", port_str))
 	log.WithFields(log.Fields{"port": port_str,}).Info("STARTING HTTP SERVER")
 
 	sentry_handler := sentryhttp.New(sentryhttp.Options{}).Handle(http.DefaultServeMux)
@@ -166,8 +168,8 @@ func Run_service(p_runtime *gf_eth_core.GF_runtime) {
 
 	if http_err != nil {
 		msg_str := fmt.Sprintf("cant start listening on port - %s", port_str)
-		p_runtime.RuntimeSys.LogFun("ERROR", msg_str)
-		p_runtime.RuntimeSys.LogFun("ERROR", fmt.Sprint(http_err))
+		pRuntime.RuntimeSys.LogFun("ERROR", msg_str)
+		pRuntime.RuntimeSys.LogFun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

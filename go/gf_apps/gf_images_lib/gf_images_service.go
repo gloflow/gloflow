@@ -55,6 +55,8 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	//-------------
 	// S3
+	// REMOVE!! - usage of AWS creds here, they should be discovered
+	//            by the AWS client from the environment.
 	s3Info, gfErr := gf_aws.S3init(pServiceInfo.AWS_access_key_id_str,
 		pServiceInfo.AWS_secret_access_key_str,
 		pServiceInfo.AWS_token_str,
@@ -97,6 +99,7 @@ func InitService(pHTTPmux *http.ServeMux,
 
 	// flows__templates_dir_path_str := pServiceInfo.Templates_dir_paths_map["flows_str"]
 	gfErr = gf_images_flows.InitHandlers(pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
 		pHTTPmux,
 		pServiceInfo.Templates_paths_map,
 		jobsMngrCh,
@@ -130,6 +133,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	//-------------
 	// HANDLERS
 	gfErr = gf_images_service.InitHandlers(pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
 		pHTTPmux,
 		jobsMngrCh,
 		pConfig,

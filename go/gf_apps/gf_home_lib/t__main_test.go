@@ -48,13 +48,20 @@ func TestMain(m *testing.M) {
 		"gf_home_main": "./../../../web/src/gf_apps/gf_home/templates/gf_home_main/gf_home_main.html",
 	}
 
+	// GF_IDENTITY_SERVICE
+	testIdentityServicePortInt := 2001
+	keyServer := gf_identity.TestStartService(testIdentityServicePortInt,
+		runtimeSys)
+
 	// GF_HOME_SERVICE
 	testPortInt := 2000
 	go func() {
 
 		HTTPmux := http.NewServeMux()
 
-		serviceInfo := &GFserviceInfo{}
+		serviceInfo := &GFserviceInfo{
+			KeyServer: keyServer,
+		}
 		InitService(templatesPathsMap,
 			serviceInfo,
 			HTTPmux,
@@ -62,13 +69,7 @@ func TestMain(m *testing.M) {
 		gf_rpc_lib.ServerInitWithMux("gf_home_test", testPortInt, HTTPmux)
 	}()
 
-	// GF_IDENTITY_SERVICE
-	testIdentityServicePortInt := 2001
-	go func() {
-
-		gf_identity.TestStartService(testIdentityServicePortInt,
-			runtimeSys)
-	}()
+	
 
 	time.Sleep(2*time.Second) // let services startup
 
@@ -154,8 +155,8 @@ func TestHomeViz(pTest *testing.T) {
 func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_home_test",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_home_test",
+		LogFun:         logFun,
 	}
 
 	// TEMPLATES

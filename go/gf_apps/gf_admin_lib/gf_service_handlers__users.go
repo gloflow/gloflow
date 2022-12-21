@@ -33,7 +33,8 @@ import (
 
 //------------------------------------------------
 
-func initHandlersUsers(pHTTPmux *http.ServeMux,
+func initHandlersUsers(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux             *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_core.GFserviceInfo,
 	pLocalHub            *sentry.Hub,
@@ -59,6 +60,7 @@ func initHandlersUsers(pHTTPmux *http.ServeMux,
 		StoreRunBool:    true,
 		SentryHub:       pLocalHub,
 		AuthLoginURLstr: "/v1/admin/login_ui",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

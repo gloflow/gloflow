@@ -32,6 +32,7 @@ import (
 //-------------------------------------------------
 
 func InitHandlers(pAuthLoginURLstr string,
+	pKeyServer         *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux           *http.ServeMux,
 	pTemplatesPathsMap map[string]string,
 	pJobsMngrCh        chan gf_images_jobs_core.JobMsg,
@@ -65,6 +66,7 @@ func InitHandlers(pAuthLoginURLstr string,
 		StoreRunBool:    true,
 		SentryHub:       nil,
 		AuthLoginURLstr: pAuthLoginURLstr,
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

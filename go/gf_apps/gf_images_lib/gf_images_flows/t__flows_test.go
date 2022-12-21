@@ -31,84 +31,85 @@ import (
 
 //---------------------------------------------------
 
-func Test__get_all(p_test *testing.T) {
+func TestGetAll(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_flows_tests",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_images_flows_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
 	}
 
 	// MONGODB
-	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
-	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
-	test__mongodb_db_name_str := "gf_tests"
-	mongodb_db, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, nil, runtimeSys)
+	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
+	testMongodbDBnameStr := "gf_tests"
+	mongodbDB, _, gfErr  := gf_core.MongoConnectNew(testMongodbURLstr, testMongodbDBnameStr, nil, runtimeSys)
 	if gfErr != nil {
 		fmt.Println(gfErr.Error)
-		p_test.Fail()
+		pTest.Fail()
 	}
-	mongodb_coll := mongodb_db.Collection("data_symphony")
-	runtimeSys.Mongo_db   = mongodb_db
-	runtimeSys.Mongo_coll = mongodb_coll
+	mongodbColl := mongodbDB.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongodbDB
+	runtimeSys.Mongo_coll = mongodbColl
 	
 	//------------------
 	ctx := context.Background()
 
 	//------------------
 	// CREATE_TEST_IMAGES
-	test_img_0 := &gf_images_core.GFimage{
+	testImg0 := &gf_images_core.GFimage{
 		IDstr: "test_img_0",
 		T_str: "img",
 		FlowsNamesLst: []string{"flow_0"},
 	}
-	test_img_1 := &gf_images_core.GFimage{
+	testImg1 := &gf_images_core.GFimage{
 		IDstr: "test_img_1",
 		T_str: "img",
 		FlowsNamesLst: []string{"flow_0"},
 	}
-	test_img_2 := &gf_images_core.GFimage{
+	testImg2 := &gf_images_core.GFimage{
 		IDstr: "test_img_2",
 		T_str: "img",
 		FlowsNamesLst: []string{"flow_0", "flow_1"},
 	}
-	test_img_3 := &gf_images_core.GFimage{
+	testImg3 := &gf_images_core.GFimage{
 		IDstr: "test_img_3",
 		T_str: "img",
 		FlowsNamesLst: []string{"flow_1", "flow_2"},
 	}
-	gfErr = gf_images_core.DBputImage(test_img_0, ctx, runtimeSys)
+	gfErr = gf_images_core.DBputImage(testImg0, ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(test_img_1, ctx, runtimeSys)
+	gfErr = gf_images_core.DBputImage(testImg1, ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(test_img_2, ctx, runtimeSys)
+	gfErr = gf_images_core.DBputImage(testImg2, ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
-	gfErr = gf_images_core.DBputImage(test_img_3, ctx, runtimeSys)
+	gfErr = gf_images_core.DBputImage(testImg3, ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
  
 	//------------------
 
 
-	all_flows_names_lst, gfErr := pipelineGetAll(ctx, runtimeSys)
+	allFlowsNamesLst, gfErr := pipelineGetAll(ctx, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
-	spew.Dump(all_flows_names_lst)
+	spew.Dump(allFlowsNamesLst)
 
-	assert.True(p_test, len(all_flows_names_lst) == 3, "3 flows in total should have been discovered")
-	assert.True(p_test, all_flows_names_lst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
-	assert.True(p_test, all_flows_names_lst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
-	assert.True(p_test, all_flows_names_lst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
+	assert.True(pTest, len(allFlowsNamesLst) == 3, "3 flows in total should have been discovered")
+	assert.True(pTest, allFlowsNamesLst[0]["flow_name_str"].(string) == "flow_0", "first flow should be flow_0")
+	assert.True(pTest, allFlowsNamesLst[1]["flow_name_str"].(string) == "flow_1", "first flow should be flow_1")
+	assert.True(pTest, allFlowsNamesLst[2]["flow_name_str"].(string) == "flow_2", "first flow should be flow_2")
 
-	assert.True(p_test, all_flows_names_lst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
-	assert.True(p_test, all_flows_names_lst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
-	assert.True(p_test, all_flows_names_lst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
+	assert.True(pTest, allFlowsNamesLst[0]["flow_imgs_count_int"].(int32) == 3, "first flow should have a count of 3")
+	assert.True(pTest, allFlowsNamesLst[1]["flow_imgs_count_int"].(int32) == 2, "second flow should have a count of 2")
+	assert.True(pTest, allFlowsNamesLst[2]["flow_imgs_count_int"].(int32) == 1, "third flow should have a count of 1")
 }

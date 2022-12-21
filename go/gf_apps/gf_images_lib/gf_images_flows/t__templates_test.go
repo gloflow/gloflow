@@ -29,12 +29,13 @@ import (
 )
 
 var logFun func(string,string)
+var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _  = gf_core.LogsInit()
+	logFun, logNewFun  = gf_core.LogsInit()
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -42,11 +43,12 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
-func Test__templates(p_test *testing.T) {
+func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_flows_tests",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_images_flows_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
 	}
 
 	// TEMPLATES
@@ -54,9 +56,9 @@ func Test__templates(p_test *testing.T) {
 		"gf_images_flows_browser": "./../../../../web/src/gf_apps/gf_images/templates/gf_images_flows_browser/gf_images_flows_browser.html",
 	}
 	
-	gf_templates, gfErr := tmplLoad(templatesPathsMap, runtimeSys)
+	gfTemplates, gfErr := tmplLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
 	imagesPagesLst := [][]*gf_images_core.GFimage{
@@ -74,17 +76,17 @@ func Test__templates(p_test *testing.T) {
 		},
 	}
 
-	flow_name_str      := "test_flow" 
-	flow_pages_num_int := int64(6)
-	template_rendered_str, gfErr := renderTemplate(flow_name_str,
+	flowNameStr     := "test_flow" 
+	flowPagesNumInt := int64(6)
+	templateRenderedStr, gfErr := renderTemplate(flowNameStr,
 		imagesPagesLst,
-		flow_pages_num_int,
-		gf_templates.flows_browser__tmpl,
-		gf_templates.flows_browser__subtemplates_names_lst,
+		flowPagesNumInt,
+		gfTemplates.flows_browser__tmpl,
+		gfTemplates.flows_browser__subtemplates_names_lst,
 		runtimeSys)
 	if gfErr != nil {
-		p_test.Fail()
+		pTest.Fail()
 	}
 
-	fmt.Println(template_rendered_str)
+	fmt.Println(templateRenderedStr)
 }

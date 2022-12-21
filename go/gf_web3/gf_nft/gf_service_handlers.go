@@ -32,7 +32,8 @@ import (
 )
 
 //-------------------------------------------------
-func InitHandlers(pHTTPmux *http.ServeMux,
+func InitHandlers(pKeyServer *gf_identity_core.GFkeyServerInfo,
+	pHTTPmux          *http.ServeMux,
 	pConfig           *gf_eth_core.GF_config,
 	pImagesJobsMngrCh chan gf_images_jobs_core.JobMsg,
 	pRuntimeSys       *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -55,6 +56,10 @@ func InitHandlers(pHTTPmux *http.ServeMux,
 		Metrics:      metricsForHandlers,
 		StoreRunBool: true,
 		SentryHub:    nil,
+
+		// url redirected too if user not logged in and tries to access auth handler
+		AuthLoginURLstr: "/landing/main",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------

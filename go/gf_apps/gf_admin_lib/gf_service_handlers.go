@@ -34,7 +34,7 @@ import (
 //------------------------------------------------
 
 func initHandlers(pTemplatesPathsMap map[string]string,
-	pKeyServerInfo       *gf_identity_core.GFkeyServerInfo,
+	pKeyServer           *gf_identity_core.GFkeyServerInfo,
 	pHTTPmux             *http.ServeMux,
 	pServiceInfo         *GFserviceInfo,
 	pIdentityServiceInfo *gf_identity_core.GFserviceInfo,
@@ -68,6 +68,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		SentryHub:       pLocalHub,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
 		AuthLoginURLstr: "/v1/admin/login_ui",
+		AuthKeyServer:   pKeyServer,
 	}
 
 	//---------------------
@@ -80,7 +81,7 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 				validBool, _, gfErr := gf_identity_core.Validate(pReq,
-					pKeyServerInfo,
+					pKeyServer,
 					rpcHandlerRuntime.AuthSubsystemTypeStr,
 					pCtx,
 					pRuntimeSys)

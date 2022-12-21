@@ -33,12 +33,13 @@ import (
 //---------------------------------------------------
 
 var logFun func(string, string)
+var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _ = gf_core.LogsInit()
+	logFun, logNewFun = gf_core.LogsInit()
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -49,8 +50,9 @@ func TestMain(m *testing.M) {
 func Test__basic_image_ops(p_test *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_ops_tests",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_images_ops_tests",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
 	}
 
 	// MONGODB

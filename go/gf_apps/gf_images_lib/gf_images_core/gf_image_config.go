@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -47,6 +48,7 @@ type GFserviceInfo struct {
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users when email is confirmed.
 	AuthLoginURLstr string
+	KeyServer       *gf_identity_core.GFkeyServerInfo
 
 	// NEW_STORAGE_ENGINE - flag indicating if the new image storage engine should be used
 	UseNewStorageEngineBool bool

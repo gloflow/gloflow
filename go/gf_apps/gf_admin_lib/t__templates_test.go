@@ -45,8 +45,8 @@ func TestMain(m *testing.M) {
 func TestTemplates(pTest *testing.T) {
 
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_admin_test",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_admin_test",
+		LogFun:         logFun,
 	}
 
 	// TEMPLATES

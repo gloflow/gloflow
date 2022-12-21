@@ -24,6 +24,7 @@ import (
 	"flag"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //-------------------------------------------------
@@ -33,6 +34,8 @@ type GFserviceInfo struct {
 	// AUTH_LOGIN_URL - url of the login page to which the system should
 	//                  redirect users after certain operations
 	AuthLoginURLstr string
+
+	KeyServer *gf_identity_core.GFkeyServerInfo
 }
 
 //-------------------------------------------------
@@ -55,6 +58,7 @@ func InitService(pTemplatesPathsMap map[string]string,
 	// HANDLERS
 	gfErr := initHandlers(pTemplatesPathsMap,
 		pServiceInfo.AuthLoginURLstr,
+		pServiceInfo.KeyServer,
 		pHTTPmux,
 		pRuntimeSys)
 	if gfErr != nil {
