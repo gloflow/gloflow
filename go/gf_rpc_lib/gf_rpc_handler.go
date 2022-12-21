@@ -92,9 +92,9 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	if pHandlerRuntime.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
 		
 	} else {
-		// BUILTIN_AUTH
-		// set the builtin auth_subsystem type as the default value if another value is not set
-		pHandlerRuntime.AuthSubsystemTypeStr = gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN
+		// USERPASS_AUTH
+		// set the userpass auth_subsystem type as the default value if another value is not set
+		pHandlerRuntime.AuthSubsystemTypeStr = gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS
 	}
 
 	// HANDLER_FUN
@@ -111,13 +111,13 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 	switch pHandlerRuntime.AuthSubsystemTypeStr {
 
 	//------------------
-	// BUILTIN
-	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+	// USERPASS
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 
 		if pAuthBool {
 
 			//-------------------------------------------------
-			builtinHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
+			userpassHandlerFun := func(pResp http.ResponseWriter, pReq *http.Request) {
 				
 				ctx := pReq.Context()
 				pathStr := pReq.URL.Path
@@ -163,7 +163,7 @@ func CreateHandlerHTTPwithAuth(pAuthBool bool, // if handler uses authentication
 
 			//-------------------------------------------------
 
-			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(builtinHandlerFun))
+			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(userpassHandlerFun))
 
 		} else {
 			pHandlerRuntime.Mux.Handle(pPathStr, http.HandlerFunc(appHandlerFun))

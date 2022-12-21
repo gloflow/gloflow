@@ -53,6 +53,13 @@ type GFauthenticator struct {
 
 //-------------------------------------------------------------
 
+func GetJWTpublicKey(pCtx context.Context,
+	pRuntimeSys *gf_core.RuntimeSys) {
+
+}
+
+//-------------------------------------------------------------
+
 func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("INFO", "initializing Auth0...", nil)

@@ -271,9 +271,9 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	
 	//--------------------
 	// CLI_ARGUMENT - AUTH_SUBSYSTEM_TYPE
-	authSubsystemTypeDefaultStr := "builtin"
+	authSubsystemTypeDefaultStr := "userpass"
 	cmdBase.PersistentFlags().String("auth_subsystem_type", authSubsystemTypeDefaultStr,
-		"auth subsystem to use - builtin|auth0")
+		"auth subsystem to use - userpass|auth0")
 	err = viper.BindPFlag("auth_subsystem_type", cmdBase.PersistentFlags().Lookup("auth_subsystem_type"))
 	if err != nil {
 		fmt.Println("failed to bind CLI arg to Viper config")

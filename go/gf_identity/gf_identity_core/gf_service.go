@@ -22,8 +22,8 @@ package gf_identity_core
 //---------------------------------------------------
 
 const (
-	GF_AUTH_SUBSYSTEM_TYPE__BUILTIN = "builtin"
-	GF_AUTH_SUBSYSTEM_TYPE__AUTH0   = "auth0"
+	GF_AUTH_SUBSYSTEM_TYPE__USERPASS = "userpass"
+	GF_AUTH_SUBSYSTEM_TYPE__AUTH0    = "auth0"
 )
 
 //---------------------------------------------------
@@ -37,7 +37,7 @@ type GFserviceInfo struct {
 	DomainBaseStr string
 
 	//------------------------
-	// AUTH_SUBSYSTEM_TYPE - builtin | auth0
+	// AUTH_SUBSYSTEM_TYPE - userpass | auth0
 	AuthSubsystemTypeStr string
 
 	//------------------------

@@ -47,8 +47,8 @@ func Validate(pReq *http.Request,
 	switch pAuthSubsystemTypeStr {
 	
 	//---------------------
-	// BUILTIN
-	case GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+	// USERPASS
+	case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 		
 		JWTtokenValStr := sessionDataStr
 

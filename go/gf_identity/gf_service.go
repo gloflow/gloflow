@@ -54,7 +54,7 @@ func InitService(pHTTPmux *http.ServeMux,
 		return nil, gfErr
 	}
 
-	// ETH - these handlers are always enabled, whether builtin or auth0 auth subsystem is activated
+	// ETH - these handlers are always enabled, whether userpass|auth0 auth subsystem is activated
 	gfErr = initHandlersEth(keyServerInfo, pHTTPmux, pServiceInfo, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
@@ -63,7 +63,7 @@ func InitService(pHTTPmux *http.ServeMux,
 	switch pServiceInfo.AuthSubsystemTypeStr {
 
 	// USERPASS
-	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__BUILTIN:
+	case gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
 		
 		gfErr = initHandlersUserpass(keyServerInfo,
 			pHTTPmux,
