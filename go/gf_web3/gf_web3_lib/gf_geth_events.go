@@ -33,7 +33,7 @@ import (
 )
 
 //-------------------------------------------------
-type GF_queue_info struct {
+type GFqueueInfo struct {
 	name_str   string
 	url_str    string
 	aws_client *sqs.SQS
@@ -42,7 +42,7 @@ type GF_queue_info struct {
 //-------------------------------------------------
 // INIT_QUEUE
 func Event__init_queue(p_queue_name_str string,
-	p_metrics *gf_eth_core.GF_metrics) (*GF_queue_info, error) {
+	pMetrics *gf_eth_core.GF_metrics) (*GFqueueInfo, error) {
 
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
@@ -67,8 +67,8 @@ func Event__init_queue(p_queue_name_str string,
 		}
 		
 		// METRICS
-		if p_metrics != nil {
-			p_metrics.Errs_num__counter.Inc()
+		if pMetrics != nil {
+			pMetrics.Errs_num__counter.Inc()
 		}
 
 		return nil, err
@@ -76,7 +76,7 @@ func Event__init_queue(p_queue_name_str string,
 
 	// fmt.Println(result_url)
 
-	queue_info := &GF_queue_info{
+	queue_info := &GFqueueInfo{
 		name_str:   p_queue_name_str,
 		url_str:    *result_url.QueueUrl,
 		aws_client: svc,
@@ -85,24 +85,24 @@ func Event__init_queue(p_queue_name_str string,
 }
 
 //-------------------------------------------------
-func event__start_sqs_consumer(p_queue_info *GF_queue_info,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) {
+func eventStartSQSconsumer(pQueueInfo *GFqueueInfo,
+	pCtx     context.Context,
+	pMetrics *gf_eth_core.GF_metrics,
+	pRuntime *gf_eth_core.GF_runtime) {
 
 	go func() {
 
 		for {
-			Event__process_from_sqs(p_queue_info, p_ctx, p_metrics, p_runtime)
+			EventProcessFromSQS(pQueueInfo, pCtx, pMetrics, pRuntime)
 		}
 	}()
 }
 
 //-------------------------------------------------
-func Event__process_from_sqs(p_queue_info *GF_queue_info,
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) {
+func EventProcessFromSQS(pQueueInfo *GFqueueInfo,
+	pCtx     context.Context,
+	pMetrics *gf_eth_core.GF_metrics,
+	pRuntime *gf_eth_core.GF_runtime) {
 
 	// 20s - before this call returns if no message is present.
 	// Must be >= 0 and <= 20
@@ -110,8 +110,8 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 
 	// SQS_RECEIVE_MESSAGE
-	result, err := p_queue_info.aws_client.ReceiveMessage(&sqs.ReceiveMessageInput{
-		QueueUrl:       aws.String(p_queue_info.url_str),
+	result, err := pQueueInfo.aws_client.ReceiveMessage(&sqs.ReceiveMessageInput{
+		QueueUrl:       aws.String(pQueueInfo.url_str),
 		AttributeNames: aws.StringSlice([]string{
 			"SentTimestamp",
 		}),
@@ -127,11 +127,11 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 		WaitTimeSeconds: aws.Int64(int64(timeout_sec_int)),
 	})
 	if err != nil {
-		panic(fmt.Sprintf("Unable to receive message from queue - %s - %v", p_queue_info.name_str, err))
+		panic(fmt.Sprintf("Unable to receive message from queue - %s - %v", pQueueInfo.name_str, err))
 
 		// METRICS
-		if p_metrics != nil {
-			p_metrics.Errs_num__counter.Inc()
+		if pMetrics != nil {
+			pMetrics.Errs_num__counter.Inc()
 		}
 	}
 
@@ -146,7 +146,7 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		//---------------------------
 		// EVENT__PROCESS
-		gfErr := event__process(event_map, p_ctx, p_metrics, p_runtime)
+		gfErr := event__process(event_map, pCtx, pMetrics, pRuntime)
 		if gfErr != nil {
 			// attempt to process remaining messages
 			continue
@@ -155,16 +155,16 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 
 		// DELETE_MESSAGE
 		// https://docs.aws.amazon.com/sdk-for-go/api/service/sqs/#SQS.DeleteMessage
-		_, err := p_queue_info.aws_client.DeleteMessage(&sqs.DeleteMessageInput{
-			QueueUrl:      aws.String(p_queue_info.url_str),
+		_, err := pQueueInfo.aws_client.DeleteMessage(&sqs.DeleteMessageInput{
+			QueueUrl:      aws.String(pQueueInfo.url_str),
 			ReceiptHandle: m.ReceiptHandle,
 		})
 		if err != nil {
-			panic(fmt.Sprintf("failed to delete message from queue - %s - %v", p_queue_info.name_str, err))
+			panic(fmt.Sprintf("failed to delete message from queue - %s - %v", pQueueInfo.name_str, err))
 
 			// METRICS
-			if p_metrics != nil {
-				p_metrics.Errs_num__counter.Inc()
+			if pMetrics != nil {
+				pMetrics.Errs_num__counter.Inc()
 			}
 		}
 	}
@@ -173,9 +173,9 @@ func Event__process_from_sqs(p_queue_info *GF_queue_info,
 //-------------------------------------------------
 // GF_ETH_WORKER_EVENT
 func event__process(p_event_map map[string]interface{},
-	p_ctx     context.Context,
-	p_metrics *gf_eth_core.GF_metrics,
-	p_runtime *gf_eth_core.GF_runtime) *gf_core.GFerror {
+	pCtx     context.Context,
+	pMetrics *gf_eth_core.GF_metrics,
+	pRuntime *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 
 
@@ -205,15 +205,15 @@ func event__process(p_event_map map[string]interface{},
 		}
 
 		// DB_WRITE
-		gfErr := gf_eth_core.Eth_peers__db__write(peer__new_lifecycle, p_ctx, p_metrics, p_runtime)
+		gfErr := gf_eth_core.Eth_peers__db__write(peer__new_lifecycle, pCtx, pMetrics, pRuntime)
 		if gfErr != nil {
 			return gfErr
 		}
 	}
 
 	// METRICS
-	if p_metrics != nil {
-		p_metrics.SQS__msgs_num__counter.Inc()
+	if pMetrics != nil {
+		pMetrics.SQS__msgs_num__counter.Inc()
 	}
 
 	return nil

@@ -34,18 +34,18 @@ import (
 )
 
 //-------------------------------------------------
-func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) []string,
-	p_indexer_cmds_ch                     gf_eth_indexer.GF_indexer_ch,
-	p_indexer_job_updates_new_consumer_ch gf_eth_indexer.GF_job_update_new_consumer_ch,
-	p_metrics                             *gf_eth_core.GF_metrics,
-	pRuntime                              *gf_eth_core.GF_runtime) *gf_core.GFerror {
+func InitHandlers(pGetHostsFun func(context.Context, *gf_eth_core.GF_runtime) []string,
+	pIndexerCmdsCh                  gf_eth_indexer.GF_indexer_ch,
+	pIndexerJobUpdatesNewConsumerCh gf_eth_indexer.GF_job_update_new_consumer_ch,
+	pMetrics                        *gf_eth_core.GF_metrics,
+	pRuntime                        *gf_eth_core.GF_runtime) *gf_core.GFerror {
 
 	//---------------------
 	// INDEXER
 
-	gf_eth_indexer.Init_handlers(p_indexer_cmds_ch,
-		p_indexer_job_updates_new_consumer_ch,
-		p_metrics,
+	gf_eth_indexer.Init_handlers(pIndexerCmdsCh,
+		pIndexerJobUpdatesNewConsumerCh,
+		pMetrics,
 		pRuntime)
 
 	//---------------------
@@ -113,10 +113,10 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			spanPipeline := sentry.StartSpan(spanRoot.Context(), "tx_trace_plot")
 
 			plot_svg_str, gfErr := gf_eth_tx.Trace__plot(txHexStr,
-				p_get_hosts_fn,
+				pGetHostsFun,
 				spanPipeline.Context(),
 				pRuntime.Py_plugins,
-				p_metrics,
+				pMetrics,
 				pRuntime)
 			
 			spanPipeline.Finish()
@@ -166,7 +166,7 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			// PIPELINE
 
 			// ABI_DEFS
-			abisDefsMap, gfErr := gf_eth_contract.Eth_abi__get_defs(ctx, p_metrics, pRuntime)
+			abisDefsMap, gfErr := gf_eth_contract.Eth_abi__get_defs(ctx, pMetrics, pRuntime)
 			if gfErr != nil {
 				return nil, gfErr
 			}
@@ -174,10 +174,10 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 			spanPipeline := sentry.StartSpan(ctx, "blocks_get_from_workers")
 
 			blockFromWorkersMap, gfErr := gf_eth_blocks.Get_from_workers__pipeline(blockNumInt,
-				p_get_hosts_fn,
+				pGetHostsFun,
 				abisDefsMap,
 				spanPipeline.Context(),
-				p_metrics,
+				pMetrics,
 				pRuntime)
 			
 			spanPipeline.Finish()
@@ -227,12 +227,12 @@ func InitHandlers(p_get_hosts_fn func(context.Context, *gf_eth_core.GF_runtime) 
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			// METRICS
-			if p_metrics != nil {
-				p_metrics.Peers__http_req_num__get_peers__counter.Inc()
+			if pMetrics != nil {
+				pMetrics.Peers__http_req_num__get_peers__counter.Inc()
 			}
 
 			// PEERS__GET
-			peer_names_groups_lst, gfErr := gf_eth_core.Eth_peers__db__get_pipeline(p_metrics, pRuntime)
+			peer_names_groups_lst, gfErr := gf_eth_core.Eth_peers__db__get_pipeline(pMetrics, pRuntime)
 			if gfErr != nil {
 				return nil, gfErr
 			}
