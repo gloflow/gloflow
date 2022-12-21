@@ -88,6 +88,7 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 func TestStartService(pPortInt int,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_identity_core.GFkeyServerInfo {
 
+	serviceInitCh := make(chan bool)
 	var keyServer *gf_identity_core.GFkeyServerInfo
 	go func() {
 
@@ -109,9 +110,12 @@ func TestStartService(pPortInt int,
 			panic("failed to initialize gf_identity service")
 		}
 
+		serviceInitCh <- true
 		gf_rpc_lib.ServerInitWithMux("gf_identity_test", pPortInt, HTTPmux)
 	}()
 	time.Sleep(2*time.Second) // let server startup
+
+	<-serviceInitCh
 	return keyServer
 }
 
