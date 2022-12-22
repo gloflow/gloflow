@@ -54,6 +54,7 @@ func Validate(pReq *http.Request,
 
 		// JWT_VALIDATE
 		JWTuserIdentifierStr, gfErr := JWTpipelineValidate(GFjwtTokenVal(JWTtokenValStr),
+			pAuthSubsystemTypeStr,
 			pKeyServerInfo,
 			pCtx,
 			pRuntimeSys)

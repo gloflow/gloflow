@@ -37,10 +37,16 @@ func InitService(pHTTPmux *http.ServeMux,
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity service...", map[string]interface{}{
 		"auth_subsystem_type_str": pServiceInfo.AuthSubsystemTypeStr,
 	})
-
+	
 	//------------------------
 	// KEYS_SERVER
-	keyServerInfo, gfErr := gf_identity_core.KSinit(pRuntimeSys)
+
+	auth0initBool := false
+	if pServiceInfo.AuthSubsystemTypeStr == gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__AUTH0 {
+		auth0initBool = true
+	}
+
+	keyServerInfo, gfErr := gf_identity_core.KSinit(auth0initBool, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}

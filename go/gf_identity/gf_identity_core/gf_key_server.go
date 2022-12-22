@@ -28,6 +28,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 )
 
 //---------------------------------------------------
@@ -47,23 +48,35 @@ type GFjwtSecret struct {
 	PrivateKeyPEMstr     GFjwtPrivateKeyPEMval `bson:"private_key_pem_str"`
 }
 
-type GFjwtValidationKeyResponseCh chan *rsa.PublicKey
-type GFjwtSigningKeyResponseCh chan *rsa.PrivateKey
+type GFjwtValidationKeyReq struct {
+	authSubsystemTypeStr string
+	responseCh           chan *rsa.PublicKey
+}
+
+type GFjwtSigningKeyReq struct {
+	authSubsystemTypeStr string
+	responseCh           chan *rsa.PrivateKey
+}
 
 type GFkeyServerInfo struct {
-	GetJWTvalidationKeyCh chan GFjwtValidationKeyResponseCh
-	GetJWTsigningKeyCh    chan GFjwtSigningKeyResponseCh
+	GetJWTvalidationKeyCh chan GFjwtValidationKeyReq
+	GetJWTsigningKeyCh    chan GFjwtSigningKeyReq
 }
 
 //---------------------------------------------------
 // CLIENT
 //---------------------------------------------------
 
-func ksClientJWTgetValidationKey(pKeyServerInfo *GFkeyServerInfo,
-	pRuntimeSys *gf_core.RuntimeSys) (*rsa.PublicKey, *gf_core.GFerror) {
+func ksClientJWTgetValidationKey(pAuthSubsystemTypeStr string,
+	pKeyServerInfo *GFkeyServerInfo,
+	pRuntimeSys    *gf_core.RuntimeSys) (*rsa.PublicKey, *gf_core.GFerror) {
 
-	responseCh := make(GFjwtValidationKeyResponseCh)
-	pKeyServerInfo.GetJWTvalidationKeyCh <- responseCh
+	responseCh := make(chan *rsa.PublicKey)
+	req := GFjwtValidationKeyReq{
+		authSubsystemTypeStr: pAuthSubsystemTypeStr,
+		responseCh:           responseCh,
+	}
+	pKeyServerInfo.GetJWTvalidationKeyCh <- req
 
 	publicKey := <- responseCh
 	return publicKey, nil
@@ -71,11 +84,16 @@ func ksClientJWTgetValidationKey(pKeyServerInfo *GFkeyServerInfo,
 
 //---------------------------------------------------
 
-func ksClientJWTgetSigningKey(pKeyServerInfo *GFkeyServerInfo,
-	pRuntimeSys *gf_core.RuntimeSys) (*rsa.PrivateKey, *gf_core.GFerror) {
+func ksClientJWTgetSigningKey(pAuthSubsystemTypeStr string,
+	pKeyServerInfo *GFkeyServerInfo,
+	pRuntimeSys    *gf_core.RuntimeSys) (*rsa.PrivateKey, *gf_core.GFerror) {
 
-	responseCh := make(GFjwtSigningKeyResponseCh)
-	pKeyServerInfo.GetJWTsigningKeyCh <- responseCh
+	responseCh := make(chan *rsa.PrivateKey)
+	req := GFjwtSigningKeyReq{
+		authSubsystemTypeStr: pAuthSubsystemTypeStr,
+		responseCh:           responseCh,
+	}
+	pKeyServerInfo.GetJWTsigningKeyCh <- req
 
 	privateKey := <- responseCh
 	return privateKey, nil
@@ -87,13 +105,17 @@ func ksClientJWTgetSigningKey(pKeyServerInfo *GFkeyServerInfo,
 
 // initialize a goroutine that servers requests from other goroutines
 // for public/private keypairs
-func KSinit(pRuntimeSys *gf_core.RuntimeSys) (*GFkeyServerInfo, *gf_core.GFerror) {
+func KSinit(pAuth0initBool bool,
+	pRuntimeSys *gf_core.RuntimeSys) (*GFkeyServerInfo, *gf_core.GFerror) {
 
 	pRuntimeSys.LogNewFun("INFO", "initializing gf_identity keys server...", nil)
 
 	//------------------------
-	// JWT_SIGNING_SECRET - generate it if the user is not using a secret store, where they
-	//                      placed it independently.
+	// JWT_SIGNING_KEY - generate it if the user is not using a secret store, where they
+	//                   placed it independently.
+	//                   this key is always fetched/generated, regardless if Auth0 is
+	//                   activated or not, since even with Auth0 activated the Ethereum
+	//                   auth method is available.     
 	ctx := context.Background()
 	publicKey, privateKey, gfErr := ksJWTgetKeysPipeline(ctx, pRuntimeSys)
 	if gfErr != nil {
@@ -101,22 +123,60 @@ func KSinit(pRuntimeSys *gf_core.RuntimeSys) (*GFkeyServerInfo, *gf_core.GFerror
 	}
 
 	//------------------------
+	// AUTH0
+	var auth0publicKey *rsa.PublicKey
+	if pAuth0initBool {
 
-	getJWTvalidationKeyCh := make(chan GFjwtValidationKeyResponseCh, 100)
-	getJWTsigningKeyCh := make(chan GFjwtSigningKeyResponseCh, 10)
+		auth0config := gf_auth0.LoadConfig(pRuntimeSys)
+
+		_, auth0publicKey, gfErr = gf_auth0.GetJWTpublicKeyForTenant(auth0config, pRuntimeSys)
+		if gfErr != nil {
+			return nil, gfErr
+		}
+	}
+
+	//------------------------
+
+
+	getJWTvalidationKeyCh := make(chan GFjwtValidationKeyReq, 100)
+	getJWTsigningKeyCh := make(chan GFjwtSigningKeyReq, 10)
 
 	go func() {
 		for {
 			select {
-			case validationKeyResponseCh := <- getJWTvalidationKeyCh:
+			
+			// VALIDATION
+			case req := <- getJWTvalidationKeyCh:
 
-				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT validation key", nil)
-				validationKeyResponseCh <- publicKey
+				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT validation key",
+					map[string]interface{}{"auth_subsystem_type_str": req.authSubsystemTypeStr,})
 
-			case signingKeyResponseCh := <- getJWTsigningKeyCh:
+				switch req.authSubsystemTypeStr {
+				case GF_AUTH_SUBSYSTEM_TYPE__USERPASS:
+					req.responseCh <- publicKey
 
-				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT signing key", nil)
-				signingKeyResponseCh <- privateKey
+				case GF_AUTH_SUBSYSTEM_TYPE__ETH:
+					req.responseCh <- publicKey
+
+				case GF_AUTH_SUBSYSTEM_TYPE__AUTH0:
+					req.responseCh <- auth0publicKey
+				} 
+
+			// SIGNING
+			case req := <- getJWTsigningKeyCh:
+
+				pRuntimeSys.LogNewFun("DEBUG", "key_server - received request for JWT signing key",
+						map[string]interface{}{"auth_subsystem_type_str": req.authSubsystemTypeStr,})
+
+				// signing using keys managed by key_server are only done for "userpass" and "eth" auth methods
+				if req.authSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__USERPASS ||
+					req.authSubsystemTypeStr == GF_AUTH_SUBSYSTEM_TYPE__ETH {
+
+					req.responseCh <- privateKey
+				} else {
+					// unsupported auth_subsystem_type
+					req.responseCh <- nil
+				}
 			}
 		}
 	}()

@@ -23,8 +23,10 @@ import (
 	"os"
 	"fmt"
 	"context"
+	"crypto/rsa"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
+	jwks "github.com/MicahParks/keyfunc"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -53,9 +55,36 @@ type GFauthenticator struct {
 
 //-------------------------------------------------------------
 
-func GetJWTpublicKey(pCtx context.Context,
-	pRuntimeSys *gf_core.RuntimeSys) {
+func GetJWTpublicKeyForTenant(pConfig *GFconfig,
+	pRuntimeSys *gf_core.RuntimeSys) (string, *rsa.PublicKey, *gf_core.GFerror) {
 
+	jwksURLstr := fmt.Sprintf("https://%s/.well-known/jwks.json", pConfig.Auth0domainStr)
+	
+	jwks, err := jwks.Get(jwksURLstr, jwks.Options{}) // See recommended options in the examples directory.
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to get the JWKS from the given Auth0 URL",
+			"library_error",
+			map[string]interface{}{
+				"jwks_url_str": jwksURLstr,
+			},
+			err, "gf_auth0", pRuntimeSys)
+		return "", nil, gfErr
+	}
+
+	var auth0keyIDstr  string
+	var auth0publicKey *rsa.PublicKey
+
+	// auth0 always returns a list of keys in the JWKS, where the first one is the active key
+	// used for signing, and all subsequent keys are pending (next in queue) keys.
+	for k, v := range jwks.ReadOnlyKeys() {
+		
+		auth0keyIDstr  = k
+		auth0publicKey = v.(*rsa.PublicKey)
+
+		break
+	}
+
+	return auth0keyIDstr, auth0publicKey, nil
 }
 
 //-------------------------------------------------------------
@@ -64,7 +93,7 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 
 	pRuntimeSys.LogNewFun("INFO", "initializing Auth0...", nil)
 
-	config := loadConfig(pRuntimeSys)
+	config := LoadConfig(pRuntimeSys)
 	
 	provider, err := oidc.NewProvider(
 		context.Background(),
@@ -140,7 +169,7 @@ func VerifyIDtoken(pOauth2bearerToken *oauth2.Token,
 //-------------------------------------------------------------
 
 // load Auth0 config, mostly from ENV vars
-func loadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
+func LoadConfig(pRuntimeSys *gf_core.RuntimeSys) *GFconfig {
 
 	auth0domainStr       := os.Getenv("AUTH0_DOMAIN")
 	auth0clientIDstr     := os.Getenv("AUTH0_CLIENT_ID")

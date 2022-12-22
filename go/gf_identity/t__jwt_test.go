@@ -45,11 +45,12 @@ func testJWTmain(pTest *testing.T,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	ctx := context.Background()
-	testUserAddressETH := gf_identity_core.GFuserAddressETH("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
-
+	testUserAddressETH   := gf_identity_core.GFuserAddressETH("0xBA47Bef4ca9e8F86149D2f109478c6bd8A642C97")
+	authSubsystemTypeStr := gf_identity_core.GF_AUTH_SUBSYSTEM_TYPE__ETH
+	
 	//------------------------
 	// KEY_SERVER
-	keyServerInfo, gfErr := gf_identity_core.KSinit(pRuntimeSys)
+	keyServerInfo, gfErr := gf_identity_core.KSinit(false, pRuntimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
@@ -59,6 +60,7 @@ func testJWTmain(pTest *testing.T,
 	// JWT_GENERATE
 	userIdentifierStr := string(testUserAddressETH)
 	jwtVal, gfErr := gf_identity_core.JWTpipelineGenerate(userIdentifierStr,
+		authSubsystemTypeStr,
 		keyServerInfo,
 		ctx,
 		pRuntimeSys)
@@ -68,6 +70,7 @@ func testJWTmain(pTest *testing.T,
 	
 	// JWT_VALIDATE
 	userIdentifierStr, gfErr = gf_identity_core.JWTpipelineValidate(*jwtVal,
+		authSubsystemTypeStr,
 		keyServerInfo,
 		ctx,
 		pRuntimeSys)

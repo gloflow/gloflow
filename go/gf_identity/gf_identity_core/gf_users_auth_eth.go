@@ -186,7 +186,9 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 	//------------------------
 	// JWT
 	userIdentifierStr := string(userIDstr)
+	authSubsystemTypeStr := GF_AUTH_SUBSYSTEM_TYPE__ETH
 	jwtTokenVal, gfErr := JWTpipelineGenerate(userIdentifierStr,
+		authSubsystemTypeStr,
 		pKeyServerInfo,
 		pCtx, pRuntimeSys)
 	if gfErr != nil {

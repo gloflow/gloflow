@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_identity_core
 
 import (
+	// "fmt"
 	"time"
 	"context"
 	"crypto/rsa"
@@ -37,22 +38,23 @@ type GFjwtTokenVal string
 //---------------------------------------------------
 
 func JWTpipelineGenerate(pUserIdentifierStr string,
-	pKeyServerInfo *GFkeyServerInfo,
-	pCtx           context.Context,
-	pRuntimeSys    *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
+	pAuthSubsystemTypeStr string,
+	pKeyServerInfo        *GFkeyServerInfo,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 	
 	// KEY_SERVER
-	privateKey, gfErr := ksClientJWTgetSigningKey(pKeyServerInfo, pRuntimeSys)
+	privateKey, gfErr := ksClientJWTgetSigningKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
-	signKey := privateKey
+	signingKey := privateKey
 
 	//----------------------
 	// JWT_GENERATE
 	tokenValStr, gfErr := jwtGenerate(pUserIdentifierStr,
-		signKey,
+		signingKey,
 		pCtx,
 		pRuntimeSys)
 	if gfErr != nil {
@@ -67,7 +69,7 @@ func JWTpipelineGenerate(pUserIdentifierStr string,
 //---------------------------------------------------
 
 func jwtGenerate(pUserIdentifierStr string,
-	pSignKey    *rsa.PrivateKey,
+	pSigningKey *rsa.PrivateKey,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) (*GFjwtTokenVal, *gf_core.GFerror) {
 	
@@ -125,7 +127,8 @@ func jwtGenerate(pUserIdentifierStr string,
 	//----------------------
 
 	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("RS256"), jwt.MapClaims(claimsMap))
-	jwtTokenSignedStr, err := jwtToken.SignedString(pSignKey)
+
+	jwtTokenSignedStr, err := jwtToken.SignedString(pSigningKey)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("failed to sign JWT token for user",
 			"crypto_jwt_sign_token_error",
@@ -146,14 +149,15 @@ func jwtGenerate(pUserIdentifierStr string,
 //---------------------------------------------------
 
 func JWTpipelineValidate(pJWTtokenVal GFjwtTokenVal,
-	pKeyServerInfo *GFkeyServerInfo,
-	pCtx           context .Context,
-	pRuntimeSys    *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
+	pAuthSubsystemTypeStr string,
+	pKeyServerInfo        *GFkeyServerInfo,
+	pCtx                  context.Context,
+	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	pRuntimeSys.LogNewFun("DEBUG", "validating JWT token...", nil)
 
 	// KEY_SERVER
-	publicKey, gfErr := ksClientJWTgetValidationKey(pKeyServerInfo, pRuntimeSys)
+	publicKey, gfErr := ksClientJWTgetValidationKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}

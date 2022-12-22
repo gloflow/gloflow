@@ -69,6 +69,7 @@ jobs:
       env:
         GF_ALCHEMY_SERVICE_ACC__API_KEY: ${{ secrets.GF_ALCHEMY_SERVICE_ACC__API_KEY }}
         GF_TEST_MONGODB_HOST_PORT: mongo
+        AUTH0_DOMAIN: ${{ secrets.GF_AUTH0_DOMAIN }}
 
     services:
       mongo:
@@ -123,7 +124,7 @@ jobs:
           cd /home/gf/go/gf_apps/gf_images_lib/gf_images_service
           go test -v -mongodb_host=mongo
 
-      # GF_TAGGER
+      # GF_BOOKMARKS
       - name: test gf_bookmarks
         run: |
           cd /home/gf/go/gf_apps/gf_tagger_lib/gf_bookmarks

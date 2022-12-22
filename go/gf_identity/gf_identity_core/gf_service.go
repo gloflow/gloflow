@@ -23,6 +23,7 @@ package gf_identity_core
 
 const (
 	GF_AUTH_SUBSYSTEM_TYPE__USERPASS = "userpass"
+	GF_AUTH_SUBSYSTEM_TYPE__ETH      = "eth"
 	GF_AUTH_SUBSYSTEM_TYPE__AUTH0    = "auth0"
 )
 
