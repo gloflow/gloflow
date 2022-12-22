@@ -150,7 +150,7 @@ func initHandlersAuth0(pKeyServer *gf_identity_core.GFkeyServerInfo,
 			//---------------------
 			// SET_SESSION_ID - sets gf_sess cookie on all future requests
 			sessionDataStr := string(sessionIDstr)
-			gf_session.Create(sessionDataStr, pResp)
+			gf_session.CreateCookie(sessionDataStr, pResp)
 
 			//------------------
 			// HTTP_REDIRECT - redirect user to logged in page

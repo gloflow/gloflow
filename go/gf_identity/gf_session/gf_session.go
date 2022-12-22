@@ -28,7 +28,7 @@ import (
 
 //---------------------------------------------------
 
-func Create(pSessionDataStr string,
+func CreateCookie(pSessionDataStr string,
 	pResp http.ResponseWriter) {
 	
 	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
