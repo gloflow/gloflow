@@ -38,8 +38,8 @@ type GF_images_extern_runtime_info struct {
 //-------------------------------------------------
 
 func InitService(pHTTPmux *http.ServeMux,
-	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	pRuntimeSys              *gf_core.RuntimeSys) {
+	pImagesRuntime *GF_images_extern_runtime_info,
+	pRuntimeSys    *gf_core.RuntimeSys) {
 
 	//------------------------
 	// STATIC FILES SERVING
@@ -52,8 +52,8 @@ func InitService(pHTTPmux *http.ServeMux,
 	
 	//------------------------
 
-	err := initHandlers(p_gf_images_runtime_info,
-		p_gf_images_runtime_info.Templates_dir_paths_map,
+	err := initHandlers(pImagesRuntime,
+		pImagesRuntime.Templates_dir_paths_map,
 		pHTTPmux,
 		pRuntimeSys)
 	if err != nil {
@@ -65,12 +65,11 @@ func InitService(pHTTPmux *http.ServeMux,
 //-------------------------------------------------
 
 func RunService(p_port_str string,
-	p_mongodb_host_str       string,
-	p_mongodb_db_name_str    string,
-	p_gf_images_runtime_info *GF_images_extern_runtime_info,
-	p_init_done_ch           chan bool,
-	pLogFun                func(string,string)) {
-	pLogFun("FUN_ENTER","gf_publisher_service.Run_service()")
+	p_mongodb_host_str    string,
+	p_mongodb_db_name_str string,
+	pImagesRuntime        *GF_images_extern_runtime_info,
+	p_init_done_ch        chan bool,
+	pLogFun               func(string, string)) {
 
 	pLogFun("INFO","")
 	pLogFun("INFO"," >>>>>>>>>>> STARTING GF_PUBLISHER SERVICE")
@@ -110,24 +109,24 @@ func RunService(p_port_str string,
                  |############\`
     pLogFun("INFO",logo_str)
 	
-	runtime_sys := &gf_core.RuntimeSys{
+	runtimeSys := &gf_core.RuntimeSys{
 		ServiceNameStr: "gf_publisher",
 		LogFun:         pLogFun,
 	}
 
-	mongo_db, _, gf_err   := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtime_sys)
+	mongo_db, _, gf_err   := gf_core.MongoConnectNew(p_mongodb_host_str, p_mongodb_db_name_str, nil, runtimeSys)
 	if gf_err != nil {
 		panic(-1)
 	}
-	runtime_sys.Mongo_db   = mongo_db
-	runtime_sys.Mongo_coll = mongo_db.Collection("data_symphony")
+	runtimeSys.Mongo_db   = mongo_db
+	runtimeSys.Mongo_coll = mongo_db.Collection("data_symphony")
 
 	//------------------------
 	// INIT
 
 	http_mux := http.NewServeMux()
 
-	InitService(http_mux, p_gf_images_runtime_info, runtime_sys)
+	InitService(http_mux, pImagesRuntime, runtimeSys)
 
 	//----------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
@@ -136,14 +135,14 @@ func RunService(p_port_str string,
 	}
 
 	//----------------------
-	runtime_sys.LogFun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtime_sys.LogFun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
-	runtime_sys.LogFun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.LogFun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+	runtimeSys.LogFun("INFO","STARTING HTTP SERVER - PORT - "+p_port_str)
+	runtimeSys.LogFun("INFO",">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	http_err := http.ListenAndServe(":"+p_port_str, nil)
 	if http_err != nil {
 		msg_str := "cant start listening on port - "+p_port_str
-		runtime_sys.LogFun("ERROR", msg_str)
-		runtime_sys.LogFun("ERROR", fmt.Sprint(http_err))
+		runtimeSys.LogFun("ERROR", msg_str)
+		runtimeSys.LogFun("ERROR", fmt.Sprint(http_err))
 		
 		panic(fmt.Sprint(http_err))
 	}

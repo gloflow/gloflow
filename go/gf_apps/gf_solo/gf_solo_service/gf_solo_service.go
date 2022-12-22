@@ -183,6 +183,7 @@ func Run(pConfig *GFconfig,
 
 	homeServiceInfo := &gf_home_lib.GFserviceInfo{
 		AuthLoginURLstr: "/landing/main", // if not logged in redirect users to this
+		KeyServer:       keyServer,
 	}
 
 	gfErr = gf_home_lib.InitService(pConfig.TemplatesPathsMap,
@@ -225,7 +226,8 @@ func Run(pConfig *GFconfig,
 		// AUTH
 		// on user trying to access authed endpoint while not logged in, redirect to this
 		AuthLoginURLstr: "/landing/main",
-
+		KeyServer:       keyServer,
+		
 		// IMAGES_STORAGE
 		UseNewStorageEngineBool: pConfig.ImagesUseNewStorageEngineBool,
 
