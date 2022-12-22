@@ -238,6 +238,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	//--------------------
+	// DEPRECATE!! - remove this
 	// CLI_ARGUMENT - AWS_ACCESS_KEY_ID
 	cmdBase.PersistentFlags().String("aws_access_key_id", "AWS ACCESS_KEY_ID", "AWS access_key_id")
 	err = viper.BindPFlag("aws_access_key_id", cmdBase.PersistentFlags().Lookup("aws_access_key_id"))
@@ -254,6 +255,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	//--------------------
+	// DEPRECATE!! - remove this
 	// CLI_ARGUMENT - AWS_SECRET_ACCESS_KEY
 	cmdBase.PersistentFlags().String("aws_secret_access_key", "AWS SECRET_ACCESS_KEY", "AWS secret_access_key")
 	err = viper.BindPFlag("aws_secret_access_key", cmdBase.PersistentFlags().Lookup("aws_secret_access_key"))

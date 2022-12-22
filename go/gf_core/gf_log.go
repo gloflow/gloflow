@@ -60,6 +60,8 @@ func LogsInitNew(pLogrusBool bool, pLogLevelStr string) (func(string, string), G
 			logLevelENVstr := os.Getenv("GF_LOG_LEVEL")
 			if logLevelENVstr == "" {
 				logLevelStr = logLevelDefaultStr
+			} else {
+				logLevelStr = logLevelENVstr
 			}
 		}
 
