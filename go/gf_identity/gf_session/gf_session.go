@@ -33,9 +33,10 @@ func Create(pSessionDataStr string,
 	
 	sessionTTLhoursInt, _ := gf_identity_core.GetSessionTTL()
 
-	sessionCookieNameStr := "gf_sess"
-	gf_identity_core.SetOnReq(sessionCookieNameStr,
-		pSessionDataStr,
+	cookieNameStr := "gf_sess"
+	cookieDataStr := pSessionDataStr
+	gf_core.HTTPsetCookieOnReq(cookieNameStr,
+		cookieDataStr,
 		pResp,
 		sessionTTLhoursInt)
 }

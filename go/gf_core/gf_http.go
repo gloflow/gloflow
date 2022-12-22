@@ -49,6 +49,62 @@ type Gf_http_fetch struct {
 }
 
 //---------------------------------------------------
+// COOKIES
+//---------------------------------------------------
+
+func HTTPgetCookieFromReq(pCookieNameStr string,
+	pReq *http.Request) (bool, string) {
+
+	for _, cookie := range pReq.Cookies() {
+		if (cookie.Name == pCookieNameStr) {
+			sessionDataStr := cookie.Value
+			return true, sessionDataStr
+		}
+	}
+	return false, ""
+}
+
+//---------------------------------------------------
+
+func HTTPsetCookieOnReq(pCookieNameStr string,
+	pDataStr     string,
+	pResp        http.ResponseWriter,
+	pTTLhoursInt int) {
+
+	ttl    := time.Duration(pTTLhoursInt) * time.Hour
+	expire := time.Now().Add(ttl)
+	
+	cookie := http.Cookie{
+		Name:    pCookieNameStr,
+		Value:   pDataStr,
+		Expires: expire,
+
+		// IMPORTANT!! - session cookie should be set for all paths
+		//               on the same domain, not just the /v1/identity/...
+		//               paths, because session is verified on all of them
+		Path: "/", 
+		
+		// ADD!! - ability to specify multiple domains that the session is
+		//         set for in case the GF services and API endpoints are spread
+		//         across multiple domains.
+		// Domain: "", 
+		
+		// IMPORTANT!! - make cookie http_only, disabling browser js context
+		//               from being able to read its value
+		HttpOnly: true,
+
+		// SameSite allows a server to define a cookie attribute making it impossible for
+		// the browser to send this cookie along with cross-site requests. The main
+		// goal is to mitigate the risk of cross-origin information leakage, and provide
+		// some protection against cross-site request forgery attacks.
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(pResp, &cookie)
+}
+
+//---------------------------------------------------
+// VAR
+//---------------------------------------------------
 
 func HTTPdetectMIMEtypeFromURL(pURLstr string,
 	pHeadersMap   map[string]string,
