@@ -113,13 +113,8 @@ func jwtGenerate(pUserIdentifierStr string,
 		
 		//----------------------
 	}
-
-	// claims := token.Claims.(jwt.MapClaims)
-	// claims["exp"] = time.Now().Add(10 * time.Minute)
-	// claims["authorized"] = true
-	// claims["user"] = "username"
 	
-	pRuntimeSys.LogNewFun("DEBUG", "claims create for new generated JWT", nil)
+	pRuntimeSys.LogNewFun("DEBUG", "claims created for new generated JWT", nil)
 	if gf_core.LogsIsDebugEnabled() {
 		spew.Dump(claimsMap)
 	}
@@ -138,7 +133,6 @@ func jwtGenerate(pUserIdentifierStr string,
 			err, "gf_identity_core", pRuntimeSys)
 		return nil, gfErr
 	}
-
 
 	tokenValStr := GFjwtTokenVal(jwtTokenSignedStr)
 	return &tokenValStr, nil

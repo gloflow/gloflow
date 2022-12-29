@@ -119,7 +119,7 @@ func ETHpipelinePreflight(pInput *GFethInputPreflight,
 }
 
 //---------------------------------------------------
-// PIPELINE__LOGIN
+// PIPELINE_LOGIN
 
 func ETHpipelineLogin(pInput *GFethInputLogin,
 	pKeyServerInfo *GFkeyServerInfo,
@@ -203,7 +203,7 @@ func ETHpipelineLogin(pInput *GFethInputLogin,
 }
 
 //---------------------------------------------------
-// PIPELINE__CREATE
+// PIPELINE_CREATE
 
 func ETHpipelineCreate(pInput *GFethInputCreate,
 	pCtx        context.Context,
