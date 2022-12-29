@@ -1,4 +1,3 @@
-
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2022 Ivan Trajkovic
@@ -18,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_state          from "./gf_state";
-import * as gf_glo_lang_utils from "./gf_glo_lang_utils";
+import * as gf_state      from "./gf_state";
+import * as gf_lang_utils from "./gf_lang_utils";
 
 //-------------------------------------------------
 export function exec__expr(p_setter_type_str :string,
@@ -29,7 +28,7 @@ export function exec__expr(p_setter_type_str :string,
     p_state_family_stack_lst,
     p_engine_api_map) {
     
-    const symb_map = gf_glo_lang_utils.get_symbols_and_constants();
+    const symb_map = gf_lang_utils.get_symbols_and_constants();
 
     if (p_setter_type_str != "set" && p_setter_type_str != "push" && p_setter_type_str != "pop")
         throw "state setter is not of type 'set|push|pop'";
@@ -51,9 +50,9 @@ export function exec__expr(p_setter_type_str :string,
 
             const [sx, sy, sz] = vals_lst;
 
-            p_state_map["sx"] = gf_glo_lang_utils.expr_eval(sx, p_state_map);;
-            p_state_map["sy"] = gf_glo_lang_utils.expr_eval(sy, p_state_map);;
-            p_state_map["sz"] = gf_glo_lang_utils.expr_eval(sz, p_state_map);;
+            p_state_map["sx"] = gf_lang_utils.expr_eval(sx, p_state_map);;
+            p_state_map["sy"] = gf_lang_utils.expr_eval(sy, p_state_map);;
+            p_state_map["sz"] = gf_lang_utils.expr_eval(sz, p_state_map);;
         }
     }
 
@@ -165,7 +164,7 @@ export function exec__expr(p_setter_type_str :string,
             else if (Array.isArray(uniform_val)) {
                 const sub_expr_lst = uniform_val;
 
-                const mul_result = gf_glo_lang_utils.arithmetic_eval(sub_expr_lst, p_state_map)
+                const mul_result = gf_lang_utils.arithmetic_eval(sub_expr_lst, p_state_map)
                 loaded_val       = mul_result;
             }
 

@@ -7,10 +7,10 @@ import delegator
 # TS
 print('RUNNING TS COMPILE...')
 
-output_file_str = './build/gf_glo_lang.js'
+output_file_str = './build/gf_lang.js'
 ts_files_lst = [
-	'./../ts/gf_glo_lang.ts',
-    './gf_glo_lang_test.ts'
+	'./../ts/gf_lang.ts',
+    './gf_lang_test.ts'
 ]
 
 for f in ts_files_lst:

@@ -1,4 +1,3 @@
-
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2022 Ivan Trajkovic

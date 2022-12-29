@@ -21,7 +21,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gloflow/gloflow/gf_glo_lang/go/gf_lang"
+	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
 )
 
 //-------------------------------------------------

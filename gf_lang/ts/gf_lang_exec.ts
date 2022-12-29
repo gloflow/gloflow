@@ -1,5 +1,3 @@
-
-
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2022 Ivan Trajkovic
@@ -19,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_glo_lang_utils from "./gf_glo_lang_utils";
+import * as gf_lang_utils     from "./gf_lang_utils";
 import * as gf_state          from "./gf_state";
 import * as gf_state_setters  from "./gf_state_setters";
 
@@ -33,7 +31,7 @@ export function execute_tree(p_expression_ast_lst,
     
     // console.log("A")
 
-    const symb_map = gf_glo_lang_utils.get_symbols_and_constants();
+    const symb_map = gf_lang_utils.get_symbols_and_constants();
     
     //--------------------
     // STATE_NEW
@@ -43,7 +41,7 @@ export function execute_tree(p_expression_ast_lst,
     //--------------------
 
     // clone in case of mutations of expression
-    const expression_lst = gf_glo_lang_utils.clone_expr(p_expression_ast_lst);
+    const expression_lst = gf_lang_utils.clone_expr(p_expression_ast_lst);
 
     // iterate over each expression element
     for (var i=0; i<expression_lst.length; i++) {
@@ -66,12 +64,12 @@ export function execute_tree(p_expression_ast_lst,
             else if (Array.isArray(modifier)) {
                 const sub_expr_lst = modifier;
 
-                if (gf_glo_lang_utils.is_sys_func(sub_expr_lst)) {
-                    const result = gf_glo_lang_utils.sys_func_eval(sub_expr_lst);
+                if (gf_lang_utils.is_sys_func(sub_expr_lst)) {
+                    const result = gf_lang_utils.sys_func_eval(sub_expr_lst);
                     modifier_val = result;
                 }
                 else {
-                    const result = gf_glo_lang_utils.arithmetic_eval(sub_expr_lst, state_map);
+                    const result = gf_lang_utils.arithmetic_eval(sub_expr_lst, state_map);
                     modifier_val = result;
                 }
             }
@@ -123,7 +121,7 @@ export function execute_tree(p_expression_ast_lst,
         // ARITHMETIC
         else if (Object.keys(symb_map["arithmetic_ops_map"]).includes(element) && i==0) {
 
-            const arithmetic_result = gf_glo_lang_utils.arithmetic_eval(expression_lst, state_map)
+            const arithmetic_result = gf_lang_utils.arithmetic_eval(expression_lst, state_map)
             const expr_result       = arithmetic_result;
             return [state_map, expr_result];
         }
@@ -233,7 +231,7 @@ function expr__rule_call(p_called_rule_name_str :string,
     p_state_family_stack_lst,
     p_engine_api_map) {
 
-    const symb_map = gf_glo_lang_utils.get_symbols_and_constants();
+    const symb_map = gf_lang_utils.get_symbols_and_constants();
     //------------------------------------
     // SYSTEM_RULE
     // rules predefined in the system
@@ -262,7 +260,7 @@ function expr__rule_call(p_called_rule_name_str :string,
 
         //--------------------
         
-        const current_rule_name_str = gf_glo_lang_utils.rule_get_name(p_state_parent_map);
+        const current_rule_name_str = gf_lang_utils.rule_get_name(p_state_parent_map);
 
         // all user calls (even recursive) are stored in the call stack
         new_state_map["rules_names_stack_lst"].push(p_called_rule_name_str);
@@ -275,15 +273,15 @@ function expr__rule_call(p_called_rule_name_str :string,
 
             // start a new iterations counter since we're entering a new rule
             // (not recursively iterating within the same rule)
-            gf_glo_lang_utils.add_new_iters_num_state(new_state_map);
+            gf_lang_utils.add_new_iters_num_state(new_state_map);
         }
 
-        const current_rule_iters_num_int = gf_glo_lang_utils.rule_get_iters_num(new_state_map);
+        const current_rule_iters_num_int = gf_lang_utils.rule_get_iters_num(new_state_map);
 
 
 
         // pick a random definition for a rule, which can have many definitions.
-        const [rule_def_map, rule_expressions_lst] = gf_glo_lang_utils.pick_rule_random_def(p_called_rule_name_str,
+        const [rule_def_map, rule_expressions_lst] = gf_lang_utils.pick_rule_random_def(p_called_rule_name_str,
             p_rules_defs_map);
 
         //------------------------------------
@@ -303,7 +301,7 @@ function expr__rule_call(p_called_rule_name_str :string,
         // check if rule has a iters_max rule modifier specified
         else if (Object.keys(rule_def_map["modifiers_map"]).includes("iters_max")) {
 
-            // const rule_iters_num_int   = gf_glo_lang_utils.rule_get_iters_num(p_state_map);
+            // const rule_iters_num_int   = gf_lang_utils.rule_get_iters_num(p_state_map);
             const rule_iters_limit_int = rule_def_map["modifiers_map"]["iters_max"];
 
             if (current_rule_iters_num_int > rule_iters_limit_int-1) {
@@ -319,7 +317,7 @@ function expr__rule_call(p_called_rule_name_str :string,
                 new_state_map["rules_iters_num_stack_lst"].pop();
                 new_state_map["rules_names_stack_lst"].pop();
 
-                const old_rule_iters_num_int    = gf_glo_lang_utils.rule_get_iters_num(new_state_map);
+                const old_rule_iters_num_int    = gf_lang_utils.rule_get_iters_num(new_state_map);
                 new_state_map["vars_map"]["$i"] = old_rule_iters_num_int;
                 
                 //-----------------
@@ -351,7 +349,7 @@ function expr__rule_call(p_called_rule_name_str :string,
             // RULE_EXIT
             // we returned from a new rule into the old rule context,
             // so the iterations count for that new rule is no longer needed (and removed from stack).
-            gf_glo_lang_utils.restore_previous_rules_iters_num(new_state_map);
+            gf_lang_utils.restore_previous_rules_iters_num(new_state_map);
 
             return new_state_map;
         }
@@ -383,7 +381,7 @@ function expr__rule_sys_call(p_rule_name_str :string,
     // IMPORTANT!! - rule iterations are counted only for actual rule evaluations.
     //               important not to count "set" statements, expression tree
     //               descending, property modifiers execution, etc.
-    gf_glo_lang_utils.increment_iters_num(p_state_map);
+    gf_lang_utils.increment_iters_num(p_state_map);
 
     //----------------------
 
@@ -455,7 +453,7 @@ function expr__animation(p_expression_lst,
     p_state_map,
     p_engine_api_map) {
 
-    const symb_map = gf_glo_lang_utils.get_symbols_and_constants();
+    const symb_map = gf_lang_utils.get_symbols_and_constants();
 
     if (p_expression_lst.length != 3 && p_expression_lst.length != 4)
         throw "animation expression can only have 3|4 elements";
@@ -518,7 +516,7 @@ function expr__conditional(p_expression_lst,
     //-------------------------------------------------
     function evaluate_logic_expr(p_logic_expr_lst) :boolean  {
         
-        const symb_map = gf_glo_lang_utils.get_symbols_and_constants();
+        const symb_map = gf_lang_utils.get_symbols_and_constants();
 
         const [logic_op_str, operand_1, operand_2] = condition_lst;
 
@@ -526,8 +524,8 @@ function expr__conditional(p_expression_lst,
             throw `specified logic operator ${logic_op_str}is not valid`;
 
         //-------------------------------------------------
-        const op_1_val = gf_glo_lang_utils.expr_eval(operand_1, p_state_map);
-        const op_2_val = gf_glo_lang_utils.expr_eval(operand_2, p_state_map);
+        const op_1_val = gf_lang_utils.expr_eval(operand_1, p_state_map);
+        const op_2_val = gf_lang_utils.expr_eval(operand_2, p_state_map);
 
         if (symb_map["logic_operators_map"][logic_op_str].eval(op_1_val, op_2_val)) {
             return true;
@@ -566,7 +564,7 @@ function expr__print(p_expression_lst,
     for (let val of vals_lst) {
         if (val.startsWith("$")) {
             const var_ref_str = val;
-            const var_val     = gf_glo_lang_utils.var_eval(var_ref_str, p_state_map); // p_state_map["vars_map"][var_ref_str];
+            const var_val     = gf_lang_utils.var_eval(var_ref_str, p_state_map); // p_state_map["vars_map"][var_ref_str];
             const val_str     = `${var_ref_str}=${var_val}`;
             vals_str += val_str+" ";
         } 

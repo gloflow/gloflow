@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_glo_engine     from "./engine/gf_glo_engine";
-import * as gf_glo_lang_exec  from "./gf_glo_lang_exec";
+import * as gf_lang_engine    from "./engine/gf_lang_engine";
+import * as gf_lang_exec      from "./gf_lang_exec";
 import * as gf_state          from "./gf_state";
-import * as gf_glo_lang_utils from "./gf_glo_lang_utils";
+import * as gf_lang_utils     from "./gf_lang_utils";
 import * as gf_ide            from "./ide/gf_ide";
 
 //-------------------------------------------------
@@ -46,7 +46,7 @@ export function run(p_program_ast_lst) {
     const shader_defs_map = load_shader_defs(expanded_program_ast_lst);
 
     // ENGINE
-    const engine_api_map = gf_glo_engine.init(shader_defs_map);
+    const engine_api_map = gf_lang_engine.init(shader_defs_map);
 
     // IDE
     gf_ide.init(engine_api_map);
@@ -75,7 +75,7 @@ export function run(p_program_ast_lst) {
         
         //------------------------------------
 
-        gf_glo_lang_exec.execute_tree(root_expression_lst,
+        gf_lang_exec.execute_tree(root_expression_lst,
             root_state_map,
             rule_defs_map,
             shader_defs_map,
@@ -92,7 +92,7 @@ export function run(p_program_ast_lst) {
 function expand_tree(p_expression_ast_lst,
     p_tree_level_int :number) {
 
-    var expression_lst = gf_glo_lang_utils.clone_expr(p_expression_ast_lst); // clone in case of mutations of expression
+    var expression_lst = gf_lang_utils.clone_expr(p_expression_ast_lst); // clone in case of mutations of expression
     for (var i=0; i<expression_lst.length;) {
 
         const element = expression_lst[i];
@@ -144,7 +144,7 @@ function expand_tree(p_expression_ast_lst,
 
                 const expression_to_multiply_lst = operand_2;
                 const factor_int                 = operand_1;
-                const expanded_expressions_lst   = gf_glo_lang_utils.clone_expr_N_times(expression_to_multiply_lst, factor_int)
+                const expanded_expressions_lst   = gf_lang_utils.clone_expr_N_times(expression_to_multiply_lst, factor_int)
 
                 /*
                 ["*", 10, [["y", -2.0], "cube"]], // 10 * {x -2} cube

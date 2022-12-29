@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_glo_lang_utils from "./gf_glo_lang_utils";
+import * as gf_lang_utils from "./gf_lang_utils";
 
 //-------------------------------------------------
 // FAMILY - state family is a new root state and all its children
@@ -82,7 +82,7 @@ export function merge_child_state(p_state_map, p_child_state_map) {
     // rule iteration count ("$i") has to propagate up the expression tree,
     // from child expressions to parent expressions, as a part of the state.
     // however $i only travels up to the root of a particular rule.
-    p_state_map["vars_map"]["$i"] = gf_glo_lang_utils.var_eval("$i", p_child_state_map); // p_child_state_map["vars_map"]["$i"];
+    p_state_map["vars_map"]["$i"] = gf_lang_utils.var_eval("$i", p_child_state_map); // p_child_state_map["vars_map"]["$i"];
 
     // what is the global number of iteratios executed relative to the root state
     p_state_map["iters_num_global_int"] = p_child_state_map["iters_num_global_int"];

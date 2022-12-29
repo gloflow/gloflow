@@ -1,7 +1,7 @@
 
 ///<reference path="../../../../../gloflow/web/src/d/jquery.d.ts" />
 
-import * as gf_glo_lang from "./../ts/gf_glo_lang";
+import * as gf_lang     from "../ts/gf_lang";
 import * as gf_examples from "./gf_examples";
 
 //-------------------------------------------------
@@ -183,6 +183,6 @@ $(document).ready(()=>{
 
 
 
-    gf_glo_lang.run(origin_setters_test__program_ast_lst);
+    gf_lang.run(origin_setters_test__program_ast_lst);
 
 });
