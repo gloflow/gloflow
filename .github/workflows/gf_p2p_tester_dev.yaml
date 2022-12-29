@@ -25,7 +25,7 @@ jobs:
 
       #-------------------------------
       # GIT_CHECKOUT
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       #-------------------------------
       # GO_BUILD
@@ -81,7 +81,7 @@ jobs:
 
       #-------------------------------
       # GIT_CHECKOUT
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       #-------------------------------
       # INITIALIZE_PYTHON3
