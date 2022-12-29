@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"fmt"
 	"github.com/gloflow/gloflow/gf_glo_lang/go/gf_lang"
 )
 
@@ -27,6 +28,7 @@ import (
 
 func main() {
 
+	fmt.Println("GF_LANG >>")
 
 	programASTlst := [][]interface{}{}
 
@@ -38,8 +40,6 @@ func main() {
 		externAPImap)
 	
 	if err != nil {
-
-
 		panic(err)
 	}
 
