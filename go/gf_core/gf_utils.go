@@ -27,47 +27,84 @@ import (
 )
 
 //-------------------------------------------------------------
+// STRING
+//-------------------------------------------------------------
 
 func StrRandom() string {
-	rand_with_seed := rand.New(rand.NewSource(time.Now().UnixNano()))
-	rand_int := rand_with_seed.Int()
-	rand_str := fmt.Sprintf("%d", rand_int)
-	return rand_str
+
+	randWithSeed := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randInt := randWithSeed.Int()
+	randStr := fmt.Sprintf("%d", randInt)
+	return randStr
+}
+
+func CastToStr(pElement interface{}) (bool, string) {
+    var isStringBool bool
+    var elementStr string
+    if valStr, ok := pElement.(string); ok {
+        elementStr = valStr
+        isStringBool = true
+    }
+    return isStringBool, elementStr
 }
 
 //-------------------------------------------------------------
 
-func HashValSha256(p_val interface{}) string {
+func HashValSha256(pVal interface{}) string {
 
 	h := sha256.New()
-	h.Write([]byte(fmt.Sprintf("%v", p_val)))
-	hash_hex_str := fmt.Sprintf("%x", h.Sum(nil))
-	return hash_hex_str
+	h.Write([]byte(fmt.Sprintf("%v", pVal)))
+	hashHexStr := fmt.Sprintf("%x", h.Sum(nil))
+	return hashHexStr
 }
 
 //-------------------------------------------------------------
+// MAP
+//-------------------------------------------------------------
 
-func StrInLst(p_str string, p_lst []string) bool {
-	for _,s := range p_lst {
-		if p_str == s {
+func MapHasKey(pMap interface{}, pKeyStr string) bool {
+
+	if _, ok := pMap.(map[string]interface{}); ok {
+		_, ok := pMap.(map[string]interface{})[pKeyStr]
+		return ok
+
+	} else if _, ok := pMap.(map[string]string); ok {
+		_, ok := pMap.(map[string]string)[pKeyStr]
+		return ok
+	}
+
+	panic("no handler for map type")
+	return false
+}
+
+//-------------------------------------------------------------
+// LIST
+//-------------------------------------------------------------
+
+func ListContainsStr(pStr string, pLst []string) bool {
+	for _, s := range pLst {
+		if pStr == s {
 			return true
 		}
 	}
 	return false
 }
 
-//-------------------------------------------------------------
+func ListRemoveElementAtIndex(pLst []interface{}, pIndex int) []interface{} {
+	newLst := make([]interface{}, 0)
+	newLst = append(newLst, pLst[:pIndex]...)
+	newLst = append(newLst, pLst[pIndex+1:]...)
+	return newLst
+}
 
-func MapHasKey(p_map interface{}, p_key_str string) bool {
+func ListPop[T any](pLst []T) (T, []T) {
 
-	if _,ok := p_map.(map[string]interface{}); ok {
-		_,ok := p_map.(map[string]interface{})[p_key_str]
-		return ok
-	} else if _,ok := p_map.(map[string]string); ok {
-		_,ok := p_map.(map[string]string)[p_key_str]
-		return ok
+	var lastVal T
+	if len(pLst) == 0 {
+		return lastVal, pLst
 	}
 
-	panic("no handler for p_map type")
-	return false
+	lastVal       = pLst[len(pLst)-1]
+    remainingLst := pLst[:len(pLst)-1]
+    return lastVal, remainingLst
 }
