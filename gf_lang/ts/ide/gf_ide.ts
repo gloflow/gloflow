@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 
-///<reference path="../../../../../../gloflow/web/src/d/jquery.d.ts" />
+///<reference path="./../../../web/src/d/jquery.d.ts" />
 
 
 

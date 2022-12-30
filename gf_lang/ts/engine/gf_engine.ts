@@ -435,8 +435,8 @@ export function init(p_shader_defs_map) {
 				// WIREFRAME
 				if (material_type_str == "wireframe") {
 
-					const material_value_str = p_state_change_map["material_value_str"];
-					wireframe_material_bool = material_value_str;
+					const material_value_bool = p_state_change_map["material_value_bool"];
+					wireframe_material_bool = material_value_bool;
 				}
 
 				// SHADER

@@ -120,15 +120,22 @@ export function exec__expr(p_setter_type_str :string,
     //------------------------------------
     // MATERIAL
     else if (p_property_name_str == "material") {
-        const [material_type_str, val_str] = p_vals;
+        const [material_type_str, val] = p_vals;
         if (material_type_str != "wireframe" 
             && material_type_str != "shader") throw "only 'wireframe|shader' material types are supported";
 
         const state_change_map = {
-            "setter_type_str":    p_setter_type_str,
-            "material_type_str":  material_type_str,
-            "material_value_str": val_str
+            "setter_type_str":   p_setter_type_str,
+            "material_type_str": material_type_str,
         };
+
+        if (material_type_str == "shader") {
+            state_change_map["material_value_str"] = val;
+        }
+        else if (material_type_str == "wireframe") {
+            state_change_map["material_value_bool"] = val;
+        }
+
         p_engine_api_map["set_state_fun"](state_change_map);                
     }
 

@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-import * as gf_lang_engine    from "./engine/gf_lang_engine";
-import * as gf_lang_exec      from "./gf_lang_exec";
-import * as gf_state          from "./gf_state";
-import * as gf_lang_utils     from "./gf_lang_utils";
-import * as gf_ide            from "./ide/gf_ide";
+import * as gf_engine     from "./engine/gf_engine";
+import * as gf_lang_exec  from "./gf_lang_exec";
+import * as gf_state      from "./gf_state";
+import * as gf_lang_utils from "./gf_lang_utils";
+import * as gf_ide        from "./ide/gf_ide";
 
 //-------------------------------------------------
 export function run(p_program_ast_lst) {
@@ -46,7 +46,7 @@ export function run(p_program_ast_lst) {
     const shader_defs_map = load_shader_defs(expanded_program_ast_lst);
 
     // ENGINE
-    const engine_api_map = gf_lang_engine.init(shader_defs_map);
+    const engine_api_map = gf_engine.init(shader_defs_map);
 
     // IDE
     gf_ide.init(engine_api_map);
