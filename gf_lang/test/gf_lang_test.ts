@@ -1,12 +1,27 @@
 
-///<reference path="../../../../../gloflow/web/src/d/jquery.d.ts" />
+///<reference path="./../../web/src/d/jquery.d.ts" />
 
 import * as gf_lang     from "../ts/gf_lang";
 import * as gf_examples from "./gf_examples";
 
+declare var Go;
+declare var gf_lang_run;
+
 //-------------------------------------------------
 $(document).ready(()=>{
 
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("./../go/build/gf_lang_web.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+
+        console.log("Golang WASM loaded");
+
+        run();
+    });
+
+});
+
+function run() {
     const examples_map                        = gf_examples.get();
     const first_scene__program_ast_lst        = examples_map["first_scene__program_ast_lst"];
     const rules_test__program_ast_lst         = examples_map["rules_test__program_ast_lst"];
@@ -181,8 +196,9 @@ $(document).ready(()=>{
     ];
 
 
+    gf_lang_run(first_scene__program_ast_lst);
 
 
-    gf_lang.run(origin_setters_test__program_ast_lst);
+    // gf_lang.run(first_scene__program_ast_lst);
 
-});
+}
