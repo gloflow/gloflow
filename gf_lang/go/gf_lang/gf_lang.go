@@ -92,14 +92,15 @@ type GFexternAPI struct {
 
 //-------------------------------------------------
 
-func Run(pProgramASTlst [][]interface{},
+func Run(pProgramASTlst []interface{},
     pExternAPI GFexternAPI) error {
 
     //------------------------------------
     // AST_EXPANSION
     expandedProgramASTlst := []interface{}{}
-    for _, rootExpressionLst := range pProgramASTlst {
+    for _, rootExpression := range pProgramASTlst {
 
+        rootExpressionLst := rootExpression.([]interface{})
         expandedRootExpressionLst, err := expandTree(rootExpressionLst, 0)
         if err != nil {
             return err
@@ -108,6 +109,8 @@ func Run(pProgramASTlst [][]interface{},
         // only include expressions which are not "expanded" to expression of 0 length
         // (expressions which are not marked for deletion)
         if len(expandedRootExpressionLst) > 0 {
+
+            fmt.Println("expanded expr", expandedRootExpressionLst)
             expandedProgramASTlst = append(expandedProgramASTlst, interface{}(expandedRootExpressionLst))
         }
     }
@@ -242,14 +245,14 @@ func expandTree(pExpressionASTlst []interface{},
             operand1 := expressionLst[i+1]
             operand2 := expressionLst[i+2]
             
-            if _, ok := operand1.(int); !ok {
+            if _, ok := operand1.(float64); !ok {
                 return nil, errors.New("first operand of multiplication expression is not a number")
             }
 
             if _, ok := operand2.([]interface{}); ok {
 
                 expressionToMultiplyLst := operand2.([]interface{})
-                factorInt               := operand1.(int)
+                factorInt               := int(operand1.(float64))
                 expandedExpressionsLst  := cloneExprNtimes(expressionToMultiplyLst, factorInt)
 
                 /*

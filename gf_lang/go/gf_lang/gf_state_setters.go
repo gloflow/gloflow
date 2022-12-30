@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_lang
 
 import (
+    // "fmt"
     "errors"
     "strings"
     "github.com/gloflow/gloflow/go/gf_core"
@@ -180,7 +181,6 @@ func execExpr(pSetterTypeStr string,
 
         valsLst         := pVals.([]interface{})
         materialTypeStr := valsLst[0].(string)
-        valStr          := valsLst[1].(string)
 
         if materialTypeStr != "wireframe" &&
             materialTypeStr != "shader" {
@@ -190,8 +190,27 @@ func execExpr(pSetterTypeStr string,
         stateChangeMap := map[string]interface{}{
             "setter_type_str":    pSetterTypeStr,
             "material_type_str":  materialTypeStr,
-            "material_value_str": valStr,
         }
+
+        if materialTypeStr == "wireframe" {
+
+            if valBool, ok := valsLst[1].(bool); ok {
+                stateChangeMap["material_value_bool"] = valBool
+            } else {
+                return nil, errors.New("if material_type is 'wireframe', the value has to be a bool indicating if wireframe is on/off")
+            }
+
+        } else if materialTypeStr == "shader" {
+            valIsStrBool, valStr := gf_core.CastToStr(valsLst[1])
+            if !valIsStrBool {
+                return nil, errors.New("if material_type is 'shader', the value has to be a string representing the shader name")
+            }
+            stateChangeMap["material_value_str"] = valStr
+
+        } else {
+            return nil, errors.New("only 'wireframe|shader' material types are supported")
+        }
+
         pExternAPI.SetStateFun(stateChangeMap)      
         
         //------------------------------------

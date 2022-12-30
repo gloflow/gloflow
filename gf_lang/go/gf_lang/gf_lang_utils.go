@@ -215,6 +215,7 @@ func sysFuncEval(pExprLst []interface{}) (interface{}, error) {
 }
 
 //-------------------------------------------------
+// VARIABLES
 
 func varEval(pVarStr string, pState *GFstate) (interface{}, error) {
 
@@ -350,6 +351,7 @@ func cloneAnimations(pAnimationsMap map[string]interface{}) map[string]interface
 //-------------------------------------------------
 // SYMBOLS
 //-------------------------------------------------
+
 func getSymbolsAndConstants() *GFsymbols {
     
     ruleLevelMaxInt := 250
@@ -405,4 +407,17 @@ func getSymbolsAndConstants() *GFsymbols {
         SystemFunctionsLst:      systemFunctionsLst,
     }
     return symbols
+}
+
+//-------------------------------------------------
+// CHECKS
+//-------------------------------------------------
+
+func checkArithmeticOpExists(pOpToCheckStr string) bool {
+    for opStr, _ := range getSymbolsAndConstants().ArithmeticOpsMap {
+        if pOpToCheckStr == opStr {
+            return true
+        }
+    }
+    return false
 }

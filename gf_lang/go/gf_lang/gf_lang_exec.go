@@ -137,7 +137,7 @@ func executeTree(pExpressionASTlst []interface{},
 
             //------------------------------------
 
-        } else if gf_core.MapHasKey(symbols.ArithmeticOpsMap, elementStr) && i==0 {
+        } else if checkArithmeticOpExists(elementStr) && i==0 {
             
             //------------------------------------
             // ARITHMETIC

@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_lang
 
 import (
+    // "fmt"
     "errors"
     "reflect"
     "github.com/gloflow/gloflow/go/gf_core"
+    // "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -202,11 +204,33 @@ func stateGetEmpty() *GFstate {
 
 //-------------------------------------------------
 
-func statePropFloatIncrement(pState *GFstate,
-    pPropertyNameStr string,
-    pIncrementByF    float64) {
+// mapping of state property names that are exposed to language programs to the
+// state names in the compiler. used when reflecting.
+func stateGetPropertyNamesInLangMap() map[string]string {
+    return map[string]string{
+        "x": "Xf",
+        "y": "Yf",
+        "z": "Zf",
+        "rx": "RotationXf",
+        "ry": "RotationYf",
+        "rz": "RotationZf",
+        "sx": "ScaleXf",
+        "sy": "ScaleYf",
+        "sz": "ScaleZf",
+        "cr": "ColorRedF",
+        "cg": "ColorGreenF",
+        "cb": "ColorBlueF",
+    }
+}
 
-    field        := reflect.ValueOf(pState).Elem().FieldByName(pPropertyNameStr)
+//-------------------------------------------------
+
+func statePropFloatIncrement(pState *GFstate,
+    pPropertyInProgramNameStr string,
+    pIncrementByF             float64) {
+
+    propInternalNameStr := stateGetPropertyNamesInLangMap()[pPropertyInProgramNameStr]
+    field        := reflect.ValueOf(pState).Elem().FieldByName(propInternalNameStr)
     fieldValF    := field.Float()
     fieldNewValF := fieldValF + pIncrementByF
 
@@ -214,9 +238,10 @@ func statePropFloatIncrement(pState *GFstate,
 }
 
 func statePropGet(pState *GFstate,
-    pPropertyNameStr string) float64 {
+    pPropertyInProgramNameStr string) float64 {
 
-    field     := reflect.ValueOf(pState).Elem().FieldByName(pPropertyNameStr)
+    propInternalNameStr := stateGetPropertyNamesInLangMap()[pPropertyInProgramNameStr]
+    field     := reflect.ValueOf(pState).Elem().FieldByName(propInternalNameStr)
     fieldValF := field.Float()
     return fieldValF
 }
