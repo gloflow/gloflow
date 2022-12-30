@@ -82,13 +82,18 @@ type GFgeometryFunc func(float64, float64, float64,
     float64, float64, float64,
     float64, float64, float64)
 
-
-type GFsetStateFun func(map[string]interface{}) []interface{}
+type GFexternAPI struct {
+    SetStateFun     func(map[string]interface{}) []interface{}
+    CreateCubeFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
+    CreateSphereFun func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
+    CreateLineFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
+    AnimateFun      func([]map[string]interface{}, float64, bool)
+}
 
 //-------------------------------------------------
 
 func Run(pProgramASTlst [][]interface{},
-    pExternAPImap map[string]interface{}) error {
+    pExternAPI GFexternAPI) error {
 
     //------------------------------------
     // AST_EXPANSION
@@ -147,7 +152,7 @@ func Run(pProgramASTlst [][]interface{},
             ruleDefsMap,
             shaderDefsMap,
             stateFamilyStackLst,
-            pExternAPImap)
+            pExternAPI)
         if err != nil {
             return err
         }

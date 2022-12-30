@@ -33,10 +33,9 @@ func execExpr(pSetterTypeStr string,
     pVals                interface{},
     pState               *GFstate,
     pStateFamilyStackLst []*GFstate,
-    pExternAPImap        map[string]interface{}) (*GFstate, error) {
+    pExternAPI           GFexternAPI) (*GFstate, error) {
     
     symbols := getSymbolsAndConstants()
-    setStateFun := pExternAPImap["set_state_fun"].(GFsetStateFun)
 
     if pSetterTypeStr != "set" && pSetterTypeStr != "push" && pSetterTypeStr != "pop" {
         return nil, errors.New("state setter is not of type 'set|push|pop'")
@@ -106,7 +105,7 @@ func execExpr(pSetterTypeStr string,
                 "setter_type_str": pSetterTypeStr,
                 "color_rgb":       []float64{rF, gF, bF},
             }
-            setStateFun(stateChangeMap)
+            pExternAPI.SetStateFun(stateChangeMap)
 
             pState.ColorRedF   = rF
             pState.ColorGreenF = gF
@@ -130,7 +129,7 @@ func execExpr(pSetterTypeStr string,
                 "color_rgb":       colorHexStr,
             }
             // set_state_fun() will return parsed color hex string, with rgb channels in 0-1 range.
-            resultLst := setStateFun(stateChangeMap)
+            resultLst := pExternAPI.SetStateFun(stateChangeMap)
 
             pState.ColorRedF   = resultLst[0].(float64)
             pState.ColorGreenF = resultLst[1].(float64)
@@ -160,7 +159,7 @@ func execExpr(pSetterTypeStr string,
             "setter_type_str":  pSetterTypeStr,
             "color_background": []float64{r, g, b,},
         }
-        setStateFun(stateChangeMap)
+        pExternAPI.SetStateFun(stateChangeMap)
 
         //------------------------------------
 
@@ -193,7 +192,7 @@ func execExpr(pSetterTypeStr string,
             "material_type_str":  materialTypeStr,
             "material_value_str": valStr,
         }
-        setStateFun(stateChangeMap)      
+        pExternAPI.SetStateFun(stateChangeMap)      
         
         //------------------------------------
 
@@ -262,7 +261,7 @@ func execExpr(pSetterTypeStr string,
                     "material_shader_uniform_val":      loadedVal,
                 },
             }
-            setStateFun(stateChangeMap)
+            pExternAPI.SetStateFun(stateChangeMap)
         }
 
         //------------------------------------
@@ -279,7 +278,7 @@ func execExpr(pSetterTypeStr string,
             "setter_type_str": pSetterTypeStr,
             "line_cmd_str":    "start",
         }
-        setStateFun(stateChangeMap)
+        pExternAPI.SetStateFun(stateChangeMap)
 
         //------------------------------------
         
@@ -302,7 +301,7 @@ func execExpr(pSetterTypeStr string,
                 "ry": pState.RotationYf,
                 "rz": pState.RotationZf,
             }
-            setStateFun(stateChangeMap)
+            pExternAPI.SetStateFun(stateChangeMap)
         }
 
         //------------------------------------
@@ -336,7 +335,7 @@ func execExpr(pSetterTypeStr string,
                     "ry": pState.RotationYf,
                     "rz": pState.RotationZf,
                 }
-                setStateFun(newStateChangeMap)
+                pExternAPI.SetStateFun(newStateChangeMap)
 
                 //---------------------------
                 // NEW_BLANK_STATE - only other place where this is being done
@@ -374,7 +373,7 @@ func execExpr(pSetterTypeStr string,
                     "ry": lastFamilyState.RotationYf,
                     "rz": lastFamilyState.RotationZf,
                 }
-                setStateFun(restoreStateChangeMap)
+                pExternAPI.SetStateFun(restoreStateChangeMap)
 
             //------------------------------------
         }

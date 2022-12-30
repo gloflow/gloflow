@@ -33,7 +33,7 @@ func executeTree(pExpressionASTlst []interface{},
     pRulesDefsMap        GFruleDefs,
     pShaderDefsMap       map[string]interface{},
     pStateFamilyStackLst []*GFstate,
-    pExternAPImap        map[string]interface{}) (*GFstate, interface{}, error) {
+    pExternAPI           GFexternAPI) (*GFstate, interface{}, error) {
     
     symbols := getSymbolsAndConstants()
     
@@ -111,7 +111,7 @@ func executeTree(pExpressionASTlst []interface{},
                 pRulesDefsMap,
                 pShaderDefsMap,
                 pStateFamilyStackLst,
-                pExternAPImap)
+                pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
@@ -166,7 +166,7 @@ func executeTree(pExpressionASTlst []interface{},
                 pRulesDefsMap,
                 pShaderDefsMap,
                 pStateFamilyStackLst,
-                pExternAPImap)
+                pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
@@ -199,7 +199,7 @@ func executeTree(pExpressionASTlst []interface{},
                     vals,
                     state,
                     pStateFamilyStackLst,
-                    pExternAPImap)
+                    pExternAPI)
                 if err != nil {
                     return nil, nil, err
                 }
@@ -212,7 +212,7 @@ func executeTree(pExpressionASTlst []interface{},
                     vals,
                     state,
                     pStateFamilyStackLst,
-                    pExternAPImap)
+                    pExternAPI)
                 if err != nil {
                     return nil, nil, err
                 }
@@ -243,7 +243,7 @@ func executeTree(pExpressionASTlst []interface{},
                 return nil, nil, errors.New("'animate' keyword can ony be the first element in the expression")
             }
 
-            exprAnimation(expressionLst, state, pExternAPImap)
+            exprAnimation(expressionLst, state, pExternAPI)
             break
 
             //------------------------------------
@@ -265,7 +265,7 @@ func executeTree(pExpressionASTlst []interface{},
                 pRulesDefsMap,
                 pShaderDefsMap,
                 pStateFamilyStackLst,
-                pExternAPImap)
+                pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
@@ -285,12 +285,12 @@ func executeTree(pExpressionASTlst []interface{},
 //-------------------------------------------------
 
 func exprRuleCall(pCalledRuleNameStr string,
-    pExpressionLst []interface{},
-    pStateParent   *GFstate,
-    pRulesDefsMap  GFruleDefs,
-    pShaderDefsMap map[string]interface{},
+    pExpressionLst       []interface{},
+    pStateParent         *GFstate,
+    pRulesDefsMap        GFruleDefs,
+    pShaderDefsMap       map[string]interface{},
     pStateFamilyStackLst []*GFstate,
-    pExternAPImap        map[string]interface{}) (*GFstate, error) {
+    pExternAPI           GFexternAPI) (*GFstate, error) {
 
     symbols := getSymbolsAndConstants()
 
@@ -302,7 +302,7 @@ func exprRuleCall(pCalledRuleNameStr string,
 
         newState := exprRuleSysCall(pCalledRuleNameStr,
             pStateParent,
-            pExternAPImap)
+            pExternAPI)
         return newState, nil
 
     } else if gf_core.MapHasKey(pRulesDefsMap, pCalledRuleNameStr) {
@@ -410,7 +410,7 @@ func exprRuleCall(pCalledRuleNameStr string,
             pRulesDefsMap,
             pShaderDefsMap,
             pStateFamilyStackLst,
-            pExternAPImap)
+            pExternAPI)
         if err != nil {
             return nil, err
         }
@@ -450,8 +450,8 @@ func exprRuleCall(pCalledRuleNameStr string,
 //-------------------------------------------------
 
 func exprRuleSysCall(pRuleNameStr string,
-    pState        *GFstate,
-    pExternAPImap map[string]interface{}) *GFstate {
+    pState     *GFstate,
+    pExternAPI GFexternAPI) *GFstate {
 
     //----------------------
     pState.ItersNumGlobalInt += 1
@@ -479,8 +479,7 @@ func exprRuleSysCall(pRuleNameStr string,
         cg := pState.ColorGreenF
         cb := pState.ColorBlueF
 
-        createCubeFun := pExternAPImap["create_cube_fun"].(GFgeometryFunc)
-        createCubeFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        pExternAPI.CreateCubeFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
 
     } else if pRuleNameStr == "sphere" {
 
@@ -498,8 +497,7 @@ func exprRuleSysCall(pRuleNameStr string,
         cg := pState.ColorGreenF
         cb := pState.ColorBlueF
 
-        createSphereFun := pExternAPImap["create_sphere_fun"].(GFgeometryFunc)
-        createSphereFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        pExternAPI.CreateSphereFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
 
     } else if pRuleNameStr == "line" {
 
@@ -517,8 +515,7 @@ func exprRuleSysCall(pRuleNameStr string,
         cg := pState.ColorGreenF
         cb := pState.ColorBlueF
 
-        createLineFun := pExternAPImap["create_line_fun"].(GFgeometryFunc)
-        createLineFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        pExternAPI.CreateLineFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
     }
 
     return pState
@@ -527,8 +524,8 @@ func exprRuleSysCall(pRuleNameStr string,
 //-------------------------------------------------
 
 func exprAnimation(pExpressionLst []interface{},
-    pState        *GFstate,
-    pExternAPImap map[string]interface{}) error {
+    pState     *GFstate,
+    pExternAPI GFexternAPI) error {
 
     symbols := getSymbolsAndConstants()
 
@@ -582,8 +579,7 @@ func exprAnimation(pExpressionLst []interface{},
         })
     }
 
-    animateFun := pExternAPImap["animate_fun"].(func([]map[string]interface{}, float64, bool))
-    animateFun(propsToAnimateLst, durationSecF, repeatBool)
+    pExternAPI.AnimateFun(propsToAnimateLst, durationSecF, repeatBool)
 
     return nil
 }
@@ -596,7 +592,7 @@ func exprConditional(pExpressionLst []interface{},
     pRulesDefsMap        GFruleDefs,
     pShaderDefsMap       map[string]interface{},
     pStateFamilyStackLst []*GFstate,
-    pExternAPImap        map[string]interface{}) (*GFstate, error) {
+    pExternAPI           GFexternAPI) (*GFstate, error) {
 
     // [, conditionLst, subExpressionsLst] = pExpressionLst;
     conditionLst      := pExpressionLst[1].([]interface{})
@@ -654,7 +650,7 @@ func exprConditional(pExpressionLst []interface{},
             pRulesDefsMap,
             pShaderDefsMap,
             pStateFamilyStackLst,
-            pExternAPImap)
+            pExternAPI)
         if err != nil {
             return nil, err
         }

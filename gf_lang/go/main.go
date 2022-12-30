@@ -32,12 +32,42 @@ func main() {
 
 	programASTlst := [][]interface{}{}
 
-	externAPImap := map[string]interface{}{
-		"test_fun": func(){},
+	externAPI := gf_lang.GFexternAPI{
+		SetStateFun: func(pNewStateMap map[string]interface{}) []interface{} {
+			fmt.Println("set state")
+			return nil
+		},
+		CreateCubeFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+
+			fmt.Println("create cube")
+		},
+		CreateSphereFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+
+			fmt.Println("create sphere")
+		},
+		CreateLineFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+			
+			fmt.Println("create line")
+		},
+		AnimateFun: func(pPropsToAnimateLst []map[string]interface{},
+			pDurationSecF float64,
+			pRepeatBool   bool) {
+
+			fmt.Println("animate")
+		},
 	}
 	
 	err := gf_lang.Run(programASTlst,
-		externAPImap)
+		externAPI)
 	
 	if err != nil {
 		panic(err)
