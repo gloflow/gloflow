@@ -125,9 +125,9 @@ func loadExternAPIfuns(pExternAPImap js.Value) gf_lang.GFexternAPI {
 
 			stateChangeMap := transformStateChangeForJS(pStateChange)
 
-			fmt.Println("JS STATE CHANGE >>>>>>>>>>>>>>>>")
-			spew.Dump(pStateChange)
-			spew.Dump(stateChangeMap)
+			// fmt.Println("JS STATE CHANGE >>>>>>>>>>>>>>>>")
+			// spew.Dump(pStateChange)
+			// spew.Dump(stateChangeMap)
 
 			setStateFun.Invoke(stateChangeMap)
 			return nil

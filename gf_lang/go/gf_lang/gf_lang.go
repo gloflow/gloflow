@@ -23,6 +23,7 @@ import (
     "fmt"
     "errors"
     "github.com/gloflow/gloflow/go/gf_core"
+    "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -86,9 +87,9 @@ func Run(pProgramASTlst []interface{},
     //------------------------------------
     // only load rules after AST tree expansion is complete,
     // and the rule is ready for execution.
-    ruleDefsMap := loadRuleDefs(expandedProgramASTlst)
+    ruleDefsMap, programASTlnoRuleDefsLst := loadRuleDefs(expandedProgramASTlst)
     
-    shaderDefsMap, err := loadShaderDefs(expandedProgramASTlst)
+    shaderDefsMap, programASTnoShaderDefsLst, err := loadShaderDefs(programASTlnoRuleDefsLst)
     if err != nil {
         return err
     }
@@ -100,9 +101,10 @@ func Run(pProgramASTlst []interface{},
     // AST_EXECUTION
 
     fmt.Println("executing AST...")
+    spew.Dump(programASTnoShaderDefsLst)
 
     i:=0
-    for _, rootExpression := range expandedProgramASTlst {
+    for _, rootExpression := range programASTnoShaderDefsLst {
 
         rootState := stateCreateNew(nil)
 
@@ -289,15 +291,22 @@ func expandTree(pExpressionASTlst []interface{},
 
 //-------------------------------------------------
 
-func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
+func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
 
     fmt.Println("loading rule defs...")
 
+    //------------------------
+    // copy program_ast
+    newProgramASTlst := make([]interface{}, len(pProgramASTlst))
+    copy(newProgramASTlst, pProgramASTlst)
+
+    //------------------------
+
     ruleDefsMap := map[string][]*GFruleDef{}
 
-    for i:=0; i < len(pProgramASTlst); {
+    for i:=0; i < len(newProgramASTlst); {
 
-        rootExpressionLst := pProgramASTlst[i].([]interface{})
+        rootExpressionLst := newProgramASTlst[i].([]interface{})
         rootExprFirstElementIsStrBool, rootExprFirstElementStr := gf_core.CastToStr(rootExpressionLst[0])
 
         if rootExprFirstElementIsStrBool && rootExprFirstElementStr == "rule" {
@@ -326,7 +335,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
                 // remove the rule definition element from the program_ast, 
                 // as it has been expanded and loaded and ready for execution,
                 // it doesnt need to be iterated over during execution.
-                pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+                newProgramASTlst = gf_core.ListRemoveElementAtIndex(newProgramASTlst, i)
 
                 // run next iteration without incrementing "i"
                 continue
@@ -366,7 +375,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
                 // remove the rule definition element from the program_ast, 
                 // as it has been expanded and loaded and ready for execution,
                 // it doesnt need to be iterated over during execution.
-                pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+                newProgramASTlst = gf_core.ListRemoveElementAtIndex(newProgramASTlst, i)
 
                 // run next iteration without incrementing "i"
                 continue
@@ -375,23 +384,30 @@ func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
 
         i+=1
     }
-    return ruleDefsMap
+    return ruleDefsMap, newProgramASTlst
 }
 
 //-------------------------------------------------
 
-func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, error) {
+func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, []interface{}, error) {
     shaderDefsMap := map[string]interface{}{}
     
-    for i:=0; i < len(pProgramASTlst);  {
+    //------------------------
+    // copy program_ast
+    newProgramASTlst := make([]interface{}, len(pProgramASTlst))
+    copy(newProgramASTlst, pProgramASTlst)
 
-        rootExpressionLst := pProgramASTlst[i].([]interface{})
+    //------------------------
+
+    for i:=0; i < len(newProgramASTlst);  {
+
+        rootExpressionLst := newProgramASTlst[i].([]interface{})
         rootExprFirstElementIsStrBool, rootExprFirstElementStr := gf_core.CastToStr(rootExpressionLst[0])
 
         if rootExprFirstElementIsStrBool && rootExprFirstElementStr == "shader" {
 
             if len(rootExpressionLst) != 4 && len(rootExpressionLst) != 5 {
-                return nil, errors.New(fmt.Sprintf("shader definition expression %s can only have 4|5 elements", rootExpressionLst))
+                return nil, nil, errors.New(fmt.Sprintf("shader definition expression %s can only have 4|5 elements", rootExpressionLst))
             }
 
             if len(rootExpressionLst) == 4 {
@@ -429,10 +445,10 @@ func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, error
             // remove the shader definition element from the program_ast, 
             // as it has been expanded and loaded and ready for execution,
             // it doesnt need to be iterated over during execution.
-            pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+            newProgramASTlst = gf_core.ListRemoveElementAtIndex(newProgramASTlst, i)
         }
 
         i+=1
     }
-    return shaderDefsMap, nil
+    return shaderDefsMap, newProgramASTlst, nil
 }

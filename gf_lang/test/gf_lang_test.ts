@@ -12,16 +12,16 @@ declare var gf_lang_run;
 //-------------------------------------------------
 $(document).ready(()=>{
 
-    /*const go = new Go();
+    const go = new Go();
     WebAssembly.instantiateStreaming(fetch("./../go/build/gf_lang_web.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
 
         console.log("Golang WASM loaded");
 
         run();
-    });*/
+    });
 
-    run();
+    // run();
 
 });
 
@@ -258,6 +258,6 @@ function run() {
         }
     }
 
-    // gf_lang_run(rules_test__program_ast_lst, extern_api_map);
-    gf_lang.run(rules_test__program_ast_lst);
+    gf_lang_run(rules_test__program_ast_lst, extern_api_map);
+    // gf_lang.run(rules_test__program_ast_lst);
 }
