@@ -77,11 +77,12 @@ func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
             }
             
             return val, nil
+        
+        //-------------
 
         } else if isSysFunc(exprLst) {
 
             // SYSTEM_FUNCTION
-
             val, err := sysFuncEval(exprLst)
             if err != nil {
                 return nil, err
@@ -156,7 +157,6 @@ func arithmeticEval(pExprLst []interface{}, pState *GFstate) (*float64, error) {
         } else {
 
             // NUMBER
-
             // if operand is not a var reference, it has to be a number
             if _, ok := pOperand.(float64); !ok {
                 return nil, errors.New(fmt.Sprintf("operand %s is not a number", pOperand))
@@ -420,4 +420,19 @@ func checkArithmeticOpExists(pOpToCheckStr string) bool {
         }
     }
     return false
+}
+
+//-------------------------------------------------
+// CHECKS
+//-------------------------------------------------
+
+func castToFloat(pN interface{}) float64 {
+    if nInt, ok := pN.(int); ok {
+        return float64(nInt)
+    }
+    if nF, ok := pN.(float64); ok {
+        return nF
+    }
+    panic(fmt.Sprintf("number %s is not a int or float64", pN))
+    return 0.0
 }

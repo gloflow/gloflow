@@ -215,7 +215,7 @@ func execExpr(pSetterTypeStr string,
         //------------------------------------
         // ITERS_MAX
 
-        iterationsMaxInt := pVals.(int)
+        iterationsMaxInt := int(pVals.(float64))
         pState.ItersMaxInt = iterationsMaxInt
 
         //------------------------------------

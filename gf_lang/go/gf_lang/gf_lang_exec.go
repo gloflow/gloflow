@@ -364,8 +364,7 @@ func exprRuleCall(pCalledRuleNameStr string,
             // RULE_LIMIT
             // check if rule has a iters_max rule modifier specified
 
-            // const rule_iters_num_int   = gf_glo_lang_utils.rule_get_iters_num(pStateMap);
-            ruleItersLimitInt := ruleDef.ModifiersMap["iters_max"].(int)
+            ruleItersLimitInt := int(ruleDef.ModifiersMap["iters_max"].(float64))
 
             if currentRuleItersNumInt > ruleItersLimitInt-1 {
 
@@ -625,7 +624,8 @@ func exprConditional(pExpressionLst []interface{},
             return false, err
         }
 
-        if symbols.LogicOperatorsMap[logicOpStr](op1val.(float64), op2val.(float64)) {
+        
+        if symbols.LogicOperatorsMap[logicOpStr](castToFloat(op1val), castToFloat(op2val)) {
             return true, nil
         } else {
             return false, nil
