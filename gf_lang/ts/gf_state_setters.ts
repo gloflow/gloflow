@@ -67,8 +67,9 @@ export function exec__expr(p_setter_type_str :string,
             
             const [, r, g, b] = vals_lst;
             const state_change_map = {
-                "setter_type_str": p_setter_type_str,
-                "color_rgb":       [r, g, b],
+                "property_name_str": "color_rgb_lst",
+                "setter_type_str":   p_setter_type_str,
+                "color_rgb_lst":     [r, g, b],
             };
             p_engine_api_map["set_state_fun"](state_change_map);
 
@@ -83,8 +84,9 @@ export function exec__expr(p_setter_type_str :string,
 
             const color_hex_str = p_vals;
             const state_change_map = {
-                "setter_type_str": p_setter_type_str,
-                "color_rgb":       color_hex_str
+                "property_name_str": "color_rgb_hex",
+                "setter_type_str":   p_setter_type_str,
+                "color_rgb_hex_str": color_hex_str
             };
             // set_state_fun() will return parsed color hex string, with rgb channels in 0-1 range.
             const [r, g, b] = p_engine_api_map["set_state_fun"](state_change_map);
@@ -104,8 +106,9 @@ export function exec__expr(p_setter_type_str :string,
         
         const [, r, g, b] = vals_lst;
         const state_change_map = {
-            "setter_type_str":  p_setter_type_str,
-            "color_background": [r, g, b],
+            "property_name_str": "color_background_rgb_lst",
+            "setter_type_str":   p_setter_type_str,
+            "color_background_rgb_lst": [r, g, b],
         };
         p_engine_api_map["set_state_fun"](state_change_map);
     }
@@ -125,6 +128,7 @@ export function exec__expr(p_setter_type_str :string,
             && material_type_str != "shader") throw "only 'wireframe|shader' material types are supported";
 
         const state_change_map = {
+            "property_name_str": "material_type",
             "setter_type_str":   p_setter_type_str,
             "material_type_str": material_type_str,
         };
@@ -180,12 +184,17 @@ export function exec__expr(p_setter_type_str :string,
                 loaded_val = uniform_val;
             }
             const state_change_map = {
-                "setter_type_str": p_setter_type_str,
-                "material_prop_map": {
+                "property_name_str":                "material_shader_uniform",
+                "setter_type_str":                  p_setter_type_str,
+                "material_shader_name_str":         material_name_str,
+                "material_shader_uniform_name_str": uniform_name_str,
+                "material_shader_uniform_val":      loaded_val,
+                
+                /*"material_prop_map": {
                     "material_shader_name_str":         material_name_str,
                     "material_shader_uniform_name_str": uniform_name_str,
                     "material_shader_uniform_val":      loaded_val,
-                }
+                }*/
             };
             p_engine_api_map["set_state_fun"](state_change_map);        
         }
@@ -197,8 +206,9 @@ export function exec__expr(p_setter_type_str :string,
         const [cmd_str] = p_vals;
 
         const state_change_map = {
-            "setter_type_str": p_setter_type_str,
-            "line_cmd_str": "start",
+            "property_name_str": "line_cmd",
+            "setter_type_str":   p_setter_type_str,
+            "line_cmd_str":      "start",
         };
         p_engine_api_map["set_state_fun"](state_change_map);
     }
@@ -214,12 +224,12 @@ export function exec__expr(p_setter_type_str :string,
                 "property_name_str": "rotation_pivot",
                 "setter_type_str":   p_setter_type_str,
                 "axis_type_str":     "current_pos",
-                "x":  p_state_map["x"],
-                "y":  p_state_map["y"],
-                "z":  p_state_map["z"],
-                "rx": p_state_map["rx"],
-                "ry": p_state_map["ry"],
-                "rz": p_state_map["rz"]
+                "x_f":  p_state_map["x"],
+                "y_f":  p_state_map["y"],
+                "z_f":  p_state_map["z"],
+                "rotation_x_f": p_state_map["rx"],
+                "rotation_y_f": p_state_map["ry"],
+                "rotation_z_f": p_state_map["rz"]
             };
             p_engine_api_map["set_state_fun"](state_change_map);
         }
@@ -247,12 +257,12 @@ export function exec__expr(p_setter_type_str :string,
                     "setter_type_str":   "push",
                     "origin_type_str":   origin_type_str,
         
-                    "x":  p_state_map["x"],
-                    "y":  p_state_map["y"],
-                    "z":  p_state_map["z"],
-                    "rx": p_state_map["rx"],
-                    "ry": p_state_map["ry"],
-                    "rz": p_state_map["rz"]
+                    "x_f":  p_state_map["x"],
+                    "y_f":  p_state_map["y"],
+                    "z_f":  p_state_map["z"],
+                    "rotation_x_f": p_state_map["rx"],
+                    "rotation_y_f": p_state_map["ry"],
+                    "rotation_z_f": p_state_map["rz"]
                 }
                 p_engine_api_map["set_state_fun"](new_state_change_map);
 
@@ -282,12 +292,12 @@ export function exec__expr(p_setter_type_str :string,
                     "setter_type_str":   "pop",
                     "origin_type_str":   origin_type_str,
         
-                    "x":  last_family_state_map["x"],
-                    "y":  last_family_state_map["y"],
-                    "z":  last_family_state_map["z"],
-                    "rx": last_family_state_map["rx"],
-                    "ry": last_family_state_map["ry"],
-                    "rz": last_family_state_map["rz"]
+                    "x_f":  last_family_state_map["x"],
+                    "y_f":  last_family_state_map["y"],
+                    "z_f":  last_family_state_map["z"],
+                    "rotation_x_f": last_family_state_map["rx"],
+                    "rotation_y_f": last_family_state_map["ry"],
+                    "rotation_z_f": last_family_state_map["rz"]
                 }
                 p_engine_api_map["set_state_fun"](restore_state_change_map);
 

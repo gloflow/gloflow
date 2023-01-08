@@ -1,7 +1,7 @@
 
 ///<reference path="./../../web/src/d/jquery.d.ts" />
 
-// import * as gf_lang     from "../ts/gf_lang";
+import * as gf_lang     from "../ts/gf_lang";
 import * as gf_examples from "./gf_examples";
 import * as gf_engine   from "../ts/engine/gf_engine";
 import * as gf_ide      from "../ts/ide/gf_ide";
@@ -12,14 +12,16 @@ declare var gf_lang_run;
 //-------------------------------------------------
 $(document).ready(()=>{
 
-    const go = new Go();
+    /*const go = new Go();
     WebAssembly.instantiateStreaming(fetch("./../go/build/gf_lang_web.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
 
         console.log("Golang WASM loaded");
 
         run();
-    });
+    });*/
+
+    run();
 
 });
 
@@ -255,8 +257,7 @@ function run() {
             console.log("animate")
         }
     }
-    gf_lang_run(first_scene__program_ast_lst, extern_api_map);
 
-
-    // gf_lang.run(first_scene__program_ast_lst);
+    // gf_lang_run(rules_test__program_ast_lst, extern_api_map);
+    gf_lang.run(rules_test__program_ast_lst);
 }
