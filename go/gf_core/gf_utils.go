@@ -62,19 +62,13 @@ func HashValSha256(pVal interface{}) string {
 // MAP
 //-------------------------------------------------------------
 
-func MapHasKey(pMap interface{}, pKeyStr string) bool {
+func MapHasKey[K string, V any](pMap map[K]V, pKeyStr string) bool {
+	keysLst := make([]string, 0, len(pMap))
+    for k := range pMap {
+        keysLst = append(keysLst, string(k))
+    }
 
-	if _, ok := pMap.(map[string]interface{}); ok {
-		_, ok := pMap.(map[string]interface{})[pKeyStr]
-		return ok
-
-	} else if _, ok := pMap.(map[string]string); ok {
-		_, ok := pMap.(map[string]string)[pKeyStr]
-		return ok
-	}
-
-	panic("no handler for map type")
-	return false
+	return ListContainsStr(pKeyStr, []string(keysLst))
 }
 
 //-------------------------------------------------------------
