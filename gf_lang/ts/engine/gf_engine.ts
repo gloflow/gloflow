@@ -279,9 +279,8 @@ export function init(p_shader_defs_map) {
 			
 			//------------------------------------
 			// COORDINATE_ORIGIN
-			if (Object.keys(p_state_change_map).includes("property_name_str") && 
-				p_state_change_map["property_name_str"] == "coord_origin") {
-
+			// if (Object.keys(p_state_change_map).includes("property_name_str") && p_state_change_map["property_name_str"] == "coord_origin") {
+			if (p_state_change_map["property_name_str"] == "coord_origin") {
 				const origin_type_str = p_state_change_map["origin_type_str"];
 
 				if (origin_type_str == "current_pos") {
@@ -295,13 +294,13 @@ export function init(p_shader_defs_map) {
 
 							// get absolute world position of the state at the time of the
 							// state change, so that it can be set as the new world origin.
-							const real_world_point_v3 = gf_engine_utils.get_real_world_pos(latest_coord_origin_v3.x + p_state_change_map["x"],
-								latest_coord_origin_v3.y + p_state_change_map["y"],
-								latest_coord_origin_v3.z + p_state_change_map["z"],
+							const real_world_point_v3 = gf_engine_utils.get_real_world_pos(latest_coord_origin_v3.x + p_state_change_map["x_f"], // p_state_change_map["x"],
+								latest_coord_origin_v3.y + p_state_change_map["y_f"], // p_state_change_map["y"],
+								latest_coord_origin_v3.z + p_state_change_map["z_f"], // p_state_change_map["z"],
 
-								p_state_change_map["rx"],
-								p_state_change_map["ry"],
-								p_state_change_map["rz"],
+								p_state_change_map["rotation_x_f"], // p_state_change_map["rx"],
+								p_state_change_map["rotation_y_f"], // p_state_change_map["ry"],
+								p_state_change_map["rotation_z_f"], // p_state_change_map["rz"],
 
 								// stack is used to get the latest coordinate system origin,
 								// since the supplied state_change x/y/z coords are relative to that
@@ -315,7 +314,12 @@ export function init(p_shader_defs_map) {
 							
 							const new_coord_origin_point_v3 = real_world_point_v3;
 							coord_origins_stack_lst.push(new_coord_origin_point_v3);
-							rotations_stack_lst.push([p_state_change_map["rx"], p_state_change_map["ry"], p_state_change_map["rz"]]);
+
+							// rotations_stack_lst.push([p_state_change_map["rx"], p_state_change_map["ry"], p_state_change_map["rz"]]);
+							rotations_stack_lst.push([
+								p_state_change_map["rotation_x_f"],
+								p_state_change_map["rotation_y_f"],
+								p_state_change_map["rotation_z_f"]]);
 
 							break;
 						
@@ -335,9 +339,8 @@ export function init(p_shader_defs_map) {
 
 			//------------------------------------
 			// ROTATION_PIVOT_POINT
-			if (Object.keys(p_state_change_map).includes("property_name_str") && 
-				p_state_change_map["property_name_str"] == "rotation_pivot") {
-
+			// if (Object.keys(p_state_change_map).includes("property_name_str") && p_state_change_map["property_name_str"] == "rotation_pivot") {
+			if (p_state_change_map["property_name_str"] == "rotation_pivot") {
 				switch (p_state_change_map["setter_type_str"]) {
 
 					// PUSH
@@ -351,12 +354,12 @@ export function init(p_shader_defs_map) {
 							// p_state_change_map["x"]/y/z only are not enough, since they're not what gets applied
 							// to objects directly, instead rotations also get applied to objects
 							// (and objects are often the povit points that are used)
-							const real_world_point_v3 = gf_engine_utils.get_real_world_pos(p_state_change_map["x"],
-								p_state_change_map["y"],
-								p_state_change_map["z"],
-								p_state_change_map["rx"],
-								p_state_change_map["ry"],
-								p_state_change_map["rz"],
+							const real_world_point_v3 = gf_engine_utils.get_real_world_pos(p_state_change_map["x_f"], // p_state_change_map["x"],
+								p_state_change_map["y_f"], // p_state_change_map["y"],
+								p_state_change_map["z_f"], // p_state_change_map["z"],
+								p_state_change_map["rotation_x_f"], // p_state_change_map["rx"],
+								p_state_change_map["rotation_y_f"], // p_state_change_map["ry"],
+								p_state_change_map["rotation_z_f"], // p_state_change_map["rz"],
 
 								// stack is used to get the latest pivot point to apply for rotation
 								rotation_pivot_points_stack_lst);
@@ -380,7 +383,7 @@ export function init(p_shader_defs_map) {
 
 			//------------------------------------
 			// COLOR
-			if (Object.keys(p_state_change_map).includes("color_rgb")) {
+			/*if (Object.keys(p_state_change_map).includes("color_rgb")) {
 				
 				const color = p_state_change_map["color_rgb"];
 
@@ -406,10 +409,40 @@ export function init(p_shader_defs_map) {
 				});
 
 				return [three_color.r, three_color.g, three_color.b];
+			}*/
+			if (p_state_change_map["property_name_str"] == "color_rgb_lst") {
+				
+				const color_lst = p_state_change_map["color_rgb_lst"];
+				const [r, g, b] = color_lst;
+				const three_color = new THREE.Color(r, g, b);
+				
+				material = new THREE.MeshBasicMaterial({
+					color:               three_color,
+					polygonOffset:       true,
+					polygonOffsetFactor: 1, // positive value pushes polygon further away
+					polygonOffsetUnits:  1
+				});
+
+				return [three_color.r, three_color.g, three_color.b];
+			}
+			if (p_state_change_map["property_name_str"] == "color_rgb_hex") {
+				
+				const color_hex_str = p_state_change_map["color_rgb_hex_str"];
+				const three_color   = new THREE.Color(color_hex_str);
+				
+				material = new THREE.MeshBasicMaterial({
+					color:               three_color,
+					polygonOffset:       true,
+					polygonOffsetFactor: 1, // positive value pushes polygon further away
+					polygonOffsetUnits:  1
+				});
+
+				return [three_color.r, three_color.g, three_color.b];
 			}
 
+			//------------------------------------
 			// COLOR_BACKGROUND
-			if (Object.keys(p_state_change_map).includes("color_background")) {
+			/*if (Object.keys(p_state_change_map).includes("color_background")) {
 				const color = p_state_change_map["color_background"];
 				
 				var bg_color;
@@ -424,11 +457,27 @@ export function init(p_shader_defs_map) {
 				color_background = bg_color;
 				// renderer.setClearColor(bg_color, 1);
 				scene_3d.background = bg_color;
+			}*/
+			if (p_state_change_map["property_name_str"] == "color_background_rgb_lst") {
+				const color_lst = p_state_change_map["color_background_rgb_lst"];
+				const [r, g, b] = color_lst;
+				const bg_color  = new THREE.Color(r, g, b);
+
+				color_background    = bg_color;
+				scene_3d.background = bg_color;
+			}
+			if (p_state_change_map["property_name_str"] == "color_background_rgb_hex") {
+				const color_hex_str = p_state_change_map["color_background_hex_str"];
+				const bg_color      = new THREE.Color(color_hex_str);
+				
+				color_background    = bg_color;
+				scene_3d.background = bg_color;
 			}
 
 			//------------------------------------
 			// MATERIAL
-			if (Object.keys(p_state_change_map).includes("material_type_str")) {
+			// if (Object.keys(p_state_change_map).includes("material_type_str")) {
+			if (p_state_change_map["property_name_str"] == "material_type") {
 
 				const material_type_str = p_state_change_map["material_type_str"];
 
@@ -463,7 +512,7 @@ export function init(p_shader_defs_map) {
 			};
 			*/
 
-			if (Object.keys(p_state_change_map).includes("material_prop_map")) {
+			/*if (Object.keys(p_state_change_map).includes("material_prop_map")) {
 				const material_prop_change_map = p_state_change_map["material_prop_map"];
 
 				if (Object.keys(material_prop_change_map).includes("material_shader_name_str")) {
@@ -475,11 +524,21 @@ export function init(p_shader_defs_map) {
 
 					material.uniforms[material_shader_uniform_name_str].value = material_shader_uniform_val;
 				}
+			}*/
+			if (p_state_change_map["property_name_str"] == "material_shader_uniform") {
+					const material_shader_name_str         = p_state_change_map["material_shader_name_str"];
+					const material_shader_uniform_name_str = p_state_change_map["material_shader_uniform_name_str"];
+					const material_shader_uniform_val      = p_state_change_map["material_shader_uniform_val"];
+
+					const material = material_shader_active;
+
+					material.uniforms[material_shader_uniform_name_str].value = material_shader_uniform_val;
 			}
 
 			//------------------------------------
 			// LINE_START
-			if (Object.keys(p_state_change_map).includes("line_cmd_str")) {
+			// if (Object.keys(p_state_change_map).includes("line_cmd_str")) {
+			if (p_state_change_map["property_name_str"] == "line_cmd") {
 
 				if (p_state_change_map["line_cmd_str"] == "start") {
 					line_points_lst = []; // reset line memory

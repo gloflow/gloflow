@@ -27,39 +27,6 @@ import (
 
 //-------------------------------------------------
 
-type GFstate struct {
-    Xf          float64
-    Yf          float64
-    Zf          float64
-    RotationXf  float64
-    RotationYf  float64
-    RotationZf  float64
-    ScaleXf     float64
-    ScaleYf     float64
-    ScaleZf     float64
-    ColorRedF   float64
-    ColorGreenF float64
-    ColorBlueF  float64
-
-    // global max number of iterations for any rule
-    ItersMaxInt int
-
-    // list of all rules that are executing
-    RulesNamesStackLst []string
-
-    VarsMap map[string]interface{}
-
-    // global iterations number for a particular root expression
-    ItersNumGlobalInt int
-    
-    // stack of iteration numbers for each rule as its entered
-    RulesItersNumStackLst []int
-
-    // ANIMATIONS - map of animations that are currently active
-    //              in a subexpression or its children
-    AnimationsActiveMap map[string]interface{}
-}
-
 type GFruleDefs map[string][]*GFruleDef
 type GFruleDef struct {
     NameStr        string
@@ -83,7 +50,8 @@ type GFgeometryFunc func(float64, float64, float64,
     float64, float64, float64)
 
 type GFexternAPI struct {
-    SetStateFun     func(map[string]interface{}) []interface{}
+    InitEngineFun   func(map[string]interface{})
+    SetStateFun     func(GFstateChange) []interface{}
     CreateCubeFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
     CreateSphereFun func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
     CreateLineFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
@@ -124,6 +92,9 @@ func Run(pProgramASTlst []interface{},
     if err != nil {
         return err
     }
+    
+    // INIT_ENGINE
+    pExternAPI.InitEngineFun(shaderDefsMap)
     
     //------------------------------------
     // AST_EXECUTION

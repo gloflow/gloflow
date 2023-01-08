@@ -28,6 +28,41 @@ import (
 )
 
 //-------------------------------------------------
+
+type GFstate struct {
+    Xf          float64
+    Yf          float64
+    Zf          float64
+    RotationXf  float64
+    RotationYf  float64
+    RotationZf  float64
+    ScaleXf     float64
+    ScaleYf     float64
+    ScaleZf     float64
+    ColorRedF   float64
+    ColorGreenF float64
+    ColorBlueF  float64
+
+    // global max number of iterations for any rule
+    ItersMaxInt int
+
+    // list of all rules that are executing
+    RulesNamesStackLst []string
+
+    VarsMap map[string]interface{}
+
+    // global iterations number for a particular root expression
+    ItersNumGlobalInt int
+    
+    // stack of iteration numbers for each rule as its entered
+    RulesItersNumStackLst []int
+
+    // ANIMATIONS - map of animations that are currently active
+    //              in a subexpression or its children
+    AnimationsActiveMap map[string]interface{}
+}
+
+//-------------------------------------------------
 // FAMILY - state family is a new root state and all its children
 //          that are merged into each other.
 //          they have their own coordinate system origin.

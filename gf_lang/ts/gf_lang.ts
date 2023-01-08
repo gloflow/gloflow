@@ -263,6 +263,7 @@ function load_rule_defs(p_program_ast_lst) {
 
 //-------------------------------------------------
 function load_shader_defs(p_program_ast_lst) {
+    
     const shader_defs_map = {};
     for (var i=0; i<p_program_ast_lst.length;) {
 

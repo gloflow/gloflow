@@ -1,8 +1,10 @@
 
 ///<reference path="./../../web/src/d/jquery.d.ts" />
 
-import * as gf_lang     from "../ts/gf_lang";
+// import * as gf_lang     from "../ts/gf_lang";
 import * as gf_examples from "./gf_examples";
+import * as gf_engine   from "../ts/engine/gf_engine";
+import * as gf_ide      from "../ts/ide/gf_ide";
 
 declare var Go;
 declare var gf_lang_run;
@@ -21,6 +23,16 @@ $(document).ready(()=>{
 
 });
 
+//-------------------------------------------------
+// must cast as any to set property on window
+const _global = window as any;
+_global.test_global = test_global;
+
+function test_global() {
+    console.log("test global")
+}
+
+//-------------------------------------------------
 function run() {
     const examples_map                        = gf_examples.get();
     const first_scene__program_ast_lst        = examples_map["first_scene__program_ast_lst"];
@@ -196,9 +208,55 @@ function run() {
     ];
 
 
-    gf_lang_run(first_scene__program_ast_lst);
+    var engine_api_map;
+    const extern_api_map = {
+        "init_engine_fun": function(p_shader_defs_map) {
+            console.log("init engine", p_shader_defs_map)
+
+            // ENGINE
+            engine_api_map = gf_engine.init(p_shader_defs_map);
+
+            // IDE
+            gf_ide.init(engine_api_map);
+        },
+        "set_state_fun": function(p_state_change_map) {
+
+            engine_api_map["set_state_fun"](p_state_change_map)
+        },
+        "create_cube_fun": function(p_x, p_y, p_z,
+			p_rx, p_ry, p_rz,
+			p_sx, p_sy, p_sz,
+			p_cr, p_cg, p_cb) {
+
+            engine_api_map["create_cube_fun"](p_x, p_y, p_z,
+                p_rx, p_ry, p_rz,
+                p_sx, p_sy, p_sz,
+                p_cr, p_cg, p_cb);
+        },
+        "create_sphere_fun": function(p_x, p_y, p_z,
+			p_rx, p_ry, p_rz,
+			p_sx, p_sy, p_sz,
+			p_cr, p_cg, p_cb) {
+            engine_api_map["create_sphere_fun"](p_x, p_y, p_z,
+                p_rx, p_ry, p_rz,
+                p_sx, p_sy, p_sz,
+                p_cr, p_cg, p_cb);
+        },
+        "create_line_fun": function(p_x, p_y, p_z,
+			p_rx, p_ry, p_rz,
+			p_sx, p_sy, p_sz,
+			p_cr, p_cg, p_cb) {
+            engine_api_map["create_line_fun"](p_x, p_y, p_z,
+                p_rx, p_ry, p_rz,
+                p_sx, p_sy, p_sz,
+                p_cr, p_cg, p_cb);
+        },
+        "animate_fun": function() {
+            console.log("animate")
+        }
+    }
+    gf_lang_run(first_scene__program_ast_lst, extern_api_map);
 
 
     // gf_lang.run(first_scene__program_ast_lst);
-
 }
