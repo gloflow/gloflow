@@ -99,6 +99,8 @@ func Run(pProgramASTlst []interface{},
     //------------------------------------
     // AST_EXECUTION
 
+    fmt.Println("executing AST...")
+
     i:=0
     for _, rootExpression := range expandedProgramASTlst {
 
@@ -289,6 +291,8 @@ func expandTree(pExpressionASTlst []interface{},
 
 func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
 
+    fmt.Println("loading rule defs...")
+
     ruleDefsMap := map[string][]*GFruleDef{}
 
     for i:=0; i < len(pProgramASTlst); {
@@ -322,7 +326,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
                 // remove the rule definition element from the program_ast, 
                 // as it has been expanded and loaded and ready for execution,
                 // it doesnt need to be iterated over during execution.
-                gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+                pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
 
                 // run next iteration without incrementing "i"
                 continue
@@ -362,7 +366,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) GFruleDefs {
                 // remove the rule definition element from the program_ast, 
                 // as it has been expanded and loaded and ready for execution,
                 // it doesnt need to be iterated over during execution.
-                gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+                pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
 
                 // run next iteration without incrementing "i"
                 continue
@@ -422,10 +426,10 @@ func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, error
                 }
             }
 
-            // remove the rule definition element from the program_ast, 
+            // remove the shader definition element from the program_ast, 
             // as it has been expanded and loaded and ready for execution,
             // it doesnt need to be iterated over during execution.
-            gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
+            pProgramASTlst = gf_core.ListRemoveElementAtIndex(pProgramASTlst, i)
         }
 
         i+=1
