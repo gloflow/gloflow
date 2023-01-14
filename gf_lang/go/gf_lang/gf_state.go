@@ -50,7 +50,7 @@ type GFstate struct {
     RulesNamesStackLst []string
 
     // VARIABLES
-    VarsMap map[string]*GFvariable
+    VarsMap map[string]*GFvariableVal
 
     // global iterations number for a particular root expression
     ItersNumGlobalInt int
@@ -236,8 +236,8 @@ func stateGetEmpty() *GFstate {
         ScaleZf: 1.0,
         ItersMaxInt: 250,
         RulesNamesStackLst: []string{"root",},
-        VarsMap: map[string]*GFvariable{
-            "$i": &GFvariable{
+        VarsMap: map[string]*GFvariableVal{
+            "$i": &GFvariableVal{
                 NameStr: "i",
                 Val:     0,
             },
@@ -296,10 +296,10 @@ func statePropGet(pState *GFstate,
 // VARIABLES
 //-------------------------------------------------
 func stateVariableCreate(pVariableNameStr string,
-    pState *GFstate) *GFvariable {
+    pState *GFstate) *GFvariableVal {
 
     var newVal interface{}
-    variable := &GFvariable{
+    variable := &GFvariableVal{
         NameStr: pVariableNameStr,
         Val:     newVal,
     }

@@ -47,6 +47,32 @@ func executeTree(pExpressionASTlst []interface{},
     // clone in case of mutations of expression
     expressionLst := cloneExpr(pExpressionASTlst)
 
+
+
+    //-------------------------------------------------
+    handleSubExpressionFun := func(pSubExprLst []interface{}) (interface{}, error) {
+            
+        // RECURSION
+        childState, subExprResult, err := executeTree(pSubExprLst,
+            state,
+            pRulesDefsMap,
+            pShaderDefsMap,
+            pStateFamilyStackLst,
+            pExternAPI)
+        if err != nil {
+            return nil, err
+        }
+
+        mergedState, err := stateMergeChild(state, childState)
+        if err != nil {
+            return nil, err
+        }
+        state = mergedState
+        return subExprResult, nil
+    }
+
+    //-------------------------------------------------
+
     // iterate over each expression element
     for i:=0; i < len(expressionLst); i++ {
 
@@ -108,6 +134,24 @@ func executeTree(pExpressionASTlst []interface{},
             // SUB_EXPRESSION
 
             subExprLst := element.([]interface{})
+            subExprResult, err := handleSubExpressionFun(subExprLst)
+            if err != nil {
+                return nil, nil, err
+            }
+
+            // sub-expression evaluated to a value
+            if subExprResult != nil {
+
+                // substitute sub-expression for its results
+                expressionLst[i] = subExprResult
+                
+                // continue looping through the expression elements,
+                // without incrementing "i". because we evaluated the expression
+                // at position "i" and substituted results of that expression at that slot.
+                continue
+            }
+            
+            /*subExprLst := element.([]interface{})
             
             // recursion
             childState, subExprResult, err := executeTree(subExprLst,
@@ -137,7 +181,7 @@ func executeTree(pExpressionASTlst []interface{},
                 // without incrementing "i". because we evaluated the expression
                 // at position "i" and substituted results of that expression at that slot.
                 continue
-            }
+            }*/
 
             //------------------------------------
 
@@ -251,6 +295,34 @@ func executeTree(pExpressionASTlst []interface{},
             break
 
             //------------------------------------
+        
+        } else if elementIsStrBool && isVar(elementStr) && i==0 {
+
+            //------------------------------------
+            // VARIABLE
+            // as the first element is the expression. 
+            // when assigning to a variable (["$some", 10])
+            // the name of the var is always expected to be the first.
+
+            varNameStr := expressionLst[0].(string)
+            varValUnevaluated := expressionLst[1]
+
+            fmt.Printf("variable %s\n", varNameStr)
+
+            //------------------------------------
+            // EVALUATE
+            // variable assignments can for now be relativelly simple expressions,
+            // numbers, other variable references,
+            // and simple arithmetic and system_function expressions. 
+            varVal, err := exprEval(varValUnevaluated, state, pExternAPI)
+            if err != nil {
+                return nil, nil, err
+            }
+
+            expressionResult := varVal
+            return state, expressionResult, nil
+            
+            //------------------------------------
 
         } else {
 
@@ -260,7 +332,9 @@ func executeTree(pExpressionASTlst []interface{},
             ruleNameStr := elementStr
 
             if i != len(expressionLst)-1 {
-                return nil, nil, errors.New(fmt.Sprintf("rule %s call can only be the last element in expression", ruleNameStr))
+                return nil, nil, errors.New(fmt.Sprintf("rule call can only be the last element in expression; name %s, expression %s",
+                    ruleNameStr,
+                    expressionLst))
             }
 
             newState, err := exprRuleCall(ruleNameStr,

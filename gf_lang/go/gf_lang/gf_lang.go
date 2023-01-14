@@ -45,7 +45,7 @@ type GFsymbols struct {
     SystemFunctionsLst      []string
 }
 
-type GFvariable struct {
+type GFvariableVal struct {
     NameStr string
     Val     interface{}
 }
@@ -140,6 +140,27 @@ func expandTree(pExpressionASTlst []interface{},
     pTreeLevelInt int) ([]interface{}, error) {
 
     expressionLst := cloneExpr(pExpressionASTlst) // clone in case of mutations of expression
+
+    //-------------------------------------------------
+    // SUB_EXPRESSION
+    // [...]
+
+    handleSubExpressionFun := func(pSubExpressionLst []interface{}, pIndexInt int) error {
+
+        // RECURSION
+        expandedSubExpressionLst, err := expandTree(pSubExpressionLst, pTreeLevelInt+1)
+        if err != nil {
+            return err
+        }
+
+        // IMPORTANT!! - splice the expanded sub-expression in the place of the old unexpanded element
+        expressionLst[pIndexInt] = expandedSubExpressionLst
+
+        return nil
+    }
+
+    //-------------------------------------------------
+
     for i:=0; i < len(expressionLst); {
 
         element := expressionLst[i]
@@ -208,14 +229,92 @@ func expandTree(pExpressionASTlst []interface{},
                 return nil, errors.New("* operator has to be the first element in the expression");
             }
 
-            operand1 := expressionLst[i+1]
-            operand2 := expressionLst[i+2]
+            operand1indexInt := i+1
+            operand2indexInt := i+2
+
+            operand1 := expressionLst[operand1indexInt]
+            operand2 := expressionLst[operand2indexInt]
             
-            if _, ok := operand1.(float64); !ok {
-                return nil, errors.New("first operand of multiplication expression is not a number")
+
+
+            // check operand2 first, if its a subexpression that expand it.
+            // then when operand1 is evaluated and if its statically defined, operand2 can be cloned N times.
+            if operand2subExpressionLst, ok := operand2.([]interface{}); ok {
+                err := handleSubExpressionFun(operand2subExpressionLst, operand2indexInt)
+                if err != nil {
+                    return nil, err
+                }
+
+                //-----------
+                // rewind to start, since the expression has a possibly new form (after run of handleSubExpressionFun() which might expand the expression list),
+                // and should be re-processed
+                i=0
+
+                // go straight to new iteration, without incrementing 'i' (keeping it at 0 instead)
+                continue
+
+                //-----------
             }
 
-            if _, ok := operand2.([]interface{}); ok {
+
+            _, operand1isNumBool    := operand1.(float64)
+            _, operand1isListBool   := operand1.([]interface{})
+            _, operand1isStringBool := operand1.(string)
+
+
+            fmt.Println("* operand 1 is", operand1isNumBool, operand1isListBool, operand1isStringBool)
+
+
+            // operand1 is not a static value so cant be expanded at compile time.
+            // instead skip, and it will be handled dynamically at interpretation time.
+            // do some validation of it if its a variable reference, and if subexpression then
+            // handle it as such.
+            //
+            // first operand not being a float64 use to be an error, it was meant for static/compile-time expansion.
+            // return nil, errors.New(fmt.Sprintf("first operand of multiplication expression is not a number - %s", expressionLst))
+            if !operand1isNumBool {
+
+                // SUB_EXPRESSION
+                subExpressionLst, _ := operand1.([]interface{})
+                if operand1isListBool {
+                    err := handleSubExpressionFun(subExpressionLst, operand1indexInt)
+                    if err != nil {
+                        return nil, err
+                    }
+
+                    // both operand2 and operand1 have been expanded at this point,
+                    // so exit the loop for processing this multiply subexpression.
+                    break
+                }
+                
+                // VARIABLE
+                operand1str, _ := operand1.(string)
+                if operand1isStringBool {
+                    varStr := operand1str
+
+                    // verify variable reference
+                    err := varVerify(varStr)
+                    if err != nil {
+                        return nil, err
+                    }
+
+                    // when handling variables no expansion is done.
+                    // since operand2 was already expanded, this multiplication statement 
+                    break
+                }
+                
+                if !(operand1isNumBool && operand1isListBool && operand1isStringBool) {
+                    // if operand1 is not a number, or list, or variable reference
+                    return nil, errors.New(fmt.Sprintf("first operand of multiplication expression is not a number or a sub_expression list or a string (variable reference) - %s", expressionLst))
+                }
+            }
+
+
+
+
+
+            // operand1 is a float64 (static/compile-time) so the expansion of the operand2 can be completed.
+            if _, ok := operand2.([]interface{}); ok && operand1isNumBool {
 
                 expressionToMultiplyLst := operand2.([]interface{})
                 factorInt               := int(operand1.(float64))
@@ -235,30 +334,26 @@ func expandTree(pExpressionASTlst []interface{},
                 // and multiplication expression itself eliminated/replaced by new cloned expressions
                 expressionLst = expandedExpressionsLst
 
-                i=0      // rewind to start, since the expression has a new form, and should be re-processed
-                continue // go straight to new iteration, without incrementing 'i' (keeping it at 0 instead)
+                //-----------
+                // rewind to start, since the expression has a new form, and should be re-processed (where operand2 is multiplied
+                // at compile-time multiple times)
+                i=0
+                
+                // go straight to new iteration, without incrementing 'i' (keeping it at 0 instead)
+                continue
+
+                //-----------
             }
 
             //------------------------------------
 
-        } else if _, ok := element.([]interface{}); ok {
+        } else if subExpressionLst, ok := element.([]interface{}); ok {
 
-            //------------------------------------
             // SUB_EXPRESSION
-            // [...]
-
-            subExpressionLst := element.([]interface{})
-            
-            // RECURSION
-            expandedSubExpressionLst, err := expandTree(subExpressionLst, pTreeLevelInt+1)
+            err := handleSubExpressionFun(subExpressionLst, i)
             if err != nil {
                 return nil, err
             }
-
-            // IMPORTANT!! - splice the expanded sub-expression in the place of the old unexpanded element
-            expressionLst[i] = expandedSubExpressionLst
-
-            //------------------------------------
 
         } else if elementIsStrBool && elementStr == "lang_v" {
 

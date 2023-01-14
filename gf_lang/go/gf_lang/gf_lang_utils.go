@@ -38,14 +38,19 @@ func exprEval(pExpr interface{},
 
     symbols := getSymbolsAndConstants()
 
+    //-------------
     // NUMBER
     if valF, ok := pExpr.(float64); ok {
         return valF, nil
+    
+    //-------------
 
     } else if exprStr, ok := pExpr.(string); ok {
 
-        if strings.HasPrefix(exprStr, "$") {
-            // VAR_REFERENCE
+        if isVar(exprStr) {
+
+            //-------------
+            // VAR_REFERENCE            
 
             // for now only system-defined vars are available, no user-defined vars yet.
             if !gf_core.ListContainsStr(exprStr, symbols.SystemVarsLst) {
@@ -60,6 +65,8 @@ func exprEval(pExpr interface{},
             }
 
             return varValue.Val, nil
+
+            //-------------
         }
 
     } else if _, ok := pExpr.([]interface{}); ok {
@@ -83,12 +90,17 @@ func exprEval(pExpr interface{},
 
         } else if isSysFunc(exprLst) {
 
+            //-------------
             // SYSTEM_FUNCTION
+            // these are mosly functions that are in turn invoking external_api functions.
+
             val, err := sysFuncEval(exprLst, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
             return val, nil
+
+            //-------------
         }
     }
     return nil, nil
@@ -248,16 +260,32 @@ func sysFuncEval(pExprLst []interface{},
 //-------------------------------------------------
 // VARIABLES
 
-func varEval(pVarStr string, pState *GFstate) (*GFvariable, error) {
+func varEval(pVarStr string, pState *GFstate) (*GFvariableVal, error) {
 
-    if !strings.HasPrefix(pVarStr, "$") {
-        return nil, errors.New(fmt.Sprintf("variable string %s has no '$' prefixed", pVarStr))
+    // VERIFY
+    err := varVerify(pVarStr)
+    if err != nil {
+        return nil, err
     }
 
     // read value
     varValue := pState.VarsMap[pVarStr]
 
     return varValue, nil
+}
+
+func varVerify(pVarStr string) error {
+    if !strings.HasPrefix(pVarStr, "$") {
+        return errors.New(fmt.Sprintf("variable string %s has no '$' prefixed", pVarStr))
+    }
+    return nil
+}
+
+func isVar(pVarStr string) bool {
+    if strings.HasPrefix(pVarStr, "$") {
+        return true
+    }
+    return false
 }
 
 //-------------------------------------------------
@@ -354,8 +382,8 @@ func cloneExprNtimes(pExprLst []interface{}, pNint int) []interface{} {
 // CLONE_VARS
 
 // clone program vars. this still assumes simple variables with primitive values.
-func cloneVars(pVarsMap map[string]*GFvariable) map[string]*GFvariable {
-    cloneMap := map[string]*GFvariable{}
+func cloneVars(pVarsMap map[string]*GFvariableVal) map[string]*GFvariableVal {
+    cloneMap := map[string]*GFvariableVal{}
     for k, v := range pVarsMap {
         cloneMap[k] = v
     }
