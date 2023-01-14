@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"net/http"
 	"context"
+	"regexp"
+	"strings"
 	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -34,12 +36,11 @@ import (
 
 func main() {
 
-	fmt.Println("GF_LANG >>")
+	fmt.Println("\n   GF_LANG SERVER >>\n")
 
 	serverPortInt := 5000
-	programASTlst := []interface{}{}
 	
-	logFun, logNewFun := gf_core.LogsInit()
+	logFun, logNewFun := gf_core.LogsInitNew(true, "DEBUG")
 	log.SetOutput(os.Stdout)
 
 	runtimeSys := &gf_core.RuntimeSys{
@@ -48,6 +49,15 @@ func main() {
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 	}
+
+	//--------------------------
+	localTestProgramStr := "./tests/rpc_test.gf"
+	programASTlst, gfErr := ParseProgramASTfromFile(localTestProgramStr, runtimeSys)
+	if gfErr != nil {
+		panic(1)
+	}
+
+	//--------------------------
 
 	externAPI := gf_lang.GFexternAPI{
 
@@ -117,18 +127,20 @@ func main() {
 					pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 					
-					programASTlst := h.CodeASTlst
+					handlerProgramASTlst := h.CodeASTlst
 
 					//---------------------
 					// RUN_CODE
-					err := gf_lang.Run(programASTlst,
+					runtimeSys.LogNewFun("DEBUG", "about to run a gf_lang program...", nil)
+
+					err := gf_lang.Run(handlerProgramASTlst,
 						pExternAPI)
 					
 					if err != nil {
 
 						gfErr := gf_core.ErrorCreate("failed to execute gf_lang program in a rpc handler",
 							"gf_lang_program_run_failed",
-							map[string]interface{}{"program_ast_lst": programASTlst,},
+							map[string]interface{}{"program_ast_lst": handlerProgramASTlst,},
 							err, "gf_lang", runtimeSys)
 						return nil, gfErr
 					}
@@ -166,6 +178,7 @@ func main() {
 		//---------------------------------------------
 	}
 	
+	// RUN
 	err := gf_lang.Run(programASTlst,
 		externAPI)
 	
@@ -173,4 +186,47 @@ func main() {
 		panic(err)
 	}
 
+}
+
+//-------------------------------------------------
+
+func ParseProgramASTfromFile(pLocalFilePathStr string,
+	pRuntimeSys *gf_core.RuntimeSys) ([]interface{}, *gf_core.GFerror) {
+
+	//------------------------
+	// READ_FILE
+	programCodeStr, gfErr := gf_core.FileRead(pLocalFilePathStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	//------------------------
+	// REMOVE_COMMENTS
+	commentRegex := regexp.MustCompile(`(?m)(.*)//.*$`)
+
+	cleanJSONcodeStr := ""
+	for _, lineStr := range strings.Split(programCodeStr, "\n") {
+
+		lineNoCommentsStr := commentRegex.ReplaceAllString(lineStr, "$1")
+
+		if strings.TrimSpace(lineNoCommentsStr) != "" {
+			cleanJSONcodeStr += fmt.Sprintf("%s\n", lineNoCommentsStr)
+		}
+	}
+
+	fmt.Println("clean JSON code:", cleanJSONcodeStr)
+
+	//------------------------
+	// PARSE
+
+	code, gfErr := gf_core.ParseJSONfromString(cleanJSONcodeStr, pRuntimeSys)
+	if gfErr != nil {
+		return nil, gfErr
+	}
+
+	codeLst := code.([]interface{})
+
+	//------------------------
+    
+	return codeLst, nil
 }

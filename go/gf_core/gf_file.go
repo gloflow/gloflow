@@ -24,6 +24,31 @@ import (
 	"io/ioutil"
 )
 
+//---------------------------------------------------
+
+func FileRead(pLocalFilePathStr string,
+	pRuntimeSys *RuntimeSys) (string, *GFerror) {
+
+	file, err := os.Open(pLocalFilePathStr)
+	if err != nil {
+		gfErr := ErrorCreate("OS failed to open a file for JSON reading",
+			"file_open_error",
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
+			err, "gf_core", pRuntimeSys)
+		return "", gfErr
+	}
+
+	bytesLst, err := ioutil.ReadAll(file)
+    if err != nil {
+        gfErr := ErrorCreate("failed to read all data from a file, for JSON parsing",
+			"file_open_error",
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
+			err, "gf_gif_lib", pRuntimeSys)
+		return "", gfErr
+    }
+
+	return string(bytesLst), nil
+}
 
 //---------------------------------------------------
 

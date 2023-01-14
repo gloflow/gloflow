@@ -59,10 +59,10 @@ func ParseJSONfromByteList(pBytesLst []byte,
 //---------------------------------------------------
 
 func ParseJSONfromString(pJSONstr string,
-	pRuntimeSys *RuntimeSys) (map[string]interface{}, *GFerror) {
+	pRuntimeSys *RuntimeSys) (interface{}, *GFerror) {
 
-	var outputMap map[string]interface{}
-	err := json.Unmarshal([]byte(pJSONstr), &outputMap)
+	var output interface{}
+	err := json.Unmarshal([]byte(pJSONstr), &output)
 
 	if err != nil {
 		gfErr := ErrorCreate("failed to parse json string",
@@ -74,5 +74,5 @@ func ParseJSONfromString(pJSONstr string,
 		return nil, gfErr
 	}
 
-	return outputMap, nil
+	return output, nil
 }

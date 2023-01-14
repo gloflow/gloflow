@@ -354,7 +354,7 @@ func storePreviewFrames(pLocalFilePathSrc string,
 
 //--------------------------------------------------
 
-func gifFramesSaveToFS(pLocalFilePathSrc string,
+func gifFramesSaveToFS(pLocalFilePathStr string,
 	p_frames_images_dir_path_str string,
 	p_frames_num_to_get_int      int,
 	pRuntimeSys                  *gf_core.RuntimeSys) ([]string, *gf_core.GFerror) {
@@ -364,23 +364,23 @@ func gifFramesSaveToFS(pLocalFilePathSrc string,
 
 	pRuntimeSys.LogFun("INFO", "")
 	pRuntimeSys.LogFun("INFO", cyan("       --- GIF")+" - "+cyan("GET_FRAMES"))
-	pRuntimeSys.LogFun("INFO", black(pLocalFilePathSrc))
+	pRuntimeSys.LogFun("INFO", black(pLocalFilePathStr))
 	pRuntimeSys.LogFun("INFO", "")
 
 	//---------------------
 	// GIF_GET_DIMENSIONS
-	img_width_int, img_height_int, gfErr := getDimensions(pLocalFilePathSrc, pRuntimeSys)
+	img_width_int, img_height_int, gfErr := getDimensions(pLocalFilePathStr, pRuntimeSys)
 	if gfErr != nil {
 		return nil, gfErr
 	}
 
 	//---------------------
 
-	file, err := os.Open(pLocalFilePathSrc)
+	file, err := os.Open(pLocalFilePathStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("OS failed to open a GIF file to then save its frames as individual files",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 			err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
@@ -392,17 +392,17 @@ func gifFramesSaveToFS(pLocalFilePathSrc string,
 		if r := recover(); r != nil {
 			_ = gf_core.ErrorCreate("Gif__frames__save_to_fs() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+				map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
 
-	gif_image,gif_err := gif.DecodeAll(file)
+	gif_image, gif_err := gif.DecodeAll(file)
 
 	if gif_err != nil {
 		gfErr := gf_core.ErrorCreate("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
 		return nil, gfErr
 	}
@@ -418,7 +418,7 @@ func gifFramesSaveToFS(pLocalFilePathSrc string,
 		image.ZP,
 		draw.Src)
 
-	source_file_name_str := filepath.Base(pLocalFilePathSrc)
+	source_file_name_str := filepath.Base(pLocalFilePathStr)
 	new_files_names_lst  := []string{}
 
 	// IMPORTANT!! - save GIF frames to .png files on local filesystem
@@ -477,14 +477,14 @@ func gifFramesSaveToFS(pLocalFilePathSrc string,
 
 //--------------------------------------------------
 
-func getDimensions(pLocalFilePathSrc string,
+func getDimensions(pLocalFilePathStr string,
 	pRuntimeSys *gf_core.RuntimeSys) (int, int, *gf_core.GFerror) {
 
-	file, err := os.Open(pLocalFilePathSrc)
+	file, err := os.Open(pLocalFilePathStr)
 	if err != nil {
 		gfErr := gf_core.ErrorCreate("OS failed to open a file to get image dimensions",
 			"file_open_error",
-			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 			err, "gf_gif_lib", pRuntimeSys)
 		return 0, 0, gfErr
 	}
@@ -496,7 +496,7 @@ func getDimensions(pLocalFilePathSrc string,
 		if r := recover(); r != nil {
 			_ = gf_core.ErrorCreate("getDimensions() has failed, a panic was caught, likely from gif.DecodeAll()",
 				"panic_error",
-				map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+				map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 				err, "gf_gif_lib", pRuntimeSys)
 		}
 	}()
@@ -506,7 +506,7 @@ func getDimensions(pLocalFilePathSrc string,
 	if gif_err != nil {
 		gfErr := gf_core.ErrorCreate("gif.DecodeAll() failed to parse a gif in order to save its frames to FS",
 			"gif_decoding_frames_error",
-			map[string]interface{}{"local_file_path_src": pLocalFilePathSrc,},
+			map[string]interface{}{"local_file_path_str": pLocalFilePathStr,},
 			gif_err, "gf_gif_lib", pRuntimeSys)
 		return 0, 0, gfErr
 	}
