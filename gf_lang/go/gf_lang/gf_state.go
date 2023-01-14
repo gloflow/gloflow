@@ -49,7 +49,8 @@ type GFstate struct {
     // list of all rules that are executing
     RulesNamesStackLst []string
 
-    VarsMap map[string]interface{}
+    // VARIABLES
+    VarsMap map[string]*GFvariable
 
     // global iterations number for a particular root expression
     ItersNumGlobalInt int
@@ -106,7 +107,8 @@ func stateCreateNewFamily(pStateParent *GFstate) *GFstate {
 // VAR
 //-------------------------------------------------
 
-func stateMergeChild(pState *GFstate, pChildState *GFstate) (*GFstate, error) {
+func stateMergeChild(pState *GFstate,
+    pChildState *GFstate) (*GFstate, error) {
     
     if pChildState == nil {
         return nil, errors.New("supplied child_state_map is nil")
@@ -127,6 +129,7 @@ func stateMergeChild(pState *GFstate, pChildState *GFstate) (*GFstate, error) {
     pState.ItersMaxInt        = pChildState.ItersMaxInt
     pState.RulesNamesStackLst = pChildState.RulesNamesStackLst
 
+    //----------------------
     // rule iteration count ("$i") has to propagate up the expression tree,
     // from child expressions to parent expressions, as a part of the state.
     // however $i only travels up to the root of a particular rule.
@@ -136,6 +139,8 @@ func stateMergeChild(pState *GFstate, pChildState *GFstate) (*GFstate, error) {
     }
     pState.VarsMap["$i"] = varVal
 
+    //----------------------
+    
     // what is the global number of iteratios executed relative to the root state
     pState.ItersNumGlobalInt = pChildState.ItersNumGlobalInt
 
@@ -169,8 +174,11 @@ func stateCreateNew(pStateParent *GFstate) *GFstate {
         stateNew.ColorRedF   = pStateParent.ColorRedF
         stateNew.ColorGreenF = pStateParent.ColorGreenF
         stateNew.ColorBlueF  = pStateParent.ColorBlueF
+
         stateNew.ItersMaxInt        = pStateParent.ItersMaxInt
         stateNew.RulesNamesStackLst = cloneRulesNamesStack(pStateParent.RulesNamesStackLst) // clone
+        
+        // VARS
         stateNew.VarsMap            = cloneVars(pStateParent.VarsMap)                       // clone
 
         stateNew.ItersNumGlobalInt     = pStateParent.ItersNumGlobalInt
@@ -228,8 +236,11 @@ func stateGetEmpty() *GFstate {
         ScaleZf: 1.0,
         ItersMaxInt: 250,
         RulesNamesStackLst: []string{"root",},
-        VarsMap: map[string]interface{}{
-            "$i": 0,
+        VarsMap: map[string]*GFvariable{
+            "$i": &GFvariable{
+                NameStr: "i",
+                Val:     0,
+            },
         },
 
         RulesItersNumStackLst: []int{0,},
@@ -279,4 +290,19 @@ func statePropGet(pState *GFstate,
     field     := reflect.ValueOf(pState).Elem().FieldByName(propInternalNameStr)
     fieldValF := field.Float()
     return fieldValF
+}
+
+//-------------------------------------------------
+// VARIABLES
+//-------------------------------------------------
+func stateVariableCreate(pVariableNameStr string,
+    pState *GFstate) *GFvariable {
+
+    var newVal interface{}
+    variable := &GFvariable{
+        NameStr: pVariableNameStr,
+        Val:     newVal,
+    }
+    pState.VarsMap[pVariableNameStr] = variable
+    return nil
 }

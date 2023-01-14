@@ -45,18 +45,9 @@ type GFsymbols struct {
     SystemFunctionsLst      []string
 }
 
-type GFgeometryFunc func(float64, float64, float64,
-    float64, float64, float64,
-    float64, float64, float64,
-    float64, float64, float64)
-
-type GFexternAPI struct {
-    InitEngineFun   func(map[string]interface{})
-    SetStateFun     func(GFstateChange) []interface{}
-    CreateCubeFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
-    CreateSphereFun func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
-    CreateLineFun   func(float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64, float64)
-    AnimateFun      func([]map[string]interface{}, float64, bool)
+type GFvariable struct {
+    NameStr string
+    Val     interface{}
 }
 
 //-------------------------------------------------

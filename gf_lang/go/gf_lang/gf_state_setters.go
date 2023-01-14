@@ -94,15 +94,15 @@ func execExpr(pSetterTypeStr string,
             sy := valsLst[1]
             sz := valsLst[2] 
 
-            sxResult, err := exprEval(sx, pState)
+            sxResult, err := exprEval(sx, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
-            syResult, err := exprEval(sy, pState)
+            syResult, err := exprEval(sy, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
-            szResult, err := exprEval(sz, pState)
+            szResult, err := exprEval(sz, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
@@ -310,7 +310,7 @@ func execExpr(pSetterTypeStr string,
                 // ARITHMETIC_EXPRESSION
 
                 subExprLst := uniformValLst
-                mulResult, err := arithmeticEval(subExprLst, pState)
+                mulResult, err := arithmeticEval(subExprLst, pState, pExternAPI)
                 if err != nil {
                     return nil, err
                 }

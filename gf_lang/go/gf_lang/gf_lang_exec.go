@@ -71,17 +71,21 @@ func executeTree(pExpressionASTlst []interface{},
 
                 subExprLst := modifierLst
 
+                //--------------------
+                // SYSTEM_FUNCTION
                 if isSysFunc(subExprLst) {
 
-                    result, err := sysFuncEval(subExprLst)
+                    result, err := sysFuncEval(subExprLst, state, pExternAPI)
                     if err != nil {
                         return nil, nil, err
                     }
 
                     modifierFinalValF = result.(float64)
+                
+                //--------------------
 
                 } else {
-                    resultF, err := arithmeticEval(subExprLst, state)
+                    resultF, err := arithmeticEval(subExprLst, state, pExternAPI)
                     if err != nil {
                         return nil, nil, err
                     }
@@ -142,7 +146,7 @@ func executeTree(pExpressionASTlst []interface{},
             //------------------------------------
             // ARITHMETIC
 
-            arithmeticResult, err := arithmeticEval(expressionLst, state)
+            arithmeticResult, err := arithmeticEval(expressionLst, state, pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
@@ -386,7 +390,7 @@ func exprRuleCall(pCalledRuleNameStr string,
                 newState.RulesNamesStackLst = newRulesNamesStackLst
 
                 oldRuleItersNumInt := ruleGetItersNum(newState)
-                newState.VarsMap["$i"] = oldRuleItersNumInt
+                newState.VarsMap["$i"].Val = oldRuleItersNumInt
                 
                 //-----------------
 
@@ -615,11 +619,11 @@ func exprConditional(pExpressionLst []interface{},
         }
 
         //-------------------------------------------------
-        op1val, err := exprEval(operand1, pState)
+        op1val, err := exprEval(operand1, pState, pExternAPI)
         if err != nil {
             return false, err
         }
-        op2val, err := exprEval(operand2, pState)
+        op2val, err := exprEval(operand2, pState, pExternAPI)
         if err != nil {
             return false, err
         }
@@ -691,7 +695,7 @@ func exprPrint(pExpressionLst []interface{},
                     return err
                 }
 
-                valFmtStr := fmt.Sprintf("%s=%s ", varRefStr, varVal)
+                valFmtStr := fmt.Sprintf("%s=%s ", varRefStr, varVal.Val)
                 valsStr += valFmtStr
             
             } else {
