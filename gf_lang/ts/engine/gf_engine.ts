@@ -118,6 +118,46 @@ export function init(p_shader_defs_map) {
 	});
 
 	//-------------------------------------------------
+	// RPC_CALL
+	function rpc_call(p_node_str :string,
+		p_module_str   :string,
+		p_function_str :string,
+		p_args_lst) {
+
+		const p = new Promise(function(p_resolve_fun, p_reject_fun) {
+			const data_map = { 
+				"module_str":   p_module_str,
+				"function_str": p_function_str,
+				"args_lst":     p_args_lst,
+			};
+			
+			// URL
+			const url_str = '/v1/admin/users/delete';
+
+			$.ajax({
+				'url':         url_str,
+				'type':        'POST',
+				'data':        JSON.stringify(data_map),
+				'contentType': 'application/json',
+				'success':     (p_response_map)=>{
+					const status_str = p_response_map["status"];
+					const data_map   = p_response_map["data"];
+	
+					if (status_str == "OK") {
+						p_resolve_fun(data_map);
+					} else {
+						p_reject_fun(data_map);
+					}
+				},
+				'error': (jqXHR, p_text_status_str)=>{
+					p_reject_fun(p_text_status_str);
+				}
+			});
+		});
+		return p;
+	}
+
+	//-------------------------------------------------
 	// CREATE_LINE
 
 	var line_points_lst = [];
@@ -266,6 +306,12 @@ export function init(p_shader_defs_map) {
 
 		"scene_3d":                scene_3d,
 		"coord_origins_stack_lst": coord_origins_stack_lst,
+
+		//-------------------------------------------------
+		// RPC_CALL
+		"rpc_call": (p_node_str, p_module_str, p_function_str, p_args_lst)=>{
+			rpc_call(p_node_str, p_module_str, p_function_str, p_args_lst);
+		},
 
 		//-------------------------------------------------
 		"get_state_fun": (p_state_prop_name_str)=>{

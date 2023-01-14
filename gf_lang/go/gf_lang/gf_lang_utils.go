@@ -1,4 +1,3 @@
-
 /*
 GloFlow application and media management/publishing platform
 Copyright (C) 2022 Ivan Trajkovic
@@ -33,7 +32,9 @@ import (
 // EVALUATION
 //-------------------------------------------------
 
-func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
+func exprEval(pExpr interface{},
+    pState     *GFstate,
+    pExternAPI GFexternAPI) (interface{}, error) {
 
     symbols := getSymbolsAndConstants()
 
@@ -58,7 +59,7 @@ func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
                 return nil, err
             }
 
-            return varValue, nil
+            return varValue.Val, nil
         }
 
     } else if _, ok := pExpr.([]interface{}); ok {
@@ -71,7 +72,7 @@ func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
         //-------------
         // ARITHMETIC_OPERATION
         if firstElementIsStrBool && gf_core.MapHasKey(symbols.ArithmeticOpsMap, arithmeticOpStr) {
-            val, err := arithmeticEval(exprLst, pState)
+            val, err := arithmeticEval(exprLst, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
@@ -83,7 +84,7 @@ func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
         } else if isSysFunc(exprLst) {
 
             // SYSTEM_FUNCTION
-            val, err := sysFuncEval(exprLst)
+            val, err := sysFuncEval(exprLst, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
@@ -96,7 +97,9 @@ func exprEval(pExpr interface{}, pState *GFstate) (interface{}, error) {
 //-------------------------------------------------
 // ARITHMETIC_EVALUATION
 
-func arithmeticEval(pExprLst []interface{}, pState *GFstate) (*float64, error) {
+func arithmeticEval(pExprLst []interface{},
+    pState     *GFstate,
+    pExternAPI GFexternAPI) (*float64, error) {
 
     symbols := getSymbolsAndConstants()
 
@@ -125,7 +128,7 @@ func arithmeticEval(pExprLst []interface{}, pState *GFstate) (*float64, error) {
 
             // system_function sub-expression
             if isSysFunc(subExprLst) {
-                subResult, err := sysFuncEval(subExprLst)
+                subResult, err := sysFuncEval(subExprLst, pState, pExternAPI)
                 if err != nil {
                     return nil, err
                 }
@@ -134,7 +137,7 @@ func arithmeticEval(pExprLst []interface{}, pState *GFstate) (*float64, error) {
 
                 // arithmetic sub-expression
 
-                subResult, err := arithmeticEval(subExprLst, pState)
+                subResult, err := arithmeticEval(subExprLst, pState, pExternAPI)
                 if err != nil {
                     return nil, err
                 }
@@ -149,7 +152,7 @@ func arithmeticEval(pExprLst []interface{}, pState *GFstate) (*float64, error) {
                 if err != nil {
                     return nil, err
                 }
-                operand = varVal
+                operand = varVal.Val
             } else {
                 return nil, errors.New("operator is a string but not a variable reference with '$'")
             }
@@ -195,21 +198,49 @@ func isSysFunc(pExprLst []interface{}) bool {
     return false
 }
 
-func sysFuncEval(pExprLst []interface{}) (interface{}, error) {
+func sysFuncEval(pExprLst []interface{},
+    pState     *GFstate,
+    pExternAPI GFexternAPI) (interface{}, error) {
     
     funcNameStr := pExprLst[0].(string)
-    argsLst     := pExprLst[1].([]interface{})
+    argsExprLst := pExprLst[1].([]interface{})
     
     var val interface{}
-    if funcNameStr == "rand" {
-        if len(argsLst) != 2 {
+    switch funcNameStr {
+
+    //---------------------
+    // RAND
+    case "rand":
+        if len(argsExprLst) != 2 {
             return nil, errors.New("'rand' system function only takes 2 argument")
         }
 
-        randomRangeMinF := argsLst[0].(float64)
-        randomRangeMaxF := argsLst[1].(float64)
+        randomRangeMinF := argsExprLst[0].(float64)
+        randomRangeMaxF := argsExprLst[1].(float64)
         valF := rand.Float64()*(randomRangeMaxF - randomRangeMinF) + randomRangeMinF
         val = interface{}(valF)
+
+    //---------------------
+    // RPC_CALL
+    case "rpc_call":
+        
+        responseMap, err := rpcCallEval(argsExprLst, pState, pExternAPI)
+        if err != nil {
+            return nil, err
+        }
+
+        fmt.Println(responseMap)
+
+    //---------------------
+    // RPC_SERVE
+    case "rpc_serve":
+
+        err := rpcServeEval(argsExprLst, pState, pExternAPI)
+        if err != nil {
+            return nil, err
+        }
+
+    //---------------------
     }
     return val, nil
 }
@@ -217,12 +248,15 @@ func sysFuncEval(pExprLst []interface{}) (interface{}, error) {
 //-------------------------------------------------
 // VARIABLES
 
-func varEval(pVarStr string, pState *GFstate) (interface{}, error) {
+func varEval(pVarStr string, pState *GFstate) (*GFvariable, error) {
 
     if !strings.HasPrefix(pVarStr, "$") {
         return nil, errors.New(fmt.Sprintf("variable string %s has no '$' prefixed", pVarStr))
     }
+
+    // read value
     varValue := pState.VarsMap[pVarStr]
+
     return varValue, nil
 }
 
@@ -257,14 +291,14 @@ func incrementItersNum(pState *GFstate) int {
     newRuleItersNumInt := ruleGetItersNum(pState) + 1
 
     pState.RulesItersNumStackLst[len(pState.RulesItersNumStackLst)-1] = newRuleItersNumInt
-    pState.VarsMap["$i"] = newRuleItersNumInt
+    pState.VarsMap["$i"].Val = newRuleItersNumInt
     
     return newRuleItersNumInt
 }
 
 func addNewItersNumState(pState *GFstate) {
     pState.RulesItersNumStackLst = append(pState.RulesItersNumStackLst, 0)
-    pState.VarsMap["$i"] = 0
+    pState.VarsMap["$i"].Val = 0
 }
 
 //-------------------------------------------------
@@ -277,7 +311,7 @@ func restorePreviousRulesItersNum(pState *GFstate) {
     pState.RulesItersNumStackLst = newRulesItersNumStackLst
 
     // reinitialize $i to the parents number of iterations
-    pState.VarsMap["$i"] = pState.RulesItersNumStackLst[len(pState.RulesItersNumStackLst)-1]
+    pState.VarsMap["$i"].Val = pState.RulesItersNumStackLst[len(pState.RulesItersNumStackLst)-1]
 }
 
 //-------------------------------------------------
@@ -317,15 +351,18 @@ func cloneExprNtimes(pExprLst []interface{}, pNint int) []interface{} {
 }
 
 //-------------------------------------------------
+// CLONE_VARS
 
 // clone program vars. this still assumes simple variables with primitive values.
-func cloneVars(pVarsMap map[string]interface{}) map[string]interface{} {
-    cloneMap := map[string]interface{}{}
+func cloneVars(pVarsMap map[string]*GFvariable) map[string]*GFvariable {
+    cloneMap := map[string]*GFvariable{}
     for k, v := range pVarsMap {
         cloneMap[k] = v
     }
     return cloneMap
 }
+
+//-------------------------------------------------
 
 func cloneItersNumStack(pRulesItersNumStackLst []int) []int {
     copyLst := make([]int, len(pRulesItersNumStackLst))
@@ -394,7 +431,8 @@ func getSymbolsAndConstants() *GFsymbols {
         "$i", // current rule iteration
     }
     systemFunctionsLst := []string{
-        "rand", // random number generator
+        "rand",     // random number generator,
+        "rpc_call", // remot procedure call
     }
 
     symbols := &GFsymbols{

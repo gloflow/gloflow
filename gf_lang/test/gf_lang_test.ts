@@ -1,3 +1,21 @@
+/*
+GloFlow application and media management/publishing platform
+Copyright (C) 2023 Ivan Trajkovic
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
 
 ///<reference path="./../../web/src/d/jquery.d.ts" />
 
@@ -12,16 +30,16 @@ declare var gf_lang_run;
 //-------------------------------------------------
 $(document).ready(()=>{
 
-    const go = new Go();
+    /*const go = new Go();
     WebAssembly.instantiateStreaming(fetch("./../go/build/gf_lang_web.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
 
         console.log("Golang WASM loaded");
 
         run();
-    });
+    });*/
 
-    // run();
+    run();
 
 });
 
@@ -258,6 +276,6 @@ function run() {
         }
     }
 
-    gf_lang_run(color_test__program_ast_lst, extern_api_map);
-    // gf_lang.run(rules_test__program_ast_lst);
+    // gf_lang_run(color_test__program_ast_lst, extern_api_map);
+    gf_lang.run(gray_fabric__program_ast_lst);
 }

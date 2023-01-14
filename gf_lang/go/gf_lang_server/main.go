@@ -21,7 +21,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 )
 
 //-------------------------------------------------
@@ -30,10 +32,15 @@ func main() {
 
 	fmt.Println("GF_LANG >>")
 
-	programASTlst := [][]interface{}{}
-
+	serverPortInt := 5000
+	programASTlst := []interface{}{}
+	
 	externAPI := gf_lang.GFexternAPI{
-		SetStateFun: func(pNewStateMap map[string]interface{}) []interface{} {
+
+		InitEngineFun: func(pShaderDefsMap map[string]interface{}) {
+			fmt.Println("init_engine")
+		},
+		SetStateFun: func(pStateChange gf_lang.GFstateChange) []interface{} {
 			fmt.Println("set state")
 			return nil
 		},
@@ -64,6 +71,53 @@ func main() {
 
 			fmt.Println("animate")
 		},
+
+		//---------------------------------------------
+		// RPC_CALL
+		RPCcall: func(pNodeStr string, // node
+			pModuleStr   string,       // module
+			pFunctionStr string,       // function
+			pArgsLst     []interface{}) map[string]interface{} { // args list
+			
+
+			return nil
+
+
+		},
+
+		//---------------------------------------------
+		// RPC_SERVE
+		RPCserve: func(pNodeNameStr string,
+			pHandlersLst []*gf_lang.GFrpcServerHandler,
+			pExternAPI   gf_lang.GFexternAPI) {
+
+			// HTTP_MUX
+			HTTPmux := http.NewServeMux()
+
+			for _, h := range pHandlersLst {
+				handlerFun := func() {
+
+					programASTlst := h.CodeASTlst
+
+					//---------------------
+					// RUN_CODE
+					gf_lang.Run(programASTlst,
+						pExternAPI)
+
+					//---------------------
+				}
+
+				fmt.Println(handlerFun)
+			}
+
+			//-------------
+			// SERVER_INIT - blocking
+			gf_rpc_lib.ServerInitWithMux("gf_lang", serverPortInt, HTTPmux)
+
+			//-------------
+		},
+
+		//---------------------------------------------
 	}
 	
 	err := gf_lang.Run(programASTlst,
