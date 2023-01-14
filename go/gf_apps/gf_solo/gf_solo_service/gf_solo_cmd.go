@@ -88,7 +88,7 @@ func CmdsInit(pExternalPlugins *gf_core.ExternalPlugins) *cobra.Command {
 	}
 
 	//--------------------
-	// START_SERVICE
+	// INFO_GIT_COMMIT_SHA
 	cmdInfoGitCommitSHA := &cobra.Command{
 		Use:   "git_commit_sha",
 		Short: "get git commit sha",

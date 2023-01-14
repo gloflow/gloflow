@@ -423,6 +423,13 @@ func errorGetDefs() map[string]ErrorDef {
 		},
 
 		//---------------
+		// GF_LANG
+
+		"gf_lang_program_run_failed": ErrorDef{
+			DescrStr: "failed to execute a gf_lang program",
+		},
+		
+		//---------------
 	}
 	return errorDefsMap
 }

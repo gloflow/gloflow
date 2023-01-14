@@ -20,10 +20,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"os"
 	"fmt"
 	"net/http"
+	"context"
+	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //-------------------------------------------------
@@ -35,6 +39,16 @@ func main() {
 	serverPortInt := 5000
 	programASTlst := []interface{}{}
 	
+	logFun, logNewFun := gf_core.LogsInit()
+	log.SetOutput(os.Stdout)
+
+	runtimeSys := &gf_core.RuntimeSys{
+		ServiceNameStr: "gf_lang_server",
+		EnvStr:         "dev",
+		LogFun:         logFun,
+		LogNewFun:      logNewFun,
+	}
+
 	externAPI := gf_lang.GFexternAPI{
 
 		InitEngineFun: func(pShaderDefsMap map[string]interface{}) {
@@ -95,18 +109,50 @@ func main() {
 			HTTPmux := http.NewServeMux()
 
 			for _, h := range pHandlersLst {
-				handlerFun := func() {
 
+				//-------------------------------------------------
+				// handler_fun
+				handlerFun := func(pCtx context.Context,
+					pResp http.ResponseWriter,
+					pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+					
 					programASTlst := h.CodeASTlst
 
 					//---------------------
 					// RUN_CODE
-					gf_lang.Run(programASTlst,
+					err := gf_lang.Run(programASTlst,
 						pExternAPI)
+					
+					if err != nil {
+
+						gfErr := gf_core.ErrorCreate("failed to execute gf_lang program in a rpc handler",
+							"gf_lang_program_run_failed",
+							map[string]interface{}{"program_ast_lst": programASTlst,},
+							err, "gf_lang", runtimeSys)
+						return nil, gfErr
+					}
 
 					//---------------------
+					
+					outputMap := map[string]interface{}{
+
+					}
+					return outputMap, nil
 				}
 
+				//-------------------------------------------------
+
+
+				gf_rpc_lib.CreateHandlerHTTPwithMux(h.URLpathStr,
+					handlerFun,
+					HTTPmux,
+					nil,
+					false, // pStoreRunBool
+					nil,
+					runtimeSys)
+
+					
 				fmt.Println(handlerFun)
 			}
 
