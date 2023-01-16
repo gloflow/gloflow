@@ -24,6 +24,7 @@ import (
     "errors"
     "strings"
     "github.com/gloflow/gloflow/go/gf_core"
+    // "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -128,12 +129,11 @@ func executeTree(pExpressionASTlst []interface{},
             i+=1 // fast-forward, modifiers can be listed sequentially in the same expression
             continue
 
-        } else if _, ok := element.([]interface{}); ok {
+        } else if subExprLst, ok := element.(GFexpr); ok {
 
             //------------------------------------
             // SUB_EXPRESSION
 
-            subExprLst := element.([]interface{})
             subExprResult, err := handleSubExpressionFun(subExprLst)
             if err != nil {
                 return nil, nil, err
@@ -304,21 +304,12 @@ func executeTree(pExpressionASTlst []interface{},
             // when assigning to a variable (["$some", 10])
             // the name of the var is always expected to be the first.
 
-            varNameStr := expressionLst[0].(string)
-            valUnevaluated := expressionLst[1]
 
-            fmt.Printf("variable %s\n", varNameStr)
-
-            // EVALUATE
-            // variable assignments can for now be relativelly simple expressions,
-            // numbers, other variable references,
-            // and simple arithmetic and system_function expressions. 
-            varVal, err := exprEval(valUnevaluated, state, pExternAPI)
+            expressionResult, err := execVarExpr(expressionLst, state, pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
-
-            expressionResult := varVal
+           
             return state, expressionResult, nil
             
             //------------------------------------

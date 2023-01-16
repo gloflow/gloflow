@@ -38,6 +38,32 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestVariables(pTest *testing.T) {
+	
+	_, logNewFun := gf_core.LogsInit()
+	externAPI := getTestExternAPI()
+
+	// program
+	programASTlst := GFexpr{
+		GFexpr{"lang_v", "0.0.6"},
+		GFexpr{
+			GFexpr{"$test_var", 10},
+			GFexpr{"return", "$test_var"},
+		},
+	}
+
+	// run program
+	resultsLst, err := Run(programASTlst, externAPI)
+	if err != nil {
+		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		pTest.Fail()
+	}
+
+	spew.Dump(resultsLst)
+}
+
+//---------------------------------------------------
+
 func TestReturnExpression(pTest *testing.T) {
 	
 	_, logNewFun := gf_core.LogsInit()
