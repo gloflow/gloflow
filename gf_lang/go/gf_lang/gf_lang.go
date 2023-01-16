@@ -27,12 +27,13 @@ import (
 )
 
 //-------------------------------------------------
-
+type GFexpr     []interface{}
 type GFruleDefs map[string][]*GFruleDef
+
 type GFruleDef struct {
     NameStr        string
     ModifiersMap   map[string]interface{}
-    ExpressionsLst []interface{}
+    ExpressionsLst GFexpr
 }
 
 type GFsymbols struct {
@@ -52,18 +53,18 @@ type GFvariableVal struct {
 
 //-------------------------------------------------
 
-func Run(pProgramASTlst []interface{},
-    pExternAPI GFexternAPI) error {
+func Run(pProgramASTlst GFexpr,
+    pExternAPI GFexternAPI) ([]interface{}, error) {
 
     //------------------------------------
     // AST_EXPANSION
-    expandedProgramASTlst := []interface{}{}
+    expandedProgramASTlst := GFexpr{}
     for _, rootExpression := range pProgramASTlst {
 
-        rootExpressionLst := rootExpression.([]interface{})
+        rootExpressionLst := rootExpression.(GFexpr)
         expandedRootExpressionLst, err := expandTree(rootExpressionLst, 0)
         if err != nil {
-            return err
+            return nil, err
         }
 
         // only include expressions which are not "expanded" to expression of 0 length
@@ -82,7 +83,7 @@ func Run(pProgramASTlst []interface{},
     
     shaderDefsMap, programASTnoShaderDefsLst, err := loadShaderDefs(programASTlnoRuleDefsLst)
     if err != nil {
-        return err
+        return nil, err
     }
     
     // INIT_ENGINE
@@ -95,6 +96,7 @@ func Run(pProgramASTlst []interface{},
     spew.Dump(programASTnoShaderDefsLst)
 
     i:=0
+    exprResultsLst := []interface{}{}
     for _, rootExpression := range programASTnoShaderDefsLst {
 
         rootState := stateCreateNew(nil)
@@ -116,22 +118,25 @@ func Run(pProgramASTlst []interface{},
         //------------------------------------
         rootExpressionLst := rootExpression.([]interface{})
 
-        _, _, err := executeTree(rootExpressionLst,
+        _, exprResult, err := executeTree(rootExpressionLst,
             rootState,
             ruleDefsMap,
             shaderDefsMap,
             stateFamilyStackLst,
             pExternAPI)
         if err != nil {
-            return err
+            return nil, err
         }
+
+        // accumulate as many results as there are top-level expressions
+        exprResultsLst = append(exprResultsLst, exprResult)
         
         i+=1
     }
     
     //------------------------------------
 
-    return nil
+    return exprResultsLst, nil
 }
 
 //-------------------------------------------------

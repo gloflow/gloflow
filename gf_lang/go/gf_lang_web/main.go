@@ -53,7 +53,7 @@ func main() {
 		spew.Dump(loadedProgramASTlst)
 		
 
-		err := gf_lang.Run(loadedProgramASTlst,
+		_, err := gf_lang.Run(loadedProgramASTlst,
 			loadedExternAPI)
 		
 		if err != nil {

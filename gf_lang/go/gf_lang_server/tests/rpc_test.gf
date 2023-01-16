@@ -22,7 +22,7 @@
 
         //------------------------------
         // draw as many spheres as there are elements in the response r.data list
-        ["*", ["len", "$r.data"], "sphere"]
+        ["*", ["len", ["$r.data"]], "sphere"]
 
         //------------------------------
     ]

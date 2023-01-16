@@ -195,7 +195,7 @@ func executeTree(pExpressionASTlst []interface{},
                 return nil, nil, err
             }
 
-            expressionResult := arithmeticResult
+            expressionResult := *arithmeticResult
             return state, expressionResult, nil
 
             //------------------------------------
@@ -305,16 +305,15 @@ func executeTree(pExpressionASTlst []interface{},
             // the name of the var is always expected to be the first.
 
             varNameStr := expressionLst[0].(string)
-            varValUnevaluated := expressionLst[1]
+            valUnevaluated := expressionLst[1]
 
             fmt.Printf("variable %s\n", varNameStr)
 
-            //------------------------------------
             // EVALUATE
             // variable assignments can for now be relativelly simple expressions,
             // numbers, other variable references,
             // and simple arithmetic and system_function expressions. 
-            varVal, err := exprEval(varValUnevaluated, state, pExternAPI)
+            varVal, err := exprEval(valUnevaluated, state, pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
@@ -322,6 +321,23 @@ func executeTree(pExpressionASTlst []interface{},
             expressionResult := varVal
             return state, expressionResult, nil
             
+            //------------------------------------
+        
+        } else if elementIsStrBool && elementStr == "return" && i==0 {
+
+            //------------------------------------
+            // RETURN
+            valUnevaluated := expressionLst[1]
+
+            // EVALUATE
+            returnVal, err := exprEval(valUnevaluated, state, pExternAPI)
+            if err != nil {
+                return nil, nil, err
+            }
+
+            expressionResult := returnVal
+            return state, expressionResult, nil
+
             //------------------------------------
 
         } else {
@@ -778,6 +794,6 @@ func exprPrint(pExpressionLst []interface{},
         }
     }
 
-    fmt.Println(`gf %s`, valsStr)
+    fmt.Printf(`gf %s\n`, valsStr)
     return nil
 }

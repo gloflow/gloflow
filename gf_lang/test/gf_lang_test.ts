@@ -277,5 +277,5 @@ function run() {
     }
 
     // gf_lang_run(color_test__program_ast_lst, extern_api_map);
-    gf_lang.run(gray_fabric__program_ast_lst);
+    gf_lang.run(sphere_test__program_ast_lst);
 }

@@ -133,7 +133,7 @@ func main() {
 					// RUN_CODE
 					runtimeSys.LogNewFun("DEBUG", "about to run a gf_lang program...", nil)
 
-					err := gf_lang.Run(handlerProgramASTlst,
+					resultsLst, err := gf_lang.Run(handlerProgramASTlst,
 						pExternAPI)
 					
 					if err != nil {
@@ -148,7 +148,7 @@ func main() {
 					//---------------------
 					
 					outputMap := map[string]interface{}{
-
+						"results_lst": resultsLst,
 					}
 					return outputMap, nil
 				}
@@ -179,7 +179,7 @@ func main() {
 	}
 	
 	// RUN
-	err := gf_lang.Run(programASTlst,
+	_, err := gf_lang.Run(programASTlst,
 		externAPI)
 	
 	if err != nil {

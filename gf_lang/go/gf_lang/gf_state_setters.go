@@ -315,7 +315,7 @@ func execExpr(pSetterTypeStr string,
                     return nil, err
                 }
 
-                loadedVal = mulResult
+                loadedVal = *mulResult
 
             } else {
 

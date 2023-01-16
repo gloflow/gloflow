@@ -82,6 +82,12 @@ jobs:
       - uses: actions/checkout@v3
 
       #-------------------------------
+      # GF_LANG
+      - name: test gf_lang
+        run: |
+          cd /home/gf/gf_lang/go/gf_lang
+          go test -v
+
       # GF_IDENTITY_LIB
       - name: test gf_identity
         run: |
