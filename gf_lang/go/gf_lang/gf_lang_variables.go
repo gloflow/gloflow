@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"strings"
 	"errors"
+    "reflect"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -30,6 +31,7 @@ import (
 
 type GFvariableVal struct {
     NameStr string
+    TypeStr string // "string"|"number"|"list"
     Val     interface{}
 }
 
@@ -38,7 +40,6 @@ type GFvariableVal struct {
 func execVarAssignExpr(pExpr GFexpr,
 	pState     *GFstate,
 	pExternAPI GFexternAPI) error {
-
 
 	varNameStr := pExpr[0].(string)
 	valUnevaluated := pExpr[1]
@@ -58,12 +59,46 @@ func execVarAssignExpr(pExpr GFexpr,
 	// check if the variable is already created. in that case
 	// assign it the new value
 	if varVal, ok := pState.VarsMap[varNameStr]; ok {
-		varVal.Val = varNewVal
+
+        //------------------------------------
+        // UPDATE_EXISTING_VARIABLE
+
+        newValTypeStr, err := inferVarType(varNewVal)
+        if err != nil {
+            return err
+        }
+
+        if varVal.TypeStr != newValTypeStr {
+            return errors.New(fmt.Sprintf("trying to assign to variable %s of type %s a value %s of incompatible type %s",
+                varVal.TypeStr,
+                varNameStr,
+                varNewVal,
+                newValTypeStr))
+        }
+
+        if newValTypeStr == "list" {
+            // gurantee the list/[]interface{} type,
+            // since all lists in the code are first cast to GFexpr type by the preprocessor.
+            varNewValLst := varNewVal.([]interface{})
+            varVal.Val = varNewValLst
+        } else {
+            varVal.Val = varNewVal
+        }
+
+        //------------------------------------
+		
 	} else {
 
+        //------------------------------------
+        // CREATE_NEW_VARIABLE
 		// if var has not already been created, then create it
 		// and assign it the newly evaluated value.
-		_ = createVariable(varNameStr, varNewVal, pState)
+		_, err = createVariable(varNameStr, varNewVal, pState)
+        if err != nil {
+            return err
+        }
+
+        //------------------------------------
 	}
 
 	return nil
@@ -90,14 +125,32 @@ func varEval(pVarStr string, pState *GFstate) (*GFvariableVal, error) {
 
 func createVariable(pVariableNameStr string,
 	pInitVal interface{},
-    pState   *GFstate) *GFvariableVal {
+    pState   *GFstate) (*GFvariableVal, error) {
+    
+    fmt.Printf("create new variable - %s | %s\n", pVariableNameStr, pInitVal)
+
+    varTypeStr, err := inferVarType(pInitVal)
+    if err != nil {
+        return nil, err
+    }
 
     variable := &GFvariableVal{
         NameStr: pVariableNameStr,
-        Val:     pInitVal,
+        TypeStr: varTypeStr,
     }
+
+    if varTypeStr == "list" {
+
+        // gurantee the list/[]interface{} type,
+        // since all lists in the code are first cast to GFexpr type by the preprocessor.
+        varValLst := []interface{}(pInitVal.(GFexpr))
+        variable.Val = varValLst
+    } else {
+        variable.Val = pInitVal
+    }
+
     pState.VarsMap[pVariableNameStr] = variable
-    return nil
+    return variable, nil
 }
 
 //-------------------------------------------------
@@ -128,4 +181,26 @@ func cloneVars(pVarsMap map[string]*GFvariableVal) map[string]*GFvariableVal {
         cloneMap[k] = v
     }
     return cloneMap
+}
+
+//-------------------------------------------------
+
+func inferVarType(pVal interface{}) (string, error) {
+    
+    switch pVal.(type) {
+    case int:
+        return "int", nil
+    case float64:
+        return "float", nil
+    case string:
+        return "string", nil
+    case []interface{}:
+        return "list", nil
+    case GFexpr:
+        return "list", nil
+    default:
+        unknownTypeStr := reflect.TypeOf(pVal)
+        return "", errors.New(fmt.Sprintf("variable of unsupported type - %s", unknownTypeStr))
+    }
+    return "", nil
 }

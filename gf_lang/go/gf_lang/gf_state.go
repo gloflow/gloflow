@@ -252,6 +252,7 @@ func stateGetEmpty() *GFstate {
         VarsMap: map[string]*GFvariableVal{
             "$i": &GFvariableVal{
                 NameStr: "i",
+                TypeStr: "int",
                 Val:     0,
             },
         },

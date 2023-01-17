@@ -38,6 +38,44 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestLists(pTest *testing.T) {
+	_, logNewFun := gf_core.LogsInit()
+	externAPI := getTestExternAPI()
+
+	// program
+	programASTlst := GFexpr{
+		GFexpr{"lang_v", "0.0.6"},
+		
+		GFexpr{
+			"return", GFexpr{
+				GFexpr{"$test_list",        GFexpr{1, 2, 3,},},
+				GFexpr{"$test_list_length", GFexpr{"len", GFexpr{"$test_list",},},},
+				GFexpr{"return", "$test_list_length"},
+			},
+		},
+	}
+
+	// run program
+	resultsLst, err := Run(programASTlst, externAPI)
+	if err != nil {
+		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		pTest.Fail()
+	}
+
+	if len(resultsLst) != 1 {
+		logNewFun("ERROR", "results list should be 1 elements", nil)
+		pTest.Fail()
+	}
+	if resultsLst[0] != 3 {
+		logNewFun("ERROR", "first results should be equal to 3", map[string]interface{}{"result": resultsLst[0],})
+		pTest.Fail()
+	}
+	
+
+}
+
+//---------------------------------------------------
+
 func TestVariables(pTest *testing.T) {
 	
 	_, logNewFun := gf_core.LogsInit()
@@ -88,6 +126,7 @@ func TestReturnExpression(pTest *testing.T) {
 		GFexpr{"lang_v", "0.0.6"},
 		GFexpr{"return", 10},
 		GFexpr{"return", GFexpr{"*", 3, 12}},
+		GFexpr{"return", GFexpr{"return", GFexpr{"*", 10, 2}}},
 	}
 
 	// run program
@@ -99,7 +138,7 @@ func TestReturnExpression(pTest *testing.T) {
 
 	spew.Dump(resultsLst)
 
-	if len(resultsLst) != 2 {
+	if len(resultsLst) != 3 {
 		logNewFun("ERROR", "results list should be 2 elements", nil)
 		pTest.Fail()
 	}
@@ -111,6 +150,11 @@ func TestReturnExpression(pTest *testing.T) {
 
 	if int(resultsLst[1].(float64)) != 36 {
 		logNewFun("ERROR", "first results should be equal to 36", map[string]interface{}{"result": resultsLst[1],})
+		pTest.Fail()
+	}
+
+	if int(resultsLst[2].(float64)) != 20 {
+		logNewFun("ERROR", "first results should be equal to 20", map[string]interface{}{"result": resultsLst[2],})
 		pTest.Fail()
 	}
 }

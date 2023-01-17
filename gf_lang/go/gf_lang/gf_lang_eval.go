@@ -112,7 +112,12 @@ func exprEvalSimple(pExpr interface{},
             fmt.Println("complex sub-expression...")
 
             isComplexSubExprBool := true
-            return nil, isComplexSubExprBool, nil
+
+            // return exprLst as the evaluated value of the expression, and the flag to indicate that
+            // its a complex expression.
+            // its up to the caller then to either use this returned value as is, or to do further
+            // complex evaluation.
+            return exprLst, isComplexSubExprBool, nil
 
             //-------------
         }

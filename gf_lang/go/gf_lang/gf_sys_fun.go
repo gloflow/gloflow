@@ -55,7 +55,7 @@ func sysFuncEval(pExprLst []interface{},
     pExternAPI GFexternAPI) (interface{}, error) {
     
     funcNameStr := pExprLst[0].(string)
-    argsExprLst := pExprLst[1].([]interface{})
+    argsExprLst := pExprLst[1].(GFexpr)
     
     var val interface{}
     switch funcNameStr {
