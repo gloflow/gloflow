@@ -46,9 +46,14 @@ func TestVariables(pTest *testing.T) {
 	// program
 	programASTlst := GFexpr{
 		GFexpr{"lang_v", "0.0.6"},
+
+		// testing setting of a user variable, and referencing
+		// and returning it.
 		GFexpr{
-			GFexpr{"$test_var", 10},
-			GFexpr{"return", "$test_var"},
+			"return", GFexpr{
+					GFexpr{"$test_var", 10},
+					GFexpr{"return", "$test_var"},
+				},
 		},
 	}
 
@@ -60,6 +65,15 @@ func TestVariables(pTest *testing.T) {
 	}
 
 	spew.Dump(resultsLst)
+
+	if len(resultsLst) != 1 {
+		logNewFun("ERROR", "results list should be 1 elements", nil)
+		pTest.Fail()
+	}
+	if resultsLst[0] != 10 {
+		logNewFun("ERROR", "first results should be equal to 10", map[string]interface{}{"result": resultsLst[0],})
+		pTest.Fail()
+	}
 }
 
 //---------------------------------------------------

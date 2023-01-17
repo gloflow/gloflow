@@ -28,21 +28,21 @@ import (
 
 //---------------------------------------------------
 
-func exprEval(pExpr interface{},
+func exprEvalSimple(pExpr interface{},
     pState     *GFstate,
-    pExternAPI GFexternAPI) (interface{}, error) {
+    pExternAPI GFexternAPI) (interface{}, bool, error) {
 
     symbols := getSymbolsAndConstants()
 
     //-------------
     // NUMBER_FLOAT
     if valF, ok := pExpr.(float64); ok {
-        return valF, nil
+        return valF, false, nil
 
     //-------------
     // NUMBER_INT
     } else if valInt, ok := pExpr.(int); ok {
-        return valInt, nil
+        return valInt, false, nil
     
     //-------------
 
@@ -62,10 +62,10 @@ func exprEval(pExpr interface{},
 
             varValue, err := varEval(exprStr, pState)
             if err != nil {
-                return nil, err
+                return nil, false, err
             }
 
-            return varValue.Val, nil
+            return varValue.Val, false, nil
 
             //-------------
         }
@@ -80,11 +80,11 @@ func exprEval(pExpr interface{},
         if isStrBool && gf_core.MapHasKey(symbols.ArithmeticOpsMap, arithmeticOpStr) {
             val, err := arithmeticEval(exprLst, pState, pExternAPI)
             if err != nil {
-                return nil, err
+                return nil, false, err
             }
             
             valF := *val
-            return valF, nil
+            return valF, false, nil
         
         //-------------
 
@@ -96,14 +96,28 @@ func exprEval(pExpr interface{},
 
             val, err := sysFuncEval(exprLst, pState, pExternAPI)
             if err != nil {
-                return nil, err
+                return nil, false, err
             }
-            return val, nil
+            return val, false, nil
+
+            //-------------
+
+        } else {
+
+            //-------------
+            // COMPLEX_SUB_EXPRESSION
+            // its a more complex sub-expression and should not be handled by this function,
+            // meant for simple values or subexpressions.
+
+            fmt.Println("complex sub-expression...")
+
+            isComplexSubExprBool := true
+            return nil, isComplexSubExprBool, nil
 
             //-------------
         }
     }
-    return nil, nil
+    return nil, false, nil
 }
 
 //-------------------------------------------------
@@ -199,21 +213,4 @@ func arithmeticEval(pExprLst []interface{},
     // EVALUATE
     resultF := symbols.ArithmeticOpsMap[opStr](op1.(float64), op2.(float64))
     return &resultF, nil
-}
-
-//-------------------------------------------------
-// VARIABLES
-
-func varEval(pVarStr string, pState *GFstate) (*GFvariableVal, error) {
-
-    // VERIFY
-    err := varVerify(pVarStr)
-    if err != nil {
-        return nil, err
-    }
-
-    // read value
-    varValue := pState.VarsMap[pVarStr]
-
-    return varValue, nil
 }

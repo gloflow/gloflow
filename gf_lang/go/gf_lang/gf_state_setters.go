@@ -59,7 +59,7 @@ type GFstateChange struct {
 
 //-------------------------------------------------
 
-func execExpr(pSetterTypeStr string,
+func execStateSetterExpr(pSetterTypeStr string,
     pPropertyNameStr     string,
     pVals                interface{},
     pState               *GFstate,
@@ -94,15 +94,15 @@ func execExpr(pSetterTypeStr string,
             sy := valsLst[1]
             sz := valsLst[2] 
 
-            sxResult, err := exprEval(sx, pState, pExternAPI)
+            sxResult, _, err := exprEvalSimple(sx, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
-            syResult, err := exprEval(sy, pState, pExternAPI)
+            syResult, _, err := exprEvalSimple(sy, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }
-            szResult, err := exprEval(sz, pState, pExternAPI)
+            szResult, _, err := exprEvalSimple(sz, pState, pExternAPI)
             if err != nil {
                 return nil, err
             }

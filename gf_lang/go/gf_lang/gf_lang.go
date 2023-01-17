@@ -46,11 +46,6 @@ type GFsymbols struct {
     SystemFunctionsLst      []string
 }
 
-type GFvariableVal struct {
-    NameStr string
-    Val     interface{}
-}
-
 //-------------------------------------------------
 
 func Run(pProgramASTlst GFexpr,

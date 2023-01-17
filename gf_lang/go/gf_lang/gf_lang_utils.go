@@ -203,7 +203,7 @@ func getSymbolsAndConstants() *GFsymbols {
 // CHECKS
 //-------------------------------------------------
 
-func checkArithmeticOpExists(pOpToCheckStr string) bool {
+func checkIsArithmeticOp(pOpToCheckStr string) bool {
     for opStr, _ := range getSymbolsAndConstants().ArithmeticOpsMap {
         if pOpToCheckStr == opStr {
             return true
@@ -213,7 +213,14 @@ func checkArithmeticOpExists(pOpToCheckStr string) bool {
 }
 
 //-------------------------------------------------
-// CHECKS
+
+func checkIsReturnExpr(pExprLst GFexpr) bool {
+    if pExprLst[0].(string) == "return" {
+        return true
+    }
+    return false
+}
+
 //-------------------------------------------------
 
 func castToFloat(pN interface{}) float64 {

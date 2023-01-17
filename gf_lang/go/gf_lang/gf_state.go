@@ -130,14 +130,21 @@ func stateMergeChild(pState *GFstate,
     pState.RulesNamesStackLst = pChildState.RulesNamesStackLst
 
     //----------------------
-    // rule iteration count ("$i") has to propagate up the expression tree,
+    // VARS
+    // var values have to propagate up the expression tree,
     // from child expressions to parent expressions, as a part of the state.
-    // however $i only travels up to the root of a particular rule.
-    varVal, err := varEval("$i", pChildState)
+
+    // rule iteration count ("$i") has to propagate up the expression tree as well,
+    // however $i only travels up to the root of a particular rule;
+    // in effect every rule has its own $i instance
+    
+    /*varVal, err := varEval("$i", pChildState)
     if err != nil {
         return nil, err
     }
-    pState.VarsMap["$i"] = varVal
+    pState.VarsMap["$i"] = varVal*/
+
+    pState.VarsMap = pChildState.VarsMap
 
     //----------------------
     
@@ -178,8 +185,11 @@ func stateCreateNew(pStateParent *GFstate) *GFstate {
         stateNew.ItersMaxInt        = pStateParent.ItersMaxInt
         stateNew.RulesNamesStackLst = cloneRulesNamesStack(pStateParent.RulesNamesStackLst) // clone
         
+        //----------------------
         // VARS
-        stateNew.VarsMap            = cloneVars(pStateParent.VarsMap)                       // clone
+        stateNew.VarsMap = cloneVars(pStateParent.VarsMap)                       // clone
+
+        //----------------------
 
         stateNew.ItersNumGlobalInt     = pStateParent.ItersNumGlobalInt
         stateNew.RulesItersNumStackLst = cloneItersNumStack(pStateParent.RulesItersNumStackLst) // clone
@@ -236,12 +246,17 @@ func stateGetEmpty() *GFstate {
         ScaleZf: 1.0,
         ItersMaxInt: 250,
         RulesNamesStackLst: []string{"root",},
+
+        //----------------------
+        // VARS
         VarsMap: map[string]*GFvariableVal{
             "$i": &GFvariableVal{
                 NameStr: "i",
                 Val:     0,
             },
         },
+
+        //----------------------
 
         RulesItersNumStackLst: []int{0,},
     }
@@ -290,19 +305,4 @@ func statePropGet(pState *GFstate,
     field     := reflect.ValueOf(pState).Elem().FieldByName(propInternalNameStr)
     fieldValF := field.Float()
     return fieldValF
-}
-
-//-------------------------------------------------
-// VARIABLES
-//-------------------------------------------------
-func stateVariableCreate(pVariableNameStr string,
-    pState *GFstate) *GFvariableVal {
-
-    var newVal interface{}
-    variable := &GFvariableVal{
-        NameStr: pVariableNameStr,
-        Val:     newVal,
-    }
-    pState.VarsMap[pVariableNameStr] = variable
-    return nil
 }

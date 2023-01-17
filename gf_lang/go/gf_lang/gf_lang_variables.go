@@ -28,32 +28,76 @@ import (
 
 //-------------------------------------------------
 
-func execVarExpr(pExpr GFexpr,
+type GFvariableVal struct {
+    NameStr string
+    Val     interface{}
+}
+
+//-------------------------------------------------
+
+func execVarAssignExpr(pExpr GFexpr,
 	pState     *GFstate,
-	pExternAPI GFexternAPI) (interface{}, error) {
+	pExternAPI GFexternAPI) error {
 
 
 	varNameStr := pExpr[0].(string)
 	valUnevaluated := pExpr[1]
 
 	fmt.Printf("variable %s\n", varNameStr)
+	spew.Dump(pState.VarsMap)
 
 	// EVALUATE
 	// variable assignments can for now be relativelly simple expressions,
 	// numbers, other variable references,
 	// and simple arithmetic and system_function expressions. 
-	varVal, err := exprEval(valUnevaluated, pState, pExternAPI)
+	varNewVal, _, err := exprEvalSimple(valUnevaluated, pState, pExternAPI)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
+	// check if the variable is already created. in that case
+	// assign it the new value
+	if varVal, ok := pState.VarsMap[varNameStr]; ok {
+		varVal.Val = varNewVal
+	} else {
 
+		// if var has not already been created, then create it
+		// and assign it the newly evaluated value.
+		_ = createVariable(varNameStr, varNewVal, pState)
+	}
 
+	return nil
+}
 
-	spew.Dump(pState)
+//-------------------------------------------------
 
-	expressionResult := varVal
-	return expressionResult, nil
+func varEval(pVarStr string, pState *GFstate) (*GFvariableVal, error) {
+
+    // VERIFY
+    err := varVerify(pVarStr)
+    if err != nil {
+        return nil, err
+    }
+
+    // read value
+    varValue := pState.VarsMap[pVarStr]
+
+    return varValue, nil
+}
+
+//-------------------------------------------------
+// CREATE
+
+func createVariable(pVariableNameStr string,
+	pInitVal interface{},
+    pState   *GFstate) *GFvariableVal {
+
+    variable := &GFvariableVal{
+        NameStr: pVariableNameStr,
+        Val:     pInitVal,
+    }
+    pState.VarsMap[pVariableNameStr] = variable
+    return nil
 }
 
 //-------------------------------------------------
@@ -75,7 +119,7 @@ func isVar(pVarStr string) bool {
 }
 
 //-------------------------------------------------
-// CLONE_VARS
+// CLONE
 
 // clone program vars. this still assumes simple variables with primitive values.
 func cloneVars(pVarsMap map[string]*GFvariableVal) map[string]*GFvariableVal {

@@ -51,7 +51,7 @@ func executeTree(pExpressionASTlst []interface{},
 
 
     //-------------------------------------------------
-    handleSubExpressionFun := func(pSubExprLst []interface{}) (interface{}, error) {
+    handleSubExpressionFun := func(pSubExprLst GFexpr) (interface{}, error) {
             
         // RECURSION
         childState, subExprResult, err := executeTree(pSubExprLst,
@@ -142,50 +142,28 @@ func executeTree(pExpressionASTlst []interface{},
             // sub-expression evaluated to a value
             if subExprResult != nil {
 
-                // substitute sub-expression for its results
-                expressionLst[i] = subExprResult
-                
-                // continue looping through the expression elements,
-                // without incrementing "i". because we evaluated the expression
-                // at position "i" and substituted results of that expression at that slot.
-                continue
-            }
-            
-            /*subExprLst := element.([]interface{})
-            
-            // recursion
-            childState, subExprResult, err := executeTree(subExprLst,
-                state,
-                pRulesDefsMap,
-                pShaderDefsMap,
-                pStateFamilyStackLst,
-                pExternAPI)
-            if err != nil {
-                return nil, nil, err
-            }
-            
+                // RETURN - special handling if a subexpression is a return statement.
+                //          in that case break out of the expression processing loop
+                //          immediatelly and return to parent expression a result.
+                if checkIsReturnExpr(subExprLst) {
+                    return state, subExprResult, nil
 
-            mergedState, err := stateMergeChild(state, childState)
-            if err != nil {
-                return nil, nil, err
-            }
-            state = mergedState
-            
-            // sub-expression evaluated to a value
-            if subExprResult != nil {
-
-                // substitute sub-expression for its results
-                expressionLst[i] = subExprResult
+                } else {
+                    // REGULAR_CASE
                 
-                // continue looping through the expression elements,
-                // without incrementing "i". because we evaluated the expression
-                // at position "i" and substituted results of that expression at that slot.
-                continue
-            }*/
+                    // substitute sub-expression for its results
+                    expressionLst[i] = subExprResult
+                    
+                    // continue looping through the expression elements,
+                    // without incrementing "i". because we evaluated the expression
+                    // at position "i" and substituted results of that expression at that slot.
+                    continue
+                }
+            }
 
             //------------------------------------
 
-        } else if checkArithmeticOpExists(elementStr) && i==0 {
+        } else if checkIsArithmeticOp(elementStr) && i==0 {
             
             //------------------------------------
             // ARITHMETIC
@@ -242,7 +220,7 @@ func executeTree(pExpressionASTlst []interface{},
                 
                 // coord_origin state_setter is the only setter so far that returns
                 // a new state, all other state setters dont modify the gf_lang state.
-                newState, err := execExpr(setterTypeStr,
+                newState, err := execStateSetterExpr(setterTypeStr,
                     propertyNameStr,
                     vals,
                     state,
@@ -255,7 +233,7 @@ func executeTree(pExpressionASTlst []interface{},
                 state = newState
 
             } else {
-                _, err := execExpr(setterTypeStr,
+                _, err := execStateSetterExpr(setterTypeStr,
                     propertyNameStr,
                     vals,
                     state,
@@ -296,21 +274,22 @@ func executeTree(pExpressionASTlst []interface{},
 
             //------------------------------------
         
-        } else if elementIsStrBool && isVar(elementStr) && i==0 {
+        } else if elementIsStrBool && isVar(elementStr) && i==0 && len(expressionLst) == 2 {
 
             //------------------------------------
-            // VARIABLE
+            // VARIABLE_ASSIGNMENT
             // as the first element is the expression. 
             // when assigning to a variable (["$some", 10])
             // the name of the var is always expected to be the first.
 
-
-            expressionResult, err := execVarExpr(expressionLst, state, pExternAPI)
+            err := execVarAssignExpr(expressionLst, state, pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
-           
-            return state, expressionResult, nil
+            
+            // spew.Dump(state.VarsMap)
+
+            return state, nil, nil
             
             //------------------------------------
         
@@ -321,12 +300,29 @@ func executeTree(pExpressionASTlst []interface{},
             valUnevaluated := expressionLst[1]
 
             // EVALUATE
-            returnVal, err := exprEval(valUnevaluated, state, pExternAPI)
+            returnVal, complexSubExprBool, err := exprEvalSimple(valUnevaluated, state, pExternAPI)
             if err != nil {
                 return nil, nil, err
             }
 
-            expressionResult := returnVal
+            var expressionResult interface{}
+
+            // return statement contains a complex sub-expression, which cant be handled by exprEvalSimple(),
+            // and instead it has to be handled by a full executeTree() run.
+            if complexSubExprBool {
+                
+                subExprLst := valUnevaluated.(GFexpr)
+                subExprResult, err := handleSubExpressionFun(subExprLst)
+                if err != nil {
+                    return nil, nil, err
+                }
+
+                expressionResult = subExprResult
+
+            } else {
+                expressionResult = returnVal
+            }
+
             return state, expressionResult, nil
 
             //------------------------------------
@@ -480,11 +476,6 @@ func exprRuleCall(pCalledRuleNameStr string,
 
             //------------------------------------
         }
-
-        
-        
-        
-        
 
         // RECURSION
         // IMPORTANT!! - rules are not yet treated as expressions, and cant return
@@ -700,11 +691,11 @@ func exprConditional(pExpressionLst []interface{},
         }
 
         //-------------------------------------------------
-        op1val, err := exprEval(operand1, pState, pExternAPI)
+        op1val, _, err := exprEvalSimple(operand1, pState, pExternAPI)
         if err != nil {
             return false, err
         }
-        op2val, err := exprEval(operand2, pState, pExternAPI)
+        op2val, _, err := exprEvalSimple(operand2, pState, pExternAPI)
         if err != nil {
             return false, err
         }
