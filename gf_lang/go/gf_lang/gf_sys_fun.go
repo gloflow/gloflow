@@ -30,6 +30,7 @@ import (
 
 func getSysFunctionNames() []string {
 	return []string{
+        "make",      // make a datastructure - list|map
 		"len",       // length of a collection
         "rand",      // random number generator,
         "rpc_call",  // remot procedure call
@@ -59,6 +60,66 @@ func sysFuncEval(pExprLst []interface{},
     
     var val interface{}
     switch funcNameStr {
+
+    //---------------------
+    // MAKE - create a datastructure
+    case "make":
+
+        if len(argsExprLst) != 2 {
+			return nil, errors.New("'make' system function can only be called with 2 arg, 'list|map' and initial values or list length")
+		}
+        var makeTypeStr string
+        if typeStr, ok := argsExprLst[0].(string); true {
+
+            if !ok {
+                return nil, errors.New("first 'make' arg has to be a string, indicating the 'make' type")
+            }
+            if typeStr != "list" && typeStr != "map" {
+                return nil, errors.New("'make' type can only be 'list'|'map'")
+            }
+            makeTypeStr = typeStr
+        }
+
+        switch makeTypeStr {
+        
+        //---------------------
+        // LIST
+        case "list":
+
+            var newLst []interface{}
+            switch v := argsExprLst[1].(type) {
+            
+            // new list 'make' command specifies a length to be created, of an empty string
+            case int:
+                listLenInt := v
+                newLst = make([]interface{}, listLenInt)
+
+            // initial values for the new list are specified
+            case GFexpr:
+                initialValuesLst := []interface{}(v)
+                newLst = initialValuesLst
+
+            default:
+                return nil, errors.New("unsupported type for the second argument in the 'make' sys func for creating a list")
+            }
+            val = newLst
+
+        //---------------------
+        // MAP
+        case "map":
+            newMap := map[string]interface{}{}
+            initValuesLst := []interface{}(argsExprLst[1].(GFexpr))
+            for _, kv := range initValuesLst {
+                kvLst := []interface{}(kv.(GFexpr))
+                kSstr := kvLst[0].(string)
+                v     := kvLst[1].(interface{})
+
+                newMap[kSstr] = v
+            }
+            val = newMap
+
+        //---------------------
+        }
 
 	//---------------------
 	// LEN - get a length of a collection
@@ -120,5 +181,6 @@ func sysFuncEval(pExprLst []interface{},
 
     //---------------------
     }
+
     return val, nil
 }

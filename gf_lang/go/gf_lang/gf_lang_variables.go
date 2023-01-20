@@ -143,7 +143,7 @@ func createVariable(pVariableNameStr string,
 
         // gurantee the list/[]interface{} type,
         // since all lists in the code are first cast to GFexpr type by the preprocessor.
-        varValLst := []interface{}(pInitVal.(GFexpr))
+        varValLst := pInitVal.([]interface{})
         variable.Val = varValLst
     } else {
         variable.Val = pInitVal
@@ -198,6 +198,8 @@ func inferVarType(pVal interface{}) (string, error) {
         return "list", nil
     case GFexpr:
         return "list", nil
+    case map[string]interface{}:
+        return "map", nil
     default:
         unknownTypeStr := reflect.TypeOf(pVal)
         return "", errors.New(fmt.Sprintf("variable of unsupported type - %s", unknownTypeStr))

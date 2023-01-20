@@ -38,6 +38,56 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestMap(pTest *testing.T) {
+	_, logNewFun := gf_core.LogsInit()
+	externAPI := getTestExternAPI()
+
+	// program
+	programASTlst := GFexpr{
+		GFexpr{"lang_v", "0.0.6"},
+
+		GFexpr{
+			GFexpr{"$test_map", GFexpr{"make", GFexpr{"map", 
+				GFexpr{
+					GFexpr{"a", "b"},
+					GFexpr{"c", 2},
+				}},
+			}},
+			GFexpr{"return", "$test_map"},
+		},
+	}
+
+	// run program
+	resultsLst, err := Run(programASTlst, externAPI)
+	if err != nil {
+		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		pTest.Fail()
+	}
+
+
+	spew.Dump(resultsLst)
+
+	if len(resultsLst) != 1 {
+		logNewFun("ERROR", "results list should be 1 elements", nil)
+		pTest.Fail()
+	}
+
+	testMap := resultsLst[0].(map[string]interface{})
+	spew.Dump(testMap)
+
+	if testMap["a"].(string) != "b" {
+		logNewFun("ERROR", "first result map key 'a' should be 'b'", nil)
+		pTest.Fail()
+	}
+
+	if testMap["c"].(int) != 2 {
+		logNewFun("ERROR", "first result map key 'c' should be 2", nil)
+		pTest.Fail()
+	}
+}
+
+//---------------------------------------------------
+
 func TestLists(pTest *testing.T) {
 	_, logNewFun := gf_core.LogsInit()
 	externAPI := getTestExternAPI()
@@ -48,7 +98,7 @@ func TestLists(pTest *testing.T) {
 		
 		GFexpr{
 			"return", GFexpr{
-				GFexpr{"$test_list",        GFexpr{1, 2, 3,},},
+				GFexpr{"$test_list",        GFexpr{"make", GFexpr{"list", GFexpr{1, 2, 3,},},},},
 				GFexpr{"$test_list_length", GFexpr{"len", GFexpr{"$test_list",},},},
 				GFexpr{"return", "$test_list_length"},
 			},
