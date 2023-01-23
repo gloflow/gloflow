@@ -22,8 +22,9 @@ package gf_lang
 import (
     "fmt"
     "errors"
+    "encoding/json"
     "github.com/gloflow/gloflow/go/gf_core"
-    "github.com/davecgh/go-spew/spew"
+    // "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -46,10 +47,23 @@ type GFsymbols struct {
     SystemFunctionsLst      []string
 }
 
+type GFshaderDef struct {
+    NameStr         string               
+    UniformsDefsLst []GFshaderUniformDef
+    VertexCodeStr   string
+    FragmentCodeStr string
+}
+
+type GFshaderUniformDef struct {
+    NameStr    string
+    TypeStr    string
+    DefaultVal interface{}
+}
+
 //-------------------------------------------------
 
 func Run(pProgramASTlst GFexpr,
-    pExternAPI GFexternAPI) ([]interface{}, error) {
+    pExternAPI GFexternAPI) ([]interface{}, []*GFprogramDebug, error) {
 
     //------------------------------------
     // AST_EXPANSION
@@ -59,17 +73,20 @@ func Run(pProgramASTlst GFexpr,
         rootExpressionLst := rootExpression.(GFexpr)
         expandedRootExpressionLst, err := expandTree(rootExpressionLst, 0)
         if err != nil {
-            return nil, err
+            return nil, nil, err
         }
 
         // only include expressions which are not "expanded" to expression of 0 length
         // (expressions which are not marked for deletion)
         if len(expandedRootExpressionLst) > 0 {
 
-            fmt.Println("expanded expr", expandedRootExpressionLst)
+            // fmt.Println("expanded expr", expandedRootExpressionLst)
             expandedProgramASTlst = append(expandedProgramASTlst, interface{}(expandedRootExpressionLst))
         }
     }
+
+    // DEBUG - view new program AST
+    // viewExpandedProgram(expandedProgramASTlst)    
 
     //------------------------------------
     // only load rules after AST tree expansion is complete,
@@ -78,9 +95,9 @@ func Run(pProgramASTlst GFexpr,
     
     shaderDefsMap, programASTnoShaderDefsLst, err := loadShaderDefs(programASTlnoRuleDefsLst)
     if err != nil {
-        return nil, err
+        return nil, nil, err
     }
-    
+
     // INIT_ENGINE
     pExternAPI.InitEngineFun(shaderDefsMap)
     
@@ -88,39 +105,51 @@ func Run(pProgramASTlst GFexpr,
     // AST_EXECUTION
 
     fmt.Println("executing AST...")
-    spew.Dump(programASTnoShaderDefsLst)
+    // spew.Dump(programASTnoShaderDefsLst)
 
     i:=0
     exprResultsLst := []interface{}{}
+
+    // IMPORTANT!! - all states are accumulated here when running each root expression,
+    //               and returned to the runner of the program, for debugging purposes, so that
+    //               the runner can inspect the produced state and make checks.
+    programsDebugLst := []*GFprogramDebug{}
+    
     for _, rootExpression := range programASTnoShaderDefsLst {
 
-        rootState := stateCreateNew(nil)
+        //------------------------------------
+        // DEBUG
+        programDebug := debugInit()
+        programsDebugLst = append(programsDebugLst, programDebug)
 
+        //------------------------------------
+        rootState := stateCreateNew(nil, programDebug)
+        
         //------------------------------------
         // STATE_FAMILY_STACK
         // STATE_FAMILY - is a group of stacks that are related and are treated independently,
         //                without copying/merging back into the states from which it came from.
         //
-        // allowing for multiple state objects to exist durring program execution.
+        // allowing for multiple state objects to exist durring expression/program execution.
         // initially there was only one blank state that the program started with, and all future
         // operations worked with that one state.
         // going forward there are state_setters that allow for pushing new states onto that stack,
         // and popping them.
         
         stateFamilyStackLst := []*GFstate{}
-        // gf_state.push_family(rootState, stateFamilyStackLst)
         
         //------------------------------------
-        rootExpressionLst := rootExpression.([]interface{})
+        rootExpressionLst := rootExpression.(GFexpr)
 
         _, exprResult, err := executeTree(rootExpressionLst,
             rootState,
             ruleDefsMap,
             shaderDefsMap,
             stateFamilyStackLst,
-            pExternAPI)
+            pExternAPI,
+            programDebug)
         if err != nil {
-            return nil, err
+            return nil, programsDebugLst, err
         }
 
         // accumulate as many results as there are top-level expressions
@@ -131,21 +160,23 @@ func Run(pProgramASTlst GFexpr,
     
     //------------------------------------
 
-    return exprResultsLst, nil
+    return exprResultsLst, programsDebugLst, nil
 }
 
 //-------------------------------------------------
 
-func expandTree(pExpressionASTlst []interface{},
-    pTreeLevelInt int) ([]interface{}, error) {
+func expandTree(pExpressionASTlst GFexpr,
+    pTreeLevelInt int) (GFexpr, error) {
 
     expressionLst := cloneExpr(pExpressionASTlst) // clone in case of mutations of expression
 
+    // fmt.Println("expand tree", expressionLst)
+    
     //-------------------------------------------------
     // SUB_EXPRESSION
     // [...]
 
-    handleSubExpressionFun := func(pSubExpressionLst []interface{}, pIndexInt int) error {
+    handleSubExpressionFun := func(pSubExpressionLst GFexpr, pIndexInt int) error {
 
         // RECURSION
         expandedSubExpressionLst, err := expandTree(pSubExpressionLst, pTreeLevelInt+1)
@@ -166,11 +197,14 @@ func expandTree(pExpressionASTlst []interface{},
         element := expressionLst[i]
         elementIsStrBool, elementStr := gf_core.CastToStr(element)
 
-        //------------------------------------
-        // RULE_DEFINITION
-        // [rule rule_name, [...]]
         if elementIsStrBool && elementStr == "rule" {
 
+            //------------------------------------
+            // RULE_DEFINITION
+            // [rule rule_name, [...]]
+            
+            //-----------
+            // VERIFICATION
             if pTreeLevelInt != 0 {
                 return nil, errors.New("rule definitions can only exist at the top level")
             }
@@ -185,15 +219,15 @@ func expandTree(pExpressionASTlst []interface{},
             if len(expressionLst) != 3 && len(expressionLst) != 4 {
                 return nil, errors.New("rule definition expression can only have 3|4 elements")
             }
-            
+
             if len(expressionLst) == 3 {
-                if _, ok := expressionLst[2].([]interface{}); !ok {
+                if _, ok := expressionLst[2].(GFexpr); !ok {
                     return nil, errors.New("rule definitions 3rd element has to be a list of its expressions")
                 }
             }
 
             if len(expressionLst) == 4 { 
-                if _, ok := expressionLst[3].([]interface{}); !ok {
+                if _, ok := expressionLst[3].(GFexpr); !ok {
                     return nil, errors.New("rule definitions 4rd element has to be a list of its expressions")
                 }
             }
@@ -207,6 +241,10 @@ func expandTree(pExpressionASTlst []interface{},
                 i+=3
             }
 
+            //-----------
+
+            //------------------------------------
+            
             continue
 
         } else if elementIsStrBool && elementStr == "set" {
@@ -219,64 +257,54 @@ func expandTree(pExpressionASTlst []interface{},
 
             //------------------------------------
 
+            // ADD!! - localize "i" incrementing to each sub-block, instead at the end of 'for' loop.
+            //         for better viewing/debug.
+            // i+=1
+
         } else if elementIsStrBool && elementStr == "*" && i==0 {
 
             //------------------------------------
             // MULTIPLICATION__TOP_LEVEL
             // [* op1 op2]
 
-            if i != 0 {
-                return nil, errors.New("* operator has to be the first element in the expression");
-            }
-
             operand1indexInt := i+1
             operand2indexInt := i+2
 
             operand1 := expressionLst[operand1indexInt]
             operand2 := expressionLst[operand2indexInt]
-            
 
-
-            // check operand2 first, if its a subexpression that expand it.
-            // then when operand1 is evaluated and if its statically defined, operand2 can be cloned N times.
-            if operand2subExpressionLst, ok := operand2.([]interface{}); ok {
-                err := handleSubExpressionFun(operand2subExpressionLst, operand2indexInt)
-                if err != nil {
-                    return nil, err
-                }
-
-                //-----------
-                // rewind to start, since the expression has a possibly new form (after run of handleSubExpressionFun() which might expand the expression list),
-                // and should be re-processed
-                i=0
-
-                // go straight to new iteration, without incrementing 'i' (keeping it at 0 instead)
-                continue
-
-                //-----------
-            }
-
-
-            _, operand1isNumBool    := operand1.(float64)
-            _, operand1isListBool   := operand1.([]interface{})
+            //-----------
+            // OPERAND_1
+            _, operand1isFloatBool  := operand1.(float64)
+            _, operand1isIntBool    := operand1.(int)
+            _, operand1isExprBool   := operand1.(GFexpr)
             _, operand1isStringBool := operand1.(string)
 
+            var operand1isNumBool bool
+            if operand1isFloatBool || operand1isIntBool {
+                operand1isNumBool = true
+            }
 
-            fmt.Println("* operand 1 is", operand1isNumBool, operand1isListBool, operand1isStringBool)
+            fmt.Println(expressionLst)
+            fmt.Println("* operand 1 is", operand1isNumBool, operand1isExprBool, operand1isStringBool)
 
-
+            // IMPORTANT!! - if operand1 is not a static number no compile-time expansion is done.
+            //
             // operand1 is not a static value so cant be expanded at compile time.
             // instead skip, and it will be handled dynamically at interpretation time.
             // do some validation of it if its a variable reference, and if subexpression then
             // handle it as such.
             //
-            // first operand not being a float64 use to be an error, it was meant for static/compile-time expansion.
-            // return nil, errors.New(fmt.Sprintf("first operand of multiplication expression is not a number - %s", expressionLst))
+            // first operand not being a float64 use to be an error, it was meant for static/compile-time expansion;
+            // but with general multiplication "*" that can happen at runtime with operands being expressions with runtime values, it no longer is.
+            
+            // EXIT_LOGIC
             if !operand1isNumBool {
 
+                //-----------
                 // SUB_EXPRESSION
-                subExpressionLst, _ := operand1.([]interface{})
-                if operand1isListBool {
+                subExpressionLst, _ := operand1.(GFexpr)
+                if operand1isExprBool {
                     err := handleSubExpressionFun(subExpressionLst, operand1indexInt)
                     if err != nil {
                         return nil, err
@@ -287,6 +315,7 @@ func expandTree(pExpressionASTlst []interface{},
                     break
                 }
                 
+                //-----------
                 // VARIABLE
                 operand1str, _ := operand1.(string)
                 if operand1isStringBool {
@@ -303,21 +332,21 @@ func expandTree(pExpressionASTlst []interface{},
                     break
                 }
                 
-                if !(operand1isNumBool && operand1isListBool && operand1isStringBool) {
+                //-----------
+
+                if !(operand1isNumBool && operand1isExprBool && operand1isStringBool) {
                     // if operand1 is not a number, or list, or variable reference
-                    return nil, errors.New(fmt.Sprintf("first operand of multiplication expression is not a number or a sub_expression list or a string (variable reference) - %s", expressionLst))
+                    return nil, errors.New(fmt.Sprintf("first operand of multiplication expression is not a number or a sub_expression or a string (variable reference) - %s", expressionLst))
                 }
             }
 
-
-
-
-
+            //-----------
+            // MAIN_LOGIC
             // operand1 is a float64 (static/compile-time) so the expansion of the operand2 can be completed.
-            if _, ok := operand2.([]interface{}); ok && operand1isNumBool {
+            if _, ok := operand2.(GFexpr); ok && operand1isNumBool {
 
-                expressionToMultiplyLst := operand2.([]interface{})
-                factorInt               := int(operand1.(float64))
+                expressionToMultiplyLst := operand2.(GFexpr)
+                factorInt               := castToInt(operand1)
                 expandedExpressionsLst  := cloneExprNtimes(expressionToMultiplyLst, factorInt)
 
                 /*
@@ -347,13 +376,20 @@ func expandTree(pExpressionASTlst []interface{},
 
             //------------------------------------
 
-        } else if subExpressionLst, ok := element.([]interface{}); ok {
+        } else if subExpressionLst, ok := element.(GFexpr); ok {
 
+            //------------------------------------
             // SUB_EXPRESSION
             err := handleSubExpressionFun(subExpressionLst, i)
             if err != nil {
                 return nil, err
             }
+
+            //------------------------------------
+
+            // ADD!! - localize "i" incrementing to each sub-block, instead at the end of 'for' loop.
+            //         for better viewing/debug.
+            // i+=1
 
         } else if elementIsStrBool && elementStr == "lang_v" {
 
@@ -365,7 +401,7 @@ func expandTree(pExpressionASTlst []interface{},
             }
 
             // this expression is expanded to expression of 0 length, meaning it should be removed.
-            return []interface{}{}, nil
+            return GFexpr{}, nil
 
             //------------------------------------
         }
@@ -377,14 +413,13 @@ func expandTree(pExpressionASTlst []interface{},
 
 //-------------------------------------------------
 
-func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
+func loadRuleDefs(pProgramASTlst GFexpr) (GFruleDefs, GFexpr) {
 
     fmt.Println("loading rule defs...")
 
     //------------------------
     // copy program_ast
-    newProgramASTlst := make([]interface{}, len(pProgramASTlst))
-    copy(newProgramASTlst, pProgramASTlst)
+    newProgramASTlst := cloneExpr(pProgramASTlst)
 
     //------------------------
 
@@ -392,7 +427,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
 
     for i:=0; i < len(newProgramASTlst); {
 
-        rootExpressionLst := newProgramASTlst[i].([]interface{})
+        rootExpressionLst := newProgramASTlst[i].(GFexpr)
         rootExprFirstElementIsStrBool, rootExprFirstElementStr := gf_core.CastToStr(rootExpressionLst[0])
 
         if rootExprFirstElementIsStrBool && rootExprFirstElementStr == "rule" {
@@ -401,7 +436,7 @@ func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
             if len(rootExpressionLst) == 3 {
 
                 ruleNameStr        := rootExpressionLst[1].(string)
-                ruleExpressionsLst := rootExpressionLst[2].([]interface{})
+                ruleExpressionsLst := rootExpressionLst[2].(GFexpr)
 
                 ruleDef := &GFruleDef{
                     NameStr:        ruleNameStr,
@@ -431,14 +466,14 @@ func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
                 // rule with modifiers
 
                 ruleNameStr        := rootExpressionLst[1].(string)
-                ruleModifiersLst   := rootExpressionLst[2].([]interface{})
-                ruleExpressionsLst := rootExpressionLst[3].([]interface{})
+                ruleModifiersLst   := rootExpressionLst[2].(GFexpr)
+                ruleExpressionsLst := rootExpressionLst[3].(GFexpr)
 
                 // MODIFIERS
                 ruleModifiersMap := map[string]interface{}{}
                 for _, modifier := range ruleModifiersLst {
 
-                    modifierLst     := modifier.([]interface{})
+                    modifierLst     := modifier.(GFexpr)
                     modifierNameStr := modifierLst[0].(string)
                     modifierVal     := modifierLst[1]
 
@@ -475,19 +510,19 @@ func loadRuleDefs(pProgramASTlst []interface{}) (GFruleDefs, []interface{}) {
 
 //-------------------------------------------------
 
-func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, []interface{}, error) {
-    shaderDefsMap := map[string]interface{}{}
+func loadShaderDefs(pProgramASTlst GFexpr) (map[string]*GFshaderDef, GFexpr, error) {
+
+    shaderDefsMap := map[string]*GFshaderDef{}
     
     //------------------------
     // copy program_ast
-    newProgramASTlst := make([]interface{}, len(pProgramASTlst))
-    copy(newProgramASTlst, pProgramASTlst)
+    newProgramASTlst := cloneExpr(pProgramASTlst)
 
     //------------------------
 
     for i:=0; i < len(newProgramASTlst);  {
 
-        rootExpressionLst := newProgramASTlst[i].([]interface{})
+        rootExpressionLst := newProgramASTlst[i].(GFexpr)
         rootExprFirstElementIsStrBool, rootExprFirstElementStr := gf_core.CastToStr(rootExpressionLst[0])
 
         if rootExprFirstElementIsStrBool && rootExprFirstElementStr == "shader" {
@@ -498,34 +533,56 @@ func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, []int
 
             if len(rootExpressionLst) == 4 {
                 shaderNameStr     := rootExpressionLst[1].(string)
-                vertexShaderLst   := rootExpressionLst[2].([]interface{})
-                fragmentShaderLst := rootExpressionLst[3].([]interface{})
+                vertexShaderLst   := rootExpressionLst[2].(GFexpr)
+                fragmentShaderLst := rootExpressionLst[3].(GFexpr)
 
-                vertexCodeStr   := vertexShaderLst[1]
-                fragmentCodeStr := fragmentShaderLst[1]
+                vertexCodeStr   := vertexShaderLst[1].(string)
+                fragmentCodeStr := fragmentShaderLst[1].(string)
 
-                shaderDefsMap[shaderNameStr] = map[string]interface{}{
-                    "vertex_code_str":   vertexCodeStr,
-                    "fragment_code_str": fragmentCodeStr,
+                shaderDef := &GFshaderDef{
+                    NameStr:         shaderNameStr,
+                    VertexCodeStr:   vertexCodeStr,
+                    FragmentCodeStr: fragmentCodeStr,
                 }
+
+                shaderDefsMap[shaderNameStr] = shaderDef
             }
 
             if len(rootExpressionLst) == 5 {
 
                 shaderNameStr       := rootExpressionLst[1].(string)
-                uniformsDefsExprLst := rootExpressionLst[2].([]interface{})
-                vertexShaderLst     := rootExpressionLst[3].([]interface{})
-                fragmentShaderLst   := rootExpressionLst[4].([]interface{})
+                uniformsDefsExprLst := rootExpressionLst[2].(GFexpr)
+                vertexShaderLst     := rootExpressionLst[3].(GFexpr)
+                fragmentShaderLst   := rootExpressionLst[4].(GFexpr)
 
                 vertexCodeStr   := vertexShaderLst[1].(string)
                 fragmentCodeStr := fragmentShaderLst[1].(string)
                 uniformsDefsLst := uniformsDefsExprLst[1]
 
-                shaderDefsMap[shaderNameStr] = map[string]interface{}{
-                    "uniforms_defs_lst": uniformsDefsLst,
-                    "vertex_code_str":   vertexCodeStr,
-                    "fragment_code_str": fragmentCodeStr,
+                uniformDefsLst := []GFshaderUniformDef{}
+                for _, uniformDefinterface := range uniformsDefsLst.(GFexpr) {
+                    uniformDefExpr, _ := uniformDefinterface.(GFexpr)
+
+                    uniformNameStr    := uniformDefExpr[0].(string)
+                    uniformTypeStr    := uniformDefExpr[1].(string)
+                    uniformDefaultVal := uniformDefExpr[2].(interface{})
+
+                    uniformDef := GFshaderUniformDef{
+                        NameStr:    uniformNameStr,
+                        TypeStr:    uniformTypeStr,
+                        DefaultVal: uniformDefaultVal,
+                    }
+
+                    uniformDefsLst = append(uniformDefsLst, uniformDef)
                 }
+
+                shaderDef := &GFshaderDef{
+                    NameStr:         shaderNameStr,
+                    UniformsDefsLst: uniformDefsLst,
+                    VertexCodeStr:   vertexCodeStr,
+                    FragmentCodeStr: fragmentCodeStr,
+                }
+                shaderDefsMap[shaderNameStr] = shaderDef
             }
 
             // remove the shader definition element from the program_ast, 
@@ -537,4 +594,18 @@ func loadShaderDefs(pProgramASTlst []interface{}) (map[string]interface{}, []int
         i+=1
     }
     return shaderDefsMap, newProgramASTlst, nil
+}
+
+//-------------------------------------------------
+
+func viewExpandedProgram(pExpandedProgramASTlst GFexpr) {
+
+    fmt.Println("=======================>>>>>>>>>>>>>>")
+    fmt.Println("EXPANDED PROGRAM")
+    jsonData, _ := json.MarshalIndent(pExpandedProgramASTlst, "", "    ")
+    
+    fmt.Println(string(jsonData))
+    // spew.Dump(pExpandedProgramASTlst)
+
+    fmt.Println("=======================>>>>>>>>>>>>>>")
 }

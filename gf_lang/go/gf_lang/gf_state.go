@@ -164,7 +164,8 @@ func stateMergeChild(pState *GFstate,
 
 //-------------------------------------------------
 
-func stateCreateNew(pStateParent *GFstate) *GFstate {
+func stateCreateNew(pStateParent *GFstate,
+    pDebug *GFprogramDebug) *GFstate {
 
     stateNew := stateGetEmpty()
 
@@ -187,13 +188,18 @@ func stateCreateNew(pStateParent *GFstate) *GFstate {
         
         //----------------------
         // VARS
-        stateNew.VarsMap = cloneVars(pStateParent.VarsMap)                       // clone
+        stateNew.VarsMap = cloneVars(pStateParent.VarsMap) // clone
 
         //----------------------
 
         stateNew.ItersNumGlobalInt     = pStateParent.ItersNumGlobalInt
         stateNew.RulesItersNumStackLst = cloneItersNumStack(pStateParent.RulesItersNumStackLst) // clone
         stateNew.AnimationsActiveMap   = cloneAnimations(pStateParent.AnimationsActiveMap)      // clone
+    }
+
+    // DEBUG - get a reference to this newly created state.
+    if pDebug != nil {
+        pDebug.StateHistoryLst = append(pDebug.StateHistoryLst, stateNew)
     }
 
     return stateNew

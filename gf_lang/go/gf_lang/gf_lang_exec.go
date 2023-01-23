@@ -32,23 +32,22 @@ import (
 func executeTree(pExpressionASTlst []interface{},
     pStateParent         *GFstate,
     pRulesDefsMap        GFruleDefs,
-    pShaderDefsMap       map[string]interface{},
+    pShaderDefsMap       map[string]*GFshaderDef,
     pStateFamilyStackLst []*GFstate,
-    pExternAPI           GFexternAPI) (*GFstate, interface{}, error) {
+    pExternAPI           GFexternAPI,
+    pDebug               *GFprogramDebug) (*GFstate, interface{}, error) {
     
     symbols := getSymbolsAndConstants()
     
     //--------------------
     // STATE_NEW
     // IMPORTANT!! - on every tree descent a new independent state is constructed
-    state := stateCreateNew(pStateParent)
+    state := stateCreateNew(pStateParent, pDebug)
 
     //--------------------
 
     // clone in case of mutations of expression
     expressionLst := cloneExpr(pExpressionASTlst)
-
-
 
     //-------------------------------------------------
     handleSubExpressionFun := func(pSubExprLst GFexpr) (interface{}, error) {
@@ -59,7 +58,8 @@ func executeTree(pExpressionASTlst []interface{},
             pRulesDefsMap,
             pShaderDefsMap,
             pStateFamilyStackLst,
-            pExternAPI)
+            pExternAPI,
+            pDebug)
         if err != nil {
             return nil, err
         }
@@ -123,10 +123,12 @@ func executeTree(pExpressionASTlst []interface{},
             // IMPORTANT!! - incremental modification
             statePropFloatIncrement(state, propertyNameStr, modifierFinalValF)
 
-            // if (propertyNameStr.startsWith("r"))
-            //     console.log("rotation", propertyNameStr, modifierVal, state[propertyNameStr])
-
+            //-----------
+            // FIX!! - this should be i+=2, since we're jumping over "property_name, modifier" (2 elements, not just one)
             i+=1 // fast-forward, modifiers can be listed sequentially in the same expression
+            
+            //-----------
+
             continue
 
         } else if subExprLst, ok := element.(GFexpr); ok {
@@ -192,7 +194,8 @@ func executeTree(pExpressionASTlst []interface{},
                 pRulesDefsMap,
                 pShaderDefsMap,
                 pStateFamilyStackLst,
-                pExternAPI)
+                pExternAPI,
+                pDebug)
             if err != nil {
                 return nil, nil, err
             }
@@ -233,6 +236,9 @@ func executeTree(pExpressionASTlst []interface{},
                 state = newState
 
             } else {
+
+                // setterTypeStr == "set"
+
                 _, err := execStateSetterExpr(setterTypeStr,
                     propertyNameStr,
                     vals,
@@ -243,6 +249,7 @@ func executeTree(pExpressionASTlst []interface{},
                     return nil, nil, err
                 }
             }
+
             break
 
             //------------------------------------
@@ -346,7 +353,8 @@ func executeTree(pExpressionASTlst []interface{},
                 pRulesDefsMap,
                 pShaderDefsMap,
                 pStateFamilyStackLst,
-                pExternAPI)
+                pExternAPI,
+                pDebug)
             if err != nil {
                 return nil, nil, err
             }
@@ -369,11 +377,19 @@ func exprRuleCall(pCalledRuleNameStr string,
     pExpressionLst       []interface{},
     pStateParent         *GFstate,
     pRulesDefsMap        GFruleDefs,
-    pShaderDefsMap       map[string]interface{},
+    pShaderDefsMap       map[string]*GFshaderDef,
     pStateFamilyStackLst []*GFstate,
-    pExternAPI           GFexternAPI) (*GFstate, error) {
+    pExternAPI           GFexternAPI,
+    pDebug               *GFprogramDebug) (*GFstate, error) {
 
     symbols := getSymbolsAndConstants()
+
+    if pDebug != nil {
+        if _, ok := pDebug.RulesCallsCounterMap[pCalledRuleNameStr]; !ok {
+            pDebug.RulesCallsCounterMap[pCalledRuleNameStr] = 0
+        }
+        pDebug.RulesCallsCounterMap[pCalledRuleNameStr] += 1
+    }
 
     //------------------------------------
     // SYSTEM_RULE
@@ -397,7 +413,7 @@ func exprRuleCall(pCalledRuleNameStr string,
         // for each rule invocation a new state object is created, that inherits 
         // the values of its parent state, within the same state family.
 
-        newState := stateCreateNew(pStateParent)
+        newState := stateCreateNew(pStateParent, pDebug)
 
         //--------------------
         // get the name of the rule that is making this call to another rule
@@ -485,7 +501,8 @@ func exprRuleCall(pCalledRuleNameStr string,
             pRulesDefsMap,
             pShaderDefsMap,
             pStateFamilyStackLst,
-            pExternAPI)
+            pExternAPI,
+            pDebug)
         if err != nil {
             return nil, err
         }
@@ -662,23 +679,24 @@ func exprAnimation(pExpressionLst []interface{},
 //-------------------------------------------------
 // EXPRESSION__CONDITIONAL
 
-func exprConditional(pExpressionLst []interface{},
+func exprConditional(pExpressionLst GFexpr,
     pState               *GFstate,
     pRulesDefsMap        GFruleDefs,
-    pShaderDefsMap       map[string]interface{},
+    pShaderDefsMap       map[string]*GFshaderDef,
     pStateFamilyStackLst []*GFstate,
-    pExternAPI           GFexternAPI) (*GFstate, error) {
+    pExternAPI           GFexternAPI,
+    pDebug               *GFprogramDebug) (*GFstate, error) {
 
     // [, conditionLst, subExpressionsLst] = pExpressionLst;
-    conditionLst      := pExpressionLst[1].([]interface{})
-    subExpressionsLst := pExpressionLst[2].([]interface{})
+    conditionLst      := pExpressionLst[1].(GFexpr)
+    subExpressionsLst := pExpressionLst[2].(GFexpr)
 
     if len(conditionLst) > 3 {
         return nil, errors.New("'if' condition can only have 3 elements [logic_op, operand1, operand2]")
     }
 
     //-------------------------------------------------
-    evaluateLogicExprFun := func(pLogicExprLst []interface{}) (bool, error)  {
+    evaluateLogicExprFun := func(pLogicExprLst GFexpr) (bool, error)  {
         
         symbols := getSymbolsAndConstants()
 
@@ -726,7 +744,8 @@ func exprConditional(pExpressionLst []interface{},
             pRulesDefsMap,
             pShaderDefsMap,
             pStateFamilyStackLst,
-            pExternAPI)
+            pExternAPI,
+            pDebug)
         if err != nil {
             return nil, err
         }
@@ -747,10 +766,10 @@ func exprConditional(pExpressionLst []interface{},
 //-------------------------------------------------
 // EXPRESSION__PRINT
 
-func exprPrint(pExpressionLst []interface{},
+func exprPrint(pExpressionLst GFexpr,
     pState *GFstate) error {
 
-    valsLst := pExpressionLst[1].([]interface{})
+    valsLst := pExpressionLst[1].(GFexpr)
 
     valsStr := ""
     for _, val := range valsLst {

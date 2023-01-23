@@ -27,16 +27,16 @@ import (
 	"regexp"
 	"strings"
 	log "github.com/sirupsen/logrus"
-	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
-	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_rpc_lib"
+	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
 )
 
 //-------------------------------------------------
 
 func main() {
 
-	fmt.Println("\n   GF_LANG SERVER >>\n")
+	fmt.Printf("\n   GF_LANG SERVER >>\n\n")
 
 	serverPortInt := 5000
 	
@@ -61,7 +61,7 @@ func main() {
 
 	externAPI := gf_lang.GFexternAPI{
 
-		InitEngineFun: func(pShaderDefsMap map[string]interface{}) {
+		InitEngineFun: func(pShaderDefsMap map[string]*gf_lang.GFshaderDef) {
 			fmt.Println("init_engine")
 		},
 		SetStateFun: func(pStateChange gf_lang.GFstateChange) []interface{} {
@@ -133,7 +133,7 @@ func main() {
 					// RUN_CODE
 					runtimeSys.LogNewFun("DEBUG", "about to run a gf_lang program...", nil)
 
-					resultsLst, err := gf_lang.Run(handlerProgramASTlst,
+					resultsLst, _, err := gf_lang.Run(handlerProgramASTlst,
 						pExternAPI)
 					
 					if err != nil {
@@ -163,9 +163,6 @@ func main() {
 					false, // pStoreRunBool
 					nil,
 					runtimeSys)
-
-					
-				fmt.Println(handlerFun)
 			}
 
 			//-------------
@@ -179,7 +176,7 @@ func main() {
 	}
 	
 	// RUN
-	_, err := gf_lang.Run(programASTlst,
+	_, _, err := gf_lang.Run(programASTlst,
 		externAPI)
 	
 	if err != nil {
@@ -191,7 +188,7 @@ func main() {
 //-------------------------------------------------
 
 func ParseProgramASTfromFile(pLocalFilePathStr string,
-	pRuntimeSys *gf_core.RuntimeSys) ([]interface{}, *gf_core.GFerror) {
+	pRuntimeSys *gf_core.RuntimeSys) (gf_lang.GFexpr, *gf_core.GFerror) {
 
 	//------------------------
 	// READ_FILE
@@ -224,7 +221,8 @@ func ParseProgramASTfromFile(pLocalFilePathStr string,
 		return nil, gfErr
 	}
 
-	codeLst := code.([]interface{})
+	codeUncastedLst := code.([]interface{})
+	codeLst := gf_lang.CastToExpr(codeUncastedLst)
 
 	//------------------------
     
