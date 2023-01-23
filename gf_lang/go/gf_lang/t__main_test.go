@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_lang
 
 import (
-	"fmt"
 	"os"
+	"fmt"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
@@ -38,9 +38,65 @@ func TestMain(m *testing.M) {
 
 //---------------------------------------------------
 
+func TestTreeExpansion(pTest *testing.T) {
+	_, logNewFun := gf_core.LogsInit()
+	externAPI := GetTestExternAPI()
+
+	// program
+	programASTlst := GFexpr{
+		GFexpr{"lang_v", "0.0.6"},
+		GFexpr{"*", 10, GFexpr{GFexpr{"x", 5.4}, GFexpr{"*", 1, GFexpr{GFexpr{"z", 1.6,}, "cube"},},},}, // 3 * {x 5.4} 1 * {z 1.6} cube
+	}
+
+	// run program
+	resultsLst, programsDebugLst, err := Run(programASTlst, externAPI)
+	if err != nil {
+		logNewFun("ERROR", "failed to run program to test State Operations",
+			map[string]interface{}{"err": err,})
+		pTest.Fail()
+	}
+
+	fmt.Println("============================")
+	fmt.Println("results:")
+	spew.Dump(resultsLst)
+	fmt.Println("-----")
+	viewDebug(programASTlst, programsDebugLst)
+}
+
+//---------------------------------------------------
+
+func TestStateOps(pTest *testing.T) {
+	_, logNewFun := gf_core.LogsInit()
+	externAPI := GetTestExternAPI()
+
+	// program
+	programASTlst := GFexpr{
+		GFexpr{"lang_v", "0.0.6"},
+		GFexpr{"set", "color-background", GFexpr{"rgb", 0.5, 0.5, 0.5,},},
+		GFexpr{GFexpr{"set", "color", GFexpr{"rgb", 0, 0, 1.0},}, "cube"},                   // cube
+    	GFexpr{GFexpr{"set", "color", GFexpr{"rgb", 0, 0, 1.0},}, GFexpr{"x", 2.0}, "cube"}, // {x 2} cube
+	}
+
+	// run program
+	resultsLst, programsDebugLst, err := Run(programASTlst, externAPI)
+	if err != nil {
+		logNewFun("ERROR", "failed to run program to test State Operations",
+			map[string]interface{}{"err": err,})
+		pTest.Fail()
+	}
+
+	fmt.Println("============================")
+	fmt.Println("results:")
+	spew.Dump(resultsLst)
+	fmt.Println("-----")
+	viewDebug(programASTlst, programsDebugLst)
+}
+
+//---------------------------------------------------
+
 func TestMap(pTest *testing.T) {
 	_, logNewFun := gf_core.LogsInit()
-	externAPI := getTestExternAPI()
+	externAPI := GetTestExternAPI()
 
 	// program
 	programASTlst := GFexpr{
@@ -58,9 +114,9 @@ func TestMap(pTest *testing.T) {
 	}
 
 	// run program
-	resultsLst, err := Run(programASTlst, externAPI)
+	resultsLst, _, err := Run(programASTlst, externAPI)
 	if err != nil {
-		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		logNewFun("ERROR", "failed to run program to test Maps", map[string]interface{}{"err": err,})
 		pTest.Fail()
 	}
 
@@ -90,7 +146,7 @@ func TestMap(pTest *testing.T) {
 
 func TestLists(pTest *testing.T) {
 	_, logNewFun := gf_core.LogsInit()
-	externAPI := getTestExternAPI()
+	externAPI := GetTestExternAPI()
 
 	// program
 	programASTlst := GFexpr{
@@ -106,9 +162,9 @@ func TestLists(pTest *testing.T) {
 	}
 
 	// run program
-	resultsLst, err := Run(programASTlst, externAPI)
+	resultsLst, _, err := Run(programASTlst, externAPI)
 	if err != nil {
-		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		logNewFun("ERROR", "failed to run program to test Lists", map[string]interface{}{"err": err,})
 		pTest.Fail()
 	}
 
@@ -120,8 +176,6 @@ func TestLists(pTest *testing.T) {
 		logNewFun("ERROR", "first results should be equal to 3", map[string]interface{}{"result": resultsLst[0],})
 		pTest.Fail()
 	}
-	
-
 }
 
 //---------------------------------------------------
@@ -129,12 +183,12 @@ func TestLists(pTest *testing.T) {
 func TestVariables(pTest *testing.T) {
 	
 	_, logNewFun := gf_core.LogsInit()
-	externAPI := getTestExternAPI()
+	externAPI := GetTestExternAPI()
 
 	// program
 	programASTlst := GFexpr{
 		GFexpr{"lang_v", "0.0.6"},
-
+		
 		// testing setting of a user variable, and referencing
 		// and returning it.
 		GFexpr{
@@ -146,9 +200,9 @@ func TestVariables(pTest *testing.T) {
 	}
 
 	// run program
-	resultsLst, err := Run(programASTlst, externAPI)
+	resultsLst, _, err := Run(programASTlst, externAPI)
 	if err != nil {
-		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		logNewFun("ERROR", "failed to run program to test Variables", map[string]interface{}{"err": err,})
 		pTest.Fail()
 	}
 
@@ -169,7 +223,7 @@ func TestVariables(pTest *testing.T) {
 func TestReturnExpression(pTest *testing.T) {
 	
 	_, logNewFun := gf_core.LogsInit()
-	externAPI := getTestExternAPI()
+	externAPI := GetTestExternAPI()
 
 	// program
 	programASTlst := GFexpr{
@@ -180,16 +234,16 @@ func TestReturnExpression(pTest *testing.T) {
 	}
 
 	// run program
-	resultsLst, err := Run(programASTlst, externAPI)
+	resultsLst, _, err := Run(programASTlst, externAPI)
 	if err != nil {
-		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
+		logNewFun("ERROR", "failed to run program to test Return statements", map[string]interface{}{"err": err,})
 		pTest.Fail()
 	}
 
 	spew.Dump(resultsLst)
 
 	if len(resultsLst) != 3 {
-		logNewFun("ERROR", "results list should be 2 elements", nil)
+		logNewFun("ERROR", "results list should be 3 elements", nil)
 		pTest.Fail()
 	}
 
@@ -207,71 +261,4 @@ func TestReturnExpression(pTest *testing.T) {
 		logNewFun("ERROR", "first results should be equal to 20", map[string]interface{}{"result": resultsLst[2],})
 		pTest.Fail()
 	}
-}
-
-//---------------------------------------------------
-
-func getTestExternAPI() GFexternAPI {
-	externAPI := GFexternAPI{
-
-		InitEngineFun: func(pShaderDefsMap map[string]interface{}) {
-			fmt.Println("init_engine")
-		},
-		SetStateFun: func(pStateChange GFstateChange) []interface{} {
-			fmt.Println("set state")
-			return nil
-		},
-		CreateCubeFun: func(pXf float64, pYf float64, pZf float64,
-			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
-			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
-			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
-
-			fmt.Println("create cube")
-		},
-		CreateSphereFun: func(pXf float64, pYf float64, pZf float64,
-			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
-			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
-			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
-
-			fmt.Println("create sphere")
-		},
-		CreateLineFun: func(pXf float64, pYf float64, pZf float64,
-			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
-			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
-			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
-			
-			fmt.Println("create line")
-		},
-		AnimateFun: func(pPropsToAnimateLst []map[string]interface{},
-			pDurationSecF float64,
-			pRepeatBool   bool) {
-
-			fmt.Println("animate")
-		},
-
-		//---------------------------------------------
-		// RPC_CALL
-		RPCcall: func(pNodeStr string, // node
-			pModuleStr   string,       // module
-			pFunctionStr string,       // function
-			pArgsLst     []interface{}) map[string]interface{} { // args list
-			
-
-			return nil
-
-
-		},
-
-		//---------------------------------------------
-		// RPC_SERVE
-		RPCserve: func(pNodeNameStr string,
-			pHandlersLst []*GFrpcServerHandler,
-			pExternAPI   GFexternAPI) {
-
-			
-		},
-
-		//---------------------------------------------
-	}
-	return externAPI
 }
