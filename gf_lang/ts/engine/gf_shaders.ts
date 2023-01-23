@@ -58,6 +58,7 @@ function create(p_uniforms_defs_map,
 
     const material = new THREE.ShaderMaterial({
         
+        //---------------------
         // UNIFORMS
         uniforms: p_uniforms_defs_map,
         
@@ -65,7 +66,9 @@ function create(p_uniforms_defs_map,
             // time: {value: 1.0},
             // resolution: {value: new THREE.Vector2()}
         },*/
-    
+        
+        //---------------------
+        
         vertexShader:   p_vertex_shader_str,
         fragmentShader: p_fragment_shader_str
     } );

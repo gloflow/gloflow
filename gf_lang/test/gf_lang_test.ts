@@ -30,16 +30,16 @@ declare var gf_lang_run;
 //-------------------------------------------------
 $(document).ready(()=>{
 
-    /*const go = new Go();
+    const go = new Go();
     WebAssembly.instantiateStreaming(fetch("./../go/build/gf_lang_web.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
 
         console.log("Golang WASM loaded");
 
         run();
-    });*/
+    });
 
-    run();
+    // run();
 
 });
 
@@ -232,7 +232,7 @@ function run() {
     const extern_api_map = {
         "init_engine_fun": function(p_shader_defs_map) {
             console.log("init engine", p_shader_defs_map)
-
+            
             // ENGINE
             engine_api_map = gf_engine.init(p_shader_defs_map);
 
@@ -241,7 +241,8 @@ function run() {
         },
         "set_state_fun": function(p_state_change_map) {
 
-            engine_api_map["set_state_fun"](p_state_change_map)
+            const result = engine_api_map["set_state_fun"](p_state_change_map);
+            return result;
         },
         "create_cube_fun": function(p_x, p_y, p_z,
 			p_rx, p_ry, p_rz,
@@ -276,6 +277,6 @@ function run() {
         }
     }
 
-    // gf_lang_run(color_test__program_ast_lst, extern_api_map);
-    gf_lang.run(planes_world__program_ast_lst);
+    gf_lang_run(shader_test__program_ast_lst, extern_api_map);
+    // gf_lang.run(form_experiment__ast_lst);
 }

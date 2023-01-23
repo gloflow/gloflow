@@ -147,7 +147,7 @@ function expand_tree(p_expression_ast_lst,
                 const expanded_expressions_lst   = gf_lang_utils.clone_expr_N_times(expression_to_multiply_lst, factor_int)
 
                 /*
-                ["*", 10, [["y", -2.0], "cube"]], // 10 * {x -2} cube
+                ["*", 3, [["y", -2.0], "cube"]], // 3 * {x -2} cube
                 transforms to:
 
                 [

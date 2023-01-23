@@ -716,7 +716,6 @@ export function init(p_shader_defs_map) {
 			const [derived_x_f, derived_y_f, derived_z_f] = 
 				gf_engine_utils.get_derived_coords(p_x, p_y, p_z, coord_origins_stack_lst);
 
-			
 			const mesh = create_sphere(derived_x_f, derived_y_f, derived_z_f,
 				p_rx, p_ry, p_rz,
 				p_sx, p_sy, p_sz,
