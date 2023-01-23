@@ -98,7 +98,7 @@ func pickRuleRandomDef(pRuleNameStr string,
 // CLONING
 //-------------------------------------------------
 
-func cloneExpr(pExprLst []interface{}) []interface{} {
+func cloneExpr(pExprLst GFexpr) GFexpr {
     copyLst := make([]interface{}, len(pExprLst))
     copy(copyLst, pExprLst)
     return copyLst
@@ -106,7 +106,7 @@ func cloneExpr(pExprLst []interface{}) []interface{} {
 
 //-------------------------------------------------
 
-func cloneExprNtimes(pExprLst []interface{}, pNint int) []interface{} {
+func cloneExprNtimes(pExprLst GFexpr, pNint int) GFexpr {
     
     clonesLst := []interface{}{}
     for i := 0; i < pNint; i++ {
@@ -114,7 +114,7 @@ func cloneExprNtimes(pExprLst []interface{}, pNint int) []interface{} {
         clonedExprLst := cloneExpr(pExprLst)
         clonesLst = append(clonesLst, clonedExprLst)
     }
-    return clonesLst
+    return GFexpr(clonesLst)
 }
 
 //-------------------------------------------------
@@ -222,6 +222,26 @@ func checkIsReturnExpr(pExprLst GFexpr) bool {
 }
 
 //-------------------------------------------------
+// CASTS
+//-------------------------------------------------
+
+func CastToExpr(pExprLst []interface{}) GFexpr {
+
+    exprLst := []interface{}{}
+    for _, el := range pExprLst {
+        if eLst, ok := el.([]interface{}); ok {
+
+            exprCastedLst := CastToExpr(eLst)
+            exprLst = append(exprLst, exprCastedLst)
+        } else {
+            // not an expression, so no need to cast
+            exprLst = append(exprLst, el)
+        }
+    }
+    return GFexpr(exprLst)
+}
+
+//-------------------------------------------------
 
 func castToFloat(pN interface{}) float64 {
     if nInt, ok := pN.(int); ok {
@@ -232,4 +252,15 @@ func castToFloat(pN interface{}) float64 {
     }
     panic(fmt.Sprintf("number %s is not a int or float64", pN))
     return 0.0
+}
+
+func castToInt(pN interface{}) int {
+    if nInt, ok := pN.(int); ok {
+        return nInt
+    }
+    if nF, ok := pN.(float64); ok {
+        return int(nF)
+    }
+    panic(fmt.Sprintf("number %s is not a int or float64", pN))
+    return 0
 }

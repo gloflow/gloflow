@@ -19,13 +19,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 package gf_lang
 
+import (
+    "fmt"
+)
+
+//---------------------------------------------------
+
 type GFgeometryFunc func(float64, float64, float64,
     float64, float64, float64,
     float64, float64, float64,
     float64, float64, float64)
 
 type GFexternAPI struct {
-    InitEngineFun   func(map[string]interface{})
+    InitEngineFun   func(map[string]*GFshaderDef)
     SetStateFun     func(GFstateChange) []interface{}
     CreateCubeFun   GFgeometryFunc
     CreateSphereFun GFgeometryFunc
@@ -41,4 +47,71 @@ type GFexternAPI struct {
     RPCserve GFrpcServeFun
 
     //------------------------------------
+}
+
+//---------------------------------------------------
+
+func GetTestExternAPI() GFexternAPI {
+	externAPI := GFexternAPI{
+
+		InitEngineFun: func(pShaderDefsMap map[string]*GFshaderDef) {
+			fmt.Println("init_engine")
+		},
+		SetStateFun: func(pStateChange GFstateChange) []interface{} {
+			fmt.Println("set state")
+			return nil
+		},
+		CreateCubeFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+
+			fmt.Println("create cube")
+		},
+		CreateSphereFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+
+			fmt.Println("create sphere")
+		},
+		CreateLineFun: func(pXf float64, pYf float64, pZf float64,
+			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
+			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
+			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
+			
+			fmt.Println("create line")
+		},
+		AnimateFun: func(pPropsToAnimateLst []map[string]interface{},
+			pDurationSecF float64,
+			pRepeatBool   bool) {
+
+			fmt.Println("animate")
+		},
+
+		//---------------------------------------------
+		// RPC_CALL
+		RPCcall: func(pNodeStr string, // node
+			pModuleStr   string,       // module
+			pFunctionStr string,       // function
+			pArgsLst     []interface{}) map[string]interface{} { // args list
+			
+
+			return nil
+
+
+		},
+
+		//---------------------------------------------
+		// RPC_SERVE
+		RPCserve: func(pNodeNameStr string,
+			pHandlersLst []*GFrpcServerHandler,
+			pExternAPI   GFexternAPI) {
+
+			
+		},
+
+		//---------------------------------------------
+	}
+	return externAPI
 }

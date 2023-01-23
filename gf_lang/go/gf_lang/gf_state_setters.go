@@ -83,7 +83,7 @@ func execStateSetterExpr(pSetterTypeStr string,
             pState.ScaleYf = scaleValF
             pState.ScaleZf = scaleValF
 
-        } else if valLst, ok := pVals.([]interface{}); ok {
+        } else if valLst, ok := pVals.(GFexpr); ok {
 
             valsLst := valLst
             if len(valsLst) != 3 {
@@ -117,7 +117,7 @@ func execStateSetterExpr(pSetterTypeStr string,
         //------------------------------------
         // COLOR
 
-        if valLst, ok := pVals.([]interface{}); ok {
+        if valLst, ok := pVals.(GFexpr); ok {
 
             valsLst := valLst
             if valsLst[0] != "rgb" {
@@ -128,9 +128,9 @@ func execStateSetterExpr(pSetterTypeStr string,
                 return nil, errors.New("rgb values can only be of length 4 ['rgb', r, g, b]")
             }
 
-            rF := valsLst[1].(float64)
-            gF := valsLst[2].(float64)
-            bF := valsLst[3].(float64)
+            rF := castToFloat(valsLst[1])
+            gF := castToFloat(valsLst[2])
+            bF := castToFloat(valsLst[3])
 
             /*stateChangeMap := map[string]interface{}{
                 "setter_type_str": pSetterTypeStr,
@@ -185,7 +185,7 @@ func execStateSetterExpr(pSetterTypeStr string,
         //------------------------------------
         // COLOR_BACKGROUND
 
-        valsLst := pVals.([]interface{})
+        valsLst := []interface{}(pVals.(GFexpr))
         if valsLst[0].(string) != "rgb" {
             return nil, errors.New("only rgb type is allowed")
         }
@@ -225,7 +225,7 @@ func execStateSetterExpr(pSetterTypeStr string,
         //------------------------------------
         // MATERIAL
 
-        valsLst         := pVals.([]interface{})
+        valsLst         := pVals.(GFexpr)
         materialTypeStr := valsLst[0].(string)
 
         if materialTypeStr != "wireframe" &&
@@ -271,7 +271,7 @@ func execStateSetterExpr(pSetterTypeStr string,
         //------------------------------------
         // MATERIAL_PROPERTY
 
-        valsLst := pVals.([]interface{})
+        valsLst := pVals.(GFexpr)
         materialNameStr := valsLst[0].(string)
         materialPropStr := valsLst[1].(string)
         materialPropVal := valsLst[2]
@@ -282,7 +282,7 @@ func execStateSetterExpr(pSetterTypeStr string,
     
         if materialPropStr == "shader_uniform" {
 
-            materialPropValLst := materialPropVal.([]interface{})
+            materialPropValLst := materialPropVal.(GFexpr)
             uniformNameStr := materialPropValLst[0].(string)
             uniformVal     := materialPropValLst[1]
             uniformValIsStrBool, uniformValStr := gf_core.CastToStr(uniformVal)
@@ -305,7 +305,7 @@ func execStateSetterExpr(pSetterTypeStr string,
                     loadedVal = pState.VarsMap[uniformValStr]
                 }
 
-            } else if uniformValLst, ok := uniformVal.([]interface{}); ok {
+            } else if uniformValLst, ok := uniformVal.(GFexpr); ok {
 
                 // ARITHMETIC_EXPRESSION
 

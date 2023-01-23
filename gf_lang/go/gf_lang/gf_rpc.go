@@ -54,7 +54,7 @@ func rpcCallEval(pExprLst []interface{},
 	nodeNameStr     := pExprLst[0].(string)
 	moduleNameStr   := pExprLst[1].(string)
 	functionNameStr := pExprLst[2].(string)
-	argsLst         := pExprLst[3].([]interface{})
+	argsLst         := []interface{}(pExprLst[3].(GFexpr))
 
 	resultMap := pExternAPI.RPCcall(nodeNameStr, moduleNameStr, functionNameStr, argsLst)
 

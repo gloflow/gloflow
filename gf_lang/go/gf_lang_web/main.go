@@ -24,7 +24,7 @@ import (
 	"syscall/js"
 	"reflect"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -49,11 +49,11 @@ func main() {
 		loadedProgramASTlst := loadProgramAST(programASTlst)
 		loadedExternAPI     := loadExternAPIfuns(externAPImap)
 
-		fmt.Println("LOADED PROGRAM AST >>>")
-		spew.Dump(loadedProgramASTlst)
+		// fmt.Println("LOADED PROGRAM AST >>>")
+		// spew.Dump(loadedProgramASTlst)
 		
 
-		_, err := gf_lang.Run(loadedProgramASTlst,
+		_, _, err := gf_lang.Run(loadedProgramASTlst,
 			loadedExternAPI)
 		
 		if err != nil {
@@ -117,10 +117,17 @@ func loadExternAPIfuns(pExternAPImap js.Value) gf_lang.GFexternAPI {
 	
 	externAPI := gf_lang.GFexternAPI{
 
-		InitEngineFun: func(pShaderDefsMap map[string]interface{}) {
+		//-------------------------------------------------
+		// INIT_ENGINE
+		InitEngineFun: func(pShaderDefsMap map[string]*gf_lang.GFshaderDef) {
 
-			initEngineFun.Invoke(pShaderDefsMap)
+			shaderDefsForJSmap := transformShaderDefsForJS(pShaderDefsMap)
+
+			initEngineFun.Invoke(shaderDefsForJSmap)
 		},
+
+		//-------------------------------------------------
+		// SET_STATE
 		SetStateFun: func(pStateChange gf_lang.GFstateChange) []interface{} {
 
 			stateChangeMap := transformStateChangeForJS(pStateChange)
@@ -129,9 +136,26 @@ func loadExternAPIfuns(pExternAPImap js.Value) gf_lang.GFexternAPI {
 			// spew.Dump(pStateChange)
 			// spew.Dump(stateChangeMap)
 
-			setStateFun.Invoke(stateChangeMap)
+			r := setStateFun.Invoke(stateChangeMap)
+
+			//----------------
+			// ADD!! - this only assumes that set_state_fun always returns just
+			//         lists of floats.
+			//         Add support for other datatypes or structs
+			if !r.IsUndefined() {
+				var resultsLst []interface{}
+				for i:=0; i< r.Length(); i++{
+					resultsLst = append(resultsLst, interface{}(r.Index(i).Float()))
+				}
+				return resultsLst
+			}
+
+			//----------------
+
 			return nil
 		},
+
+		//-------------------------------------------------
 		CreateCubeFun: func(pXf float64, pYf float64, pZf float64,
 			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
 			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
@@ -146,15 +170,21 @@ func loadExternAPIfuns(pExternAPImap js.Value) gf_lang.GFexternAPI {
 			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
 			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
 			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
-
-			createSphereFun.Invoke()
+				
+			createSphereFun.Invoke(pXf, pYf, pZf,
+				pRotationXf, pRotationYf, pRotationZf,
+				pScaleXf, ScaleYf, ScaleZf,
+				pColorRedF, pColorGreenF, pColorBlueF)
 		},
 		CreateLineFun: func(pXf float64, pYf float64, pZf float64,
 			pRotationXf float64, pRotationYf  float64, pRotationZf float64,
 			pScaleXf    float64, ScaleYf      float64, ScaleZf     float64,
 			pColorRedF  float64, pColorGreenF float64, pColorBlueF float64) {
 			
-			createLineFun.Invoke()
+			createLineFun.Invoke(pXf, pYf, pZf,
+				pRotationXf, pRotationYf, pRotationZf,
+				pScaleXf, ScaleYf, ScaleZf,
+				pColorRedF, pColorGreenF, pColorBlueF)
 		},
 		AnimateFun: func(pPropsToAnimateLst []map[string]interface{},
 			pDurationSecF float64,
@@ -168,7 +198,7 @@ func loadExternAPIfuns(pExternAPImap js.Value) gf_lang.GFexternAPI {
 
 //-------------------------------------------------
 
-func loadProgramAST(pLst js.Value) []interface{} {
+func loadProgramAST(pLst js.Value) gf_lang.GFexpr { // []interface{} {
 
 	exprLst := []interface{}{}
 	for i:=0; i < pLst.Length() ;i++ {
@@ -196,6 +226,32 @@ func loadProgramAST(pLst js.Value) []interface{} {
 	return exprLst
 }
 
+
+//-------------------------------------------------
+
+func transformShaderDefsForJS(pShaderDefsMap map[string]*gf_lang.GFshaderDef) map[string]interface{} {
+
+	shaderDefsMap := map[string]interface{}{}
+
+	for shaderNameStr, shaderDef := range pShaderDefsMap {
+		
+		uniformDefsLst := []interface{}{}
+		for _, u := range shaderDef.UniformsDefsLst {
+			uniformDefsLst = append(uniformDefsLst, []interface{}{u.NameStr, u.TypeStr, u.DefaultVal})
+		}
+
+		shaderDefMap := map[string]interface{}{
+			"name_str":          shaderDef.NameStr,
+			"uniforms_defs_lst": uniformDefsLst,
+			"vertex_code_str":   shaderDef.VertexCodeStr,
+			"fragment_code_str": shaderDef.FragmentCodeStr,
+		}
+
+		shaderDefsMap[shaderNameStr] = shaderDefMap
+	}
+	return shaderDefsMap
+}
+
 //-------------------------------------------------
 
 func transformStateChangeForJS(pStateChange gf_lang.GFstateChange) map[string]interface{} {
@@ -211,6 +267,7 @@ func transformStateChangeForJS(pStateChange gf_lang.GFstateChange) map[string]in
 		fieldValue := structVal.Field(i)
 		// fieldNameStr := fieldType.Name
 
+		// get the 'json' tag from the struct member
 		fieldJSONnameStr := reflect.StructTag(fieldType.Tag).Get("json")
 
 		switch fieldType.Type.Kind() {
@@ -244,6 +301,5 @@ func transformStateChangeForJS(pStateChange gf_lang.GFstateChange) map[string]in
 			stateChangeMap[fieldJSONnameStr] = fieldValue.Interface()
 		}
 	}
-	return stateChangeMap
-	
+	return stateChangeMap	
 }
