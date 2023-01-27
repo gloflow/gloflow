@@ -277,6 +277,6 @@ function run() {
         }
     }
 
-    gf_lang_run(shader_test__program_ast_lst, extern_api_map);
+    gf_lang_run(first_scene__program_ast_lst, extern_api_map);
     // gf_lang.run(form_experiment__ast_lst);
 }

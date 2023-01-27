@@ -251,7 +251,8 @@ function draw_helpers(p_engine_api_map) {
 
         $(color_picker_color_element).text(picked_color_hex_str);
         p_engine_api_map["set_state_fun"]({
-            "color_background": picked_color_hex_str
+            "property_name_str":        "color_background_rgb_hex",
+            "color_background_rgb_hex": picked_color_hex_str
         });
     });
 

@@ -221,7 +221,12 @@ export function init(p_shader_defs_map) {
 		const real_world_point_v3 = gf_engine_utils.get_real_world_pos(p_x, p_y, p_z,
 			p_rx, p_ry, p_rz,
 			p_rotation_pivot_points_stack_lst);
+			
+		
 
+		
+
+		
 		cube_mesh.position.x = real_world_point_v3.x;
 		cube_mesh.position.y = real_world_point_v3.y;
 		cube_mesh.position.z = real_world_point_v3.z;
@@ -513,7 +518,7 @@ export function init(p_shader_defs_map) {
 				scene_3d.background = bg_color;
 			}
 			if (p_state_change_map["property_name_str"] == "color_background_rgb_hex") {
-				const color_hex_str = p_state_change_map["color_background_hex_str"];
+				const color_hex_str = p_state_change_map["color_background_rgb_hex"];
 				const bg_color      = new THREE.Color(color_hex_str);
 				
 				color_background    = bg_color;
@@ -660,6 +665,8 @@ export function init(p_shader_defs_map) {
 			}
 			
 
+			
+
 			// get global coords that are derived from the latest coordinate system origin
 			// that was last added to the stack of coordinate system origins.
 			const [derived_x_f, derived_y_f, derived_z_f] = 
@@ -667,7 +674,6 @@ export function init(p_shader_defs_map) {
 
 			// const [derived_rx_f, derived_ry_f, derived_rz_f] = 
 			// 	gf_engine_utils.get_derived_rotation(p_rx, p_ry, p_rz, rotations_stack_lst);
-
 			
 			const mesh = create_cube(derived_x_f, derived_y_f, derived_z_f,
 				p_rx, p_ry, p_rz,
