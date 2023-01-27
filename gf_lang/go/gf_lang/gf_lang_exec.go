@@ -228,7 +228,8 @@ func executeTree(pExpressionASTlst []interface{},
                     vals,
                     state,
                     pStateFamilyStackLst,
-                    pExternAPI)
+                    pExternAPI,
+                    pDebug)
                 if err != nil {
                     return nil, nil, err
                 }
@@ -244,7 +245,8 @@ func executeTree(pExpressionASTlst []interface{},
                     vals,
                     state,
                     pStateFamilyStackLst,
-                    pExternAPI)
+                    pExternAPI,
+                    pDebug)
                 if err != nil {
                     return nil, nil, err
                 }
@@ -399,9 +401,11 @@ func exprRuleCall(pCalledRuleNameStr string,
 
         newState := exprRuleSysCall(pCalledRuleNameStr,
             pStateParent,
-            pExternAPI)
+            pExternAPI,
+            pDebug)
         return newState, nil
-
+    
+    //------------------------------------
     } else if gf_core.MapHasKey(pRulesDefsMap, pCalledRuleNameStr) {
 
         //------------------------------------
@@ -543,7 +547,8 @@ func exprRuleCall(pCalledRuleNameStr string,
 
 func exprRuleSysCall(pRuleNameStr string,
     pState     *GFstate,
-    pExternAPI GFexternAPI) *GFstate {
+    pExternAPI GFexternAPI,
+    pDebug     *GFprogramDebug) *GFstate {
 
     //----------------------
     pState.ItersNumGlobalInt += 1
@@ -554,60 +559,52 @@ func exprRuleSysCall(pRuleNameStr string,
     incrementItersNum(pState)
 
     //----------------------
+    
+    x := pState.Xf
+    y := pState.Yf
+    z := pState.Zf
+    rx := pState.RotationXf
+    ry := pState.RotationYf
+    rz := pState.RotationZf
+    sx := pState.ScaleXf
+    sy := pState.ScaleYf
+    sz := pState.ScaleZf
+    cr := pState.ColorRedF
+    cg := pState.ColorGreenF
+    cb := pState.ColorBlueF
+    
+    props := &GFentityProps{
+        Xf: pState.Xf,
+        Yf: pState.Yf,
+        Zf: pState.Zf,
+        RotationXf: pState.RotationXf,
+        RotationYf: pState.RotationYf,
+        RotationZf: pState.RotationZf,
+        ScaleXf: pState.ScaleXf,
+        ScaleYf: pState.ScaleYf,
+        ScaleZf: pState.ScaleZf,
+        ColorRedF:   pState.ColorRedF,
+        ColorGreenF: pState.ColorGreenF,
+        ColorBlueF:  pState.ColorBlueF,
+    }
 
     if pRuleNameStr == "cube" {
-
+        
         // CUBE
-        x := pState.Xf
-        y := pState.Yf
-        z := pState.Zf
-        rx := pState.RotationXf
-        ry := pState.RotationYf
-        rz := pState.RotationZf
-        sx := pState.ScaleXf
-        sy := pState.ScaleYf
-        sz := pState.ScaleZf
-        cr := pState.ColorRedF
-        cg := pState.ColorGreenF
-        cb := pState.ColorBlueF
-
         pExternAPI.CreateCubeFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        addEntityToOutput("cube", props, pDebug)
 
     } else if pRuleNameStr == "sphere" {
 
         // SPHERE
-        x := pState.Xf
-        y := pState.Yf
-        z := pState.Zf
-        rx := pState.RotationXf
-        ry := pState.RotationYf
-        rz := pState.RotationZf
-        sx := pState.ScaleXf
-        sy := pState.ScaleYf
-        sz := pState.ScaleZf
-        cr := pState.ColorRedF
-        cg := pState.ColorGreenF
-        cb := pState.ColorBlueF
-
         pExternAPI.CreateSphereFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        addEntityToOutput("sphere", props, pDebug)
 
     } else if pRuleNameStr == "line" {
 
         // LINE
-        x := pState.Xf
-        y := pState.Yf
-        z := pState.Zf
-        rx := pState.RotationXf
-        ry := pState.RotationYf
-        rz := pState.RotationZf
-        sx := pState.ScaleXf
-        sy := pState.ScaleYf
-        sz := pState.ScaleZf
-        cr := pState.ColorRedF
-        cg := pState.ColorGreenF
-        cb := pState.ColorBlueF
-
         pExternAPI.CreateLineFun(x, y, z, rx, ry, rz, sx, sy, sz, cr, cg, cb)
+        addEntityToOutput("line", props, pDebug)
     }
 
     return pState

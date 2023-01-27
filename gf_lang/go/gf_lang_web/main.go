@@ -53,12 +53,15 @@ func main() {
 		// spew.Dump(loadedProgramASTlst)
 		
 
-		_, _, err := gf_lang.Run(loadedProgramASTlst,
+		_, programsDebugLst, err := gf_lang.Run(loadedProgramASTlst,
 			loadedExternAPI)
 		
 		if err != nil {
 			panic(err)
 		}
+
+
+		debugView(programsDebugLst)
 
 		outputStr := "gf_output"
 		return js.ValueOf(outputStr)

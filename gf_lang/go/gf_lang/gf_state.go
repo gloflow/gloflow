@@ -21,6 +21,7 @@ package gf_lang
 
 import (
     // "fmt"
+    "time"
     "errors"
     "reflect"
     "github.com/gloflow/gloflow/go/gf_core"
@@ -30,37 +31,40 @@ import (
 //-------------------------------------------------
 
 type GFstate struct {
-    Xf          float64
-    Yf          float64
-    Zf          float64
-    RotationXf  float64
-    RotationYf  float64
-    RotationZf  float64
-    ScaleXf     float64
-    ScaleYf     float64
-    ScaleZf     float64
-    ColorRedF   float64
-    ColorGreenF float64
-    ColorBlueF  float64
+    
+    CreationUNIXtimeF float64 `json:"creation_unix_time_f"`
+
+    Xf          float64 `json:"x_f"`
+    Yf          float64 `json:"y_f"`
+    Zf          float64 `json:"z_f"`
+    RotationXf  float64 `json:"rotation_f"`
+    RotationYf  float64 `json:"rotation_f"`
+    RotationZf  float64 `json:"rotation_f"`
+    ScaleXf     float64 `json:"scale_x_f"`
+    ScaleYf     float64 `json:"scale_y_f"`
+    ScaleZf     float64 `json:"scale_z_f"`
+    ColorRedF   float64 `json:"color_red_f"`
+    ColorGreenF float64 `json:"color_green_f"`
+    ColorBlueF  float64 `json:"color_blue_f"`
 
     // global max number of iterations for any rule
-    ItersMaxInt int
+    ItersMaxInt int `json:"iters_max_int"`
 
     // list of all rules that are executing
-    RulesNamesStackLst []string
+    RulesNamesStackLst []string `json:"rules_names_stack_lst"`
 
     // VARIABLES
-    VarsMap map[string]*GFvariableVal
+    VarsMap map[string]*GFvariableVal `json:"vars_map"`
 
     // global iterations number for a particular root expression
-    ItersNumGlobalInt int
+    ItersNumGlobalInt int `json:"iters_num_global_int"`
     
     // stack of iteration numbers for each rule as its entered
-    RulesItersNumStackLst []int
+    RulesItersNumStackLst []int `json:"rules_iters_num_stack_lst"`
 
     // ANIMATIONS - map of animations that are currently active
     //              in a subexpression or its children
-    AnimationsActiveMap map[string]interface{}
+    AnimationsActiveMap map[string]interface{} `json:"animations_active_map"`
 }
 
 //-------------------------------------------------
@@ -170,6 +174,10 @@ func stateCreateNew(pStateParent *GFstate,
     stateNew := stateGetEmpty()
 
     if pStateParent != nil {
+        
+        creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+        stateNew.CreationUNIXtimeF = creationUNIXtimeF
+
         stateNew.Xf = pStateParent.Xf
         stateNew.Yf = pStateParent.Yf
         stateNew.Zf = pStateParent.Zf
@@ -247,6 +255,9 @@ func stateGetEmpty() *GFstate {
     */
 
     state := &GFstate{
+        Xf: 0.0,
+        Yf: 0.0,
+        Zf: 0.0,
         ScaleXf: 1.0,
         ScaleYf: 1.0,
         ScaleZf: 1.0,

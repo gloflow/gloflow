@@ -24,8 +24,6 @@ import (
 	"fmt"
 	"net/http"
 	"context"
-	"regexp"
-	"strings"
 	log "github.com/sirupsen/logrus"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
@@ -34,11 +32,17 @@ import (
 
 //-------------------------------------------------
 
+type GFplugins struct {
+	PyBaseDirStr string
+}
+
+//-------------------------------------------------
+
 func main() {
 
 	fmt.Printf("\n   GF_LANG SERVER >>\n\n")
 
-	serverPortInt := 5000
+	appServerPortInt := 5000
 	
 	logFun, logNewFun := gf_core.LogsInitNew(true, "DEBUG")
 	log.SetOutput(os.Stdout)
@@ -50,8 +54,14 @@ func main() {
 		LogNewFun:      logNewFun,
 	}
 
+
+
+	plugins := &GFplugins{
+		PyBaseDirStr: "./../../py/",
+	}
+
 	//--------------------------
-	localTestProgramStr := "./tests/rpc_test.gf"
+	localTestProgramStr := "./tests/first_scene.gf"
 	programASTlst, gfErr := ParseProgramASTfromFile(localTestProgramStr, runtimeSys)
 	if gfErr != nil {
 		panic(1)
@@ -155,7 +165,6 @@ func main() {
 
 				//-------------------------------------------------
 
-
 				gf_rpc_lib.CreateHandlerHTTPwithMux(h.URLpathStr,
 					handlerFun,
 					HTTPmux,
@@ -167,7 +176,7 @@ func main() {
 
 			//-------------
 			// SERVER_INIT - blocking
-			gf_rpc_lib.ServerInitWithMux("gf_lang", serverPortInt, HTTPmux)
+			gf_rpc_lib.ServerInitWithMux("gf_lang", appServerPortInt, HTTPmux)
 
 			//-------------
 		},
@@ -176,55 +185,48 @@ func main() {
 	}
 	
 	// RUN
-	_, _, err := gf_lang.Run(programASTlst,
+	_, programsDebugLst, err := gf_lang.Run(programASTlst,
 		externAPI)
 	
 	if err != nil {
 		panic(err)
 	}
 
+
+	// OUTPUT->FILE
+	filePathStr := "serialized_output.json"
+
+	gfErr = debugSerializeOutputToFile(filePathStr,
+		programsDebugLst,
+		runtimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
+
+	// STATE_HISTORY->FILE
+	filePathStr = "state_history.json"
+	debugSerializeStateHistoryToFile(filePathStr,
+		programsDebugLst,
+		runtimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
+
+	//-------------
+	// DEBUG_ANALYZER
+	gfErr = debugRunPyAnalyzer(programsDebugLst,
+		plugins,
+		runtimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
+	fmt.Println("debug processing done...")
+
+	//-------------
 }
 
 //-------------------------------------------------
 
-func ParseProgramASTfromFile(pLocalFilePathStr string,
-	pRuntimeSys *gf_core.RuntimeSys) (gf_lang.GFexpr, *gf_core.GFerror) {
-
-	//------------------------
-	// READ_FILE
-	programCodeStr, gfErr := gf_core.FileRead(pLocalFilePathStr, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	//------------------------
-	// REMOVE_COMMENTS
-	commentRegex := regexp.MustCompile(`(?m)(.*)//.*$`)
-
-	cleanJSONcodeStr := ""
-	for _, lineStr := range strings.Split(programCodeStr, "\n") {
-
-		lineNoCommentsStr := commentRegex.ReplaceAllString(lineStr, "$1")
-
-		if strings.TrimSpace(lineNoCommentsStr) != "" {
-			cleanJSONcodeStr += fmt.Sprintf("%s\n", lineNoCommentsStr)
-		}
-	}
-
-	fmt.Println("clean JSON code:", cleanJSONcodeStr)
-
-	//------------------------
-	// PARSE
-
-	code, gfErr := gf_core.ParseJSONfromString(cleanJSONcodeStr, pRuntimeSys)
-	if gfErr != nil {
-		return nil, gfErr
-	}
-
-	codeUncastedLst := code.([]interface{})
-	codeLst := gf_lang.CastToExpr(codeUncastedLst)
-
-	//------------------------
-    
-	return codeLst, nil
-}

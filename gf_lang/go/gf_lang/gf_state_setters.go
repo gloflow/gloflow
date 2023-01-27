@@ -59,12 +59,27 @@ type GFstateChange struct {
 
 //-------------------------------------------------
 
+func setExternState(pStateChange *GFstateChange,
+    pExternAPI GFexternAPI,
+    pDebug     *GFprogramDebug) []interface{} {
+
+    resultLst := pExternAPI.SetStateFun(*pStateChange)
+
+    if pDebug != nil {
+        addExternStateChange(pStateChange, pDebug)
+    }
+    return resultLst
+}
+
+//-------------------------------------------------
+
 func execStateSetterExpr(pSetterTypeStr string,
     pPropertyNameStr     string,
     pVals                interface{},
     pState               *GFstate,
     pStateFamilyStackLst []*GFstate,
-    pExternAPI           GFexternAPI) (*GFstate, error) {
+    pExternAPI           GFexternAPI,
+    pDebug               *GFprogramDebug) (*GFstate, error) {
     
     symbols := getSymbolsAndConstants()
 
@@ -136,12 +151,13 @@ func execStateSetterExpr(pSetterTypeStr string,
                 "setter_type_str": pSetterTypeStr,
                 "color_rgb":       []float64{rF, gF, bF},
             }*/
-            stateChange := GFstateChange{
+            stateChange := &GFstateChange{
                 PropertyNameStr: "color_rgb_lst",
                 SetterTypeStr:   pSetterTypeStr,
                 ColorRGBlst:     []float64{rF, gF, bF},
             }
-            pExternAPI.SetStateFun(stateChange)
+            setExternState(stateChange, pExternAPI, pDebug)
+            // pExternAPI.SetStateFun(stateChange)
 
             pState.ColorRedF   = rF
             pState.ColorGreenF = gF
@@ -164,14 +180,15 @@ func execStateSetterExpr(pSetterTypeStr string,
                 "setter_type_str": pSetterTypeStr,
                 "color_rgb":       colorHexStr,
             }*/
-            stateChange := GFstateChange{
+            stateChange := &GFstateChange{
                 PropertyNameStr: "color_rgb_hex",
                 SetterTypeStr:   pSetterTypeStr,
                 ColorRGBhexStr:  colorHexStr,
             }
 
             // set_state_fun() will return parsed color hex string, with rgb channels in 0-1 range.
-            resultLst := pExternAPI.SetStateFun(stateChange)
+            resultLst := setExternState(stateChange, pExternAPI, pDebug)
+            // resultLst := pExternAPI.SetStateFun(stateChange)
 
             pState.ColorRedF   = resultLst[0].(float64)
             pState.ColorGreenF = resultLst[1].(float64)
@@ -201,12 +218,13 @@ func execStateSetterExpr(pSetterTypeStr string,
             "setter_type_str":  pSetterTypeStr,
             "color_background": []float64{r, g, b,},
         }*/
-        stateChange := GFstateChange{
+        stateChange := &GFstateChange{
             PropertyNameStr:       "color_background_rgb_lst",
             SetterTypeStr:         pSetterTypeStr,
             ColorBackgroundRGBlst: []float64{r, g, b,},
         }
-        pExternAPI.SetStateFun(stateChange)
+        setExternState(stateChange, pExternAPI, pDebug)
+        // pExternAPI.SetStateFun(stateChange)
 
         //------------------------------------
 
@@ -237,7 +255,7 @@ func execStateSetterExpr(pSetterTypeStr string,
             "setter_type_str":    pSetterTypeStr,
             "material_type_str":  materialTypeStr,
         }*/
-        stateChange := GFstateChange{
+        stateChange := &GFstateChange{
             PropertyNameStr: "material_type",
             SetterTypeStr:   pSetterTypeStr,
             MaterialTypeStr: materialTypeStr,
@@ -262,7 +280,8 @@ func execStateSetterExpr(pSetterTypeStr string,
             return nil, errors.New("only 'wireframe|shader' material types are supported")
         }
 
-        pExternAPI.SetStateFun(stateChange)      
+        setExternState(stateChange, pExternAPI, pDebug)
+        // pExternAPI.SetStateFun(stateChange)      
         
         //------------------------------------
 
@@ -331,14 +350,15 @@ func execStateSetterExpr(pSetterTypeStr string,
                     "material_shader_uniform_val":      loadedVal,
                 },
             }*/
-            stateChange := GFstateChange{
+            stateChange := &GFstateChange{
                 PropertyNameStr:              "material_shader_uniform",
                 SetterTypeStr:                pSetterTypeStr,
                 MaterialShaderNameStr:        materialNameStr,
                 MaterialShaderUniformNameStr: uniformNameStr,
                 MaterialShaderUniformVal:     loadedVal,
             }
-            pExternAPI.SetStateFun(stateChange)
+            setExternState(stateChange, pExternAPI, pDebug)
+            // pExternAPI.SetStateFun(stateChange)
         }
 
         //------------------------------------
@@ -355,12 +375,13 @@ func execStateSetterExpr(pSetterTypeStr string,
             "setter_type_str": pSetterTypeStr,
             "line_cmd_str":    "start",
         }*/
-        stateChange := GFstateChange{
+        stateChange := &GFstateChange{
             PropertyNameStr: "line_cmd",
             SetterTypeStr:   pSetterTypeStr,
             LineCmdStr:      "start",
         }
-        pExternAPI.SetStateFun(stateChange)
+        setExternState(stateChange, pExternAPI, pDebug)
+        // pExternAPI.SetStateFun(stateChange)
 
         //------------------------------------
         
@@ -383,7 +404,7 @@ func execStateSetterExpr(pSetterTypeStr string,
                 "ry": pState.RotationYf,
                 "rz": pState.RotationZf,
             }*/
-            stateChange := GFstateChange{
+            stateChange := &GFstateChange{
                 PropertyNameStr: "rotation_pivot",
                 SetterTypeStr:   pSetterTypeStr,
                 AxisTypeStr:     "current_pos",
@@ -395,7 +416,8 @@ func execStateSetterExpr(pSetterTypeStr string,
                 RotationZf: pState.RotationZf,
             }
 
-            pExternAPI.SetStateFun(stateChange)
+            setExternState(stateChange, pExternAPI, pDebug)
+            // pExternAPI.SetStateFun(stateChange)
         }
 
         //------------------------------------
@@ -429,7 +451,7 @@ func execStateSetterExpr(pSetterTypeStr string,
                     "ry": pState.RotationYf,
                     "rz": pState.RotationZf,
                 }*/
-                newStateChange := GFstateChange{
+                newStateChange := &GFstateChange{
                     PropertyNameStr: "coord_origin",
                     SetterTypeStr:   "push",
 
@@ -442,7 +464,8 @@ func execStateSetterExpr(pSetterTypeStr string,
                     RotationZf: pState.RotationZf,
                 }
 
-                pExternAPI.SetStateFun(newStateChange)
+                setExternState(newStateChange, pExternAPI, pDebug)
+                // pExternAPI.SetStateFun(newStateChange)
 
                 //---------------------------
                 // NEW_BLANK_STATE - only other place where this is being done
@@ -480,7 +503,7 @@ func execStateSetterExpr(pSetterTypeStr string,
                     "ry": lastFamilyState.RotationYf,
                     "rz": lastFamilyState.RotationZf,
                 }*/
-                restoreStateChange := GFstateChange{
+                restoreStateChange := &GFstateChange{
                     PropertyNameStr: "coord_origin",
                     SetterTypeStr:   "pop",
 
@@ -493,7 +516,8 @@ func execStateSetterExpr(pSetterTypeStr string,
                     RotationZf: lastFamilyState.RotationZf,
                 }
 
-                pExternAPI.SetStateFun(restoreStateChange)
+                setExternState(restoreStateChange, pExternAPI, pDebug)
+                // pExternAPI.SetStateFun(restoreStateChange)
 
             //------------------------------------
         }

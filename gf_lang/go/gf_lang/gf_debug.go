@@ -21,12 +21,105 @@ package gf_lang
 
 import (
 	"fmt"
+	"time"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------
 
 type GFprogramDebug struct {
 	RulesCallsCounterMap map[string]int
 	StateHistoryLst      []*GFstate
+
+	//----------------
+	// OUTPUT
+	
+	OutputEntitiesMap map[gf_core.GF_ID]*GFentityOutput
+	
+	// this is the full output built up over program execution
+	// that stores all extern API calls.
+	// this includes both the entities and state operations
+	OutputLst []interface{}
+
+	//----------------
+}
+
+//-------------------------------------------------
+
+type GFstateChangeOutput struct {
+	IDstr   gf_core.GF_ID  `json:"id_str"`
+	Change  *GFstateChange `json:"change_map"`
+}
+
+type GFentityOutput struct {
+	IDstr   gf_core.GF_ID  `json:"id_str"`
+	TypeStr string         `json:"type_str"`
+	Props   *GFentityProps `json:"props_map"`
+}
+
+type GFentityProps struct {
+	Xf float64 `json:"x_f"`
+	Yf float64 `json:"y_f"`
+	Zf float64 `json:"z_f"`
+	RotationXf  float64 `json:"rotation_x_f"`
+	RotationYf  float64 `json:"rotation_y_f"`
+	RotationZf  float64 `json:"rotation_z_f"`
+	ScaleXf     float64 `json:"scale_x_f"`
+	ScaleYf     float64 `json:"scale_y_f"`
+	ScaleZf     float64 `json:"scale_z_f"`
+	ColorRedF   float64 `json:"color_red_f"`
+	ColorGreenF float64 `json:"color_green_f"`
+	ColorBlueF  float64 `json:"color_blue_f"`
+}
+
+//-------------------------------------------------
+
+func addEntityToOutput(pTypeStr string,
+	pProps *GFentityProps,
+	pDebug *GFprogramDebug) {
+
+	//------------------------
+	// ID
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	fieldsForIDlst := []string{
+	}
+	IDstr := gf_core.IDcreate(fieldsForIDlst,
+		creationUNIXtimeF)
+		
+	//------------------------
+
+	entity := &GFentityOutput{
+		IDstr:   IDstr,
+		TypeStr: pTypeStr,
+		Props:   pProps,
+	}
+
+	pDebug.OutputEntitiesMap[IDstr] = entity
+	pDebug.OutputLst = append(pDebug.OutputLst, entity)
+}
+
+//-------------------------------------------------
+
+func addExternStateChange(pStateChange *GFstateChange,
+	pDebug *GFprogramDebug) {
+
+	//------------------------
+	// ID
+	creationUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+	fieldsForIDlst := []string{
+	}
+	IDstr := gf_core.IDcreate(fieldsForIDlst,
+		creationUNIXtimeF)
+		
+	//------------------------
+	
+	stateChange := &GFstateChangeOutput{
+		IDstr:   IDstr,
+		Change:  pStateChange,
+	}
+
+	pDebug.OutputLst = append(pDebug.OutputLst, stateChange)
 }
 
 //-------------------------------------------------
@@ -35,6 +128,9 @@ func debugInit() *GFprogramDebug {
 	programDebug := &GFprogramDebug{
 		RulesCallsCounterMap: map[string]int{},
 		StateHistoryLst:      []*GFstate{},
+		OutputEntitiesMap:    map[gf_core.GF_ID]*GFentityOutput{},
+		OutputLst:            []interface{}{},
+
 	}
 	return programDebug
 }

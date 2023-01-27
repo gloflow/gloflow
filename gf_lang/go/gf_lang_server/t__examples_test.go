@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package main
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	log "github.com/sirupsen/logrus"
@@ -65,7 +66,7 @@ func TestExampleFirstScene(pTest *testing.T) {
 	}
 
 	// run program
-	resultsLst, err := gf_lang.Run(programASTlst, externAPI)
+	resultsLst, programsDebugLst, err := gf_lang.Run(programASTlst, externAPI)
 	if err != nil {
 		logNewFun("ERROR", "failed to run program in test_basic", map[string]interface{}{"err": err,})
 		pTest.Fail()
@@ -73,4 +74,19 @@ func TestExampleFirstScene(pTest *testing.T) {
 
 
 	spew.Dump(resultsLst)
+	// spew.Dump(programsDebugLst[0].StateHistoryLst)
+
+	for _, s := range programsDebugLst[0].StateHistoryLst {
+		fmt.Printf("++++ %f     time - %f\n", s.Xf, s.CreationUNIXtimeF)
+	}
+
+	debug       := programsDebugLst[0]
+	filePathStr := "serialized_output.json"
+
+	gfErr = debugSerializeOutputToFile(filePathStr,
+		debug,
+		runtimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
 }
