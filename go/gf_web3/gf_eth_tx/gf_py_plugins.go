@@ -28,43 +28,43 @@ import (
 )
 
 //-------------------------------------------------
-func py__run_plugin__plot_tx_trace(p_tx_id_str string,
-	p_tx_trace     *GF_eth__tx_trace,
-	p_plugins_info *gf_eth_core.GF_py_plugins,
+func py__run_plugin__plot_tx_trace(pTxIDstr string,
+	pTxTrace     *GF_eth__tx_trace,
+	pPluginsInfo *gf_eth_core.GF_py_plugins,
 	pRuntimeSys  *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
 
-	py_path_str := fmt.Sprintf("%s/gf_plugin__plot_tx_trace.py", p_plugins_info.Base_dir_path_str)
-	args_lst := []string{
-		fmt.Sprintf("-tx_id=%s", p_tx_id_str),
+	pyPathStr := fmt.Sprintf("%s/gf_plugin__plot_tx_trace.py", pPluginsInfo.Base_dir_path_str)
+	argsLst := []string{
+		fmt.Sprintf("-tx_id=%s", pTxIDstr),
 
 		// write SVG output to stdout instead of to a file
 		"-stdout",
 	}
-	stdout_prefix_str := "GF_OUT:"
+	stdoutPrefixStr := "GF_OUT:"
 
 
 
 
 
 	// JSON
-	tx_trace_byte_lst, _ := json.Marshal(p_tx_trace)
-	tx_trace_byte_str    := string(tx_trace_byte_lst)
+	txTraceByteLst, _ := json.Marshal(pTxTrace)
+	txTraceByteStr    := string(txTraceByteLst)
 
 	// PY_RUN
-	outputs_lst, gfErr := gf_core.CLIpyRun(py_path_str,
-		args_lst,
-		&tx_trace_byte_str,
-		stdout_prefix_str,
+	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
+		argsLst,
+		&txTraceByteStr,
+		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}
 
-	svg_str := outputs_lst[0]["svg_str"].(string)
+	svgStr := outputsLst[0]["svg_str"].(string)
 
 	// LOG
-	log.WithFields(log.Fields{"tx_id": p_tx_id_str, "py_path": py_path_str}).Info("py_plugin gf_plugin__plot_tx_trace.py complete...")
+	log.WithFields(log.Fields{"tx_id": pTxIDstr, "py_path": pyPathStr}).Info("py_plugin gf_plugin__plot_tx_trace.py complete...")
 
-	return svg_str, nil
+	return svgStr, nil
 }

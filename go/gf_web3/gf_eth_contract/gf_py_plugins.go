@@ -35,24 +35,24 @@ func Py__run_plugin__get_contract_info(pNewContractAddrStr string,
 	pRuntimeSys  *gf_core.RuntimeSys) *gf_core.GFerror {
 
 
-	py_path_str := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", pPluginsInfo.Base_dir_path_str)
-	args_lst := []string{
+	pyPathStr := fmt.Sprintf("%s/gf_plugin__get_contract_info.py", pPluginsInfo.Base_dir_path_str)
+	argsLst := []string{
 		fmt.Sprintf("-contract_addr=%s", pNewContractAddrStr),
 	}
-	stdout_prefix_str := "GF_OUT:"
+	stdoutPrefixStr := "GF_OUT:"
 
 	// PY_RUN
-	outputs_lst, gfErr := gf_core.CLIpyRun(py_path_str,
-		args_lst,
+	outputsLst, gfErr := gf_core.CLIpyRun(pyPathStr,
+		argsLst,
 		nil,
-		stdout_prefix_str,
+		stdoutPrefixStr,
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr
 	}
 
 
-	for _, o := range outputs_lst {
+	for _, o := range outputsLst {
 
 		fmt.Println(o)
 
