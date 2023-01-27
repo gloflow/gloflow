@@ -1,5 +1,4 @@
 [
-[
     ["lang_v", 0.3],
     ["set", "color-background", ["rgb", 0.5, 0.5, 0.5]],
     ["set", "material", ["wireframe", true]],
@@ -77,5 +76,4 @@
         ["set", "color", ["rgb", 0, 0, 1.0]],
         ["*", 1, [["x", 1.4], ["*", 2, [["y", 2.1], "cube"]]]] // 3 * {x 5} 6 * {y 2} cube
     ]
-]
 ]
