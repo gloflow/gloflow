@@ -137,7 +137,7 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 	//----------------------
 	// STDOUT
 
-	stdOutCh := make(chan string, 100)
+	stdOutCh := make(chan string, 10000)
 	go func(p_stdOutCh chan string) {
 		for {
 			l, err := cmdStdoutBuffer.ReadString('\n')
@@ -162,7 +162,7 @@ func CLIrunCore(pCmdInfo *GFcliCmdInfo,
 	//----------------------
 	// STDERR
 
-	stdErrCh := make(chan string, 100)
+	stdErrCh := make(chan string, 10000)
 	go func() {
 		for {
 			l, err := cmdStderrBuffer.ReadString('\n')

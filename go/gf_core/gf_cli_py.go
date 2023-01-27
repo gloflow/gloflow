@@ -40,7 +40,7 @@ func CLIpyRun(pPyPathStr string,
 	cmdLst := []string{"python3", "-u", pyAbsPathStr,}
 	cmdLst = append(cmdLst, pArgsLst...)
 
-	cmdInfo := GFcliCmdInfo {
+	cmdInfo := GFcliCmdInfo{
 		Cmd_lst:          cmdLst,
 		Stdin_data_str:   pInputStdinStr,
 		Env_vars_map:     map[string]string{},

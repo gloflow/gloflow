@@ -30,8 +30,8 @@ import (
 
 //---------------------------------------------------
 
-func EncodeJSONfromMap(pInputMap map[string]interface{}) []byte {
-	outputLst, _ := json.Marshal(pInputMap)
+func EncodeJSONfromData(pInput interface{}) []byte {
+	outputLst, _ := json.Marshal(pInput)
 	return outputLst
 }
 
