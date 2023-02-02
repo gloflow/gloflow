@@ -71,7 +71,10 @@ func dhtInit(pNode host.Host,
 	}
 
 	fmt.Printf("DHT mode: %s\n", dht.Mode())
-	
+
+	// START
+	dht.Start()
+
 	return dht, nil
 }
 
