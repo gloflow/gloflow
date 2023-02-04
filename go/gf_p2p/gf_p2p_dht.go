@@ -42,6 +42,10 @@ func dhtInit(pNode host.Host,
 		dht.Mode(dht.ModeServer),
 		// dht.Mode(dht.ModeAuto),
 
+		// how many times each k/v pair should be replicated across
+		// the peers in the network.
+		dht.OptionReplicationFactor(3),
+
 		// DisableAutoRefresh(),
 	}
 
