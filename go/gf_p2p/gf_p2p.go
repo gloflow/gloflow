@@ -372,13 +372,15 @@ func readDataFromStream(pReadWriter *bufio.ReadWriter,
 		}
 
 		// PARSE
-		msgMap, gfErr := gf_core.ParseJSONfromString(lineStr, pRuntimeSys)
+		msg, gfErr := gf_core.ParseJSONfromString(lineStr, pRuntimeSys)
 		if gfErr != nil {
 
 		}
 
 		//----------------
 		// PROTOCOL
+		
+		msgMap := msg.(map[string]interface{})
 		gfErr = handleIncomingMsg(msgMap, pRuntimeSys)
 		if gfErr != nil {
 
@@ -397,7 +399,7 @@ func writeDataToStream(pReadWriter *bufio.ReadWriter,
 
 	for {
 
-		msgBytesLst := gf_core.EncodeJSONfromMap(msgMap)
+		msgBytesLst := gf_core.EncodeJSONfromData(msgMap)
 		
 		_, err := pReadWriter.Write(msgBytesLst)
 		if err != nil {

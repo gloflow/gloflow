@@ -33,8 +33,8 @@ func main() {
 	// RUNTIME
 	logFun, _ := gf_core.LogsInit()
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_p2p_tester",
-		LogFun:           logFun,
+		ServiceNameStr: "gf_p2p_tester",
+		LogFun:         logFun,
 	}
 
 	//---------------------

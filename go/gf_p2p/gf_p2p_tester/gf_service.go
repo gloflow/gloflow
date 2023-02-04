@@ -59,7 +59,7 @@ func initService(pStatusServerCh gf_p2p.GFp2pStatusServerCh,
 
 	//------------------------
 	// SERVER_INIT - blocking
-	gf_rpc_lib.ServerInitWithMux(pPortInt, pHTTPmux)
+	gf_rpc_lib.ServerInitWithMux("gf_p2p_tester", pPortInt, pHTTPmux)
 
 	//------------------------
 }
