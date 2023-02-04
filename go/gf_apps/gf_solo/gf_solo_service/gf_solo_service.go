@@ -43,6 +43,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_web3_lib"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
+	"github.com/gloflow/gloflow/gf_lang/go/gf_lang_server/gf_lang_service"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -309,6 +310,28 @@ func Run(pConfig *GFconfig,
 		web3Config,
 		imagesJobsMngrCh,
 		pRuntimeSys)
+	
+	//-------------
+	// GF_LANG
+
+	// ADD!! - expose this as a ENV var. the user should be able to 
+	//         disable the language server from starting up and accepting
+	//         programs for execution.
+	enableLangBool := true
+
+	if enableLangBool {
+		langServiceInfo := &gf_lang_service.GFserviceInfo{
+			NameStr: "gf_lang", 
+		}
+		langConfig := &gf_lang_service.GFconfig{}
+		gfErr := gf_lang_service.InitService(gfSoloHTTPmux,
+			langServiceInfo,
+			langConfig,
+			pRuntimeSys)
+		if gfErr != nil {
+			return
+		}
+	}
 
 	//-------------
 	// METRICS - start prometheus metrics endpoint, and get core_metrics

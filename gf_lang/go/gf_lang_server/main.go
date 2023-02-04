@@ -28,6 +28,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_rpc_lib"
 	"github.com/gloflow/gloflow/gf_lang/go/gf_lang"
+	"github.com/gloflow/gloflow/gf_lang/go/gf_lang_server/gf_lang_service"
 )
 
 //-------------------------------------------------
@@ -224,6 +225,28 @@ func main() {
 	}
 
 	fmt.Println("debug processing done...")
+
+	//-------------
+	// SERVICE
+	
+	serviceInfo := &gf_lang_service.GFserviceInfo{
+		NameStr: "gf_lang_server",
+	}
+	config := &gf_lang_service.GFconfig{}
+
+	HTTPmux := http.NewServeMux()
+	gfErr = gf_lang_service.InitService(HTTPmux,
+		serviceInfo,
+		config,
+		runtimeSys)
+	if gfErr != nil {
+		panic(gfErr.Error)
+	}
+
+	//-------------
+	// SERVER_INIT - blocking
+	langPortInt := 5010
+	gf_rpc_lib.ServerInitWithMux("gf_lang_server", langPortInt, HTTPmux)
 
 	//-------------
 }

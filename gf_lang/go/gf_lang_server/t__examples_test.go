@@ -80,11 +80,10 @@ func TestExampleFirstScene(pTest *testing.T) {
 		fmt.Printf("++++ %f     time - %f\n", s.Xf, s.CreationUNIXtimeF)
 	}
 
-	debug       := programsDebugLst[0]
 	filePathStr := "serialized_output.json"
 
 	gfErr = debugSerializeOutputToFile(filePathStr,
-		debug,
+		programsDebugLst,
 		runtimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
