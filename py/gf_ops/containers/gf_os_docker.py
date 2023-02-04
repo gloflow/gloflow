@@ -406,7 +406,7 @@ def build_image(p_image_names_lst,
 		# 	image_id_str = get_image_id_from_line(line_str)
 		# 	print("image ID - %s"%(image_id_str))
 	
-
+	
 	p.communicate()
 	exit_code_int = p.returncode
 	
