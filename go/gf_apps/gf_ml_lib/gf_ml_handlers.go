@@ -34,8 +34,12 @@ func initHandlers(pHTTPmux *http.ServeMux,
 	//---------------------
 	// DATASETS_CREATE - register a dataset
 
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/ml/datasets/register",
+	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/ml/datasets/register",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
+
+
+
+
 			return nil, nil
 		},
 		pHTTPmux,

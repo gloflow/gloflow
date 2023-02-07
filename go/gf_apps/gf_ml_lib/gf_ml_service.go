@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_apps/gf_ml_lib/gf_rl_apps"
 )
 
 //-------------------------------------------------
@@ -50,18 +49,13 @@ func InitService(pHTTPmux *http.ServeMux,
 	}
 
 	//-------------
-
-
-	// RL_APPS
-	gf_rl_apps.Init(pRuntimeSys)
 }
 
 //-------------------------------------------------
 
-func Run_service(p_service_info *GF_service_info,
+func RunService(pServiceInfo *GF_service_info,
 	p_init_done_ch chan bool,
 	pLogFun        func(string, string)) {
-	pLogFun("FUN_ENTER", "gf_ml_service.Run_service()")
 
 	//-------------
 	// RUNTIME_SYS
@@ -71,8 +65,8 @@ func Run_service(p_service_info *GF_service_info,
 		LogFun:         pLogFun,
 	}
 
-	mongo_db, _, gf_err := gf_core.MongoConnectNew(p_service_info.Mongodb_host_str,
-		p_service_info.Mongodb_db_name_str,
+	mongo_db, _, gf_err := gf_core.MongoConnectNew(pServiceInfo.Mongodb_host_str,
+		pServiceInfo.Mongodb_db_name_str,
 		nil,
 		runtimeSys)
 	if gf_err != nil {
@@ -93,11 +87,11 @@ func Run_service(p_service_info *GF_service_info,
 	//-------------
 
 	runtimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	runtimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+p_service_info.Port_str)
+	runtimeSys.LogFun("INFO", "STARTING HTTP SERVER - PORT - "+pServiceInfo.Port_str)
 	runtimeSys.LogFun("INFO", ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-	http_err := http.ListenAndServe(":"+p_service_info.Port_str, nil)
+	http_err := http.ListenAndServe(":"+pServiceInfo.Port_str, nil)
 	if http_err != nil {
-		msg_str := fmt.Sprintf("cant start listening on port - ", p_service_info.Port_str)
+		msg_str := fmt.Sprintf("cant start listening on port - ", pServiceInfo.Port_str)
 		runtimeSys.LogFun("ERROR", msg_str)
 		runtimeSys.LogFun("ERROR", fmt.Sprint(http_err))
 		
