@@ -97,8 +97,6 @@ func TestMain(p_test *testing.T) {
 	runtimeSys.Mongo_db   = mongodbDB
 	runtimeSys.Mongo_coll = mongodbColl
 
-
-
 	//-----------------
 
 	test_image_data := &Gf_test_image_data{

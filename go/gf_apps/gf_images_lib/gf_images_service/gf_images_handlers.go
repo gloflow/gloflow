@@ -282,7 +282,7 @@ func InitHandlers(pAuthLoginURLstr string,
 				// image metadata (optional)
 				var metaMap map[string]interface{}
 				if metaMap, ok := iMap["meta_map"]; ok {
-					metaMap = metaMap
+					metaMap = metaMap.(map[string]interface{})
 				}
 
 				//------------------

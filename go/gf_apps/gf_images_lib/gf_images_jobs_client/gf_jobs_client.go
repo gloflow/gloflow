@@ -94,9 +94,9 @@ func RunLocalImgs(pClientTypeStr string,
 
 func RunUploadedImages(pClientTypeStr string,
 	pImagesToProcessLst []gf_images_jobs_core.GFimageUploadedToProcess,
-	pFlowsNamesLst       []string,
-	pJobsMngrCh             gf_images_jobs_core.JobsMngr,
-	pRuntimeSys             *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
+	pFlowsNamesLst      []string,
+	pJobsMngrCh         gf_images_jobs_core.JobsMngr,
+	pRuntimeSys         *gf_core.RuntimeSys) (*gf_images_jobs_core.GFjobRunning, *gf_core.GFerror) {
 
 	job_cmd_str    := "start_job_uploaded_imgs"
 	job_init_ch    := make(chan *gf_images_jobs_core.GFjobRunning)

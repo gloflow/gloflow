@@ -22,12 +22,17 @@ package gf_images_service
 import (
 	"os"
 	"fmt"
+	"bytes"
 	"testing"
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"io/ioutil"
 	// "github.com/stretchr/testify/assert"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
-	// "github.com/davecgh/go-spew/spew"
+	"github.com/davecgh/go-spew/spew"
 )
 
 //---------------------------------------------------
@@ -54,6 +59,7 @@ func Test__basic_image_ops(p_test *testing.T) {
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 	}
+	ctx := context.Background()
 
 	// MONGODB
 	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
@@ -70,8 +76,24 @@ func Test__basic_image_ops(p_test *testing.T) {
 	runtimeSys.Mongo_coll = mongodbColl
 	
 	//------------------
-	ctx := context.Background()
+	// TEST_HTTP_PARSING
+	metaMap := map[string]interface{}{
+		"file_name_str":          "test_file",
+		"file_name_original_str": "test_file_original",
+	}
+	metaBytesLst, _ := json.Marshal(metaMap)
 
+	req := httptest.NewRequest(http.MethodPost, "/some_endpoint", 
+        ioutil.NopCloser(bytes.NewBufferString(string(metaBytesLst))))
+
+	iMap, gfErr :=  gf_core.HTTPgetInput(req, runtimeSys)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		p_test.Fail()
+	}
+
+	spew.Dump(iMap)
+	
 	//------------------
 	// CREATE_TEST_IMAGES
 	test_img_0 := &gf_images_core.GFimage{
