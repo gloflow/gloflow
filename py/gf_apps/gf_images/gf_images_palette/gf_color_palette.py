@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 import argparse
 import json
 from colored import fg, bg, attr
@@ -23,77 +24,40 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 #----------------------------------------------
-def main(p_test_bool=True):
+def run_from_file(p_image_file_path_str):
+	assert os.path.isfile(p_image_file_path_str)
 
-	# TEST
-	if p_test_bool:
-		test_image_paths_lst = [
-			'./../../gf_ml_worker/test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg',
-			'./../../gf_ml_worker/test/data/input/canvas.png',
-			"./../../gf_ml_worker/test/data/input/4b14ca75070ac78323cf2ddef077ae92_thumb_medium.jpeg",
-			"./../../gf_ml_worker/test/data/input/4838df39722bc2d681b67bf739f29357_thumb_small.jpeg",
-			"./../../gf_ml_worker/test/data/input/1234cd19517b939d3eb726c817985fe4_thumb_medium.jpeg",
-			"./../../gf_ml_worker/test/data/input/3a61e7d68fb17198e8dc0476cc862ddd_thumb_small.jpeg",
-		]
+	image = Image.open(p_image_file_path_str)
+	width_int, height_int = image.size
 
+	palette_pixels_only_arr, result = run(image, width_int, height_int)
 
-		for i in range(0, len(test_image_paths_lst)):
-			img = Image.open(test_image_paths_lst[i])
-
-			# pix = img.load()
-			width_int, height_int = img.size
-
-			o_str = f"./output/out_{i}.png"
-
-			# RUN
-			run(img, o_str, width_int, height_int)
-
-	# PRODUCTION
-	else:
-
-		args_map = parse_args()
-
-
-		input_images_local_file_paths_lst = args_map["input_images_local_file_paths_str"].split(",")
-		
-		# RUN
-		run_multiple(input_images_local_file_paths_lst)
-
-
-		out_map = {}
-		print(f"GF_OUT:{json.dumps(out_map)}")
-
+	return palette_pixels_only_arr, result
 
 #----------------------------------------------
-def run_multiple(p_input_images_local_file_paths_lst):
+def run(p_image,
+	p_img_width_int,
+	p_img_height_int):
 
-	print(f"RUNNING {fg('green')}GF_COLOR_PALETTE{attr(0)} PLUGIN ")
-	
-	# VERIFY
-	for f in p_input_images_local_file_paths_lst:
-		assert os.path.isfile(f)
-		print(f"input - {fg('yellow')}{f}{attr(0)}")
+	img_pixels_original_arr = np.array(p_image.getdata())
 
-	# RUN
-	for f in p_input_images_local_file_paths_lst:
-		img = Image.open(f)
-		width_int, height_int = img.size
+	# only select the first 3 channels of each pixel, since some images have
+	# an alpha channel as well which we dont want.
+	img_pixels_arr = img_pixels_original_arr[:, :3]
 
-		run(img, o_str, width_int, height_int)
-
-#----------------------------------------------
-def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_int):
-
-	img_pixels_arr = np.array(p_img.getdata())
-	
 	#----------------------------------------------
-	def process_img__with_px_coords(p_img_pixels_with_global_index_arr, p_level_int, p_levels_max_int=6):
-		
-		# p_img_pixels_arr
-		# shape - (px_num, 3) - 3 element tuple per pixel
-		# [[r1, g1, b1], [r2, g2, b2], ...]
+	# levels_max gives a color palette of certain size:
+	# 3 - 8  colors
+	# 4 - 16 colors
+	# 5 - 32 colors
+	# 6 - 64 colors
+
+	def process_img__with_px_coords(p_img_pixels_with_global_index_arr,
+		p_level_int,
+		p_levels_max_int=3):
 		
 		# TERMINATION
+		# check if we reached the maximum level of subdivision/recursion 
 		if p_level_int >= p_levels_max_int:
 			
 
@@ -115,9 +79,16 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 
 			# round and cast as integer
 			a = np.round(average_pixel_arr).astype(int)
-			return [(img_pixels_global_indexes_arr, a[0], a[1], a[2])]
 
-		# p_img_pixels_with_global_index_arr.T output:
+			return [(img_pixels_global_indexes_arr,
+				a[0],  # R 
+				a[1],  # G
+				a[2])] # B
+
+		# remove the pixels global index (index of the pixel relative to the whole image)
+		# 
+		# input:
+		# p_img_pixels_with_global_index_arr
 		# [[     0      1      2 ... 115997 115998 115999]
 		# [   162    163    164 ...    142    140    140]
 		# [   200    201    202 ...    193    191    191]
@@ -135,7 +106,11 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 		#----------
 		# PICK_CHANNEL_WITH_MAX_RANGE
 		# get the range (max_val-min_val) of each of the r/g/b channels.
-		ranges_per_channel_lst           = img_by_channel_arr.ptp(axis=1)
+		# .ptp() - stands for "peak-to-peak" and it calculates the range of values in a NumPy array along a specified axis.
+		#          returns the difference between the maximum and minimum values in the array along the specified axis.
+		ranges_per_channel_lst = img_by_channel_arr.ptp(axis=1)
+
+		# argmax() - returns the indices of the maximum values along a specified axis of a NumPy array.
 		channel_with_max_range_index_int = np.argmax(ranges_per_channel_lst)
 
 		# values of pixels in a particular channel which has the maximum range of values.
@@ -149,18 +124,15 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 		# argsort() - sorts values and returns their indexes
 		img_max_range_channel_vals_sorted_indexes_arr = img_max_range_channel_vals_arr.argsort()
 
-		# split sorted list of pixels (on channel with max range by pixel value) indicies
-		# into half/median. 
+		# split sorted list of pixels (on channel with max range by pixel value) indicies into half/median. 
 		# np.array_split() - wont error if the image doesnt split in 2 equal parts.
 		upper_half__px_indicies_arr, lower_half__px_indicies_arr = np.array_split(img_max_range_channel_vals_sorted_indexes_arr, 2)
-
-
 
 		# index into image pixels by sorted indexes of the channel with biggest range/variance
 		upper_half__px_arr = p_img_pixels_with_global_index_arr[upper_half__px_indicies_arr]
 		lower_half__px_arr = p_img_pixels_with_global_index_arr[lower_half__px_indicies_arr]
 
-
+		# RECURSION
 		upper_half__avrg_pixels_arr = process_img__with_px_coords(upper_half__px_arr, p_level_int+1)
 		lower_half__avrg_pixels_arr = process_img__with_px_coords(lower_half__px_arr, p_level_int+1)
 
@@ -171,7 +143,7 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 
 	#----------------------------------------------
 
-	# ADD_PIXEL_GLOBAL_INDEX - index of the pixel relative to the whole image.
+	# ADD_PIXEL_GLOBAL_INDEX - add an index of the pixel relative to the whole image, to the pixels rgb color value.
 	#                          this is used to be able to track where in the image particular pixels come from.
 	# [[r0, g0, b0], [r1, g1, b1], [r2, g2, b2], ...] -> [[0, r0, g0, b0], [1, r1, g1, b1], [2, r2, g2, b2], ...]
 	# 
@@ -179,29 +151,47 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 	img_pixels_with_global_index_arr = np.column_stack((np.arange(len(img_pixels_arr)), img_pixels_arr))
 
 
-
-	r = process_img__with_px_coords(img_pixels_with_global_index_arr, 0)
+	start_level_int = 0
+	result = process_img__with_px_coords(img_pixels_with_global_index_arr, start_level_int)
 
 
 	# IMAGE_PALETTE
-	r_img = Image.new('RGB', (len(r), 1))
+	r_img = Image.new('RGB', (len(result), 1))
 
-	palette_pixels_only_arr = np.array(r)[:, 1:4]
+
+
+	# get the palette pixels only, removing global pixel indexes from each of the palette pixel part.
+	# each of the palette pixels has a format (px_global_indexes_arr, r, g, b), so only get (r, g, b).
+	palette_pixels_only_arr = np.empty((len(result), 3), dtype=int)
+	for i in range(len(result)):
+		_, r_int, g_int, b_int = result[i]
+		palette_pixels_only_arr[i] = np.array([r_int, g_int, b_int])
 
 	print(palette_pixels_only_arr)
 	print(palette_pixels_only_arr.shape)
 
-	# r_img.putdata(palette_pixels_only_arr)
+	return palette_pixels_only_arr, result
+
+#----------------------------------------------
+def run_extended(p_image_file_path_str,
+	p_palette__output_file_path_str):
+ 
+	palette_pixels_only_arr, result = run_from_file(p_image_file_path_str)
+
 	r_img = Image.fromarray(palette_pixels_only_arr.reshape(palette_pixels_only_arr.shape[0], 1, 3).astype(np.uint8))
 	r_img.save(p_palette__output_file_path_str)
 
 
-
 	#----------
 	
+	image = Image.open(p_image_file_path_str)
+	width_int, height_int = image.size
 
+	img_pixels_original_arr = np.array(image.getdata())
 
-
+	# only select the first 3 channels of each pixel, since some images have
+	# an alpha channel as well which we dont want.
+	img_pixels_arr = img_pixels_original_arr[:, :3]
 
 	# colorize original image with quantized color palette,
 	# using the global_indexes of every average pixel color calcuated
@@ -209,20 +199,20 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 	# ADD!! - figure out how to vectorize this operation, withyout needing
 	#         to iterate through pixels individually.
 	colors_lst = []
-	for c in r:
-		print(c)
+	for c in result:
 
 		global_indexes_arr = c[0]
 		color_arr          = c[1:4]
 		colors_lst.append(color_arr)
 
+		# color_4d_arr = np.array(color_arr)
+		# color_4d_arr = np.append(color_4d_arr, 1).reshape((4, ))
+
 		for i in global_indexes_arr:
 			img_pixels_arr[i] = color_arr
 
 	# height/width/3 - height has to go before width
-	img_pixels_3d_arr = img_pixels_arr.reshape(p_img_height_int, p_img_width_int, 3)
-
-
+	img_pixels_3d_arr = img_pixels_arr.reshape(height_int, width_int, 3)
 
 	r_img = Image.fromarray(img_pixels_3d_arr.astype(np.uint8))
 
@@ -234,21 +224,14 @@ def run(p_img, p_palette__output_file_path_str, p_img_width_int, p_img_height_in
 	#----------------------------------------------
 	# draw_sectors()
 
-
 	r_img.save(f"{p_palette__output_file_path_str}__sectors.png")
 
 	#----------
 
-
 	print("K MEANS ------------")
 	kmeans(colors_lst)
 
-
-	exit()
-
-
 #----------------------------------------------
-
 def kmeans(p_colors_lst, p_k = 5):
 
 	import scipy.spatial.distance
@@ -266,14 +249,6 @@ def kmeans(p_colors_lst, p_k = 5):
 	print(p_colors_lst)
 	print("==")
 	print(centroids_arr)
-
-	
-
-
-
-
-
-	
 
 	#----------------------------------------------
 	def algo():
@@ -406,5 +381,3 @@ def parse_args():
 	}
 
 #----------------------------------------------
-if __name__ == "__main__":
-	main()
