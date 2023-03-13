@@ -98,12 +98,11 @@ func Test__main(p_test *testing.T) {
 	//-------------
 	// S3
 	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
+
 	//-------------
-
-
 	// CONFIG
-	img_config, gf_err := gf_images_core.Config__get(test__config_file_path_str, runtime_sys)
-	if gf_err != nil {
+	img_config, gfErr := gf_images_core.Config__get(test__config_file_path_str, runtime_sys)
+	if gfErr != nil {
 		return
 	}
 
@@ -132,26 +131,18 @@ func test_posts_creation(p_test_post_info_map map[string]interface{},
 	pRuntimeSys            *gf_core.RuntimeSys) {
 	pRuntimeSys.LogFun("FUN_ENTER", "t__main_test.test_posts_creation()")
 
-	
-	
-
 	// CREATE_POST
-	gf_post, images_job_id_str, gf_err := Pipeline__create_post(p_test_post_info_map,
+	gf_post, images_job_id_str, gfErr := Pipeline__create_post(p_test_post_info_map,
 		p_gf_images_runtime_info,
 		pRuntimeSys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
-
 
 	fmt.Printf("images_job_id_str - %s\n", images_job_id_str)
 	spew.Dump(gf_post)
 
-
-
 	gf_images_lib.T__test_image_job__updates(images_job_id_str,
 		p_gf_images_runtime_info.Jobs_mngr,
 		pRuntimeSys)
-
-
 }

@@ -27,6 +27,7 @@ import (
 
 //-------------------------------------------------
 // reads config argument either from the CLI or from a config (file or ENV vars)
+
 func ConfigGetArg(pArgNameStr string, pCmd *cobra.Command) string {
 
 	argValStr := viper.GetString(pArgNameStr)

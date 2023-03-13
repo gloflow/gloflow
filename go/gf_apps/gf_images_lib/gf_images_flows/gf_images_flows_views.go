@@ -111,7 +111,7 @@ func renderTemplate(pFlowNameStr string,
 		pageImagesLst := []map[string]interface{}{}
 		for _, image := range imagesPageLst {
 
-			metaJSONbytesLst, _ := json.Marshal(image.Meta_map)
+			metaJSONbytesLst, _ := json.Marshal(image.MetaMap)
 			metaJSONstr         := string(metaJSONbytesLst)
 
 			imageInfoMap := map[string]interface{}{
@@ -126,9 +126,9 @@ func renderTemplate(pFlowNameStr string,
 				"image_origin_page_url_str": image.Origin_page_url_str,
 			}
 
-			if len(image.Tags_lst) > 0 {
+			if len(image.TagsLst) > 0 {
 				imageInfoMap["image_has_tags_bool"] = true
-				imageInfoMap["tags_lst"]            = image.Tags_lst
+				imageInfoMap["tags_lst"]            = image.TagsLst
 			} else {
 				imageInfoMap["image_has_tags_bool"] = false
 			}

@@ -40,22 +40,22 @@ func ImgGet(pImageIDstr gf_images_core.GFimageID,
 	if existsBool {
 
 		// DB_GET
-		gf_img, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
+		gfImage, gfErr := gf_images_core.DBgetImage(pImageIDstr, pCtx, pRuntimeSys)
 		if gfErr != nil {
 			return nil, false, gfErr
 		}
 
-		gf_img_export := &gf_images_core.GFimageExport{
-			Creation_unix_time_f:     gf_img.Creation_unix_time_f,
-			Title_str:                gf_img.TitleStr,
-			Flows_names_lst:          gf_img.FlowsNamesLst,
-			Thumbnail_small_url_str:  gf_img.Thumbnail_small_url_str,
-			Thumbnail_medium_url_str: gf_img.Thumbnail_medium_url_str,
-			Thumbnail_large_url_str:  gf_img.Thumbnail_large_url_str,
-			Format_str:               gf_img.Format_str,
-			Tags_lst:                 gf_img.Tags_lst,
+		gfImageExport := &gf_images_core.GFimageExport{
+			Creation_unix_time_f:     gfImage.Creation_unix_time_f,
+			Title_str:                gfImage.TitleStr,
+			Flows_names_lst:          gfImage.FlowsNamesLst,
+			Thumbnail_small_url_str:  gfImage.Thumbnail_small_url_str,
+			Thumbnail_medium_url_str: gfImage.Thumbnail_medium_url_str,
+			Thumbnail_large_url_str:  gfImage.Thumbnail_large_url_str,
+			Format_str:               gfImage.Format_str,
+			Tags_lst:                 gfImage.TagsLst,
 		}
-		return gf_img_export, true, nil
+		return gfImageExport, true, nil
 	} else {
 		return nil, false, nil
 	}
@@ -73,22 +73,22 @@ func TagsAddToImage(pImage *gf_images_core.GFimage,
 
 		//add all new tags with the current tags associated with an image,
 		//with possible duplicates existing
-		pImage.Tags_lst = append(pImage.Tags_lst, pTagsLst...)
+		pImage.TagsLst = append(pImage.TagsLst, pTagsLst...)
 
 		//-----------
 		set := map[string]bool{}
-		for _, t_str := range pImage.Tags_lst {
+		for _, t_str := range pImage.TagsLst {
 			set[t_str] = true
 		}
 
 		//-----------
-		list_no_duplicates_lst := []string{}
-		for k_str, _ := range set {
-			list_no_duplicates_lst = append(list_no_duplicates_lst, k_str)
+		listNoDuplicatesLst := []string{}
+		for kStr, _ := range set {
+			listNoDuplicatesLst = append(listNoDuplicatesLst, kStr)
 		}
 
 		//eliminate duplicates from the list
-		pImage.Tags_lst = list_no_duplicates_lst
+		pImage.TagsLst = listNoDuplicatesLst
 		
 		//-----------
 	}

@@ -71,13 +71,13 @@ type GFimage struct {
 
 	//---------------
 	// COLORS
-	Dominant_color_hex_str string `json:"dominant_color_hex_str"`
-	Pallete_str            string `json:"pallete_str"`
+	DominantColorHexStr string `json:"dominant_color_hex_str"`
+	PalleteStr          string `json:"pallete_str"`
 
 	//---------------
 	// META
-	Meta_map map[string]interface{} `json:"meta_map" bson:"meta_map"` // metadata external users might assign to an image
-	Tags_lst []string               `json:"tags_lst" bson:"tags_lst"` // human facing tags assigned to an image
+	MetaMap map[string]interface{} `json:"meta_map" bson:"meta_map"` // metadata external users might assign to an image
+	TagsLst []string               `json:"tags_lst" bson:"tags_lst"` // human facing tags assigned to an image
 
 	//---------------
 
@@ -150,7 +150,7 @@ func ImageCreateNew(pImageInfo *GFimageNewInfo,
 		Width_int:                      pImageInfo.Width_int,
 		Height_int:                     pImageInfo.Height_int,
 
-		Meta_map: pImageInfo.Meta_map,
+		MetaMap: pImageInfo.Meta_map,
 	}
 
 	//----------------------------------

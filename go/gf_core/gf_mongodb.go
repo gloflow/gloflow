@@ -260,8 +260,13 @@ func MongoUpsert(pQuery bson.M,
 	pCtx        context.Context,
 	pRuntimeSys *RuntimeSys) *GFerror {
 
-	_, err := pColl.UpdateOne(pCtx, pQuery, bson.M{"$set": pRecord,},
-		options.Update().SetUpsert(true))
+	// writeConcern := options.WriteConcernMajority()
+	opt := options.Update().
+		SetUpsert(true)
+		// SetWriteConcern(writeConcern)
+
+	_, err := pColl.UpdateOne(pCtx, pQuery, bson.M{"$set": pRecord,}, opt)
+
 	if err != nil {
 
 		// NO_DOCUMENTS
@@ -448,19 +453,19 @@ func MongoCollExists(pCollNameStr string,
 //--------------------------------------------------------------------
 // CONNECT_NEW
 
-func MongoConnectNew(p_mongo_server_url_str string,
-	p_db_name_str       string,
-	p_tls_custom_config *tls.Config,
-	pRuntimeSys         *RuntimeSys) (*mongo.Database, *mongo.Client, *GFerror) {
+func MongoConnectNew(pMongoServerURLstr string,
+	pDBnameStr       string,
+	pTLScustomConfig *tls.Config,
+	pRuntimeSys      *RuntimeSys) (*mongo.Database, *mongo.Client, *GFerror) {
 
 	connect_timeout_in_sec_int := 3
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(connect_timeout_in_sec_int) * time.Second)
 
-	mongo_options := options.Client().ApplyURI(p_mongo_server_url_str)
+	mongo_options := options.Client().ApplyURI(pMongoServerURLstr)
 
 	// TLS
-	if p_tls_custom_config != nil {
-		mongo_options.SetTLSConfig(p_tls_custom_config)
+	if pTLScustomConfig != nil {
+		mongo_options.SetTLSConfig(pTLScustomConfig)
 	}
 
 	mongo_client, err := mongo.Connect(ctx, mongo_options)
@@ -469,7 +474,7 @@ func MongoConnectNew(p_mongo_server_url_str string,
 		gfErr := ErrorCreate("failed to connect to a MongoDB server at target url",
 			"mongodb_connect_error",
 			map[string]interface{}{
-				// "mongo_server_url_str": p_mongo_server_url_str,
+				// "mongo_server_url_str": pMongoServerURLstr,
 			}, err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
@@ -481,12 +486,12 @@ func MongoConnectNew(p_mongo_server_url_str string,
 		gfErr := ErrorCreate("failed to ping a MongoDB server at target url",
 			"mongodb_ping_error",
 			map[string]interface{}{
-				// "mongo_server_url_str": p_mongo_server_url_str,
+				// "mongo_server_url_str": pMongoServerURLstr,
 			}, err, "gf_core", pRuntimeSys)
 		return nil, nil, gfErr
 	}
 
-	mongo_db := mongo_client.Database(p_db_name_str)
+	mongo_db := mongo_client.Database(pDBnameStr)
 
 	return mongo_db, mongo_client, nil
 }

@@ -89,12 +89,10 @@ func S3getFile(pTargetFileS3pathStr string,
 //---------------------------------------------------
 // S3_INIT
 
-func S3init(p_aws_access_key_id_str string,
-	p_aws_secret_access_key_str string,
-	p_token_str                 string,
-	pRuntimeSys                 *gf_core.RuntimeSys) (*GFs3Info, *gf_core.GFerror) {
-	pRuntimeSys.LogFun("FUN_ENTER", "gf_s3.S3init()")
-
+func S3init(pAccessKeyIDstr string,
+	pSecretAccessKeyStr string,
+	pTokenStr           string,
+	pRuntimeSys         *gf_core.RuntimeSys) (*GFs3Info, *gf_core.GFerror) {
 	
 	config := &aws.Config{
 		Region:           aws.String("us-east-1"),
@@ -107,9 +105,9 @@ func S3init(p_aws_access_key_id_str string,
 	//--------------
 	// STATIC_CREDENTIALS - they're non-empty and should be constructed. otherwise AWS creds are acquired
 	//                      by the AWS client from the environment.
-	if p_aws_access_key_id_str != "" {
+	if pAccessKeyIDstr != "" {
 
-		creds  := credentials.NewStaticCredentials(p_aws_access_key_id_str, p_aws_secret_access_key_str, p_token_str)
+		creds  := credentials.NewStaticCredentials(pAccessKeyIDstr, pSecretAccessKeyStr, pTokenStr)
 		_, err := creds.Get()
 
 		if err != nil {
