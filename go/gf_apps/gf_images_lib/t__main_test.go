@@ -30,7 +30,7 @@ import (
 
 //---------------------------------------------------
 
-type Gf_test_image_data struct {
+type GFtestImageData struct {
 	image_client_type_str            string
 	image_flows_names_lst            []string
 	images_local_filepaths_lst       []string
@@ -43,22 +43,22 @@ type Gf_test_image_data struct {
 }
 
 var logFun func(string, string)
-var cli_args_map map[string]interface{}
+var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
 	logFun, _ = gf_core.LogsInit()
-	cli_args_map = gf_images_core.CLI__parse_args(logFun)
+	cliArgsMap = gf_images_core.CLI__parse_args(logFun)
 	v := m.Run()
 	os.Exit(v)
 }
 
 //---------------------------------------------------
 
-func TestMain(p_test *testing.T) {
+func TestCore(p_test *testing.T) {
 
-	fmt.Println("TEST__MAIN ==============================================")
+	fmt.Println("TEST__CORE ==============================================")
 	
 	//-----------------
 	// TEST_DATA
@@ -76,13 +76,13 @@ func TestMain(p_test *testing.T) {
 	medium_thumb_max_size_px_int           := 400
 	large_thumb_max_size_px_int            := 600
 
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) //"127.0.0.1"
+	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) //"127.0.0.1"
 	test__mongodb_db_name_str := "gf_tests"
 
 	// RUNTIME
 	runtimeSys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_tests",
-		LogFun:          logFun,
+		ServiceNameStr: "gf_images_tests",
+		LogFun:         logFun,
 	}
 	
 	//-----------------
@@ -99,7 +99,7 @@ func TestMain(p_test *testing.T) {
 
 	//-----------------
 
-	test_image_data := &Gf_test_image_data{
+	testImageData := &GFtestImageData{
 		image_client_type_str:            test__image_client_type_str,
 		image_flows_names_lst:            test__image_flows_names_lst,
 		images_local_filepaths_lst:       test__images_local_filepaths_lst,
@@ -111,25 +111,25 @@ func TestMain(p_test *testing.T) {
 		large_thumb_max_size_px_int:      large_thumb_max_size_px_int,
 	}
 
-	test__images_transformer(test_image_data, runtimeSys)
-	test__images_ops(test_image_data, runtimeSys)
+	testImagesTransformer(testImageData, runtimeSys)
+	testImagesOps(testImageData, runtimeSys)
 }
 
 //---------------------------------------------------
 
-func test__images_transformer(p_test_image_data *Gf_test_image_data,
+func testImagesTransformer(pTestImageData *GFtestImageData,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_TRANSFORMER   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("")
 
-	for _, image_local_file_path_str := range p_test_image_data.images_local_filepaths_lst {
+	for _, image_local_file_path_str := range pTestImageData.images_local_filepaths_lst {
 
 		//---------------
-		format_str, gf_err := gf_images_core.Get_image_ext_from_url(image_local_file_path_str, pRuntimeSys)
-		if gf_err != nil {
-			panic(gf_err.Error)
+		format_str, gfErr := gf_images_core.Get_image_ext_from_url(image_local_file_path_str, pRuntimeSys)
+		if gfErr != nil {
+			panic(gfErr.Error)
 		}
 
 		//---------------
@@ -138,18 +138,18 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 
 		//---------------
 
-		image_thumbs, gf_image, gf_err := gf_images_core.Trans__process_image(test__image_id_str,
-			p_test_image_data.image_client_type_str,
-			p_test_image_data.image_flows_names_lst,
-			p_test_image_data.origin_url_str,
-			p_test_image_data.origin_page_url_str,
+		image_thumbs, gf_image, gfErr := gf_images_core.Trans__process_image(test__image_id_str,
+			pTestImageData.image_client_type_str,
+			pTestImageData.image_flows_names_lst,
+			pTestImageData.origin_url_str,
+			pTestImageData.origin_page_url_str,
 			format_str,
 			image_local_file_path_str,
-			p_test_image_data.local_thumbs_target_dir_path_str,
+			pTestImageData.local_thumbs_target_dir_path_str,
 			pRuntimeSys)
 
-		if gf_err != nil {
-			panic(gf_err.Error)	
+		if gfErr != nil {
+			panic(gfErr.Error)	
 		}
 
 		spew.Dump(image_thumbs)
@@ -162,21 +162,21 @@ func test__images_transformer(p_test_image_data *Gf_test_image_data,
 
 //---------------------------------------------------
 
-func test__images_ops(p_test_image_data *Gf_test_image_data,
+func testImagesOps(pTestImageData *GFtestImageData,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
 	fmt.Println("")
 	fmt.Println("         TEST__IMAGES_OPS   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	fmt.Println("")
 
-	for _, test__image_local_filepath_str := range p_test_image_data.images_local_filepaths_lst {
+	for _, test__image_local_filepath_str := range pTestImageData.images_local_filepaths_lst {
 
-		format_str, gf_err := gf_images_core.Get_image_ext_from_url(test__image_local_filepath_str, pRuntimeSys)
-		if gf_err != nil {
-			panic(gf_err.Error)
+		format_str, gfErr := gf_images_core.Get_image_ext_from_url(test__image_local_filepath_str, pRuntimeSys)
+		if gfErr != nil {
+			panic(gfErr.Error)
 		}
 
-		test__image_ops(p_test_image_data,
+		testImageOps(pTestImageData,
 			test__image_local_filepath_str,
 			format_str,
 			pRuntimeSys)
@@ -185,31 +185,31 @@ func test__images_ops(p_test_image_data *Gf_test_image_data,
 
 //---------------------------------------------------
 
-func test__image_ops(p_test_image_data *Gf_test_image_data,
-	p_test__image_local_filepath_str string,
-	p_test__image_format_str         string,
-	pRuntimeSys                      *gf_core.RuntimeSys) {
+func testImageOps(pTestImageData *GFtestImageData,
+	pTestImageLocalFilepathStr string,
+	pTestImageFormatStr        string,
+	pRuntimeSys                *gf_core.RuntimeSys) {
 
 	//---------------
-	test__image_id_str := gf_images_core.Image_ID__create(p_test__image_local_filepath_str, p_test__image_format_str, pRuntimeSys)
+	test__image_id_str := gf_images_core.Image_ID__create(pTestImageLocalFilepathStr, pTestImageFormatStr, pRuntimeSys)
 	fmt.Println("test__image_id_str - "+test__image_id_str)
 
 	//---------------
-	test__image_title_str, gfErr := gf_images_core.Get_image_title_from_url(p_test__image_local_filepath_str, pRuntimeSys)
+	test__image_title_str, gfErr := gf_images_core.Get_image_title_from_url(pTestImageLocalFilepathStr, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 	fmt.Println("test__image_title_str - "+test__image_title_str)
 
 	//---------------
-	img_width_int, img_height_int, gfErr := gf_images_core.Get_image_dimensions__from_filepath(p_test__image_local_filepath_str, pRuntimeSys)
+	img_width_int, img_height_int, gfErr := gf_images_core.Get_image_dimensions__from_filepath(pTestImageLocalFilepathStr, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 	fmt.Println(fmt.Sprintf("test__image dimensions - %d/%d",img_width_int,img_height_int))
 
 	//---------------
-	img, gfErr := gf_images_core.ImageLoadFile(p_test__image_local_filepath_str, p_test__image_format_str, pRuntimeSys)
+	img, gfErr := gf_images_core.ImageLoadFile(pTestImageLocalFilepathStr, pTestImageFormatStr, pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
@@ -229,12 +229,12 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 
 	//---------------
 	imageThumbs, gfErr := gf_images_core.Create_thumbnails(test__image_id_str,
-		p_test__image_format_str,
-		p_test__image_local_filepath_str,
-		p_test_image_data.local_thumbs_target_dir_path_str,
-		p_test_image_data.small_thumb_max_size_px_int,
-		p_test_image_data.medium_thumb_max_size_px_int,
-		p_test_image_data.large_thumb_max_size_px_int,
+		pTestImageFormatStr,
+		pTestImageLocalFilepathStr,
+		pTestImageData.local_thumbs_target_dir_path_str,
+		pTestImageData.small_thumb_max_size_px_int,
+		pTestImageData.medium_thumb_max_size_px_int,
+		pTestImageData.large_thumb_max_size_px_int,
 		img,
 		pRuntimeSys)
 
@@ -256,15 +256,15 @@ func test__image_ops(p_test_image_data *Gf_test_image_data,
 	imageNewInfo := &gf_images_core.GFimageNewInfo{
 		Id_str:                         test__image_id_str,
 		Title_str:                      test__image_title_str,
-		Flows_names_lst:                p_test_image_data.image_flows_names_lst,
-		Image_client_type_str:          p_test_image_data.image_client_type_str,
-		Origin_url_str:                 p_test_image_data.origin_url_str,
-		Origin_page_url_str:            p_test_image_data.origin_page_url_str,
-		Original_file_internal_uri_str: p_test__image_local_filepath_str,
+		Flows_names_lst:                pTestImageData.image_flows_names_lst,
+		Image_client_type_str:          pTestImageData.image_client_type_str,
+		Origin_url_str:                 pTestImageData.origin_url_str,
+		Origin_page_url_str:            pTestImageData.origin_page_url_str,
+		Original_file_internal_uri_str: pTestImageLocalFilepathStr,
 		Thumbnail_small_url_str:        imageThumbs.Small_relative_url_str,
 		Thumbnail_medium_url_str:       imageThumbs.Medium_relative_url_str,
 		Thumbnail_large_url_str:        imageThumbs.Large_relative_url_str,
-	 	Format_str:                     p_test__image_format_str,
+	 	Format_str:                     pTestImageFormatStr,
 	 	Width_int:                      img_width_int,
 	 	Height_int:                     img_height_int,
 	}

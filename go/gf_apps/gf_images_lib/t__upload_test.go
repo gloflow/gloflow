@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"testing"
 	"github.com/stretchr/testify/assert"
-	// "github.com/parnurzeal/gorequest"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs"
@@ -32,7 +31,7 @@ import (
 
 //---------------------------------------------------
 
-func TestUpload(p_test *testing.T) {
+func TestUpload(pTest *testing.T) {
 
 	fmt.Println("TEST__UPLOAD ==============================================")
 
@@ -40,14 +39,15 @@ func TestUpload(p_test *testing.T) {
 	// TEST_DATA
 
 	// MONGODB
-	test__mongodb_host_str    := cli_args_map["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_host_str    := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	test__mongodb_url_str     := fmt.Sprintf("mongodb://%s", test__mongodb_host_str)
 	test__mongodb_db_name_str := "gf_tests"
 	
-	test__image_name_str        := "test_image"
-	test__image_flows_names_lst := []string{"test_flow",}
-	test__config_file_path_str  := "./test_config/gf_images_config.yaml"
+	testImageNameStr       := "test_image"
+	testImageFlowsNamesLst := []string{"test_flow",}
+	testConfigFilePathStr  := "./test_config/gf_images_config.yaml"
 
-	test__image_local_file_path_lst := "./tests_data/test_image_02.jpeg"
+	testImageLocalFilePathLst := "./tests_data/test_image_02.jpeg"
 
 	test__images_local_dir_path_str        := "./tests_data"
 	test__images_thumbs_local_dir_path_str := "./tests_data/thumbnails"
@@ -56,26 +56,30 @@ func TestUpload(p_test *testing.T) {
 
 	//-------------
 	
-	mongodb_db   := gf_core.Mongo__connect(test__mongodb_host_str, test__mongodb_db_name_str, logFun)
-	mongodb_coll := mongodb_db.C("data_symphony")
+	mongodbDB, _, gfErr := gf_core.MongoConnectNew(test__mongodb_url_str, test__mongodb_db_name_str, logFun)
+	if gfErr != nil {
+		fmt.Println(gfErr.Error)
+		pTest.Fail()
+	}
+	mongodbColl := mongodbDB.Collection("data_symphony")
 	
 	runtime_sys := &gf_core.RuntimeSys{
-		Service_name_str: "gf_images_tests",
+		ServiceNameStr: "gf_images_tests",
 		LogFun:           logFun,
-		Mongodb_db:       mongodb_db,
-		Mongodb_coll:     mongodb_coll,
+		Mongodb_db:       mongodbDB,
+		Mongodb_coll:     mongodbColl,
 	}
 
 	// CONFIG
-	img_config, gf_err := gf_images_core.Config__get(test__config_file_path_str, runtime_sys)
-	if gf_err != nil {
+	img_config, gfErr := gf_images_core.Config__get(testConfigFilePathStr, runtime_sys)
+	if gfErr != nil {
 		return
 	}
 	
 	//-------------
 	// S3
-	gf_s3_test_info := gf_core.T__get_s3_info(runtime_sys)
-	fmt.Println(gf_s3_test_info)
+	s3testInfo := gf_core.T__get_s3_info(runtime_sys)
+	fmt.Println(s3testInfo)
 
 	//-------------
 	// JOBS_MANAGER
@@ -83,38 +87,38 @@ func TestUpload(p_test *testing.T) {
 		test__images_thumbs_local_dir_path_str,
 		testVideosLocalDirPathStr,
 		img_config,
-		gf_s3_test_info.Gf_s3_info,
+		s3testInfo.Gf_s3_info,
 		runtime_sys)
 
 	//-------------
 	// UPLOAD_INIT
-	upload_info, gf_err := Upload__init(test__image_name_str,
+	uploadInfo, gfErr := Upload__init(testImageNameStr,
 		"jpeg", // image_format_str,
-		test__image_flows_names_lst,
+		testImageFlowsNamesLst,
 		"browser", // client_type_str,
-		gf_s3_test_info.Gf_s3_info,
+		s3testInfo.Gf_s3_info,
 		img_config,
 		runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
-	spew.Dump(upload_info)
+	spew.Dump(uploadInfo)
 
-	assert.Equal(p_test, upload_info.T_str, "img_upload_info", "upload_info doesnt have a proper type set")
-	assert.Equal(p_test, len(upload_info.Upload_gf_image_id_str), 32, "S3 image upload_info gf_image_id is not of correct length - 32 chars")
-	assert.NotEqual(p_test, upload_info.Presigned_url_str, "", "S3 image presigned_url is not set")
+	assert.Equal(pTest, uploadInfo.T_str, "img_upload_info", "upload_info doesnt have a proper type set")
+	assert.Equal(pTest, len(uploadInfo.Upload_gf_image_id_str), 32, "S3 image upload_info gf_image_id is not of correct length - 32 chars")
+	assert.NotEqual(pTest, uploadInfo.Presigned_url_str, "", "S3 image presigned_url is not set")
 
 	//-------------
 	// DB
-	db_upload_info, gf_err := Upload_db__get_info(upload_info.Upload_gf_image_id_str, runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	db_upload_info, gfErr := Upload_db__get_info(uploadInfo.Upload_gf_image_id_str, runtime_sys)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	fmt.Println("done DB READING")
 
-	assert.Equal(p_test, upload_info.Creation_unix_time_f, db_upload_info.Creation_unix_time_f,
+	assert.Equal(pTest, uploadInfo.Creation_unix_time_f, db_upload_info.Creation_unix_time_f,
 		"upload_info struct that was created in memory and the one refetched from the DB (after the memory one was persisted) dont have the same creation time ")
 
 	//-------------
@@ -124,30 +128,30 @@ func TestUpload(p_test *testing.T) {
 		"x-amz-acl":    "public-read",
 	}
 
-	resp, gf_err := gf_core.HTTP__put_file(upload_info.Presigned_url_str,
-		test__image_local_file_path_lst,
+	resp, gfErr := gf_core.HTTP__put_file(uploadInfo.Presigned_url_str,
+		testImageLocalFilePathLst,
 		headers_map,
 		runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	fmt.Println(resp.StatusCode)
 	fmt.Println(resp.Body)
 
-	fmt.Printf("HTTP PUT COMPLETE - %s\n", test__image_local_file_path_lst)
+	fmt.Printf("HTTP PUT COMPLETE - %s\n", testImageLocalFilePathLst)
 
-	assert.Equal(p_test, resp.StatusCode, 200,
+	assert.Equal(pTest, resp.StatusCode, 200,
 		"image upload to S3 via presigned-url failed")
 		
 	//-------------
 	// UPLOAD_COMPLETE
-	running_job, gf_err := Upload__complete(upload_info.Upload_gf_image_id_str,
+	running_job, gfErr := Upload__complete(uploadInfo.Upload_gf_image_id_str,
 		jobsMngr,
-		gf_s3_test_info.Gf_s3_info,
+		s3testInfo.Gf_s3_info,
 		runtime_sys)
-	if gf_err != nil {
-		panic(gf_err.Error)
+	if gfErr != nil {
+		panic(gfErr.Error)
 	}
 
 	T__test_image_job__updates(running_job.Id_str, jobsMngr, runtime_sys)

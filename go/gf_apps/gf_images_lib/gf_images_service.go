@@ -167,10 +167,9 @@ func InitService(pHTTPmux *http.ServeMux,
 // DB(MongoDB) connection is established as well.
 // S3 client is initialized as a target file-system for image files.
 func RunService(pHTTPmux *http.ServeMux,
-	pServiceInfo   *gf_images_core.GFserviceInfo,
-	p_init_done_ch chan bool,
-	pLogFun        func(string, string)) {
-	pLogFun("FUN_ENTER", "gf_images_service.RunService()")
+	pServiceInfo *gf_images_core.GFserviceInfo,
+	pInitDoneCh  chan bool,
+	pLogFun      func(string, string)) {
 
 	pLogFun("INFO", "")
 	pLogFun("INFO", " >>>>>>>>>>> STARTING GF_IMAGES SERVICE")
@@ -237,8 +236,8 @@ func RunService(pHTTPmux *http.ServeMux,
 
 	//------------------------
 	// IMPORTANT!! - signal to user that server in this goroutine is ready to start listening 
-	if p_init_done_ch != nil {
-		p_init_done_ch <- true
+	if pInitDoneCh != nil {
+		pInitDoneCh <- true
 	}
 
 	//----------------------
