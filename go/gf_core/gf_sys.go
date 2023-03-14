@@ -68,6 +68,10 @@ type RuntimeSys struct {
 type ExternalPlugins struct {
 
 	//---------------------------
+	// IMAGES
+	ImageFilterMetadataCallback func(map[string]interface{}) map[string]interface{}
+	
+	//---------------------------
 	// EVENTS
 	EventCallback func(string, map[string]interface{}, *RuntimeSys) *GFerror
 

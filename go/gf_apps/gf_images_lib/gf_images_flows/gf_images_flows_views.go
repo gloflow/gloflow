@@ -103,6 +103,12 @@ func renderTemplate(pFlowNameStr string,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
+	// plugin
+	metadataFilterDefinedBool := false
+	if pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
+		metadataFilterDefinedBool = true
+	}
+
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	//-------------------------
 	imagesPagesLst := [][]map[string]interface{}{}
@@ -111,14 +117,19 @@ func renderTemplate(pFlowNameStr string,
 		pageImagesLst := []map[string]interface{}{}
 		for _, image := range imagesPageLst {
 
-			metaJSONbytesLst, _ := json.Marshal(image.MetaMap)
-			metaJSONstr         := string(metaJSONbytesLst)
+			// META
+			var filteredMetaJSONstr string
+			if metadataFilterDefinedBool {
+				filteredMetaMap := pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback(image.MetaMap)
+				metaJSONbytesLst, _ := json.Marshal(filteredMetaMap)
+				filteredMetaJSONstr = string(metaJSONbytesLst)
+			}
 
 			imageInfoMap := map[string]interface{}{
 				"creation_unix_time_str":    strconv.FormatFloat(image.Creation_unix_time_f, 'f', 6, 64),
 				"id_str":                    image.IDstr,
 				"title_str":                 image.TitleStr,
-				"meta_json_str":             metaJSONstr,
+				"meta_json_str":             filteredMetaJSONstr,
 				"format_str":                image.Format_str,
 				"thumbnail_small_url_str":   image.Thumbnail_small_url_str,
 				"thumbnail_medium_url_str":  image.Thumbnail_medium_url_str,
