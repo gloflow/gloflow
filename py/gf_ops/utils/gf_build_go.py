@@ -30,10 +30,9 @@ def run_in_cont(p_name_str,
     p_go_dir_path_str,
     p_go_output_path_str,
     p_static_bool    = False,
-    p_local_dev_bool = False):
+    p_local_dev_bool = False,
+    p_repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()):
     assert isinstance(p_local_dev_bool, bool)
-
-    repo_local_path_str = os.path.abspath(f'{modd_str}/../../../../gloflow').strip()
 
     cmd_lst = [
         "sudo", "docker", "run",
@@ -49,7 +48,7 @@ def run_in_cont(p_name_str,
     # VOLUMES
     volumes_lst = [
         # mount GF repo into the container
-        "-v", f"{repo_local_path_str}:/home/gf",
+        "-v", f"{p_repo_local_path_str}:/home/gf",
 
         #-----------------------------
         # IMPORTANT!!
