@@ -105,7 +105,7 @@ func renderTemplate(pFlowNameStr string,
 
 	// plugin
 	metadataFilterDefinedBool := false
-	if pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
+	if pRuntimeSys.ExternalPlugins != nil && pRuntimeSys.ExternalPlugins.ImageFilterMetadataCallback != nil {
 		metadataFilterDefinedBool = true
 	}
 
