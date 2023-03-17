@@ -104,7 +104,7 @@ def get():
 
                     # PY_PLUGINS                
                     (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_images_plugins_main.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
-                    (f"{modd_str}/../py/gf_apps/gf_images/plugins/gf_color_palette.py",       f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
+                    # (f"{modd_str}/../py/gf_apps/gf_images/gf_images_palette/gf_color_palette.py", f"{modd_str}/../build/gf_apps/gf_solo/gf_images/plugins"),
 
                     #------------------------
                     # GF_ML_WORKER
