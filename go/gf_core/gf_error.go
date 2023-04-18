@@ -206,9 +206,9 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 
 	
 
-	creation_unix_time_f := float64(time.Now().UnixNano()) / 1000000000.0
-	idStr                := fmt.Sprintf("%s:%f", pErrorTypeStr, creation_unix_time_f)
-	stackTraceStr        := string(debug.Stack())
+	creationUNIXtimeF := float64(time.Now().UnixNano()) / 1000000000.0
+	idStr             := fmt.Sprintf("%s:%f", pErrorTypeStr, creationUNIXtimeF)
+	stackTraceStr     := string(debug.Stack())
 
 	// // IMPORTANT!! - number of stack frames to skip before recording. without skipping 
 	// //               we would get info on this function, not its caller which is where
@@ -235,7 +235,7 @@ func ErrorCreateWithDefs(pUserMsgStr string,
 	gfErr := GFerror{
 		Id_str:               idStr,
 		T_str:                "gf_error",
-		Creation_unix_time_f: creation_unix_time_f,
+		Creation_unix_time_f: creationUNIXtimeF,
 		Type_str:             pErrorTypeStr,
 		User_msg_str:         pUserMsgStr,
 		Data_map:             pErrorDataMap,

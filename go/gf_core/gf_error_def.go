@@ -202,6 +202,15 @@ func errorGetDefs() map[string]ErrorDef {
 		"ws_connection_init_error": ErrorDef{
 			DescrStr: "websocket client failed to connect to a url",
 		},
+
+		//---------------
+		// UDP
+		"udp_open_socket_error": ErrorDef{
+			DescrStr: "failed to open UDP socket listening on a port",
+		},
+		"udp_write_packge_to_socket_error": ErrorDef{
+			DescrStr: "failed to write package to UDP socket",
+		},
 		
 		//---------------
 		// IMAGES
