@@ -42,12 +42,19 @@ type GFudpServerDef struct {
 	// to register with this server
 	RegistrationPacketLst []byte
 	RegistrationConfirmationPacketLst []byte
+
+	// object headers to sync across connected clients
+	ObjectsToSyncLst []PacketHeaderObjUpdate
 }
 
 type GFudpClient struct {
+	IDint   int
 	IPstr   string
 	PortInt int
+	Address *net.UDPAddr
 }
+
+type PacketHeaderObjUpdate []byte
 
 //-------------------------------------------------
 
@@ -77,15 +84,24 @@ func UDPstartListening(pServerDef GFudpServerDef,
 			}
 
 
+			
+			packetDataLst := buff[0:bytesReadLengthInt]
+
+			pRuntimeSys.LogNewFun("INFO", "received UDP data", map[string]interface{}{
+				"package_data_lst": packetDataLst,
+				"address_str":      udpAddressOfSender,
+			})
+			
+
+			// packet header - 6 bytes
+			packetHeaderLst := packetDataLst[0:6]
+
 			clientCompositeKeyStr := fmt.Sprintf("%s:%d", udpAddressOfSender.IP, udpAddressOfSender.Port)
 
 
-			packetDataLst   := buff[0:bytesReadLengthInt]
-			packetHeaderLst := packetDataLst[0:6]
 
-			fmt.Println(packetHeaderLst, pServerDef.RegistrationPacketLst)
-
-
+			//------------------------------
+			// CLIENT_REGISTRATION
 			// check if this client sending the packet is registering with this server.
 			if bytes.Equal(packetHeaderLst, pServerDef.RegistrationPacketLst) {
 
@@ -94,7 +110,10 @@ func UDPstartListening(pServerDef GFudpServerDef,
 				if _, ok := clientsTableMap[clientCompositeKeyStr]; ok {
 
 					// send confirmation packet back to client
-					gfErr := UDPsendRegistrationConfirmation(udpAddressOfSender, connExt, pServerDef, pRuntimeSys)
+					gfErr := UDPsendRegistrationConfirmation(udpAddressOfSender,
+						connExt,
+						pServerDef,
+						pRuntimeSys)
 					if gfErr != nil {
 
 					}
@@ -106,14 +125,25 @@ func UDPstartListening(pServerDef GFudpServerDef,
 					"address_str": udpAddressOfSender,
 				})
 
-				// register client in the clients_table
-				clientsTableMap[clientCompositeKeyStr] = GFudpClient{
+				
+				playerIDbyteLst := packetDataLst[6:7]
+				playerIDint  := int(playerIDbyteLst[0])
+
+				client := GFudpClient{
+					IDint:   playerIDint,
 					IPstr:   fmt.Sprint(udpAddressOfSender.IP),
 					PortInt: udpAddressOfSender.Port,
+					Address: udpAddressOfSender,
 				}
 
+				// register client in the clients_table
+				clientsTableMap[clientCompositeKeyStr] = client
+
 				// send confirmation packet back to client
-				gfErr := UDPsendRegistrationConfirmation(udpAddressOfSender, connExt, pServerDef, pRuntimeSys)
+				gfErr := UDPsendRegistrationConfirmation(udpAddressOfSender,
+					connExt,
+					pServerDef,
+					pRuntimeSys)
 				if gfErr != nil {
 
 				}
@@ -122,24 +152,60 @@ func UDPstartListening(pServerDef GFudpServerDef,
 				continue
 			}
 
+			//------------------------------
 
+			for _, headerLst := range pServerDef.ObjectsToSyncLst {
+				if bytes.Equal(packetHeaderLst, []byte(headerLst)) {
 
-
-
-
-
-
-			pRuntimeSys.LogNewFun("INFO", "received UDP data", map[string]interface{}{
-				"package_data_lst": packetDataLst,
-				"address_str":      udpAddressOfSender,
-			})
-
-
+					UDPsendObjUpdateToAllClients(packetDataLst,
+						clientCompositeKeyStr,
+						clientsTableMap,
+						connExt,
+						pServerDef,
+						pRuntimeSys)
+				}
+			}
 
 			// send data back to client right away
 			connExt.WriteTo(packetDataLst, udpAddressOfSender)
 		}
 	}()
+}
+
+//-------------------------------------------------
+
+func UDPsendObjUpdateToAllClients(pPacketDataLst []byte,
+	pUpdateOriginatorClientCompositeKeyStr string,
+	pClientsTableMap map[string]GFudpClient,
+	pConnExt         *net.UDPConn,
+	pServerDef       GFudpServerDef,
+	pRuntimeSys      *gf_core.RuntimeSys) {
+	
+	// iterate through all connected clients, and send them all this object update
+	for k, udpClient := range pClientsTableMap {
+
+		// skip sending this update packet to the player that originated it
+		if k == pUpdateOriginatorClientCompositeKeyStr {
+			continue
+		}
+
+		// fmt.Println(" -- sending packet to", udpClient.Address, pPacketDataLst)
+
+		// send this packet to all other clients connected to this server
+		_, err := pConnExt.WriteTo(pPacketDataLst, udpClient.Address)
+		if err != nil {
+			msgStr  := "failed to write obj update packet to UDP socket of one of the clients"
+			typeStr := "udp_write_packge_to_socket_error"
+
+			// only printing error info, since packet sending frequency is too high
+			// and handling them as an gf_error would overload the error handling systems
+			// (DB, Sentry, etc.)
+			pRuntimeSys.LogNewFun("ERROR", msgStr, map[string]interface{}{
+				"error_type_str": typeStr,
+				"address_str":    udpClient.Address,
+			})
+		}
+	}
 }
 
 //-------------------------------------------------
