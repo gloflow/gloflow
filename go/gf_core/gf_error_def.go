@@ -327,6 +327,12 @@ func errorGetDefs() map[string]ErrorDef {
 		"aws_ec2_instances_describe_error": ErrorDef{
 			DescrStr: "failed to describe EC2 instances",
 		},
+		"aws_ec2_autoscaling_scale_error": ErrorDef{
+			DescrStr: "failed to change the count of instances in a EC2 autoscaling group",
+		},
+		"aws_ec2_autoscaling_describe_error": ErrorDef{
+			DescrStr: "failed to get info on a EC2 autoscaling group",
+		},
 		
 		// ECS
 		"aws_ecs_service_update_error": ErrorDef{

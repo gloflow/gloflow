@@ -45,9 +45,9 @@ type handler_http_sse     func(context.Context, http.ResponseWriter, *http.Reque
 //-------------------------------------------------
 
 func CreateHandlerSSE(p_path_str string,
-	p_handler_fun    handler_http_sse,
+	p_handler_fun handler_http_sse,
 	pStoreRunBool bool,
-	pRuntimeSys      *gf_core.RuntimeSys) {
+	pRuntimeSys   *gf_core.RuntimeSys) {
 
 	CreateHandlerHTTPwithMetrics(p_path_str,
 		func(p_ctx context.Context, p_resp http.ResponseWriter, p_req *http.Request) (map[string]interface{}, *gf_core.GFerror) {

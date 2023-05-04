@@ -25,9 +25,92 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/gloflow/gloflow/go/gf_core"
 	// "github.com/davecgh/go-spew/spew"
 )
+
+//-------------------------------------------------------------
+// EC2_SCALE_AUTSCALING_GROUP
+
+func EC2scaleAutoscalingGroup(pAutscalingGroupNameStr string,
+	pDesiredCapacityInt int,
+	pRuntimeSys         *gf_core.RuntimeSys) *gf_core.GFerror {
+	
+	sess, err := session.NewSessionWithOptions(session.Options{
+		Config:  aws.Config{Region: aws.String("us-east-1")},
+		Profile: "default",
+	})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to create an AWS session object",
+			"aws_session_create",
+			map[string]interface{}{},
+			err, "gf_aws", pRuntimeSys)
+		return gfErr
+	}
+
+	svc := autoscaling.New(sess)
+
+	//-----------------------
+	// UPDATE
+	_, err = svc.UpdateAutoScalingGroup(&autoscaling.UpdateAutoScalingGroupInput{
+		AutoScalingGroupName: aws.String(pAutscalingGroupNameStr),
+		DesiredCapacity:      aws.Int64(int64(pDesiredCapacityInt)),
+	})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update an EC2 Autoscaling Group capacity",
+			"aws_ec2_autoscaling_scale_error",
+			map[string]interface{}{
+				"autoscaling_group_name_str": pAutscalingGroupNameStr,
+				"desired_capacity_int":       pDesiredCapacityInt,
+			},
+			err, "gf_aws", pRuntimeSys)
+		return gfErr
+	}
+
+	//-----------------------
+	return nil
+}
+
+//-------------------------------------------------------------
+
+func EC2getInfoOnAutoscalingGroup(pAutscalingGroupNameStr string,
+	pRuntimeSys *gf_core.RuntimeSys) (int, *gf_core.GFerror) {
+	
+	sess, err := session.NewSessionWithOptions(session.Options{
+		Config:  aws.Config{Region: aws.String("us-east-1")},
+		Profile: "default",
+	})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to create an AWS session object",
+			"aws_session_create",
+			map[string]interface{}{},
+			err, "gf_aws", pRuntimeSys)
+		return 0, gfErr
+	}
+
+	svc := autoscaling.New(sess)
+
+	//-----------------------
+	// GET_INFO
+	result, err := svc.DescribeAutoScalingGroups(&autoscaling.DescribeAutoScalingGroupsInput{
+		AutoScalingGroupNames: []*string{aws.String(pAutscalingGroupNameStr)},
+	})
+	if err != nil {
+		gfErr := gf_core.ErrorCreate("failed to update an EC2 Autoscaling Group capacity",
+			"aws_ec2_autoscaling_describe_error",
+			map[string]interface{}{
+				"autoscaling_group_name_str": pAutscalingGroupNameStr,
+			},
+			err, "gf_aws", pRuntimeSys)
+		return 0, gfErr
+	}
+
+	instancesNumInt := len(result.AutoScalingGroups[0].Instances)
+
+	//-----------------------
+	return instancesNumInt, nil
+}
 
 //-------------------------------------------------------------
 

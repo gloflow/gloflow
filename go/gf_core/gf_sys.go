@@ -25,6 +25,7 @@ SOFTWARE.
 package gf_core
 
 import (
+	"database/sql"
 	"go.mongodb.org/mongo-driver/mongo"
 	"github.com/go-playground/validator"
 )
@@ -39,6 +40,7 @@ type RuntimeSys struct {
 	LogFun           func(string, string)
 	LogNewFun        GFlogFun
 
+	SQLdb            *sql.DB
 	Mongo_db         *mongo.Database
 	Mongo_coll       *mongo.Collection // main mongodb collection to use when none is specified
 	Debug_bool       bool              // if debug mode is enabled (some places will print extra info in debug mode)
