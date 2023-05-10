@@ -26,27 +26,47 @@ package gf_rpc_lib
 
 import (
 	"fmt"
+	"time"
 	"net/http"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
 //------------------------------------------------------------------------
-type GFmmsOnSessionJoinFun func(map[string]interface{}) map[string]interface{}
 
+type GFmmsOnSessionJoinFun   func(*GFmmsSession, map[string]interface{}) map[string]interface{}
+type GFmmsOnSessionStatusFun func(*GFmmsSession, map[string]interface{}) map[string]interface{}
+
+// SERVER_INFO
 type GFmmsServerInfo struct {
-	OnSessionJoinFun GFmmsOnSessionJoinFun
+	ClientsJoinedThresholdInt int // number of clients that are expected to join the session at a minimum
+	OnSessionJoinFun   GFmmsOnSessionJoinFun
+	OnSessionStatusFun GFmmsOnSessionStatusFun
 }
 
+// SESSION
 type GFmmsSession struct {
+	IDstr                     string
 	ClientsJoinedThresholdInt int // number of clients that are expected to join the session at a minimum
 	ClientsJoinedLst          []int 
 	ClientNextAvailableIDint  int
 	ClientsCountInt int
 }
 
+// SESSION_STATUS
+type GFmmsSessionStatus struct {
+	StatusStr                 string // "waiting" | "started"
+	ClientsJoinedThresholdInt int
+	ClientsJoinedLst []int
+	ClientsCountInt  int
+
+	// arbtirary metadata that this servrs callbacks can attach to sessions
+	SessionMetaMap map[string]interface{}
+}
+
 //------------------------------------------------------------------------
 // SESSION_JOIN
+
 func MMSsessioJoin(pUserNameStr string,
 	pMetaMap    map[string]interface{},
 	pSession    *GFmmsSession,
@@ -60,20 +80,40 @@ func MMSsessioJoin(pUserNameStr string,
 	pSession.ClientsCountInt += 1
 
 	// call user-defined session_join callback
-	sessionMetaMap := pServerInfo.OnSessionJoinFun(pMetaMap)
+	sessionMetaMap := pServerInfo.OnSessionJoinFun(pSession, pMetaMap)
 
 	return newClientIDint, sessionMetaMap
 }
 
 //------------------------------------------------------------------------
 // SESSION_STATUS
-func MMSsessionStatus() {
+
+func MMSsessionStatus(pReqMetaMap map[string]interface{},
+	pSession    *GFmmsSession,
+	pServerInfo GFmmsServerInfo,
+	pRuntimeSys *gf_core.RuntimeSys) *GFmmsSessionStatus {
 
 
+
+	// call user-defined session_join callback
+	sessionMetaMap := pServerInfo.OnSessionStatusFun(pSession, pReqMetaMap)
+	
+
+	
+	sessionStatus := &GFmmsSessionStatus{
+		ClientsJoinedThresholdInt: pSession.ClientsJoinedThresholdInt,
+		ClientsJoinedLst:          pSession.ClientsJoinedLst,
+		ClientsCountInt:           pSession.ClientsCountInt,
+		SessionMetaMap:            sessionMetaMap,
+	}
+
+
+	return sessionStatus
 }
 
 //------------------------------------------------------------------------
 // SESSION_RESET
+
 func MMSsessionReset(pSessionNameStr string,
 	pUserNameStr string,
 	pSession     *GFmmsSession,
@@ -85,14 +125,17 @@ func MMSsessionReset(pSessionNameStr string,
 //------------------------------------------------------------------------
 
 func MMSsessionGetOrCreate(pNameStr string,
-	pSessionMap map[string]*GFmmsSession) *GFmmsSession {
-
-	clientsJoinedThresholdInt := 2
+	pSessionMap map[string]*GFmmsSession,
+	pServerInfo GFmmsServerInfo) *GFmmsSession {
 
 	if _, ok := pSessionMap[pNameStr]; !ok {
 
+		currentUNIXtimeF := float64(time.Now().UnixNano())/1000000000.0
+		idStr := fmt.Sprintf("mms_session:%f", currentUNIXtimeF)
+
 		session := &GFmmsSession{
-			ClientsJoinedThresholdInt: clientsJoinedThresholdInt,
+			IDstr:                     idStr,
+			ClientsJoinedThresholdInt: pServerInfo.ClientsJoinedThresholdInt,
 			ClientNextAvailableIDint:  0,
 			ClientsCountInt: 0,
 		}
@@ -105,6 +148,7 @@ func MMSsessionGetOrCreate(pNameStr string,
 }
 
 //------------------------------------------------------------------------
+
 func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 	pHTTPmutex  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
@@ -117,7 +161,8 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 	
  
 	//------------------------------------------------------------------------
-	CreateHandlerHTTPwithMux("/v1/session/reset",
+	// SESSION_RESET
+	CreateHandlerHTTPwithMux("/v1/mms/session/reset",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "GET" {
@@ -137,7 +182,7 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 
 				//------------------
 
-				session := MMSsessionGetOrCreate(sessionNameStr, sessionsMap)
+				session := MMSsessionGetOrCreate(sessionNameStr, sessionsMap, pServerInfo)
 
 				//------------------
 				// MMS_SESSION_JOIN
@@ -163,7 +208,8 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 		pRuntimeSys)
 
 	//------------------------------------------------------------------------
-	CreateHandlerHTTPwithMux("/v1/session/join",
+	// SESSION_JOIN
+	CreateHandlerHTTPwithMux("/v1/mms/session/join",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -181,16 +227,16 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 				userNameStr := iMap["user_name_str"].(string)
 				fmt.Println("user_name", userNameStr)
 
-				metaMap := iMap["meta_map"].(map[string]interface{})
+				reqMetaMap := iMap["meta_map"].(map[string]interface{})
 
 				//------------------
 
-				session := MMSsessionGetOrCreate(sessionNameStr, sessionsMap)
+				session := MMSsessionGetOrCreate(sessionNameStr, sessionsMap, pServerInfo)
 
 				//------------------
 				// MMS_SESSION_JOIN
 				newClientIDint, sessionMetaMap := MMSsessioJoin(userNameStr,
-					metaMap,
+					reqMetaMap,
 					session,
 					pServerInfo,
 					pRuntimeSys)
@@ -214,9 +260,10 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 		pRuntimeSys)
 	
 	//------------------------------------------------------------------------
+	// SESSION_STATUS
 	// used to get status of a session, by clients that have already joined a session
 
-	CreateHandlerHTTPwithMux("/v1/session/status",
+	CreateHandlerHTTPwithMux("/v1/mms/session/status",
 		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
 
 			if pReq.Method == "POST" {
@@ -234,25 +281,25 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 				clientIDint := int(iMap["client_id_int"].(float64))
 				fmt.Println("client_id", clientIDint)
 
+				reqMetaMap := iMap["meta_map"].(map[string]interface{})
+
 				//------------------
+				
+				session := sessionsMap[sessionNameStr]
 
-				session := MMSsessionGetOrCreate(sessionNameStr, sessionsMap)
-
-				var allUsersJoinedBool bool
-				if session.ClientsJoinedThresholdInt >= session.ClientsCountInt {
-					allUsersJoinedBool = true
-				}
-
-
-				MMSsessionStatus()
-
+				// STATUS
+				sessionStatus := MMSsessionStatus(reqMetaMap, session, pServerInfo, pRuntimeSys)
 
 				//------------------
 				// OUTPUT
 				dataMap := map[string]interface{}{
+					"session_status_map": sessionStatus,
+
+					/*
 					"game_map": map[string]interface{}{
 						"ALL_USERS_JOINED": allUsersJoinedBool,
 					},
+					*/
 				}
 				return dataMap, nil
 
