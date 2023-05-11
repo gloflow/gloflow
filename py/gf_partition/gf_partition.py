@@ -22,7 +22,109 @@ sys.path.append(f"{modd_str}/../gf_core")
 import gf_core_sql_db
 
 #---------------------------------------------------------------------------------
-def create(p_partition_map,
+# DECORATORS
+#---------------------------------------------------------------------------------
+def gf_materialize(p_partition_map,
+    p_partition_sql_id_int,
+    p_dagster_run_id,
+    p_db_client):
+    def decorator(p_func):
+        def wrapper(*args, **kwargs):
+            func_name_str = p_func.__name__
+            print(f"gf_materialize decorator ---> {p_func.__name__}")
+            
+            # CREATE
+            materialization_sql_id_int = db_create_materialization(p_partition_map,
+                p_partition_sql_id_int,
+                p_dagster_run_id,
+                p_db_client)
+            
+            # FUNC
+            try:
+                result = p_func(*args, **kwargs)
+
+            except Exception as e:
+                
+                db_update_materialization("failed", )
+                
+                # rethrow the exception further up the chain
+                raise
+                    
+            # COMPLETE
+            db_update_materialization("completed", materialization_sql_id_int, p_db_client)
+
+            return result
+        return wrapper
+    return decorator
+
+#---------------------------------------------------------------------------------
+def db_create_materialization(p_partition_map,
+    p_partition_sql_id_int,
+    p_dagster_run_id_str,
+    p_db_client):
+    assert isinstance(p_partition_map, dict)
+
+    print("create materialization...")
+
+    table_name_str = "gf_data_partitions_materilize"
+    status_str     = "started"
+
+    query_str = f"""
+        INSERT INTO {table_name_str} (
+            set_name,
+            group_name,
+            status,
+            dagster_run_id,
+            partition_id) 
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id;"""
+
+    values_tpl = (p_partition_map["set_name_str"],
+        p_partition_map["group_name_str"],
+        status_str,
+        p_dagster_run_id_str,
+        p_partition_sql_id_int)
+
+    cur = p_db_client.cursor()
+    cur.execute(query_str, values_tpl)
+
+    new_sql_id_int = cur.fetchone()[0]
+
+
+    print("DDDDDDDDDDDDDDDDDDDD")
+    print(new_sql_id_int)
+
+
+
+    p_db_client.commit()
+    cur.close()
+
+    return new_sql_id_int
+
+#---------------------------------------------------------------------------------
+def db_update_materialization(p_status_str,
+    p_materialization_id_int,
+    p_db_client):
+    assert p_status_str == "failed" or p_status_str == "completed"
+
+    table_name_str = "gf_data_partitions_materilize"
+    status_str     = "completed"
+
+    query_str = f"""
+        UPDATE {table_name_str}
+        SET status = '{p_status_str}'
+        WHERE id={p_materialization_id_int};
+    """
+
+    cur = p_db_client.cursor()
+    cur.execute(query_str)
+    p_db_client.commit()
+    cur.close()
+
+#---------------------------------------------------------------------------------
+# MAIN
+#---------------------------------------------------------------------------------
+def db_create(p_partition_map,
     p_db_client):
     assert isinstance(p_partition_map, dict)
 
@@ -37,24 +139,31 @@ def create(p_partition_map,
             dagster_asset_id,
             partition_i,
             partition_size,
+            materialized_actively,
             materialized) 
-        VALUES (%s, %s, %s, %s, %s, %s)"""
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        RETURNING id;"""
 
     values_tpl = (p_partition_map["set_name_str"],
         p_partition_map["group_name_str"],
         p_partition_map["dagster_asset_id_str"],
         p_partition_map["partition_i_int"],
-        p_partition_map["partition_size_int"], True)
+        p_partition_map["partition_size_int"],
+        False, # materialized_actively
+        True)  # materialized
 
     cur = p_db_client.cursor()
     cur.execute(query_str, values_tpl)
 
-    p_db_client.commit()
+    new_partition_sql_id_int = cur.fetchone()[0]
 
+    p_db_client.commit()
     cur.close()
+
+    return new_partition_sql_id_int
     
 #---------------------------------------------------------------------------------
-def check_exists(p_set_name_str,
+def db_check_exists(p_set_name_str,
     p_group_name_str,
     p_partition_i_int,
     p_partition_size_int,
@@ -64,7 +173,7 @@ def check_exists(p_set_name_str,
     partition_str = "%s:%s:%s:%s"%(p_set_name_str, p_group_name_str, p_partition_i_int, p_partition_size_int)
 
     try:
-        result = get_one(p_set_name_str,
+        result = db_get_one(p_set_name_str,
             p_group_name_str,
             p_partition_i_int,
             p_partition_size_int,
@@ -92,7 +201,7 @@ def check_exists(p_set_name_str,
     p_db_client.close()
 
 #---------------------------------------------------------------------------------
-def get_one(p_set_name_str,
+def db_get_one(p_set_name_str,
     p_group_name_str,
     p_partition_i_int,
     p_partition_size_int,
@@ -114,7 +223,7 @@ def get_one(p_set_name_str,
     return result
 
 #---------------------------------------------------------------------------------
-def init_db(p_db_client):
+def db_init(p_db_client):
     
     cur = p_db_client.cursor()
 
@@ -125,14 +234,15 @@ def init_db(p_db_client):
     #---------------------------------------------------------------------------------
     def create_table():
 
-        # cur.execute(f"DROP TABLE {table_name_str} CASCADE;")
-        # cur.execute(f"DROP TABLE {table_partition_materialize_name_str} CASCADE;")
+        cur.execute(f"DROP TABLE {table_name_str} CASCADE;")
+        cur.execute(f"DROP TABLE {table_partition_materialize_name_str} CASCADE;")
 
         # GF_DATA_PARTITIONS
         if not gf_core_sql_db.table_exists(table_name_str, cur):
 
             # dagster_asset_id - rereference to the appropriate Dagster Asset that
             #                    materialized/computed this partition.
+            # actively_processed - flag indicating if anyone is activelly processing this 
             # materialized_bool - has this partition been ever materialized?
             create_table_sql_str = f"""
                 CREATE TABLE {table_name_str} (
@@ -145,7 +255,9 @@ def init_db(p_db_client):
                     partition_i    INT NOT NULL,
                     partition_size INT NOT NULL,
 
-                    materialized BOOLEAN NOT NULL,
+                    materialized_started_at TIMESTAMP,
+                    materialized_actively   BOOLEAN NOT NULL,
+                    materialized            BOOLEAN NOT NULL,
 
                     UNIQUE(set_name, group_name, partition_i, partition_size)
                 );"""
@@ -155,15 +267,17 @@ def init_db(p_db_client):
         # GF_DATA_PARTITIONS_MATERIALIZE
         if not gf_core_sql_db.table_exists(table_partition_materialize_name_str, cur):
 
-            # status - "started" | "failed" | "completed"
+            # status         - "started" | "failed" | "completed"
+            # dagster_run_id - ID of the Dagster Run within which this materialization is executing
             create_table_sql_str = f"""
                 CREATE TABLE {table_partition_materialize_name_str} (
-                    id           BIGSERIAL PRIMARY KEY,
-                    created_at   TIMESTAMP DEFAULT NOW(),
-                    set_name     VARCHAR(255) NOT NULL,
-                    group_name   VARCHAR(255) NOT NULL,
-                    status       VARCHAR(255) NOT NULL,
-                    partition_id BIGINT REFERENCES {table_name_str}(id)
+                    id             BIGSERIAL PRIMARY KEY,
+                    created_at     TIMESTAMP DEFAULT NOW(),
+                    set_name       VARCHAR(255) NOT NULL,
+                    group_name     VARCHAR(255) NOT NULL,
+                    status         VARCHAR(255) NOT NULL,
+                    dagster_run_id VARCHAR(255) NOT NULL,
+                    partition_id   BIGINT REFERENCES {table_name_str}(id)
                 );"""
             cur.execute(create_table_sql_str)
             p_db_client.commit()
