@@ -164,8 +164,14 @@ def run(p_image,
 	# each of the palette pixels has a format (px_global_indexes_arr, r, g, b), so only get (r, g, b).
 	palette_pixels_only_arr = np.empty((len(result), 3), dtype=int)
 	for i in range(len(result)):
-		_, r_int, g_int, b_int = result[i]
+		pixels_global_indexes_lst, r_int, g_int, b_int = result[i]
 		palette_pixels_only_arr[i] = np.array([r_int, g_int, b_int])
+
+
+		print(pixels_global_indexes_lst)
+
+
+		print(f"global {len(result[i][0])} {palette_pixels_only_arr[i]}")
 
 	print(palette_pixels_only_arr)
 	print(palette_pixels_only_arr.shape)

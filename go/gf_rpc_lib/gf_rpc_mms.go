@@ -153,13 +153,8 @@ func MMSinitHandlers(pServerInfo GFmmsServerInfo,
 	pHTTPmutex  *http.ServeMux,
 	pRuntimeSys *gf_core.RuntimeSys) {
 
-
-
-
 	sessionsMap := map[string]*GFmmsSession{}
 
-	
- 
 	//------------------------------------------------------------------------
 	// SESSION_RESET
 	CreateHandlerHTTPwithMux("/v1/mms/session/reset",
