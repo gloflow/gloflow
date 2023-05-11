@@ -234,8 +234,8 @@ def db_init(p_db_client):
     #---------------------------------------------------------------------------------
     def create_table():
 
-        cur.execute(f"DROP TABLE {table_name_str} CASCADE;")
-        cur.execute(f"DROP TABLE {table_partition_materialize_name_str} CASCADE;")
+        # cur.execute(f"DROP TABLE {table_name_str} CASCADE;")
+        # cur.execute(f"DROP TABLE {table_partition_materialize_name_str} CASCADE;")
 
         # GF_DATA_PARTITIONS
         if not gf_core_sql_db.table_exists(table_name_str, cur):
