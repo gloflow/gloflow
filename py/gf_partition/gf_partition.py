@@ -18,6 +18,8 @@
 import os, sys
 modd_str = os.path.abspath(os.path.dirname(__file__)) # module dir
 
+import pandas as pd
+
 sys.path.append(f"{modd_str}/../gf_core")
 import gf_core_sql_db
 
@@ -56,6 +58,49 @@ def gf_materialize(p_partition_map,
             return result
         return wrapper
     return decorator
+
+#---------------------------------------------------------------------------------
+# MAIN
+#---------------------------------------------------------------------------------
+def db_get_partitions_info(p_db_client):
+    
+    table_name_str = "gf_data_partitions"
+    table_name_materialize_str = "gf_data_partitions_materilize"
+
+    query_str = f"""
+        SELECT set_name, group_name, partition_size, ARRAY_AGG(partition_i ORDER BY partition_i) AS partition_ids
+        FROM {table_name_str}
+        GROUP BY set_name, group_name, partition_size;"""
+
+    cur = p_db_client.cursor()
+    cur.execute(query_str)
+
+
+
+
+    rows = cur.fetchall()
+
+    partition_groups_lst = []
+    for row in rows:
+
+        set_name_str, group_name_str, partition_size_int, partition_indexes_lst = row
+        partition_info_map = {
+            "set_name":          set_name_str,
+            "group_name":        group_name_str,
+            "partition_size":    partition_size_int,
+            "partition_indexes": partition_indexes_lst,
+            "partitions_num":    len(partition_indexes_lst),
+        }
+
+        
+        partition_groups_lst.append(partition_info_map)
+
+    df = pd.DataFrame(partition_groups_lst)
+    print(df)
+
+    cur.close()
+
+    return df
 
 #---------------------------------------------------------------------------------
 def db_create_materialization(p_partition_map,
@@ -121,8 +166,6 @@ def db_update_materialization(p_status_str,
     p_db_client.commit()
     cur.close()
 
-#---------------------------------------------------------------------------------
-# MAIN
 #---------------------------------------------------------------------------------
 def db_create(p_partition_map,
     p_db_client):
