@@ -41,11 +41,11 @@ def gf_materialize(p_partition_map,
             
             # FUNC
             try:
-                result = p_func(*args, **kwargs)
-
+                output_map = p_func(*args, **kwargs)
+                assert isinstance(output_map, dict)
             except Exception as e:
                 
-                db_update_materialization("failed", )
+                db_update_materialization("failed", materialization_sql_id_int, p_db_client)
                 
                 # rethrow the exception further up the chain
                 raise
@@ -53,7 +53,9 @@ def gf_materialize(p_partition_map,
             # COMPLETE
             db_update_materialization("completed", materialization_sql_id_int, p_db_client)
 
-            return result
+            p_partition_map["output_map"] = output_map 
+
+            return output_map
         return wrapper
     return decorator
 
