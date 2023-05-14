@@ -27,7 +27,6 @@ import gf_core_sql_db
 # DECORATORS
 #---------------------------------------------------------------------------------
 def gf_materialize(p_partition_map,
-    p_partition_sql_id_int,
     p_dagster_run_id,
     p_db_client):
     def decorator(p_func):
@@ -37,7 +36,6 @@ def gf_materialize(p_partition_map,
             
             # CREATE
             materialization_sql_id_int = db_create_materialization(p_partition_map,
-                p_partition_sql_id_int,
                 p_dagster_run_id,
                 p_db_client)
             
@@ -61,6 +59,81 @@ def gf_materialize(p_partition_map,
 
 #---------------------------------------------------------------------------------
 # MAIN
+#---------------------------------------------------------------------------------
+def get_or_create(p_set_name_str,
+    p_group_name_str,
+    p_partition_keys_map,
+    p_partition_i_int,
+    p_partition_size_int,
+    p_dagster_asset_id_str,
+    p_db_client):
+    
+    # CHECK_PARTITION_EXISTS
+    exists_bool, materialized_bool = db_check_exists(p_set_name_str,
+        p_group_name_str,
+        p_partition_i_int,
+        p_partition_size_int,
+        p_db_client)
+
+    
+    # CREATE_PARTITION
+    if not exists_bool:
+
+        new_partition_map = {
+            "set_name_str": p_set_name_str,
+
+            # this is the general group to which this set belongs to
+            "group_name_str": p_group_name_str,
+
+            #----------------------
+            # PARTITION_KEYS
+            "partition_keys_map": p_partition_keys_map,
+            
+            #----------------------
+
+            "partition_i_int":    p_partition_i_int,
+            "partition_size_int": p_partition_size_int,
+
+            "partition_sql_id_int": None,
+
+            # ID of a dagster asset that triggered this partition
+            "dagster_asset_id_str": p_dagster_asset_id_str,
+
+
+            # "output_map": output_map
+        }
+        
+        
+        new_partition_sql_id_int = db_create(new_partition_map, p_db_client)
+        new_partition_map["partition_sql_id_int"] = new_partition_sql_id_int
+
+        return new_partition_map
+
+    # GET_EXISTING_PARTITION
+    else:
+        
+        # DB
+        result = db_get_one(p_set_name_str,
+            p_group_name_str,
+            p_partition_i_int,
+            p_partition_size_int,
+            p_db_client)
+
+        partition_sql_id_int, created_at, dagster_asset_id, _, _, _ = result
+        _, _, _, materialized_started_at, materialized_actively, materialized = result
+
+        existing_partition_map = {
+            "set_name_str":         p_set_name_str,
+            "group_name_str":       p_group_name_str,
+            "partition_keys_map":   p_partition_keys_map,
+            "partition_i_int":      p_partition_i_int,
+            "partition_size_int":   p_partition_size_int,
+            "partition_sql_id_int": partition_sql_id_int,
+            "dagster_asset_id_str": p_dagster_asset_id_str,
+        }
+
+        return existing_partition_map
+
 #---------------------------------------------------------------------------------
 def db_get_partitions_info(p_db_client):
     
@@ -104,7 +177,6 @@ def db_get_partitions_info(p_db_client):
 
 #---------------------------------------------------------------------------------
 def db_create_materialization(p_partition_map,
-    p_partition_sql_id_int,
     p_dagster_run_id_str,
     p_db_client):
     assert isinstance(p_partition_map, dict)
@@ -113,6 +185,10 @@ def db_create_materialization(p_partition_map,
 
     table_name_str = "gf_data_partitions_materilize"
     status_str     = "started"
+
+
+    partition_sql_id_int = p_partition_map["partition_sql_id_int"]
+    assert isinstance(partition_sql_id_int, int)
 
     query_str = f"""
         INSERT INTO {table_name_str} (
@@ -128,7 +204,7 @@ def db_create_materialization(p_partition_map,
         p_partition_map["group_name_str"],
         status_str,
         p_dagster_run_id_str,
-        p_partition_sql_id_int)
+        partition_sql_id_int)
 
     cur = p_db_client.cursor()
     cur.execute(query_str, values_tpl)
@@ -232,7 +308,7 @@ def db_check_exists(p_set_name_str,
     
     if result is not None:
         
-        materialized_bool = result[0]
+        materialized_bool = result[5]
 
         print(f"partition exists - {partition_str}")
         return True, materialized_bool
@@ -253,7 +329,13 @@ def db_get_one(p_set_name_str,
     table_name_str = "gf_data_partitions"
     cur = p_db_client.cursor()
     query_str = f"""
-        SELECT *
+        SELECT
+            id,
+            created_at,
+            dagster_asset_id,
+            materialized_started_at,
+            materialized_actively,
+            materialized
         FROM {table_name_str}
         WHERE set_name = %s AND group_name = %s AND partition_i = %s AND partition_size = %s
     """
