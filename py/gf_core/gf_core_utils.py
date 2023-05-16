@@ -120,11 +120,23 @@ def get_self_ip():
 			ip_str = get_remote()
 			return ip_str
 
+	#---------------------------------------------------
+	def extern_service_ifconfigme_method():
+		r = delegator.run("curl ifconfig.me")
+		ip_str = r.out
+		return ip_str
 
 	#---------------------------------------------------
 	
-	self_ip_str = dns_method()
-	# self_ip_str = extern_service_method()
-	print(f"self IP: {self_ip_str}")
+	# IMPORTANT!! - in some networks in some countries many exit points are used dynamically for the same
+	#               access point (mobile router); and each of these methods determines a different IP.
+	#               so we're executing them all here and returning them all.
+	dns__self_ip_str        = dns_method()
+	ipinfo__self_ip_str     = extern_service_method()
+	ifconfigme__self_ip_str = extern_service_ifconfigme_method()
+	print(f"self IP:")
+	print(f"dns         - {dns__self_ip_str}")
+	print(f"ipinfo.io   - {ipinfo__self_ip_str}")
+	print(f"ifconfig.me - {ifconfigme__self_ip_str}")
 
-	return self_ip_str
+	return [dns__self_ip_str, ipinfo__self_ip_str, ifconfigme__self_ip_str]
