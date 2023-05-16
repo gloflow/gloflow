@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
 import logging
 import subprocess
 import signal
@@ -102,16 +103,23 @@ def get_self_ip():
 			return self_ip_str
 
 		#---------------------------------------------------
-		f=open("self_ip_cache.txt", "r")
-		ip_str = f.read()
-		f.close()
 
-		# if text is a valid IP 
-		if len(ip_str.split(".")) == 4:
-			return ip_str
+		cache_path_str = "self_ip_cache.txt"
+		if os.path.isfile(cache_path_str):
+			f=open("self_ip_cache.txt", "r")
+			ip_str = f.read()
+			f.close()
+
+			# if text is a valid IP 
+			if len(ip_str.split(".")) == 4:
+				return ip_str
+			else:
+				ip_str = get_remote()
+				return ip_str
 		else:
 			ip_str = get_remote()
 			return ip_str
+
 
 	#---------------------------------------------------
 	
