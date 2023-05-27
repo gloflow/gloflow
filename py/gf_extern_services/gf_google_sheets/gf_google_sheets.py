@@ -31,12 +31,15 @@ def get_column_by_name(p_column_name_str,
         # format returned data to be in column-first format 
         majorDimension='COLUMNS').execute()
 
-
-
     # iterate over each column, and get the one thats needed
     i=0
     for column_vals_lst in result['values']:
-        
+
+        # some columns dont have any values in them, in which case skip it,
+        # since we're not going to find a column_name in it.
+        if len(column_vals_lst) == 0:
+            continue
+
         column_name_str = column_vals_lst[p_column_name__row_index_int]
         if column_name_str == p_column_name_str:
             return column_vals_lst, i
