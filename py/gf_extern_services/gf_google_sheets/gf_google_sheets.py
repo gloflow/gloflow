@@ -19,12 +19,12 @@
 def get_column_by_name(p_column_name_str,
     p_spreadsheet_id_str,
     p_subsheet_name_str,
-    p_service,
+    p_service_client,
     p_column_name__row_index_int=1):
 
     range_name_str = f"{p_subsheet_name_str}!A:Z"
 
-    result = p_service.spreadsheets().values().get(spreadsheetId=p_spreadsheet_id_str,
+    result = p_service_client.spreadsheets().values().get(spreadsheetId=p_spreadsheet_id_str,
         # body=data,
         range=range_name_str,
 
@@ -51,9 +51,9 @@ def get_column_by_name(p_column_name_str,
 #---------------------------------------------------------------------------------
 def get_sheet_id(p_sheet_name_str,
     p_spreadsheet_id_str,
-    p_service):
+    p_service_client):
 
-    spreadsheet_metadata = p_service.spreadsheets().get(spreadsheetId=p_spreadsheet_id_str).execute()
+    spreadsheet_metadata = p_service_client.spreadsheets().get(spreadsheetId=p_spreadsheet_id_str).execute()
     sheets_lst           = spreadsheet_metadata.get('sheets', '')
 
     for sheet in sheets_lst:
