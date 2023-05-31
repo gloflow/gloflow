@@ -31,6 +31,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFnft struct {
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
@@ -80,6 +81,7 @@ type GFnftExtern struct {
 }
 
 //-------------------------------------------------
+
 func getNFTexternForm(pNFTsLst []*GFnft) []*GFnftExtern {
 
 	// export NFT data for public usage
@@ -109,6 +111,7 @@ func getNFTexternForm(pNFTsLst []*GFnft) []*GFnftExtern {
 }
 
 //-------------------------------------------------
+
 func get(pTokenIDstr string,
 	pCollectionNameStr string,
 	pCtx               context.Context,
@@ -121,6 +124,7 @@ func get(pTokenIDstr string,
 
 //---------------------------------------------------
 // CREATE_FOR_ALCHEMY
+
 func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 	pMetrics    *GFmetrics,
 	pCtx        context.Context,
@@ -190,6 +194,7 @@ func createFromAlchemy(pNFTsAlchemyLst []*gf_nft_extern_services.GFnftAlchemy,
 
 //---------------------------------------------------
 // CREATE_ID
+
 func createID(pUserIdentifierStr string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 

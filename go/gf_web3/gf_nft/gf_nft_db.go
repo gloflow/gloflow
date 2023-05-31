@@ -31,6 +31,7 @@ import (
 
 
 //-------------------------------------------------
+
 func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
 	pGFimageID          gf_images_core.GFimageID,
 	pGFimageThumbURLstr *string,
@@ -68,6 +69,7 @@ func DBupdateGFimageProps(pNFTid gf_core.GF_ID,
 }
 
 //-------------------------------------------------
+
 func DBgetByOwner(pAddressStr string,
 	pChainStr   string,
 	pCtx        context.Context,
@@ -112,6 +114,7 @@ func DBgetByOwner(pAddressStr string,
 }
 
 //-------------------------------------------------
+
 func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 	pMetrics    *GFmetrics,
 	pCtx        context.Context,
@@ -163,6 +166,7 @@ func DBcreateBulkNFTs(pNFTsLst []*GFnft,
 }
 
 //-------------------------------------------------
+
 func DBcreateBulkAlchemyNFTs(pNFTsLst []*gf_nft_extern_services.GFnftAlchemy,
 	pMetrics    *GFmetrics,
 	pCtx        context.Context,

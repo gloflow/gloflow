@@ -24,6 +24,7 @@ import (
 )
 
 //---------------------------------------------------
+
 func CreateID(pFieldsForIDlst []string,
 	pCreationUNIXtimeF float64) gf_core.GF_ID {
 

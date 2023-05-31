@@ -30,6 +30,7 @@ import (
 
 //---------------------------------------------------
 // CREATE_AS_IMAGES_IN_FLOWS
+
 func createAsImagesInFlows(pNFTsLst []*GFnft,
 	pFlowsNamesLst []string,
 	pJobsMngrCh    chan gf_images_jobs_core.JobMsg,

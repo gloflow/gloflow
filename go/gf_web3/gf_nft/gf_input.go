@@ -28,6 +28,7 @@ import (
 
 //-------------------------------------------------
 // INDEX_ADDRESS
+
 func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
@@ -68,9 +69,9 @@ func httpInputForIndexAddress(pUserIDstr gf_core.GF_ID,
 	return input, nil
 }
 
-
 //-------------------------------------------------
 // GET
+
 func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,
@@ -102,6 +103,7 @@ func httpInputForGetByOwner(pUserIDstr gf_core.GF_ID,
 
 //-------------------------------------------------
 // GET
+
 func httpInputForGet(pUserIDstr gf_core.GF_ID,
 	pReq        *http.Request,
 	pResp       http.ResponseWriter,

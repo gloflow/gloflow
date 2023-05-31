@@ -29,6 +29,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFindexAddressInput struct {
 	UserIDstr  gf_core.GF_ID
 	AddressStr string
@@ -52,6 +53,7 @@ type GFgetInput struct {
 }
 
 //-------------------------------------------------
+
 func pipelineIndexAddress(pInput *GFindexAddressInput,
 	pConfig     *gf_eth_core.GF_config,
 	pJobsMngrCh chan gf_images_jobs_core.JobMsg,
@@ -84,6 +86,7 @@ func pipelineIndexAddress(pInput *GFindexAddressInput,
 }
 
 //-------------------------------------------------
+
 func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]*GFnftExtern, *gf_core.GFerror) {
@@ -106,6 +109,7 @@ func pipelineGetByOwner(pInput *GFgetByOwnerInput,
 }
 
 //-------------------------------------------------
+
 func pipelineGet(pInput *GFgetInput,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {

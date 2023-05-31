@@ -32,6 +32,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFnftAlchemy struct {
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
@@ -62,6 +63,7 @@ type GFnftAlchemy struct {
 }
 
 //-------------------------------------------------
+
 func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 	pAPIkeyStr  string,
 	pChainStr   string,
@@ -105,6 +107,7 @@ func AlchemyGetAllNFTsForAddress(pOwnerAddressStr string,
 }
 
 //-------------------------------------------------
+
 func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 	pPageKeyStr string,
 	pAPIkeyStr  string,

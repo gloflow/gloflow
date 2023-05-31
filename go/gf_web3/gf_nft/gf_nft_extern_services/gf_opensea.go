@@ -33,6 +33,7 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFnftOpenSea struct {
 	Vstr               string             `bson:"v_str"` // schema_version
 	Id                 primitive.ObjectID `bson:"_id,omitempty"`
@@ -84,6 +85,7 @@ type GFnftOpenSeaCollection struct {
 }
 
 //-------------------------------------------------
+
 func OpenSeaGetAllNFTsForAddress(pAddressStr string,
 	pCtx        context.Context,
 	pRuntimeSys *gf_core.RuntimeSys) ([]GFnftOpenSea, *gf_core.GFerror) {
@@ -116,6 +118,7 @@ func OpenSeaGetAllNFTsForAddress(pAddressStr string,
 }
 
 //-------------------------------------------------
+
 func OpenSeaQueryByAddress(pAddressStr string,
 	pOffsetInt  int,
 	pLimitInt   int,

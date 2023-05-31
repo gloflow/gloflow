@@ -26,12 +26,14 @@ import (
 )
 
 //-------------------------------------------------
+
 type GFmetrics struct {
 	NftDBinsertsCount        prometheus.Counter
 	NftAlchemyDBinsertsCount prometheus.Counter
 }
 
 //-------------------------------------------------
+
 func MetricsCreate() *GFmetrics {
 
 	// NFT_DB_INSERTS__COUNT
