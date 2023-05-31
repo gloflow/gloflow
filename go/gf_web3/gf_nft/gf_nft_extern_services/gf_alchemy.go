@@ -149,7 +149,6 @@ func AlchemyQueryByOwnerAddress(pOwnerAddressStr string,
 	}
 	qsStr := strings.Join(qsLst, "&")
 
-
 	// endpoint supported on Ethereum/Polygon/Flow chains
 	// https://docs.alchemy.com/reference/getnfts
 	urlStr := fmt.Sprintf("https://%s.g.alchemy.com/v2/%s/getNFTs?%s",

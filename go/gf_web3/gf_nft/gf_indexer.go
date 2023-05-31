@@ -7,6 +7,7 @@ import (
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_eth_core"
 	"github.com/gloflow/gloflow/go/gf_web3/gf_nft/gf_nft_extern_services"
+	// "github.com/davecgh/go-spew/spew"
 )
 
 //-------------------------------------------------
@@ -66,6 +67,8 @@ func indexAddress(pAddressStr string,
 		if gfErr != nil {
 			return nil, gfErr
 		}
+
+		// spew.Dump(nftsLst)
 
 		//---------------------
 		// GF_IMAGES
