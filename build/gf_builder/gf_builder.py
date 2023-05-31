@@ -43,7 +43,7 @@ sys.path.append('%s/../../py/gf_ops/containers'%(modd_str))
 import gf_os_docker
 import gf_containers
 
-sys.path.append('%s/../../py/gf_aws'%(modd_str))
+sys.path.append('%s/../../py/gf_extern_services/gf_aws'%(modd_str))
 import gf_os_aws_creds
 
 #--------------------------------------------------
