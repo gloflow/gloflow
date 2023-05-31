@@ -363,15 +363,8 @@ func ErrorInitSentry(pSentryEndpointStr string,
 
 		EnableTracing: true,
 		TracesSampler: sentry.TracesSampler(func(pSamplingCtx sentry.SamplingContext) float64 {
-
-			// Span is the building block of a Sentry transaction
-			txRootSpan := sentry.TransactionFromContext(pSamplingCtx.Span.Context())
-			transactionNameStr := txRootSpan.Name
-
-			// hub                := sentry.GetHubFromContext(pCtx.Span.Context())
-			// transactionNameStr := hub.Scope().Transaction()
-			// fmt.Printf("SENTRY TX - %s\n", transactionNameStr)
-
+			
+			transactionNameStr := pSamplingCtx.Span.Name
 			if sampleRateF, ok := pTransactionsTracingRateMap[transactionNameStr]; ok {
 				return sampleRateF
 			}
