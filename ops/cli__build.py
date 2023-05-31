@@ -46,7 +46,7 @@ import gf_containers
 sys.path.append("%s/../py/gf_ops/gf_builder"%(modd_str))
 import gf_builder_ops
 
-sys.path.append("%s/../py/gf_aws"%(modd_str))
+sys.path.append("%s/../py/gf_extern_services/gf_aws"%(modd_str))
 import gf_aws_s3
 
 #--------------------------------------------------
