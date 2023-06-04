@@ -50,40 +50,11 @@ $(document).ready(()=>{
 	$("time.timeago").timeago();
 
 	init(log_fun);
-	// init_remote(log_fun);
 });
 
 //--------------------------------------------------------
-/*export function init_remote(p_log_fun) {
-
-	init(remote_register_user_email, p_log_fun);
-	//--------------------------------------------------------
-	function remote_register_user_email(p_inputed_email_str :string,
-		p_on_complete_fun,
-		p_log_fun) {
-		
-		const url_str       = "/landing/register_invite_email";
-		const data_args_map = {
-			"email_str": p_inputed_email_str
-		};
-		
-		$.ajax({
-			"url":         url_str,
-			"type":        "POST",
-			"data":        JSON.stringify(data_args_map),
-			"contentType": "application/json",
-			"success":     (p_data_map)=>{
-	     		p_on_complete_fun("success", p_data_map);
-			}
-		});
-	}
-
-	//--------------------------------------------------------
-}*/
-
-//--------------------------------------------------------
 // INIT
-function init(p_log_fun) {
+export function init(p_log_fun) {
 	
 	//---------------------
 	// META
@@ -212,6 +183,7 @@ function posts_init() {
 }
 
 //--------------------------------------------------------
+/*
 function load_static_data(p_log_fun) :Object[] {
 	
 	const featured_elements_infos_lst :Object[] = []; 
@@ -234,3 +206,4 @@ function load_static_data(p_log_fun) :Object[] {
 
 	return featured_elements_infos_lst;
 }
+*/
