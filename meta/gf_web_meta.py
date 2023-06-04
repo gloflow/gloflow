@@ -23,8 +23,8 @@ def get():
 
 	gf_landing_page__pages_map = {
 		"gf_landing_page": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_landing_page"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html"%(modd_str),
+			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_landing_page",
+			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_landing_page/templates/gf_landing_page/gf_landing_page.html",
 			"url_base_str":       "/landing/static",
 		}
 	}

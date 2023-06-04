@@ -93,7 +93,8 @@ def get_self_ip():
 			cmd_str = "curl http://ipinfo.io"
 			print(cmd_str)
 			
-			r           = delegator.run(cmd_str)
+			r = delegator.run(cmd_str)
+
 			self_ip_str = json.loads(r.out)["ip"]
 
 			f=open("self_ip_cache.txt", "w")

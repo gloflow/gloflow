@@ -12,7 +12,8 @@ RUN apt-get update
 RUN apt-get install -y \
     python3 \
     python3-pip \
-    wget
+    wget \
+    curl
 
 # used for container building, since gf_builder_go container
 # is used for container building as well. if a different container is used

@@ -1,15 +1,14 @@
-# gloflow-web3-monitor
-monitoring of the Web3 networks (Ethereum, IPFS, etc.)
+### gloflow-web3-monitor
+- monitoring of the Web3 networks (Ethereum, IPFS, etc.)
+- The goal is to create a monitoring tool for the Ethereum mainnet.  
+- Main gf-web3-monitor server manages the spawning of modified GF go-ethereum nodes that connect into the mainnet. These nodes are modified to contain custom instrumentation, and are sending data to a common queue system that is shared with the gf-web3-monitor server. The main API server is a consumer, and the GF go-ethereum node is a producer.  
 
+- pre-built container is available in a Dockerhub repo - `glofloworg/gf_web3_monitor`
 
+```bash
+docker run glofloworg/gf_web3_monitor
+```  
 
-
-
-The goal is to create a monitoring tool for the Ethereum mainnet.  
-Main gf-web3-monitor server manages the spawning of modified GF go-ethereum nodes that connect into the mainnet. These nodes are modified to contain custom instrumentation, and are sending data to a common queue system that is shared with the gf-web3-monitor server. The main API server is a consumer, and the GF go-ethereum node is a producer.  
-
-pre-built container is available in a Dockerhub repo - glofloworg/gf_web3_monitor  
-`docker run glofloworg/gf_web3_monitor`  
 ENV vars for the container are:  
 - `GF_PORT`
 - `GF_PORT_METRICS`
@@ -34,11 +33,9 @@ Agent usually running on the same host as an Ethereum node (geth).
 - in the future will contain functions as well that will assume that they're running on the same host as the Eth node.
 - ideally it will run and query a full archive geth node to get all of the expected data (tx traces, acc balances, etc.)
 
+---
 
-
-
-
-GO TESTS:
+### Go tests
 ```bash
 
 # working dir - ./py/ops/
@@ -74,9 +71,9 @@ $ go test -v -run Test__blocks
 
 ```
 
+---
 
-
-PY TESTS:
+### Py tests
 ```bash
 
 # working dir - ./py/ops/
@@ -87,3 +84,11 @@ $ python3 gf_builder_cli.py -run=test_py
 
 ```
 
+---
+
+### Run service
+```bash
+$ export AWS_ACCESS_KEY_ID=...
+$ export AWS_SECRET_ACCESS_KEY=...
+$ AWS_REGION=us-east-1 GF_AWS_SQS_QUEUE=... GF_WORKERS_HOSTS=... ./gf_eth_monitor start service
+```
