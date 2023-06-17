@@ -390,7 +390,7 @@ def build_image(p_image_names_lst,
 
 	p = subprocess.Popen(c_str, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=1)
 	
-	image_id_str = ""
+	# image_id_str = ""
 	for line in iter(p.stdout.readline, b''):	
 		line_str = line.strip().decode("utf-8")
 		
@@ -399,13 +399,11 @@ def build_image(p_image_names_lst,
 		# IMPORTANT!! - failure to reach Dcoerk daemon should always exit. its not a expected failure.
 		if "Cannot connect to the Docker daemon" in line_str:
 			exit(1)
-		
-		# # CONTAINER_STARTED
-		# if line_str.startswith("Successfully built"):
-		#
-		# 	image_id_str = get_image_id_from_line(line_str)
-		# 	print("image ID - %s"%(image_id_str))
 	
+	for line in iter(p.stderr.readline, b''):	
+		line_str = line.strip().decode("utf-8")
+		
+		print(line_str)
 	
 	p.communicate()
 	exit_code_int = p.returncode
@@ -416,6 +414,7 @@ def build_image(p_image_names_lst,
 	#               in other scenarious its acceptable for this command to fail, and we want the caller
 	#               to keep executing.
 	if not exit_code_int == 0:
+		print("build failed - non-zero exit code returned...")
 		if p_exit_on_fail_bool:
 			exit(exit_code_int)
 
