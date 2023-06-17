@@ -32,25 +32,32 @@ import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";
 declare var gf_upload__init;
 
 //--------------------------------------------------------
-$(document).ready(()=>{
-	//-------------------------------------------------
-	function log_fun(p_g, p_m) {
-		var msg_str = p_g+':'+p_m;
-		switch (p_g) {
-			case "INFO":
-				console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
-				break;
-			case "FUN_ENTER":
-				console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
-				break;
+// check if this file is running in global scope, and only if it is should the
+// document.ready() function be called.
+// this is needed in case that this module is imported in other external parent TS modules,
+// where init() is called, but where we dont want this document.ready() function to be called
+// (where there might be other parent document.ready() calls)
+if (window === this) {
+	$(document).ready(()=>{
+		//-------------------------------------------------
+		function log_fun(p_g, p_m) {
+			var msg_str = p_g+':'+p_m;
+			switch (p_g) {
+				case "INFO":
+					console.log("%cINFO"+":"+"%c"+p_m, "color:green; background-color:#ACCFAC;", "background-color:#ACCFAC;");
+					break;
+				case "FUN_ENTER":
+					console.log("%cFUN_ENTER"+":"+"%c"+p_m, "color:yellow; background-color:lightgray", "background-color:lightgray");
+					break;
+			}
 		}
-	}
 
-	//-------------------------------------------------
-	$("time.timeago").timeago();
+		//-------------------------------------------------
+		$("time.timeago").timeago();
 
-	init(log_fun);
-});
+		init(log_fun);
+	});
+}
 
 //--------------------------------------------------------
 // INIT
