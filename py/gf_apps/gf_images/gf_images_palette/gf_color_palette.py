@@ -19,7 +19,6 @@ import os
 import argparse
 import json
 from colored import fg, bg, attr
-
 import numpy as np
 from PIL import Image, ImageDraw
 

@@ -21,7 +21,7 @@ modd_str = os.path.abspath(os.path.dirname(__file__))
 import pandas as pd
 import matplotlib.pyplot as plt 
 import boto3
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 
 sys.path.append("%s/../../../gf_aws"%(modd_str))
 import gf_aws_s3

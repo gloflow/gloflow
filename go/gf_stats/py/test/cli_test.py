@@ -18,7 +18,7 @@
 import os,sys
 cwd_str = os.path.abspath(os.path.dirname(__file__))
 
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 
 sys.path.append('%s/..'%(cwd_str))
 import cli_stats

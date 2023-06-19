@@ -4,7 +4,7 @@ clint
 pymongo
 boto3
 bs4
-colored
+colored==1.4.4
 delegator-py
 Pillow
 numpy

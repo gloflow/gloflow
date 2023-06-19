@@ -21,7 +21,7 @@ cwd_str = os.path.abspath(os.path.dirname(__file__))
 import importlib
 import argparse
 
-from colored import fg,bg,attr
+from colored import fg, bg, attr
 import pymongo
 import delegator
 
