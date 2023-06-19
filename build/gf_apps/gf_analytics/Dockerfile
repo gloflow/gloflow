@@ -48,7 +48,7 @@ RUN python3 -mpip install --upgrade matplotlib
 RUN python3 -mpip install pandas
 RUN python3 -mpip install pymongo
 RUN python3 -mpip install delegator-py
-RUN python3 -mpip install colored
+RUN python3 -mpip install colored==1.4.4
 
 #------------
 # SUPERVISOR

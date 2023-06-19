@@ -13,7 +13,7 @@ RUN apt-get update && \
 # PY_DEPENDENCIES
 RUN pip3 install \
     delegator.py \
-    colored \
+    colored==1.4.4 \
     beautifulsoup4 \
     requests \
     boto3
