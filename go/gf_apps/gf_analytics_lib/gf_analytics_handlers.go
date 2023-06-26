@@ -36,14 +36,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_core.GFerror {
 
 	//---------------------
-	// TEMPLATES
-
-	gf_templates, gfErr := tmplLoad(pTemplatesPathsMap, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
-
-	//---------------------
 	// METRICS
 	handlers_endpoints_lst := []string{
 		"/v1/a/ue",
@@ -114,30 +106,6 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		true, // pStoreRunBool
 		nil,
 		pRuntimeSys)
-
-	//--------------
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/v1/a/dashboard",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-			
-		if pReq.Method == "GET" {
-			
-			//--------------------
-			// RENDER TEMPLATE
-			gfErr = dashboardRenderTemplate(gf_templates.dashboard__tmpl,
-				gf_templates.dashboard__subtemplates_names_lst,
-				pResp,
-				pRuntimeSys)
-			if gfErr != nil {
-				return nil, gfErr
-			}
-		}
-		return nil, nil
-	},
-	pMux,
-	metrics,
-	true, // pStoreRunBool
-	nil,
-	pRuntimeSys)
 
 	//--------------
 	return nil

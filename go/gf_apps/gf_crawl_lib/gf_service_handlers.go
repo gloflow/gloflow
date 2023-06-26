@@ -33,17 +33,9 @@ func initHandlers(pMediaDomainStr string,
 	p_crawled_images_s3_bucket_name_str string,
 	p_gf_images_s3_bucket_name_str      string,
 	p_templates_paths_map               map[string]string,
-	pHTTPmux                          *http.ServeMux,
+	pHTTPmux                            *http.ServeMux,
 	pRuntime                            *gf_crawl_core.GFcrawlerRuntime,
 	pRuntimeSys                         *gf_core.RuntimeSys) *gf_core.GFerror {
-	
-	//---------------------
-	// TEMPLATES
-
-	gfTemplates, gfErr := tmpl__load(p_templates_paths_map, pRuntimeSys)
-	if gfErr != nil {
-		return gfErr
-	}
 	
 	//----------------
 	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/image/recent",
@@ -155,31 +147,6 @@ func initHandlers(pMediaDomainStr string,
 		pRuntimeSys)
 
 	//----------------
-	gf_rpc_lib.CreateHandlerHTTPwithMux("/a/crawl/crawl_dashboard",
-		func(pCtx context.Context, pResp http.ResponseWriter, pReq *http.Request) (map[string]interface{}, *gf_core.GFerror) {
-
-			if pReq.Method == "GET" {
-
-				//--------------------
-				// RENDER TEMPLATE
-				gfErr := dashboard__render_template(gfTemplates.dashboard__tmpl,
-					gfTemplates.dashboard__subtemplates_names_lst,
-					pResp,
-					pRuntimeSys)
-				if gfErr != nil {
-					return nil, gfErr
-				}
-				return nil, nil
-			}
-			return nil, nil
-		},
-		pHTTPmux,
-		nil,
-		true, // pStoreRunBool
-		nil,
-		pRuntimeSys)
-	
-	//--------------
 
 	return nil
 }
