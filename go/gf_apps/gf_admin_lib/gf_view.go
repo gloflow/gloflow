@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_admin_lib
 
 import (
+	"fmt"
 	"bytes"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -36,23 +37,38 @@ type gfTemplates struct {
 
 //------------------------------------------------
 
-func viewRenderTemplateLogin(pMFAconfirmBool bool,
+func viewRenderTemplateLogin(pAuthSubsystemTypeStr string,
+	pJWTvalidationPublicKeyPEMstr string,
+	pMFAconfirmBool       bool,
 	pTemplate             *template.Template,
 	pSubtemplatesNamesLst []string,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 	
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
+
+	shorthandPubKeyFun := func() string {
+		lenInt := len(pJWTvalidationPublicKeyPEMstr)
+		firstStr := pJWTvalidationPublicKeyPEMstr[:4]        // first 4 characters
+		lastStr  := pJWTvalidationPublicKeyPEMstr[lenInt-4:] // last 4 characters
+		transformedStr := fmt.Sprintf("%s...%s", firstStr, lastStr)
+		return transformedStr
+	}
+
 	type templateData struct {
-		MFA_confirm_bool bool
-		Sys_release_info gf_core.SysReleaseInfo
-		Is_subtmpl_def   func(string) bool // used inside the main_template to check if the subtemplate is defined
+		AuthSubsystemTypeStr               string
+		JWTvalidationPublicKeyShorthandStr string
+		MFA_confirm_bool     bool
+		Sys_release_info     gf_core.SysReleaseInfo
+		Is_subtmpl_def       func(string) bool // used inside the main_template to check if the subtemplate is defined
 	}
 
 	buff := new(bytes.Buffer)
 	err := pTemplate.Execute(buff, templateData{
-		MFA_confirm_bool: pMFAconfirmBool,
-		Sys_release_info: sysReleaseInfo,
+		AuthSubsystemTypeStr:               pAuthSubsystemTypeStr,
+		JWTvalidationPublicKeyShorthandStr: shorthandPubKeyFun(),
+		MFA_confirm_bool:                   pMFAconfirmBool,
+		Sys_release_info:                   sysReleaseInfo,
 		
 		//-------------------------------------------------
 		// IS_SUBTEMPLATE_DEFINED

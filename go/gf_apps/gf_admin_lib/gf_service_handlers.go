@@ -112,9 +112,11 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 
 				//---------------------
 
-				templateRenderedStr, gfErr := PipelineRenderLogin(mfaConfirmBool,
+				templateRenderedStr, gfErr := PipelineRenderLogin(pServiceInfo.AuthSubsystemTypeStr,
+					mfaConfirmBool,
 					gfTemplates.loginTmpl,
 					gfTemplates.dashboardSubtemplatesNamesLst,
+					pKeyServer,
 					pCtx,
 					pRuntimeSys)
 				if gfErr != nil {

@@ -16,6 +16,11 @@
 		</div>
         <div class="label">Welcome to Admin LOGIN</div>
     </div>
+
+	<div id="sys_debug_info">
+		<div id="auth_subsystem_type">{{- .AuthSubsystemTypeStr }}</div>
+		<div id="jwt_validation_pub_key">{{- .JWTvalidationPublicKeyShorthandStr }}</div>
+	</div>
 	
 	{{ if .MFA_confirm_bool }}
 	<div id="identiy_mfa_confirm">

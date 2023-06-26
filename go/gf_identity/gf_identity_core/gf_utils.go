@@ -64,6 +64,14 @@ func GetUserIDfromCtx(pCtx context.Context) (gf_core.GF_ID, bool) {
 //---------------------------------------------------
 // HTTP
 //---------------------------------------------------
+// GET_AUTH_SUBSYSTEM_TYPE
+
+func HTTPgetAuthSubsystemType(pReq *http.Request) string {
+	authSubsystemTypeStr := pReq.Header.Get("gf_auth_type")
+	return authSubsystemTypeStr
+}
+
+//---------------------------------------------------
 
 func HTTPgetUserStdInput(pCtx context.Context,
 	pReq        *http.Request,

@@ -67,7 +67,7 @@ type GFkeyServerInfo struct {
 // CLIENT
 //---------------------------------------------------
 
-func ksClientJWTgetValidationKey(pAuthSubsystemTypeStr string,
+func KSclientJWTgetValidationKey(pAuthSubsystemTypeStr string,
 	pKeyServerInfo *GFkeyServerInfo,
 	pRuntimeSys    *gf_core.RuntimeSys) (*rsa.PublicKey, *gf_core.GFerror) {
 

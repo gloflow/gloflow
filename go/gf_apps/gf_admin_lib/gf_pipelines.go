@@ -23,17 +23,32 @@ import (
 	"text/template"
 	"context"
 	"github.com/gloflow/gloflow/go/gf_core"
+	"github.com/gloflow/gloflow/go/gf_identity/gf_identity_core"
 )
 
 //------------------------------------------------
 
-func PipelineRenderLogin(pMFAconfirmBool bool,
+func PipelineRenderLogin(pAuthSubsystemTypeStr string,
+	pMFAconfirmBool       bool,
 	pTmpl                 *template.Template,
 	pSubtemplatesNamesLst []string,
+	pKeyServerInfo        *gf_identity_core.GFkeyServerInfo,
 	pCtx                  context.Context,
 	pRuntimeSys           *gf_core.RuntimeSys) (string, *gf_core.GFerror) {
 
-	templateRenderedStr, gfErr := viewRenderTemplateLogin(pMFAconfirmBool,
+	//--------------------
+	// KEY_SERVER
+	publicKey, gfErr := gf_identity_core.KSclientJWTgetValidationKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
+	if gfErr != nil {
+		return "", gfErr
+	}
+	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(publicKey)
+
+	//--------------------
+	
+	templateRenderedStr, gfErr := viewRenderTemplateLogin(pAuthSubsystemTypeStr,
+		pubKeyPEMstr,
+		pMFAconfirmBool,
 		pTmpl,
 		pSubtemplatesNamesLst,
 		pRuntimeSys)
