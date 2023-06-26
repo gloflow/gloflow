@@ -17,14 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
+///<reference path="../../d/jquery.d.ts" />
 
 
 
 import * as gf_identity_eth      from "./gf_identity_eth";
 import * as gf_identity_userpass from "./gf_identity_userpass";
 import * as gf_identity_http     from "./gf_identity_http";
-import * as gf_utils             from "./../../../gf_core/ts/gf_utils";
+import * as gf_utils             from "../../gf_core/ts/gf_utils";
 
 declare const window: any;
 declare var Web3;

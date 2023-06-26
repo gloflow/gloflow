@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_identity       from "./../../gf_identity/ts/gf_identity";
-import * as gf_identity_http  from "./../../gf_identity/ts/gf_identity_http";
+import * as gf_identity       from "./../../../gf_identity/ts/gf_identity";
+import * as gf_identity_http  from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_images         from "./gf_images";
 import * as gf_procedural_art from "./procedural_art/gf_procedural_art";
 import * as gf_image_colors   from "./../../../gf_core/ts/gf_image_colors";

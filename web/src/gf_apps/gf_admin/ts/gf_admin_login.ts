@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
+///<reference path="./../../../d/jquery.d.ts" />
 
-import * as gf_identity      from "./../../gf_identity/ts/gf_identity";
-import * as gf_identity_http from "./../../gf_identity/ts/gf_identity_http";
-import * as gf_identity_mfa  from "./../../gf_identity/ts/gf_identity_mfa";
+import * as gf_identity      from "./../../../gf_identity/ts/gf_identity";
+import * as gf_identity_http from "./../../../gf_identity/ts/gf_identity_http";
+import * as gf_identity_mfa  from "./../../../gf_identity/ts/gf_identity_mfa";
 
 //--------------------------------------------------------
 $(document).ready(()=>{

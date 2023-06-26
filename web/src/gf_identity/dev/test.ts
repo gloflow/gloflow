@@ -2,9 +2,9 @@
 
 
 
-///<reference path="../../../d/jquery.d.ts" />
+///<reference path="../../d/jquery.d.ts" />
 
-import * as gf_identity from "./../ts/gf_identity";
+import * as gf_identity from "../ts/gf_identity";
 
 //--------------------------------------------------------
 $(document).ready(()=>{

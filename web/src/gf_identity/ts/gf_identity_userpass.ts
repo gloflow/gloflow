@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-///<reference path="../../../d/jquery.d.ts" />
-import * as gf_utils from "./../../../gf_core/ts/gf_utils";
+///<reference path="../../d/jquery.d.ts" />
+import * as gf_utils from "../../gf_core/ts/gf_utils";
 
 //-------------------------------------------------
 export async function user_auth_pipeline(p_notifications_meta_map,

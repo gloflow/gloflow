@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../../d/jquery.d.ts" />
 
-import * as gf_identity_http from "../../gf_identity/ts/gf_identity_http";
+import * as gf_identity_http from "./../../../gf_identity/ts/gf_identity_http";
 import * as gf_admin         from "./gf_admin";
 
 //--------------------------------------------------------

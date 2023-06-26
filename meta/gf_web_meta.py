@@ -39,16 +39,6 @@ def get():
 		},
 
 		#-------------
-		# IMAGES_DASHBOARD
-		"gf_images_dashboard": {
-			"build_dir_str":      f"{modd_str}/../web/build/gf_apps/gf_images",
-			"main_html_path_str": f"{modd_str}/../web/src/gf_apps/gf_images/templates/gf_images_dashboard/gf_images_dashboard.html",
-			"url_base_str":       "/images/static",
-		},
-
-		#-------------
-
-		#-------------
 		# PAGE_PICKER
 		# FIX!! - figure out some general solution for build_dir (not gf_images), since its not just images that
 		#         are manipulated with this bookmarklet but also bookmarks/tags/etc.
@@ -91,21 +81,6 @@ def get():
 	}
 
 	gf_analytics__pages_map = {
-		#-------------
-		# DASHBOARD
-		"gf_analytics_dashboard":{
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_analytics/templates/gf_analytics_dashboard/gf_analytics_dashboard.html"%(modd_str),
-			"url_base_str":       "/posts/static",
-		},
-
-		#-------------
-		# CRAWL_DASHBOARD
-		"gf_crawl_dashboard": {
-			"build_dir_str":      "%s/../web/build/gf_apps/gf_analytics"%(modd_str),
-			"main_html_path_str": "%s/../web/src/gf_apps/gf_crawl_lib/templates/gf_crawl_dashboard/gf_crawl_dashboard.html"%(modd_str),
-			"url_base_str":       "/a/static",
-		},
 
 		#-------------
 		# DOMAINS_BROWSER
