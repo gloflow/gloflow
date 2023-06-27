@@ -22,6 +22,7 @@ package gf_identity
 import (
 	"fmt"
 	"testing"
+	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_extern_services/gf_auth0"
 	// "github.com/davecgh/go-spew/spew"
 )
@@ -43,8 +44,13 @@ func TestAuth0(pTest *testing.T) {
 		pTest.Fail()
 	}
 
-	fmt.Println("Auth0 keys", auth0keyIDstr, auth0publicKey)
-	
+	pubKeyPEMstr := gf_core.CryptoConvertPubKeyToPEM(auth0publicKey)
+
+	runtimeSys.LogNewFun("INFO", "Auth0 keys...", map[string]interface{}{
+		"auth0_key_id":  auth0keyIDstr,
+		"auth0_pub_key": auth0publicKey,
+		"auth0_pub_key_pem": pubKeyPEMstr,
+	})
 
 
 }

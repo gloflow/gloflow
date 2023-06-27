@@ -93,7 +93,15 @@ func Init(pRuntimeSys *gf_core.RuntimeSys) (*GFauthenticator, *GFconfig, *gf_cor
 
 	pRuntimeSys.LogNewFun("INFO", "initializing Auth0...", nil)
 
+	//-------------------
+	// CONFIG
 	config := LoadConfig(pRuntimeSys)
+	pRuntimeSys.LogNewFun("INFO", "Auth0 config loaded...",
+		map[string]interface{}{
+			"auth0_app_domain": config.Auth0domainStr,
+		})
+
+	//-------------------
 	
 	provider, err := oidc.NewProvider(
 		context.Background(),

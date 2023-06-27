@@ -22,6 +22,7 @@ package gf_admin_lib
 import (
 	"fmt"
 	"bytes"
+	"strings"
 	"text/template"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
@@ -46,14 +47,23 @@ func viewRenderTemplateLogin(pAuthSubsystemTypeStr string,
 	
 	sysReleaseInfo := gf_core.GetSysReleseInfo(pRuntimeSys)
 	
-
+	//------------------------------------------------
 	shorthandPubKeyFun := func() string {
 		lenInt := len(pJWTvalidationPublicKeyPEMstr)
-		firstStr := pJWTvalidationPublicKeyPEMstr[:4]        // first 4 characters
-		lastStr  := pJWTvalidationPublicKeyPEMstr[lenInt-4:] // last 4 characters
+
+		// PEM strings start and end with
+		// "-----BEGIN RSA PUBLIC KEY-----" and "-----END RSA PUBLIC KEY-----"
+		linesLst   := strings.Split(pJWTvalidationPublicKeyPEMstr, "\n")
+		linesLst    = linesLst[1 : len(linesLst)-1]
+		PEMbodyStr := strings.Join(linesLst, "\n")
+
+		firstStr := PEMbodyStr[:4]            // first 4 characters
+		lastStr  := PEMbodyStr[(lenInt-1)-4:] // last 4 characters
 		transformedStr := fmt.Sprintf("%s...%s", firstStr, lastStr)
 		return transformedStr
 	}
+
+	//------------------------------------------------
 
 	type templateData struct {
 		AuthSubsystemTypeStr               string
