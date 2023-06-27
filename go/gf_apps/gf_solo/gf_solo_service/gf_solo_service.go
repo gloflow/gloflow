@@ -136,6 +136,7 @@ func Run(pConfig *GFconfig,
 
 		adminServiceInfo := &gf_admin_lib.GFserviceInfo{
 			NameStr:                           "gf_admin",
+			AuthSubsystemTypeStr:              pConfig.AuthSubsystemTypeStr,
 			AdminEmailStr:                     pConfig.AdminEmailStr,
 			EnableEventsAppBool:               true,
 			EnableUserCredsInSecretsStoreBool: true,

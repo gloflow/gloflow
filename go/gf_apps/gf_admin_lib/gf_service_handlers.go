@@ -67,8 +67,8 @@ func initHandlers(pTemplatesPathsMap map[string]string,
 		StoreRunBool:    true,
 		SentryHub:       pLocalHub,
 		AuthSubsystemTypeStr: pServiceInfo.AuthSubsystemTypeStr,
-		AuthLoginURLstr: "/v1/admin/login_ui",
-		AuthKeyServer:   pKeyServer,
+		AuthLoginURLstr:      "/v1/admin/login_ui",
+		AuthKeyServer:        pKeyServer,
 	}
 
 	//---------------------
