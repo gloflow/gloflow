@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ///<reference path="../../d/jquery.d.ts" />
 
-import * as gf_identity_http from "./gf_identity_http";
-import * as gf_ops           from "./gf_ops";
+import * as gf_ops from "./gf_ops";
+// import * as gf_identity_http from "./gf_identity_http";
 
 declare const window: any;
 declare var Web3;

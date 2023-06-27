@@ -24,6 +24,28 @@
 }
 
 /*------------------------------------------------------------*/
+/*AUTH0_PICK_DIALOG*/
+
+#identity #auth0_pick_dialog {
+    top: -2px;
+    right: 0px;
+    position: absolute;
+
+    width: 184px;
+    height: 14px;
+    padding-top: 9px;
+    padding: 7px;
+    background-color: white;
+    text-align: center;
+    font-size: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+#identity #auth0_pick_dialog:hover {
+    background-color: rgb(141, 141, 141);
+}
+
+/*------------------------------------------------------------*/
 /*WALLET_PICK_DIALOG*/
 #identity #wallet_pick_dialog {
     position: absolute;
@@ -66,9 +88,9 @@
 }
 
 /*------------------------------------------------------------*/
-/*USER_AND_PASS_PICK_DIALOG*/
-
-#identity #user_and_pass_pick_dialog {
+/*INTERNAL_USER_AND_PASS_PICK_DIALOG*/
+/*
+#identity #internal_username_and_pass_pick_dialog {
     top: -2px;
     right: 0px;
     position: absolute;
@@ -83,9 +105,10 @@
     cursor: pointer;
     user-select: none;
 }
-#identity #user_and_pass_pick_dialog:hover {
+#identity #internal_username_and_pass_pick_dialog:hover {
     background-color: rgb(141, 141, 141);
 }
+*/
 
 /*------------------------------------------------------------*/
 /*USER_AND_PASS_DIALOG*/
