@@ -85,7 +85,8 @@ func TestCreateAndLoginNewUser(pTest *testing.T,
 
 //-------------------------------------------------
 
-func TestStartService(pPortInt int,
+func TestStartService(pAuthSubsystemTypeStr string,
+	pPortInt    int,
 	pRuntimeSys *gf_core.RuntimeSys) *gf_identity_core.GFkeyServerInfo {
 
 	serviceInitCh := make(chan bool)
@@ -96,14 +97,15 @@ func TestStartService(pPortInt int,
 
 		serviceInfo := &gf_identity_core.GFserviceInfo{
 
-			AuthSubsystemTypeStr: "userpass",
+			AuthSubsystemTypeStr: pAuthSubsystemTypeStr, // "userpass",
 			
 			// IMPORTANT!! - durring testing dont send emails
 			EnableEmailBool: false,
 		}
 
 		spew.Dump(serviceInfo)
-		
+		// spew.Dump(pRuntimeSys)
+
 		var gfErr *gf_core.GFerror
 		keyServer, gfErr = InitService(HTTPmux, serviceInfo, pRuntimeSys)
 		if gfErr != nil {
@@ -121,14 +123,15 @@ func TestStartService(pPortInt int,
 
 //-------------------------------------------------
 
-func Tinit() *gf_core.RuntimeSys {
+func Tinit(pServiceNameStr string,
+	pMongoHostStr string) *gf_core.RuntimeSys {
 
-	testMongodbHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	testMongodbHostStr   := pMongoHostStr // cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
 	testMongodbDBnameStr := "gf_tests"
 	testMongodbURLstr    := fmt.Sprintf("mongodb://%s", testMongodbHostStr)
 
 	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_identity_tests",
+		ServiceNameStr: pServiceNameStr, // "gf_identity_tests",
 		LogFun:         logFun,
 		LogNewFun:      logNewFun,
 		Validator:      gf_core.ValidateInit(),

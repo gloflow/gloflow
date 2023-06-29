@@ -49,13 +49,17 @@ func viewRenderTemplateLogin(pAuthSubsystemTypeStr string,
 	
 	//------------------------------------------------
 	shorthandPubKeyFun := func() string {
-		lenInt := len(pJWTvalidationPublicKeyPEMstr)
+		
 
 		// PEM strings start and end with
 		// "-----BEGIN RSA PUBLIC KEY-----" and "-----END RSA PUBLIC KEY-----"
-		linesLst   := strings.Split(pJWTvalidationPublicKeyPEMstr, "\n")
+		PEMcleanStr := strings.Trim(pJWTvalidationPublicKeyPEMstr, "\n")
+		linesLst   := strings.Split(PEMcleanStr, "\n")
 		linesLst    = linesLst[1 : len(linesLst)-1]
 		PEMbodyStr := strings.Join(linesLst, "\n")
+		lenInt := len(PEMbodyStr)
+
+		fmt.Println(PEMbodyStr)
 
 		firstStr := PEMbodyStr[:4]            // first 4 characters
 		lastStr  := PEMbodyStr[(lenInt-1)-4:] // last 4 characters

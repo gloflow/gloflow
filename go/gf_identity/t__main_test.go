@@ -31,10 +31,14 @@ func TestMain(m *testing.M) {
 
 	logFun, logNewFun = gf_core.LogsInitNew(true, "debug")
 	cliArgsMap = CLIparseArgs(logFun)
-	runtimeSys := Tinit()
 
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
+
+	authSubsystemTypeStr := "userpass"
 	portInt := 2000
-	TestStartService(portInt, runtimeSys)
+	TestStartService(authSubsystemTypeStr, portInt, runtimeSys)
 
 	v := m.Run()
 	os.Exit(v)

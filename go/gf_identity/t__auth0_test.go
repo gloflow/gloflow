@@ -33,7 +33,9 @@ func TestAuth0(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_AUTH0 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtimeSys := Tinit()
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 
 
 

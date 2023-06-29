@@ -38,7 +38,9 @@ func PipelineRenderLogin(pAuthSubsystemTypeStr string,
 
 	//--------------------
 	// KEY_SERVER
-	publicKey, gfErr := gf_identity_core.KSclientJWTgetValidationKey(pAuthSubsystemTypeStr, pKeyServerInfo, pRuntimeSys)
+	publicKey, gfErr := gf_identity_core.KSclientJWTgetValidationKey(pAuthSubsystemTypeStr,
+		pKeyServerInfo,
+		pRuntimeSys)
 	if gfErr != nil {
 		return "", gfErr
 	}

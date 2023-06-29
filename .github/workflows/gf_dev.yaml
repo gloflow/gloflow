@@ -110,7 +110,7 @@ jobs:
       - name: test gf_admin
         run: |
           cd /home/gf/go/gf_apps/gf_admin_lib
-          go test -v
+          go test -v -mongodb_host=mongo
 
       # GF_IMAGES_CORE
       - name: test gf_images_core

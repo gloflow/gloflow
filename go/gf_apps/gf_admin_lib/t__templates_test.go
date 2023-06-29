@@ -22,19 +22,22 @@ package gf_admin_lib
 import (
 	"os"
 	"fmt"
+	"context"
 	"testing"
 	"github.com/gloflow/gloflow/go/gf_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
+	"github.com/gloflow/gloflow/go/gf_identity"
 	// "github.com/davecgh/go-spew/spew"
 )
 
 var logFun func(string,string)
+var logNewFun gf_core.GFlogFun
 var cliArgsMap map[string]interface{}
 
 //---------------------------------------------------
 
 func TestMain(m *testing.M) {
-	logFun, _  = gf_core.LogsInit()
+	logFun, logNewFun = gf_core.LogsInit()
 	cliArgsMap = gf_images_core.CLIparseArgs(logFun)
 	v := m.Run()
 	os.Exit(v)
@@ -44,23 +47,44 @@ func TestMain(m *testing.M) {
 
 func TestTemplates(pTest *testing.T) {
 
-	runtimeSys := &gf_core.RuntimeSys{
-		ServiceNameStr: "gf_admin_test",
-		LogFun:         logFun,
-	}
+	serviceNameStr := "gf_admin_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys   := gf_identity.Tinit(serviceNameStr, mongoHostStr)
+	runtimeSys.LogFun    = logFun
+	runtimeSys.LogNewFun = logNewFun
+
+	authSubsystemTypeStr := "auth0"
+	portInt := 3000
+	keyServer := gf_identity.TestStartService(authSubsystemTypeStr, portInt, runtimeSys) 
 
 	// TEMPLATES
 	templatesPathsMap := map[string]string{
 		"gf_admin_login":     "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_login/gf_admin_login.html",
 		"gf_admin_dashboard": "./../../../web/src/gf_apps/gf_admin/templates/gf_admin_dashboard/gf_admin_dashboard.html",
-	}
+	}			
 	
 	templates, gfErr := templatesLoad(templatesPathsMap, runtimeSys)
 	if gfErr != nil {
 		pTest.Fail()
 	}
 
-	templateRenderedStr, gfErr := viewRenderTemplateDashboard(templates.dashboardTmpl,
+	//------------------
+	MFAconfirmBool := false
+	templateRenderedStr, gfErr := PipelineRenderLogin(authSubsystemTypeStr,
+		MFAconfirmBool,
+		templates.loginTmpl,
+		templates.loginSubtemplatesNamesLst,
+		keyServer,
+		context.Background(),
+		runtimeSys)
+	if gfErr != nil {
+		pTest.Fail()
+	}
+
+	fmt.Println(templateRenderedStr)
+
+	//------------------
+	templateRenderedStr, gfErr = viewRenderTemplateDashboard(templates.dashboardTmpl,
 		templates.dashboardSubtemplatesNamesLst,
 		runtimeSys)
 	if gfErr != nil {
@@ -68,4 +92,6 @@ func TestTemplates(pTest *testing.T) {
 	}
 
 	fmt.Println(templateRenderedStr)
+
+	//------------------
 }

@@ -37,7 +37,9 @@ import (
 
 func TestUsersHTTPeth(pTest *testing.T) {
 
-	runtimeSys := Tinit()
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_HTTP_ETH >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
 	testPortInt := 2000
@@ -235,7 +237,9 @@ func TestUsersHTTPeth(pTest *testing.T) {
 
 func TestUsersETHunit(pTest *testing.T) {
 
-	runtimeSys := Tinit()
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 	runtimeSys.LogNewFun("INFO", "TEST_USERS_ETH_UNIT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", nil)
 
 	

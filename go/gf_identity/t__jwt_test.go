@@ -35,7 +35,9 @@ func TestJWT(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_JWT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtimeSys := Tinit()
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 	testJWTmain(pTest, runtimeSys)
 }
 

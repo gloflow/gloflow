@@ -38,7 +38,11 @@ func TesUsersHTTPuserpass(pTest *testing.T) {
 
 	testPortInt := 2000
 	ctx         := context.Background()
-	runtimeSys  := Tinit()
+
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+
+	runtimeSys  := Tinit(serviceNameStr, mongoHostStr)
 	HTTPagent   := gorequest.New()
 
 	testUserNameStr := "ivan_t"

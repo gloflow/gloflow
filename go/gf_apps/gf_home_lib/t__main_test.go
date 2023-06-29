@@ -49,8 +49,10 @@ func TestMain(m *testing.M) {
 	}
 
 	// GF_IDENTITY_SERVICE
+	authSubsystemTypeStr := "userpass"
 	testIdentityServicePortInt := 2001
-	keyServer := gf_identity.TestStartService(testIdentityServicePortInt,
+	keyServer := gf_identity.TestStartService(authSubsystemTypeStr,
+		testIdentityServicePortInt,
 		runtimeSys)
 
 	// GF_HOME_SERVICE

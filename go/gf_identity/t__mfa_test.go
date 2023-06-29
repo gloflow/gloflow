@@ -31,7 +31,9 @@ func TestMFA(pTest *testing.T) {
 
 	fmt.Println(" TEST__IDENTITY_MFA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
-	runtimeSys := Tinit()
+	serviceNameStr := "gf_identity_test"
+	mongoHostStr   := cliArgsMap["mongodb_host_str"].(string) // "127.0.0.1"
+	runtimeSys := Tinit(serviceNameStr, mongoHostStr)
 
 	testMFAmain(pTest, runtimeSys)
 }
