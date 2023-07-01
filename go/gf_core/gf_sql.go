@@ -51,7 +51,7 @@ func DBsqlConnect(pDBnameStr string,
 		})
 
 	// connect
-	db, err := sql.Open(pDBnameStr, urlStr)
+	db, err := sql.Open("postgres", urlStr)
 	if err != nil {
 		gfErr := ErrorCreate("failed to connect to a SQL server at target url",
 			"sql_failed_to_connect",
