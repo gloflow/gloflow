@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package gf_aws
 
 import (
-	"os"
+	// "os"
 	"github.com/gloflow/gloflow/go/gf_core"
 )
 
@@ -28,15 +28,16 @@ import (
 
 type GFs3TestInfo struct {
 	GFs3Info              *GFs3Info
-	AWSaccessKeyIDstr     string
-	AWSsecretAccessKeyStr string
-	AWStokenStr           string
+	// AWSaccessKeyIDstr     string
+	// AWSsecretAccessKeyStr string
+	// AWStokenStr           string
 }
 
 //---------------------------------------------------
 
 func TgetS3info(pRuntimeSys *gf_core.RuntimeSys) *GFs3TestInfo {
 
+	/*
 	awsAccessKeyIDstr     := os.Getenv("GF_AWS_ACCESS_KEY_ID")
 	awsSecretAccessKeyStr := os.Getenv("GF_AWS_SECRET_ACCESS_KEY")
 	awsTokenStr           := os.Getenv("GF_AWS_TOKEN")
@@ -44,17 +45,19 @@ func TgetS3info(pRuntimeSys *gf_core.RuntimeSys) *GFs3TestInfo {
 	if awsAccessKeyIDstr == "" || awsSecretAccessKeyStr == "" {
 		panic("test AWS credentials were not supplied")
 	}
-	
-	s3info, gfErr := S3init(awsAccessKeyIDstr, awsSecretAccessKeyStr, awsTokenStr, pRuntimeSys)
+	*/
+
+	s3info, gfErr := S3init(// awsAccessKeyIDstr, awsSecretAccessKeyStr, awsTokenStr,
+		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)
 	}
 
 	s3testInfo := &GFs3TestInfo{
 		GFs3Info:              s3info,
-		AWSaccessKeyIDstr:     awsAccessKeyIDstr,
-		AWSsecretAccessKeyStr: awsSecretAccessKeyStr,
-		AWStokenStr:           awsTokenStr,
+		// AWSaccessKeyIDstr:     awsAccessKeyIDstr,
+		// AWSsecretAccessKeyStr: awsSecretAccessKeyStr,
+		// AWStokenStr:           awsTokenStr,
 	}
 	return s3testInfo
 }

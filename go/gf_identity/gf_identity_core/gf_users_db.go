@@ -66,7 +66,6 @@ func dbAuth0createNewSession(pAuth0session *GFauth0session,
 		return gfErr
 	}
 
-	
 	return nil
 }
 

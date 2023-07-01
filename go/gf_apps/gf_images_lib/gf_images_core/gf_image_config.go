@@ -39,9 +39,6 @@ type GFserviceInfo struct {
 
 	Media_domain_str                     string
 	Images_main_s3_bucket_name_str       string
-	AWS_access_key_id_str                string
-	AWS_secret_access_key_str            string
-	AWS_token_str                        string
 	Templates_paths_map                  map[string]string
 	Config_file_path_str                 string
 
@@ -55,6 +52,12 @@ type GFserviceInfo struct {
 
 	// IPFS_NODE_HOST - host/gateway to use to connect to for IPFS operations
 	IPFSnodeHostStr string
+
+	/*
+	AWS_access_key_id_str                string
+	AWS_secret_access_key_str            string
+	AWS_token_str                        string
+	*/
 }
 
 //-------------------------------------------------

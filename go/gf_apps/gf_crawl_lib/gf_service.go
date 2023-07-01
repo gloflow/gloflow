@@ -69,11 +69,13 @@ func Init(pConfig *GFcrawlerConfig,
 	pMediaDomainStr             string,
 	pTemplatesPathsMap          map[string]string,
 
+	/*
 	// DEPRECATE!!
 	p_aws_access_key_id_str     string,
 	p_aws_secret_access_key_str string,
 	p_aws_token_str             string,
-
+	*/
+	
 	pEsearchClient              *elastic.Client,
 	pHTTPmux                    *http.ServeMux,
 	pRuntimeSys                 *gf_core.RuntimeSys) *gf_core.GFerror {
@@ -84,9 +86,9 @@ func Init(pConfig *GFcrawlerConfig,
 	// crawled_images_s3_bucket_name_str := "gf--discovered--img"
 	// gf_images_s3_bucket_name_str      := "gf--img"
 
-	gf_s3_info, gfErr := gf_aws.S3init(p_aws_access_key_id_str,
+	gf_s3_info, gfErr := gf_aws.S3init(/*p_aws_access_key_id_str,
 		p_aws_secret_access_key_str,
-		p_aws_token_str,
+		p_aws_token_str,*/
 		pRuntimeSys)
 	if gfErr != nil {
 		return gfErr

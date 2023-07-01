@@ -57,9 +57,9 @@ func InitService(pHTTPmux *http.ServeMux,
 	// S3
 	// REMOVE!! - usage of AWS creds here, they should be discovered
 	//            by the AWS client from the environment.
-	s3Info, gfErr := gf_aws.S3init(pServiceInfo.AWS_access_key_id_str,
-		pServiceInfo.AWS_secret_access_key_str,
-		pServiceInfo.AWS_token_str,
+	s3Info, gfErr := gf_aws.S3init(// pServiceInfo.AWS_access_key_id_str,
+		// pServiceInfo.AWS_secret_access_key_str,
+		// pServiceInfo.AWS_token_str,
 		pRuntimeSys)
 	if gfErr != nil {
 		panic(gfErr.Error)

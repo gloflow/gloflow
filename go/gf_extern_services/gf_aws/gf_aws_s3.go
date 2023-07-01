@@ -29,7 +29,7 @@ import (
 	"path/filepath"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/aws/credentials"
+	// "github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/gloflow/gloflow/go/gf_core"
@@ -89,9 +89,9 @@ func S3getFile(pTargetFileS3pathStr string,
 //---------------------------------------------------
 // S3_INIT
 
-func S3init(pAccessKeyIDstr string,
-	pSecretAccessKeyStr string,
-	pTokenStr           string,
+func S3init(// pAccessKeyIDstr string,
+	// pSecretAccessKeyStr string,
+	// pTokenStr           string,
 	pRuntimeSys         *gf_core.RuntimeSys) (*GFs3Info, *gf_core.GFerror) {
 	
 	config := &aws.Config{
@@ -103,6 +103,7 @@ func S3init(pAccessKeyIDstr string,
 	}
 
 	//--------------
+	/*
 	// STATIC_CREDENTIALS - they're non-empty and should be constructed. otherwise AWS creds are acquired
 	//                      by the AWS client from the environment.
 	if pAccessKeyIDstr != "" {
@@ -118,6 +119,7 @@ func S3init(pAccessKeyIDstr string,
 
 		config.Credentials = creds
 	}
+	*/
 
 	//--------------
 

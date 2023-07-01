@@ -25,7 +25,7 @@ import (
 	"net/http"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gloflow/gloflow/go/gf_core"
-	"github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
+	// "github.com/gloflow/gloflow/go/gf_extern_services/gf_aws"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_core"
 	"github.com/gloflow/gloflow/go/gf_apps/gf_images_lib/gf_images_jobs_client"
@@ -99,7 +99,7 @@ func TstartService(pMongoHostStr string,
 
 	//-------------
 	// S3
-	s3testInfo := gf_aws.TgetS3info(runtimeSys)
+	// s3testInfo := gf_aws.TgetS3info(runtimeSys)
 
 	//-------------
 	// START_HTTP_SERVICE
@@ -112,11 +112,13 @@ func TstartService(pMongoHostStr string,
 		ImagesThumbnailsStoreLocalDirPathStr: test__images_thumbs_local_dir_path_str,
 		Images_main_s3_bucket_name_str:       config.Main_s3_bucket_name_str, // test__s3_bucket_name_str,
 		
+		/*
 		// DEPRECATE!!
 		AWS_access_key_id_str:                s3testInfo.AWSaccessKeyIDstr,
 		AWS_secret_access_key_str:            s3testInfo.AWSsecretAccessKeyStr,
 		AWS_token_str:                        s3testInfo.AWStokenStr,
-		
+		*/
+
 		Templates_paths_map:                  testServiceTemplatesDirPathsMap,
 		Config_file_path_str:                 testConfigFilePathStr,
 	}

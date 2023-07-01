@@ -129,7 +129,7 @@ func Init(pConfig *GFimageStorageConfig,
 		case "s3":
 
 			// get new S3 client, and get AWS creds from environment
-			S3info, gfErr := gf_aws.S3init("", "", "", pRuntimeSys)
+			S3info, gfErr := gf_aws.S3init(pRuntimeSys)
 			if gfErr != nil {
 				return nil, gfErr
 			}
